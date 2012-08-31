@@ -35,7 +35,6 @@
 
 package imagej.core.plugins.axispos;
 
-import imagej.ImageJ;
 import imagej.data.Data;
 import imagej.data.display.ImageDisplay;
 import imagej.data.event.DataRestructuredEvent;
@@ -45,6 +44,7 @@ import imagej.display.event.input.KyPressedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.StatusService;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.input.KeyCode;
 import imagej.service.AbstractService;
@@ -67,29 +67,13 @@ public class AnimationService extends AbstractService {
 		"Animation stopped. Press '\\' to resume.";
 	private static final String ALL_STOPPED_STATUS = "All animations stopped.";
 
-	private final EventService eventService;
-	private final StatusService statusService;
+	@Parameter
+	private EventService eventService;
 
-	private final Map<ImageDisplay, Animation> animations =
-		new ConcurrentHashMap<ImageDisplay, Animation>();
+	@Parameter
+	private StatusService statusService;
 
-	// -- Constructors --
-
-	public AnimationService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public AnimationService(final ImageJ context,
-		final EventService eventService, final StatusService statusService)
-	{
-		super(context);
-		this.eventService = eventService;
-		this.statusService = statusService;
-
-		subscribeToEvents(eventService);
-	}
+	private Map<ImageDisplay, Animation> animations;
 
 	// -- AnimationService methods --
 
@@ -135,6 +119,15 @@ public class AnimationService extends AbstractService {
 			animations.put(display, animation);
 		}
 		return animation;
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		animations = new ConcurrentHashMap<ImageDisplay, Animation>();
+
+		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

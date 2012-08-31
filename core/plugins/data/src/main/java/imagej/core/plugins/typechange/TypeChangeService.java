@@ -35,7 +35,6 @@
 
 package imagej.core.plugins.typechange;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -43,6 +42,7 @@ import imagej.display.Display;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
@@ -60,29 +60,14 @@ import java.util.List;
 @Plugin(type = Service.class)
 public final class TypeChangeService extends AbstractService {
 
-	private final EventService eventService;
-	private final PluginService pluginService;
-	private final ImageDisplayService imageDisplayService;
+	@Parameter
+	private EventService eventService;
 
-	// -- Constructors --
+	@Parameter
+	private PluginService pluginService;
 
-	public TypeChangeService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public TypeChangeService(final ImageJ context,
-		final EventService eventService, final PluginService pluginService,
-		final ImageDisplayService imageDisplayService)
-	{
-		super(context);
-		this.eventService = eventService;
-		this.pluginService = pluginService;
-		this.imageDisplayService = imageDisplayService;
-
-		subscribeToEvents(eventService);
-	}
+	@Parameter
+	private ImageDisplayService imageDisplayService;
 
 	// -- TypeChangeService methods --
 
@@ -114,6 +99,13 @@ public final class TypeChangeService extends AbstractService {
 
 		// notify interested parties that the TypeChanger plugins have changed
 		eventService.publish(new ModulesUpdatedEvent(plugins));
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

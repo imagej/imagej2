@@ -35,10 +35,10 @@
 
 package imagej.platform;
 
-import imagej.ImageJ;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.ext.InstantiableException;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
@@ -63,43 +63,20 @@ public final class DefaultPlatformService extends AbstractService implements
 	PlatformService
 {
 
-	private final LogService log;
-	private final EventService eventService;
-	private final PluginService pluginService;
-	private final AppService appService;
+	@Parameter
+	private LogService log;
+
+	@Parameter
+	private EventService eventService;
+
+	@Parameter
+	private PluginService pluginService;
+
+	@Parameter
+	private AppService appService;
 
 	/** Platform handlers applicable to this platform. */
 	private List<Platform> targetPlatforms;
-
-	// -- Constructors --
-
-	public DefaultPlatformService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public DefaultPlatformService(final ImageJ context, final LogService log,
-		final EventService eventService, final PluginService pluginService,
-		final AppService appEventService)
-	{
-		super(context);
-		this.log = log;
-		this.eventService = eventService;
-		this.pluginService = pluginService;
-		this.appService = appEventService;
-
-		final List<Platform> platforms = discoverTargetPlatforms();
-		targetPlatforms = Collections.unmodifiableList(platforms);
-		for (final Platform platform : platforms) {
-			log.info("Configuring platform: " + platform.getClass().getName());
-			platform.configure(this);
-		}
-		if (platforms.size() == 0) log.info("No platforms to configure.");
-		// ENABLE NEXT LINE and all plugins run twice
-		// DISABLE NEXT LINE and default menu disappears
-		subscribeToEvents(eventService);
-	}
 
 	// -- PlatformService methods --
 
@@ -160,6 +137,22 @@ public final class DefaultPlatformService extends AbstractService implements
 			if (platform.registerAppMenus(menus)) return true;
 		}
 		return false;
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		final List<Platform> platforms = discoverTargetPlatforms();
+		targetPlatforms = Collections.unmodifiableList(platforms);
+		for (final Platform platform : platforms) {
+			log.info("Configuring platform: " + platform.getClass().getName());
+			platform.configure(this);
+		}
+		if (platforms.size() == 0) log.info("No platforms to configure.");
+		// ENABLE NEXT LINE and all plugins run twice
+		// DISABLE NEXT LINE and default menu disappears
+		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

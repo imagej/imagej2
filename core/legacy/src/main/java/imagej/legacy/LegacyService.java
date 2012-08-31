@@ -38,7 +38,6 @@ package imagej.legacy;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
-import imagej.ImageJ;
 import imagej.core.options.OptionsMisc;
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
@@ -50,6 +49,7 @@ import imagej.display.event.input.KyPressedEvent;
 import imagej.display.event.input.KyReleasedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
@@ -94,12 +94,24 @@ public final class LegacyService extends AbstractService {
 		new LegacyInjector().injectHooks();
 	}
 
-	private final LogService log;
-	private final EventService eventService;
-	private final PluginService pluginService;
-	private final OptionsService optionsService;
-	private final ImageDisplayService imageDisplayService;
-	private final MenuService menuService;
+	@Parameter
+	private LogService log;
+
+	@Parameter
+	private EventService eventService;
+
+	@Parameter
+	private PluginService pluginService;
+
+	@Parameter
+	private OptionsService optionsService;
+
+	@Parameter
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter
+	private MenuService menuService;
+
 	private boolean lastDebugMode;
 	private boolean initialized;
 
@@ -108,56 +120,6 @@ public final class LegacyService extends AbstractService {
 
 	/** Method of synchronizing IJ2 & IJ1 options. */
 	private OptionsSynchronizer optionsSynchronizer;
-
-	// -- Constructors --
-
-	/**
-	 * Default constructor (will not run to completion). Provided only to fulfill
-	 * an API contract elsewhere. Do not use.
-	 */
-	public LegacyService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	/** Preferred constructor. */
-	public LegacyService(final ImageJ context, final LogService log,
-		final EventService eventService, final PluginService pluginService,
-		final OptionsService optionsService,
-		final ImageDisplayService imageDisplayService, final MenuService menuService)
-	{
-		super(context);
-		this.log = log;
-		this.eventService = eventService;
-		this.pluginService = pluginService;
-		this.optionsService = optionsService;
-		this.imageDisplayService = imageDisplayService;
-		this.menuService = menuService;
-
-		imageMap = new LegacyImageMap(context);
-		optionsSynchronizer = new OptionsSynchronizer(optionsService);
-
-		// initialize legacy ImageJ application
-		try {
-			new ij.ImageJ(ij.ImageJ.NO_SHOW);
-		}
-		catch (final Throwable t) {
-			log.warn("Failed to instantiate IJ1.", t);
-		}
-
-		// discover legacy plugins
-		final OptionsMisc optsMisc = optionsService.getOptions(OptionsMisc.class);
-		lastDebugMode = optsMisc.isDebugMode();
-		final boolean enableBlacklist = !optsMisc.isDebugMode();
-		addLegacyPlugins(enableBlacklist);
-
-		updateIJ1Settings();
-
-		subscribeToEvents(eventService);
-
-		initialized = true;
-	}
 
 	// -- LegacyService methods --
 
@@ -268,6 +230,34 @@ public final class LegacyService extends AbstractService {
 		optionsSynchronizer.colorOptions(fgColor, bgColor);
 	}
 	
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		imageMap = new LegacyImageMap(getContext());
+		optionsSynchronizer = new OptionsSynchronizer(optionsService);
+
+		// initialize legacy ImageJ application
+		try {
+			new ij.ImageJ(ij.ImageJ.NO_SHOW);
+		}
+		catch (final Throwable t) {
+			log.warn("Failed to instantiate IJ1.", t);
+		}
+
+		// discover legacy plugins
+		final OptionsMisc optsMisc = optionsService.getOptions(OptionsMisc.class);
+		lastDebugMode = optsMisc.isDebugMode();
+		final boolean enableBlacklist = !optsMisc.isDebugMode();
+		addLegacyPlugins(enableBlacklist);
+
+		updateIJ1Settings();
+
+		subscribeToEvents(eventService);
+
+		initialized = true;
+	}
+
 	// -- Event handlers --
 
 	/**

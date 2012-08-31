@@ -35,9 +35,9 @@
 
 package imagej.platform;
 
-import imagej.ImageJ;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.plugin.RunnablePlugin;
@@ -60,30 +60,15 @@ public final class DefaultAppService extends AbstractService implements
 	AppService
 {
 
-	// -- Fields --
+	@Parameter
+	private EventService eventService;
 
-	private final PluginService pluginService;
+	@Parameter
+	private PluginService pluginService;
 
 	private Class<? extends RunnablePlugin> aboutPlugin;
 	private Class<? extends RunnablePlugin> prefsPlugin;
 	private Class<? extends RunnablePlugin> quitPlugin;
-
-	// -- Constructors --
-
-	public DefaultAppService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public DefaultAppService(final ImageJ context,
-		final EventService eventService, final PluginService pluginService)
-	{
-		super(context);
-		this.pluginService = pluginService;
-
-		subscribeToEvents(eventService);
-	}
 
 	// -- AppService methods --
 
@@ -132,6 +117,13 @@ public final class DefaultAppService extends AbstractService implements
 		if (prefsPlugin != null) handledPlugins.add(prefsPlugin);
 		if (quitPlugin != null) handledPlugins.add(quitPlugin);
 		return handledPlugins;
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

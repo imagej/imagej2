@@ -35,9 +35,9 @@
 
 package imagej.menu;
 
-import imagej.ImageJ;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.ext.plugin.RunnablePlugin;
@@ -63,35 +63,14 @@ import java.util.List;
 @Plugin(type = Service.class)
 public class DefaultMenuService extends AbstractService implements MenuService {
 
-	private final EventService eventService;
-	private final PluginService pluginService;
+	@Parameter
+	private EventService eventService;
+
+	@Parameter
+	private PluginService pluginService;
 
 	/** Menu tree structures. There is one structure per menu root. */
 	private HashMap<String, ShadowMenu> rootMenus;
-
-	// -- Constructors --
-
-	public DefaultMenuService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public DefaultMenuService(final ImageJ context,
-		final EventService eventService, final PluginService pluginService)
-	{
-		super(context);
-		this.eventService = eventService;
-		this.pluginService = pluginService;
-
-		rootMenus = new HashMap<String, ShadowMenu>();
-
-		final List<ModuleInfo> allModules =
-			getPluginService().getModuleService().getModules();
-		addModules(allModules);
-
-		subscribeToEvents(eventService);
-	}
 
 	// -- MenuService methods --
 
@@ -158,6 +137,19 @@ public class DefaultMenuService extends AbstractService implements MenuService {
 	public void setSelected(final ModuleInfo info, final boolean selected) {
 		info.setSelected(selected);
 		info.update(eventService);
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		rootMenus = new HashMap<String, ShadowMenu>();
+
+		final List<ModuleInfo> allModules =
+			getPluginService().getModuleService().getModules();
+		addModules(allModules);
+
+		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

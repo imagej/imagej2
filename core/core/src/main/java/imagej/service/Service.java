@@ -54,6 +54,8 @@ import imagej.ext.plugin.Plugin;
  * @see Plugin
  */
 public interface Service extends IPlugin, Contextual, Prioritized {
-	// A service is a plugin that provides additional API for ImageJ,
-	// discoverable via the plugin discovery mechanism.
+
+	/** Performs any needed initialization when the service is first loaded. */
+	void initialize();
+
 }

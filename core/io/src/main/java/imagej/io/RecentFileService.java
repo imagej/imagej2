@@ -35,15 +35,15 @@
 
 package imagej.io;
 
-import imagej.ImageJ;
 import imagej.MenuEntry;
 import imagej.MenuPath;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.ext.plugin.RunnablePlugin;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginModuleInfo;
 import imagej.ext.plugin.PluginService;
+import imagej.ext.plugin.RunnablePlugin;
 import imagej.io.event.FileOpenedEvent;
 import imagej.io.event.FileSavedEvent;
 import imagej.io.plugins.OpenImage;
@@ -92,41 +92,17 @@ public final class RecentFileService extends AbstractService {
 
 	// -- Fields --
 
-	private final EventService eventService;
-	private final ModuleService moduleService;
-	private final PluginService pluginService;
+	@Parameter
+	private EventService eventService;
 
-	private final List<String> recentFiles;
-	private final Map<String, ModuleInfo> recentModules;
+	@Parameter
+	private ModuleService moduleService;
 
-	// -- Constructors --
+	@Parameter
+	private PluginService pluginService;
 
-	public RecentFileService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public RecentFileService(final ImageJ context,
-		final EventService eventService, final ModuleService moduleService,
-		final PluginService pluginService)
-	{
-		super(context);
-		this.eventService = eventService;
-		this.moduleService = moduleService;
-		this.pluginService = pluginService;
-
-		recentFiles = Prefs.getList(RECENT_FILES_KEY);
-		recentModules = new HashMap<String, ModuleInfo>();
-		for (final String path : recentFiles) {
-			recentModules.put(path, createInfo(path));
-		}
-
-		// register the modules with the module service
-		moduleService.addModules(recentModules.values());
-
-		subscribeToEvents(eventService);
-	}
+	private List<String> recentFiles;
+	private Map<String, ModuleInfo> recentModules;
 
 	// -- RecentFileService methods --
 
@@ -186,6 +162,22 @@ public final class RecentFileService extends AbstractService {
 	/** Gets the list of recent files. */
 	public List<String> getRecentFiles() {
 		return Collections.unmodifiableList(recentFiles);
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		recentFiles = Prefs.getList(RECENT_FILES_KEY);
+		recentModules = new HashMap<String, ModuleInfo>();
+		for (final String path : recentFiles) {
+			recentModules.put(path, createInfo(path));
+		}
+
+		// register the modules with the module service
+		moduleService.addModules(recentModules.values());
+
+		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

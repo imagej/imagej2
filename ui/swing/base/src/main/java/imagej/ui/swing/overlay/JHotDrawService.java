@@ -35,13 +35,13 @@
 
 package imagej.ui.swing.overlay;
 
-import imagej.ImageJ;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.event.EventService;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
@@ -65,31 +65,21 @@ import org.jhotdraw.draw.Figure;
 @Plugin(type = Service.class)
 public class JHotDrawService extends AbstractService {
 
-	private final EventService eventService;
-	private final ImageDisplayService imageDisplayService;
+	@Parameter
+	private PluginService pluginService;
 
-	private final List<? extends JHotDrawAdapter> adapters;
+	@Parameter
+	private EventService eventService;
 
-	public JHotDrawService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
+	@Parameter
+	private ImageDisplayService imageDisplayService;
 
-	public JHotDrawService(final ImageJ context,
-		final PluginService pluginService, final EventService eventService,
-		final ImageDisplayService imageDisplayService, final LogService log)
-	{
-		super(context);
-		this.eventService = eventService;
-		this.imageDisplayService = imageDisplayService;
+	@Parameter
+	private LogService log;
 
-		// ask the plugin service for the list of available JHotDraw adapters
-		adapters = pluginService.createInstancesOfType(JHotDrawAdapter.class);
-		if (log != null) {
-			log.info("Found " + adapters.size() + " JHotDraw adapters.");
-		}
-	}
+	private List<? extends JHotDrawAdapter> adapters;
+
+	// -- JHotDrawService methods --
 
 	/**
 	 * Gets the first available adapter for the given overlay.
@@ -169,6 +159,17 @@ public class JHotDrawService extends AbstractService {
 		adapter.updateOverlay(figure, overlayView);
 
 		eventService.publish(new FigureCreatedEvent(overlayView, figure, display));
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		// ask the plugin service for the list of available JHotDraw adapters
+		adapters = pluginService.createInstancesOfType(JHotDrawAdapter.class);
+		if (log != null) {
+			log.info("Found " + adapters.size() + " JHotDraw adapters.");
+		}
 	}
 
 }

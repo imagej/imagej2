@@ -35,9 +35,9 @@
 
 package imagej.object;
 
-import imagej.ImageJ;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.object.event.ObjectCreatedEvent;
 import imagej.object.event.ObjectDeletedEvent;
@@ -65,28 +65,11 @@ public final class DefaultObjectService extends AbstractService implements
 	ObjectService
 {
 
-	private final EventService eventService;
+	@Parameter
+	private EventService eventService;
 
 	/** Index of registered objects. */
-	private final ObjectIndex<Object> objectIndex = new ObjectIndex<Object>(
-		Object.class);
-
-	// -- Constructors --
-
-	public DefaultObjectService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public DefaultObjectService(final ImageJ context,
-		final EventService eventService)
-	{
-		super(context);
-		this.eventService = eventService;
-
-		subscribeToEvents(eventService);
-	}
+	private ObjectIndex<Object> objectIndex;
 
 	// -- ObjectService methods --
 
@@ -118,6 +101,14 @@ public final class DefaultObjectService extends AbstractService implements
 	public void removeObject(final Object obj) {
 		objectIndex.remove(obj);
 		eventService.publish(new ObjectsRemovedEvent(obj));
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		objectIndex = new ObjectIndex<Object>(Object.class);
+		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

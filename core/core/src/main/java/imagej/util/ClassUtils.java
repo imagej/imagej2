@@ -36,8 +36,11 @@
 package imagej.util;
 
 import java.io.File;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Useful methods for working with {@link Class} objects and primitive types.
@@ -245,7 +248,9 @@ public final class ClassUtils {
 	}
 
 	/** Loads the class with the given name, or null if it cannot be loaded. */
-	public static Class<?> loadClass(final String className, final ClassLoader classLoader) {
+	public static Class<?> loadClass(final String className,
+		final ClassLoader classLoader)
+	{
 		try {
 			if (classLoader == null) return Class.forName(className);
 			return classLoader.loadClass(className);
@@ -261,7 +266,9 @@ public final class ClassUtils {
 	}
 
 	/** Checks whether a class with the given name exists. */
-	public static boolean hasClass(final String className, final ClassLoader classLoader) {
+	public static boolean hasClass(final String className,
+		final ClassLoader classLoader)
+	{
 		try {
 			if (classLoader == null) Class.forName(className);
 			else classLoader.loadClass(className);
@@ -284,6 +291,7 @@ public final class ClassUtils {
 	 * "/path/to/my-jar.jar!/my/package/MyClass.class") then it will return the
 	 * path to the JAR (e.g., "/path/to/my-jar.jar").
 	 * </p>
+	 * 
 	 * @param className The name of the class whose location is desired.
 	 */
 	public static File getLocation(final String className) {
@@ -302,6 +310,7 @@ public final class ClassUtils {
 	 * "/path/to/my-jar.jar!/my/package/MyClass.class") then it will return the
 	 * path to the JAR (e.g., "/path/to/my-jar.jar").
 	 * </p>
+	 * 
 	 * @param className The name of the class whose location is desired.
 	 * @param classLoader The class loader to use when loading the class.
 	 */
@@ -324,6 +333,7 @@ public final class ClassUtils {
 	 * "/path/to/my-jar.jar!/my/package/MyClass.class") then it will return the
 	 * path to the JAR (e.g., "/path/to/my-jar.jar").
 	 * </p>
+	 * 
 	 * @param c The class whose location is desired.
 	 */
 	public static File getLocation(final Class<?> c) {
@@ -352,10 +362,63 @@ public final class ClassUtils {
 		return new File(path);
 	}
 
+	// -- Utility methods --
+
+	/**
+	 * Gets the given class's {@link Field}s marked with the annotation of the
+	 * specified class.
+	 * <p>
+	 * Unlike {@link Class#getFields()}, the result will include any non-public
+	 * fields, including fields defined in supertypes of the given class.
+	 * </p>
+	 * 
+	 * @param c The class to scan for annotated fields.
+	 * @param annotationClass The type of annotation for which to scan.
+	 * @return A new list containing all fields with the requested annotation.
+	 */
+	public static <A extends Annotation> List<Field> getAnnotatedFields(
+		final Class<?> c, final Class<A> annotationClass)
+	{
+		final ArrayList<Field> fields = new ArrayList<Field>();
+		getAnnotatedFields(c, annotationClass, fields);
+		return fields;
+	}
+
+	/**
+	 * Gets the given class's {@link Field}s marked with the annotation of the
+	 * specified class.
+	 * <p>
+	 * Unlike {@link Class#getFields()}, the result will include any non-public
+	 * fields, including fields defined in supertypes of the given class.
+	 * </p>
+	 * 
+	 * @param c The class to scan for annotated fields.
+	 * @param annotationClass The type of annotation for which to scan.
+	 * @param fields The list to which matching fields will be added.
+	 */
+	public static <A extends Annotation> void
+		getAnnotatedFields(final Class<?> c, final Class<A> annotationClass,
+			final List<Field> fields)
+	{
+		if (c == null) return;
+
+		// check supertypes for annotated fields first
+		getAnnotatedFields(c.getSuperclass(), annotationClass, fields);
+		for (final Class<?> iface : c.getInterfaces()) {
+			getAnnotatedFields(iface, annotationClass, fields);
+		}
+
+		for (final Field f : c.getDeclaredFields()) {
+			final A ann = f.getAnnotation(annotationClass);
+			if (ann != null) fields.add(f);
+		}
+	}
+
 	/**
 	 * Gets the specified field of the given class, or null if it does not exist.
 	 */
-	public static Field getField(final String className, final String fieldName) {
+	public static Field getField(final String className, final String fieldName)
+	{
 		return getField(loadClass(className), fieldName);
 	}
 

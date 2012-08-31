@@ -35,10 +35,10 @@
 
 package imagej.ui.common.awt;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.display.ScreenCaptureService;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
@@ -67,32 +67,10 @@ public class AWTScreenCaptureService
 	extends AbstractService
 	implements ScreenCaptureService
 {
-	// -- instance variables --
 	
-	private final DatasetService dataService;
+	@Parameter
+	private DatasetService dataService;
 
-	// -- constructor --
-
-	/**
-	 * Hobbled constructor. Needed for Sezpoz compatiblity and is not to be
-	 * used.
-	 */
-	public AWTScreenCaptureService() {
-		// NB - needed by Sezpoz
-		super(null);
-		throw new UnsupportedOperationException(
-			"this constructor not meant to be used");
-	}
-	
-	/**
-	 * Default constructor: creates an AWTScreenCaptureService using other
-	 * services.
-	 */
-	public AWTScreenCaptureService(ImageJ context, DatasetService datasetService) {
-		super(context);
-		this.dataService = datasetService;
-	}
-	
 	// -- public api --
 	
 	/**

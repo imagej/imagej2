@@ -35,9 +35,9 @@
 
 package imagej.console;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.DisplayService;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginService;
 import imagej.io.IOService;
@@ -58,31 +58,20 @@ public class DefaultConsoleService extends AbstractService implements
 	ConsoleService
 {
 
-	private final LogService log;
-	private final OptionsService optionsService;
-	private final PluginService pluginService;
-	private final IOService ioService;
-	private final DisplayService displayService;
+	@Parameter
+	private LogService log;
 
-	// -- Constructors --
+	@Parameter
+	private OptionsService optionsService;
 
-	public DefaultConsoleService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
+	@Parameter
+	private PluginService pluginService;
 
-	public DefaultConsoleService(final ImageJ context, final LogService log,
-		final OptionsService optionsService, final PluginService pluginService,
-		final IOService ioService, final DisplayService displayService)
-	{
-		super(context);
-		this.log = log;
-		this.optionsService = optionsService;
-		this.pluginService = pluginService;
-		this.ioService = ioService;
-		this.displayService = displayService;
-	}
+	@Parameter
+	private IOService ioService;
+
+	@Parameter
+	private DisplayService displayService;
 
 	// -- ConsoleService methods --
 

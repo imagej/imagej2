@@ -35,7 +35,6 @@
 
 package imagej.display;
 
-import imagej.ImageJ;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.window.WinActivatedEvent;
@@ -43,6 +42,7 @@ import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.ext.InstantiableException;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
@@ -66,10 +66,17 @@ public final class DefaultDisplayService extends AbstractService implements
 	DisplayService
 {
 
-	private final LogService log;
-	private final EventService eventService;
-	private final ObjectService objectService;
-	private final PluginService pluginService;
+	@Parameter
+	private LogService log;
+
+	@Parameter
+	private EventService eventService;
+
+	@Parameter
+	private ObjectService objectService;
+
+	@Parameter
+	private PluginService pluginService;
 
 	// TODO - implement queue of most recently activated displays.
 	// Can actually keep a list of all known displays in this class, and pull
@@ -78,25 +85,6 @@ public final class DefaultDisplayService extends AbstractService implements
 	// iterate through the list of known displays for the first match.
 
 	private Display<?> activeDisplay;
-
-	public DefaultDisplayService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public DefaultDisplayService(final ImageJ context, final LogService log,
-		final EventService eventService, final ObjectService objectService,
-		final PluginService pluginService)
-	{
-		super(context);
-		this.log = log;
-		this.eventService = eventService;
-		this.objectService = objectService;
-		this.pluginService = pluginService;
-
-		subscribeToEvents(eventService);
-	}
 
 	// -- DisplayService methods --
 
@@ -227,6 +215,13 @@ public final class DefaultDisplayService extends AbstractService implements
 			}
 		}
 		return null;
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

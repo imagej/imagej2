@@ -35,7 +35,7 @@
 
 package imagej.event;
 
-import imagej.ImageJ;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.log.LogService;
 import imagej.service.AbstractService;
@@ -63,24 +63,13 @@ public class DefaultEventService extends AbstractService implements
 	EventService
 {
 
-	private final LogService log;
-	private final DefaultEventBus eventBus;
+	@Parameter
+	private ThreadService threadService;
 
-	// -- Constructors --
+	@Parameter
+	private LogService log;
 
-	public DefaultEventService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public DefaultEventService(final ImageJ context,
-		final ThreadService threadService, final LogService log)
-	{
-		super(context);
-		this.log = log;
-		eventBus = new DefaultEventBus(threadService, log);
-	}
+	private DefaultEventBus eventBus;
 
 	// -- EventService methods --
 
@@ -124,6 +113,13 @@ public class DefaultEventService extends AbstractService implements
 		@SuppressWarnings("unchecked")
 		final List<EventSubscriber<E>> typedList = list;
 		return typedList;
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		eventBus = new DefaultEventBus(threadService, log);
 	}
 
 	// -- Helper methods --

@@ -35,7 +35,6 @@
 
 package imagej.log.slf4j;
 
-import imagej.ImageJ;
 import imagej.ext.plugin.Plugin;
 import imagej.log.DefaultUncaughtExceptionHandler;
 import imagej.log.LogService;
@@ -57,25 +56,7 @@ public final class SLF4JLogService extends AbstractService implements
 
 	private Logger logger;
 
-	// -- Constructors --
-
-	public SLF4JLogService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public SLF4JLogService(final ImageJ context) {
-		super(context);
-
-		// HACK: Dirty, because every time a new ImageJ context is created with an
-		// SLF4JLogService, it will "steal" the default exception handling.
-		DefaultUncaughtExceptionHandler.install(this);
-
-		logger = LoggerFactory.getLogger(SLF4JLogService.class);
-	}
-
-	// -- DefaultLogService methods --
+	// -- SLF4JLogService methods --
 
 	public Logger getLogger() {
 		return logger;
@@ -185,6 +166,17 @@ public final class SLF4JLogService extends AbstractService implements
 	@Override
 	public boolean isWarn() {
 		return logger.isWarnEnabled();
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		// HACK: Dirty, because every time a new ImageJ context is created with an
+		// SLF4JLogService, it will "steal" the default exception handling.
+		DefaultUncaughtExceptionHandler.install(this);
+
+		logger = LoggerFactory.getLogger(SLF4JLogService.class);
 	}
 
 	// -- Helper methods --

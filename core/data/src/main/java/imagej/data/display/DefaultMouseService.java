@@ -35,7 +35,6 @@
 
 package imagej.data.display;
 
-import imagej.ImageJ;
 import imagej.display.Display;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.input.MsExitedEvent;
@@ -44,6 +43,7 @@ import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
@@ -60,28 +60,15 @@ public class DefaultMouseService extends AbstractService implements
 	MouseService
 {
 
-	private final EventService eventService;
+	@Parameter
+	private EventService eventService;
 
-	private final HashSet<Integer> buttonsDown = new HashSet<Integer>();
+	private HashSet<Integer> buttonsDown;
 
 	private Display<?> display;
 	private int lastX, lastY;
 
-	public DefaultMouseService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public DefaultMouseService(final ImageJ context,
-		final EventService eventService)
-	{
-		super(context);
-		this.eventService = eventService;
-		clearCoords();
-
-		subscribeToEvents(eventService);
-	}
+	// -- MouseService methods --
 
 	@Override
 	public EventService getEventService() {
@@ -106,6 +93,16 @@ public class DefaultMouseService extends AbstractService implements
 	@Override
 	public boolean isButtonDown(final int button) {
 		return buttonsDown.contains(button);
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		buttonsDown = new HashSet<Integer>();
+		clearCoords();
+
+		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

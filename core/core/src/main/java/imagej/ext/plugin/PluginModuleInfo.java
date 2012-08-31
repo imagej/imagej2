@@ -48,6 +48,7 @@ import imagej.plugin.PluginModule;
 import imagej.plugin.PluginModuleFactory;
 import imagej.plugin.PluginModuleItem;
 import imagej.plugin.PreviewPlugin;
+import imagej.util.ClassUtils;
 import imagej.util.Log;
 import imagej.util.StringMaker;
 
@@ -277,28 +278,16 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 		checkFields(loadPluginClass());
 	}
 
-	/**
-	 * Recursively parses the given class's declared fields for {@link Parameter}
-	 * annotations.
-	 * <p>
-	 * This method (rather than {@link Class#getFields()}) is used to check all
-	 * fields of the given type and ancestor types, including non-public fields.
-	 * </p>
-	 */
+	/** Processes the given class's @{@link Parameter}-annotated fields. */
 	private void checkFields(final Class<?> type) {
 		if (type == null) return;
+		final List<Field> fields =
+			ClassUtils.getAnnotatedFields(type, Parameter.class);
 
-		// check super-types for annotated fields first
-		checkFields(type.getSuperclass());
-		for (final Class<?> c : type.getInterfaces()) {
-			checkFields(c);
-		}
-
-		for (final Field f : type.getDeclaredFields()) {
+		for (final Field f : fields) {
 			f.setAccessible(true); // expose private fields
 
 			final Parameter param = f.getAnnotation(Parameter.class);
-			if (param == null) continue; // not a parameter
 
 			boolean valid = true;
 

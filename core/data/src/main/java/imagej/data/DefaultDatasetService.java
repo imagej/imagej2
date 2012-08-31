@@ -35,9 +35,9 @@
 
 package imagej.data;
 
-import imagej.ImageJ;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.object.ObjectService;
 import imagej.service.AbstractService;
@@ -75,22 +75,8 @@ public final class DefaultDatasetService extends AbstractService implements
 	DatasetService
 {
 
-	private final ObjectService objectService;
-
-	// -- Constructors --
-
-	public DefaultDatasetService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public DefaultDatasetService(final ImageJ context,
-		final ObjectService objectService)
-	{
-		super(context);
-		this.objectService = objectService;
-	}
+	@Parameter
+	private ObjectService objectService;
 
 	// -- DatasetService methods --
 

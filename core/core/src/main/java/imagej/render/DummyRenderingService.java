@@ -35,7 +35,6 @@
 
 package imagej.render;
 
-import imagej.ImageJ;
 import imagej.Priority;
 import imagej.ext.plugin.Plugin;
 import imagej.service.AbstractService;
@@ -52,23 +51,20 @@ public class DummyRenderingService extends AbstractService implements
 	RenderingService
 {
 
-	private final TextRenderer textRenderer;
+	private TextRenderer textRenderer;
 
-	public DummyRenderingService() {
-		// NB - needed by Sezpoz
-		super(null);
-		throw new UnsupportedOperationException(
-			"this constructor not meant to be used");
-	}
-
-	public DummyRenderingService(final ImageJ context) {
-		super(context);
-		textRenderer = new DummyTextRenderer();
-	}
+	// -- RenderingService methods --
 
 	@Override
 	public TextRenderer getTextRenderer() {
 		return textRenderer;
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		textRenderer = new DummyTextRenderer();
 	}
 
 }

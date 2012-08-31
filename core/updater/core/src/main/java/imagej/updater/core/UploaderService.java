@@ -35,10 +35,8 @@
 
 package imagej.updater.core;
 
-import imagej.ImageJ;
-import imagej.ext.InstantiableException;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
 import imagej.service.AbstractService;
@@ -56,30 +54,15 @@ import java.util.List;
 @Plugin(type = Service.class)
 public class UploaderService extends AbstractService {
 
-	private final HashMap<String, Uploader> uploaderMap;
+	@Parameter
+	private LogService log;
 
-	public UploaderService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
+	@Parameter
+	private PluginService pluginService;
 
-	public UploaderService(final ImageJ context,
-		final PluginService pluginService, final LogService log)
-	{
-		super(context);
+	private HashMap<String, Uploader> uploaderMap;
 
-		// ask the plugin service for the list of available upload mechanisms
-		uploaderMap = new HashMap<String, Uploader>();
-		final List<? extends Uploader> uploaders =
-			pluginService.createInstancesOfType(Uploader.class);
-		for (final Uploader uploader : uploaders) {
-			uploaderMap.put(uploader.getProtocol(), uploader);
-		}
-		if (log != null) {
-			log.info("Found " + uploaderMap.size() + " upload mechanisms.");
-		}
-	}
+	// -- UploaderService methods --
 
 	public boolean hasUploader(final String protocol) {
 		return uploaderMap.containsKey(protocol);
@@ -94,6 +77,20 @@ public class UploaderService extends AbstractService {
 				protocol);
 		}
 		return uploader;
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		// ask the plugin service for the list of available upload mechanisms
+		uploaderMap = new HashMap<String, Uploader>();
+		final List<? extends Uploader> uploaders =
+			pluginService.createInstancesOfType(Uploader.class);
+		for (final Uploader uploader : uploaders) {
+			uploaderMap.put(uploader.getProtocol(), uploader);
+		}
+		log.info("Found " + uploaderMap.size() + " upload mechanisms.");
 	}
 
 }

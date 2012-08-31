@@ -35,7 +35,6 @@
 
 package imagej.tool;
 
-import imagej.ImageJ;
 import imagej.display.event.DisplayEvent;
 import imagej.display.event.input.KyPressedEvent;
 import imagej.display.event.input.KyReleasedEvent;
@@ -48,6 +47,7 @@ import imagej.display.event.input.MsWheelEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.ext.InstantiableException;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.ext.plugin.PluginInfo;
 import imagej.ext.plugin.PluginService;
@@ -76,9 +76,14 @@ public class DefaultToolService extends AbstractService implements ToolService {
 
 	private static final double SEPARATOR_DISTANCE = 10;
 
-	private final LogService log;
-	private final EventService eventService;
-	private final PluginService pluginService;
+	@Parameter
+	private LogService log;
+
+	@Parameter
+	private EventService eventService;
+
+	@Parameter
+	private PluginService pluginService;
 
 	private Map<String, Tool> alwaysActiveTools;
 	private Map<String, Tool> tools;
@@ -87,28 +92,6 @@ public class DefaultToolService extends AbstractService implements ToolService {
 	private List<Tool> toolList;
 
 	private Tool activeTool;
-
-	// -- Constructors --
-
-	public DefaultToolService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public DefaultToolService(final ImageJ context, final LogService log,
-		final EventService eventService, final PluginService pluginService)
-	{
-		super(context);
-		this.log = log;
-		this.eventService = eventService;
-		this.pluginService = pluginService;
-
-		createTools();
-		activeTool = new DummyTool();
-
-		subscribeToEvents(eventService);
-	}
 
 	// -- ToolService methods --
 
@@ -179,6 +162,16 @@ public class DefaultToolService extends AbstractService implements ToolService {
 		final double priority1 = tool1.getInfo().getPriority();
 		final double priority2 = tool2.getInfo().getPriority();
 		return Math.abs(priority1 - priority2) >= SEPARATOR_DISTANCE;
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		createTools();
+		activeTool = new DummyTool();
+
+		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

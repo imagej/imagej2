@@ -35,11 +35,11 @@
 
 package imagej.io;
 
-import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.event.EventService;
 import imagej.event.StatusService;
+import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.io.event.FileOpenedEvent;
 import imagej.module.ModuleService;
@@ -65,27 +65,17 @@ public final class DefaultIOService<T extends RealType<T> & NativeType<T>>
 	// TODO: eliminate bogus T parameter above. Rather, find a different way of
 	// handling ImgOpener's need to pass forward a T parameter.
 
+	@Parameter
 	private EventService eventService;
+
+	@Parameter
 	private StatusService statusService;
+
+	@Parameter
 	private ModuleService moduleService;
+
+	@Parameter
 	private DatasetService datasetService;
-
-	public DefaultIOService() {
-		// NB: Required by SezPoz.
-		super(null);
-		throw new UnsupportedOperationException();
-	}
-
-	public DefaultIOService(final ImageJ context, final EventService eventService,
-		final StatusService statusService, final ModuleService moduleService,
-		final DatasetService datasetService)
-	{
-		super(context);
-		this.eventService = eventService;
-		this.statusService = statusService;
-		this.moduleService = moduleService;
-		this.datasetService = datasetService;
-	}
 
 	// -- IOService methods --
 
