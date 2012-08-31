@@ -53,7 +53,7 @@ import java.lang.annotation.Target;
  * @author Johannes Schindelin
  * @author Grant Harris
  * @author Curtis Rueden
- * @see PluginModuleInfo
+ * @see CommandInfo
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

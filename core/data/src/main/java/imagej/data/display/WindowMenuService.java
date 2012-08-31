@@ -49,7 +49,7 @@ import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginModuleInfo;
+import imagej.plugin.CommandInfo;
 import imagej.plugin.Command;
 import imagej.service.AbstractService;
 import imagej.service.Service;
@@ -176,8 +176,8 @@ public final class WindowMenuService extends AbstractService {
 
 	/** Creates a {@link ModuleInfo} to reopen data at the given path. */
 	private ModuleInfo createInfo(final String displayName) {
-		final PluginModuleInfo<Command> info =
-			new PluginModuleInfo<Command>(SelectWindow.class.getName(),
+		final CommandInfo<Command> info =
+			new CommandInfo<Command>(SelectWindow.class.getName(),
 				Command.class);
 
 		// hard code path to open as a preset
@@ -197,7 +197,7 @@ public final class WindowMenuService extends AbstractService {
 
 		// use the same icon as File > Open
 //		final PluginService pluginService = ImageJ.get(PluginService.class);
-//		final PluginModuleInfo<Command> fileOpen =
+//		final CommandInfo<Command> fileOpen =
 //				pluginService.getCommand("imagej.io.plugins.OpenImage");
 //		final String iconPath = fileOpen.getIconPath();
 //		info.setIconPath(iconPath);

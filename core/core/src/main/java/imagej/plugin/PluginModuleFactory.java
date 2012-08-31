@@ -39,21 +39,21 @@ import imagej.module.Module;
 import imagej.module.ModuleException;
 
 /**
- * A factory for instantiating a module from a {@link PluginModuleInfo}.
+ * A factory for instantiating a module from a {@link CommandInfo}.
  * 
  * @author Curtis Rueden
  */
 public interface PluginModuleFactory {
 
-	/** Constructs a module to work with the given {@link PluginModuleInfo}. */
-	<C extends Command> Module createModule(PluginModuleInfo<C> info)
+	/** Constructs a module to work with the given {@link CommandInfo}. */
+	<C extends Command> Module createModule(CommandInfo<C> info)
 		throws ModuleException;
 
 	/**
-	 * Constructs a module to work with the given {@link PluginModuleInfo}, around
+	 * Constructs a module to work with the given {@link CommandInfo}, around
 	 * the specified {@link Command} instance.
 	 */
-	<C extends Command> Module createModule(PluginModuleInfo<C> info,
+	<C extends Command> Module createModule(CommandInfo<C> info,
 		final C command);
 
 }

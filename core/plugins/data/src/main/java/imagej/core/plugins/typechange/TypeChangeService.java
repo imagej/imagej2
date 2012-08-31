@@ -45,7 +45,7 @@ import imagej.event.EventService;
 import imagej.module.event.ModulesUpdatedEvent;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginModuleInfo;
+import imagej.plugin.CommandInfo;
 import imagej.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
@@ -90,9 +90,9 @@ public final class TypeChangeService extends AbstractService {
 			dataset == null ? "" : dataset.getTypeLabelShort();
 		final String suffix = ".ChangeTo" + typeLabel.toUpperCase();
 
-		final List<PluginModuleInfo<TypeChanger>> plugins =
+		final List<CommandInfo<TypeChanger>> plugins =
 			pluginService.getCommandsOfType(TypeChanger.class);
-		for (final PluginModuleInfo<TypeChanger> info : plugins) {
+		for (final CommandInfo<TypeChanger> info : plugins) {
 			final boolean selected = info.getDelegateClassName().endsWith(suffix);
 			info.setSelected(selected);
 		}

@@ -106,7 +106,7 @@ public class DefaultPluginFinder implements PluginFinder {
 
 		if (Command.class.isAssignableFrom(pluginType)) {
 			// TODO - Investigate a simpler way to handle this.
-			final PluginModuleInfo<? extends Command> moduleInfo =
+			final CommandInfo<? extends Command> moduleInfo =
 				createModuleInfo(className, plugin);
 			@SuppressWarnings("unchecked")
 			final PluginInfo<P> result = (PluginInfo<P>) moduleInfo;
@@ -115,13 +115,13 @@ public class DefaultPluginFinder implements PluginFinder {
 		return new PluginInfo<P>(className, pluginType, plugin);
 	}
 
-	private <C extends Command> PluginModuleInfo<C> createModuleInfo(
+	private <C extends Command> CommandInfo<C> createModuleInfo(
 		final String className, final Plugin plugin)
 	{
 		@SuppressWarnings("unchecked")
 		final Class<C> pluginType = (Class<C>) plugin.type();
 
-		return new PluginModuleInfo<C>(className, pluginType, plugin);
+		return new CommandInfo<C>(className, pluginType, plugin);
 	}
 
 }

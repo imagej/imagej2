@@ -58,7 +58,7 @@ import java.util.Map;
 /**
  * A collection of metadata about a particular {@link Command}. Unlike
  * its more general superclass {@link PluginInfo}, a
- * <code>PluginModuleInfo</code> implements {@link ModuleInfo}, allowing it to
+ * <code>CommandInfo</code> implements {@link ModuleInfo}, allowing it to
  * describe and instantiate the command in {@link Module} form.
  * 
  * @author Curtis Rueden
@@ -68,24 +68,24 @@ import java.util.Map;
  * @see PluginModule
  * @see Command
  */
-public class PluginModuleInfo<C extends Command> extends PluginInfo<C>
+public class CommandInfo<C extends Command> extends PluginInfo<C>
 	implements ModuleInfo
 {
 
 	/** List of items with fixed, preset values. */
 	private Map<String, Object> presets;
 
-	/** Factory used to create a module associated with the associated plugin. */
+	/** Factory used to create a module associated with the associated command. */
 	private PluginModuleFactory factory;
 
 	/**
-	 * Flag indicating whether the plugin parameters have been parsed. Parsing the
-	 * parameters requires loading the plugin class, so doing so is deferred until
+	 * Flag indicating whether the command parameters have been parsed. Parsing the
+	 * parameters requires loading the command class, so doing so is deferred until
 	 * information about the parameters is actively needed.
 	 */
 	private boolean paramsParsed;
 
-	/** List of problems detected when parsing plugin parameters. */
+	/** List of problems detected when parsing command parameters. */
 	private List<String> paramErrors = new ArrayList<String>();
 
 	/** Table of inputs, keyed on name. */
@@ -105,21 +105,21 @@ public class PluginModuleInfo<C extends Command> extends PluginInfo<C>
 
 	// -- Constructors --
 
-	public PluginModuleInfo(final String className, final Class<C> pluginType) {
-		super(className, pluginType);
+	public CommandInfo(final String className, final Class<C> commandType) {
+		super(className, commandType);
 		setPresets(null);
 		setPluginModuleFactory(null);
 	}
 
-	public PluginModuleInfo(final String className, final Class<C> pluginType,
+	public CommandInfo(final String className, final Class<C> commandType,
 		final Plugin plugin)
 	{
-		super(className, pluginType, plugin);
+		super(className, commandType, plugin);
 		setPresets(null);
 		setPluginModuleFactory(null);
 	}
 
-	// -- PluginModuleInfo methods --
+	// -- CommandInfo methods --
 
 	/** Sets the table of items with fixed, preset values. */
 	public void setPresets(final Map<String, Object> presets) {
@@ -153,7 +153,7 @@ public class PluginModuleInfo<C extends Command> extends PluginInfo<C>
 
 	/**
 	 * Instantiates the module described by this module info, around the specified
-	 * existing plugin instance.
+	 * existing command instance.
 	 */
 	public Module createModule(final C commandInstance) {
 		return factory.createModule(this, commandInstance);
@@ -261,7 +261,7 @@ public class PluginModuleInfo<C extends Command> extends PluginInfo<C>
 	// -- Helper methods --
 
 	/**
-	 * Parses the plugin's inputs and outputs. Invoked lazily, as needed, to defer
+	 * Parses the command's inputs and outputs. Invoked lazily, as needed, to defer
 	 * class loading as long as possible.
 	 */
 	private void parseParams() {

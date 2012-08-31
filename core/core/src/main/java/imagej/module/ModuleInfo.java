@@ -38,7 +38,7 @@ package imagej.module;
 import imagej.UIDetails;
 import imagej.event.EventService;
 import imagej.module.event.ModulesUpdatedEvent;
-import imagej.plugin.PluginModuleInfo;
+import imagej.plugin.CommandInfo;
 
 import java.util.List;
 
@@ -134,7 +134,7 @@ public interface ModuleInfo extends UIDetails {
 	 * case of programmatically generated module infos whose input data comes from
 	 * an untrusted source.
 	 * </p>
-	 * @see PluginModuleInfo#isValid()
+	 * @see CommandInfo#isValid()
 	 */
 	boolean isValid();
 

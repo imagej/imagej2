@@ -56,13 +56,13 @@ public class PluginModule<C extends Command> extends AbstractModule
 {
 
 	/** The metadata describing the command. */
-	private final PluginModuleInfo<C> info;
+	private final CommandInfo<C> info;
 
 	/** The command instance handled by this module. */
 	private final C command;
 
 	/** Creates a plugin module for the given {@link PluginInfo}. */
-	public PluginModule(final PluginModuleInfo<C> info) throws ModuleException {
+	public PluginModule(final CommandInfo<C> info) throws ModuleException {
 		super();
 		this.info = info;
 		command = instantiateCommand();
@@ -73,7 +73,7 @@ public class PluginModule<C extends Command> extends AbstractModule
 	 * Creates a plugin module for the given {@link PluginInfo}, around the
 	 * specified {@link Command} instance.
 	 */
-	public PluginModule(final PluginModuleInfo<C> info, final C command) {
+	public PluginModule(final CommandInfo<C> info, final C command) {
 		super();
 		this.info = info;
 		this.command = command;
@@ -113,7 +113,7 @@ public class PluginModule<C extends Command> extends AbstractModule
 	}
 
 	@Override
-	public PluginModuleInfo<C> getInfo() {
+	public CommandInfo<C> getInfo() {
 		return info;
 	}
 

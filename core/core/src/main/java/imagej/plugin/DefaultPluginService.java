@@ -188,50 +188,50 @@ public class DefaultPluginService extends AbstractService implements
 	}
 
 	@Override
-	public List<PluginModuleInfo<Command>> getCommands() {
+	public List<CommandInfo<Command>> getCommands() {
 		return getCommandsOfType(Command.class);
 	}
 
 	@Override
-	public <C extends Command> PluginModuleInfo<C> getCommand(
+	public <C extends Command> CommandInfo<C> getCommand(
 		final Class<C> commandClass)
 	{
 		return first(getCommandsOfClass(commandClass));
 	}
 
 	@Override
-	public PluginModuleInfo<Command> getCommand(
+	public CommandInfo<Command> getCommand(
 		final String className)
 	{
 		return first(getCommandsOfClass(className));
 	}
 
 	@Override
-	public <C extends Command> List<PluginModuleInfo<C>>
+	public <C extends Command> List<CommandInfo<C>>
 		getCommandsOfType(final Class<C> type)
 	{
 		final List<PluginInfo<?>> list = pluginIndex.get(type);
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final List<PluginModuleInfo<C>> result = (List) list;
+		final List<CommandInfo<C>> result = (List) list;
 		return result;
 	}
 
 	@Override
-	public <C extends Command> List<PluginModuleInfo<C>>
+	public <C extends Command> List<CommandInfo<C>>
 		getCommandsOfClass(final Class<C> commandClass)
 	{
-		final ArrayList<PluginModuleInfo<C>> result =
-			new ArrayList<PluginModuleInfo<C>>();
+		final ArrayList<CommandInfo<C>> result =
+			new ArrayList<CommandInfo<C>>();
 		getPluginsOfClass(commandClass.getName(), getCommands(), result);
 		return result;
 	}
 
 	@Override
-	public List<PluginModuleInfo<Command>> getCommandsOfClass(
+	public List<CommandInfo<Command>> getCommandsOfClass(
 		final String className)
 	{
-		final ArrayList<PluginModuleInfo<Command>> result =
-			new ArrayList<PluginModuleInfo<Command>>();
+		final ArrayList<CommandInfo<Command>> result =
+			new ArrayList<CommandInfo<Command>>();
 		getPluginsOfClass(className, getCommands(), result);
 		return result;
 	}
@@ -270,7 +270,7 @@ public class DefaultPluginService extends AbstractService implements
 
 	@Override
 	public Future<Module> run(final String className, final Object... inputs) {
-		final PluginModuleInfo<?> command = getCommand(className);
+		final CommandInfo<?> command = getCommand(className);
 		if (!checkPlugin(command, className)) return null;
 		return run(command, inputs);
 	}
@@ -279,7 +279,7 @@ public class DefaultPluginService extends AbstractService implements
 	public Future<Module> run(final String className,
 		final Map<String, Object> inputMap)
 	{
-		final PluginModuleInfo<?> command = getCommand(className);
+		final CommandInfo<?> command = getCommand(className);
 		if (!checkPlugin(command, className)) return null;
 		return run(command, inputMap);
 	}
@@ -288,7 +288,7 @@ public class DefaultPluginService extends AbstractService implements
 	public <C extends Command> Future<PluginModule<C>> run(
 		final Class<C> commandClass, final Object... inputs)
 	{
-		final PluginModuleInfo<C> command = getCommand(commandClass);
+		final CommandInfo<C> command = getCommand(commandClass);
 		if (!checkPlugin(command, commandClass.getName())) return null;
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		final Future<PluginModule<C>> future = (Future) run(command, inputs);
@@ -299,7 +299,7 @@ public class DefaultPluginService extends AbstractService implements
 	public <C extends Command> Future<PluginModule<C>> run(
 		final Class<C> commandClass, final Map<String, Object> inputMap)
 	{
-		final PluginModuleInfo<C> command = getCommand(commandClass);
+		final CommandInfo<C> command = getCommand(commandClass);
 		if (!checkPlugin(command, commandClass.getName())) return null;
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		final Future<PluginModule<C>> future = (Future) run(command, inputMap);
@@ -370,7 +370,7 @@ public class DefaultPluginService extends AbstractService implements
 		return createInstancesOfType(PostprocessorPlugin.class);
 	}
 
-	private boolean checkPlugin(final PluginModuleInfo<?> plugin,
+	private boolean checkPlugin(final CommandInfo<?> plugin,
 		final String name)
 	{
 		if (plugin == null) {

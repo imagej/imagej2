@@ -47,7 +47,7 @@ import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginModuleInfo;
+import imagej.plugin.CommandInfo;
 import imagej.plugin.PluginService;
 import imagej.plugin.Command;
 import imagej.service.AbstractService;
@@ -196,8 +196,8 @@ public final class RecentFileService extends AbstractService {
 
 	/** Creates a {@link ModuleInfo} to reopen data at the given path. */
 	private ModuleInfo createInfo(final String path) {
-		final PluginModuleInfo<Command> info =
-			new PluginModuleInfo<Command>("imagej.io.plugins.OpenImage",
+		final CommandInfo<Command> info =
+			new CommandInfo<Command>("imagej.io.plugins.OpenImage",
 				Command.class);
 
 		// hard code path to open as a preset
@@ -217,7 +217,7 @@ public final class RecentFileService extends AbstractService {
 		leaf.setWeight(0); // TODO - do this properly
 
 		// use the same icon as File > Open
-		final PluginModuleInfo<OpenImage> fileOpen =
+		final CommandInfo<OpenImage> fileOpen =
 			pluginService.getCommand(OpenImage.class);
 		final String iconPath = fileOpen.getIconPath();
 		info.setIconPath(iconPath);

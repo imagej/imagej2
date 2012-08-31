@@ -45,7 +45,7 @@ import imagej.input.KeyCode;
 import imagej.log.LogService;
 import imagej.menu.ShadowMenu;
 import imagej.plugin.PluginInfo;
-import imagej.plugin.PluginModuleInfo;
+import imagej.plugin.CommandInfo;
 import imagej.plugin.Command;
 
 import java.awt.Menu;
@@ -179,8 +179,8 @@ public class LegacyPluginFinder {
 		final Map<String, Object> presets = new HashMap<String, Object>();
 		presets.put("className", className);
 		presets.put("arg", arg);
-		final PluginModuleInfo<Command> pe =
-			new PluginModuleInfo<Command>(LEGACY_PLUGIN_CLASS,
+		final CommandInfo<Command> pe =
+			new CommandInfo<Command>(LEGACY_PLUGIN_CLASS,
 				Command.class);
 		pe.setLabel(makeLabel(menuPath));
 		pe.setMenuPath(menuPath);

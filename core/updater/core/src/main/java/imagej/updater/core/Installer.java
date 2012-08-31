@@ -35,7 +35,7 @@
 
 package imagej.updater.core;
 
-import imagej.plugin.PluginModuleInfo;
+import imagej.plugin.CommandInfo;
 import imagej.plugin.PluginService;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
@@ -162,7 +162,7 @@ public class Installer extends Downloader {
 		final Set<FileObject> topLevel = new HashSet<FileObject>();
 		topLevel.add(updater);
 		if (pluginService != null) {
-			for (final PluginModuleInfo<UpdaterUIPlugin> plugin : pluginService.getCommandsOfType(UpdaterUIPlugin.class)) {
+			for (final CommandInfo<UpdaterUIPlugin> plugin : pluginService.getCommandsOfType(UpdaterUIPlugin.class)) {
 				final FileObject file = getFileObject(files, plugin.getClassName());
 				if (file != null) {
 					topLevel.add(file);

@@ -61,7 +61,7 @@ import java.lang.reflect.Field;
  */
 public class DynamicPluginInfo extends DefaultModuleInfo {
 
-	private PluginModuleInfo<? extends DynamicPlugin> info;
+	private CommandInfo<? extends DynamicPlugin> info;
 
 	// -- Internal methods --
 

@@ -132,23 +132,23 @@ public interface PluginService extends Service {
 	List<PluginInfo<IPlugin>> getPluginsOfClass(String className);
 
 	/** Gets the list of executable plugins (i.e., {@link Command}s). */
-	List<PluginModuleInfo<Command>> getCommands();
+	List<CommandInfo<Command>> getCommands();
 
 	/**
 	 * Gets the first available executable plugin of the given class, or null if
 	 * none.
 	 */
-	<C extends Command> PluginModuleInfo<C> getCommand(
+	<C extends Command> CommandInfo<C> getCommand(
 		Class<C> commandClass);
 
 	/**
 	 * Gets the first available executable plugin of the given class name, or null
 	 * if none.
 	 */
-	PluginModuleInfo<Command> getCommand(String className);
+	CommandInfo<Command> getCommand(String className);
 
 	/** Gets the list of executable plugins of the given type. */
-	<C extends Command> List<PluginModuleInfo<C>>
+	<C extends Command> List<CommandInfo<C>>
 		getCommandsOfType(Class<C> type);
 
 	/**
@@ -158,7 +158,7 @@ public interface PluginService extends Service {
 	 * (such as imagej.legacy.LegacyPlugin) may match many entries.
 	 * </p>
 	 */
-	<C extends Command> List<PluginModuleInfo<C>>
+	<C extends Command> List<CommandInfo<C>>
 		getCommandsOfClass(Class<C> commandClass);
 
 	/**
@@ -168,7 +168,7 @@ public interface PluginService extends Service {
 	 * (such as imagej.legacy.LegacyPlugin) may match many entries.
 	 * </p>
 	 */
-	List<PluginModuleInfo<Command>> getCommandsOfClass(
+	List<CommandInfo<Command>> getCommandsOfClass(
 		String className);
 
 	/**

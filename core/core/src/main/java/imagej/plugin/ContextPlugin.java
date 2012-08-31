@@ -94,7 +94,7 @@ public abstract class ContextPlugin extends AbstractContextual implements
 
 		// populate service parameters
 		final PluginService pluginService = context.getService(PluginService.class);
-		final PluginModuleInfo<? extends ContextPlugin> info =
+		final CommandInfo<? extends ContextPlugin> info =
 			pluginService.getCommand(getClass());
 		populateServices(info);
 	}
@@ -102,7 +102,7 @@ public abstract class ContextPlugin extends AbstractContextual implements
 	// -- Helper methods --
 
 	private <C extends Command> void populateServices(
-		final PluginModuleInfo<C> info)
+		final CommandInfo<C> info)
 	{
 		@SuppressWarnings("unchecked")
 		final C typedCommand = (C) this;

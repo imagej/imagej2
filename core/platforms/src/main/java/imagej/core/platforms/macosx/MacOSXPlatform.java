@@ -45,7 +45,7 @@ import imagej.platform.AppService;
 import imagej.platform.Platform;
 import imagej.platform.PlatformService;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginModuleInfo;
+import imagej.plugin.CommandInfo;
 import imagej.plugin.PluginService;
 import imagej.plugin.Command;
 
@@ -138,7 +138,7 @@ public class MacOSXPlatform extends AbstractPlatform {
 		// (the Mac application menu will trigger them instead)
 		final ArrayList<ModuleInfo> infos = new ArrayList<ModuleInfo>();
 		for (final Class<? extends Command> plugin : plugins) {
-			final PluginModuleInfo<? extends Command> info =
+			final CommandInfo<? extends Command> info =
 				pluginService.getCommand(plugin);
 			info.setMenuPath(null);
 			infos.add(info);

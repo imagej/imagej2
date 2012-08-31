@@ -43,7 +43,7 @@ import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginModuleInfo;
+import imagej.plugin.CommandInfo;
 import imagej.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
@@ -115,7 +115,7 @@ public class SplitChannelsContextMonitor extends AbstractService {
 	// WinActivated does fire before MsPressed, so the behavior is mysterious.
 
 	private void setContextAppropriate(final boolean enabled) {
-		final PluginModuleInfo<SplitChannelsContext> info =
+		final CommandInfo<SplitChannelsContext> info =
 			pluginService.getCommand(SplitChannelsContext.class);
 		info.setEnabled(enabled);
 		info.update(eventService); // TODO: Is this needed here?

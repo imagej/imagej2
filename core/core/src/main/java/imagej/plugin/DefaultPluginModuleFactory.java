@@ -49,7 +49,7 @@ public class DefaultPluginModuleFactory implements PluginModuleFactory {
 
 	@Override
 	public <C extends Command> Module createModule(
-		final PluginModuleInfo<C> info) throws ModuleException
+		final CommandInfo<C> info) throws ModuleException
 	{
 		// if the command implements Module, return a new instance directly
 		try {
@@ -74,7 +74,7 @@ public class DefaultPluginModuleFactory implements PluginModuleFactory {
 
 	@Override
 	public <C extends Command> Module createModule(
-		PluginModuleInfo<C> info, C command)
+		CommandInfo<C> info, C command)
 	{
 		// if the command implements Module, return the instance directly
 		if (command instanceof Module) {

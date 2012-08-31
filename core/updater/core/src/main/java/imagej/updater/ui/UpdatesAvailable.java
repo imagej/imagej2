@@ -38,7 +38,7 @@ package imagej.updater.ui;
 import imagej.log.LogService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginModuleInfo;
+import imagej.plugin.CommandInfo;
 import imagej.plugin.PluginService;
 import imagej.plugin.Command;
 import imagej.updater.core.UpToDate;
@@ -72,7 +72,7 @@ public class UpdatesAvailable implements Command {
 	@Override
 	public void run() {
 		if (updateAction.equals(YES)) {
-			final List<PluginModuleInfo<UpdaterUIPlugin>> updaters =
+			final List<CommandInfo<UpdaterUIPlugin>> updaters =
 				pluginService.getCommandsOfType(UpdaterUIPlugin.class);
 			if (updaters.size() > 0) {
 				pluginService.run(updaters.get(0));
