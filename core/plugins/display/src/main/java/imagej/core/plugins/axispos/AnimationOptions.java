@@ -38,7 +38,7 @@ package imagej.core.plugins.axispos;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
-import imagej.plugin.DynamicPlugin;
+import imagej.plugin.DynamicCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -59,7 +59,7 @@ import net.imglib2.meta.AxisType;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Animation", mnemonic = 'a'),
 	@Menu(label = "Animation Options...", weight = 4) }, headless = true)
-public class AnimationOptions extends DynamicPlugin {
+public class AnimationOptions extends DynamicCommand {
 
 	// -- Parameters --
 

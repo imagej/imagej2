@@ -39,7 +39,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
-import imagej.plugin.DynamicPlugin;
+import imagej.plugin.DynamicCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -62,7 +62,7 @@ import net.imglib2.meta.AxisType;
 			mnemonic = MenuConstants.IMAGE_MNEMONIC),
 		@Menu(label = "Axes", mnemonic = 'a'),
 		@Menu(label = "Set Active Axis...") }, headless = true)
-public class SetActiveAxis extends DynamicPlugin {
+public class SetActiveAxis extends DynamicCommand {
 
 	// -- Constants --
 

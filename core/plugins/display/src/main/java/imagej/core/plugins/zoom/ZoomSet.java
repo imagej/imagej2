@@ -41,7 +41,7 @@ import imagej.data.display.ImageDisplayService;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
-import imagej.plugin.DynamicPlugin;
+import imagej.plugin.DynamicCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -59,7 +59,7 @@ import imagej.util.RealRect;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Zoom", mnemonic = 'z'), @Menu(label = "Set...", weight = 6) },
 	headless = true, initializer = "initAll")
-public class ZoomSet extends DynamicPlugin {
+public class ZoomSet extends DynamicCommand {
 
 	// -- Constants --
 

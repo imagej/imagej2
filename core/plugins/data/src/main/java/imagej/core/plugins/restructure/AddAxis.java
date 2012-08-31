@@ -40,7 +40,7 @@ import imagej.data.Dataset;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
-import imagej.plugin.DynamicPlugin;
+import imagej.plugin.DynamicCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -62,7 +62,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Axes", mnemonic = 'a'), @Menu(label = "Add Axis...") },
 	headless = true, initializer = "initAll")
-public class AddAxis extends DynamicPlugin implements Cancelable {
+public class AddAxis extends DynamicCommand implements Cancelable {
 
 	// -- Constants --
 

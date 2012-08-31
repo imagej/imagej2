@@ -38,7 +38,7 @@ package imagej.options;
 import imagej.event.EventService;
 import imagej.module.ModuleItem;
 import imagej.options.event.OptionsEvent;
-import imagej.plugin.DynamicPlugin;
+import imagej.plugin.DynamicCommand;
 import imagej.plugin.Parameter;
 
 // TODO - outline for how to address issues with options (initializing, aggregating into 1 dialog)
@@ -55,7 +55,7 @@ import imagej.plugin.Parameter;
 // can get all OptionsPlugins from the OptionsService
 // can iterate over all values of OptionsPlugin?
 // 1. Remove all menu parameters from Plugin annotations
-// 2. Create Options plugin, extends DynamicPlugin
+// 2. Create Options plugin, extends DynamicCommand
 //    - Aggregates inputs from all OptionsPlugins from OptionsService & PluginService
 //    - assigns "group" field matching name of OptionsPlugin
 //    - Would iterate over options: one tab per OptionsPlugin class?
@@ -72,7 +72,7 @@ import imagej.plugin.Parameter;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public class OptionsPlugin extends DynamicPlugin {
+public class OptionsPlugin extends DynamicCommand {
 
 	// -- Parameters --
 

@@ -41,33 +41,33 @@ import imagej.util.ClassUtils;
 import java.lang.reflect.Field;
 
 /**
- * A class which can be extended to provide an ImageJ plugin with a variable
+ * A class which can be extended to provide an ImageJ command with a variable
  * number of inputs and outputs. This class provides greater configurability,
  * but also greater complexity, than implementing the {@link Command}
  * interface and using only @{@link Parameter} annotations on instance fields.
  * 
  * @author Curtis Rueden
  */
-public abstract class DynamicPlugin extends DefaultModule implements
+public abstract class DynamicCommand extends DefaultModule implements
 	Command
 {
 
-	private final DynamicPluginInfo info;
+	private final DynamicCommandInfo info;
 
-	public DynamicPlugin() {
-		this(new DynamicPluginInfo());
+	public DynamicCommand() {
+		this(new DynamicCommandInfo());
 	}
 
-	public DynamicPlugin(final DynamicPluginInfo info) {
+	public DynamicCommand(final DynamicCommandInfo info) {
 		super(info);
 		this.info = info;
-		info.setPluginClass(getClass());
+		info.setCommandClass(getClass());
 	}
 
 	// -- Module methods --
 
 	@Override
-	public DynamicPluginInfo getInfo() {
+	public DynamicCommandInfo getInfo() {
 		return info;
 	}
 

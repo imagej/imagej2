@@ -43,7 +43,7 @@ import imagej.data.sampler.SamplingDefinition;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
-import imagej.plugin.DynamicPlugin;
+import imagej.plugin.DynamicCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -66,7 +66,7 @@ import net.imglib2.meta.AxisType;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Duplicate", accelerator = "shift control D") },
 	headless = true, initializer = "initializer")
-public class DuplicateImage extends DynamicPlugin implements Cancelable {
+public class DuplicateImage extends DynamicCommand implements Cancelable {
 
 	// -- Plugin parameters --
 
