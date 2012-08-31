@@ -39,7 +39,7 @@ import imagej.menu.MenuConstants;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 import imagej.util.Prefs;
 
 /**
@@ -51,7 +51,7 @@ import imagej.util.Prefs;
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Preferences", weight = 30) }, headless = true)
-public class Preferences implements RunnablePlugin {
+public class Preferences implements Command {
 
 	@Parameter(label = "Clear all preferences")
 	private boolean clearAll = false;

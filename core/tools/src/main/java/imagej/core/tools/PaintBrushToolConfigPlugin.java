@@ -38,7 +38,7 @@ package imagej.core.tools;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 
 /**
  * Implements the configuration code for {@link PaintBrushTool}.
@@ -46,7 +46,7 @@ import imagej.plugin.RunnablePlugin;
  * @author Barry DeZonia
  */
 @Plugin(label = "Paintbrush Tool")
-public class PaintBrushToolConfigPlugin implements RunnablePlugin {
+public class PaintBrushToolConfigPlugin implements Command {
 
 	@Parameter(type = ItemIO.BOTH)
 	private PaintBrushTool tool;

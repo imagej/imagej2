@@ -46,14 +46,14 @@ import imagej.module.ModuleException;
 public interface PluginModuleFactory {
 
 	/** Constructs a module to work with the given {@link PluginModuleInfo}. */
-	<R extends RunnablePlugin> Module createModule(PluginModuleInfo<R> info)
+	<C extends Command> Module createModule(PluginModuleInfo<C> info)
 		throws ModuleException;
 
 	/**
 	 * Constructs a module to work with the given {@link PluginModuleInfo}, around
-	 * the specified {@link RunnablePlugin} instance.
+	 * the specified {@link Command} instance.
 	 */
-	<R extends RunnablePlugin> Module createModule(PluginModuleInfo<R> info,
-		final R plugin);
+	<C extends Command> Module createModule(PluginModuleInfo<C> info,
+		final C command);
 
 }

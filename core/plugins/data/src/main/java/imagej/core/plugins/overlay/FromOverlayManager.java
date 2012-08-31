@@ -69,7 +69,7 @@ public class FromOverlayManager extends ContextPlugin {
 	@Parameter
 	private OverlayService ovrSrv;
 	
-	// -- RunnablePlugin methods --
+	// -- Command methods --
 	
 	@Override
 	public void run() {

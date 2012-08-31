@@ -220,7 +220,7 @@ public class DefaultOptionsService extends AbstractService implements
 		final Class<O> optionsClass)
 	{
 		final PluginModuleInfo<O> info =
-			pluginService.getRunnablePlugin(optionsClass);
+			pluginService.getCommand(optionsClass);
 		if (info == null) {
 			log.error("No such options class: " + optionsClass.getName());
 		}
@@ -230,7 +230,7 @@ public class DefaultOptionsService extends AbstractService implements
 	private PluginModuleInfo<OptionsPlugin>
 		getOptionsInfo(final String className)
 	{
-		final PluginModuleInfo<?> info = pluginService.getRunnablePlugin(className);
+		final PluginModuleInfo<?> info = pluginService.getCommand(className);
 		if (info == null) {
 			log.error("No such options class: " + className);
 			return null;

@@ -41,7 +41,7 @@ import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 
 /**
  * Clears the list of recently opened files.
@@ -54,12 +54,12 @@ import imagej.plugin.RunnablePlugin;
 	@Menu(label = "Open Recent", weight = 4, mnemonic = 'r'),
 	@Menu(label = "Clear List", weight = RecentFileService.MAX_FILES_SHOWN + 10,
 		mnemonic = 'c') })
-public class ClearRecent implements RunnablePlugin {
+public class ClearRecent implements Command {
 
 	@Parameter(type = ItemIO.BOTH)
 	private RecentFileService recentFileService;
 
-	// -- RunnablePlugin methods --
+	// -- Command methods --
 
 	@Override
 	public void run() {

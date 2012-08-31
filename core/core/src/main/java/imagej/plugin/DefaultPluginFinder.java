@@ -104,9 +104,9 @@ public class DefaultPluginFinder implements PluginFinder {
 		@SuppressWarnings("unchecked")
 		final Class<P> pluginType = (Class<P>) plugin.type();
 
-		if (RunnablePlugin.class.isAssignableFrom(pluginType)) {
+		if (Command.class.isAssignableFrom(pluginType)) {
 			// TODO - Investigate a simpler way to handle this.
-			final PluginModuleInfo<? extends RunnablePlugin> moduleInfo =
+			final PluginModuleInfo<? extends Command> moduleInfo =
 				createModuleInfo(className, plugin);
 			@SuppressWarnings("unchecked")
 			final PluginInfo<P> result = (PluginInfo<P>) moduleInfo;
@@ -115,13 +115,13 @@ public class DefaultPluginFinder implements PluginFinder {
 		return new PluginInfo<P>(className, pluginType, plugin);
 	}
 
-	private <R extends RunnablePlugin> PluginModuleInfo<R> createModuleInfo(
+	private <C extends Command> PluginModuleInfo<C> createModuleInfo(
 		final String className, final Plugin plugin)
 	{
 		@SuppressWarnings("unchecked")
-		final Class<R> pluginType = (Class<R>) plugin.type();
+		final Class<C> pluginType = (Class<C>) plugin.type();
 
-		return new PluginModuleInfo<R>(className, pluginType, plugin);
+		return new PluginModuleInfo<C>(className, pluginType, plugin);
 	}
 
 }

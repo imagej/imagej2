@@ -39,7 +39,7 @@ import imagej.AbstractContextual;
 import imagej.ImageJ;
 
 /**
- * A runnable plugin that knows its context. Its service parameters are
+ * A command that knows its context. Its service parameters are
  * automatically populated at construction, to make it easier to use via Java
  * API calls (i.e., without invoking it via {@link PluginService#run}). This
  * improves compile-time safety of downstream code that calls the plugin.
@@ -69,13 +69,13 @@ import imagej.ImageJ;
  * </pre>
  * <p>
  * We believe the latter is more intuitive for most Java programmers, and so
- * encourage runnable plugins to extend this class and provide API to use them
+ * encourage commands to extend this class and provide API to use them
  * directly.
  * </p>
  * <p>
  * That said, there are times when you cannot extend a particular class (usually
  * because you must extend a different class instead). In that case, you can
- * still implement the {@link RunnablePlugin} interface and end up with a
+ * still implement the {@link Command} interface and end up with a
  * perfectly serviceable plugin. The consequence is only that other Java
  * programmers will not be able to use the latter paradigm above to invoke your
  * code in a fully compile-time-safe way.
@@ -83,7 +83,7 @@ import imagej.ImageJ;
  * @author Curtis Rueden
  */
 public abstract class ContextPlugin extends AbstractContextual implements
-	RunnablePlugin
+	Command
 {
 
 	// -- Contextual methods --
@@ -95,18 +95,18 @@ public abstract class ContextPlugin extends AbstractContextual implements
 		// populate service parameters
 		final PluginService pluginService = context.getService(PluginService.class);
 		final PluginModuleInfo<? extends ContextPlugin> info =
-			pluginService.getRunnablePlugin(getClass());
+			pluginService.getCommand(getClass());
 		populateServices(info);
 	}
 
 	// -- Helper methods --
 
-	private <R extends RunnablePlugin> void populateServices(
-		final PluginModuleInfo<R> info)
+	private <C extends Command> void populateServices(
+		final PluginModuleInfo<C> info)
 	{
 		@SuppressWarnings("unchecked")
-		final R typedPlugin = (R) this;
-		final PluginModule<R> module = new PluginModule<R>(info, typedPlugin);
+		final C typedCommand = (C) this;
+		final PluginModule<C> module = new PluginModule<C>(info, typedCommand);
 		final ServicePreprocessor servicePreprocessor = new ServicePreprocessor();
 		servicePreprocessor.setContext(getContext());
 		servicePreprocessor.process(module);

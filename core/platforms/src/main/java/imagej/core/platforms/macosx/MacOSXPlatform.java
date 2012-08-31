@@ -47,7 +47,7 @@ import imagej.platform.PlatformService;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginModuleInfo;
 import imagej.plugin.PluginService;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 
 import java.io.IOException;
 import java.net.URL;
@@ -131,15 +131,15 @@ public class MacOSXPlatform extends AbstractPlatform {
 		final AppService appEventService = platformService.getAppService();
 
 		// get the list of plugins being handled at the application level
-		final List<Class<? extends RunnablePlugin>> plugins =
+		final List<Class<? extends Command>> plugins =
 			appEventService.getHandlers();
 
 		// remove said plugins from the main menu bar
 		// (the Mac application menu will trigger them instead)
 		final ArrayList<ModuleInfo> infos = new ArrayList<ModuleInfo>();
-		for (final Class<? extends RunnablePlugin> plugin : plugins) {
-			final PluginModuleInfo<? extends RunnablePlugin> info =
-				pluginService.getRunnablePlugin(plugin);
+		for (final Class<? extends Command> plugin : plugins) {
+			final PluginModuleInfo<? extends Command> info =
+				pluginService.getCommand(plugin);
 			info.setMenuPath(null);
 			infos.add(info);
 		}

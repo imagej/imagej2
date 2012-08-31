@@ -57,7 +57,7 @@ public class SplitChannelsContext extends ContextPlugin {
 	@Parameter
 	private PluginService pluginService;
 
-	// -- RunnablePlugin methods --
+	// -- Command methods --
 
 	@Override
 	public void run() {

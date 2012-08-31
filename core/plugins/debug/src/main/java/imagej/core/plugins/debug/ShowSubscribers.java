@@ -46,7 +46,7 @@ import imagej.object.event.ObjectDeletedEvent;
 import imagej.object.event.ObjectsListEvent;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 
 import java.util.List;
 
@@ -57,7 +57,7 @@ import java.util.List;
  * @author Curtis Rueden
  */
 @Plugin(menuPath = "Plugins>Debug>Subscribers", headless = true)
-public class ShowSubscribers implements RunnablePlugin {
+public class ShowSubscribers implements Command {
 
 	@Parameter
 	private EventService eventService;

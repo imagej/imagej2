@@ -43,7 +43,7 @@ import imagej.module.ItemVisibility;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PreviewPlugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 import imagej.util.ColorRGB;
 import imagej.widget.WidgetStyle;
 
@@ -57,7 +57,7 @@ import java.math.BigInteger;
  * @author Curtis Rueden
  */
 @Plugin(menuPath = "Plugins>Debug>Parameter Tester", headless = true)
-public class ParameterTester implements RunnablePlugin, PreviewPlugin {
+public class ParameterTester implements Command, PreviewPlugin {
 
 	@Parameter
 	private LogService log;

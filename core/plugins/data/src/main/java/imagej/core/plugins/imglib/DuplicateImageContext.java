@@ -39,7 +39,7 @@ import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginService;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 
 /**
  * Context menu plugin for Duplicate command.
@@ -49,14 +49,14 @@ import imagej.plugin.RunnablePlugin;
 @Plugin(menu = { @Menu(label = "Duplicate...", mnemonic = 'd',
 	accelerator = "shift control D") }, menuRoot = Plugin.CONTEXT_MENU_ROOT,
 	headless = true)
-public class DuplicateImageContext implements RunnablePlugin {
+public class DuplicateImageContext implements Command {
 
 	// -- Plugin parameters --
 
 	@Parameter
 	private PluginService pluginService;
 
-	// -- RunnablePlugin methods --
+	// -- Command methods --
 
 	@Override
 	public void run() {

@@ -38,7 +38,7 @@ package imagej.ui;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 import imagej.util.AppUtils;
 
 import java.io.DataInputStream;
@@ -53,7 +53,7 @@ import java.io.IOException;
  * @author Curtis Rueden
  */
 @Plugin
-public class ShowReadme implements RunnablePlugin {
+public class ShowReadme implements Command {
 
 	private static final String README_FILE = "README.txt";
 

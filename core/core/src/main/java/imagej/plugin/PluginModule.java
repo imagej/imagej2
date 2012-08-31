@@ -45,112 +45,112 @@ import imagej.util.Log;
 import java.util.Map;
 
 /**
- * Module class for working with a {@link RunnablePlugin} instance.
+ * Module class for working with a {@link Command} instance.
  * 
  * @author Curtis Rueden
  * @author Johannes Schindelin
  * @author Grant Harris
  */
-public class PluginModule<R extends RunnablePlugin> extends AbstractModule
+public class PluginModule<C extends Command> extends AbstractModule
 	implements Cancelable
 {
 
-	/** The plugin info describing the plugin. */
-	private final PluginModuleInfo<R> info;
+	/** The metadata describing the command. */
+	private final PluginModuleInfo<C> info;
 
-	/** The plugin instance handled by this module. */
-	private final R plugin;
+	/** The command instance handled by this module. */
+	private final C command;
 
 	/** Creates a plugin module for the given {@link PluginInfo}. */
-	public PluginModule(final PluginModuleInfo<R> info) throws ModuleException {
+	public PluginModule(final PluginModuleInfo<C> info) throws ModuleException {
 		super();
 		this.info = info;
-		plugin = instantiatePlugin();
+		command = instantiateCommand();
 		assignPresets();
 	}
 
 	/**
 	 * Creates a plugin module for the given {@link PluginInfo}, around the
-	 * specified {@link RunnablePlugin} instance.
+	 * specified {@link Command} instance.
 	 */
-	public PluginModule(final PluginModuleInfo<R> info, final R plugin) {
+	public PluginModule(final PluginModuleInfo<C> info, final C command) {
 		super();
 		this.info = info;
-		this.plugin = plugin;
+		this.command = command;
 		assignPresets();
 	}
 
 	// -- PluginModule methods --
 
-	/** Gets the plugin instance handled by this module. */
-	public R getPlugin() {
-		return plugin;
+	/** Gets the command instance handled by this module. */
+	public C getCommand() {
+		return command;
 	}
 
 	// -- Module methods --
 
 	/**
-	 * Computes a preview of the plugin's results. For this method to do anything,
-	 * the plugin must implement the {@link PreviewPlugin} interface.
+	 * Computes a preview of the command's results. For this method to do anything,
+	 * the command must implement the {@link PreviewPlugin} interface.
 	 */
 	@Override
 	public void preview() {
-		if (!(plugin instanceof PreviewPlugin)) return; // cannot preview
-		final PreviewPlugin previewPlugin = (PreviewPlugin) plugin;
+		if (!(command instanceof PreviewPlugin)) return; // cannot preview
+		final PreviewPlugin previewPlugin = (PreviewPlugin) command;
 		previewPlugin.preview();
 	}
 
 	/**
-	 * Cancels the plugin, undoing the effects of any calls to {@link #preview()}.
-	 * For this method to do anything, the plugin must implement the
+	 * Cancels the command, undoing the effects of any calls to {@link #preview()}.
+	 * For this method to do anything, the command must implement the
 	 * {@link PreviewPlugin} interface.
 	 */
 	@Override
 	public void cancel() {
-		if (!(plugin instanceof PreviewPlugin)) return; // nothing to cancel
-		final PreviewPlugin previewPlugin = (PreviewPlugin) plugin;
+		if (!(command instanceof PreviewPlugin)) return; // nothing to cancel
+		final PreviewPlugin previewPlugin = (PreviewPlugin) command;
 		previewPlugin.cancel();
 	}
 
 	@Override
-	public PluginModuleInfo<R> getInfo() {
+	public PluginModuleInfo<C> getInfo() {
 		return info;
 	}
 
 	@Override
 	public Object getDelegateObject() {
-		return plugin;
+		return command;
 	}
 
 	@Override
 	public Object getInput(final String name) {
 		final PluginModuleItem<?> item = info.getInput(name);
-		return ClassUtils.getValue(item.getField(), plugin);
+		return ClassUtils.getValue(item.getField(), command);
 	}
 
 	@Override
 	public Object getOutput(final String name) {
 		final PluginModuleItem<?> item = info.getOutput(name);
-		return ClassUtils.getValue(item.getField(), plugin);
+		return ClassUtils.getValue(item.getField(), command);
 	}
 
 	@Override
 	public void setInput(final String name, final Object value) {
 		final PluginModuleItem<?> item = info.getInput(name);
-		ClassUtils.setValue(item.getField(), plugin, value);
+		ClassUtils.setValue(item.getField(), command, value);
 	}
 
 	@Override
 	public void setOutput(final String name, final Object value) {
 		final PluginModuleItem<?> item = info.getOutput(name);
-		ClassUtils.setValue(item.getField(), plugin, value);
+		ClassUtils.setValue(item.getField(), command, value);
 	}
 
 	// -- Object methods --
 
 	@Override
 	public String toString() {
-		return plugin.getClass().getName();
+		return command.getClass().getName();
 	}
 
 	// -- Runnable methods --
@@ -158,7 +158,7 @@ public class PluginModule<R extends RunnablePlugin> extends AbstractModule
 	@Override
 	public void run() {
 		try {
-			plugin.run();
+			command.run();
 		}
 		catch (final Throwable t) {
 			Log.error(t);
@@ -169,19 +169,19 @@ public class PluginModule<R extends RunnablePlugin> extends AbstractModule
 
 	@Override
 	public boolean isCanceled() {
-		if (!(plugin instanceof Cancelable)) return false;
-		return ((Cancelable) plugin).isCanceled();
+		if (!(command instanceof Cancelable)) return false;
+		return ((Cancelable) command).isCanceled();
 	}
 
 	@Override
 	public String getCancelReason() {
-		if (!(plugin instanceof Cancelable)) return null;
-		return ((Cancelable) plugin).getCancelReason();
+		if (!(command instanceof Cancelable)) return null;
+		return ((Cancelable) command).getCancelReason();
 	}
 
 	// -- Helper methods --
 
-	private R instantiatePlugin() throws ModuleException {
+	private C instantiateCommand() throws ModuleException {
 		try {
 			return info.createInstance();
 		}

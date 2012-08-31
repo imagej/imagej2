@@ -36,7 +36,7 @@
 package imagej.script;
 
 import imagej.plugin.Plugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 
 import java.util.List;
 
@@ -49,7 +49,7 @@ import javax.script.ScriptEngineManager;
  * @author Grant Harris
  */
 @Plugin(menuPath = "Plugins>Script>List Engines")
-public class ScriptEngineList implements RunnablePlugin {
+public class ScriptEngineList implements Command {
 
 	@Override
 	public void run() {

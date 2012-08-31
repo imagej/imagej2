@@ -37,7 +37,7 @@ package imagej.ui.swing.plugins.debug;
 
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 
@@ -47,7 +47,7 @@ import imagej.ui.UIService;
  * @author Grant Harris
  */
 @Plugin(menuPath = "Plugins>Sandbox>TestDialogPrompt")
-public class TestDialogPrompt implements RunnablePlugin {
+public class TestDialogPrompt implements Command {
 
 	@Parameter
 	private UIService uiService;

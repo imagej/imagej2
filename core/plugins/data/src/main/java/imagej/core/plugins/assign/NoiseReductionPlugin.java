@@ -44,7 +44,7 @@ import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +85,7 @@ import net.imglib2.type.numeric.RealType;
 			mnemonic = MenuConstants.PROCESS_MNEMONIC),
 		@Menu(label = "Noise", mnemonic = 'n'),
 		@Menu(label = "Noise Reduction", weight = 4) })
-public class NoiseReductionPlugin<T extends RealType<T>> implements RunnablePlugin
+public class NoiseReductionPlugin<T extends RealType<T>> implements Command
 {
 	// -- constants --
 	

@@ -38,19 +38,18 @@ package imagej.plugin;
 import imagej.module.Module;
 
 /**
- * <code>RunnablePlugin</code> is a plugin that is executable. A
- * <code>RunnablePlugin</code> can be executed as a {@link Module} by wrapping
- * it in a {@link PluginModule}.
+ * <code>Command</code> is a plugin that is executable. A <code>Command</code>
+ * can be executed as a {@link Module} by wrapping it in a {@link PluginModule}.
  * <p>
- * Runnable plugins discoverable at runtime must implement this interface
- * and be annotated with @{@link Plugin}.
+ * Commands discoverable at runtime must implement this interface and be
+ * annotated with @{@link Plugin}.
  * </p>
  * 
  * @author Curtis Rueden
  * @see Plugin
  * @see PluginService
  */
-public interface RunnablePlugin extends IPlugin, Runnable {
-	// RunnablePlugin is a plugin that extends Runnable,
+public interface Command extends IPlugin, Runnable {
+	// Command is a plugin that extends Runnable,
 	// discoverable via the plugin discovery mechanism.
 }

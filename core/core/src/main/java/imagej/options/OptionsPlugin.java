@@ -60,7 +60,7 @@ import imagej.plugin.Parameter;
 //    - assigns "group" field matching name of OptionsPlugin
 //    - Would iterate over options: one tab per OptionsPlugin class?
 //    - One widget per field of that class -- reuse InputWidget logic
-//    - List<PluginModuleInfo<OptionsPlugin>> infos = pluginService.getRunnablePlugins(OptionsPlugin.class)
+//    - List<PluginModuleInfo<OptionsPlugin>> infos = pluginService.getCommands(OptionsPlugin.class)
 //      from those, can get name & label (for use setting group name, which we'll use for tab name)
 // "Best" approach: a "grouped" set of inputs rendered as tabs by input harvester
 // that get rendered as tabs by Swing, but potentially something else in other UIs

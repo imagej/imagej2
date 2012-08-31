@@ -35,13 +35,13 @@
 
 package imagej.updater.core;
 
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 
 /**
  * A placeholder interface for graphical user interfaces for the updater.
  * 
  * @author Johannes Schindelin
  */
-public interface UpdaterUIPlugin extends RunnablePlugin {
+public interface UpdaterUIPlugin extends Command {
 	// marker interface
 }

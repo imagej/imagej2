@@ -41,7 +41,7 @@ import imagej.data.DatasetService;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.ops.pointset.PointSetIterator;
@@ -54,7 +54,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Barry DeZonia
  */
 @Plugin(menuPath = "Plugins>Sandbox>PointSet Demo")
-public class PointSetDemo implements RunnablePlugin, Cancelable {
+public class PointSetDemo implements Command, Cancelable {
 
 	@Parameter(label="PointSet specification", type = ItemIO.INPUT)
 	private String specification;

@@ -41,7 +41,7 @@ import imagej.data.display.DatasetView;
 import imagej.menu.MenuService;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
@@ -68,7 +68,7 @@ import net.imglib2.type.numeric.real.DoubleType;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public abstract class TypeChanger implements RunnablePlugin {
+public abstract class TypeChanger implements Command {
 
 	@Parameter
 	private MenuService menuService;

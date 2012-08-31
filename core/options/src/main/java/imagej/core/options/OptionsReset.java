@@ -41,7 +41,7 @@ import imagej.options.OptionsService;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 import imagej.util.Prefs;
 
 import java.util.List;
@@ -57,7 +57,7 @@ import java.util.List;
 			mnemonic = MenuConstants.EDIT_MNEMONIC),
 		@Menu(label = "Options", mnemonic = 'o'),
 		@Menu(label = "Reset", weight = 18) })
-public class OptionsReset implements RunnablePlugin {
+public class OptionsReset implements Command {
 
 	@Parameter
 	private OptionsService optionsService;

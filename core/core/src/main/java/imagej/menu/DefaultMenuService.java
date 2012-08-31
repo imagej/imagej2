@@ -45,7 +45,7 @@ import imagej.module.event.ModulesUpdatedEvent;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginService;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
@@ -115,22 +115,22 @@ public class DefaultMenuService extends AbstractService implements MenuService {
 	}
 
 	@Override
-	public void setSelected(final RunnablePlugin plugin, final boolean selected) {
-		setSelected(plugin.getClass(), selected);
+	public void setSelected(final Command command, final boolean selected) {
+		setSelected(command.getClass(), selected);
 	}
 
 	@Override
-	public <R extends RunnablePlugin> void setSelected(
-		final Class<R> pluginClass, final boolean selected)
+	public <C extends Command> void setSelected(
+		final Class<C> commandClass, final boolean selected)
 	{
-		setSelected(pluginService.getRunnablePlugin(pluginClass), selected);
+		setSelected(pluginService.getCommand(commandClass), selected);
 	}
 
 	@Override
-	public <R extends RunnablePlugin> void setSelected(
+	public <C extends Command> void setSelected(
 		final String pluginClassName, final boolean selected)
 	{
-		setSelected(pluginService.getRunnablePlugin(pluginClassName), selected);
+		setSelected(pluginService.getCommand(pluginClassName), selected);
 	}
 
 	@Override

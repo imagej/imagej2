@@ -67,7 +67,7 @@ public @interface Plugin {
 	 * The type of plugin; e.g., {@link Service}, {@link PreprocessorPlugin},
 	 * {@link PostprocessorPlugin} or {@link Display}.
 	 */
-	Class<?> type() default RunnablePlugin.class;
+	Class<?> type() default Command.class;
 
 	/** The name of the plugin. */
 	String name() default "";

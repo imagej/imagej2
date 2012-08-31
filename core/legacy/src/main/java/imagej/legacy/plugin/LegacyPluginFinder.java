@@ -46,7 +46,7 @@ import imagej.log.LogService;
 import imagej.menu.ShadowMenu;
 import imagej.plugin.PluginInfo;
 import imagej.plugin.PluginModuleInfo;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 
 import java.awt.Menu;
 import java.awt.MenuBar;
@@ -115,7 +115,7 @@ public class LegacyPluginFinder {
 		final Hashtable<?, ?> commands = Menus.getCommands();
 		final int startSize = plugins.size();
 		for (final Object key : commands.keySet()) {
-			final PluginInfo<RunnablePlugin> pe =
+			final PluginInfo<Command> pe =
 				createEntry(key, commands, menuTable);
 			if (pe != null) plugins.add(pe);
 		}
@@ -143,7 +143,7 @@ public class LegacyPluginFinder {
 		r.close();
 	}
 
-	private PluginInfo<RunnablePlugin> createEntry(final Object key,
+	private PluginInfo<Command> createEntry(final Object key,
 		final Hashtable<?, ?> commands, final Map<String, MenuPath> menuTable)
 	{
 		final String ij1PluginString = commands.get(key).toString();
@@ -179,9 +179,9 @@ public class LegacyPluginFinder {
 		final Map<String, Object> presets = new HashMap<String, Object>();
 		presets.put("className", className);
 		presets.put("arg", arg);
-		final PluginModuleInfo<RunnablePlugin> pe =
-			new PluginModuleInfo<RunnablePlugin>(LEGACY_PLUGIN_CLASS,
-				RunnablePlugin.class);
+		final PluginModuleInfo<Command> pe =
+			new PluginModuleInfo<Command>(LEGACY_PLUGIN_CLASS,
+				Command.class);
 		pe.setLabel(makeLabel(menuPath));
 		pe.setMenuPath(menuPath);
 		pe.setPresets(presets);

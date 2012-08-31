@@ -167,7 +167,7 @@ public class DuplicateImage extends DynamicPlugin implements Cancelable {
 		return subrange.getError();
 	}
 
-	// -- RunnablePlugin methods --
+	// -- Command methods --
 
 	@Override
 	public void run() {

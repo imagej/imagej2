@@ -48,14 +48,14 @@ import imagej.module.ModuleException;
 public class DefaultPluginModuleFactory implements PluginModuleFactory {
 
 	@Override
-	public <R extends RunnablePlugin> Module createModule(
-		final PluginModuleInfo<R> info) throws ModuleException
+	public <C extends Command> Module createModule(
+		final PluginModuleInfo<C> info) throws ModuleException
 	{
-		// if the plugin implements Module, return a new instance directly
+		// if the command implements Module, return a new instance directly
 		try {
-			final Class<R> pluginClass = info.loadClass();
-			if (Module.class.isAssignableFrom(pluginClass)) {
-				return (Module) pluginClass.newInstance();
+			final Class<C> commandClass = info.loadClass();
+			if (Module.class.isAssignableFrom(commandClass)) {
+				return (Module) commandClass.newInstance();
 			}
 		}
 		catch (final InstantiableException e) {
@@ -68,21 +68,21 @@ public class DefaultPluginModuleFactory implements PluginModuleFactory {
 			throw new ModuleException(e);
 		}
 
-		// plugin does not implement Module; wrap it in a PluginModule instance
-		return new PluginModule<R>(info);
+		// command does not implement Module; wrap it in a PluginModule instance
+		return new PluginModule<C>(info);
 	}
 
 	@Override
-	public <R extends RunnablePlugin> Module createModule(
-		PluginModuleInfo<R> info, R plugin)
+	public <C extends Command> Module createModule(
+		PluginModuleInfo<C> info, C command)
 	{
-		// if the plugin implements Module, return the instance directly
-		if (plugin instanceof Module) {
-			return (Module) plugin;
+		// if the command implements Module, return the instance directly
+		if (command instanceof Module) {
+			return (Module) command;
 		}
 
-		// plugin does not implement Module; wrap it in a PluginModule instance
-		return new PluginModule<R>(info, plugin);
+		// command does not implement Module; wrap it in a PluginModule instance
+		return new PluginModule<C>(info, command);
 	}
 
 }

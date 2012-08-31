@@ -162,7 +162,7 @@ public class Installer extends Downloader {
 		final Set<FileObject> topLevel = new HashSet<FileObject>();
 		topLevel.add(updater);
 		if (pluginService != null) {
-			for (final PluginModuleInfo<UpdaterUIPlugin> plugin : pluginService.getRunnablePluginsOfType(UpdaterUIPlugin.class)) {
+			for (final PluginModuleInfo<UpdaterUIPlugin> plugin : pluginService.getCommandsOfType(UpdaterUIPlugin.class)) {
 				final FileObject file = getFileObject(files, plugin.getClassName());
 				if (file != null) {
 					topLevel.add(file);

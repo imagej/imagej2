@@ -40,7 +40,7 @@ import com.github.sbridges.objectinspector.Inspector;
 import imagej.data.display.DataView;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 
 /**
  * TODO
@@ -48,7 +48,7 @@ import imagej.plugin.RunnablePlugin;
  * @author Grant Harris
  */
 @Plugin(menuPath = "Plugins>Debug>Inspect Image", headless = true)
-public class InspectImg implements RunnablePlugin {
+public class InspectImg implements Command {
 
 	@Parameter
 	private DataView view;

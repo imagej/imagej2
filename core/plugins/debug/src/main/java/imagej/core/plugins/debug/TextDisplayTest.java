@@ -38,7 +38,7 @@ package imagej.core.plugins.debug;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 
 /**
  * A test of text displays.
@@ -46,7 +46,7 @@ import imagej.plugin.RunnablePlugin;
  * @author Curtis Rueden
  */
 @Plugin(menuPath = "Plugins>Sandbox>TextDisplayTest", headless = true)
-public class TextDisplayTest implements RunnablePlugin {
+public class TextDisplayTest implements Command {
 
 	@Parameter(type = ItemIO.OUTPUT)
 	private String output;

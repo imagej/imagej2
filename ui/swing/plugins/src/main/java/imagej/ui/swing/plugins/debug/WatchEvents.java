@@ -41,7 +41,7 @@ import imagej.event.EventHistoryListener;
 import imagej.log.LogService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -52,7 +52,7 @@ import java.awt.event.WindowEvent;
  * @author Curtis Rueden
  */
 @Plugin(menuPath = "Plugins>Debug>Watch Events")
-public class WatchEvents implements RunnablePlugin, EventHistoryListener {
+public class WatchEvents implements Command, EventHistoryListener {
 
 	// -- Parameters --
 

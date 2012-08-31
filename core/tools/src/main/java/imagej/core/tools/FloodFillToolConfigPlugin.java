@@ -38,7 +38,7 @@ package imagej.core.tools;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 
 /**
  * Implements the configuration code for {@link FloodFillTool}.
@@ -46,7 +46,7 @@ import imagej.plugin.RunnablePlugin;
  * @author Barry DeZonia
  */
 @Plugin(label = "Flood Fill Tool")
-public class FloodFillToolConfigPlugin implements RunnablePlugin {
+public class FloodFillToolConfigPlugin implements Command {
 
 	// -- constants --
 

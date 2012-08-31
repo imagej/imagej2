@@ -40,7 +40,7 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginModuleInfo;
 import imagej.plugin.PluginService;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 import imagej.updater.core.UpToDate;
 import imagej.updater.core.UpdaterUIPlugin;
 import imagej.updater.util.Util;
@@ -54,7 +54,7 @@ import java.util.List;
  * @author Johannes Schindelin
  */
 @Plugin(label = "There are updates available")
-public class UpdatesAvailable implements RunnablePlugin {
+public class UpdatesAvailable implements Command {
 
 	private final static String YES = "Yes, please", NEVER = "Never",
 			LATER = "Remind me later";
@@ -73,7 +73,7 @@ public class UpdatesAvailable implements RunnablePlugin {
 	public void run() {
 		if (updateAction.equals(YES)) {
 			final List<PluginModuleInfo<UpdaterUIPlugin>> updaters =
-				pluginService.getRunnablePluginsOfType(UpdaterUIPlugin.class);
+				pluginService.getCommandsOfType(UpdaterUIPlugin.class);
 			if (updaters.size() > 0) {
 				pluginService.run(updaters.get(0));
 			}

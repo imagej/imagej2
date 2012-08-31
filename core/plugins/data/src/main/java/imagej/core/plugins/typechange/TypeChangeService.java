@@ -91,7 +91,7 @@ public final class TypeChangeService extends AbstractService {
 		final String suffix = ".ChangeTo" + typeLabel.toUpperCase();
 
 		final List<PluginModuleInfo<TypeChanger>> plugins =
-			pluginService.getRunnablePluginsOfType(TypeChanger.class);
+			pluginService.getCommandsOfType(TypeChanger.class);
 		for (final PluginModuleInfo<TypeChanger> info : plugins) {
 			final boolean selected = info.getDelegateClassName().endsWith(suffix);
 			info.setSelected(selected);

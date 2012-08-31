@@ -61,7 +61,7 @@ import java.util.concurrent.Future;
  * A <em>plugin</em> is distinct from a <em>module</em> in that plugins extend
  * ImageJ's functionality in some way, taking many forms, whereas modules are
  * always runnable code with typed inputs and outputs. There is a particular
- * type of plugin called a {@link imagej.plugin.RunnablePlugin} which is
+ * type of plugin called a {@link imagej.plugin.Command} which is
  * also a module, but many plugins (e.g., {@link imagej.tool.Tool}s and
  * {@link imagej.display.Display}s) are not modules.
  * </p>
@@ -107,7 +107,7 @@ public interface PluginService extends Service {
 	PluginInfo<IPlugin> getPlugin(String className);
 
 	/**
-	 * Gets the list of plugins of the given type (e.g., {@link RunnablePlugin}).
+	 * Gets the list of plugins of the given type (e.g., {@link Command}).
 	 */
 	<P extends IPlugin> List<PluginInfo<? extends P>> getPluginsOfType(
 		Class<P> type);
@@ -131,25 +131,25 @@ public interface PluginService extends Service {
 	 */
 	List<PluginInfo<IPlugin>> getPluginsOfClass(String className);
 
-	/** Gets the list of executable plugins (i.e., {@link RunnablePlugin}s). */
-	List<PluginModuleInfo<RunnablePlugin>> getRunnablePlugins();
+	/** Gets the list of executable plugins (i.e., {@link Command}s). */
+	List<PluginModuleInfo<Command>> getCommands();
 
 	/**
 	 * Gets the first available executable plugin of the given class, or null if
 	 * none.
 	 */
-	<R extends RunnablePlugin> PluginModuleInfo<R> getRunnablePlugin(
-		Class<R> pluginClass);
+	<C extends Command> PluginModuleInfo<C> getCommand(
+		Class<C> commandClass);
 
 	/**
 	 * Gets the first available executable plugin of the given class name, or null
 	 * if none.
 	 */
-	PluginModuleInfo<RunnablePlugin> getRunnablePlugin(String className);
+	PluginModuleInfo<Command> getCommand(String className);
 
 	/** Gets the list of executable plugins of the given type. */
-	<R extends RunnablePlugin> List<PluginModuleInfo<R>>
-		getRunnablePluginsOfType(Class<R> type);
+	<C extends Command> List<PluginModuleInfo<C>>
+		getCommandsOfType(Class<C> type);
 
 	/**
 	 * Gets the list of executable plugins of the given class.
@@ -158,8 +158,8 @@ public interface PluginService extends Service {
 	 * (such as imagej.legacy.LegacyPlugin) may match many entries.
 	 * </p>
 	 */
-	<R extends RunnablePlugin> List<PluginModuleInfo<R>>
-		getRunnablePluginsOfClass(Class<R> pluginClass);
+	<C extends Command> List<PluginModuleInfo<C>>
+		getCommandsOfClass(Class<C> commandClass);
 
 	/**
 	 * Gets the list of executable plugins with the given class name.
@@ -168,7 +168,7 @@ public interface PluginService extends Service {
 	 * (such as imagej.legacy.LegacyPlugin) may match many entries.
 	 * </p>
 	 */
-	List<PluginModuleInfo<RunnablePlugin>> getRunnablePluginsOfClass(
+	List<PluginModuleInfo<Command>> getCommandsOfClass(
 		String className);
 
 	/**
@@ -193,9 +193,9 @@ public interface PluginService extends Service {
 		List<PluginInfo<? extends P>> infos);
 
 	/**
-	 * Executes the first runnable plugin of the given class name.
+	 * Executes the first command of the given class name.
 	 * 
-	 * @param className Class name of the plugin to execute.
+	 * @param className Class name of the command to execute.
 	 * @param inputs List of input parameter names and values. The expected order
 	 *          is in pairs: an input name followed by its value, for each desired
 	 *          input to populate. Leaving some inputs unpopulated is allowed.
@@ -208,9 +208,9 @@ public interface PluginService extends Service {
 	Future<Module> run(String className, Object... inputs);
 
 	/**
-	 * Executes the first runnable plugin of the given class name.
+	 * Executes the first command of the given class name.
 	 * 
-	 * @param className Class name of the plugin to execute.
+	 * @param className Class name of the command to execute.
 	 * @param inputMap Table of input parameter values, with keys matching the
 	 *          plugin's input parameter names. Passing a value of a type
 	 *          incompatible with the associated input parameter will issue an
@@ -221,10 +221,10 @@ public interface PluginService extends Service {
 	Future<Module> run(String className, Map<String, Object> inputMap);
 
 	/**
-	 * Executes the first runnable plugin of the given class.
+	 * Executes the first command of the given class.
 	 * 
-	 * @param <R> Class of the plugin to execute.
-	 * @param pluginClass Class object of the plugin to execute.
+	 * @param <C> Class of the command to execute.
+	 * @param commandClass Class object of the command to execute.
 	 * @param inputs List of input parameter names and values. The expected order
 	 *          is in pairs: an input name followed by its value, for each desired
 	 *          input to populate. Leaving some inputs unpopulated is allowed.
@@ -234,14 +234,14 @@ public interface PluginService extends Service {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	<R extends RunnablePlugin> Future<PluginModule<R>> run(Class<R> pluginClass,
+	<C extends Command> Future<PluginModule<C>> run(Class<C> commandClass,
 		Object... inputs);
 
 	/**
-	 * Executes the first runnable plugin of the given class.
+	 * Executes the first command of the given class.
 	 * 
-	 * @param <R> Class of the plugin to execute.
-	 * @param pluginClass Class object of the plugin to execute.
+	 * @param <C> Class of the command to execute.
+	 * @param commandClass Class object of the command to execute.
 	 * @param inputMap Table of input parameter values, with keys matching the
 	 *          plugin's input parameter names. Passing a value of a type
 	 *          incompatible with the associated input parameter will issue an
@@ -249,7 +249,7 @@ public interface PluginService extends Service {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	<R extends RunnablePlugin> Future<PluginModule<R>> run(Class<R> pluginClass,
+	<C extends Command> Future<PluginModule<C>> run(Class<C> commandClass,
 		Map<String, Object> inputMap);
 
 	/**

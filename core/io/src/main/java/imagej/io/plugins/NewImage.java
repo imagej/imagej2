@@ -166,7 +166,7 @@ public class NewImage extends ContextPlugin {
 		this.height = height;
 	}
 
-	// -- RunnablePlugin methods --
+	// -- Command methods --
 
 	@Override
 	public void run() {

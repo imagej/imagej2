@@ -39,7 +39,7 @@ import imagej.data.Dataset;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
@@ -50,7 +50,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Curtis Rueden
  */
 @Plugin(label = "| It's a secret to everyone |", headless = true)
-public class EasterEgg implements RunnablePlugin {
+public class EasterEgg implements Command {
 
 	private static final String CHARS = "#O*o+-,. ";
 

@@ -43,7 +43,7 @@ import imagej.platform.event.AppQuitEvent;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginService;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
@@ -66,9 +66,9 @@ public final class DefaultAppService extends AbstractService implements
 	@Parameter
 	private PluginService pluginService;
 
-	private Class<? extends RunnablePlugin> aboutPlugin;
-	private Class<? extends RunnablePlugin> prefsPlugin;
-	private Class<? extends RunnablePlugin> quitPlugin;
+	private Class<? extends Command> aboutPlugin;
+	private Class<? extends Command> prefsPlugin;
+	private Class<? extends Command> quitPlugin;
 
 	// -- AppService methods --
 
@@ -92,27 +92,27 @@ public final class DefaultAppService extends AbstractService implements
 
 	@Override
 	public void
-		setAboutHandler(final Class<? extends RunnablePlugin> aboutPlugin)
+		setAboutHandler(final Class<? extends Command> aboutPlugin)
 	{
 		this.aboutPlugin = aboutPlugin;
 	}
 
 	@Override
 	public void
-		setPrefsHandler(final Class<? extends RunnablePlugin> prefsPlugin)
+		setPrefsHandler(final Class<? extends Command> prefsPlugin)
 	{
 		this.prefsPlugin = prefsPlugin;
 	}
 
 	@Override
-	public void setQuitHandler(final Class<? extends RunnablePlugin> quitPlugin) {
+	public void setQuitHandler(final Class<? extends Command> quitPlugin) {
 		this.quitPlugin = quitPlugin;
 	}
 
 	@Override
-	public List<Class<? extends RunnablePlugin>> getHandlers() {
-		final ArrayList<Class<? extends RunnablePlugin>> handledPlugins =
-			new ArrayList<Class<? extends RunnablePlugin>>();
+	public List<Class<? extends Command>> getHandlers() {
+		final ArrayList<Class<? extends Command>> handledPlugins =
+			new ArrayList<Class<? extends Command>>();
 		if (aboutPlugin != null) handledPlugins.add(aboutPlugin);
 		if (prefsPlugin != null) handledPlugins.add(prefsPlugin);
 		if (quitPlugin != null) handledPlugins.add(quitPlugin);

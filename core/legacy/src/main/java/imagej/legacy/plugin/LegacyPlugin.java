@@ -53,7 +53,7 @@ import imagej.legacy.translate.LegacyUtils;
 import imagej.log.LogService;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 
@@ -69,7 +69,7 @@ import java.util.Set;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public class LegacyPlugin implements RunnablePlugin {
+public class LegacyPlugin implements Command {
 
 	@Parameter
 	private String className;

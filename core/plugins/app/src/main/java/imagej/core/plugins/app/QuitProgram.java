@@ -41,7 +41,7 @@ import imagej.menu.MenuConstants;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 
@@ -57,7 +57,7 @@ import imagej.ui.UIService;
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Quit", weight = Double.MAX_VALUE, mnemonic = 'q',
 		accelerator = "^Q") }, headless = true)
-public class QuitProgram implements RunnablePlugin {
+public class QuitProgram implements Command {
 
 	public static final String MESSAGE = "Quit ImageJ?";
 

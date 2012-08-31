@@ -39,7 +39,7 @@ import imagej.ImageJ;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 import imagej.util.Manifest;
 
 import java.io.File;
@@ -55,7 +55,7 @@ import java.util.regex.Pattern;
  * @author Curtis Rueden
  */
 @Plugin(menuPath = "Plugins>Debug>System Information", headless = true)
-public class SystemInformation implements RunnablePlugin {
+public class SystemInformation implements Command {
 
 	// -- Constants --
 

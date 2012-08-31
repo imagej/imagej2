@@ -39,7 +39,7 @@ import imagej.data.Dataset;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 
 /**
  * Dummy helper plugin that turns a Dataset into a Display by passing it through
@@ -49,7 +49,7 @@ import imagej.plugin.RunnablePlugin;
  * @author Barry DeZonia
  */
 @Plugin(headless = true)
-public class LoadDataset implements RunnablePlugin {
+public class LoadDataset implements Command {
 
 	@Parameter(type=ItemIO.BOTH)
 	private Dataset dataset;

@@ -56,19 +56,19 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A collection of metadata about a particular {@link RunnablePlugin}. Unlike
+ * A collection of metadata about a particular {@link Command}. Unlike
  * its more general superclass {@link PluginInfo}, a
  * <code>PluginModuleInfo</code> implements {@link ModuleInfo}, allowing it to
- * describe and instantiate the plugin in {@link Module} form.
+ * describe and instantiate the command in {@link Module} form.
  * 
  * @author Curtis Rueden
  * @author Johannes Schindelin
  * @author Grant Harris
  * @see ModuleInfo
  * @see PluginModule
- * @see RunnablePlugin
+ * @see Command
  */
-public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
+public class PluginModuleInfo<C extends Command> extends PluginInfo<C>
 	implements ModuleInfo
 {
 
@@ -105,13 +105,13 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 
 	// -- Constructors --
 
-	public PluginModuleInfo(final String className, final Class<R> pluginType) {
+	public PluginModuleInfo(final String className, final Class<C> pluginType) {
 		super(className, pluginType);
 		setPresets(null);
 		setPluginModuleFactory(null);
 	}
 
-	public PluginModuleInfo(final String className, final Class<R> pluginType,
+	public PluginModuleInfo(final String className, final Class<C> pluginType,
 		final Plugin plugin)
 	{
 		super(className, pluginType, plugin);
@@ -155,8 +155,8 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 	 * Instantiates the module described by this module info, around the specified
 	 * existing plugin instance.
 	 */
-	public Module createModule(final R pluginInstance) {
-		return factory.createModule(this, pluginInstance);
+	public Module createModule(final C commandInstance) {
+		return factory.createModule(this, commandInstance);
 	}
 
 	// -- Object methods --
@@ -209,9 +209,9 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 
 	@Override
 	public boolean canPreview() {
-		final Class<?> pluginClass = loadPluginClass();
-		if (pluginClass == null) return false;
-		return PreviewPlugin.class.isAssignableFrom(pluginClass);
+		final Class<?> commandClass = loadCommandClass();
+		if (commandClass == null) return false;
+		return PreviewPlugin.class.isAssignableFrom(commandClass);
 	}
 
 	@Override
@@ -267,7 +267,7 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 	private void parseParams() {
 		if (paramsParsed) return;
 		paramsParsed = true;
-		checkFields(loadPluginClass());
+		checkFields(loadCommandClass());
 	}
 
 	/** Processes the given class's @{@link Parameter}-annotated fields. */
@@ -323,12 +323,12 @@ public class PluginModuleInfo<R extends RunnablePlugin> extends PluginInfo<R>
 		}
 	}
 
-	private Class<?> loadPluginClass() {
+	private Class<?> loadCommandClass() {
 		try {
 			return loadClass();
 		}
 		catch (final InstantiableException e) {
-			Log.error("Could not initialize plugin class: " + getClassName(), e);
+			Log.error("Could not initialize command class: " + getClassName(), e);
 		}
 		return null;
 	}

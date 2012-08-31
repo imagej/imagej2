@@ -38,7 +38,7 @@ package imagej.core.tools;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 
 /**
  * Implements the configuration code for {@link SprayCanTool}.
@@ -46,7 +46,7 @@ import imagej.plugin.RunnablePlugin;
  * @author Barry DeZonia
  */
 @Plugin(label = "Spray Can Tool", initializer = "initAll")
-public class SprayCanToolConfigPlugin implements RunnablePlugin {
+public class SprayCanToolConfigPlugin implements Command {
 
 	@Parameter(type = ItemIO.BOTH)
 	private SprayCanTool tool;

@@ -52,7 +52,7 @@ import imagej.widget.InputWidget;
  * The core types of plugins are as follows:
  * </p>
  * <ul>
- * <li>{@link RunnablePlugin} - plugins that are executable as {@link Module}s.
+ * <li>{@link Command} - plugins that are executable as {@link Module}s.
  * These plugins typically perform a discrete operation, and are accessible via
  * the ImageJ menus.</li>
  * <li>{@link Service} - plugins that define new API in a particular area.</li>

@@ -91,7 +91,7 @@ public class SelectionSpecify extends ContextPlugin {
 	@Parameter(label = "Oval")
 	private boolean oval;
 
-	// -- RunnablePlugin methods --
+	// -- Command methods --
 
 	@Override
 	public void run() {

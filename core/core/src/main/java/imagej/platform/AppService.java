@@ -35,7 +35,7 @@
 
 package imagej.platform;
 
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 import imagej.service.Service;
 
 import java.util.List;
@@ -57,15 +57,15 @@ public interface AppService extends Service {
 	void quit();
 
 	/** Sets the plugin invoked when {@link #about()} is called. */
-	void setAboutHandler(Class<? extends RunnablePlugin> aboutPlugin);
+	void setAboutHandler(Class<? extends Command> aboutPlugin);
 
 	/** Sets the plugin invoked when {@link #showPrefs()} is called. */
-	void setPrefsHandler(Class<? extends RunnablePlugin> prefsPlugin);
+	void setPrefsHandler(Class<? extends Command> prefsPlugin);
 
 	/** Sets the plugin invoked when {@link #quit()} is called. */
-	void setQuitHandler(Class<? extends RunnablePlugin> quitPlugin);
+	void setQuitHandler(Class<? extends Command> quitPlugin);
 
 	/** Gets the plugins associated with this service. */
-	List<Class<? extends RunnablePlugin>> getHandlers();
+	List<Class<? extends Command>> getHandlers();
 
 }

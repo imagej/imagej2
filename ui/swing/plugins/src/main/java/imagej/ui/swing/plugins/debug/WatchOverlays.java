@@ -50,7 +50,7 @@ import imagej.object.ObjectService;
 import imagej.object.event.ObjectsListEvent;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 import imagej.ui.swing.SwingOutputWindow;
 
 import java.util.ArrayList;
@@ -64,7 +64,7 @@ import net.imglib2.roi.RectangleRegionOfInterest;
  * @author Grant Harris
  */
 @Plugin(menuPath = "Plugins>Debug>Watch Overlays")
-public class WatchOverlays implements RunnablePlugin {
+public class WatchOverlays implements Command {
 
 	@Parameter
 	private EventService eventService;

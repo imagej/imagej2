@@ -40,7 +40,7 @@ import com.github.sbridges.objectinspector.Inspector;
 import imagej.object.ObjectService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 
 /**
  * Inspect the ObjectService
@@ -48,7 +48,7 @@ import imagej.plugin.RunnablePlugin;
  * @author Grant Harris
  */
 @Plugin(menuPath = "Plugins>Debug>Inspect Objects")
-public class InspectObjects implements RunnablePlugin {
+public class InspectObjects implements Command {
 
 	@Parameter
 	private ObjectService objectService;

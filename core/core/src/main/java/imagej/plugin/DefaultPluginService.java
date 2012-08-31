@@ -88,14 +88,14 @@ public class DefaultPluginService extends AbstractService implements
 
 	@Override
 	public void reloadPlugins() {
-		// remove old runnable plugins from module service
-		moduleService.removeModules(getRunnablePlugins());
+		// remove old commands from module service
+		moduleService.removeModules(getCommands());
 
 		pluginIndex.clear();
 		pluginIndex.discover();
 
-		// add new runnable plugins to module service
-		moduleService.addModules(getRunnablePlugins());
+		// add new commands to module service
+		moduleService.addModules(getCommands());
 	}
 
 	@Override
@@ -112,7 +112,7 @@ public class DefaultPluginService extends AbstractService implements
 	{
 		pluginIndex.addAll(plugins);
 
-		// add new runnable plugins to module service
+		// add new commands to module service
 		final List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
 		for (final PluginInfo<?> info : plugins) {
 			if (info instanceof ModuleInfo) {
@@ -136,7 +136,7 @@ public class DefaultPluginService extends AbstractService implements
 	{
 		pluginIndex.removeAll(plugins);
 
-		// remove old runnable plugins to module service
+		// remove old commands to module service
 		final List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
 		for (final PluginInfo<?> info : plugins) {
 			if (info instanceof ModuleInfo) {
@@ -188,51 +188,51 @@ public class DefaultPluginService extends AbstractService implements
 	}
 
 	@Override
-	public List<PluginModuleInfo<RunnablePlugin>> getRunnablePlugins() {
-		return getRunnablePluginsOfType(RunnablePlugin.class);
+	public List<PluginModuleInfo<Command>> getCommands() {
+		return getCommandsOfType(Command.class);
 	}
 
 	@Override
-	public <R extends RunnablePlugin> PluginModuleInfo<R> getRunnablePlugin(
-		final Class<R> pluginClass)
+	public <C extends Command> PluginModuleInfo<C> getCommand(
+		final Class<C> commandClass)
 	{
-		return first(getRunnablePluginsOfClass(pluginClass));
+		return first(getCommandsOfClass(commandClass));
 	}
 
 	@Override
-	public PluginModuleInfo<RunnablePlugin> getRunnablePlugin(
+	public PluginModuleInfo<Command> getCommand(
 		final String className)
 	{
-		return first(getRunnablePluginsOfClass(className));
+		return first(getCommandsOfClass(className));
 	}
 
 	@Override
-	public <R extends RunnablePlugin> List<PluginModuleInfo<R>>
-		getRunnablePluginsOfType(final Class<R> type)
+	public <C extends Command> List<PluginModuleInfo<C>>
+		getCommandsOfType(final Class<C> type)
 	{
 		final List<PluginInfo<?>> list = pluginIndex.get(type);
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final List<PluginModuleInfo<R>> result = (List) list;
+		final List<PluginModuleInfo<C>> result = (List) list;
 		return result;
 	}
 
 	@Override
-	public <R extends RunnablePlugin> List<PluginModuleInfo<R>>
-		getRunnablePluginsOfClass(final Class<R> pluginClass)
+	public <C extends Command> List<PluginModuleInfo<C>>
+		getCommandsOfClass(final Class<C> commandClass)
 	{
-		final ArrayList<PluginModuleInfo<R>> result =
-			new ArrayList<PluginModuleInfo<R>>();
-		getPluginsOfClass(pluginClass.getName(), getRunnablePlugins(), result);
+		final ArrayList<PluginModuleInfo<C>> result =
+			new ArrayList<PluginModuleInfo<C>>();
+		getPluginsOfClass(commandClass.getName(), getCommands(), result);
 		return result;
 	}
 
 	@Override
-	public List<PluginModuleInfo<RunnablePlugin>> getRunnablePluginsOfClass(
+	public List<PluginModuleInfo<Command>> getCommandsOfClass(
 		final String className)
 	{
-		final ArrayList<PluginModuleInfo<RunnablePlugin>> result =
-			new ArrayList<PluginModuleInfo<RunnablePlugin>>();
-		getPluginsOfClass(className, getRunnablePlugins(), result);
+		final ArrayList<PluginModuleInfo<Command>> result =
+			new ArrayList<PluginModuleInfo<Command>>();
+		getPluginsOfClass(className, getCommands(), result);
 		return result;
 	}
 
@@ -270,39 +270,39 @@ public class DefaultPluginService extends AbstractService implements
 
 	@Override
 	public Future<Module> run(final String className, final Object... inputs) {
-		final PluginModuleInfo<?> plugin = getRunnablePlugin(className);
-		if (!checkPlugin(plugin, className)) return null;
-		return run(plugin, inputs);
+		final PluginModuleInfo<?> command = getCommand(className);
+		if (!checkPlugin(command, className)) return null;
+		return run(command, inputs);
 	}
 
 	@Override
 	public Future<Module> run(final String className,
 		final Map<String, Object> inputMap)
 	{
-		final PluginModuleInfo<?> plugin = getRunnablePlugin(className);
-		if (!checkPlugin(plugin, className)) return null;
-		return run(plugin, inputMap);
+		final PluginModuleInfo<?> command = getCommand(className);
+		if (!checkPlugin(command, className)) return null;
+		return run(command, inputMap);
 	}
 
 	@Override
-	public <R extends RunnablePlugin> Future<PluginModule<R>> run(
-		final Class<R> pluginClass, final Object... inputs)
+	public <C extends Command> Future<PluginModule<C>> run(
+		final Class<C> commandClass, final Object... inputs)
 	{
-		final PluginModuleInfo<R> plugin = getRunnablePlugin(pluginClass);
-		if (!checkPlugin(plugin, pluginClass.getName())) return null;
+		final PluginModuleInfo<C> command = getCommand(commandClass);
+		if (!checkPlugin(command, commandClass.getName())) return null;
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final Future<PluginModule<R>> future = (Future) run(plugin, inputs);
+		final Future<PluginModule<C>> future = (Future) run(command, inputs);
 		return future;
 	}
 
 	@Override
-	public <R extends RunnablePlugin> Future<PluginModule<R>> run(
-		final Class<R> pluginClass, final Map<String, Object> inputMap)
+	public <C extends Command> Future<PluginModule<C>> run(
+		final Class<C> commandClass, final Map<String, Object> inputMap)
 	{
-		final PluginModuleInfo<R> plugin = getRunnablePlugin(pluginClass);
-		if (!checkPlugin(plugin, pluginClass.getName())) return null;
+		final PluginModuleInfo<C> command = getCommand(commandClass);
+		if (!checkPlugin(command, commandClass.getName())) return null;
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final Future<PluginModule<R>> future = (Future) run(plugin, inputMap);
+		final Future<PluginModule<C>> future = (Future) run(command, inputMap);
 		return future;
 	}
 
@@ -336,8 +336,8 @@ public class DefaultPluginService extends AbstractService implements
 	public void initialize() {
 		pluginIndex = getContext().getPluginIndex();
 
-		// inform the module service of available runnable plugins
-		moduleService.addModules(getRunnablePlugins());
+		// inform the module service of available commands
+		moduleService.addModules(getCommands());
 	}
 
 	// -- Helper methods --

@@ -51,11 +51,11 @@ import java.net.URL;
  * the metadata is populated without actually loading the plugin class, by
  * reading from an efficient binary cache (see {@link PluginService} for
  * details). As such, ImageJ can very quickly build a complex menu structure
- * containing all available {@link RunnablePlugin}s without waiting for the Java
+ * containing all available {@link Command}s without waiting for the Java
  * class loader.
  * 
  * @author Curtis Rueden
- * @see RunnablePlugin
+ * @see Command
  * @see Plugin
  * @see PluginService
  */
@@ -69,7 +69,7 @@ public class PluginInfo<P extends IPlugin> extends AbstractUIDetails implements
 	/** Class object for this plugin. Lazily loaded. */
 	private Class<P> pluginClass;
 
-	/** Type of this entry's plugin; e.g., {@link RunnablePlugin}. */
+	/** Type of this entry's plugin; e.g., {@link Command}. */
 	private Class<P> pluginType;
 
 	/** Annotation describing the plugin. */

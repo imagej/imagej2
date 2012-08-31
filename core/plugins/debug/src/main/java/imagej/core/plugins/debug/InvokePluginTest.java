@@ -42,7 +42,7 @@ import imagej.module.ModuleService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginService;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +57,7 @@ import java.util.concurrent.Future;
  * @author Curtis Rueden
  */
 @Plugin(menuPath = "Plugins>Sandbox>Invoke Plugin Test", headless = true)
-public class InvokePluginTest implements RunnablePlugin {
+public class InvokePluginTest implements Command {
 
 	@Parameter
 	private LogService log;

@@ -50,7 +50,7 @@ import imagej.module.ModuleService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginModuleInfo;
-import imagej.plugin.RunnablePlugin;
+import imagej.plugin.Command;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
@@ -176,9 +176,9 @@ public final class WindowMenuService extends AbstractService {
 
 	/** Creates a {@link ModuleInfo} to reopen data at the given path. */
 	private ModuleInfo createInfo(final String displayName) {
-		final PluginModuleInfo<RunnablePlugin> info =
-			new PluginModuleInfo<RunnablePlugin>(SelectWindow.class.getName(),
-				RunnablePlugin.class);
+		final PluginModuleInfo<Command> info =
+			new PluginModuleInfo<Command>(SelectWindow.class.getName(),
+				Command.class);
 
 		// hard code path to open as a preset
 		final HashMap<String, Object> presets = new HashMap<String, Object>();
@@ -197,8 +197,8 @@ public final class WindowMenuService extends AbstractService {
 
 		// use the same icon as File > Open
 //		final PluginService pluginService = ImageJ.get(PluginService.class);
-//		final PluginModuleInfo<RunnablePlugin> fileOpen =
-//				pluginService.getRunnablePlugin("imagej.io.plugins.OpenImage");
+//		final PluginModuleInfo<Command> fileOpen =
+//				pluginService.getCommand("imagej.io.plugins.OpenImage");
 //		final String iconPath = fileOpen.getIconPath();
 //		info.setIconPath(iconPath);
 //		leaf.setIconPath(iconPath);

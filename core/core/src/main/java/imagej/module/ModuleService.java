@@ -59,7 +59,7 @@ import java.util.concurrent.Future;
  * A <em>module</em> is distinct from a <em>plugin</em> in that plugins extend
  * ImageJ's functionality in some way, taking many forms, whereas modules are
  * always runnable code with typed inputs and outputs. There is a particular
- * type of plugin called a {@link imagej.plugin.RunnablePlugin} which is
+ * type of plugin called a {@link imagej.plugin.Command} which is
  * also a module, but many plugins (e.g., {@link imagej.tool.Tool}s and
  * {@link imagej.display.Display}s) are not modules.
  * </p>

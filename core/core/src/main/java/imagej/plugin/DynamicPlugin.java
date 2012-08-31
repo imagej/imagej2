@@ -43,13 +43,13 @@ import java.lang.reflect.Field;
 /**
  * A class which can be extended to provide an ImageJ plugin with a variable
  * number of inputs and outputs. This class provides greater configurability,
- * but also greater complexity, than implementing the {@link RunnablePlugin}
+ * but also greater complexity, than implementing the {@link Command}
  * interface and using only @{@link Parameter} annotations on instance fields.
  * 
  * @author Curtis Rueden
  */
 public abstract class DynamicPlugin extends DefaultModule implements
-	RunnablePlugin
+	Command
 {
 
 	private final DynamicPluginInfo info;

@@ -69,7 +69,7 @@ public class DynamicPluginInfo extends DefaultModuleInfo {
 		final Class<? extends DynamicPlugin> pluginClass)
 	{
 		final PluginService pluginService = ImageJ.get(PluginService.class);
-		info = pluginService.getRunnablePlugin(pluginClass);
+		info = pluginService.getCommand(pluginClass);
 		populateItems();
 	}
 

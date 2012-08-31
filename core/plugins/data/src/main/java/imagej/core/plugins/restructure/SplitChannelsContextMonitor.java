@@ -116,7 +116,7 @@ public class SplitChannelsContextMonitor extends AbstractService {
 
 	private void setContextAppropriate(final boolean enabled) {
 		final PluginModuleInfo<SplitChannelsContext> info =
-			pluginService.getRunnablePlugin(SplitChannelsContext.class);
+			pluginService.getCommand(SplitChannelsContext.class);
 		info.setEnabled(enabled);
 		info.update(eventService); // TODO: Is this needed here?
 	}
