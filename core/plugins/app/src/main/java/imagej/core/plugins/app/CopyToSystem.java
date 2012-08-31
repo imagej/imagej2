@@ -42,7 +42,7 @@ import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.event.StatusService;
 import imagej.menu.MenuConstants;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -60,7 +60,7 @@ import imagej.util.ARGBPlane;
 		@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 			mnemonic = MenuConstants.EDIT_MNEMONIC),
 		@Menu(label = "Copy To System", weight = 12) })
-public class CopyToSystem extends ContextPlugin {
+public class CopyToSystem extends ContextCommand {
 
 	@Parameter
 	private UserInterface ui;

@@ -44,7 +44,7 @@ import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
 import imagej.module.event.ModuleEvent;
 import imagej.module.event.ModuleExecutedEvent;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -81,7 +81,7 @@ import javax.swing.WindowConstants;
  */
 @Plugin(menu = { @Menu(label = "Plugins"), @Menu(label = "Macros"),
 	@Menu(label = "Record...", weight = 4) })
-public class SwingScriptRecorder extends ContextPlugin {
+public class SwingScriptRecorder extends ContextCommand {
 
 	@Parameter
 	private EventService eventService;

@@ -38,7 +38,7 @@ package imagej.core.plugins.display.interactive;
 import imagej.Cancelable;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -53,7 +53,7 @@ import imagej.plugin.Plugin;
 		mnemonic = MenuConstants.ANALYZE_MNEMONIC),
 	@Menu(label = "Tools"),
 	@Menu(label = "Synchronize Windows") })
-public class SynchronizeWindows extends ContextPlugin implements Cancelable {
+public class SynchronizeWindows extends ContextCommand implements Cancelable {
 
 	private String err;
 

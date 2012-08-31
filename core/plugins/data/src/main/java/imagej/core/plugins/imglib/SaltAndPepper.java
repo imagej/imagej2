@@ -44,7 +44,7 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -70,7 +70,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Noise", mnemonic = 'n'),
 	@Menu(label = "Salt and Pepper", weight = 3) }, headless = true)
-public class SaltAndPepper extends ContextPlugin implements Cancelable {
+public class SaltAndPepper extends ContextCommand implements Cancelable {
 
 	// -- instance variables that are Parameters --
 

@@ -40,7 +40,7 @@ import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -93,7 +93,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 	@Menu(label = "Analyze"),
 	@Menu(label = "Histogram Plot", accelerator = "control shift alt H",
 		weight = 0) })
-public class HistogramPlot extends ContextPlugin implements Cancelable {
+public class HistogramPlot extends ContextCommand implements Cancelable {
 
 	// -- instance variables that are Parameters --
 

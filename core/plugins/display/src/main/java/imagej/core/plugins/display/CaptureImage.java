@@ -41,7 +41,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ScreenCaptureService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -87,7 +87,7 @@ import imagej.ui.viewer.DisplayWindow;
 			mnemonic = MenuConstants.PLUGINS_MNEMONIC),
 	@Menu(label = "Utilities"),
 	@Menu(label = "Capture Image", weight = 21)})
-public class CaptureImage extends ContextPlugin {
+public class CaptureImage extends ContextCommand {
 
 	// -- Parameters --
 	

@@ -39,7 +39,7 @@ import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -73,7 +73,7 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Adjust"),
 	@Menu(label = "Auto-Contrast", accelerator = "control shift alt L",
 		weight = 0) }, headless = true)
-public class AutoContrast extends ContextPlugin {
+public class AutoContrast extends ContextCommand {
 
 	private static final int BINS = 256;
 	private static final int AUTO_THRESHOLD = 5000;

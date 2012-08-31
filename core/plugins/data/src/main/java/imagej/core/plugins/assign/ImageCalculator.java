@@ -40,7 +40,7 @@ import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -83,7 +83,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Image Calculator...", weight = 22) }, headless = true)
 public class ImageCalculator<U extends RealType<U>,V extends RealType<V>>
-	extends ContextPlugin
+	extends ContextCommand
 	implements Cancelable
 {
 	// -- instance variables that are Parameters --

@@ -37,7 +37,7 @@ package imagej.ui.swing.plugins;
 
 import imagej.menu.MenuConstants;
 import imagej.module.ModuleInfo;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -56,7 +56,7 @@ import javax.swing.JOptionPane;
 		weight = MenuConstants.PLUGINS_WEIGHT,
 		mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Utilities"),
 	@Menu(label = "Find Commands...", accelerator = "control L") })
-public class CommandFinder extends ContextPlugin {
+public class CommandFinder extends ContextCommand {
 
 	@Parameter
 	private PluginService pluginService;

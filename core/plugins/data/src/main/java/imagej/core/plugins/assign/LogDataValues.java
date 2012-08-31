@@ -43,7 +43,7 @@ import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -62,7 +62,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Log...", weight = 13) },
 	headless = true)
-public class LogDataValues<T extends RealType<T>> extends ContextPlugin {
+public class LogDataValues<T extends RealType<T>> extends ContextCommand {
 
 	// -- instance variables that are Parameters --
 

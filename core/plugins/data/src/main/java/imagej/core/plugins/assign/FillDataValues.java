@@ -43,7 +43,7 @@ import imagej.data.overlay.Overlay;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.options.OptionsService;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -60,7 +60,7 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Fill", weight = 28, accelerator = "control F") },
 	headless = true)
 public class FillDataValues<T extends RealType<T>>
-	extends ContextPlugin
+	extends ContextCommand
 	implements Cancelable
 {
 	// -- Parameters --

@@ -49,7 +49,7 @@ import imagej.data.overlay.Overlay;
 import imagej.data.overlay.RectangleOverlay;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -66,7 +66,7 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Selection", mnemonic = 's'),
 	@Menu(label = "Select View", mnemonic = 'v', // TODO - accelerator
 		weight = 0) }, headless = true)
-public class SelectView extends ContextPlugin {
+public class SelectView extends ContextCommand {
 
 	@Parameter
 	private ImageJ context;

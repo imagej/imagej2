@@ -82,7 +82,7 @@ import imagej.ImageJ;
  * 
  * @author Curtis Rueden
  */
-public abstract class ContextPlugin extends AbstractContextual implements
+public abstract class ContextCommand extends AbstractContextual implements
 	Command
 {
 
@@ -94,7 +94,7 @@ public abstract class ContextPlugin extends AbstractContextual implements
 
 		// populate service parameters
 		final PluginService pluginService = context.getService(PluginService.class);
-		final CommandInfo<? extends ContextPlugin> info =
+		final CommandInfo<? extends ContextCommand> info =
 			pluginService.getCommand(getClass());
 		populateServices(info);
 	}

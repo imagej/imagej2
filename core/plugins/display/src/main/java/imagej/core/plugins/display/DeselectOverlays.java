@@ -40,7 +40,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -56,7 +56,7 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Selection", mnemonic = 's'),
 	@Menu(label = "Deselect Overlays", mnemonic = 'd', weight = 2,
 	accelerator = "control shift a") }, headless = true)
-public class DeselectOverlays extends ContextPlugin {
+public class DeselectOverlays extends ContextCommand {
 
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;

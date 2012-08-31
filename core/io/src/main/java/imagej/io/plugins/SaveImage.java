@@ -37,7 +37,7 @@ package imagej.io.plugins;
 
 import imagej.data.Dataset;
 import imagej.menu.MenuConstants;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -58,7 +58,7 @@ import net.imglib2.img.ImgPlus;
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Save", weight = 20, mnemonic = 's') })
-public class SaveImage extends ContextPlugin {
+public class SaveImage extends ContextCommand {
 
 	@Parameter
 	private PluginService pluginService;

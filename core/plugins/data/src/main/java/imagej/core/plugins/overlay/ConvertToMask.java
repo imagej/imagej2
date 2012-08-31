@@ -41,7 +41,7 @@ import imagej.data.overlay.BinaryMaskOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -72,7 +72,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Binary", mnemonic = 'b'),
 	@Menu(label = "Convert to Mask", weight = 1) }, headless = true)
-public class ConvertToMask extends ContextPlugin {
+public class ConvertToMask extends ContextCommand {
 
 	@Parameter(label = "Threshold", description = "The threshold that "
 		+ "separates background (mask) from foreground (region of interest).")

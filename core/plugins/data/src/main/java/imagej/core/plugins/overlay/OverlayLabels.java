@@ -37,7 +37,7 @@ package imagej.core.plugins.overlay;
 
 import imagej.Cancelable;
 import imagej.menu.MenuConstants;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Plugin;
 
@@ -51,7 +51,7 @@ import imagej.plugin.Plugin;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay", mnemonic = 'o'),
 	@Menu(label = "Labels...", mnemonic = 'l', weight = 6) })
-public class OverlayLabels extends ContextPlugin implements Cancelable {
+public class OverlayLabels extends ContextCommand implements Cancelable {
 
 	private String err;
 	

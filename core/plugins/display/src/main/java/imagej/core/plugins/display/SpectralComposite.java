@@ -38,7 +38,7 @@ package imagej.core.plugins.display;
 import imagej.data.display.DatasetView;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -55,7 +55,7 @@ import net.imglib2.display.ColorTable8;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Color"),
 	@Menu(label = "Spectral Composite...") })
-public class SpectralComposite extends ContextPlugin {
+public class SpectralComposite extends ContextCommand {
 
 	// -- Parameters --
 

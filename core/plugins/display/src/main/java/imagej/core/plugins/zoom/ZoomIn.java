@@ -39,7 +39,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.MouseService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -56,7 +56,7 @@ import imagej.util.IntCoords;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Zoom", mnemonic = 'z'),
 	@Menu(label = "In", weight = 1, accelerator = "PLUS") }, headless = true)
-public class ZoomIn extends ContextPlugin {
+public class ZoomIn extends ContextCommand {
 
 	@Parameter
 	private MouseService mouseService;

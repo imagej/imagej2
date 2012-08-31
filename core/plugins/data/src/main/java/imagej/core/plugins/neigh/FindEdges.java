@@ -41,7 +41,7 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -57,7 +57,7 @@ import imagej.util.RealRect;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Find Edges", weight = 3) }, headless = true)
-public class FindEdges extends ContextPlugin {
+public class FindEdges extends ContextCommand {
 
 	// -- instance variables that are Parameters --
 

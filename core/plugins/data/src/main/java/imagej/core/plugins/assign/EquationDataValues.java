@@ -46,7 +46,7 @@ import imagej.data.overlay.Overlay;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.module.ItemVisibility;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -75,7 +75,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Equation...", weight = 20) },
 	headless = true)
 public class EquationDataValues<T extends RealType<T>>
-	extends ContextPlugin
+	extends ContextCommand
 	implements Cancelable
 {
 	// -- instance variables that are Parameters --

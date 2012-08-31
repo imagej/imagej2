@@ -39,7 +39,7 @@ import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -57,7 +57,7 @@ import imagej.ui.viewer.ImageDisplayViewer;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay"),
 	@Menu(label = "Flatten", weight = 4) })
-public class Flatten extends ContextPlugin {
+public class Flatten extends ContextCommand {
 
 	// -- Parameters --
 	

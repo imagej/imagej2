@@ -40,7 +40,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.EllipseOverlay;
 import imagej.data.overlay.RectangleOverlay;
 import imagej.menu.MenuConstants;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -63,7 +63,7 @@ import imagej.plugin.Plugin;
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Selection", mnemonic = 's'),
 	@Menu(label = "Specify...", mnemonic = 's') }, headless = true)
-public class SelectionSpecify extends ContextPlugin {
+public class SelectionSpecify extends ContextCommand {
 
 	// -- Parameters --
 

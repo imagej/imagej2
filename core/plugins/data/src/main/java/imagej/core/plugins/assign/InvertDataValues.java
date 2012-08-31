@@ -45,7 +45,7 @@ import imagej.data.overlay.Overlay;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.options.OptionsService;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -67,7 +67,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Invert...", weight = 30, accelerator = "shift control I") },
 	headless = true)
-public class InvertDataValues<T extends RealType<T>> extends ContextPlugin {
+public class InvertDataValues<T extends RealType<T>> extends ContextCommand {
 
 	// -- instance variables that are Parameters --
 

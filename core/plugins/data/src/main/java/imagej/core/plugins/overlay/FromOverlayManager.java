@@ -40,7 +40,7 @@ import imagej.data.display.OverlayInfoList;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.menu.MenuConstants;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -59,7 +59,7 @@ import java.util.List;
 	@Menu(label = "Overlay", mnemonic = 'o'),
 	@Menu(label = "From Overlay Manager", weight = 1, mnemonic = 'f') },
 	headless = true)
-public class FromOverlayManager extends ContextPlugin {
+public class FromOverlayManager extends ContextCommand {
 
 	// -- Parameters --
 	

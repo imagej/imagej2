@@ -40,7 +40,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Parameter;
 import imagej.util.RealRect;
 
@@ -49,7 +49,7 @@ import imagej.util.RealRect;
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractShadows extends ContextPlugin {
+public abstract class AbstractShadows extends ContextCommand {
 
 	@Parameter
 	private ImageDisplayService imageDisplayService;

@@ -45,7 +45,7 @@ import imagej.data.overlay.Overlay;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.options.OptionsService;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -66,7 +66,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Reciprocal...", weight = 17) }, headless = true)
 public class ReciprocalDataValues<T extends RealType<T>>
-	extends ContextPlugin
+	extends ContextCommand
 {
 	// -- instance variables that are Parameters --
 

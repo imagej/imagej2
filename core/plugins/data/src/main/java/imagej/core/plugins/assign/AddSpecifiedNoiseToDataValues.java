@@ -44,7 +44,7 @@ import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -63,7 +63,7 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Noise", mnemonic = 'n'),
 	@Menu(label = "Add Specified Noise...", weight = 2) }, headless = true)
 public class AddSpecifiedNoiseToDataValues<T extends RealType<T>>
-	extends ContextPlugin
+	extends ContextCommand
 {
 
 	// -- instance variables that are Parameters --

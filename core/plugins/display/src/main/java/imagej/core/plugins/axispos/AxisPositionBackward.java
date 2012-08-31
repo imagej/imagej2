@@ -39,7 +39,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.KeyboardService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -61,7 +61,7 @@ import net.imglib2.meta.AxisType;
 	@Menu(label = "Axes", mnemonic = 'a'),
 	@Menu(label = "Axis Position Backward", accelerator = "LESS") },
 	headless = true)
-public class AxisPositionBackward extends ContextPlugin {
+public class AxisPositionBackward extends ContextCommand {
 
 	@Parameter
 	private AnimationService animationService;

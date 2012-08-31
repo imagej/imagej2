@@ -46,7 +46,7 @@ import imagej.io.IOService;
 import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -93,7 +93,7 @@ import net.imglib2.meta.AxisType;
 			weight = MenuConstants.HELP_WEIGHT,
 			mnemonic = MenuConstants.HELP_MNEMONIC),
 		@Menu(label = "About ImageJ...", weight = 43) }, headless = true)
-public class AboutImageJ extends ContextPlugin {
+public class AboutImageJ extends ContextCommand {
 
 	// -- constants --
 

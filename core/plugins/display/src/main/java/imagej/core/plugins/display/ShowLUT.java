@@ -45,7 +45,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -75,7 +75,7 @@ import net.imglib2.meta.AxisType;
 			mnemonic = MenuConstants.IMAGE_MNEMONIC),
 		@Menu(label = "Color"),
 		@Menu(label = "Show LUT", weight = 12) })
-public class ShowLUT extends ContextPlugin {
+public class ShowLUT extends ContextCommand {
 
 	// -- Parameters --
 	

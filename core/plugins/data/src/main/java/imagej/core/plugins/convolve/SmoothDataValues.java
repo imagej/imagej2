@@ -41,7 +41,7 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -58,7 +58,7 @@ import imagej.util.RealRect;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Smooth", weight = 1, accelerator = "shift control S") },
 	headless = true)
-public class SmoothDataValues extends ContextPlugin {
+public class SmoothDataValues extends ContextCommand {
 
 	// -- instance variables that are Parameters --
 
