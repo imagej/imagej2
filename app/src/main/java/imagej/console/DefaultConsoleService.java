@@ -35,6 +35,7 @@
 
 package imagej.console;
 
+import imagej.command.CommandService;
 import imagej.data.Dataset;
 import imagej.display.DisplayService;
 import imagej.io.IOService;
@@ -42,7 +43,6 @@ import imagej.log.LogService;
 import imagej.options.OptionsService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import net.imglib2.exception.IncompatibleTypeException;
@@ -65,7 +65,7 @@ public class DefaultConsoleService extends AbstractService implements
 	private OptionsService optionsService;
 
 	@Parameter
-	private PluginService pluginService;
+	private CommandService commandService;
 
 	@Parameter
 	private IOService ioService;
@@ -109,7 +109,7 @@ public class DefaultConsoleService extends AbstractService implements
 
 	/** Implements the "--run" command line argument. */
 	private void run(final String className) {
-		pluginService.run(className);
+		commandService.run(className);
 	}
 
 }

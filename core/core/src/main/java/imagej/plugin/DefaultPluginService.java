@@ -38,26 +38,27 @@ package imagej.plugin;
 import imagej.Contextual;
 import imagej.InstantiableException;
 import imagej.Prioritized;
-import imagej.command.Command;
-import imagej.command.CommandInfo;
-import imagej.command.CommandModule;
+import imagej.event.EventService;
 import imagej.log.LogService;
-import imagej.module.Module;
-import imagej.module.ModuleInfo;
-import imagej.module.ModuleService;
+import imagej.plugin.event.PluginsAddedEvent;
+import imagej.plugin.event.PluginsRemovedEvent;
 import imagej.service.AbstractService;
 import imagej.service.Service;
+import imagej.util.ListUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Future;
 
 /**
  * Default service for keeping track of available plugins. Available plugins are
  * discovered using a library called SezPoz. Loading of the actual plugin
- * classes can be deferred until a particular plugin's first execution.
+ * classes can be deferred until a particular plugin is actually needed.
+ * <p>
+ * Plugins are added or removed via the plugin service are reported via the
+ * event service. (No events are published for plugins directly added to or
+ * removed from the {@link PluginIndex}.)
+ * </p>
  * 
  * @author Curtis Rueden
  * @see IPlugin
@@ -72,17 +73,12 @@ public class DefaultPluginService extends AbstractService implements
 	private LogService log;
 
 	@Parameter
-	private ModuleService moduleService;
+	private EventService eventService;
 
 	/** Index of registered plugins. */
 	private PluginIndex pluginIndex;
 
 	// -- PluginService methods --
-
-	@Override
-	public ModuleService getModuleService() {
-		return moduleService;
-	}
 
 	@Override
 	public PluginIndex getIndex() {
@@ -91,21 +87,25 @@ public class DefaultPluginService extends AbstractService implements
 
 	@Override
 	public void reloadPlugins() {
-		// remove old commands from module service
-		moduleService.removeModules(getCommands());
-
+		// clear all old plugins, and notify interested parties
+		final List<PluginInfo<?>> oldPlugins = pluginIndex.getAll();
 		pluginIndex.clear();
-		pluginIndex.discover();
+		if (oldPlugins.size() > 0) {
+			eventService.publish(new PluginsRemovedEvent(oldPlugins));
+		}
 
-		// add new commands to module service
-		moduleService.addModules(getCommands());
+		// re-discover all available plugins, and notify interested parties
+		pluginIndex.discover();
+		final List<PluginInfo<?>> newPlugins = pluginIndex.getAll();
+		if (newPlugins.size() > 0) {
+			eventService.publish(new PluginsAddedEvent(newPlugins));
+		}
 	}
 
 	@Override
 	public void addPlugin(final PluginInfo<?> plugin) {
-		pluginIndex.add(plugin);
-		if (plugin instanceof ModuleInfo) {
-			moduleService.addModule((ModuleInfo) plugin);
+		if (pluginIndex.add(plugin)) {
+			eventService.publish(new PluginsAddedEvent(plugin));
 		}
 	}
 
@@ -113,23 +113,15 @@ public class DefaultPluginService extends AbstractService implements
 	public <T extends PluginInfo<?>> void
 		addPlugins(final Collection<T> plugins)
 	{
-		pluginIndex.addAll(plugins);
-
-		// add new commands to module service
-		final List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
-		for (final PluginInfo<?> info : plugins) {
-			if (info instanceof ModuleInfo) {
-				modules.add((ModuleInfo) info);
-			}
+		if (pluginIndex.addAll(plugins)) {
+			eventService.publish(new PluginsAddedEvent(plugins));
 		}
-		moduleService.addModules(modules);
 	}
 
 	@Override
 	public void removePlugin(final PluginInfo<?> plugin) {
-		pluginIndex.remove(plugin);
-		if (plugin instanceof ModuleInfo) {
-			moduleService.removeModule((ModuleInfo) plugin);
+		if (pluginIndex.remove(plugin)) {
+			eventService.publish(new PluginsRemovedEvent(plugin));
 		}
 	}
 
@@ -137,16 +129,9 @@ public class DefaultPluginService extends AbstractService implements
 	public <T extends PluginInfo<?>> void removePlugins(
 		final Collection<T> plugins)
 	{
-		pluginIndex.removeAll(plugins);
-
-		// remove old commands to module service
-		final List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
-		for (final PluginInfo<?> info : plugins) {
-			if (info instanceof ModuleInfo) {
-				modules.add((ModuleInfo) info);
-			}
+		if (pluginIndex.removeAll(plugins)) {
+			eventService.publish(new PluginsRemovedEvent(plugins));
 		}
-		moduleService.removeModules(modules);
 	}
 
 	@Override
@@ -158,16 +143,16 @@ public class DefaultPluginService extends AbstractService implements
 	public <P extends IPlugin> PluginInfo<P>
 		getPlugin(final Class<P> pluginClass)
 	{
-		return first(getPluginsOfClass(pluginClass));
+		return ListUtils.first(getPluginsOfClass(pluginClass));
 	}
 
 	@Override
 	public PluginInfo<IPlugin> getPlugin(final String className) {
-		return first(getPluginsOfClass(className));
+		return ListUtils.first(getPluginsOfClass(className));
 	}
 
 	@Override
-	public <P extends IPlugin> List<PluginInfo<? extends P>> getPluginsOfType(
+	public <P extends IPlugin> List<PluginInfo<P>> getPluginsOfType(
 		final Class<P> type)
 	{
 		return pluginIndex.getPlugins(type);
@@ -191,59 +176,15 @@ public class DefaultPluginService extends AbstractService implements
 	}
 
 	@Override
-	public List<CommandInfo<Command>> getCommands() {
-		return getCommandsOfType(Command.class);
-	}
-
-	@Override
-	public <C extends Command> CommandInfo<C> getCommand(
-		final Class<C> commandClass)
+	public <P extends IPlugin> List<P> createInstancesOfType(final Class<P> type)
 	{
-		return first(getCommandsOfClass(commandClass));
-	}
-
-	@Override
-	public CommandInfo<Command> getCommand(
-		final String className)
-	{
-		return first(getCommandsOfClass(className));
-	}
-
-	@Override
-	public <C extends Command> List<CommandInfo<C>>
-		getCommandsOfType(final Class<C> type)
-	{
-		final List<PluginInfo<?>> list = pluginIndex.get(type);
+		final List<PluginInfo<P>> plugins = getPluginsOfType(type);
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final List<CommandInfo<C>> result = (List) list;
-		return result;
-	}
-
-	@Override
-	public <C extends Command> List<CommandInfo<C>>
-		getCommandsOfClass(final Class<C> commandClass)
-	{
-		final ArrayList<CommandInfo<C>> result =
-			new ArrayList<CommandInfo<C>>();
-		getPluginsOfClass(commandClass.getName(), getCommands(), result);
-		return result;
-	}
-
-	@Override
-	public List<CommandInfo<Command>> getCommandsOfClass(
-		final String className)
-	{
-		final ArrayList<CommandInfo<Command>> result =
-			new ArrayList<CommandInfo<Command>>();
-		getPluginsOfClass(className, getCommands(), result);
-		return result;
-	}
-
-	@Override
-	public <P extends IPlugin> List<? extends P> createInstancesOfType(
-		final Class<P> type)
-	{
-		return createInstances(getPluginsOfType(type));
+		final List<PluginInfo<? extends P>> typedPlugins = (List) plugins;
+		final List<? extends P> instances = createInstances(typedPlugins);
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		final List<P> typedInstances = (List) instances;
+		return typedInstances;
 	}
 
 	@Override
@@ -271,81 +212,24 @@ public class DefaultPluginService extends AbstractService implements
 		return list;
 	}
 
-	@Override
-	public Future<Module> run(final String className, final Object... inputs) {
-		final CommandInfo<?> command = getCommand(className);
-		if (!checkPlugin(command, className)) return null;
-		return run(command, inputs);
-	}
-
-	@Override
-	public Future<Module> run(final String className,
-		final Map<String, Object> inputMap)
-	{
-		final CommandInfo<?> command = getCommand(className);
-		if (!checkPlugin(command, className)) return null;
-		return run(command, inputMap);
-	}
-
-	@Override
-	public <C extends Command> Future<CommandModule<C>> run(
-		final Class<C> commandClass, final Object... inputs)
-	{
-		final CommandInfo<C> command = getCommand(commandClass);
-		if (!checkPlugin(command, commandClass.getName())) return null;
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final Future<CommandModule<C>> future = (Future) run(command, inputs);
-		return future;
-	}
-
-	@Override
-	public <C extends Command> Future<CommandModule<C>> run(
-		final Class<C> commandClass, final Map<String, Object> inputMap)
-	{
-		final CommandInfo<C> command = getCommand(commandClass);
-		if (!checkPlugin(command, commandClass.getName())) return null;
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final Future<CommandModule<C>> future = (Future) run(command, inputMap);
-		return future;
-	}
-
-	@Override
-	public Future<Module> run(final ModuleInfo info, final Object... inputs) {
-		return moduleService.run(info, pre(), post(), inputs);
-	}
-
-	@Override
-	public Future<Module> run(final ModuleInfo info,
-		final Map<String, Object> inputMap)
-	{
-		return moduleService.run(info, pre(), post(), inputMap);
-	}
-
-	@Override
-	public Future<Module> run(final Module module, final Object... inputs) {
-		return moduleService.run(module, pre(), post(), inputs);
-	}
-
-	@Override
-	public <M extends Module> Future<M> run(final M module,
-		final Map<String, Object> inputMap)
-	{
-		return moduleService.run(module, pre(), post(), inputMap);
-	}
-
 	// -- Service methods --
 
 	@Override
 	public void initialize() {
 		pluginIndex = getContext().getPluginIndex();
-
-		// inform the module service of available commands
-		moduleService.addModules(getCommands());
 	}
 
-	// -- Helper methods --
+	// -- Utility methods --
 
-	private <T extends PluginInfo<?>> void getPluginsOfClass(
+	/**
+	 * Transfers plugins of the given class from the source list to the
+	 * destination list.
+	 * 
+	 * @param className The class name of the desired plugins.
+	 * @param srcList The list to scan for matching plugins.
+	 * @param destList The list to which matching plugins are added.
+	 */
+	public static <T extends PluginInfo<?>> void getPluginsOfClass(
 		final String className, final List<? extends PluginInfo<?>> srcList,
 		final List<T> destList)
 	{
@@ -356,31 +240,6 @@ public class DefaultPluginService extends AbstractService implements
 				destList.add(match);
 			}
 		}
-	}
-
-	/** Gets the first element of the given list, or null if none. */
-	private <T> T first(final List<T> list) {
-		if (list == null || list.size() == 0) return null;
-		return list.get(0);
-
-	}
-
-	private List<? extends PreprocessorPlugin> pre() {
-		return createInstancesOfType(PreprocessorPlugin.class);
-	}
-
-	private List<? extends PostprocessorPlugin> post() {
-		return createInstancesOfType(PostprocessorPlugin.class);
-	}
-
-	private boolean checkPlugin(final CommandInfo<?> plugin,
-		final String name)
-	{
-		if (plugin == null) {
-			log.error("No such plugin: " + name);
-			return false;
-		}
-		return true;
 	}
 
 }

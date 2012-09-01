@@ -36,6 +36,7 @@
 package imagej.core.plugins.typechange;
 
 import imagej.command.CommandInfo;
+import imagej.command.CommandService;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -46,7 +47,6 @@ import imagej.event.EventService;
 import imagej.module.event.ModulesUpdatedEvent;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
@@ -64,7 +64,7 @@ public final class TypeChangeService extends AbstractService {
 	private EventService eventService;
 
 	@Parameter
-	private PluginService pluginService;
+	private CommandService commandService;
 
 	@Parameter
 	private ImageDisplayService imageDisplayService;
@@ -75,8 +75,8 @@ public final class TypeChangeService extends AbstractService {
 		return eventService;
 	}
 
-	public PluginService getPluginService() {
-		return pluginService;
+	public CommandService getCommandService() {
+		return commandService;
 	}
 
 	public ImageDisplayService getImageDisplayService() {
@@ -90,15 +90,15 @@ public final class TypeChangeService extends AbstractService {
 			dataset == null ? "" : dataset.getTypeLabelShort();
 		final String suffix = ".ChangeTo" + typeLabel.toUpperCase();
 
-		final List<CommandInfo<TypeChanger>> plugins =
-			pluginService.getCommandsOfType(TypeChanger.class);
-		for (final CommandInfo<TypeChanger> info : plugins) {
+		final List<CommandInfo<TypeChanger>> commands =
+			commandService.getCommandsOfType(TypeChanger.class);
+		for (final CommandInfo<TypeChanger> info : commands) {
 			final boolean selected = info.getDelegateClassName().endsWith(suffix);
 			info.setSelected(selected);
 		}
 
-		// notify interested parties that the TypeChanger plugins have changed
-		eventService.publish(new ModulesUpdatedEvent(plugins));
+		// notify interested parties that the TypeChanger commands have changed
+		eventService.publish(new ModulesUpdatedEvent(commands));
 	}
 
 	// -- Service methods --

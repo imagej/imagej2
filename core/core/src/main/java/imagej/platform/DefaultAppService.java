@@ -36,6 +36,7 @@
 package imagej.platform;
 
 import imagej.command.Command;
+import imagej.command.CommandService;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.platform.event.AppAboutEvent;
@@ -43,7 +44,6 @@ import imagej.platform.event.AppPreferencesEvent;
 import imagej.platform.event.AppQuitEvent;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
@@ -64,59 +64,59 @@ public final class DefaultAppService extends AbstractService implements
 	private EventService eventService;
 
 	@Parameter
-	private PluginService pluginService;
+	private CommandService commandService;
 
-	private Class<? extends Command> aboutPlugin;
-	private Class<? extends Command> prefsPlugin;
-	private Class<? extends Command> quitPlugin;
+	private Class<? extends Command> aboutCommand;
+	private Class<? extends Command> prefsCommand;
+	private Class<? extends Command> quitCommand;
 
 	// -- AppService methods --
 
 	@Override
 	public void about() {
-		if (aboutPlugin == null) return;
-		pluginService.run(aboutPlugin);
+		if (aboutCommand == null) return;
+		commandService.run(aboutCommand);
 	}
 
 	@Override
 	public void showPrefs() {
-		if (prefsPlugin == null) return;
-		pluginService.run(prefsPlugin);
+		if (prefsCommand == null) return;
+		commandService.run(prefsCommand);
 	}
 
 	@Override
 	public void quit() {
-		if (quitPlugin == null) return;
-		pluginService.run(quitPlugin);
+		if (quitCommand == null) return;
+		commandService.run(quitCommand);
 	}
 
 	@Override
 	public void
-		setAboutHandler(final Class<? extends Command> aboutPlugin)
+		setAboutHandler(final Class<? extends Command> aboutCommand)
 	{
-		this.aboutPlugin = aboutPlugin;
+		this.aboutCommand = aboutCommand;
 	}
 
 	@Override
 	public void
-		setPrefsHandler(final Class<? extends Command> prefsPlugin)
+		setPrefsHandler(final Class<? extends Command> prefsCommand)
 	{
-		this.prefsPlugin = prefsPlugin;
+		this.prefsCommand = prefsCommand;
 	}
 
 	@Override
-	public void setQuitHandler(final Class<? extends Command> quitPlugin) {
-		this.quitPlugin = quitPlugin;
+	public void setQuitHandler(final Class<? extends Command> quitCommand) {
+		this.quitCommand = quitCommand;
 	}
 
 	@Override
 	public List<Class<? extends Command>> getHandlers() {
-		final ArrayList<Class<? extends Command>> handledPlugins =
+		final ArrayList<Class<? extends Command>> handledCommands =
 			new ArrayList<Class<? extends Command>>();
-		if (aboutPlugin != null) handledPlugins.add(aboutPlugin);
-		if (prefsPlugin != null) handledPlugins.add(prefsPlugin);
-		if (quitPlugin != null) handledPlugins.add(quitPlugin);
-		return handledPlugins;
+		if (aboutCommand != null) handledCommands.add(aboutCommand);
+		if (prefsCommand != null) handledCommands.add(prefsCommand);
+		if (quitCommand != null) handledCommands.add(quitCommand);
+		return handledCommands;
 	}
 
 	// -- Service methods --

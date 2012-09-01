@@ -87,7 +87,7 @@ public interface DisplayService extends Service {
 	 * Gets the list of display plugins of the given type (e.g.,
 	 * <code>ImageDisplay.class</code>).
 	 */
-	<D extends Display<?>> List<PluginInfo<? extends D>> getDisplayPluginsOfType(
+	<D extends Display<?>> List<PluginInfo<D>> getDisplayPluginsOfType(
 		Class<D> type);
 
 	/** Gets a list of all available displays. */

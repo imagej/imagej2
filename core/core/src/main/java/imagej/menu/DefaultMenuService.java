@@ -36,6 +36,7 @@
 package imagej.menu;
 
 import imagej.command.Command;
+import imagej.command.CommandService;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.module.Module;
@@ -45,7 +46,6 @@ import imagej.module.event.ModulesRemovedEvent;
 import imagej.module.event.ModulesUpdatedEvent;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
@@ -67,7 +67,7 @@ public class DefaultMenuService extends AbstractService implements MenuService {
 	private EventService eventService;
 
 	@Parameter
-	private PluginService pluginService;
+	private CommandService commandService;
 
 	/** Menu tree structures. There is one structure per menu root. */
 	private HashMap<String, ShadowMenu> rootMenus;
@@ -80,8 +80,8 @@ public class DefaultMenuService extends AbstractService implements MenuService {
 	}
 
 	@Override
-	public PluginService getPluginService() {
-		return pluginService;
+	public CommandService getCommandService() {
+		return commandService;
 	}
 
 	@Override
@@ -123,14 +123,14 @@ public class DefaultMenuService extends AbstractService implements MenuService {
 	public <C extends Command> void setSelected(
 		final Class<C> commandClass, final boolean selected)
 	{
-		setSelected(pluginService.getCommand(commandClass), selected);
+		setSelected(commandService.getCommand(commandClass), selected);
 	}
 
 	@Override
 	public <C extends Command> void setSelected(
-		final String pluginClassName, final boolean selected)
+		final String commandClassName, final boolean selected)
 	{
-		setSelected(pluginService.getCommand(pluginClassName), selected);
+		setSelected(commandService.getCommand(commandClassName), selected);
 	}
 
 	@Override
@@ -146,7 +146,7 @@ public class DefaultMenuService extends AbstractService implements MenuService {
 		rootMenus = new HashMap<String, ShadowMenu>();
 
 		final List<ModuleInfo> allModules =
-			getPluginService().getModuleService().getModules();
+			getCommandService().getModuleService().getModules();
 		addModules(allModules);
 
 		subscribeToEvents(eventService);

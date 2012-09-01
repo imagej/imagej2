@@ -175,7 +175,8 @@ public interface ModuleService extends Service {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module> run(Module module, List<? extends ModulePreprocessor> pre,
+	<M extends Module> Future<M> run(M module,
+		List<? extends ModulePreprocessor> pre,
 		List<? extends ModulePostprocessor> post, Object... inputs);
 
 	/**

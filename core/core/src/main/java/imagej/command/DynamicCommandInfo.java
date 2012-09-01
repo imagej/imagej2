@@ -35,7 +35,6 @@
 
 package imagej.command;
 
-import imagej.ImageJ;
 import imagej.MenuPath;
 import imagej.UIDetails;
 import imagej.module.DefaultModuleInfo;
@@ -67,15 +66,15 @@ public class DynamicCommandInfo extends DefaultModuleInfo {
 
 	private CommandInfo<? extends DynamicCommand> info;
 
-	// -- Internal methods --
-
-	protected void setCommandClass(
-		final Class<? extends DynamicCommand> commandClass)
+	public DynamicCommandInfo(final CommandInfo<? extends DynamicCommand> info,
+		final Class<? extends DynamicCommand> moduleClass)
 	{
-		final PluginService pluginService = ImageJ.get(PluginService.class);
-		info = pluginService.getCommand(commandClass);
+		this.info = info;
+		setModuleClass(moduleClass);
 		populateItems();
 	}
+
+	// -- Internal methods --
 
 	/**
 	 * Gets the {@link Field} corresponding to the given @{@link Parameter}

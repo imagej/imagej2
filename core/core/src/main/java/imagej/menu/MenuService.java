@@ -36,10 +36,10 @@
 package imagej.menu;
 
 import imagej.command.Command;
+import imagej.command.CommandService;
 import imagej.event.EventService;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
-import imagej.plugin.PluginService;
 import imagej.service.Service;
 
 /**
@@ -51,7 +51,7 @@ public interface MenuService extends Service {
 
 	EventService getEventService();
 
-	PluginService getPluginService();
+	CommandService getCommandService();
 
 	/** Gets the root node of the application menu structure. */
 	ShadowMenu getMenu();

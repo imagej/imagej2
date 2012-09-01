@@ -36,7 +36,7 @@
 package imagej.updater.core;
 
 import imagej.command.CommandInfo;
-import imagej.plugin.PluginService;
+import imagej.command.CommandService;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.Downloadable;
@@ -155,15 +155,15 @@ public class Installer extends Downloader {
 
 	protected final static String UPDATER_JAR_NAME = "jars/ij-updater-core.jar";
 
-	public static Set<FileObject> getUpdaterFiles(final FilesCollection files, final PluginService pluginService, final boolean onlyUpdateable) {
+	public static Set<FileObject> getUpdaterFiles(final FilesCollection files, final CommandService commandService, final boolean onlyUpdateable) {
 		final Set<FileObject> result = new HashSet<FileObject>();
 		final FileObject updater = files.get(UPDATER_JAR_NAME);
 		if (updater == null) return result;
 		final Set<FileObject> topLevel = new HashSet<FileObject>();
 		topLevel.add(updater);
-		if (pluginService != null) {
-			for (final CommandInfo<UpdaterUIPlugin> plugin : pluginService.getCommandsOfType(UpdaterUIPlugin.class)) {
-				final FileObject file = getFileObject(files, plugin.getClassName());
+		if (commandService != null) {
+			for (final CommandInfo<UpdaterUIPlugin> info : commandService.getCommandsOfType(UpdaterUIPlugin.class)) {
+				final FileObject file = getFileObject(files, info.getClassName());
 				if (file != null) {
 					topLevel.add(file);
 				}
@@ -211,16 +211,16 @@ public class Installer extends Downloader {
 		return isTheUpdaterUpdateable(files, null);
 	}
 
-	public static boolean isTheUpdaterUpdateable(final FilesCollection files, final PluginService pluginService) {
-		return getUpdaterFiles(files, pluginService, true).size() > 0;
+	public static boolean isTheUpdaterUpdateable(final FilesCollection files, final CommandService commandService) {
+		return getUpdaterFiles(files, commandService, true).size() > 0;
 	}
 
 	public static void updateTheUpdater(final FilesCollection files, final Progress progress) throws IOException {
 		updateTheUpdater(files, progress, null);
 	}
 
-	public static void updateTheUpdater(final FilesCollection files, final Progress progress, final PluginService pluginService) throws IOException {
-		final Set<FileObject> all = getUpdaterFiles(files, pluginService, true);
+	public static void updateTheUpdater(final FilesCollection files, final Progress progress, final CommandService commandService) throws IOException {
+		final Set<FileObject> all = getUpdaterFiles(files, commandService, true);
 		int counter = 0;
 		for (final FileObject file : all) {
 			if (file.setFirstValidAction(files, Action.UPDATE, Action.INSTALL))

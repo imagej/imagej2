@@ -36,6 +36,7 @@
 package imagej.ui;
 
 import imagej.InstantiableException;
+import imagej.command.CommandService;
 import imagej.data.display.ImageDisplay;
 import imagej.display.Display;
 import imagej.display.DisplayService;
@@ -102,6 +103,9 @@ public final class DefaultUIService extends AbstractService implements
 	private PluginService pluginService;
 
 	@Parameter
+	private CommandService commandService;
+
+	@Parameter
 	private MenuService menuService;
 
 	@Parameter
@@ -160,6 +164,11 @@ public final class DefaultUIService extends AbstractService implements
 	@Override
 	public PluginService getPluginService() {
 		return pluginService;
+	}
+
+	@Override
+	public CommandService getCommandService() {
+		return commandService;
 	}
 
 	@Override
@@ -363,7 +372,7 @@ public final class DefaultUIService extends AbstractService implements
 	protected void onEvent(final DisplayCreatedEvent e) {
 		final Display<?> display = e.getObject();
 		for (@SuppressWarnings("rawtypes")
-		final PluginInfo<? extends DisplayViewer> info : pluginService
+		final PluginInfo<DisplayViewer> info : pluginService
 			.getPluginsOfType(DisplayViewer.class))
 		{
 			try {
@@ -453,9 +462,9 @@ public final class DefaultUIService extends AbstractService implements
 
 	/** Discovers available user interfaces. */
 	private void discoverUIs() {
-		final List<PluginInfo<? extends UserInterface>> infos =
+		final List<PluginInfo<UserInterface>> infos =
 			pluginService.getPluginsOfType(UserInterface.class);
-		for (final PluginInfo<? extends UserInterface> info : infos) {
+		for (final PluginInfo<UserInterface> info : infos) {
 			try {
 				// instantiate user interface
 				final UserInterface ui = info.createInstance();

@@ -58,7 +58,7 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Start Animation", accelerator = "BACK_SLASH", weight = 1) })
 public class StartAnimation extends ContextCommand {
 
-	// -- Plugin parameters --
+	// -- Parameters --
 
 	@Parameter
 	private AnimationService animationService;

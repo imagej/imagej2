@@ -35,6 +35,8 @@
 
 package imagej.command;
 
+import imagej.Contextual;
+import imagej.ImageJ;
 import imagej.module.DefaultModule;
 import imagej.plugin.Parameter;
 import imagej.util.ClassUtils;
@@ -50,20 +52,11 @@ import java.lang.reflect.Field;
  * @author Curtis Rueden
  */
 public abstract class DynamicCommand extends DefaultModule implements
-	Command
+	Command, Contextual
 {
 
-	private final DynamicCommandInfo info;
-
-	public DynamicCommand() {
-		this(new DynamicCommandInfo());
-	}
-
-	public DynamicCommand(final DynamicCommandInfo info) {
-		super(info);
-		this.info = info;
-		info.setCommandClass(getClass());
-	}
+	private ImageJ context;
+	private DynamicCommandInfo info;
 
 	// -- Module methods --
 
@@ -98,6 +91,32 @@ public abstract class DynamicCommand extends DefaultModule implements
 		final Field field = info.getOutputField(name);
 		if (field == null) super.setOutput(name, value);
 		else ClassUtils.setValue(field, this, value);
+	}
+
+	// -- Contextual methods --
+
+	@Override
+	public ImageJ getContext() {
+		return context;
+	}
+
+	@Override
+	public void setContext(final ImageJ context) {
+		if (this.context != null) {
+			throw new IllegalStateException("Context already set");
+		}
+		this.context = context;
+
+		// populate service parameters
+		final CommandService commandService =
+			context.getService(CommandService.class);
+		if (commandService == null) {
+			throw new IllegalArgumentException("Context has no command service");
+		}
+		final CommandInfo<DynamicCommand> commandInfo =
+			commandService.populateServices(this);
+
+		info = new DynamicCommandInfo(commandInfo, getClass());
 	}
 
 }

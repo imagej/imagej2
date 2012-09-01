@@ -166,10 +166,9 @@ public class DefaultModuleService extends AbstractService implements
 	}
 
 	@Override
-	public Future<Module>
-		run(final Module module, final List<? extends ModulePreprocessor> pre,
-			final List<? extends ModulePostprocessor> post,
-			final Object... inputs)
+	public <M extends Module> Future<M> run(final M module,
+		final List<? extends ModulePreprocessor> pre,
+		final List<? extends ModulePostprocessor> post, final Object... inputs)
 	{
 		return run(module, pre, post, createMap(inputs));
 	}

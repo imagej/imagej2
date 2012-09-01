@@ -35,16 +35,16 @@
 
 package imagej.core.plugins.restructure;
 
+import imagej.command.CommandService;
 import imagej.command.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginService;
 
 import java.util.HashMap;
 
 /**
- * Context menu plugin for Split Channels legacy command.
+ * Context menu command for Split Channels legacy command.
  * 
  * @author Curtis Rueden
  */
@@ -52,21 +52,21 @@ import java.util.HashMap;
 	menuRoot = Plugin.CONTEXT_MENU_ROOT, headless = true)
 public class SplitChannelsContext extends ContextCommand {
 
-	// -- Plugin parameters --
+	// -- Parameters --
 
 	@Parameter
-	private PluginService pluginService;
+	private CommandService commandService;
 
 	// -- Command methods --
 
 	@Override
 	public void run() {
 		// TODO: Figure out why the parameter order is messed up and this fails:
-//		pluginService.run("imagej.legacy.plugin.LegacyPlugin",
+//		commandService.run("imagej.legacy.plugin.LegacyPlugin",
 //			"ij.plugin.ChannelSplitter");
 		final HashMap<String, Object> inputValues = new HashMap<String, Object>();
 		inputValues.put("className", "ij.plugin.ChannelSplitter");
-		pluginService.run("imagej.legacy.plugin.LegacyPlugin", inputValues);
+		commandService.run("imagej.legacy.plugin.LegacyPlugin", inputValues);
 		
 		// TODO - replace with LegacyService::reunLegacyPlugin() ?
 	}

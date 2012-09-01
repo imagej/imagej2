@@ -35,6 +35,7 @@
 
 package imagej.platform;
 
+import imagej.command.CommandService;
 import imagej.event.EventService;
 import imagej.plugin.PluginService;
 import imagej.service.Service;
@@ -54,6 +55,8 @@ public interface PlatformService extends Service {
 	EventService getEventService();
 
 	PluginService getPluginService();
+
+	CommandService getCommandService();
 
 	AppService getAppService();
 

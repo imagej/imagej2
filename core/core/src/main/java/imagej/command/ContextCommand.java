@@ -37,20 +37,19 @@ package imagej.command;
 
 import imagej.AbstractContextual;
 import imagej.ImageJ;
-import imagej.plugin.PluginService;
 import imagej.plugin.ServicePreprocessor;
 
 /**
  * A command that knows its context. Its service parameters are
  * automatically populated at construction, to make it easier to use via Java
- * API calls (i.e., without invoking it via {@link PluginService#run}). This
- * improves compile-time safety of downstream code that calls the plugin.
+ * API calls (i.e., without invoking it via {@link CommandService#run}). This
+ * improves compile-time safety of downstream code that calls the command.
  * <p>
- * Here is an example plugin execution using {@link PluginService#run}:
+ * Here is an example command execution using {@link CommandService#run}:
  * </p>
  * <pre>
  * Future&lt;CommandModule&lt;FindEdges&gt;&gt; future =
- *   pluginService.run(findEdges.class, &quot;display&quot;, myDisplay);
+ *   commandService.run(findEdges.class, &quot;display&quot;, myDisplay);
  * CommandModule&lt;FindEdges&gt; module = future.get(); // block till complete
  * ImageDisplay outDisplay = (ImageDisplay) module.getOutput(&quot;display&quot;);
  * </pre>
@@ -60,7 +59,7 @@ import imagej.plugin.ServicePreprocessor;
  * get automatically populated by the {@link ServicePreprocessor}.
  * </p>
  * <p>
- * Here is the same plugin execution via direct Java calls:
+ * Here is the same command execution via direct Java calls:
  * </p>
  * <pre>
  * FindEdges findEdges = new FindEdges();
@@ -78,7 +77,7 @@ import imagej.plugin.ServicePreprocessor;
  * That said, there are times when you cannot extend a particular class (usually
  * because you must extend a different class instead). In that case, you can
  * still implement the {@link Command} interface and end up with a
- * perfectly serviceable plugin. The consequence is only that other Java
+ * perfectly serviceable command. The consequence is only that other Java
  * programmers will not be able to use the latter paradigm above to invoke your
  * code in a fully compile-time-safe way.
  * 
@@ -95,23 +94,12 @@ public abstract class ContextCommand extends AbstractContextual implements
 		super.setContext(context);
 
 		// populate service parameters
-		final PluginService pluginService = context.getService(PluginService.class);
-		final CommandInfo<? extends ContextCommand> info =
-			pluginService.getCommand(getClass());
-		populateServices(info);
-	}
-
-	// -- Helper methods --
-
-	private <C extends Command> void populateServices(
-		final CommandInfo<C> info)
-	{
-		@SuppressWarnings("unchecked")
-		final C typedCommand = (C) this;
-		final CommandModule<C> module = new CommandModule<C>(info, typedCommand);
-		final ServicePreprocessor servicePreprocessor = new ServicePreprocessor();
-		servicePreprocessor.setContext(getContext());
-		servicePreprocessor.process(module);
+		final CommandService commandService =
+			context.getService(CommandService.class);
+		if (commandService == null) {
+			throw new IllegalArgumentException("Context has no command service");
+		}
+		commandService.populateServices(this);
 	}
 
 }

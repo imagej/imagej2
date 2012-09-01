@@ -56,16 +56,16 @@ public interface AppService extends Service {
 	/** Quits ImageJ. */
 	void quit();
 
-	/** Sets the plugin invoked when {@link #about()} is called. */
-	void setAboutHandler(Class<? extends Command> aboutPlugin);
+	/** Sets the command invoked when {@link #about()} is called. */
+	void setAboutHandler(Class<? extends Command> aboutCommand);
 
-	/** Sets the plugin invoked when {@link #showPrefs()} is called. */
-	void setPrefsHandler(Class<? extends Command> prefsPlugin);
+	/** Sets the command invoked when {@link #showPrefs()} is called. */
+	void setPrefsHandler(Class<? extends Command> prefsCommand);
 
-	/** Sets the plugin invoked when {@link #quit()} is called. */
-	void setQuitHandler(Class<? extends Command> quitPlugin);
+	/** Sets the command invoked when {@link #quit()} is called. */
+	void setQuitHandler(Class<? extends Command> quitCommand);
 
-	/** Gets the plugins associated with this service. */
+	/** Gets the commands associated with this service. */
 	List<Class<? extends Command>> getHandlers();
 
 }

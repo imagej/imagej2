@@ -39,6 +39,7 @@ import imagej.MenuEntry;
 import imagej.MenuPath;
 import imagej.command.Command;
 import imagej.command.CommandInfo;
+import imagej.command.CommandService;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.io.event.FileOpenedEvent;
@@ -49,7 +50,6 @@ import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.util.FileUtils;
@@ -99,7 +99,7 @@ public final class RecentFileService extends AbstractService {
 	private ModuleService moduleService;
 
 	@Parameter
-	private PluginService pluginService;
+	private CommandService commandService;
 
 	private List<String> recentFiles;
 	private Map<String, ModuleInfo> recentModules;
@@ -218,7 +218,7 @@ public final class RecentFileService extends AbstractService {
 
 		// use the same icon as File > Open
 		final CommandInfo<OpenImage> fileOpen =
-			pluginService.getCommand(OpenImage.class);
+			commandService.getCommand(OpenImage.class);
 		final String iconPath = fileOpen.getIconPath();
 		info.setIconPath(iconPath);
 

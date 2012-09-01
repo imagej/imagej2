@@ -35,8 +35,6 @@
 
 package imagej.plugin;
 
-import imagej.command.Command;
-import imagej.command.CommandInfo;
 import imagej.util.Log;
 
 import java.util.List;
@@ -97,33 +95,16 @@ public class DefaultPluginFinder implements PluginFinder {
 
 	// -- Helper methods --
 
-	private <P extends IPlugin> PluginInfo<P> createInfo(
-		final IndexItem<Plugin, IPlugin> item)
+	private PluginInfo<IPlugin>
+		createInfo(final IndexItem<Plugin, IPlugin> item)
 	{
 		final String className = item.className();
 		final Plugin plugin = item.annotation();
 
 		@SuppressWarnings("unchecked")
-		final Class<P> pluginType = (Class<P>) plugin.type();
+		final Class<IPlugin> pluginType = (Class<IPlugin>) plugin.type();
 
-		if (Command.class.isAssignableFrom(pluginType)) {
-			// TODO - Investigate a simpler way to handle this.
-			final CommandInfo<? extends Command> moduleInfo =
-				createModuleInfo(className, plugin);
-			@SuppressWarnings("unchecked")
-			final PluginInfo<P> result = (PluginInfo<P>) moduleInfo;
-			return result;
-		}
-		return new PluginInfo<P>(className, pluginType, plugin);
-	}
-
-	private <C extends Command> CommandInfo<C> createModuleInfo(
-		final String className, final Plugin plugin)
-	{
-		@SuppressWarnings("unchecked")
-		final Class<C> pluginType = (Class<C>) plugin.type();
-
-		return new CommandInfo<C>(className, pluginType, plugin);
+		return new PluginInfo<IPlugin>(className, pluginType, plugin);
 	}
 
 }

@@ -33,61 +33,28 @@
  * #L%
  */
 
-package imagej.io.plugins;
+package imagej.plugin.event;
 
-import imagej.command.CommandService;
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+import imagej.object.event.ListEvent;
+import imagej.plugin.PluginInfo;
+import imagej.plugin.PluginService;
 
-import java.io.File;
-import java.util.HashMap;
-
-import net.imglib2.img.ImgPlus;
+import java.util.Collection;
 
 /**
- * Saves the current {@link Dataset} to disk.
+ * An event indicating something has happened to the list of plugins registered
+ * with the {@link PluginService}.
  * 
- * @author Barry DeZonia
- * @author Mark Hiner
+ * @author Curtis Rueden
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
-		mnemonic = MenuConstants.FILE_MNEMONIC),
-	@Menu(label = "Save", weight = 20, mnemonic = 's') })
-public class SaveImage extends ContextCommand {
+public abstract class PluginsListEvent extends ListEvent<PluginInfo<?>> {
 
-	@Parameter
-	private CommandService commandService;
-
-	@Parameter
-	private Dataset dataset;
-
-	@Override
-	public void run() {
-		final HashMap<String, Object> inputMap = new HashMap<String, Object>();
-		inputMap.put("dataset", dataset);
-
-		final ImgPlus<?> img = dataset.getImgPlus();
-		final String source = img.getSource();
-
-		final File sourceFile = source.isEmpty() ? null : new File(source);
-
-		if (sourceFile != null && sourceFile.isFile()) {
-			inputMap.put("outputFile", new File(source));
-		}
-		commandService.run(SaveAsImage.class, inputMap);
+	public PluginsListEvent(final PluginInfo<?> o) {
+		super(o);
 	}
-	
-	public void setDataset(Dataset d) {
-		dataset = d;
-	}
-	
-	public Dataset getDataset() {
-		return dataset;
+
+	public PluginsListEvent(final Collection<? extends PluginInfo<?>> c) {
+		super(c);
 	}
 
 }

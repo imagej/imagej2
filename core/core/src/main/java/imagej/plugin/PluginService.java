@@ -35,18 +35,10 @@
 
 package imagej.plugin;
 
-import imagej.command.Command;
-import imagej.command.CommandInfo;
-import imagej.command.CommandModule;
-import imagej.module.Module;
-import imagej.module.ModuleInfo;
-import imagej.module.ModuleService;
 import imagej.service.Service;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Future;
 
 /**
  * Interface for service that keeps track of available plugins.
@@ -57,25 +49,20 @@ import java.util.concurrent.Future;
  * </p>
  * <p>
  * The default plugin service discovers available plugins on the classpath.
- * Plugins that are runnable as modules are reported to the
- * {@link ModuleService}.
  * </p>
  * <p>
- * A <em>plugin</em> is distinct from a <em>module</em> in that plugins extend
- * ImageJ's functionality in some way, taking many forms, whereas modules are
- * always runnable code with typed inputs and outputs. There is a particular
- * type of plugin called a {@link imagej.command.Command} which is
+ * A <em>plugin</em> is distinct from a {@link imagej.module.Module} in that
+ * plugins extend ImageJ's functionality in some way, taking many forms, whereas
+ * modules are always runnable code with typed inputs and outputs. There is a
+ * particular type of plugin called a {@link imagej.command.Command} which is
  * also a module, but many plugins (e.g., {@link imagej.tool.Tool}s and
  * {@link imagej.display.Display}s) are not modules.
  * </p>
  * 
  * @author Curtis Rueden
  * @see IPlugin
- * @see imagej.module.ModuleService
  */
 public interface PluginService extends Service {
-
-	ModuleService getModuleService();
 
 	/** Gets the index of available plugins. */
 	PluginIndex getIndex();
@@ -110,16 +97,16 @@ public interface PluginService extends Service {
 	PluginInfo<IPlugin> getPlugin(String className);
 
 	/**
-	 * Gets the list of plugins of the given type (e.g., {@link Command}).
+	 * Gets the list of plugins of the given type (e.g.,
+	 * {@link imagej.command.Command}).
 	 */
-	<P extends IPlugin> List<PluginInfo<? extends P>> getPluginsOfType(
-		Class<P> type);
+	<P extends IPlugin> List<PluginInfo<P>> getPluginsOfType(Class<P> type);
 
 	/**
 	 * Gets the list of plugins of the given class.
 	 * <p>
-	 * Most plugins will have only a single match, but some special plugin classes
-	 * (such as imagej.legacy.LegacyPlugin) may match many entries.
+	 * Most classes will have only a single match, but some special classes
+	 * (such as <code>imagej.legacy.LegacyPlugin</code>) may match many entries.
 	 * </p>
 	 */
 	<P extends IPlugin> List<PluginInfo<P>> getPluginsOfClass(
@@ -128,195 +115,31 @@ public interface PluginService extends Service {
 	/**
 	 * Gets the list of plugins with the given class name.
 	 * <p>
-	 * Most plugins will have only a single match, but some special plugin classes
-	 * (such as imagej.legacy.LegacyPlugin) may match many entries.
+	 * Most classes will have only a single match, but some special classes
+	 * (such as <code>imagej.legacy.LegacyPlugin</code>) may match many entries.
 	 * </p>
 	 */
 	List<PluginInfo<IPlugin>> getPluginsOfClass(String className);
 
-	/** Gets the list of executable plugins (i.e., {@link Command}s). */
-	List<CommandInfo<Command>> getCommands();
-
-	/**
-	 * Gets the first available executable plugin of the given class, or null if
-	 * none.
-	 */
-	<C extends Command> CommandInfo<C> getCommand(
-		Class<C> commandClass);
-
-	/**
-	 * Gets the first available executable plugin of the given class name, or null
-	 * if none.
-	 */
-	CommandInfo<Command> getCommand(String className);
-
-	/** Gets the list of executable plugins of the given type. */
-	<C extends Command> List<CommandInfo<C>>
-		getCommandsOfType(Class<C> type);
-
-	/**
-	 * Gets the list of executable plugins of the given class.
-	 * <p>
-	 * Most plugins will have only a single match, but some special plugin classes
-	 * (such as imagej.legacy.LegacyPlugin) may match many entries.
-	 * </p>
-	 */
-	<C extends Command> List<CommandInfo<C>>
-		getCommandsOfClass(Class<C> commandClass);
-
-	/**
-	 * Gets the list of executable plugins with the given class name.
-	 * <p>
-	 * Most plugins will have only a single match, but some special plugin classes
-	 * (such as imagej.legacy.LegacyPlugin) may match many entries.
-	 * </p>
-	 */
-	List<CommandInfo<Command>> getCommandsOfClass(
-		String className);
-
 	/**
 	 * Creates one instance each of the available plugins of the given type.
 	 * <p>
-	 * Note that this method does <em>not</em> do any preprocessing on the plugin
-	 * instances, so parameters will not be auto-populated, initializers will not
-	 * be executed, etc.
+	 * Note that in the case of commands, this method does <em>not</em> do any
+	 * preprocessing on the command instances, so parameters will not be
+	 * auto-populated, initializers will not be executed, etc.
 	 * </p>
 	 */
-	<P extends IPlugin> List<? extends P> createInstancesOfType(Class<P> type);
+	<P extends IPlugin> List<P> createInstancesOfType(Class<P> type);
 
 	/**
 	 * Creates an instance of each of the plugins on the given list.
 	 * <p>
-	 * Note that this method does <em>not</em> do any preprocessing on the plugin
-	 * instances, so parameters will not be auto-populated, initializers will not
-	 * be executed, etc.
+	 * Note that in the case of commands, this method does <em>not</em> do any
+	 * preprocessing on the command instances, so parameters will not be
+	 * auto-populated, initializers will not be executed, etc.
 	 * </p>
 	 */
 	<P extends IPlugin> List<? extends P> createInstances(
 		List<PluginInfo<? extends P>> infos);
-
-	/**
-	 * Executes the first command of the given class name.
-	 * 
-	 * @param className Class name of the command to execute.
-	 * @param inputs List of input parameter names and values. The expected order
-	 *          is in pairs: an input name followed by its value, for each desired
-	 *          input to populate. Leaving some inputs unpopulated is allowed.
-	 *          Passing the name of an input that is not valid for the plugin, or
-	 *          passing a value of a type incompatible with the associated input
-	 *          parameter, will issue an error and ignore that name/value pair.
-	 * @return {@link Future} of the module instance being executed. Calling
-	 *         {@link Future#get()} will block until execution is complete.
-	 */
-	Future<Module> run(String className, Object... inputs);
-
-	/**
-	 * Executes the first command of the given class name.
-	 * 
-	 * @param className Class name of the command to execute.
-	 * @param inputMap Table of input parameter values, with keys matching the
-	 *          plugin's input parameter names. Passing a value of a type
-	 *          incompatible with the associated input parameter will issue an
-	 *          error and ignore that value.
-	 * @return {@link Future} of the module instance being executed. Calling
-	 *         {@link Future#get()} will block until execution is complete.
-	 */
-	Future<Module> run(String className, Map<String, Object> inputMap);
-
-	/**
-	 * Executes the first command of the given class.
-	 * 
-	 * @param <C> Class of the command to execute.
-	 * @param commandClass Class object of the command to execute.
-	 * @param inputs List of input parameter names and values. The expected order
-	 *          is in pairs: an input name followed by its value, for each desired
-	 *          input to populate. Leaving some inputs unpopulated is allowed.
-	 *          Passing the name of an input that is not valid for the plugin, or
-	 *          passing a value of a type incompatible with the associated input
-	 *          parameter, will issue an error and ignore that name/value pair.
-	 * @return {@link Future} of the module instance being executed. Calling
-	 *         {@link Future#get()} will block until execution is complete.
-	 */
-	<C extends Command> Future<CommandModule<C>> run(Class<C> commandClass,
-		Object... inputs);
-
-	/**
-	 * Executes the first command of the given class.
-	 * 
-	 * @param <C> Class of the command to execute.
-	 * @param commandClass Class object of the command to execute.
-	 * @param inputMap Table of input parameter values, with keys matching the
-	 *          plugin's input parameter names. Passing a value of a type
-	 *          incompatible with the associated input parameter will issue an
-	 *          error and ignore that value.
-	 * @return {@link Future} of the module instance being executed. Calling
-	 *         {@link Future#get()} will block until execution is complete.
-	 */
-	<C extends Command> Future<CommandModule<C>> run(Class<C> commandClass,
-		Map<String, Object> inputMap);
-
-	/**
-	 * Executes the given module, with pre- and postprocessing steps from all
-	 * available {@link PreprocessorPlugin}s and {@link PostprocessorPlugin}s in
-	 * the plugin index.
-	 * 
-	 * @param info The module to instantiate and run.
-	 * @param inputs List of input parameter names and values. The expected order
-	 *          is in pairs: an input name followed by its value, for each desired
-	 *          input to populate. Leaving some inputs unpopulated is allowed.
-	 *          Passing the name of an input that is not valid for the plugin, or
-	 *          passing a value of a type incompatible with the associated input
-	 *          parameter, will issue an error and ignore that name/value pair.
-	 * @return {@link Future} of the module instance being executed. Calling
-	 *         {@link Future#get()} will block until execution is complete.
-	 */
-	Future<Module> run(ModuleInfo info, Object... inputs);
-
-	/**
-	 * Executes the given module, with pre- and postprocessing steps from all
-	 * available {@link PreprocessorPlugin}s and {@link PostprocessorPlugin}s in
-	 * the plugin index.
-	 * 
-	 * @param info The module to instantiate and run.
-	 * @param inputMap Table of input parameter values, with keys matching the
-	 *          {@link ModuleInfo}'s input parameter names. Passing a value of a
-	 *          type incompatible with the associated input parameter will issue
-	 *          an error and ignore that value.
-	 * @return {@link Future} of the module instance being executed. Calling
-	 *         {@link Future#get()} will block until execution is complete.
-	 */
-	Future<Module> run(ModuleInfo info, Map<String, Object> inputMap);
-
-	/**
-	 * Executes the given module, with pre- and postprocessing steps from all
-	 * available {@link PreprocessorPlugin}s and {@link PostprocessorPlugin}s in
-	 * the plugin index.
-	 * 
-	 * @param module The module to run.
-	 * @param inputs List of input parameter names and values. The expected order
-	 *          is in pairs: an input name followed by its value, for each desired
-	 *          input to populate. Leaving some inputs unpopulated is allowed.
-	 *          Passing the name of an input that is not valid for the plugin, or
-	 *          passing a value of a type incompatible with the associated input
-	 *          parameter, will issue an error and ignore that name/value pair.
-	 * @return {@link Future} of the module instance being executed. Calling
-	 *         {@link Future#get()} will block until execution is complete.
-	 */
-	<M extends Module> Future<M> run(M module, Object... inputs);
-
-	/**
-	 * Executes the given module, with pre- and postprocessing steps from all
-	 * available {@link PreprocessorPlugin}s and {@link PostprocessorPlugin}s in
-	 * the plugin index.
-	 * 
-	 * @param module The module to run.
-	 * @param inputMap Table of input parameter values, with keys matching the
-	 *          module's {@link ModuleInfo}'s input parameter names. Passing a
-	 *          value of a type incompatible with the associated input parameter
-	 *          will issue an error and ignore that value.
-	 * @return {@link Future} of the module instance being executed. Calling
-	 *         {@link Future#get()} will block until execution is complete.
-	 */
-	<M extends Module> Future<M> run(M module, Map<String, Object> inputMap);
 
 }

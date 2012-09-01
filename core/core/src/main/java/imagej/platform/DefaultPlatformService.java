@@ -36,6 +36,7 @@
 package imagej.platform;
 
 import imagej.InstantiableException;
+import imagej.command.CommandService;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.log.LogService;
@@ -73,6 +74,9 @@ public final class DefaultPlatformService extends AbstractService implements
 	private PluginService pluginService;
 
 	@Parameter
+	private CommandService commandService;
+
+	@Parameter
 	private AppService appService;
 
 	/** Platform handlers applicable to this platform. */
@@ -88,6 +92,11 @@ public final class DefaultPlatformService extends AbstractService implements
 	@Override
 	public PluginService getPluginService() {
 		return pluginService;
+	}
+
+	@Override
+	public CommandService getCommandService() {
+		return commandService;
 	}
 
 	@Override

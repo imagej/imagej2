@@ -36,21 +36,21 @@
 package imagej.core.plugins.debug;
 
 import imagej.command.Command;
+import imagej.command.CommandService;
 import imagej.data.Dataset;
 import imagej.log.LogService;
 import imagej.module.Module;
 import imagej.module.ModuleService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginService;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
 
 /**
- * A test of {@link PluginService#run}. The source code demonstrates two
- * different ways of invoking a plugin programmatically: with a list of
+ * A test of {@link CommandService#run}. The source code demonstrates two
+ * different ways of invoking a command programmatically: with a list of
  * arguments, or by declaring them in a {@link Map}.
  * 
  * @author Grant Harris
@@ -66,7 +66,7 @@ public class InvokePluginTest implements Command {
 	private ModuleService moduleService;
 
 	@Parameter
-	private PluginService pluginService;
+	private CommandService commandService;
 
 	@Override
 	public void run() {
@@ -77,7 +77,7 @@ public class InvokePluginTest implements Command {
 	}
 
 	public Future<Module> invokeWithArgs() {
-		return pluginService.run("imagej.io.plugins.NewImage", "name", "Untitled",
+		return commandService.run("imagej.io.plugins.NewImage", "name", "Untitled",
 			"bitDepth", "8-bit", "signed", false, "floating", false, "fillType",
 			"Ramp", "width", 512, "height", 512);
 	}
@@ -91,7 +91,7 @@ public class InvokePluginTest implements Command {
 		inputMap.put("fillType", "Ramp");
 		inputMap.put("width", 512L);
 		inputMap.put("height", 512L);
-		return pluginService.run("imagej.io.plugins.NewImage", inputMap);
+		return commandService.run("imagej.io.plugins.NewImage", inputMap);
 	}
 
 }

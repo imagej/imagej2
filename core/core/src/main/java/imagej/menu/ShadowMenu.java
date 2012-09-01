@@ -39,13 +39,13 @@ import imagej.AbstractContextual;
 import imagej.ImageJ;
 import imagej.MenuEntry;
 import imagej.MenuPath;
+import imagej.command.CommandService;
 import imagej.event.EventService;
 import imagej.log.LogService;
 import imagej.menu.event.MenusAddedEvent;
 import imagej.menu.event.MenusRemovedEvent;
 import imagej.menu.event.MenusUpdatedEvent;
 import imagej.module.ModuleInfo;
-import imagej.plugin.PluginService;
 import imagej.util.ClassUtils;
 
 import java.lang.reflect.Array;
@@ -314,8 +314,8 @@ public class ShadowMenu extends AbstractContextual implements
 	@Override
 	public void run() {
 		if (moduleInfo == null) return; // no module to run
-		final PluginService ps = getContext().getService(PluginService.class);
-		if (ps != null) ps.run(moduleInfo);
+		final CommandService cs = getContext().getService(CommandService.class);
+		if (cs != null) cs.run(moduleInfo);
 	}
 
 	// -- Collection methods --

@@ -39,6 +39,7 @@ import com.apple.eawt.Application;
 
 import imagej.command.Command;
 import imagej.command.CommandInfo;
+import imagej.command.CommandService;
 import imagej.event.EventService;
 import imagej.module.ModuleInfo;
 import imagej.module.event.ModulesUpdatedEvent;
@@ -47,7 +48,6 @@ import imagej.platform.AppService;
 import imagej.platform.Platform;
 import imagej.platform.PlatformService;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginService;
 
 import java.io.IOException;
 import java.net.URL;
@@ -127,7 +127,7 @@ public class MacOSXPlatform extends AbstractPlatform {
 
 	private void removeAppPluginsFromMenu() {
 		final EventService eventService = platformService.getEventService();
-		final PluginService pluginService = platformService.getPluginService();
+		final CommandService commandService = platformService.getCommandService();
 		final AppService appEventService = platformService.getAppService();
 
 		// get the list of plugins being handled at the application level
@@ -139,7 +139,7 @@ public class MacOSXPlatform extends AbstractPlatform {
 		final ArrayList<ModuleInfo> infos = new ArrayList<ModuleInfo>();
 		for (final Class<? extends Command> plugin : plugins) {
 			final CommandInfo<? extends Command> info =
-				pluginService.getCommand(plugin);
+				commandService.getCommand(plugin);
 			info.setMenuPath(null);
 			infos.add(info);
 		}

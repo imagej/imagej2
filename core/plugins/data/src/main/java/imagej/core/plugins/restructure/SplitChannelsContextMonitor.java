@@ -36,6 +36,7 @@
 package imagej.core.plugins.restructure;
 
 import imagej.command.CommandInfo;
+import imagej.command.CommandService;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.event.DataRestructuredEvent;
@@ -44,7 +45,6 @@ import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import net.imglib2.meta.Axes;
@@ -61,7 +61,7 @@ public class SplitChannelsContextMonitor extends AbstractService {
 	private EventService eventService;
 
 	@Parameter
-	private PluginService pluginService;
+	private CommandService commandService;
 
 	@Parameter
 	private ImageDisplayService imageDisplayService;
@@ -116,7 +116,7 @@ public class SplitChannelsContextMonitor extends AbstractService {
 
 	private void setContextAppropriate(final boolean enabled) {
 		final CommandInfo<SplitChannelsContext> info =
-			pluginService.getCommand(SplitChannelsContext.class);
+			commandService.getCommand(SplitChannelsContext.class);
 		info.setEnabled(enabled);
 		info.update(eventService); // TODO: Is this needed here?
 	}

@@ -38,6 +38,7 @@ package imagej.legacy;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
+import imagej.command.CommandService;
 import imagej.core.options.OptionsMisc;
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
@@ -104,6 +105,9 @@ public final class LegacyService extends AbstractService {
 	private PluginService pluginService;
 
 	@Parameter
+	private CommandService commandService;
+
+	@Parameter
 	private OptionsService optionsService;
 
 	@Parameter
@@ -160,7 +164,7 @@ public final class LegacyService extends AbstractService {
 		final Map<String, Object> inputMap = new HashMap<String, Object>();
 		inputMap.put("className", ij1ClassName);
 		inputMap.put("arg", arg);
-		pluginService.run(LegacyPlugin.class, inputMap);
+		commandService.run(LegacyPlugin.class, inputMap);
 	}
 
 	/**

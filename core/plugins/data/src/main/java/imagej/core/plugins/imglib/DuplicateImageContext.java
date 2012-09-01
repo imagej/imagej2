@@ -36,10 +36,10 @@
 package imagej.core.plugins.imglib;
 
 import imagej.command.Command;
+import imagej.command.CommandService;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginService;
 
 /**
  * Context menu plugin for Duplicate command.
@@ -51,16 +51,16 @@ import imagej.plugin.PluginService;
 	headless = true)
 public class DuplicateImageContext implements Command {
 
-	// -- Plugin parameters --
+	// -- Parameters --
 
 	@Parameter
-	private PluginService pluginService;
+	private CommandService commandService;
 
-	// -- Command methods --
+	// -- Runnable methods --
 
 	@Override
 	public void run() {
-		pluginService.run(DuplicateImage.class);
+		commandService.run(DuplicateImage.class);
 	}
 
 }

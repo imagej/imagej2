@@ -35,8 +35,8 @@
 
 package imagej.core.tools;
 
+import imagej.command.CommandService;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginService;
 import imagej.tool.Tool;
 
 /**
@@ -56,9 +56,9 @@ public class PencilTool extends AbstractLineTool {
 
 	@Override
 	public void configure() {
-		final PluginService pluginService =
-			getContext().getService(PluginService.class);
-		pluginService.run(PencilToolConfigPlugin.class, "tool", this);
+		final CommandService commandService =
+			getContext().getService(CommandService.class);
+		commandService.run(PencilToolConfigPlugin.class, "tool", this);
 	}
 
 }

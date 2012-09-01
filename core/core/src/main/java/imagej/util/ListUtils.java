@@ -33,61 +33,28 @@
  * #L%
  */
 
-package imagej.io.plugins;
+// File path shortening code adapted from:
+// from: http://www.rgagnon.com/javadetails/java-0661.html
 
-import imagej.command.CommandService;
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+package imagej.util;
 
-import java.io.File;
-import java.util.HashMap;
-
-import net.imglib2.img.ImgPlus;
+import java.util.List;
 
 /**
- * Saves the current {@link Dataset} to disk.
+ * Useful methods for working with {@link List}s.
  * 
- * @author Barry DeZonia
- * @author Mark Hiner
+ * @author Curtis Rueden
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
-		mnemonic = MenuConstants.FILE_MNEMONIC),
-	@Menu(label = "Save", weight = 20, mnemonic = 's') })
-public class SaveImage extends ContextCommand {
+public final class ListUtils {
 
-	@Parameter
-	private CommandService commandService;
-
-	@Parameter
-	private Dataset dataset;
-
-	@Override
-	public void run() {
-		final HashMap<String, Object> inputMap = new HashMap<String, Object>();
-		inputMap.put("dataset", dataset);
-
-		final ImgPlus<?> img = dataset.getImgPlus();
-		final String source = img.getSource();
-
-		final File sourceFile = source.isEmpty() ? null : new File(source);
-
-		if (sourceFile != null && sourceFile.isFile()) {
-			inputMap.put("outputFile", new File(source));
-		}
-		commandService.run(SaveAsImage.class, inputMap);
+	private ListUtils() {
+		// prevent instantiation of utility class
 	}
-	
-	public void setDataset(Dataset d) {
-		dataset = d;
-	}
-	
-	public Dataset getDataset() {
-		return dataset;
+
+	/** Gets the first element of the given list, or null if none. */
+	public static <T> T first(final List<T> list) {
+		if (list == null || list.size() == 0) return null;
+		return list.get(0);
 	}
 
 }

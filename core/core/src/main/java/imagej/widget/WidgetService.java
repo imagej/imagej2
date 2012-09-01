@@ -66,10 +66,10 @@ public class WidgetService extends AbstractService {
 	/** Creates a widget that represents the given widget model. */
 	public InputWidget<?, ?> createWidget(final WidgetModel model) {
 		@SuppressWarnings("rawtypes")
-		final List<PluginInfo<? extends InputWidget>> infos =
+		final List<PluginInfo<InputWidget>> infos =
 			pluginService.getPluginsOfType(InputWidget.class);
 		for (@SuppressWarnings("rawtypes")
-		final PluginInfo<? extends InputWidget> info : infos)
+		final PluginInfo<InputWidget> info : infos)
 		{
 			final InputWidget<?, ?> widget;
 			try {

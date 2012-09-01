@@ -37,6 +37,7 @@ package imagej.options;
 
 import imagej.InstantiableException;
 import imagej.command.CommandInfo;
+import imagej.command.CommandService;
 import imagej.event.EventService;
 import imagej.log.LogService;
 import imagej.module.Module;
@@ -80,6 +81,9 @@ public class DefaultOptionsService extends AbstractService implements
 	@Parameter
 	private PluginService pluginService;
 
+	@Parameter
+	private CommandService commandService;
+
 	// -- OptionsService methods --
 
 	@Override
@@ -95,7 +99,7 @@ public class DefaultOptionsService extends AbstractService implements
 	@Override
 	public List<OptionsPlugin> getOptions() {
 		// get the list of available options plugins
-		final List<PluginInfo<? extends OptionsPlugin>> infos =
+		final List<PluginInfo<OptionsPlugin>> infos =
 			pluginService.getPluginsOfType(OptionsPlugin.class);
 
 		// instantiate one instance of each options plugin
@@ -220,7 +224,7 @@ public class DefaultOptionsService extends AbstractService implements
 		final Class<O> optionsClass)
 	{
 		final CommandInfo<O> info =
-			pluginService.getCommand(optionsClass);
+			commandService.getCommand(optionsClass);
 		if (info == null) {
 			log.error("No such options class: " + optionsClass.getName());
 		}
@@ -230,7 +234,7 @@ public class DefaultOptionsService extends AbstractService implements
 	private CommandInfo<OptionsPlugin>
 		getOptionsInfo(final String className)
 	{
-		final CommandInfo<?> info = pluginService.getCommand(className);
+		final CommandInfo<?> info = commandService.getCommand(className);
 		if (info == null) {
 			log.error("No such options class: " + className);
 			return null;

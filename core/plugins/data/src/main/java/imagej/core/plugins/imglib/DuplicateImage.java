@@ -68,7 +68,7 @@ import net.imglib2.meta.AxisType;
 	headless = true, initializer = "initializer")
 public class DuplicateImage extends DynamicCommand implements Cancelable {
 
-	// -- Plugin parameters --
+	// -- Parameters --
 
 	@Parameter
 	private SamplerService samplerService;

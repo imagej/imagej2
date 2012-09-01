@@ -36,12 +36,12 @@
 package imagej.updater.gui;
 
 import imagej.ImageJ;
+import imagej.command.CommandService;
 import imagej.event.StatusService;
 import imagej.log.LogService;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginService;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FilesCollection;
@@ -103,7 +103,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 	private UploaderService uploaderService;
 
 	@Parameter
-	private PluginService pluginService;
+	private CommandService commandService;
 
 	@Override
 	public void run() {
@@ -175,13 +175,13 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 			return;
 		}
 
-		if (Installer.isTheUpdaterUpdateable(files, pluginService)) {
+		if (Installer.isTheUpdaterUpdateable(files, commandService)) {
 			if (SwingTools.showQuestion(main, "Update the updater",
 				"There is an update available for the Updater. Install now?"))
 			{
 				try {
 					// download just the updater
-					Installer.updateTheUpdater(files, main.getProgress("Installing the updater..."), pluginService);
+					Installer.updateTheUpdater(files, main.getProgress("Installing the updater..."), commandService);
 				}
 				catch (final UpdateCanceledException e) {
 					main.error("Canceled");
@@ -194,7 +194,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 
 				// make a class path using the updated files
 				final List<URL> classPath = new ArrayList<URL>();
-				for (FileObject component : Installer.getUpdaterFiles(files, pluginService, false)) {
+				for (FileObject component : Installer.getUpdaterFiles(files, commandService, false)) {
 					final String name = component.getLocalFilename(false);
 					File file = files.prefix(name);
 					try {

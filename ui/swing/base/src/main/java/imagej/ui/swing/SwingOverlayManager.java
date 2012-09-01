@@ -36,6 +36,7 @@
 package imagej.ui.swing;
 
 import imagej.ImageJ;
+import imagej.command.CommandService;
 import imagej.core.plugins.display.Flatten;
 import imagej.core.plugins.overlay.SelectedManagerOverlayProperties;
 import imagej.core.plugins.overlay.SelectionSpecify;
@@ -61,7 +62,6 @@ import imagej.event.EventSubscriber;
 import imagej.log.LogService;
 import imagej.options.OptionsService;
 import imagej.platform.PlatformService;
-import imagej.plugin.PluginService;
 import imagej.ui.UIService;
 import imagej.util.Prefs;
 
@@ -592,9 +592,9 @@ public class SwingOverlayManager
 		final ImageDisplayService ids = context.getService(ImageDisplayService.class);
 		final ImageDisplay imageDisplay = ids.getActiveImageDisplay();
 		if (imageDisplay == null) return;
-		UIService uiService = context.getService(UIService.class);
-		PluginService ps = context.getService(PluginService.class);
-		ps.run(Flatten.class, "uiService", uiService, "display", imageDisplay);
+		final UIService uiService = context.getService(UIService.class);
+		final CommandService cs = context.getService(CommandService.class);
+		cs.run(Flatten.class, "uiService", uiService, "display", imageDisplay);
 	}
 	
 	private void help() {
@@ -726,8 +726,8 @@ public class SwingOverlayManager
 		final ImageDisplayService ids = context.getService(ImageDisplayService.class);
 		final ImageDisplay imageDisplay = ids.getActiveImageDisplay();
 		if (imageDisplay == null) return;
-		PluginService ps = context.getService(PluginService.class);
-		ps.run(SelectionSpecify.class, "context", context, "display", imageDisplay);
+		final CommandService cs = context.getService(CommandService.class);
+		cs.run(SelectionSpecify.class, "context", context, "display", imageDisplay);
 	}
 	
 	/*
@@ -1150,8 +1150,8 @@ public class SwingOverlayManager
 	private void runPropertiesPlugin() {
 		final Map<String, Object> inputMap = new HashMap<String, Object>();
 		inputMap.put("overlays", ovrSrv.getOverlayInfo().selectedOverlays());
-		PluginService pluginService = context.getService(PluginService.class);
-		pluginService.run(SelectedManagerOverlayProperties.class, inputMap);
+		final CommandService commandService = context.getService(CommandService.class);
+		commandService.run(SelectedManagerOverlayProperties.class, inputMap);
 	}
 
 	private ChannelCollection getChannels() {

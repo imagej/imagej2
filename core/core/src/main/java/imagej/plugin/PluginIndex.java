@@ -75,18 +75,18 @@ public class PluginIndex extends SortedObjectIndex<PluginInfo<?>> {
 	 * This method is more specific than {@link #get(Class)} since that method
 	 * returns only a <code>List&lt;PluginInfo&lt;?&gt;&gt;</code>, whereas this
 	 * one is guaranteed to return a
-	 * <code>List&lt;PluginInfo&lt;? extends P&gt;&gt;</code>.
+	 * <code>List&lt;PluginInfo&lt;P&gt;&gt;</code>.
 	 * </p>
 	 * 
 	 * @return Read-only list of registered objects of the given type, or an empty
 	 *         list if no such objects exist (this method never returns null).
 	 */
-	public <P extends IPlugin> List<PluginInfo<? extends P>> getPlugins(
+	public <P extends IPlugin> List<PluginInfo<P>> getPlugins(
 		final Class<P> type)
 	{
 		final List<PluginInfo<?>> list = get(type);
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final List<PluginInfo<? extends P>> result = (List) list;
+		final List<PluginInfo<P>> result = (List) list;
 		return result;
 	}
 

@@ -36,10 +36,10 @@
 package imagej.core.tools;
 
 import imagej.Priority;
+import imagej.command.CommandService;
 import imagej.display.event.input.KyPressedEvent;
 import imagej.input.KeyCode;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginService;
 import imagej.thread.ThreadService;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
@@ -74,9 +74,9 @@ public class KonamiHandler extends AbstractTool implements Runnable {
 				final ThreadService threadService =
 					getContext().getService(ThreadService.class);
 				threadService.run(this);
-				final PluginService pluginService =
-					getContext().getService(PluginService.class);
-				pluginService.run(PLUGIN);
+				final CommandService commandService =
+					getContext().getService(CommandService.class);
+				commandService.run(PLUGIN);
 			}
 		}
 		else index = 0;

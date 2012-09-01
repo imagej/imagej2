@@ -37,10 +37,10 @@ package imagej.updater.ui;
 
 import imagej.command.Command;
 import imagej.command.CommandInfo;
+import imagej.command.CommandService;
 import imagej.log.LogService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginService;
 import imagej.updater.core.UpToDate;
 import imagej.updater.core.UpdaterUIPlugin;
 import imagej.updater.util.Util;
@@ -60,7 +60,7 @@ public class UpdatesAvailable implements Command {
 			LATER = "Remind me later";
 
 	@Parameter
-	public PluginService pluginService;
+	public CommandService commandService;
 
 	@Parameter
 	public LogService log;
@@ -73,9 +73,9 @@ public class UpdatesAvailable implements Command {
 	public void run() {
 		if (updateAction.equals(YES)) {
 			final List<CommandInfo<UpdaterUIPlugin>> updaters =
-				pluginService.getCommandsOfType(UpdaterUIPlugin.class);
+				commandService.getCommandsOfType(UpdaterUIPlugin.class);
 			if (updaters.size() > 0) {
-				pluginService.run(updaters.get(0));
+				commandService.run(updaters.get(0));
 			}
 			else {
 				if (log == null) {
