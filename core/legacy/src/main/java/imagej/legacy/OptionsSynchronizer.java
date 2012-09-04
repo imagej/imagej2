@@ -192,6 +192,7 @@ public class OptionsSynchronizer {
 		OptionsChannels options = optionsService.getOptions(OptionsChannels.class);
 		options.setLastFgColor(fgColor, false);
 		options.setLastBgColor(bgColor, false);
+		options.save();
 	}
 	
 	private void compilerOptions() {

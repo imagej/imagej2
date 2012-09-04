@@ -40,11 +40,11 @@ import imagej.ext.plugin.Menu;
 import imagej.ext.plugin.Parameter;
 import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemVisibility;
 import imagej.options.OptionsPlugin;
 import imagej.options.event.OptionsEvent;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
+import imagej.util.Prefs;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -61,6 +61,13 @@ import java.util.List;
 	@Menu(label = "Channels...", weight = 9) })
 public class OptionsChannels extends OptionsPlugin {
 
+	private static final String LAST_FG_RED =   "lastFgColor.red";
+	private static final String LAST_FG_GREEN = "lastFgColor.green";
+	private static final String LAST_FG_BLUE =  "lastFgColor.blue";
+	private static final String LAST_BG_RED =   "lastBgColor.red";
+	private static final String LAST_BG_GREEN = "lastBgColor.green";
+	private static final String LAST_BG_BLUE =  "lastBgColor.blue";
+
 	// TODO - this should become a List<Double> when that widget is supported
 	@Parameter(label = "Foreground values")
 	private String fgValuesString = "255,255,255";
@@ -69,18 +76,8 @@ public class OptionsChannels extends OptionsPlugin {
 	@Parameter(label = "Background values")
 	private String bgValuesString = "0,0,0";
 
-	// TODO
-	// Ideally this would be truly invisible and persisted. We use it to
-	// set IJ1 colors to IJ2 values.
-	@Parameter(label = "Last foreground color",
-		visibility = ItemVisibility.MESSAGE)
 	private ColorRGB lastFgColor = Colors.WHITE;
 
-	// TODO
-	// Ideally this would be truly invisible and persisted. We use it to
-	// set IJ1 colors to IJ2 values.
-	@Parameter(label = "Last background color",
-		visibility = ItemVisibility.MESSAGE)
 	private ColorRGB lastBgColor = Colors.BLACK;
 
 	// -- instance variables that are not Parameters --
@@ -151,10 +148,25 @@ public class OptionsChannels extends OptionsPlugin {
 		super.load();
 		fgValues = decode(fgValuesString);
 		bgValues = decode(bgValuesString);
+		int r,g,b;
+		r = Prefs.getInt(getClass(), LAST_FG_RED, 255);
+		g = Prefs.getInt(getClass(), LAST_FG_GREEN, 255);
+		b = Prefs.getInt(getClass(), LAST_FG_BLUE, 255);
+		lastFgColor = new ColorRGB(r,g,b);
+		r = Prefs.getInt(getClass(), LAST_BG_RED, 0);
+		g = Prefs.getInt(getClass(), LAST_BG_GREEN, 0);
+		b = Prefs.getInt(getClass(), LAST_BG_BLUE, 0);
+		lastBgColor = new ColorRGB(r,g,b);
 	}
 
 	@Override
 	public void save() {
+		Prefs.put(getClass(), LAST_FG_RED,   lastFgColor.getRed());
+		Prefs.put(getClass(), LAST_FG_GREEN, lastFgColor.getGreen());
+		Prefs.put(getClass(), LAST_FG_BLUE,  lastFgColor.getBlue());
+		Prefs.put(getClass(), LAST_BG_RED,   lastBgColor.getRed());
+		Prefs.put(getClass(), LAST_BG_GREEN, lastBgColor.getGreen());
+		Prefs.put(getClass(), LAST_BG_BLUE,  lastBgColor.getBlue());
 		cleanStrings();
 		super.save();
 	}
