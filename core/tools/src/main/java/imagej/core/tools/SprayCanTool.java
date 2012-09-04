@@ -111,7 +111,7 @@ public class SprayCanTool extends AbstractTool {
 	public void configure() {
 		final CommandService commandService =
 			getContext().getService(CommandService.class);
-		commandService.run(SprayCanToolConfigPlugin.class, "tool", this);
+		commandService.run(SprayCanToolConfig.class, "tool", this);
 	}
 
 	public void setWidth(int width) { this.width = width; }

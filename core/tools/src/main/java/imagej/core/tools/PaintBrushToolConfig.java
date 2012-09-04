@@ -46,7 +46,7 @@ import imagej.plugin.Plugin;
  * @author Barry DeZonia
  */
 @Plugin(label = "Paintbrush Tool")
-public class PaintBrushToolConfigPlugin implements Command {
+public class PaintBrushToolConfig implements Command {
 
 	@Parameter(type = ItemIO.BOTH)
 	private PaintBrushTool tool;

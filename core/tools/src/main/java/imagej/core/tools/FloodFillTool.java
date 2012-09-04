@@ -87,7 +87,7 @@ public class FloodFillTool extends AbstractTool {
 	public void configure() {
 		final CommandService commandService =
 			getContext().getService(CommandService.class);
-		commandService.run(FloodFillToolConfigPlugin.class, "tool", this);
+		commandService.run(FloodFillToolConfig.class, "tool", this);
 	}
 
 	/** Run flood fill when mouse clicked */

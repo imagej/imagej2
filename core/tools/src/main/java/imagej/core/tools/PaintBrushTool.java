@@ -59,7 +59,7 @@ public class PaintBrushTool extends AbstractLineTool {
 	public void configure() {
 		final CommandService commandService =
 			getContext().getService(CommandService.class);
-		commandService.run(PaintBrushToolConfigPlugin.class, "tool", this);
+		commandService.run(PaintBrushToolConfig.class, "tool", this);
 	}
 
 }

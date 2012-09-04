@@ -41,41 +41,48 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
 /**
- * Implements the configuration code for {@link SprayCanTool}.
+ * Implements the configuration code for {@link FloodFillTool}.
  * 
  * @author Barry DeZonia
  */
-@Plugin(label = "Spray Can Tool", initializer = "initAll")
-public class SprayCanToolConfigPlugin implements Command {
+@Plugin(label = "Flood Fill Tool")
+public class FloodFillToolConfig implements Command {
+
+	// -- constants --
+
+	private static final String FOUR = "4-connected";
+	private static final String EIGHT = "8-connected";
+
+	// -- Parameters --
 
 	@Parameter(type = ItemIO.BOTH)
-	private SprayCanTool tool;
+	private FloodFillTool tool;
 
-	// TODO - it would be nice to persist these values but the associated
-	// tools cannot persist values. thus you get in a situation that the
-	// these values do not equal the tool's initial values which is
-	// confusing. Tools need to be able to persist some values to get around this.
+	// TODO - it would be nice to persist this. but the associated tool cannot
+	// persist values. thus you get in a situation that the dialog connectivity
+	// does not equal the tool's initial value which is confusing. Tools need to
+	// be able to persist some values to get around this.
 
-  @Parameter(label = "Spray Width (pixels):", min = "1", persist = false)
-  private int width;
+	@Parameter(label = "Flood Type:", choices = { EIGHT, FOUR },
+		initializer = "init", persist = false)
+	private String connectivity;
 
-  @Parameter(label = "Dot Size (pixels):", min = "1", persist = false)
-  private int dotSize;
-  
-  @Parameter(label = "Flow Rate (1-10):", min = "1", max = "10", persist=false)
-  private int rate;
-  
+	// -- public interface --
+
+	/** Configures the connectivity of the FloodFillTool */
 	@Override
 	public void run() {
-		tool.setWidth(width);
-		tool.setRate(rate);
-		tool.setDotSize(dotSize);
+		if (connectivity.equals(FOUR))
+			tool.setConnectivity(FloodFillTool.Connectivity.FOUR);
+		else tool.setConnectivity(FloodFillTool.Connectivity.EIGHT);
 	}
 
-	protected void initAll() {
-		width = tool.getWidth();
-		rate = tool.getRate();
-		dotSize = tool.getDotSize();
+	// -- initializer --
+
+	protected void init() {
+		final FloodFillTool.Connectivity neighCount = tool.getConnectivity();
+		if (neighCount.equals(FloodFillTool.Connectivity.FOUR)) connectivity = FOUR;
+		else connectivity = EIGHT;
 	}
 
 }

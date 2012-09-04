@@ -41,32 +41,41 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
 /**
- * Implements the configuration code for {@link PencilTool}.
+ * Implements the configuration code for {@link SprayCanTool}.
  * 
  * @author Barry DeZonia
  */
-@Plugin(label = "Pencil Tool")
-public class PencilToolConfigPlugin implements Command {
+@Plugin(label = "Spray Can Tool", initializer = "initAll")
+public class SprayCanToolConfig implements Command {
 
 	@Parameter(type = ItemIO.BOTH)
-	private PencilTool tool;
+	private SprayCanTool tool;
 
-	// TODO - it would be nice to persist this pencil width. but the associated
-	// tool cannot persist its own width. thus you get in a situation that the
-	// dialog pencil width does not equal the tool's initial value which is
+	// TODO - it would be nice to persist these values but the associated
+	// tools cannot persist values. thus you get in a situation that the
+	// these values do not equal the tool's initial values which is
 	// confusing. Tools need to be able to persist some values to get around this.
 
-	@Parameter(label = "Pencil Width (pixels)", min = "1", persist = false,
-		initializer = "init")
-	private long width;
+  @Parameter(label = "Spray Width (pixels):", min = "1", persist = false)
+  private int width;
 
+  @Parameter(label = "Dot Size (pixels):", min = "1", persist = false)
+  private int dotSize;
+  
+  @Parameter(label = "Flow Rate (1-10):", min = "1", max = "10", persist=false)
+  private int rate;
+  
 	@Override
 	public void run() {
-		tool.setLineWidth(width);
+		tool.setWidth(width);
+		tool.setRate(rate);
+		tool.setDotSize(dotSize);
 	}
 
-	protected void init() {
-		width = tool.getLineWidth();
+	protected void initAll() {
+		width = tool.getWidth();
+		rate = tool.getRate();
+		dotSize = tool.getDotSize();
 	}
 
 }
