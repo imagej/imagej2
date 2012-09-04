@@ -85,8 +85,8 @@ import net.imglib2.type.numeric.RealType;
 			mnemonic = MenuConstants.PROCESS_MNEMONIC),
 		@Menu(label = "Noise", mnemonic = 'n'),
 		@Menu(label = "Noise Reduction", weight = 4) })
-public class NoiseReductionPlugin<T extends RealType<T>> implements Command
-{
+public class NoiseReduction<T extends RealType<T>> implements Command {
+
 	// -- constants --
 	
 	private static final String MEDIAN = "Median";
