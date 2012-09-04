@@ -36,6 +36,7 @@
 package imagej.command;
 
 import imagej.InstantiableException;
+import imagej.Previewable;
 import imagej.event.EventService;
 import imagej.module.ItemVisibility;
 import imagej.module.Module;
@@ -46,7 +47,6 @@ import imagej.module.event.ModulesUpdatedEvent;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginInfo;
-import imagej.plugin.PreviewPlugin;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
 import imagej.util.StringMaker;
@@ -215,7 +215,7 @@ public class CommandInfo<C extends Command> extends PluginInfo<C>
 	public boolean canPreview() {
 		final Class<?> commandClass = loadCommandClass();
 		if (commandClass == null) return false;
-		return PreviewPlugin.class.isAssignableFrom(commandClass);
+		return Previewable.class.isAssignableFrom(commandClass);
 	}
 
 	@Override

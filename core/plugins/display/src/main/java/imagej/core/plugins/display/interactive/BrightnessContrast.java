@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.display.interactive;
 
+import imagej.Previewable;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
@@ -44,7 +45,6 @@ import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.PreviewPlugin;
 import imagej.widget.WidgetStyle;
 
 import java.util.List;
@@ -68,7 +68,7 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Brightness/Contrast...", accelerator = "control shift C",
 		weight = 0) }, iconPath = "/icons/plugins/contrast.png", headless = true,
 	initializer = "initValues")
-public class BrightnessContrast extends ContextCommand implements PreviewPlugin {
+public class BrightnessContrast extends ContextCommand implements Previewable {
 
 	private static final int SLIDER_MIN = 0;
 	private static final int SLIDER_MAX = 100;
@@ -116,7 +116,7 @@ public class BrightnessContrast extends ContextCommand implements PreviewPlugin 
 		updateDisplay();
 	}
 
-	// -- PreviewPlugin methods --
+	// -- Previewable methods --
 
 	@Override
 	public void preview() {

@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.debug;
 
+import imagej.Previewable;
 import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.event.StatusService;
@@ -43,7 +44,6 @@ import imagej.module.ItemIO;
 import imagej.module.ItemVisibility;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.PreviewPlugin;
 import imagej.util.ColorRGB;
 import imagej.widget.WidgetStyle;
 
@@ -57,7 +57,7 @@ import java.math.BigInteger;
  * @author Curtis Rueden
  */
 @Plugin(menuPath = "Plugins>Debug>Parameter Tester", headless = true)
-public class ParameterTester implements Command, PreviewPlugin {
+public class ParameterTester implements Command, Previewable {
 
 	@Parameter
 	private LogService log;

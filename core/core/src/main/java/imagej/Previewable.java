@@ -33,21 +33,21 @@
  * #L%
  */
 
-package imagej.plugin;
+package imagej;
 
 /**
- * A plugin capable of generating previews of its results.
+ * A operation whose results can be previewed.
  * 
  * @author Curtis Rueden
  */
-public interface PreviewPlugin {
+public interface Previewable {
 
-	/** Computes a preview of the plugin's results. */
+	/** Computes a preview of the operation's results. */
 	void preview();
 
 	/**
-	 * Does whatever is necessary upon plugin cancelation to reset things back to
-	 * before the plugin was executed.
+	 * Does whatever is necessary upon cancelation to reset things back to before
+	 * the operation was executed.
 	 */
 	void cancel();
 

@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.assign;
 
+import imagej.Previewable;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.Position;
@@ -45,7 +46,6 @@ import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
-import imagej.plugin.PreviewPlugin;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.ops.function.real.PrimitiveDoubleArray;
@@ -62,7 +62,7 @@ import net.imglib2.type.numeric.RealType;
  */
 public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends ComplexType<O>>
 	extends ContextCommand
-	implements PreviewPlugin
+	implements Previewable
 {
 	// -- instance variables that are Parameters --
 

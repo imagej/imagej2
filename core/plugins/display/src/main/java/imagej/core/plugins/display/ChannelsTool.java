@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.display;
 
+import imagej.Previewable;
 import imagej.command.ContextCommand;
 import imagej.data.display.ColorMode;
 import imagej.data.display.DatasetView;
@@ -43,7 +44,6 @@ import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.PreviewPlugin;
 
 /**
  * Plugin that allows toggling between different color modes.
@@ -55,7 +55,7 @@ import imagej.plugin.PreviewPlugin;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Color"),
 	@Menu(label = "Channels Tool...", weight = -5) },
 	iconPath = "/icons/plugins/color_wheel.png", headless = true)
-public class ChannelsTool extends ContextCommand implements PreviewPlugin {
+public class ChannelsTool extends ContextCommand implements Previewable {
 
 	public static final String GRAYSCALE = "Grayscale";
 	public static final String COLOR = "Color";

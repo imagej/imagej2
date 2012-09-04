@@ -35,6 +35,7 @@
 
 package imagej.core.plugins.overlay;
 
+import imagej.Previewable;
 import imagej.command.ContextCommand;
 import imagej.data.options.OptionsOverlay;
 import imagej.data.overlay.Overlay;
@@ -42,7 +43,6 @@ import imagej.data.overlay.Overlay.ArrowStyle;
 import imagej.data.overlay.Overlay.LineStyle;
 import imagej.options.OptionsService;
 import imagej.plugin.Parameter;
-import imagej.plugin.PreviewPlugin;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 import imagej.widget.WidgetStyle;
@@ -58,7 +58,7 @@ import java.util.List;
  * @author Lee Kamentsky
  */
 public abstract class AbstractOverlayProperties
-	extends ContextCommand implements PreviewPlugin
+	extends ContextCommand implements Previewable
 {
 	static final private String solidLineStyle = "Solid";
 	static final private String dashLineStyle = "Dash";

@@ -37,10 +37,10 @@ package imagej.command;
 
 import imagej.Cancelable;
 import imagej.InstantiableException;
+import imagej.Previewable;
 import imagej.module.AbstractModule;
 import imagej.module.ModuleException;
 import imagej.plugin.PluginInfo;
-import imagej.plugin.PreviewPlugin;
 import imagej.util.ClassUtils;
 import imagej.util.Log;
 
@@ -93,24 +93,24 @@ public class CommandModule<C extends Command> extends AbstractModule
 
 	/**
 	 * Computes a preview of the command's results. For this method to do anything,
-	 * the command must implement the {@link PreviewPlugin} interface.
+	 * the command must implement the {@link Previewable} interface.
 	 */
 	@Override
 	public void preview() {
-		if (!(command instanceof PreviewPlugin)) return; // cannot preview
-		final PreviewPlugin previewPlugin = (PreviewPlugin) command;
+		if (!(command instanceof Previewable)) return; // cannot preview
+		final Previewable previewPlugin = (Previewable) command;
 		previewPlugin.preview();
 	}
 
 	/**
 	 * Cancels the command, undoing the effects of any calls to {@link #preview()}.
 	 * For this method to do anything, the command must implement the
-	 * {@link PreviewPlugin} interface.
+	 * {@link Previewable} interface.
 	 */
 	@Override
 	public void cancel() {
-		if (!(command instanceof PreviewPlugin)) return; // nothing to cancel
-		final PreviewPlugin previewPlugin = (PreviewPlugin) command;
+		if (!(command instanceof Previewable)) return; // nothing to cancel
+		final Previewable previewPlugin = (Previewable) command;
 		previewPlugin.cancel();
 	}
 
