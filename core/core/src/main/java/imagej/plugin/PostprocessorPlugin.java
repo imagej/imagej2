@@ -39,22 +39,24 @@ import imagej.Contextual;
 import imagej.module.ModulePostprocessor;
 
 /**
- * A plugin postprocessor defines a step that occurs immediately following the
- * actual execution of a plugin. Typically, a postprocessor does something with
- * the results of a plugin, such as displaying its outputs on screen.
+ * A postprocessor plugin defines a step that occurs immediately following the
+ * actual execution of a {@link imagej.module.Module}. Typically, a
+ * postprocessor does something with the results of a module, such as displaying
+ * its outputs on screen.
  * <p>
- * Plugin postprocessors discoverable at runtime must implement this interface
+ * Postprocessor plugins discoverable at runtime must implement this interface
  * and be annotated with @{@link Plugin} with {@link Plugin#type()} =
- * {@link PostprocessorPlugin}.class. While it possible to create a plugin
- * postprocessor merely by implementing this interface, it is encouraged to
- * instead extend {@link AbstractPostprocessorPlugin}, for convenience.
+ * {@link PostprocessorPlugin}.class. While it possible to create a
+ * postprocessor plugin merely by implementing this interface, it is encouraged
+ * to instead extend {@link AbstractPostprocessorPlugin}, for convenience.
  * </p>
  * 
  * @author Curtis Rueden
+ * @see ModulePostprocessor
  */
 public interface PostprocessorPlugin extends IPlugin, Contextual,
 	ModulePostprocessor
 {
-	// PostprocessorPlugin is a plugin postprocessor,
+	// PostprocessorPlugin is a module postprocessor,
 	// discoverable via the plugin discovery mechanism.
 }

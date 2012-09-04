@@ -37,8 +37,9 @@ package imagej.module;
 
 /**
  * A module postprocessor defines a step that occurs immediately following the
- * actual execution of a module. Typically, a postprocessor does something with
- * the results of a module, such as displaying its outputs on screen.
+ * actual execution of a {@link Module}. Typically, a postprocessor does
+ * something with the results of a module, such as displaying its outputs on
+ * screen.
  * 
  * @author Curtis Rueden
  */
