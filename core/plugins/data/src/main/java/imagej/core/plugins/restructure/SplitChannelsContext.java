@@ -62,13 +62,13 @@ public class SplitChannelsContext extends ContextCommand {
 	@Override
 	public void run() {
 		// TODO: Figure out why the parameter order is messed up and this fails:
-//		commandService.run("imagej.legacy.plugin.LegacyPlugin",
+//		commandService.run("imagej.legacy.plugin.LegacyCommand",
 //			"ij.plugin.ChannelSplitter");
 		final HashMap<String, Object> inputValues = new HashMap<String, Object>();
 		inputValues.put("className", "ij.plugin.ChannelSplitter");
-		commandService.run("imagej.legacy.plugin.LegacyPlugin", inputValues);
+		commandService.run("imagej.legacy.plugin.LegacyCommand", inputValues);
 		
-		// TODO - replace with LegacyService::reunLegacyPlugin() ?
+		// TODO - replace with LegacyService::reunLegacyCommand() ?
 	}
 
 }

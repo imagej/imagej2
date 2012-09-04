@@ -64,12 +64,12 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Executes an IJ1 plugin.
+ * Executes an ImageJ v1.x command.
  * 
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public class LegacyPlugin implements Command {
+public class LegacyCommand implements Command {
 
 	@Parameter
 	private String className;
@@ -95,7 +95,7 @@ public class LegacyPlugin implements Command {
 	@Parameter
 	private UIService uiService;
 
-	// -- LegacyPlugin methods --
+	// -- LegacyCommand methods --
 
 	/** Gets the list of output {@link ImageDisplay}s. */
 	public List<ImageDisplay> getOutputs() {
@@ -111,14 +111,14 @@ public class LegacyPlugin implements Command {
 
 		if (!isLegacyCompatible(activeDisplay)) {
 			final String err =
-				"The active dataset is too large to be represented inside IJ1.";
+				"The active dataset is not compatible with ImageJ v1.x.";
 			log.error(err);
 			notifyUser(err);
 			outputs = new ArrayList<ImageDisplay>();
 			return;
 		}
 
-		final LegacyPluginThread thread = new LegacyPluginThread();
+		final LegacyCommandThread thread = new LegacyCommandThread();
 
 		// enforce the desired order of thread execution
 		try {
@@ -146,7 +146,7 @@ public class LegacyPlugin implements Command {
 
 	// -- helper class --
 
-	private class LegacyPluginThread extends Thread {
+	private class LegacyCommandThread extends Thread {
 
 		final ThreadGroup group;
 		final LegacyImageMap map;
@@ -158,7 +158,7 @@ public class LegacyPlugin implements Command {
 		// in its own thread group. waitForPluginThreads() only waits for those
 		// threads in its group.
 
-		public LegacyPluginThread() {
+		public LegacyCommandThread() {
 			super(new ThreadGroup("plugin thread group"), "plugin thread");
 			this.group = getThreadGroup();
 			this.map = legacyService.getImageMap();
@@ -238,7 +238,7 @@ public class LegacyPlugin implements Command {
 		}
 
 		private void waitForPluginThreads() {
-			log.debug("LegacyPlugin: begin waitForPluginThreads()");
+			log.debug("LegacyCommand: begin waitForPluginThreads()");
 			while (true) {
 				boolean allDead = true;
 				final List<Thread> currentThreads = getCurrentThreads();
@@ -259,7 +259,7 @@ public class LegacyPlugin implements Command {
 				}
 				catch (final Exception e) {/**/}
 			}
-			log.debug("LegacyPlugin: end waitForPluginThreads()");
+			log.debug("LegacyCommand: end waitForPluginThreads()");
 		}
 
 		private List<Thread> getCurrentThreads() {
