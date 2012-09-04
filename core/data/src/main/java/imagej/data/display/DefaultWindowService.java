@@ -61,15 +61,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Service for keeping track of open windows, including management of the
- * Windows menu.
+ * Default service for keeping track of open windows, including management of
+ * the Windows menu.
  * 
  * @author Grant Harris
  */
 @Plugin(type = Service.class)
-public final class WindowMenuService extends AbstractService {
-
-	public static final int MAX_FILES_SHOWN = 10;
+public final class DefaultWindowService extends AbstractService implements
+	WindowService
+{
 
 	// max name width constants
 	private static final int MAX_LEADER_SIZE = 10;
@@ -94,21 +94,24 @@ public final class WindowMenuService extends AbstractService {
 
 	private int order = 1000;
 
-	// -- WindowMenuService methods --
+	// -- WindowService methods --
 
+	@Override
 	public MenuService getMenuService() {
 		return menuService;
 	}
 
+	@Override
 	public ModuleService getModuleService() {
 		return moduleService;
 	}
 
+	@Override
 	public EventService getEventService() {
 		return eventService;
 	}
 
-	/** Adds a path to the list of window files. */
+	@Override
 	public void add(final String displayName) {
 		final ModuleInfo info = windowModules.get(displayName);
 		if (info != null) { // already present
@@ -120,7 +123,7 @@ public final class WindowMenuService extends AbstractService {
 		}
 	}
 
-	/** Removes a path from the list of window files. */
+	@Override
 	public boolean remove(final String displayName) {
 		final ModuleInfo info = windowModules.remove(displayName);
 		if (info != null) {
@@ -129,14 +132,14 @@ public final class WindowMenuService extends AbstractService {
 		return openWindows.remove(displayName);
 	}
 
-	/** Clears the list of window files. */
+	@Override
 	public void clear() {
 		openWindows.clear();
 		moduleService.removeModules(windowModules.values());
 		windowModules.clear();
 	}
 
-	/** Gets the list of window files. */
+	@Override
 	public List<String> getOpenWindows() {
 		return Collections.unmodifiableList(openWindows);
 	}

@@ -33,67 +33,41 @@
  * #L%
  */
 
-package imagej.core.commands.app;
+package imagej.data.display;
 
-import imagej.command.Command;
-import imagej.data.display.WindowService;
-import imagej.event.StatusService;
-import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.ui.DialogPrompt;
-import imagej.ui.UIService;
+import imagej.event.EventService;
+import imagej.menu.MenuService;
+import imagej.module.ModuleService;
+import imagej.service.Service;
+
+import java.util.List;
 
 /**
- * Quits ImageJ.
+ * Interface for service that keeps track of open windows, including management
+ * of the Windows menu.
  * 
  * @author Grant Harris
- * @author Barry DeZonia
- * @author Curtis Rueden
  */
-@Plugin(label = "Quit", iconPath = "/icons/plugins/door_in.png", menu = {
-	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
-		mnemonic = MenuConstants.FILE_MNEMONIC),
-	@Menu(label = "Quit", weight = Double.MAX_VALUE, mnemonic = 'q',
-		accelerator = "^Q") }, headless = true)
-public class QuitProgram implements Command {
+public interface WindowService extends Service {
 
-	public static final String MESSAGE = "Quit ImageJ?";
+	int MAX_FILES_SHOWN = 10;
 
-	@Parameter
-	private StatusService statusService;
+	MenuService getMenuService();
 
-	@Parameter
-	private WindowService windowService;
+	ModuleService getModuleService();
 
-	@Parameter
-	private UIService uiService;
+	EventService getEventService();
 
-	@Override
-	public void run() {
-		if (windowService != null && windowService.getOpenWindows().size() > 0) {
-			if (!promptForQuit()) {
-				return;
-			}
+	/** Adds a path to the list of window files. */
+	void add(String displayName);
 
-			// TODO - save existing data
-			// TODO - close windows
-		}
-		// TODO - call ImageJ.getContext().shutdown() or some such, rather than
-		// using System.exit(0), which kills the entire JVM.
-		if (statusService != null) {
-			statusService.showStatus("Quitting...");
-		}
-		System.exit(0);
-	}
+	/** Removes a path from the list of window files. */
+	boolean remove(String displayName);
 
-	private boolean promptForQuit() {
-		final DialogPrompt.Result result =
-			uiService.showDialog(MESSAGE, "Quit",
-				DialogPrompt.MessageType.QUESTION_MESSAGE,
-				DialogPrompt.OptionType.YES_NO_OPTION);
-		return result == DialogPrompt.Result.YES_OPTION;
-	}
+	/** Clears the list of window files. */
+	void clear();
+
+	/** Gets the list of window files. */
+	List<String> getOpenWindows();
 
 }
