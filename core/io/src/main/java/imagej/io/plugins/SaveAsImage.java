@@ -35,19 +35,19 @@
 
 package imagej.io.plugins;
 
+import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.event.EventService;
 import imagej.event.StatusService;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.io.StatusDispatcher;
 import imagej.io.event.FileSavedEvent;
 import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.Result;
 import imagej.ui.UIService;
@@ -69,7 +69,7 @@ import net.imglib2.io.ImgSaver;
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Save As...", weight = 21) })
-public class SaveAsImage extends ContextPlugin {
+public class SaveAsImage extends ContextCommand {
 
 	@Parameter
 	private LogService log;

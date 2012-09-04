@@ -39,14 +39,14 @@ import ij.IJ;
 import ij.Menus;
 import imagej.MenuEntry;
 import imagej.MenuPath;
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.PluginInfo;
-import imagej.ext.plugin.PluginModuleInfo;
+import imagej.command.Command;
+import imagej.command.CommandInfo;
 import imagej.input.Accelerator;
 import imagej.input.InputModifiers;
 import imagej.input.KeyCode;
 import imagej.log.LogService;
 import imagej.menu.ShadowMenu;
+import imagej.plugin.PluginInfo;
 
 import java.awt.Menu;
 import java.awt.MenuBar;
@@ -76,7 +76,7 @@ import java.util.Set;
  */
 public class LegacyPluginFinder {
 
-	private static final String LEGACY_PLUGIN_CLASS = LegacyPlugin.class
+	private static final String LEGACY_PLUGIN_CLASS = LegacyCommand.class
 		.getName();
 
 	private static final String PLUGIN_BLACKLIST = "plugin-blacklist.txt";
@@ -85,7 +85,7 @@ public class LegacyPluginFinder {
 	private final LogService log;
 	private final ShadowMenu appMenu;
 
-	/** A list of plugins to exclude from legacy plugin discovery. */
+	/** A list of commands to exclude from legacy plugin discovery. */
 	private final Set<String> blacklist;
 
 	public LegacyPluginFinder(final LogService log, final ShadowMenu menu,
@@ -115,7 +115,7 @@ public class LegacyPluginFinder {
 		final Hashtable<?, ?> commands = Menus.getCommands();
 		final int startSize = plugins.size();
 		for (final Object key : commands.keySet()) {
-			final PluginInfo<RunnablePlugin> pe =
+			final PluginInfo<Command> pe =
 				createEntry(key, commands, menuTable);
 			if (pe != null) plugins.add(pe);
 		}
@@ -143,21 +143,21 @@ public class LegacyPluginFinder {
 		r.close();
 	}
 
-	private PluginInfo<RunnablePlugin> createEntry(final Object key,
+	private PluginInfo<Command> createEntry(final Object key,
 		final Hashtable<?, ?> commands, final Map<String, MenuPath> menuTable)
 	{
 		final String ij1PluginString = commands.get(key).toString();
 
-		// NB: Check whether legacy plugin is on the blacklist.
+		// NB: Check whether legacy command is on the blacklist.
 		final boolean blacklisted = blacklist.contains(ij1PluginString);
 
-		// NB: Check whether menu path is already taken by an ImageJ2 plugin.
-		// This allows transparent override of legacy plugins.
+		// NB: Check whether menu path is already taken by an ImageJ2 command.
+		// This allows transparent override of legacy commands.
 		final MenuPath menuPath = menuTable.get(key);
 		final boolean overridden = appMenu.getMenu(menuPath) != null;
 
 		if (log.isDebug()) {
-			// output discovery info for this legacy plugin
+			// output discovery info for this legacy command
 			final String status;
 			if (blacklisted && overridden) status = "[BLACKLISTED, OVERRIDDEN] ";
 			else if (blacklisted) status = "[BLACKLISTED] ";
@@ -179,14 +179,14 @@ public class LegacyPluginFinder {
 		final Map<String, Object> presets = new HashMap<String, Object>();
 		presets.put("className", className);
 		presets.put("arg", arg);
-		final PluginModuleInfo<RunnablePlugin> pe =
-			new PluginModuleInfo<RunnablePlugin>(LEGACY_PLUGIN_CLASS,
-				RunnablePlugin.class);
+		final CommandInfo<Command> pe =
+			new CommandInfo<Command>(LEGACY_PLUGIN_CLASS,
+				Command.class);
 		pe.setLabel(makeLabel(menuPath));
 		pe.setMenuPath(menuPath);
 		pe.setPresets(presets);
 
-		// flag legacy plugin with special icon
+		// flag legacy command with special icon
 		menuPath.getLeaf().setIconPath(LEGACY_PLUGIN_ICON);
 
 		return pe;

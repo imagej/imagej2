@@ -44,7 +44,7 @@ import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.event.EventHandler;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Plugin;
 import imagej.util.ColorRGB;
 
 import java.util.ArrayList;

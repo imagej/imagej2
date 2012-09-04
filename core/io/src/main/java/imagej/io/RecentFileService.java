@@ -37,19 +37,19 @@ package imagej.io;
 
 import imagej.MenuEntry;
 import imagej.MenuPath;
+import imagej.command.Command;
+import imagej.command.CommandInfo;
+import imagej.command.CommandService;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.PluginService;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.io.event.FileOpenedEvent;
 import imagej.io.event.FileSavedEvent;
 import imagej.io.plugins.OpenImage;
 import imagej.menu.MenuConstants;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.util.FileUtils;
@@ -99,7 +99,7 @@ public final class RecentFileService extends AbstractService {
 	private ModuleService moduleService;
 
 	@Parameter
-	private PluginService pluginService;
+	private CommandService commandService;
 
 	private List<String> recentFiles;
 	private Map<String, ModuleInfo> recentModules;
@@ -196,9 +196,9 @@ public final class RecentFileService extends AbstractService {
 
 	/** Creates a {@link ModuleInfo} to reopen data at the given path. */
 	private ModuleInfo createInfo(final String path) {
-		final PluginModuleInfo<RunnablePlugin> info =
-			new PluginModuleInfo<RunnablePlugin>("imagej.io.plugins.OpenImage",
-				RunnablePlugin.class);
+		final CommandInfo<Command> info =
+			new CommandInfo<Command>("imagej.io.plugins.OpenImage",
+				Command.class);
 
 		// hard code path to open as a preset
 		final HashMap<String, Object> presets = new HashMap<String, Object>();
@@ -217,8 +217,8 @@ public final class RecentFileService extends AbstractService {
 		leaf.setWeight(0); // TODO - do this properly
 
 		// use the same icon as File > Open
-		final PluginModuleInfo<OpenImage> fileOpen =
-			pluginService.getRunnablePlugin(OpenImage.class);
+		final CommandInfo<OpenImage> fileOpen =
+			commandService.getCommand(OpenImage.class);
 		final String iconPath = fileOpen.getIconPath();
 		info.setIconPath(iconPath);
 

@@ -35,9 +35,9 @@
 
 package imagej.options;
 
+import imagej.command.CommandInfo;
 import imagej.event.EventService;
-import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.PluginService;
+import imagej.plugin.PluginService;
 import imagej.service.Service;
 
 import java.util.List;
@@ -96,7 +96,7 @@ public interface OptionsService extends Service {
 	 * Sets the option with the given name, from the specified options plugin, to
 	 * the given value.
 	 */
-	<O extends OptionsPlugin> void setOption(PluginModuleInfo<O> info,
+	<O extends OptionsPlugin> void setOption(CommandInfo<O> info,
 		String name, Object value);
 
 }

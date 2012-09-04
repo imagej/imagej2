@@ -39,8 +39,8 @@ import imagej.display.event.input.KyPressedEvent;
 import imagej.display.event.input.KyReleasedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 

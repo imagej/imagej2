@@ -35,7 +35,7 @@
 
 package imagej.ui.pivot.widget;
 
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Plugin;
 import imagej.util.ColorRGB;
 import imagej.widget.ColorWidget;
 import imagej.widget.InputWidget;

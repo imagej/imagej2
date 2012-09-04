@@ -36,24 +36,24 @@
 package imagej.updater.gui;
 
 import imagej.ImageJ;
+import imagej.command.CommandService;
 import imagej.event.StatusService;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.Installer;
-import imagej.updater.core.UpdaterUIPlugin;
+import imagej.updater.core.UpdaterUI;
 import imagej.updater.core.UploaderService;
 import imagej.updater.gui.ViewOptions.Option;
-import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.Progress;
+import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
-import imagej.util.FileUtils;
+import imagej.util.AppUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,7 +66,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Updater. As plugin.
+ * The Updater. As a command.
  * <p>
  * Incidentally, this class can be used as an out-of-ImageJ entry point to the
  * updater, as it does not *require* a StatusService to run. Use this Beanshell
@@ -89,9 +89,9 @@ import java.util.List;
  * 
  * @author Johannes Schindelin
  */
-@Plugin(type = UpdaterUIPlugin.class, menu = { @Menu(label = "Help"),
+@Plugin(type = UpdaterUI.class, menu = { @Menu(label = "Help"),
 	@Menu(label = "Update...") })
-public class ImageJUpdater implements UpdaterUIPlugin {
+public class ImageJUpdater implements UpdaterUI {
 
 	@Parameter
 	private StatusService statusService;
@@ -103,7 +103,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 	private UploaderService uploaderService;
 
 	@Parameter
-	private PluginService pluginService;
+	private CommandService commandService;
 
 	@Override
 	public void run() {
@@ -121,7 +121,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 
 		if (errorIfDebian()) return;
 
-		final File imagejRoot = FileUtils.getBaseDirectory();
+		final File imagejRoot = AppUtils.getBaseDirectory();
 		final FilesCollection files = new FilesCollection(imagejRoot);
 		final UpdaterFrame main = new UpdaterFrame(log, uploaderService, files);
 		if (new File(imagejRoot, "update").exists()) {
@@ -175,13 +175,13 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 			return;
 		}
 
-		if (Installer.isTheUpdaterUpdateable(files, pluginService)) {
+		if (Installer.isTheUpdaterUpdateable(files, commandService)) {
 			if (SwingTools.showQuestion(main, "Update the updater",
 				"There is an update available for the Updater. Install now?"))
 			{
 				try {
 					// download just the updater
-					Installer.updateTheUpdater(files, main.getProgress("Installing the updater..."), pluginService);
+					Installer.updateTheUpdater(files, main.getProgress("Installing the updater..."), commandService);
 				}
 				catch (final UpdateCanceledException e) {
 					main.error("Canceled");
@@ -194,7 +194,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 
 				// make a class path using the updated files
 				final List<URL> classPath = new ArrayList<URL>();
-				for (FileObject component : Installer.getUpdaterFiles(files, pluginService, false)) {
+				for (FileObject component : Installer.getUpdaterFiles(files, commandService, false)) {
 					final String name = component.getLocalFilename(false);
 					File file = files.prefix(name);
 					try {
@@ -284,7 +284,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 			UpdaterUserInterface.get().error(message);
 			return true;
 		}
-		else return false;
+		return false;
 	}
 
 	protected static boolean moveOutOfTheWay(final File file) {

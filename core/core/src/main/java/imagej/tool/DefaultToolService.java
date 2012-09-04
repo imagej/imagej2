@@ -35,6 +35,7 @@
 
 package imagej.tool;
 
+import imagej.InstantiableException;
 import imagej.display.event.DisplayEvent;
 import imagej.display.event.input.KyPressedEvent;
 import imagej.display.event.input.KyReleasedEvent;
@@ -46,12 +47,11 @@ import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.ext.InstantiableException;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginInfo;
-import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginInfo;
+import imagej.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.tool.event.ToolActivatedEvent;
@@ -268,7 +268,7 @@ public class DefaultToolService extends AbstractService implements ToolService {
 
 	private void createTools() {
 		// discover available tools
-		final List<PluginInfo<? extends Tool>> toolEntries =
+		final List<PluginInfo<Tool>> toolEntries =
 			pluginService.getPluginsOfType(Tool.class);
 
 		// create tool instances
@@ -276,7 +276,7 @@ public class DefaultToolService extends AbstractService implements ToolService {
 		alwaysActiveToolList = new ArrayList<Tool>();
 		tools = new HashMap<String, Tool>();
 		toolList = new ArrayList<Tool>();
-		for (final PluginInfo<? extends Tool> info : toolEntries) {
+		for (final PluginInfo<Tool> info : toolEntries) {
 			final Tool tool;
 			try {
 				tool = info.createInstance();

@@ -36,11 +36,11 @@
 package imagej.core.options;
 
 import imagej.config.ConfigFileParameters;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.options.OptionsPlugin;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 
 /**
  * Runs the Edit::Options::Memory &amp; Threads dialog.
@@ -73,10 +73,6 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 	private final ConfigFileParameters params = new ConfigFileParameters();
 
 	// -- OptionsMemoryAndThreads methods --
-
-	public OptionsMemoryAndThreads() {
-		load(); // NB: Load persisted values *after* field initialization.
-	}
 
 	/** Loads the instance variable fields from persistent storage. */
 	@Override

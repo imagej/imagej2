@@ -37,20 +37,20 @@ package imagej.data.display;
 
 import imagej.MenuEntry;
 import imagej.MenuPath;
+import imagej.command.Command;
+import imagej.command.CommandInfo;
 import imagej.display.Display;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.menu.MenuConstants;
 import imagej.menu.MenuService;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
@@ -176,9 +176,9 @@ public final class WindowMenuService extends AbstractService {
 
 	/** Creates a {@link ModuleInfo} to reopen data at the given path. */
 	private ModuleInfo createInfo(final String displayName) {
-		final PluginModuleInfo<RunnablePlugin> info =
-			new PluginModuleInfo<RunnablePlugin>(SelectWindow.class.getName(),
-				RunnablePlugin.class);
+		final CommandInfo<Command> info =
+			new CommandInfo<Command>(SelectWindow.class.getName(),
+				Command.class);
 
 		// hard code path to open as a preset
 		final HashMap<String, Object> presets = new HashMap<String, Object>();
@@ -197,8 +197,8 @@ public final class WindowMenuService extends AbstractService {
 
 		// use the same icon as File > Open
 //		final PluginService pluginService = ImageJ.get(PluginService.class);
-//		final PluginModuleInfo<RunnablePlugin> fileOpen =
-//				pluginService.getRunnablePlugin("imagej.io.plugins.OpenImage");
+//		final CommandInfo<Command> fileOpen =
+//				pluginService.getCommand("imagej.io.plugins.OpenImage");
 //		final String iconPath = fileOpen.getIconPath();
 //		info.setIconPath(iconPath);
 //		leaf.setIconPath(iconPath);

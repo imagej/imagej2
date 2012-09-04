@@ -35,9 +35,9 @@
 
 package imagej.menu;
 
+import imagej.command.Command;
+import imagej.command.CommandService;
 import imagej.event.EventService;
-import imagej.ext.plugin.PluginService;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
 import imagej.service.Service;
@@ -51,7 +51,7 @@ public interface MenuService extends Service {
 
 	EventService getEventService();
 
-	PluginService getPluginService();
+	CommandService getCommandService();
 
 	/** Gets the root node of the application menu structure. */
 	ShadowMenu getMenu();
@@ -86,18 +86,18 @@ public interface MenuService extends Service {
 	void setSelected(Module module, boolean selected);
 
 	/** Selects or deselects the given plugin in the menu structure. */
-	void setSelected(RunnablePlugin plugin, boolean selected);
+	void setSelected(Command command, boolean selected);
 
 	/**
 	 * Selects or deselects the plugin of the given class in the menu structure.
 	 */
-	<R extends RunnablePlugin> void setSelected(Class<R> pluginClass,
+	<C extends Command> void setSelected(Class<C> commandClass,
 		boolean selected);
 
 	/**
 	 * Selects or deselects the plugin of the given class in the menu structure.
 	 */
-	<R extends RunnablePlugin> void setSelected(String pluginClassName,
+	<C extends Command> void setSelected(String pluginClassName,
 		boolean selected);
 
 	/** Selects or deselects the given module in the menu structure. */

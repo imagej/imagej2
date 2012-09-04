@@ -35,7 +35,7 @@
 
 package imagej.ui.swing.widget;
 
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Plugin;
 import imagej.util.ColorRGB;
 import imagej.util.awt.AWTColors;
 import imagej.widget.ColorWidget;

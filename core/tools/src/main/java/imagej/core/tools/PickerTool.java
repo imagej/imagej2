@@ -35,14 +35,14 @@
 
 package imagej.core.tools;
 
+import imagej.command.CommandService;
 import imagej.data.ChannelCollection;
 import imagej.data.options.OptionsChannels;
 import imagej.display.event.input.MsButtonEvent;
 import imagej.display.event.input.MsClickedEvent;
 import imagej.event.StatusService;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
 import imagej.options.OptionsService;
+import imagej.plugin.Plugin;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 
@@ -126,10 +126,10 @@ public class PickerTool extends AbstractTool {
 	
 	@Override
 	public void configure() {
-		final PluginService pluginService =
-				getContext().getService(PluginService.class);
+		final CommandService commandService =
+			getContext().getService(CommandService.class);
 		
-		pluginService.run(OptionsChannels.class);
+		commandService.run(OptionsChannels.class);
 	}
 	
 	// -- private interface --

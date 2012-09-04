@@ -35,7 +35,7 @@
 
 package imagej.ui.swing.widget;
 
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Plugin;
 import imagej.util.NumberUtils;
 import imagej.widget.InputWidget;
 import imagej.widget.NumberWidget;

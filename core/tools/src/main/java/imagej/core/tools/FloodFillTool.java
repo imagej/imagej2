@@ -35,6 +35,7 @@
 
 package imagej.core.tools;
 
+import imagej.command.CommandService;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.DrawingTool;
@@ -43,9 +44,8 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.options.OptionsChannels;
 import imagej.display.event.input.MsButtonEvent;
 import imagej.display.event.input.MsClickedEvent;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
 import imagej.options.OptionsService;
+import imagej.plugin.Plugin;
 import imagej.render.RenderingService;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
@@ -85,9 +85,9 @@ public class FloodFillTool extends AbstractTool {
 	/** Implements the configuration of this tool. */
 	@Override
 	public void configure() {
-		final PluginService pluginService =
-			getContext().getService(PluginService.class);
-		pluginService.run(FloodFillToolConfigPlugin.class, "tool", this);
+		final CommandService commandService =
+			getContext().getService(CommandService.class);
+		commandService.run(FloodFillToolConfig.class, "tool", this);
 	}
 
 	/** Run flood fill when mouse clicked */

@@ -37,11 +37,11 @@ package imagej.data.display;
 
 import imagej.Priority;
 import imagej.data.Dataset;
-import imagej.ext.plugin.Plugin;
 import imagej.module.Module;
 import imagej.module.ModuleItem;
 import imagej.module.ModuleService;
 import imagej.plugin.AbstractPreprocessorPlugin;
+import imagej.plugin.Plugin;
 import imagej.plugin.PreprocessorPlugin;
 
 /**

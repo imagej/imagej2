@@ -38,9 +38,9 @@ package imagej.service;
 import imagej.AbstractContextual;
 import imagej.ImageJ;
 import imagej.event.EventService;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.PluginInfo;
 import imagej.log.LogService;
+import imagej.plugin.Parameter;
+import imagej.plugin.PluginInfo;
 import imagej.service.event.ServicesLoadedEvent;
 import imagej.util.ClassUtils;
 
@@ -209,12 +209,12 @@ public class ServiceHelper extends AbstractContextual {
 		final List<Class<? extends Service>> serviceList)
 	{
 		// ask the plugin index for the (sorted) list of available services
-		final List<PluginInfo<? extends Service>> services =
+		final List<PluginInfo<Service>> services =
 			getContext().getPluginIndex().getPlugins(Service.class);
 
-		for (final PluginInfo<? extends Service> info : services) {
+		for (final PluginInfo<Service> info : services) {
 			try {
-				final Class<? extends Service> c = info.loadClass();
+				final Class<Service> c = info.loadClass();
 				final double priority = info.getPriority();
 				serviceMap.put(c, priority);
 				serviceList.add(c);

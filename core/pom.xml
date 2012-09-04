@@ -18,6 +18,7 @@
 	<description>Core ImageJ projects.</description>
 
 	<modules>
+		<module>commands</module>
 		<module>core</module>
 		<module>data</module>
 		<module>io</module>
@@ -25,7 +26,6 @@
 		<module>log-slf4j</module>
 		<module>options</module>
 		<module>platforms</module>
-		<module>plugins</module>
 		<module>tools</module>
 		<module>ui</module>
 		<module>updater</module>

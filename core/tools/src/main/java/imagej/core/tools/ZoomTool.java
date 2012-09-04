@@ -42,7 +42,7 @@ import imagej.display.event.input.MsMovedEvent;
 import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Plugin;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 import imagej.util.IntCoords;

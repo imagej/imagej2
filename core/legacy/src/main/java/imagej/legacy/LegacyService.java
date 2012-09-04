@@ -38,6 +38,7 @@ package imagej.legacy;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
+import imagej.command.CommandService;
 import imagej.core.options.OptionsMisc;
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
@@ -49,17 +50,17 @@ import imagej.display.event.input.KyPressedEvent;
 import imagej.display.event.input.KyReleasedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginInfo;
-import imagej.ext.plugin.PluginService;
 import imagej.input.KeyCode;
-import imagej.legacy.plugin.LegacyPlugin;
+import imagej.legacy.plugin.LegacyCommand;
 import imagej.legacy.plugin.LegacyPluginFinder;
 import imagej.log.LogService;
 import imagej.menu.MenuService;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginInfo;
+import imagej.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.util.ColorRGB;
@@ -79,9 +80,9 @@ import java.util.Map;
  * {@link Dataset}s.
  * </p>
  * <p>
- * In this fashion, when a legacy plugin is executed on a {@link Dataset}, the
+ * In this fashion, when a legacy command is executed on a {@link Dataset}, the
  * service transparently translates it into an {@link ImagePlus}, and vice
- * versa, enabling backward compatibility with legacy plugins.
+ * versa, enabling backward compatibility with legacy commands.
  * </p>
  * 
  * @author Curtis Rueden
@@ -102,6 +103,9 @@ public final class LegacyService extends AbstractService {
 
 	@Parameter
 	private PluginService pluginService;
+
+	@Parameter
+	private CommandService commandService;
 
 	@Parameter
 	private OptionsService optionsService;
@@ -148,24 +152,24 @@ public final class LegacyService extends AbstractService {
 		return imageMap;
 	}
 
-	/** Runs a legacy plugin programmaticaly
+	/** Runs a legacy command programmaticaly
 	 * 
 	 * @param ij1ClassName The name of the plugin class you want to run e.g.
 	 *          "ij.plugin.Clipboard"
 	 * @param argument The argument string to pass to the plugin e.g. "copy"
 	 */
-	public void runLegacyPlugin(final String ij1ClassName, final String argument)
+	public void runLegacyCommand(final String ij1ClassName, final String argument)
 	{
-		final String arg = (argument == null) ? "" : argument;
+		final String arg = argument == null ? "" : argument;
 		final Map<String, Object> inputMap = new HashMap<String, Object>();
 		inputMap.put("className", ij1ClassName);
 		inputMap.put("arg", arg);
-		pluginService.run(LegacyPlugin.class, inputMap);
+		commandService.run(LegacyCommand.class, inputMap);
 	}
 
 	/**
 	 * Indicates to the service that the given {@link ImagePlus} has changed as
-	 * part of a legacy plugin execution.
+	 * part of a legacy command execution.
 	 */
 	public void legacyImageChanged(final ImagePlus imp) {
 		// CTR FIXME rework static InsideBatchDrawing logic?
@@ -176,7 +180,7 @@ public final class LegacyService extends AbstractService {
 		// create a display if it doesn't exist yet.
 		imageMap.registerLegacyImage(imp);
 
-		// record resultant ImagePlus as a legacy plugin output
+		// record resultant ImagePlus as a legacy command output
 		LegacyOutputTracker.getOutputImps().add(imp);
 	}
 
@@ -249,7 +253,7 @@ public final class LegacyService extends AbstractService {
 		final OptionsMisc optsMisc = optionsService.getOptions(OptionsMisc.class);
 		lastDebugMode = optsMisc.isDebugMode();
 		final boolean enableBlacklist = !optsMisc.isDebugMode();
-		addLegacyPlugins(enableBlacklist);
+		addLegacyCommands(enableBlacklist);
 
 		updateIJ1Settings();
 
@@ -316,11 +320,11 @@ public final class LegacyService extends AbstractService {
 	private void updateMenus(final OptionsMisc optsMisc) {
 		pluginService.reloadPlugins();
 		final boolean enableBlacklist = !optsMisc.isDebugMode();
-		addLegacyPlugins(enableBlacklist);
+		addLegacyCommands(enableBlacklist);
 		lastDebugMode = optsMisc.isDebugMode();
 	}
 
-	private void addLegacyPlugins(final boolean enableBlacklist) {
+	private void addLegacyCommands(final boolean enableBlacklist) {
 		final LegacyPluginFinder finder =
 			new LegacyPluginFinder(log, menuService.getMenu(), enableBlacklist);
 		final ArrayList<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();

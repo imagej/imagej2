@@ -35,18 +35,19 @@
 
 package imagej.options;
 
+import imagej.InstantiableException;
+import imagej.command.CommandInfo;
+import imagej.command.CommandService;
 import imagej.event.EventService;
-import imagej.ext.InstantiableException;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginInfo;
-import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
 import imagej.module.Module;
 import imagej.module.ModuleException;
 import imagej.module.ModuleRunner;
 import imagej.plugin.InitPreprocessor;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginInfo;
+import imagej.plugin.PluginService;
 import imagej.plugin.PreprocessorPlugin;
 import imagej.plugin.ServicePreprocessor;
 import imagej.plugin.ValidityPreprocessor;
@@ -80,6 +81,9 @@ public class DefaultOptionsService extends AbstractService implements
 	@Parameter
 	private PluginService pluginService;
 
+	@Parameter
+	private CommandService commandService;
+
 	// -- OptionsService methods --
 
 	@Override
@@ -95,7 +99,7 @@ public class DefaultOptionsService extends AbstractService implements
 	@Override
 	public List<OptionsPlugin> getOptions() {
 		// get the list of available options plugins
-		final List<PluginInfo<? extends OptionsPlugin>> infos =
+		final List<PluginInfo<OptionsPlugin>> infos =
 			pluginService.getPluginsOfType(OptionsPlugin.class);
 
 		// instantiate one instance of each options plugin
@@ -146,7 +150,7 @@ public class DefaultOptionsService extends AbstractService implements
 	public <O extends OptionsPlugin> void setOption(final Class<O> optionsClass,
 		final String name, final Object value)
 	{
-		final PluginModuleInfo<O> info = getOptionsInfo(optionsClass);
+		final CommandInfo<O> info = getOptionsInfo(optionsClass);
 		if (info == null) return;
 		setOption(info, name, value);
 	}
@@ -155,14 +159,14 @@ public class DefaultOptionsService extends AbstractService implements
 	public void setOption(final String className, final String name,
 		final Object value)
 	{
-		final PluginModuleInfo<OptionsPlugin> info = getOptionsInfo(className);
+		final CommandInfo<OptionsPlugin> info = getOptionsInfo(className);
 		if (info == null) return;
 		setOption(info, name, value);
 	}
 
 	@Override
 	public <O extends OptionsPlugin> void setOption(
-		final PluginModuleInfo<O> info, final String name, final Object value)
+		final CommandInfo<O> info, final String name, final Object value)
 	{
 		final Module module;
 		try {
@@ -200,6 +204,7 @@ public class DefaultOptionsService extends AbstractService implements
 			log.error("Cannot create plugin: " + info.getClassName());
 			return null;
 		}
+		optionsPlugin.setContext(getContext());
 
 		// execute key preprocessors on the newly created options plugin
 		final ArrayList<PluginInfo<? extends PreprocessorPlugin>> preInfos =
@@ -216,21 +221,21 @@ public class DefaultOptionsService extends AbstractService implements
 		return optionsPlugin;
 	}
 
-	private <O extends OptionsPlugin> PluginModuleInfo<O> getOptionsInfo(
+	private <O extends OptionsPlugin> CommandInfo<O> getOptionsInfo(
 		final Class<O> optionsClass)
 	{
-		final PluginModuleInfo<O> info =
-			pluginService.getRunnablePlugin(optionsClass);
+		final CommandInfo<O> info =
+			commandService.getCommand(optionsClass);
 		if (info == null) {
 			log.error("No such options class: " + optionsClass.getName());
 		}
 		return info;
 	}
 
-	private PluginModuleInfo<OptionsPlugin>
+	private CommandInfo<OptionsPlugin>
 		getOptionsInfo(final String className)
 	{
-		final PluginModuleInfo<?> info = pluginService.getRunnablePlugin(className);
+		final CommandInfo<?> info = commandService.getCommand(className);
 		if (info == null) {
 			log.error("No such options class: " + className);
 			return null;
@@ -241,12 +246,12 @@ public class DefaultOptionsService extends AbstractService implements
 			return null;
 		}
 		@SuppressWarnings("unchecked")
-		final PluginModuleInfo<OptionsPlugin> typedInfo =
-			(PluginModuleInfo<OptionsPlugin>) info;
+		final CommandInfo<OptionsPlugin> typedInfo =
+			(CommandInfo<OptionsPlugin>) info;
 		return typedInfo;
 	}
 
-	private Object getInput(final PluginModuleInfo<?> info, final String name) {
+	private Object getInput(final CommandInfo<?> info, final String name) {
 		if (info == null) return null;
 		try {
 			return info.createModule().getInput(name);
@@ -257,7 +262,7 @@ public class DefaultOptionsService extends AbstractService implements
 		return null;
 	}
 
-	private Map<String, Object> getInputs(final PluginModuleInfo<?> info) {
+	private Map<String, Object> getInputs(final CommandInfo<?> info) {
 		if (info == null) return null;
 		try {
 			return info.createModule().getInputs();

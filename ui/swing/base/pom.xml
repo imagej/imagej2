@@ -19,6 +19,16 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-commands-data</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-commands-display</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -30,16 +40,6 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-options</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-plugins-data</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-plugins-display</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

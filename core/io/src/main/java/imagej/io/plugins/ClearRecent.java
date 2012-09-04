@@ -35,13 +35,13 @@
 
 package imagej.io.plugins;
 
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
+import imagej.command.Command;
 import imagej.io.RecentFileService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 
 /**
  * Clears the list of recently opened files.
@@ -54,12 +54,12 @@ import imagej.module.ItemIO;
 	@Menu(label = "Open Recent", weight = 4, mnemonic = 'r'),
 	@Menu(label = "Clear List", weight = RecentFileService.MAX_FILES_SHOWN + 10,
 		mnemonic = 'c') })
-public class ClearRecent implements RunnablePlugin {
+public class ClearRecent implements Command {
 
 	@Parameter(type = ItemIO.BOTH)
 	private RecentFileService recentFileService;
 
-	// -- RunnablePlugin methods --
+	// -- Command methods --
 
 	@Override
 	public void run() {

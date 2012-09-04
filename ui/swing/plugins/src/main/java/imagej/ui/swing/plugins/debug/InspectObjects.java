@@ -37,10 +37,10 @@ package imagej.ui.swing.plugins.debug;
 
 import com.github.sbridges.objectinspector.Inspector;
 
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
+import imagej.command.Command;
 import imagej.object.ObjectService;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 
 /**
  * Inspect the ObjectService
@@ -48,7 +48,7 @@ import imagej.object.ObjectService;
  * @author Grant Harris
  */
 @Plugin(menuPath = "Plugins>Debug>Inspect Objects")
-public class InspectObjects implements RunnablePlugin {
+public class InspectObjects implements Command {
 
 	@Parameter
 	private ObjectService objectService;

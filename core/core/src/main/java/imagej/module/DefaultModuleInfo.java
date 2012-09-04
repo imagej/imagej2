@@ -39,7 +39,6 @@ import imagej.AbstractUIDetails;
 import imagej.event.EventService;
 import imagej.module.event.ModulesUpdatedEvent;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -54,6 +53,15 @@ import java.util.Map;
  * {@link #setModuleClass(Class)} method is given as the delegate class name for
  * {@link #getDelegateClassName()}, and instantiated using a constructor that
  * takes a single {@link ModuleInfo} parameter.
+ * </p>
+ * By default, {@link ModuleItem}s are stored in {@link HashMap}s and
+ * {@link ArrayList}s, internally. </p>
+ * <p>
+ * It is important for downstream code to call the
+ * {@link #setModuleClass(Class)} method to associate the module info with its
+ * module class prior to using the module info for anything; the
+ * {@link #getDelegateClassName()} and {@link #createModule()} methods will fail
+ * if the module class has not been set.
  * </p>
  * 
  * @author Curtis Rueden
@@ -144,9 +152,7 @@ public class DefaultModuleInfo extends AbstractUIDetails implements ModuleInfo
 	@Override
 	public Module createModule() throws ModuleException {
 		try {
-			final Constructor<? extends Module> ctor =
-				moduleClass.getConstructor(ModuleInfo.class);
-			return ctor.newInstance(this);
+			return moduleClass.newInstance();
 		}
 		catch (final Exception e) {
 			// NB: Several types of exceptions; simpler to handle them all the same.

@@ -218,7 +218,7 @@ public class LegacyImageMap {
 	// -- Event handlers --
 
 	/*
-	Removing this code to fix bug #835. Rely on LegacyPlugin to create
+	Removing this code to fix bug #835. Rely on LegacyCommand to create
 	ImagePluses as they are needed.
 
 	@EventHandler

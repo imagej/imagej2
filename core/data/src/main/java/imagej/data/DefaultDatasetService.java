@@ -37,9 +37,9 @@ package imagej.data;
 
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.object.ObjectService;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 

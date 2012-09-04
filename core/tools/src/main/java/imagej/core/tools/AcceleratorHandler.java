@@ -35,14 +35,14 @@
 
 package imagej.core.tools;
 
+import imagej.command.CommandService;
 import imagej.display.event.input.KyPressedEvent;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
 import imagej.input.Accelerator;
 import imagej.input.InputModifiers;
 import imagej.input.KeyCode;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
+import imagej.plugin.Plugin;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 
@@ -74,8 +74,8 @@ public class AcceleratorHandler extends AbstractTool {
 	public void onKeyDown(final KyPressedEvent evt) {
 		final ModuleService moduleService =
 			getContext().getService(ModuleService.class);
-		final PluginService pluginService =
-			getContext().getService(PluginService.class);
+		final CommandService commandService =
+			getContext().getService(CommandService.class);
 
 		ModuleInfo moduleInfo = null;
 
@@ -98,8 +98,8 @@ public class AcceleratorHandler extends AbstractTool {
 
 		if (moduleInfo == null) return; // no matching module found
 
-		// run via plugin service, so that preprocessors are run
-		pluginService.run(moduleInfo);
+		// run via command service, so that preprocessors are run
+		commandService.run(moduleInfo);
 
 		// consume event, so that nothing else tries to handle it
 		evt.consume();

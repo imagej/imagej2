@@ -35,9 +35,9 @@
 
 package imagej.core.platforms.windows;
 
-import imagej.ext.plugin.Plugin;
 import imagej.platform.AbstractPlatform;
 import imagej.platform.Platform;
+import imagej.plugin.Plugin;
 
 import java.io.IOException;
 import java.net.URL;

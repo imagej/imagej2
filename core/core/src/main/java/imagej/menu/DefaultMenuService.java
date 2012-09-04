@@ -35,17 +35,17 @@
 
 package imagej.menu;
 
+import imagej.command.Command;
+import imagej.command.CommandService;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
 import imagej.module.event.ModulesAddedEvent;
 import imagej.module.event.ModulesRemovedEvent;
 import imagej.module.event.ModulesUpdatedEvent;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
@@ -67,7 +67,7 @@ public class DefaultMenuService extends AbstractService implements MenuService {
 	private EventService eventService;
 
 	@Parameter
-	private PluginService pluginService;
+	private CommandService commandService;
 
 	/** Menu tree structures. There is one structure per menu root. */
 	private HashMap<String, ShadowMenu> rootMenus;
@@ -80,8 +80,8 @@ public class DefaultMenuService extends AbstractService implements MenuService {
 	}
 
 	@Override
-	public PluginService getPluginService() {
-		return pluginService;
+	public CommandService getCommandService() {
+		return commandService;
 	}
 
 	@Override
@@ -115,22 +115,22 @@ public class DefaultMenuService extends AbstractService implements MenuService {
 	}
 
 	@Override
-	public void setSelected(final RunnablePlugin plugin, final boolean selected) {
-		setSelected(plugin.getClass(), selected);
+	public void setSelected(final Command command, final boolean selected) {
+		setSelected(command.getClass(), selected);
 	}
 
 	@Override
-	public <R extends RunnablePlugin> void setSelected(
-		final Class<R> pluginClass, final boolean selected)
+	public <C extends Command> void setSelected(
+		final Class<C> commandClass, final boolean selected)
 	{
-		setSelected(pluginService.getRunnablePlugin(pluginClass), selected);
+		setSelected(commandService.getCommand(commandClass), selected);
 	}
 
 	@Override
-	public <R extends RunnablePlugin> void setSelected(
-		final String pluginClassName, final boolean selected)
+	public <C extends Command> void setSelected(
+		final String commandClassName, final boolean selected)
 	{
-		setSelected(pluginService.getRunnablePlugin(pluginClassName), selected);
+		setSelected(commandService.getCommand(commandClassName), selected);
 	}
 
 	@Override
@@ -146,7 +146,7 @@ public class DefaultMenuService extends AbstractService implements MenuService {
 		rootMenus = new HashMap<String, ShadowMenu>();
 
 		final List<ModuleInfo> allModules =
-			getPluginService().getModuleService().getModules();
+			getCommandService().getModuleService().getModules();
 		addModules(allModules);
 
 		subscribeToEvents(eventService);

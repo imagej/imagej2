@@ -35,12 +35,12 @@
 
 package imagej.widget;
 
-import imagej.ext.InstantiableException;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginInfo;
-import imagej.ext.plugin.PluginService;
+import imagej.InstantiableException;
 import imagej.log.LogService;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginInfo;
+import imagej.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
@@ -66,10 +66,10 @@ public class WidgetService extends AbstractService {
 	/** Creates a widget that represents the given widget model. */
 	public InputWidget<?, ?> createWidget(final WidgetModel model) {
 		@SuppressWarnings("rawtypes")
-		final List<PluginInfo<? extends InputWidget>> infos =
+		final List<PluginInfo<InputWidget>> infos =
 			pluginService.getPluginsOfType(InputWidget.class);
 		for (@SuppressWarnings("rawtypes")
-		final PluginInfo<? extends InputWidget> info : infos)
+		final PluginInfo<InputWidget> info : infos)
 		{
 			final InputWidget<?, ?> widget;
 			try {

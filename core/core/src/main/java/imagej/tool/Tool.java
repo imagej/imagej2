@@ -45,10 +45,10 @@ import imagej.display.event.input.MsMovedEvent;
 import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
-import imagej.ext.plugin.IPlugin;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginInfo;
 import imagej.input.MouseCursor;
+import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginInfo;
 
 /**
  * Interface for ImageJ tools. A tool is a collection of rules binding
@@ -72,7 +72,7 @@ import imagej.input.MouseCursor;
  * @see Plugin
  * @see ToolService
  */
-public interface Tool extends IPlugin, Contextual, Prioritized {
+public interface Tool extends ImageJPlugin, Contextual, Prioritized {
 
 	/** Gets the info describing the tool. */
 	PluginInfo<? extends Tool> getInfo();

@@ -35,11 +35,11 @@
 
 package imagej.core.options;
 
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.options.OptionsPlugin;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 import imagej.widget.WidgetStyle;
@@ -82,10 +82,6 @@ public class OptionsRoundedRectangleTool extends OptionsPlugin {
 	private int alpha = 0;
 
 	// -- OptionsRoundedRectangle methods --
-
-	public OptionsRoundedRectangleTool() {
-		load(); // NB: Load persisted values *after* field initialization.
-	}
 
 	public int getStrokeWidth() {
 		return strokeWidth;

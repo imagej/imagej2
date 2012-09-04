@@ -35,9 +35,9 @@
 
 package imagej.ui.swing.mdi;
 
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.RunnablePlugin;
+import imagej.command.Command;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import imagej.ui.Arrangeable.Arrangement;
 import imagej.ui.Desktop;
 import imagej.ui.UserInterface;
@@ -48,7 +48,7 @@ import imagej.ui.UserInterface;
  * @author Grant Harris
  */
 @Plugin(menuPath = "Window>Tile Vertical")
-public class WindowsTileVertical implements RunnablePlugin {
+public class WindowsTileVertical implements Command {
 
 	@Parameter
 	private UserInterface ui;
