@@ -148,9 +148,9 @@ public class LegacyPlugin implements RunnablePlugin {
 
 	private class LegacyPluginThread extends Thread {
 
-		final ThreadGroup group;
-		final LegacyImageMap map;
-		final Harmonizer harmonizer;
+		final private ThreadGroup group;
+		final private LegacyImageMap map;
+		final private Harmonizer harmonizer;
 
 		// NB - BDZ
 		// In order to keep threads from waiting on each other unnecessarily when
@@ -165,7 +165,6 @@ public class LegacyPlugin implements RunnablePlugin {
 			final ImageTranslator imageTranslator =
 				new DefaultImageTranslator(context);
 			this.harmonizer = new Harmonizer(context, imageTranslator);
-
 		}
 
 		@Override
@@ -238,7 +237,7 @@ public class LegacyPlugin implements RunnablePlugin {
 		}
 
 		private void waitForPluginThreads() {
-			log.debug("LegacyPlugin: begin waitForPluginThreads()");
+			//log.debug("LegacyPlugin: begin waitForPluginThreads()");
 			while (true) {
 				boolean allDead = true;
 				final List<Thread> currentThreads = getCurrentThreads();
@@ -259,7 +258,7 @@ public class LegacyPlugin implements RunnablePlugin {
 				}
 				catch (final Exception e) {/**/}
 			}
-			log.debug("LegacyPlugin: end waitForPluginThreads()");
+			//log.debug("LegacyPlugin: end waitForPluginThreads()");
 		}
 
 		private List<Thread> getCurrentThreads() {
@@ -447,7 +446,7 @@ public class LegacyPlugin implements RunnablePlugin {
 			roi.endPaste();
 		}
 
-		/* save for debugging if null pixel array exception every reported
+		/* save for debugging if null pixel array exception ever reported
 		 * 
 		private void reportStackIssues(String contextMsg) {
 			System.out.println("Stack issue report: "+contextMsg);
