@@ -70,16 +70,16 @@ public class DefaultPluginFinder implements PluginFinder {
 
 	@Override
 	public void findPlugins(final List<PluginInfo<?>> plugins) {
-		final Index<Plugin, IPlugin> pluginIndex;
+		final Index<Plugin, ImageJPlugin> pluginIndex;
 		if (classLoader == null) {
-			pluginIndex = Index.load(Plugin.class, IPlugin.class);
+			pluginIndex = Index.load(Plugin.class, ImageJPlugin.class);
 		}
 		else {
-			pluginIndex = Index.load(Plugin.class, IPlugin.class, classLoader);
+			pluginIndex = Index.load(Plugin.class, ImageJPlugin.class, classLoader);
 		}
 
 		final int oldSize = plugins.size();
-		for (final IndexItem<Plugin, IPlugin> item : pluginIndex) {
+		for (final IndexItem<Plugin, ImageJPlugin> item : pluginIndex) {
 			final PluginInfo<?> info = createInfo(item);
 			plugins.add(info);
 		}
@@ -95,16 +95,16 @@ public class DefaultPluginFinder implements PluginFinder {
 
 	// -- Helper methods --
 
-	private PluginInfo<IPlugin>
-		createInfo(final IndexItem<Plugin, IPlugin> item)
+	private PluginInfo<ImageJPlugin>
+		createInfo(final IndexItem<Plugin, ImageJPlugin> item)
 	{
 		final String className = item.className();
 		final Plugin plugin = item.annotation();
 
 		@SuppressWarnings("unchecked")
-		final Class<IPlugin> pluginType = (Class<IPlugin>) plugin.type();
+		final Class<ImageJPlugin> pluginType = (Class<ImageJPlugin>) plugin.type();
 
-		return new PluginInfo<IPlugin>(className, pluginType, plugin);
+		return new PluginInfo<ImageJPlugin>(className, pluginType, plugin);
 	}
 
 }

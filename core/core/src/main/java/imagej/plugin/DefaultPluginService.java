@@ -61,7 +61,7 @@ import java.util.List;
  * </p>
  * 
  * @author Curtis Rueden
- * @see IPlugin
+ * @see ImageJPlugin
  * @see Plugin
  */
 @Plugin(type = Service.class)
@@ -140,26 +140,26 @@ public class DefaultPluginService extends AbstractService implements
 	}
 
 	@Override
-	public <P extends IPlugin> PluginInfo<P>
+	public <P extends ImageJPlugin> PluginInfo<P>
 		getPlugin(final Class<P> pluginClass)
 	{
 		return ListUtils.first(getPluginsOfClass(pluginClass));
 	}
 
 	@Override
-	public PluginInfo<IPlugin> getPlugin(final String className) {
+	public PluginInfo<ImageJPlugin> getPlugin(final String className) {
 		return ListUtils.first(getPluginsOfClass(className));
 	}
 
 	@Override
-	public <P extends IPlugin> List<PluginInfo<P>> getPluginsOfType(
+	public <P extends ImageJPlugin> List<PluginInfo<P>> getPluginsOfType(
 		final Class<P> type)
 	{
 		return pluginIndex.getPlugins(type);
 	}
 
 	@Override
-	public <P extends IPlugin> List<PluginInfo<P>> getPluginsOfClass(
+	public <P extends ImageJPlugin> List<PluginInfo<P>> getPluginsOfClass(
 		final Class<P> pluginClass)
 	{
 		final ArrayList<PluginInfo<P>> result = new ArrayList<PluginInfo<P>>();
@@ -168,15 +168,15 @@ public class DefaultPluginService extends AbstractService implements
 	}
 
 	@Override
-	public List<PluginInfo<IPlugin>> getPluginsOfClass(final String className) {
-		final ArrayList<PluginInfo<IPlugin>> result =
-			new ArrayList<PluginInfo<IPlugin>>();
+	public List<PluginInfo<ImageJPlugin>> getPluginsOfClass(final String className) {
+		final ArrayList<PluginInfo<ImageJPlugin>> result =
+			new ArrayList<PluginInfo<ImageJPlugin>>();
 		getPluginsOfClass(className, getPlugins(), result);
 		return result;
 	}
 
 	@Override
-	public <P extends IPlugin> List<P> createInstancesOfType(final Class<P> type)
+	public <P extends ImageJPlugin> List<P> createInstancesOfType(final Class<P> type)
 	{
 		final List<PluginInfo<P>> plugins = getPluginsOfType(type);
 		@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -188,7 +188,7 @@ public class DefaultPluginService extends AbstractService implements
 	}
 
 	@Override
-	public <P extends IPlugin> List<? extends P> createInstances(
+	public <P extends ImageJPlugin> List<? extends P> createInstances(
 		final List<PluginInfo<? extends P>> infos)
 	{
 		final ArrayList<P> list = new ArrayList<P>();

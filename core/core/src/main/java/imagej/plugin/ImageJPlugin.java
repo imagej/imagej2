@@ -81,6 +81,6 @@ import imagej.widget.InputWidget;
  * @see Plugin
  * @see PluginService
  */
-public interface IPlugin {
+public interface ImageJPlugin {
 	// top-level marker interface for discovery via SezPoz
 }

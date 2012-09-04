@@ -41,7 +41,7 @@ import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.PositionableByAxis;
 import imagej.data.overlay.Overlay;
-import imagej.plugin.IPlugin;
+import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Plugin;
 import net.imglib2.meta.AxisType;
 
@@ -74,7 +74,7 @@ import net.imglib2.meta.AxisType;
  * 
  * @author Curtis Rueden
  */
-public interface DataView extends PositionableByAxis, IPlugin, Contextual {
+public interface DataView extends PositionableByAxis, ImageJPlugin, Contextual {
 
 	/** Gets whether this view is compatible with the given {@link Data}. */
 	boolean isCompatible(Data data);

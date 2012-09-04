@@ -38,7 +38,7 @@ package imagej.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import imagej.plugin.IPlugin;
+import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Plugin;
 
 import java.io.File;
@@ -132,7 +132,7 @@ public class CheckSezpozTest {
 
 		Thread.currentThread().setContextClassLoader(
 			new URLClassLoader(new URL[] { classes.toURI().toURL() }));
-		assertTrue(sezpozFindsClass(Plugin.class, IPlugin.class, "Annotated"));
+		assertTrue(sezpozFindsClass(Plugin.class, ImageJPlugin.class, "Annotated"));
 	}
 
 	protected <S extends Annotation, T> boolean sezpozFindsClass(

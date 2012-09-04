@@ -36,7 +36,7 @@
 package imagej.command;
 
 import imagej.module.Module;
-import imagej.plugin.IPlugin;
+import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginService;
 
@@ -52,7 +52,7 @@ import imagej.plugin.PluginService;
  * @see Plugin
  * @see PluginService
  */
-public interface Command extends IPlugin, Runnable {
+public interface Command extends ImageJPlugin, Runnable {
 	// Command is a plugin that extends Runnable,
 	// discoverable via the plugin discovery mechanism.
 }

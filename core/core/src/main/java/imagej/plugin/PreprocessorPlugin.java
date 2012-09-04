@@ -54,7 +54,7 @@ import imagej.module.ModulePreprocessor;
  * @author Curtis Rueden
  * @see ModulePreprocessor
  */
-public interface PreprocessorPlugin extends IPlugin, Contextual,
+public interface PreprocessorPlugin extends ImageJPlugin, Contextual,
 	ModulePreprocessor
 {
 	// PreprocessorPlugin is a module preprocessor,

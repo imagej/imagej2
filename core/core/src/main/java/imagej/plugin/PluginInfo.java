@@ -60,7 +60,7 @@ import java.net.URL;
  * @see Plugin
  * @see PluginService
  */
-public class PluginInfo<P extends IPlugin> extends AbstractUIDetails implements
+public class PluginInfo<P extends ImageJPlugin> extends AbstractUIDetails implements
 	Instantiable<P>
 {
 

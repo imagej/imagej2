@@ -53,12 +53,12 @@ import net.java.sezpoz.Indexable;
  * discovery mechanism.
  * 
  * @author Curtis Rueden
- * @see IPlugin
+ * @see ImageJPlugin
  * @see PluginService
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Indexable(type = IPlugin.class)
+@Indexable(type = ImageJPlugin.class)
 public @interface Plugin {
 
 	String APPLICATION_MENU_ROOT = "app";

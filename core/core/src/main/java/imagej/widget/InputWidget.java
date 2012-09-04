@@ -36,7 +36,7 @@
 package imagej.widget;
 
 import imagej.module.ModuleItem;
-import imagej.plugin.IPlugin;
+import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Plugin;
 
 /**
@@ -59,7 +59,7 @@ import imagej.plugin.Plugin;
  * @see InputHarvester
  * @see InputPanel
  */
-public interface InputWidget<T, W> extends IPlugin, UIComponent<W> {
+public interface InputWidget<T, W> extends ImageJPlugin, UIComponent<W> {
 
 	/** Gets whether this widget would be appropriate for the given model. */
 	boolean isCompatible(WidgetModel model);

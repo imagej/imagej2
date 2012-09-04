@@ -37,13 +37,13 @@ package imagej.display;
 
 import imagej.Contextual;
 import imagej.Prioritized;
-import imagej.plugin.IPlugin;
+import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Plugin;
 
 import java.util.List;
 
 /**
- * A display is a particular type of {@link IPlugin} intended to collect objects
+ * A display is a particular type of {@link ImageJPlugin} intended to collect objects
  * for visualization. The most common type of display is the
  * <code>imagej.data.display.ImageDisplay</code>, which displays images.
  * However, in principle there are no limits to the sorts of objects that can be
@@ -61,7 +61,7 @@ import java.util.List;
  * @see Plugin
  * @see DisplayService
  */
-public interface Display<T> extends List<T>, IPlugin, Contextual, Prioritized {
+public interface Display<T> extends List<T>, ImageJPlugin, Contextual, Prioritized {
 
 	/**
 	 * Tests whether the display is capable of visualizing objects of the given

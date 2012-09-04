@@ -46,7 +46,7 @@ import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
 import imagej.input.MouseCursor;
-import imagej.plugin.IPlugin;
+import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginInfo;
 
@@ -72,7 +72,7 @@ import imagej.plugin.PluginInfo;
  * @see Plugin
  * @see ToolService
  */
-public interface Tool extends IPlugin, Contextual, Prioritized {
+public interface Tool extends ImageJPlugin, Contextual, Prioritized {
 
 	/** Gets the info describing the tool. */
 	PluginInfo<? extends Tool> getInfo();

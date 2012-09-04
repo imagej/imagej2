@@ -54,7 +54,7 @@ import imagej.module.ModulePostprocessor;
  * @author Curtis Rueden
  * @see ModulePostprocessor
  */
-public interface PostprocessorPlugin extends IPlugin, Contextual,
+public interface PostprocessorPlugin extends ImageJPlugin, Contextual,
 	ModulePostprocessor
 {
 	// PostprocessorPlugin is a module postprocessor,

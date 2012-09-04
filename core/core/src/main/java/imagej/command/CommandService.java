@@ -39,7 +39,7 @@ import imagej.event.EventService;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
-import imagej.plugin.IPlugin;
+import imagej.plugin.ImageJPlugin;
 import imagej.plugin.PluginService;
 import imagej.plugin.PostprocessorPlugin;
 import imagej.plugin.PreprocessorPlugin;
@@ -52,7 +52,7 @@ import java.util.concurrent.Future;
 /**
  * Interface for service that keeps track of available commands.
  * <p>
- * A <em>command</em> is a particular type of {@link IPlugin} that is also a
+ * A <em>command</em> is a particular type of {@link ImageJPlugin} that is also a
  * {@link Module}; i.e., it is {@link Runnable}, with typed inputs and outputs.
  * <p>
  * The command service keeps a master index of all commands known to the system.
@@ -61,7 +61,7 @@ import java.util.concurrent.Future;
  * </p>
  * 
  * @author Curtis Rueden
- * @see IPlugin
+ * @see ImageJPlugin
  * @see ModuleService
  * @see PluginService
  */

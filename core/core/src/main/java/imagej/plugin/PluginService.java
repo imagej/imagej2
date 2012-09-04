@@ -45,7 +45,7 @@ import java.util.List;
  * <p>
  * The plugin service keeps a master index of all plugins known to the system.
  * At heart, a plugin is a piece of functionality that extends ImageJ's
- * capabilities. Plugins take many forms; see {@link IPlugin} for details.
+ * capabilities. Plugins take many forms; see {@link ImageJPlugin} for details.
  * </p>
  * <p>
  * The default plugin service discovers available plugins on the classpath.
@@ -60,7 +60,7 @@ import java.util.List;
  * </p>
  * 
  * @author Curtis Rueden
- * @see IPlugin
+ * @see ImageJPlugin
  */
 public interface PluginService extends Service {
 
@@ -89,18 +89,18 @@ public interface PluginService extends Service {
 	List<PluginInfo<?>> getPlugins();
 
 	/** Gets the first available plugin of the given class, or null if none. */
-	<P extends IPlugin> PluginInfo<P> getPlugin(Class<P> pluginClass);
+	<P extends ImageJPlugin> PluginInfo<P> getPlugin(Class<P> pluginClass);
 
 	/**
 	 * Gets the first available plugin of the given class name, or null if none.
 	 */
-	PluginInfo<IPlugin> getPlugin(String className);
+	PluginInfo<ImageJPlugin> getPlugin(String className);
 
 	/**
 	 * Gets the list of plugins of the given type (e.g.,
 	 * {@link imagej.command.Command}).
 	 */
-	<P extends IPlugin> List<PluginInfo<P>> getPluginsOfType(Class<P> type);
+	<P extends ImageJPlugin> List<PluginInfo<P>> getPluginsOfType(Class<P> type);
 
 	/**
 	 * Gets the list of plugins of the given class.
@@ -109,7 +109,7 @@ public interface PluginService extends Service {
 	 * (such as <code>imagej.legacy.LegacyPlugin</code>) may match many entries.
 	 * </p>
 	 */
-	<P extends IPlugin> List<PluginInfo<P>> getPluginsOfClass(
+	<P extends ImageJPlugin> List<PluginInfo<P>> getPluginsOfClass(
 		Class<P> pluginClass);
 
 	/**
@@ -119,7 +119,7 @@ public interface PluginService extends Service {
 	 * (such as <code>imagej.legacy.LegacyPlugin</code>) may match many entries.
 	 * </p>
 	 */
-	List<PluginInfo<IPlugin>> getPluginsOfClass(String className);
+	List<PluginInfo<ImageJPlugin>> getPluginsOfClass(String className);
 
 	/**
 	 * Creates one instance each of the available plugins of the given type.
@@ -129,7 +129,7 @@ public interface PluginService extends Service {
 	 * auto-populated, initializers will not be executed, etc.
 	 * </p>
 	 */
-	<P extends IPlugin> List<P> createInstancesOfType(Class<P> type);
+	<P extends ImageJPlugin> List<P> createInstancesOfType(Class<P> type);
 
 	/**
 	 * Creates an instance of each of the plugins on the given list.
@@ -139,7 +139,7 @@ public interface PluginService extends Service {
 	 * auto-populated, initializers will not be executed, etc.
 	 * </p>
 	 */
-	<P extends IPlugin> List<? extends P> createInstances(
+	<P extends ImageJPlugin> List<? extends P> createInstances(
 		List<PluginInfo<? extends P>> infos);
 
 }

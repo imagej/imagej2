@@ -41,7 +41,7 @@ import imagej.log.LogService;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
-import imagej.plugin.IPlugin;
+import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginInfo;
@@ -144,7 +144,7 @@ public class DefaultCommandService extends AbstractService implements
 
 	@Override
 	public List<CommandInfo<Command>> getCommandsOfClass(final String className) {
-		final List<PluginInfo<IPlugin>> plugins =
+		final List<PluginInfo<ImageJPlugin>> plugins =
 			pluginService.getPluginsOfClass(className);
 		final List<CommandInfo<Command>> commands = getCommands(downcast(plugins));
 		return commands;
@@ -360,7 +360,7 @@ public class DefaultCommandService extends AbstractService implements
 	}
 
 	/** A HACK for downcasting a list of plugins. */
-	private <P extends IPlugin> List<PluginInfo<?>> downcast(
+	private <P extends ImageJPlugin> List<PluginInfo<?>> downcast(
 		final List<PluginInfo<P>> plugins)
 	{
 		// HACK: It seems that List<PluginInfo<? extends P>> cannot be used to

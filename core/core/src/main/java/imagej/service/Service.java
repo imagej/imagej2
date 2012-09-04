@@ -37,7 +37,7 @@ package imagej.service;
 
 import imagej.Contextual;
 import imagej.Prioritized;
-import imagej.plugin.IPlugin;
+import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Plugin;
 
 /**
@@ -53,7 +53,7 @@ import imagej.plugin.Plugin;
  * @author Curtis Rueden
  * @see Plugin
  */
-public interface Service extends IPlugin, Contextual, Prioritized {
+public interface Service extends ImageJPlugin, Contextual, Prioritized {
 
 	/** Performs any needed initialization when the service is first loaded. */
 	void initialize();
