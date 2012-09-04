@@ -56,7 +56,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Subtract...", weight = 2) }, headless = true)
 public class SubtractFromDataValues<T extends RealType<T>>
-	extends AbstractAssignPlugin<T,DoubleType>
+	extends MathCommand<T,DoubleType>
 {
 
 	// -- instance variables that are Parameters --

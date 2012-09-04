@@ -57,7 +57,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 		@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Max...", weight = 10) },
 	headless = true)
 public class MaxDataValues<T extends RealType<T>>
-	extends	AbstractAssignPlugin<T,DoubleType>
+	extends	MathCommand<T,DoubleType>
 {
 
 	// -- instance variables that are Parameters --

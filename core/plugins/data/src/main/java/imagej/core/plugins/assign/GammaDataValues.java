@@ -58,7 +58,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 		@Menu(label = "Math", mnemonic = 'm'),
 		@Menu(label = "Gamma...", weight = 11) }, headless = true)
 public class GammaDataValues<T extends RealType<T>>
-	extends AbstractAssignPlugin<T,DoubleType>
+	extends MathCommand<T,DoubleType>
 {
 
 	// -- instance variables that are Parameters --

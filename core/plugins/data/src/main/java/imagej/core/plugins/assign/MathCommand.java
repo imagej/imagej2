@@ -56,13 +56,12 @@ import net.imglib2.type.numeric.ComplexType;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * Base class for previewable math plugins.
+ * Base class for previewable math commands.
  * 
  * @author Barry DeZonia
  */
-public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends ComplexType<O>>
-	extends ContextCommand
-	implements Previewable
+public abstract class MathCommand<I extends ComplexType<I>, O extends ComplexType<O>>
+	extends ContextCommand implements Previewable
 {
 	// -- instance variables that are Parameters --
 
@@ -93,7 +92,7 @@ public abstract class AbstractAssignPlugin<I extends ComplexType<I>, O extends C
 	
 	// -- public interface --
 
-	public AbstractAssignPlugin(O outType) {
+	public MathCommand(O outType) {
 		this.outType = outType;
 	}
 	

@@ -59,7 +59,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 		@Menu(label = "Math", mnemonic = 'm'),
 		@Menu(label = "Divide...", weight = 4) }, headless = true)
 public class DivideDataValuesBy<T extends RealType<T>>
-	extends AbstractAssignPlugin<T,DoubleType>
+	extends MathCommand<T,DoubleType>
 {
 
 	// -- instance variables that are Parameters --
