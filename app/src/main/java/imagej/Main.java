@@ -53,10 +53,13 @@ public final class Main {
 		final ImageJ context = ImageJ.createContext();
 
 		// parse command line arguments
-		context.getService(ConsoleService.class).processArgs(args);
+		final ConsoleService consoleService =
+			context.getService(ConsoleService.class);
+		if (consoleService != null) consoleService.processArgs(args);
 
 		// display the user interface
-		context.getService(UIService.class).createUI();
+		final UIService uiService = context.getService(UIService.class);
+		if (uiService != null) uiService.createUI();
 	}
 
 }
