@@ -81,12 +81,6 @@ public class OptionsLookAndFeel extends OptionsPlugin {
 		initializer = "initLookAndFeel")
 	private String lookAndFeel;
 
-	// -- Constructor --
-
-	public OptionsLookAndFeel() {
-		load(); // NB: Load persisted values *after* field initialization.
-	}
-
 	// -- OptionsLookAndFeel methods --
 
 	public UserInterface getUI() {

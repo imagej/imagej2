@@ -83,10 +83,6 @@ public class OptionsRoundedRectangleTool extends OptionsPlugin {
 
 	// -- OptionsRoundedRectangle methods --
 
-	public OptionsRoundedRectangleTool() {
-		load(); // NB: Load persisted values *after* field initialization.
-	}
-
 	public int getStrokeWidth() {
 		return strokeWidth;
 	}

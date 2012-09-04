@@ -88,12 +88,6 @@ public class OptionsChannels extends OptionsPlugin {
 	private ChannelCollection fgValues; // used by IJ2 consumers
 	private ChannelCollection bgValues; // used by IJ2 consumers
 
-	// -- Constructor --
-
-	public OptionsChannels() {
-		load(); // NB: Load persisted values *after* field initialization.
-	}
-
 	// -- OptionsChannels methods --
 
 	public ChannelCollection getFgValues() {

@@ -58,10 +58,6 @@ public class OptionsLineWidth extends OptionsPlugin {
 
 	// -- OptionsLineWidth methods --
 
-	public OptionsLineWidth() {
-		load(); // NB: Load persisted values *after* field initialization.
-	}
-
 	public int getLineWidth() {
 		return lineWidth;
 	}

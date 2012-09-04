@@ -109,10 +109,6 @@ public class OptionsOverlay extends OptionsPlugin {
 
 	// -- public interface --
 
-	public OptionsOverlay() {
-		load(); // NB: Load persisted values *after* field initialization.
-	}
-
 	@Override
 	public void run() {
 		updateSettings(overlayService.getDefaultSettings());

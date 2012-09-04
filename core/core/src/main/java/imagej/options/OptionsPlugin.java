@@ -35,6 +35,7 @@
 
 package imagej.options;
 
+import imagej.ImageJ;
 import imagej.command.DynamicCommand;
 import imagej.event.EventService;
 import imagej.module.ModuleItem;
@@ -101,6 +102,14 @@ public class OptionsPlugin extends DynamicCommand {
 	public void run() {
 		save();
 		eventService.publish(new OptionsEvent(this));
+	}
+
+	// -- Contextual methods --
+
+	@Override
+	public void setContext(final ImageJ context) {
+		super.setContext(context);
+		load();
 	}
 
 	// -- Helper methods --

@@ -64,10 +64,6 @@ public class OptionsDicom extends OptionsPlugin {
 
 	// -- OptionsDicom methods --
 
-	public OptionsDicom() {
-		load(); // NB: Load persisted values *after* field initialization.
-	}
-
 	public boolean isOpenAs32bitFloat() {
 		return openAs32bitFloat;
 	}

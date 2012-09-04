@@ -85,10 +85,6 @@ public class OptionsAppearance extends OptionsPlugin {
 
 	// -- OptionsAppearance methods --
 
-	public OptionsAppearance() {
-		load(); // NB: Load persisted values *after* field initialization.
-	}
-
 	public ColorRGB getSelectionColor() {
 		return selectionColor;
 	}

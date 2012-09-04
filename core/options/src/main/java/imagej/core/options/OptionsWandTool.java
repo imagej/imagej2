@@ -64,10 +64,6 @@ public class OptionsWandTool extends OptionsPlugin {
 
 	// -- OptionsWandTool methods --
 
-	public OptionsWandTool() {
-		load(); // NB: Load persisted values *after* field initialization.
-	}
-
 	public String getMode() {
 		return mode;
 	}

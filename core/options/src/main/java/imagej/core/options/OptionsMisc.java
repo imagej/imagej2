@@ -83,10 +83,6 @@ public class OptionsMisc extends OptionsPlugin {
 
 	// -- OptionsMisc methods --
 
-	public OptionsMisc() {
-		load(); // NB: Load persisted values *after* field initialization.
-	}
-
 	public String getDivByZeroVal() {
 		return divByZeroVal;
 	}

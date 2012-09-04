@@ -72,10 +72,6 @@ public class OptionsFont extends OptionsPlugin {
 
 	// -- OptionsFont methods --
 
-	public OptionsFont() {
-		load(); // NB: Load persisted values *after* field initialization.
-	}
-
 	public String getFont() {
 		return font;
 	}

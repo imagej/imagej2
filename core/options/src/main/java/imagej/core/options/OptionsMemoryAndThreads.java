@@ -74,10 +74,6 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 
 	// -- OptionsMemoryAndThreads methods --
 
-	public OptionsMemoryAndThreads() {
-		load(); // NB: Load persisted values *after* field initialization.
-	}
-
 	/** Loads the instance variable fields from persistent storage. */
 	@Override
 	public void load() {

@@ -70,10 +70,6 @@ public class OptionsPointTool extends OptionsPlugin {
 
 	// -- OptionsPointTool methods --
 
-	public OptionsPointTool() {
-		load(); // NB: Load persisted values *after* field initialization.
-	}
-
 	public int getMarkWidth() {
 		return markWidth;
 	}

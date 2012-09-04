@@ -204,6 +204,7 @@ public class DefaultOptionsService extends AbstractService implements
 			log.error("Cannot create plugin: " + info.getClassName());
 			return null;
 		}
+		optionsPlugin.setContext(getContext());
 
 		// execute key preprocessors on the newly created options plugin
 		final ArrayList<PluginInfo<? extends PreprocessorPlugin>> preInfos =
