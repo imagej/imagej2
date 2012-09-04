@@ -78,7 +78,8 @@ public class OptionsMisc extends OptionsPlugin {
 	@Parameter(label = "Debug mode")
 	private boolean debugMode = false;
 
-	@Parameter(label = "Compatibility mode", choices = {MODE_LEGACY, MODE_MODERN})
+	@Parameter(label = "ImageJ 1.x compatibility mode",
+		choices = {MODE_LEGACY, MODE_MODERN})
 	private String compatibilityMode = MODE_LEGACY;
 
 	// -- OptionsMisc methods --
@@ -153,11 +154,11 @@ public class OptionsMisc extends OptionsPlugin {
 		this.debugMode = debugMode;
 	}
 
-	public void setCompatibilityLegacy() {
+	public void setIJ1CompatibilityModeLegacy() {
 		compatibilityMode = MODE_LEGACY;
 	}
 
-	public void setCompatibilityModern() {
+	public void setIJ1CompatibilityModeModern() {
 		compatibilityMode = MODE_MODERN;
 	}
 }
