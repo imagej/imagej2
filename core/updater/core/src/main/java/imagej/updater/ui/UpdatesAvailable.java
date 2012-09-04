@@ -42,7 +42,7 @@ import imagej.log.LogService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.updater.core.UpToDate;
-import imagej.updater.core.UpdaterUIPlugin;
+import imagej.updater.core.UpdaterUI;
 import imagej.updater.util.Util;
 
 import java.util.List;
@@ -72,8 +72,8 @@ public class UpdatesAvailable implements Command {
 	@Override
 	public void run() {
 		if (updateAction.equals(YES)) {
-			final List<CommandInfo<UpdaterUIPlugin>> updaters =
-				commandService.getCommandsOfType(UpdaterUIPlugin.class);
+			final List<CommandInfo<UpdaterUI>> updaters =
+				commandService.getCommandsOfType(UpdaterUI.class);
 			if (updaters.size() > 0) {
 				commandService.run(updaters.get(0));
 			}

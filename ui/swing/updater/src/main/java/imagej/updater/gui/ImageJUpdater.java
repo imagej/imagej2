@@ -46,7 +46,7 @@ import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.Installer;
-import imagej.updater.core.UpdaterUIPlugin;
+import imagej.updater.core.UpdaterUI;
 import imagej.updater.core.UploaderService;
 import imagej.updater.gui.ViewOptions.Option;
 import imagej.updater.util.Progress;
@@ -66,7 +66,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Updater. As plugin.
+ * The Updater. As a command.
  * <p>
  * Incidentally, this class can be used as an out-of-ImageJ entry point to the
  * updater, as it does not *require* a StatusService to run. Use this Beanshell
@@ -89,9 +89,9 @@ import java.util.List;
  * 
  * @author Johannes Schindelin
  */
-@Plugin(type = UpdaterUIPlugin.class, menu = { @Menu(label = "Help"),
+@Plugin(type = UpdaterUI.class, menu = { @Menu(label = "Help"),
 	@Menu(label = "Update...") })
-public class ImageJUpdater implements UpdaterUIPlugin {
+public class ImageJUpdater implements UpdaterUI {
 
 	@Parameter
 	private StatusService statusService;

@@ -42,6 +42,6 @@ import imagej.command.Command;
  * 
  * @author Johannes Schindelin
  */
-public interface UpdaterUIPlugin extends Command {
+public interface UpdaterUI extends Command {
 	// marker interface
 }
