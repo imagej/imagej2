@@ -35,6 +35,8 @@
 
 package imagej.event;
 
+import imagej.service.Service;
+
 import java.util.Set;
 
 /**
@@ -42,7 +44,7 @@ import java.util.Set;
  * 
  * @author Curtis Rueden
  */
-public interface EventHistory {
+public interface EventHistory extends Service {
 
 	/** Activates or deactivates event history tracking. */
 	void setActive(boolean active);

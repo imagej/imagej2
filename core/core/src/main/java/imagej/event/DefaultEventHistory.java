@@ -49,7 +49,9 @@ import java.util.Set;
  * @author Curtis Rueden
  */
 @Plugin(type = Service.class)
-public class DefaultEventHistory extends AbstractService implements EventHistory {
+public class DefaultEventHistory extends AbstractService implements
+	EventHistory
+{
 
 	@Parameter
 	private EventService eventService;
