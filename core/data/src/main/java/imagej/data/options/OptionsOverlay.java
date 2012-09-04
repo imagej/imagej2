@@ -62,17 +62,17 @@ import imagej.widget.WidgetStyle;
 		@Menu(label = "Overlay Options...") }, label = "Default Overlay Settings")
 public class OptionsOverlay extends OptionsPlugin {
 
-	// -- public statics --
+	// -- Constants --
 
-	static final public String solidLineStyle = "Solid";
-	static final public String dashLineStyle = "Dash";
-	static final public String dotLineStyle = "Dot";
-	static final public String dotDashLineStyle = "Dot-dash";
-	static final public String noLineStyle = "None";
-	static final public String arrowLineDecoration = "Arrow";
-	static final public String noLineDecoration = "None";
+	public static final String solidLineStyle = "Solid";
+	public static final String dashLineStyle = "Dash";
+	public static final String dotLineStyle = "Dot";
+	public static final String dotDashLineStyle = "Dot-dash";
+	public static final String noLineStyle = "None";
+	public static final String arrowLineDecoration = "Arrow";
+	public static final String noLineDecoration = "None";
 
-	// -- private statics --
+	// -- Parameters  --
 
 	@Parameter
 	private OverlayService overlayService;
