@@ -49,11 +49,11 @@ import imagej.updater.core.Installer;
 import imagej.updater.core.UpdaterUIPlugin;
 import imagej.updater.core.UploaderService;
 import imagej.updater.gui.ViewOptions.Option;
-import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.Progress;
+import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
-import imagej.util.FileUtils;
+import imagej.util.AppUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -121,7 +121,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 
 		if (errorIfDebian()) return;
 
-		final File imagejRoot = FileUtils.getBaseDirectory();
+		final File imagejRoot = AppUtils.getBaseDirectory();
 		final FilesCollection files = new FilesCollection(imagejRoot);
 		final UpdaterFrame main = new UpdaterFrame(log, uploaderService, files);
 		if (new File(imagejRoot, "update").exists()) {
@@ -284,7 +284,7 @@ public class ImageJUpdater implements UpdaterUIPlugin {
 			UpdaterUserInterface.get().error(message);
 			return true;
 		}
-		else return false;
+		return false;
 	}
 
 	protected static boolean moveOutOfTheWay(final File file) {
