@@ -46,11 +46,21 @@ import imagej.plugin.Plugin;
  * @author Curtis Rueden
  */
 @Plugin(menuPath = "Plugins>Debug>Invalid Plugin", headless = true)
-public class InvalidPlugin extends ParameterTester {
+public class InvalidCommand extends ParameterTester {
 
+	/**
+	 * This parameter is invalid because it shadows a private parameter of a
+	 * superclass. Such parameters violate the principle of parameter names as
+	 * unique keys.
+	 */
 	@Parameter
 	private int q;
 
+	/**
+	 * This parameter is invalid because it is declared <code>final</code> without
+	 * being {@link imagej.module.ItemVisibility#MESSAGE} visibility. Java does
+	 * not allow such parameter values to be set by the framework.
+	 */
 	@Parameter
 	private final float x = 0;
 	
