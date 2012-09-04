@@ -37,9 +37,9 @@ package imagej.ui.swing;
 
 import imagej.ImageJ;
 import imagej.command.CommandService;
-import imagej.core.plugins.display.Flatten;
-import imagej.core.plugins.overlay.SelectedManagerOverlayProperties;
-import imagej.core.plugins.overlay.SelectionSpecify;
+import imagej.core.commands.display.Flatten;
+import imagej.core.commands.overlay.SelectedManagerOverlayProperties;
+import imagej.core.commands.overlay.SelectionSpecify;
 import imagej.data.ChannelCollection;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
