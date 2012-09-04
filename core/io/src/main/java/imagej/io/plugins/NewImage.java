@@ -166,6 +166,10 @@ public class NewImage extends ContextCommand {
 		this.height = height;
 	}
 
+	public Dataset getDataset() {
+		return dataset;
+	}
+
 	// -- Command methods --
 
 	@Override
