@@ -35,16 +35,58 @@
 
 package imagej.widget;
 
+import imagej.InstantiableException;
+import imagej.log.LogService;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginInfo;
+import imagej.plugin.PluginService;
+import imagej.service.AbstractService;
 import imagej.service.Service;
 
+import java.util.List;
+
 /**
- * Interface for services that manage available {@link InputWidget}s.
+ * Default service for managing available {@link InputWidget}s.
  * 
  * @author Curtis Rueden
  */
-public interface WidgetService extends Service {
+@Plugin(type = Service.class)
+public class DefaultWidgetService extends AbstractService implements
+	WidgetService
+{
 
-	/** Creates a widget that represents the given widget model. */
-	InputWidget<?, ?> createWidget(WidgetModel model);
+	@Parameter
+	private LogService log;
+
+	@Parameter
+	private PluginService pluginService;
+
+	// -- WidgetService methods --
+
+	@Override
+	public InputWidget<?, ?> createWidget(final WidgetModel model) {
+		@SuppressWarnings("rawtypes")
+		final List<PluginInfo<InputWidget>> infos =
+			pluginService.getPluginsOfType(InputWidget.class);
+		for (@SuppressWarnings("rawtypes")
+		final PluginInfo<InputWidget> info : infos)
+		{
+			final InputWidget<?, ?> widget;
+			try {
+				widget = info.createInstance();
+			}
+			catch (final InstantiableException e) {
+				log.error("Invalid widget: " + info.getClassName(), e);
+				continue;
+			}
+			if (widget.isCompatible(model)) {
+				widget.initialize(model);
+				return widget;
+			}
+		}
+		log.warn("No widget found for input: " + model.getItem().getName());
+		return null;
+	}
 
 }
