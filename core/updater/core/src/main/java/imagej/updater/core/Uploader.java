@@ -35,8 +35,8 @@
 
 package imagej.updater.core;
 
-import imagej.ext.plugin.IPlugin;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Plugin;
 import imagej.updater.util.Progressable;
 
 import java.io.IOException;
@@ -57,7 +57,7 @@ import java.util.List;
  * @see Plugin
  * @see UploaderService
  */
-public interface Uploader extends IPlugin, Progressable {
+public interface Uploader extends ImageJPlugin, Progressable {
 
 	/** TODO */
 	void upload(List<Uploadable> files, List<String> locks) throws IOException;

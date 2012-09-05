@@ -36,10 +36,10 @@
 package imagej.core.tools;
 
 import imagej.Priority;
+import imagej.command.CommandService;
 import imagej.display.event.input.KyPressedEvent;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
 import imagej.input.KeyCode;
+import imagej.plugin.Plugin;
 import imagej.thread.ThreadService;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
@@ -60,7 +60,7 @@ public class KonamiHandler extends AbstractTool implements Runnable {
 	private static final String JINGLE =
 		"T100 L32 B > C E G B > C E C < B G E C < L8 B";
 
-	private static final String PLUGIN = "imagej.core.plugins.app.EasterEgg";
+	private static final String COMMAND = "imagej.core.commands.app.EasterEgg";
 
 	private int index = 0;
 
@@ -74,9 +74,9 @@ public class KonamiHandler extends AbstractTool implements Runnable {
 				final ThreadService threadService =
 					getContext().getService(ThreadService.class);
 				threadService.run(this);
-				final PluginService pluginService =
-					getContext().getService(PluginService.class);
-				pluginService.run(PLUGIN);
+				final CommandService commandService =
+					getContext().getService(CommandService.class);
+				commandService.run(COMMAND);
 			}
 		}
 		else index = 0;

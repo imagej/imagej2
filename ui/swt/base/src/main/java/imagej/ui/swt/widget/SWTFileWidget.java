@@ -35,7 +35,7 @@
 
 package imagej.ui.swt.widget;
 
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Plugin;
 import imagej.widget.FileWidget;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;

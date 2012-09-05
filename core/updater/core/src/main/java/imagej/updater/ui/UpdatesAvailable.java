@@ -35,14 +35,14 @@
 
 package imagej.updater.ui;
 
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.PluginService;
+import imagej.command.Command;
+import imagej.command.CommandInfo;
+import imagej.command.CommandService;
 import imagej.log.LogService;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import imagej.updater.core.UpToDate;
-import imagej.updater.core.UpdaterUIPlugin;
+import imagej.updater.core.UpdaterUI;
 import imagej.updater.util.Util;
 
 import java.util.List;
@@ -54,13 +54,13 @@ import java.util.List;
  * @author Johannes Schindelin
  */
 @Plugin(label = "There are updates available")
-public class UpdatesAvailable implements RunnablePlugin {
+public class UpdatesAvailable implements Command {
 
 	private final static String YES = "Yes, please", NEVER = "Never",
 			LATER = "Remind me later";
 
 	@Parameter
-	public PluginService pluginService;
+	public CommandService commandService;
 
 	@Parameter
 	public LogService log;
@@ -72,10 +72,10 @@ public class UpdatesAvailable implements RunnablePlugin {
 	@Override
 	public void run() {
 		if (updateAction.equals(YES)) {
-			final List<PluginModuleInfo<UpdaterUIPlugin>> updaters =
-				pluginService.getRunnablePluginsOfType(UpdaterUIPlugin.class);
+			final List<CommandInfo<UpdaterUI>> updaters =
+				commandService.getCommandsOfType(UpdaterUI.class);
 			if (updaters.size() > 0) {
-				pluginService.run(updaters.get(0));
+				commandService.run(updaters.get(0));
 			}
 			else {
 				if (log == null) {

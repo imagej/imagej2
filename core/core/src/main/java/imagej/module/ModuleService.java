@@ -59,14 +59,14 @@ import java.util.concurrent.Future;
  * A <em>module</em> is distinct from a <em>plugin</em> in that plugins extend
  * ImageJ's functionality in some way, taking many forms, whereas modules are
  * always runnable code with typed inputs and outputs. There is a particular
- * type of plugin called a {@link imagej.ext.plugin.RunnablePlugin} which is
+ * type of plugin called a {@link imagej.command.Command} which is
  * also a module, but many plugins (e.g., {@link imagej.tool.Tool}s and
  * {@link imagej.display.Display}s) are not modules.
  * </p>
  * 
  * @author Curtis Rueden
  * @see Module
- * @see imagej.ext.plugin.PluginService
+ * @see imagej.plugin.PluginService
  */
 public interface ModuleService extends Service {
 
@@ -175,7 +175,8 @@ public interface ModuleService extends Service {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module> run(Module module, List<? extends ModulePreprocessor> pre,
+	<M extends Module> Future<M> run(M module,
+		List<? extends ModulePreprocessor> pre,
 		List<? extends ModulePostprocessor> post, Object... inputs);
 
 	/**

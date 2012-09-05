@@ -42,7 +42,7 @@ import imagej.object.event.ListEvent;
 import java.util.Collection;
 
 /**
- * An event indicating something has happened to the list of modules registered
+ * An event indicating something has happened to the list of plugins registered
  * with the {@link ModuleService}.
  * 
  * @author Curtis Rueden

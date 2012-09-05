@@ -1,4 +1,4 @@
-# This file lists legacy plugins to explicitly ignore.
+# This file lists legacy commands to explicitly ignore.
 
 ij.plugin.Commands("quit")                 # File > Quit
 ij.plugin.Clipboard("scopy")               # Edit > Copy To System

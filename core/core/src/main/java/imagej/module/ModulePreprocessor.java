@@ -39,8 +39,8 @@ import imagej.Cancelable;
 
 /**
  * A module preprocessor defines a step that occurs just prior to the actual
- * execution of a module. Typically, a preprocessor prepares the module for
- * execution in some way, such as populating module inputs or checking
+ * execution of a {@link Module}. Typically, a preprocessor prepares the module
+ * for execution in some way, such as populating module inputs or checking
  * prerequisites.
  * <p>
  * The preprocessor may decide to cancel the module's pending execution, subject

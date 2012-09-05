@@ -39,11 +39,11 @@ import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay.ArrowStyle;
 import imagej.data.overlay.Overlay.LineStyle;
 import imagej.data.overlay.OverlaySettings;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.options.OptionsPlugin;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 import imagej.widget.WidgetStyle;
@@ -62,17 +62,17 @@ import imagej.widget.WidgetStyle;
 		@Menu(label = "Overlay Options...") }, label = "Default Overlay Settings")
 public class OptionsOverlay extends OptionsPlugin {
 
-	// -- public statics --
+	// -- Constants --
 
-	static final public String solidLineStyle = "Solid";
-	static final public String dashLineStyle = "Dash";
-	static final public String dotLineStyle = "Dot";
-	static final public String dotDashLineStyle = "Dot-dash";
-	static final public String noLineStyle = "None";
-	static final public String arrowLineDecoration = "Arrow";
-	static final public String noLineDecoration = "None";
+	public static final String solidLineStyle = "Solid";
+	public static final String dashLineStyle = "Dash";
+	public static final String dotLineStyle = "Dot";
+	public static final String dotDashLineStyle = "Dot-dash";
+	public static final String noLineStyle = "None";
+	public static final String arrowLineDecoration = "Arrow";
+	public static final String noLineDecoration = "None";
 
-	// -- private statics --
+	// -- Parameters  --
 
 	@Parameter
 	private OverlayService overlayService;
@@ -108,10 +108,6 @@ public class OptionsOverlay extends OptionsPlugin {
 	private String endLineArrowStyle = noLineDecoration;
 
 	// -- public interface --
-
-	public OptionsOverlay() {
-		load(); // NB: Load persisted values *after* field initialization.
-	}
 
 	@Override
 	public void run() {

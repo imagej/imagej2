@@ -36,10 +36,10 @@
 package imagej.ui;
 
 import imagej.Priority;
-import imagej.ext.plugin.Plugin;
 import imagej.module.Module;
 import imagej.module.ModuleItem;
 import imagej.plugin.AbstractPreprocessorPlugin;
+import imagej.plugin.Plugin;
 import imagej.plugin.PreprocessorPlugin;
 
 /**

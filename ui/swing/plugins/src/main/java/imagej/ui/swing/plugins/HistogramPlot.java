@@ -36,14 +36,14 @@
 package imagej.ui.swing.plugins;
 
 import imagej.Cancelable;
+import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import imagej.util.RealRect;
 
 import java.awt.BasicStroke;
@@ -93,7 +93,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 	@Menu(label = "Analyze"),
 	@Menu(label = "Histogram Plot", accelerator = "control shift alt H",
 		weight = 0) })
-public class HistogramPlot extends ContextPlugin implements Cancelable {
+public class HistogramPlot extends ContextCommand implements Cancelable {
 
 	// -- instance variables that are Parameters --
 

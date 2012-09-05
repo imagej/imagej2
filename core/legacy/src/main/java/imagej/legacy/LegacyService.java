@@ -35,339 +35,75 @@
 
 package imagej.legacy;
 
-import ij.IJ;
 import ij.ImagePlus;
-import ij.WindowManager;
-import imagej.core.options.OptionsMisc;
-import imagej.data.Dataset;
-import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.data.options.OptionsChannels;
-import imagej.display.event.DisplayActivatedEvent;
-import imagej.display.event.input.KyPressedEvent;
-import imagej.display.event.input.KyReleasedEvent;
-import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginInfo;
-import imagej.ext.plugin.PluginService;
-import imagej.input.KeyCode;
-import imagej.legacy.plugin.LegacyPlugin;
-import imagej.legacy.plugin.LegacyPluginFinder;
-import imagej.log.LogService;
-import imagej.menu.MenuService;
 import imagej.options.OptionsService;
-import imagej.options.event.OptionsEvent;
-import imagej.service.AbstractService;
+import imagej.plugin.PluginService;
 import imagej.service.Service;
-import imagej.util.ColorRGB;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * Service for working with legacy ImageJ 1.x.
- * <p>
- * The legacy service overrides the behavior of various IJ1 methods, inserting
- * seams so that (e.g.) the modern UI is aware of IJ1 events as they occur.
- * </p>
- * <p>
- * It also maintains an image map between IJ1 {@link ImagePlus} objects and IJ2
- * {@link Dataset}s.
- * </p>
- * <p>
- * In this fashion, when a legacy plugin is executed on a {@link Dataset}, the
- * service transparently translates it into an {@link ImagePlus}, and vice
- * versa, enabling backward compatibility with legacy plugins.
- * </p>
+ * Interface for services that work with legacy ImageJ 1.x.
  * 
- * @author Curtis Rueden
  * @author Barry DeZonia
+ * @author Curtis Rueden
+ *
  */
-@Plugin(type = Service.class)
-public final class LegacyService extends AbstractService {
+public interface LegacyService extends Service {
 
-	static {
-		new LegacyInjector().injectHooks();
-	}
+	/** Gets the EventService associated with this LegacyService. */
+	EventService getEventService();
 
-	@Parameter
-	private LogService log;
+	/** Gets the PluginService associated with this LegacyService. */
+	PluginService getPluginService();
 
-	@Parameter
-	private EventService eventService;
+	/** Gets the OptionsService associated with this LegacyService. */
+	OptionsService getOptionsService();
 
-	@Parameter
-	private PluginService pluginService;
+	/** Gets the ImageDisplayService associated with this LegacyService. */
+	ImageDisplayService getImageDisplayService();
 
-	@Parameter
-	private OptionsService optionsService;
+	/** Gets the LegacyImageMap associated with this LegacyService. */
+	LegacyImageMap getImageMap();
 
-	@Parameter
-	private ImageDisplayService imageDisplayService;
-
-	@Parameter
-	private MenuService menuService;
-
-	private boolean lastDebugMode;
-	private boolean initialized;
-
-	/** Mapping between modern and legacy image data structures. */
-	private LegacyImageMap imageMap;
-
-	/** Method of synchronizing IJ2 & IJ1 options. */
-	private OptionsSynchronizer optionsSynchronizer;
-
-	// -- LegacyService methods --
-
-	/** Returns the EventService associated with this LegacyService */
-	public EventService getEventService() {
-		return eventService;
-	}
-
-	/** Returns the PluginService associated with this LegacyService */
-	public PluginService getPluginService() {
-		return pluginService;
-	}
-
-	/** Returns the OptionsService associated with this LegacyService */
-	public OptionsService getOptionsService() {
-		return optionsService;
-	}
-
-	/** Returns the ImageDisplayService associated with this LegacyService */
-	public ImageDisplayService getImageDisplayService() {
-		return imageDisplayService;
-	}
-
-	/** Returns the LegacyImageMap associated with this LegacyService */
-	public LegacyImageMap getImageMap() {
-		return imageMap;
-	}
-
-	/** Runs a legacy plugin programmaticaly
+	/**
+	 * Runs a legacy command programmatically.
 	 * 
 	 * @param ij1ClassName The name of the plugin class you want to run e.g.
 	 *          "ij.plugin.Clipboard"
 	 * @param argument The argument string to pass to the plugin e.g. "copy"
 	 */
-	public void runLegacyPlugin(final String ij1ClassName, final String argument)
-	{
-		final String arg = (argument == null) ? "" : argument;
-		final Map<String, Object> inputMap = new HashMap<String, Object>();
-		inputMap.put("className", ij1ClassName);
-		inputMap.put("arg", arg);
-		pluginService.run(LegacyPlugin.class, inputMap);
-	}
+	void runLegacyCommand(String ij1ClassName, String argument);
 
 	/**
 	 * Indicates to the service that the given {@link ImagePlus} has changed as
-	 * part of a legacy plugin execution.
+	 * part of a legacy command execution.
 	 */
-	public void legacyImageChanged(final ImagePlus imp) {
-		// CTR FIXME rework static InsideBatchDrawing logic?
-		// BDZ - removal for now. replace if issues arise. Alternative fix outlined
-		// in FunctionsMethods code. This code was for addressing bug #554
-		// if (FunctionsMethods.InsideBatchDrawing > 0) return;
-
-		// create a display if it doesn't exist yet.
-		imageMap.registerLegacyImage(imp);
-
-		// record resultant ImagePlus as a legacy plugin output
-		LegacyOutputTracker.getOutputImps().add(imp);
-	}
+	void legacyImageChanged(ImagePlus imp);
 
 	/**
 	 * Ensures that the currently active {@link ImagePlus} matches the currently
 	 * active {@link ImageDisplay}. Does not perform any harmonization.
 	 */
-	public void syncActiveImage() {
-		final ImageDisplay activeDisplay =
-			imageDisplayService.getActiveImageDisplay();
-		final ImagePlus activeImagePlus = imageMap.lookupImagePlus(activeDisplay);
-		// NB - old way - caused probs with 3d Project
-		//WindowManager.setTempCurrentImage(activeImagePlus);
-		// NB - new way - test thoroughly
-		if (activeImagePlus == null)
-			WindowManager.setCurrentWindow(null);
-		else
-			WindowManager.setCurrentWindow(activeImagePlus.getWindow());
-	}
-
-	/** Returns true if this LegacyService has been initialized already and false
-	 * if not.
-	 */
-	public boolean isInitialized() {
-		return initialized;
-	}
-
-	// TODO - make private only???
-
-	/** Updates ImageJ 1.x option settings from ImageJ 2.x options values. */
-	public void updateIJ1Settings() {
-		optionsSynchronizer.updateIJ1SettingsFromIJ2();
-	}
-
-	// TODO - make private only???
-
-	/** Updates ImageJ 2.x option settings from ImageJ 1.x options values. */
-	public void updateIJ2Settings() {
-		optionsSynchronizer.updateIJ2SettingsFromIJ1();
-	}
-
-	/** Sets the foreground and background colors in ImageJ 1.x from the current
-	 * view using the current channel values.
-	 */
-	public void syncColors() {
-		DatasetView view = imageDisplayService.getActiveDatasetView();
-		if (view == null) return;
-		OptionsChannels channels = getChannels();
-		ColorRGB fgColor = view.getColor(channels.getFgValues());
-		ColorRGB bgColor = view.getColor(channels.getBgValues());
-		optionsSynchronizer.colorOptions(fgColor, bgColor);
-	}
-	
-	// -- Service methods --
-
-	@Override
-	public void initialize() {
-		imageMap = new LegacyImageMap(getContext());
-		optionsSynchronizer = new OptionsSynchronizer(optionsService);
-
-		// initialize legacy ImageJ application
-		try {
-			new ij.ImageJ(ij.ImageJ.NO_SHOW);
-		}
-		catch (final Throwable t) {
-			log.warn("Failed to instantiate IJ1.", t);
-		}
-
-		// discover legacy plugins
-		final OptionsMisc optsMisc = optionsService.getOptions(OptionsMisc.class);
-		lastDebugMode = optsMisc.isDebugMode();
-		final boolean enableBlacklist = !optsMisc.isDebugMode();
-		addLegacyPlugins(enableBlacklist);
-
-		updateIJ1Settings();
-
-		subscribeToEvents(eventService);
-
-		initialized = true;
-	}
-
-	// -- Event handlers --
+	void syncActiveImage();
 
 	/**
-	 * Keeps the active legacy {@link ImagePlus} in sync with the active modern
-	 * {@link ImageDisplay}.
+	 * Returns true if this LegacyService has been initialized already and false
+	 * if not.
 	 */
-	@EventHandler
-	protected void onEvent(
-		@SuppressWarnings("unused") final DisplayActivatedEvent event)
-	{
-		syncActiveImage();
-	}
+	boolean isInitialized();
 
-	@EventHandler
-	protected void onEvent(final OptionsEvent event) {
-		if (event.getOptions().getClass() == OptionsMisc.class) {
-			final OptionsMisc opts = (OptionsMisc) event.getOptions();
-			if (opts.isDebugMode() != lastDebugMode) updateMenus(opts);
-		}
-		updateIJ1Settings();
-	}
+	/** Updates ImageJ 1.x option settings from ImageJ 2.x options values. */
+	void updateIJ1Settings();
 
-	@EventHandler
-	protected void onEvent(final KyPressedEvent event) {
-		final KeyCode code = event.getCode();
-		if (code == KeyCode.SPACE) IJ.setKeyDown(KeyCode.SPACE.getCode());
-		if (code == KeyCode.ALT) IJ.setKeyDown(KeyCode.ALT.getCode());
-		if (code == KeyCode.SHIFT) IJ.setKeyDown(KeyCode.SHIFT.getCode());
-		if (code == KeyCode.CONTROL) IJ.setKeyDown(KeyCode.CONTROL.getCode());
-		if (IJ.isMacintosh() && code == KeyCode.META) {
-			IJ.setKeyDown(KeyCode.CONTROL.getCode());
-		}
-	}
+	/** Updates ImageJ 2.x option settings from ImageJ 1.x options values. */
+	void updateIJ2Settings();
 
-	@EventHandler
-	protected void onEvent(final KyReleasedEvent event) {
-		final KeyCode code = event.getCode();
-		if (code == KeyCode.SPACE) IJ.setKeyUp(KeyCode.SPACE.getCode());
-		if (code == KeyCode.ALT) IJ.setKeyUp(KeyCode.ALT.getCode());
-		if (code == KeyCode.SHIFT) IJ.setKeyUp(KeyCode.SHIFT.getCode());
-		if (code == KeyCode.CONTROL) IJ.setKeyUp(KeyCode.CONTROL.getCode());
-		if (IJ.isMacintosh() && code == KeyCode.META) {
-			IJ.setKeyUp(KeyCode.CONTROL.getCode());
-		}
-	}
+	/**
+	 * Sets the foreground and background colors in ImageJ 1.x from the current
+	 * view using the current channel values.
+	 */
+	void syncColors();
 
-	// -- helpers --
-
-	private OptionsChannels getChannels() {
-		final OptionsService service =
-			getContext().getService(OptionsService.class);
-
-		return service.getOptions(OptionsChannels.class);
-	}
-
-	private void updateMenus(final OptionsMisc optsMisc) {
-		pluginService.reloadPlugins();
-		final boolean enableBlacklist = !optsMisc.isDebugMode();
-		addLegacyPlugins(enableBlacklist);
-		lastDebugMode = optsMisc.isDebugMode();
-	}
-
-	private void addLegacyPlugins(final boolean enableBlacklist) {
-		final LegacyPluginFinder finder =
-			new LegacyPluginFinder(log, menuService.getMenu(), enableBlacklist);
-		final ArrayList<PluginInfo<?>> plugins = new ArrayList<PluginInfo<?>>();
-		finder.findPlugins(plugins);
-		pluginService.addPlugins(plugins);
-	}
-
-	/* 3-1-12
-
-	 We are no longer going to synchronize colors from IJ1 to IJ2
-
-	protected class IJ1EventListener implements IJEventListener {
-
-		@Override
-		public void eventOccurred(final int eventID) {
-			final OptionsChannels colorOpts =
-				optionsService.getOptions(OptionsChannels.class);
-			ColorRGB color;
-			switch (eventID) {
-				case ij.IJEventListener.COLOR_PICKER_CLOSED:
-					color = AWTColors.getColorRGB(Toolbar.getForegroundColor());
-					colorOpts.setFgColor(color);
-					color = AWTColors.getColorRGB(Toolbar.getBackgroundColor());
-					colorOpts.setBgColor(color);
-					colorOpts.save();
-					break;
-				case ij.IJEventListener.FOREGROUND_COLOR_CHANGED:
-					color = AWTColors.getColorRGB(Toolbar.getForegroundColor());
-					colorOpts.setFgColor(color);
-					colorOpts.save();
-					break;
-				case ij.IJEventListener.BACKGROUND_COLOR_CHANGED:
-					color = AWTColors.getColorRGB(Toolbar.getBackgroundColor());
-					colorOpts.setBgColor(color);
-					colorOpts.save();
-					break;
-				case ij.IJEventListener.LOG_WINDOW_CLOSED:
-					// TODO - do something???
-					break;
-				case ij.IJEventListener.TOOL_CHANGED:
-					// TODO - do something???
-					break;
-				default: // unknown event
-					// do nothing
-					break;
-			}
-		}
-	}
-	*/
 }

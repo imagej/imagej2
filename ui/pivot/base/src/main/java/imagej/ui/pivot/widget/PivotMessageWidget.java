@@ -36,7 +36,7 @@
 package imagej.ui.pivot.widget;
 
 import imagej.Priority;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Plugin;
 import imagej.widget.InputWidget;
 import imagej.widget.MessageWidget;
 import imagej.widget.WidgetModel;

@@ -35,14 +35,14 @@
 
 package imagej.io.plugins;
 
+import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import net.imglib2.Cursor;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
@@ -61,7 +61,7 @@ import net.imglib2.type.numeric.RealType;
 		@Menu(label = "New", mnemonic = 'n'),
 		@Menu(label = "Image...", weight = 0, mnemonic = 'i',
 			accelerator = "control N") })
-public class NewImage extends ContextPlugin {
+public class NewImage extends ContextCommand {
 
 	public static final String DEPTH1 = "1-bit";
 	public static final String DEPTH8 = "8-bit";
@@ -166,7 +166,11 @@ public class NewImage extends ContextPlugin {
 		this.height = height;
 	}
 
-	// -- RunnablePlugin methods --
+	public Dataset getDataset() {
+		return dataset;
+	}
+
+	// -- Command methods --
 
 	@Override
 	public void run() {

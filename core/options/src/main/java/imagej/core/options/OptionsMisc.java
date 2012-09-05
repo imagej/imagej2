@@ -35,11 +35,11 @@
 
 package imagej.core.options;
 
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.options.OptionsPlugin;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 
 /**
  * Runs the Edit::Options::Misc dialog.
@@ -78,14 +78,11 @@ public class OptionsMisc extends OptionsPlugin {
 	@Parameter(label = "Debug mode")
 	private boolean debugMode = false;
 
-	@Parameter(label = "Compatibility mode", choices = {MODE_LEGACY, MODE_MODERN})
+	@Parameter(label = "ImageJ 1.x compatibility mode",
+		choices = {MODE_LEGACY, MODE_MODERN})
 	private String compatibilityMode = MODE_LEGACY;
 
 	// -- OptionsMisc methods --
-
-	public OptionsMisc() {
-		load(); // NB: Load persisted values *after* field initialization.
-	}
 
 	public String getDivByZeroVal() {
 		return divByZeroVal;
@@ -153,11 +150,11 @@ public class OptionsMisc extends OptionsPlugin {
 		this.debugMode = debugMode;
 	}
 
-	public void setCompatibilityLegacy() {
+	public void setIJ1CompatibilityModeLegacy() {
 		compatibilityMode = MODE_LEGACY;
 	}
 
-	public void setCompatibilityModern() {
+	public void setIJ1CompatibilityModeModern() {
 		compatibilityMode = MODE_MODERN;
 	}
 }

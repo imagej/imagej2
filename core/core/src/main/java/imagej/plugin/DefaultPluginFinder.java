@@ -35,11 +35,6 @@
 
 package imagej.plugin;
 
-import imagej.ext.plugin.IPlugin;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginInfo;
-import imagej.ext.plugin.PluginModuleInfo;
-import imagej.ext.plugin.RunnablePlugin;
 import imagej.util.Log;
 
 import java.util.List;
@@ -75,16 +70,16 @@ public class DefaultPluginFinder implements PluginFinder {
 
 	@Override
 	public void findPlugins(final List<PluginInfo<?>> plugins) {
-		final Index<Plugin, IPlugin> pluginIndex;
+		final Index<Plugin, ImageJPlugin> pluginIndex;
 		if (classLoader == null) {
-			pluginIndex = Index.load(Plugin.class, IPlugin.class);
+			pluginIndex = Index.load(Plugin.class, ImageJPlugin.class);
 		}
 		else {
-			pluginIndex = Index.load(Plugin.class, IPlugin.class, classLoader);
+			pluginIndex = Index.load(Plugin.class, ImageJPlugin.class, classLoader);
 		}
 
 		final int oldSize = plugins.size();
-		for (final IndexItem<Plugin, IPlugin> item : pluginIndex) {
+		for (final IndexItem<Plugin, ImageJPlugin> item : pluginIndex) {
 			final PluginInfo<?> info = createInfo(item);
 			plugins.add(info);
 		}
@@ -100,33 +95,16 @@ public class DefaultPluginFinder implements PluginFinder {
 
 	// -- Helper methods --
 
-	private <P extends IPlugin> PluginInfo<P> createInfo(
-		final IndexItem<Plugin, IPlugin> item)
+	private PluginInfo<ImageJPlugin>
+		createInfo(final IndexItem<Plugin, ImageJPlugin> item)
 	{
 		final String className = item.className();
 		final Plugin plugin = item.annotation();
 
 		@SuppressWarnings("unchecked")
-		final Class<P> pluginType = (Class<P>) plugin.type();
+		final Class<ImageJPlugin> pluginType = (Class<ImageJPlugin>) plugin.type();
 
-		if (RunnablePlugin.class.isAssignableFrom(pluginType)) {
-			// TODO - Investigate a simpler way to handle this.
-			final PluginModuleInfo<? extends RunnablePlugin> moduleInfo =
-				createModuleInfo(className, plugin);
-			@SuppressWarnings("unchecked")
-			final PluginInfo<P> result = (PluginInfo<P>) moduleInfo;
-			return result;
-		}
-		return new PluginInfo<P>(className, pluginType, plugin);
-	}
-
-	private <R extends RunnablePlugin> PluginModuleInfo<R> createModuleInfo(
-		final String className, final Plugin plugin)
-	{
-		@SuppressWarnings("unchecked")
-		final Class<R> pluginType = (Class<R>) plugin.type();
-
-		return new PluginModuleInfo<R>(className, pluginType, plugin);
+		return new PluginInfo<ImageJPlugin>(className, pluginType, plugin);
 	}
 
 }

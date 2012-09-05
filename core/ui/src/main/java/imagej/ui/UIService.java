@@ -35,16 +35,17 @@
 
 package imagej.ui;
 
+import imagej.command.CommandService;
 import imagej.data.display.ImageDisplay;
 import imagej.display.Display;
 import imagej.event.EventService;
 import imagej.event.StatusService;
-import imagej.ext.plugin.PluginService;
 import imagej.log.LogService;
 import imagej.menu.MenuService;
 import imagej.options.OptionsService;
 import imagej.platform.AppService;
 import imagej.platform.PlatformService;
+import imagej.plugin.PluginService;
 import imagej.service.Service;
 import imagej.thread.ThreadService;
 import imagej.tool.ToolService;
@@ -74,6 +75,8 @@ public interface UIService extends Service {
 	PlatformService getPlatformService();
 
 	PluginService getPluginService();
+
+	CommandService getCommandService();
 
 	MenuService getMenuService();
 

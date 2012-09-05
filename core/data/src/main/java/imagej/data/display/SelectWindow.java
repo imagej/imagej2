@@ -35,11 +35,11 @@
 
 package imagej.data.display;
 
+import imagej.command.Command;
 import imagej.display.Display;
 import imagej.display.DisplayService;
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 
 /**
  * Activates the chosen display. This operation sets the display as the active
@@ -48,7 +48,7 @@ import imagej.ext.plugin.Plugin;
  * @author Grant Harris
  */
 @Plugin(label = "Select Window...")
-public class SelectWindow implements RunnablePlugin {
+public class SelectWindow implements Command {
 
 	@Parameter(autoFill = false)
 	private Display<?> display;

@@ -35,13 +35,13 @@
 
 package imagej.ui.swing.plugins;
 
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
+import imagej.command.CommandService;
+import imagej.command.ContextCommand;
 import imagej.menu.MenuConstants;
 import imagej.module.ModuleInfo;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import imagej.util.swing.SwingUtils;
 
 import javax.swing.JOptionPane;
@@ -56,15 +56,15 @@ import javax.swing.JOptionPane;
 		weight = MenuConstants.PLUGINS_WEIGHT,
 		mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Utilities"),
 	@Menu(label = "Find Commands...", accelerator = "control L") })
-public class CommandFinder extends ContextPlugin {
+public class CommandFinder extends ContextCommand {
 
 	@Parameter
-	private PluginService pluginService;
+	private CommandService commandService;
 
 	@Override
 	public void run() {
 		final CommandFinderPanel commandFinderPanel =
-			new CommandFinderPanel(pluginService.getModuleService());
+			new CommandFinderPanel(commandService.getModuleService());
 		final int rval =
 			SwingUtils.showDialog(null, commandFinderPanel, "Find Commands",
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, false,
@@ -75,7 +75,7 @@ public class CommandFinder extends ContextPlugin {
 		if (info == null) return; // no command selected
 
 		// execute selected command
-		pluginService.run(info);
+		commandService.run(info);
 	}
 
 }

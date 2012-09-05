@@ -35,6 +35,7 @@
 
 package imagej.ui.swing.plugins.debug;
 
+import imagej.command.Command;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.display.DataView;
@@ -46,11 +47,10 @@ import imagej.display.event.DisplayActivatedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.ext.plugin.RunnablePlugin;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.object.ObjectService;
 import imagej.object.event.ObjectsListEvent;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import imagej.ui.swing.SwingOutputWindow;
 
 import java.util.ArrayList;
@@ -64,7 +64,7 @@ import net.imglib2.roi.RectangleRegionOfInterest;
  * @author Grant Harris
  */
 @Plugin(menuPath = "Plugins>Debug>Watch Overlays")
-public class WatchOverlays implements RunnablePlugin {
+public class WatchOverlays implements Command {
 
 	@Parameter
 	private EventService eventService;

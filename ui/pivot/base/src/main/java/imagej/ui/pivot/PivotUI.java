@@ -36,8 +36,8 @@
 package imagej.ui.pivot;
 
 import imagej.display.Display;
-import imagej.ext.plugin.Plugin;
 import imagej.log.LogService;
+import imagej.plugin.Plugin;
 import imagej.ui.AbstractUserInterface;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;

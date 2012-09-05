@@ -35,11 +35,11 @@
 
 package imagej.core.options;
 
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.options.OptionsPlugin;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 
 /**
  * Runs the Edit::Options::Input/Output dialog.
@@ -83,10 +83,6 @@ public class OptionsInputOutput extends OptionsPlugin {
 	private boolean saveRowNumbers = true;
 
 	// -- OptionsInputOutput methods --
-
-	public OptionsInputOutput() {
-		load(); // NB: Load persisted values *after* field initialization.
-	}
 
 	public int getJpegQuality() {
 		return jpegQuality;

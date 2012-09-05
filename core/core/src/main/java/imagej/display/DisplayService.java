@@ -36,9 +36,9 @@
 package imagej.display;
 
 import imagej.event.EventService;
-import imagej.ext.plugin.PluginInfo;
-import imagej.ext.plugin.PluginService;
 import imagej.object.ObjectService;
+import imagej.plugin.PluginInfo;
+import imagej.plugin.PluginService;
 import imagej.service.Service;
 
 import java.util.List;
@@ -87,7 +87,7 @@ public interface DisplayService extends Service {
 	 * Gets the list of display plugins of the given type (e.g.,
 	 * <code>ImageDisplay.class</code>).
 	 */
-	<D extends Display<?>> List<PluginInfo<? extends D>> getDisplayPluginsOfType(
+	<D extends Display<?>> List<PluginInfo<D>> getDisplayPluginsOfType(
 		Class<D> type);
 
 	/** Gets a list of all available displays. */

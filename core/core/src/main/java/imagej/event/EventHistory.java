@@ -35,45 +35,25 @@
 
 package imagej.event;
 
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
-import imagej.service.AbstractService;
 import imagej.service.Service;
 
-import java.util.ArrayList;
 import java.util.Set;
 
 /**
- * Service that keeps a history of ImageJ events.
+ * Interface for service that keeps a history of ImageJ events.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Service.class)
-public class EventHistory extends AbstractService {
+public interface EventHistory extends Service {
 
-	@Parameter
-	private EventService eventService;
+	/** Activates or deactivates event history tracking. */
+	void setActive(boolean active);
 
-	/** Event details that have been recorded. */
-	private ArrayList<EventDetails> history;
+	/** Gets whether event history tracking is currently active. */
+	boolean isActive();
 
-	private ArrayList<EventHistoryListener> listeners;
-
-	private boolean active;
-
-	// -- EventHistory methods --
-
-	public void setActive(final boolean active) {
-		this.active = active;
-	}
-
-	public boolean isActive() {
-		return active;
-	}
-
-	public void clear() {
-		history.clear();
-	}
+	/** Clears the recorded event history. */
+	void clear();
 
 	/**
 	 * Gets the recorded event history as an HTML string.
@@ -82,68 +62,20 @@ public class EventHistory extends AbstractService {
 	 * @param highlighted Set of event types to highlight in the history.
 	 * @return An HTML string representing the recorded event history.
 	 */
-	public String toHTML(final Set<Class<? extends ImageJEvent>> filtered,
-		final Set<Class<? extends ImageJEvent>> highlighted)
-	{
-		final StringBuilder sb = new StringBuilder();
-		for (final EventDetails details : history) {
-			final Class<? extends ImageJEvent> eventType = details.getEventType();
-			if (filtered != null && filtered.contains(eventType)) {
-				// skip filtered event type
-				continue;
-			}
-			final boolean bold =
-				highlighted != null && highlighted.contains(eventType);
-			sb.append(details.toHTML(bold));
-		}
-		return sb.toString();
-	}
+	String toHTML(Set<Class<? extends ImageJEvent>> filtered,
+		Set<Class<? extends ImageJEvent>> highlighted);
 
-	public void addListener(final EventHistoryListener l) {
-		synchronized (listeners) {
-			listeners.add(l);
-		}
-		// someone is listening; start recording
-		setActive(true);
-	}
+	/**
+	 * Adds an event history listener. This mechanism exists (rather than using
+	 * the event bus) to avoid event feedback loops when reporting history changes.
+	 */
+	void addListener(EventHistoryListener l);
 
-	public void removeListener(final EventHistoryListener l) {
-		synchronized (listeners) {
-			listeners.remove(l);
-		}
-		if (listeners.isEmpty()) {
-			// if no one is listening, stop recording
-			setActive(false);
-		}
-	}
-
-	// -- Service methods --
-
-	@Override
-	public void initialize() {
-		history = new ArrayList<EventDetails>();
-		listeners = new ArrayList<EventHistoryListener>();
-		subscribeToEvents(eventService);
-	}
-
-	// -- Event handlers --
-
-	@EventHandler
-	protected void onEvent(final ImageJEvent event) {
-		if (!active) return; // only record events while active
-		final EventDetails details = new EventDetails(event);
-		history.add(details);
-		notifyListeners(details);
-	}
-
-	// -- Helper methods --
-
-	private void notifyListeners(final EventDetails details) {
-		synchronized (listeners) {
-			for (final EventHistoryListener l : listeners) {
-				l.eventOccurred(details);
-			}
-		}
-	}
+	/**
+	 * Removes an event history listener. This mechanism exists (rather than using
+	 * the event bus) to avoid event feedback loops when reporting history
+	 * changes.
+	 */
+	void removeListener(EventHistoryListener l);
 
 }

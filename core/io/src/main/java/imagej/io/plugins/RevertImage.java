@@ -35,15 +35,15 @@
 
 package imagej.io.plugins;
 
+import imagej.command.ContextCommand;
 import imagej.data.Dataset;
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.io.IOService;
 import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
-import imagej.plugin.ContextPlugin;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 import net.imglib2.exception.IncompatibleTypeException;
@@ -60,7 +60,7 @@ import net.imglib2.io.ImgIOException;
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Revert", weight = 20, mnemonic = 'v',
 		accelerator = "control R") })
-public class RevertImage extends ContextPlugin {
+public class RevertImage extends ContextCommand {
 
 	@Parameter
 	private LogService log;

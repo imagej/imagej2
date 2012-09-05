@@ -35,15 +35,16 @@
 
 package imagej.options;
 
+import imagej.ImageJ;
+import imagej.command.DynamicCommand;
 import imagej.event.EventService;
-import imagej.ext.plugin.Parameter;
 import imagej.module.ModuleItem;
 import imagej.options.event.OptionsEvent;
-import imagej.plugin.DynamicPlugin;
+import imagej.plugin.Parameter;
 
 // TODO - outline for how to address issues with options (initializing, aggregating into 1 dialog)
 
-// 1. iterate over all inputs: array of PluginModuleItem?
+// 1. iterate over all inputs: array of CommandModuleItem?
 //     - or, split common logic into ParameterHelper class?
 // 2. for each input, call loadValue
 // 3. if loaded value is null, ignore; else set parameter to equal loaded value
@@ -55,12 +56,12 @@ import imagej.plugin.DynamicPlugin;
 // can get all OptionsPlugins from the OptionsService
 // can iterate over all values of OptionsPlugin?
 // 1. Remove all menu parameters from Plugin annotations
-// 2. Create Options plugin, extends DynamicPlugin
+// 2. Create Options plugin, extends DynamicCommand
 //    - Aggregates inputs from all OptionsPlugins from OptionsService & PluginService
 //    - assigns "group" field matching name of OptionsPlugin
 //    - Would iterate over options: one tab per OptionsPlugin class?
 //    - One widget per field of that class -- reuse InputWidget logic
-//    - List<PluginModuleInfo<OptionsPlugin>> infos = pluginService.getRunnablePlugins(OptionsPlugin.class)
+//    - List<CommandInfo<OptionsPlugin>> infos = pluginService.getCommands(OptionsPlugin.class)
 //      from those, can get name & label (for use setting group name, which we'll use for tab name)
 // "Best" approach: a "grouped" set of inputs rendered as tabs by input harvester
 // that get rendered as tabs by Swing, but potentially something else in other UIs
@@ -72,7 +73,7 @@ import imagej.plugin.DynamicPlugin;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public class OptionsPlugin extends DynamicPlugin {
+public class OptionsPlugin extends DynamicCommand {
 
 	// -- Parameters --
 
@@ -101,6 +102,14 @@ public class OptionsPlugin extends DynamicPlugin {
 	public void run() {
 		save();
 		eventService.publish(new OptionsEvent(this));
+	}
+
+	// -- Contextual methods --
+
+	@Override
+	public void setContext(final ImageJ context) {
+		super.setContext(context);
+		load();
 	}
 
 	// -- Helper methods --

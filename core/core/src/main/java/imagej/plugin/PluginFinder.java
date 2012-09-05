@@ -35,7 +35,6 @@
 
 package imagej.plugin;
 
-import imagej.ext.plugin.PluginInfo;
 
 import java.util.List;
 

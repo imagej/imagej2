@@ -36,7 +36,7 @@
 package imagej.tool;
 
 import imagej.event.EventService;
-import imagej.ext.plugin.PluginService;
+import imagej.plugin.PluginService;
 import imagej.service.Service;
 
 import java.util.List;

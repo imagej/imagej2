@@ -35,11 +35,11 @@
 
 package imagej.core.options;
 
-import imagej.ext.plugin.Menu;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.menu.MenuConstants;
 import imagej.options.OptionsPlugin;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 
 /**
  * Runs the Edit::Options::DICOM dialog.
@@ -63,10 +63,6 @@ public class OptionsDicom extends OptionsPlugin {
 	private boolean rotateXZ = false;
 
 	// -- OptionsDicom methods --
-
-	public OptionsDicom() {
-		load(); // NB: Load persisted values *after* field initialization.
-	}
 
 	public boolean isOpenAs32bitFloat() {
 		return openAs32bitFloat;

@@ -44,8 +44,8 @@ import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
 import imagej.event.StatusService;
-import imagej.ext.plugin.PluginInfo;
 import imagej.input.MouseCursor;
+import imagej.plugin.PluginInfo;
 import imagej.plugin.SortablePlugin;
 
 import java.text.DecimalFormat;

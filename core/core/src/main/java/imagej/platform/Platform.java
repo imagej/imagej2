@@ -35,8 +35,8 @@
 
 package imagej.platform;
 
-import imagej.ext.plugin.IPlugin;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Plugin;
 
 import java.io.IOException;
 import java.net.URL;
@@ -56,7 +56,7 @@ import java.net.URL;
  * @see Plugin
  * @see PlatformService
  */
-public interface Platform extends IPlugin {
+public interface Platform extends ImageJPlugin {
 
 	/** Java Runtime Environment vendor to match. */
 	String javaVendor();

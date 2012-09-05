@@ -37,12 +37,12 @@ package imagej.object;
 
 import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.ext.plugin.Parameter;
-import imagej.ext.plugin.Plugin;
 import imagej.object.event.ObjectCreatedEvent;
 import imagej.object.event.ObjectDeletedEvent;
 import imagej.object.event.ObjectsAddedEvent;
 import imagej.object.event.ObjectsRemovedEvent;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 

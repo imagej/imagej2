@@ -263,7 +263,7 @@ public class AWTDropListener implements DropTargetListener {
 		private void loadImage(final File f) {
 			final Map<String, Object> params = new HashMap<String, Object>();
 			params.put("inputFile", f);
-			uiService.getPluginService().run(OpenImage.class, params);
+			uiService.getCommandService().run(OpenImage.class, params);
 		}
 
 		private void openAsTextFile(final String filename) {
@@ -337,7 +337,7 @@ public class AWTDropListener implements DropTargetListener {
 			params.put("fillType", NewImage.RAMP);
 			params.put("width", 256L);
 			params.put("height", 50L);
-			uiService.getPluginService().run(NewImage.class, params);
+			uiService.getCommandService().run(NewImage.class, params);
 		}
 
 		private String shortName(final String filename) {

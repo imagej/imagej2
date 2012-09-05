@@ -143,7 +143,7 @@ public abstract class AbstractUserInterface extends SortablePlugin
 		final String firstRun = Prefs.get(getClass(), prefFirstRun);
 		if (firstRun != null) return;
 		Prefs.put(getClass(), prefFirstRun, false);
-		getUIService().getPluginService().run(ShowReadme.class);
+		getUIService().getCommandService().run(ShowReadme.class);
 	}
 
 	/** Tests whether updates are available */
@@ -160,7 +160,7 @@ public abstract class AbstractUserInterface extends SortablePlugin
 				case DEVELOPER:
 					return;
 				case UPDATEABLE:
-					getUIService().getPluginService().run(UpdatesAvailable.class);
+					getUIService().getCommandService().run(UpdatesAvailable.class);
 					break;
 				case PROXY_NEEDS_AUTHENTICATION:
 					throw new RuntimeException(

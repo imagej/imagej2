@@ -38,8 +38,8 @@ package imagej.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import imagej.ext.plugin.IPlugin;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Plugin;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -98,7 +98,7 @@ public class CheckSezpozTest {
 		final FileWriter writer = new FileWriter(source);
 		writer.append("import imagej.ImageJ;\n"
 			+ "import imagej.Prioritized;\n"
-			+ "import imagej.ext.plugin.Plugin;\n"
+			+ "import imagej.plugin.Plugin;\n"
 			+ "import imagej.service.Service;\n"
 			+ "\n"
 			+ "@Plugin(type = Service.class)\n"
@@ -128,11 +128,11 @@ public class CheckSezpozTest {
 		// second run succeeds
 		assertTrue(CheckSezpoz.checkDirectory(classes));
 		assertTrue(new File(classes,
-			"META-INF/annotations/imagej.ext.plugin.Plugin").exists());
+			"META-INF/annotations/imagej.plugin.Plugin").exists());
 
 		Thread.currentThread().setContextClassLoader(
 			new URLClassLoader(new URL[] { classes.toURI().toURL() }));
-		assertTrue(sezpozFindsClass(Plugin.class, IPlugin.class, "Annotated"));
+		assertTrue(sezpozFindsClass(Plugin.class, ImageJPlugin.class, "Annotated"));
 	}
 
 	protected <S extends Annotation, T> boolean sezpozFindsClass(

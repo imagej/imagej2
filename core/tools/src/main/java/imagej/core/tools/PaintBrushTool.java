@@ -35,8 +35,8 @@
 
 package imagej.core.tools;
 
-import imagej.ext.plugin.Plugin;
-import imagej.ext.plugin.PluginService;
+import imagej.command.CommandService;
+import imagej.plugin.Plugin;
 import imagej.tool.Tool;
 
 /**
@@ -57,9 +57,9 @@ public class PaintBrushTool extends AbstractLineTool {
 
 	@Override
 	public void configure() {
-		final PluginService pluginService =
-			getContext().getService(PluginService.class);
-		pluginService.run(PaintBrushToolConfigPlugin.class, "tool", this);
+		final CommandService commandService =
+			getContext().getService(CommandService.class);
+		commandService.run(PaintBrushToolConfig.class, "tool", this);
 	}
 
 }

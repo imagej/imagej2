@@ -36,7 +36,7 @@
 package imagej.display;
 
 import imagej.Priority;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Plugin;
 
 /**
  * Default display for objects, when no other displays are available.

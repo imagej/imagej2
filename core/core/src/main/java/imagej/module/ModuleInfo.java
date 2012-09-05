@@ -36,8 +36,8 @@
 package imagej.module;
 
 import imagej.UIDetails;
+import imagej.command.CommandInfo;
 import imagej.event.EventService;
-import imagej.ext.plugin.PluginModuleInfo;
 import imagej.module.event.ModulesUpdatedEvent;
 
 import java.util.List;
@@ -72,8 +72,8 @@ public interface ModuleInfo extends UIDetails {
 	 * {@link ModuleItem#getCallback()}.
 	 * <p>
 	 * The nature of this method is implementation-specific; for example, a
-	 * <code>PluginModule</code> will return the class name of its associated
-	 * <code>RunnablePlugin</code>. For modules that are not plugins, the result
+	 * <code>CommandModule</code> will return the class name of its associated
+	 * <code>Command</code>. For modules that are not plugins, the result
 	 * may be something else.
 	 * </p>
 	 * <p>
@@ -134,7 +134,7 @@ public interface ModuleInfo extends UIDetails {
 	 * case of programmatically generated module infos whose input data comes from
 	 * an untrusted source.
 	 * </p>
-	 * @see PluginModuleInfo#isValid()
+	 * @see CommandInfo#isValid()
 	 */
 	boolean isValid();
 

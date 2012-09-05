@@ -40,7 +40,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.display.event.input.MsMovedEvent;
 import imagej.event.StatusService;
-import imagej.ext.plugin.Plugin;
+import imagej.plugin.Plugin;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 import net.imglib2.meta.Axes;

@@ -35,7 +35,6 @@
 
 package imagej;
 
-import imagej.ext.InstantiableException;
 
 /**
  * An interface declaring the ability to create objects.
