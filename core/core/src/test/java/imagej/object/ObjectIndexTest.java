@@ -38,6 +38,7 @@ package imagej.object;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -64,10 +65,10 @@ public class ObjectIndexTest {
 		objectIndex.add(o2);
 		objectIndex.add(o3);
 		final List<Object> all = objectIndex.getAll();
-		assertTrue(all.size() == 3);
-		assertTrue(all.get(0) == o1);
-		assertTrue(all.get(1) == o2);
-		assertTrue(all.get(2) == o3);
+		assertEquals(3, all.size());
+		assertSame(o1, all.get(0));
+		assertSame(o2, all.get(1));
+		assertSame(o3, all.get(2));
 	}
 
 	@Test
@@ -80,10 +81,10 @@ public class ObjectIndexTest {
 		objectIndex.add(o1);
 		objectIndex.add(o2);
 		objectIndex.add(o3);
-		final List<Object> all = objectIndex.get(Integer.class);
-		assertTrue(all.size() == 2);
-		assertTrue(all.get(0) == o1);
-		assertTrue(all.get(1) == o3);
+		final List<Object> integers = objectIndex.get(Integer.class);
+		assertEquals(2, integers.size());
+		assertSame(o1, integers.get(0));
+		assertSame(o3, integers.get(1));
 	}
 
 	@Test
@@ -122,7 +123,7 @@ public class ObjectIndexTest {
 		int i = 0;
 		while (iter.hasNext()) {
 			final Object o = iter.next();
-			assertTrue(o == objects[i]);
+			assertSame(objects[i], o);
 			i++;
 		}
 	}
@@ -168,7 +169,7 @@ public class ObjectIndexTest {
 		objects.add(new Integer(3));
 		objectIndex.addAll(objects);
 		final List<Object> result = objectIndex.getAll();
-		assertEquals(result, objects);
+		assertEquals(objects, result);
 	}
 
 	@Test
@@ -183,11 +184,11 @@ public class ObjectIndexTest {
 		objects.add(o2);
 		objects.add(o3);
 		objectIndex.addAll(objects);
-		assertTrue(objectIndex.size() == 3);
+		assertEquals(3, objectIndex.size());
 		objects.remove(o2);
 		objectIndex.removeAll(objects);
-		assertTrue(objectIndex.size() == 1);
-		assertTrue(objectIndex.getAll().get(0) == o2);
+		assertEquals(1, objectIndex.size());
+		assertSame(o2, objectIndex.getAll().get(0));
 	}
 
 	@Test

@@ -35,7 +35,8 @@
 
 package imagej.object;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 import java.util.List;
 
@@ -59,10 +60,10 @@ public class SortedObjectIndexTest {
 		objectIndex.add(o2);
 		objectIndex.add(o3);
 		final List<String> all = objectIndex.getAll();
-		assertTrue(all.size() == 3);
-		assertTrue(all.get(0) == o2);
-		assertTrue(all.get(1) == o3);
-		assertTrue(all.get(2) == o1);
+		assertEquals(3, all.size());
+		assertSame(o2, all.get(0));
+		assertSame(o3, all.get(1));
+		assertSame(o1, all.get(2));
 	}
 
 }
