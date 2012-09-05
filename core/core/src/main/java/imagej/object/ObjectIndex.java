@@ -38,6 +38,7 @@ package imagej.object;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -166,6 +167,37 @@ public class ObjectIndex<E> implements Collection<E> {
 	@Override
 	public void clear() {
 		hoard.clear();
+	}
+
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		final List<Class<?>> classes = new ArrayList<Class<?>>(hoard.keySet());
+		Collections.sort(classes, new Comparator<Class<?>>() {
+
+			@Override
+			public int compare(Class<?> c1, Class<?> c2) {
+				return c1.getName().compareTo(c2.getName());
+			}
+
+		});
+
+		final String nl = System.getProperty("line.separator");
+		final StringBuilder sb = new StringBuilder();
+		for (final Class<?> c : classes) {
+			sb.append(c.getName() + ": {");
+			final List<E> list = hoard.get(c);
+			boolean first = true;
+			for (final E element : list) {
+				if (first) first = false;
+				else sb.append(", ");
+				sb.append(element);
+			}
+			sb.append("}" + nl);
+		}
+
+		return sb.toString();
 	}
 
 	// -- Internal methods --
