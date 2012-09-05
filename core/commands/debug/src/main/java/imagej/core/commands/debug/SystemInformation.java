@@ -40,12 +40,14 @@ import imagej.command.Command;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.service.Service;
 import imagej.util.Manifest;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -76,6 +78,13 @@ public class SystemInformation implements Command {
 		final StringBuilder sb = new StringBuilder();
 
 		sb.append(context.getInfo(false) + NL);
+
+		sb.append(NL);
+		sb.append("-- Services --" + NL);
+		final List<Service> services = context.getServiceIndex().getAll();
+		for (final Service service : services) {
+			sb.append(service + NL);
+		}
 
 		final Manifest manifest = context.getManifest();
 		if (manifest != null) {
