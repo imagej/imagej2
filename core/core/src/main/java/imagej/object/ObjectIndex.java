@@ -46,14 +46,30 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Data structure for managing lists of registered objects.
+ * <p>
+ * The object index keeps lists of objects segregated by type. The type
+ * hierarchy beneath which each object is classified can be customized through
+ * subclassing (e.g., see {@link imagej.plugin.PluginIndex}), but by default,
+ * each registered object is added to all type lists with which its class is
+ * compatible. For example, an object of type {@link String} would be added to
+ * the following type lists: {@link String}, {@link java.io.Serializable},
+ * {@link Comparable}, {@link CharSequence} and {@link Object}. A subsequent
+ * request for all objects of type {@link Comparable} (via a call to
+ * {@link #get(Class)}) would return a list that includes the object.
+ * </p>
+ * <p>
+ * Note that similar to {@link List}, it is possible for the same object to be
+ * added to the index more than once, in which case it will appear on relevant
+ * type lists multiple times.
+ * </p>
  * 
  * @author Curtis Rueden
  */
 public class ObjectIndex<E> implements Collection<E> {
 
 	/**
-	 * "Them as counts counts moren them as dont count." &mdash;Russell Hoban,
-	 * <em>Riddley Walker</em>
+	 * "Them as counts counts moren them as dont count." <br>
+	 * &mdash;Russell Hoban, <em>Riddley Walker</em>
 	 */
 	protected final Map<Class<?>, List<E>> hoard =
 		new ConcurrentHashMap<Class<?>, List<E>>();
@@ -73,11 +89,20 @@ public class ObjectIndex<E> implements Collection<E> {
 
 	/**
 	 * Gets a list of all registered objects.
+	 * <p>
+	 * Calling this method is equivalent to calling
+	 * <code>get(Object.class)</code>.
+	 * </p>
 	 * 
 	 * @return Read-only list of all registered objects, or an empty list if none
 	 *         (this method never returns null).
 	 */
 	public List<E> getAll() {
+		// NB: We *must* pass Object.class here rather than getBaseClass()! The
+		// reason is that the base class of the objects stored in the index may
+		// differ from the type hierarchy beneath which they are classified.
+		// In particular, PluginIndex classifies its PluginInfo objects beneath
+		// the ImageJPlugin type hierarchy, and not that of PluginInfo.
 		return get(Object.class);
 	}
 
@@ -88,7 +113,7 @@ public class ObjectIndex<E> implements Collection<E> {
 	 *         list if no such objects exist (this method never returns null).
 	 */
 	public List<E> get(final Class<?> type) {
-		final List<E> list = getList(type);
+		final List<E> list = retrieveList(type);
 		return Collections.unmodifiableList(list);
 	}
 
@@ -202,10 +227,12 @@ public class ObjectIndex<E> implements Collection<E> {
 
 	// -- Internal methods --
 
+	/** Adds the object to all compatible type lists. */
 	protected boolean add(final E o, final boolean batch) {
 		return add(o, o.getClass(), batch);
 	}
 
+	/** Removes the object from all compatible type lists. */
 	protected boolean remove(final Object o, final boolean batch) {
 		return remove(o, o.getClass(), batch);
 	}
@@ -248,7 +275,7 @@ public class ObjectIndex<E> implements Collection<E> {
 	{
 		if (type == null) return false; // invalid class
 
-		final boolean result = addToList(o, getList(type), batch);
+		final boolean result = addToList(o, retrieveList(type), batch);
 
 		// recursively add to supertypes
 		register(o, type.getSuperclass(), batch);
@@ -265,7 +292,7 @@ public class ObjectIndex<E> implements Collection<E> {
 	{
 		if (type == null) return false;
 
-		final boolean result = removeFromList(obj, getList(type), batch);
+		final boolean result = removeFromList(obj, retrieveList(type), batch);
 
 		// recursively remove from supertypes
 		deregister(obj, type.getSuperclass(), batch);
@@ -276,7 +303,8 @@ public class ObjectIndex<E> implements Collection<E> {
 		return result;
 	}
 
-	private List<E> getList(final Class<?> type) {
+	/** Retrieves the type list for the given type, creating it if necessary. */
+	private List<E> retrieveList(final Class<?> type) {
 		List<E> list = hoard.get(type);
 		if (list == null) {
 			list = new ArrayList<E>();
@@ -285,6 +313,11 @@ public class ObjectIndex<E> implements Collection<E> {
 		return list;
 	}
 
+	/**
+	 * Some types such as primitives (e.g., <code>int.class</code>) and interfaces
+	 * (e.g., {@link java.lang.annotation.Annotation}) do not extend
+	 * {@link Object}. This method checks whether the given type is one of those.
+	 */
 	private boolean extendsObject(final Class<?> c) {
 		if (c == null) return false;
 		if (c == Object.class) return true;

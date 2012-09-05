@@ -42,6 +42,24 @@ import java.util.List;
 
 /**
  * Data structure for managing registered plugins.
+ * <p>
+ * The plugin index is a special type of {@link imagej.object.ObjectIndex} that
+ * classifies each {@link PluginInfo} object into a type hierarchy compatible
+ * with its associated <em>plugin</em> type (i.e.,
+ * {@link PluginInfo#getPluginType()}), rather than {@link PluginInfo}'s type
+ * hierarchy (i.e., {@link PluginInfo}, {@link imagej.UIDetails},
+ * {@link imagej.Instantiable}, etc.).
+ * </p>
+ * <p>
+ * NB: This type hierarchy will typically <em>not</em> include the plugin class
+ * itself; for example, the <code>imagej.core.plugins.app.AboutImageJ</code>
+ * command has a plugin type of {@link imagej.command.Command}, and hence will
+ * be categorized beneath <code>Command.class</code>, not
+ * <code>AboutImageJ.class</code>. The rationale is that to fully classify each
+ * plugin including its own class, said class would need to be loaded, which
+ * ImageJ makes an effort not to do until the plugin is actually executed for
+ * the first time.
+ * </p>
  * 
  * @author Curtis Rueden
  */
@@ -92,11 +110,33 @@ public class PluginIndex extends SortedObjectIndex<PluginInfo<?>> {
 
 	// -- Internal methods --
 
+	/**
+	 * Adds the plugin to all type lists compatible with its plugin type.
+	 * <p>
+	 * NB: This behavior differs from the default
+	 * {@link imagej.object.ObjectIndex} behavior in that the <code>info</code>
+	 * object's actual type hierarchy is not used for classification, but rather
+	 * the object is classified according to {@link PluginInfo#getPluginType()}.
+	 * </p>
+	 * 
+	 * @see PluginInfo#getPluginType()
+	 */
 	@Override
 	protected boolean add(final PluginInfo<?> info, final boolean batch) {
 		return add(info, info.getPluginType(), batch);
 	}
 
+	/**
+	 * Removes the plugin from all type lists compatible with its plugin type.
+	 * <p>
+	 * NB: This behavior differs from the default
+	 * {@link imagej.object.ObjectIndex} behavior in that the <code>info</code>
+	 * object's actual type hierarchy is not used for classification, but rather
+	 * the object is classified according to {@link PluginInfo#getPluginType()}.
+	 * </p>
+	 * 
+	 * @see PluginInfo#getPluginType()
+	 */
 	@Override
 	protected boolean remove(final Object o, final boolean batch) {
 		if (!(o instanceof PluginInfo)) return false;

@@ -41,6 +41,15 @@ import java.util.List;
 
 /**
  * Data structure for managing sorted lists of registered objects.
+ * <p>
+ * This data structure is the same as a vanilla {@link ObjectIndex} except that
+ * each type list is kept in sorted order; hence, the items managed must
+ * implement the {@link Comparable} interface. When adding a single item (i.e.,
+ * with {@link #add(Object)}), a binary search is used to insert it in the
+ * correct position (O(log n) + O(n) time per item). When adding multiple items
+ * at once (i.e., with {@link #addAll(Collection)}), the items are appended and
+ * the list is then resorted (O(n log n) time for all items).
+ * </p>
  * 
  * @author Curtis Rueden
  */
