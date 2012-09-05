@@ -89,8 +89,8 @@ public class MacOSXPlatform extends AbstractPlatform {
 		// use Mac OS X screen menu bar
 		if (SCREEN_MENU) System.setProperty("apple.laf.useScreenMenuBar", "true");
 
-		// remove app plugins from menu structure
-		if (SCREEN_MENU) removeAppPluginsFromMenu();
+		// remove app commands from menu structure
+		if (SCREEN_MENU) removeAppCommandsFromMenu();
 
 		// translate Mac OS X application events into ImageJ events
 		final EventService eventService = platformService.getEventService();
@@ -125,21 +125,21 @@ public class MacOSXPlatform extends AbstractPlatform {
 
 	// -- Helper methods --
 
-	private void removeAppPluginsFromMenu() {
+	private void removeAppCommandsFromMenu() {
 		final EventService eventService = platformService.getEventService();
 		final CommandService commandService = platformService.getCommandService();
 		final AppService appEventService = platformService.getAppService();
 
-		// get the list of plugins being handled at the application level
-		final List<Class<? extends Command>> plugins =
+		// get the list of commands being handled at the application level
+		final List<Class<? extends Command>> commands =
 			appEventService.getHandlers();
 
-		// remove said plugins from the main menu bar
+		// remove said commands from the main menu bar
 		// (the Mac application menu will trigger them instead)
 		final ArrayList<ModuleInfo> infos = new ArrayList<ModuleInfo>();
-		for (final Class<? extends Command> plugin : plugins) {
+		for (final Class<? extends Command> command : commands) {
 			final CommandInfo<? extends Command> info =
-				commandService.getCommand(plugin);
+				commandService.getCommand(command);
 			info.setMenuPath(null);
 			infos.add(info);
 		}
