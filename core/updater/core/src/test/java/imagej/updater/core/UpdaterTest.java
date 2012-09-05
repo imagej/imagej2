@@ -505,6 +505,7 @@ public class UpdaterTest {
 		assertEquals(FileObject.getFilename("jars/javassist.jar", true), FileObject.getFilename("jars/javassist-3.9.0.GA.jar", true));
 		assertEquals(FileObject.getFilename("jars/javassist.jar", true), FileObject.getFilename("jars/javassist-3.16.1-GA.jar", true));
 		assertEquals(FileObject.getFilename("jars/bsh.jar", true), FileObject.getFilename("jars/bsh-2.0b4.jar", true));
+		assertEquals(FileObject.getFilename("jars/mpicbg.jar", true), FileObject.getFilename("jars/mpicbg-20111128.jar", true));
 	}
 
 	@Test
