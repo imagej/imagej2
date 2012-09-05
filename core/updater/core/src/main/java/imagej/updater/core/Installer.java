@@ -161,7 +161,11 @@ public class Installer extends Downloader {
 		if (updater == null) return result;
 		final Set<FileObject> topLevel = new HashSet<FileObject>();
 		topLevel.add(updater);
-		if (commandService != null) {
+		if (commandService == null) {
+			final String hardcoded = "jars/ij-ui-swing-updater.jar";
+			final FileObject file = files.get(hardcoded);
+			if (file != null) topLevel.add(file);
+		} else {
 			for (final CommandInfo<UpdaterUI> info : commandService.getCommandsOfType(UpdaterUI.class)) {
 				final FileObject file = getFileObject(files, info.getClassName());
 				if (file != null) {
