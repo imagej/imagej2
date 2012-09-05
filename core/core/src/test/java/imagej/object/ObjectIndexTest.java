@@ -85,6 +85,11 @@ public class ObjectIndexTest {
 		assertEquals(2, integers.size());
 		assertSame(o1, integers.get(0));
 		assertSame(o3, integers.get(1));
+		final List<Object> numbers = objectIndex.get(Number.class);
+		assertEquals(numbers.size(), 3);
+		assertSame(o1, numbers.get(0));
+		assertSame(o2, numbers.get(1));
+		assertSame(o3, numbers.get(2));
 	}
 
 	@Test
