@@ -41,9 +41,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -63,6 +65,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * Note that similar to {@link List}, it is possible for the same object to be
  * added to the index more than once, in which case it will appear on relevant
  * type lists multiple times.
+ * </p>
+ * <p>
+ * Note that similar to {@link List}, it is possible for the same object to
+ * be added to the index more than once, in which case it will appear on
+ * compatible type lists multiple times.
  * </p>
  * 
  * @author Curtis Rueden
@@ -241,8 +248,11 @@ public class ObjectIndex<E> implements Collection<E> {
 
 	/** Adds an object to type lists beneath the given type hierarchy. */
 	protected boolean add(final E o, final Class<?> type, final boolean batch) {
-		final boolean result = register(o, type, batch);
-		if (extendsObject(o.getClass())) register(o, Object.class, batch);
+		boolean result = false;
+		final Set<Class<?>> types = getTypes(type);
+		for (final Class<?> c : types) {
+			if (addToList(o, retrieveList(c), batch)) result = true;
+		}
 		return result;
 	}
 
@@ -250,17 +260,18 @@ public class ObjectIndex<E> implements Collection<E> {
 	protected boolean remove(final Object o, final Class<?> type,
 		final boolean batch)
 	{
-		final boolean result = deregister(o, type, batch);
-		if (!extendsObject(o.getClass())) deregister(o, Object.class, batch);
+		boolean result = false;
+		final Set<Class<?>> types = getTypes(type);
+		for (final Class<?> c : types) {
+			if (removeFromList(o, retrieveList(c), batch)) result = true;
+		}
 		return result;
 	}
 
 	protected boolean addToList(final E obj, final List<E> list,
 		@SuppressWarnings("unused") final boolean batch)
 	{
-		if (list.contains(obj)) return false; // object already on the list
-		list.add(obj);
-		return true;
+		return list.add(obj);
 	}
 
 	protected boolean removeFromList(final Object obj, final List<E> list,
@@ -271,38 +282,23 @@ public class ObjectIndex<E> implements Collection<E> {
 
 	// -- Helper methods --
 
-	/** Recursively adds the given object to type lists. */
-	private boolean
-		register(final E o, final Class<?> type, final boolean batch)
-	{
-		if (type == null) return false; // invalid class
-
-		final boolean result = addToList(o, retrieveList(type), batch);
-
-		// recursively add to supertypes
-		register(o, type.getSuperclass(), batch);
-		for (final Class<?> iface : type.getInterfaces()) {
-			register(o, iface, batch);
-		}
-
-		return result;
+	/** Gets a new set containing the type and all its supertypes. */
+	private HashSet<Class<?>> getTypes(final Class<?> type) {
+		final HashSet<Class<?>> types = new HashSet<Class<?>>();
+		getTypes(type, types);
+		return types;
 	}
 
-	/** Recursively removes the given object from type lists. */
-	private boolean deregister(final Object obj, final Class<?> type,
-		final boolean batch)
-	{
-		if (type == null) return false;
+	/** Recursively adds the type and all its supertypes to the given set. */
+	private void getTypes(final Class<?> type, final HashSet<Class<?>> types) {
+		if (type == null) return;
+		types.add(type);
 
-		final boolean result = removeFromList(obj, retrieveList(type), batch);
-
-		// recursively remove from supertypes
-		deregister(obj, type.getSuperclass(), batch);
+		// recursively add to supertypes
+		getTypes(type.getSuperclass(), types);
 		for (final Class<?> iface : type.getInterfaces()) {
-			deregister(obj, iface, batch);
+			getTypes(iface, types);
 		}
-
-		return result;
 	}
 
 	/** Retrieves the type list for the given type, creating it if necessary. */
@@ -313,17 +309,6 @@ public class ObjectIndex<E> implements Collection<E> {
 			hoard.put(type, list);
 		}
 		return list;
-	}
-
-	/**
-	 * Some types such as primitives (e.g., <code>int.class</code>) and interfaces
-	 * (e.g., {@link java.lang.annotation.Annotation}) do not extend
-	 * {@link Object}. This method checks whether the given type is one of those.
-	 */
-	private boolean extendsObject(final Class<?> c) {
-		if (c == null) return false;
-		if (c == Object.class) return true;
-		return extendsObject(c.getSuperclass());
 	}
 
 }
