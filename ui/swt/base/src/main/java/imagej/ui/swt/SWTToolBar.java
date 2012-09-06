@@ -51,6 +51,8 @@ import java.util.Map;
 import net.miginfocom.swt.MigLayout;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -88,10 +90,11 @@ public class SWTToolBar extends Composite implements ToolBar {
 	// -- Helper methods --
 
 	private void populateToolBar() {
+		final Tool activeTool = toolService.getActiveTool();
 		for (final Tool tool : toolService.getTools()) {
 			final PluginInfo<? extends Tool> info = tool.getInfo();
 			try {
-				final Button button = createButton(tool);
+				final Button button = createButton(tool, tool == activeTool);
 				toolButtons.put(info.getName(), button);
 			}
 			catch (final InstantiableException e) {
@@ -100,7 +103,7 @@ public class SWTToolBar extends Composite implements ToolBar {
 		}
 	}
 
-	private Button createButton(final Tool tool) throws InstantiableException {
+	private Button createButton(final Tool tool, boolean active) throws InstantiableException {
 		final PluginInfo<? extends Tool> info = tool.getInfo();
 		final String name = info.getName();
 		final URL iconURL = info.getIconURL();
@@ -113,13 +116,14 @@ public class SWTToolBar extends Composite implements ToolBar {
 			uiService.getLog().warn("Invalid icon for tool: " + tool);
 		}
 
-		// TODO
-//		button.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				getToolService().setActiveTool(tool);
-//			}
-//		});
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				getToolService().setActiveTool(tool);
+			}
+		});
+
+		if (active) button.setSelection(true);
 
 		return button;
 	}

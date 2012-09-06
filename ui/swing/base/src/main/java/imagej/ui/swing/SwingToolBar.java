@@ -102,10 +102,12 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 	// -- Helper methods --
 
 	private void populateToolBar() {
+		final ToolService toolService = getToolService();
+		final Tool activeTool = toolService.getActiveTool();
 		Tool lastTool = null;
-		for (final Tool tool : getToolService().getTools()) {
+		for (final Tool tool : toolService.getTools()) {
 			try {
-				final AbstractButton button = createButton(tool);
+				final AbstractButton button = createButton(tool, tool == activeTool);
 				toolButtons.put(tool.getInfo().getName(), button);
 
 				// add a separator between tools where applicable
@@ -120,7 +122,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 		}
 	}
 
-	private AbstractButton createButton(final Tool tool)
+	private AbstractButton createButton(final Tool tool, boolean active)
 		throws InstantiableException
 	{
 		final PluginInfo<? extends Tool> info = tool.getInfo();
@@ -167,21 +169,22 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 		// activate tool when button pressed
 		button.addChangeListener(new ChangeListener() {
 
-			boolean active = false;
+			boolean isActive = false;
 
 			@Override
 			public void stateChanged(final ChangeEvent e) {
 				final boolean selected = button.isSelected();
 				button.setBorder(selected ? ACTIVE_BORDER : INACTIVE_BORDER);
-				if (selected == active) return;
-				active = selected;
-				if (active) {
+				if (selected == isActive) return;
+				isActive = selected;
+				if (isActive) {
 					getToolService().setActiveTool(tool);
 				}
 			}
 		});
 
-		button.setBorder(INACTIVE_BORDER);
+		button.setBorder(active ? ACTIVE_BORDER : INACTIVE_BORDER);
+		if (active) button.setSelected(true);
 		button.setEnabled(enabled);
 
 		return button;
