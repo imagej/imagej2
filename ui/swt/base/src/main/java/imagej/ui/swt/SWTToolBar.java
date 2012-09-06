@@ -35,13 +35,13 @@
 
 package imagej.ui.swt;
 
-import imagej.ImageJ;
 import imagej.InstantiableException;
 import imagej.plugin.PluginInfo;
 import imagej.tool.Tool;
 import imagej.tool.ToolService;
 import imagej.ui.ToolBar;
 import imagej.util.Log;
+import imagej.ui.UIService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,14 +64,16 @@ import org.eclipse.swt.widgets.Display;
  */
 public class SWTToolBar extends Composite implements ToolBar {
 
+	private final UIService uiService;
 	private final Display display;
 	private final ToolService toolService;
 	private final Map<String, Button> toolButtons;
 
-	public SWTToolBar(final Display display, final Composite parent) {
+	public SWTToolBar(final UIService uiService, final Display display, final Composite parent) {
 		super(parent, 0);
 		this.display = display;
-		toolService = ImageJ.get(ToolService.class);
+		this.uiService = uiService;
+		toolService = uiService.getToolService();
 		toolButtons = new HashMap<String, Button>();
 		setLayout(new MigLayout());
 		populateToolBar();
