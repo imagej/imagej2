@@ -200,7 +200,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 			return createPolygonRoi((PolygonOverlay) overlay);
 		}
 		if (overlay instanceof BinaryMaskOverlay) {
-			return createBinaryMaskRoi((BinaryMaskOverlay) overlay);
+			return createBinaryMaskRoi((BinaryMaskOverlay<?, ?>) overlay);
 		}
 		if (overlay instanceof LineOverlay) {
 			return createLineRoi((LineOverlay) overlay);
@@ -339,7 +339,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		return new PolygonRoi(xpoints, ypoints, 3, Roi.ANGLE);
 	}
 	
-	private ShapeRoi createBinaryMaskRoi(final BinaryMaskOverlay overlay) {
+	private ShapeRoi createBinaryMaskRoi(final BinaryMaskOverlay<?, ?> overlay) {
 		final RegionOfInterest roi = overlay.getRegionOfInterest();
 		final double[] min = new double[roi.numDimensions()];
 		roi.realMin(min);
@@ -621,7 +621,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		}
 		final BinaryMaskRegionOfInterest<BitType, Img<BitType>> broi =
 			new BinaryMaskRegionOfInterest<BitType, Img<BitType>>(img);
-		return new BinaryMaskOverlay(getContext(), broi);
+		return new BinaryMaskOverlay<BitType, Img<BitType>>(getContext(), broi);
 	}
 
 	private void assignPropertiesToOverlay(final Overlay overlay, final Roi roi)
