@@ -35,6 +35,7 @@
 
 package imagej.module;
 
+import imagej.Contextual;
 import imagej.MenuPath;
 import imagej.event.EventService;
 import imagej.input.Accelerator;
@@ -152,6 +153,9 @@ public class DefaultModuleService extends AbstractService implements
 	{
 		try {
 			final Module module = info.createModule();
+			if (module instanceof Contextual) {
+				((Contextual)module).setContext(getContext());
+			}
 			return run(module, pre, post, inputMap);
 		}
 		catch (final ModuleException e) {
