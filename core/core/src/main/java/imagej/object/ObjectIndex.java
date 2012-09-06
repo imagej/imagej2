@@ -133,7 +133,7 @@ public class ObjectIndex<E> implements Collection<E> {
 
 	@Override
 	public boolean contains(final Object o) {
-		return getAll().contains(o);
+		return get(o.getClass()).contains(o);
 	}
 
 	@Override
