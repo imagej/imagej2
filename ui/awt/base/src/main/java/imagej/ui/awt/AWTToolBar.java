@@ -41,7 +41,6 @@ import imagej.tool.Tool;
 import imagej.tool.ToolService;
 import imagej.ui.ToolBar;
 import imagej.ui.UIService;
-import imagej.util.Log;
 
 import java.awt.Button;
 import java.awt.FlowLayout;
@@ -100,7 +99,7 @@ public class AWTToolBar extends Panel implements ToolBar {
 				lastTool = tool;
 			}
 			catch (final InstantiableException e) {
-				Log.warn("Invalid tool: " + tool.getInfo(), e);
+				uiService.getLog().warn("Invalid tool: " + tool.getInfo(), e);
 			}
 		}
 	}
@@ -130,7 +129,7 @@ public class AWTToolBar extends Panel implements ToolBar {
 		if (iconURL == null) {
 			if (label != null && !label.isEmpty()) button.setLabel(label);
 			else button.setLabel(name);
-			Log.warn("Invalid icon for tool: " + tool);
+			uiService.getLog().warn("Invalid icon for tool: " + tool);
 		}
 
 		// display description on mouseover

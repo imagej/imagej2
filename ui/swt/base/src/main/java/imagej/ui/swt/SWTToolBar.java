@@ -40,7 +40,6 @@ import imagej.plugin.PluginInfo;
 import imagej.tool.Tool;
 import imagej.tool.ToolService;
 import imagej.ui.ToolBar;
-import imagej.util.Log;
 import imagej.ui.UIService;
 
 import java.io.IOException;
@@ -96,7 +95,7 @@ public class SWTToolBar extends Composite implements ToolBar {
 				toolButtons.put(info.getName(), button);
 			}
 			catch (final InstantiableException e) {
-				Log.warn("Invalid tool: " + info, e);
+				uiService.getLog().warn("Invalid tool: " + info, e);
 			}
 		}
 	}
@@ -111,7 +110,7 @@ public class SWTToolBar extends Composite implements ToolBar {
 		if (iconImage != null) button.setImage(iconImage);
 		if (iconURL == null) {
 			button.setText(name);
-			Log.warn("Invalid icon for tool: " + tool);
+			uiService.getLog().warn("Invalid icon for tool: " + tool);
 		}
 
 		// TODO
