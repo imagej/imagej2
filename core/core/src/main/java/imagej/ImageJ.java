@@ -274,4 +274,19 @@ public class ImageJ {
 		return serviceIndex.getService(c);
 	}
 
+	/**
+	 * Injects the application context into the given object. Note that this is
+	 * only possible if the given object implements the {@link Contextual}
+	 * interface.
+	 * 
+	 * @param o The object to which the context should be assigned.
+	 * @return true If the context was successfully injected.
+	 * @throws IllegalStateException If the object already has a context.
+	 */
+	public boolean inject(final Object o) {
+		if (!(o instanceof Contextual)) return false;
+		((Contextual) o).setContext(this);
+		return true;
+	}
+
 }

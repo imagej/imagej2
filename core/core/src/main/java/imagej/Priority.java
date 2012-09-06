@@ -94,4 +94,18 @@ public final class Priority {
 		return priority1 > priority2 ? -1 : 1;
 	}
 
+	/**
+	 * Injects the specified priority into the given object. Note that this is
+	 * only possible if the given object implements the {@link Prioritized}
+	 * interface.
+	 * 
+	 * @param o The object to which the priority should be assigned.
+	 * @return true If the priority was successfully injected.
+	 */
+	public static boolean inject(final Object o, final double priority) {
+		if (!(o instanceof Prioritized)) return false;
+		((Prioritized) o).setPriority(priority);
+		return true;
+	}
+
 }

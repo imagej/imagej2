@@ -35,9 +35,8 @@
 
 package imagej.plugin;
 
-import imagej.Contextual;
 import imagej.InstantiableException;
-import imagej.Prioritized;
+import imagej.Priority;
 import imagej.event.EventService;
 import imagej.log.LogService;
 import imagej.plugin.event.PluginsAddedEvent;
@@ -196,14 +195,8 @@ public class DefaultPluginService extends AbstractService implements
 			try {
 				final P p = info.createInstance();
 				list.add(p);
-				// inject ImageJ context, where applicable
-				if (p instanceof Contextual) {
-					((Contextual) p).setContext(getContext());
-				}
-				// inject priority, where applicable
-				if (p instanceof Prioritized) {
-					((Prioritized) p).setPriority(info.getPriority());
-				}
+				getContext().inject(p);
+				Priority.inject(p, info.getPriority());
 			}
 			catch (final InstantiableException e) {
 				log.error("Cannot create plugin: " + info.getClassName());
