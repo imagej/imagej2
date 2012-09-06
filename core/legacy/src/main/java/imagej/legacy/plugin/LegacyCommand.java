@@ -330,18 +330,18 @@ public class LegacyCommand implements Command {
 			for (final ImageDisplay display : imageDisplays) {
 				ImagePlus imp = map.lookupImagePlus(display);
 				if (imp == null) {
-					if (isLegacyCompatible(display)) {
-						imp = map.registerDisplay(display);
-						harmonizer.registerType(imp);
+					if (!isLegacyCompatible(display)) {
+						continue;
 					}
+					imp = map.registerDisplay(display);
 				}
 				else { // imp already exists : update it
 					// NB - it is possible a runtime exception in an IJ1 plugin left the
 					// ImagePlus in a locked state. Make sure its unlocked going forward.
 					imp.unlock();
-					harmonizer.updateLegacyImage(display, imp);
-					harmonizer.registerType(imp);
 				}
+				harmonizer.updateLegacyImage(display, imp);
+				harmonizer.registerType(imp);
 			}
 		}
 
