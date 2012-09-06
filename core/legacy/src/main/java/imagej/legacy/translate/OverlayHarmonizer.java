@@ -52,19 +52,19 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.AngleOverlay;
 import imagej.data.overlay.BinaryMaskOverlay;
-import imagej.data.overlay.CompositeOverlay;
 import imagej.data.overlay.EllipseOverlay;
+import imagej.data.overlay.GeneralPathOverlay;
 import imagej.data.overlay.LineOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.PointOverlay;
 import imagej.data.overlay.PolygonOverlay;
 import imagej.data.overlay.RectangleOverlay;
-import imagej.util.ColorRGB;
 import imagej.log.LogService;
 import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.awt.geom.PathIterator;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,6 +79,7 @@ import net.imglib2.img.basictypeaccess.array.BitArray;
 import net.imglib2.img.transform.ImgTranslationAdapter;
 import net.imglib2.roi.BinaryMaskRegionOfInterest;
 import net.imglib2.roi.EllipseRegionOfInterest;
+import net.imglib2.roi.GeneralPathRegionOfInterest;
 import net.imglib2.roi.PolygonRegionOfInterest;
 import net.imglib2.roi.RectangleRegionOfInterest;
 import net.imglib2.roi.RegionOfInterest;
@@ -199,6 +200,9 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		if (overlay instanceof PolygonOverlay) {
 			return createPolygonRoi((PolygonOverlay) overlay);
 		}
+		if (overlay instanceof GeneralPathOverlay) {
+			return createGeneralPathRoi((GeneralPathOverlay) overlay);
+		}
 		if (overlay instanceof BinaryMaskOverlay) {
 			return createBinaryMaskRoi((BinaryMaskOverlay<?, ?>) overlay);
 		}
@@ -295,6 +299,11 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		final Roi roi = new PolygonRoi(x, y, vertexCount, Roi.POLYGON);
 		assignPropertiesToRoi(roi, overlay);
 		return roi;
+	}
+
+	private Roi createGeneralPathRoi(final GeneralPathOverlay overlay) {
+		final GeneralPathRegionOfInterest region = overlay.getRegionOfInterest();
+		return new ShapeRoi(region.getGeneralPath());
 	}
 
 	// NB - there is some overloading here with createPointRoi.
@@ -465,29 +474,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 			case Roi.COMPOSITE:
 				log.warn("====> COMPOSITE: " + roi);
 				final ShapeRoi shapeRoi = (ShapeRoi) roi;
-				final Roi[] rois = shapeRoi.getRois();
-				final double xO = xOff + xOff + shapeRoi.getBounds().x;
-				final double yO = yOff + shapeRoi.getBounds().y;
-				final ArrayList<Overlay> subOverlays = new ArrayList<Overlay>();
-				for (final Roi r : rois)
-					createOverlays(r, subOverlays, xO, yO);
-				for (final Overlay overlay : subOverlays) {
-					assignPropertiesToOverlay(overlay, shapeRoi);
-				}
-				if (subOverlays.size() == 1) {
-					overlays.add(subOverlays.get(0));
-					return;
-				}
-				final CompositeOverlay coverlay = new CompositeOverlay(getContext());
-				for (Overlay subOverlay : subOverlays) {
-					coverlay.xor(subOverlay);
-				}
-				/*
-				 * An arbitrary guess - set the fill color to red with a 1/3 alpha
-				 */
-				coverlay.setFillColor(new ColorRGB(255, 0, 0));
-				coverlay.setAlpha(80);
-				overlays.add(coverlay);
+				overlays.add(createGeneralPathOverlay(shapeRoi, xOff, yOff));
 				break;
 			default:
 				log.warn("====> OTHER (" + roi.getType() + ", " + "): " + roi);
@@ -572,6 +559,43 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		for (int i = 0; i < xCoords.length; i++) {
 			final double x = xCoords[i] + x0, y = yCoords[i] + y0;
 			region.addVertex(i, new RealPoint(x, y));
+		}
+		assignPropertiesToOverlay(overlay, roi);
+		return overlay;
+	}
+
+	@SuppressWarnings("unused")
+	private GeneralPathOverlay createGeneralPathOverlay(final Roi roi, final double xOff,
+		final double yOff)
+	{
+		assert roi instanceof ShapeRoi;
+		final ShapeRoi polygonRoi = (ShapeRoi) roi;
+		final Rectangle bounds = polygonRoi.getBounds();
+		final GeneralPathOverlay overlay = new GeneralPathOverlay(getContext());
+		final GeneralPathRegionOfInterest region = overlay.getRegionOfInterest();
+		region.reset();
+		final double[] coords = new double[6];
+		for (final PathIterator iterator = polygonRoi.getShape().getPathIterator(null); !iterator.isDone(); iterator.next()) {
+			int type = iterator.currentSegment(coords);
+			switch (type) {
+				case PathIterator.SEG_MOVETO:
+					region.moveTo(coords[0] + bounds.x, coords[1] + bounds.y);
+					break;
+				case PathIterator.SEG_LINETO:
+					region.lineTo(coords[0] + bounds.x, coords[1] + bounds.y);
+					break;
+				case PathIterator.SEG_QUADTO:
+					region.quadTo(coords[0] + bounds.x, coords[1] + bounds.y, coords[2] + bounds.x, coords[3] + bounds.y);
+					break;
+				case PathIterator.SEG_CUBICTO:
+					region.cubicTo(coords[0] + bounds.x, coords[1] + bounds.y, coords[2] + bounds.x, coords[3] + bounds.y, coords[4] + bounds.x, coords[5] + bounds.y);
+					break;
+				case PathIterator.SEG_CLOSE:
+					region.close();
+					break;
+				default:
+					throw new RuntimeException("Unsupported segment type: " + type);
+			}
 		}
 		assignPropertiesToOverlay(overlay, roi);
 		return overlay;

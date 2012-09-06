@@ -55,6 +55,7 @@ import java.util.Random;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.roi.PolygonRegionOfInterest;
+import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.logic.BitType;
 
 import org.junit.Test;
@@ -293,45 +294,17 @@ public class OverlayHarmonizerTest {
 		final int[] r1y = new int[] { 9, 9, 15, 15, 9 };
 		final int[] r2x = new int[] { 8, 9, 9, 8, 8 };
 		final int[] r2y = new int[] { 11, 11, 13, 13, 11 };
-		final int[][] all_x = new int[][] { r1x, r2x };
-		final int[][] all_y = new int[][] { r1y, r2y };
 		final Roi r1 = Helper.makePolygonROI(r1x, r1y);
 		final Roi r2 = Helper.makePolygonROI(r2x, r2y);
 		final Roi roi = new ShapeRoi(r1).not(new ShapeRoi(r2));
 
 		imagePlus.setRoi(roi);
 		final List<Overlay> list = ot.getOverlays(imagePlus);
+		assertEquals(1, list.size());
+		RegionOfInterest roi2 = list.get(0).getRegionOfInterest();
 		for (int i = 0; i < 12; i++) {
-			boolean ignore = false;
-			for (final int[] aa : all_x) {
-				for (final int c : aa) {
-					if (i == c) {
-						ignore = true;
-						break;
-					}
-				}
-			}
-			if (ignore) continue;
-			for (int j = 0; j < 14; j++) {
-				ignore = false;
-				for (final int[] aa : all_y) {
-					for (final int c : aa) {
-						if (j == c) {
-							ignore = true;
-							break;
-						}
-					}
-				}
-				if (ignore) continue;
-				boolean contains = false;
-				for (final Overlay overlay : list) {
-					final RealRandomAccess<BitType> ra =
-						overlay.getRegionOfInterest().realRandomAccess();
-					ra.setPosition(i, 0);
-					ra.setPosition(j, 1);
-					contains |= ra.get().get();
-				}
-				assertEquals(roi.contains(i, j), contains);
+			for (int j = 0; j < 16; j++) {
+				assertEquals("@(" + i + ", " + j + ")", roi.contains(i,  j), roi2.contains(new double[] { i, j }));
 			}
 		}
 	}
