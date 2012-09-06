@@ -39,6 +39,7 @@ import imagej.AbstractContextual;
 import imagej.Contextual;
 import imagej.Prioritized;
 import imagej.Priority;
+import imagej.util.ClassUtils;
 
 /**
  * Abstract base class for {@link Contextual}, {@link Prioritized} plugins.
@@ -68,7 +69,14 @@ public abstract class SortablePlugin extends AbstractContextual
 
 	@Override
 	public int compareTo(final Prioritized that) {
-		return Priority.compare(this, that);
+		if (that == null) return 1;
+
+		// compare priorities
+		final int priorityCompare = Priority.compare(this, that);
+		if (priorityCompare != 0) return priorityCompare;
+
+		// compare classes
+		return ClassUtils.compare(getClass(), that.getClass());
 	}
 
 }
