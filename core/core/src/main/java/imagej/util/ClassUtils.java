@@ -362,8 +362,6 @@ public final class ClassUtils {
 		return new File(path);
 	}
 
-	// -- Utility methods --
-
 	/**
 	 * Gets the given class's {@link Field}s marked with the annotation of the
 	 * specified class.
@@ -509,6 +507,29 @@ public final class ClassUtils {
 
 	public static boolean isText(final Class<?> type) {
 		return String.class.isAssignableFrom(type) || isCharacter(type);
+	}
+
+	// -- Comparison --
+
+	/**
+	 * Compares two {@link Class} objects using their fully qualified names.
+	 * <p>
+	 * Note: this method provides a natural ordering that may be inconsistent with
+	 * equals. Specifically, two unequal classes may return 0 when compared in
+	 * this fashion if they represent the same class loaded using two different
+	 * {@link ClassLoader}s. Hence, if this method is used as a basis for
+	 * implementing {@link Comparable#compareTo} or
+	 * {@link java.util.Comparator#compare}, that implementation may want to
+	 * impose logic beyond that of this method, for breaking ties, if a total
+	 * ordering consistent with equals is always required.
+	 * </p>
+	 * @see imagej.Priority#compare(imagej.Prioritized, imagej.Prioritized)
+	 */
+	public static int compare(final Class<?> c1, final Class<?> c2) {
+		if (c1 == c2) return 0;
+		final String name1 = c1.getName();
+		final String name2 = c2.getName();
+		return name1.compareTo(name2);
 	}
 
 }
