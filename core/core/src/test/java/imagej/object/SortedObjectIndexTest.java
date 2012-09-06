@@ -66,4 +66,29 @@ public class SortedObjectIndexTest {
 		assertSame(o1, all.get(2));
 	}
 
+	@Test
+	public void testDuplicates() {
+		final SortedObjectIndex<String> objectIndex =
+			new SortedObjectIndex<String>(String.class);
+		final String o1 = "quick";
+		final String o2 = "brown";
+		final String o3 = "fox";
+		objectIndex.add(o1);
+		objectIndex.add(o2);
+		objectIndex.add(o3);
+		objectIndex.add(o2);
+		objectIndex.add(o3);
+		objectIndex.add(o1);
+		objectIndex.add(o3);
+		objectIndex.remove(o3);
+		final List<String> all = objectIndex.getAll();
+		assertEquals(6, all.size());
+		assertSame(o2, all.get(0));
+		assertSame(o2, all.get(1));
+		assertSame(o3, all.get(2));
+		assertSame(o3, all.get(3));
+		assertSame(o1, all.get(4));
+		assertSame(o1, all.get(5));
+	}
+
 }
