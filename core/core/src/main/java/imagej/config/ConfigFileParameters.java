@@ -75,7 +75,7 @@ public class ConfigFileParameters {
 	// -- private instance variables --
 
 	private final Map<String, String> dataMap;
-	private final String filename;
+	private final File configFile;
 
 	// -- constructors --
 
@@ -83,9 +83,9 @@ public class ConfigFileParameters {
 	 * Constructs a ConfigFileParameters object. Uses filename for loading/saving
 	 * its values.
 	 */
-	public ConfigFileParameters(final String filename) {
+	public ConfigFileParameters(final File configFile) {
 		this.dataMap = new HashMap<String, String>();
-		this.filename = filename;
+		this.configFile = configFile;
 		initialize();
 	}
 
@@ -94,15 +94,15 @@ public class ConfigFileParameters {
 	 * file location.
 	 */
 	public ConfigFileParameters() {
-		this(getCfgFileName());
+		this(getCfgFile());
 	}
 
 	// -- public interface --
 
 	/** Finds the default name/location of the launcher config file. */
-	public static String getCfgFileName() {
+	public static File getCfgFile() {
 		final File directory = AppUtils.getBaseDirectory();
-		return new File(directory, CONFIG_FILE).getAbsolutePath();
+		return new File(directory, CONFIG_FILE);
 	}
 
 	/**
@@ -117,7 +117,7 @@ public class ConfigFileParameters {
 			val = Integer.parseInt(memVal);
 		}
 		catch (final NumberFormatException e) {
-			Log.warn("Launcher configuration file " + filename + " has key " +
+			Log.warn("Launcher configuration file " + configFile + " has key " +
 				MEMORY_KEY + " that is not in an integer format");
 		}
 		if (val < MINIMUM_MEMORY) val = MINIMUM_MEMORY;
@@ -169,15 +169,15 @@ public class ConfigFileParameters {
 	 */
 	private void initialize() {
 		setDefaultValues(dataMap);
-		if (isLegacyConfigFile(filename)) {
-			loadLegacyConfigValues(dataMap, filename);
+		if (isLegacyConfigFile(configFile)) {
+			loadLegacyConfigValues(dataMap, configFile);
 		}
-		else loadModernConfigValues(dataMap, filename);
+		else loadModernConfigValues(dataMap, configFile);
 	}
 
 	/** Saves current values to the launcher config file. */
 	private void save() {
-		saveConfigValues(dataMap, filename);
+		saveConfigValues(dataMap, configFile);
 	}
 
 	/** Initializes launcher config file values to valid defaults. */
@@ -191,9 +191,10 @@ public class ConfigFileParameters {
 	 * Returns true if specified config file is an old legacy style launcher
 	 * config file.
 	 */
-	private boolean isLegacyConfigFile(final String fname) {
+	private boolean isLegacyConfigFile(final File file) {
+		if (!file.exists()) return false;
 		try {
-			final FileInputStream fstream = new FileInputStream(fname);
+			final FileInputStream fstream = new FileInputStream(file);
 			final DataInputStream din = new DataInputStream(fstream);
 			final InputStreamReader in = new InputStreamReader(din);
 			final BufferedReader br = new BufferedReader(in);
@@ -208,10 +209,11 @@ public class ConfigFileParameters {
 
 	/** Loads launcher config file values from an old legacy style file. */
 	private boolean loadLegacyConfigValues(final Map<String, String> map,
-		final String fname)
+		final File file)
 	{
+		if (!file.exists()) return false;
 		try {
-			final FileInputStream fstream = new FileInputStream(fname);
+			final FileInputStream fstream = new FileInputStream(file);
 			final DataInputStream din = new DataInputStream(fstream);
 			final InputStreamReader in = new InputStreamReader(din);
 			final BufferedReader br = new BufferedReader(in);
@@ -229,17 +231,18 @@ public class ConfigFileParameters {
 			return true;
 		}
 		catch (final Exception e) {
-			Log.warn("Could not load legacy launcher config file " + fname);
+			Log.warn("Couldd not load legacy launcher config file " + file);
 			return false;
 		}
 	}
 
 	/** Loads launcher config file values from a modern IJ2 style file. */
 	private boolean loadModernConfigValues(final Map<String, String> map,
-		final String fname)
+		final File file)
 	{
+		if (!file.exists()) return false;
 		try {
-			final FileInputStream fstream = new FileInputStream(fname);
+			final FileInputStream fstream = new FileInputStream(file);
 			final DataInputStream din = new DataInputStream(fstream);
 			final InputStreamReader in = new InputStreamReader(din);
 			final BufferedReader br = new BufferedReader(in);
@@ -261,17 +264,17 @@ public class ConfigFileParameters {
 			return true;
 		}
 		catch (final IOException e) {
-			Log.warn("Could not load launcher config file " + fname);
+			Log.warn("Could not load launcher config file " + file);
 			return false;
 		}
 	}
 
 	/** Writes launcher config values to an IJ2 style launcher config file. */
 	private void saveConfigValues(final Map<String, String> map,
-		final String fname)
+		final File file)
 	{
 		try {
-			final FileOutputStream fos = new FileOutputStream(fname);
+			final FileOutputStream fos = new FileOutputStream(file);
 			final OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF8");
 			final BufferedWriter out = new BufferedWriter(osw);
 			out.write("#" + SENTINEL + " (" + ImageJ.VERSION + ")");
@@ -287,7 +290,7 @@ public class ConfigFileParameters {
 			out.close();
 		}
 		catch (final IOException e) {
-			Log.warn("Could not save launcher config file values to " + fname);
+			Log.warn("Could not save launcher config file values to " + file);
 		}
 	}
 
