@@ -35,6 +35,8 @@
 
 package imagej.object;
 
+import imagej.util.ClassUtils;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -202,8 +204,8 @@ public class ObjectIndex<E> implements Collection<E> {
 		Collections.sort(classes, new Comparator<Class<?>>() {
 
 			@Override
-			public int compare(Class<?> c1, Class<?> c2) {
-				return c1.getName().compareTo(c2.getName());
+			public int compare(final Class<?> c1, final Class<?> c2) {
+				return ClassUtils.compare(c1, c2);
 			}
 
 		});
