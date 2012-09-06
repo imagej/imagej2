@@ -445,11 +445,11 @@ public class OverlayHarmonizer extends AbstractContextual implements
 				break;
 			case Roi.FREEROI:
 				log.warn("====> FREEROI: " + roi);
-				overlays.add(createDefaultOverlay(roi, xOff, yOff));
+				overlays.add(createPolygonOverlay(roi, xOff, yOff));
 				break;
 			case Roi.TRACED_ROI:
 				log.warn("====> TRACED_ROI: " + roi);
-				overlays.add(createDefaultOverlay(roi, xOff, yOff));
+				overlays.add(createPolygonOverlay(roi, xOff, yOff));
 				break;
 			case Roi.LINE:
 				log.warn("====> LINE: " + roi);

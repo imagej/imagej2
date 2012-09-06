@@ -327,8 +327,8 @@ public class OverlayHarmonizerTest {
 		imagePlus.setRoi(roi);
 		final List<Overlay> list = ot.getOverlays(imagePlus);
 		assertEquals(1, list.size());
-		assertTrue(list.get(0) instanceof BinaryMaskOverlay);
-		final BinaryMaskOverlay overlay = (BinaryMaskOverlay) (list.get(0));
+		assertTrue(list.get(0) instanceof PolygonOverlay);
+		final PolygonOverlay overlay = (PolygonOverlay)list.get(0);
 		final RealRandomAccess<BitType> ra =
 			overlay.getRegionOfInterest().realRandomAccess();
 		for (int i = 0; i < 9; i++) {
