@@ -56,7 +56,7 @@ import java.util.List;
 		@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 			mnemonic = MenuConstants.EDIT_MNEMONIC),
 		@Menu(label = "Options", mnemonic = 'o'),
-		@Menu(label = "Reset", weight = 18) })
+		@Menu(label = "Reset", weight = 20) })
 public class OptionsReset implements Command {
 
 	@Parameter

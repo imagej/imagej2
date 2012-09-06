@@ -36,7 +36,7 @@
 package imagej.core.commands.assign;
 
 import imagej.command.ContextCommand;
-import imagej.core.options.OptionsMisc;
+import imagej.core.options.OptionsCompatibility;
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
@@ -97,15 +97,16 @@ public class InvertDataValues<T extends RealType<T>> extends ContextCommand {
 		Dataset dataset = imgDispService.getActiveDataset(display);
 		Overlay overlay = overlayService.getActiveOverlay(display);
 		DatasetView view = imgDispService.getActiveDatasetView(display);
-		OptionsMisc options = optionsService.getOptions(OptionsMisc.class);
+		OptionsCompatibility options = optionsService.getOptions(OptionsCompatibility.class);
 		
-		if (options.isLegacyMode() && dataset.isInteger() && !dataset.isSigned() &&
-			dataset.getType().getBitsPerPixel() == 8)
+		if (options.isInvertModeLegacy() && dataset.isInteger() &&
+				!dataset.isSigned() && dataset.getType().getBitsPerPixel() == 8)
 		{
 			min = 0;
 			max = 255;
 		}
 		else calcValueRange(dataset);
+
 		final RealInvert<DoubleType, DoubleType> op =
 			new RealInvert<DoubleType, DoubleType>(min, max);
 		
