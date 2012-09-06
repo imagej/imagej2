@@ -35,6 +35,7 @@
 
 package imagej;
 
+import imagej.util.ClassUtils;
 import imagej.util.StringMaker;
 
 /**
@@ -239,8 +240,30 @@ public abstract class AbstractUIDetails implements UIDetails {
 	// -- Comparable methods --
 
 	@Override
-	public int compareTo(final Prioritized p) {
-		return Priority.compare(this, p);
+	public int compareTo(final Prioritized that) {
+		if (that == null) return 1;
+
+		// compare priorities
+		final int priorityCompare = Priority.compare(this, that);
+		if (priorityCompare != 0) return priorityCompare;
+
+		// compare classes
+		final int classCompare = ClassUtils.compare(getClass(), that.getClass());
+		if (classCompare != 0) return classCompare;
+
+		if (!(that instanceof UIDetails)) return 1;
+		final UIDetails uiDetails = (UIDetails) that;
+
+		// compare names
+		final String thisName = getName();
+		final String thatName = uiDetails.getName();
+		final int nameCompare = thisName.compareTo(thatName);
+		if (nameCompare != 0) return nameCompare;
+
+		// compare titles
+		final String thisTitle = getTitle();
+		final String thatTitle = uiDetails.getTitle();
+		return thisTitle.compareTo(thatTitle);
 	}
 
 }
