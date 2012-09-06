@@ -60,7 +60,7 @@ import imagej.data.overlay.PointOverlay;
 import imagej.data.overlay.PolygonOverlay;
 import imagej.data.overlay.RectangleOverlay;
 import imagej.util.ColorRGB;
-import imagej.util.Log;
+import imagej.log.LogService;
 import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
@@ -95,9 +95,11 @@ import net.imglib2.type.logic.BitType;
 public class OverlayHarmonizer extends AbstractContextual implements
 	DisplayHarmonizer
 {
+	private final LogService log;
 
 	public OverlayHarmonizer(final ImageJ context) {
 		setContext(context);
+		log = context.getService(LogService.class);
 	}
 
 	/**
@@ -418,50 +420,50 @@ public class OverlayHarmonizer extends AbstractContextual implements
 	{
 		if (roi == null) return;
 
-		Log.warn("====> Roi class = " + roi.getClass().getName());
+		log.warn("====> Roi class = " + roi.getClass().getName());
 		switch (roi.getType()) {
 			case Roi.RECTANGLE:
-				Log.warn("====> RECTANGLE: " + roi);
+				log.warn("====> RECTANGLE: " + roi);
 				overlays.add(createRectangleOverlay(roi, xOff, yOff));
 				break;
 			case Roi.OVAL:
-				Log.warn("====> OVAL: " + roi);
+				log.warn("====> OVAL: " + roi);
 				overlays.add(createEllipseOverlay(roi, xOff, yOff));
 				break;
 			case Roi.POLYGON:
-				Log.warn("====> POLYGON: " + roi);
+				log.warn("====> POLYGON: " + roi);
 				overlays.add(createPolygonOverlay(roi, xOff, yOff));
 				break;
 			case Roi.FREEROI:
-				Log.warn("====> FREEROI: " + roi);
+				log.warn("====> FREEROI: " + roi);
 				overlays.add(createDefaultOverlay(roi, xOff, yOff));
 				break;
 			case Roi.TRACED_ROI:
-				Log.warn("====> TRACED_ROI: " + roi);
+				log.warn("====> TRACED_ROI: " + roi);
 				overlays.add(createDefaultOverlay(roi, xOff, yOff));
 				break;
 			case Roi.LINE:
-				Log.warn("====> LINE: " + roi);
+				log.warn("====> LINE: " + roi);
 				overlays.add(createLineOverlay(roi, xOff, yOff));
 				break;
 			case Roi.POLYLINE:
-				Log.warn("====> POLYLINE: " + roi);
+				log.warn("====> POLYLINE: " + roi);
 				// throw new UnsupportedOperationException("POLYLINE unimplemented");
 				break;
 			case Roi.FREELINE:
-				Log.warn("====> FREELINE: " + roi);
+				log.warn("====> FREELINE: " + roi);
 				// throw new UnsupportedOperationException("FREELINE unimplemented");
 				break;
 			case Roi.ANGLE:
-				Log.warn("====> ANGLE: " + roi);
+				log.warn("====> ANGLE: " + roi);
 				overlays.add(createAngleOverlay(roi, xOff, yOff));
 				break;
 			case Roi.POINT:
-				Log.warn("====> POINT: " + roi);
+				log.warn("====> POINT: " + roi);
 				overlays.addAll(createPointOverlays(roi, xOff, yOff));
 				break;
 			case Roi.COMPOSITE:
-				Log.warn("====> COMPOSITE: " + roi);
+				log.warn("====> COMPOSITE: " + roi);
 				final ShapeRoi shapeRoi = (ShapeRoi) roi;
 				final Roi[] rois = shapeRoi.getRois();
 				final double xO = xOff + xOff + shapeRoi.getBounds().x;
@@ -488,7 +490,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 				overlays.add(coverlay);
 				break;
 			default:
-				Log.warn("====> OTHER (" + roi.getType() + ", " + "): " + roi);
+				log.warn("====> OTHER (" + roi.getType() + ", " + "): " + roi);
 				throw new UnsupportedOperationException("OTHER unimplemented");
 		}
 	}
