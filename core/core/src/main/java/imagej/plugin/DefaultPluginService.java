@@ -192,17 +192,24 @@ public class DefaultPluginService extends AbstractService implements
 	{
 		final ArrayList<P> list = new ArrayList<P>();
 		for (final PluginInfo<? extends P> info : infos) {
-			try {
-				final P p = info.createInstance();
-				list.add(p);
-				getContext().inject(p);
-				Priority.inject(p, info.getPriority());
-			}
-			catch (final InstantiableException e) {
-				log.error("Cannot create plugin: " + info.getClassName());
-			}
+			final P p = createInstance(info);
+			if (p != null) list.add(p);
 		}
 		return list;
+	}
+
+	@Override
+	public <P extends ImageJPlugin> P createInstance(PluginInfo<P> info) {
+		try {
+			final P p = info.createInstance();
+			getContext().inject(p);
+			Priority.inject(p, info.getPriority());
+			return p;
+		}
+		catch (InstantiableException exc) {
+			log.error("Cannot create plugin: " + info.getClassName());
+		}
+		return null;
 	}
 
 	// -- Service methods --

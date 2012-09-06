@@ -134,6 +134,11 @@ public interface PluginService extends Service {
 	/**
 	 * Creates an instance of each of the plugins on the given list.
 	 * <p>
+	 * If the plugin implements the {@link imagej.Contextual} interface, the
+	 * appropriate context is injected. Similarly, if the plugin implements the
+	 * {@link imagej.Prioritized} interface, the appropriate priority is injected.
+	 * </p>
+	 * <p>
 	 * Note that in the case of commands, this method does <em>not</em> do any
 	 * preprocessing on the command instances, so parameters will not be
 	 * auto-populated, initializers will not be executed, etc.
@@ -141,5 +146,20 @@ public interface PluginService extends Service {
 	 */
 	<P extends ImageJPlugin> List<? extends P> createInstances(
 		List<PluginInfo<? extends P>> infos);
+
+	/**
+	 * Creates an instance of the given plugin.
+	 * <p>
+	 * If the plugin implements the {@link imagej.Contextual} interface, the
+	 * appropriate context is injected. Similarly, if the plugin implements the
+	 * {@link imagej.Prioritized} interface, the appropriate priority is injected.
+	 * </p>
+	 * <p>
+	 * Note that in the case of commands, this method does <em>not</em> do any
+	 * preprocessing on the command instances, so parameters will not be
+	 * auto-populated, initializers will not be executed, etc.
+	 * </p>
+	 */
+	<P extends ImageJPlugin> P createInstance(PluginInfo<P> info);
 
 }
