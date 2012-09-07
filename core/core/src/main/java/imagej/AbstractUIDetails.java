@@ -36,6 +36,7 @@
 package imagej;
 
 import imagej.util.ClassUtils;
+import imagej.util.MiscUtils;
 import imagej.util.StringMaker;
 
 /**
@@ -257,7 +258,7 @@ public abstract class AbstractUIDetails implements UIDetails {
 		// compare names
 		final String thisName = getName();
 		final String thatName = uiDetails.getName();
-		final int nameCompare = thisName.compareTo(thatName);
+		final int nameCompare = MiscUtils.compare(thisName, thatName);
 		if (nameCompare != 0) return nameCompare;
 
 		// compare titles
