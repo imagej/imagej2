@@ -41,6 +41,15 @@ import java.util.List;
 
 /**
  * Data structure for managing sorted lists of registered objects.
+ * <p>
+ * This data structure is the same as a vanilla {@link ObjectIndex} except that
+ * each type list is kept in sorted order; hence, the items managed must
+ * implement the {@link Comparable} interface. When adding a single item (i.e.,
+ * with {@link #add(Object)}), a binary search is used to insert it in the
+ * correct position (O(log n) + O(n) time per item). When adding multiple items
+ * at once (i.e., with {@link #addAll(Collection)}), the items are appended and
+ * the list is then resorted (O(n log n) time for all items).
+ * </p>
  * 
  * @author Curtis Rueden
  */
@@ -91,10 +100,16 @@ public class SortedObjectIndex<E extends Comparable<? super E>> extends
 		}
 
 		// search for the correct location to insert the object
-		final int index = Collections.binarySearch(list, obj);
-		if (index >= 0) return false; // object already on the list
+		final int result = Collections.binarySearch(list, obj);
+		// NB: The objects' natural ordering may not be consistent with equals.
+		// Hence, the index reported may indicate a match with an unequal object
+		// (i.e., obj.compareTo(match) == 0 but !obj.equals(match)).
+		// But since we allow duplicate items in the index, this situation is fine;
+		// either way, we want to insert the object at the given point.
+		final int index = result < 0 ? -result - 1 : result;
+
 		// insert object at the appropriate location
-		list.add(-index - 1, obj);
+		list.add(index, obj);
 		return true;
 	}
 

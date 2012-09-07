@@ -35,6 +35,7 @@
 
 package imagej;
 
+
 /**
  * Constants for specifying an item's priority.
  * 
@@ -84,7 +85,23 @@ public final class Priority {
 	/** Priority for items that must go at the end of the chain. */
 	public static final double LAST_PRIORITY = Double.NEGATIVE_INFINITY;
 
-	/** Compares the two {@link Prioritized} objects. */
+	/**
+	 * Compares two {@link Prioritized} objects.
+	 * <p>
+	 * Note: this method provides a natural ordering that may be inconsistent with
+	 * equals. That is, two unequal objects may often have the same priority, and
+	 * thus return 0 when compared in this fashion. Hence, if this method is used
+	 * as a basis for implementing {@link Comparable#compareTo} or
+	 * {@link java.util.Comparator#compare}, that implementation may want to
+	 * impose logic beyond that of this method, for breaking ties, if a total
+	 * ordering consistent with equals is always required.
+	 * </p>
+	 * 
+	 * @return -1 if <code>p1</code>'s priority is higher than <code>p2</code>'s,
+	 *         1 if <code>p2</code>'s priority is higher than <code>p1</code>'s,
+	 *         or 0 if they have the same priority.
+	 * @see imagej.util.ClassUtils#compare(Class, Class)
+	 */
 	public static int compare(final Prioritized p1, final Prioritized p2) {
 		final double priority1 = p1.getPriority();
 		final double priority2 = p2.getPriority();

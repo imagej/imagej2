@@ -162,7 +162,11 @@ public class DefaultPluginService extends AbstractService implements
 		final Class<P> pluginClass)
 	{
 		final ArrayList<PluginInfo<P>> result = new ArrayList<PluginInfo<P>>();
-		getPluginsOfClass(pluginClass.getName(), getPlugins(), result);
+		// NB: Since we have the class in question, we can determine its
+		// plugin type and limit our search to plugins of that type.
+		final String className = pluginClass.getName();
+		final Class<? extends ImageJPlugin> pluginType = getPluginType(pluginClass);
+		getPluginsOfClass(className, getPluginsOfType(pluginType), result);
 		return result;
 	}
 
@@ -170,7 +174,10 @@ public class DefaultPluginService extends AbstractService implements
 	public List<PluginInfo<ImageJPlugin>> getPluginsOfClass(final String className) {
 		final ArrayList<PluginInfo<ImageJPlugin>> result =
 			new ArrayList<PluginInfo<ImageJPlugin>>();
-		getPluginsOfClass(className, getPlugins(), result);
+		// NB: Since we cannot load the class in question, and hence cannot
+		// know its type hierarchy, we must scan *all* plugins for a match.
+		final List<PluginInfo<?>> allPlugins = getPlugins();
+		getPluginsOfClass(className, allPlugins, result);
 		return result;
 	}
 
@@ -223,7 +230,8 @@ public class DefaultPluginService extends AbstractService implements
 
 	/**
 	 * Transfers plugins of the given class from the source list to the
-	 * destination list.
+	 * destination list. Note that because this method compares class name
+	 * strings, it does not need to actually load the class in question.
 	 * 
 	 * @param className The class name of the desired plugins.
 	 * @param srcList The list to scan for matching plugins.
@@ -240,6 +248,24 @@ public class DefaultPluginService extends AbstractService implements
 				destList.add(match);
 			}
 		}
+	}
+
+	/**
+	 * Gets the plugin type of the given plugin class, as declared by its
+	 * <code>@Plugin</code> annotation (i.e., @{link Plugin#type()}).
+	 * 
+	 * @param pluginClass The plugin class whose plugin type is needed.
+	 * @return The plugin type, or null if no @{link Plugin} annotation exists for
+	 *         the given class.
+	 */
+	public static <T extends ImageJPlugin, P extends T> Class<T> getPluginType(
+		final Class<P> pluginClass)
+	{
+		final Plugin annotation = pluginClass.getAnnotation(Plugin.class);
+		if (annotation == null) return null;
+		@SuppressWarnings("unchecked")
+		final Class<T> type = (Class<T>) annotation.type();
+		return type;
 	}
 
 }

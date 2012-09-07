@@ -33,50 +33,46 @@
  * #L%
  */
 
-package imagej.plugin;
+package imagej.service;
 
-import imagej.AbstractContextual;
-import imagej.Contextual;
-import imagej.Prioritized;
-import imagej.Priority;
-import imagej.util.ClassUtils;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import imagej.ImageJ;
+import imagej.command.DefaultCommandService;
+import imagej.event.DefaultEventService;
+import imagej.log.StderrLogService;
+import imagej.module.DefaultModuleService;
+import imagej.platform.DefaultAppService;
+import imagej.platform.DefaultPlatformService;
+import imagej.platform.PlatformService;
+import imagej.plugin.DefaultPluginService;
+import imagej.thread.DefaultThreadService;
+
+import java.util.List;
+
+import org.junit.Test;
 
 /**
- * Abstract base class for {@link Contextual}, {@link Prioritized} plugins.
+ * Tests {@link ServiceIndex}.
  * 
  * @author Curtis Rueden
  */
-public abstract class SortablePlugin extends AbstractContextual
-	implements Prioritized, ImageJPlugin
-{
+public class ServiceIndexTest {
 
-	/** The priority of the plugin. */
-	private double priority = Priority.NORMAL_PRIORITY;
-
-	// -- Prioritized methods --
-
-	@Override
-	public double getPriority() {
-		return priority;
-	}
-
-	@Override
-	public void setPriority(final double priority) {
-		this.priority = priority;
-	}
-
-	// -- Comparable methods --
-
-	@Override
-	public int compareTo(final Prioritized that) {
-		if (that == null) return 1;
-
-		// compare priorities
-		final int priorityCompare = Priority.compare(this, that);
-		if (priorityCompare != 0) return priorityCompare;
-
-		// compare classes
-		return ClassUtils.compare(getClass(), that.getClass());
+	@Test
+	public void testGetAll() {
+		final ImageJ context = ImageJ.createContext(PlatformService.class);
+		final ServiceIndex serviceIndex = context.getServiceIndex();
+		final List<Service> all = serviceIndex.getAll();
+		assertEquals(8, all.size());
+		assertSame(DefaultCommandService.class, all.get(0).getClass());
+		assertSame(DefaultEventService.class, all.get(1).getClass());
+		assertSame(DefaultModuleService.class, all.get(2).getClass());
+		assertSame(DefaultAppService.class, all.get(3).getClass());
+		assertSame(DefaultPlatformService.class, all.get(4).getClass());
+		assertSame(DefaultPluginService.class, all.get(5).getClass());
+		assertSame(DefaultThreadService.class, all.get(6).getClass());
+		assertSame(StderrLogService.class, all.get(7).getClass());
 	}
 
 }

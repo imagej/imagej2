@@ -35,24 +35,50 @@
 
 package imagej.object;
 
+import imagej.util.ClassUtils;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Data structure for managing lists of registered objects.
+ * <p>
+ * The object index keeps lists of objects segregated by type. The type
+ * hierarchy beneath which each object is classified can be customized through
+ * subclassing (e.g., see {@link imagej.plugin.PluginIndex}), but by default,
+ * each registered object is added to all type lists with which its class is
+ * compatible. For example, an object of type {@link String} would be added to
+ * the following type lists: {@link String}, {@link java.io.Serializable},
+ * {@link Comparable}, {@link CharSequence} and {@link Object}. A subsequent
+ * request for all objects of type {@link Comparable} (via a call to
+ * {@link #get(Class)}) would return a list that includes the object.
+ * </p>
+ * <p>
+ * Note that similar to {@link List}, it is possible for the same object to be
+ * added to the index more than once, in which case it will appear on relevant
+ * type lists multiple times.
+ * </p>
+ * <p>
+ * Note that similar to {@link List}, it is possible for the same object to
+ * be added to the index more than once, in which case it will appear on
+ * compatible type lists multiple times.
+ * </p>
  * 
  * @author Curtis Rueden
  */
 public class ObjectIndex<E> implements Collection<E> {
 
 	/**
-	 * "Them as counts counts moren them as dont count." &mdash;Russell Hoban,
-	 * <em>Riddley Walker</em>
+	 * "Them as counts counts moren them as dont count." <br>
+	 * &mdash;Russell Hoban, <em>Riddley Walker</em>
 	 */
 	protected final Map<Class<?>, List<E>> hoard =
 		new ConcurrentHashMap<Class<?>, List<E>>();
@@ -72,11 +98,20 @@ public class ObjectIndex<E> implements Collection<E> {
 
 	/**
 	 * Gets a list of all registered objects.
+	 * <p>
+	 * Calling this method is equivalent to calling
+	 * <code>get(Object.class)</code>.
+	 * </p>
 	 * 
 	 * @return Read-only list of all registered objects, or an empty list if none
 	 *         (this method never returns null).
 	 */
 	public List<E> getAll() {
+		// NB: We *must* pass Object.class here rather than getBaseClass()! The
+		// reason is that the base class of the objects stored in the index may
+		// differ from the type hierarchy beneath which they are classified.
+		// In particular, PluginIndex classifies its PluginInfo objects beneath
+		// the ImageJPlugin type hierarchy, and not that of PluginInfo.
 		return get(Object.class);
 	}
 
@@ -87,7 +122,7 @@ public class ObjectIndex<E> implements Collection<E> {
 	 *         list if no such objects exist (this method never returns null).
 	 */
 	public List<E> get(final Class<?> type) {
-		final List<E> list = getList(type);
+		final List<E> list = retrieveList(type);
 		return Collections.unmodifiableList(list);
 	}
 
@@ -105,7 +140,7 @@ public class ObjectIndex<E> implements Collection<E> {
 
 	@Override
 	public boolean contains(final Object o) {
-		return getAll().contains(o);
+		return get(o.getClass()).contains(o);
 	}
 
 	@Override
@@ -168,20 +203,56 @@ public class ObjectIndex<E> implements Collection<E> {
 		hoard.clear();
 	}
 
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		final List<Class<?>> classes = new ArrayList<Class<?>>(hoard.keySet());
+		Collections.sort(classes, new Comparator<Class<?>>() {
+
+			@Override
+			public int compare(final Class<?> c1, final Class<?> c2) {
+				return ClassUtils.compare(c1, c2);
+			}
+
+		});
+
+		final String nl = System.getProperty("line.separator");
+		final StringBuilder sb = new StringBuilder();
+		for (final Class<?> c : classes) {
+			sb.append(c.getName() + ": {");
+			final List<E> list = hoard.get(c);
+			boolean first = true;
+			for (final E element : list) {
+				if (first) first = false;
+				else sb.append(", ");
+				sb.append(element);
+			}
+			sb.append("}" + nl);
+		}
+
+		return sb.toString();
+	}
+
 	// -- Internal methods --
 
+	/** Adds the object to all compatible type lists. */
 	protected boolean add(final E o, final boolean batch) {
 		return add(o, o.getClass(), batch);
 	}
 
+	/** Removes the object from all compatible type lists. */
 	protected boolean remove(final Object o, final boolean batch) {
 		return remove(o, o.getClass(), batch);
 	}
 
 	/** Adds an object to type lists beneath the given type hierarchy. */
 	protected boolean add(final E o, final Class<?> type, final boolean batch) {
-		final boolean result = register(o, type, batch);
-		if (extendsObject(o.getClass())) register(o, Object.class, batch);
+		boolean result = false;
+		final Set<Class<?>> types = getTypes(type);
+		for (final Class<?> c : types) {
+			if (addToList(o, retrieveList(c), batch)) result = true;
+		}
 		return result;
 	}
 
@@ -189,17 +260,18 @@ public class ObjectIndex<E> implements Collection<E> {
 	protected boolean remove(final Object o, final Class<?> type,
 		final boolean batch)
 	{
-		final boolean result = deregister(o, type, batch);
-		if (!extendsObject(o.getClass())) deregister(o, Object.class, batch);
+		boolean result = false;
+		final Set<Class<?>> types = getTypes(type);
+		for (final Class<?> c : types) {
+			if (removeFromList(o, retrieveList(c), batch)) result = true;
+		}
 		return result;
 	}
 
 	protected boolean addToList(final E obj, final List<E> list,
 		@SuppressWarnings("unused") final boolean batch)
 	{
-		if (list.contains(obj)) return false; // object already on the list
-		list.add(obj);
-		return true;
+		return list.add(obj);
 	}
 
 	protected boolean removeFromList(final Object obj, final List<E> list,
@@ -210,53 +282,33 @@ public class ObjectIndex<E> implements Collection<E> {
 
 	// -- Helper methods --
 
-	/** Recursively adds the given object to type lists. */
-	private boolean
-		register(final E o, final Class<?> type, final boolean batch)
-	{
-		if (type == null) return false; // invalid class
+	/** Gets a new set containing the type and all its supertypes. */
+	private HashSet<Class<?>> getTypes(final Class<?> type) {
+		final HashSet<Class<?>> types = new HashSet<Class<?>>();
+		getTypes(type, types);
+		return types;
+	}
 
-		final boolean result = addToList(o, getList(type), batch);
+	/** Recursively adds the type and all its supertypes to the given set. */
+	private void getTypes(final Class<?> type, final HashSet<Class<?>> types) {
+		if (type == null) return;
+		types.add(type);
 
 		// recursively add to supertypes
-		register(o, type.getSuperclass(), batch);
+		getTypes(type.getSuperclass(), types);
 		for (final Class<?> iface : type.getInterfaces()) {
-			register(o, iface, batch);
+			getTypes(iface, types);
 		}
-
-		return result;
 	}
 
-	/** Recursively removes the given object from type lists. */
-	private boolean deregister(final Object obj, final Class<?> type,
-		final boolean batch)
-	{
-		if (type == null) return false;
-
-		final boolean result = removeFromList(obj, getList(type), batch);
-
-		// recursively remove from supertypes
-		deregister(obj, type.getSuperclass(), batch);
-		for (final Class<?> iface : type.getInterfaces()) {
-			deregister(obj, iface, batch);
-		}
-
-		return result;
-	}
-
-	private List<E> getList(final Class<?> type) {
+	/** Retrieves the type list for the given type, creating it if necessary. */
+	private List<E> retrieveList(final Class<?> type) {
 		List<E> list = hoard.get(type);
 		if (list == null) {
 			list = new ArrayList<E>();
 			hoard.put(type, list);
 		}
 		return list;
-	}
-
-	private boolean extendsObject(final Class<?> c) {
-		if (c == null) return false;
-		if (c == Object.class) return true;
-		return extendsObject(c.getSuperclass());
 	}
 
 }
