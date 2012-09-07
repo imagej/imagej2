@@ -46,6 +46,8 @@ import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.util.RealCoords;
 
+import java.awt.Shape;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -61,7 +63,7 @@ import org.jhotdraw.draw.Figure;
 @Plugin(type = JHotDrawAdapter.class, name = "Oval",
 	description = "Oval selections", iconPath = "/icons/tools/oval.png",
 	priority = SwingEllipseTool.PRIORITY, enabled = true)
-public class SwingEllipseTool extends AbstractJHotDrawAdapter<EllipseOverlay> {
+public class SwingEllipseTool extends AbstractJHotDrawAdapter<EllipseOverlay, EllipseFigure> {
 
 	public static final double PRIORITY = SwingRectangleTool.PRIORITY - 1;
 
@@ -96,7 +98,7 @@ public class SwingEllipseTool extends AbstractJHotDrawAdapter<EllipseOverlay> {
 	}
 
 	@Override
-	public void updateFigure(final OverlayView view, final Figure figure) {
+	public void updateFigure(final OverlayView view, final EllipseFigure figure) {
 		super.updateFigure(view, figure);
 		final EllipseOverlay overlay = downcastOverlay(view.getData());
 		final double centerX = overlay.getOrigin(0);
@@ -109,7 +111,7 @@ public class SwingEllipseTool extends AbstractJHotDrawAdapter<EllipseOverlay> {
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView view) {
+	public void updateOverlay(final EllipseFigure figure, final OverlayView view) {
 		super.updateOverlay(figure, view);
 		final EllipseOverlay overlay = downcastOverlay(view.getData());
 		final Rectangle2D.Double bounds = figure.getBounds();
@@ -133,6 +135,12 @@ public class SwingEllipseTool extends AbstractJHotDrawAdapter<EllipseOverlay> {
 	@Override
 	public void report(final RealCoords p1, final RealCoords p2) {
 		reportRectangle(p1, p2);
+	}
+
+	@Override
+	public Shape toShape(final EllipseFigure figure) {
+		Rectangle2D.Double bounds = figure.getBounds();
+		return new Ellipse2D.Double(bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 
 }

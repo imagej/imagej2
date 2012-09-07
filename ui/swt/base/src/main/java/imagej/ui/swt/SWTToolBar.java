@@ -35,13 +35,12 @@
 
 package imagej.ui.swt;
 
-import imagej.ImageJ;
 import imagej.InstantiableException;
 import imagej.plugin.PluginInfo;
 import imagej.tool.Tool;
 import imagej.tool.ToolService;
 import imagej.ui.ToolBar;
-import imagej.util.Log;
+import imagej.ui.UIService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,6 +51,8 @@ import java.util.Map;
 import net.miginfocom.swt.MigLayout;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -64,14 +65,16 @@ import org.eclipse.swt.widgets.Display;
  */
 public class SWTToolBar extends Composite implements ToolBar {
 
+	private final UIService uiService;
 	private final Display display;
 	private final ToolService toolService;
 	private final Map<String, Button> toolButtons;
 
-	public SWTToolBar(final Display display, final Composite parent) {
+	public SWTToolBar(final UIService uiService, final Display display, final Composite parent) {
 		super(parent, 0);
 		this.display = display;
-		toolService = ImageJ.get(ToolService.class);
+		this.uiService = uiService;
+		toolService = uiService.getToolService();
 		toolButtons = new HashMap<String, Button>();
 		setLayout(new MigLayout());
 		populateToolBar();
@@ -87,19 +90,20 @@ public class SWTToolBar extends Composite implements ToolBar {
 	// -- Helper methods --
 
 	private void populateToolBar() {
+		final Tool activeTool = toolService.getActiveTool();
 		for (final Tool tool : toolService.getTools()) {
 			final PluginInfo<? extends Tool> info = tool.getInfo();
 			try {
-				final Button button = createButton(tool);
+				final Button button = createButton(tool, tool == activeTool);
 				toolButtons.put(info.getName(), button);
 			}
 			catch (final InstantiableException e) {
-				Log.warn("Invalid tool: " + info, e);
+				uiService.getLog().warn("Invalid tool: " + info, e);
 			}
 		}
 	}
 
-	private Button createButton(final Tool tool) throws InstantiableException {
+	private Button createButton(final Tool tool, boolean active) throws InstantiableException {
 		final PluginInfo<? extends Tool> info = tool.getInfo();
 		final String name = info.getName();
 		final URL iconURL = info.getIconURL();
@@ -109,16 +113,17 @@ public class SWTToolBar extends Composite implements ToolBar {
 		if (iconImage != null) button.setImage(iconImage);
 		if (iconURL == null) {
 			button.setText(name);
-			Log.warn("Invalid icon for tool: " + tool);
+			uiService.getLog().warn("Invalid icon for tool: " + tool);
 		}
 
-		// TODO
-//		button.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				getToolService().setActiveTool(tool);
-//			}
-//		});
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				getToolService().setActiveTool(tool);
+			}
+		});
+
+		if (active) button.setSelection(true);
 
 		return button;
 	}

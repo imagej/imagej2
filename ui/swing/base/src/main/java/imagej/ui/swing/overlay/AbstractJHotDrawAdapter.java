@@ -49,6 +49,7 @@ import imagej.util.RealCoords;
 import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
+import java.awt.Shape;
 
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
@@ -60,8 +61,8 @@ import org.jhotdraw.draw.decoration.ArrowTip;
  * 
  * @author Lee Kamentsky
  */
-public abstract class AbstractJHotDrawAdapter<O extends Overlay> extends
-	AbstractTool implements JHotDrawAdapter
+public abstract class AbstractJHotDrawAdapter<O extends Overlay, F extends Figure> extends
+	AbstractTool implements JHotDrawAdapter<F>
 {
 
 	// NB: The line styles here are taken from
@@ -91,7 +92,7 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay> extends
 	// -- JHotDrawAdapter methods --
 
 	@Override
-	public void updateFigure(final OverlayView view, final Figure figure) {
+	public void updateFigure(final OverlayView view, final F figure) {
 		final Overlay overlay = view.getData();
 		final ColorRGB lineColor = overlay.getLineColor();
 		if (overlay.getLineStyle() != Overlay.LineStyle.NONE) {
@@ -145,7 +146,7 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay> extends
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView view) {
+	public void updateOverlay(final F figure, final OverlayView view) {
 		final Color strokeColor = figure.get(AttributeKeys.STROKE_COLOR);
 		final Overlay overlay = view.getData();
 		overlay.setLineColor(AWTColors.getColorRGB(strokeColor));
@@ -178,7 +179,7 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay> extends
 
 	// -- Internal methods --
 
-	protected void initDefaultSettings(final Figure figure) {
+	protected void initDefaultSettings(final F figure) {
 		final OverlayService overlayService =
 			getContext().getService(OverlayService.class);
 		final OverlaySettings settings = overlayService.getDefaultSettings();
@@ -245,5 +246,10 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay> extends
 		final ImageCanvas canvas = imageDisplay.getCanvas();
 		return canvas.panelToDataCoords(new IntCoords(x, y));
 	}
+
+	/**
+	 * Convert a figure into an AWT Shape.
+	 */
+	public abstract Shape toShape(final F figure);
 
 }

@@ -45,6 +45,7 @@ import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.OutputWindow;
 import imagej.ui.SystemClipboard;
+import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 import imagej.ui.swt.menu.SWTMenuCreator;
 import imagej.ui.viewer.DisplayWindow;
@@ -133,14 +134,15 @@ public class SWTUI extends AbstractUserInterface implements Runnable {
 
 	@Override
 	protected void createUI() {
-		eventService = getUIService().getEventService();
+		UIService uiService = getUIService();
+		eventService = uiService.getEventService();
 
 		swtDisplay = new Display();
 
 		shell = new SWTApplicationFrame(swtDisplay);
 		shell.setLayout(new MigLayout("wrap 1"));
 		shell.setText(getContext().getTitle());
-		toolBar = new SWTToolBar(swtDisplay, shell);
+		toolBar = new SWTToolBar(uiService, swtDisplay, shell);
 		statusBar = new SWTStatusBar(shell, eventService);
 		createMenus();
 

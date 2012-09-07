@@ -46,6 +46,7 @@ import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.util.RealCoords;
 
+import java.awt.Shape;
 import java.awt.geom.Point2D;
 
 import org.jhotdraw.draw.Figure;
@@ -61,7 +62,7 @@ import org.jhotdraw.geom.BezierPath.Node;
 @Plugin(type = JHotDrawAdapter.class, name = "Line",
 	description = "Straight line overlays", iconPath = "/icons/tools/line.png",
 	priority = SwingLineTool.PRIORITY, enabled = true)
-public class SwingLineTool extends AbstractJHotDrawAdapter<LineOverlay> {
+public class SwingLineTool extends AbstractJHotDrawAdapter<LineOverlay, LineFigure> {
 
 	public static final double PRIORITY = SwingPolygonTool.PRIORITY - 1;
 
@@ -86,7 +87,7 @@ public class SwingLineTool extends AbstractJHotDrawAdapter<LineOverlay> {
 	}
 
 	@Override
-	public void updateFigure(final OverlayView view, final Figure figure) {
+	public void updateFigure(final OverlayView view, final LineFigure figure) {
 		super.updateFigure(view, figure);
 		assert figure instanceof LineFigure;
 		final LineFigure lineFigure = (LineFigure) figure;
@@ -102,7 +103,7 @@ public class SwingLineTool extends AbstractJHotDrawAdapter<LineOverlay> {
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView view) {
+	public void updateOverlay(final LineFigure figure, final OverlayView view) {
 		super.updateOverlay(figure, view);
 		assert figure instanceof LineFigure;
 		final LineFigure line = (LineFigure) figure;
@@ -131,6 +132,11 @@ public class SwingLineTool extends AbstractJHotDrawAdapter<LineOverlay> {
 	@Override
 	public void report(final RealCoords p1, final RealCoords p2) {
 		reportLine(p1, p2);
+	}
+
+    @Override
+	public Shape toShape(final LineFigure figure) {
+		return figure.getBezierPath().toGeneralPath();
 	}
 
 }

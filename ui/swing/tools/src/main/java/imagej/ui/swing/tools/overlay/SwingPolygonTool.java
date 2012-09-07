@@ -45,22 +45,17 @@ import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJBezierTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
+import imagej.ui.swing.overlay.SwingPolygonFigure;
 
-import java.awt.Point;
-import java.awt.event.InputEvent;
+import java.awt.Shape;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.roi.PolygonRegionOfInterest;
 
+import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.BezierFigure;
 import org.jhotdraw.draw.Figure;
-import org.jhotdraw.draw.handle.BezierNodeHandle;
-import org.jhotdraw.draw.handle.BezierOutlineHandle;
-import org.jhotdraw.draw.handle.Handle;
 import org.jhotdraw.geom.BezierPath.Node;
 
 /**
@@ -72,14 +67,9 @@ import org.jhotdraw.geom.BezierPath.Node;
 @Plugin(type = JHotDrawAdapter.class, name = "Polygon",
 	description = "Polygon overlays", iconPath = "/icons/tools/polygon.png",
 	priority = SwingPolygonTool.PRIORITY, enabled = true)
-public class SwingPolygonTool extends AbstractJHotDrawAdapter<PolygonOverlay> {
+public class SwingPolygonTool extends AbstractJHotDrawAdapter<PolygonOverlay, BezierFigure> {
 
 	public static final double PRIORITY = SwingEllipseTool.PRIORITY - 1;
-
-	private static BezierFigure downcastFigure(final Figure figure) {
-		assert figure instanceof BezierFigure;
-		return (BezierFigure) figure;
-	}
 
 	private static PolygonOverlay downcastOverlay(final Overlay overlay) {
 		assert overlay instanceof PolygonOverlay;
@@ -90,7 +80,7 @@ public class SwingPolygonTool extends AbstractJHotDrawAdapter<PolygonOverlay> {
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
-		if (figure != null && !(figure instanceof PolygonFigure)) return false;
+		if (figure != null && !(figure instanceof BezierFigure)) return false;
 		return overlay instanceof PolygonOverlay;
 	}
 
@@ -102,25 +92,25 @@ public class SwingPolygonTool extends AbstractJHotDrawAdapter<PolygonOverlay> {
 
 	@Override
 	public Figure createDefaultFigure() {
-		final BezierFigure figure = new PolygonFigure();
+		final BezierFigure figure = new SwingPolygonFigure();
 		initDefaultSettings(figure);
+		figure.set(AttributeKeys.WINDING_RULE, AttributeKeys.WindingRule.EVEN_ODD);
 		return figure;
 	}
 
 	@Override
-	public void updateOverlay(final Figure figure, final OverlayView view) {
+	public void updateOverlay(final BezierFigure figure, final OverlayView view) {
 		super.updateOverlay(figure, view);
-		final BezierFigure b = downcastFigure(figure);
 		final PolygonOverlay poverlay = downcastOverlay(view.getData());
 		final PolygonRegionOfInterest roi = poverlay.getRegionOfInterest();
-		final int nodeCount = b.getNodeCount();
+		final int nodeCount = figure.getNodeCount();
 		final LogService log = getContext().getService(LogService.class);
 		while (roi.getVertexCount() > nodeCount) {
 			roi.removeVertex(nodeCount);
 			if (log != null) log.debug("Removed node from overlay.");
 		}
 		for (int i = 0; i < nodeCount; i++) {
-			final Node node = b.getNode(i);
+			final Node node = figure.getNode(i);
 			final double[] position = new double[] { node.x[0], node.y[0] };
 			if (roi.getVertexCount() == i) {
 				roi.addVertex(i, new RealPoint(position));
@@ -142,24 +132,23 @@ public class SwingPolygonTool extends AbstractJHotDrawAdapter<PolygonOverlay> {
 	}
 
 	@Override
-	public void updateFigure(final OverlayView view, final Figure figure) {
+	public void updateFigure(final OverlayView view, final BezierFigure figure) {
 		super.updateFigure(view, figure);
-		final BezierFigure bezierFigure = downcastFigure(figure);
 		final PolygonOverlay polygonOverlay = downcastOverlay(view.getData());
 		final PolygonRegionOfInterest roi = polygonOverlay.getRegionOfInterest();
 		final int vertexCount = roi.getVertexCount();
-		while (bezierFigure.getNodeCount() > vertexCount) {
-			bezierFigure.removeNode(vertexCount);
+		while (figure.getNodeCount() > vertexCount) {
+			figure.removeNode(vertexCount);
 		}
 		for (int i = 0; i < vertexCount; i++) {
 			final RealLocalizable vertex = roi.getVertex(i);
 			final double x = vertex.getDoublePosition(0);
 			final double y = vertex.getDoublePosition(1);
-			if (bezierFigure.getNodeCount() == i) {
-				bezierFigure.addNode(new Node(x, y));
+			if (figure.getNodeCount() == i) {
+				figure.addNode(new Node(x, y));
 			}
 			else {
-				final Node node = bezierFigure.getNode(i);
+				final Node node = figure.getNode(i);
 				node.mask = 0;
 				Arrays.fill(node.x, x);
 				Arrays.fill(node.y, y);
@@ -172,59 +161,9 @@ public class SwingPolygonTool extends AbstractJHotDrawAdapter<PolygonOverlay> {
 		return new IJBezierTool(display, this);
 	}
 
-	// -- Helper classes --
-
-	/**
-	 * The BezierFigure uses a BezierNodeHandle which can change the curve
-	 * connecting vertices from a line to a Bezier curve. We subclass both the
-	 * figure and the node handle to defeat this.
-	 */
-	public static class PolygonNodeHandle extends BezierNodeHandle {
-
-		public PolygonNodeHandle(final BezierFigure owner, final int index,
-			final Figure transformOwner)
-		{
-			super(owner, index, transformOwner);
-		}
-
-		public PolygonNodeHandle(final BezierFigure owner, final int index) {
-			super(owner, index);
-		}
-
-		@Override
-		public void trackEnd(final Point anchor, final Point lead,
-			final int modifiersEx)
-		{
-			// Remove the behavior associated with the shift keys
-			super.trackEnd(anchor, lead, modifiersEx &
-				~(InputEvent.META_DOWN_MASK | InputEvent.CTRL_DOWN_MASK |
-					InputEvent.ALT_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
-		}
-
-	}
-
-	public static class PolygonFigure extends BezierFigure {
-
-		public PolygonFigure() {
-			// The constructor makes the BezierFigure a closed figure.
-			super(true);
-		}
-
-		@Override
-		public Collection<Handle> createHandles(final int detailLevel) {
-			final LinkedList<Handle> handles = new LinkedList<Handle>();
-			if (detailLevel != 0) {
-				return super.createHandles(detailLevel);
-			}
-			handles.add(new BezierOutlineHandle(this));
-			for (int i = 0, n = path.size(); i < n; i++) {
-				handles.add(new PolygonNodeHandle(this, i));
-			}
-			return handles;
-		}
-
-		private static final long serialVersionUID = 1L;
-
+	@Override
+	public Shape toShape(final BezierFigure figure) {
+		return figure.getBezierPath().toGeneralPath();
 	}
 
 }

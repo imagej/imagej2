@@ -172,6 +172,10 @@ public class DefaultToolService extends AbstractService implements ToolService {
 		activeTool = new DummyTool();
 
 		subscribeToEvents(eventService);
+		final Tool rectangleTool = getTool("Rectangle");
+		if (rectangleTool != null) {
+			setActiveTool(rectangleTool);
+		}
 	}
 
 	// -- Event handlers --

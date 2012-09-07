@@ -1,4 +1,4 @@
-package imagej.updater.test;
+package imagej.ui.swing.overlay;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -34,11 +34,52 @@ package imagej.updater.test;
  * #L%
  */
 
-/**
- * A class to test the ByteCodeAnalyzer
- * 
- * @author Johannes Schindelin
- */
-public interface Dependency {
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 
+import org.jhotdraw.draw.handle.AbstractHandle;
+
+public class SwingPointHandle extends AbstractHandle {
+
+	private final SwingPointFigure figure;
+
+	public SwingPointHandle(final SwingPointFigure fig) {
+		super(fig);
+		figure = fig;
+	}
+
+	@Override
+	public void trackEnd(final Point anchor, final Point lead,
+		final int modifiers)
+	{
+		final double currX = figure.getX();
+		final double currY = figure.getY();
+		final double dx = lead.x - anchor.x;
+		final double dy = lead.y - anchor.y;
+		figure.setPoint(currX + dx, currY + dy);
+	}
+
+	@Override
+	public void trackStart(final Point anchor, final int modifiers) {
+		// do nothing
+	}
+
+	@Override
+	public void trackStep(final Point anchor, final Point lead,
+		final int modifiers)
+	{
+		// do nothing
+	}
+
+	@Override
+	protected Rectangle basicGetBounds() {
+		final Rectangle rect = new Rectangle();
+		final Rectangle2D.Double bounds = figure.getBounds();
+		rect.x = (int) bounds.x;
+		rect.y = (int) bounds.y;
+		rect.width = (int) bounds.width;
+		rect.height = (int) bounds.height;
+		return rect;
+	}
 }

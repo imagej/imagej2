@@ -93,8 +93,8 @@ public class OptionsOverlay extends OptionsPlugin {
 	@Parameter(label = "Fill opacity",
 		description = "The opacity or alpha of the "
 			+ "interior of the overlay (0=transparent, 255=opaque)",
-		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255")
-	private int alpha = 0;
+		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255", persistKey = "alpha.1")
+	private int alpha = 63;
 
 	@Parameter(
 		label = "Line start arrow style",

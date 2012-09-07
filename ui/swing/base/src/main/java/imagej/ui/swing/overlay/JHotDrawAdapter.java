@@ -59,7 +59,7 @@ import org.jhotdraw.draw.Figure;
  * @author Lee Kamentsky
  * @author Curtis Rueden
  */
-public interface JHotDrawAdapter extends Tool {
+public interface JHotDrawAdapter<F extends Figure> extends Tool {
 
 	/**
 	 * Determines whether the adapter can handle a particular overlay, or overlay
@@ -90,7 +90,7 @@ public interface JHotDrawAdapter extends Tool {
 	 * @param view view of the overlay that needs to be changed to bring it
 	 *          in-sync with the figure.
 	 */
-	void updateOverlay(Figure figure, OverlayView view);
+	void updateOverlay(F figure, OverlayView view);
 
 	/**
 	 * Update the appearance of the figure to match the overlay
@@ -98,7 +98,7 @@ public interface JHotDrawAdapter extends Tool {
 	 * @param view view of the overlay to be represented by the figure
 	 * @param figure the figure that is to be made to look like the overlay
 	 */
-	void updateFigure(OverlayView view, Figure figure);
+	void updateFigure(OverlayView view, F figure);
 
 	JHotDrawTool getCreationTool(ImageDisplay display);
 

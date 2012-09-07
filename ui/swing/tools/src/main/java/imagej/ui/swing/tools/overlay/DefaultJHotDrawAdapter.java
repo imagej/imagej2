@@ -47,6 +47,7 @@ import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.util.ColorRGB;
 
 import java.awt.Color;
+import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
@@ -73,7 +74,7 @@ import org.jhotdraw.draw.ImageFigure;
  */
 @Plugin(type = JHotDrawAdapter.class,
 	priority = DefaultJHotDrawAdapter.PRIORITY, alwaysActive = true)
-public class DefaultJHotDrawAdapter extends AbstractJHotDrawAdapter<Overlay> {
+public class DefaultJHotDrawAdapter extends AbstractJHotDrawAdapter<Overlay, ImageFigure> {
 
 	public static final double PRIORITY = Priority.VERY_LOW_PRIORITY;
 
@@ -96,13 +97,11 @@ public class DefaultJHotDrawAdapter extends AbstractJHotDrawAdapter<Overlay> {
 	}
 
 	@Override
-	public void updateFigure(final OverlayView overlay, final Figure figure) {
+	public void updateFigure(final OverlayView overlay, final ImageFigure figure) {
 		super.updateFigure(overlay, figure);
 
 		// Override the base: set the fill color to transparent.
 		figure.set(AttributeKeys.FILL_COLOR, new Color(0, 0, 0, 0));
-		assert figure instanceof ImageFigure;
-		final ImageFigure imgf = (ImageFigure) figure;
 		final RegionOfInterest roi = overlay.getData().getRegionOfInterest();
 		if (roi != null) {
 			final long minX = (long) Math.floor(roi.realMin(0));
@@ -143,14 +142,18 @@ public class DefaultJHotDrawAdapter extends AbstractJHotDrawAdapter<Overlay> {
 			final Raster raster =
 				Raster.createRaster(sm, db, new java.awt.Point(0, 0));
 			img.setData(raster);
-			imgf.setBounds(new Rectangle2D.Double(minX, minY, w, h));
-			imgf.setBufferedImage(img);
+			figure.setBounds(new Rectangle2D.Double(minX, minY, w, h));
+			figure.setBufferedImage(img);
 		}
 	}
 
 	@Override
 	public JHotDrawTool getCreationTool(final ImageDisplay display) {
-		return new IJCreationTool(display, this);
+		return new IJCreationTool<ImageFigure>(display, this);
 	}
 
+	@Override
+	public Shape toShape(final ImageFigure figure) {
+		throw new UnsupportedOperationException();
+	}
 }
