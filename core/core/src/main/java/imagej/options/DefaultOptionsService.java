@@ -35,19 +35,16 @@
 
 package imagej.options;
 
-import imagej.InstantiableException;
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
 import imagej.event.EventService;
 import imagej.log.LogService;
-import imagej.module.ModuleRunner;
 import imagej.plugin.InitPreprocessor;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginInfo;
 import imagej.plugin.PluginService;
 import imagej.plugin.PreprocessorPlugin;
-import imagej.plugin.ServicePreprocessor;
 import imagej.plugin.ValidityPreprocessor;
 import imagej.service.AbstractService;
 import imagej.service.Service;
@@ -166,7 +163,7 @@ public class DefaultOptionsService extends AbstractService implements
 	public <O extends OptionsPlugin> void setOption(
 		final CommandInfo<O> info, final String name, final Object value)
 	{
-		final O optionsPlugin = pluginService.createInstance(info);
+		final O optionsPlugin = createInstance(info);
 		if (optionsPlugin == null) return; // cannot set option
 
 		// assign value with correct type
@@ -188,27 +185,19 @@ public class DefaultOptionsService extends AbstractService implements
 		if (info == null) return null;
 
 		// instantiate the options plugin
-		final O optionsPlugin;
-		try {
-			optionsPlugin = info.createInstance();
-		}
-		catch (final InstantiableException e) {
-			log.error("Cannot create plugin: " + info.getClassName());
-			return null;
-		}
-		optionsPlugin.setContext(getContext());
+		final O optionsPlugin = pluginService.createInstance(info);
+		if (optionsPlugin == null) return null;
 
 		// execute key preprocessors on the newly created options plugin
 		final ArrayList<PluginInfo<? extends PreprocessorPlugin>> preInfos =
 			new ArrayList<PluginInfo<? extends PreprocessorPlugin>>();
 		preInfos.add(pluginService.getPlugin(ValidityPreprocessor.class));
-		preInfos.add(pluginService.getPlugin(ServicePreprocessor.class));
 		preInfos.add(pluginService.getPlugin(InitPreprocessor.class));
 		final List<? extends PreprocessorPlugin> pre =
 			pluginService.createInstances(preInfos);
-		final ModuleRunner moduleRunner =
-			new ModuleRunner(getContext(), optionsPlugin, pre, null);
-		moduleRunner.preProcess();
+		for (PreprocessorPlugin pp : pre) {
+			pp.process(optionsPlugin);
+		}
 
 		return optionsPlugin;
 	}
@@ -247,7 +236,7 @@ public class DefaultOptionsService extends AbstractService implements
 		final String name)
 	{
 		if (info == null) return null;
-		final O optionsPlugin = pluginService.createInstance(info);
+		final O optionsPlugin = createInstance(info);
 		if (optionsPlugin == null) return null;
 		return optionsPlugin.getInput(name);
 	}
@@ -256,7 +245,7 @@ public class DefaultOptionsService extends AbstractService implements
 		final CommandInfo<O> info)
 	{
 		if (info == null) return null;
-		final O optionsPlugin = pluginService.createInstance(info);
+		final O optionsPlugin = createInstance(info);
 		if (optionsPlugin == null) return null;
 		return optionsPlugin.getInputs();
 	}
