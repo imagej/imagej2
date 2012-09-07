@@ -199,6 +199,7 @@ public final class ClassUtils {
 	 * <li>int.class becomes Integer.class</li>
 	 * <li>long.class becomes Long.class</li>
 	 * <li>short.class becomes Short.class</li>
+	 * <li>void.class becomes Void.class</li>
 	 * </ul>
 	 * All other types are unchanged.
 	 * </p>
@@ -213,6 +214,7 @@ public final class ClassUtils {
 		else if (type == int.class) destType = Integer.class;
 		else if (type == long.class) destType = Long.class;
 		else if (type == short.class) destType = Short.class;
+		else if (type == void.class) destType = Void.class;
 		else destType = type;
 		@SuppressWarnings("unchecked")
 		final Class<T> result = (Class<T>) destType;
