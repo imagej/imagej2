@@ -174,7 +174,10 @@ public class DefaultPluginService extends AbstractService implements
 	public List<PluginInfo<ImageJPlugin>> getPluginsOfClass(final String className) {
 		final ArrayList<PluginInfo<ImageJPlugin>> result =
 			new ArrayList<PluginInfo<ImageJPlugin>>();
-		getPluginsOfClass(className, getPlugins(), result);
+		// NB: Since we cannot load the class in question, and hence cannot
+		// know its type hierarchy, we must scan *all* plugins for a match.
+		final List<PluginInfo<?>> allPlugins = getPlugins();
+		getPluginsOfClass(className, allPlugins, result);
 		return result;
 	}
 
@@ -227,7 +230,8 @@ public class DefaultPluginService extends AbstractService implements
 
 	/**
 	 * Transfers plugins of the given class from the source list to the
-	 * destination list.
+	 * destination list. Note that because this method compares class name
+	 * strings, it does not need to actually load the class in question.
 	 * 
 	 * @param className The class name of the desired plugins.
 	 * @param srcList The list to scan for matching plugins.
