@@ -40,8 +40,6 @@ import imagej.command.CommandInfo;
 import imagej.command.CommandService;
 import imagej.event.EventService;
 import imagej.log.LogService;
-import imagej.module.Module;
-import imagej.module.ModuleException;
 import imagej.module.ModuleRunner;
 import imagej.plugin.InitPreprocessor;
 import imagej.plugin.Parameter;
@@ -168,22 +166,16 @@ public class DefaultOptionsService extends AbstractService implements
 	public <O extends OptionsPlugin> void setOption(
 		final CommandInfo<O> info, final String name, final Object value)
 	{
-		final Module module;
-		try {
-			module = info.createModule();
-		}
-		catch (final ModuleException e) {
-			log.error("Cannot create module: " + info.getClassName());
-			return;
-		}
+		final O optionsPlugin = pluginService.createInstance(info);
+		if (optionsPlugin == null) return; // cannot set option
 
 		// assign value with correct type
 		final Class<?> type = info.getInput(name).getType();
 		final Object typedValue = ClassUtils.convert(value, type);
-		module.setInput(name, typedValue);
+		optionsPlugin.setInput(name, typedValue);
 
 		// persist the option value, and publish an OptionsEvent
-		module.run();
+		optionsPlugin.run();
 	}
 
 	// -- Helper methods --
@@ -251,26 +243,22 @@ public class DefaultOptionsService extends AbstractService implements
 		return typedInfo;
 	}
 
-	private Object getInput(final CommandInfo<?> info, final String name) {
+	private <O extends OptionsPlugin> Object getInput(final CommandInfo<O> info,
+		final String name)
+	{
 		if (info == null) return null;
-		try {
-			return info.createModule().getInput(name);
-		}
-		catch (final ModuleException e) {
-			log.error("Cannot create module: " + info.getClassName());
-		}
-		return null;
+		final O optionsPlugin = pluginService.createInstance(info);
+		if (optionsPlugin == null) return null;
+		return optionsPlugin.getInput(name);
 	}
 
-	private Map<String, Object> getInputs(final CommandInfo<?> info) {
+	private <O extends OptionsPlugin> Map<String, Object> getInputs(
+		final CommandInfo<O> info)
+	{
 		if (info == null) return null;
-		try {
-			return info.createModule().getInputs();
-		}
-		catch (final ModuleException e) {
-			log.error("Cannot create module: " + info.getClassName());
-		}
-		return null;
+		final O optionsPlugin = pluginService.createInstance(info);
+		if (optionsPlugin == null) return null;
+		return optionsPlugin.getInputs();
 	}
 
 }
