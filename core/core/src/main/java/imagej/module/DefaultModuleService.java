@@ -35,8 +35,8 @@
 
 package imagej.module;
 
-import imagej.Contextual;
 import imagej.MenuPath;
+import imagej.Priority;
 import imagej.event.EventService;
 import imagej.input.Accelerator;
 import imagej.log.LogService;
@@ -132,6 +132,20 @@ public class DefaultModuleService extends AbstractService implements
 	}
 
 	@Override
+	public Module createModule(final ModuleInfo info) {
+		try {
+			final Module module = info.createModule();
+			getContext().inject(module);
+			Priority.inject(module, info.getPriority());
+			return module;
+		}
+		catch (ModuleException exc) {
+			log.error("Cannot create module: " + info.getDelegateClassName());
+		}
+		return null;
+	}
+
+	@Override
 	public Future<Module> run(final ModuleInfo info, final Object... inputs) {
 		return run(info, null, null, inputs);
 	}
@@ -151,17 +165,9 @@ public class DefaultModuleService extends AbstractService implements
 		final List<? extends ModulePostprocessor> post,
 		final Map<String, Object> inputMap)
 	{
-		try {
-			final Module module = info.createModule();
-			if (module instanceof Contextual) {
-				((Contextual)module).setContext(getContext());
-			}
-			return run(module, pre, post, inputMap);
-		}
-		catch (final ModuleException e) {
-			log.error("Could not execute module: " + info, e);
-		}
-		return null;
+		final Module module = createModule(info);
+		if (module == null) return null;
+		return run(module, pre, post, inputMap);
 	}
 
 	@Override

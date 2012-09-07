@@ -97,6 +97,21 @@ public interface ModuleService extends Service {
 	ModuleInfo getModuleForAccelerator(Accelerator acc);
 
 	/**
+	 * Creates an instance of the given module.
+	 * <p>
+	 * If the module implements the {@link imagej.Contextual} interface, the
+	 * appropriate context is injected. Similarly, if the module implements the
+	 * {@link imagej.Prioritized} interface, the appropriate priority is injected.
+	 * </p>
+	 * <p>
+	 * Note that in the case of commands, this method does <em>not</em> do any
+	 * preprocessing on the command instances, so parameters will not be
+	 * auto-populated, initializers will not be executed, etc.
+	 * </p>
+	 */
+	Module createModule(ModuleInfo info);
+
+	/**
 	 * Executes the given module, without any pre- or postprocessing.
 	 * 
 	 * @param info The module to instantiate and run.
