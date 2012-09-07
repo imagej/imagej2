@@ -176,9 +176,9 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			boolean allGrayTables = true;
 			for (int i = 0; i < ci.getNChannels(); i++) {
 				final ColorTable cTable = cTables.get(i);
-				if ((allGrayTables) && (!ColorTables.isGrayColorTable((ColorTable8) cTable))) { //TODO ARG type override s/n/b nec.
-                                    allGrayTables = false;
-                                }
+				if ((allGrayTables) && (!ColorTables.isGrayColorTable(cTable))) {
+					allGrayTables = false;
+				}
 			}
 			if (allGrayTables) {
 				ci.setMode(CompositeImage.GRAYSCALE);
