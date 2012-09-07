@@ -50,7 +50,6 @@ import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
 import net.imglib2.display.ColorTable;
-import net.imglib2.display.ColorTable8;
 
 /**
  * A widget for displaying a {@link ColorTable} as a bar.
@@ -76,11 +75,11 @@ public final class SwingColorBar extends JComponent {
 		this(null, height);
 	}
 
-	public SwingColorBar(final ColorTable<?> lut) {
+	public SwingColorBar(final ColorTable lut) {
 		this(lut, DEFAULT_HEIGHT);
 	}
 
-	public SwingColorBar(final ColorTable<?> lut, final int height) {
+	public SwingColorBar(final ColorTable lut, final int height) {
 		this.height = height;
 		if (lut != null) setColorTable(lut);
 	}
@@ -88,20 +87,21 @@ public final class SwingColorBar extends JComponent {
 	// -- SwingColorBar methods --
 
 	/** Sets the {@link ColorTable} displayed by this color bar. */
-	public void setColorTable(final ColorTable<?> lut) {
-		if (bar == null || bar.getWidth() != lut.getLength()) {
+	public void setColorTable(final ColorTable colorTable) {
+		
+		if (bar == null || bar.getWidth() != colorTable.getLength()) {
 			// create compatible image
-			bar = AWTImageTools.createImage(lut.getLength(), 1);
+			bar = AWTImageTools.createImage(colorTable.getLength(), 1);
 		}
 
 		// paint color table onto image
 		final Graphics gfx = bar.getGraphics();
-		for (int i = 0; i < lut.getLength(); i++) {
-			final int argb = lut.argb(i);
+		for (int i = 0; i < colorTable.getLength(); i++) {
+			final int argb = colorTable.lookupARGB(0, colorTable.getLength(), i);
 			gfx.setColor(new Color(argb, false));
 			gfx.drawLine(i, 0, i, 1);
 		}
-		gfx.dispose();
+		gfx.dispose();		
 	}
 
 	// -- JComponent methods --
@@ -131,7 +131,7 @@ public final class SwingColorBar extends JComponent {
 	// -- Main method --
 
 	public static void main(final String[] args) {
-		final ColorTable8[] luts =
+		final ColorTable[] luts =
 			{ ColorTables.FIRE, ColorTables.ICE, ColorTables.SPECTRUM,
 				ColorTables.RED, ColorTables.GREEN, ColorTables.BLUE, ColorTables.CYAN,
 				ColorTables.MAGENTA, ColorTables.YELLOW, ColorTables.GRAYS,
@@ -143,7 +143,7 @@ public final class SwingColorBar extends JComponent {
 		frame.setContentPane(pane);
 		pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		for (final ColorTable8 lut : luts) {
+		for (final ColorTable lut : luts) {
 			final SwingColorBar colorBar = new SwingColorBar(lut);
 			colorBar.setBorder(new LineBorder(Color.black));
 			pane.add(colorBar);

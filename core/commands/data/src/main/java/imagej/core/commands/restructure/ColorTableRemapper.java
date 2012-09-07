@@ -35,8 +35,7 @@
 
 package imagej.core.commands.restructure;
 
-import net.imglib2.display.ColorTable16;
-import net.imglib2.display.ColorTable8;
+import net.imglib2.display.ColorTable;
 import net.imglib2.img.ImgPlus;
 
 /**
@@ -86,10 +85,8 @@ public class ColorTableRemapper {
 			remapper.remapPlanePosition(origPlaneDims, origPlanePos, newPlanePos);
 			long newLongIndex = to1D(newPlaneDims, newPlanePos);
 			int newIndex = intIndex(newLongIndex);
-			ColorTable8 c8 = srcImgPlus.getColorTable8(tNum);
-			ColorTable16 c16 = srcImgPlus.getColorTable16(tNum);
-			dstImgPlus.setColorTable(c8, newIndex);
-			dstImgPlus.setColorTable(c16, newIndex);
+			ColorTable colorTable = srcImgPlus.getColorTable(tNum);
+			dstImgPlus.setColorTable(colorTable, newIndex);
 		}
 	}
 

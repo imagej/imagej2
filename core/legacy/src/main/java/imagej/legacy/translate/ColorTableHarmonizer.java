@@ -52,6 +52,7 @@ import java.awt.image.IndexColorModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.imglib2.display.AbstractColorTable;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.display.RealLUTConverter;
@@ -78,7 +79,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	@Override
 	public void updateDisplay(final ImageDisplay disp, final ImagePlus imp) {
 		final boolean sixteenBitLuts = imp.getType() == ImagePlus.GRAY16;
-		final List<ColorTable<?>> colorTables = colorTablesFromImagePlus(imp);
+		final List<ColorTable> colorTables = colorTablesFromImagePlus(imp);
 		assignColorTables(disp, colorTables, sixteenBitLuts);
 		assignChannelMinMax(disp, imp);
 
@@ -107,7 +108,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 		final DatasetView activeView = (DatasetView) disp.getActiveView();
 		if (imp instanceof CompositeImage) {
 			final CompositeImage ci = (CompositeImage) imp;
-			final List<ColorTable8> colorTables =
+			final List<ColorTable> colorTables =
 				(activeView == null) ? null : activeView.getColorTables();
 			setCompositeImageLuts(ci, colorTables);
 			final int composChannCount =
@@ -138,7 +139,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	 */
 	private void setCompositeImageLutsToDefault(final CompositeImage ci) {
 		for (int i = 0; i < ci.getNChannels(); i++) {
-			final ColorTable8 cTable = ColorTables.getDefaultColorTable(i);
+			final ColorTable cTable = ColorTables.getDefaultColorTable(i);
 			final LUT lut = make8BitLut(cTable);
 			ci.setChannelLut(lut, i + 1);
 		}
@@ -148,14 +149,14 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	 * For each channel in CompositeImage, sets LUT to one from given ColorTables
 	 */
 	private void setCompositeImageLuts(final CompositeImage ci,
-		final List<ColorTable8> cTables)
+		final List<ColorTable> cTables)
 	{
 		if (cTables == null || cTables.size() == 0) {
 			setCompositeImageLutsToDefault(ci);
 		}
 		else {
 			for (int i = 0; i < ci.getNChannels(); i++) {
-				final ColorTable8 cTable = cTables.get(i);
+				final ColorTable cTable = cTables.get(i);
 				final LUT lut = make8BitLut(cTable);
 				ci.setChannelLut(lut, i + 1);
 			}
@@ -167,16 +168,17 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	 * values.
 	 */
 	private void setCompositeImageMode(final CompositeImage ci,
-		final int composCount, final List<ColorTable8> cTables)
+		final int composCount, final List<ColorTable> cTables)
 	{
 		if ((composCount > 1) || (cTables == null) || (cTables.size() == 0)) ci
 			.setMode(CompositeImage.COMPOSITE);
 		else {
 			boolean allGrayTables = true;
 			for (int i = 0; i < ci.getNChannels(); i++) {
-				final ColorTable8 cTable = cTables.get(i);
-				if ((allGrayTables) && (!ColorTables.isGrayColorTable(cTable))) allGrayTables =
-					false;
+				final ColorTable cTable = cTables.get(i);
+				if ((allGrayTables) && (!ColorTables.isGrayColorTable((ColorTable8) cTable))) { //TODO ARG type override s/n/b nec.
+                                    allGrayTables = false;
+                                }
 			}
 			if (allGrayTables) {
 				ci.setMode(CompositeImage.GRAYSCALE);
@@ -191,7 +193,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	private void setImagePlusLutToFirstInDataset(final Dataset ds,
 		final ImagePlus imp)
 	{
-		ColorTable8 cTable = ds.getColorTable8(0);
+		ColorTable cTable = ds.getColorTable(0);
 		if (cTable == null) cTable = ColorTables.GRAYS;
 		final LUT lut = make8BitLut(cTable);
 		imp.getProcessor().setColorModel(lut);
@@ -202,7 +204,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	private void setImagePlusLutToFirstInView(final DatasetView view,
 		final ImagePlus imp)
 	{
-		ColorTable8 cTable = view.getColorTables().get(0);
+		ColorTable cTable = view.getColorTables().get(0);
 		if (cTable == null) cTable = ColorTables.GRAYS;
 		final LUT lut = make8BitLut(cTable);
 		imp.getProcessor().setColorModel(lut);
@@ -296,23 +298,31 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 		return new ColorTable8(reds, greens, blues);
 	}
 
-	/** Makes an 8-bit LUT from a ColorTable8. */
-	private LUT make8BitLut(final ColorTable8 cTable) {
+	/**
+	 * Makes an 8-bit LUT from a ColorTable.
+	 * <p>
+	 * ColorTable16's are merely down-sampled.  If this is a non-false-color
+	 * image (i.e. the data is in the palette entries) data will be lost.  For
+	 * false-color images (data is in the indices, palette is just for 
+	 * visualization) the default palette is typically a ramp so the ColorTable8
+	 * version is functionally equivalent.
+	 */
+	private LUT make8BitLut(final ColorTable cTable) {
 		final byte[] reds = new byte[256];
 		final byte[] greens = new byte[256];
 		final byte[] blues = new byte[256];
 
 		for (int i = 0; i < 256; i++) {
-			reds[i] = (byte) cTable.get(0, i);
-			greens[i] = (byte) cTable.get(1, i);
-			blues[i] = (byte) cTable.get(2, i);
+			reds  [i] = (byte) cTable.getResampled(ColorTable.RED,   256, i);
+			greens[i] = (byte) cTable.getResampled(ColorTable.GREEN, 256, i);
+			blues [i] = (byte) cTable.getResampled(ColorTable.BLUE,  256, i);
 		}
 		return new LUT(reds, greens, blues);
 	}
 
 	/** Assigns the color tables of the active view of a ImageDisplay. */
 	private void assignColorTables(final ImageDisplay disp,
-		final List<ColorTable<?>> colorTables,
+		final List<ColorTable> colorTables,
 		@SuppressWarnings("unused") final boolean sixteenBitLuts)
 	{
 		// FIXME HACK
@@ -334,8 +344,8 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 
 		// either we're given one color table for whole dataset
 		if (colorTables.size() == 1) {
-			final ColorTable8 newTable = (ColorTable8) colorTables.get(0);
-			final List<ColorTable8> existingColorTables = dsView.getColorTables();
+			final ColorTable newTable = colorTables.get(0);
+			final List<ColorTable> existingColorTables = dsView.getColorTables();
 			for (int i = 0; i < existingColorTables.size(); i++)
 				dsView.setColorTable(newTable, i);
 		}
@@ -351,7 +361,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			//	dsView.resetColorTables(false); // TODO - when to use "true"?
 			*/
 			for (int i = 0; i < colorTables.size(); i++)
-				dsView.setColorTable((ColorTable8) colorTables.get(i), i);
+				dsView.setColorTable(colorTables.get(i), i);
 		}
 		// TODO : note Dec 20, 2011 BDZ  See bug #915
 		// we should tell the dsView that it needs a redraw (projector.map()) to be
@@ -418,20 +428,20 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	}
 
 	/** Creates a list of ColorTables from an ImagePlus. */
-	private List<ColorTable<?>> colorTablesFromImagePlus(final ImagePlus imp) {
-		final List<ColorTable<?>> colorTables = new ArrayList<ColorTable<?>>();
+	private List<ColorTable> colorTablesFromImagePlus(final ImagePlus imp) {
+		final List<ColorTable> colorTables = new ArrayList<ColorTable>();
 		final LUT[] luts = imp.getLuts();
 		if (luts == null) { // not a CompositeImage
 			if (imp.getType() == ImagePlus.COLOR_RGB) {
 				for (int i = 0; i < imp.getNChannels() * 3; i++) {
-					final ColorTable<?> cTable = ColorTables.getDefaultColorTable(i);
+					final ColorTable cTable = ColorTables.getDefaultColorTable(i);
 					colorTables.add(cTable);
 				}
 			}
 			else { // not a direct color model image
 				final IndexColorModel icm =
 					(IndexColorModel) imp.getProcessor().getColorModel();
-				ColorTable<?> cTable;
+				ColorTable cTable;
 //				if (icm.getPixelSize() == 16) // is 16 bit table
 //					cTable = make16BitColorTable(icm);
 //				else // 8 bit color table
@@ -440,8 +450,9 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			}
 		}
 		else { // we have multiple LUTs from a CompositeImage, 1 per channel
-			ColorTable<?> cTable;
+			ColorTable cTable;
 			for (int i = 0; i < luts.length; i++) {
+				//TODO ARG what about 16-bit LUTs also?
 //				if (luts[i].getPixelSize() == 16) // is 16 bit table
 //					cTable = make16BitColorTable(luts[i]);
 //				else // 8 bit color table

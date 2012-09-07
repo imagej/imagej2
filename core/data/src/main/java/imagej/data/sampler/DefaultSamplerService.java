@@ -53,8 +53,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.imglib2.RandomAccess;
-import net.imglib2.display.ColorTable16;
-import net.imglib2.display.ColorTable8;
+import net.imglib2.display.ColorTable;
 import net.imglib2.display.RealLUTConverter;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
@@ -248,11 +247,9 @@ public class DefaultSamplerService extends AbstractService implements
 			
 			// keep dataset color tables in sync
 			final int inputPlaneNumber = planeNum(inputDims, inputPos);
-			final ColorTable8 lut8 = input.getColorTable8(inputPlaneNumber);
-			final ColorTable16 lut16 = input.getColorTable16(inputPlaneNumber);
+			final ColorTable lut = input.getColorTable(inputPlaneNumber);
 			final int outputPlaneNumber = planeNum(outputDims, outputPos);
-			output.setColorTable(lut8, outputPlaneNumber);
-			output.setColorTable(lut16, outputPlaneNumber);
+			output.setColorTable(lut, outputPlaneNumber);
 		}
 
 		// TODO - enable this code
@@ -311,7 +308,7 @@ public class DefaultSamplerService extends AbstractService implements
 		final ImageDisplay input = def.getDisplay();
 		final DatasetView inView = imgDispService.getActiveDatasetView(input);
 		final DatasetView outView = imgDispService.getActiveDatasetView(output);
-		final List<ColorTable8> inputColorTables = inView.getColorTables();
+		final List<ColorTable> inputColorTables = inView.getColorTables();
 		final int inputChanAxis = input.getAxisIndex(Axes.CHANNEL); 
 		final List<List<Long>> inputRanges = def.getInputRanges();
 		for (int i = 0; i < inputColorTables.size(); i++) {

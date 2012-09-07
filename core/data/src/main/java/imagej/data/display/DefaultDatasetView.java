@@ -51,10 +51,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import net.imglib2.Binning;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.stats.ComputeMinMax;
 import net.imglib2.display.ARGBScreenImage;
-import net.imglib2.display.ColorTable8;
+import net.imglib2.display.ColorTable;
 import net.imglib2.display.CompositeXYProjector;
 import net.imglib2.display.RealLUTConverter;
 import net.imglib2.img.ImgPlus;
@@ -81,7 +82,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	 * Default color tables, one per channel, used when the {@link Dataset} 
 	 * doesn't have one for a particular plane.
 	 */
-	private ArrayList<ColorTable8> defaultLUTs;
+	private ArrayList<ColorTable> defaultLUTs;
 
 	private ARGBScreenImage screenImage;
 
@@ -165,12 +166,12 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	}
 
 	@Override
-	public List<ColorTable8> getColorTables() {
+	public List<ColorTable> getColorTables() {
 		return Collections.unmodifiableList(defaultLUTs);
 	}
 
 	@Override
-	public void setColorTable(final ColorTable8 colorTable, final int channel) {
+	public void setColorTable(final ColorTable colorTable, final int channel) {
 		defaultLUTs.set(channel, colorTable);
 		updateLUTs();
 		// TODO - temp hacks towards fixing bug #668
@@ -204,8 +205,8 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 		if (composite) {
 			return ColorMode.COMPOSITE;
 		}
-		final List<ColorTable8> colorTables = getColorTables();
-		for (final ColorTable8 colorTable : colorTables) {
+		final List<ColorTable> colorTables = getColorTables();
+		for (final ColorTable colorTable : colorTables) {
 			// TODO - replace with !ColorTables.isGrayColorTable(colorTable)
 			if (colorTable != ColorTables.GRAYS) {
 				return ColorMode.COLOR;
@@ -242,17 +243,14 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			for (int c = 0; c < channelCount; c++) {
 				final double value = channels.getChannelValue(c);
 				final RealLUTConverter<? extends RealType<?>> converter =
-					converters.get(c);
+						converters.get(c);
 				final double min = converter.getMin();
 				final double max = converter.getMax();
-				double relativeValue = (value - min) / (max - min);
-				if (relativeValue < 0) relativeValue = 0;
-				if (relativeValue > 1) relativeValue = 1;
-				final int grayValue = (int) (relativeValue * 255);
-				final ColorTable8 colorTable = converter.getLUT();
-				rSum += colorTable.get(0, grayValue);
-				gSum += colorTable.get(1, grayValue);
-				bSum += colorTable.get(2, grayValue);
+				final int grayValue = Binning.valueToBin(256, min, max, value);
+				final ColorTable colorTable = converter.getLUT();
+				rSum += colorTable.getResampled(ColorTable.RED, 256, grayValue);
+				gSum += colorTable.getResampled(ColorTable.GREEN, 256, grayValue);
+				bSum += colorTable.getResampled(ColorTable.BLUE, 256, grayValue);
 			}
 			r = (rSum > 255) ? 255 : (int) Math.round(rSum);
 			g = (gSum > 255) ? 255 : (int) Math.round(gSum);
@@ -262,18 +260,15 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			final long currChannel = getLongPosition(Axes.CHANNEL);
 			final double value = channels.getChannelValue(currChannel);
 			final RealLUTConverter<? extends RealType<?>> converter =
-				converters.get((int) currChannel);
+					converters.get((int) currChannel);
 			final double min = converter.getMin();
 			final double max = converter.getMax();
-			double relativeValue = (value - min) / (max - min);
-			if (relativeValue < 0) relativeValue = 0;
-			if (relativeValue > 1) relativeValue = 1;
-			final int grayValue = (int) Math.round(relativeValue * 255);
+			final int grayValue = Binning.valueToBin(256, min, max, value);
 			if (mode == ColorMode.COLOR) {
-				final ColorTable8 colorTable = converter.getLUT();
-				r = colorTable.get(0, grayValue);
-				g = colorTable.get(1, grayValue);
-				b = colorTable.get(2, grayValue);
+				final ColorTable colorTable = converter.getLUT();
+				r = colorTable.getResampled(ColorTable.RED, 256, grayValue);
+				g = colorTable.getResampled(ColorTable.GREEN, 256, grayValue);
+				b = colorTable.getResampled(ColorTable.BLUE, 256, grayValue);
 			}
 			else { // mode == grayscale
 				r = grayValue;
@@ -324,7 +319,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 		final ImgPlus<? extends RealType<?>> img = getData().getImgPlus();
 
 		if (defaultLUTs == null || defaultLUTs.size() != getChannelCount()) {
-			defaultLUTs = new ArrayList<ColorTable8>();
+			defaultLUTs = new ArrayList<ColorTable>();
 			resetColorTables(false);
 		}
 
@@ -450,18 +445,18 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 
 		final long channelCount = getChannelCount();
 		for (int c = 0; c < channelCount; c++) {
-			final ColorTable8 lut = getCurrentLUT(c);
+			final ColorTable lut = getCurrentLUT(c);
 			converters.get(c).setLUT(lut);
 		}
 	}
 
-	private ColorTable8 getCurrentLUT(final int cPos) {
+	private ColorTable getCurrentLUT(final int cPos) {
 		final Position pos = getPlanePosition();
 		if (channelDimIndex >= 0) {
 			pos.setPosition(cPos, channelDimIndex - 2);
 		}
 		final int no = (int) pos.getIndex();
-		final ColorTable8 lut = getData().getColorTable8(no);
+		final ColorTable lut = getData().getColorTable(no);
 		if (lut != null) {
 			return lut; // return dataset-specific LUT
 		}

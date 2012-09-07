@@ -38,8 +38,7 @@ package imagej.core.commands.restructure;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import net.imglib2.RandomAccess;
-import net.imglib2.display.ColorTable16;
-import net.imglib2.display.ColorTable8;
+import net.imglib2.display.ColorTable;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
@@ -184,10 +183,8 @@ public class RestructureUtils {
 	public static void copyColorTables(ImgPlus<?> srcImgPlus, ImgPlus<?> dstImgPlus) {
 		int tableCount = srcImgPlus.getColorTableCount();
 		for (int i = 0; i < tableCount; i++) {
-			ColorTable8 c8 = srcImgPlus.getColorTable8(i);
-			ColorTable16 c16 = srcImgPlus.getColorTable16(i);
-			dstImgPlus.setColorTable(c8, i);
-			dstImgPlus.setColorTable(c16, i);
+			ColorTable c = srcImgPlus.getColorTable(i);
+			dstImgPlus.setColorTable(c, i);
 		}
 	}
 	

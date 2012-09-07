@@ -72,7 +72,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import net.imglib2.display.ColorTable8;
+import net.imglib2.display.ColorTable;
 import net.imglib2.display.RealLUTConverter;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
@@ -287,7 +287,7 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 			view.getConverters();
 		if (c >= converters.size()) return;
 		final RealLUTConverter<? extends RealType<?>> converter = converters.get(c);
-		final ColorTable8 lut = converter.getLUT();
+		final ColorTable lut = converter.getLUT();
 		colorBar.setColorTable(lut);
 		colorBar.repaint();
 	}
