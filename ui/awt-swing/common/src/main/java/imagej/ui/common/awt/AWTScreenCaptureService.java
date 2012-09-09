@@ -55,7 +55,6 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 
-
 /**
  * An AWT implementation of the ScreenCaptureService interface. Allows one to
  * capture regions of the screen to Datasets.

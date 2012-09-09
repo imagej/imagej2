@@ -53,7 +53,6 @@ import java.util.Map;
 
 import net.imglib2.meta.AxisType;
 
-
 /**
  * Duplicates data from one input display to an output display. The planes to be
  * duplicated can be specified via dialog parameters. The XY coordinates can be

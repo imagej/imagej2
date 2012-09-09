@@ -1,4 +1,3 @@
-package imagej.ui.swing.overlay;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -34,12 +33,19 @@ package imagej.ui.swing.overlay;
  * #L%
  */
 
+package imagej.ui.swing.overlay;
+
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 
 import org.jhotdraw.draw.handle.AbstractHandle;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class SwingPointHandle extends AbstractHandle {
 
 	private final SwingPointFigure figure;

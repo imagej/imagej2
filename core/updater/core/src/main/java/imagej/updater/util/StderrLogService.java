@@ -41,12 +41,15 @@ import imagej.log.LogService;
 
 /**
  * Deprecated; do not use.
- * 
+ * <p>
  * This class is here solely to keep the Updater process running even if only
  * ij-updater-core is updated but not ij-ui-swing-updater.
+ * </p>
  * 
- * @deprecated
+ * @author Johannes Schindelin
+ * @deprecated Use {@link imagej.log.StderrLogService} instead.
  */
+@Deprecated
 public class StderrLogService implements LogService {
 	@Override public void initialize() { }
 	@Override public ImageJ getContext() { return null; }

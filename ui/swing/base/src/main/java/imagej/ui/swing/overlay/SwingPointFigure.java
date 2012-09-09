@@ -1,4 +1,3 @@
-package imagej.ui.swing.overlay;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -34,6 +33,8 @@ package imagej.ui.swing.overlay;
  * #L%
  */
 
+package imagej.ui.swing.overlay;
+
 import imagej.util.ColorRGB;
 import imagej.util.awt.AWTColors;
 
@@ -50,7 +51,11 @@ import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.handle.Handle;
 import org.jhotdraw.geom.Geom;
 
-@SuppressWarnings("serial")
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class SwingPointFigure extends AbstractAttributedFigure {
 
 	protected Rectangle2D.Double bounds;

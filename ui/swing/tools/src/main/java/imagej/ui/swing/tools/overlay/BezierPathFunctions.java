@@ -1,4 +1,3 @@
-package imagej.ui.swing.tools.overlay;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -34,6 +33,8 @@ package imagej.ui.swing.tools.overlay;
  * #L%
  */
 
+package imagej.ui.swing.tools.overlay;
+
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -51,6 +52,11 @@ import net.imglib2.roi.GeneralPathRegionOfInterest;
 
 import org.jhotdraw.geom.BezierPath;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class BezierPathFunctions {
 	public static BezierPath toBezierPath(final PathIterator iterator) {
 		final BezierPath path = new BezierPath();

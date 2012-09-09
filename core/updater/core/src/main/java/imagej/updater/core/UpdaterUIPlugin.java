@@ -35,11 +35,11 @@
 
 package imagej.updater.core;
 
-import imagej.command.Command;
-
 /**
- * Work-around for a bug in the Updater
- *
- * @deprecated
+ * Work-around for a bug in the Updater.
+ * 
+ * @author Johannes Schindelin
+ * @deprecated Use {@link UpdaterUI} instead.
  */
-public interface UpdaterUIPlugin extends UpdaterUI { }
+@Deprecated
+public interface UpdaterUIPlugin extends UpdaterUI {}

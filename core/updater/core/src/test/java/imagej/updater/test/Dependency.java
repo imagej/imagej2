@@ -1,4 +1,3 @@
-package imagej.updater.test;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -34,8 +33,10 @@ package imagej.updater.test;
  * #L%
  */
 
+package imagej.updater.test;
+
 /**
- * A class to test the ByteCodeAnalyzer
+ * A class to test the ByteCodeAnalyzer.
  * 
  * @author Johannes Schindelin
  */

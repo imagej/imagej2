@@ -46,7 +46,6 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
-
 /**
  * The AWT implementation of the TextRenderer interface. TODO - relocate to
  * some other subproject to remove AWT dependencies from this subproject.

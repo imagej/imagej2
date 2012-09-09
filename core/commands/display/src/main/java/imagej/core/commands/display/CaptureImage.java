@@ -72,7 +72,6 @@ import imagej.ui.viewer.DisplayWindow;
 // we only have ARGB data. So we should do a screen grab like IJ2 of the coords
 // of the current image window. All without using AWT.
 
-
 /**
  * Captures the current view of an {@link ImageDisplay} to a {@link Dataset}.
  * Unlike the Flatten command this plugin captures a view of the current image

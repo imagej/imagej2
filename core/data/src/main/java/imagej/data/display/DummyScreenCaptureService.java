@@ -1,6 +1,3 @@
-
-package imagej.data.display;
-
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -35,6 +32,8 @@ package imagej.data.display;
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
+package imagej.data.display;
 
 import imagej.Priority;
 import imagej.data.Dataset;

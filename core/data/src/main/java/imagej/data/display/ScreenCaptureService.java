@@ -38,7 +38,6 @@ package imagej.data.display;
 import imagej.data.Dataset;
 import imagej.service.Service;
 
-
 /**
  * An interface for supporting the capturing of screen data to a Dataset.
  * 

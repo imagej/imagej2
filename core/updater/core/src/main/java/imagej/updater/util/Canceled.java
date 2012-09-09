@@ -36,8 +36,10 @@
 package imagej.updater.util;
 
 /**
- * Deprecated; do not use
+ * Deprecated; do not use.
  * 
- * @deprecated
+ * @author Johannes Schindelin
+ * @deprecated Use {@link UpdateCanceledException} instead.
  */
-public class Canceled extends UpdateCanceledException { }
+@Deprecated
+public class Canceled extends UpdateCanceledException {}

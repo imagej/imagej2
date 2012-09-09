@@ -35,7 +35,6 @@
 
 package imagej.core.commands.display;
 
-
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.roi.RegionOfInterest;

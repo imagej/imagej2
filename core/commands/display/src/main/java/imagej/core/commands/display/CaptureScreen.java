@@ -44,7 +44,6 @@ import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
-
 /**
  * Captures the entire screen to a {@link Dataset}.
  * 
