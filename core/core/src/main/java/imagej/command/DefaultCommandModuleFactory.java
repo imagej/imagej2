@@ -48,8 +48,8 @@ import imagej.module.ModuleException;
 public class DefaultCommandModuleFactory implements CommandModuleFactory {
 
 	@Override
-	public <C extends Command> Module createModule(
-		final CommandInfo<C> info) throws ModuleException
+	public <C extends Command> Module createModule(final CommandInfo<C> info)
+		throws ModuleException
 	{
 		// if the command implements Module, return a new instance directly
 		try {
@@ -73,8 +73,8 @@ public class DefaultCommandModuleFactory implements CommandModuleFactory {
 	}
 
 	@Override
-	public <C extends Command> Module createModule(
-		CommandInfo<C> info, C command)
+	public <C extends Command> Module createModule(final CommandInfo<C> info,
+		final C command)
 	{
 		// if the command implements Module, return the instance directly
 		if (command instanceof Module) {

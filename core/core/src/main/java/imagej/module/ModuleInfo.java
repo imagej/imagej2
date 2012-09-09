@@ -73,8 +73,8 @@ public interface ModuleInfo extends UIDetails {
 	 * <p>
 	 * The nature of this method is implementation-specific; for example, a
 	 * <code>CommandModule</code> will return the class name of its associated
-	 * <code>Command</code>. For modules that are not commands, the result
-	 * may be something else.
+	 * <code>Command</code>. For modules that are not commands, the result may be
+	 * something else.
 	 * </p>
 	 * <p>
 	 * If you are implementing this interface directly, a good rule of thumb is to
@@ -134,6 +134,7 @@ public interface ModuleInfo extends UIDetails {
 	 * case of programmatically generated module infos whose input data comes from
 	 * an untrusted source.
 	 * </p>
+	 * 
 	 * @see CommandInfo#isValid()
 	 */
 	boolean isValid();

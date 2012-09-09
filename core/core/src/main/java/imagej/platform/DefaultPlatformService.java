@@ -176,9 +176,9 @@ public final class DefaultPlatformService extends AbstractService implements
 	/** Discovers target platform handlers. */
 	private List<Platform> discoverTargetPlatforms() {
 		final List<Platform> platforms = new ArrayList<Platform>();
-		for (final PluginInfo<? extends Platform> info :
-			pluginService.getPluginsOfType(Platform.class))
-		{
+		final List<PluginInfo<Platform>> infos =
+			pluginService.getPluginsOfType(Platform.class);
+		for (final PluginInfo<? extends Platform> info : infos) {
 			try {
 				final Platform platform = info.createInstance();
 				if (!isTargetPlatform(platform)) continue;

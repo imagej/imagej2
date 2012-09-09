@@ -58,7 +58,8 @@ public class DefaultUncaughtExceptionHandler implements
 	}
 
 	@Override
-	public void uncaughtException(final Thread thread, final Throwable throwable)
+	public void
+		uncaughtException(final Thread thread, final Throwable throwable)
 	{
 		log.error("Uncaught exception in thread " + thread, throwable);
 	}

@@ -525,6 +525,7 @@ public final class ClassUtils {
 	 * impose logic beyond that of this method, for breaking ties, if a total
 	 * ordering consistent with equals is always required.
 	 * </p>
+	 * 
 	 * @see imagej.Priority#compare(imagej.Prioritized, imagej.Prioritized)
 	 */
 	public static int compare(final Class<?> c1, final Class<?> c2) {

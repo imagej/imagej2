@@ -55,7 +55,8 @@ import imagej.plugin.PreprocessorPlugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_HIGH_PRIORITY)
+@Plugin(type = PreprocessorPlugin.class,
+	priority = Priority.VERY_HIGH_PRIORITY)
 public class ActiveDisplayPreprocessor extends AbstractPreprocessorPlugin {
 
 	// -- ModuleProcessor methods --

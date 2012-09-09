@@ -40,10 +40,10 @@ import imagej.ImageJ;
 import imagej.plugin.ServicePreprocessor;
 
 /**
- * A command that knows its context. Its service parameters are
- * automatically populated at construction, to make it easier to use via Java
- * API calls (i.e., without invoking it via {@link CommandService#run}). This
- * improves compile-time safety of downstream code that calls the command.
+ * A command that knows its context. Its service parameters are automatically
+ * populated at construction, to make it easier to use via Java API calls (i.e.,
+ * without invoking it via {@link CommandService#run}). This improves
+ * compile-time safety of downstream code that calls the command.
  * <p>
  * Here is an example command execution using {@link CommandService#run}:
  * </p>
@@ -76,10 +76,10 @@ import imagej.plugin.ServicePreprocessor;
  * <p>
  * That said, there are times when you cannot extend a particular class (usually
  * because you must extend a different class instead). In that case, you can
- * still implement the {@link Command} interface and end up with a
- * perfectly serviceable command. The consequence is only that other Java
- * programmers will not be able to use the latter paradigm above to invoke your
- * code in a fully compile-time-safe way.
+ * still implement the {@link Command} interface and end up with a perfectly
+ * serviceable command. The consequence is only that other Java programmers will
+ * not be able to use the latter paradigm above to invoke your code in a fully
+ * compile-time-safe way.
  * 
  * @author Curtis Rueden
  */

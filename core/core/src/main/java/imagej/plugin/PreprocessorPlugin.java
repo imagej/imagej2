@@ -45,7 +45,7 @@ import imagej.module.ModulePreprocessor;
  * inputs or checking prerequisites.
  * <p>
  * Preprocessor plugins discoverable at runtime must implement this interface
- * and be annotated with @{@link Plugin} with {@link Plugin#type()} =
+ * and be annotated with @{@link Plugin} with attribute {@link Plugin#type()} =
  * {@link PreprocessorPlugin}.class. While it possible to create a preprocessor
  * plugin merely by implementing this interface, it is encouraged to instead
  * extend {@link AbstractPreprocessorPlugin}, for convenience.

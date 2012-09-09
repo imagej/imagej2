@@ -52,8 +52,9 @@ import java.util.concurrent.Future;
 /**
  * Interface for service that keeps track of available commands.
  * <p>
- * A <em>command</em> is a particular type of {@link ImageJPlugin} that is also a
- * {@link Module}; i.e., it is {@link Runnable}, with typed inputs and outputs.
+ * A <em>command</em> is a particular type of {@link ImageJPlugin} that is also
+ * a {@link Module}; i.e., it is {@link Runnable}, with typed inputs and
+ * outputs.
  * <p>
  * The command service keeps a master index of all commands known to the system.
  * It asks the {@link PluginService} for available commands, then takes care of
@@ -77,8 +78,7 @@ public interface CommandService extends Service {
 	List<CommandInfo<Command>> getCommands();
 
 	/** Gets the first available command of the given class, or null if none. */
-	<C extends Command> CommandInfo<C> getCommand(
-		Class<C> commandClass);
+	<C extends Command> CommandInfo<C> getCommand(Class<C> commandClass);
 
 	/**
 	 * Gets the first available command of the given class name, or null if none.
@@ -86,28 +86,26 @@ public interface CommandService extends Service {
 	CommandInfo<Command> getCommand(String className);
 
 	/** Gets the list of commands of the given type. */
-	<C extends Command> List<CommandInfo<C>>
-		getCommandsOfType(Class<C> type);
+	<C extends Command> List<CommandInfo<C>> getCommandsOfType(Class<C> type);
 
 	/**
 	 * Gets the list of commands of the given class.
 	 * <p>
-	 * Most classes will have only a single match, but some special classes
-	 * (such as imagej.legacy.LegacyCommand) may match many entries.
+	 * Most classes will have only a single match, but some special classes (such
+	 * as <code>imagej.legacy.LegacyCommand</code>) may match many entries.
 	 * </p>
 	 */
-	<C extends Command> List<CommandInfo<C>>
-		getCommandsOfClass(Class<C> commandClass);
+	<C extends Command> List<CommandInfo<C>> getCommandsOfClass(
+		Class<C> commandClass);
 
 	/**
 	 * Gets the list of commands with the given class name.
 	 * <p>
-	 * Most classes will have only a single match, but some special classes
-	 * (such as imagej.legacy.LegacyCommand) may match many entries.
+	 * Most classes will have only a single match, but some special classes (such
+	 * as <code>imagej.legacy.LegacyCommand</code>) may match many entries.
 	 * </p>
 	 */
-	List<CommandInfo<Command>> getCommandsOfClass(
-		String className);
+	List<CommandInfo<Command>> getCommandsOfClass(String className);
 
 	/**
 	 * Populates any {@link Service} parameters for the given command instance,

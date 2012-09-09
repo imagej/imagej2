@@ -74,7 +74,7 @@ public class DefaultPlatform extends AbstractPlatform {
 				final int exitCode = platformService.exec(browser, url.toString());
 				if (exitCode == 0) return;
 			}
-			catch (IOException e) {
+			catch (final IOException e) {
 				// browser executable was invalid; try the next one
 			}
 		}

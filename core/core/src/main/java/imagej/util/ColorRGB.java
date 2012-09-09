@@ -42,6 +42,7 @@ import java.io.Serializable;
  * 
  * @author Curtis Rueden
  * @author Lee Kamentsky
+ * @author Barry DeZonia
  */
 public class ColorRGB implements Serializable {
 
@@ -174,11 +175,13 @@ public class ColorRGB implements Serializable {
 	}
 
 	// TODO - move when we handle color spaces. For now its a convenience method.
-	
-	public static ColorRGB fromHSVColor(double h, double s, double v) {
+
+	public static ColorRGB fromHSVColor(final double h, final double s,
+		final double v)
+	{
 		return hsvToRgb(h, s, v);
 	}
-	
+
 	// -- Helper methods --
 
 	private int parse(final String[] s, final int index) {
@@ -191,43 +194,73 @@ public class ColorRGB implements Serializable {
 		}
 	}
 
-	// NB BDZ - adapted from
-	// http://mjijackson.com/2008/02/
-	//   rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
-
 	/**
-	 * Converts an HSV color value to RGB. Conversion formula
-	 * adapted from http://en.wikipedia.org/wiki/HSV_color_space.
-	 * Assumes h, s, and v are contained in the set [0, 1] and
-	 * returns r, g, and b in the set [0, 255].
-	 *
-	 * @param   h          The hue
-	 * @param   s          The saturation
-	 * @param   v          The value
-	 * @return  ColorRGB   The RGB representation
+	 * Converts an HSV color value to RGB.
+	 * <p>
+	 * Assumes {@code h}, {@code s}, and {@code v} are contained in the set [0, 1]
+	 * and returns {@code r}, {@code g}, and {@code b} in the set [0, 255].
+	 * </p>
+	 * <p>
+	 * Conversion formula adapted from Wikipedia's <a
+	 * href="http://en.wikipedia.org/wiki/HSL_and_HSV">HSL and HSV article</a> and
+	 * Michael Jackson's <a href="http://bit.ly/9L2qln">blog post on additive
+	 * color model conversion algorithms</a>.
+	 * </p>
+	 * 
+	 * @param h The hue
+	 * @param s The saturation
+	 * @param v The value
+	 * @return ColorRGB The RGB representation
 	 */
-	private static ColorRGB hsvToRgb(double h, double s, double v){
-	    double r01 = 0, g01 = 0, b01 = 0;
+	private static ColorRGB hsvToRgb(final double h, final double s,
+		final double v)
+	{
+		double r01 = 0, g01 = 0, b01 = 0;
 
-	    int i = (int) Math.floor(h * 6);
-	    double f = h * 6 - i;
-	    double p = v * (1 - s);
-	    double q = v * (1 - f * s);
-	    double t = v * (1 - (1 - f) * s);
+		final int i = (int) Math.floor(h * 6);
+		final double f = h * 6 - i;
+		final double p = v * (1 - s);
+		final double q = v * (1 - f * s);
+		final double t = v * (1 - (1 - f) * s);
 
-	    switch(i % 6){
-	        case 0: r01 = v; g01 = t; b01 = p; break;
-	        case 1: r01 = q; g01 = v; b01 = p; break;
-	        case 2: r01 = p; g01 = v; b01 = t; break;
-	        case 3: r01 = p; g01 = q; b01 = v; break;
-	        case 4: r01 = t; g01 = p; b01 = v; break;
-	        case 5: r01 = v; g01 = p; b01 = q; break;
-	    }
+		switch (i % 6) {
+			case 0:
+				r01 = v;
+				g01 = t;
+				b01 = p;
+				break;
+			case 1:
+				r01 = q;
+				g01 = v;
+				b01 = p;
+				break;
+			case 2:
+				r01 = p;
+				g01 = v;
+				b01 = t;
+				break;
+			case 3:
+				r01 = p;
+				g01 = q;
+				b01 = v;
+				break;
+			case 4:
+				r01 = t;
+				g01 = p;
+				b01 = v;
+				break;
+			case 5:
+				r01 = v;
+				g01 = p;
+				b01 = q;
+				break;
+		}
 
-	    int r255 = (int) Math.round(r01 * 255);
-	    int g255 = (int) Math.round(g01 * 255);
-	    int b255 = (int) Math.round(b01 * 255);
-	    
-	    return new ColorRGB(r255, g255, b255);
+		final int r255 = (int) Math.round(r01 * 255);
+		final int g255 = (int) Math.round(g01 * 255);
+		final int b255 = (int) Math.round(b01 * 255);
+
+		return new ColorRGB(r255, g255, b255);
 	}
+
 }

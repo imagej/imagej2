@@ -43,7 +43,8 @@ import imagej.plugin.SortablePlugin;
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractService extends SortablePlugin implements Service
+public abstract class AbstractService extends SortablePlugin implements
+	Service
 {
 
 	/** Maintain list of event subscribers, to avoid garbage collection. */

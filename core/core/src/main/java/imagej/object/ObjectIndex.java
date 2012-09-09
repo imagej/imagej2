@@ -67,9 +67,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * type lists multiple times.
  * </p>
  * <p>
- * Note that similar to {@link List}, it is possible for the same object to
- * be added to the index more than once, in which case it will appear on
- * compatible type lists multiple times.
+ * Note that similar to {@link List}, it is possible for the same object to be
+ * added to the index more than once, in which case it will appear on compatible
+ * type lists multiple times.
  * </p>
  * 
  * @author Curtis Rueden
@@ -99,8 +99,7 @@ public class ObjectIndex<E> implements Collection<E> {
 	/**
 	 * Gets a list of all registered objects.
 	 * <p>
-	 * Calling this method is equivalent to calling
-	 * <code>get(Object.class)</code>.
+	 * This method is equivalent to calling <code>get(Object.class)</code>.
 	 * </p>
 	 * 
 	 * @return Read-only list of all registered objects, or an empty list if none

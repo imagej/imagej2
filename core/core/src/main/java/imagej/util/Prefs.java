@@ -72,13 +72,14 @@ public final class Prefs {
 		return get(null, name, defaultValue);
 	}
 
-	public static boolean
-		getBoolean(final String name, final boolean defaultValue)
+	public static boolean getBoolean(final String name,
+		final boolean defaultValue)
 	{
 		return getBoolean(null, name, defaultValue);
 	}
 
-	public static double getDouble(final String name, final double defaultValue) {
+	public static double getDouble(final String name, final double defaultValue)
+	{
 		return getDouble(null, name, defaultValue);
 	}
 
@@ -160,8 +161,8 @@ public final class Prefs {
 		return prefs(c).getLong(key(c, name), defaultValue);
 	}
 
-	public static void
-		put(final Class<?> c, final String name, final String value)
+	public static void put(final Class<?> c, final String name,
+		final String value)
 	{
 		prefs(c).put(key(c, name), value);
 	}
@@ -172,8 +173,8 @@ public final class Prefs {
 		prefs(c).putBoolean(key(c, name), value);
 	}
 
-	public static void
-		put(final Class<?> c, final String name, final double value)
+	public static void put(final Class<?> c, final String name,
+		final double value)
 	{
 		prefs(c).putDouble(key(c, name), value);
 	}
@@ -184,11 +185,13 @@ public final class Prefs {
 		prefs(c).putFloat(key(c, name), value);
 	}
 
-	public static void put(final Class<?> c, final String name, final int value) {
+	public static void put(final Class<?> c, final String name, final int value)
+	{
 		prefs(c).putInt(key(c, name), value);
 	}
 
-	public static void put(final Class<?> c, final String name, final long value)
+	public static void
+		put(final Class<?> c, final String name, final long value)
 	{
 		prefs(c).putLong(key(c, name), value);
 	}

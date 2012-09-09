@@ -77,7 +77,7 @@ public class PrefsTest {
 		recentFiles.add("some/path2");
 		recentFiles.add("some/path3");
 		Prefs.putList(prefs, recentFiles, recentFilesKey);
-		List<String> result = Prefs.getList(prefs, recentFilesKey);
+		final List<String> result = Prefs.getList(prefs, recentFilesKey);
 		assertEquals(recentFiles, result);
 	}
 

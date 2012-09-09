@@ -45,7 +45,7 @@ import imagej.module.ModulePostprocessor;
  * its outputs on screen.
  * <p>
  * Postprocessor plugins discoverable at runtime must implement this interface
- * and be annotated with @{@link Plugin} with {@link Plugin#type()} =
+ * and be annotated with @{@link Plugin} with attribute {@link Plugin#type()} =
  * {@link PostprocessorPlugin}.class. While it possible to create a
  * postprocessor plugin merely by implementing this interface, it is encouraged
  * to instead extend {@link AbstractPostprocessorPlugin}, for convenience.

@@ -43,8 +43,8 @@ package imagej.util;
  */
 public final class UnitUtils {
 
-	private static final String[] BYTE_UNITS = { "B", "KiB", "MiB", "GiB", "TiB",
-		"PiB", "EiB", "ZiB", "YiB" };
+	private static final String[] BYTE_UNITS = { "B", "KiB", "MiB", "GiB",
+		"TiB", "PiB", "EiB", "ZiB", "YiB" };
 
 	private static final double LOG1024 = Math.log(1024);
 

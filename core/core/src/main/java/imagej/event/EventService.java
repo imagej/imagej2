@@ -59,13 +59,12 @@ public interface EventService extends Service {
 	 * <ol>
 	 * <li>{@link imagej.module.event.ModulesUpdatedEvent} is published with
 	 * {@link #publish}.</li>
-	 * <li>{@link imagej.menu.DefaultMenuService} receives the event and
-	 * handles it, publishing {@link imagej.menu.event.MenusUpdatedEvent} in
-	 * response.</li>
+	 * <li>{@link imagej.menu.DefaultMenuService} receives the event and handles
+	 * it, publishing {@link imagej.menu.event.MenusUpdatedEvent} in response.</li>
 	 * <li>A third party that subscribes to both
 	 * {@link imagej.module.event.ModulesUpdatedEvent} and
-	 * {@link imagej.menu.event.MenusUpdatedEvent} will receive the latter
-	 * before the former.</li>
+	 * {@link imagej.menu.event.MenusUpdatedEvent} will receive the latter before
+	 * the former.</li>
 	 * </ol>
 	 * That said, the behavior of {@link #publish} depends on the thread from
 	 * which it is called: if called from a thread identified as a dispatch thread
@@ -90,13 +89,12 @@ public interface EventService extends Service {
 	 * <ol>
 	 * <li>{@link imagej.module.event.ModulesUpdatedEvent} is published with
 	 * {@link #publishLater}.</li>
-	 * <li>{@link imagej.menu.DefaultMenuService} receives the event and
-	 * handles it, publishing {@link imagej.menu.event.MenusUpdatedEvent} in
-	 * response.</li>
+	 * <li>{@link imagej.menu.DefaultMenuService} receives the event and handles
+	 * it, publishing {@link imagej.menu.event.MenusUpdatedEvent} in response.</li>
 	 * <li>A third party that subscribes to both
 	 * {@link imagej.module.event.ModulesUpdatedEvent} and
-	 * {@link imagej.menu.event.MenusUpdatedEvent} will receive the former
-	 * first, since it was already queued by the time the latter was published.</li>
+	 * {@link imagej.menu.event.MenusUpdatedEvent} will receive the former first,
+	 * since it was already queued by the time the latter was published.</li>
 	 * </ol>
 	 */
 	<E extends ImageJEvent> void publishLater(E e);

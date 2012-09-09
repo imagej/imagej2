@@ -72,7 +72,8 @@ import java.util.Map;
  * @see Tool
  */
 @Plugin(type = Service.class)
-public class DefaultToolService extends AbstractService implements ToolService {
+public class DefaultToolService extends AbstractService implements ToolService
+{
 
 	private static final double SEPARATOR_DISTANCE = 10;
 

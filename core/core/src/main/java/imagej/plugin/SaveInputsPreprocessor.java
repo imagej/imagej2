@@ -44,8 +44,8 @@ import imagej.module.ModuleItem;
  * <p>
  * This preprocessor runs late in the chain, giving other preprocessors every
  * chance to populate the inputs first. In particular, it executes after the
- * {@link imagej.widget.InputHarvester} has run, so that user-specified
- * values are persisted for next time.
+ * {@link imagej.widget.InputHarvester} has run, so that user-specified values
+ * are persisted for next time.
  * </p>
  * 
  * @author Curtis Rueden
@@ -73,4 +73,3 @@ public class SaveInputsPreprocessor extends AbstractPreprocessorPlugin {
 	}
 
 }
-

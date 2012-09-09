@@ -50,9 +50,12 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Default service for keeping track of available plugins. Available plugins are
- * discovered using a library called SezPoz. Loading of the actual plugin
+ * Default service for keeping track of available plugins.
+ * <p>
+ * Available plugins are discovered using a library called <a
+ * href="http://sezpoz.java.net/">SezPoz</a>. Loading of the actual plugin
  * classes can be deferred until a particular plugin is actually needed.
+ * </p>
  * <p>
  * Plugins are added or removed via the plugin service are reported via the
  * event service. (No events are published for plugins directly added to or
@@ -139,8 +142,8 @@ public class DefaultPluginService extends AbstractService implements
 	}
 
 	@Override
-	public <P extends ImageJPlugin> PluginInfo<P>
-		getPlugin(final Class<P> pluginClass)
+	public <P extends ImageJPlugin> PluginInfo<P> getPlugin(
+		final Class<P> pluginClass)
 	{
 		return ListUtils.first(getPluginsOfClass(pluginClass));
 	}
@@ -165,13 +168,16 @@ public class DefaultPluginService extends AbstractService implements
 		// NB: Since we have the class in question, we can determine its
 		// plugin type and limit our search to plugins of that type.
 		final String className = pluginClass.getName();
-		final Class<? extends ImageJPlugin> pluginType = getPluginType(pluginClass);
+		final Class<? extends ImageJPlugin> pluginType =
+			getPluginType(pluginClass);
 		getPluginsOfClass(className, getPluginsOfType(pluginType), result);
 		return result;
 	}
 
 	@Override
-	public List<PluginInfo<ImageJPlugin>> getPluginsOfClass(final String className) {
+	public List<PluginInfo<ImageJPlugin>> getPluginsOfClass(
+		final String className)
+	{
 		final ArrayList<PluginInfo<ImageJPlugin>> result =
 			new ArrayList<PluginInfo<ImageJPlugin>>();
 		// NB: Since we cannot load the class in question, and hence cannot
@@ -182,7 +188,8 @@ public class DefaultPluginService extends AbstractService implements
 	}
 
 	@Override
-	public <P extends ImageJPlugin> List<P> createInstancesOfType(final Class<P> type)
+	public <P extends ImageJPlugin> List<P> createInstancesOfType(
+		final Class<P> type)
 	{
 		final List<PluginInfo<P>> plugins = getPluginsOfType(type);
 		@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -206,14 +213,14 @@ public class DefaultPluginService extends AbstractService implements
 	}
 
 	@Override
-	public <P extends ImageJPlugin> P createInstance(PluginInfo<P> info) {
+	public <P extends ImageJPlugin> P createInstance(final PluginInfo<P> info) {
 		try {
 			final P p = info.createInstance();
 			getContext().inject(p);
 			Priority.inject(p, info.getPriority());
 			return p;
 		}
-		catch (InstantiableException exc) {
+		catch (final InstantiableException exc) {
 			log.error("Cannot create plugin: " + info.getClassName());
 		}
 		return null;

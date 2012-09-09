@@ -91,16 +91,12 @@ public final class DefaultAppService extends AbstractService implements
 	}
 
 	@Override
-	public void
-		setAboutHandler(final Class<? extends Command> aboutCommand)
-	{
+	public void setAboutHandler(final Class<? extends Command> aboutCommand) {
 		this.aboutCommand = aboutCommand;
 	}
 
 	@Override
-	public void
-		setPrefsHandler(final Class<? extends Command> prefsCommand)
-	{
+	public void setPrefsHandler(final Class<? extends Command> prefsCommand) {
 		this.prefsCommand = prefsCommand;
 	}
 
@@ -129,7 +125,8 @@ public final class DefaultAppService extends AbstractService implements
 	// -- Event handlers --
 
 	@EventHandler
-	protected void onEvent(@SuppressWarnings("unused") final AppAboutEvent event)
+	protected void
+		onEvent(@SuppressWarnings("unused") final AppAboutEvent event)
 	{
 		about();
 	}
@@ -142,7 +139,8 @@ public final class DefaultAppService extends AbstractService implements
 	}
 
 	@EventHandler
-	protected void onEvent(@SuppressWarnings("unused") final AppQuitEvent event) {
+	protected void onEvent(@SuppressWarnings("unused") final AppQuitEvent event)
+	{
 		quit();
 	}
 

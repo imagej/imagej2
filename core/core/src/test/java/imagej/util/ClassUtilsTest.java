@@ -1,4 +1,3 @@
-package imagej.util;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -34,7 +33,10 @@ package imagej.util;
  * #L%
  */
 
-import static org.junit.Assert.*;
+package imagej.util;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -48,40 +50,53 @@ import java.util.zip.ZipEntry;
 
 import org.junit.Test;
 
+/**
+ * Tests {@link ClassUtils}.
+ * 
+ * @author Johannes Schindelin
+ */
 public class ClassUtilsTest {
 
 	@Test
 	public void testUnpackedClass() throws IOException {
-		File tmpDir = createTempDirectory("class-utils-test");
-		String path = getClass().getName().replace('.', '/') + ".class";
-		File classFile = new File(tmpDir, path);
-		assertTrue(classFile.getParentFile().exists() || classFile.getParentFile().mkdirs());
-		copy(getClass().getResource("/" + path).openStream(), new FileOutputStream(classFile), true);
+		final File tmpDir = createTempDirectory("class-utils-test");
+		final String path = getClass().getName().replace('.', '/') + ".class";
+		final File classFile = new File(tmpDir, path);
+		assertTrue(classFile.getParentFile().exists() ||
+			classFile.getParentFile().mkdirs());
+		copy(getClass().getResource("/" + path).openStream(),
+			new FileOutputStream(classFile), true);
 
-		ClassLoader classLoader = new URLClassLoader(new URL[] { tmpDir.toURI().toURL() }, null);
-		assertEquals(tmpDir, ClassUtils.getLocation(getClass().getName(), classLoader));
+		final ClassLoader classLoader =
+			new URLClassLoader(new URL[] { tmpDir.toURI().toURL() }, null);
+		assertEquals(tmpDir, ClassUtils.getLocation(getClass().getName(),
+			classLoader));
 	}
 
 	@Test
 	public void testClassInJar() throws IOException {
-		File jar = File.createTempFile("class-utils-test", ".jar");
-		JarOutputStream out = new JarOutputStream(new FileOutputStream(jar));
-		String path = getClass().getName().replace('.', '/') + ".class";
+		final File jar = File.createTempFile("class-utils-test", ".jar");
+		final JarOutputStream out = new JarOutputStream(new FileOutputStream(jar));
+		final String path = getClass().getName().replace('.', '/') + ".class";
 		out.putNextEntry(new ZipEntry(path));
 		copy(getClass().getResource("/" + path).openStream(), out, true);
 
-		ClassLoader classLoader = new URLClassLoader(new URL[] { jar.toURI().toURL() }, null);
-		assertEquals(jar, ClassUtils.getLocation(getClass().getName(), classLoader));
+		final ClassLoader classLoader =
+			new URLClassLoader(new URL[] { jar.toURI().toURL() }, null);
+		assertEquals(jar, ClassUtils
+			.getLocation(getClass().getName(), classLoader));
 	}
 
 	/**
-	 * Create a temporary directory
+	 * Creates a temporary directory.
 	 * 
 	 * @param prefix the prefix as for {@link File#createTempFile(String, String)}
 	 * @return the File object describing the directory
 	 * @throws IOException
 	 */
-	protected static File createTempDirectory(final String prefix) throws IOException {
+	private static File createTempDirectory(final String prefix)
+		throws IOException
+	{
 		final File file = File.createTempFile(prefix, "");
 		file.delete();
 		file.mkdir();
@@ -89,17 +104,19 @@ public class ClassUtilsTest {
 	}
 
 	/**
-	 * Copies bytes from an {@link InputStream} to an {@link OutputStream}
+	 * Copies bytes from an {@link InputStream} to an {@link OutputStream}.
 	 * 
 	 * @param in the source
 	 * @param out the sink
 	 * @param closeOut whether to close the sink after we're done
 	 * @throws IOException
 	 */
-	protected static void copy(final InputStream in, final OutputStream out, boolean closeOut) throws IOException {
-		byte[] buffer = new byte[16384];
+	private static void copy(final InputStream in, final OutputStream out,
+		final boolean closeOut) throws IOException
+	{
+		final byte[] buffer = new byte[16384];
 		for (;;) {
-			int count = in.read(buffer);
+			final int count = in.read(buffer);
 			if (count < 0) break;
 			out.write(buffer, 0, count);
 		}

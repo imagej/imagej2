@@ -64,7 +64,7 @@ import java.lang.reflect.Field;
  */
 public class DynamicCommandInfo extends DefaultModuleInfo {
 
-	private CommandInfo<? extends DynamicCommand> info;
+	private final CommandInfo<? extends DynamicCommand> info;
 
 	public DynamicCommandInfo(final CommandInfo<? extends DynamicCommand> info,
 		final Class<? extends DynamicCommand> moduleClass)
@@ -236,8 +236,8 @@ public class DynamicCommandInfo extends DefaultModuleInfo {
 
 	/**
 	 * Copies any inputs from the adapted {@link CommandInfo}. This step allows
-	 * {@link DynamicCommand}s to mix and match @{@link Parameter} annotations with
-	 * inputs dynamically generated at runtime.
+	 * {@link DynamicCommand}s to mix and match @{@link Parameter} annotations
+	 * with inputs dynamically generated at runtime.
 	 */
 	private void populateItems() {
 		for (final ModuleItem<?> item : info.inputs()) {

@@ -60,10 +60,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A collection of metadata about a particular {@link Command}. Unlike
- * its more general superclass {@link PluginInfo}, a
+ * A collection of metadata about a particular {@link Command}.
+ * <p>
+ * Unlike its more general superclass {@link PluginInfo}, a
  * <code>CommandInfo</code> implements {@link ModuleInfo}, allowing it to
  * describe and instantiate the command in {@link Module} form.
+ * </p>
  * 
  * @author Curtis Rueden
  * @author Johannes Schindelin
@@ -72,8 +74,8 @@ import java.util.Map;
  * @see CommandModule
  * @see Command
  */
-public class CommandInfo<C extends Command> extends PluginInfo<C>
-	implements ModuleInfo
+public class CommandInfo<C extends Command> extends PluginInfo<C> implements
+	ModuleInfo
 {
 
 	/** List of items with fixed, preset values. */
@@ -83,14 +85,14 @@ public class CommandInfo<C extends Command> extends PluginInfo<C>
 	private CommandModuleFactory factory;
 
 	/**
-	 * Flag indicating whether the command parameters have been parsed. Parsing the
-	 * parameters requires loading the command class, so doing so is deferred until
-	 * information about the parameters is actively needed.
+	 * Flag indicating whether the command parameters have been parsed. Parsing
+	 * the parameters requires loading the command class, so doing so is deferred
+	 * until information about the parameters is actively needed.
 	 */
 	private boolean paramsParsed;
 
 	/** List of problems detected when parsing command parameters. */
-	private List<String> paramErrors = new ArrayList<String>();
+	private final List<String> paramErrors = new ArrayList<String>();
 
 	/** Table of inputs, keyed on name. */
 	private final Map<String, ModuleItem<?>> inputMap =
@@ -265,8 +267,8 @@ public class CommandInfo<C extends Command> extends PluginInfo<C>
 	// -- Helper methods --
 
 	/**
-	 * Parses the command's inputs and outputs. Invoked lazily, as needed, to defer
-	 * class loading as long as possible.
+	 * Parses the command's inputs and outputs. Invoked lazily, as needed, to
+	 * defer class loading as long as possible.
 	 */
 	private void parseParams() {
 		if (paramsParsed) return;

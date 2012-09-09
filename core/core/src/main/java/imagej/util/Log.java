@@ -42,8 +42,8 @@ import imagej.log.StderrLogService;
  * Simple logging utility class.
  * <p>
  * The class supports five common logging levels: error, warn, info, trace and
- * debug. It provides methods for logging messages, exception stack traces
- * and combinations of the two.
+ * debug. It provides methods for logging messages, exception stack traces and
+ * combinations of the two.
  * </p>
  * 
  * @author Curtis Rueden

@@ -35,7 +35,6 @@
 
 package imagej;
 
-
 /**
  * Constants for specifying an item's priority.
  * 
@@ -51,8 +50,8 @@ public final class Priority {
 	}
 
 	/**
-	 * Priority for items that must go first in the chain. Examples:
-	 * {@link imagej.plugin.DebugPreprocessor},
+	 * Priority for items that must go first in the chain.<br>
+	 * Examples: {@link imagej.plugin.DebugPreprocessor},
 	 * {@link imagej.plugin.DebugPostprocessor}
 	 */
 	public static final double FIRST_PRIORITY = Double.POSITIVE_INFINITY;
@@ -65,8 +64,8 @@ public final class Priority {
 	public static final double VERY_HIGH_PRIORITY = +10000;
 
 	/**
-	 * Priority for items that prefer to be earlier in the chain. Example:
-	 * {@link imagej.plugin.InitPreprocessor}
+	 * Priority for items that prefer to be earlier in the chain.<br>
+	 * Example: {@link imagej.plugin.InitPreprocessor}
 	 */
 	public static final double HIGH_PRIORITY = +100;
 
@@ -77,7 +76,7 @@ public final class Priority {
 	public static final double LOW_PRIORITY = -100;
 
 	/**
-	 * Priority for items that strongly prefer to be late in the chain.
+	 * Priority for items that strongly prefer to be late in the chain.<br>
 	 * Example: {@link imagej.display.DisplayPostprocessor}
 	 */
 	public static final double VERY_LOW_PRIORITY = -10000;

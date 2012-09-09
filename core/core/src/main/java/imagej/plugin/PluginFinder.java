@@ -35,7 +35,6 @@
 
 package imagej.plugin;
 
-
 import java.util.List;
 
 /**

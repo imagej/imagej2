@@ -41,7 +41,7 @@ package imagej;
  * @author Curtis Rueden
  */
 public class InstantiableException extends Exception {
-	
+
 	public InstantiableException() {
 		super();
 	}

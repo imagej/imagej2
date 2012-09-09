@@ -45,8 +45,8 @@ import java.net.URL;
  * An interface for configuring a specific deployment platform, defined by
  * criteria such as operating system, machine architecture or Java version.
  * <p>
- * Platforms discoverable at runtime must implement this
- * interface and be annotated with @{@link Plugin} with {@link Plugin#type()} =
+ * Platforms discoverable at runtime must implement this interface and be
+ * annotated with @{@link Plugin} with attribute {@link Plugin#type()} =
  * {@link Platform}.class. While it possible to create a platform merely by
  * implementing this interface, it is encouraged to instead extend
  * {@link AbstractPlatform}, for convenience.

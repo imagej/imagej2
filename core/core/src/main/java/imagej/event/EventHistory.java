@@ -67,7 +67,8 @@ public interface EventHistory extends Service {
 
 	/**
 	 * Adds an event history listener. This mechanism exists (rather than using
-	 * the event bus) to avoid event feedback loops when reporting history changes.
+	 * the event bus) to avoid event feedback loops when reporting history
+	 * changes.
 	 */
 	void addListener(EventHistoryListener l);
 

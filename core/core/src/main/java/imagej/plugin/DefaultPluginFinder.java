@@ -95,8 +95,8 @@ public class DefaultPluginFinder implements PluginFinder {
 
 	// -- Helper methods --
 
-	private PluginInfo<ImageJPlugin>
-		createInfo(final IndexItem<Plugin, ImageJPlugin> item)
+	private PluginInfo<ImageJPlugin> createInfo(
+		final IndexItem<Plugin, ImageJPlugin> item)
 	{
 		final String className = item.className();
 		final Plugin plugin = item.annotation();

@@ -270,8 +270,8 @@ public class ConfigFileParameters {
 	}
 
 	/** Writes launcher config values to an IJ2 style launcher config file. */
-	private void saveConfigValues(final Map<String, String> map,
-		final File file)
+	private void
+		saveConfigValues(final Map<String, String> map, final File file)
 	{
 		try {
 			final FileOutputStream fos = new FileOutputStream(file);

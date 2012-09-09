@@ -43,14 +43,14 @@ import imagej.plugin.Plugin;
 import java.util.List;
 
 /**
- * A display is a particular type of {@link ImageJPlugin} intended to collect objects
- * for visualization. The most common type of display is the
+ * A display is a particular type of {@link ImageJPlugin} intended to collect
+ * objects for visualization. The most common type of display is the
  * <code>imagej.data.display.ImageDisplay</code>, which displays images.
  * However, in principle there are no limits to the sorts of objects that can be
  * handled.
  * <p>
- * Displays discoverable at runtime must implement this
- * interface and be annotated with @{@link Plugin} with {@link Plugin#type()} =
+ * Displays discoverable at runtime must implement this interface and be
+ * annotated with @{@link Plugin} with attribute {@link Plugin#type()} =
  * {@link Display}.class. While it possible to create a display merely by
  * implementing this interface, it is encouraged to instead extend
  * {@link AbstractDisplay}, for convenience.
@@ -61,7 +61,9 @@ import java.util.List;
  * @see Plugin
  * @see DisplayService
  */
-public interface Display<T> extends List<T>, ImageJPlugin, Contextual, Prioritized {
+public interface Display<T> extends List<T>, ImageJPlugin, Contextual,
+	Prioritized
+{
 
 	/**
 	 * Tests whether the display is capable of visualizing objects of the given

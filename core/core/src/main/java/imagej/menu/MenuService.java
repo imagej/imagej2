@@ -91,14 +91,14 @@ public interface MenuService extends Service {
 	/**
 	 * Selects or deselects the plugin of the given class in the menu structure.
 	 */
-	<C extends Command> void setSelected(Class<C> commandClass,
-		boolean selected);
+	<C extends Command> void
+		setSelected(Class<C> commandClass, boolean selected);
 
 	/**
 	 * Selects or deselects the plugin of the given class in the menu structure.
 	 */
-	<C extends Command> void setSelected(String pluginClassName,
-		boolean selected);
+	<C extends Command> void
+		setSelected(String pluginClassName, boolean selected);
 
 	/** Selects or deselects the given module in the menu structure. */
 	void setSelected(ModuleInfo info, boolean selected);

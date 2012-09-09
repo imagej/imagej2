@@ -53,8 +53,8 @@ import java.util.Map;
  * @author Johannes Schindelin
  * @author Grant Harris
  */
-public class CommandModule<C extends Command> extends AbstractModule
-	implements Cancelable
+public class CommandModule<C extends Command> extends AbstractModule implements
+	Cancelable
 {
 
 	/** The metadata describing the command. */
@@ -92,8 +92,8 @@ public class CommandModule<C extends Command> extends AbstractModule
 	// -- Module methods --
 
 	/**
-	 * Computes a preview of the command's results. For this method to do anything,
-	 * the command must implement the {@link Previewable} interface.
+	 * Computes a preview of the command's results. For this method to do
+	 * anything, the command must implement the {@link Previewable} interface.
 	 */
 	@Override
 	public void preview() {
@@ -103,7 +103,7 @@ public class CommandModule<C extends Command> extends AbstractModule
 	}
 
 	/**
-	 * Cancels the command, undoing the effects of any calls to {@link #preview()}.
+	 * Cancels the command, undoing the effects of any {@link #preview()} calls.
 	 * For this method to do anything, the command must implement the
 	 * {@link Previewable} interface.
 	 */

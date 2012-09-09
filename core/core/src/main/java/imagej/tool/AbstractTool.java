@@ -150,8 +150,8 @@ public abstract class AbstractTool extends SortablePlugin implements Tool {
 	}
 
 	/** Publishes line length and angle in the status bar. */
-	protected void reportLine(final double x1, final double y1,
-		final double x2, final double y2)
+	protected void reportLine(final double x1, final double y1, final double x2,
+		final double y2)
 	{
 		// compute line angle
 		final double dx = x2 - x1;

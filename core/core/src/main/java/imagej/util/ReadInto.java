@@ -44,13 +44,15 @@ import java.io.PrintStream;
 /**
  * This class takes an {@link InputStream} and either accumulates the read bytes
  * in a {@link String} or outputs to a {@link PrintStream}.
- * 
+ * <p>
  * Its intended use is to catch the output and error streams of {@link Process}
  * instances.
+ * </p>
  * 
  * @author Johannes Schindelin
  */
 public class ReadInto extends Thread {
+
 	protected BufferedReader reader;
 	protected PrintStream out;
 	protected StringBuilder buffer = new StringBuilder();
@@ -59,13 +61,11 @@ public class ReadInto extends Thread {
 	/**
 	 * Construct a ReadInto thread and start it right away.
 	 * 
-	 * @param in
-	 *            the stream to read
-	 * @param out
-	 *            the stream to print to; if it is null, the {@link #toString()}
-	 *            method will have the output instead
+	 * @param in the stream to read
+	 * @param out the stream to print to; if it is null, the {@link #toString()}
+	 *          method will have the output instead
 	 */
-	public ReadInto(InputStream in, PrintStream out) {
+	public ReadInto(final InputStream in, final PrintStream out) {
 		reader = new BufferedReader(new InputStreamReader(in));
 		this.out = out;
 		start();
@@ -73,9 +73,10 @@ public class ReadInto extends Thread {
 
 	/**
 	 * The main method.
-	 * 
-	 * It runs until interrupted, or until the {@link InputStream} ends,
-	 * whichever comes first.
+	 * <p>
+	 * It runs until interrupted, or until the {@link InputStream} ends, whichever
+	 * comes first.
+	 * </p>
 	 */
 	@Override
 	public void run() {
@@ -85,22 +86,19 @@ public class ReadInto extends Thread {
 					if (done) return;
 					Thread.sleep(500);
 				}
-				String line = reader.readLine();
-				if (line == null)
-					break;
-				if (out != null)
-					out.println(line);
-				else
-					buffer.append(line).append("\n");
+				final String line = reader.readLine();
+				if (line == null) break;
+				if (out != null) out.println(line);
+				else buffer.append(line).append("\n");
 				Thread.sleep(0);
 			}
 		}
-		catch (InterruptedException e) { /* just stop */ }
-		catch (IOException e) { /* just stop */ }
+		catch (final InterruptedException e) { /* just stop */}
+		catch (final IOException e) { /* just stop */}
 		try {
 			reader.close();
 		}
-		catch (IOException e) { /* just stop */ }
+		catch (final IOException e) { /* just stop */}
 	}
 
 	public void done() {

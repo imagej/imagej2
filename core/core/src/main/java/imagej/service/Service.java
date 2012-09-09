@@ -44,7 +44,7 @@ import imagej.plugin.Plugin;
  * An ImageJ service, for a particular area of functionality.
  * <p>
  * Services discoverable at runtime must implement this interface and be
- * annotated with @{@link Plugin} with {@link Plugin#type()} =
+ * annotated with @{@link Plugin} with attribute {@link Plugin#type()} =
  * {@link Service}.class. While it possible to create a service merely by
  * implementing this interface, it is encouraged to instead extend
  * {@link AbstractService}, for convenience.

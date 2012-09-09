@@ -59,8 +59,8 @@ public final class MiscUtils {
 	 *         them is null, in which case nulls are considered less than non-null
 	 *         objects.
 	 */
-	public static <T extends Comparable<? super T>> int
-		compare(T o1, final T o2)
+	public static <T extends Comparable<? super T>> int compare(final T o1,
+		final T o2)
 	{
 		return compare(o1, o2, false);
 	}
@@ -77,8 +77,8 @@ public final class MiscUtils {
 	 *         <code>heavyNulls</code> flag is used, to define nulls as either
 	 *         less than, or greater than, non-null objects.
 	 */
-	public static <T extends Comparable<? super T>> int
-		compare(T o1, final T o2, final boolean heavyNulls)
+	public static <T extends Comparable<? super T>> int compare(final T o1,
+		final T o2, final boolean heavyNulls)
 	{
 		if (o1 == null && o2 == null) return 0;
 		if (o1 == null) return heavyNulls ? 1 : -1;

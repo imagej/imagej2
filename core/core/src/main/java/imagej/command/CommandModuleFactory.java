@@ -50,10 +50,10 @@ public interface CommandModuleFactory {
 		throws ModuleException;
 
 	/**
-	 * Constructs a module to work with the given {@link CommandInfo}, around
-	 * the specified {@link Command} instance.
+	 * Constructs a module to work with the given {@link CommandInfo}, around the
+	 * specified {@link Command} instance.
 	 */
-	<C extends Command> Module createModule(CommandInfo<C> info,
-		final C command);
+	<C extends Command> Module
+		createModule(CommandInfo<C> info, final C command);
 
 }

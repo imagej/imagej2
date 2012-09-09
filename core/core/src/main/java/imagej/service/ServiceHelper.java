@@ -169,7 +169,7 @@ public class ServiceHelper extends AbstractContextual {
 	// -- Helper methods --
 
 	/** Instantiates a service using the given constructor. */
-	private <S extends Service> S createService(Class<S> c)
+	private <S extends Service> S createService(final Class<S> c)
 		throws InstantiationException, IllegalAccessException
 	{
 		final S service = c.newInstance();

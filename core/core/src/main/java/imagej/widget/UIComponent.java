@@ -39,7 +39,6 @@ package imagej.widget;
  * An interface identifying an object housed within a UI component.
  * 
  * @author Curtis Rueden
- *
  * @param <C> The type of UI component housing the object.
  */
 public interface UIComponent<C> {

@@ -68,8 +68,8 @@ public final class ProcessUtils {
 	 * @throws RuntimeException if interrupted or the program failed to execute
 	 *           successfully.
 	 */
-	public static String exec(final File workingDirectory, final PrintStream err,
-		final PrintStream out, final String... args)
+	public static String exec(final File workingDirectory,
+		final PrintStream err, final PrintStream out, final String... args)
 	{
 		try {
 			final Process process =
@@ -92,8 +92,8 @@ public final class ProcessUtils {
 				throw new RuntimeException(e);
 			}
 			if (process.exitValue() != 0) {
-				throw new RuntimeException("exit status " + process.exitValue() + ": " +
-					Arrays.toString(args) + "\n" + err);
+				throw new RuntimeException("exit status " + process.exitValue() +
+					": " + Arrays.toString(args) + "\n" + err);
 			}
 			return outThread.toString();
 		}

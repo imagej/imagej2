@@ -40,9 +40,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import imagej.ImageJ;
-import imagej.display.Display;
-import imagej.display.DisplayService;
-import imagej.display.TextDisplay;
 
 import org.junit.Test;
 

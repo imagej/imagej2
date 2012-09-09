@@ -46,8 +46,8 @@ import imagej.util.ClassUtils;
  * 
  * @author Curtis Rueden
  */
-public abstract class SortablePlugin extends AbstractContextual
-	implements Prioritized, ImageJPlugin
+public abstract class SortablePlugin extends AbstractContextual implements
+	Prioritized, ImageJPlugin
 {
 
 	/** The priority of the plugin. */

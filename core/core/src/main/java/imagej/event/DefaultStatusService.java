@@ -84,8 +84,8 @@ public class DefaultStatusService extends AbstractService implements
 	}
 
 	@Override
-	public void
-		showStatus(int progress, int maximum, String message, boolean warn)
+	public void showStatus(final int progress, final int maximum,
+		final String message, final boolean warn)
 	{
 		currStatusString = message;
 		eventService.publish(new StatusEvent(progress, maximum, message, warn));

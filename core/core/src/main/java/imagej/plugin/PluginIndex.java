@@ -92,8 +92,7 @@ public class PluginIndex extends SortedObjectIndex<PluginInfo<?>> {
 	 * <p>
 	 * This method is more specific than {@link #get(Class)} since that method
 	 * returns only a <code>List&lt;PluginInfo&lt;?&gt;&gt;</code>, whereas this
-	 * one is guaranteed to return a
-	 * <code>List&lt;PluginInfo&lt;P&gt;&gt;</code>.
+	 * one is guaranteed to return a <code>List&lt;PluginInfo&lt;P&gt;&gt;</code>.
 	 * </p>
 	 * 
 	 * @return Read-only list of registered objects of the given type, or an empty

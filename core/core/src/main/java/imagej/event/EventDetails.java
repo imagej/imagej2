@@ -105,7 +105,7 @@ public class EventDetails {
 		return dateStr;
 	}
 
-	private String htmlize(String s) {
+	private String htmlize(final String s) {
 		final String tab = "&nbsp;&nbsp;&nbsp;&nbsp;";
 		return s.replaceAll("\\t", tab).replaceAll("\\n", "<br>");
 	}

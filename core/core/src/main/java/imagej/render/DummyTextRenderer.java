@@ -35,20 +35,18 @@
 
 package imagej.render;
 
-
 /**
- * A dummy implementation of the TextRenderer interface. Necessary to allow
- * any UI that does not support text rendering to still initialize correctly.
-
+ * A dummy implementation of the TextRenderer interface. Necessary to allow any
+ * UI that does not support text rendering to still initialize correctly.
+ * 
  * @author Barry DeZonia
- *
  */
 public class DummyTextRenderer implements TextRenderer {
 
 	private static final String MSG = "Dummy text renderer is not functional";
-	
+
 	@Override
-	public void renderText(String text) {
+	public void renderText(final String text) {
 		throw new UnsupportedOperationException(MSG);
 	}
 
@@ -68,7 +66,7 @@ public class DummyTextRenderer implements TextRenderer {
 	}
 
 	@Override
-	public void setFontFamily(FontFamily family) {
+	public void setFontFamily(final FontFamily family) {
 		throw new UnsupportedOperationException(MSG);
 	}
 
@@ -78,7 +76,7 @@ public class DummyTextRenderer implements TextRenderer {
 	}
 
 	@Override
-	public void setFontStyle(FontStyle style) {
+	public void setFontStyle(final FontStyle style) {
 		throw new UnsupportedOperationException(MSG);
 	}
 
@@ -88,7 +86,7 @@ public class DummyTextRenderer implements TextRenderer {
 	}
 
 	@Override
-	public void setFontSize(int size) {
+	public void setFontSize(final int size) {
 		throw new UnsupportedOperationException(MSG);
 	}
 
@@ -98,7 +96,7 @@ public class DummyTextRenderer implements TextRenderer {
 	}
 
 	@Override
-	public void setAntialiasing(boolean val) {
+	public void setAntialiasing(final boolean val) {
 		throw new UnsupportedOperationException(MSG);
 	}
 

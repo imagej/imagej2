@@ -186,7 +186,8 @@ public final class FileUtils {
 		// fill the array from the end
 		int i = 0;
 		for (; i < limit; i++) {
-			if (pathArray[pathindex - i] != '/' && pathArray[pathindex - i] != '\\') {
+			if (pathArray[pathindex - i] != '/' && pathArray[pathindex - i] != '\\')
+			{
 				shortPathArray[shortpathindex - i] = pathArray[pathindex - i];
 			}
 			else {
@@ -227,14 +228,14 @@ public final class FileUtils {
 	/** @deprecated Use {@link AppUtils#getBaseDirectory(String)} instead. */
 	@Deprecated
 	public static String getBaseDirectory(final String className) {
-		File baseDir = AppUtils.getBaseDirectory(className);
+		final File baseDir = AppUtils.getBaseDirectory(className);
 		return baseDir == null ? null : baseDir.getAbsolutePath();
 	}
 
 	/** @deprecated Use {@link ProcessUtils#exec} instead. */
 	@Deprecated
-	public static String exec(final File workingDirectory, final PrintStream err,
-		final PrintStream out, final String... args)
+	public static String exec(final File workingDirectory,
+		final PrintStream err, final PrintStream out, final String... args)
 	{
 		return ProcessUtils.exec(workingDirectory, err, out, args);
 	}

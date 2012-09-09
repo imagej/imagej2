@@ -501,7 +501,8 @@ public class ShadowMenu extends AbstractContextual implements
 		if (existingChild == null) {
 			// create new child and add to table
 			final String menuName = entry.getName();
-			final ShadowMenu newChild = new ShadowMenu(getContext(), info, depth, this);
+			final ShadowMenu newChild =
+				new ShadowMenu(getContext(), info, depth, this);
 			children.put(menuName, newChild);
 			child = newChild;
 		}

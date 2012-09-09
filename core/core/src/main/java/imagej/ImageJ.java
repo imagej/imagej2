@@ -67,8 +67,10 @@ public class ImageJ {
 	public static ImageJ createContext() {
 		try {
 			if (!CheckSezpoz.check(false)) {
-				// SezPoz uses ClassLoader.getResources() which will now pick up the apt-generated annotations.
-				System.err.println("SezPoz generated annotations."); // no log service yet
+				// SezPoz uses ClassLoader.getResources() which will now pick up the
+				// apt-generated annotations.
+				System.err.println("SezPoz generated annotations."); // no log service
+																															// yet
 			}
 		}
 		catch (final IOException e) {

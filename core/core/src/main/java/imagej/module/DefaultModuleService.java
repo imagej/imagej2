@@ -139,7 +139,7 @@ public class DefaultModuleService extends AbstractService implements
 			Priority.inject(module, info.getPriority());
 			return module;
 		}
-		catch (ModuleException exc) {
+		catch (final ModuleException exc) {
 			log.error("Cannot create module: " + info.getDelegateClassName());
 		}
 		return null;
@@ -151,10 +151,9 @@ public class DefaultModuleService extends AbstractService implements
 	}
 
 	@Override
-	public Future<Module>
-		run(final ModuleInfo info, final List<? extends ModulePreprocessor> pre,
-			final List<? extends ModulePostprocessor> post,
-			final Object... inputs)
+	public Future<Module> run(final ModuleInfo info,
+		final List<? extends ModulePreprocessor> pre,
+		final List<? extends ModulePostprocessor> post, final Object... inputs)
 	{
 		return run(info, pre, post, createMap(inputs));
 	}
@@ -246,7 +245,7 @@ public class DefaultModuleService extends AbstractService implements
 		}
 
 		// loop over list of key/value pairs
-		int numPairs = values.length / 2;
+		final int numPairs = values.length / 2;
 		for (int i = 0; i < numPairs; i++) {
 			final Object key = values[2 * i];
 			final Object value = values[2 * i + 1];

@@ -1,4 +1,3 @@
-package imagej.util;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -34,12 +33,20 @@ package imagej.util;
  * #L%
  */
 
-import static org.junit.Assert.*;
+package imagej.util;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.File;
 
 import org.junit.Test;
 
+/**
+ * Tests {@link AppUtils}.
+ * 
+ * @author Johannes Schindelin
+ */
 public class AppUtilsTest {
 
 	@Test

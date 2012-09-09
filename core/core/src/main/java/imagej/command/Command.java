@@ -42,7 +42,8 @@ import imagej.plugin.PluginService;
 
 /**
  * <code>Command</code> is a plugin that is executable. A <code>Command</code>
- * can be executed as a {@link Module} by wrapping it in a {@link CommandModule}.
+ * can be executed as a {@link Module} by wrapping it in an instance of
+ * {@link CommandModule}.
  * <p>
  * Commands discoverable at runtime must implement this interface and be
  * annotated with @{@link Plugin}.

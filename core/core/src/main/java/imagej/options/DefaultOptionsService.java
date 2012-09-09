@@ -160,8 +160,8 @@ public class DefaultOptionsService extends AbstractService implements
 	}
 
 	@Override
-	public <O extends OptionsPlugin> void setOption(
-		final CommandInfo<O> info, final String name, final Object value)
+	public <O extends OptionsPlugin> void setOption(final CommandInfo<O> info,
+		final String name, final Object value)
 	{
 		final O optionsPlugin = createInstance(info);
 		if (optionsPlugin == null) return; // cannot set option
@@ -181,7 +181,8 @@ public class DefaultOptionsService extends AbstractService implements
 	 * Creates an instance of the {@link OptionsPlugin} described by the given
 	 * {@link PluginInfo}, preprocessing it with available preprocessors.
 	 */
-	private <O extends OptionsPlugin> O createInstance(final PluginInfo<O> info) {
+	private <O extends OptionsPlugin> O createInstance(final PluginInfo<O> info)
+	{
 		if (info == null) return null;
 
 		// instantiate the options plugin
@@ -195,7 +196,7 @@ public class DefaultOptionsService extends AbstractService implements
 		preInfos.add(pluginService.getPlugin(InitPreprocessor.class));
 		final List<? extends PreprocessorPlugin> pre =
 			pluginService.createInstances(preInfos);
-		for (PreprocessorPlugin pp : pre) {
+		for (final PreprocessorPlugin pp : pre) {
 			pp.process(optionsPlugin);
 		}
 
@@ -205,17 +206,14 @@ public class DefaultOptionsService extends AbstractService implements
 	private <O extends OptionsPlugin> CommandInfo<O> getOptionsInfo(
 		final Class<O> optionsClass)
 	{
-		final CommandInfo<O> info =
-			commandService.getCommand(optionsClass);
+		final CommandInfo<O> info = commandService.getCommand(optionsClass);
 		if (info == null) {
 			log.error("No such options class: " + optionsClass.getName());
 		}
 		return info;
 	}
 
-	private CommandInfo<OptionsPlugin>
-		getOptionsInfo(final String className)
-	{
+	private CommandInfo<OptionsPlugin> getOptionsInfo(final String className) {
 		final CommandInfo<?> info = commandService.getCommand(className);
 		if (info == null) {
 			log.error("No such options class: " + className);

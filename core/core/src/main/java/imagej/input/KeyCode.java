@@ -455,10 +455,10 @@ public enum KeyCode {
 	/** Double quote ('"'). */
 	QUOTEDBL(0x98),
 
-	/** Less than ('<'). */
+	/** Less than ('&lt;'). */
 	LESS(0x99),
 
-	/** Greater than ('>'). */
+	/** Greater than ('&gt;'). */
 	GREATER(0xa0),
 
 	/** Left curly brace ('{'). */

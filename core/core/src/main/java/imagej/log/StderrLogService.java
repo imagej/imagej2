@@ -51,21 +51,21 @@ public class StderrLogService extends AbstractService implements LogService {
 	// -- LogService methods --
 
 	@Override
-	public void debug(Object msg) {
+	public void debug(final Object msg) {
 		if (isDebug()) {
 			System.err.println(msg.toString());
 		}
 	}
 
 	@Override
-	public void debug(Throwable t) {
+	public void debug(final Throwable t) {
 		if (isDebug()) {
 			t.printStackTrace();
 		}
 	}
 
 	@Override
-	public void debug(Object msg, Throwable t) {
+	public void debug(final Object msg, final Throwable t) {
 		if (isDebug()) {
 			System.err.println(msg.toString());
 			t.printStackTrace();
@@ -73,65 +73,65 @@ public class StderrLogService extends AbstractService implements LogService {
 	}
 
 	@Override
-	public void error(Object msg) {
+	public void error(final Object msg) {
 		System.err.println(msg.toString());
 	}
 
 	@Override
-	public void error(Throwable t) {
+	public void error(final Throwable t) {
 		t.printStackTrace();
 	}
 
 	@Override
-	public void error(Object msg, Throwable t) {
-		System.err.println(msg.toString());
-		t.printStackTrace();
-	}
-
-	@Override
-	public void info(Object msg) {
-		System.err.println(msg.toString());
-	}
-
-	@Override
-	public void info(Throwable t) {
-		t.printStackTrace();
-	}
-
-	@Override
-	public void info(Object msg, Throwable t) {
+	public void error(final Object msg, final Throwable t) {
 		System.err.println(msg.toString());
 		t.printStackTrace();
 	}
 
 	@Override
-	public void trace(Object msg) {
+	public void info(final Object msg) {
 		System.err.println(msg.toString());
 	}
 
 	@Override
-	public void trace(Throwable t) {
+	public void info(final Throwable t) {
 		t.printStackTrace();
 	}
 
 	@Override
-	public void trace(Object msg, Throwable t) {
+	public void info(final Object msg, final Throwable t) {
 		System.err.println(msg.toString());
 		t.printStackTrace();
 	}
 
 	@Override
-	public void warn(Object msg) {
+	public void trace(final Object msg) {
 		System.err.println(msg.toString());
 	}
 
 	@Override
-	public void warn(Throwable t) {
+	public void trace(final Throwable t) {
 		t.printStackTrace();
 	}
 
 	@Override
-	public void warn(Object msg, Throwable t) {
+	public void trace(final Object msg, final Throwable t) {
+		System.err.println(msg.toString());
+		t.printStackTrace();
+	}
+
+	@Override
+	public void warn(final Object msg) {
+		System.err.println(msg.toString());
+	}
+
+	@Override
+	public void warn(final Throwable t) {
+		t.printStackTrace();
+	}
+
+	@Override
+	public void warn(final Object msg, final Throwable t) {
 		System.err.println(msg.toString());
 		t.printStackTrace();
 	}

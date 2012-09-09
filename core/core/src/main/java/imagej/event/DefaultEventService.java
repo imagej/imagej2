@@ -128,8 +128,9 @@ public class DefaultEventService extends AbstractService implements
 	 * Recursively scans for @{@link EventHandler} annotated methods, and
 	 * subscribes them to the event service.
 	 */
-	private void subscribeRecursively(final List<EventSubscriber<?>> subscribers,
-		final Class<?> type, final Object o)
+	private void subscribeRecursively(
+		final List<EventSubscriber<?>> subscribers, final Class<?> type,
+		final Object o)
 	{
 		if (type == null || type == Object.class) return;
 		for (final Method m : type.getDeclaredMethods()) {

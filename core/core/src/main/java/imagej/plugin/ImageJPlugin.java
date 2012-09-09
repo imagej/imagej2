@@ -53,9 +53,9 @@ import imagej.widget.InputWidget;
  * The core types of plugins are as follows:
  * </p>
  * <ul>
- * <li>{@link Command} - plugins that are executable as {@link Module}s.
- * These plugins typically perform a discrete operation, and are accessible via
- * the ImageJ menus.</li>
+ * <li>{@link Command} - plugins that are executable as {@link Module}s. These
+ * plugins typically perform a discrete operation, and are accessible via the
+ * ImageJ menus.</li>
  * <li>{@link Service} - plugins that define new API in a particular area.</li>
  * <li>{@link Tool} - plugins that map user input (e.g., keyboard and mouse
  * actions) to behavior. They are usually rendered as icons in the ImageJ

@@ -51,9 +51,9 @@ import imagej.plugin.Plugin;
 import imagej.plugin.PluginInfo;
 
 /**
- * Interface for ImageJ tools. A tool is a collection of rules binding
- * user input (e.g., keyboard and mouse events) to display and data manipulation
- * in a coherent way.
+ * Interface for ImageJ tools. A tool is a collection of rules binding user
+ * input (e.g., keyboard and mouse events) to display and data manipulation in a
+ * coherent way.
  * <p>
  * For example, a <code>PanTool</code> might pan a display when the mouse is
  * dragged or arrow key is pressed, while a <code>PencilTool</code> could draw
@@ -113,7 +113,7 @@ public interface Tool extends ImageJPlugin, Contextual, Prioritized {
 	/** Occurs when the mouse wheel is moved while the tool is active. */
 	void onMouseWheel(MsWheelEvent event);
 
-	/** Occurs when the user right clicks this tool's icon. */ 
+	/** Occurs when the user right clicks this tool's icon. */
 	void configure();
 
 	/** Returns the text the tool provides when mouse hovers over tool */

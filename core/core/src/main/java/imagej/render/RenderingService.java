@@ -37,7 +37,6 @@ package imagej.render;
 
 import imagej.service.Service;
 
-
 /**
  * Interface for service that performs text rendering.
  * 

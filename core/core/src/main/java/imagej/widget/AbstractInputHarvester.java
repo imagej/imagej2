@@ -93,8 +93,9 @@ public abstract class AbstractInputHarvester<P, W> implements Contextual,
 	}
 
 	@Override
-	public void buildPanel(final InputPanel<P, W> inputPanel, final Module module)
-		throws ModuleException
+	public void
+		buildPanel(final InputPanel<P, W> inputPanel, final Module module)
+			throws ModuleException
 	{
 		final Iterable<ModuleItem<?>> inputs = module.getInfo().inputs();
 
@@ -114,9 +115,8 @@ public abstract class AbstractInputHarvester<P, W> implements Contextual,
 	}
 
 	@Override
-	public void
-		processResults(final InputPanel<P, W> inputPanel, final Module module)
-			throws ModuleException
+	public void processResults(final InputPanel<P, W> inputPanel,
+		final Module module) throws ModuleException
 	{
 		final Iterable<ModuleItem<?>> inputs = module.getInfo().inputs();
 

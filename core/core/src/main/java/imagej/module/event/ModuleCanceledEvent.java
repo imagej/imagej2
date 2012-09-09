@@ -54,7 +54,7 @@ import imagej.widget.InputHarvester;
  */
 public class ModuleCanceledEvent extends ModuleExecutionEvent {
 
-	private String reason;
+	private final String reason;
 
 	public ModuleCanceledEvent(final Module module) {
 		this(module, null);

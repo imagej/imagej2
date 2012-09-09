@@ -61,7 +61,8 @@ import java.util.List;
  * @see ShadowMenu
  */
 @Plugin(type = Service.class)
-public class DefaultMenuService extends AbstractService implements MenuService {
+public class DefaultMenuService extends AbstractService implements MenuService
+{
 
 	@Parameter
 	private EventService eventService;
@@ -95,15 +96,13 @@ public class DefaultMenuService extends AbstractService implements MenuService {
 	}
 
 	@Override
-	public <T> T createMenus(final MenuCreator<T> creator,
-		final T menu)
-	{
+	public <T> T createMenus(final MenuCreator<T> creator, final T menu) {
 		return createMenus(Plugin.APPLICATION_MENU_ROOT, creator, menu);
 	}
 
 	@Override
-	public <T> T createMenus(final String menuRoot, final MenuCreator<T> creator,
-		final T menu)
+	public <T> T createMenus(final String menuRoot,
+		final MenuCreator<T> creator, final T menu)
 	{
 		creator.createMenus(getMenu(menuRoot), menu);
 		return menu;
@@ -120,15 +119,15 @@ public class DefaultMenuService extends AbstractService implements MenuService {
 	}
 
 	@Override
-	public <C extends Command> void setSelected(
-		final Class<C> commandClass, final boolean selected)
+	public <C extends Command> void setSelected(final Class<C> commandClass,
+		final boolean selected)
 	{
 		setSelected(commandService.getCommand(commandClass), selected);
 	}
 
 	@Override
-	public <C extends Command> void setSelected(
-		final String commandClassName, final boolean selected)
+	public <C extends Command> void setSelected(final String commandClassName,
+		final boolean selected)
 	{
 		setSelected(commandService.getCommand(commandClassName), selected);
 	}

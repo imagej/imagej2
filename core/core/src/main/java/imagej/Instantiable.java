@@ -35,7 +35,6 @@
 
 package imagej;
 
-
 /**
  * An interface declaring the ability to create objects.
  * 

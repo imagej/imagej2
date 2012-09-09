@@ -143,7 +143,8 @@ public class DefaultCommandService extends AbstractService implements
 	}
 
 	@Override
-	public List<CommandInfo<Command>> getCommandsOfClass(final String className) {
+	public List<CommandInfo<Command>> getCommandsOfClass(final String className)
+	{
 		final List<PluginInfo<ImageJPlugin>> plugins =
 			pluginService.getPluginsOfClass(className);
 		final List<CommandInfo<Command>> commands = getCommands(downcast(plugins));
@@ -265,7 +266,8 @@ public class DefaultCommandService extends AbstractService implements
 	}
 
 	/** Logs an error if the given command is null. */
-	private boolean checkCommand(final CommandInfo<?> command, final String name)
+	private boolean
+		checkCommand(final CommandInfo<?> command, final String name)
 	{
 		if (command == null) {
 			log.error("No such command: " + name);

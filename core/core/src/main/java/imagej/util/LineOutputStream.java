@@ -39,119 +39,111 @@ import java.io.OutputStream;
 
 /**
  * This class hides a line-based output behind an {@link OutputStream}.
+ * <p>
+ * Only the abstract method {@link #println(String)} needs to be overridden; the
+ * other methods in {@link OutputStream} are overridden in this class already to
+ * buffer lines until they are complete and then flush them.
+ * </p>
  * 
- * Only the abstract method {@link #println(String)} needs to be overridden; the other
- * methods in {@link OutputStream} are overridden in this class already to buffer
- * lines until they are complete and then flush them.
- *  
  * @author Johannes Schindelin
  */
 public abstract class LineOutputStream extends OutputStream {
-    public byte[] buffer = new byte[16384];
-    public int len;
 
-    /**
-     * This method is all that needs to be implemented.
-     * 
-     * @param line the line to print
-     */
-    public abstract void println(String line);
+	public byte[] buffer = new byte[16384];
+	public int len;
 
-    /**
-	 * Add a single byte to the current line buffer, or {@link #flush()} the
+	/**
+	 * This method is all that needs to be implemented.
+	 * 
+	 * @param line the line to print
+	 */
+	public abstract void println(String line);
+
+	/**
+	 * Adds a single byte to the current line buffer, or {@link #flush()} the
 	 * current line if it is a new-line character.
 	 * 
-	 * @param b
-	 *            the byte to write
+	 * @param b the byte to write
 	 */
-    @Override
-    public synchronized void write(final int b) {
-            ensure(len + 1);
-            buffer[len++] = (byte)b;
-            if (b == '\n')
-                    flush();
-    }
+	@Override
+	public synchronized void write(final int b) {
+		ensure(len + 1);
+		buffer[len++] = (byte) b;
+		if (b == '\n') flush();
+	}
 
-    /**
-	 * Add bytes to the current line buffer. Whenever a new-line character is
+	/**
+	 * Adds bytes to the current line buffer. Whenever a new-line character is
 	 * encountered, {@link #flush()} the current line buffer.
 	 * 
-	 * @param buffer
-	 *            the bytes to write
+	 * @param buf the bytes to write
 	 */
-    @Override
-    public synchronized void write(final byte[] buffer) {
-            write(buffer, 0, buffer.length);
-    }
+	@Override
+	public synchronized void write(final byte[] buf) {
+		write(buf, 0, buf.length);
+	}
 
-    /**
-	 * Add bytes to the current line buffer. Whenever a new-line character is
+	/**
+	 * Adds bytes to the current line buffer. Whenever a new-line character is
 	 * encountered, {@link #flush()} the current line buffer.
 	 * 
-	 * @param buffer
-	 *            the bytes to write
-	 * @param offset
-	 *            the offset into the buffer
-	 * @param length
-	 *            how many bytes to add
+	 * @param buf the bytes to write
+	 * @param offset the offset into the buffer
+	 * @param length how many bytes to add
 	 */
-    @Override
-    public synchronized void write(final byte[] buffer, int offset, int length) {
-            int eol = length;
-            while (eol > 0)
-                    if (buffer[eol - 1] == '\n')
-                            break;
-                    else
-                            eol--;
-            if (eol >= 0) {
-                    ensure(len + eol);
-                    System.arraycopy(buffer, offset, this.buffer, len, eol);
-                    len += eol;
-                    flush();
-                    length -= eol;
-                    if (length == 0)
-                            return;
-                    offset += eol;
-            }
-            ensure(len + length);
-            System.arraycopy(buffer, offset, this.buffer, len, length);
-            len += length;
-    }
+	@Override
+	public synchronized void write(final byte[] buf, int offset, int length) {
+		int eol = length;
+		while (eol > 0) {
+			if (buf[eol - 1] == '\n') break;
+			eol--;
+		}
+		if (eol >= 0) {
+			ensure(len + eol);
+			System.arraycopy(buf, offset, this.buffer, len, eol);
+			len += eol;
+			flush();
+			length -= eol;
+			if (length == 0) return;
+			offset += eol;
+		}
+		ensure(len + length);
+		System.arraycopy(buf, offset, this.buffer, len, length);
+		len += length;
+	}
 
-    /**
-     * Flush the current line buffer if any bytes are left in it.
-     */
-    public void close() {
-            flush();
-    }
+	/** Flushes the current line buffer if any bytes are left in it. */
+	@Override
+	public void close() {
+		flush();
+	}
 
-    /**
+	/**
 	 * If any bytes are in the current line buffer, output the line via
-	 * {@link #println(String)} , stripping any trailing new-line characters.
+	 * {@link #println(String)}, stripping any trailing new-line characters.
 	 */
-    public synchronized void flush() {
-            if (len > 0) {
-                    if (buffer[len - 1] == '\n')
-                            len--;
-                    println(new String(buffer, 0, len));
-            }
-            len = 0;
-    }
+	@Override
+	public synchronized void flush() {
+		if (len > 0) {
+			if (buffer[len - 1] == '\n') len--;
+			println(new String(buffer, 0, len));
+		}
+		len = 0;
+	}
 
-    /**
-     * Increase the size of the line buffer if necessary.
-     * 
-     * @param length the required minimal length
-     */
-    protected synchronized void ensure(int length) {
-        if (buffer.length >= length)
-                return;
+	/**
+	 * Increases the size of the line buffer if necessary.
+	 * 
+	 * @param length the required minimal length
+	 */
+	protected synchronized void ensure(final int length) {
+		if (buffer.length >= length) return;
 
-        int newLength = buffer.length * 3 / 2;
-        if (newLength < length)
-                newLength = length + 16;
-        byte[] newBuffer = new byte[newLength];
-        System.arraycopy(buffer, 0, newBuffer, 0, len);
-        buffer = newBuffer;
-    }
+		int newLength = buffer.length * 3 / 2;
+		if (newLength < length) newLength = length + 16;
+		final byte[] newBuffer = new byte[newLength];
+		System.arraycopy(buffer, 0, newBuffer, 0, len);
+		buffer = newBuffer;
+	}
+
 }

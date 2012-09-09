@@ -48,20 +48,22 @@ import imagej.util.StringMaker;
 import java.net.URL;
 
 /**
- * A collection of metadata about a particular plugin. For performance reasons,
- * the metadata is populated without actually loading the plugin class, by
- * reading from an efficient binary cache (see {@link PluginService} for
- * details). As such, ImageJ can very quickly build a complex menu structure
- * containing all available {@link Command}s without waiting for the Java
- * class loader.
+ * A collection of metadata about a particular plugin.
+ * <p>
+ * For performance reasons, the metadata is populated without actually loading
+ * the plugin class, by reading from an efficient binary cache (see
+ * {@link imagej.plugin.DefaultPluginService} for details). As such, ImageJ can
+ * very quickly build a complex menu structure containing all available
+ * {@link Command}s without waiting for the Java class loader.
+ * </p>
  * 
  * @author Curtis Rueden
  * @see Command
  * @see Plugin
  * @see PluginService
  */
-public class PluginInfo<P extends ImageJPlugin> extends AbstractUIDetails implements
-	Instantiable<P>
+public class PluginInfo<P extends ImageJPlugin> extends AbstractUIDetails
+	implements Instantiable<P>
 {
 
 	/** Fully qualified class name of this plugin. */

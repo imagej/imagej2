@@ -42,28 +42,39 @@ import imagej.display.Display;
  * removed.
  * 
  * @author Grant Harris
+ * @author Lee Kamentsky
  */
 public class DisplayUpdatedEvent extends DisplayEvent {
+
 	/**
-	 * The display update level gives a hint about how much work
-	 * needs to be done during the update.
-	 * 
-	 * UPDATE - the data has changed, but the extents and decorations
-	 *          have not. An example: changing the intensity of
-	 *          a single pixel.
-	 * REBUILD - the extents and decorations have changed. An
-	 *           example: stretching an image so it's height changes.
+	 * The display update level gives a hint about how much work needs to be done
+	 * during the update.
 	 */
 	public enum DisplayUpdateLevel {
+
+		/**
+		 * The data has changed, but the extents and decorations have not.<br>
+		 * An example: changing the intensity of a single pixel.
+		 */
 		UPDATE,
+
+		/**
+		 * The extents and decorations have changed.<br>
+		 * An example: stretching an image so it's height changes.
+		 */
 		REBUILD
+
 	}
+
 	private final DisplayUpdateLevel level;
-	public DisplayUpdatedEvent(final Display<?> display, DisplayUpdateLevel level) {
+
+	public DisplayUpdatedEvent(final Display<?> display,
+		final DisplayUpdateLevel level)
+	{
 		super(display);
 		this.level = level;
 	}
-	
+
 	public DisplayUpdateLevel getLevel() {
 		return level;
 	}

@@ -70,7 +70,8 @@ public class DefaultEventBus extends ThreadSafeEventService {
 	// processed.
 	// See ticket #719: http://trac.imagej.net/ticket/719
 
-	public DefaultEventBus(final ThreadService threadService, final LogService log)
+	public DefaultEventBus(final ThreadService threadService,
+		final LogService log)
 	{
 		super(200L, false, null, null, null);
 		this.threadService = threadService;
