@@ -48,7 +48,7 @@ import imagej.plugin.Plugin;
  * A display viewer is a UI widget that shows a display to a user.
  * <p>
  * Display viewers discoverable at runtime must implement this interface and be
- * annotated with @{@link Plugin} with {@link Plugin#type()} =
+ * annotated with @{@link Plugin} with attribute {@link Plugin#type()} =
  * {@link DisplayViewer}.class. While it possible to create a display viewer
  * merely by implementing this interface, it is encouraged to instead extend
  * {@link AbstractDisplayViewer}, for convenience.

@@ -46,7 +46,7 @@ import java.util.List;
  * Interface for ImageJ upload mechanisms.
  * <p>
  * Upload mechanisms discoverable at runtime must implement this interface and
- * be annotated with @{@link Plugin} with {@link Plugin#type()} =
+ * be annotated with @{@link Plugin} with attribute {@link Plugin#type()} =
  * {@link Uploader}.class. While it possible to create an upload mechanism
  * merely by implementing this interface, it is encouraged to instead extend
  * {@link AbstractUploader}, for convenience.

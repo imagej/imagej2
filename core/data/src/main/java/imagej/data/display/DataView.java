@@ -66,10 +66,10 @@ import net.imglib2.meta.AxisType;
  * </p>
  * <p>
  * Data views discoverable at runtime must implement this interface and be
- * annotated with @{@link Plugin} with {@link Plugin#type()} = {@link DataView}
- * .class. While it possible to create a data view merely by implementing this
- * interface, it is encouraged to instead extend {@link AbstractDataView}, for
- * convenience.
+ * annotated with @{@link Plugin} with attribute {@link Plugin#type()} =
+ * {@link DataView}.class. While it possible to create a data view merely by
+ * implementing this interface, it is encouraged to instead extend
+ * {@link AbstractDataView}, for convenience.
  * </p>
  * 
  * @author Curtis Rueden

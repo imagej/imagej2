@@ -50,7 +50,7 @@ import org.jhotdraw.draw.Figure;
  * link between an ImageJ {@link Overlay} and a JHotDraw {@link Figure}.
  * <p>
  * JHotDraw adapters discoverable at runtime must implement this interface and
- * be annotated with @{@link Plugin} with {@link Plugin#type()} =
+ * be annotated with @{@link Plugin} with attribute {@link Plugin#type()} =
  * {@link JHotDrawAdapter}.class. While it possible to create a JHotDraw adapter
  * merely by implementing this interface, it is encouraged to instead extend
  * {@link AbstractJHotDrawAdapter}, for convenience.
