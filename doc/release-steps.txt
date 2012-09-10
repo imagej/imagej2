@@ -72,7 +72,7 @@ II. BUILD IMAGEJ2 RELEASE BINARIES:
 III. UPDATE ONLINE RESOURCES:
 
 1) Download the new application ZIP from the Jenkins build:
-       http://jenkins.imagej.net/job/ImageJ/lastSuccessfulBuild/artifact/app/target/imagej-2.0.0-beta3-application.zip
+       http://jenkins.imagej.net/job/ImageJ/lastSuccessfulBuild/artifact/app/target/
 
    Rename the ZIP to delete the "-application" suffix.
 
