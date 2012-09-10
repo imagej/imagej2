@@ -43,6 +43,6 @@ package imagej.widget;
  * @author Barry DeZonia
  *
  */
-public interface ButtonMarker {
+public interface Button {
 	// marker : nothing to implement
 }

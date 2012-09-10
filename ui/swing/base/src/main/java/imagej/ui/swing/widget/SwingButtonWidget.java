@@ -42,10 +42,9 @@ import javax.swing.JButton;
 
 import imagej.module.Module;
 import imagej.plugin.Plugin;
-import imagej.widget.ButtonMarker;
+import imagej.widget.Button;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
-import imagej.widget.WidgetStyle;
 
 /**
  * A Swing widget that displays a button and invokes the callback of a parameter
@@ -55,7 +54,7 @@ import imagej.widget.WidgetStyle;
  *
  */
 @Plugin(type = InputWidget.class)
-public class SwingButtonWidget extends SwingInputWidget<ButtonMarker>
+public class SwingButtonWidget extends SwingInputWidget<Button>
 {
 	private JButton button;
 	
@@ -63,32 +62,28 @@ public class SwingButtonWidget extends SwingInputWidget<ButtonMarker>
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
 
-		// add widgets, if specified
-		final WidgetStyle style = model.getItem().getWidgetStyle();
-		if (style.equals(WidgetStyle.BUTTON)) {
-			String label = model.getItem().getLabel();
-			if ((label == null) || label.isEmpty()) label = "A button";
-			button = new JButton(label);
-			button.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					Module module = model.getModule();
-					model.getItem().callback(module);
-				}
-			});
-			setToolTip(button);
-			getComponent().add(button);
-		}
+		String label = model.getItem().getLabel();
+		if ((label == null) || label.isEmpty()) label = "A button";
+		button = new JButton(label);
+		button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Module module = model.getModule();
+				model.getItem().callback(module);
+			}
+		});
+		setToolTip(button);
+		getComponent().add(button);
 	}
 
 	@Override
 	public boolean isCompatible(WidgetModel model) {
-		return model.isType(ButtonMarker.class);
+		return model.isType(Button.class);
 	}
 	
 	@Override
-	public ButtonMarker getValue() {
+	public Button getValue() {
 		return null;
 	}
 

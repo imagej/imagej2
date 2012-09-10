@@ -53,8 +53,7 @@ import imagej.platform.PlatformService;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.widget.ButtonMarker;
-import imagej.widget.WidgetStyle;
+import imagej.widget.Button;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.ops.condition.UVInsideRoiCondition;
@@ -110,10 +109,10 @@ public class EquationDataValues<T extends RealType<T>>
 	@Parameter(label = "Equation")
 	private String equationString;
 
-	@Parameter(label = "Help", style = WidgetStyle.BUTTON,
+	@Parameter(label = "Help",
 			description="View a web page detailing the equation language",
 			callback="openWebPage", persist = false)
-	private ButtonMarker dummyVariable;
+	private Button openWebPage;
 	
 	// -- instance variables that are not Parameters --
 	

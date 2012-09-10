@@ -43,8 +43,7 @@ import imagej.platform.PlatformService;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.widget.ButtonMarker;
-import imagej.widget.WidgetStyle;
+import imagej.widget.Button;
 
 /**
  * Runs the Edit::Options::Compatibility dialog.
@@ -64,10 +63,10 @@ public class OptionsCompatibility extends OptionsPlugin {
 	@Parameter
 	private PlatformService platformService;
 	
-	@Parameter(label = "Notes", style = WidgetStyle.BUTTON,
+	@Parameter(label = "Notes",
 			description="View a web page detailing the commands on this dialog",
 			callback="openWebPage", persist = false)
-	private ButtonMarker dummyVariable;
+	private Button openWebPage;
 
 	@Parameter(label = "Invert command",
 		choices = {MODE_LEGACY, MODE_MODERN})

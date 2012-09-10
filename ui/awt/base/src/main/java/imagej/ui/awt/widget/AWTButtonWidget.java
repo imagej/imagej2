@@ -35,16 +35,14 @@
 
 package imagej.ui.awt.widget;
 
-import java.awt.Button;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import imagej.module.Module;
 import imagej.plugin.Plugin;
-import imagej.widget.ButtonMarker;
+import imagej.widget.Button;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
-import imagej.widget.WidgetStyle;
 
 /**
  * A AWT widget that displays a button and invokes the callback of a parameter
@@ -54,39 +52,35 @@ import imagej.widget.WidgetStyle;
  *
  */
 @Plugin(type = InputWidget.class)
-public class AWTButtonWidget extends AWTInputWidget<ButtonMarker>
+public class AWTButtonWidget extends AWTInputWidget<Button>
 {
-	private Button button;
+	private java.awt.Button button;
 	
 	@Override
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
 
-		// add widgets, if specified
-		final WidgetStyle style = model.getItem().getWidgetStyle();
-		if (style.equals(WidgetStyle.BUTTON)) {
-			String label = model.getItem().getLabel();
-			if ((label == null) || label.isEmpty()) label = "A button";
-			button = new Button(label);
-			button.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					Module module = model.getModule();
-					model.getItem().callback(module);
-				}
-			});
-			getComponent().add(button);
-		}
+		String label = model.getItem().getLabel();
+		if ((label == null) || label.isEmpty()) label = "A button";
+		button = new java.awt.Button(label);
+		button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Module module = model.getModule();
+				model.getItem().callback(module);
+			}
+		});
+		getComponent().add(button);
 	}
 
 	@Override
 	public boolean isCompatible(WidgetModel model) {
-		return model.isType(ButtonMarker.class);
+		return model.isType(Button.class);
 	}
 	
 	@Override
-	public ButtonMarker getValue() {
+	public Button getValue() {
 		return null;
 	}
 

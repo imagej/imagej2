@@ -36,7 +36,7 @@
 package imagej.ui.swt.widget;
 
 import imagej.plugin.Plugin;
-import imagej.widget.ButtonMarker;
+import imagej.widget.Button;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
 
@@ -48,7 +48,7 @@ import imagej.widget.WidgetModel;
  *
  */
 @Plugin(type = InputWidget.class)
-public class SWTButtonWidget extends SWTInputWidget<ButtonMarker>
+public class SWTButtonWidget extends SWTInputWidget<Button>
 {
 	// private Button button;
 	
@@ -83,11 +83,11 @@ public class SWTButtonWidget extends SWTInputWidget<ButtonMarker>
 
 	@Override
 	public boolean isCompatible(WidgetModel model) {
-		return model.isType(ButtonMarker.class);
+		return model.isType(Button.class);
 	}
 	
 	@Override
-	public ButtonMarker getValue() {
+	public Button getValue() {
 		return null;
 	}
 
