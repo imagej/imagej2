@@ -39,24 +39,31 @@ import imagej.MenuPath;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
 
+import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JCheckBox;
+import javax.swing.ImageIcon;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.AbstractTableModel;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -71,23 +78,45 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 {
 
 	protected final JTextField searchField;
-	protected final JList commandsList;
-	private final JCheckBox showFullCheckbox;
+	protected final JTable commandsList;
 
-	private final List<Command> commands;
+	private final List<ModuleInfo> commands;
 
 	public CommandFinderPanel(final ModuleService moduleService) {
 		commands = buildCommands(moduleService);
 
+		setPreferredSize(new Dimension(640, 480));
+
 		searchField = new JTextField(12);
-		commandsList = new JList();
-		commandsList.setVisibleRowCount(20);
-		showFullCheckbox = new JCheckBox("Show full information");
+		commandsList = new JTable(20, 6);
+		commandsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		commandsList.setRowSelectionAllowed(true);
+		commandsList.setColumnSelectionAllowed(false);
+		commandsList.setAutoCreateRowSorter(true);
+
+		commandsList.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(final MouseEvent e) {
+				if (e.getClickCount() < 2) return;
+				int row = commandsList.rowAtPoint(e.getPoint());
+				if (row >= 0) {
+					closeDialog(true);
+				}
+			}
+		});
+		commandsList.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(final KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					e.consume();
+					closeDialog(true);
+				}
+			}
+		});
 
 		searchField.getDocument().addDocumentListener(this);
-		showFullCheckbox.addActionListener(this);
 
-		updateCommands();
+		commandsList.setModel(new CommandTableModel(commands));
 
 		final String layout = "fillx,wrap 2";
 		final String cols = "[pref|fill,grow]";
@@ -96,7 +125,6 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 		add(new JLabel("Type part of a command:"));
 		add(searchField);
 		add(new JScrollPane(commandsList), "grow,span 2");
-		add(showFullCheckbox, "center, span 2");
 
 		searchField.addKeyListener(new KeyAdapter() {
 
@@ -104,14 +132,14 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 			public void keyPressed(final KeyEvent e) {
 				switch (e.getKeyCode()) {
 					case KeyEvent.VK_DOWN:
-						commandsList.ensureIndexIsVisible(0);
-						commandsList.setSelectedIndex(0);
+						commandsList.scrollRectToVisible(commandsList.getCellRect(0, 0, true));
+						commandsList.setRowSelectionInterval(0, 0);
 						commandsList.grabFocus();
 						break;
 					case KeyEvent.VK_UP:
-						final int index = commandsList.getModel().getSize() - 1;
-						commandsList.ensureIndexIsVisible(index);
-						commandsList.setSelectedIndex(index);
+						final int index = commandsList.getModel().getRowCount() - 1;
+						commandsList.scrollRectToVisible(commandsList.getCellRect(index, 0, true));
+						commandsList.setRowSelectionInterval(index, index);
 						commandsList.grabFocus();
 						break;
 					default:
@@ -129,12 +157,12 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 
 				switch (e.getKeyCode()) {
 					case KeyEvent.VK_DOWN:
-						selected = commandsList.getSelectedIndex();
-						if (selected != commandsList.getModel().getSize() - 1) return;
+						selected = commandsList.getSelectedRow();
+						if (selected != commandsList.getModel().getRowCount() - 1) return;
 						searchField.grabFocus();
 						break;
 					case KeyEvent.VK_UP:
-						selected = commandsList.getSelectedIndex();
+						selected = commandsList.getSelectedRow();
 						if (selected != 0) return;
 						searchField.grabFocus();
 						break;
@@ -150,13 +178,11 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 
 	/** Gets the currently selected command. */
 	public ModuleInfo getCommand() {
-		Command command = (Command) commandsList.getSelectedValue();
-		if (command == null) {
-			final ListModel model = commandsList.getModel();
-			if (model.getSize() == 0) return null;
-			command = (Command) model.getElementAt(0);
-		}
-		return command == null ? null : command.getModuleInfo();
+		final CommandTableModel model = (CommandTableModel)commandsList.getModel();
+		if (model.getRowCount() < 1) return null;
+		int selectedRow = commandsList.getSelectedRow();
+		if (selectedRow < 0) return null;
+		return model.get(commandsList.convertRowIndexToModel(selectedRow));
 	}
 
 	/** Gets the {@link JTextField} component for specifying the search string. */
@@ -168,9 +194,15 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 		return ".*" + searchField.getText().toLowerCase() + ".*";
 	}
 
-	/** Gets whether the "Show full information" option is checked. */
-	public boolean isShowFull() {
-		return showFullCheckbox.isSelected();
+	private void closeDialog(boolean okay) {
+		for (Container parent = getParent(); parent != null; parent = parent.getParent()) {
+			if (parent instanceof JOptionPane) {
+				((JOptionPane)parent).setValue(okay ? JOptionPane.OK_OPTION : JOptionPane.CANCEL_OPTION);
+			} else if (parent instanceof JDialog) {
+				((JDialog)parent).setVisible(false);
+				break;
+			}
+		}
 	}
 
 	// -- ActionListener methods --
@@ -200,33 +232,28 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 	// -- Helper methods --
 
 	/** Builds the master list of available commands. */
-	private ArrayList<Command> buildCommands(final ModuleService moduleService) {
-		final ArrayList<Command> list = new ArrayList<Command>();
-
-		final List<ModuleInfo> modules = moduleService.getModules();
-		for (final ModuleInfo info : modules) {
-			list.add(new Command(info));
-		}
-
+	private List<ModuleInfo> buildCommands(final ModuleService moduleService) {
+		final List<ModuleInfo> list = new ArrayList<ModuleInfo>();
+		list.addAll(moduleService.getModules());
 		Collections.sort(list);
-
 		return list;
 	}
 
 	/** Updates the list of visible commands. */
 	private void updateCommands() {
-		final Command selected = (Command)commandsList.getSelectedValue();
-		boolean isSelectionStillValid = false;
+		final ModuleInfo selected = getCommand();
+		int counter = 0, selectedRow = -1;
 		final String regex = getRegex();
-		final DefaultListModel matches = new DefaultListModel();
-		for (final Command command : commands) {
-			if (!command.matches(regex)) continue; // no match
-			matches.addElement(command);
-			if (command == selected) isSelectionStillValid = true;
+		final List<ModuleInfo> matches = new ArrayList<ModuleInfo>();
+		for (final ModuleInfo command : commands) {
+			if (!command.getTitle().toLowerCase().matches(regex)) continue; // no match
+			matches.add(command);
+			if (command == selected) selectedRow = counter;
+			counter++;
 		}
-		commandsList.setModel(matches);
-		if (isSelectionStillValid) {
-			commandsList.setSelectedValue(selected, false);
+		commandsList.setModel(new CommandTableModel(matches));
+		if (selectedRow >= 0) {
+			commandsList.setRowSelectionInterval(selectedRow, selectedRow);
 		}
 	}
 
@@ -237,41 +264,57 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 
 	// -- Helper classes --
 
-	private class Command implements Comparable<Command> {
+	protected static class CommandTableModel extends AbstractTableModel {
+		protected List<ModuleInfo> list;
 
-		private final ModuleInfo info;
-		private final String title;
-
-		public Command(final ModuleInfo info) {
-			this.info = info;
-			title = info.getTitle();
+		public CommandTableModel(final List<ModuleInfo> list) {
+			this.list = list;
 		}
 
-		public boolean matches(final String regex) {
-			return title.toLowerCase().matches(regex);
-		}
-
-		public ModuleInfo getModuleInfo() {
-			return info;
+		public ModuleInfo get(int index) {
+			return list.get(index);
 		}
 
 		@Override
-		public String toString() {
-			final StringBuilder sb = new StringBuilder(title);
-			if (isShowFull()) {
-				final MenuPath menuPath = info.getMenuPath();
-				final String menuString = menuPath.getMenuString(false);
-				if (!menuString.isEmpty()) sb.append(" (in " + menuString + ")");
-				sb.append(" : " + info.toString());
+		public int getColumnCount() {
+			return 6;
+		}
+
+		@Override
+		public String getColumnName(int column) {
+			if (column == 0) return "Icon";
+			if (column == 1) return "Command";
+			if (column == 2) return "Menu Path";
+			if (column == 3) return "Class";
+			if (column == 4) return "Description";
+			if (column == 5) return "Priority";
+			return null;
+		}
+
+		@Override
+		public int getRowCount() {
+			return list.size();
+		}
+
+		@Override
+		public Object getValueAt(int row, int column) {
+			final ModuleInfo info = list.get(row);
+			if (column == 0) {
+				final String iconPath = info.getIconPath();
+				if (iconPath == null) return null;
+				final URL iconURL = getClass().getResource(iconPath);
+				return iconURL == null ? null : new ImageIcon(iconURL);
 			}
-			return sb.toString();
+			if (column == 1) return info.getTitle();
+			if (column == 2) {
+				final MenuPath menuPath = info.getMenuPath();
+				return menuPath.getMenuString(false);
+			}
+			if (column == 3) return info.getDelegateClassName();
+			if (column == 4) return info.getDescription();
+			if (column == 5) return info.getPriority();
+			return null;
 		}
-
-		@Override
-		public int compareTo(final Command command) {
-			return title.compareTo(command.title);
-		}
-
 	}
 
 }
