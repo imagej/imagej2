@@ -33,12 +33,11 @@
  * #L%
  */
 
-package imagej.ui.swing.widget;
+package imagej.ui.awt.widget;
 
+import java.awt.Button;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
 
 import imagej.module.Module;
 import imagej.plugin.Plugin;
@@ -48,14 +47,16 @@ import imagej.widget.WidgetModel;
 import imagej.widget.WidgetStyle;
 
 /**
+ * A AWT widget that displays a button and invokes the callback of a parameter
+ * when the button is clicked.
  * 
  * @author Barry DeZonia
  *
  */
 @Plugin(type = InputWidget.class)
-public class SwingTextButtonWidget extends SwingInputWidget<ButtonMarker>
+public class AWTButtonWidget extends AWTInputWidget<ButtonMarker>
 {
-	private JButton button;
+	private Button button;
 	
 	@Override
 	public void initialize(final WidgetModel model) {
@@ -66,7 +67,7 @@ public class SwingTextButtonWidget extends SwingInputWidget<ButtonMarker>
 		if (style.equals(WidgetStyle.BUTTON)) {
 			String label = model.getItem().getLabel();
 			if ((label == null) || label.isEmpty()) label = "A button";
-			button = new JButton(label);
+			button = new Button(label);
 			button.addActionListener(new ActionListener() {
 				
 				@Override
@@ -75,7 +76,6 @@ public class SwingTextButtonWidget extends SwingInputWidget<ButtonMarker>
 					model.getItem().callback(module);
 				}
 			});
-			setToolTip(button);
 			getComponent().add(button);
 		}
 	}
