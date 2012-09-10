@@ -61,7 +61,8 @@ public class ImageJ {
 
 	/** @deprecated Use {@link ImageJ#getVersion()} instead. */
 	@Deprecated
-	public static final String VERSION = "2.0.0-beta4-DEV";
+	public static final String VERSION =
+		POM.getPOM(ImageJ.class, "net.imagej", "ij-core").getVersion();
 
 	/** Creates a new ImageJ application context with all available services. */
 	public static ImageJ createContext() {
