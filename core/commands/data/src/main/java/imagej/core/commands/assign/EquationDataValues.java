@@ -35,6 +35,8 @@
 
 package imagej.core.commands.assign;
 
+import java.net.URL;
+
 import imagej.Cancelable;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
@@ -47,9 +49,11 @@ import imagej.data.overlay.Overlay;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.module.ItemVisibility;
+import imagej.platform.PlatformService;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.widget.WidgetStyle;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.ops.condition.UVInsideRoiCondition;
@@ -72,7 +76,8 @@ import net.imglib2.type.numeric.real.DoubleType;
 	@Menu(label = MenuConstants.PROCESS_LABEL,
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
-	@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Equation...", weight = 20) },
+	@Menu(label = "Math", mnemonic = 'm'),
+	@Menu(label = "Equation...", weight = 20) },
 	headless = true)
 public class EquationDataValues<T extends RealType<T>>
 	extends ContextCommand
@@ -85,6 +90,9 @@ public class EquationDataValues<T extends RealType<T>>
 	
 	@Parameter
 	private ImageDisplayService imgDispService;
+	
+	@Parameter
+	private PlatformService platformService;
 	
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
@@ -101,6 +109,13 @@ public class EquationDataValues<T extends RealType<T>>
 	@Parameter(label = "Equation")
 	private String equationString;
 
+	@Parameter(label = "Help", style = WidgetStyle.TEXT_BUTTON,
+			description="View a web page detailing the equation language",
+			callback="openWebPage", persist = false)
+	private Void dummyVariable;
+	/*
+	*/
+	
 	// -- instance variables that are not Parameters --
 	
 	private Dataset dataset;
@@ -225,5 +240,16 @@ public class EquationDataValues<T extends RealType<T>>
 			condition = new UVInsideRoiCondition(overlay.getRegionOfInterest());
 		
 		return null;
+	}
+	
+	protected void openWebPage() {
+		try {
+			String urlString =
+					"http://wiki.imagej.net/ImageJ2/Documentation/Process/Math/Equation";
+			URL url = new URL(urlString);
+			platformService.open(url);
+		} catch (Exception e) {
+			// do nothing
+		}
 	}
 }
