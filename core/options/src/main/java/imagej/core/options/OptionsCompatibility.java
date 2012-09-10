@@ -35,14 +35,19 @@
 
 package imagej.core.options;
 
+import java.net.URL;
+
 import imagej.menu.MenuConstants;
 import imagej.options.OptionsPlugin;
+import imagej.platform.PlatformService;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.widget.ButtonMarker;
+import imagej.widget.WidgetStyle;
 
 /**
- * Runs the Edit::Options::Misc dialog.
+ * Runs the Edit::Options::Compatibility dialog.
  * 
  * @author Barry DeZonia
  */
@@ -55,6 +60,14 @@ public class OptionsCompatibility extends OptionsPlugin {
 
 	private static final String MODE_LEGACY = "Legacy";
 	private static final String MODE_MODERN = "Modern";
+
+	@Parameter
+	private PlatformService platformService;
+	
+	@Parameter(label = "Notes", style = WidgetStyle.BUTTON,
+			description="View a web page detailing the commands on this dialog",
+			callback="openWebPage", persist = false)
+	private ButtonMarker dummyVariable;
 
 	@Parameter(label = "Invert command",
 		choices = {MODE_LEGACY, MODE_MODERN})
@@ -77,5 +90,18 @@ public class OptionsCompatibility extends OptionsPlugin {
 
 	public void setInvertModeModern() {
 		invertMode = MODE_MODERN;
+	}
+	
+	// -- helpers --
+	
+	protected void openWebPage() {
+		try {
+			String urlString =
+					"http://wiki.imagej.net/ImageJ2/Documentation/Edit/Options/Compatibility";
+			URL url = new URL(urlString);
+			platformService.open(url);
+		} catch (Exception e) {
+			// do nothing
+		}
 	}
 }
