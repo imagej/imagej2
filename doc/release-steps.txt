@@ -24,35 +24,23 @@ I. BUILD IMGLIB2 RELEASE BINARIES:
 -------------------------------------------------------------------------------
 II. BUILD IMAGEJ2 RELEASE BINARIES:
 
-1) In ImageJ2 repository, create a temporary branch:
-       git checkout HEAD^0
+1) In ImageJ repository, run the tag-release.sh script; e.g.:
+       bin/tag-release.sh 2.0.0-SNAPSHOT 2.0.0-beta3 1.46r 4.4.0
 
-2) Create a commit that updates the version numbers for the release.
-   This should be modeled after the previous release; e.g.:
-       git show v2.0.0-beta3
+   Where:
+       - "2.0.0-SNAPSHOT" is the current/previous development version
+       - "2.0.0-beta3" is the new release version
+       - "1.46r" is the desired version of ImageJ1 to pin
+       -  "4.4.0" is the desired version of SCIFIO to pin
 
-   Typically this consists of the following steps
-   (where "2.x.x" is the desired release version):
-       # update project version to 2.x.x
-       mvn versions:set
-       # add needed properties block to toplevel POM
-       vi pom.xml
-       # verify that no SNAPSHOT versions remain
-       git grep SNAPSHOT
-       # commit the result, with message modeled after previous releases
-       git commit .
+2) Push the tag; e.g.:
+       git push origin v2.0.0-beta3
 
-3) Tag the release:
-       git tag -a v2.x.x
-
-4) Push the tag:
-       git push origin v2.x.x
-
-5) Tell Jenkins to build and deploy the launcher for the just-pushed tag (the
+3) Tell Jenkins to build and deploy the launcher for the just-pushed tag (the
    TOKEN is here: http://jenkins.imagej.net/job/ImageJ-launcher/configure):
        bin/trigger-jenkins-deploy.sh launcher <TOKEN> <TAG>
 
-6) Tell Jenkins to build and deploy ImageJ2 itself for the just-pushed tag (the
+4) Tell Jenkins to build and deploy ImageJ2 itself for the just-pushed tag (the
    TOKEN is here: http://jenkins.imagej.net/job/ImageJ/configure):
        bin/trigger-jenkins-deploy.sh app <TOKEN> <TAG>
 
