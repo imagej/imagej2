@@ -11,8 +11,6 @@ import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
 import imagej.widget.WidgetStyle;
 
-// NOTE - include this class and Process > Math > Equation shows no fields
-
 @Plugin(type = InputWidget.class)
 public class SwingTextButtonWidget extends SwingInputWidget<Void>
 {
@@ -58,7 +56,7 @@ public class SwingTextButtonWidget extends SwingInputWidget<Void>
 
 	@Override
 	public boolean isLabeled() {
-		return false;  // NOTE toggling this changes whether labels appear for ANY field
+		return false;
 	}
 
 }
