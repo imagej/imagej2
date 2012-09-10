@@ -70,7 +70,6 @@ public class ImageJ {
 				// SezPoz uses ClassLoader.getResources() which will now pick up the
 				// apt-generated annotations.
 				System.err.println("SezPoz generated annotations."); // no log service
-																															// yet
 			}
 		}
 		catch (final IOException e) {
