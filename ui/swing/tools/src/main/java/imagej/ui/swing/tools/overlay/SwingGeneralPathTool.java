@@ -62,7 +62,7 @@ import org.jhotdraw.draw.Figure;
 	priority = SwingGeneralPathTool.PRIORITY, enabled = false)
 public class SwingGeneralPathTool extends AbstractJHotDrawAdapter<GeneralPathOverlay, SwingGeneralPathFigure> {
 
-	public static final double PRIORITY = SwingPolygonTool.PRIORITY - 1;
+	public static final double PRIORITY = SwingPolygonTool.PRIORITY + 0.5;
 
 	private static GeneralPathOverlay downcastOverlay(final Overlay overlay) {
 		assert overlay instanceof GeneralPathOverlay;
