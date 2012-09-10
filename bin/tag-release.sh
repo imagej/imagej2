@@ -66,9 +66,7 @@ mvn versions:set -DoldVersion="$old" -DnewVersion="$new" -DgenerateBackupPoms=fa
 files="$(git grep -l "$old" |
 grep -v NOTICE.txt |
 grep -v bin/tag-release.sh |
-grep -v core/updater/core/src/test/java/imagej/updater/core/UpdaterTest.java |
-grep -v doc/release-steps.txt |
-grep -v ui/swing/updater/src/main/java/imagej/updater/gui/ImageJUpdater.java)" && {
+grep -v doc/release-steps.txt)" && {
 	msg "There are still references to '$old'"
 	msg "$files"
 	exit 1
