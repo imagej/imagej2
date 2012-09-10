@@ -3,34 +3,22 @@ Releasing a new version of ImageJ2 involves three broad steps:
 -------------------------------------------------------------------------------
 I. BUILD IMGLIB2 RELEASE BINARIES:
 
-1) In ImgLib repository, create a temporary branch:
-       git checkout HEAD^0
+1) In ImgLib repository, run the tag-release.sh script; e.g.:
+       bin/tag-release.sh 2.0.0-SNAPSHOT 2.0.0-beta3 1.46r 4.4.0
 
-2) Create a commit that updates the version numbers for the release.
-   This should be modeled after the previous release; e.g.:
-       git show v2.0.0-beta3
+   Where:
+       - "2.0.0-SNAPSHOT" is the current/previous development version
+       - "2.0.0-beta3" is the new release version
+       - "1.46r" is the desired version of ImageJ1 to pin
+       -  "4.4.0" is the desired version of SCIFIO to pin
 
-   Typically this consists of the following steps
-   (where "2.x.x" is the desired release version):
-       # update project version to 2.x.x
-       mvn versions:set
-       # add needed properties block to toplevel POM
-       vi pom.xml
-       # replace any remaining SNAPSHOT versions (esp. in broken subtree)
-       git grep -z SNAPSHOT | xargs -0r sed -i '' -e 's/SNAPSHOT/2.x.x/'
-       # commit the result, with message modeled after previous releases
-       git commit .
-
-3) Tag the release:
-       git tag -a v2.x.x
-
-4) Make sure everything builds successfully:
+2) Make sure everything builds successfully:
        mvn clean install
 
-5) If all is well (i.e., "BUILD SUCCESSFUL") then deploy the result:
+3) If all is well (i.e., "BUILD SUCCESSFUL") then deploy the result:
        mvn -DskipTests deploy
 
-6) Push the tag:
+4) Push the tag:
        git push origin v2.x.x
 
 -------------------------------------------------------------------------------
