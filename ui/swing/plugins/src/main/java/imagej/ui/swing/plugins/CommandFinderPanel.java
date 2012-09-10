@@ -215,13 +215,19 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 
 	/** Updates the list of visible commands. */
 	private void updateCommands() {
+		final Command selected = (Command)commandsList.getSelectedValue();
+		boolean isSelectionStillValid = false;
 		final String regex = getRegex();
 		final DefaultListModel matches = new DefaultListModel();
 		for (final Command command : commands) {
 			if (!command.matches(regex)) continue; // no match
 			matches.addElement(command);
+			if (command == selected) isSelectionStillValid = true;
 		}
 		commandsList.setModel(matches);
+		if (isSelectionStillValid) {
+			commandsList.setSelectedValue(selected, false);
+		}
 	}
 
 	/** Called when the search filter text field changes. */
