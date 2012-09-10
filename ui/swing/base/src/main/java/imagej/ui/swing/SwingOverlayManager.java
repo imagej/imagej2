@@ -598,12 +598,10 @@ public class SwingOverlayManager
 	}
 	
 	private void help() {
-		LogService log = context.getService(LogService.class);
-		log.warn("TODO in SwingOverlayManager::help() - using old IJ1 URL for this command");
 		final PlatformService ps = context.getService(PlatformService.class);
 		try {
 			final URL url =
-					new URL("http://imagej.nih.gov/ij/docs/menus/analyze.html#manager");
+					new URL("http://wiki.imagej.net/ImageJ2/Documentation/Image/Overlay/OverlayManager");
 			ps.open(url);
 		} catch (IOException e) {
 			// do nothing
