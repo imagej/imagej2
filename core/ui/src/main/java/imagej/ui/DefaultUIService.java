@@ -404,7 +404,7 @@ public final class DefaultUIService extends AbstractService implements
 			}
 			if (displayViewer == null) {
 				log.warn("For UI '" + ui.getClass().getName() +
-					"': no suitable viewer for display");
+					"': no suitable viewer for display: " + display);
 			}
 			else {
 				final DisplayWindow displayWindow =
