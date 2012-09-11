@@ -4,7 +4,7 @@ backwards compatible with ImageJ 1.x via a "legacy layer" and features a user
 interface closely modeled after the original.
 
 Under the hood, ImageJ2 completely isolates the image processing logic from the
-graphical user interface (UI), allowing ImageJ2 plugins to be used in many
+graphical user interface (UI), allowing ImageJ2 commands to be used in many
 contexts, including headless in the cloud or on a server such as OMERO, or from
 within another application such as KNIME, ICY or CellProfiler (a Python
 application).
@@ -60,12 +60,12 @@ Please report any bugs by following the instructions at:
 OTHER NOTES
 -----------
 
-Menus: IJ2 is currently made up of both IJ1 & IJ2 plugins. IJ1 plugins are
+Menus: IJ2 is currently made up of both IJ1 & IJ2 commands. IJ1 commands are
 distinguished with a small microscope icon next to their name in the menus,
-while IJ2 plugins have either a green puzzle piece or a custom icon. Many IJ1
-menu commands work, but many do not, for various reasons. We are still working
-to improve the number of working IJ1 commands, and/or update them to pure IJ2
-plugins.
+while IJ2 commands have either a green puzzle piece or a custom icon. Many IJ1
+commands work, but many do not, for various reasons. We are still working to
+improve the number of working IJ1 commands, and/or update them to pure IJ2
+commands.
 
 Macros and scripts: It is possible to execute IJ1 macros in IJ2, though you may
 experience mixed results. You can even include calls to overridden IJ2 commands
