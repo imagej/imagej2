@@ -43,7 +43,7 @@ import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.TextDisplayViewer;
 
 /**
- * TODO
+ * A Swing text display viewer, which displays strings in a simple text panel.
  * 
  * @author Lee Kamentsky
  */
