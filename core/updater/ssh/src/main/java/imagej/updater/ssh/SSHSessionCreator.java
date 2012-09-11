@@ -87,7 +87,18 @@ final class SSHSessionCreator {
 		if (proxyHost != null && proxyPort != null)
 			session.setProxy(new ProxyHTTP(proxyHost, Integer.parseInt(proxyPort)));
 		session.setUserInfo(userInfo);
-		session.connect();
+		try {
+			session.connect();
+		} catch (JSchException e) {
+			if (proxyHost != null && proxyPort != null && e.getMessage().indexOf("Forbidden") >= 0) {
+				System.err.println("Trying to connect to " + config.username + "@" + config.sshHost + " without a proxy.");
+				session.setProxy(null);
+				session.connect();
+			} else {
+				// re-throw
+				throw e;
+			}
+		}
 
 		return session;
 	}
