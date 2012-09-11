@@ -67,10 +67,9 @@ import net.imglib2.meta.AxisType;
  * @author Curtis Rueden
  */
 @Plugin(type = ImageDisplay.class)
-public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
-	ImageDisplay
+public class DefaultImageDisplay extends AbstractDisplay<DataView>
+	implements ImageDisplay
 {
-
 	private List<EventSubscriber<?>> subscribers;
 
 	/** Data structure that aggregates dimensional axes from constituent views. */
