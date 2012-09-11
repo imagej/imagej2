@@ -35,11 +35,9 @@
 
 package imagej.ui.swing.sdi.display;
 
-import imagej.display.Display;
 import imagej.plugin.Plugin;
 import imagej.ui.swing.display.AbstractSwingImageDisplayViewer;
 import imagej.ui.swing.display.SwingImageDisplayViewer;
-import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.ImageDisplayViewer;
 
 import javax.swing.JFrame;
