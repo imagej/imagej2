@@ -269,6 +269,15 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
+	public List<UserInterface> getVisibleUIs() {
+		final ArrayList<UserInterface> uis = new ArrayList<UserInterface>();
+		for (final UserInterface ui : uiList) {
+			if (ui.isVisible()) uis.add(ui);
+		}
+		return uis;
+	}
+
+	@Override
 	public DisplayViewer<?> getDisplayViewer(final Display<?> display) {
 		for (final DisplayViewer<?> displayViewer : displayViewers) {
 			if (displayViewer.getDisplay() == display) return displayViewer;
@@ -371,29 +380,41 @@ public final class DefaultUIService extends AbstractService implements
 	@EventHandler
 	protected void onEvent(final DisplayCreatedEvent e) {
 		final Display<?> display = e.getObject();
-		for (@SuppressWarnings("rawtypes")
-		final PluginInfo<DisplayViewer> info : pluginService
-			.getPluginsOfType(DisplayViewer.class))
-		{
-			try {
-				final DisplayViewer<?> displayViewer = info.createInstance();
-				displayViewer.setContext(getContext());
-				displayViewer.setPriority(info.getPriority());
-				if (displayViewer.canView(display)) {
-					final DisplayWindow displayWindow =
-						getDefaultUI().createDisplayWindow(display);
-					displayViewer.view(displayWindow, display);
-					displayWindow.setTitle(display.getName());
-					displayViewers.add(displayViewer);
-					displayWindow.showDisplay(true);
-					return;
+
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		final List<PluginInfo<DisplayViewer<?>>> viewers = (List)
+			pluginService.getPluginsOfType(DisplayViewer.class);
+
+		for (final UserInterface ui : getVisibleUIs()) {
+			DisplayViewer<?> displayViewer = null;
+			for (final PluginInfo<DisplayViewer<?>> info : viewers) {
+				// check that viewer can actually handle the given display
+				try {
+					final DisplayViewer<?> viewer = info.createInstance();
+					viewer.setContext(getContext());
+					viewer.setPriority(info.getPriority());
+					if (!viewer.canView(display)) continue;
+					if (!viewer.isCompatible(ui)) continue;
+					displayViewer = viewer;
+					break; // found a suitable viewer; move on to the next UI
+				}
+				catch (final InstantiableException exc) {
+					log.warn("Failed to create instance of " + info.getClassName(), exc);
 				}
 			}
-			catch (final InstantiableException exc) {
-				log.warn("Failed to create instance of " + info.getClassName(), exc);
+			if (displayViewer == null) {
+				log.warn("For UI '" + ui.getClass().getName() +
+					"': no suitable viewer for display: " + display);
+			}
+			else {
+				final DisplayWindow displayWindow =
+						getDefaultUI().createDisplayWindow(display);
+				displayViewer.view(displayWindow, display);
+				displayWindow.setTitle(display.getName());
+				displayViewers.add(displayViewer);
+				displayWindow.showDisplay(true);
 			}
 		}
-		log.warn("No suitable DisplayViewer found for display");
 	}
 
 	/**

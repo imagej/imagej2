@@ -35,11 +35,11 @@
 
 package imagej.ui.swing.sdi.display;
 
-import imagej.display.Display;
 import imagej.plugin.Plugin;
+import imagej.ui.UserInterface;
 import imagej.ui.swing.display.AbstractSwingImageDisplayViewer;
 import imagej.ui.swing.display.SwingImageDisplayViewer;
-import imagej.ui.viewer.DisplayWindow;
+import imagej.ui.swing.sdi.SwingUI;
 import imagej.ui.viewer.ImageDisplayViewer;
 
 import javax.swing.JFrame;
@@ -55,5 +55,12 @@ import javax.swing.JFrame;
 @Plugin(type = ImageDisplayViewer.class)
 public class SwingSdiImageDisplayViewer extends AbstractSwingImageDisplayViewer
 {
-	// This class intentionally left blank
+
+	// -- DisplayViewer methods --
+
+	@Override
+	public boolean isCompatible(final UserInterface ui) {
+		return ui instanceof SwingUI;
+	}
+
 }

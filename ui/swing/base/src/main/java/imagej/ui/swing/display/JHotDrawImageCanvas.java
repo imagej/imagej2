@@ -195,7 +195,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 	}
 
 	public void addEventDispatcher(final AWTInputEventDispatcher dispatcher) {
-		dispatcher.register(drawingView);
+		dispatcher.register(drawingView, true, true);
 	}
 
 	/**
@@ -551,7 +551,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 
 	private void activateTool(final Tool iTool) {
 		if (iTool instanceof JHotDrawAdapter) {
-			final JHotDrawAdapter adapter = (JHotDrawAdapter) iTool;
+			final JHotDrawAdapter<?> adapter = (JHotDrawAdapter<?>) iTool;
 			final JHotDrawTool creationTool = adapter.getCreationTool(getDisplay());
 			toolDelegator.setCreationTool(creationTool);
 		}

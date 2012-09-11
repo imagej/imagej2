@@ -43,6 +43,7 @@ import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.DisplayUpdatedEvent;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Plugin;
+import imagej.ui.UserInterface;
 
 /**
  * A display viewer is a UI widget that shows a display to a user.
@@ -55,9 +56,13 @@ import imagej.plugin.Plugin;
  * </p>
  * 
  * @author Lee Kamentsky
+ * @author Curtis Rueden
  * @see Plugin
  */
 public interface DisplayViewer<T> extends ImageJPlugin, Contextual, Prioritized {
+
+	/** Returns true if this display viewer can be used with the given UI. */
+	boolean isCompatible(final UserInterface ui);
 
 	/**
 	 * Returns true if an instance of this display viewer can view the given

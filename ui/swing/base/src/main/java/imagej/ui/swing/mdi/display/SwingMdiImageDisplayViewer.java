@@ -37,8 +37,10 @@ package imagej.ui.swing.mdi.display;
 
 import imagej.display.Display;
 import imagej.plugin.Plugin;
+import imagej.ui.UserInterface;
 import imagej.ui.swing.display.AbstractSwingImageDisplayViewer;
 import imagej.ui.swing.display.SwingImageDisplayViewer;
+import imagej.ui.swing.mdi.SwingMdiUI;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.ImageDisplayViewer;
 
@@ -58,6 +60,11 @@ public class SwingMdiImageDisplayViewer extends AbstractSwingImageDisplayViewer
 {
 
 	// -- DisplayViewer methods --
+
+	@Override
+	public boolean isCompatible(final UserInterface ui) {
+		return ui instanceof SwingMdiUI;
+	}
 
 	@Override
 	public void view(final DisplayWindow w, final Display<?> d) {

@@ -160,6 +160,9 @@ public interface UIService extends Service {
 	/** Gets the user interfaces available to the service. */
 	List<UserInterface> getAvailableUIs();
 
+	/** Gets the user interfaces that are currently visible. */
+	List<UserInterface> getVisibleUIs();
+
 	/** Gets the UI widget being used to visualize the given {@link Display}. */
 	DisplayViewer<?> getDisplayViewer(Display<?> display);
 

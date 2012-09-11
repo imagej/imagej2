@@ -43,7 +43,14 @@ import imagej.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Display.class, priority = Priority.VERY_LOW_PRIORITY)
+// TODO - For the moment, we have disabled discovery and automatic usage of the
+// default display. In order to be useful for anything other than headless
+// operation, it needs a corresponding display viewer in the Swing UI. The
+// viewer can be very simple (perhaps dumping the objects to a text window
+// using Object#toString()), but until it exists, discovery of this display
+// merely causes the UIService to eventually issue some warnings anyway
+// ("No suitable viewer found for display" and "No viewer found for display").
+//@Plugin(type = Display.class, priority = Priority.VERY_LOW_PRIORITY)
 public class DefaultDisplay extends AbstractDisplay<Object> {
 
 	public DefaultDisplay() {
