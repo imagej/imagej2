@@ -38,11 +38,11 @@ II. BUILD IMAGEJ2 RELEASE BINARIES:
 
 3) Tell Jenkins to build and deploy the launcher for the just-pushed tag (the
    TOKEN is here: http://jenkins.imagej.net/job/ImageJ-launcher/configure):
-       bin/trigger-jenkins-deploy.sh launcher <TOKEN> <TAG>
+       bin/trigger-jenkins-deploy.sh --no-push launcher <TOKEN> <TAG>
 
 4) Tell Jenkins to build and deploy ImageJ2 itself for the just-pushed tag (the
    TOKEN is here: http://jenkins.imagej.net/job/ImageJ/configure):
-       bin/trigger-jenkins-deploy.sh app <TOKEN> <TAG>
+       bin/trigger-jenkins-deploy.sh --no-push app <TOKEN> <TAG>
 
 -------------------------------------------------------------------------------
 III. UPDATE ONLINE RESOURCES:
