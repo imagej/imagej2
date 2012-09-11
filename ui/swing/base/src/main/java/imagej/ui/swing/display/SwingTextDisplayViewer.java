@@ -37,6 +37,8 @@ package imagej.ui.swing.display;
 
 import imagej.display.Display;
 import imagej.plugin.Plugin;
+import imagej.ui.UserInterface;
+import imagej.ui.swing.AbstractSwingUI;
 import imagej.ui.swing.SwingTextDisplayPanel;
 import imagej.ui.viewer.AbstractTextDisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
@@ -49,6 +51,12 @@ import imagej.ui.viewer.TextDisplayViewer;
  */
 @Plugin(type = TextDisplayViewer.class)
 public class SwingTextDisplayViewer extends AbstractTextDisplayViewer {
+
+	@Override
+	public boolean isCompatible(final UserInterface ui) {
+		// TODO: Consider whether to use an interface for Swing UIs instead?
+		return ui instanceof AbstractSwingUI;
+	}
 
 	@Override
 	public void view(final DisplayWindow w, final Display<?> d) {
