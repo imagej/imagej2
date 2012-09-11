@@ -81,6 +81,24 @@ public abstract class AbstractDisplay<T> extends SortablePlugin implements
 		structureChanged = true;
 	}
 
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder(super.toString());
+		sb.append(": type=" + type);
+		sb.append(", name=" + name);
+		sb.append(", objects={");
+		boolean first = true;
+		for (final T object : objects) {
+			if (first) first = false;
+			else sb.append(", ");
+			sb.append(object);
+		}
+		sb.append("}");
+		return sb.toString();
+	}
+
 	// -- Display methods --
 
 	@Override
