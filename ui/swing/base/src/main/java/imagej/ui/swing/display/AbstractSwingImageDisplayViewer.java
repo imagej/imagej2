@@ -65,6 +65,15 @@ public abstract class AbstractSwingImageDisplayViewer extends
 	private JHotDrawImageCanvas imgCanvas;
 	private SwingDisplayPanel imgPanel;
 
+	// -- SwingImageDisplayViewer methods --
+
+	@Override
+	public JHotDrawImageCanvas getCanvas() {
+		return imgCanvas;
+	}
+
+	// -- DisplayViewer methods --
+
 	@Override
 	public void view(final DisplayWindow w, final Display<?> d) {
 		super.view(w, d);
@@ -79,15 +88,6 @@ public abstract class AbstractSwingImageDisplayViewer extends
 
 		updateTitle();
 	}
-
-	// -- SwingImageDisplayViewer methods --
-
-	@Override
-	public JHotDrawImageCanvas getCanvas() {
-		return imgCanvas;
-	}
-
-	// -- DisplayViewer methods --
 
 	@Override
 	public SwingDisplayPanel getPanel() {
