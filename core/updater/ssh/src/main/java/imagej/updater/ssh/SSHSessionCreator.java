@@ -63,8 +63,7 @@ final class SSHSessionCreator {
 	/**
 	 * Creates and connects SSH session.
 	 * 
-	 * @param username SSH user name.
-	 * @param sshHost SSH host to connect to.
+	 * @param config connection data.
 	 * @param userInfo authentication data.
 	 * @return connected session.
 	 * @throws JSchException if authentication or connection fails.
