@@ -39,7 +39,7 @@ import imagej.display.Display;
 import imagej.display.TextDisplay;
 
 /**
- * TODO
+ * Implements the UI-independent elements of a text viewer.
  * 
  * @author Lee Kamentsky
  */
