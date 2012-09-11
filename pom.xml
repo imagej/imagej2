@@ -13,7 +13,7 @@
 
 	<groupId>net.imagej</groupId>
 	<artifactId>pom-ij-base</artifactId>
-	<version>2.0.0-SNAPSHOT</version>
+	<version>2.0.0-beta4</version>
 	<packaging>pom</packaging>
 
 	<name>ImageJ Projects</name>
@@ -29,6 +29,10 @@
 
 	<properties>
 		<project.rootdir>${basedir}</project.rootdir>
+		<imagej.version>${project.version}</imagej.version>
+		<imglib2.version>${project.version}</imglib2.version>
+		<imagej1.version>1.47c</imagej1.version>
+		<scifio.version>4.4.2</scifio.version>
 	</properties>
 
 	<build>
