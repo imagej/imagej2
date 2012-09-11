@@ -79,7 +79,7 @@ final class SSHSessionCreator {
 		jsch.setKnownHosts(knownHosts.getAbsolutePath());
 
 		final Session session = jsch.getSession(config.username, config.sshHost, config.port);
-		if (config != null && config.identity != null) {
+		if (config.identity != null) {
 			jsch.addIdentity(config.identity);
 		}
 		String proxyHost = System.getProperty("http.proxyHost");
