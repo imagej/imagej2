@@ -55,14 +55,5 @@ import javax.swing.JFrame;
 @Plugin(type = ImageDisplayViewer.class)
 public class SwingSdiImageDisplayViewer extends AbstractSwingImageDisplayViewer
 {
-
-	// -- DisplayViewer methods --
-
-	@Override
-	public void view(final DisplayWindow w, final Display<?> d) {
-		super.view(w, d);
-		final SwingDisplayWindow sdiWindow = (SwingDisplayWindow) w;
-		dispatcher.register(sdiWindow, true, false);
-	}
-
+	// This class intentionally left blank
 }
