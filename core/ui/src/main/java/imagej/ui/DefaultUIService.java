@@ -269,6 +269,15 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
+	public List<UserInterface> getVisibleUIs() {
+		final ArrayList<UserInterface> uis = new ArrayList<UserInterface>();
+		for (final UserInterface ui : uiList) {
+			if (ui.isVisible()) uis.add(ui);
+		}
+		return uis;
+	}
+
+	@Override
 	public DisplayViewer<?> getDisplayViewer(final Display<?> display) {
 		for (final DisplayViewer<?> displayViewer : displayViewers) {
 			if (displayViewer.getDisplay() == display) return displayViewer;
