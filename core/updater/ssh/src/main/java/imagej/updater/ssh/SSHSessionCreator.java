@@ -63,8 +63,7 @@ final class SSHSessionCreator {
 	/**
 	 * Creates and connects SSH session.
 	 * 
-	 * @param username SSH user name.
-	 * @param sshHost SSH host to connect to.
+	 * @param config connection data.
 	 * @param userInfo authentication data.
 	 * @return connected session.
 	 * @throws JSchException if authentication or connection fails.
@@ -80,7 +79,7 @@ final class SSHSessionCreator {
 		jsch.setKnownHosts(knownHosts.getAbsolutePath());
 
 		final Session session = jsch.getSession(config.username, config.sshHost, config.port);
-		if (config != null && config.identity != null) {
+		if (config.identity != null) {
 			jsch.addIdentity(config.identity);
 		}
 		String proxyHost = System.getProperty("http.proxyHost");
@@ -88,7 +87,18 @@ final class SSHSessionCreator {
 		if (proxyHost != null && proxyPort != null)
 			session.setProxy(new ProxyHTTP(proxyHost, Integer.parseInt(proxyPort)));
 		session.setUserInfo(userInfo);
-		session.connect();
+		try {
+			session.connect();
+		} catch (JSchException e) {
+			if (proxyHost != null && proxyPort != null && e.getMessage().indexOf("Forbidden") >= 0) {
+				System.err.println("Trying to connect to " + config.username + "@" + config.sshHost + " without a proxy.");
+				session.setProxy(null);
+				session.connect();
+			} else {
+				// re-throw
+				throw e;
+			}
+		}
 
 		return session;
 	}
