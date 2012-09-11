@@ -195,7 +195,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 	}
 
 	public void addEventDispatcher(final AWTInputEventDispatcher dispatcher) {
-		dispatcher.register(drawingView);
+		dispatcher.register(drawingView, true, true);
 	}
 
 	/**

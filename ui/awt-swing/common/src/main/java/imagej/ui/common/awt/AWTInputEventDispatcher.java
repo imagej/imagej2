@@ -116,14 +116,6 @@ public class AWTInputEventDispatcher implements KeyListener, MouseListener,
 	// -- AWTInputEventDispatcher methods --
 
 	/**
-	 * Attaches the event dispatcher to the given component as a listener,
-	 * rebroadcasting both key and mouse events.
-	 */
-	public void register(final Component c) {
-		register(c, true, true);
-	}
-
-	/**
 	 * Attaches the event dispatcher to the given component as a listener.
 	 * 
 	 * @param c The component from which to rebroadcast events.
