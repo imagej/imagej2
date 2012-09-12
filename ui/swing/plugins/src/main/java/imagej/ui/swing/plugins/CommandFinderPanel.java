@@ -39,6 +39,7 @@ import imagej.MenuPath;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
 
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -64,6 +65,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -79,13 +83,14 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 
 	protected final JTextField searchField;
 	protected final JTable commandsList;
+	protected final CommandTableModel tableModel;
 
 	private final List<ModuleInfo> commands;
 
 	public CommandFinderPanel(final ModuleService moduleService) {
 		commands = buildCommands(moduleService);
 
-		setPreferredSize(new Dimension(640, 480));
+		setPreferredSize(new Dimension(800, 600));
 
 		searchField = new JTextField(12);
 		commandsList = new JTable(20, 6);
@@ -116,7 +121,9 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 
 		searchField.getDocument().addDocumentListener(this);
 
-		commandsList.setModel(new CommandTableModel(commands));
+		tableModel = new CommandTableModel(commands);
+		commandsList.setModel(tableModel);
+		tableModel.setColumnWidths(commandsList.getColumnModel());
 
 		final String layout = "fillx,wrap 2";
 		final String cols = "[pref|fill,grow]";
@@ -251,7 +258,7 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 			if (command == selected) selectedRow = counter;
 			counter++;
 		}
-		commandsList.setModel(new CommandTableModel(matches));
+		tableModel.setData(matches);
 		if (selectedRow >= 0) {
 			commandsList.setRowSelectionInterval(selectedRow, selectedRow);
 		}
@@ -269,6 +276,26 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 
 		public CommandTableModel(final List<ModuleInfo> list) {
 			this.list = list;
+		}
+
+		public void setData(List<ModuleInfo> list) {
+			this.list = list;
+			fireTableDataChanged();
+		}
+
+		public void setColumnWidths(TableColumnModel columnModel) {
+			int[] widths = { 32, 150, 150, 300, 50, 20 };
+			for (int i = 0; i < widths.length; i++) {
+				columnModel.getColumn(i).setPreferredWidth(widths[i]);
+			}
+			final TableColumn iconColumn = columnModel.getColumn(0);
+			iconColumn.setMaxWidth(32);
+			iconColumn.setCellRenderer(new DefaultTableCellRenderer() {
+				@Override
+				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+					return (Component)value;
+				}
+			});
 		}
 
 		public ModuleInfo get(int index) {
@@ -303,7 +330,7 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 				final String iconPath = info.getIconPath();
 				if (iconPath == null) return null;
 				final URL iconURL = getClass().getResource(iconPath);
-				return iconURL == null ? null : new ImageIcon(iconURL);
+				return iconURL == null ? null : new JLabel(new ImageIcon(iconURL));
 			}
 			if (column == 1) return info.getTitle();
 			if (column == 2) {
