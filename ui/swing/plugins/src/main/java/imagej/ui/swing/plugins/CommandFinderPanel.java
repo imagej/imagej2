@@ -38,6 +38,8 @@ package imagej.ui.swing.plugins;
 import imagej.MenuPath;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
+import imagej.util.AppUtils;
+import imagej.util.ClassUtils;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -93,7 +95,7 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 		setPreferredSize(new Dimension(800, 600));
 
 		searchField = new JTextField(12);
-		commandsList = new JTable(20, 6);
+		commandsList = new JTable(20, CommandTableModel.COLUMN_COUNT);
 		commandsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		commandsList.setRowSelectionAllowed(true);
 		commandsList.setColumnSelectionAllowed(false);
@@ -272,7 +274,10 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 	// -- Helper classes --
 
 	protected static class CommandTableModel extends AbstractTableModel {
+		private final static String ijLocation = AppUtils.getBaseDirectory().getAbsolutePath();
 		protected List<ModuleInfo> list;
+
+		public final static int COLUMN_COUNT = 7;
 
 		public CommandTableModel(final List<ModuleInfo> list) {
 			this.list = list;
@@ -284,7 +289,7 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 		}
 
 		public void setColumnWidths(TableColumnModel columnModel) {
-			int[] widths = { 32, 150, 150, 300, 50, 20 };
+			int[] widths = { 32, 150, 150, 300, 200, 50, 20 };
 			for (int i = 0; i < widths.length; i++) {
 				columnModel.getColumn(i).setPreferredWidth(widths[i]);
 			}
@@ -304,7 +309,7 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 
 		@Override
 		public int getColumnCount() {
-			return 6;
+			return COLUMN_COUNT;
 		}
 
 		@Override
@@ -313,8 +318,9 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 			if (column == 1) return "Command";
 			if (column == 2) return "Menu Path";
 			if (column == 3) return "Class";
-			if (column == 4) return "Description";
-			if (column == 5) return "Priority";
+			if (column == 4) return "File";
+			if (column == 5) return "Description";
+			if (column == 6) return "Priority";
 			return null;
 		}
 
@@ -338,8 +344,14 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 				return menuPath.getMenuString(false);
 			}
 			if (column == 3) return info.getDelegateClassName();
-			if (column == 4) return info.getDescription();
-			if (column == 5) return info.getPriority();
+			if (column == 4) {
+				final String location = ClassUtils.getLocation(info.getDelegateClassName()).getAbsolutePath();
+				if (location.startsWith(ijLocation))
+					return location.substring(ijLocation.length() + 1);
+				return location;
+			}
+			if (column == 5) return info.getDescription();
+			if (column == 6) return info.getPriority();
 			return null;
 		}
 	}
