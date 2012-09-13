@@ -281,7 +281,7 @@ public class UpdaterTest {
 		assertAction(Action.INSTALL, files, filename);
 
 		// Start the update
-		update(files);
+		update(files, progress);
 		assertTrue(file.exists());
 
 		assertTrue("Recorded remote timestamp", files.getUpdateSite(
@@ -481,7 +481,7 @@ public class UpdaterTest {
 		assertTrue(resolutions[0].getDescription().startsWith("Install"));
 		conflict.resolutions[0].resolve();
 
-		update(files);
+		update(files, progress);
 
 		assertFalse(files.prefix(obsoleted).exists());
 	}
@@ -683,7 +683,7 @@ public class UpdaterTest {
 	public void testMultipleUpdateSites() throws Exception {
 		// initialize secondary update site
 		File webRoot2 = createTempDirectory("testUpdaterWebRoot2");
-		initializeUpdateSite(webRoot2, "jars/hello.jar");
+		initializeUpdateSite(ijRoot, webRoot2, progress, "jars/hello.jar");
 		assertFalse(new File(webRoot, "db.xml.gz").exists());
 
 		// initialize main update site
@@ -1231,12 +1231,12 @@ public class UpdaterTest {
 
 	protected void initializeUpdateSite(final String... fileNames)
 			throws Exception {
-		initializeUpdateSite(webRoot, fileNames);
+		initializeUpdateSite(ijRoot, webRoot, progress, fileNames);
 	}
 
-	protected void initializeUpdateSite(final File webRoot, final String... fileNames)
-				throws Exception
-			{
+	protected static void initializeUpdateSite(final File ijRoot, final File webRoot, final Progress progress, final String... fileNames)
+			throws Exception
+		{
 		final File localDb = new File(ijRoot, "db.xml.gz");
 		final File remoteDb = new File(webRoot, "db.xml.gz");
 
@@ -1263,13 +1263,13 @@ public class UpdaterTest {
 
 			final List<String> list = new ArrayList<String>();
 			for (final String name : fileNames) {
-				writeFile(name);
+				writeFile(new File(ijRoot, name), name);
 				list.add(name);
 			}
 
 			// Initialize db.xml.gz
 
-			final FilesCollection files = readDb(false, false, webRoot);
+			final FilesCollection files = readDb(false, false, ijRoot, webRoot, progress);
 			assertEquals(0, files.size());
 
 			files.write();
@@ -1296,11 +1296,11 @@ public class UpdaterTest {
 		final boolean runChecksummer) throws IOException,
 		ParserConfigurationException, SAXException
 	{
-		return readDb(readLocalDb, runChecksummer, webRoot);
+		return readDb(readLocalDb, runChecksummer, ijRoot, webRoot, progress);
 	}
 
-	protected FilesCollection readDb(final boolean readLocalDb,
-			final boolean runChecksummer, final File webRoot) throws IOException,
+	protected static FilesCollection readDb(final boolean readLocalDb,
+			final boolean runChecksummer, final File ijRoot, final File webRoot, final Progress progress) throws IOException,
 			ParserConfigurationException, SAXException {
 		final FilesCollection files = new FilesCollection(ijRoot);
 		final File localDb = new File(ijRoot, "db.xml.gz");
@@ -1332,7 +1332,8 @@ public class UpdaterTest {
 		return files;
 	}
 
-	protected void update(final FilesCollection files) throws IOException {
+	protected static void update(final FilesCollection files, final Progress progress) throws IOException {
+		final File ijRoot = files.prefix(".");
 		final Installer installer = new Installer(files, progress);
 		installer.start();
 		assertTrue(new File(ijRoot, "update").isDirectory());
@@ -1439,7 +1440,7 @@ public class UpdaterTest {
 	 * @return the File object describing the directory
 	 * @throws IOException
 	 */
-	protected File createTempDirectory(final String prefix) throws IOException {
+	protected static File createTempDirectory(final String prefix) throws IOException {
 		final File file = File.createTempFile(prefix, "");
 		file.delete();
 		file.mkdir();
@@ -1525,7 +1526,7 @@ public class UpdaterTest {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	protected File writeJar(final File dir, final String name,
+	protected static File writeJar(final File dir, final String name,
 		final String... args) throws FileNotFoundException, IOException
 	{
 		final File file = new File(dir, name);
@@ -1577,7 +1578,7 @@ public class UpdaterTest {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	protected File writeGZippedFile(final File dir, final String name,
+	protected static File writeGZippedFile(final File dir, final String name,
 		final String content) throws FileNotFoundException, IOException
 	{
 		final File file = new File(dir, name);
@@ -1597,8 +1598,7 @@ public class UpdaterTest {
 	protected File writeFile(final String name) throws FileNotFoundException,
 		IOException
 	{
-		if (name.endsWith(".jar")) return writeJar(name);
-		return writeFile(ijRoot, name, name);
+		return writeFile(new File(ijRoot, name), name);
 	}
 
 	/**
@@ -1626,7 +1626,7 @@ public class UpdaterTest {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	protected File writeFile(final File dir, final String name,
+	protected static File writeFile(final File dir, final String name,
 		final String content) throws FileNotFoundException, IOException
 	{
 		final File file = new File(dir, name);
@@ -1643,9 +1643,14 @@ public class UpdaterTest {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	protected File writeFile(final File file, final String content)
+	protected static File writeFile(final File file, final String content)
 		throws FileNotFoundException, IOException
 	{
+		final File dir = file.getParentFile();
+		if (!dir.isDirectory()) dir.mkdirs();
+		final String name = file.getName();
+		if (name.endsWith(".jar")) return writeJar(dir, name, name, name);
+
 		writeStream(new FileOutputStream(file), content, true);
 		return file;
 	}
@@ -1657,7 +1662,7 @@ public class UpdaterTest {
 	 * @param content what to write
 	 * @param close whether to close the stream
 	 */
-	protected void writeStream(final OutputStream out, final String content,
+	protected static void writeStream(final OutputStream out, final String content,
 		final boolean close)
 	{
 		final PrintWriter writer = new PrintWriter(out);
