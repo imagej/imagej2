@@ -1058,11 +1058,7 @@ public class UpdaterTest {
 		FilesCollection files = readDb(true,  true);
 		files.write();
 
-		File ijRoot2 = createTempDirectory("testUpdaterIJRoot2");
-		writeGZippedFile(ijRoot2, "db.xml.gz", "<pluginRecords><update-site name=\""
-				+ FilesCollection.DEFAULT_UPDATE_SITE + "\" timestamp=\"0\" url=\""
-				+ webRoot.toURI().toURL().toString() + "\" ssh-host=\"file:localhost\" "
-				+ "upload-directory=\"" + webRoot.getAbsolutePath() + "\"/></pluginRecords>");
+		File ijRoot2 = makeIJRoot(webRoot);
 
 		files = new FilesCollection(ijRoot2);
 		files.downloadIndexAndChecksum(progress);
@@ -1228,6 +1224,15 @@ public class UpdaterTest {
 	//
 	// Utility functions
 	//
+
+	protected static File makeIJRoot(final File webRoot) throws IOException {
+		final File ijRoot = createTempDirectory("testUpdaterIJRoot");
+		writeGZippedFile(ijRoot, "db.xml.gz", "<pluginRecords><update-site name=\""
+				+ FilesCollection.DEFAULT_UPDATE_SITE + "\" timestamp=\"0\" url=\""
+				+ webRoot.toURI().toURL().toString() + "\" ssh-host=\"file:localhost\" "
+				+ "upload-directory=\"" + webRoot.getAbsolutePath() + "\"/></pluginRecords>");
+		return ijRoot;
+	}
 
 	protected void initializeUpdateSite(final String... fileNames)
 			throws Exception {
