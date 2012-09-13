@@ -968,6 +968,18 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 				throw e;
 		}
 		new Checksummer(this, progress).updateFromLocal();
+
+		// When upstream fixed dependencies, heed them
+		for (final FileObject file : upToDate()) {
+			System.err.println("file: " + file);
+			for (final FileObject dependency : file.getFileDependencies(this, false)) {
+				System.err.println("dependency " + dependency);
+				if (dependency.getAction() == Action.NOT_INSTALLED) {
+					dependency.setAction(this, Action.INSTALL);
+				}
+			}
+		}
+
 		return downloader.getWarnings();
 	}
 

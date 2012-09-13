@@ -1178,6 +1178,37 @@ public class UpdaterTest {
 		assertTrue(db.indexOf(obsoleteChecksum) > 0);
 	}
 
+	@Test
+	public void testShownByDefault() throws Exception {
+		initializeUpdateSite("jars/will-have-dependency.jar");
+		FilesCollection files = readDb(true, true);
+		files.write();
+
+		File ijRoot2 = makeIJRoot(webRoot);
+
+		FilesCollection files2 = new FilesCollection(ijRoot2);
+		files2.downloadIndexAndChecksum(progress);
+		update(files2, progress);
+
+		writeFile("jars/dependency.jar");
+		new Checksummer(files, progress).updateFromLocal();
+		final FileObject dependency = files.get("jars/dependency.jar");
+		assertNotNull(dependency);
+		dependency.updateSite = FilesCollection.DEFAULT_UPDATE_SITE;
+		dependency.setAction(files, Action.UPLOAD);
+		assertCount(1, files.toUpload());
+		upload(files);
+
+		files2 = readDb(true, true, ijRoot2, webRoot, progress);
+		files2.write();
+
+		files.get("jars/will-have-dependency.jar").addDependency(files, dependency);
+		upload(files);
+
+		files2 = readDb(true, true, ijRoot2, webRoot, progress);
+		assertAction(Action.INSTALL, files2, "jars/dependency.jar");
+	}
+
 	//
 	// Debug functions
 	//
