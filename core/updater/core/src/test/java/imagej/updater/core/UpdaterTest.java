@@ -1390,7 +1390,7 @@ public class UpdaterTest {
 	protected static void assertAction(final Action action,
 		final FileObject file)
 	{
-		assertNotNull("Object " + file.filename, file);
+		assertNotNull("Object " + file, file);
 		assertEquals("Action of " + file.filename, action, file.getAction());
 	}
 
