@@ -113,6 +113,11 @@ public class Conflicts {
 		public Resolution[] getResolutions() {
 			return resolutions;
 		}
+
+		@Override
+		public String toString() {
+			return getFilename() + ": " + getConflict();
+		}
 	}
 
 	public abstract static class Resolution {
