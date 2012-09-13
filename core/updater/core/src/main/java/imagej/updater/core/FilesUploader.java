@@ -152,8 +152,9 @@ public class FilesUploader {
 		if (uploader == null) throw new RuntimeException("No uploader set for " +
 			site.sshHost);
 		if (!loggedIn) throw new RuntimeException("Not logged in!");
-		if (new Conflicts(files).hasUploadConflicts()) throw new RuntimeException(
-			"Unresolved upload conflicts!");
+		final Conflicts conflicts = new Conflicts(files);
+		if (conflicts.hasUploadConflicts()) throw new RuntimeException(
+			"Unresolved upload conflicts!\n\n" + Util.join("\n", conflicts.getConflicts(true)));
 		uploader.addProgress(progress);
 		uploader.addProgress(new VerifyTimestamp());
 
