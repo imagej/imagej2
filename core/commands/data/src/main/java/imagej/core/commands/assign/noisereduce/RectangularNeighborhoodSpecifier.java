@@ -11,16 +11,16 @@ public class RectangularNeighborhoodSpecifier extends ContextCommand {
 	@Parameter(label = "Dimensionality")
 	private int numDims;
 	
-	@Parameter(label = "Positive X", min = "0L")
+	@Parameter(label = "Neighborhood: positive width", min = "0L")
 	private long posX;
 
-	@Parameter(label = "Positive Y", min = "0L")
+	@Parameter(label = "Neighborhood: positive height", min = "0L")
 	private long posY;
 
-	@Parameter(label = "Negative X", min = "0L")
+	@Parameter(label = "Neighborhood: negative width", min = "0L")
 	private long negX;
 
-	@Parameter(label = "Negative Y", min = "0L")
+	@Parameter(label = "Neighborhood: negative height", min = "0L")
 	private long negY;
 
 	@Parameter(type = ItemIO.OUTPUT)

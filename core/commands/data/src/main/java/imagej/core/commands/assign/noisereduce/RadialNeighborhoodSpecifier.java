@@ -11,7 +11,7 @@ public class RadialNeighborhoodSpecifier extends ContextCommand {
 	@Parameter(label = "Dimensionality")
 	private int numDims;
 	
-	@Parameter(label = "Radius")
+	@Parameter(label = "Neoghborhood: radius")
 	private long radius;
 
 	@Parameter(type = ItemIO.OUTPUT)
