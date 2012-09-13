@@ -1205,8 +1205,8 @@ public class UpdaterTest {
 			final Class<?> clazz =
 				loader.loadClass("imagej.updater.gui.UpdaterFrame");
 			final java.lang.reflect.Constructor<?> ctor =
-				clazz.getConstructor(LogService.class, FilesCollection.class);
-			final Object updaterFrame = ctor.newInstance(Util.getLogService(), files);
+				clazz.getConstructor(LogService.class, UploaderService.class, FilesCollection.class);
+			final Object updaterFrame = ctor.newInstance(Util.getLogService(), null, files);
 			final java.lang.reflect.Method setVisible =
 				clazz.getMethod("setVisible", boolean.class);
 			setVisible.invoke(updaterFrame, true);
