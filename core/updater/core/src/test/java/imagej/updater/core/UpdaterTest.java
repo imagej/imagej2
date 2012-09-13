@@ -1351,6 +1351,8 @@ public class UpdaterTest {
 	}
 
 	protected void upload(final FilesCollection files, final String updateSite) throws Exception {
+		for (final FileObject file : files.toUpload())
+			assertEquals(updateSite, file.updateSite);
 		final FilesUploader uploader =
 			new FilesUploader(files, updateSite);
 		assertTrue(uploader.login());
