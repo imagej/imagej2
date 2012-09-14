@@ -187,11 +187,10 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 
 	/** Gets the currently selected command. */
 	public ModuleInfo getCommand() {
-		final CommandTableModel model = (CommandTableModel)commandsList.getModel();
-		if (model.getRowCount() < 1) return null;
+		if (tableModel.getRowCount() < 1) return null;
 		int selectedRow = commandsList.getSelectedRow();
-		if (selectedRow < 0) return null;
-		return model.get(commandsList.convertRowIndexToModel(selectedRow));
+		if (selectedRow < 0) selectedRow = 0;
+		return tableModel.get(commandsList.convertRowIndexToModel(selectedRow));
 	}
 
 	/** Gets the {@link JTextField} component for specifying the search string. */
@@ -250,7 +249,7 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 
 	/** Updates the list of visible commands. */
 	private void updateCommands() {
-		final ModuleInfo selected = getCommand();
+		final ModuleInfo selected = commandsList.getSelectedRow() < 0 ? null : getCommand();
 		int counter = 0, selectedRow = -1;
 		final String regex = getRegex();
 		final List<ModuleInfo> matches = new ArrayList<ModuleInfo>();
