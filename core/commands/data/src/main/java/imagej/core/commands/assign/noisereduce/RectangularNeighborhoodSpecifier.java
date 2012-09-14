@@ -45,7 +45,7 @@ import imagej.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin
+@Plugin(label="Rectangular Neighborhood Specification")
 public class RectangularNeighborhoodSpecifier extends ContextCommand {
 	
 	@Parameter(label = "Dimensionality")

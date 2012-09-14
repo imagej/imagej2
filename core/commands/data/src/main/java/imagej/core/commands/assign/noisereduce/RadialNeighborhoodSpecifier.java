@@ -45,13 +45,13 @@ import imagej.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin
+@Plugin(label="Radial Neighborhood Specification")
 public class RadialNeighborhoodSpecifier extends ContextCommand {
 	
 	@Parameter(label = "Dimensionality")
 	private int numDims;
 	
-	@Parameter(label = "Neoghborhood: radius")
+	@Parameter(label = "Neighborhood: radius")
 	private long radius;
 
 	@Parameter(type = ItemIO.OUTPUT)

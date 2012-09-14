@@ -99,7 +99,7 @@ public abstract class AbstractNoiseReducerPlugin<U extends RealType<U>>
 	
 	private String cancelReason;
 
-	private Neighborhood neighborhood = null;
+	private Neighborhood userProvidedNeighborhood = null;
 	
 	// -- public API --
 	
@@ -108,9 +108,9 @@ public abstract class AbstractNoiseReducerPlugin<U extends RealType<U>>
 
 	@Override
 	public void run() {
-		if (neighborhood == null)
-			neighborhood = determineNeighborhood(input.numDimensions());
+		Neighborhood neighborhood = determineNeighborhood(input.numDimensions());
 		if (neighborhood == null) return;
+		@SuppressWarnings("unchecked")
 		ImgPlus<U> inputImg = (ImgPlus<U>) input.getImgPlus();
 		OutOfBoundsMirrorFactory<U, Img<U>> oobFactory =
 				new OutOfBoundsMirrorFactory<U,Img<U>>(Boundary.DOUBLE);
@@ -135,7 +135,7 @@ public abstract class AbstractNoiseReducerPlugin<U extends RealType<U>>
 	}
 
 	public void setNeighborhood(Neighborhood n) {
-		neighborhood = n;
+		userProvidedNeighborhood = n;
 	}
 	
 	public NeighborhoodType getNeighborhoodType() {
@@ -160,6 +160,7 @@ public abstract class AbstractNoiseReducerPlugin<U extends RealType<U>>
 	// -- private helpers --
 	
 	private Neighborhood determineNeighborhood(int numDims) {
+		if (userProvidedNeighborhood != null) return userProvidedNeighborhood;
 		setNeighType();
 		CommandModule<?> module = null;
 		try {
