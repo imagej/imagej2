@@ -78,6 +78,13 @@ public class Reducer<U extends RealType<U>,V extends RealType<V>>
 		this.statusService = context.getService(StatusService.class);
 	}
 
+	// NOTE - because the neighborhood could be a spherical neighborhood that
+	// relies on a WithinRadiusOfPointCondition we cannot parallelize this
+	// algorithm. If we did we'd get one point per Thread with only one being
+	// updated correctly. One can see by trial that using a regular
+	// ImageAssignment hereresults in only a portion of the image getting noise
+	// reduced.
+	
 	public Dataset reduceNoise(String neighDescrip) {
 		notifyUserAtStart(neighDescrip);
 		ImgPlus<U> newImg = input.copy();
