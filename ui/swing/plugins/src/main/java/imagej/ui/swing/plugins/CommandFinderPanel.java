@@ -288,7 +288,7 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 		}
 
 		public void setColumnWidths(TableColumnModel columnModel) {
-			int[] widths = { 32, 150, 150, 300, 200, 50, 20 };
+			int[] widths = { 32, 250, 150, 250, 200, 50, 20 };
 			for (int i = 0; i < widths.length; i++) {
 				columnModel.getColumn(i).setPreferredWidth(widths[i]);
 			}
