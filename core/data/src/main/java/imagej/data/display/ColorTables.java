@@ -88,16 +88,16 @@ public final class ColorTables {
 		}
 	}
 
-	/** Tests whether a ColorTable is a gray ramp */
-        //TODO ARG has to be linear gray to succeed; non-linear grays will fail
+	/** Tests whether a ColorTable consists of gray values. A gray table does not
+	 * have to be a ramp. */
 	public static boolean isGrayColorTable(final ColorTable table) {
 		if (table == ColorTables.GRAYS) return true;
 		final int numChannels = table.getComponentCount();
 		final int tableLen = table.getLength();
-		for (int c = 0; c < numChannels; c++) {
-			for (int i = 0; i < tableLen; i++) {
-				if (table.get(c, i) != i) return false;
-			}
+		for (int i = 0; i < tableLen; i++) {
+			int value = table.get(0, i);
+			for (int c = 1; c < numChannels; c++)
+				if ((table.get(c, i)) != value) return false;
 		}
 		return true;
 	}
