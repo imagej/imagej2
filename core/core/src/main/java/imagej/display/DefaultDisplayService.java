@@ -193,6 +193,11 @@ public final class DefaultDisplayService extends AbstractService implements
 	}
 
 	@Override
+	public Display<?> createDisplay(final Object o) {
+		return createDisplay(null, o);
+	}
+
+	@Override
 	public Display<?> createDisplay(final String name, final Object o) {
 		// get available display plugins from the plugin service
 		final List<PluginInfo<Display<?>>> displayPlugins = getDisplayPlugins();
@@ -204,8 +209,8 @@ public final class DefaultDisplayService extends AbstractService implements
 				// display object using the first compatible Display
 				// TODO: how to handle multiple matches? prompt user with dialog box?
 				if (display.canDisplay(o)) {
-					display.setName(name);
 					display.display(o);
+					if (name != null) display.setName(name);
 					eventService.publish(new DisplayCreatedEvent(display));
 					return display;
 				}
