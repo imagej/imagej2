@@ -187,6 +187,18 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		return canvas;
 	}
 
+	@Override
+	public RealRect getPlaneExtents() {
+		final Extents extents = getExtents();
+		final int xAxis = getAxisIndex(Axes.X);
+		final int yAxis = getAxisIndex(Axes.Y);
+		final double xMin = extents.realMin(xAxis);
+		final double yMin = extents.realMin(yAxis);
+		final double width = extents.realMax(xAxis) - extents.realMin(xAxis);
+		final double height = extents.realMax(yAxis) - extents.realMin(yAxis);
+		return new RealRect(xMin, yMin, width, height);
+	}
+
 	// -- Display methods --
 
 	@Override
@@ -672,18 +684,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		final EventService eventService =
 			getContext().getService(EventService.class);
 		if (eventService != null) eventService.unsubscribe(subscribers);
-	}
-
-	@Override
-	public RealRect getPlaneExtents() {
-		final Extents extents = getExtents();
-		final int xAxis = getAxisIndex(Axes.X);
-		final int yAxis = getAxisIndex(Axes.Y);
-		final double xMin = extents.realMin(xAxis);
-		final double yMin = extents.realMin(yAxis);
-		final double width = extents.realMax(xAxis) - extents.realMin(xAxis);
-		final double height = extents.realMax(yAxis) - extents.realMin(yAxis);
-		return new RealRect(xMin, yMin, width, height);
 	}
 
 }
