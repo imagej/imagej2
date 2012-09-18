@@ -47,9 +47,9 @@ import imagej.util.ClassUtils;
 public class LegacyInjector {
 
 	/** Overrides class behavior of ImageJ1 classes by injecting method hooks. */
-	public void injectHooks() {
+	public void injectHooks(final ClassLoader classLoader) {
 		// NB: Override class behavior before class loading gets too far along.
-		final CodeHacker hacker = new CodeHacker();
+		final CodeHacker hacker = new CodeHacker(classLoader);
 
 		// override behavior of ij.ImageJ
 		hacker.insertMethod("ij.ImageJ",
