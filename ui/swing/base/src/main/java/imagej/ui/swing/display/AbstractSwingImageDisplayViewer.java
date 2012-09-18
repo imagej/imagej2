@@ -94,6 +94,11 @@ public abstract class AbstractSwingImageDisplayViewer extends
 		return imgPanel;
 	}
 
+	@Override
+	public Dataset capture() {
+		return getCanvas().capture();
+	}
+
 	// -- AbstractImageDisplayViewer methods --
 
 	// CTR TODO - This logic is not Swing-specific and should be factored up.
@@ -118,10 +123,5 @@ public abstract class AbstractSwingImageDisplayViewer extends
 	@EventHandler
 	protected void onEvent(@SuppressWarnings("unused") final OptionsEvent e) {
 		updateLabel();
-	}
-
-	@Override
-	public Dataset capture() {
-		return getCanvas().capture();
 	}
 }

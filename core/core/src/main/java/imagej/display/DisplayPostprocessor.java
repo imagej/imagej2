@@ -43,6 +43,7 @@ import imagej.plugin.AbstractPostprocessorPlugin;
 import imagej.plugin.Plugin;
 import imagej.plugin.PostprocessorPlugin;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -65,15 +66,30 @@ public class DisplayPostprocessor extends AbstractPostprocessorPlugin {
 		if (displayService == null) return;
 
 		for (final ModuleItem<?> outputItem : module.getInfo().outputs()) {
-			final String name = outputItem.getName();
-			final String label = outputItem.getLabel();
-			final String displayName =
-				label == null || label.isEmpty() ? name : label;
 			final Object value = outputItem.getValue(module);
+			String displayName = determineName(outputItem, value);
 			handleOutput(displayService, displayName, value);
 		}
 	}
 
+	private String determineName(ModuleItem<?> outputItem, Object value) {
+		Method[] methods = value.getClass().getMethods();
+		for (Method method : methods) {
+			if (method.getName().equals("getName"))
+				if (method.getReturnType().equals(String.class))
+					try {
+						return (String) method.invoke(value);
+					}
+					catch (Exception e) {
+						// fall through to later cases
+					}
+		}
+		final String name = outputItem.getName();
+		final String label = outputItem.getLabel();
+		if (label == null || label.isEmpty()) return name;
+		return label;
+	}
+	
 	/** Displays output objects. */
 	public void handleOutput(final DisplayService displayService,
 		final String name, final Object output)

@@ -46,6 +46,8 @@ import imagej.data.display.event.PanZoomEvent;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.display.Display;
+import imagej.display.event.DisplayCreatedEvent;
+import imagej.display.event.DisplayUpdatedEvent;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.event.EventHandler;
 import imagej.tool.ToolService;
@@ -300,21 +302,32 @@ public abstract class AbstractImageDisplayViewer extends
 		if (isMyDataset(event.getObject())) updateLabel();
 	}
 
-	// NB - using less restrictive event type here. This captures both dataset
-	// data type changes and dataset axis type changes. each affect label.
-	
-	@EventHandler
-	protected void onEvent(final DatasetUpdatedEvent event) {
-		if (isMyDataset(event.getObject())) {
-			updateLabel();
-			updateTitle();
-		}
-	}
-
 	@EventHandler
 	protected void onEvent(final DelayedPositionEvent event) {
 		if (event.getDisplay() != getDisplay()) return;
 		updateLabel();
 	}
 	
+	// NB - using less restrictive event type here. This captures both dataset
+	// data type changes and dataset axis type changes. each affect label.
+	
+	@EventHandler
+	protected void onEvent(final DatasetUpdatedEvent event) {
+		if (!isMyDataset(event.getObject())) return;
+		updateLabel();
+		updateTitle();
+	}
+
+	@EventHandler
+	protected void onEvent(final DisplayCreatedEvent event) {
+		if (event.getObject() != getDisplay()) return;
+		updateTitle();
+	}
+
+	@EventHandler
+	protected void onEvent(final DisplayUpdatedEvent event) {
+		if (event.getDisplay() != getDisplay()) return;
+		updateLabel();
+		updateTitle();
+	}
 }

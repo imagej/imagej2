@@ -103,12 +103,14 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		// NB: Ensure display flags its structure as changed.
 		super.rebuild();
 
-		// set display name to match first available view
-		for (final DataView view : this) {
-			final String dataName = view.getData().getName();
-			if (dataName != null && !dataName.isEmpty()) {
-				setName(createName(dataName));
-				break;
+		if (getName() == null) { 
+			// set display name to match first available view
+			for (final DataView view : this) {
+				final String dataName = view.getData().getName();
+				if (dataName != null && !dataName.isEmpty()) {
+					setName(createName(dataName));
+					break;
+				}
 			}
 		}
 
