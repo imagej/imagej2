@@ -43,7 +43,6 @@ import imagej.plugin.AbstractPostprocessorPlugin;
 import imagej.plugin.Plugin;
 import imagej.plugin.PostprocessorPlugin;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -54,6 +53,7 @@ import java.util.Map;
  * 
  * @author Curtis Rueden
  * @author Lee Kamentsky
+ * @author Barry DeZonia
  */
 @Plugin(type = PostprocessorPlugin.class,
 	priority = Priority.VERY_LOW_PRIORITY)
@@ -67,32 +67,20 @@ public class DisplayPostprocessor extends AbstractPostprocessorPlugin {
 
 		for (final ModuleItem<?> outputItem : module.getInfo().outputs()) {
 			final Object value = outputItem.getValue(module);
-			String displayName = determineName(outputItem, value);
-			handleOutput(displayService, displayName, value);
+			String name = defaultName(outputItem);
+			handleOutput(displayService, name, value);
 		}
 	}
 
-	private String determineName(ModuleItem<?> outputItem, Object value) {
-		Method[] methods = value.getClass().getMethods();
-		for (Method method : methods) {
-			if (method.getName().equals("getName"))
-				if (method.getReturnType().equals(String.class))
-					try {
-						return (String) method.invoke(value);
-					}
-					catch (Exception e) {
-						// fall through to later cases
-					}
-		}
-		final String name = outputItem.getName();
-		final String label = outputItem.getLabel();
-		if (label == null || label.isEmpty()) return name;
-		return label;
-	}
-	
-	/** Displays output objects. */
+	/**
+	 * Displays output objects.
+	 * 
+	 * @param displayService The service used to create displays.
+	 * @param defaultName The default name for the display, if not already set.
+	 * @param output The object to display.
+	 */
 	public void handleOutput(final DisplayService displayService,
-		final String name, final Object output)
+		final String defaultName, final Object output)
 	{
 		if (output instanceof Display) {
 			// output is itself a display; just update it
@@ -120,8 +108,14 @@ public class DisplayPostprocessor extends AbstractPostprocessorPlugin {
 			}
 			else {
 				// create a new display for the output
-				final Display<?> display = displayService.createDisplay(name, output);
-				if (display != null) displays.add(display);
+				final Display<?> display = displayService.createDisplay(output);
+				if (display != null) {
+					displays.add(display);
+					if (display.getName() == null) {
+						// set a default name based on the parameter
+						display.setName(defaultName);
+					}
+				}
 			}
 		}
 
@@ -148,7 +142,7 @@ public class DisplayPostprocessor extends AbstractPostprocessorPlugin {
 			// handle each item of the collection separately
 			final Collection<?> collection = (Collection<?>) output;
 			for (final Object item : collection) {
-				handleOutput(displayService, name, item);
+				handleOutput(displayService, defaultName, item);
 			}
 			return;
 		}
@@ -167,6 +161,14 @@ public class DisplayPostprocessor extends AbstractPostprocessorPlugin {
 	private boolean addToExisting(final Object output) {
 		// TODO - find a general way to decide this
 		return false;
+	}
+
+	private String defaultName(final ModuleItem<?> item) {
+		final String label = item.getLabel();
+		if (label != null && !label.isEmpty()) return label;
+		final String name = item.getName();
+		if (name != null && !name.isEmpty()) return name;
+		return "Unnamed";
 	}
 
 }
