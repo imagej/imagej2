@@ -90,13 +90,22 @@ import java.util.Map;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-@Plugin(type = Service.class)
 public final class DefaultLegacyService extends AbstractService implements
 	LegacyService
 {
 
 	static {
-		new LegacyInjector().injectHooks(Thread.currentThread().getContextClassLoader());
+		final ClassLoader classLoader = DefaultLegacyService.class.getClassLoader();
+		if (!(classLoader instanceof LegacyClassLoader)) {
+			throw new UnsupportedOperationException("DefaultLegacyService must be loaded via LegacyClassLoader");
+		}
+		new LegacyInjector().injectHooks(classLoader);
+	}
+
+	private static DefaultLegacyService instance;
+
+	public static DefaultLegacyService getInstance() {
+		return instance;
 	}
 
 	@Parameter
@@ -121,7 +130,6 @@ public final class DefaultLegacyService extends AbstractService implements
 	private MenuService menuService;
 
 	private boolean lastDebugMode;
-	private boolean initialized;
 
 	/** Mapping between modern and legacy image data structures. */
 	private LegacyImageMap imageMap;
@@ -158,7 +166,6 @@ public final class DefaultLegacyService extends AbstractService implements
 		return imageDisplayService;
 	}
 
-	@Override
 	public LegacyImageMap getImageMap() {
 		return imageMap;
 	}
@@ -203,7 +210,7 @@ public final class DefaultLegacyService extends AbstractService implements
 
 	@Override
 	public boolean isInitialized() {
-		return initialized;
+		return instance != null;
 	}
 
 	// TODO - make private only???
@@ -233,7 +240,10 @@ public final class DefaultLegacyService extends AbstractService implements
 	// -- Service methods --
 
 	@Override
-	public void initialize() {
+	public synchronized void initialize() {
+		if (instance != null) {
+			throw new UnsupportedOperationException("Cannot instantiate more than one DefaultLegacyService per class loader");
+		}
 		imageMap = new LegacyImageMap(getContext());
 		optionsSynchronizer = new OptionsSynchronizer(optionsService);
 
@@ -255,7 +265,7 @@ public final class DefaultLegacyService extends AbstractService implements
 
 		subscribeToEvents(eventService);
 
-		initialized = true;
+		instance = this;
 	}
 
 	// -- Event handlers --
