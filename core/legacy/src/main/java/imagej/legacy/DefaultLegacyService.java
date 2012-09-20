@@ -315,6 +315,18 @@ public final class DefaultLegacyService extends AbstractService implements
 
 	// -- helpers --
 
+	/**
+	 * Returns the legacy service associated with the ImageJ 1.x instance in the current class loader.
+	 * 
+	 * This method is intended to be used by the CodeHacker; it is invoked by the javassisted
+	 * methods.
+	 * 
+	 * @return the legacy service
+	 */
+	public static DefaultLegacyService getInstance() {
+		return instance;
+	}
+
 	private OptionsChannels getChannels() {
 		final OptionsService service =
 			getContext().getService(OptionsService.class);

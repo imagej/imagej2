@@ -36,6 +36,7 @@
 package imagej.legacy.patches;
 
 import ij.ImageJ;
+import imagej.legacy.LegacyService;
 import imagej.util.Log;
 
 import java.awt.Point;
@@ -49,6 +50,7 @@ public class ImageJMethods {
 
 	/** Replaces {@link ImageJ#getLocationOnScreen()}. */
 	public static Point getLocationOnScreen(
+		@SuppressWarnings("unused") final LegacyService legacyService,
 		@SuppressWarnings("unused") final ImageJ obj)
 	{
 		Log.debug("getLocationOnScreen");

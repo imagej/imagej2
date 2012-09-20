@@ -38,7 +38,6 @@ package imagej.legacy.patches;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.ImageWindow;
-import imagej.ImageJ;
 import imagej.legacy.LegacyOutputTracker;
 import imagej.legacy.LegacyService;
 import imagej.legacy.Utils;
@@ -57,11 +56,10 @@ public final class ImageWindowMethods {
 	}
 
 	/** Replaces {@link ImageWindow#setVisible(boolean)}. */
-	public static void setVisible(final ImageWindow obj, final boolean visible) {
+	public static void setVisible(final LegacyService legacyService, final ImageWindow obj, final boolean visible) {
 		Log.debug("ImageWindow.setVisible(" + visible + "): " + obj);
 		if (!visible) return;
 		if (Utils.isLegacyThread(Thread.currentThread())) {
-			final LegacyService legacyService = ImageJ.get(LegacyService.class);
 			legacyService.legacyImageChanged(obj.getImagePlus());
 		}
 		// TODO - not sure this is correct. Does setVisible(true) imply that it
@@ -71,12 +69,12 @@ public final class ImageWindowMethods {
 	}
 
 	/** Replaces {@link ImageWindow#show()}. */
-	public static void show(final ImageWindow obj) {
-		setVisible(obj, true);
+	public static void show(final LegacyService legacyService, final ImageWindow obj) {
+		setVisible(legacyService, obj, true);
 	}
 
 	/** Prepends {@link ImageWindow#close()}. */
-	public static void close(final ImageWindow obj) {
+	public static void close(@SuppressWarnings("unused") final LegacyService legacyService, final ImageWindow obj) {
 		if (!Utils.isLegacyThread(Thread.currentThread())) return;
 		final ImagePlus imp = obj.getImagePlus();
 		if (imp == null) return;
