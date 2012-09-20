@@ -44,7 +44,6 @@ import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.legacy.DefaultLegacyService;
 import imagej.legacy.LegacyImageMap;
 import imagej.legacy.LegacyOutputTracker;
 import imagej.legacy.LegacyService;
@@ -166,7 +165,7 @@ public class LegacyCommand implements Command {
 		public LegacyCommandThread() {
 			super(new ThreadGroup(GROUP_NAME), THREAD_NAME);
 			this.group = getThreadGroup();
-			this.map = DefaultLegacyService.getInstance().getImageMap();
+			this.map = legacyService.getImageMap();
 			final ImageTranslator imageTranslator =
 				new DefaultImageTranslator(context);
 			this.harmonizer = new Harmonizer(context, imageTranslator);

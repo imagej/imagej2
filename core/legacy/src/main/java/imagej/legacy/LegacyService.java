@@ -65,6 +65,7 @@ public interface LegacyService extends Service {
 	ImageDisplayService getImageDisplayService();
 
 	/** Gets the LegacyImageMap associated with this LegacyService. */
+	LegacyImageMap getImageMap();
 
 	/**
 	 * Runs a legacy command programmatically.
