@@ -64,4 +64,14 @@ public interface DisplayPanel {
 	/** Redraws the contents of the panel. */
 	void redraw();
 
+	/**
+	 * Updates the panel UI to match the state of its associated display.
+	 * <p>
+	 * This includes updating the scroll bars to match the axis positions, and
+	 * redrawing any graphical elements that have changed (color bars, image
+	 * planes, etc.).
+	 * </p>
+	 */
+	void update();
+
 }

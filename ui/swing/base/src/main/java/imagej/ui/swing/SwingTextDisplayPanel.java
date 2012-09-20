@@ -108,6 +108,11 @@ public class SwingTextDisplayPanel extends JScrollPane implements
 
 	@Override
 	public void redraw() {
+		// Nothing to redraw
+	}
+
+	@Override
+	public void update() {
 		// The strategy is to compare the lines in the text area against
 		// those in the display. We clear the control if we find a mismatch.
 

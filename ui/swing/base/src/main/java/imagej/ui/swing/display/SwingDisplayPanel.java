@@ -40,12 +40,7 @@ import imagej.data.display.DatasetView;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.data.display.event.AxisPositionEvent;
-import imagej.data.display.event.DelayedPositionEvent;
 import imagej.display.Display;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.SwingColorBar;
@@ -106,9 +101,6 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 	private final Map<AxisType, JLabel> axisLabels =
 		new HashMap<AxisType, JLabel>();
 
-	@SuppressWarnings("unused")
-	private final List<EventSubscriber<?>> subscribers;
-
 	// -- constructors --
 
 	public SwingDisplayPanel(final SwingImageDisplayViewer displayViewer,
@@ -144,10 +136,6 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		add(sliderPanel, BorderLayout.SOUTH);
 
 		window.setContent(this);
-
-		final EventService eventService =
-			display.getContext().getService(EventService.class);
-		subscribers = eventService.subscribe(this);
 	}
 
 	// -- SwingDisplayPanel methods --
@@ -209,16 +197,22 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		displayViewer.getCanvas().update();
 	}
 
-	// -- Event handlers --
-
-	@EventHandler
-	protected void onEvent(final AxisPositionEvent event) {
-		if (event.getDisplay() != getDisplay()) return;
-		final AxisType axis = event.getAxis();
-		updateAxis(axis);
-		final EventService eventService =
-				display.getContext().getService(EventService.class);
-		eventService.publish(new DelayedPositionEvent(display, axis));
+	@Override
+	public void update() {
+		boolean changed = false;
+		for (int d=0; d<display.numDimensions(); d++) {
+			final AxisType axis = display.axis(d);
+			final JScrollBar scrollBar = axisSliders.get(axis);
+			if (scrollBar == null) continue;
+			final int oldValue = scrollBar.getValue();
+			final int newValue = display.getIntPosition(d);
+			if (oldValue != newValue) {
+				scrollBar.setValue(newValue);
+				changed = true;
+				if (axis == Axes.CHANNEL) updateColorBar(newValue);
+			}
+		}
+		if (changed) redraw();
 	}
 
 	// -- Helper methods --
@@ -301,21 +295,6 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 			canvas.setInitialScale(canvas.getZoomFactor());
 			initialScaleCalculated = true;
 		}
-	}
-
-	// NB - BDZ would like to streamline this to avoid extra display updates.
-	// However testing scroll bar position versus current display's position
-	// fails as the display position always matches already. So we can't avoid
-	// calling display.update() by testing such. We need to make the display
-	// update mechanism smarter if possible. Perhaps by giving it hints about
-	// the changes being made.
-	
-	private void updateAxis(final AxisType axis) {
-		final int value = (int) display.getLongPosition(axis);
-		if (axis == Axes.CHANNEL) updateColorBar(value);
-		final JScrollBar scrollBar = axisSliders.get(axis);
-		if (scrollBar != null) scrollBar.setValue(value);
-		getDisplay().update();
 	}
 
 	private double findFullyVisibleScale() {
