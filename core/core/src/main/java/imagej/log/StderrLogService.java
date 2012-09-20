@@ -259,6 +259,10 @@ public class StderrLogService extends AbstractService implements LogService {
 	private void log(final String prefix, final Throwable t) {
 		System.err.print(prefix);
 		t.printStackTrace();
+		final Throwable cause = t.getCause();
+		if (cause != null) {
+			log("", cause);
+		}
 	}
 
 }
