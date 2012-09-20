@@ -35,7 +35,6 @@
 
 package imagej.legacy;
 
-import imagej.util.Log;
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
@@ -253,7 +252,10 @@ public class CodeHacker {
 			return classRef.toClass(classLoader, null);
 		}
 		catch (final CannotCompileException e) {
-			Log.warn("Cannot load class: " + fullClass, e);
+			// Cannot use LogService; it will not be initialized by the time the DefaultLegacyService
+			// class is loaded, which is when the CodeHacker is run
+			System.err.println("Warning: Cannot load class: " + fullClass);
+			e.printStackTrace();
 			return null;
 		}
 	}
