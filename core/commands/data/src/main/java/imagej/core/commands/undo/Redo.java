@@ -12,7 +12,7 @@ import imagej.plugin.Plugin;
 	@Menu(label = MenuConstants.EDIT_LABEL,
 		weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
-	@Menu(label = "Redo")},
+	@Menu(label = "Redo", weight = 51)},
 	headless = true)
 public class Redo implements Command, Unrecordable {
 
