@@ -139,14 +139,14 @@ public class ImageJ {
 	/**
 	 * Gets the static ImageJ application context.
 	 * 
-	 * @deprecated Avoid using this method. If you are writing a plugin, you can
+	 * @deprecated Avoid using this method. If you are writing a command, you can
 	 *             declare the {@link ImageJ} or {@link Service} you want as a
-	 *             parameter, with required=true and persist=false. If you are
-	 *             writing a tool, you can obtain the {@link ImageJ} context by
-	 *             calling {@link ImageJEvent#getContext()}, and then asking that
-	 *             context for needed {@link Service} instances by calling
+	 *             parameter. If you are writing a tool, you can obtain the
+	 *             {@link ImageJ} context by calling
+	 *             {@link ImageJEvent#getContext()}, and then asking that context
+	 *             for needed {@link Service} instances by calling
 	 *             {@link ImageJ#getService(Class)}. See the classes in
-	 *             core/plugins and core/tools for many examples.
+	 *             {@code core/commands} and {@code core/tools} for many examples.
 	 */
 	@Deprecated
 	public static ImageJ getContext() {
@@ -157,14 +157,14 @@ public class ImageJ {
 	 * Gets the service of the given class for the current ImageJ application
 	 * context.
 	 * 
-	 * @deprecated Avoid using this method. If you are writing a plugin, you can
+	 * @deprecated Avoid using this method. If you are writing a command, you can
 	 *             annotate the {@link ImageJ} or {@link Service} you want as a
-	 *             parameter, with required=true and persist=false. If you are
-	 *             writing a tool, you can obtain the {@link ImageJ} context by
-	 *             calling {@link ImageJEvent#getContext()}, and then asking that
-	 *             context for needed {@link Service} instances by calling
+	 *             parameter. If you are writing a tool, you can obtain the
+	 *             {@link ImageJ} context by calling
+	 *             {@link ImageJEvent#getContext()}, and then asking that context
+	 *             for needed {@link Service} instances by calling
 	 *             {@link ImageJ#getService(Class)}. See the classes in
-	 *             core/plugins and core/tools for many examples.
+	 *             {@code core/commands} and {@code core/tools} for many examples.
 	 */
 	@Deprecated
 	public static <S extends Service> S get(final Class<S> serviceClass) {
