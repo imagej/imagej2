@@ -1,6 +1,8 @@
 package imagej.command;
 
+import java.util.Map;
+
 public interface InvertableCommand {
 	Class<? extends Command> getInverseCommand();
-	Object[] getInverseInputMap();  // "string", valueObj, "string2" valueObj2, ...
+	Map<String,Object> getInverseInputMap();
 }

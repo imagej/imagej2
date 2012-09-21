@@ -12,19 +12,16 @@ import imagej.plugin.Plugin;
 	@Menu(label = MenuConstants.EDIT_LABEL,
 		weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
-	@Menu(label = "Undo")},
+	@Menu(label = "Clear Undo History")},
 	headless = true)
-public class Undo implements Command, Unrecordable {
+public class ClearUndoHistory implements Command, Unrecordable {
 
 	@Parameter
 	private UndoService service;
 	
-	@Parameter(required = false)
-	private ImageDisplay display;
-	
 	@Override
 	public void run() {
-		service.undo(display);
+		service.clearHistory();
 	}
 
 }
