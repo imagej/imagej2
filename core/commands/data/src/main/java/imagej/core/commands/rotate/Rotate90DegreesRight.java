@@ -35,7 +35,12 @@
 
 package imagej.core.commands.rotate;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import imagej.command.Command;
 import imagej.command.ContextCommand;
+import imagej.command.InvertableCommand;
 import imagej.core.commands.imglib.ImgLibDataTransform;
 import imagej.core.commands.rotate.XYFlipper.FlipCoordinateTransformer;
 import imagej.data.Dataset;
@@ -62,7 +67,7 @@ import imagej.util.RealRect;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Transform", mnemonic = 't'),
 	@Menu(label = "Rotate 90 Degrees Right", weight = 4) }, headless = true)
-public class Rotate90DegreesRight extends ContextCommand {
+public class Rotate90DegreesRight extends ContextCommand implements InvertableCommand {
 
 	// -- instance variables that are Parameters --
 
@@ -95,6 +100,18 @@ public class Rotate90DegreesRight extends ContextCommand {
 	
 	public ImageDisplay getDisplay() {
 		return display;
+	}
+
+	@Override
+	public Class<? extends Command> getInverseCommand() {
+		return Rotate90DegreesLeft.class;
+	}
+
+	@Override
+	public Map<String, Object> getInverseInputMap() {
+		HashMap<String, Object> input = new HashMap<String, Object>();
+		input.put("display", display);
+		return input;
 	}
 
 	// -- private interface --

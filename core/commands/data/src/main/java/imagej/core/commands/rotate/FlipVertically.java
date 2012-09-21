@@ -35,7 +35,12 @@
 
 package imagej.core.commands.rotate;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import imagej.command.Command;
 import imagej.command.ContextCommand;
+import imagej.command.InvertableCommand;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
@@ -64,7 +69,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Transform", mnemonic = 't'),
 	@Menu(label = "Flip Vertically", weight = 2) }, headless = true)
-public class FlipVertically extends ContextCommand {
+public class FlipVertically extends ContextCommand implements InvertableCommand {
 
 	// -- instance variables that are Parameters --
 
@@ -92,6 +97,18 @@ public class FlipVertically extends ContextCommand {
 	
 	public ImageDisplay getDisplay() {
 		return display;
+	}
+
+	@Override
+	public Class<? extends Command> getInverseCommand() {
+		return FlipVertically.class;
+	}
+
+	@Override
+	public Map<String, Object> getInverseInputMap() {
+		HashMap<String, Object> input = new HashMap<String, Object>();
+		input.put("display", display);
+		return input;
 	}
 
 	// -- private interface --

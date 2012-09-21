@@ -12,7 +12,10 @@ import imagej.plugin.Plugin;
 
 
 @Plugin
-public class UndoHelperPlugin extends ContextCommand implements InvertableCommand {
+public class UndoHelperPlugin
+	extends ContextCommand
+	implements InvertableCommand
+{
 	@Parameter(type = ItemIO.INPUT)
 	private Dataset source;
 	
