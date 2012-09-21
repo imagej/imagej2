@@ -33,6 +33,12 @@ import imagej.service.Service;
 // Track display deleted events and delete related undo history 
 // Make friendly for multithreaded access.
 
+// Later TODOs
+// Support tools and gestures
+// Grouping of many cammands as one undoable block
+//   Create a Command that contains a list of commands to run. Record the undos
+//   in one and the redos in another. Then add the uber command to the undo stack.
+
 /**
  * 
  * @author Barry DeZonia
