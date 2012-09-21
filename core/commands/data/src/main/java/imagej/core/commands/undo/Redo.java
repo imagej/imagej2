@@ -1,7 +1,8 @@
 package imagej.core.commands.undo;
 
 import imagej.command.Command;
-import imagej.data.Dataset;
+import imagej.command.Unrecordable;
+import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -13,17 +14,17 @@ import imagej.plugin.Plugin;
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Redo")},
 	headless = true)
-public class Redo implements Command {
+public class Redo implements Command, Unrecordable {
 
 	@Parameter
 	private UndoService service;
 	
 	@Parameter(required = false)
-	private Dataset dataset;
+	private ImageDisplay display;
 	
 	@Override
 	public void run() {
-		service.redo(dataset);
+		service.redo(display);
 	}
 
 }
