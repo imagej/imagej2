@@ -97,13 +97,20 @@ public class LegacyImageMap {
 	 */
 	private final DefaultImageTranslator imageTranslator;
 
+	/**
+	 * The legacy service corresponding to this image map.
+	 */
+	private final DefaultLegacyService legacyService;
+
 	/** List of event subscribers, to avoid garbage collection. */
 	@SuppressWarnings("unused")
 	private final List<EventSubscriber<?>> subscribers;
 
 	// -- Constructor --
 
-	public LegacyImageMap(final ImageJ context) {
+	public LegacyImageMap(final DefaultLegacyService legacyService) {
+		this.legacyService = legacyService;
+		final ImageJ context = legacyService.getContext();
 		imagePlusTable = new ConcurrentHashMap<ImageDisplay, ImagePlus>();
 		displayTable = new ConcurrentHashMap<ImagePlus, ImageDisplay>();
 		imageTranslator = new DefaultImageTranslator(context);

@@ -243,7 +243,7 @@ public final class DefaultLegacyService extends AbstractService implements
 			throw new UnsupportedOperationException("Cannot instantiate more than one DefaultLegacyService");
 		}
 
-		imageMap = new LegacyImageMap(getContext());
+		imageMap = new LegacyImageMap(this);
 		optionsSynchronizer = new OptionsSynchronizer(optionsService);
 
 		synchronized (DefaultLegacyService.class) {
