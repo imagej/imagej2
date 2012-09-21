@@ -38,6 +38,7 @@ package imagej.core.commands.undo;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import imagej.command.Command;
 import imagej.command.CommandService;
@@ -51,6 +52,7 @@ import imagej.display.DisplayService;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
+import imagej.module.Module;
 import imagej.module.event.ModuleCanceledEvent;
 import imagej.module.event.ModuleFinishedEvent;
 import imagej.module.event.ModuleStartedEvent;
@@ -97,6 +99,10 @@ public class UndoService extends AbstractService {
 	
 	private static final int MAX_STEPS = 5;
 	
+	/*  tricky attempt to make this code ignore prerecorded commands safely
+	private static final String RECORDED_INTERNALLY = "ReallyDontRecordMePlease";
+	*/
+	
 	// -- Parameters --
 	
 	@Parameter
@@ -115,8 +121,9 @@ public class UndoService extends AbstractService {
 	
 	private Map<Display<?>,History> histories;
 
-	// TODO : SUPER DUPER HACK THAT WILL GO AWAY
-	private Class<? extends Command> classToNotRecord;
+	// HACK TO GO AWAY SOON
+	private Map<Class<? extends Command>,Boolean> classesToIgnore =
+			new ConcurrentHashMap<Class<? extends Command>,Boolean>();
 	
 	// -- service initialization code --
 	
@@ -169,16 +176,20 @@ public class UndoService extends AbstractService {
 	
 	@EventHandler
 	protected void onEvent(ModuleStartedEvent evt) {
-		Object theObject = evt.getModule().getDelegateObject();
-		if (theObject instanceof Unrecordable) return;
-		// TODO - this could be fraught with multithreaded issues
-		if ((classToNotRecord != null) && (classToNotRecord.isInstance(theObject))){
+		Module module = evt.getModule();
+		/*  tricky attempt to make this code ignore prerecorded commands safely
+		if (module.getInput(RECORDED_INTERNALLY) != null) {
+			System.out.println("Skipping the recording of a prerecorded command "+module.getClass().getName());
 			return;
 		}
+		*/
+		Object theObject = module.getDelegateObject();
+		if (ignoring((Class<? extends Command>)theObject.getClass())) return;
+		if (theObject instanceof Unrecordable) return;
 		if (theObject instanceof InvertableCommand) return; // record later
 		if (theObject instanceof Command) {
 			Display<?> display = displayService.getActiveDisplay();
-			// FIXME HACK only datasets and imagedisplays supported right now
+			// FIXME HACK only datasets of imagedisplays supported right now
 			if (!(display instanceof ImageDisplay)) return;
 			Dataset dataset = imageDisplayService.getActiveDataset((ImageDisplay)display);
 			if (dataset == null) return;
@@ -196,16 +207,19 @@ public class UndoService extends AbstractService {
 	
 	@EventHandler
 	protected void onEvent(ModuleCanceledEvent evt) {
-		Object theObject = evt.getModule().getDelegateObject();
-		if (theObject instanceof Unrecordable) return;
-		// TODO - this could be fraught with multithreaded issues
-		if ((classToNotRecord != null) && (classToNotRecord.isInstance(theObject))){
-			classToNotRecord = null;
+		Module module = evt.getModule();
+		/*  tricky attempt to make this code ignore prerecorded commands safely
+		if (module.getInput(RECORDED_INTERNALLY) != null) {
+			System.out.println("Skipping the recording of a prerecorded command "+module.getClass().getName());
 			return;
 		}
+		*/
+		Object theObject = module.getDelegateObject();
+		if (ignoring((Class<? extends Command>)theObject.getClass())) return;
+		if (theObject instanceof Unrecordable) return;
 		if (theObject instanceof Command) {
 			Display<?> display = displayService.getActiveDisplay();
-			// FIXME HACK only datasets and imagedisplays supported right now
+			// FIXME HACK only datasets of imagedisplays supported right now
 			if (!(display instanceof ImageDisplay)) return;
 			// remove last undo point
 			findHistory(display).removeNewestUndo();
@@ -214,28 +228,32 @@ public class UndoService extends AbstractService {
 	
 	@EventHandler
 	protected void onEvent(ModuleFinishedEvent evt) {
-		Object theObject = evt.getModule().getDelegateObject();
-		if (theObject instanceof Unrecordable) return;
-		// TODO - this could be fraught with multithreaded issues
-		if ((classToNotRecord != null) && (classToNotRecord.isInstance(theObject))){
-			classToNotRecord = null;
+		Module module = evt.getModule();
+		/*  tricky attempt to make this code ignore prerecorded commands safely
+		if (module.getInput(RECORDED_INTERNALLY) != null) {
+			System.out.println("Skipping the recording of a prerecorded command "+module.getClass().getName());
 			return;
 		}
+		*/
+		Object theObject = module.getDelegateObject();
+		if (theObject instanceof Unrecordable) return;
 		if (theObject instanceof Command) {
 			Display<?> display = displayService.getActiveDisplay();
-			// FIXME HACK only datasets and imagedisplays supported right now
+			// FIXME HACK only datasets of imagedisplays supported right now
 			if (!(display instanceof ImageDisplay)) return;
 			Dataset dataset = imageDisplayService.getActiveDataset((ImageDisplay)display);
 			if (dataset == null) return;
-			if (theObject instanceof InvertableCommand) {
-				InvertableCommand command = (InvertableCommand) theObject;
-				findHistory(display).addUndo(command.getInverseCommand(), command.getInverseInputMap());
-			}
 			Class<? extends Command> theClass =
 					(Class<? extends Command>) theObject.getClass();
-			findHistory(display).addRedo(theClass, evt.getModule().getInputs());
+			if (!ignoring(theClass)) {
+				if (theObject instanceof InvertableCommand) {
+					InvertableCommand command = (InvertableCommand) theObject;
+					findHistory(display).addUndo(command.getInverseCommand(), command.getInverseInputMap());
+				}
+				findHistory(display).addRedo(theClass, evt.getModule().getInputs());
+			}
+			stopIgnoring(theClass);
 		}
-		
 	}
 
 	// NOTE - what if you use ImageCalc to add two images (so both displays stored
@@ -256,6 +274,16 @@ public class UndoService extends AbstractService {
 	
 	// -- private helpers --
 
+	// HACK TO GO AWAY SOON
+	private boolean ignoring(Class<? extends Command> clss) {
+		return classesToIgnore.get(clss) != null;
+	}
+
+	// HACK TO GO AWAY SOON
+	private void stopIgnoring(Class<? extends Command> clss) {
+		classesToIgnore.remove(clss);
+	}
+	
 	private History findHistory(Display<?> disp) {
 		History h = histories.get(disp);
 		if (h == null) {
@@ -288,7 +316,6 @@ public class UndoService extends AbstractService {
 			Map<String,Object> input = undoableInputs.get(undoPos);
 			undoPos--;
 			redoPos--;
-			classToNotRecord = command;
 			commandService.run(command, input);
 		}
 		
@@ -296,14 +323,8 @@ public class UndoService extends AbstractService {
 			if ((redoPos < 0) || (redoPos >= redoableCommands.size())) return;
 			Class<? extends Command> command = redoableCommands.get(redoPos);
 			Map<String,Object> input = redoableInputs.get(redoPos);
-			System.out.println("About to redo:");
-			System.out.println("  command = "+command.getName());
-			for (String key : input.keySet()) {
-				System.out.println("  input: "+key+" : "+input.get(key));
-			}
 			undoPos++;
 			redoPos++;
-			classToNotRecord = command;
 			commandService.run(command, input);
 		}
 		
@@ -319,6 +340,9 @@ public class UndoService extends AbstractService {
 		// TODO - if not at end clear out some list entries above
 		
 		void addUndo(Class<? extends Command> command, Map<String,Object> inputs) {
+			/*  tricky attempt to make this code ignore prerecorded commands safely
+			inputs.put(RECORDED_INTERNALLY, RECORDED_INTERNALLY);
+			*/
 			undoableCommands.add(command);
 			undoableInputs.add(inputs);
 			undoPos++;
@@ -326,6 +350,9 @@ public class UndoService extends AbstractService {
 		}
 		
 		void addRedo(Class<? extends Command> command, Map<String,Object> inputs) {
+			/*  tricky attempt to make this code ignore prerecorded commands safely
+			inputs.put(RECORDED_INTERNALLY, RECORDED_INTERNALLY);
+			*/
 			redoableCommands.add(command);
 			redoableInputs.add(inputs);
 			redoPos++;
