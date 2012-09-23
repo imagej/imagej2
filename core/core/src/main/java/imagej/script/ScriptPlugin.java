@@ -39,7 +39,6 @@ import imagej.command.Command;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.util.FileUtils;
-import imagej.util.Log;
 
 import java.io.File;
 import java.io.FileReader;
@@ -75,10 +74,10 @@ public class ScriptPlugin implements Command {
 			}
 		}
 		catch (final ScriptException e) {
-			Log.error(e.getCause());
+			scriptService.getLogService().error(e.getCause());
 		}
 		catch (final Throwable e) {
-			Log.error(e);
+			scriptService.getLogService().error(e);
 		}
 	}
 
