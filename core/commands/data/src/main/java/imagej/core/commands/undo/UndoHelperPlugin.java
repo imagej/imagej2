@@ -39,7 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import imagej.command.ContextCommand;
-import imagej.command.InvertableCommand;
+import imagej.command.InvertibleCommand;
 import imagej.data.Dataset;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
@@ -54,7 +54,7 @@ import imagej.plugin.Plugin;
 @Plugin
 public class UndoHelperPlugin
 	extends ContextCommand
-	implements InvertableCommand
+	implements InvertibleCommand
 {
 	@Parameter(type = ItemIO.INPUT)
 	private Dataset source;

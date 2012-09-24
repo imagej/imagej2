@@ -40,9 +40,19 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import net.imglib2.RandomAccess;
+import net.imglib2.img.Img;
+import net.imglib2.img.ImgFactory;
+import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.ops.pointset.HyperVolumePointSet;
+import net.imglib2.ops.pointset.PointSet;
+import net.imglib2.ops.pointset.PointSetIterator;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
+
 import imagej.command.Command;
 import imagej.command.CommandService;
-import imagej.command.InvertableCommand;
+import imagej.command.InvertibleCommand;
 import imagej.command.Unrecordable;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
@@ -68,20 +78,42 @@ import imagej.service.Service;
 //   setting of options values, dataset dimensions changing, setImgPlus(), etc.
 // Also what about legacy plugin run results? (Multiple things hatched)
 // Use displays rather than datasets (i.e. handle overlays too and other events)
-// Multiple undo histories for different displays etc.
 // ThreadLocal code for classToNotRecord. Nope, can't work.
 // Reorganizing undo/redo history when in middle and command recorded
-// Track display deleted events and delete related undo history 
 // Make friendly for multithreaded access.
 // Currently made to handle Datasets of ImageDisplays. Should be made to support
 //   histories of arbitrary objects. The objects would need to support some
 //   duplicate/save/restore interface.
+// Note that undoing a noise reducer plugin fails because that command runs two
+//   plugins. They need to be grouped as one undoable command. Or break that
+//   command into two separate plugins - one a neigh specifier that sets a value
+//   of a new Options plugin. Info could show in menu eventually. But for now
+//   just a command with 2d rect and n-d radial options. In the long run we want
+//   grouping.
+// SplitChannelsContext plugin is sometimes getting run and recorded. Is this a
+//   problem?
+// We could make another helper plugin that takes a Dataset, a subset of its
+//   indices in the form of a PointSet and a 1-d Img<DoubleType> that stores
+//   pixel values. The original command creates the PointSet, walks it, and
+//   records PixelValues in the Img. The inverse of this is to walk the img in
+//   order and set the values of the Dataset using the PointSet iteration. This
+//   could be tightly wrapped to be invokable easily from other plugins. Part of
+//   UndoService?
 
 // Later TODOs
 // Support tools and gestures
 // Grouping of many cammands as one undoable block
 //   Create a Command that contains a list of commands to run. Record the undos
 //   in one and the redos in another. Then add the uber command to the undo stack.
+
+// Note: because initially no image exists a redo gets recorded (load image or
+// new image) without a corresponding undo. So in general redoPos == undoPos+1.
+// TODO - currently while no dataset exists nothing gets recorded. So what
+// happens when we run a number of nondisplay oriented plugins. They aren't
+// undoable. Should undo steps be associated with the app and not the displays?
+// Or have a separate undo history for the app (when no dataset loaded). Then
+// user can switch between displays and undo a lot of stuff. And they can record
+// and undo app related events.
 
 /**
  * 
@@ -171,6 +203,46 @@ public class UndoService extends AbstractService {
 			hist.clear();
 		}
 	}
+
+	// TODO - move to a reusable plugin????
+	
+	public Img<DoubleType> captureData(Dataset source, PointSet points, ImgFactory<DoubleType> factory) {
+		long numPoints = points.calcSize();
+		Img<DoubleType> backup = factory.create(new long[]{numPoints}, new DoubleType());
+		long[] miniPos = new long[1];
+		long i = 0;
+		RandomAccess<? extends RealType<?>> dataAccessor = source.getImgPlus().randomAccess();
+		RandomAccess<DoubleType> backupAccessor = backup.randomAccess();
+		PointSetIterator iter = points.createIterator();
+		while (iter.hasNext()) {
+			long[] pos = iter.next();
+			miniPos[0] = i++;
+			dataAccessor.setPosition(pos);
+			double val = dataAccessor.get().getRealDouble();
+			backupAccessor.setPosition(miniPos);
+			backupAccessor.get().setReal(val);
+		}
+		return backup;
+	}
+
+	// TODO - move to a reusable plugin????
+	
+	public void restoreData(Dataset target, PointSet points, Img<DoubleType> backup) {
+		long[] miniPos = new long[1];
+		long i = 0;
+		RandomAccess<? extends RealType<?>> dataAccessor = target.getImgPlus().randomAccess();
+		RandomAccess<DoubleType> backupAccessor = backup.randomAccess();
+		PointSetIterator iter = points.createIterator();
+		while (iter.hasNext()) {
+			long[] pos = iter.next();
+			miniPos[0] = i++;
+			backupAccessor.setPosition(miniPos);
+			double val = backupAccessor.get().getRealDouble();
+			dataAccessor.setPosition(pos);
+			dataAccessor.get().setReal(val);
+		}
+		target.update();
+	}
 	
 	// -- protected event handlers --
 	
@@ -186,22 +258,21 @@ public class UndoService extends AbstractService {
 		Object theObject = module.getDelegateObject();
 		if (ignoring((Class<? extends Command>)theObject.getClass())) return;
 		if (theObject instanceof Unrecordable) return;
-		if (theObject instanceof InvertableCommand) return; // record later
+		if (theObject instanceof InvertibleCommand) return; // record later
 		if (theObject instanceof Command) {
 			Display<?> display = displayService.getActiveDisplay();
 			// FIXME HACK only datasets of imagedisplays supported right now
 			if (!(display instanceof ImageDisplay)) return;
 			Dataset dataset = imageDisplayService.getActiveDataset((ImageDisplay)display);
 			if (dataset == null) return;
-			UndoHelperPlugin snapshot = new UndoHelperPlugin();
-			snapshot.setContext(getContext());
-			snapshot.setSource(dataset);
-			snapshot.run();
-			Dataset backup = snapshot.getTarget();
+			PointSet points = new HyperVolumePointSet(dataset.getDims());
+			// TODO replace ArrayImgFactory with something more apprpriate
+			Img<DoubleType> backup = captureData(dataset, points, new ArrayImgFactory<DoubleType>());
 			Map<String,Object> inputs = new HashMap<String, Object>();
-			inputs.put("source", backup);
 			inputs.put("target", dataset);
-			findHistory(display).addUndo(UndoHelperPlugin.class, inputs);
+			inputs.put("points", points);
+			inputs.put("data", backup);
+			findHistory(display).addUndo(UndoRestoreDataPlugin.class, inputs);
 		}
 	}
 	
@@ -246,8 +317,8 @@ public class UndoService extends AbstractService {
 			Class<? extends Command> theClass =
 					(Class<? extends Command>) theObject.getClass();
 			if (!ignoring(theClass)) {
-				if (theObject instanceof InvertableCommand) {
-					InvertableCommand command = (InvertableCommand) theObject;
+				if (theObject instanceof InvertibleCommand) {
+					InvertibleCommand command = (InvertibleCommand) theObject;
 					findHistory(display).addUndo(command.getInverseCommand(), command.getInverseInputMap());
 				}
 				findHistory(display).addRedo(theClass, evt.getModule().getInputs());
@@ -274,6 +345,11 @@ public class UndoService extends AbstractService {
 	
 	// -- private helpers --
 
+	// HACK TO GO AWAY SOON
+	private void ignore(Class<? extends Command> clss) {
+		classesToIgnore.put(clss, true);
+	}
+	
 	// HACK TO GO AWAY SOON
 	private boolean ignoring(Class<? extends Command> clss) {
 		return classesToIgnore.get(clss) != null;
@@ -306,25 +382,29 @@ public class UndoService extends AbstractService {
 			redoableCommands = new LinkedList<Class<? extends Command>>();
 			undoableInputs = new LinkedList<Map<String,Object>>();
 			redoableInputs = new LinkedList<Map<String,Object>>();
-			undoPos = -1;
-			redoPos = -1;
+			undoPos = 0;
+			redoPos = 0;
 		}
 		
 		void doUndo() {
-			if ((undoPos < 0) || (undoPos >= undoableCommands.size())) return;
-			Class<? extends Command> command = undoableCommands.get(undoPos);
-			Map<String,Object> input = undoableInputs.get(undoPos);
+			//System.out.println("doUndo() : undoPos = "+undoPos+" redoPos = "+redoPos);
+			if (undoPos <= 0) return;
 			undoPos--;
 			redoPos--;
+			Class<? extends Command> command = undoableCommands.get(undoPos);
+			Map<String,Object> input = undoableInputs.get(undoPos);
+			ignore(command);
 			commandService.run(command, input);
 		}
 		
 		void doRedo() {
-			if ((redoPos < 0) || (redoPos >= redoableCommands.size())) return;
+			//System.out.println("doRedo() : undoPos = "+undoPos+" redoPos = "+redoPos);
+			if (redoPos >= redoableCommands.size()) return;
 			Class<? extends Command> command = redoableCommands.get(redoPos);
 			Map<String,Object> input = redoableInputs.get(redoPos);
 			undoPos++;
 			redoPos++;
+			ignore(command);
 			commandService.run(command, input);
 		}
 		
@@ -333,30 +413,36 @@ public class UndoService extends AbstractService {
 			redoableCommands.clear();
 			undoableInputs.clear();
 			redoableInputs.clear();
-			undoPos = -1;
-			redoPos = -1;
+			undoPos = 0;
+			redoPos = 0;
 		}
-		
-		// TODO - if not at end clear out some list entries above
 		
 		void addUndo(Class<? extends Command> command, Map<String,Object> inputs) {
 			/*  tricky attempt to make this code ignore prerecorded commands safely
 			inputs.put(RECORDED_INTERNALLY, RECORDED_INTERNALLY);
 			*/
+			while (undoPos < undoableCommands.size()) {
+				undoableCommands.removeLast();
+				undoableInputs.removeLast();
+			}
 			undoableCommands.add(command);
 			undoableInputs.add(inputs);
 			undoPos++;
-			if (undoPos > MAX_STEPS) removeOldestUndo();
+			if (undoableCommands.size() > MAX_STEPS) removeOldestUndo();
 		}
 		
 		void addRedo(Class<? extends Command> command, Map<String,Object> inputs) {
 			/*  tricky attempt to make this code ignore prerecorded commands safely
 			inputs.put(RECORDED_INTERNALLY, RECORDED_INTERNALLY);
 			*/
+			while (redoPos < redoableCommands.size()) {
+				redoableCommands.removeLast();
+				redoableInputs.removeLast();
+			}
 			redoableCommands.add(command);
 			redoableInputs.add(inputs);
 			redoPos++;
-			if (redoPos > MAX_STEPS) removeOldestRedo();
+			if (redoableCommands.size() > MAX_STEPS) removeOldestRedo();
 		}
 		
 		void removeNewestUndo() {
