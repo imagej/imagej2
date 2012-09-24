@@ -35,267 +35,91 @@
 
 package imagej.util;
 
-import java.lang.reflect.Array;
-
-import java.util.Iterator;
+import java.util.List;
 
 /**
- * Abstract base class for primitive-type extensible arrays.
- * 
+ * Interface for primitive-type extensible arrays, modeled after
+ * {@link java.util.ArrayList}, but more performant.
  * <p>
  * For primitive type arrays, {@link java.util.ArrayList} is not a good choice
  * because it uses boxing and unboxing to store the elements, leading to a large
  * memory footprint as well as performance penalties.
- * </p> 
- * 
- * <p>
- * This class makes it easy to implement extensible arrays backed by fixed-size
- * primitive type arrays, re-allocating and copying data as needed. To
- * avoid frequent re-allocation, the fixed-size array will be doubled in size by
- * default when running out of space.
- * </p>
- * 
- * <p>
- * For example, a ByteArray would look like this:
- * <pre>
- * public class ByteArray extends PrimitiveArray&lt;byte[], Byte&gt;
- * {
- *     protected byte[] array;
- * 
- *     public ByteArray(int size) {
- *         super(size, Byte.TYPE);
- *     }
- * 
- *     @Override
- *     protected void setArray(byte[] array) {
- *         this.array = array;
- *     }
- * 
- *     @Override
- *     protected byte[] getArray() {
- *         return array;
- *     }
- * 
- *     @Override
- *     protected Byte valueOf(int index) {
- *         return Byte.valueOf(array[index]);
- *     }
- * 
- *     // these methods make this class useful
- * 
- *     public byte get(int index) {
- *         return array[index];
- *     }
- * 
- *     public void set(int index, byte value) {
- *         array[index] = value;
- *     }
- * 
- *     public void add(byte value) {
- *         set(getAddIndex(), value);
- *     }
- * }
- * </pre>
  * </p>
  * 
  * @author Johannes Schindelin
- *
- * @param <ArrayType>
- * @param <BaseType>
+ * @author Curtis Rueden
+ * @param <ArrayType> Type of the primitive array; e.g., {@code double[]}.
+ * @param <BaseType> Boxed type of the array element; e.g., {@code Double}.
  */
-public abstract class PrimitiveArray<ArrayType, BaseType>  implements Iterable<BaseType>, Sizable {
-
-	/** The class boxing the element type. */
-	protected Class<BaseType> type;
-	/** The size of the array. */
-	protected int actualSize;
-	/** The size of the backing array. */
-	protected int allocated;
-	/** The maximal growth step */
-	protected int maximumGrowth;
-
-	/**
-	 * Constructs an extensible array of primitive type elements, backed by a fixed-size array.
-	 * 
-	 * @param size the initial size
-	 * @param growth maximal step size by which to grow the fixed-size arrays when running out of space
-	 * @param type the class of the primitive type
-	 */
-	public PrimitiveArray(int size, int growth, Class<BaseType> type) {
-		this.type = type;
-		@SuppressWarnings("unchecked")
-		ArrayType array = (ArrayType)Array.newInstance(type, size);
-		allocated = size;
-		maximumGrowth = growth;
-		setArray(array);
-	}
-
-	/**
-	 * Constructs an extensible array of primitive type elements, backed by a fixed-size array.
-	 * 
-	 * @param size the initial size
-	 * @param type the class of the primitive type
-	 */
-	public PrimitiveArray(int size, Class<BaseType> type) {
-		this(size, Integer.MAX_VALUE, type);
-	}
+public interface PrimitiveArray<ArrayType, BaseType> extends List<BaseType>,
+	Sizable
+{
 
 	/**
 	 * Gets the fixed-size array backing this instance.
 	 * 
-	 * @return the array
+	 * @return the backing array
 	 */
-	protected abstract ArrayType getArray();
+	ArrayType getArray();
 
 	/**
 	 * Sets the fixed-size array backing this instance.
 	 * 
-	 * @param array
+	 * @param array the new backing array
 	 */
-	protected abstract void setArray(ArrayType array);
+	void setArray(ArrayType array);
 
 	/**
-	 * Returns the (boxed) element at a given index.
-	 * 
-	 * @param index the index
-	 * @return the value
+	 * Gets the maximal step size by which to grow the fixed-size array when
+	 * running out of space.
 	 */
-	protected abstract BaseType valueOf(int index);
+	int getMaximumGrowth();
 
 	/**
-	 * Makes sure the backing array at least a specified capacity.
-	 * 
-	 * After calling this method, <code>valueOf(required - 1)<code> is valid, but
-	 * <code>valueOf(required)</code> might not be.
-	 * 
-	 * @param required the size
+	 * Sets the maximal step size by which to grow the fixed-size array when
+	 * running out of space.
 	 */
-	public void ensureCapacity(int required) {
-		if (required <= actualSize)
-			return;
-		if (required <= allocated) {
-			actualSize = required;
-			return;
-		}
-		ArrayType base = getArray();
-		int size = Math.max(required, allocated + Math.min(allocated, maximumGrowth));
-		@SuppressWarnings("unchecked")
-		ArrayType grown = (ArrayType)Array.newInstance(type, size);
-		if (actualSize > 0)
-			System.arraycopy(base, 0, grown, 0, actualSize);
-		allocated = size;
-		actualSize = required;
-		setArray(grown);
-	}
+	void setMaximumGrowth(int growth);
 
 	/**
-	 * Gets the next add position for appending, increasing size if needed.
-	 * 
-	 * @return the index
-	 */
-	protected int getAddIndex() {
-		int result = actualSize;
-		ensureCapacity(actualSize + 1);
-		return result;
-	}
-
-	/**
-	 * Makes room to insert a value at a specified index.
-	 * 
-	 * @param index the index
-	 */
-	protected void makeInsertSpace(int index) {
-		if (index < 0)
-			throw new ArrayIndexOutOfBoundsException("Invalid index value");
-		ensureCapacity(actualSize + 1);
-		if (index < actualSize) {
-			ArrayType array = getArray();
-			System.arraycopy(array, index, array, index + 1, actualSize - index - 1);
-		}
-	}
-
-	/**
-	 * Removes a value from the array.
-	 * 
-	 * @param index the index
-	 */
-	public void remove(int index) {
-		if (index < 0 || index >= actualSize)
-			throw new ArrayIndexOutOfBoundsException("Invalid index value: " + index);
-		if (index < --actualSize) {
-			ArrayType array = getArray();
-			System.arraycopy(array, index + 1, array, index, actualSize - index);
-		}
-	}
-
-	/**
-	 * Sets the size to zero.
-	 */
-	public void clear() {
-		setSize(0);
-	}
-
-	/**
-	 * Gets the number of elements in this array.
-	 * 
-	 * @return the size
-	 */
-	@Override
-	public int size() {
-		return actualSize;
-	}
-
-	/**
-	 * Sets the size of the current array.
-	 * 
-	 * @param size the size
-	 */
-	@Override
-	public void setSize(int size) {
-		if (size > allocated)
-			ensureCapacity(size);
-		actualSize = size;
-	}
-
-	/**
-	 * Returns the array as a primitive-type array.
-	 * 
-	 * The returned array is guaranteed to have {@link PrimitiveArray#size()} elements.
+	 * Returns a copy of the primitive-array array.
+	 * <p>
+	 * The returned array is guaranteed to have {@link PrimitiveArray#size()}
+	 * elements.
+	 * </p>
 	 * 
 	 * @return the fixed-size array
 	 */
-	public ArrayType buildArray() {
-		@SuppressWarnings("unchecked")
-		ArrayType copy = (ArrayType)Array.newInstance(type, actualSize);
-		System.arraycopy(getArray(), 0, copy, 0, actualSize);
-		return copy;
-	}
+	ArrayType copyArray();
+
+	/** Gets the current capacity of the backing array. */
+	int capacity();
 
 	/**
-	 * Returns an iterator of the elements in this array.
+	 * Makes sure the backing array at least a specified capacity.
+	 * <p>
+	 * After calling this method, the internal array will have at least
+	 * {@code minCapacity} elements.
+	 * </p>
 	 * 
-	 * Each element will be boxed, therefore this method is a not very performant
-	 * convenience method.
+	 * @param minCapacity the minimum capacity
 	 */
-	@Override
-	public Iterator<BaseType> iterator() {
-		return new Iterator<BaseType>() {
-			int counter = 0;
+	void ensureCapacity(int minCapacity);
 
-			@Override
-			public boolean hasNext() {
-				return counter < actualSize;
-			}
+	/**
+	 * Shifts the array to insert space at a specified index.
+	 * 
+	 * @param index the index where the space should be inserted
+	 * @param count the number of values to insert
+	 */
+	void insert(int index, int count);
 
-			@Override
-			public BaseType next() {
-				return valueOf(counter++);
-			}
+	/**
+	 * Shifts the array to delete space starting at a specified index.
+	 * 
+	 * @param index the index where the space should be deleted
+	 * @param count the number of values to delete
+	 */
+	void delete(int index, int count);
 
-			@Override
-			public void remove() {
-				PrimitiveArray.this.remove(--counter);
-			}
-		};
-	}
 }

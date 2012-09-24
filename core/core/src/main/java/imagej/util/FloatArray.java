@@ -35,145 +35,193 @@
 
 package imagej.util;
 
+import java.util.Collection;
+
 /**
- * An extensible array of float elements.
+ * An extensible array of {@code float} elements.
  * 
  * @author Johannes Schindelin
+ * @author Curtis Rueden
  */
-public class FloatArray extends PrimitiveArray<float[], Float> {
+public class FloatArray extends AbstractPrimitiveArray<float[], Float> {
+
+	/** The backing array. */
+	private float[] array;
 
 	/**
-	 * The backing array.
-	 */
-	protected float[] baseArray;
-
-	/**
-	 * Constructs the variable-size array.
-	 * 
-	 * @param size the initial size
-	 * @param growth the maximal growth
-	 */
-	public FloatArray(int size, int growth) {
-		super(size, growth, Float.TYPE);
-	}
-
-	/**
-	 * Constructs the variable-size array.
-	 * 
-	 * @param size the initial size
-	 */
-	public FloatArray(int size) {
-		super(size, Float.TYPE);
-	}
-
-	/**
-	 * Constructs the variable-size array.
+	 * Constructs an extensible array of floats, backed by a fixed-size array.
 	 */
 	public FloatArray() {
-		super(0, Float.TYPE);
+		super(Float.TYPE);
 	}
 
 	/**
-	 * Returns the backing array.
-	 */
-	@Override
-	protected float[] getArray() {
-		return baseArray;
-	}
-
-	/**
-	 * Sets the backing array.
+	 * Constructs an extensible array of floats, backed by a fixed-size array.
 	 * 
-	 * The caller needs to ensure that actualSize is valid after this call.
+	 * @param size the initial size
 	 */
-	@Override
-	protected void setArray(float[] array) {
-		baseArray = array;
+	public FloatArray(final int size) {
+		super(Float.TYPE, size);
 	}
 
 	/**
-	 * Returns one (boxed) element of the array.
-	 */
-	@Override
-	protected Float valueOf(int index) {
-		return Float.valueOf(baseArray[index]);
-	}
-
-	/**
-	 * Appends a value to the collection.
+	 * Constructs an extensible array of floats, backed by the given fixed-size
+	 * array.
 	 * 
-	 * @param value the value
-	 * @return the index at which the value was inserted
+	 * @param array the array to wrap
 	 */
-	public int add(float value) {
-		int index = getAddIndex();
-		baseArray[index] = value;
-		return index;
+	public FloatArray(final float[] array) {
+		super(Float.TYPE, array);
 	}
 
-	/**
-	 * Inserts a value into the collection.
-	 * 
-	 * @param index the indest
-	 * @param value the value
-	 * @return the index at which the value was inserted
-	 */
-	public int insert(int index, float value) {
-		if (index < 0 || index > actualSize)
-			throw new ArrayIndexOutOfBoundsException("Invalid index value");
-		makeInsertSpace(index);
-		baseArray[index] = value;
-		return index;
+	// -- FloatArray methods --
+
+	public void addValue(final float value) {
+		addValue(size(), value);
 	}
 
-	/**
-	 * Returns the element at the given index.
-	 * 
-	 * @param index the index
-	 * @return the value
-	 */
-	public float get(int index) {
-		if (index < 0 || index >= actualSize)
-			throw new ArrayIndexOutOfBoundsException("Invalid index value");
-		return baseArray[index];
+	public boolean removeValue(final float value) {
+		final int index = indexOf(value);
+		if (index < 0) return false;
+		delete(index, 1);
+		return true;
 	}
 
-	/**
-	 * Sets the value at a give position.
-	 * 
-	 * @param index the index
-	 * @param value the value
-	 */
-	public void set(int index, float value) {
-		if (index < 0 || index >= actualSize)
-			throw new ArrayIndexOutOfBoundsException("Invalid index value");
-		baseArray[index] = value;
+	public float getValue(final int index) {
+		checkBounds(index);
+		return array[index];
 	}
 
-	/**
-	 * Checks whether the array contains a given value.
-	 * 
-	 * @param value the value
-	 * @return whether the array contains the value 
-	 */
-	public boolean contains(float value) {
-		for (int i = 0; i < actualSize; i++)
-			if (baseArray[i] == value)
-				return true;
-		return false;
+	public float setValue(final int index, final float value) {
+		checkBounds(index);
+		final float oldValue = getValue(index);
+		array[index] = value;
+		return oldValue;
 	}
 
-	/**
-	 * Returns a {@link String} representation of the array.
-	 */
-	@Override
-	public String toString() {
-		StringBuilder result = new StringBuilder();
-		String delimiter = "";
-		for (int i = 0; i < actualSize; i++) {
-			result.append(delimiter).append(baseArray[i]);
-			delimiter = ", ";
+	public void addValue(final int index, final float value) {
+		insert(index, 1);
+		array[index] = value;
+	}
+
+	public int indexOf(final float value) {
+		for (int i = 0; i < size(); i++) {
+			if (array[i] == value) return i;
 		}
-		return "[ " + result.toString() + " ]";
+		return -1;
 	}
+
+	public int lastIndexOf(final float value) {
+		for (int i = size() - 1; i >= 0; i--) {
+			if (array[i] == value) return i;
+		}
+		return -1;
+	}
+
+	public boolean contains(final float value) {
+		return indexOf(value) >= 0;
+	}
+
+	// -- PrimitiveArray methods --
+
+	@Override
+	public float[] getArray() {
+		return array;
+	}
+
+	@Override
+	public void setArray(final float[] array) {
+		if (array.length < size()) {
+			throw new IllegalArgumentException("Array too small");
+		}
+		this.array = array;
+	}
+
+	// -- List methods --
+
+	@Override
+	public Float get(final int index) {
+		return getValue(index);
+	}
+
+	@Override
+	public Float set(final int index, final Float element) {
+		return setValue(index, element);
+	}
+
+	@Override
+	public void add(final int index, final Float element) {
+		addValue(index, element);
+	}
+
+	// NB: Overridden for performance.
+	@Override
+	public int indexOf(final Object o) {
+		if (!(o instanceof Float)) return -1;
+		final float value = (Float) o;
+		return indexOf(value);
+	}
+
+	// NB: Overridden for performance.
+	@Override
+	public int lastIndexOf(final Object o) {
+		if (!(o instanceof Float)) return -1;
+		final float value = (Float) o;
+		return lastIndexOf(value);
+	}
+
+	// -- Collection methods --
+
+	// NB: Overridden for performance.
+	@Override
+	public boolean contains(final Object o) {
+		if (!(o instanceof Float)) return false;
+		final float value = (Float) o;
+		return contains(value);
+	}
+
+	// NB: Overridden for performance.
+	@Override
+	public boolean remove(final Object o) {
+		if (!(o instanceof Float)) return false;
+		final float value = (Float) o;
+		return removeValue(value);
+	}
+
+	// NB: Overridden for performance.
+	@Override
+	public boolean containsAll(final Collection<?> c) {
+		for (final Object o : c) {
+			if (!(o instanceof Float)) return false;
+			final float value = (Float) o;
+			if (indexOf(value) < 0) return false;
+		}
+		return true;
+	}
+
+	// NB: Overridden for performance.
+	@Override
+	public boolean addAll(final int index, final Collection<? extends Float> c) {
+		if (c.size() == 0) return false;
+		insert(index, c.size());
+		int i = index;
+		for (final float e : c) {
+			setValue(i++, e);
+		}
+		return true;
+	}
+
+	// NB: Overridden for performance.
+	@Override
+	public boolean removeAll(final Collection<?> c) {
+		boolean changed = false;
+		for (final Object o : c) {
+			if (!(o instanceof Float)) continue;
+			final float value = (Float) o;
+			final boolean result = removeValue(value);
+			if (result) changed = true;
+		}
+		return changed;
+	}
+
 }

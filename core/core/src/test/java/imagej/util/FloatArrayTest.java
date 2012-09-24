@@ -46,35 +46,35 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 /**
- * Tests {@link DoubleArray}.
+ * Tests {@link FloatArray}.
  * 
  * @author Curtis Rueden
  * @author Johannes Schindelin
  */
-public class DoubleArrayTest extends PrimitiveArrayTest {
+public class FloatArrayTest extends PrimitiveArrayTest {
 
-	/** Tests {@link DoubleArray#DoubleArray()}. */
+	/** Tests {@link FloatArray#FloatArray()}. */
 	@Test
 	public void testConstructorNoArgs() {
-		final DoubleArray array = new DoubleArray();
+		final FloatArray array = new FloatArray();
 		assertEquals(0, array.size());
 		assertEquals(0, array.copyArray().length);
 	}
 
-	/** Tests {@link DoubleArray#DoubleArray(int)}. */
+	/** Tests {@link FloatArray#FloatArray(int)}. */
 	@Test
 	public void testConstructorSize() {
 		final int size = 24;
-		final DoubleArray array = new DoubleArray(size);
+		final FloatArray array = new FloatArray(size);
 		assertEquals(size, array.size());
 		assertEquals(size, array.copyArray().length);
 	}
 
-	/** Tests {@link DoubleArray#DoubleArray(double[])}. */
+	/** Tests {@link FloatArray#FloatArray(float[])}. */
 	@Test
 	public void testConstructorArray() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		final DoubleArray array = new DoubleArray(raw);
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		final FloatArray array = new FloatArray(raw);
 		assertSame(raw, array.getArray());
 		assertEquals(raw.length, array.size());
 		for (int i = 0; i < raw.length; i++) {
@@ -83,12 +83,12 @@ public class DoubleArrayTest extends PrimitiveArrayTest {
 		assertArrayEquals(raw, array.copyArray(), 0);
 	}
 
-	/** Tests {@link DoubleArray#addValue(double)}. */
+	/** Tests {@link FloatArray#addValue(float)}. */
 	@Test
 	public void testAddValue() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		final DoubleArray array = new DoubleArray(raw.clone());
-		final double e6 = 1.1f, e7 = 2.2f;
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		final FloatArray array = new FloatArray(raw.clone());
+		final float e6 = 1.1f, e7 = 2.2f;
 		array.addValue(e6);
 		array.addValue(e7);
 		assertEquals(raw.length + 2, array.size());
@@ -99,10 +99,10 @@ public class DoubleArrayTest extends PrimitiveArrayTest {
 		assertEquals(e7, array.getValue(6), 0);
 	}
 
-	/** Tests {@link DoubleArray#removeValue(double)}. */
+	/** Tests {@link FloatArray#removeValue(float)}. */
 	public void testRemoveValue() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		final DoubleArray array = new DoubleArray(raw.clone());
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		final FloatArray array = new FloatArray(raw.clone());
 		assertEquals(raw.length, array.size());
 		array.removeValue(raw[0]);
 		assertEquals(raw.length - 1, array.size());
@@ -114,21 +114,21 @@ public class DoubleArrayTest extends PrimitiveArrayTest {
 		assertEquals(raw[3], array.getValue(1), 0);
 	}
 
-	/** Tests {@link DoubleArray#getValue(int)}. */
+	/** Tests {@link FloatArray#getValue(int)}. */
 	public void testGetValue() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		final DoubleArray array = new DoubleArray(raw.clone());
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		final FloatArray array = new FloatArray(raw.clone());
 		for (int i = 0; i < raw.length; i++) {
 			assertEquals("@" + i, raw[i], array.getValue(i), 0);
 		}
 	}
 
-	/** Tests {@link DoubleArray#setValue(int, double)}. */
+	/** Tests {@link FloatArray#setValue(int, float)}. */
 	@Test
 	public void testSetValue() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		final DoubleArray array = new DoubleArray(raw.clone());
-		final double e0 = 7.7f, e2 = 1.1f, e4 = 2.2f;
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		final FloatArray array = new FloatArray(raw.clone());
+		final float e0 = 7.7f, e2 = 1.1f, e4 = 2.2f;
 		array.setValue(0, e0);
 		array.setValue(2, e2);
 		array.setValue(4, e4);
@@ -140,12 +140,12 @@ public class DoubleArrayTest extends PrimitiveArrayTest {
 		assertEquals(e4, array.getValue(4), 0);
 	}
 
-	/** Tests {@link DoubleArray#addValue(int, double)}. */
+	/** Tests {@link FloatArray#addValue(int, float)}. */
 	@Test
 	public void testAddValueIndex() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		final DoubleArray array = new DoubleArray(raw.clone());
-		final double e0 = 7.7f, e4 = 1.1f, e7 = 2.2f;
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		final FloatArray array = new FloatArray(raw.clone());
+		final float e0 = 7.7f, e4 = 1.1f, e7 = 2.2f;
 		array.addValue(0, e0);
 		array.addValue(4, e4);
 		array.addValue(7, e7);
@@ -160,10 +160,10 @@ public class DoubleArrayTest extends PrimitiveArrayTest {
 		assertEquals(e7, array.getValue(7), 0);
 	}
 
-	/** Tests {@link DoubleArray#remove(int)}. */
+	/** Tests {@link FloatArray#remove(int)}. */
 	public void testRemoveIndex() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		final DoubleArray array = new DoubleArray(raw.clone());
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		final FloatArray array = new FloatArray(raw.clone());
 		assertEquals(raw.length, array.size());
 		array.remove(0);
 		assertEquals(raw.length - 1, array.size());
@@ -175,96 +175,96 @@ public class DoubleArrayTest extends PrimitiveArrayTest {
 		assertEquals(raw[3], array.getValue(1), 0);
 	}
 
-	/** Tests {@link DoubleArray#indexOf(double)}. */
+	/** Tests {@link FloatArray#indexOf(float)}. */
 	@Test
 	public void testIndexOf() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		final DoubleArray array = new DoubleArray(raw.clone());
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		final FloatArray array = new FloatArray(raw.clone());
 		for (int i = 0; i < raw.length; i++) {
 			assertEquals("@" + i, i, array.indexOf(raw[i]));
 		}
 		assertEquals(-1, array.indexOf(-1));
 		assertEquals(-1, array.indexOf(0));
 		assertEquals(-1, array.indexOf(1));
-		assertEquals(-1, array.indexOf(Double.NaN));
-		assertEquals(-1, array.indexOf(Double.POSITIVE_INFINITY));
-		assertEquals(-1, array.indexOf(Double.NEGATIVE_INFINITY));
+		assertEquals(-1, array.indexOf(Float.NaN));
+		assertEquals(-1, array.indexOf(Float.POSITIVE_INFINITY));
+		assertEquals(-1, array.indexOf(Float.NEGATIVE_INFINITY));
 	}
 
-	/** Tests {@link DoubleArray#lastIndexOf(double)}. */
+	/** Tests {@link FloatArray#lastIndexOf(float)}. */
 	@Test
 	public void testLastIndexOf() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		final DoubleArray array = new DoubleArray(raw.clone());
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		final FloatArray array = new FloatArray(raw.clone());
 		for (int i = 0; i < raw.length; i++) {
 			assertEquals("@" + i, i, array.lastIndexOf(raw[i]));
 		}
 		assertEquals(-1, array.lastIndexOf(-1));
 		assertEquals(-1, array.lastIndexOf(0));
 		assertEquals(-1, array.lastIndexOf(1));
-		assertEquals(-1, array.lastIndexOf(Double.NaN));
-		assertEquals(-1, array.lastIndexOf(Double.POSITIVE_INFINITY));
-		assertEquals(-1, array.lastIndexOf(Double.NEGATIVE_INFINITY));
+		assertEquals(-1, array.lastIndexOf(Float.NaN));
+		assertEquals(-1, array.lastIndexOf(Float.POSITIVE_INFINITY));
+		assertEquals(-1, array.lastIndexOf(Float.NEGATIVE_INFINITY));
 	}
 
-	/** Tests {@link DoubleArray#contains(double)}. */
+	/** Tests {@link FloatArray#contains(float)}. */
 	@Test
 	public void testContains() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		final DoubleArray array = new DoubleArray(raw.clone());
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		final FloatArray array = new FloatArray(raw.clone());
 		for (int i = 0; i < raw.length; i++) {
 			assertTrue("@" + i, array.contains(raw[i]));
 		}
 		assertFalse(array.contains(-1));
 		assertFalse(array.contains(0));
 		assertFalse(array.contains(1));
-		assertFalse(array.contains(Double.NaN));
-		assertFalse(array.contains(Double.POSITIVE_INFINITY));
-		assertFalse(array.contains(Double.NEGATIVE_INFINITY));
+		assertFalse(array.contains(Float.NaN));
+		assertFalse(array.contains(Float.POSITIVE_INFINITY));
+		assertFalse(array.contains(Float.NEGATIVE_INFINITY));
 	}
 
 	/**
-	 * Tests {@link DoubleArray#getArray()} and
-	 * {@link DoubleArray#setArray(double[])}.
+	 * Tests {@link FloatArray#getArray()} and
+	 * {@link FloatArray#setArray(float[])}.
 	 */
 	@Test
 	public void testSetArray() {
-		final DoubleArray array = new DoubleArray();
-		final double[] raw = { 1, 2, 3, 5, 8, 13, 21 };
+		final FloatArray array = new FloatArray();
+		final float[] raw = { 1, 2, 3, 5, 8, 13, 21 };
 		array.setArray(raw);
 		assertSame(raw, array.getArray());
 	}
 
-	/** Tests {@link DoubleArray#insert(int, int)}. */
+	/** Tests {@link FloatArray#insert(int, int)}. */
 	@Test
 	public void testInsert() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		testInsert(new DoubleArray(raw));
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		testInsert(new FloatArray(raw));
 	}
 
-	/** Tests {@link DoubleArray#delete(int, int)}. */
+	/** Tests {@link FloatArray#delete(int, int)}. */
 	@Test
 	public void testDelete() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		testDelete(new DoubleArray(raw));
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		testDelete(new FloatArray(raw));
 	}
 
-	/** Tests {@link DoubleArray#get(int)}. */
+	/** Tests {@link FloatArray#get(int)}. */
 	@Test
 	public void testGet() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		final DoubleArray array = new DoubleArray(raw.clone());
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		final FloatArray array = new FloatArray(raw.clone());
 		for (int i = 0; i < raw.length; i++) {
-			assertEquals("@" + i, raw[i], array.get(i).doubleValue(), 0);
+			assertEquals("@" + i, raw[i], array.get(i).floatValue(), 0);
 		}
 	}
 
-	/** Tests {@link DoubleArray#set(int, Double)}. */
+	/** Tests {@link FloatArray#set(int, Float)}. */
 	@Test
 	public void testSet() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		final DoubleArray array = new DoubleArray(raw.clone());
-		final Double e0 = 7.7, e2 = 1.1, e4 = 2.2;
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		final FloatArray array = new FloatArray(raw.clone());
+		final Float e0 = 7.7f, e2 = 1.1f, e4 = 2.2f;
 		array.set(0, e0);
 		array.set(2, e2);
 		array.set(4, e4);
@@ -276,12 +276,12 @@ public class DoubleArrayTest extends PrimitiveArrayTest {
 		assertEquals(e4, array.get(4), 0);
 	}
 
-	/** Tests {@link DoubleArray#add(int, Double)}. */
+	/** Tests {@link FloatArray#add(int, Float)}. */
 	@Test
 	public void testAdd() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		final DoubleArray array = new DoubleArray(raw.clone());
-		final Double e6 = 1.1, e7 = 2.2;
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		final FloatArray array = new FloatArray(raw.clone());
+		final Float e6 = 1.1f, e7 = 2.2f;
 		array.add(e6);
 		array.add(e7);
 		assertEquals(raw.length + 2, array.size());
@@ -292,103 +292,103 @@ public class DoubleArrayTest extends PrimitiveArrayTest {
 		assertEquals(e7, array.get(6), 0);
 	}
 
-	/** Tests {@link DoubleArray#indexOf(Object)}. */
+	/** Tests {@link FloatArray#indexOf(Object)}. */
 	@Test
 	public void testIndexOfBoxed() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		final DoubleArray array = new DoubleArray(raw.clone());
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		final FloatArray array = new FloatArray(raw.clone());
 		for (int i = 0; i < raw.length; i++) {
-			assertEquals("@" + i, i, array.indexOf(new Double(raw[i])));
+			assertEquals("@" + i, i, array.indexOf(new Float(raw[i])));
 		}
-		assertEquals(-1, array.indexOf(new Double(-1)));
-		assertEquals(-1, array.indexOf(new Double(0)));
-		assertEquals(-1, array.indexOf(new Double(1)));
-		assertEquals(-1, array.indexOf(new Double(Double.NaN)));
-		assertEquals(-1, array.indexOf(new Double(Double.POSITIVE_INFINITY)));
-		assertEquals(-1, array.indexOf(new Double(Double.NEGATIVE_INFINITY)));
+		assertEquals(-1, array.indexOf(new Float(-1)));
+		assertEquals(-1, array.indexOf(new Float(0)));
+		assertEquals(-1, array.indexOf(new Float(1)));
+		assertEquals(-1, array.indexOf(new Float(Float.NaN)));
+		assertEquals(-1, array.indexOf(new Float(Float.POSITIVE_INFINITY)));
+		assertEquals(-1, array.indexOf(new Float(Float.NEGATIVE_INFINITY)));
 		assertEquals(-1, array.indexOf(null));
-		assertEquals(-1, array.indexOf("Not a double"));
+		assertEquals(-1, array.indexOf("Not a float"));
 	}
 
-	/** Tests {@link DoubleArray#lastIndexOf(Object)}. */
+	/** Tests {@link FloatArray#lastIndexOf(Object)}. */
 	@Test
 	public void testLastIndexOfBoxed() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		final DoubleArray array = new DoubleArray(raw.clone());
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		final FloatArray array = new FloatArray(raw.clone());
 		for (int i = 0; i < raw.length; i++) {
-			assertEquals("@" + i, i, array.lastIndexOf(new Double(raw[i])));
+			assertEquals("@" + i, i, array.lastIndexOf(new Float(raw[i])));
 		}
-		assertEquals(-1, array.lastIndexOf(new Double(-1)));
-		assertEquals(-1, array.lastIndexOf(new Double(0)));
-		assertEquals(-1, array.lastIndexOf(new Double(1)));
-		assertEquals(-1, array.lastIndexOf(new Double(Double.NaN)));
-		assertEquals(-1, array.lastIndexOf(new Double(Double.POSITIVE_INFINITY)));
-		assertEquals(-1, array.lastIndexOf(new Double(Double.NEGATIVE_INFINITY)));
+		assertEquals(-1, array.lastIndexOf(new Float(-1)));
+		assertEquals(-1, array.lastIndexOf(new Float(0)));
+		assertEquals(-1, array.lastIndexOf(new Float(1)));
+		assertEquals(-1, array.lastIndexOf(new Float(Float.NaN)));
+		assertEquals(-1, array.lastIndexOf(new Float(Float.POSITIVE_INFINITY)));
+		assertEquals(-1, array.lastIndexOf(new Float(Float.NEGATIVE_INFINITY)));
 		assertEquals(-1, array.lastIndexOf(null));
-		assertEquals(-1, array.lastIndexOf("Not a double"));
+		assertEquals(-1, array.lastIndexOf("Not a float"));
 	}
 
-	/** Tests {@link DoubleArray#contains(Object)}. */
+	/** Tests {@link FloatArray#contains(Object)}. */
 	@Test
 	public void testContainsBoxed() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		final DoubleArray array = new DoubleArray(raw.clone());
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		final FloatArray array = new FloatArray(raw.clone());
 		for (int i = 0; i < raw.length; i++) {
-			assertTrue("@" + i, array.contains(new Double(raw[i])));
+			assertTrue("@" + i, array.contains(new Float(raw[i])));
 		}
-		assertFalse(array.contains(new Double(-1)));
-		assertFalse(array.contains(new Double(0)));
-		assertFalse(array.contains(new Double(1)));
-		assertFalse(array.contains(new Double(Double.NaN)));
-		assertFalse(array.contains(new Double(Double.POSITIVE_INFINITY)));
-		assertFalse(array.contains(new Double(Double.NEGATIVE_INFINITY)));
+		assertFalse(array.contains(new Float(-1)));
+		assertFalse(array.contains(new Float(0)));
+		assertFalse(array.contains(new Float(1)));
+		assertFalse(array.contains(new Float(Float.NaN)));
+		assertFalse(array.contains(new Float(Float.POSITIVE_INFINITY)));
+		assertFalse(array.contains(new Float(Float.NEGATIVE_INFINITY)));
 		assertFalse(array.contains(null));
-		assertFalse(array.contains("Not a double"));
+		assertFalse(array.contains("Not a float"));
 	}
 
-	/** Tests {@link DoubleArray#remove(Object)}. */
+	/** Tests {@link FloatArray#remove(Object)}. */
 	@Test
 	public void testRemove() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		final DoubleArray array = new DoubleArray(raw.clone());
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		final FloatArray array = new FloatArray(raw.clone());
 		assertEquals(raw.length, array.size());
-		array.remove(new Double(raw[0]));
+		array.remove(new Float(raw[0]));
 		assertEquals(raw.length - 1, array.size());
-		array.remove(new Double(raw[2]));
+		array.remove(new Float(raw[2]));
 		assertEquals(raw.length - 2, array.size());
-		array.remove(new Double(raw[4]));
+		array.remove(new Float(raw[4]));
 		assertEquals(raw.length - 3, array.size());
 		assertEquals(raw[1], array.getValue(0), 0);
 		assertEquals(raw[3], array.getValue(1), 0);
 	}
 
-	/** Tests {@link DoubleArray#containsAll}. */
+	/** Tests {@link FloatArray#containsAll}. */
 	@Test
 	public void testContainsAll() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		final DoubleArray array = new DoubleArray(raw.clone());
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		final FloatArray array = new FloatArray(raw.clone());
 
-		final ArrayList<Double> list = new ArrayList<Double>();
+		final ArrayList<Float> list = new ArrayList<Float>();
 		assertTrue(array.containsAll(list));
-		list.add(13d);
+		list.add(13f);
 		assertTrue(array.containsAll(list));
-		list.add(1d);
+		list.add(1f);
 		assertFalse(array.containsAll(list));
 
-		final DoubleArray yes = new DoubleArray(new double[] { 3, 8, 21 });
+		final FloatArray yes = new FloatArray(new float[] { 3, 8, 21 });
 		assertTrue(array.containsAll(yes));
 
-		final DoubleArray no = new DoubleArray(new double[] { 5, 13, 1 });
+		final FloatArray no = new FloatArray(new float[] { 5, 13, 1 });
 		assertFalse(array.containsAll(no));
 	}
 
-	/** Tests {@link DoubleArray#addAll(int, java.util.Collection)}. */
+	/** Tests {@link FloatArray#addAll(int, java.util.Collection)}. */
 	@Test
 	public void testAddAll() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		final DoubleArray array = new DoubleArray(raw.clone());
-		final double[] add = { 1.1f, 7.7f };
-		final DoubleArray toAdd = new DoubleArray(add.clone());
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		final FloatArray array = new FloatArray(raw.clone());
+		final float[] add = { 1.1f, 7.7f };
+		final FloatArray toAdd = new FloatArray(add.clone());
 		final int index = 3;
 		array.addAll(index, toAdd);
 		for (int i = 0; i < index; i++) {
@@ -402,12 +402,12 @@ public class DoubleArrayTest extends PrimitiveArrayTest {
 		}
 	}
 
-	/** Tests {@link DoubleArray#removeAll}. */
+	/** Tests {@link FloatArray#removeAll}. */
 	@Test
 	public void testRemoveAll() {
-		final double[] raw = { 3, 5, 8, 13, 21 };
-		final DoubleArray array = new DoubleArray(raw.clone());
-		final DoubleArray toRemove = new DoubleArray(new double[] { 3, 8, 21 });
+		final float[] raw = { 3, 5, 8, 13, 21 };
+		final FloatArray array = new FloatArray(raw.clone());
+		final FloatArray toRemove = new FloatArray(new float[] { 3, 8, 21 });
 		assertEquals(raw.length, array.size());
 		array.removeAll(toRemove);
 		assertEquals(raw.length - 3, array.size());

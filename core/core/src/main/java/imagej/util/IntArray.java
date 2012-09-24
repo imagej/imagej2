@@ -35,144 +35,194 @@
 
 package imagej.util;
 
+import java.util.Collection;
+
 /**
- * An extensible array of int elements.
+ * An extensible array of {@code int} elements.
  * 
  * @author Johannes Schindelin
+ * @author Curtis Rueden
  */
-public class IntArray extends PrimitiveArray<int[], Integer> {
+public class IntArray extends AbstractPrimitiveArray<int[], Integer> {
+
+	/** The backing array. */
+	private int[] array;
 
 	/**
-	 * The backing array.
-	 */
-	protected int[] baseArray;
-
-	/**
-	 * Constructs the variable-size array.
-	 * 
-	 * @param size the initial size
-	 * @param growth the maximal growth
-	 */
-	public IntArray(int size, int growth) {
-		super(size, growth, Integer.TYPE);
-	}
-
-	/**
-	 * Constructs the variable-size array.
-	 * 
-	 * @param size the initial size
-	 */
-	public IntArray(int size) {
-		super(size, Integer.TYPE);
-	}
-
-	/**
-	 * Constructs the variable-size array.
+	 * Constructs an extensible array of ints, backed by a fixed-size array.
 	 */
 	public IntArray() {
-		super(0, Integer.TYPE);
+		super(Integer.TYPE);
 	}
 
 	/**
-	 * Returns the backing array.
-	 */
-	@Override
-	protected int[] getArray() {
-		return baseArray;
-	}
-
-	/**
-	 * Sets the backing array.
+	 * Constructs an extensible array of ints, backed by a fixed-size array.
 	 * 
-	 * The caller needs to ensure that actualSize is valid after this call.
+	 * @param size the initial size
 	 */
-	@Override
-	protected void setArray(int[] array) {
-		baseArray = array;
+	public IntArray(final int size) {
+		super(Integer.TYPE, size);
 	}
 
 	/**
-	 * Returns one (boxed) element of the array.
-	 */
-	@Override
-	protected Integer valueOf(int index) {
-		return Integer.valueOf(baseArray[index]);
-	}
-
-	/**
-	 * Appends a value to the collection.
+	 * Constructs an extensible array of ints, backed by the given fixed-size
+	 * array.
 	 * 
-	 * @param value the value
-	 * @return the index at which the value was inserted
+	 * @param array the array to wrap
 	 */
-	public int add(int value) {
-		int index = getAddIndex();
-		baseArray[index] = value;
-		return index;
+	public IntArray(final int[] array) {
+		super(Integer.TYPE, array);
 	}
 
-	/**
-	 * Inserts a value into the collection.
-	 * 
-	 * @param index the indest
-	 * @param value the value
-	 * @return the index at which the value was inserted
-	 */
-	public int insert(int index, int value) {
-		makeInsertSpace(index);
-		baseArray[index] = value;
-		return index;
+	// -- IntArray methods --
+
+	public void addValue(final int value) {
+		addValue(size(), value);
 	}
 
-	/**
-	 * Returns the element at the given index.
-	 * 
-	 * @param index the index
-	 * @return the value
-	 */
-	public int get(int index) {
-		if (index < 0 || index >= actualSize)
-			throw new ArrayIndexOutOfBoundsException("Invalid index value: " + index);
-		return baseArray[index];
+	public boolean removeValue(final int value) {
+		final int index = indexOf(value);
+		if (index < 0) return false;
+		delete(index, 1);
+		return true;
 	}
 
-	/**
-	 * Sets the value at a give position.
-	 * 
-	 * @param index the index
-	 * @param value the value
-	 */
-	public void set(int index, int value) {
-		if (index < 0 || index >= actualSize)
-			throw new ArrayIndexOutOfBoundsException("Invalid index value");
-		baseArray[index] = value;
+	public int getValue(final int index) {
+		checkBounds(index);
+		return array[index];
 	}
 
-	/**
-	 * Checks whether the array contains a given value.
-	 * 
-	 * @param value the value
-	 * @return whether the array contains the value 
-	 */
-	public boolean contains(int value) {
-		for (int i = 0; i < actualSize; i++)
-			if (baseArray[i] == value)
-				return true;
-		return false;
+	public int setValue(final int index, final int value) {
+		checkBounds(index);
+		final int oldValue = getValue(index);
+		array[index] = value;
+		return oldValue;
 	}
 
-	/**
-	 * Returns a {@link String} representation of the array.
-	 */
-	@Override
-	public String toString() {
-		StringBuilder result = new StringBuilder();
-		String delimiter = "";
-		for (int i = 0; i < actualSize; i++) {
-			result.append(delimiter).append(baseArray[i]);
-			delimiter = ", ";
+	public void addValue(final int index, final int value) {
+		insert(index, 1);
+		array[index] = value;
+	}
+
+	public int indexOf(final int value) {
+		for (int i = 0; i < size(); i++) {
+			if (array[i] == value) return i;
 		}
-		return "[ " + result.toString() + " ]";
+		return -1;
+	}
+
+	public int lastIndexOf(final int value) {
+		for (int i = size() - 1; i >= 0; i--) {
+			if (array[i] == value) return i;
+		}
+		return -1;
+	}
+
+	public boolean contains(final int value) {
+		return indexOf(value) >= 0;
+	}
+
+	// -- PrimitiveArray methods --
+
+	@Override
+	public int[] getArray() {
+		return array;
+	}
+
+	@Override
+	public void setArray(final int[] array) {
+		if (array.length < size()) {
+			throw new IllegalArgumentException("Array too small");
+		}
+		this.array = array;
+	}
+
+	// -- List methods --
+
+	@Override
+	public Integer get(final int index) {
+		return getValue(index);
+	}
+
+	@Override
+	public Integer set(final int index, final Integer element) {
+		return setValue(index, element);
+	}
+
+	@Override
+	public void add(final int index, final Integer element) {
+		addValue(index, element);
+	}
+
+	// NB: Overridden for performance.
+	@Override
+	public int indexOf(final Object o) {
+		if (!(o instanceof Integer)) return -1;
+		final int value = (Integer) o;
+		return indexOf(value);
+	}
+
+	// NB: Overridden for performance.
+	@Override
+	public int lastIndexOf(final Object o) {
+		if (!(o instanceof Integer)) return -1;
+		final int value = (Integer) o;
+		return lastIndexOf(value);
+	}
+
+	// -- Collection methods --
+
+	// NB: Overridden for performance.
+	@Override
+	public boolean contains(final Object o) {
+		if (!(o instanceof Integer)) return false;
+		final int value = (Integer) o;
+		return contains(value);
+	}
+
+	// NB: Overridden for performance.
+	@Override
+	public boolean remove(final Object o) {
+		if (!(o instanceof Integer)) return false;
+		final int value = (Integer) o;
+		return removeValue(value);
+	}
+
+	// NB: Overridden for performance.
+	@Override
+	public boolean containsAll(final Collection<?> c) {
+		for (final Object o : c) {
+			if (!(o instanceof Integer)) return false;
+			final int value = (Integer) o;
+			if (indexOf(value) < 0) return false;
+		}
+		return true;
+	}
+
+	// NB: Overridden for performance.
+	@Override
+	public boolean addAll(final int index, final Collection<? extends Integer> c)
+	{
+		if (c.size() == 0) return false;
+		insert(index, c.size());
+		int i = index;
+		for (final int e : c) {
+			setValue(i++, e);
+		}
+		return true;
+	}
+
+	// NB: Overridden for performance.
+	@Override
+	public boolean removeAll(final Collection<?> c) {
+		boolean changed = false;
+		for (final Object o : c) {
+			if (!(o instanceof Integer)) continue;
+			final int value = (Integer) o;
+			final boolean result = removeValue(value);
+			if (result) changed = true;
+		}
+		return changed;
 	}
 
 }
