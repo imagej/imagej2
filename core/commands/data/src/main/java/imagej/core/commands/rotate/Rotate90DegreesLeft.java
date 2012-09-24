@@ -40,7 +40,7 @@ import java.util.Map;
 
 import imagej.command.Command;
 import imagej.command.ContextCommand;
-import imagej.command.InvertableCommand;
+import imagej.command.InvertibleCommand;
 import imagej.core.commands.imglib.ImgLibDataTransform;
 import imagej.core.commands.rotate.XYFlipper.FlipCoordinateTransformer;
 import imagej.data.Dataset;
@@ -67,7 +67,7 @@ import imagej.util.RealRect;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Transform", mnemonic = 't'),
 	@Menu(label = "Rotate 90 Degrees Left", weight = 5) }, headless = true)
-public class Rotate90DegreesLeft extends ContextCommand implements InvertableCommand {
+public class Rotate90DegreesLeft extends ContextCommand implements InvertibleCommand {
 
 	// -- instance variables that are Parameters --
 

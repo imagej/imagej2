@@ -45,7 +45,7 @@ import java.util.Map;
  * @author Barry DeZonia
  *
  */
-public interface InvertableCommand {
+public interface InvertibleCommand {
 	Class<? extends Command> getInverseCommand();
 	Map<String,Object> getInverseInputMap();
 }
