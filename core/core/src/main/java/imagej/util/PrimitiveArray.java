@@ -103,7 +103,7 @@ import java.util.Iterator;
  * @param <ArrayType>
  * @param <BaseType>
  */
-public abstract class PrimitiveArray<ArrayType, BaseType>  implements Iterable<BaseType> {
+public abstract class PrimitiveArray<ArrayType, BaseType>  implements Iterable<BaseType>, Sizable {
 
 	/** The class boxing the element type. */
 	protected Class<BaseType> type;
@@ -240,6 +240,7 @@ public abstract class PrimitiveArray<ArrayType, BaseType>  implements Iterable<B
 	 * 
 	 * @return the size
 	 */
+	@Override
 	public int size() {
 		return actualSize;
 	}
@@ -249,6 +250,7 @@ public abstract class PrimitiveArray<ArrayType, BaseType>  implements Iterable<B
 	 * 
 	 * @param size the size
 	 */
+	@Override
 	public void setSize(int size) {
 		if (size > allocated)
 			ensureCapacity(size);
