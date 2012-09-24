@@ -40,6 +40,8 @@ import imagej.service.Service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.List;
 
 import javax.script.ScriptEngineFactory;
@@ -68,6 +70,9 @@ public interface ScriptService extends Service {
 
 	Object eval(final File file) throws FileNotFoundException,
 		ScriptException;
+
+	Object eval(final String filename, final Reader reader)
+			throws IOException, ScriptException;
 
 	boolean canHandleFile(final File file);
 

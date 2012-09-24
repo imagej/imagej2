@@ -48,6 +48,8 @@ import imagej.util.FileUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -127,6 +129,18 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 				"Could not determine language for file extension " + fileExtension);
 		}
 		return language.getScriptEngine().eval(new FileReader(file));
+	}
+
+	@Override
+	public Object eval(final String filename, final Reader reader)
+			throws IOException, ScriptException {
+		final String fileExtension = FileUtils.getExtension(filename);
+		final ScriptEngineFactory language = getByFileExtension(fileExtension);
+		if (language == null) {
+			throw new UnsupportedOperationException(
+				"Could not determine language for file extension " + fileExtension);
+		}
+		return language.getScriptEngine().eval(reader);
 	}
 
 	@Override
