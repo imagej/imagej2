@@ -991,7 +991,7 @@ public class UpdaterTest {
 		files = readDb(true, true);
 
 		// update again
-		assertTrue(files.get("jars/egads.jar").stageForUpdate(files,  false));
+		assertTrue("egads.jar's status: " + files.get("jars/egads.jar").getStatus(), files.get("jars/egads.jar").stageForUpdate(files,  false));
 		Installer installer = new Installer(files, progress);
 		installer.start();
 		assertTrue(files.prefixUpdate("jars/egads-2.1.jar").length() > 0);
