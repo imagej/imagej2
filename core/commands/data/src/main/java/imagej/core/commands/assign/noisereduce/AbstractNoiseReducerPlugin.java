@@ -82,15 +82,12 @@ public abstract class AbstractNoiseReducerPlugin<U extends RealType<U>>
 	@Parameter
 	protected CommandService commandService;
 	
-	@Parameter
+	@Parameter(type=ItemIO.BOTH)
 	protected Dataset input;
 
 	@Parameter(label = "Neighborhood type",
 			choices = {RADIAL_STRING,RECTANGULAR_STRING})
 	protected String neighTypeString = RADIAL_STRING;
-
-	@Parameter(type = ItemIO.OUTPUT)
-	protected Dataset output;
 
 	// -- private instance variables --
 	
@@ -118,19 +115,16 @@ public abstract class AbstractNoiseReducerPlugin<U extends RealType<U>>
 		PointSet ps = neighborhood.getPoints();
 		Reducer<U,DoubleType> reducer =
 				new Reducer<U,DoubleType>(context, inputImg, getFunction(otherFunc), ps);
-		output = reducer.reduceNoise(neighborhood.getDescription());
+		Dataset output = reducer.reduceNoise(neighborhood.getDescription());
+		input.setImgPlus(output.getImgPlus());
 	}
 
-	public void setInput(Dataset ds) {
+	public void setDataset(Dataset ds) {
 		input = ds;
 	}
 	
-	public Dataset getInput() {
+	public Dataset getDataset() {
 		return input;
-	}
-
-	public Dataset getOutput() {
-		return output;
 	}
 
 	public void setNeighborhood(Neighborhood n) {
