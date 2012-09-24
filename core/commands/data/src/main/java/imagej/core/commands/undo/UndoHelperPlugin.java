@@ -47,6 +47,7 @@ import imagej.plugin.Plugin;
 
 
 /**
+ * NOTE - unused at the moment.
  * 
  * @author Barry DeZonia
  *
