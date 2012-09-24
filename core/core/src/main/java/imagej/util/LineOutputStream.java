@@ -35,6 +35,7 @@
 
 package imagej.util;
 
+import java.io.IOException;
 import java.io.OutputStream;
 
 /**
@@ -57,7 +58,7 @@ public abstract class LineOutputStream extends OutputStream {
 	 * 
 	 * @param line the line to print
 	 */
-	public abstract void println(String line);
+	public abstract void println(String line) throws IOException;
 
 	/**
 	 * Adds a single byte to the current line buffer, or {@link #flush()} the
@@ -66,7 +67,7 @@ public abstract class LineOutputStream extends OutputStream {
 	 * @param b the byte to write
 	 */
 	@Override
-	public synchronized void write(final int b) {
+	public synchronized void write(final int b) throws IOException {
 		ensure(len + 1);
 		buffer[len++] = (byte) b;
 		if (b == '\n') flush();
@@ -79,7 +80,7 @@ public abstract class LineOutputStream extends OutputStream {
 	 * @param buf the bytes to write
 	 */
 	@Override
-	public synchronized void write(final byte[] buf) {
+	public synchronized void write(final byte[] buf) throws IOException {
 		write(buf, 0, buf.length);
 	}
 
@@ -92,7 +93,7 @@ public abstract class LineOutputStream extends OutputStream {
 	 * @param length how many bytes to add
 	 */
 	@Override
-	public synchronized void write(final byte[] buf, int offset, int length) {
+	public synchronized void write(final byte[] buf, int offset, int length) throws IOException {
 		int eol = length;
 		while (eol > 0) {
 			if (buf[eol - 1] == '\n') break;
@@ -114,7 +115,7 @@ public abstract class LineOutputStream extends OutputStream {
 
 	/** Flushes the current line buffer if any bytes are left in it. */
 	@Override
-	public void close() {
+	public void close() throws IOException {
 		flush();
 	}
 
@@ -123,7 +124,7 @@ public abstract class LineOutputStream extends OutputStream {
 	 * {@link #println(String)}, stripping any trailing new-line characters.
 	 */
 	@Override
-	public synchronized void flush() {
+	public synchronized void flush() throws IOException {
 		if (len > 0) {
 			if (buffer[len - 1] == '\n') len--;
 			println(new String(buffer, 0, len));
