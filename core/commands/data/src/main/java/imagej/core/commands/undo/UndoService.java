@@ -79,7 +79,6 @@ import imagej.service.Service;
 // Also what about legacy plugin run results? (Multiple things hatched)
 // Use displays rather than datasets (i.e. handle overlays too and other events)
 // ThreadLocal code for classToNotRecord. Nope, can't work.
-// Reorganizing undo/redo history when in middle and command recorded
 // Make friendly for multithreaded access.
 // Currently made to handle Datasets of ImageDisplays. Should be made to support
 //   histories of arbitrary objects. The objects would need to support some
@@ -92,13 +91,6 @@ import imagej.service.Service;
 //   grouping.
 // SplitChannelsContext plugin is sometimes getting run and recorded. Is this a
 //   problem?
-// We could make another helper plugin that takes a Dataset, a subset of its
-//   indices in the form of a PointSet and a 1-d Img<DoubleType> that stores
-//   pixel values. The original command creates the PointSet, walks it, and
-//   records PixelValues in the Img. The inverse of this is to walk the img in
-//   order and set the values of the Dataset using the PointSet iteration. This
-//   could be tightly wrapped to be invokable easily from other plugins. Part of
-//   UndoService?
 
 // Later TODOs
 // Support tools and gestures
@@ -218,7 +210,29 @@ public class UndoService extends AbstractService {
 	 * Captures a region of a Dataset to a one dimensional Img<DoubleType>. The
 	 * region is defined with a PointSet. The data is stored in the order of
 	 * iteration of the input PointSet. Using the Img<DoubleType> and the original
-	 * PointSet one can easily restore the data using restoreData().
+	 * PointSet one can easily restore the data using restoreData(). The
+	 * Img<DoubleType> will reside completely in memory and is limited to about
+	 * two gig of elements.
+	 * 
+	 * @param source
+	 * 	The Dataset to capture from.
+	 * @param points
+	 *  The set of coordinate points that hold the values to backup.
+	 * @return
+	 * 	An Img<DoubleType> that contains the backup data.
+	 */
+	public Img<DoubleType> captureData(Dataset source, PointSet points) {
+		return captureData(source, points, new ArrayImgFactory<DoubleType>());
+	}
+	
+	/**
+	 * Captures a region of a Dataset to a one dimensional Img<DoubleType>. The
+	 * region is defined with a PointSet. The data is stored in the order of
+	 * iteration of the input PointSet. Using the Img<DoubleType> and the original
+	 * PointSet one can easily restore the data using restoreData(). The
+	 * Img<DoubleType> will reside in a structure provided by the user specified
+	 * ImgFactory. This allows memory use and element count limitations of the
+	 * default implementation to be avoided.
 	 * 
 	 * @param source
 	 * 	The Dataset to capture from.
