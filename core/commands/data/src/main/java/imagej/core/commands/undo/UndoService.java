@@ -430,62 +430,59 @@ public class UndoService extends AbstractService {
 	private class History {
 		private LinkedList<Class<? extends Command>> undoableCommands;
 		private LinkedList<Class<? extends Command>> redoableCommands;
+		private LinkedList<Class<? extends Command>> tmpCommands;
 		private LinkedList<Map<String,Object>> undoableInputs;
 		private LinkedList<Map<String,Object>> redoableInputs;
-		private int undoPos;
-		private int redoPos;
+		private LinkedList<Map<String,Object>> tmpInputs;
 
 		History() {
 			undoableCommands = new LinkedList<Class<? extends Command>>();
 			redoableCommands = new LinkedList<Class<? extends Command>>();
+			tmpCommands = new LinkedList<Class<? extends Command>>();
 			undoableInputs = new LinkedList<Map<String,Object>>();
 			redoableInputs = new LinkedList<Map<String,Object>>();
-			undoPos = 0;
-			redoPos = 0;
+			tmpInputs = new LinkedList<Map<String,Object>>();
 		}
 		
 		void doUndo() {
 			//System.out.println("doUndo() : undoPos = "+undoPos+" redoPos = "+redoPos);
-			if (undoPos <= 0) return;
-			undoPos--;
-			redoPos--;
-			Class<? extends Command> command = undoableCommands.get(undoPos);
-			Map<String,Object> input = undoableInputs.get(undoPos);
+			if (undoableCommands.size() <= 0) return;
+			Class<? extends Command> command = redoableCommands.removeLast();
+			Map<String,Object> inputs = redoableInputs.removeLast();
+			tmpCommands.add(command);
+			tmpInputs.add(inputs);
+			command = undoableCommands.removeLast();
+			inputs = undoableInputs.removeLast();
 			ignore(command);
-			commandService.run(command, input);
+			commandService.run(command, inputs);
 		}
 		
 		void doRedo() {
 			//System.out.println("doRedo() : undoPos = "+undoPos+" redoPos = "+redoPos);
-			if (redoPos >= redoableCommands.size()) return;
-			Class<? extends Command> command = redoableCommands.get(redoPos);
-			Map<String,Object> input = redoableInputs.get(redoPos);
-			undoPos++;
-			redoPos++;
-			ignore(command);
+			if (tmpCommands.size() <= 0) return;
+			Class<? extends Command> command = tmpCommands.getLast();
+			Map<String,Object> input = tmpInputs.getLast();
+			//redoableCommands.add(command);
+			//redoableInputs.add(input);
+			//ignore(command);  // TODO - is this a problem???? Do we need recording for correct pixel states?
 			commandService.run(command, input);
 		}
 		
 		void clear() {
 			undoableCommands.clear();
 			redoableCommands.clear();
+			tmpCommands.clear();
 			undoableInputs.clear();
 			redoableInputs.clear();
-			undoPos = 0;
-			redoPos = 0;
+			tmpInputs.clear();
 		}
 		
 		void addUndo(Class<? extends Command> command, Map<String,Object> inputs) {
 			/*  tricky attempt to make this code ignore prerecorded commands safely
 			inputs.put(RECORDED_INTERNALLY, RECORDED_INTERNALLY);
 			*/
-			while (undoPos < undoableCommands.size()) {
-				undoableCommands.removeLast();
-				undoableInputs.removeLast();
-			}
 			undoableCommands.add(command);
 			undoableInputs.add(inputs);
-			undoPos++;
 			if (undoableCommands.size() > MAX_STEPS) removeOldestUndo();
 		}
 		
@@ -493,38 +490,41 @@ public class UndoService extends AbstractService {
 			/*  tricky attempt to make this code ignore prerecorded commands safely
 			inputs.put(RECORDED_INTERNALLY, RECORDED_INTERNALLY);
 			*/
-			while (redoPos < redoableCommands.size()) {
-				redoableCommands.removeLast();
-				redoableInputs.removeLast();
+			if (tmpCommands.size() > 0) {
+				if (tmpCommands.getLast().equals(command) &&
+						tmpInputs.getLast().equals(inputs))
+				{
+					tmpCommands.removeLast();
+					tmpInputs.removeLast();
+				}
+				else {
+					tmpCommands.clear();
+					tmpInputs.clear();
+				}
 			}
 			redoableCommands.add(command);
 			redoableInputs.add(inputs);
-			redoPos++;
 			if (redoableCommands.size() > MAX_STEPS) removeOldestRedo();
 		}
 		
 		void removeNewestUndo() {
 			undoableCommands.removeLast();
 			undoableInputs.removeLast();
-			undoPos--;
 		}
 
 		void removeNewestRedo() {
 			redoableCommands.removeLast();
 			redoableInputs.removeLast();
-			redoPos--;
 		}
 		
 		void removeOldestUndo() {
 			undoableCommands.removeFirst();
 			undoableInputs.removeFirst();
-			undoPos--;
 		}
 
 		void removeOldestRedo() {
 			redoableCommands.removeFirst();
 			redoableInputs.removeFirst();
-			redoPos--;
 		}
 
 	}
