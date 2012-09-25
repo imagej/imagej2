@@ -1689,7 +1689,7 @@ public class UpdaterTest {
 		final File dir = file.getParentFile();
 		if (!dir.isDirectory()) dir.mkdirs();
 		final String name = file.getName();
-		if (name.endsWith(".jar")) return writeJar(dir, name, name, name);
+		if (name.endsWith(".jar")) return writeJar(dir, name, content, content);
 
 		writeStream(new FileOutputStream(file), content, true);
 		return file;
