@@ -1340,6 +1340,10 @@ public class UpdaterTest {
 			ParserConfigurationException, SAXException {
 		final FilesCollection files = new FilesCollection(ijRoot);
 		final File localDb = new File(ijRoot, "db.xml.gz");
+		if (runChecksummer) {
+			// We're too fast, cannot trust the cached checksums
+			new File(ijRoot, ".checksums").delete();
+		}
 		if (readLocalDb && runChecksummer) {
 			files.downloadIndexAndChecksum(progress);
 			return files;
@@ -1360,8 +1364,6 @@ public class UpdaterTest {
 		}
 		new XMLFileReader(files).read(FilesCollection.DEFAULT_UPDATE_SITE);
 		if (runChecksummer) {
-			// We're too fast, cannot trust the cached checksums
-			new File(ijRoot, ".checksums").delete();
 			final Checksummer czechsummer = new Checksummer(files, progress);
 			czechsummer.updateFromLocal();
 		}
