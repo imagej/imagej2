@@ -241,7 +241,6 @@ public class UndoService extends AbstractService {
 		long numPoints = points.calcSize();
 		Img<DoubleType> backup =
 				factory.create(new long[]{numPoints}, new DoubleType());
-		long[] miniPos = new long[1];
 		long i = 0;
 		RandomAccess<? extends RealType<?>> dataAccessor =
 				source.getImgPlus().randomAccess();
@@ -249,10 +248,9 @@ public class UndoService extends AbstractService {
 		PointSetIterator iter = points.createIterator();
 		while (iter.hasNext()) {
 			long[] pos = iter.next();
-			miniPos[0] = i++;
 			dataAccessor.setPosition(pos);
 			double val = dataAccessor.get().getRealDouble();
-			backupAccessor.setPosition(miniPos);
+			backupAccessor.setPosition(i++,0);
 			backupAccessor.get().setReal(val);
 		}
 		return backup;
@@ -274,7 +272,6 @@ public class UndoService extends AbstractService {
 	public void restoreData(Dataset target, PointSet points,
 		Img<DoubleType> backup)
 	{
-		long[] miniPos = new long[1];
 		long i = 0;
 		RandomAccess<? extends RealType<?>> dataAccessor =
 				target.getImgPlus().randomAccess();
@@ -282,8 +279,7 @@ public class UndoService extends AbstractService {
 		PointSetIterator iter = points.createIterator();
 		while (iter.hasNext()) {
 			long[] pos = iter.next();
-			miniPos[0] = i++;
-			backupAccessor.setPosition(miniPos);
+			backupAccessor.setPosition(i++,0);
 			double val = backupAccessor.get().getRealDouble();
 			dataAccessor.setPosition(pos);
 			dataAccessor.get().setReal(val);
