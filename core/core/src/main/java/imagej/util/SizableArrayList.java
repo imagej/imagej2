@@ -79,7 +79,7 @@ public class SizableArrayList<E> extends ArrayList<E> implements Sizable {
 			// need to add some elements
 			ensureCapacity(size);
 			try {
-				final Field sizeField = ArrayList.class.getField("size");
+				final Field sizeField = ArrayList.class.getDeclaredField("size");
 				sizeField.setAccessible(true);
 				sizeField.set(this, size);
 			}
