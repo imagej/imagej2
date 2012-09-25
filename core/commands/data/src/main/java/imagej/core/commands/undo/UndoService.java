@@ -74,10 +74,17 @@ import imagej.service.Service;
 // TODO
 // This service is poorly named (recording something service is better)
 // This service belongs some place other than ij-commands-data
+// Need a good way to avoid recording operations that are being undone. We only
+//   know the class rather than having an actual reference. If we could tag a
+//   command with metadata that the command service maintains we could look for
+//   that metadata and decide to record or not. Or we could tell command service
+//   to not generate events while executing this command. Something needs to
+//   be done.
 // More undoable ops: zoom events, pan events, display creations/deletions,
 //   setting of options values, dataset dimensions changing, setImgPlus(), etc.
 // Also what about legacy plugin run results? (Multiple things hatched)
-// Use displays rather than datasets (i.e. handle overlays too and other events)
+// Store changes to displays rather than just datasets (i.e. handle overlays too
+//   and other events)
 // ThreadLocal code for classToNotRecord. Nope, can't work.
 // Make friendly for multithreaded access.
 // Currently made to handle Datasets of ImageDisplays. Should be made to support
@@ -88,7 +95,7 @@ import imagej.service.Service;
 //   command into two separate plugins - one a neigh specifier that sets a value
 //   of a new Options plugin. Info could show in menu eventually. But for now
 //   just a command with 2d rect and n-d radial options. In the long run we want
-//   grouping.
+//   grouping. (Later note: undo of this command now seems to work.)
 // SplitChannelsContext plugin is sometimes getting run and recorded. Is this a
 //   problem?
 
@@ -298,6 +305,12 @@ public class UndoService extends AbstractService {
 			return;
 		}
 		*/
+		/* tricky attempt number 2
+		if (module == moduleToIgnore) {
+			System.out.println("module start: ignoring a module");
+			return;
+		}
+		*/
 		Object theObject = module.getDelegateObject();
 		if (ignoring((Class<? extends Command>)theObject.getClass())) return;
 		if (theObject instanceof Unrecordable) return;
@@ -329,6 +342,12 @@ public class UndoService extends AbstractService {
 			return;
 		}
 		*/
+		/* tricky attempt 2
+		if (module == moduleToIgnore) {
+			System.out.println("module cancel: ignoring a module");
+			return;
+		}
+		*/
 		Object theObject = module.getDelegateObject();
 		if (ignoring((Class<? extends Command>)theObject.getClass())) return;
 		if (theObject instanceof Unrecordable) return;
@@ -347,6 +366,12 @@ public class UndoService extends AbstractService {
 		/*  tricky attempt to make this code ignore prerecorded commands safely
 		if (module.getInput(RECORDED_INTERNALLY) != null) {
 			System.out.println("Skipping the recording of a prerecorded command "+module.getClass().getName());
+			return;
+		}
+		*/
+		/* tricky attempt 2
+		if (module == moduleToIgnore) {
+			System.out.println("module finish: ignoring a module");
 			return;
 		}
 		*/
@@ -390,6 +415,16 @@ public class UndoService extends AbstractService {
 	
 	// -- private helpers --
 
+	/* tricky attempt 2
+
+	private Object moduleToIgnore;
+
+	private void ignore(Future<?> futureModule) {
+		try { moduleToIgnore = futureModule.get();} catch (Exception e) {}
+	}
+	
+	*/
+	
 	// HACK TO GO AWAY SOON
 	private void ignore(Class<? extends Command> clss) {
 		classesToIgnore.put(clss, true);
@@ -440,8 +475,11 @@ public class UndoService extends AbstractService {
 			tmpInputs.add(inputs);
 			command = undoableCommands.removeLast();
 			inputs = undoableInputs.removeLast();
-			ignore(command);
-			commandService.run(command, inputs);
+			/* tricky attempt 2
+			 * ignore(commandService.run(command, inputs));
+			 */
+			 ignore(command);
+			 commandService.run(command, inputs);
 		}
 		
 		void doRedo() {
