@@ -115,6 +115,16 @@ import imagej.service.Service;
 // user can switch between displays and undo a lot of stuff. And they can record
 // and undo app related events.
 
+// NOTE that some redo's should invalidate the undo history. Here is an example:
+//  Fill draws the current selection with the fill color
+//  So drawing a rect, moving it, and filling it only stores the data after the
+//  fill. Do this repeatedly and undo/redo on and off and data gets out of sync.
+//  This is because an undo/redo manipulates the command history pointer. But a
+//  redo after a roi move can actually make the stored undo data snapshots
+//  invalid. If undo/redo also recorded roi info like placements and moves we'd
+//  not notice this issue. But I think it points out a limitation of the current
+//  approaach.
+
 /**
  * 
  * @author Barry DeZonia
@@ -204,8 +214,22 @@ public class UndoService extends AbstractService {
 		}
 	}
 
-	// TODO - move to a reusable plugin????
-	
+	/**
+	 * Captures a region of a Dataset to a one dimensional Img<DoubleType>. The
+	 * region is defined with a PointSet. The data is stored in the order of
+	 * iteration of the input PointSet. Using the Img<DoubleType> and the original
+	 * PointSet one can easily restore the data using restoreData().
+	 * 
+	 * @param source
+	 * 	The Dataset to capture from.
+	 * @param points
+	 *  The set of coordinate points that hold the values to backup.
+	 * @param factory
+	 *  The factory used to make the Img<DoubleType>. This allows API users to
+	 *  determine the most efficient way to store backup data.
+	 * @return
+	 * 	An Img<DoubleType> that contains the backup data.
+	 */
 	public Img<DoubleType> captureData(Dataset source, PointSet points, ImgFactory<DoubleType> factory) {
 		long numPoints = points.calcSize();
 		Img<DoubleType> backup = factory.create(new long[]{numPoints}, new DoubleType());
@@ -225,8 +249,19 @@ public class UndoService extends AbstractService {
 		return backup;
 	}
 
-	// TODO - move to a reusable plugin????
-	
+	/**
+	 * Restores a region of a Dataset from a one dimensional Img<DoubleType>. The
+	 * region is defined by a PointSet. The data is stored in the order of
+	 * iteration of the input PointSet. The Img<DoubleType> should have been
+	 * previously recorded by captureData().
+	 *
+	 * @param target
+	 * 	The Dataset to restore data to.
+	 * @param points
+	 *  The set of coordinate points of the Dataset to restore to.
+	 * @param backup
+	 * 	An Img<DoubleType> that contains the backup data.
+	 */
 	public void restoreData(Dataset target, PointSet points, Img<DoubleType> backup) {
 		long[] miniPos = new long[1];
 		long i = 0;
