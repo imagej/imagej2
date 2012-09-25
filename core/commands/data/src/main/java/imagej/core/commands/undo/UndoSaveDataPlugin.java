@@ -76,13 +76,15 @@ public class UndoSaveDataPlugin
 	@Parameter(type = ItemIO.OUTPUT)
 	private Img<DoubleType> data;
 	
-	// -- public API --
+	// -- Command methods --
 	
 	@Override
 	public void run() {
 		// TODO - change ArrayImgFactory to some small memory ImgFactory made for undo
 		undoService.captureData(source, points, new ArrayImgFactory<DoubleType>());
 	}
+	
+	// -- InvertibleCommand methods --
 	
 	@Override
 	public Class<? extends Command> getInverseCommand() {
@@ -97,6 +99,8 @@ public class UndoSaveDataPlugin
 		inverseInputs.put("data", data);
 		return inverseInputs;
 	}
+	
+	// -- UndoSaveDataPlugin methods --
 	
 	public void setSource(Dataset ds) {
 		source = ds;
@@ -116,9 +120,5 @@ public class UndoSaveDataPlugin
 	
 	public Img<DoubleType> getData() {
 		return data;
-	}
-	
-	public void setUndoService(UndoService srv) {
-		undoService = srv;
 	}
 }
