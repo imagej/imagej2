@@ -47,7 +47,7 @@ import imagej.plugin.Plugin;
 
 
 /**
- * NOTE - unused at the moment.
+ * NOTE - unused at the moment. Eliminate?
  * 
  * @author Barry DeZonia
  *

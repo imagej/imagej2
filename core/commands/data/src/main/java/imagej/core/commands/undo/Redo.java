@@ -35,9 +35,9 @@
 
 package imagej.core.commands.undo;
 
-import imagej.command.Command;
+import imagej.command.ContextCommand;
 import imagej.command.Unrecordable;
-import imagej.data.display.ImageDisplay;
+import imagej.display.Display;
 import imagej.menu.MenuConstants;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -52,19 +52,28 @@ import imagej.plugin.Plugin;
 	@Menu(label = MenuConstants.EDIT_LABEL,
 		weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
-	@Menu(label = "Redo", weight = 51)},
+	@Menu(label = "Redo", accelerator = "shift control Z", weight = 51)},
 	headless = true)
-public class Redo implements Command, Unrecordable {
-
+public class Redo
+	extends ContextCommand
+	implements Unrecordable
+{
 	@Parameter
 	private UndoService service;
 	
 	@Parameter(required = false)
-	private ImageDisplay display;
+	private Display<?> display;
 	
 	@Override
 	public void run() {
 		service.redo(display);
 	}
-
+	
+	public Display<?> getDisplay() {
+		return display;
+	}
+	
+	public void setDisplay(Display<?> display) {
+		this.display = display;
+	}
 }
