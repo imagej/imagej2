@@ -37,7 +37,7 @@ package imagej.core.commands.undo;
 
 import imagej.command.Command;
 import imagej.command.Unrecordable;
-import imagej.data.display.ImageDisplay;
+import imagej.display.Display;
 import imagej.menu.MenuConstants;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -62,7 +62,7 @@ public class ClearCurrentHistory implements Command, Unrecordable {
 	private UndoService service;
 	
 	@Parameter(required = false)
-	private ImageDisplay display;
+	private Display<?> display;
 	
 	// -- Command members --
 	
