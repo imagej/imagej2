@@ -128,7 +128,7 @@ public class UndoService extends AbstractService {
 	// -- constants --
 	
 	// TODO we really need max mem for combined histories and not max steps of
-	// each history. But it will work as a test bed for now. ANd max should be
+	// each history. But it will work as a test bed for now. And max should be
 	// a settable value in some options plugin
 	
 	private static final int MAX_STEPS = 5;
@@ -140,10 +140,10 @@ public class UndoService extends AbstractService {
 	// -- Parameters --
 	
 	@Parameter
-	private DisplayService displayService;
+	private DisplayService dispService;
 	
 	@Parameter
-	private ImageDisplayService imageDisplayService;
+	private ImageDisplayService imgDispService;
 	
 	@Parameter
 	private CommandService commandService;
@@ -207,8 +207,8 @@ public class UndoService extends AbstractService {
 	}
 
 	/**
-	 * Captures a region of a Dataset to a one dimensional Img<DoubleType>. The
-	 * region is defined with a PointSet. The data is stored in the order of
+	 * Captures a region of a Dataset to a one dimensional Img<DoubleType>.
+	 * The region is defined with a PointSet. The data is stored in the order of
 	 * iteration of the input PointSet. Using the Img<DoubleType> and the original
 	 * PointSet one can easily restore the data using restoreData(). The
 	 * Img<DoubleType> will reside completely in memory and is limited to about
@@ -226,8 +226,8 @@ public class UndoService extends AbstractService {
 	}
 	
 	/**
-	 * Captures a region of a Dataset to a one dimensional Img<DoubleType>. The
-	 * region is defined with a PointSet. The data is stored in the order of
+	 * Captures a region of a Dataset to a one dimensional Img<DoubleType>.
+	 * The region is defined with a PointSet. The data is stored in the order of
 	 * iteration of the input PointSet. Using the Img<DoubleType> and the original
 	 * PointSet one can easily restore the data using restoreData(). The
 	 * Img<DoubleType> will reside in a structure provided by the user specified
@@ -244,12 +244,16 @@ public class UndoService extends AbstractService {
 	 * @return
 	 * 	An Img<DoubleType> that contains the backup data.
 	 */
-	public Img<DoubleType> captureData(Dataset source, PointSet points, ImgFactory<DoubleType> factory) {
+	public Img<DoubleType> captureData(Dataset source, PointSet points,
+		ImgFactory<DoubleType> factory)
+	{
 		long numPoints = points.calcSize();
-		Img<DoubleType> backup = factory.create(new long[]{numPoints}, new DoubleType());
+		Img<DoubleType> backup =
+				factory.create(new long[]{numPoints}, new DoubleType());
 		long[] miniPos = new long[1];
 		long i = 0;
-		RandomAccess<? extends RealType<?>> dataAccessor = source.getImgPlus().randomAccess();
+		RandomAccess<? extends RealType<?>> dataAccessor =
+				source.getImgPlus().randomAccess();
 		RandomAccess<DoubleType> backupAccessor = backup.randomAccess();
 		PointSetIterator iter = points.createIterator();
 		while (iter.hasNext()) {
@@ -264,8 +268,8 @@ public class UndoService extends AbstractService {
 	}
 
 	/**
-	 * Restores a region of a Dataset from a one dimensional Img<DoubleType>. The
-	 * region is defined by a PointSet. The data is stored in the order of
+	 * Restores a region of a Dataset from a one dimensional Img<DoubleType>.
+	 * The region is defined by a PointSet. The data is stored in the order of
 	 * iteration of the input PointSet. The Img<DoubleType> should have been
 	 * previously recorded by captureData().
 	 *
@@ -276,10 +280,13 @@ public class UndoService extends AbstractService {
 	 * @param backup
 	 * 	An Img<DoubleType> that contains the backup data.
 	 */
-	public void restoreData(Dataset target, PointSet points, Img<DoubleType> backup) {
+	public void restoreData(Dataset target, PointSet points,
+		Img<DoubleType> backup)
+	{
 		long[] miniPos = new long[1];
 		long i = 0;
-		RandomAccess<? extends RealType<?>> dataAccessor = target.getImgPlus().randomAccess();
+		RandomAccess<? extends RealType<?>> dataAccessor =
+				target.getImgPlus().randomAccess();
 		RandomAccess<DoubleType> backupAccessor = backup.randomAccess();
 		PointSetIterator iter = points.createIterator();
 		while (iter.hasNext()) {
@@ -309,14 +316,15 @@ public class UndoService extends AbstractService {
 		if (theObject instanceof Unrecordable) return;
 		if (theObject instanceof InvertibleCommand) return; // record later
 		if (theObject instanceof Command) {
-			Display<?> display = displayService.getActiveDisplay();
+			Display<?> display = dispService.getActiveDisplay();
 			// FIXME HACK only datasets of imagedisplays supported right now
 			if (!(display instanceof ImageDisplay)) return;
-			Dataset dataset = imageDisplayService.getActiveDataset((ImageDisplay)display);
+			Dataset dataset = imgDispService.getActiveDataset((ImageDisplay)display);
 			if (dataset == null) return;
 			PointSet points = new HyperVolumePointSet(dataset.getDims());
 			// TODO replace ArrayImgFactory with something more apprpriate
-			Img<DoubleType> backup = captureData(dataset, points, new ArrayImgFactory<DoubleType>());
+			Img<DoubleType> backup =
+					captureData(dataset, points, new ArrayImgFactory<DoubleType>());
 			Map<String,Object> inputs = new HashMap<String, Object>();
 			inputs.put("target", dataset);
 			inputs.put("points", points);
@@ -338,7 +346,7 @@ public class UndoService extends AbstractService {
 		if (ignoring((Class<? extends Command>)theObject.getClass())) return;
 		if (theObject instanceof Unrecordable) return;
 		if (theObject instanceof Command) {
-			Display<?> display = displayService.getActiveDisplay();
+			Display<?> display = dispService.getActiveDisplay();
 			// FIXME HACK only datasets of imagedisplays supported right now
 			if (!(display instanceof ImageDisplay)) return;
 			// remove last undo point
@@ -358,17 +366,18 @@ public class UndoService extends AbstractService {
 		Object theObject = module.getDelegateObject();
 		if (theObject instanceof Unrecordable) return;
 		if (theObject instanceof Command) {
-			Display<?> display = displayService.getActiveDisplay();
+			Display<?> display = dispService.getActiveDisplay();
 			// FIXME HACK only datasets of imagedisplays supported right now
 			if (!(display instanceof ImageDisplay)) return;
-			Dataset dataset = imageDisplayService.getActiveDataset((ImageDisplay)display);
+			Dataset dataset = imgDispService.getActiveDataset((ImageDisplay)display);
 			if (dataset == null) return;
 			Class<? extends Command> theClass =
 					(Class<? extends Command>) theObject.getClass();
 			if (!ignoring(theClass)) {
 				if (theObject instanceof InvertibleCommand) {
 					InvertibleCommand command = (InvertibleCommand) theObject;
-					findHistory(display).addUndo(command.getInverseCommand(), command.getInverseInputMap());
+					findHistory(display).addUndo(
+						command.getInverseCommand(), command.getInverseInputMap());
 				}
 				findHistory(display).addRedo(theClass, evt.getModule().getInputs());
 			}
