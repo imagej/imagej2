@@ -58,16 +58,22 @@ public class Redo
 	extends ContextCommand
 	implements Unrecordable
 {
+	// -- Parameters --
+	
 	@Parameter
 	private UndoService service;
 	
 	@Parameter(required = false)
 	private Display<?> display;
 	
+	// -- Command members --
+	
 	@Override
 	public void run() {
 		service.redo(display);
 	}
+	
+	// -- Redo members --
 	
 	public Display<?> getDisplay() {
 		return display;
