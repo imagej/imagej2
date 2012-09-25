@@ -107,17 +107,8 @@ import imagej.service.Service;
 // user can switch between displays and undo a lot of stuff. And they can record
 // and undo app related events.
 
-// NOTE that some redo's should invalidate the undo history. Here is an example:
-//  Fill draws the current selection with the fill color
-//  So drawing a rect, moving it, and filling it only stores the data after the
-//  fill. Do this repeatedly and undo/redo on and off and data gets out of sync.
-//  This is because an undo/redo manipulates the command history pointer. But a
-//  redo after a roi move can actually make the stored undo data snapshots
-//  invalid. If undo/redo also recorded roi info like placements and moves we'd
-//  not notice this issue. But I think it points out a limitation of the current
-//  approaach.
-
 /**
+ * Provides multistep undo/redo support to IJ2.
  * 
  * @author Barry DeZonia
  *
@@ -462,9 +453,6 @@ public class UndoService extends AbstractService {
 			if (tmpCommands.size() <= 0) return;
 			Class<? extends Command> command = tmpCommands.getLast();
 			Map<String,Object> input = tmpInputs.getLast();
-			//redoableCommands.add(command);
-			//redoableInputs.add(input);
-			//ignore(command);  // TODO - is this a problem???? Do we need recording for correct pixel states?
 			commandService.run(command, input);
 		}
 		
