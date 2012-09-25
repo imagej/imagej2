@@ -75,12 +75,14 @@ public class UndoRestoreDataPlugin
 	@Parameter(type = ItemIO.INPUT)
 	private Img<DoubleType> data;
 	
-	// -- public API --
+	// -- Command methods --
 	
 	@Override
 	public void run() {
 		undoService.restoreData(target, points, data);
 	}
+	
+	// -- InvertibleCommand methods --
 
 	@Override
 	public Class<? extends Command> getInverseCommand() {
@@ -95,4 +97,29 @@ public class UndoRestoreDataPlugin
 		return inverseInputs;
 	}
 
+	// -- UndoRestorDataPlugin methods --
+	
+	public void setTarget(Dataset ds) {
+		target = ds;
+	}
+	
+	public Dataset getTarget() {
+		return target;
+	}
+	
+	public void setPoints(PointSet ps) {
+		points = ps;
+	}
+
+	public PointSet getPoints() {
+		return points;
+	}
+	
+	public void setData(Img<DoubleType> data) {
+		this.data = data;
+	}
+	
+	public Img<DoubleType> getData() {
+		return data;
+	}
 }

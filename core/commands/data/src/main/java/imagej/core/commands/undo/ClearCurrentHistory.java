@@ -56,11 +56,15 @@ import imagej.plugin.Plugin;
 	headless = true)
 public class ClearCurrentHistory implements Command, Unrecordable {
 
+	// -- Parameters --
+	
 	@Parameter
 	private UndoService service;
 	
 	@Parameter(required = false)
 	private ImageDisplay display;
+	
+	// -- Command members --
 	
 	@Override
 	public void run() {

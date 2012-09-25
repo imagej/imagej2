@@ -55,8 +55,12 @@ import imagej.plugin.Plugin;
 	headless = true)
 public class ClearAllHistory implements Command, Unrecordable {
 
+	// -- Parameters --
+	
 	@Parameter
 	private UndoService service;
+	
+	// -- Command methods --
 	
 	@Override
 	public void run() {
