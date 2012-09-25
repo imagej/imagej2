@@ -35,6 +35,7 @@
 
 package imagej.core.commands.undo;
 
+import java.awt.Toolkit;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -468,7 +469,11 @@ public class UndoService extends AbstractService {
 		
 		void doUndo() {
 			//System.out.println("doUndo() : undoPos = "+undoPos+" redoPos = "+redoPos);
-			if (undoableCommands.size() <= 0) return;
+			if (undoableCommands.size() <= 0) {
+				// TODO eliminate AWT dependency with a BeepService!
+				Toolkit.getDefaultToolkit().beep();
+				return;
+			}
 			Class<? extends Command> command = redoableCommands.removeLast();
 			Map<String,Object> inputs = redoableInputs.removeLast();
 			tmpCommands.add(command);
@@ -484,7 +489,11 @@ public class UndoService extends AbstractService {
 		
 		void doRedo() {
 			//System.out.println("doRedo() : undoPos = "+undoPos+" redoPos = "+redoPos);
-			if (tmpCommands.size() <= 0) return;
+			if (tmpCommands.size() <= 0) {
+				// TODO eliminate AWT dependency with a BeepService!
+				Toolkit.getDefaultToolkit().beep();
+				return;
+			}
 			Class<? extends Command> command = tmpCommands.getLast();
 			Map<String,Object> input = tmpInputs.getLast();
 			commandService.run(command, input);
