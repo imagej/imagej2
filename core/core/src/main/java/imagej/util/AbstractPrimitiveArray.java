@@ -143,8 +143,14 @@ public abstract class AbstractPrimitiveArray<ArrayType, BaseType> extends
 
 		// grow the array by up to 50% (plus a small constant)
 		final int growth = Math.min(oldCapacity / 2 + 16, maximumGrowth);
-		// but array must grow to at least the minimum capacity too
-		final int newLength = Math.max(minCapacity, oldCapacity + growth);
+		final int newCapacity;
+		if (growth > Integer.MAX_VALUE - oldCapacity) {
+			// growth would push array over the maximum array size
+			newCapacity = Integer.MAX_VALUE;
+		}
+		else newCapacity = oldCapacity + growth;
+		// ensure the array grows by at least the requested minimum capacity
+		final int newLength = Math.max(minCapacity, newCapacity);
 
 		// copy the data into a new array
 		setArray(copyArray(newLength));
@@ -161,6 +167,10 @@ public abstract class AbstractPrimitiveArray<ArrayType, BaseType> extends
 		int oldSize = size();
 		if (index < 0 || index > oldSize) {
 			throw new ArrayIndexOutOfBoundsException("Invalid index value");
+		}
+		if (count > Integer.MAX_VALUE - oldSize) {
+			// insertion would push array over the maximum size
+			throw new IllegalArgumentException("Too many elements");
 		}
 		if (count <= 0) {
 			throw new IllegalArgumentException("Count must be positive");
