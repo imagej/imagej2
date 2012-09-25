@@ -276,6 +276,17 @@ public class ImageJ {
 		return serviceIndex.getService(c);
 	}
 
+	/** Gets the service of the given class name (useful for scripts). */
+	@SuppressWarnings("unchecked")
+	public <S extends Service> S getService(final String className) {
+		try {
+			ClassLoader loader = Thread.currentThread().getContextClassLoader();
+			return  getService((Class<S>)loader.loadClass(className));
+		} catch (ClassNotFoundException exc) {
+			return null;
+		}
+	}
+
 	/**
 	 * Injects the application context into the given object. Note that this is
 	 * only possible if the given object implements the {@link Contextual}
