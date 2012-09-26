@@ -139,8 +139,8 @@ public class FindAndReplaceDialog extends JDialog implements ActionListener {
 		replaceField.addKeyListener(listener);
 	}
 
-	@Override
-	public void show(final boolean replace) {
+	public void showDialog(final boolean replace, final JTextComponent textComponent) {
+		this.textComponent = textComponent;
 		setTitle(replace ? "Replace" : "Find");
 		replaceLabel.setEnabled(replace);
 		replaceField.setEnabled(replace);

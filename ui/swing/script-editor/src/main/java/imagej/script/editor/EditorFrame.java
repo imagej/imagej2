@@ -1038,7 +1038,7 @@ public class EditorFrame extends JFrame implements ActionListener,
 		if (selection != null)
 			findDialog.setSearchPattern(selection);
 
-		findDialog.show(replace);
+		findDialog.show(replace, getTextComponent());
 	}
 
 	public void gotoLine() {
