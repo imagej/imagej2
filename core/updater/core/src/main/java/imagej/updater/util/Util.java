@@ -36,7 +36,7 @@
 package imagej.updater.util;
 
 import imagej.log.LogService;
-import imagej.util.FileUtils;
+import imagej.util.AppUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -103,7 +103,7 @@ public class Util {
 
 	static {
 		// TODO: since this is all dependent on the ijRoot, don't make it static.
-		final File imagejRoot = FileUtils.getBaseDirectory();
+		final File imagejRoot = AppUtils.getBaseDirectory(Util.class.getName());
 		platform = getPlatform();
 
 		platforms =

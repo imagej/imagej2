@@ -991,7 +991,7 @@ public class UpdaterTest {
 		files = readDb(true, true);
 
 		// update again
-		assertTrue(files.get("jars/egads.jar").stageForUpdate(files,  false));
+		assertTrue("egads.jar's status: " + files.get("jars/egads.jar").getStatus(), files.get("jars/egads.jar").stageForUpdate(files,  false));
 		Installer installer = new Installer(files, progress);
 		installer.start();
 		assertTrue(files.prefixUpdate("jars/egads-2.1.jar").length() > 0);
@@ -1340,6 +1340,10 @@ public class UpdaterTest {
 			ParserConfigurationException, SAXException {
 		final FilesCollection files = new FilesCollection(ijRoot);
 		final File localDb = new File(ijRoot, "db.xml.gz");
+		if (runChecksummer) {
+			// We're too fast, cannot trust the cached checksums
+			new File(ijRoot, ".checksums").delete();
+		}
 		if (readLocalDb && runChecksummer) {
 			files.downloadIndexAndChecksum(progress);
 			return files;
@@ -1360,8 +1364,6 @@ public class UpdaterTest {
 		}
 		new XMLFileReader(files).read(FilesCollection.DEFAULT_UPDATE_SITE);
 		if (runChecksummer) {
-			// We're too fast, cannot trust the cached checksums
-			new File(ijRoot, ".checksums").delete();
 			final Checksummer czechsummer = new Checksummer(files, progress);
 			czechsummer.updateFromLocal();
 		}
@@ -1687,7 +1689,7 @@ public class UpdaterTest {
 		final File dir = file.getParentFile();
 		if (!dir.isDirectory()) dir.mkdirs();
 		final String name = file.getName();
-		if (name.endsWith(".jar")) return writeJar(dir, name, name, name);
+		if (name.endsWith(".jar")) return writeJar(dir, name, content, content);
 
 		writeStream(new FileOutputStream(file), content, true);
 		return file;

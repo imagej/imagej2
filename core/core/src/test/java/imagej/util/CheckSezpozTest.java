@@ -130,9 +130,11 @@ public class CheckSezpozTest {
 		assertTrue(new File(classes,
 			"META-INF/annotations/imagej.plugin.Plugin").exists());
 
+		ClassLoader savedLoader = Thread.currentThread().getContextClassLoader();
 		Thread.currentThread().setContextClassLoader(
 			new URLClassLoader(new URL[] { classes.toURI().toURL() }));
 		assertTrue(sezpozFindsClass(Plugin.class, ImageJPlugin.class, "Annotated"));
+		Thread.currentThread().setContextClassLoader(savedLoader);
 	}
 
 	protected <S extends Annotation, T> boolean sezpozFindsClass(

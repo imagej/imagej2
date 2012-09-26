@@ -24,6 +24,7 @@
 	<modules>
 		<module>app</module>
 		<module>core</module>
+		<module>script</module>
 		<module>ui</module>
 	</modules>
 
