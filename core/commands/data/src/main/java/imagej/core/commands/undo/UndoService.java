@@ -295,7 +295,6 @@ public class UndoService extends AbstractService {
 	
 	// -- protected event handlers --
 	
-	@SuppressWarnings("unchecked")
 	@EventHandler
 	protected void onEvent(ModuleStartedEvent evt) {
 		Module module = evt.getModule();
@@ -312,10 +311,13 @@ public class UndoService extends AbstractService {
 		}
 		*/
 		Object theObject = module.getDelegateObject();
-		if (ignoring((Class<? extends Command>)theObject.getClass())) return;
 		if (theObject instanceof Unrecordable) return;
 		if (theObject instanceof InvertibleCommand) return; // record later
 		if (theObject instanceof Command) {
+			@SuppressWarnings("unchecked")
+			Class<? extends Command> theClass =
+				(Class<? extends Command>) theObject.getClass(); 
+			if (ignoring(theClass)) return;
 			Display<?> display = dispService.getActiveDisplay();
 			// FIXME HACK only datasets of imagedisplays supported right now
 			if (!(display instanceof ImageDisplay)) return;
@@ -333,7 +335,6 @@ public class UndoService extends AbstractService {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	@EventHandler
 	protected void onEvent(ModuleCanceledEvent evt) {
 		Module module = evt.getModule();
@@ -350,9 +351,12 @@ public class UndoService extends AbstractService {
 		}
 		*/
 		Object theObject = module.getDelegateObject();
-		if (ignoring((Class<? extends Command>)theObject.getClass())) return;
 		if (theObject instanceof Unrecordable) return;
 		if (theObject instanceof Command) {
+			@SuppressWarnings("unchecked")
+			Class<? extends Command> theClass =
+					(Class<? extends Command>) theObject.getClass(); 
+			if (ignoring(theClass)) return;
 			Display<?> display = dispService.getActiveDisplay();
 			// FIXME HACK only datasets of imagedisplays supported right now
 			if (!(display instanceof ImageDisplay)) return;
@@ -361,7 +365,6 @@ public class UndoService extends AbstractService {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	@EventHandler
 	protected void onEvent(ModuleFinishedEvent evt) {
 		Module module = evt.getModule();
@@ -380,22 +383,24 @@ public class UndoService extends AbstractService {
 		Object theObject = module.getDelegateObject();
 		if (theObject instanceof Unrecordable) return;
 		if (theObject instanceof Command) {
+			@SuppressWarnings("unchecked")
+			Class<? extends Command> theClass =
+					(Class<? extends Command>) theObject.getClass();
+			if (ignoring(theClass)) {
+				stopIgnoring(theClass);
+				return;
+			}
 			Display<?> display = dispService.getActiveDisplay();
 			// FIXME HACK only datasets of imagedisplays supported right now
 			if (!(display instanceof ImageDisplay)) return;
 			Dataset dataset = imgDispService.getActiveDataset((ImageDisplay)display);
 			if (dataset == null) return;
-			Class<? extends Command> theClass =
-					(Class<? extends Command>) theObject.getClass();
-			if (!ignoring(theClass)) {
-				if (theObject instanceof InvertibleCommand) {
-					InvertibleCommand command = (InvertibleCommand) theObject;
-					findHistory(display).addUndo(
-						command.getInverseCommand(), command.getInverseInputMap());
-				}
-				findHistory(display).addRedo(theClass, evt.getModule().getInputs());
+			if (theObject instanceof InvertibleCommand) {
+				InvertibleCommand command = (InvertibleCommand) theObject;
+				findHistory(display).addUndo(
+					command.getInverseCommand(), command.getInverseInputMap());
 			}
-			stopIgnoring(theClass);
+			findHistory(display).addRedo(theClass, evt.getModule().getInputs());
 		}
 	}
 
