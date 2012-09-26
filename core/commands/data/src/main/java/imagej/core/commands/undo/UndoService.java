@@ -295,6 +295,7 @@ public class UndoService extends AbstractService {
 	
 	// -- protected event handlers --
 	
+	@SuppressWarnings("unchecked")
 	@EventHandler
 	protected void onEvent(ModuleStartedEvent evt) {
 		Module module = evt.getModule();
@@ -332,6 +333,7 @@ public class UndoService extends AbstractService {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	@EventHandler
 	protected void onEvent(ModuleCanceledEvent evt) {
 		Module module = evt.getModule();
@@ -359,6 +361,7 @@ public class UndoService extends AbstractService {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	@EventHandler
 	protected void onEvent(ModuleFinishedEvent evt) {
 		Module module = evt.getModule();
