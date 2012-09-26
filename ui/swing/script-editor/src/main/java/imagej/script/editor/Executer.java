@@ -34,8 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
-import imagej.util.Log;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -92,13 +90,13 @@ public abstract class Executer extends ThreadGroup {
 							final List<Thread> ts = getAllThreads();
 							activeCount = ts.size();
 							if (activeCount <= 1) break;
-							Log.debug("Waiting for " + ts.size() + " threads to die");
+							editorFrame.log.debug("Waiting for " + ts.size() + " threads to die");
 							int count_zSelector = 0;
 							for (final Thread t : ts) {
 								if (t.getName().equals("zSelector")) {
 									count_zSelector++;
 								}
-								Log.debug("THREAD: " + t.getName());
+								editorFrame.log.debug("THREAD: " + t.getName());
 							}
 							if (activeCount == count_zSelector + 1) {
 								// Do not wait on the stack slice selector thread.
@@ -170,7 +168,7 @@ public abstract class Executer extends ThreadGroup {
 			if (null != errorWriter) errorWriter.shutdownNow();
 		}
 		catch (final Exception e) {
-			Log.error(e);
+			editorFrame.log.error(e);
 		}
 		for (final Thread thread : getAllThreads()) {
 			try {
@@ -179,7 +177,7 @@ public abstract class Executer extends ThreadGroup {
 				thread.stop();
 			}
 			catch (final Throwable t) {
-				Log.error(t);
+				editorFrame.log.error(t);
 			}
 		}
 		this.editorFrame.executingTasks.remove(this);

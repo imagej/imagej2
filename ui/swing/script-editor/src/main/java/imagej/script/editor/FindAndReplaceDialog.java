@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
-import imagej.util.Log;
+import imagej.log.LogService;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -67,11 +67,13 @@ public class FindAndReplaceDialog extends JDialog implements ActionListener {
 	protected JLabel replaceLabel;
 	protected JCheckBox matchCase, wholeWord, markAll, regex, forward;
 	protected JButton findNext, replace, replaceAll, cancel;
+	protected final LogService log;
 
-	public FindAndReplaceDialog(final Frame owner,
+	public FindAndReplaceDialog(final Frame owner, final LogService logService,
 		final JTextComponent textComponent)
 	{
 		super(owner);
+		log = logService;
 		this.textComponent = textComponent;
 
 		final Container root = getContentPane();
@@ -212,7 +214,7 @@ public class FindAndReplaceDialog extends JDialog implements ActionListener {
 			}
 		}
 		catch (final BadLocationException exception) {
-			Log.error(exception);
+			log.error(exception);
 		}
 	}
 

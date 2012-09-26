@@ -37,13 +37,13 @@ package imagej.script.editor;
 import imagej.ImageJ;
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
+import imagej.log.LogService;
 import imagej.menu.MenuService;
 import imagej.menu.ShadowMenu;
 import imagej.script.CompiledLanguage;
 import imagej.script.ScriptService;
 import imagej.ui.swing.menu.SwingJMenuBarCreator;
 import imagej.util.AppUtils;
-import imagej.util.Log;
 
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -157,16 +157,18 @@ public class EditorFrame extends JFrame implements ActionListener,
 	protected final ScriptService scriptService;
 	protected final MenuService menuService;
 	protected final CommandService commandService;
+	protected final LogService log;
 
 	public EditorFrame(final ImageJ context, final ScriptService scriptService,
 		final CommandService commandService, final MenuService menuService,
-		final File file)
+		final LogService logService, final File file)
 	{
 		super("Script Editor");
 		this.context = context;
 		this.scriptService = scriptService;
 		this.commandService = commandService;
 		this.menuService = menuService;
+		log = logService;
 
 		// Initialize menu
 		final int ctrl = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
@@ -744,7 +746,7 @@ public class EditorFrame extends JFrame implements ActionListener,
 			}
 		}
 		catch (final Exception e) {
-			Log.error(e);
+			log.error(e);
 			error("The template '" + url + "' was not found.");
 		}
 	}
@@ -1193,11 +1195,11 @@ public class EditorFrame extends JFrame implements ActionListener,
 			return tab;
 		}
 		catch (final FileNotFoundException e) {
-			Log.error(e);
+			log.error(e);
 			error("The file '" + file + "' was not found.");
 		}
 		catch (final Exception e) {
-			Log.error(e);
+			log.error(e);
 			error("There was an error while opening '" + file + "': " + e);
 		}
 		return null;
@@ -1250,7 +1252,7 @@ public class EditorFrame extends JFrame implements ActionListener,
 			return true;
 		}
 		catch (final IOException e) {
-			Log.error(e);
+			log.error(e);
 			error("Could not save " + file.getName());
 			return false;
 		}
@@ -1550,7 +1552,7 @@ public class EditorFrame extends JFrame implements ActionListener,
 			tab.execute(currentLanguage, selectionOnly);
 		}
 		catch (final Throwable t) {
-			Log.error(t);
+			log.error(t);
 		}
 	}
 
@@ -1567,8 +1569,8 @@ public class EditorFrame extends JFrame implements ActionListener,
 		else getTab().showOutput();
 
 		markCompileStart();
-		final JTextAreaWriter writer = new JTextAreaWriter(getTab().screen);
-		final JTextAreaWriter errorWriter = new JTextAreaWriter(errorScreen);
+		final JTextAreaWriter writer = new JTextAreaWriter(getTab().screen, log);
+		final JTextAreaWriter errorWriter = new JTextAreaWriter(errorScreen, log);
 		final File file = getEditorPane().file;
 		scriptService.initialize(engine, file.getPath(), writer, errorWriter);
 
@@ -1657,7 +1659,7 @@ public class EditorFrame extends JFrame implements ActionListener,
 	public void markCompileEnd() {
 		if (errorHandler == null) {
 			errorHandler =
-				new ErrorHandler(getCurrentLanguage(), errorScreen,
+				new ErrorHandler(getCurrentLanguage(), errorScreen, log,
 					compileStartPosition.getOffset());
 			if (errorHandler.getErrorCount() > 0) getTab().showErrors();
 		}
@@ -1870,7 +1872,7 @@ public class EditorFrame extends JFrame implements ActionListener,
 
 	void handleException(final Throwable e) {
 		// TODO! hand off to ExceptionHandler
-		Log.error(e);
+		log.error(e);
 	}
 
 	/**

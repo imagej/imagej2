@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 package imagej.script.editor;
 
 import imagej.util.AppUtils;
-import imagej.util.Log;
 
 import java.awt.Color;
 import java.io.File;
@@ -166,7 +165,7 @@ public class FileFunctions {
 			return url.substring(offset, dotJar);
 		}
 		catch (final Exception e) {
-			Log.error(e);
+			parent.log.error(e);
 			return null;
 		}
 	}
@@ -346,7 +345,7 @@ public class FileFunctions {
 				}
 			}
 			catch (final IOException e) {
-				Log.error(e);
+				parent.log.error(e);
 			}
 		}
 		else {

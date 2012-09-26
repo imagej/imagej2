@@ -34,8 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
-import imagej.util.Log;
-
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -226,9 +224,9 @@ public class Tab extends JSplitPane {
 		final boolean selectionOnly) throws IOException
 	{
 		prepare();
-		final JTextAreaWriter output = new JTextAreaWriter(this.screen);
+		final JTextAreaWriter output = new JTextAreaWriter(this.screen, editorFrame.log);
 		final JTextAreaWriter errors =
-			new JTextAreaWriter(this.editorFrame.errorScreen);
+			new JTextAreaWriter(this.editorFrame.errorScreen, editorFrame.log);
 		final ScriptEngine engine = language.getScriptEngine();
 		this.editorFrame.scriptService.initialize(engine, editorPane.getFileName(),
 			output, errors);
@@ -286,13 +284,13 @@ public class Tab extends JSplitPane {
 						po.close();
 					}
 					catch (final Throwable tt) {
-						Log.error(tt);
+						editorFrame.log.error(tt);
 					}
 				}
 			}.start();
 		}
 		catch (final Throwable t) {
-			Log.error(t);
+			editorFrame.log.error(t);
 		}
 		finally {
 			// Re-enable when all text to send has been sent

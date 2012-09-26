@@ -37,6 +37,7 @@ package imagej.script.editor;
 import imagej.AbstractContextual;
 import imagej.command.Command;
 import imagej.command.CommandService;
+import imagej.log.LogService;
 import imagej.menu.MenuService;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -61,9 +62,12 @@ public class ScriptEditor extends AbstractContextual implements Command {
 	@Parameter
 	private MenuService menuService;
 
+	@Parameter
+	private LogService logService;
+
 	@Override
 	public void run() {
-		new EditorFrame(getContext(), scriptService, commandService, menuService, null)
+		new EditorFrame(getContext(), scriptService, commandService, menuService, logService, null)
 			.setVisible(true);
 	}
 

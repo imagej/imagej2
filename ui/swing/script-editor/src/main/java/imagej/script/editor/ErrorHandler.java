@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
-import imagej.util.Log;
+import imagej.log.LogService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,15 +53,17 @@ public class ErrorHandler {
 	protected JTextArea textArea;
 	protected int currentOffset;
 	protected Parser parser;
+	protected final LogService log;
 
-	public ErrorHandler(final JTextArea textArea) {
+	public ErrorHandler(final JTextArea textArea, final LogService logService) {
 		this.textArea = textArea;
+		log = logService;
 	}
 
 	public ErrorHandler(final ScriptEngineFactory language,
-		final JTextArea textArea, final int startOffset)
+		final JTextArea textArea, final LogService logService, final int startOffset)
 	{
-		this(textArea);
+		this(textArea, logService);
 		final String name = language.getLanguageName();
 		if (name.equals("Java") || name.equals("Fiji Build")) parser =
 			new JavacErrorParser();
@@ -73,7 +75,7 @@ public class ErrorHandler {
 			parseErrors();
 		}
 		catch (final BadLocationException e) {
-			Log.error(e);
+			log.error(e);
 		}
 	}
 
@@ -152,7 +154,7 @@ public class ErrorHandler {
 			list.add(error);
 		}
 		catch (final BadLocationException e) {
-			Log.error(e);
+			log.error(e);
 		}
 	}
 
@@ -175,7 +177,7 @@ public class ErrorHandler {
 				list.add(error);
 			}
 			catch (final BadLocationException e) {
-				Log.error(e);
+				log.error(e);
 			}
 		}
 	}

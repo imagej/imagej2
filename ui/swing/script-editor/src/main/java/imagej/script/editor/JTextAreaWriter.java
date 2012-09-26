@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
-import imagej.util.Log;
+import imagej.log.LogService;
 
 import java.io.Writer;
 import java.util.ArrayList;
@@ -50,6 +50,7 @@ import javax.swing.text.BadLocationException;
 public class JTextAreaWriter extends Writer {
 
 	JTextArea textArea;
+	protected final LogService log;
 
 	ScheduledExecutorService updater = Executors.newScheduledThreadPool(1);
 	Vector<String> queue = new Vector<String>();
@@ -58,8 +59,9 @@ public class JTextAreaWriter extends Writer {
 	 * Creates a new output stream that prints every 400 ms to the textArea. When
 	 * done, call close() to clean up and finish printing any remaining text.
 	 */
-	public JTextAreaWriter(final JTextArea textArea) {
+	public JTextAreaWriter(final JTextArea textArea, final LogService logService) {
 		this.textArea = textArea;
+		log = logService;
 		updater.scheduleWithFixedDelay(new Runnable() {
 
 			@Override
@@ -110,7 +112,7 @@ public class JTextAreaWriter extends Writer {
 					.getLineEndOffset(lineCount - 1000));
 			}
 			catch (final BadLocationException e) {
-				Log.error(e);
+				log.error(e);
 			}
 			textArea.append(sb.toString());
 			textArea.setCaretPosition(textArea.getDocument().getLength());

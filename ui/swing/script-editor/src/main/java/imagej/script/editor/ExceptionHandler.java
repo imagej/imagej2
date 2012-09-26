@@ -63,7 +63,7 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
 		screen.insert(t.getClass().getName() + ": " + t.getMessage() + "\n", screen
 			.getDocument().getLength());
-		final ErrorHandler handler = new ErrorHandler(screen);
+		final ErrorHandler handler = new ErrorHandler(screen, editor.log);
 		for (int i = 0; i < trace.length; i++) {
 			final String fileName = trace[i].getFileName();
 			final int line = trace[i].getLineNumber();
