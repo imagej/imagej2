@@ -42,8 +42,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Writer;
 import java.util.List;
 
+import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
@@ -75,6 +77,9 @@ public interface ScriptService extends Service {
 			throws IOException, ScriptException;
 
 	boolean canHandleFile(final File file);
+
+	void initialize(final ScriptEngine engine, final String fileName,
+			final Writer writer, final Writer errorWriter);
 
 }
 
