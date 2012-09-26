@@ -483,8 +483,8 @@ public class UndoService extends AbstractService {
 			/* tricky attempt 2
 			 * ignore(commandService.run(command, inputs));
 			 */
-			 ignore(command);
-			 commandService.run(command, inputs);
+			ignore(command);
+			commandService.run(command, inputs);
 		}
 		
 		void doRedo() {
