@@ -36,10 +36,10 @@
 package imagej.core.commands.rotate;
 
 import java.util.HashMap;
-import java.util.Map;
 
-import imagej.command.Command;
+import imagej.command.CompleteCommand;
 import imagej.command.ContextCommand;
+import imagej.command.DefaultCompleteCommand;
 import imagej.command.InvertibleCommand;
 import imagej.data.Dataset;
 import imagej.data.Extents;
@@ -100,15 +100,10 @@ public class FlipVertically extends ContextCommand implements InvertibleCommand 
 	}
 
 	@Override
-	public Class<? extends Command> getInverseCommand() {
-		return FlipVertically.class;
-	}
-
-	@Override
-	public Map<String, Object> getInverseInputMap() {
+	public CompleteCommand getInverseCommand() {
 		HashMap<String, Object> input = new HashMap<String, Object>();
 		input.put("display", display);
-		return input;
+		return new DefaultCompleteCommand(FlipVertically.class,input,0);
 	}
 
 	// -- private interface --

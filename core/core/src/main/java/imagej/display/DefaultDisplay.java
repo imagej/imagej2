@@ -46,6 +46,12 @@ import imagej.plugin.Plugin;
 // merely causes the UIService to eventually issue some warnings anyway
 // ("No suitable viewer found for display" and "No viewer found for display").
 //@Plugin(type = Display.class, priority = Priority.VERY_LOW_PRIORITY)
+
+/**
+ * Default display for objects, when no other displays are available.
+ * 
+ * @author Curtis Rueden
+ */
 /**
  * Default display for objects, when no other displays are available.
  * 

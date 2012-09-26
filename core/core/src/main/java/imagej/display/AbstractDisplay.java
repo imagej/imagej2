@@ -163,6 +163,16 @@ public abstract class AbstractDisplay<T> extends SortablePlugin implements
 		this.name = name;
 	}
 
+	@Override
+	public DisplayState captureState() {
+		return null;
+	}
+
+	@Override
+	public void restoreState(DisplayState state) {
+		// nothing to do
+	}
+	
 	// -- List methods --
 
 	@Override

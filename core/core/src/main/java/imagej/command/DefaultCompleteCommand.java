@@ -32,55 +32,44 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+package imagej.command;
 
-package imagej.core.commands.undo;
 
-import imagej.command.ContextCommand;
-import imagej.command.Unrecordable;
-import imagej.data.undo.UndoService;
-import imagej.display.Display;
-import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+import java.util.Map;
+
 
 /**
  * 
  * @author Barry DeZonia
  *
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.EDIT_LABEL,
-		weight = MenuConstants.EDIT_WEIGHT,
-		mnemonic = MenuConstants.EDIT_MNEMONIC),
-	@Menu(label = "Undo", accelerator = "control Z", weight=50)},
-	headless = true)
-public class Undo
-	extends ContextCommand
-	implements Unrecordable
-{
-	// -- Parameters --
-	
-	@Parameter
-	private UndoService service;
-	
-	@Parameter(required = false)
-	private Display<?> display;
-	
-	// -- Command members --
+public class DefaultCompleteCommand implements CompleteCommand {
+
+	private final Class<? extends Command> command;
+	private final Map<String, Object> inputs;
+	private final long memUsage;
+
+	public DefaultCompleteCommand(Class<? extends Command> command,
+		Map<String, Object> inputs, long memUsage)
+	{
+		this.command = command;
+		this.inputs = inputs;
+		this.memUsage = memUsage;
+	}
 	
 	@Override
-	public void run() {
-		service.undo(display);
+	public Class<? extends Command> getCommand() {
+		return command;
 	}
 
-	// -- Undo members --
-	
-	public Display<?> getDisplay() {
-		return display;
+	@Override
+	public Map<String, Object> getInputs() {
+		return inputs;
 	}
 
-	public void setDisplay(Display<?> display) {
-		this.display = display;
+	@Override
+	public long getMemoryUsage() {
+		return memUsage;
 	}
+
 }

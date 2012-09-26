@@ -33,54 +33,101 @@
  * #L%
  */
 
-package imagej.core.commands.undo;
+package imagej.data.undo;
 
+import java.util.HashMap;
+
+import net.imglib2.img.Img;
+import net.imglib2.ops.pointset.PointSet;
+import net.imglib2.type.numeric.real.DoubleType;
+
+import imagej.command.CompleteCommand;
 import imagej.command.ContextCommand;
-import imagej.command.Unrecordable;
-import imagej.data.undo.UndoService;
-import imagej.display.Display;
-import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
+import imagej.command.DefaultCompleteCommand;
+import imagej.command.InvertibleCommand;
+import imagej.data.Dataset;
+import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+
 
 /**
  * 
  * @author Barry DeZonia
  *
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.EDIT_LABEL,
-		weight = MenuConstants.EDIT_WEIGHT,
-		mnemonic = MenuConstants.EDIT_MNEMONIC),
-	@Menu(label = "Undo", accelerator = "control Z", weight=50)},
-	headless = true)
-public class Undo
+@Plugin
+public class UndoRestoreDataPlugin
 	extends ContextCommand
-	implements Unrecordable
+	implements InvertibleCommand
 {
 	// -- Parameters --
 	
 	@Parameter
-	private UndoService service;
+	private UndoService undoService;
 	
-	@Parameter(required = false)
-	private Display<?> display;
+	@Parameter(type = ItemIO.BOTH)
+	private Dataset target;
 	
-	// -- Command members --
+	@Parameter(type = ItemIO.INPUT)
+	private PointSet points;
+	
+	@Parameter(type = ItemIO.INPUT)
+	private Img<DoubleType> data;
+	
+	// -- Command methods --
 	
 	@Override
 	public void run() {
-		service.undo(display);
+		undoService.restoreData(target, points, data);
 	}
-
-	// -- Undo members --
 	
-	public Display<?> getDisplay() {
-		return display;
+	// -- InvertibleCommand methods --
+
+	@Override
+	public CompleteCommand getInverseCommand() {
+		HashMap<String, Object> inverseInputs = new HashMap<String, Object>();
+		inverseInputs.put("source", target);
+		inverseInputs.put("points", points);
+		long size = 8 * numElements(data);
+		return new DefaultCompleteCommand(UndoSaveDataPlugin.class, inverseInputs, size);
 	}
 
-	public void setDisplay(Display<?> display) {
-		this.display = display;
+	// -- UndoRestorDataPlugin methods --
+	
+	public void setTarget(Dataset ds) {
+		target = ds;
+	}
+	
+	public Dataset getTarget() {
+		return target;
+	}
+	
+	public void setPoints(PointSet ps) {
+		points = ps;
+	}
+
+	public PointSet getPoints() {
+		return points;
+	}
+	
+	public void setData(Img<DoubleType> data) {
+		this.data = data;
+	}
+	
+	public Img<DoubleType> getData() {
+		return data;
+	}
+
+	// -- private helpers --
+	
+	private long numElements(Img<?> img) {
+		int numDims = img.numDimensions();
+		if (numDims < 1) return 0;
+		long totElems = 1;
+		for (int i = 0; i < numDims; i++) {
+			totElems *= img.dimension(i);
+		}
+		return totElems;
 	}
 }

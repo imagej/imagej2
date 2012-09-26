@@ -33,14 +33,13 @@
  * #L%
  */
 
-package imagej.core.commands.undo;
+package imagej.data.undo;
 
-import imagej.command.Command;
 import imagej.command.CommandService;
+import imagej.command.CompleteCommand;
 
 import java.awt.Toolkit;
 import java.util.LinkedList;
-import java.util.Map;
 
 
 /**
@@ -51,31 +50,29 @@ import java.util.Map;
  *
  */
 class History {
+
+	// -- constants --
+	
+	private static final int MIN_USAGE = 500;
 	
 	// -- instance variables --
 	
 	private final UndoService undoService;
 	private final CommandService commandService;
-	private final int maxHistory;
-	private final LinkedList<Class<? extends Command>> undoableCommands;
-	private final LinkedList<Class<? extends Command>> redoableCommands;
-	private final LinkedList<Class<? extends Command>> tmpCommands;
-	private final LinkedList<Map<String,Object>> undoableInputs;
-	private final LinkedList<Map<String,Object>> redoableInputs;
-	private final LinkedList<Map<String,Object>> tmpInputs;
+	private final long maxMemUsage;
+	private final LinkedList<CompleteCommand> undoableCommands;
+	private final LinkedList<CompleteCommand> redoableCommands;
+	private final LinkedList<CompleteCommand> tmpCommands;
 
 	// -- constructor --
 	
-	History(UndoService uSrv, CommandService cSrv, int maxSteps) {
+	History(UndoService uSrv, CommandService cSrv, long maxMem) {
 		undoService = uSrv;
 		commandService = cSrv;
-		maxHistory = maxSteps;
-		undoableCommands = new LinkedList<Class<? extends Command>>();
-		redoableCommands = new LinkedList<Class<? extends Command>>();
-		tmpCommands = new LinkedList<Class<? extends Command>>();
-		undoableInputs = new LinkedList<Map<String,Object>>();
-		redoableInputs = new LinkedList<Map<String,Object>>();
-		tmpInputs = new LinkedList<Map<String,Object>>();
+		maxMemUsage = maxMem;
+		undoableCommands = new LinkedList<CompleteCommand>();
+		redoableCommands = new LinkedList<CompleteCommand>();
+		tmpCommands = new LinkedList<CompleteCommand>();
 	}
 	
 	// -- api to be used externally --
@@ -87,17 +84,14 @@ class History {
 			Toolkit.getDefaultToolkit().beep();
 			return;
 		}
-		Class<? extends Command> command = redoableCommands.removeLast();
-		Map<String,Object> inputs = redoableInputs.removeLast();
+		CompleteCommand command = redoableCommands.removeLast();
 		tmpCommands.add(command);
-		tmpInputs.add(inputs);
 		command = undoableCommands.removeLast();
-		inputs = undoableInputs.removeLast();
 		/* tricky attempt 2
 		 * ignore(commandService.run(command, inputs));
 		 */
-		undoService.ignore(command);
-		commandService.run(command, inputs);
+		undoService.ignore(command.getCommand());
+		commandService.run(command.getCommand(), command.getInputs());
 	}
 	
 	void doRedo() {
@@ -107,68 +101,83 @@ class History {
 			Toolkit.getDefaultToolkit().beep();
 			return;
 		}
-		Class<? extends Command> command = tmpCommands.getLast();
-		Map<String,Object> input = tmpInputs.getLast();
-		commandService.run(command, input);
+		CompleteCommand command = tmpCommands.getLast();
+		commandService.run(command.getCommand(), command.getInputs());
 	}
 	
 	void clear() {
 		undoableCommands.clear();
 		redoableCommands.clear();
 		tmpCommands.clear();
-		undoableInputs.clear();
-		redoableInputs.clear();
-		tmpInputs.clear();
 	}
 	
-	void addUndo(Class<? extends Command> command, Map<String,Object> inputs) {
+	void addUndo(CompleteCommand command) {
 		/*  tricky attempt to make this code ignore prerecorded commands safely
 		inputs.put(RECORDED_INTERNALLY, RECORDED_INTERNALLY);
 		*/
+		long additionalSpace = MIN_USAGE + command.getMemoryUsage();
+		while (((undoableCommands.size() > 0) || (redoableCommands.size() > 0)) &&
+				(spaceUsed() + additionalSpace > maxMemUsage)) {
+			if (undoableCommands.size() > 0) removeOldestUndo();
+			if (redoableCommands.size() > 0) removeOldestRedo();
+			// TODO - what abut tmpCommands???
+		}
+		// at this point we have enough space or no history has been stored
 		undoableCommands.add(command);
-		undoableInputs.add(inputs);
-		if (undoableCommands.size() > maxHistory) removeOldestUndo();
 	}
 	
-	void addRedo(Class<? extends Command> command, Map<String,Object> inputs) {
+	void addRedo(CompleteCommand command) {
 		/*  tricky attempt to make this code ignore prerecorded commands safely
 		inputs.put(RECORDED_INTERNALLY, RECORDED_INTERNALLY);
 		*/
 		if (tmpCommands.size() > 0) {
-			if (tmpCommands.getLast().equals(command) &&
-					tmpInputs.getLast().equals(inputs))
+			if (tmpCommands.getLast().getCommand().equals(command.getCommand()) &&
+					tmpCommands.getLast().getInputs().equals(command.getInputs()))
 			{
 				tmpCommands.removeLast();
-				tmpInputs.removeLast();
 			}
 			else {
 				tmpCommands.clear();
-				tmpInputs.clear();
 			}
 		}
+		long additionalSpace = MIN_USAGE + command.getMemoryUsage();
+		while (((undoableCommands.size() > 0) || (redoableCommands.size() > 0)) &&
+				(spaceUsed() + additionalSpace > maxMemUsage)) {
+			if (undoableCommands.size() > 0) removeOldestUndo();
+			if (redoableCommands.size() > 0) removeOldestRedo();
+			// TODO - what abut tmpCommands???
+		}
+		// at this point we have enough space or no history has been stored
 		redoableCommands.add(command);
-		redoableInputs.add(inputs);
-		if (redoableCommands.size() > maxHistory) removeOldestRedo();
 	}
 	
 	void removeNewestUndo() {
 		undoableCommands.removeLast();
-		undoableInputs.removeLast();
 	}
 
 	void removeNewestRedo() {
 		redoableCommands.removeLast();
-		redoableInputs.removeLast();
 	}
 	
 	void removeOldestUndo() {
 		undoableCommands.removeFirst();
-		undoableInputs.removeFirst();
 	}
 
 	void removeOldestRedo() {
 		redoableCommands.removeFirst();
-		redoableInputs.removeFirst();
 	}
 
+	long spaceUsed() {
+		long used = 0;
+		for (CompleteCommand command : undoableCommands) {
+			used += command.getMemoryUsage() + MIN_USAGE;
+		}
+		for (CompleteCommand command : redoableCommands) {
+			used += command.getMemoryUsage() + MIN_USAGE;
+		}
+		for (CompleteCommand command : tmpCommands) {
+			used += command.getMemoryUsage() + MIN_USAGE;
+		}
+		return used;
+	}
 }

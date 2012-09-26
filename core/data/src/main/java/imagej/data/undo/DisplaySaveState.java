@@ -33,23 +33,20 @@
  * #L%
  */
 
-package imagej.core.commands.undo;
+package imagej.data.undo;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import net.imglib2.img.Img;
-import net.imglib2.ops.pointset.PointSet;
-import net.imglib2.type.numeric.real.DoubleType;
-
 import imagej.command.Command;
-import imagej.command.ContextCommand;
+import imagej.command.CompleteCommand;
+import imagej.command.DefaultCompleteCommand;
 import imagej.command.InvertibleCommand;
-import imagej.data.Dataset;
+import imagej.display.Display;
+import imagej.display.DisplayState;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-
 
 /**
  * 
@@ -57,69 +54,26 @@ import imagej.plugin.Plugin;
  *
  */
 @Plugin
-public class UndoRestoreDataPlugin
-	extends ContextCommand
-	implements InvertibleCommand
-{
-	// -- Parameters --
-	
-	@Parameter
-	private UndoService undoService;
-	
-	@Parameter(type = ItemIO.BOTH)
-	private Dataset target;
-	
+public class DisplaySaveState implements Command, InvertibleCommand {
+
 	@Parameter(type = ItemIO.INPUT)
-	private PointSet points;
-	
-	@Parameter(type = ItemIO.INPUT)
-	private Img<DoubleType> data;
-	
-	// -- Command methods --
+	private Display<?> display;
+
+	@Parameter(type = ItemIO.OUTPUT)
+	private DisplayState state;
 	
 	@Override
 	public void run() {
-		undoService.restoreData(target, points, data);
-	}
-	
-	// -- InvertibleCommand methods --
-
-	@Override
-	public Class<? extends Command> getInverseCommand() {
-		return UndoSaveDataPlugin.class;
+		state = display.captureState();
 	}
 
 	@Override
-	public Map<String, Object> getInverseInputMap() {
-		HashMap<String, Object> inverseInputs = new HashMap<String, Object>();
-		inverseInputs.put("source", target);
-		inverseInputs.put("points", points);
-		return inverseInputs;
+	public CompleteCommand getInverseCommand() {
+		Map<String,Object> inverseInputs = new HashMap<String, Object>();
+		inverseInputs.put("display", display);
+		inverseInputs.put("state", state);
+		return new DefaultCompleteCommand(
+			DisplayRestoreState.class, inverseInputs, state.getMemoryUsage());
 	}
 
-	// -- UndoRestorDataPlugin methods --
-	
-	public void setTarget(Dataset ds) {
-		target = ds;
-	}
-	
-	public Dataset getTarget() {
-		return target;
-	}
-	
-	public void setPoints(PointSet ps) {
-		points = ps;
-	}
-
-	public PointSet getPoints() {
-		return points;
-	}
-	
-	public void setData(Img<DoubleType> data) {
-		this.data = data;
-	}
-	
-	public Img<DoubleType> getData() {
-		return data;
-	}
 }
