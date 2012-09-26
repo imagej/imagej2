@@ -181,6 +181,7 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 		}
 	}
 
+	@Override
 	public void initialize(final ScriptEngine engine, final String fileName,
 		final Writer writer, final Writer errorWriter)
 	{
