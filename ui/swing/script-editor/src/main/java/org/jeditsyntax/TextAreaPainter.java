@@ -25,7 +25,6 @@ import javax.swing.text.PlainDocument;
 import javax.swing.text.Segment;
 import javax.swing.text.TabExpander;
 import javax.swing.text.Utilities;
-import org.micromanager.utils.ReportingUtils;
 
 /**
  * The text area repaint manager. It performs double buffering and paints
@@ -417,7 +416,7 @@ public class TextAreaPainter extends JComponent implements TabExpander
 			System.err.println("Error repainting line"
 				+ " range {" + firstInvalid + ","
 				+ lastInvalid + "}:");
-			ReportingUtils.logError(e);
+			e.printStackTrace();
 		}
 	}
 

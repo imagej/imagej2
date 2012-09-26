@@ -20,7 +20,6 @@ import java.util.Hashtable;
 
 import javax.swing.JPopupMenu;
 import javax.swing.text.BadLocationException;
-import org.micromanager.utils.ReportingUtils;
 
 /**
  * An input handler converts the user's key strokes into concrete actions.
@@ -357,8 +356,8 @@ public abstract class InputHandler extends KeyAdapter
 		}
 
 		// this shouldn't happen
-		ReportingUtils.logError("BUG: getTextArea() returning null");
-		ReportingUtils.logError("Report this to Slava Pestov <sp@gjt.org>");
+		System.err.println("BUG: getTextArea() returning null");
+		System.err.println("Report this to Slava Pestov <sp@gjt.org>");
 		return null;
 	}
 
@@ -490,7 +489,7 @@ public abstract class InputHandler extends KeyAdapter
 				}
 				catch(BadLocationException bl)
 				{;
-					ReportingUtils.logError(bl);
+				System.err.println(bl);
 				}
 			}
 		}
@@ -537,7 +536,7 @@ public abstract class InputHandler extends KeyAdapter
 			}
 			catch(BadLocationException bl)
 			{
-				ReportingUtils.logError(bl);
+				System.err.println(bl);
 			}
 		}
 	}
@@ -573,7 +572,7 @@ public abstract class InputHandler extends KeyAdapter
 				}
 				catch(BadLocationException bl)
 				{
-					ReportingUtils.showError(bl);
+					bl.printStackTrace();
 				}
 			}
 		}
@@ -619,7 +618,7 @@ public abstract class InputHandler extends KeyAdapter
 			}
 			catch(BadLocationException bl)
 			{
-				ReportingUtils.showError(bl);
+				bl.printStackTrace();
 			}
 		}
 	}

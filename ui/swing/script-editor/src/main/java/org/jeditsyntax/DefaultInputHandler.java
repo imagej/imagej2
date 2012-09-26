@@ -17,7 +17,6 @@ import java.util.Hashtable;
 import java.util.StringTokenizer;
 
 import javax.swing.KeyStroke;
-import org.micromanager.utils.ReportingUtils;
 
 /**
  * The default input handler. It maps sequences of keystrokes into actions
@@ -334,7 +333,7 @@ public class DefaultInputHandler extends InputHandler
 		}
 		else if(key.length() == 0)
 		{
-			ReportingUtils.logError("Invalid key stroke: " + keyStroke);
+			System.err.println("Invalid key stroke: " + keyStroke);
 			return null;
 		}
 		else
@@ -348,7 +347,7 @@ public class DefaultInputHandler extends InputHandler
 			}
 			catch(Exception e)
 			{
-                ReportingUtils.logError("Invalid key stroke: "
+				System.err.println("Invalid key stroke: "
 					+ keyStroke);
 				return null;
 			}

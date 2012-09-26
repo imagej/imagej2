@@ -61,7 +61,6 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
-import org.micromanager.utils.ReportingUtils;
 
 /**
  * jEdit's text area component. It is more suited for editing program
@@ -845,7 +844,7 @@ public class JEditTextArea extends JComponent
 		}
 		catch(BadLocationException bl)
 		{
-			ReportingUtils.showError(bl);
+			bl.printStackTrace();
 			return null;
 		}
 	}
@@ -863,7 +862,7 @@ public class JEditTextArea extends JComponent
 		}
 		catch(BadLocationException bl)
 		{
-			ReportingUtils.logError(bl);
+			bl.printStackTrace();
 		}
 		finally
 		{
@@ -879,7 +878,7 @@ public class JEditTextArea extends JComponent
       try {
          document.remove(0,document.getLength());
       } catch(BadLocationException bl) {
-         ReportingUtils.logError(bl);
+    	  bl.printStackTrace();
       }
       document.beginCompoundEdit();
       char[] buf = new char[1024];
@@ -892,9 +891,9 @@ public class JEditTextArea extends JComponent
             location += bytesRead;
          }
       } catch (IOException e) {
-         ReportingUtils.logError(e);
+    	  e.printStackTrace();
       } catch (BadLocationException bl) {
-         ReportingUtils.logError(bl);
+    	  bl.printStackTrace();
       }
       document.endCompoundEdit();
       // Set Caret at the beginning of the document
@@ -915,7 +914,7 @@ public class JEditTextArea extends JComponent
 		}
 		catch(BadLocationException bl)
 		{
-			ReportingUtils.logError(bl);
+			bl.printStackTrace();
 			return null;
 		}
 	}
@@ -935,7 +934,7 @@ public class JEditTextArea extends JComponent
 		}
 		catch(BadLocationException bl)
 		{
-			ReportingUtils.logError(bl);
+			bl.printStackTrace();
 			segment.offset = segment.count = 0;
 		}
 	}
@@ -1340,7 +1339,7 @@ public class JEditTextArea extends JComponent
 		}
 		catch(BadLocationException bl)
 		{
-			ReportingUtils.logError(bl);
+			bl.printStackTrace();
 			throw new InternalError("Cannot replace"
 				+ " selection");
 		}
@@ -1443,7 +1442,7 @@ public class JEditTextArea extends JComponent
 		}
 		catch(BadLocationException bl)
 		{
-			ReportingUtils.logError(bl);
+			bl.printStackTrace();
 		}
 		finally
 		{
@@ -1585,7 +1584,7 @@ public class JEditTextArea extends JComponent
 			catch(Exception e)
 			{
 				getToolkit().beep();
-				ReportingUtils.logError("Clipboard does not"
+				System.err.println("Clipboard does not"
 					+ " contain a string");
 			}
 		}
@@ -1708,7 +1707,7 @@ public class JEditTextArea extends JComponent
 		}
 		catch(BadLocationException bl)
 		{
-			ReportingUtils.logError(bl);
+			bl.printStackTrace();
 		}
 
 		bracketLine = bracketPosition = -1;
@@ -2061,7 +2060,7 @@ public class JEditTextArea extends JComponent
 				}
 				catch(BadLocationException bl)
 				{
-					ReportingUtils.logError(bl);
+					bl.printStackTrace();
 				}
 				break;
 			case 3:
@@ -2108,7 +2107,7 @@ public class JEditTextArea extends JComponent
 			}
 			catch(BadLocationException bl)
 			{
-				ReportingUtils.logError(bl);
+				bl.printStackTrace();
 			}
 
 			// Ok, it's not a bracket... select the word
