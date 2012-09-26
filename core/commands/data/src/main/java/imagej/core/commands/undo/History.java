@@ -51,6 +51,9 @@ import java.util.Map;
  *
  */
 class History {
+	
+	// -- instance variables --
+	
 	private final UndoService undoService;
 	private final CommandService commandService;
 	private final int maxHistory;
@@ -61,6 +64,8 @@ class History {
 	private final LinkedList<Map<String,Object>> redoableInputs;
 	private final LinkedList<Map<String,Object>> tmpInputs;
 
+	// -- constructor --
+	
 	History(UndoService uSrv, CommandService cSrv, int maxSteps) {
 		undoService = uSrv;
 		commandService = cSrv;
@@ -72,6 +77,8 @@ class History {
 		redoableInputs = new LinkedList<Map<String,Object>>();
 		tmpInputs = new LinkedList<Map<String,Object>>();
 	}
+	
+	// -- api to be used externally --
 	
 	void doUndo() {
 		//System.out.println("doUndo() : undoPos = "+undoPos+" redoPos = "+redoPos);
