@@ -33,93 +33,43 @@
  * #L%
  */
 
-package imagej.ui.swing.mdi.display;
+package imagej.ui.swing.mdi.viewer;
 
-import imagej.ui.swing.StaticSwingUtils;
-import imagej.ui.swing.display.SwingDisplayPanel;
-import imagej.ui.swing.mdi.InternalFrameEventDispatcher;
-import imagej.ui.viewer.DisplayPanel;
+import imagej.display.Display;
+import imagej.plugin.Plugin;
+import imagej.ui.UserInterface;
+import imagej.ui.swing.mdi.SwingMdiUI;
+import imagej.ui.swing.viewer.image.AbstractSwingImageDisplayViewer;
+import imagej.ui.swing.viewer.image.SwingImageDisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
-
-import java.awt.Dimension;
-import java.awt.HeadlessException;
-import java.beans.PropertyVetoException;
+import imagej.ui.viewer.image.ImageDisplayViewer;
 
 import javax.swing.JInternalFrame;
-import javax.swing.WindowConstants;
 
 /**
- * TODO
+ * Multiple Document Interface implementation of Swing image display viewer. The
+ * MDI display is housed in a {@link JInternalFrame}.
  * 
  * @author Grant Harris
+ * @author Curtis Rueden
+ * @author Lee Kamentsky
+ * @see SwingImageDisplayViewer
  */
-public class SwingMdiDisplayWindow extends JInternalFrame implements
-	DisplayWindow
+@Plugin(type = ImageDisplayViewer.class)
+public class SwingMdiImageDisplayViewer extends AbstractSwingImageDisplayViewer
 {
 
-	SwingDisplayPanel panel;
-
-	public SwingMdiDisplayWindow() throws HeadlessException {
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		setMaximizable(true);
-		setResizable(true);
-		setIconifiable(false);
-		setSize(new Dimension(400, 400));
-		setLocation(StaticSwingUtils.nextFramePosition());
-	}
-
-	// -- SwingMdiDisplayWindow methods --
-
-	public void addEventDispatcher(final InternalFrameEventDispatcher dispatcher)
-	{
-		addInternalFrameListener(dispatcher);
-	}
-
-	// -- DisplayWindow methods --
+	// -- DisplayViewer methods --
 
 	@Override
-	public void setContent(final DisplayPanel panel) {
-		// TODO - eliminate hacky cast
-		this.setContentPane((SwingDisplayPanel) panel);
+	public boolean isCompatible(final UserInterface ui) {
+		return ui instanceof SwingMdiUI;
 	}
 
 	@Override
-	public void showDisplay(final boolean visible) {
-		pack();
-		setVisible(visible);
-		if (visible) {
-//		if (desktop.getComponentCount() == 1) {
-//			try {
-//				setMaximum(true);
-//			}
-//			catch (final PropertyVetoException ex) {
-//				// ignore veto
-//			}
-//		}
-			toFront();
-			try {
-				setSelected(true);
-			}
-			catch (final PropertyVetoException e) {
-				// Don't care.
-			}
-		}
+	public void view(final DisplayWindow w, final Display<?> d) {
+		super.view(w, d);
+		getPanel().addEventDispatcher(dispatcher);
 	}
 
-	@Override
-	public void close() {
-		this.setVisible(false);
-		this.dispose();
-	}
-	
-	@Override
-	public int findDisplayContentScreenX() {
-		throw new UnsupportedOperationException("not yet implemented");
-	}
-	
-	@Override
-	public int findDisplayContentScreenY() {
-		throw new UnsupportedOperationException("not yet implemented");
-	}
 }

@@ -33,23 +33,30 @@
  * #L%
  */
 
-package imagej.ui.viewer;
+package imagej.ui.swing.viewer.image;
 
-import imagej.display.Display;
-import imagej.display.TextDisplay;
+import imagej.data.display.DataView;
+
+import org.jhotdraw.draw.Figure;
 
 /**
- * Implements the UI-independent elements of a text viewer.
+ * A figure view renders a {@link DataView} with a linked JHotDraw
+ * {@link Figure}.
  * 
  * @author Lee Kamentsky
  */
-public abstract class AbstractTextDisplayViewer extends
-	AbstractDisplayViewer<String>
-{
+public interface FigureView {
 
-	@Override
-	public boolean canView(final Display<?> d) {
-		return d instanceof TextDisplay;
-	}
+	/** Gets the linked JHotDraw figure. */
+	public Figure getFigure();
+
+	/** Gets the linked ImageJ data view. */
+	public DataView getDataView();
+
+	/** Updates the figure to match the linked data view. */
+	public void update();
+
+	/** Removes the figure from the scene. */
+	public void dispose();
 
 }

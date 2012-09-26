@@ -33,35 +33,23 @@
  * #L%
  */
 
-package imagej.ui.swing.display;
+package imagej.ui.viewer.image;
 
-import imagej.display.Display;
-import imagej.plugin.Plugin;
-import imagej.ui.UserInterface;
-import imagej.ui.swing.AbstractSwingUI;
-import imagej.ui.swing.SwingTextDisplayPanel;
-import imagej.ui.viewer.AbstractTextDisplayViewer;
-import imagej.ui.viewer.DisplayWindow;
-import imagej.ui.viewer.TextDisplayViewer;
+import imagej.data.Dataset;
+import imagej.data.display.DataView;
+import imagej.data.display.ImageDisplay;
+import imagej.ui.viewer.DisplayViewer;
 
 /**
- * A Swing text display viewer, which displays strings in a simple text panel.
- * 
+ * A display viewer for {@link DataView}s.
+ *
  * @author Lee Kamentsky
  */
-@Plugin(type = TextDisplayViewer.class)
-public class SwingTextDisplayViewer extends AbstractTextDisplayViewer {
+public interface ImageDisplayViewer extends DisplayViewer<DataView> {
+
+	Dataset capture();
 
 	@Override
-	public boolean isCompatible(final UserInterface ui) {
-		// TODO: Consider whether to use an interface for Swing UIs instead?
-		return ui instanceof AbstractSwingUI;
-	}
-
-	@Override
-	public void view(final DisplayWindow w, final Display<?> d) {
-		super.view(w, d);
-		setPanel(new SwingTextDisplayPanel(getDisplay(), w));
-	}
+	ImageDisplay getDisplay();
 
 }

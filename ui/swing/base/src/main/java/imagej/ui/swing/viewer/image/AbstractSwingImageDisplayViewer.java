@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ui.swing.display;
+package imagej.ui.swing.viewer.image;
 
 import imagej.ImageJ;
 import imagej.core.options.OptionsAppearance;
@@ -43,8 +43,8 @@ import imagej.event.EventHandler;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
-import imagej.ui.viewer.AbstractImageDisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
+import imagej.ui.viewer.image.AbstractImageDisplayViewer;
 
 /**
  * A Swing image display viewer, which displays 2D planes in grayscale or

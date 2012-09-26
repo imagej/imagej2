@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ui.swing.display;
+package imagej.ui.swing.viewer.image;
 
 import imagej.data.Extents;
 import imagej.data.display.DatasetView;
@@ -42,15 +42,14 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.display.event.DelayedPositionEvent;
-import imagej.display.Display;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.SwingColorBar;
-import imagej.ui.viewer.DisplayPanel;
 import imagej.ui.viewer.DisplayWindow;
+import imagej.ui.viewer.image.ImageDisplayPanel;
 
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
@@ -89,7 +88,7 @@ import net.miginfocom.swing.MigLayout;
  * @author Grant Harris
  * @author Barry DeZonia
  */
-public class SwingDisplayPanel extends JPanel implements DisplayPanel {
+public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 
 	private final SwingImageDisplayViewer displayViewer;
 	private final ImageDisplay display;
@@ -156,12 +155,14 @@ public class SwingDisplayPanel extends JPanel implements DisplayPanel {
 		dispatcher.register(this, true, false);
 	}
 
-	// -- DisplayPanel methods --
+	// -- ImageDisplayPanel methods --
 
 	@Override
-	public Display<?> getDisplay() {
+	public ImageDisplay getDisplay() {
 		return display;
 	}
+
+	// -- DisplayPanel methods --
 
 	@Override
 	public DisplayWindow getWindow() {

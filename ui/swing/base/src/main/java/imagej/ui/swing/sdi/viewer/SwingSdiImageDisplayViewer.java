@@ -33,43 +33,34 @@
  * #L%
  */
 
-package imagej.ui.swing.mdi.display;
+package imagej.ui.swing.sdi.viewer;
 
-import imagej.display.Display;
 import imagej.plugin.Plugin;
 import imagej.ui.UserInterface;
-import imagej.ui.swing.display.AbstractSwingImageDisplayViewer;
-import imagej.ui.swing.display.SwingImageDisplayViewer;
-import imagej.ui.swing.mdi.SwingMdiUI;
-import imagej.ui.viewer.DisplayWindow;
-import imagej.ui.viewer.ImageDisplayViewer;
+import imagej.ui.swing.sdi.SwingUI;
+import imagej.ui.swing.viewer.image.AbstractSwingImageDisplayViewer;
+import imagej.ui.swing.viewer.image.SwingImageDisplayViewer;
+import imagej.ui.viewer.image.ImageDisplayViewer;
 
-import javax.swing.JInternalFrame;
+import javax.swing.JFrame;
 
 /**
- * Multiple Document Interface implementation of Swing image display viewer. The
- * MDI display is housed in a {@link JInternalFrame}.
+ * Single Document Interface implementation of Swing image display viewer. The
+ * SDI display is housed in a {@link JFrame}.
  * 
- * @author Grant Harris
  * @author Curtis Rueden
  * @author Lee Kamentsky
  * @see SwingImageDisplayViewer
  */
 @Plugin(type = ImageDisplayViewer.class)
-public class SwingMdiImageDisplayViewer extends AbstractSwingImageDisplayViewer
+public class SwingSdiImageDisplayViewer extends AbstractSwingImageDisplayViewer
 {
 
 	// -- DisplayViewer methods --
 
 	@Override
 	public boolean isCompatible(final UserInterface ui) {
-		return ui instanceof SwingMdiUI;
-	}
-
-	@Override
-	public void view(final DisplayWindow w, final Display<?> d) {
-		super.view(w, d);
-		getPanel().addEventDispatcher(dispatcher);
+		return ui instanceof SwingUI;
 	}
 
 }

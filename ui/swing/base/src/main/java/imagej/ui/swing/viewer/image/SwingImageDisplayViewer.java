@@ -33,22 +33,21 @@
  * #L%
  */
 
-package imagej.ui.viewer;
+package imagej.ui.swing.viewer.image;
 
-import imagej.data.Dataset;
-import imagej.data.display.DataView;
-import imagej.data.display.ImageDisplay;
+import imagej.ui.viewer.image.ImageDisplayViewer;
 
 /**
- * A display viewer for DataViews.
- *
- * @author Lee Kamentsky
+ * Interface for Swing-based image display viewers.
+ * 
+ * @author Curtis Rueden
  */
-public interface ImageDisplayViewer extends DisplayViewer<DataView>{
+public interface SwingImageDisplayViewer extends ImageDisplayViewer {
 
 	@Override
-	ImageDisplay getDisplay();
+	SwingDisplayPanel getPanel();
 
-	Dataset capture();
+	/** Gets the JHotDraw canvas used by the viewer. */
+	JHotDrawImageCanvas getCanvas();
 
 }

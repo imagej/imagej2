@@ -33,34 +33,25 @@
  * #L%
  */
 
-package imagej.ui.swing.sdi.display;
+package imagej.ui.viewer.text;
 
-import imagej.plugin.Plugin;
-import imagej.ui.UserInterface;
-import imagej.ui.swing.display.AbstractSwingImageDisplayViewer;
-import imagej.ui.swing.display.SwingImageDisplayViewer;
-import imagej.ui.swing.sdi.SwingUI;
-import imagej.ui.viewer.ImageDisplayViewer;
-
-import javax.swing.JFrame;
+import imagej.display.TextDisplay;
+import imagej.ui.OutputWindow;
+import imagej.ui.viewer.DisplayPanel;
 
 /**
- * Single Document Interface implementation of Swing image display viewer. The
- * SDI display is housed in a {@link JFrame}.
+ * This is a panel that can go inside a display window. It displays
+ * {@link String}s. Also, it can be used inside an {@link OutputWindow}.
  * 
- * @author Curtis Rueden
  * @author Lee Kamentsky
- * @see SwingImageDisplayViewer
  */
-@Plugin(type = ImageDisplayViewer.class)
-public class SwingSdiImageDisplayViewer extends AbstractSwingImageDisplayViewer
-{
+public interface TextDisplayPanel extends DisplayPanel {
 
-	// -- DisplayViewer methods --
+	void append(String text);
+
+	void clear();
 
 	@Override
-	public boolean isCompatible(final UserInterface ui) {
-		return ui instanceof SwingUI;
-	}
+	TextDisplay getDisplay();
 
 }

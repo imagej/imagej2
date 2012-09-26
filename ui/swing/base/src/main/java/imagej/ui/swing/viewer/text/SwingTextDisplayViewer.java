@@ -33,13 +33,34 @@
  * #L%
  */
 
-package imagej.ui.viewer;
+package imagej.ui.swing.viewer.text;
+
+import imagej.display.Display;
+import imagej.plugin.Plugin;
+import imagej.ui.UserInterface;
+import imagej.ui.swing.AbstractSwingUI;
+import imagej.ui.viewer.DisplayWindow;
+import imagej.ui.viewer.text.AbstractTextDisplayViewer;
+import imagej.ui.viewer.text.TextDisplayViewer;
 
 /**
- * A display viewer for a display of strings.
+ * A Swing text display viewer, which displays strings in a simple text panel.
  * 
  * @author Lee Kamentsky
  */
-public interface TextDisplayViewer extends DisplayViewer<String> {
-	// no methods to define. simply enforces type
+@Plugin(type = TextDisplayViewer.class)
+public class SwingTextDisplayViewer extends AbstractTextDisplayViewer {
+
+	@Override
+	public boolean isCompatible(final UserInterface ui) {
+		// TODO: Consider whether to use an interface for Swing UIs instead?
+		return ui instanceof AbstractSwingUI;
+	}
+
+	@Override
+	public void view(final DisplayWindow w, final Display<?> d) {
+		super.view(w, d);
+		setPanel(new SwingTextDisplayPanel(getDisplay(), w));
+	}
+
 }

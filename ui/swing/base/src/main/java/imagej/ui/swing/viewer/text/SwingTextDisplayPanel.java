@@ -33,11 +33,11 @@
  * #L%
  */
 
-package imagej.ui.swing;
+package imagej.ui.swing.viewer.text;
 
-import imagej.display.Display;
+import imagej.display.TextDisplay;
 import imagej.ui.viewer.DisplayWindow;
-import imagej.ui.viewer.TextDisplayPanel;
+import imagej.ui.viewer.text.TextDisplayPanel;
 
 import java.awt.Font;
 
@@ -45,7 +45,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 /**
- * This is the DisplayPanel for <code>Display&lt;String&gt;</code>.
+ * This is the display panel for {@link String}s.
  * 
  * @author Lee Kamentsky
  */
@@ -54,10 +54,10 @@ public class SwingTextDisplayPanel extends JScrollPane implements
 {
 
 	private final DisplayWindow window;
-	private final Display<String> display;
+	private final TextDisplay display;
 	private final JTextArea textArea;
 
-	public SwingTextDisplayPanel(final Display<String> display,
+	public SwingTextDisplayPanel(final TextDisplay display,
 		final DisplayWindow window)
 	{
 		this.display = display;
@@ -87,7 +87,7 @@ public class SwingTextDisplayPanel extends JScrollPane implements
 	// -- DisplayPanel methods --
 
 	@Override
-	public Display<?> getDisplay() {
+	public TextDisplay getDisplay() {
 		return display;
 	}
 

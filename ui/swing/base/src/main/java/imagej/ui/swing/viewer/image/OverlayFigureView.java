@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ui.swing.display;
+package imagej.ui.swing.viewer.image;
 
 import imagej.ImageJ;
 import imagej.data.display.DataView;

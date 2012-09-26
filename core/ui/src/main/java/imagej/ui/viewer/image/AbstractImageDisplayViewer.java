@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ui.viewer;
+package imagej.ui.viewer.image;
 
 import imagej.data.Data;
 import imagej.data.Dataset;
@@ -51,6 +51,8 @@ import imagej.display.event.DisplayUpdatedEvent;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.event.EventHandler;
 import imagej.tool.ToolService;
+import imagej.ui.viewer.AbstractDisplayViewer;
+import imagej.ui.viewer.DisplayWindow;
 import imagej.util.UnitUtils;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;

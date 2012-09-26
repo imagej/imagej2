@@ -44,7 +44,7 @@ import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.ui.UIService;
-import imagej.ui.viewer.ImageDisplayViewer;
+import imagej.ui.viewer.image.ImageDisplayViewer;
 
 /**
  * Captures the current view of an {@link ImageDisplay} to a color merged

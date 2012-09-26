@@ -33,34 +33,47 @@
  * #L%
  */
 
-package imagej.ui.swing.sdi.display;
+package imagej.ui.swing.mdi.viewer;
 
 import imagej.ui.swing.StaticSwingUtils;
-import imagej.ui.swing.display.JHotDrawImageCanvas;
+import imagej.ui.swing.mdi.InternalFrameEventDispatcher;
+import imagej.ui.swing.viewer.image.SwingDisplayPanel;
 import imagej.ui.viewer.DisplayPanel;
 import imagej.ui.viewer.DisplayWindow;
 
-import java.awt.Component;
-import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.HeadlessException;
+import java.beans.PropertyVetoException;
 
-import javax.swing.JComponent;
-import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.WindowConstants;
 
 /**
  * TODO
  * 
  * @author Grant Harris
- * @author Barry DeZonia
  */
-public class SwingDisplayWindow extends JFrame implements DisplayWindow {
+public class SwingMdiDisplayWindow extends JInternalFrame implements
+	DisplayWindow
+{
 
-	private JComponent panel;
+	SwingDisplayPanel panel;
 
-	public SwingDisplayWindow() throws HeadlessException {
+	public SwingMdiDisplayWindow() throws HeadlessException {
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		setMaximizable(true);
+		setResizable(true);
+		setIconifiable(false);
+		setSize(new Dimension(400, 400));
 		setLocation(StaticSwingUtils.nextFramePosition());
+	}
+
+	// -- SwingMdiDisplayWindow methods --
+
+	public void addEventDispatcher(final InternalFrameEventDispatcher dispatcher)
+	{
+		addInternalFrameListener(dispatcher);
 	}
 
 	// -- DisplayWindow methods --
@@ -68,56 +81,45 @@ public class SwingDisplayWindow extends JFrame implements DisplayWindow {
 	@Override
 	public void setContent(final DisplayPanel panel) {
 		// TODO - eliminate hacky cast
-		this.panel = (JComponent) panel;
-		setContentPane(this.panel);
+		this.setContentPane((SwingDisplayPanel) panel);
 	}
 
 	@Override
 	public void showDisplay(final boolean visible) {
 		pack();
 		setVisible(visible);
+		if (visible) {
+//		if (desktop.getComponentCount() == 1) {
+//			try {
+//				setMaximum(true);
+//			}
+//			catch (final PropertyVetoException ex) {
+//				// ignore veto
+//			}
+//		}
+			toFront();
+			try {
+				setSelected(true);
+			}
+			catch (final PropertyVetoException e) {
+				// Don't care.
+			}
+		}
 	}
 
 	@Override
 	public void close() {
-		setVisible(false);
-		dispose();
+		this.setVisible(false);
+		this.dispose();
 	}
 	
-	// TODO - BDZ - this is a bit hacky and will fail if we go away from
-	//        JHotDrawImageCanvas
 	@Override
 	public int findDisplayContentScreenX() {
-		JHotDrawImageCanvas canvas = findCanvas(getContentPane());
-		if (canvas == null)
-			 throw new IllegalArgumentException("Cannot find JHotDrawImageCanvas");
-		return canvas.getLocationOnScreen().x;
+		throw new UnsupportedOperationException("not yet implemented");
 	}
-
-	// TODO - BDZ - this is a bit hacky and will fail if we go away from
-	//        JHotDrawImageCanvas
+	
 	@Override
 	public int findDisplayContentScreenY() {
-		JHotDrawImageCanvas canvas = findCanvas(getContentPane());
-		if (canvas == null)
-			 throw new IllegalArgumentException("Cannot find JHotDrawImageCanvas");
-		return canvas.getLocationOnScreen().y;
+		throw new UnsupportedOperationException("not yet implemented");
 	}
-
-	// -- private helpers --
-	
-	private JHotDrawImageCanvas findCanvas(Component c) {
-		if (c instanceof JHotDrawImageCanvas) {
-			return (JHotDrawImageCanvas) c;
-		}
-		if (c instanceof Container) {
-			Container container = (Container) c;
-			for (Component comp : container.getComponents()) {
-				JHotDrawImageCanvas canvas = findCanvas(comp);
-				if (canvas != null) return canvas;
-			}
-		}
-		return null;
-	}
-	
 }

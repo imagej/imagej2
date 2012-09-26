@@ -33,21 +33,19 @@
  * #L%
  */
 
-package imagej.ui.swing.display;
+package imagej.ui.viewer.text;
 
-import imagej.ui.viewer.ImageDisplayViewer;
+import imagej.display.TextDisplay;
+import imagej.ui.viewer.DisplayViewer;
 
 /**
- * Interface for Swing-based image display viewers.
+ * A display viewer for {@link String}s.
  * 
- * @author Curtis Rueden
+ * @author Lee Kamentsky
  */
-public interface SwingImageDisplayViewer extends ImageDisplayViewer {
+public interface TextDisplayViewer extends DisplayViewer<String> {
 
 	@Override
-	SwingDisplayPanel getPanel();
-
-	/** Gets the JHotDraw canvas used by the viewer. */
-	JHotDrawImageCanvas getCanvas();
+	TextDisplay getDisplay();
 
 }
