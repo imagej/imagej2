@@ -33,18 +33,18 @@
  * #L%
  */
 
-package imagej.core.commands.undo;
+package imagej.data.undo;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.type.numeric.real.DoubleType;
 
-import imagej.command.Command;
+import imagej.command.CompleteCommand;
 import imagej.command.ContextCommand;
+import imagej.command.DefaultCompleteCommand;
 import imagej.command.InvertibleCommand;
 import imagej.data.Dataset;
 import imagej.module.ItemIO;
@@ -87,19 +87,15 @@ public class UndoSaveDataPlugin
 	// -- InvertibleCommand methods --
 	
 	@Override
-	public Class<? extends Command> getInverseCommand() {
-		return UndoRestoreDataPlugin.class;
-	}
-
-	@Override
-	public Map<String, Object> getInverseInputMap() {
+	public CompleteCommand getInverseCommand() {
 		HashMap<String, Object> inverseInputs = new HashMap<String, Object>();
 		inverseInputs.put("target", source);
 		inverseInputs.put("points", points);
 		inverseInputs.put("data", data);
-		return inverseInputs;
+		long size = 8 * numElements(data);
+		return new DefaultCompleteCommand(UndoRestoreDataPlugin.class, inverseInputs, size);
 	}
-	
+
 	// -- UndoSaveDataPlugin methods --
 	
 	public void setSource(Dataset ds) {
@@ -120,5 +116,17 @@ public class UndoSaveDataPlugin
 	
 	public Img<DoubleType> getData() {
 		return data;
+	}
+	
+	// -- private helpers --
+	
+	private long numElements(Img<?> img) {
+		int numDims = img.numDimensions();
+		if (numDims < 1) return 0;
+		long totElems = 1;
+		for (int i = 0; i < numDims; i++) {
+			totElems *= img.dimension(i);
+		}
+		return totElems;
 	}
 }

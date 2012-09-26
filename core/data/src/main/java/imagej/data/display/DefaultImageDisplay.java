@@ -38,12 +38,16 @@ package imagej.data.display;
 import imagej.ImageJ;
 import imagej.data.CombinedInterval;
 import imagej.data.Data;
+import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.event.DataRestructuredEvent;
 import imagej.data.event.DataUpdatedEvent;
+import imagej.data.undo.UndoService;
 import imagej.display.AbstractDisplay;
 import imagej.display.DisplayService;
+import imagej.display.DisplayState;
+import imagej.display.SupportsUndo;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
@@ -57,8 +61,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.imglib2.Localizable;
 import net.imglib2.Positionable;
 import net.imglib2.RealPositionable;
+import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.ops.pointset.HyperVolumePointSet;
+import net.imglib2.ops.pointset.PointSet;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
  * Default implementation of {@link ImageDisplay}.
@@ -68,7 +76,7 @@ import net.imglib2.meta.AxisType;
  */
 @Plugin(type = ImageDisplay.class)
 public class DefaultImageDisplay extends AbstractDisplay<DataView>
-	implements ImageDisplay
+	implements ImageDisplay, SupportsUndo
 {
 	private List<EventSubscriber<?>> subscribers;
 
@@ -138,6 +146,43 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		if (getActiveAxis() == null) initActiveAxis();
 	}
 
+	@Override
+	public DisplayState captureState() {
+		ImageDisplayService idSrv = getContext().getService(ImageDisplayService.class);
+		UndoService undoSrv = getContext().getService(UndoService.class);
+		Dataset ds = idSrv.getActiveDataset(this);
+		PointSet points = new HyperVolumePointSet(ds.getDims());
+		Img<DoubleType> data = undoSrv.captureData(ds,points);
+		return new ImageDisplayState(ds, points, data);
+	}
+
+	@Override
+	public void restoreState(DisplayState dispState) {
+		if (!(dispState instanceof ImageDisplayState))
+			throw new IllegalArgumentException("given wrong kind of DisplayState");
+		ImageDisplayState state = (ImageDisplayState) dispState;
+		UndoService undoSrv = getContext().getService(UndoService.class);
+		undoSrv.restoreData(state.ds, state.points, state.data);
+	}
+	
+	private class ImageDisplayState implements DisplayState {
+		
+		private final Dataset ds;
+		private final PointSet points;
+		private final Img<DoubleType> data;
+		
+		public ImageDisplayState(Dataset ds, PointSet points, Img<DoubleType> data) {
+			this.ds = ds;
+			this.points = points;
+			this.data = data;
+		}
+		
+		@Override
+		public long getMemoryUsage() {
+			return 8 * data.dimension(0);
+		}
+	}
+	
 	// -- ImageDisplay methods --
 
 	@Override

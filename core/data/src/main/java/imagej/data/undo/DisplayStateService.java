@@ -33,54 +33,30 @@
  * #L%
  */
 
-package imagej.core.commands.undo;
+package imagej.data.undo;
 
-import imagej.command.ContextCommand;
-import imagej.command.Unrecordable;
-import imagej.data.undo.UndoService;
+import java.util.HashMap;
+
+import imagej.command.CompleteCommand;
+import imagej.command.DefaultCompleteCommand;
 import imagej.display.Display;
-import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+import imagej.display.DisplayState;
+
 
 /**
  * 
  * @author Barry DeZonia
  *
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.EDIT_LABEL,
-		weight = MenuConstants.EDIT_WEIGHT,
-		mnemonic = MenuConstants.EDIT_MNEMONIC),
-	@Menu(label = "Undo", accelerator = "control Z", weight=50)},
-	headless = true)
-public class Undo
-	extends ContextCommand
-	implements Unrecordable
-{
-	// -- Parameters --
-	
-	@Parameter
-	private UndoService service;
-	
-	@Parameter(required = false)
-	private Display<?> display;
-	
-	// -- Command members --
-	
-	@Override
-	public void run() {
-		service.undo(display);
+public class DisplayStateService {
+
+	public static CompleteCommand createFullRestoreCommand(Display<?> display) {
+		DisplayState state = display.captureState();
+		HashMap<String,Object> inputs = new HashMap<String, Object>();
+		inputs.put("display", display);
+		inputs.put("state", state);
+		return new DefaultCompleteCommand(
+			DisplayRestoreState.class, inputs, state.getMemoryUsage());
 	}
 
-	// -- Undo members --
-	
-	public Display<?> getDisplay() {
-		return display;
-	}
-
-	public void setDisplay(Display<?> display) {
-		this.display = display;
-	}
 }

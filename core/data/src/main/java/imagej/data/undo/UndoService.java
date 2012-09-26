@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.commands.undo;
+package imagej.data.undo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +43,6 @@ import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
@@ -51,13 +50,15 @@ import net.imglib2.type.numeric.real.DoubleType;
 
 import imagej.command.Command;
 import imagej.command.CommandService;
+import imagej.command.CompleteCommand;
+import imagej.command.DefaultCompleteCommand;
 import imagej.command.InvertibleCommand;
 import imagej.command.Unrecordable;
 import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
 import imagej.display.Display;
 import imagej.display.DisplayService;
+import imagej.display.DisplayState;
+import imagej.display.SupportsUndo;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
@@ -94,9 +95,13 @@ import imagej.service.Service;
 //   command into two separate plugins - one a neigh specifier that sets a value
 //   of a new Options plugin. Info could show in menu eventually. But for now
 //   just a command with 2d rect and n-d radial options. In the long run we want
-//   grouping. (Later note: undo of this command now seems to work.)
+//   grouping. (Later note: undo of this command seems to work. Redo will throw
+//   up the neigh specification dialog again)
 // SplitChannelsContext plugin is sometimes getting run and recorded. Is this a
 //   problem?
+// Edit various parts of an image. Then crop. Now undo. If any undo snapshots
+//   stored coords out of bounds you'll get an exception thrown. We need to
+//   record display states including sizes rather than just pixel snapshots.
 
 // Later TODOs
 // Support tools and gestures
@@ -106,6 +111,7 @@ import imagej.service.Service;
 
 // Note: because initially no image exists a redo gets recorded (load image or
 // new image) without a corresponding undo. So in general redoPos == undoPos+1.
+// (This may no longer be true)
 // TODO - currently while no dataset exists nothing gets recorded. So what
 // happens when we run a number of nondisplay oriented plugins. They aren't
 // undoable. Should undo steps be associated with the app and not the displays?
@@ -124,11 +130,11 @@ public class UndoService extends AbstractService {
 
 	// -- constants --
 	
-	// TODO we really need max mem for combined histories and not max steps of
-	// each history. But it will work as a test bed for now. And max should be
+	// TODO we really need max mem for combined histories and max mem of one
+	// history. It will work as a test bed for now. Max should be
 	// a settable value in some options plugin
 	
-	private static final int MAX_STEPS = 5;
+	private static final int MAX_BYTES = 20 * 1024 * 1024; // temp: 20 meg
 	
 	/*  tricky attempt to make this code ignore prerecorded commands safely
 	private static final String RECORDED_INTERNALLY = "ReallyDontRecordMePlease";
@@ -138,9 +144,6 @@ public class UndoService extends AbstractService {
 	
 	@Parameter
 	private DisplayService dispService;
-	
-	@Parameter
-	private ImageDisplayService imgDispService;
 	
 	@Parameter
 	private CommandService commandService;
@@ -293,6 +296,15 @@ public class UndoService extends AbstractService {
 		target.update();
 	}
 	
+	public static CompleteCommand createFullRestoreCommand(Display<?> display) {
+		DisplayState state = display.captureState();
+		HashMap<String,Object> inputs = new HashMap<String, Object>();
+		inputs.put("display", display);
+		inputs.put("state", state);
+		return new DefaultCompleteCommand(
+			DisplayRestoreState.class, inputs, state.getMemoryUsage());
+	}
+
 	// -- protected event handlers --
 	
 	@EventHandler
@@ -319,19 +331,9 @@ public class UndoService extends AbstractService {
 				(Class<? extends Command>) theObject.getClass(); 
 			if (ignoring(theClass)) return;
 			Display<?> display = dispService.getActiveDisplay();
-			// FIXME HACK only datasets of imagedisplays supported right now
-			if (!(display instanceof ImageDisplay)) return;
-			Dataset dataset = imgDispService.getActiveDataset((ImageDisplay)display);
-			if (dataset == null) return;
-			PointSet points = new HyperVolumePointSet(dataset.getDims());
-			// TODO replace ArrayImgFactory with something more apprpriate
-			Img<DoubleType> backup =
-					captureData(dataset, points, new ArrayImgFactory<DoubleType>());
-			Map<String,Object> inputs = new HashMap<String, Object>();
-			inputs.put("target", dataset);
-			inputs.put("points", points);
-			inputs.put("data", backup);
-			findHistory(display).addUndo(UndoRestoreDataPlugin.class, inputs);
+			if (!(display instanceof SupportsUndo)) return;
+			CompleteCommand reverseCommand = createFullRestoreCommand(display);
+			findHistory(display).addUndo(reverseCommand);
 		}
 	}
 	
@@ -358,8 +360,7 @@ public class UndoService extends AbstractService {
 					(Class<? extends Command>) theObject.getClass(); 
 			if (ignoring(theClass)) return;
 			Display<?> display = dispService.getActiveDisplay();
-			// FIXME HACK only datasets of imagedisplays supported right now
-			if (!(display instanceof ImageDisplay)) return;
+			if (!(display instanceof SupportsUndo)) return;
 			// remove last undo point
 			findHistory(display).removeNewestUndo();
 		}
@@ -391,16 +392,14 @@ public class UndoService extends AbstractService {
 				return;
 			}
 			Display<?> display = dispService.getActiveDisplay();
-			// FIXME HACK only datasets of imagedisplays supported right now
-			if (!(display instanceof ImageDisplay)) return;
-			Dataset dataset = imgDispService.getActiveDataset((ImageDisplay)display);
-			if (dataset == null) return;
+			if (!(display instanceof SupportsUndo)) return;
 			if (theObject instanceof InvertibleCommand) {
 				InvertibleCommand command = (InvertibleCommand) theObject;
-				findHistory(display).addUndo(
-					command.getInverseCommand(), command.getInverseInputMap());
+				findHistory(display).addUndo(command.getInverseCommand());
 			}
-			findHistory(display).addRedo(theClass, evt.getModule().getInputs());
+			CompleteCommand forwardCommand =
+					new DefaultCompleteCommand(theClass, evt.getModule().getInputs(), 0);
+			findHistory(display).addRedo(forwardCommand);
 		}
 	}
 
@@ -450,7 +449,7 @@ public class UndoService extends AbstractService {
 	private History findHistory(Display<?> disp) {
 		History h = histories.get(disp);
 		if (h == null) {
-			h = new History(this, commandService, MAX_STEPS);
+			h = new History(this, commandService, MAX_BYTES);
 			histories.put(disp, h);
 		}
 		return h;

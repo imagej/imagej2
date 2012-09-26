@@ -33,54 +33,16 @@
  * #L%
  */
 
-package imagej.core.commands.undo;
+package imagej.display;
 
-import imagej.command.ContextCommand;
-import imagej.command.Unrecordable;
-import imagej.data.undo.UndoService;
-import imagej.display.Display;
-import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 /**
+ * This interface represents a display agnostic way to save and restore state.
+ * Each display type needs to define its specific DisplayState implementation.
  * 
  * @author Barry DeZonia
  *
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.EDIT_LABEL,
-		weight = MenuConstants.EDIT_WEIGHT,
-		mnemonic = MenuConstants.EDIT_MNEMONIC),
-	@Menu(label = "Undo", accelerator = "control Z", weight=50)},
-	headless = true)
-public class Undo
-	extends ContextCommand
-	implements Unrecordable
-{
-	// -- Parameters --
-	
-	@Parameter
-	private UndoService service;
-	
-	@Parameter(required = false)
-	private Display<?> display;
-	
-	// -- Command members --
-	
-	@Override
-	public void run() {
-		service.undo(display);
-	}
-
-	// -- Undo members --
-	
-	public Display<?> getDisplay() {
-		return display;
-	}
-
-	public void setDisplay(Display<?> display) {
-		this.display = display;
-	}
+public interface DisplayState {
+	long getMemoryUsage();
 }

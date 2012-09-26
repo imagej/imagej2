@@ -35,8 +35,6 @@
 
 package imagej.command;
 
-import java.util.Map;
-
 /**
  * Command classes implement this interface to provide the UndoService with
  * efficient means of undoing an operation. This allows the UndoService to use
@@ -46,6 +44,5 @@ import java.util.Map;
  *
  */
 public interface InvertibleCommand {
-	Class<? extends Command> getInverseCommand();
-	Map<String,Object> getInverseInputMap();
+	CompleteCommand getInverseCommand();
 }
