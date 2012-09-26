@@ -35,9 +35,7 @@
 
 package imagej.core.commands.undo;
 
-import java.awt.Toolkit;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -427,7 +425,7 @@ public class UndoService extends AbstractService {
 	*/
 	
 	// HACK TO GO AWAY SOON
-	private void ignore(Class<? extends Command> clss) {
+	void ignore(Class<? extends Command> clss) {
 		classesToIgnore.put(clss, true);
 	}
 	
@@ -444,119 +442,10 @@ public class UndoService extends AbstractService {
 	private History findHistory(Display<?> disp) {
 		History h = histories.get(disp);
 		if (h == null) {
-			h = new History();
+			h = new History(this, commandService, MAX_STEPS);
 			histories.put(disp, h);
 		}
 		return h;
 	}
 	
-	private class History {
-		private LinkedList<Class<? extends Command>> undoableCommands;
-		private LinkedList<Class<? extends Command>> redoableCommands;
-		private LinkedList<Class<? extends Command>> tmpCommands;
-		private LinkedList<Map<String,Object>> undoableInputs;
-		private LinkedList<Map<String,Object>> redoableInputs;
-		private LinkedList<Map<String,Object>> tmpInputs;
-
-		History() {
-			undoableCommands = new LinkedList<Class<? extends Command>>();
-			redoableCommands = new LinkedList<Class<? extends Command>>();
-			tmpCommands = new LinkedList<Class<? extends Command>>();
-			undoableInputs = new LinkedList<Map<String,Object>>();
-			redoableInputs = new LinkedList<Map<String,Object>>();
-			tmpInputs = new LinkedList<Map<String,Object>>();
-		}
-		
-		void doUndo() {
-			//System.out.println("doUndo() : undoPos = "+undoPos+" redoPos = "+redoPos);
-			if (undoableCommands.size() <= 0) {
-				// TODO eliminate AWT dependency with a BeepService!
-				Toolkit.getDefaultToolkit().beep();
-				return;
-			}
-			Class<? extends Command> command = redoableCommands.removeLast();
-			Map<String,Object> inputs = redoableInputs.removeLast();
-			tmpCommands.add(command);
-			tmpInputs.add(inputs);
-			command = undoableCommands.removeLast();
-			inputs = undoableInputs.removeLast();
-			/* tricky attempt 2
-			 * ignore(commandService.run(command, inputs));
-			 */
-			ignore(command);
-			commandService.run(command, inputs);
-		}
-		
-		void doRedo() {
-			//System.out.println("doRedo() : undoPos = "+undoPos+" redoPos = "+redoPos);
-			if (tmpCommands.size() <= 0) {
-				// TODO eliminate AWT dependency with a BeepService!
-				Toolkit.getDefaultToolkit().beep();
-				return;
-			}
-			Class<? extends Command> command = tmpCommands.getLast();
-			Map<String,Object> input = tmpInputs.getLast();
-			commandService.run(command, input);
-		}
-		
-		void clear() {
-			undoableCommands.clear();
-			redoableCommands.clear();
-			tmpCommands.clear();
-			undoableInputs.clear();
-			redoableInputs.clear();
-			tmpInputs.clear();
-		}
-		
-		void addUndo(Class<? extends Command> command, Map<String,Object> inputs) {
-			/*  tricky attempt to make this code ignore prerecorded commands safely
-			inputs.put(RECORDED_INTERNALLY, RECORDED_INTERNALLY);
-			*/
-			undoableCommands.add(command);
-			undoableInputs.add(inputs);
-			if (undoableCommands.size() > MAX_STEPS) removeOldestUndo();
-		}
-		
-		void addRedo(Class<? extends Command> command, Map<String,Object> inputs) {
-			/*  tricky attempt to make this code ignore prerecorded commands safely
-			inputs.put(RECORDED_INTERNALLY, RECORDED_INTERNALLY);
-			*/
-			if (tmpCommands.size() > 0) {
-				if (tmpCommands.getLast().equals(command) &&
-						tmpInputs.getLast().equals(inputs))
-				{
-					tmpCommands.removeLast();
-					tmpInputs.removeLast();
-				}
-				else {
-					tmpCommands.clear();
-					tmpInputs.clear();
-				}
-			}
-			redoableCommands.add(command);
-			redoableInputs.add(inputs);
-			if (redoableCommands.size() > MAX_STEPS) removeOldestRedo();
-		}
-		
-		void removeNewestUndo() {
-			undoableCommands.removeLast();
-			undoableInputs.removeLast();
-		}
-
-		void removeNewestRedo() {
-			redoableCommands.removeLast();
-			redoableInputs.removeLast();
-		}
-		
-		void removeOldestUndo() {
-			undoableCommands.removeFirst();
-			undoableInputs.removeFirst();
-		}
-
-		void removeOldestRedo() {
-			redoableCommands.removeFirst();
-			redoableInputs.removeFirst();
-		}
-
-	}
 }
