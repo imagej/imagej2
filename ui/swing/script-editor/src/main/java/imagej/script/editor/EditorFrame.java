@@ -96,7 +96,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("hiding")
 public class EditorFrame extends JFrame implements ActionListener,
 	ChangeListener
 {
@@ -142,7 +142,7 @@ public class EditorFrame extends JFrame implements ActionListener,
 	toolsMenu, runMenu/* TODO! , whiteSpaceMenu */;
 	protected int tabsMenuTabsStart;
 	protected Set<JMenuItem> tabsMenuItems;
-	// TODO! protected FindAndReplaceDialog findDialog;
+	protected FindAndReplaceDialog findDialog;
 	protected JCheckBoxMenuItem autoSave/* TODO! , showDeprecation, wrapLines */;
 	protected JTextArea errorScreen = new JTextArea();
 
@@ -553,9 +553,8 @@ public class EditorFrame extends JFrame implements ActionListener,
 			});
 		}
 		catch (final Exception ie) {}
-		getToolkit().setDynamicLayout(true); // added to accomodate the autocomplete
-		// part
-		// TODO! findDialog = new FindAndReplaceDialog(this);
+		getToolkit().setDynamicLayout(true); // added to accomodate the autocomplete part
+		findDialog = new FindAndReplaceDialog(this, log);
 
 		setLocationRelativeTo(null); // center on screen
 
@@ -868,14 +867,16 @@ public class EditorFrame extends JFrame implements ActionListener,
 			getTextComponent().undoLastAction();
 		else if (source == redo)
 			getTextComponent().redoLastAction();
+		*/
 		else if (source == find)
 			findOrReplace(false);
 		else if (source == findNext)
-			findDialog.searchOrReplace(false);
+			findNext(true);
 		else if (source == findPrevious)
-			findDialog.searchOrReplace(false, false);
+			findNext(false);
 		else if (source == replace)
 			findOrReplace(true);
+		/*
 		else if (source == gotoLine)
 			gotoLine();
 		else if (source == toggleBookmark)
@@ -1028,7 +1029,6 @@ public class EditorFrame extends JFrame implements ActionListener,
 		return getTab(index).editorPane;
 	}
 
-	/* TODO!
 	public void findOrReplace(boolean replace) {
 		findDialog.setLocationRelativeTo(this);
 
@@ -1039,6 +1039,14 @@ public class EditorFrame extends JFrame implements ActionListener,
 			findDialog.setSearchPattern(selection);
 
 		findDialog.show(replace, getTextComponent());
+	}
+
+	public void findNext(boolean forward) {
+		try {
+			findDialog.findNext(forward, getTextComponent());
+		} catch (BadLocationException e) {
+			log.error(e);
+		}
 	}
 
 	public void gotoLine() {
@@ -1054,8 +1062,6 @@ public class EditorFrame extends JFrame implements ActionListener,
 			error("Invalid line number: " + line);
 		}
 	}
-
-	*/
 
 	public void gotoLine(final int line) throws BadLocationException {
 		final EditorPane pane = getEditorPane();

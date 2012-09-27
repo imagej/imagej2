@@ -59,7 +59,7 @@ import javax.swing.WindowConstants;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("hiding")
 public class FindAndReplaceDialog extends JDialog implements ActionListener {
 
 	protected JTextComponent textComponent;
@@ -67,14 +67,13 @@ public class FindAndReplaceDialog extends JDialog implements ActionListener {
 	protected JLabel replaceLabel;
 	protected JCheckBox matchCase, wholeWord, markAll, regex, forward;
 	protected JButton findNext, replace, replaceAll, cancel;
+	protected Pattern forwardPattern, backwardPattern;
 	protected final LogService log;
 
-	public FindAndReplaceDialog(final Frame owner, final LogService logService,
-		final JTextComponent textComponent)
+	public FindAndReplaceDialog(final Frame owner, final LogService logService)
 	{
 		super(owner);
 		log = logService;
-		this.textComponent = textComponent;
 
 		final Container root = getContentPane();
 		root.setLayout(new GridBagLayout());
@@ -139,7 +138,7 @@ public class FindAndReplaceDialog extends JDialog implements ActionListener {
 		replaceField.addKeyListener(listener);
 	}
 
-	public void showDialog(final boolean replace, final JTextComponent textComponent) {
+	public void show(final boolean replace, final JTextComponent textComponent) {
 		this.textComponent = textComponent;
 		setTitle(replace ? "Replace" : "Find");
 		replaceLabel.setEnabled(replace);
@@ -202,39 +201,40 @@ public class FindAndReplaceDialog extends JDialog implements ActionListener {
 		final String text = searchField.getText();
 		if (text.length() == 0) return;
 
-		final Pattern pattern =
-			preparePattern(searchField.getText(), matchCase.isSelected(), wholeWord
-				.isSelected(), regex.isSelected());
+		preparePatterns(searchField.getText(), matchCase.isSelected(), wholeWord.isSelected(), regex.isSelected());
 		try {
-			if (source == findNext) find(pattern);
-			else if (source == replace) replace(pattern, replaceField.getText());
+			if (source == findNext) findOrReplace(forward.isSelected(), null);
+			else if (source == replace) findOrReplace(forward.isSelected(), replaceField.getText());
 			else if (source == replaceAll) {
-				final int replace = replaceAll(pattern, replaceField.getText());
+				final int replace = replaceAll(replaceField.getText());
 				JOptionPane.showMessageDialog(this, replace + " replacements made!");
-			}
+			} else return;
+			setVisible(false);
 		}
 		catch (final BadLocationException exception) {
 			log.error(exception);
 		}
 	}
 
-	private Pattern preparePattern(final String search, final boolean matchCase,
+	private void preparePatterns(final String search, final boolean matchCase,
 		final boolean wholeWord, final boolean regex)
 	{
 		final String boundary = wholeWord ? "\\b" : "";
-		return Pattern.compile(".*?(" + boundary +
-			(regex ? search : Pattern.quote(search)) + boundary + ").*",
-			Pattern.DOTALL | Pattern.MULTILINE |
-				(matchCase ? 0 : Pattern.CASE_INSENSITIVE));
+		final String pattern = "(" + boundary +
+				(regex ? search : Pattern.quote(search)) + boundary + ").*";
+		final int flags = Pattern.DOTALL | Pattern.MULTILINE |
+				(matchCase ? 0 : Pattern.CASE_INSENSITIVE);
+		forwardPattern = Pattern.compile(".*?" + pattern, flags);
+		backwardPattern = Pattern.compile(".*" + pattern, flags);
 	}
 
-	private int replaceAll(final Pattern pattern, final String replacement) {
+	private int replaceAll(final String replacement) {
 		final int caret = textComponent.getCaretPosition();
 		final StringBuilder builder = new StringBuilder();
 		String text = textComponent.getText();
 		int count = 0;
 		for (;;) {
-			final Matcher matcher = pattern.matcher(text);
+			final Matcher matcher = forwardPattern.matcher(text);
 			if (!matcher.matches()) break;
 			builder.append(text.substring(0, matcher.start(1)));
 			builder.append(replacement);
@@ -247,32 +247,55 @@ public class FindAndReplaceDialog extends JDialog implements ActionListener {
 		return count;
 	}
 
-	private boolean replace(final Pattern pattern, final String replacement)
-		throws BadLocationException
-	{
-		final int start = textComponent.getCaretPosition();
-		final int length = textComponent.getDocument().getLength();
-		final String text = textComponent.getText(start, length - start);
-		final Matcher matcher = pattern.matcher(text);
-		if (!matcher.matches()) return false;
-
-		final StringBuilder builder = new StringBuilder();
-		builder.append(textComponent.getText(0, start + matcher.start(1)));
-		builder.append(replacement);
-		builder.append(text.substring(matcher.end(1)));
-		textComponent.setText(builder.toString());
-		textComponent.setCaretPosition(start + matcher.start(1) +
-			replacement.length());
-		return true;
+	public boolean findNext(boolean forward, final JTextComponent textComponent) throws BadLocationException {
+		this.textComponent = textComponent;
+		return findOrReplace(forward, null);
 	}
 
-	private boolean find(final Pattern pattern) throws BadLocationException {
-		final int start = textComponent.getCaretPosition();
+	private boolean findOrReplace(final boolean forward, final String replacement) throws BadLocationException {
+		int offset = 0;
+		int start = textComponent.getCaretPosition();
 		final int length = textComponent.getDocument().getLength();
-		final String text = textComponent.getText(start, length - start);
-		final Matcher matcher = pattern.matcher(text);
-		if (!matcher.matches()) return false;
-		textComponent.setCaretPosition(start + matcher.start(1));
+		String text;
+		Matcher matcher;
+		if (forward) {
+			if (start < length) start++;
+			text = textComponent.getText(start, length - start);
+			matcher = forwardPattern.matcher(text);
+			if (!matcher.matches()) {
+				text = textComponent.getText();
+				matcher = forwardPattern.matcher(text);
+			} else {
+				offset = start;
+			}
+		} else {
+			if (start > 0) start--;
+			text = textComponent.getText(0, start);
+			matcher = backwardPattern.matcher(text);
+			if (!matcher.matches()) {
+				text = textComponent.getText();
+				matcher = backwardPattern.matcher(text);
+			}
+		}
+		if (!matcher.matches()) {
+			JOptionPane.showMessageDialog(this, "Not found", "Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+
+		final int matchStart = offset + matcher.start(1);
+		final int matchEnd = offset + matcher.end(1);
+		if (replacement == null) {
+			textComponent.setCaretPosition(matchStart);
+			textComponent.select(matchStart, matchEnd);
+		} else {
+			final StringBuilder builder = new StringBuilder();
+			builder.append(textComponent.getText(0, matchStart));
+			builder.append(replacement);
+			builder.append(textComponent.getText(matchEnd, length - matchEnd));
+			textComponent.setText(builder.toString());
+			textComponent.setCaretPosition(matchStart + replacement.length());
+			textComponent.select(matchStart, matchStart + replacement.length());
+		}
 		return true;
 	}
 
