@@ -34,9 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
-import fiji.scripting.completion.ClassCompletionProvider;
-import fiji.scripting.completion.DefaultProvider;
-
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -66,8 +63,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
 
-import org.fife.ui.autocomplete.AutoCompletion;
-
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Style;
@@ -79,7 +74,6 @@ import org.fife.ui.rtextarea.IconGroup;
 import org.fife.ui.rtextarea.RTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.fife.ui.rtextarea.RecordableTextAction;
-import org.fife.ui.rtextarea.ToolTipSupplier;
 
 public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 	TextEditor frame;
@@ -87,8 +81,6 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 	File file, gitDirectory;
 	long fileLastModified;
 	Languages.Language currentLanguage;
-	AutoCompletion autocomp;
-	ClassCompletionProvider provider;
 	Gutter gutter;
 	IconGroup iconGroup;
 	StartDebugging debugging;
@@ -107,15 +99,6 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 				.previousWordAction, wordMovement(-1, false));
 		getActionMap().put(DefaultEditorKit
 				.selectionPreviousWordAction, wordMovement(-1, true));
-		provider = new ClassCompletionProvider(new DefaultProvider(),
-				this, null);
-		autocomp = new AutoCompletion(provider);
-
-		autocomp.setListCellRenderer(new CCellRenderer());
-		autocomp.setShowDescWindow(true);
-		autocomp.setParameterAssistanceEnabled(true);
-		autocomp.install(this);
-		setToolTipSupplier((ToolTipSupplier)provider);
 		ToolTipManager.sharedInstance().registerComponent(this);
 		getDocument().addDocumentListener(this);
 		currentLanguage = Languages.get("");
@@ -380,8 +363,6 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 		}
 		currentLanguage = language;
 
-		provider.setProviderLanguage(language.menuLabel);
-
 		// TODO: these should go to upstream RSyntaxTextArea
 		 try {
 			if (language.syntaxStyle != null)
@@ -438,10 +419,6 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 
 	protected RSyntaxDocument getRSyntaxDocument() {
 		return (RSyntaxDocument)getDocument();
-	}
-
-	public ClassNameFunctions getClassNameFunctions() {
-		return new ClassNameFunctions(frame, provider);
 	}
 
 	public void toggleBookmark() {

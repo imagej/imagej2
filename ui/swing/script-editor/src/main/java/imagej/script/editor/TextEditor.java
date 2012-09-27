@@ -124,7 +124,7 @@ public class TextEditor extends JFrame implements ActionListener,
 	protected JTabbedPane tabbed;
 	protected JMenuItem newFile, open, save, saveas, compileAndRun, compile, debug, close,
 		  undo, redo, cut, copy, paste, find, replace, selectAll,
-		  autocomplete, resume, terminate, kill, gotoLine,
+		  resume, terminate, kill, gotoLine,
 		  makeJar, makeJarWithSource, removeUnusedImports,
 		  sortImports, removeTrailingWhitespace, findNext, findPrevious,
 		  openHelp, addImport, clearScreen, nextError, previousError,
@@ -280,12 +280,9 @@ public class TextEditor extends JFrame implements ActionListener,
 
 		clearScreen = addToMenu(edit, "Clear output panel", 0, 0);
 		clearScreen.setMnemonic(KeyEvent.VK_L);
-		//edit.addSeparator();
-		//autocomplete = addToMenu(edit, "Autocomplete", KeyEvent.VK_SPACE, ctrl);
 
 		zapGremlins = addToMenu(edit, "Zap Gremlins", 0, 0);
 
-		//autocomplete.setMnemonic(KeyEvent.VK_A);
 		edit.addSeparator();
 		addImport = addToMenu(edit, "Add import...", 0, 0);
 		addImport.setMnemonic(KeyEvent.VK_I);
@@ -502,7 +499,6 @@ public class TextEditor extends JFrame implements ActionListener,
 					pack();
 				}});
 		} catch (Exception ie) {}
-		getToolkit().setDynamicLayout(true);            //added to accomodate the autocomplete part
 		findDialog = new FindAndReplaceDialog(this);
 
 		setLocationRelativeTo(null); // center on screen
@@ -867,11 +863,6 @@ public class TextEditor extends JFrame implements ActionListener,
 			getTab().getScreen().setText("");
 		else if (source == zapGremlins)
 			zapGremlins();
-		else if (source == autocomplete) {
-			try {
-				getEditorPane().autocomp.doCompletion();
-			} catch (Exception e) {}
-		}
 		else if (source == resume)
 			getEditorPane().resume();
 		else if (source == terminate) {
