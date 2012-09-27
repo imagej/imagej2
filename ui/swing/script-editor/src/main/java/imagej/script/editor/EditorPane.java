@@ -391,7 +391,8 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 		if (factor == 1)
 			return;
 		SyntaxScheme scheme = getSyntaxScheme();
-		for (Style style : scheme.styles) {
+		for (int i = 0; i < scheme.getStyleCount(); i++) {
+			Style style = scheme.getStyle(i);
 			if (style == null || style.font == null)
 				continue;
 			float size = (float)Math.max(5, style.font.getSize2D() * factor);
