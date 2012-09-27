@@ -366,9 +366,6 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 		 try {
 			if (language.syntaxStyle != null)
 				setSyntaxEditingStyle(language.syntaxStyle);
-			else if (language.extension.equals(".clj"))
-				getRSyntaxDocument()
-					.setSyntaxStyle(new ClojureTokenMaker());
 			else if (language.extension.equals(".m"))
 				getRSyntaxDocument()
 					.setSyntaxStyle(new MatlabTokenMaker());
