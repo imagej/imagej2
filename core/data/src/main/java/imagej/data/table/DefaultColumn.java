@@ -33,64 +33,37 @@
  * #L%
  */
 
-package imagej.core.commands.display;
+package imagej.data.table;
 
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.ui.UIService;
-import imagej.ui.viewer.image.ImageDisplayViewer;
+import imagej.util.SizableArrayList;
 
 /**
- * Captures the current view of an {@link ImageDisplay} to a color merged
- * {@link Dataset}. Includes overlay graphics.
+ * Default implementation of {@link Column}.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
+ * @param <T> The type of data stored in the table.
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Overlay"),
-	@Menu(label = "Flatten", weight = 4) })
-public class Flatten extends ContextCommand {
+public class DefaultColumn<T> extends SizableArrayList<T> implements Column<T> {
 
-	// -- Parameters --
-	
-	@Parameter(required=true)
-	private UIService uiService;
+	/** The column header. */
+	private String header;
 
-	@Parameter(required=true)
-	private ImageDisplay display;
-	
-	@Parameter(type=ItemIO.OUTPUT)
-	private Dataset dataset;
+	public DefaultColumn() {}
 
-	// -- accessors --
-	
-	public void setDisplay(ImageDisplay disp) {
-		display = disp;
+	public DefaultColumn(final String header) {
+		this.header = header;
 	}
 
-	public ImageDisplay getDisplay() {
-		return display;
-	}
-	
-	public Dataset getOutput() {
-		return dataset;
-	}
-	
-	// -- run() method --
-	
+	// -- Column methods --
+
 	@Override
-	public void run() {
-		ImageDisplayViewer viewer = uiService.getImageDisplayViewer(display);
-		if (viewer == null) return;
-		dataset = viewer.capture();
+	public String getHeader() {
+		return header;
+	}
+
+	@Override
+	public void setHeader(final String header) {
+		this.header = header;
 	}
 
 }

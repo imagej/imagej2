@@ -33,64 +33,61 @@
  * #L%
  */
 
-package imagej.core.commands.display;
+package imagej.data.table;
 
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.ui.UIService;
-import imagej.ui.viewer.image.ImageDisplayViewer;
+import net.imglib2.img.Img;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
- * Captures the current view of an {@link ImageDisplay} to a color merged
- * {@link Dataset}. Includes overlay graphics.
+ * Default implementation of {@link ResultsTable}.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Overlay"),
-	@Menu(label = "Flatten", weight = 4) })
-public class Flatten extends ContextCommand {
+public class DefaultResultsTable extends AbstractTable<DoubleColumn, Double>
+	implements ResultsTable
+{
 
-	// -- Parameters --
-	
-	@Parameter(required=true)
-	private UIService uiService;
-
-	@Parameter(required=true)
-	private ImageDisplay display;
-	
-	@Parameter(type=ItemIO.OUTPUT)
-	private Dataset dataset;
-
-	// -- accessors --
-	
-	public void setDisplay(ImageDisplay disp) {
-		display = disp;
+	/** Creates an empty results table. */
+	public DefaultResultsTable() {
+		super();
 	}
 
-	public ImageDisplay getDisplay() {
-		return display;
+	/** Creates a results table with the given row and column dimensions. */
+	public DefaultResultsTable(final int columnCount, final int rowCount) {
+		super(columnCount, rowCount);
 	}
-	
-	public Dataset getOutput() {
-		return dataset;
-	}
-	
-	// -- run() method --
-	
+
+	// -- ResultsTable methods --
+
 	@Override
-	public void run() {
-		ImageDisplayViewer viewer = uiService.getImageDisplayViewer(display);
-		if (viewer == null) return;
-		dataset = viewer.capture();
+	public double getValue(final int col, final int row) {
+		return get(col).getValue(row);
+	}
+
+	@Override
+	public void setValue(final double value, final int col, final int row) {
+		get(col).setValue(row, value);
+	}
+
+	@Override
+	public ImgPlus<DoubleType> img() {
+		final Img<DoubleType> img = new ResultsImg(this);
+		final AxisType[] axes = { Axes.X, Axes.Y };
+		final String name = "Results";
+		final ImgPlus<DoubleType> imgPlus =
+			new ImgPlus<DoubleType>(img, name, axes);
+		// TODO: Once ImgPlus has a place for row & column labels, add those too.
+		return imgPlus;
+	}
+
+	// -- Internal methods --
+
+	@Override
+	protected DoubleColumn createColumn(final String header) {
+		return new DoubleColumn(header);
 	}
 
 }

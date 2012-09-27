@@ -33,82 +33,43 @@
  * #L%
  */
 
-package imagej.ui.swing.mdi;
+package imagej.ui.swing.mdi.viewer;
 
-import imagej.Priority;
 import imagej.display.Display;
 import imagej.plugin.Plugin;
-import imagej.ui.Desktop;
-import imagej.ui.DialogPrompt.MessageType;
-import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.UserInterface;
-import imagej.ui.swing.AbstractSwingUI;
-import imagej.ui.swing.SwingApplicationFrame;
-import imagej.ui.swing.mdi.viewer.SwingMdiDisplayWindow;
+import imagej.ui.swing.mdi.SwingMdiUI;
+import imagej.ui.swing.viewer.image.AbstractSwingImageDisplayViewer;
+import imagej.ui.swing.viewer.image.SwingImageDisplayViewer;
+import imagej.ui.viewer.DisplayWindow;
+import imagej.ui.viewer.image.ImageDisplayViewer;
 
-import java.awt.Color;
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
-
-import javax.swing.JScrollPane;
+import javax.swing.JInternalFrame;
 
 /**
- * Swing-based MDI user interface for ImageJ.
+ * Multiple Document Interface implementation of Swing image display viewer. The
+ * MDI display is housed in a {@link JInternalFrame}.
  * 
  * @author Grant Harris
  * @author Curtis Rueden
+ * @author Lee Kamentsky
+ * @see SwingImageDisplayViewer
  */
-@Plugin(type = UserInterface.class, name = SwingMdiUI.NAME,
-	priority = Priority.LOW_PRIORITY)
-public class SwingMdiUI extends AbstractSwingUI {
+@Plugin(type = ImageDisplayViewer.class)
+public class SwingMdiImageDisplayViewer extends AbstractSwingImageDisplayViewer
+{
 
-	public static final String NAME = "swing-mdi";
-
-	private JMDIDesktopPane desktopPane;
-
-	private JScrollPane scrollPane;
-
-	// -- UserInterface methods --
+	// -- DisplayViewer methods --
 
 	@Override
-	public Desktop getDesktop() {
-		return desktopPane;
+	public boolean isCompatible(final UserInterface ui) {
+		return ui instanceof SwingMdiUI;
 	}
 
 	@Override
-	public SwingMdiDisplayWindow createDisplayWindow(Display<?> display) {
-		final SwingMdiDisplayWindow displayWindow = new SwingMdiDisplayWindow();
-		displayWindow
-			.addEventDispatcher(new InternalFrameEventDispatcher(display));
-		return displayWindow;
-	}
-
-	@Override
-	public SwingMdiDialogPrompt dialogPrompt(final String message,
-		final String title, final MessageType msg, final OptionType option)
-	{
-		return new SwingMdiDialogPrompt(message, title, msg, option);
-	}
-
-	// -- Internal methods --
-
-	@Override
-	protected void setupAppFrame() {
-		final SwingApplicationFrame appFrame = getApplicationFrame();
-		desktopPane = new JMDIDesktopPane();
-		// TODO desktopPane.setTransferHandler(new DropFileTransferHandler());
-		scrollPane = new JScrollPane();
-		scrollPane.setViewportView(desktopPane);
-		desktopPane.setBackground(new Color(200, 200, 255));
-		appFrame.getContentPane().add(scrollPane);
-		appFrame.setBounds(getWorkSpaceBounds());
-	}
-
-	// -- Helper methods --
-
-	private Rectangle getWorkSpaceBounds() {
-		return GraphicsEnvironment.getLocalGraphicsEnvironment()
-			.getMaximumWindowBounds();
+	public void view(final DisplayWindow w, final Display<?> d) {
+		super.view(w, d);
+		getPanel().addEventDispatcher(dispatcher);
 	}
 
 }

@@ -33,64 +33,25 @@
  * #L%
  */
 
-package imagej.core.commands.display;
+package imagej.data.table;
 
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
+import imagej.Priority;
+import imagej.display.AbstractDisplay;
 import imagej.plugin.Plugin;
-import imagej.ui.UIService;
-import imagej.ui.viewer.image.ImageDisplayViewer;
 
 /**
- * Captures the current view of an {@link ImageDisplay} to a color merged
- * {@link Dataset}. Includes overlay graphics.
+ * Default display for {@link Table}s, including {@link ResultsTable}s.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Overlay"),
-	@Menu(label = "Flatten", weight = 4) })
-public class Flatten extends ContextCommand {
+@Plugin(type = TableDisplay.class, priority = Priority.LOW_PRIORITY)
+public class DefaultTableDisplay extends AbstractDisplay<Table<?, ?>> implements
+	TableDisplay
+{
 
-	// -- Parameters --
-	
-	@Parameter(required=true)
-	private UIService uiService;
-
-	@Parameter(required=true)
-	private ImageDisplay display;
-	
-	@Parameter(type=ItemIO.OUTPUT)
-	private Dataset dataset;
-
-	// -- accessors --
-	
-	public void setDisplay(ImageDisplay disp) {
-		display = disp;
-	}
-
-	public ImageDisplay getDisplay() {
-		return display;
-	}
-	
-	public Dataset getOutput() {
-		return dataset;
-	}
-	
-	// -- run() method --
-	
-	@Override
-	public void run() {
-		ImageDisplayViewer viewer = uiService.getImageDisplayViewer(display);
-		if (viewer == null) return;
-		dataset = viewer.capture();
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public DefaultTableDisplay() {
+		super((Class) Table.class);
 	}
 
 }

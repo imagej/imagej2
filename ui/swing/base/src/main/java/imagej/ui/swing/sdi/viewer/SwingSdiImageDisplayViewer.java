@@ -33,64 +33,34 @@
  * #L%
  */
 
-package imagej.core.commands.display;
+package imagej.ui.swing.sdi.viewer;
 
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.ui.UIService;
+import imagej.ui.UserInterface;
+import imagej.ui.swing.sdi.SwingUI;
+import imagej.ui.swing.viewer.image.AbstractSwingImageDisplayViewer;
+import imagej.ui.swing.viewer.image.SwingImageDisplayViewer;
 import imagej.ui.viewer.image.ImageDisplayViewer;
 
+import javax.swing.JFrame;
+
 /**
- * Captures the current view of an {@link ImageDisplay} to a color merged
- * {@link Dataset}. Includes overlay graphics.
+ * Single Document Interface implementation of Swing image display viewer. The
+ * SDI display is housed in a {@link JFrame}.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
+ * @author Lee Kamentsky
+ * @see SwingImageDisplayViewer
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Overlay"),
-	@Menu(label = "Flatten", weight = 4) })
-public class Flatten extends ContextCommand {
+@Plugin(type = ImageDisplayViewer.class)
+public class SwingSdiImageDisplayViewer extends AbstractSwingImageDisplayViewer
+{
 
-	// -- Parameters --
-	
-	@Parameter(required=true)
-	private UIService uiService;
+	// -- DisplayViewer methods --
 
-	@Parameter(required=true)
-	private ImageDisplay display;
-	
-	@Parameter(type=ItemIO.OUTPUT)
-	private Dataset dataset;
-
-	// -- accessors --
-	
-	public void setDisplay(ImageDisplay disp) {
-		display = disp;
-	}
-
-	public ImageDisplay getDisplay() {
-		return display;
-	}
-	
-	public Dataset getOutput() {
-		return dataset;
-	}
-	
-	// -- run() method --
-	
 	@Override
-	public void run() {
-		ImageDisplayViewer viewer = uiService.getImageDisplayViewer(display);
-		if (viewer == null) return;
-		dataset = viewer.capture();
+	public boolean isCompatible(final UserInterface ui) {
+		return ui instanceof SwingUI;
 	}
 
 }

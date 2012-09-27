@@ -33,64 +33,30 @@
  * #L%
  */
 
-package imagej.core.commands.display;
+package imagej.ui.viewer.table;
 
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.ui.UIService;
-import imagej.ui.viewer.image.ImageDisplayViewer;
+import imagej.data.table.Table;
+import imagej.data.table.TableDisplay;
+import imagej.display.Display;
+import imagej.ui.viewer.AbstractDisplayViewer;
 
 /**
- * Captures the current view of an {@link ImageDisplay} to a color merged
- * {@link Dataset}. Includes overlay graphics.
+ * Implements the UI-independent elements of a {@link Table} viewer.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Overlay"),
-	@Menu(label = "Flatten", weight = 4) })
-public class Flatten extends ContextCommand {
+public abstract class AbstractTableDisplayViewer extends
+	AbstractDisplayViewer<Table<?, ?>> implements TableDisplayViewer
+{
 
-	// -- Parameters --
-	
-	@Parameter(required=true)
-	private UIService uiService;
-
-	@Parameter(required=true)
-	private ImageDisplay display;
-	
-	@Parameter(type=ItemIO.OUTPUT)
-	private Dataset dataset;
-
-	// -- accessors --
-	
-	public void setDisplay(ImageDisplay disp) {
-		display = disp;
-	}
-
-	public ImageDisplay getDisplay() {
-		return display;
-	}
-	
-	public Dataset getOutput() {
-		return dataset;
-	}
-	
-	// -- run() method --
-	
 	@Override
-	public void run() {
-		ImageDisplayViewer viewer = uiService.getImageDisplayViewer(display);
-		if (viewer == null) return;
-		dataset = viewer.capture();
+	public boolean canView(final Display<?> d) {
+		return d instanceof TableDisplay;
+	}
+
+	@Override
+	public TableDisplay getDisplay() {
+		return (TableDisplay) super.getDisplay();
 	}
 
 }

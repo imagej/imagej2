@@ -33,64 +33,30 @@
  * #L%
  */
 
-package imagej.core.commands.display;
+package imagej.ui.swing.viewer.image;
 
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.ui.UIService;
-import imagej.ui.viewer.image.ImageDisplayViewer;
+import imagej.data.display.DataView;
+
+import org.jhotdraw.draw.Figure;
 
 /**
- * Captures the current view of an {@link ImageDisplay} to a color merged
- * {@link Dataset}. Includes overlay graphics.
+ * A figure view renders a {@link DataView} with a linked JHotDraw
+ * {@link Figure}.
  * 
- * @author Barry DeZonia
+ * @author Lee Kamentsky
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Overlay"),
-	@Menu(label = "Flatten", weight = 4) })
-public class Flatten extends ContextCommand {
+public interface FigureView {
 
-	// -- Parameters --
-	
-	@Parameter(required=true)
-	private UIService uiService;
+	/** Gets the linked JHotDraw figure. */
+	public Figure getFigure();
 
-	@Parameter(required=true)
-	private ImageDisplay display;
-	
-	@Parameter(type=ItemIO.OUTPUT)
-	private Dataset dataset;
+	/** Gets the linked ImageJ data view. */
+	public DataView getDataView();
 
-	// -- accessors --
-	
-	public void setDisplay(ImageDisplay disp) {
-		display = disp;
-	}
+	/** Updates the figure to match the linked data view. */
+	public void update();
 
-	public ImageDisplay getDisplay() {
-		return display;
-	}
-	
-	public Dataset getOutput() {
-		return dataset;
-	}
-	
-	// -- run() method --
-	
-	@Override
-	public void run() {
-		ImageDisplayViewer viewer = uiService.getImageDisplayViewer(display);
-		if (viewer == null) return;
-		dataset = viewer.capture();
-	}
+	/** Removes the figure from the scene. */
+	public void dispose();
 
 }

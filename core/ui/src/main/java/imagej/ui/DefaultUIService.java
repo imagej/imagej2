@@ -66,7 +66,7 @@ import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.DialogPrompt.Result;
 import imagej.ui.viewer.DisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
-import imagej.ui.viewer.ImageDisplayViewer;
+import imagej.ui.viewer.image.ImageDisplayViewer;
 
 import java.util.ArrayList;
 import java.util.Collections;

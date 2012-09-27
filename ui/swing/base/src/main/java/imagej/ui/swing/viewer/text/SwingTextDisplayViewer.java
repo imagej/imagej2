@@ -33,82 +33,34 @@
  * #L%
  */
 
-package imagej.ui.swing.mdi;
+package imagej.ui.swing.viewer.text;
 
-import imagej.Priority;
 import imagej.display.Display;
 import imagej.plugin.Plugin;
-import imagej.ui.Desktop;
-import imagej.ui.DialogPrompt.MessageType;
-import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.UserInterface;
 import imagej.ui.swing.AbstractSwingUI;
-import imagej.ui.swing.SwingApplicationFrame;
-import imagej.ui.swing.mdi.viewer.SwingMdiDisplayWindow;
-
-import java.awt.Color;
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
-
-import javax.swing.JScrollPane;
+import imagej.ui.viewer.DisplayWindow;
+import imagej.ui.viewer.text.AbstractTextDisplayViewer;
+import imagej.ui.viewer.text.TextDisplayViewer;
 
 /**
- * Swing-based MDI user interface for ImageJ.
+ * A Swing text display viewer, which displays strings in a simple text panel.
  * 
- * @author Grant Harris
- * @author Curtis Rueden
+ * @author Lee Kamentsky
  */
-@Plugin(type = UserInterface.class, name = SwingMdiUI.NAME,
-	priority = Priority.LOW_PRIORITY)
-public class SwingMdiUI extends AbstractSwingUI {
-
-	public static final String NAME = "swing-mdi";
-
-	private JMDIDesktopPane desktopPane;
-
-	private JScrollPane scrollPane;
-
-	// -- UserInterface methods --
+@Plugin(type = TextDisplayViewer.class)
+public class SwingTextDisplayViewer extends AbstractTextDisplayViewer {
 
 	@Override
-	public Desktop getDesktop() {
-		return desktopPane;
+	public boolean isCompatible(final UserInterface ui) {
+		// TODO: Consider whether to use an interface for Swing UIs instead?
+		return ui instanceof AbstractSwingUI;
 	}
 
 	@Override
-	public SwingMdiDisplayWindow createDisplayWindow(Display<?> display) {
-		final SwingMdiDisplayWindow displayWindow = new SwingMdiDisplayWindow();
-		displayWindow
-			.addEventDispatcher(new InternalFrameEventDispatcher(display));
-		return displayWindow;
-	}
-
-	@Override
-	public SwingMdiDialogPrompt dialogPrompt(final String message,
-		final String title, final MessageType msg, final OptionType option)
-	{
-		return new SwingMdiDialogPrompt(message, title, msg, option);
-	}
-
-	// -- Internal methods --
-
-	@Override
-	protected void setupAppFrame() {
-		final SwingApplicationFrame appFrame = getApplicationFrame();
-		desktopPane = new JMDIDesktopPane();
-		// TODO desktopPane.setTransferHandler(new DropFileTransferHandler());
-		scrollPane = new JScrollPane();
-		scrollPane.setViewportView(desktopPane);
-		desktopPane.setBackground(new Color(200, 200, 255));
-		appFrame.getContentPane().add(scrollPane);
-		appFrame.setBounds(getWorkSpaceBounds());
-	}
-
-	// -- Helper methods --
-
-	private Rectangle getWorkSpaceBounds() {
-		return GraphicsEnvironment.getLocalGraphicsEnvironment()
-			.getMaximumWindowBounds();
+	public void view(final DisplayWindow w, final Display<?> d) {
+		super.view(w, d);
+		setPanel(new SwingTextDisplayPanel(getDisplay(), w));
 	}
 
 }

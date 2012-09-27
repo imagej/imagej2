@@ -33,64 +33,66 @@
  * #L%
  */
 
-package imagej.core.commands.display;
+package imagej.util;
 
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.ui.UIService;
-import imagej.ui.viewer.image.ImageDisplayViewer;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
- * Captures the current view of an {@link ImageDisplay} to a color merged
- * {@link Dataset}. Includes overlay graphics.
+ * An {@link ArrayList} whose size can be adjusted more efficiently.
+ * <p>
+ * When sizing down, elements at the end of the list are removed in one
+ * operation. When sizing up, null elements are appended to the list.
+ * </p>
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
+ * @param <E> The type of data stored in the list.
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Overlay"),
-	@Menu(label = "Flatten", weight = 4) })
-public class Flatten extends ContextCommand {
+public class SizableArrayList<E> extends ArrayList<E> implements Sizable {
 
-	// -- Parameters --
-	
-	@Parameter(required=true)
-	private UIService uiService;
+	// -- Constructors --
 
-	@Parameter(required=true)
-	private ImageDisplay display;
-	
-	@Parameter(type=ItemIO.OUTPUT)
-	private Dataset dataset;
-
-	// -- accessors --
-	
-	public void setDisplay(ImageDisplay disp) {
-		display = disp;
+	public SizableArrayList(final int initialCapacity) {
+		super(initialCapacity);
 	}
 
-	public ImageDisplay getDisplay() {
-		return display;
+	public SizableArrayList() {
+		super();
 	}
-	
-	public Dataset getOutput() {
-		return dataset;
+
+	public SizableArrayList(final Collection<? extends E> c) {
+		super(c);
 	}
-	
-	// -- run() method --
-	
+
+	// -- Sizable methods --
+
 	@Override
-	public void run() {
-		ImageDisplayViewer viewer = uiService.getImageDisplayViewer(display);
-		if (viewer == null) return;
-		dataset = viewer.capture();
+	public void setSize(final int size) {
+		final int oldSize = size();
+		if (oldSize == size) return; // no size change
+		if (size < oldSize) {
+			// need to remove extra elements
+			removeRange(size, oldSize);
+		}
+		else {
+			// need to add some elements
+			ensureCapacity(size);
+			try {
+				final Field sizeField = ArrayList.class.getDeclaredField("size");
+				sizeField.setAccessible(true);
+				sizeField.set(this, size);
+			}
+			catch (final NoSuchFieldException exc) {
+				throw new IllegalStateException(exc);
+			}
+			catch (final IllegalArgumentException exc) {
+				throw new IllegalStateException(exc);
+			}
+			catch (final IllegalAccessException exc) {
+				throw new IllegalStateException(exc);
+			}
+		}
 	}
 
 }

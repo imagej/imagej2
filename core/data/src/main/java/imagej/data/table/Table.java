@@ -33,64 +33,62 @@
  * #L%
  */
 
-package imagej.core.commands.display;
+package imagej.data.table;
 
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.ui.UIService;
-import imagej.ui.viewer.image.ImageDisplayViewer;
+import java.util.List;
 
 /**
- * Captures the current view of an {@link ImageDisplay} to a color merged
- * {@link Dataset}. Includes overlay graphics.
+ * A table of values.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
+ * @param <C> The type of column used by the table.
+ * @param <T> The type of data stored in the table.
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Overlay"),
-	@Menu(label = "Flatten", weight = 4) })
-public class Flatten extends ContextCommand {
+public interface Table<C extends Column<T>, T> extends List<C> {
 
-	// -- Parameters --
-	
-	@Parameter(required=true)
-	private UIService uiService;
+	/** Gets the number of columns in the table. */
+	int getColumnCount();
 
-	@Parameter(required=true)
-	private ImageDisplay display;
-	
-	@Parameter(type=ItemIO.OUTPUT)
-	private Dataset dataset;
+	/** Sets the number of columns in the table. */
+	void setColumnCount(int colCount);
 
-	// -- accessors --
-	
-	public void setDisplay(ImageDisplay disp) {
-		display = disp;
-	}
+	/** Adds a column with the given header to the table. */
+	Column<T> addColumn(String header);
 
-	public ImageDisplay getDisplay() {
-		return display;
-	}
+	/** Gets the number of rows in the table. */
+	int getRowCount();
+
+	/** Sets the number of rows in the table. */
+	void setRowCount(int rowCount);
+
+	/** Adds a row (with no header) to the table. */
+	void addRow();
 	
-	public Dataset getOutput() {
-		return dataset;
-	}
-	
-	// -- run() method --
-	
-	@Override
-	public void run() {
-		ImageDisplayViewer viewer = uiService.getImageDisplayViewer(display);
-		if (viewer == null) return;
-		dataset = viewer.capture();
-	}
+	/** Adds a row with the given header to the table. */
+	void addRow(String header);
+
+	/** Sets the number of columns and rows in the table. */
+	void setDimensions(int colCount, int rowCount);
+
+	/** Gets the column header at the given column. */
+	String getColumnHeader(int col);
+
+	/** Sets the column header at the given column. */
+	void setColumnHeader(String header, int col);
+
+	/** Gets the column index of the column with the given header. */
+	int getColumnIndex(String header);
+
+	/** Gets the row header at the given row. */
+	String getRowHeader(int row);
+
+	/** Sets the row header at the given row. */
+	void setRowHeader(String header, int row);
+
+	/** Sets the table value at the given column and row. */
+	void set(T value, int col, int row);
+
+	/** Gets the table value at the given column and row. */
+	T get(int col, int row);
 
 }

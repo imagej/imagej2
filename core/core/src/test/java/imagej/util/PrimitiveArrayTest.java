@@ -33,64 +33,60 @@
  * #L%
  */
 
-package imagej.core.commands.display;
+package imagej.util;
 
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.ui.UIService;
-import imagej.ui.viewer.image.ImageDisplayViewer;
+import static org.junit.Assert.assertEquals;
 
 /**
- * Captures the current view of an {@link ImageDisplay} to a color merged
- * {@link Dataset}. Includes overlay graphics.
+ * Abstract superclass for {@link PrimitiveArray}-based tests.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
+ * @author Johannes Schindelin
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Overlay"),
-	@Menu(label = "Flatten", weight = 4) })
-public class Flatten extends ContextCommand {
+public abstract class PrimitiveArrayTest {
 
-	// -- Parameters --
-	
-	@Parameter(required=true)
-	private UIService uiService;
+	/** Tests {@link PrimitiveArray#insert(int, int)}. */
+	protected void testInsert(final PrimitiveArray<?, ?> array) {
+		final int size = array.size();
+		final Object e0 = array.get(0);
+		final Object e2 = array.get(2);
+		final Object e3 = array.get(3);
+		final Object eN = array.get(size - 1);
+		
+		array.insert(size, 3);
+		assertEquals(size + 3, array.size());
+		assertEquals(e0, array.get(0));
+		assertEquals(eN, array.get(size - 1));
+		
+		array.insert(3, 7);
+		assertEquals(size + 10, array.size());
+		assertEquals(e0, array.get(0));
+		assertEquals(e3, array.get(10));
+		assertEquals(eN, array.get(size + 6));
 
-	@Parameter(required=true)
-	private ImageDisplay display;
-	
-	@Parameter(type=ItemIO.OUTPUT)
-	private Dataset dataset;
-
-	// -- accessors --
-	
-	public void setDisplay(ImageDisplay disp) {
-		display = disp;
+		array.insert(0, 5);
+		assertEquals(size + 15, array.size());
+		assertEquals(e0, array.get(5));
+		assertEquals(e2, array.get(7));
+		assertEquals(e3, array.get(15));
+		assertEquals(eN, array.get(size + 11));
 	}
 
-	public ImageDisplay getDisplay() {
-		return display;
-	}
-	
-	public Dataset getOutput() {
-		return dataset;
-	}
-	
-	// -- run() method --
-	
-	@Override
-	public void run() {
-		ImageDisplayViewer viewer = uiService.getImageDisplayViewer(display);
-		if (viewer == null) return;
-		dataset = viewer.capture();
+	/** Tests {@link PrimitiveArray#delete(int, int)}. */
+	protected void testDelete(final PrimitiveArray<?, ?> array) {
+		final Object[] a = array.toArray();
+
+		array.delete(a.length - 2, 2);
+		assertEquals(a.length - 2, array.size());
+		for (int i = 0; i < a.length - 2; i++) {
+			assertEquals("@" + i, a[i], array.get(i));
+		}
+		
+		array.delete(0, 2);
+		assertEquals(a.length - 4, array.size());
+		for (int i = 0; i < a.length - 4; i++) {
+			assertEquals("@" + i, a[i + 2], array.get(i));
+		}
 	}
 
 }

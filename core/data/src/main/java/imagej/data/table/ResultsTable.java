@@ -33,64 +33,25 @@
  * #L%
  */
 
-package imagej.core.commands.display;
+package imagej.data.table;
 
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.ui.UIService;
-import imagej.ui.viewer.image.ImageDisplayViewer;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
- * Captures the current view of an {@link ImageDisplay} to a color merged
- * {@link Dataset}. Includes overlay graphics.
+ * A table of double-precision floating point values.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Overlay"),
-	@Menu(label = "Flatten", weight = 4) })
-public class Flatten extends ContextCommand {
+public interface ResultsTable extends Table<DoubleColumn, Double> {
 
-	// -- Parameters --
-	
-	@Parameter(required=true)
-	private UIService uiService;
+	/** Gets the value of the given table cell. */
+	double getValue(int col, int row);
 
-	@Parameter(required=true)
-	private ImageDisplay display;
-	
-	@Parameter(type=ItemIO.OUTPUT)
-	private Dataset dataset;
+	/** Sets the value of the given table cell. */
+	void setValue(double value, int col, int row);
 
-	// -- accessors --
-	
-	public void setDisplay(ImageDisplay disp) {
-		display = disp;
-	}
-
-	public ImageDisplay getDisplay() {
-		return display;
-	}
-	
-	public Dataset getOutput() {
-		return dataset;
-	}
-	
-	// -- run() method --
-	
-	@Override
-	public void run() {
-		ImageDisplayViewer viewer = uiService.getImageDisplayViewer(display);
-		if (viewer == null) return;
-		dataset = viewer.capture();
-	}
+	/** Wraps the results table in an ImgLib {@link net.imglib2.img.Img}. */
+	ImgPlus<DoubleType> img();
 
 }
