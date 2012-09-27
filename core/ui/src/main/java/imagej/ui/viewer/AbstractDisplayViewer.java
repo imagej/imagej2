@@ -37,9 +37,11 @@ package imagej.ui.viewer;
 
 import imagej.display.Display;
 import imagej.display.event.DisplayActivatedEvent;
+import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.DisplayUpdatedEvent;
 import imagej.display.event.DisplayUpdatedEvent.DisplayUpdateLevel;
+import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.plugin.SortablePlugin;
@@ -125,6 +127,24 @@ public abstract class AbstractDisplayViewer<T> extends SortablePlugin implements
 		// always be populated via an initial call to super.view(w, d).
 		if (display == null) return null;
 		return display.getContext().getService(EventService.class);
+	}
+
+	protected void updateTitle() {
+		getWindow().setTitle(getDisplay().getName());
+	}
+
+	// -- Event handlers --
+
+	@EventHandler
+	protected void onEvent(final DisplayCreatedEvent event) {
+		if (event.getObject() != getDisplay()) return;
+		updateTitle();
+	}
+
+	@EventHandler
+	protected void onEvent(final DisplayUpdatedEvent event) {
+		if (event.getDisplay() != getDisplay()) return;
+		updateTitle();
 	}
 
 }

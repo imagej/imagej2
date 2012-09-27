@@ -113,15 +113,11 @@ public abstract class AbstractSwingImageDisplayViewer extends
 			: ZoomScaleOption.OPTIONS_PERCENT_SCALE;
 	}
 
-	@Override
-	protected void updateTitle() {
-		getWindow().setTitle(getDisplay().getName());
-	}
-	
 	// -- Event handlers --
 
 	@EventHandler
 	protected void onEvent(@SuppressWarnings("unused") final OptionsEvent e) {
 		updateLabel();
 	}
+
 }

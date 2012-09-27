@@ -46,7 +46,6 @@ import imagej.data.display.event.PanZoomEvent;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.display.Display;
-import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayUpdatedEvent;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.event.EventHandler;
@@ -97,10 +96,6 @@ public abstract class AbstractImageDisplayViewer extends
 
 	// -- Internal AbstractImageDisplayViewer methods --
 
-	protected void updateTitle() {
-		// placeholder - do nothing
-	}
-	
 	protected Dataset getDataset(final DataView view) {
 		final Data data = view.getData();
 		return data instanceof Dataset ? (Dataset) data : null;
@@ -320,16 +315,12 @@ public abstract class AbstractImageDisplayViewer extends
 		updateTitle();
 	}
 
-	@EventHandler
-	protected void onEvent(final DisplayCreatedEvent event) {
-		if (event.getObject() != getDisplay()) return;
-		updateTitle();
-	}
-
+	@Override
 	@EventHandler
 	protected void onEvent(final DisplayUpdatedEvent event) {
 		if (event.getDisplay() != getDisplay()) return;
 		updateLabel();
 		updateTitle();
 	}
+
 }
