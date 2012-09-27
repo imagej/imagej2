@@ -3,6 +3,7 @@ package imagej.core.commands.debug;
 import imagej.command.Command;
 import imagej.data.table.DefaultResultsTable;
 import imagej.data.table.ResultsTable;
+import imagej.event.StatusService;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -11,12 +12,18 @@ import imagej.plugin.Plugin;
 @Plugin(menuPath = "Plugins>Sandbox>Results Table Test", headless = true)
 public class ResultsTableTest implements Command {
 
-	@Parameter(label = "Paul Molitor", type = ItemIO.OUTPUT)
-	private ResultsTable table;
+	@Parameter
+	private StatusService statusService;
+
+	@Parameter(label = "Paul Molitor Baseball Statistics", type = ItemIO.OUTPUT)
+	private ResultsTable baseball;
+
+	@Parameter(label = "Big Table", type = ItemIO.OUTPUT)
+	private ResultsTable big;
 
 	@Override
 	public void run() {
-		// Paul Molitor
+		statusService.showStatus("Creating a small table...");
 		final double[][] data = {
 			{1978, 21, .273},
 			{1979, 22, .322},
@@ -40,15 +47,27 @@ public class ResultsTableTest implements Command {
 			{1997, 40, .305},
 			{1998, 41, .281},
 		};
-		table = new DefaultResultsTable(data[0].length, data.length);
-		table.setColumnHeader("Year", 0);
-		table.setColumnHeader("Age", 1);
-		table.setColumnHeader("BA", 2);
-		for (int row=0; row<data.length; row++) {
-			for (int col=0; col<data[row].length; col++) {
-				table.setValue(data[row][col], col, row);
+		baseball = new DefaultResultsTable(data[0].length, data.length);
+		baseball.setColumnHeader("Year", 0);
+		baseball.setColumnHeader("Age", 1);
+		baseball.setColumnHeader("BA", 2);
+		for (int row = 0; row < data.length; row++) {
+			for (int col = 0; col < data[row].length; col++) {
+				baseball.setValue(data[row][col], col, row);
 			}
 		}
+
+		// create a larger table with 10 million elements
+		statusService.showStatus("Creating a large table...");
+		final int colCount = 10, rowCount = 1000000;
+		big = new DefaultResultsTable(colCount, rowCount);
+		for (int col = 0; col < colCount; col++) {
+			statusService.showProgress(col, colCount);
+			for (int row = 0; row < rowCount; row++) {
+				big.setValue(row + col, col, row);
+			}
+		}
+		statusService.clearStatus();
 	}
 
 }
