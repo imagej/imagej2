@@ -34,11 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
-import ij.Prefs;
+import imagej.util.Prefs;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
@@ -58,7 +57,7 @@ public class RecentFilesMenuItem extends JMenu {
 
 		Stack<String> prefs = new Stack<String>();
 		for (int i = 1; i <= maxCount; i++) {
-			String item = Prefs.get(prefsPrefix + i, null);
+			String item = Prefs.get(getClass(), prefsPrefix + i, null);
 			if (item == null)
 				break;
 			prefs.push(item);
@@ -101,7 +100,7 @@ public class RecentFilesMenuItem extends JMenu {
 		// persist
 		i = 1;
 		for (String item : list) {
-			Prefs.set(prefsPrefix + i, item);
+			Prefs.put(getClass(), prefsPrefix + i, item);
 			i++;
 		}
 
