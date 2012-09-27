@@ -226,7 +226,8 @@ public final class DefaultWindowService extends AbstractService implements
 	/** Shortens the given path to ensure it conforms to a maximum length. */
 	private String shortPath(final String path) {
 		String newPath = path;
-		if (path.length() > (MAX_LEADER_SIZE + 3 + MAX_TRAILER_SIZE)) {
+		if (path != null && path.length() > MAX_LEADER_SIZE + 3 + MAX_TRAILER_SIZE)
+		{
 			newPath = path.substring(0, MAX_LEADER_SIZE);
 			newPath += "...";
 			int p = path.length() - MAX_TRAILER_SIZE - 1;
