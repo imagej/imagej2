@@ -67,7 +67,7 @@ public class DisplayPostprocessor extends AbstractPostprocessorPlugin {
 
 		for (final ModuleItem<?> outputItem : module.getInfo().outputs()) {
 			final Object value = outputItem.getValue(module);
-			String name = defaultName(outputItem);
+			final String name = defaultName(outputItem);
 			handleOutput(displayService, name, value);
 		}
 	}
