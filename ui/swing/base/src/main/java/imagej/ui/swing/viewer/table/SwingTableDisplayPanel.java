@@ -70,6 +70,7 @@ public class SwingTableDisplayPanel extends JScrollPane implements
 		this.display = display;
 		this.window = window;
 		table = makeTable();
+		table.setAutoCreateRowSorter(true);
 		setViewportView(table);
 		window.setContent(this);
 
