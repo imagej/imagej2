@@ -39,9 +39,9 @@ import imagej.core.options.OptionsMemoryAndThreads;
 import imagej.event.EventHandler;
 import imagej.event.EventSubscriber;
 import imagej.event.StatusEvent;
+import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.StatusBar;
 import imagej.ui.UIService;
-import imagej.ui.DialogPrompt.MessageType;
 
 import java.awt.BorderLayout;
 import java.awt.event.MouseEvent;
@@ -49,7 +49,6 @@ import java.awt.event.MouseListener;
 import java.util.List;
 
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.border.BevelBorder;
