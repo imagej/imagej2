@@ -38,9 +38,6 @@ import common.RefreshScripts;
 
 import fiji.scripting.java.Refresh_Javas;
 
-import ij.IJ;
-import ij.WindowManager;
-
 import ij.gui.GenericDialog;
 
 import ij.io.SaveDialog;
@@ -61,6 +58,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import java.io.BufferedReader;
+import java.io.CharArrayWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -131,7 +129,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		  openHelpWithoutFrames, nextTab, previousTab,
 		  runSelection, extractSourceJar, toggleBookmark,
 		  listBookmarks, openSourceForClass, newPlugin, installMacro,
-		  openSourceForMenuItem, ijToFront,
+		  openSourceForMenuItem,
 		  openMacroFunctions, decreaseFontSize, increaseFontSize,
 		  chooseFontSize, chooseTabSize, gitGrep, openInGitweb,
 		  replaceTabsWithSpaces, replaceSpacesWithTabs, toggleWhiteSpaceLabeling,
@@ -154,7 +152,6 @@ public class TextEditor extends JFrame implements ActionListener,
 
 	public TextEditor(String path) {
 		super("Script Editor");
-		WindowManager.addWindow(this);
 
 		// Initialize menu
 		int ctrl = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
@@ -392,9 +389,6 @@ public class TextEditor extends JFrame implements ActionListener,
 		newPlugin = addToMenu(toolsMenu,
 			"Create new plugin...", 0, 0);
 		newPlugin.setMnemonic(KeyEvent.VK_C);
-		ijToFront = addToMenu(toolsMenu,
-			"Focus on the main Fiji window", 0, 0);
-		ijToFront.setMnemonic(KeyEvent.VK_F);
 		openSourceForClass = addToMenu(toolsMenu,
 			"Open .java file for class...", 0, 0);
 		openSourceForClass.setMnemonic(KeyEvent.VK_J);
@@ -464,7 +458,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			}
 
 			public void windowClosed(WindowEvent e) {
-				WindowManager.removeWindow(TextEditor.this);
+				// TODO: integrate with WindowService (how does that hope to activate windows by name?)
 			}
 		});
 
@@ -521,7 +515,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			try {
 				editorPane.setFile(file.getAbsolutePath());
 			} catch (IOException e) {
-				IJ.handleException(e);
+				handleException(e);
 			}
 			editorPane.setLanguageByFileName(file.getName());
 			setTitle();
@@ -910,8 +904,6 @@ public class TextEditor extends JFrame implements ActionListener,
 		}
 		else if (source == newPlugin)
 			new FileFunctions(this).newPlugin();
-		else if (source == ijToFront)
-			IJ.getInstance().toFront();
 		else if (source == increaseFontSize || source == decreaseFontSize) {
 			getEditorPane().increaseFontSize((float)(source == increaseFontSize ? 1.2 : 1 / 1.2));
 			updateTabAndFontSize(false);
@@ -1775,15 +1767,13 @@ public class TextEditor extends JFrame implements ActionListener,
 								List<Thread> ts = getAllThreads();
 								activeCount = ts.size();
 								if (activeCount <= 1) break;
-								if (IJ.debugMode)
-									System.err.println("Waiting for " + ts.size() + " threads to die");
+								log.debug("Waiting for " + ts.size() + " threads to die");
 								int count_zSelector = 0;
 								for (Thread t : ts) {
 									if (t.getName().equals("zSelector")) {
 										count_zSelector++;
 									}
-									if (IJ.debugMode)
-										System.err.println("THREAD: " + t.getName());
+									log.debug("THREAD: " + t.getName());
 								}
 								if (activeCount == count_zSelector + 1) {
 									// Do not wait on the stack slice selector thread.
@@ -1792,7 +1782,7 @@ public class TextEditor extends JFrame implements ActionListener,
 							} catch (InterruptedException ie) {}
 						}
 					} catch (Throwable t) {
-						IJ.handleException(t);
+						handleException(t);
 					} finally {
 						executingTasks.remove(Executer.this);
 						try {
@@ -1801,7 +1791,7 @@ public class TextEditor extends JFrame implements ActionListener,
 							if (null != errors)
 								errors.shutdown();
 						} catch (Exception e) {
-							IJ.handleException(e);
+							handleException(e);
 						}
 						// Leave kill menu item enabled if other tasks are running
 						kill.setEnabled(executingTasks.size() > 0);
@@ -2064,7 +2054,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			errorScreen.invalidate();
 			return true;
 		} catch (Exception e) {
-			IJ.handleException(e);
+			handleException(e);
 		}
 		return false;
 	}
@@ -2236,8 +2226,21 @@ public class TextEditor extends JFrame implements ActionListener,
 		JOptionPane.showMessageDialog(this, message);
 	}
 
-	void handleException(Throwable e) {
-		ij.IJ.handleException(e);
+	protected void handleException(Throwable e) {
+		handleException(e, errorScreen);
+		getTab().showErrors();
+	}
+
+	public static void handleException(Throwable e, JTextArea textArea) {
+		final CharArrayWriter writer = new CharArrayWriter();
+		PrintWriter out = new PrintWriter(writer);
+		e.printStackTrace(out);
+		for (Throwable cause = e.getCause(); cause != null; cause = cause.getCause()) {
+			out.write("Caused by: ");
+			cause.printStackTrace(out);
+		}
+		out.close();
+		textArea.append(writer.toString());
 	}
 
 	/** Removes invalid characters, shows a dialog.

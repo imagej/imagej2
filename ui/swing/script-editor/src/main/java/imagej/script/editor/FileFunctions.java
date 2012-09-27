@@ -42,8 +42,6 @@ import fiji.build.Parser;
 import fiji.build.Rule;
 import fiji.build.SubFake;
 
-import ij.IJ;
-
 import ij.gui.GenericDialog;
 
 import ij.plugin.BrowserLauncher;
@@ -52,6 +50,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -562,13 +561,16 @@ public class FileFunctions {
 						result.add(entry.getName().substring(prefixLength));
 				}
 			} catch (IOException e) {
-				IJ.handleException(e);
+				parent.handleException(e);
 			}
 		}
 		else {
-			String prefix = IJ.isWindows() ? "file:/" : "file:";
-			if (url.startsWith(prefix))
-				url = url.substring(prefix.length());
+			String prefix = "file:";
+			if (url.startsWith(prefix)) {
+				int skip = prefix.length();
+				if (url.startsWith(prefix + "//")) skip++;
+				url = url.substring(skip);
+			}
 			listFilesRecursively(new File(url), "", result);
 		}
 		return result;
@@ -742,7 +744,7 @@ public class FileFunctions {
 			}, handler, handler, directory);
 			parent.errorHandler = handler.errorHandler;
 		} catch (IOException e) {
-			IJ.handleException(e);
+			parent.handleException(e);
 		}
 	}
 

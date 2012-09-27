@@ -34,12 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
-import fiji.scripting.ErrorHandler;
-import fiji.scripting.ErrorHandler.Error;
-
-import ij.IJ;
-
-import ij.text.TextWindow;
+import imagej.log.LogService;
 
 import java.io.CharArrayWriter;
 import java.io.File;
@@ -56,14 +51,24 @@ import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
-public class ExceptionHandler implements IJ.ExceptionHandler {
-	protected Map<ThreadGroup, TextEditor> threadMap =
-		new WeakHashMap<ThreadGroup, TextEditor>();
+public class ExceptionHandler {
+	private static ExceptionHandler instance;
+	private final LogService log;
+	private Map<ThreadGroup, TextEditor> threadMap;
 
-	protected IJ.ExceptionHandler fallBack;
+	// prevent instantiation from somewhere else
+	private ExceptionHandler(final LogService logService) {
+		this.log = logService;
+		threadMap = new WeakHashMap<ThreadGroup, TextEditor>();
+	}
 
-	protected ExceptionHandler(IJ.ExceptionHandler fallBackHandler) {
-		fallBack = fallBackHandler;
+	public static ExceptionHandler getInstance(final LogService logService) {
+		if (instance == null) {
+			instance = new ExceptionHandler(logService);
+		} else if (instance.log != logService) {
+			throw new RuntimeException("Cannot have an ExceptionHandler with two different LogServices");
+		}
+		return instance;
 	}
 
 	public static void addThread(Thread thread, TextEditor editor) {
@@ -71,45 +76,8 @@ public class ExceptionHandler implements IJ.ExceptionHandler {
 	}
 
 	public static void addThreadGroup(ThreadGroup group, TextEditor editor) {
-		ExceptionHandler handler = getInstance();
+		ExceptionHandler handler = getInstance(editor.log);
 		handler.threadMap.put(group, editor);
-	}
-
-	public static ExceptionHandler getInstance() {
-		IJ.ExceptionHandler current = null;
-
-		try {
-			current = getExceptionHandler();
-			if (current instanceof ExceptionHandler)
-				return (ExceptionHandler)current;
-		}
-		catch (Exception e) {
-			/* ignore */
-		}
-		catch (NoSuchMethodError e) {
-			/* ignore */
-		}
-
-		if (current == null)
-			current = new IJ.ExceptionHandler() {
-				public void handle(Throwable t) {
-					legacyHandle(t);
-				}
-			};
-
-		ExceptionHandler result = new ExceptionHandler(current);
-		IJ.setExceptionHandler(result);
-		return result;
-	}
-
-	protected static IJ.ExceptionHandler getExceptionHandler() {
-		try {
-			Field handler = IJ.class.getDeclaredField("exceptionHandler");
-			handler.setAccessible(true);
-			return (IJ.ExceptionHandler)handler.get(null);
-		} catch (Exception e) {
-			return null;
-		}
 	}
 
 	public void handle(Throwable t) {
@@ -122,13 +90,7 @@ public class ExceptionHandler implements IJ.ExceptionHandler {
 			}
 			group = group.getParent();
 		}
-		fallBack.handle(t);
-	}
-
-	public static void legacyHandle(Throwable t) {
-		CharArrayWriter writer = new CharArrayWriter();
-		t.printStackTrace(new PrintWriter(writer));
-		new TextWindow("Exception", writer.toString(), 350, 250);
+		log.error(t);
 	}
 
 	public static void handle(Throwable t, TextEditor editor) {

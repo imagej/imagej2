@@ -37,8 +37,8 @@ package imagej.script.editor;
 import fiji.scripting.Languages;
 import fiji.scripting.Languages.Language;
 
-import ij.IJ;
-
+import java.io.CharArrayWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,7 +74,7 @@ public class ErrorHandler {
 		try {
 			parseErrors();
 		} catch (BadLocationException e) {
-			IJ.handleException(e);
+			handleException(e);
 		}
 	}
 
@@ -155,7 +155,7 @@ public class ErrorHandler {
 			error.position = document.createPosition(offset + 1);
 			list.add(error);
 		} catch (BadLocationException e) {
-			IJ.handleException(e);
+			handleException(e);
 		}
 	}
 
@@ -178,7 +178,7 @@ public class ErrorHandler {
 					.createPosition(start);
 				list.add(error);
 			} catch (BadLocationException e) {
-				IJ.handleException(e);
+				handleException(e);
 			}
 		}
 	}
@@ -202,5 +202,9 @@ public class ErrorHandler {
 			String fileName = line.substring(0, colon);
 			return new Error(fileName, lineNumber);
 		}
+	}
+
+	private void handleException(final Throwable e) {
+		TextEditor.handleException(e, textArea);
 	}
 }
