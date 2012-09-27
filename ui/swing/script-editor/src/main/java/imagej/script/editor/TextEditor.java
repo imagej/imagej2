@@ -122,9 +122,9 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 public class TextEditor extends JFrame implements ActionListener,
 	       ChangeListener {
 	protected JTabbedPane tabbed;
-	protected JMenuItem newFile, open, save, saveas, compileAndRun, compile, debug, close,
+	protected JMenuItem newFile, open, save, saveas, compileAndRun, compile, close,
 		  undo, redo, cut, copy, paste, find, replace, selectAll,
-		  resume, terminate, kill, gotoLine,
+		  kill, gotoLine,
 		  makeJar, makeJarWithSource, removeUnusedImports,
 		  sortImports, removeTrailingWhitespace, findNext, findPrevious,
 		  openHelp, addImport, clearScreen, nextError, previousError,
@@ -133,7 +133,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		  listBookmarks, openSourceForClass, newPlugin, installMacro,
 		  openSourceForMenuItem, showDiff, commit, ijToFront,
 		  openMacroFunctions, decreaseFontSize, increaseFontSize,
-		  chooseFontSize, chooseTabSize, gitGrep, loadToolsJar, openInGitweb,
+		  chooseFontSize, chooseTabSize, gitGrep, openInGitweb,
 		  replaceTabsWithSpaces, replaceSpacesWithTabs, toggleWhiteSpaceLabeling,
 		  zapGremlins;
 	protected RecentFilesMenuItem openRecent;
@@ -373,14 +373,6 @@ public class TextEditor extends JFrame implements ActionListener,
 		kill.setMnemonic(KeyEvent.VK_K);
 		kill.setEnabled(false);
 
-		runMenu.addSeparator();
-
-		debug = addToMenu(runMenu, "Start Debugging", KeyEvent.VK_D, ctrl);
-		debug.setMnemonic(KeyEvent.VK_D);
-		resume = addToMenu(runMenu, "Resume", 0, 0);
-		resume.setMnemonic(KeyEvent.VK_R);
-		terminate = addToMenu(runMenu, "Terminate", 0, 0);
-		terminate.setMnemonic(KeyEvent.VK_T);
 		mbar.add(runMenu);
 
 		toolsMenu = new JMenu("Tools");
@@ -452,8 +444,6 @@ public class TextEditor extends JFrame implements ActionListener,
 		// for Eclipse and MS Visual Studio lovers
 		addAccelerator(compileAndRun, KeyEvent.VK_F11, 0, true);
 		addAccelerator(compileAndRun, KeyEvent.VK_F5, 0, true);
-		addAccelerator(debug, KeyEvent.VK_F11, ctrl, true);
-		addAccelerator(debug, KeyEvent.VK_F5, shift, true);
 		addAccelerator(nextTab, KeyEvent.VK_PAGE_DOWN, ctrl, true);
 		addAccelerator(previousTab, KeyEvent.VK_PAGE_UP, ctrl, true);
 
@@ -782,14 +772,6 @@ public class TextEditor extends JFrame implements ActionListener,
 					nextError(false);
 				}
 			}.start();
-		else if (source == debug) {
-			try {
-				new Script_Editor().addToolsJarToClassPath();
-				getEditorPane().startDebugging();
-			} catch (Exception e) {
-				error("No debug support for this language");
-			}
-		}
 		else if (source == kill)
 			chooseTaskToKill();
 		else if (source == close)
@@ -863,11 +845,6 @@ public class TextEditor extends JFrame implements ActionListener,
 			getTab().getScreen().setText("");
 		else if (source == zapGremlins)
 			zapGremlins();
-		else if (source == resume)
-			getEditorPane().resume();
-		else if (source == terminate) {
-			getEditorPane().terminate();
-		}
 		else if (source == openHelp)
 			openHelp(null);
 		else if (source == openHelpWithoutFrames)
@@ -939,15 +916,8 @@ public class TextEditor extends JFrame implements ActionListener,
 			switchTabRelative(1);
 		else if (source == previousTab)
 			switchTabRelative(-1);
-		else if (source == loadToolsJar)
-			new Script_Editor().addToolsJarToClassPath();
 		else if (handleTabsMenu(source))
 			return;
-	}
-
-	public void installDebugSupportMenuItem() {
-		loadToolsJar = addToMenu(toolsMenu, "Load debugging support via internet", 0, 0);
-		loadToolsJar.setVisible(false);
 	}
 
 	protected boolean handleTabsMenu(Object source) {
@@ -1667,13 +1637,6 @@ public class TextEditor extends JFrame implements ActionListener,
 		autoSave.setVisible(language.isCompileable());
 		showDeprecation.setVisible(language.isCompileable());
 		makeJarWithSource.setVisible(language.isCompileable());
-
-		debug.setVisible(language.isDebuggable());
-		if (loadToolsJar != null)
-			loadToolsJar.setVisible(language.isDebuggable());
-		debug.setVisible(language.isDebuggable());
-		resume.setVisible(language.isDebuggable());
-		terminate.setVisible(language.isDebuggable());
 
 		boolean isJava = language.menuLabel.equals("Java");
 		addImport.setVisible(isJava);

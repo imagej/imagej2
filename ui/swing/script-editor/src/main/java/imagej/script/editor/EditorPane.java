@@ -83,7 +83,6 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 	Languages.Language currentLanguage;
 	Gutter gutter;
 	IconGroup iconGroup;
-	StartDebugging debugging;
 	int modifyCount;
 	boolean undoInProgress, redoInProgress;
 
@@ -463,29 +462,6 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 			return;
 		for (GutterIconInfo info : gutter.getBookmarks())
 			result.add(new Bookmark(tab, info));
-	}
-
-	public void startDebugging() {
-		if (currentLanguage == null ||
-					!currentLanguage.isDebuggable())
-			throw new RuntimeException("Debugging unavailable");
-
-		BreakpointManager manager = new BreakpointManager(gutter, this, iconGroup);
-		debugging = new StartDebugging(file.getPath(), manager.findBreakpointsLineNumber());
-
-		try {
-			System.out.println(debugging.startDebugging().exitValue());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void resume() {
-		debugging.resumeVM();
-	}
-
-	public void terminate() {
-		throw new RuntimeException("TODO: unimplemented!");
 	}
 
 	/** Adapted from ij.plugin.frame.Editor */
