@@ -86,8 +86,9 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 
 	@Override
 	public void setStatus(final String message) {
+		if (message == null) return; // no change
 		final String text;
-		if (message == null || message.isEmpty()) text = " ";
+		if (message.isEmpty()) text = " ";
 		else text = message;
 		statusText.setText(text);
 	}

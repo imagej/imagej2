@@ -86,7 +86,7 @@ public class DefaultStatusService extends AbstractService implements
 
 	@Override
 	public void clearStatus() {
-		eventService.publish(new StatusEvent(null));
+		eventService.publish(new StatusEvent(""));
 	}
 
 }
