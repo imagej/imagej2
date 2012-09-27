@@ -131,7 +131,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		  openHelpWithoutFrames, nextTab, previousTab,
 		  runSelection, extractSourceJar, toggleBookmark,
 		  listBookmarks, openSourceForClass, newPlugin, installMacro,
-		  openSourceForMenuItem, showDiff, commit, ijToFront,
+		  openSourceForMenuItem, ijToFront,
 		  openMacroFunctions, decreaseFontSize, increaseFontSize,
 		  chooseFontSize, chooseTabSize, gitGrep, openInGitweb,
 		  replaceTabsWithSpaces, replaceSpacesWithTabs, toggleWhiteSpaceLabeling,
@@ -405,12 +405,14 @@ public class TextEditor extends JFrame implements ActionListener,
 
 		gitMenu = new JMenu("Git");
 		gitMenu.setMnemonic(KeyEvent.VK_G);
+		/*
 		showDiff = addToMenu(gitMenu,
 			"Show diff...", 0, 0);
 		showDiff.setMnemonic(KeyEvent.VK_D);
 		commit = addToMenu(gitMenu,
 			"Commit...", 0, 0);
 		commit.setMnemonic(KeyEvent.VK_C);
+		*/
 		gitGrep = addToMenu(gitMenu,
 			"Grep...", 0, 0);
 		gitGrep.setMnemonic(KeyEvent.VK_G);
@@ -869,6 +871,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		}
 		else if (source == openSourceForMenuItem)
 			new OpenSourceForMenuItem().run(null);
+		/* TODO
 		else if (source == showDiff) {
 			new Thread() {
 				public void run() {
@@ -885,6 +888,7 @@ public class TextEditor extends JFrame implements ActionListener,
 				}
 			}.start();
 		}
+		*/
 		else if (source == gitGrep) {
 			String searchTerm = getTextArea().getSelectedText();
 			File searchRoot = getEditorPane().file;
