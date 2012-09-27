@@ -35,7 +35,6 @@
 
 package imagej.data.table;
 
-import imagej.Priority;
 import imagej.display.AbstractDisplay;
 import imagej.plugin.Plugin;
 
@@ -44,7 +43,7 @@ import imagej.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = TableDisplay.class, priority = Priority.LOW_PRIORITY)
+@Plugin(type = TableDisplay.class)
 public class DefaultTableDisplay extends AbstractDisplay<Table<?, ?>> implements
 	TableDisplay
 {
