@@ -34,14 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
-import fiji.scripting.Languages;
-import fiji.scripting.Languages.Language;
-
 import java.io.CharArrayWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
 import javax.swing.JTextArea;
 
 import javax.swing.text.BadLocationException;
@@ -61,10 +60,11 @@ public class ErrorHandler {
 		this.textArea = textArea;
 	}
 
-	public ErrorHandler(Language language, JTextArea textArea,
+	public ErrorHandler(ScriptEngineFactory language, JTextArea textArea,
 			int startOffset) {
 		this(textArea);
-		if (language.menuLabel.equals("Java") || language == Languages.fakefile)
+		String languageName = language == null ? "None" : language.getLanguageName();
+		if (languageName.equals("Java"))
 			parser = new JavacErrorParser();
 		else
 			return;

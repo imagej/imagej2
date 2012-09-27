@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
+import imagej.util.FileUtils;
+
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -50,8 +52,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
+import java.util.List;
 import java.util.Vector;
 
+import javax.script.ScriptEngineFactory;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
@@ -80,7 +84,7 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 	String fallBackBaseName;
 	File file, gitDirectory;
 	long fileLastModified;
-	Languages.Language currentLanguage;
+	ScriptEngineFactory currentLanguage;
 	Gutter gutter;
 	IconGroup iconGroup;
 	int modifyCount;
@@ -100,7 +104,6 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 				.selectionPreviousWordAction, wordMovement(-1, true));
 		ToolTipManager.sharedInstance().registerComponent(this);
 		getDocument().addDocumentListener(this);
-		currentLanguage = Languages.get("");
 	}
 
 	public void setTabSize(int width) {
@@ -273,11 +276,16 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 
 	public void setFileName(String baseName) {
 		String name = baseName;
-		if (baseName.endsWith(currentLanguage.extension))
-			name = name.substring(0, name.length()
-					- currentLanguage.extension.length());
+		for (String extension : currentLanguage.getExtensions()) {
+			extension = "." + extension;
+			if (baseName.endsWith(extension)) {
+				name = name.substring(0, name.length()
+						- extension.length());
+				break;
+			}
+		}
 		fallBackBaseName = name;
-		if (currentLanguage.extension.equals(".java"))
+		if (currentLanguage.getLanguageName().equals("Java"))
 			new TokenFunctions(this).setClassName(name);
 	}
 
@@ -308,14 +316,17 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 	protected String getFileName() {
 		if (file != null)
 			return file.getName();
-		if (currentLanguage.menuLabel.equals("Java")) {
+		List<String> extensions = currentLanguage.getExtensions();
+		String extension = extensions.size() == 0 ? "" : ("." + extensions.get(0));
+		if (currentLanguage.getLanguageName().equals("Java")) {
 			String name =
 				new TokenFunctions(this).getClassName();
-			if (name != null)
-				return name + currentLanguage.extension;
+			if (name != null) {
+				return name + extension;
+			}
 		}
 		return (fallBackBaseName == null ? "New_" : fallBackBaseName)
-			+ currentLanguage.extension;
+			+ extension;
 	}
 
 	private synchronized void setTitle() {
@@ -323,37 +334,30 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 			frame.setTitle();
 	}
 
-	public static String getExtension(String fileName) {
-		int dot = fileName.lastIndexOf(".");
-		return dot < 0 ?  "" : fileName.substring(dot);
-	}
-
 	protected void setLanguageByFileName(String name) {
-		if (name.equals("Fakefile") || name.endsWith("/Fakefile"))
-			setLanguage(Languages.fakefile);
-		else
-			setLanguage(Languages.get(getExtension(name)));
+		setLanguage(frame.scriptService.getByFileExtension(FileUtils.getExtension(name)));
 	}
 
-	protected void setLanguage(Languages.Language language) {
-		if (language == null)
-			language = Languages.get("");
-
+	protected void setLanguage(ScriptEngineFactory language) {
+		String languageName;
+		String defaultExtension;
+		if (language == null) {
+			languageName = "None";
+			defaultExtension = ".txt";
+		} else {
+			languageName = language.getLanguageName();
+			List<String> extensions = language.getExtensions();
+			defaultExtension = extensions.size() == 0 ? "" : ("." + extensions.get(0));
+		}
 		if (fallBackBaseName != null && fallBackBaseName.endsWith(".txt"))
 			fallBackBaseName = fallBackBaseName.substring(0,
 				fallBackBaseName.length() - 4);
 		if (file != null) {
 			String name = file.getName();
-			if (!name.endsWith(language.extension) &&
-					currentLanguage != null) {
-				String ext = currentLanguage.extension;
-				if (name.endsWith(ext))
-					name = name.substring(0, name.length()
-							- ext.length());
-				else if (name.endsWith(".txt"))
-					name = name.substring(0, name.length() - 4);
-				file = new File(file.getParentFile(),
-						name + language.extension);
+			String ext = "." + FileUtils.getExtension(name);
+			if (!defaultExtension.equals(ext)) {
+				name = name.substring(0, name.length() - ext.length());
+				file = new File(file.getParentFile(), name + defaultExtension);
 				updateGitDirectory();
 				modifyCount = Integer.MIN_VALUE;
 			}
@@ -361,15 +365,17 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 		currentLanguage = language;
 
 		// TODO: these should go to upstream RSyntaxTextArea
-		 try {
-			if (language.syntaxStyle != null)
-				setSyntaxEditingStyle(language.syntaxStyle);
-			else if (language.extension.equals(".m"))
+		try {
+			if (languageName.equals("Matlab"))
 				getRSyntaxDocument()
 					.setSyntaxStyle(new MatlabTokenMaker());
-			else if (language.extension.equals(".ijm"))
+			else if (languageName.equals("IJ Macro"))
 				getRSyntaxDocument()
 					.setSyntaxStyle(new ImageJMacroTokenMaker());
+			else {
+				final String styleName = "text/" + languageName.toLowerCase().replace(' ', '-');
+				setSyntaxEditingStyle(styleName);
+			}
 		}
 		catch (NullPointerException e) {
 			// ignore; this sometimes happens in the TokenMaker...
