@@ -52,7 +52,6 @@ import imagej.plugin.Plugin;
  * @author Barry DeZonia
  *
  */
-@SuppressWarnings("synthetic-access")
 @Plugin
 public class DisplayRestoreState implements Command, InvertibleCommand {
 
@@ -67,29 +66,26 @@ public class DisplayRestoreState implements Command, InvertibleCommand {
 		display.restoreState(state);
 	}
 
+	@SuppressWarnings("synthetic-access")
 	@Override
 	public CompleteCommand getInverseCommand() {
-		return new InverseCommand();
-	}
+		return new CompleteCommand() {
+			@Override
+			public Class<? extends Command> getCommand() {
+				return DisplaySaveState.class;
+			}
 
-	private class InverseCommand implements CompleteCommand {
+			@Override
+			public Map<String, Object> getInputs() {
+				Map<String,Object> inverseInputs = new HashMap<String, Object>();
+				inverseInputs.put("display", display);
+				return inverseInputs;
+			}
 
-		@Override
-		public Class<? extends Command> getCommand() {
-			return DisplaySaveState.class;
-		}
-
-		@Override
-		public Map<String, Object> getInputs() {
-			Map<String,Object> inverseInputs = new HashMap<String, Object>();
-			inverseInputs.put("display", display);
-			return inverseInputs;
-		}
-
-		@Override
-		public long getMemoryUsage() {
-			return state.getMemoryUsage();
-		}
-		
+			@Override
+			public long getMemoryUsage() {
+				return state.getMemoryUsage();
+			}
+		};
 	}
 }

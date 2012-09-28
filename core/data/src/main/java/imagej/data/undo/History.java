@@ -62,7 +62,7 @@ class History {
 	private final long maxMemUsage;
 	private final LinkedList<CompleteCommand> undoableCommands;
 	private final LinkedList<CompleteCommand> redoableCommands;
-	private final LinkedList<CompleteCommand> tmpCommands;
+	private final LinkedList<CompleteCommand> transitionCommands;
 
 	// -- constructor --
 	
@@ -72,7 +72,7 @@ class History {
 		maxMemUsage = maxMem;
 		undoableCommands = new LinkedList<CompleteCommand>();
 		redoableCommands = new LinkedList<CompleteCommand>();
-		tmpCommands = new LinkedList<CompleteCommand>();
+		transitionCommands = new LinkedList<CompleteCommand>();
 	}
 	
 	// -- api to be used externally --
@@ -85,7 +85,7 @@ class History {
 			return;
 		}
 		CompleteCommand command = redoableCommands.removeLast();
-		tmpCommands.add(command);
+		transitionCommands.add(command);
 		command = undoableCommands.removeLast();
 		/* tricky attempt 2
 		 * ignore(commandService.run(command, inputs));
@@ -96,19 +96,19 @@ class History {
 	
 	void doRedo() {
 		//System.out.println("doRedo() : undoPos = "+undoPos+" redoPos = "+redoPos);
-		if (tmpCommands.size() <= 0) {
+		if (transitionCommands.size() <= 0) {
 			// TODO eliminate AWT dependency with a BeepService!
 			Toolkit.getDefaultToolkit().beep();
 			return;
 		}
-		CompleteCommand command = tmpCommands.getLast();
+		CompleteCommand command = transitionCommands.getLast();
 		commandService.run(command.getCommand(), command.getInputs());
 	}
 	
 	void clear() {
 		undoableCommands.clear();
 		redoableCommands.clear();
-		tmpCommands.clear();
+		transitionCommands.clear();
 	}
 	
 	void addUndo(CompleteCommand command) {
@@ -120,7 +120,7 @@ class History {
 				(spaceUsed() + additionalSpace > maxMemUsage)) {
 			if (undoableCommands.size() > 0) removeOldestUndo();
 			if (redoableCommands.size() > 0) removeOldestRedo();
-			// TODO - what abut tmpCommands???
+			// TODO - what about transitionCommands???
 		}
 		// at this point we have enough space or no history has been stored
 		undoableCommands.add(command);
@@ -130,14 +130,14 @@ class History {
 		/*  tricky attempt to make this code ignore prerecorded commands safely
 		inputs.put(RECORDED_INTERNALLY, RECORDED_INTERNALLY);
 		*/
-		if (tmpCommands.size() > 0) {
-			if (tmpCommands.getLast().getCommand().equals(command.getCommand()) &&
-					tmpCommands.getLast().getInputs().equals(command.getInputs()))
+		if (transitionCommands.size() > 0) {
+			if (transitionCommands.getLast().getCommand().equals(command.getCommand()) &&
+					transitionCommands.getLast().getInputs().equals(command.getInputs()))
 			{
-				tmpCommands.removeLast();
+				transitionCommands.removeLast();
 			}
 			else {
-				tmpCommands.clear();
+				transitionCommands.clear();
 			}
 		}
 		long additionalSpace = MIN_USAGE + command.getMemoryUsage();
@@ -145,7 +145,7 @@ class History {
 				(spaceUsed() + additionalSpace > maxMemUsage)) {
 			if (undoableCommands.size() > 0) removeOldestUndo();
 			if (redoableCommands.size() > 0) removeOldestRedo();
-			// TODO - what abut tmpCommands???
+			// TODO - what about transitionCommands???
 		}
 		// at this point we have enough space or no history has been stored
 		redoableCommands.add(command);
@@ -175,7 +175,7 @@ class History {
 		for (CompleteCommand command : redoableCommands) {
 			used += command.getMemoryUsage() + MIN_USAGE;
 		}
-		for (CompleteCommand command : tmpCommands) {
+		for (CompleteCommand command : transitionCommands) {
 			used += command.getMemoryUsage() + MIN_USAGE;
 		}
 		return used;
