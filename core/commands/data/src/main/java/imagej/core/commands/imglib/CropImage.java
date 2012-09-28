@@ -35,10 +35,12 @@
 
 package imagej.core.commands.imglib;
 
+import imagej.command.Command;
+import imagej.command.CompleteCommand;
 import imagej.command.ContextCommand;
+import imagej.command.InvertibleCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.menu.MenuConstants;
@@ -49,7 +51,9 @@ import imagej.plugin.Plugin;
 import imagej.util.RealRect;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
@@ -74,12 +78,9 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Crop", accelerator = "shift control X") }, headless = true)
-public class CropImage extends ContextCommand {
+public class CropImage extends ContextCommand implements InvertibleCommand {
 
 	// -- instance variables that are Parameters --
-
-	@Parameter
-	private ImageDisplayService imageDisplayService;
 
 	@Parameter
 	private OverlayService overlayService;
@@ -87,13 +88,19 @@ public class CropImage extends ContextCommand {
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
+	@Parameter
+	private Dataset dataset;
+	
 	// -- other instance variables --
 
 	private Img inputImage;
 	private long minX, maxX, minY, maxY;
 	private int xIndex, yIndex;
 	private Img<? extends RealType<?>> outputImage;
-
+	private ImgPlus<? extends RealType<?>> oldData;
+	private List<Overlay> oldOverlays;
+	private List<Overlay> newOverlays;
+	
 	// -- public interface --
 
 	/**
@@ -101,7 +108,6 @@ public class CropImage extends ContextCommand {
 	 */
 	@Override
 	public void run() {
-		final Dataset dataset = imageDisplayService.getActiveDataset(display);
 		final RealRect bounds = overlayService.getSelectionBounds(display);
 		// bounds could be a single point
 		if (bounds.width == 0) bounds.width = 1;
@@ -115,8 +121,9 @@ public class CropImage extends ContextCommand {
 		final double[] toNewOrigin = new double[2];
 		toNewOrigin[0] = -bounds.x;
 		toNewOrigin[1] = -bounds.y;
-		List<Overlay> newOverlays = new ArrayList<Overlay>();
-		for (final Overlay overlay : overlayService.getOverlays(display)) {
+		oldOverlays = overlayService.getOverlays(display);
+		newOverlays = new ArrayList<Overlay>();
+		for (final Overlay overlay : oldOverlays) {
 			Overlay newOverlay = null;
 			if (overlayContained(overlay, bounds)) {
 				// can't just move() the overlay. JHotDraw gets confused. So delete all
@@ -145,6 +152,8 @@ public class CropImage extends ContextCommand {
 		//
 		// display.getCanvas().setZoom(1);
 
+		oldData = dataset.getImgPlus();
+		
 		dataset.setImgPlus(croppedData);
 
 		// here the duplicated and origin translated overlays are attached
@@ -157,6 +166,39 @@ public class CropImage extends ContextCommand {
 	
 	public ImageDisplay getDisplay() {
 		return display;
+	}
+
+
+	@SuppressWarnings("synthetic-access")
+	@Override
+	public CompleteCommand getInverseCommand() {
+		return new CompleteCommand() {
+
+			@Override
+			public Class<? extends Command> getCommand() {
+				return UndoCropImage.class;
+			}
+
+			@Override
+			public Map<String, Object> getInputs() {
+				HashMap<String,Object> inverseInputs = new HashMap<String, Object>();
+				inverseInputs.put("display", display);
+				inverseInputs.put("dataset", dataset);
+				inverseInputs.put("deletedData",oldData);
+				inverseInputs.put("removedOverlays",oldOverlays);
+				inverseInputs.put("addedOverlays",newOverlays);
+				return inverseInputs;
+			}
+
+			@Override
+			public long getMemoryUsage() {
+				long memEstimate = (long) dataset.getBytesOfInfo();
+				memEstimate += oldOverlays.size() * 1024;
+				memEstimate += newOverlays.size() * 1024;
+				return memEstimate;
+			}
+			
+		};
 	}
 
 	// -- private interface --
