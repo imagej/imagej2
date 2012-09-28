@@ -77,6 +77,7 @@ public interface ScriptService extends Service {
 			throws IOException, ScriptException;
 
 	boolean canHandleFile(final File file);
+	boolean canHandleFile(final String fileName);
 
 	void initialize(final ScriptEngine engine, final String fileName,
 			final Writer writer, final Writer errorWriter);

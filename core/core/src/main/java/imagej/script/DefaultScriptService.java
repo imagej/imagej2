@@ -159,6 +159,11 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 	}
 
 	@Override
+	public boolean canHandleFile(final String fileName) {
+		return scriptLanguageIndex.canHandleFile(fileName);
+	}
+
+	@Override
 	public boolean isCompiledLanguage(ScriptEngineFactory language) {
 		return false;
 	}

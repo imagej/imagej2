@@ -110,4 +110,10 @@ public class ScriptLanguageIndex extends HashSet<ScriptEngineFactory> {
 		return byFileExtension.containsKey(fileExtension);
 	}
 
+	public boolean canHandleFile(final String fileName) {
+		final String fileExtension = FileUtils.getExtension(fileName);
+		if ("".equals(fileExtension)) return false;
+		return byFileExtension.containsKey(fileExtension);
+	}
+
 }
