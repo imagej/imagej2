@@ -86,6 +86,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -330,12 +331,10 @@ public class FileFunctions {
 		if (paths.size() == 1)
 			return ijDir + "/" + paths.get(0);
 		String[] names = paths.toArray(new String[paths.size()]);
-		GenericDialog gd = new GenericDialog("Choose path", parent);
-		gd.addChoice("path", names, names[0]);
-		gd.showDialog();
-		if (gd.wasCanceled())
-			return null;
-		return ijDir + "/" + gd.getNextChoice();
+		JFileChooser chooser = new JFileChooser(ijDir);
+		chooser.setDialogTitle("Choose path");
+		if (chooser.showOpenDialog(parent) !=  JFileChooser.APPROVE_OPTION) return null;
+		return chooser.getSelectedFile().getPath();
 	}
 
 	protected void findJavaPaths(File directory, String prefix) {
