@@ -73,7 +73,6 @@ import imagej.service.Service;
 
 // TODO
 // This service is poorly named (recording something service is better)
-// This service belongs some place other than ij-commands-data
 // Need a good way to avoid recording operations that are being undone. We only
 //   know the class rather than having an actual reference. If we could tag a
 //   command with metadata that the command service maintains we could look for
@@ -83,8 +82,6 @@ import imagej.service.Service;
 // More undoable ops: zoom events, pan events, display creations/deletions,
 //   setting of options values, dataset dimensions changing, setImgPlus(), etc.
 // Also what about legacy plugin run results? (Multiple things hatched)
-// Store changes to displays rather than just datasets (i.e. handle overlays too
-//   and other events)
 // ThreadLocal code for classToNotRecord. Nope, can't work.
 // Make friendly for multithreaded access.
 // Currently made to handle Datasets of ImageDisplays. Should be made to support
@@ -99,9 +96,6 @@ import imagej.service.Service;
 //   up the neigh specification dialog again)
 // SplitChannelsContext plugin is sometimes getting run and recorded. Is this a
 //   problem?
-// Edit various parts of an image. Then crop. Now undo. If any undo snapshots
-//   stored coords out of bounds you'll get an exception thrown. We need to
-//   record display states including sizes rather than just pixel snapshots.
 
 // Later TODOs
 // Support tools and gestures
