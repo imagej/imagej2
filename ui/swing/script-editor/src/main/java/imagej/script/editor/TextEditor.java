@@ -41,6 +41,7 @@ import ij.gui.GenericDialog;
 import ij.io.SaveDialog;
 
 import ij.plugin.BrowserLauncher;
+import imagej.log.LogService;
 import imagej.script.ScriptService;
 import imagej.util.FileUtils;
 
@@ -154,6 +155,7 @@ public class TextEditor extends JFrame implements ActionListener,
 	protected Position compileStartPosition;
 	protected ErrorHandler errorHandler;
 
+	protected final LogService log;
 	protected final ScriptService scriptService;
 	protected Map<ScriptEngineFactory, JRadioButtonMenuItem> languageMenuItems;
 	protected JRadioButtonMenuItem noneLanguageItem;
@@ -161,6 +163,7 @@ public class TextEditor extends JFrame implements ActionListener,
 	public TextEditor(ScriptService scriptService) {
 		super("Script Editor");
 		this.scriptService = scriptService;
+		log = scriptService.getLogService();
 
 		// Initialize menu
 		int ctrl = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
