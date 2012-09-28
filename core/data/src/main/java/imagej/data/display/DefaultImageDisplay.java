@@ -146,6 +146,16 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		if (getActiveAxis() == null) initActiveAxis();
 	}
 
+	// TODO - Eventually this should capture all of an ImageDisplay's state. As a
+	// proof of concept only Dataset state is captured now. The UndoService falls
+	// back to recording complete display state by calling this when the running
+	// command does not provide any undo information. This can be inefficient. The
+	// key to avoiding speed and size issues with undo is for each command to
+	// implement the InvertibleCommand interface that when run restores the
+	// original data correctly.
+	/**
+	 * Designed to fully capture a display's state for later restore purposes.
+	 */
 	@Override
 	public DisplayState captureState() {
 		ImageDisplayService idSrv = getContext().getService(ImageDisplayService.class);
@@ -156,6 +166,11 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		return new ImageDisplayState(ds, points, data);
 	}
 
+	// TODO - Eventually this should restore all of an ImageDisplay's state. As a
+	// proof of concept only Dataset state is restored now. This is inadequate.
+	/**
+	 * Designed to fully restore a display's state to an earlier state.
+	 */
 	@Override
 	public void restoreState(DisplayState dispState) {
 		if (!(dispState instanceof ImageDisplayState))
