@@ -43,7 +43,7 @@ import java.util.Map;
  * @author Barry DeZonia
  *
  */
-public interface CompleteCommand {
+public interface InstantiableCommand {
 	public Class<? extends Command> getCommand();
 	public Map<String,Object> getInputs();
 	public long getMemoryUsage();

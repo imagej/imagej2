@@ -43,7 +43,7 @@ import java.util.Map;
  * @author Barry DeZonia
  *
  */
-public class DefaultCompleteCommand implements CompleteCommand {
+public class DefaultCompleteCommand implements InstantiableCommand {
 
 	private final Class<? extends Command> command;
 	private final Map<String, Object> inputs;
