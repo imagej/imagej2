@@ -49,7 +49,7 @@ import java.util.LinkedList;
  * @author Barry DeZonia
  *
  */
-class History {
+class CommandHistory {
 
 	// -- constants --
 	
@@ -66,7 +66,7 @@ class History {
 
 	// -- constructor --
 	
-	History(UndoService uSrv, CommandService cSrv, long maxMem) {
+	CommandHistory(UndoService uSrv, CommandService cSrv, long maxMem) {
 		undoService = uSrv;
 		commandService = cSrv;
 		maxMemUsage = maxMem;
