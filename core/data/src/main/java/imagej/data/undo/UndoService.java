@@ -296,7 +296,7 @@ public class UndoService extends AbstractService {
 		target.update();
 	}
 	
-	public static CompleteCommand createFullRestoreCommand(Display<?> display) {
+	public CompleteCommand createFullRestoreCommand(Display<?> display) {
 		DisplayState state = display.captureState();
 		HashMap<String,Object> inputs = new HashMap<String, Object>();
 		inputs.put("display", display);
