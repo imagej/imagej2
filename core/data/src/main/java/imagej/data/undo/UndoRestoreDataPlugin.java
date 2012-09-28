@@ -43,7 +43,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 
 import imagej.command.InstantiableCommand;
 import imagej.command.ContextCommand;
-import imagej.command.DefaultCompleteCommand;
+import imagej.command.DefaultInstantiableCommand;
 import imagej.command.InvertibleCommand;
 import imagej.data.Dataset;
 import imagej.module.ItemIO;
@@ -90,7 +90,7 @@ public class UndoRestoreDataPlugin
 		inverseInputs.put("source", target);
 		inverseInputs.put("points", points);
 		long size = 8 * numElements(data);
-		return new DefaultCompleteCommand(UndoSaveDataPlugin.class, inverseInputs, size);
+		return new DefaultInstantiableCommand(UndoSaveDataPlugin.class, inverseInputs, size);
 	}
 
 	// -- UndoRestorDataPlugin methods --

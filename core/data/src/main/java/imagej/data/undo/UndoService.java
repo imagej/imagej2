@@ -51,7 +51,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 import imagej.command.Command;
 import imagej.command.CommandService;
 import imagej.command.InstantiableCommand;
-import imagej.command.DefaultCompleteCommand;
+import imagej.command.DefaultInstantiableCommand;
 import imagej.command.InvertibleCommand;
 import imagej.command.Unrecordable;
 import imagej.data.Dataset;
@@ -301,7 +301,7 @@ public class UndoService extends AbstractService {
 		HashMap<String,Object> inputs = new HashMap<String, Object>();
 		inputs.put("display", display);
 		inputs.put("state", state);
-		return new DefaultCompleteCommand(
+		return new DefaultInstantiableCommand(
 			DisplayRestoreState.class, inputs, state.getMemoryUsage());
 	}
 
@@ -398,7 +398,7 @@ public class UndoService extends AbstractService {
 				findHistory(display).addUndo(command.getInverseCommand());
 			}
 			InstantiableCommand forwardCommand =
-					new DefaultCompleteCommand(theClass, evt.getModule().getInputs(), 0);
+					new DefaultInstantiableCommand(theClass, evt.getModule().getInputs(), 0);
 			findHistory(display).addRedo(forwardCommand);
 		}
 	}

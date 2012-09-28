@@ -39,7 +39,7 @@ import java.util.HashMap;
 
 import imagej.command.InstantiableCommand;
 import imagej.command.ContextCommand;
-import imagej.command.DefaultCompleteCommand;
+import imagej.command.DefaultInstantiableCommand;
 import imagej.command.InvertibleCommand;
 import imagej.core.commands.imglib.ImgLibDataTransform;
 import imagej.core.commands.rotate.XYFlipper.FlipCoordinateTransformer;
@@ -106,7 +106,7 @@ public class Rotate90DegreesRight extends ContextCommand implements InvertibleCo
 	public InstantiableCommand getInverseCommand() {
 		HashMap<String, Object> input = new HashMap<String, Object>();
 		input.put("display", display);
-		return new DefaultCompleteCommand(Rotate90DegreesLeft.class, input, 0);
+		return new DefaultInstantiableCommand(Rotate90DegreesLeft.class, input, 0);
 	}
 
 	// -- private interface --

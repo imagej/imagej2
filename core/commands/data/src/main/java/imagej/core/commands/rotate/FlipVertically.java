@@ -39,7 +39,7 @@ import java.util.HashMap;
 
 import imagej.command.InstantiableCommand;
 import imagej.command.ContextCommand;
-import imagej.command.DefaultCompleteCommand;
+import imagej.command.DefaultInstantiableCommand;
 import imagej.command.InvertibleCommand;
 import imagej.data.Dataset;
 import imagej.data.Extents;
@@ -103,7 +103,7 @@ public class FlipVertically extends ContextCommand implements InvertibleCommand 
 	public InstantiableCommand getInverseCommand() {
 		HashMap<String, Object> input = new HashMap<String, Object>();
 		input.put("display", display);
-		return new DefaultCompleteCommand(FlipVertically.class,input,0);
+		return new DefaultInstantiableCommand(FlipVertically.class,input,0);
 	}
 
 	// -- private interface --

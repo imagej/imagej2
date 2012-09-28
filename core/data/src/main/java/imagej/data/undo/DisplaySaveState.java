@@ -40,7 +40,7 @@ import java.util.Map;
 
 import imagej.command.Command;
 import imagej.command.InstantiableCommand;
-import imagej.command.DefaultCompleteCommand;
+import imagej.command.DefaultInstantiableCommand;
 import imagej.command.InvertibleCommand;
 import imagej.display.Display;
 import imagej.display.DisplayState;
@@ -72,7 +72,7 @@ public class DisplaySaveState implements Command, InvertibleCommand {
 		Map<String,Object> inverseInputs = new HashMap<String, Object>();
 		inverseInputs.put("display", display);
 		inverseInputs.put("state", state);
-		return new DefaultCompleteCommand(
+		return new DefaultInstantiableCommand(
 			DisplayRestoreState.class, inverseInputs, state.getMemoryUsage());
 	}
 

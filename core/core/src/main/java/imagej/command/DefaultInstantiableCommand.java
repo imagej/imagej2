@@ -43,13 +43,13 @@ import java.util.Map;
  * @author Barry DeZonia
  *
  */
-public class DefaultCompleteCommand implements InstantiableCommand {
+public class DefaultInstantiableCommand implements InstantiableCommand {
 
 	private final Class<? extends Command> command;
 	private final Map<String, Object> inputs;
 	private final long memUsage;
 
-	public DefaultCompleteCommand(Class<? extends Command> command,
+	public DefaultInstantiableCommand(Class<? extends Command> command,
 		Map<String, Object> inputs, long memUsage)
 	{
 		this.command = command;
