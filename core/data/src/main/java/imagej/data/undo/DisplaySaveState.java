@@ -39,7 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import imagej.command.Command;
-import imagej.command.CompleteCommand;
+import imagej.command.InstantiableCommand;
 import imagej.command.DefaultCompleteCommand;
 import imagej.command.InvertibleCommand;
 import imagej.display.Display;
@@ -68,7 +68,7 @@ public class DisplaySaveState implements Command, InvertibleCommand {
 	}
 
 	@Override
-	public CompleteCommand getInverseCommand() {
+	public InstantiableCommand getInverseCommand() {
 		Map<String,Object> inverseInputs = new HashMap<String, Object>();
 		inverseInputs.put("display", display);
 		inverseInputs.put("state", state);

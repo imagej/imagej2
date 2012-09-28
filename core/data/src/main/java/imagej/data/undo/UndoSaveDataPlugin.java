@@ -42,7 +42,7 @@ import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.type.numeric.real.DoubleType;
 
-import imagej.command.CompleteCommand;
+import imagej.command.InstantiableCommand;
 import imagej.command.ContextCommand;
 import imagej.command.DefaultCompleteCommand;
 import imagej.command.InvertibleCommand;
@@ -87,7 +87,7 @@ public class UndoSaveDataPlugin
 	// -- InvertibleCommand methods --
 	
 	@Override
-	public CompleteCommand getInverseCommand() {
+	public InstantiableCommand getInverseCommand() {
 		HashMap<String, Object> inverseInputs = new HashMap<String, Object>();
 		inverseInputs.put("target", source);
 		inverseInputs.put("points", points);

@@ -36,7 +36,7 @@
 package imagej.data.undo;
 
 import imagej.command.CommandService;
-import imagej.command.CompleteCommand;
+import imagej.command.InstantiableCommand;
 
 import java.awt.Toolkit;
 import java.util.LinkedList;
@@ -60,9 +60,9 @@ class History {
 	private final UndoService undoService;
 	private final CommandService commandService;
 	private final long maxMemUsage;
-	private final LinkedList<CompleteCommand> undoableCommands;
-	private final LinkedList<CompleteCommand> redoableCommands;
-	private final LinkedList<CompleteCommand> transitionCommands;
+	private final LinkedList<InstantiableCommand> undoableCommands;
+	private final LinkedList<InstantiableCommand> redoableCommands;
+	private final LinkedList<InstantiableCommand> transitionCommands;
 
 	// -- constructor --
 	
@@ -70,9 +70,9 @@ class History {
 		undoService = uSrv;
 		commandService = cSrv;
 		maxMemUsage = maxMem;
-		undoableCommands = new LinkedList<CompleteCommand>();
-		redoableCommands = new LinkedList<CompleteCommand>();
-		transitionCommands = new LinkedList<CompleteCommand>();
+		undoableCommands = new LinkedList<InstantiableCommand>();
+		redoableCommands = new LinkedList<InstantiableCommand>();
+		transitionCommands = new LinkedList<InstantiableCommand>();
 	}
 	
 	// -- api to be used externally --
@@ -84,7 +84,7 @@ class History {
 			Toolkit.getDefaultToolkit().beep();
 			return;
 		}
-		CompleteCommand command = redoableCommands.removeLast();
+		InstantiableCommand command = redoableCommands.removeLast();
 		transitionCommands.add(command);
 		command = undoableCommands.removeLast();
 		/* tricky attempt 2
@@ -101,7 +101,7 @@ class History {
 			Toolkit.getDefaultToolkit().beep();
 			return;
 		}
-		CompleteCommand command = transitionCommands.getLast();
+		InstantiableCommand command = transitionCommands.getLast();
 		commandService.run(command.getCommand(), command.getInputs());
 	}
 	
@@ -111,7 +111,7 @@ class History {
 		transitionCommands.clear();
 	}
 	
-	void addUndo(CompleteCommand command) {
+	void addUndo(InstantiableCommand command) {
 		/*  tricky attempt to make this code ignore prerecorded commands safely
 		inputs.put(RECORDED_INTERNALLY, RECORDED_INTERNALLY);
 		*/
@@ -126,7 +126,7 @@ class History {
 		undoableCommands.add(command);
 	}
 	
-	void addRedo(CompleteCommand command) {
+	void addRedo(InstantiableCommand command) {
 		/*  tricky attempt to make this code ignore prerecorded commands safely
 		inputs.put(RECORDED_INTERNALLY, RECORDED_INTERNALLY);
 		*/
@@ -169,13 +169,13 @@ class History {
 
 	long spaceUsed() {
 		long used = 0;
-		for (CompleteCommand command : undoableCommands) {
+		for (InstantiableCommand command : undoableCommands) {
 			used += command.getMemoryUsage() + MIN_USAGE;
 		}
-		for (CompleteCommand command : redoableCommands) {
+		for (InstantiableCommand command : redoableCommands) {
 			used += command.getMemoryUsage() + MIN_USAGE;
 		}
-		for (CompleteCommand command : transitionCommands) {
+		for (InstantiableCommand command : transitionCommands) {
 			used += command.getMemoryUsage() + MIN_USAGE;
 		}
 		return used;

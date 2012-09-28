@@ -44,5 +44,5 @@ package imagej.command;
  *
  */
 public interface InvertibleCommand {
-	CompleteCommand getInverseCommand();
+	InstantiableCommand getInverseCommand();
 }

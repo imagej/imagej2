@@ -37,7 +37,7 @@ package imagej.core.commands.rotate;
 
 import java.util.HashMap;
 
-import imagej.command.CompleteCommand;
+import imagej.command.InstantiableCommand;
 import imagej.command.ContextCommand;
 import imagej.command.DefaultCompleteCommand;
 import imagej.command.InvertibleCommand;
@@ -103,7 +103,7 @@ public class Rotate90DegreesRight extends ContextCommand implements InvertibleCo
 	}
 
 	@Override
-	public CompleteCommand getInverseCommand() {
+	public InstantiableCommand getInverseCommand() {
 		HashMap<String, Object> input = new HashMap<String, Object>();
 		input.put("display", display);
 		return new DefaultCompleteCommand(Rotate90DegreesLeft.class, input, 0);

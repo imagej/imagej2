@@ -36,7 +36,7 @@
 package imagej.core.commands.imglib;
 
 import imagej.command.Command;
-import imagej.command.CompleteCommand;
+import imagej.command.InstantiableCommand;
 import imagej.command.ContextCommand;
 import imagej.command.InvertibleCommand;
 import imagej.data.Dataset;
@@ -171,8 +171,8 @@ public class CropImage extends ContextCommand implements InvertibleCommand {
 
 	@SuppressWarnings("synthetic-access")
 	@Override
-	public CompleteCommand getInverseCommand() {
-		return new CompleteCommand() {
+	public InstantiableCommand getInverseCommand() {
+		return new InstantiableCommand() {
 
 			@Override
 			public Class<? extends Command> getCommand() {
