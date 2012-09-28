@@ -33,41 +33,36 @@
  * #L%
  */
 
-package imagej.event;
+package imagej.data.table;
 
-import imagej.service.Service;
+import imagej.util.DoubleArray;
 
 /**
- * Interface for the status notification service.
+ * Efficient implementation of {@link Column} for {@code double} primitives.
  * 
  * @author Curtis Rueden
  */
-public interface StatusService extends Service {
+public class DoubleColumn extends DoubleArray implements Column<Double> {
 
-	/** Updates ImageJ's progress bar. */
-	void showProgress(int value, int maximum);
+	/** The column header. */
+	private String header;
 
-	/** Updates ImageJ's status message. */
-	void showStatus(String message);
+	public DoubleColumn() {}
 
-	/** Updates ImageJ's status message and progress bar. */
-	void showStatus(int progress, int maximum, String message);
+	public DoubleColumn(final String header) {
+		this.header = header;
+	}
 
-	/**
-	 * Updates ImageJ's status message and progress bar, optionally flagging the
-	 * status notification as a warning.
-	 * 
-	 * @param progress New progress value
-	 * @param maximum New progress maximum
-	 * @param message New status message
-	 * @param warn Whether or not this notification constitutes a warning
-	 */
-	void showStatus(int progress, int maximum, String message, boolean warn);
+	// -- Column methods --
 
-	/** Issues a warning message. */
-	void warn(String message);
+	@Override
+	public String getHeader() {
+		return header;
+	}
 
-	/** Clears ImageJ's status message. */
-	void clearStatus();
+	@Override
+	public void setHeader(final String header) {
+		this.header = header;
+	}
 
 }

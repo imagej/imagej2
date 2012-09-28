@@ -33,41 +33,60 @@
  * #L%
  */
 
-package imagej.event;
+package imagej.util;
 
-import imagej.service.Service;
+import static org.junit.Assert.assertEquals;
 
 /**
- * Interface for the status notification service.
+ * Abstract superclass for {@link PrimitiveArray}-based tests.
  * 
  * @author Curtis Rueden
+ * @author Johannes Schindelin
  */
-public interface StatusService extends Service {
+public abstract class PrimitiveArrayTest {
 
-	/** Updates ImageJ's progress bar. */
-	void showProgress(int value, int maximum);
+	/** Tests {@link PrimitiveArray#insert(int, int)}. */
+	protected void testInsert(final PrimitiveArray<?, ?> array) {
+		final int size = array.size();
+		final Object e0 = array.get(0);
+		final Object e2 = array.get(2);
+		final Object e3 = array.get(3);
+		final Object eN = array.get(size - 1);
+		
+		array.insert(size, 3);
+		assertEquals(size + 3, array.size());
+		assertEquals(e0, array.get(0));
+		assertEquals(eN, array.get(size - 1));
+		
+		array.insert(3, 7);
+		assertEquals(size + 10, array.size());
+		assertEquals(e0, array.get(0));
+		assertEquals(e3, array.get(10));
+		assertEquals(eN, array.get(size + 6));
 
-	/** Updates ImageJ's status message. */
-	void showStatus(String message);
+		array.insert(0, 5);
+		assertEquals(size + 15, array.size());
+		assertEquals(e0, array.get(5));
+		assertEquals(e2, array.get(7));
+		assertEquals(e3, array.get(15));
+		assertEquals(eN, array.get(size + 11));
+	}
 
-	/** Updates ImageJ's status message and progress bar. */
-	void showStatus(int progress, int maximum, String message);
+	/** Tests {@link PrimitiveArray#delete(int, int)}. */
+	protected void testDelete(final PrimitiveArray<?, ?> array) {
+		final Object[] a = array.toArray();
 
-	/**
-	 * Updates ImageJ's status message and progress bar, optionally flagging the
-	 * status notification as a warning.
-	 * 
-	 * @param progress New progress value
-	 * @param maximum New progress maximum
-	 * @param message New status message
-	 * @param warn Whether or not this notification constitutes a warning
-	 */
-	void showStatus(int progress, int maximum, String message, boolean warn);
-
-	/** Issues a warning message. */
-	void warn(String message);
-
-	/** Clears ImageJ's status message. */
-	void clearStatus();
+		array.delete(a.length - 2, 2);
+		assertEquals(a.length - 2, array.size());
+		for (int i = 0; i < a.length - 2; i++) {
+			assertEquals("@" + i, a[i], array.get(i));
+		}
+		
+		array.delete(0, 2);
+		assertEquals(a.length - 4, array.size());
+		for (int i = 0; i < a.length - 4; i++) {
+			assertEquals("@" + i, a[i + 2], array.get(i));
+		}
+	}
 
 }

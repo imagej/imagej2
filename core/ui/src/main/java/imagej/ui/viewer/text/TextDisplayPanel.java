@@ -33,41 +33,25 @@
  * #L%
  */
 
-package imagej.event;
+package imagej.ui.viewer.text;
 
-import imagej.service.Service;
+import imagej.display.TextDisplay;
+import imagej.ui.OutputWindow;
+import imagej.ui.viewer.DisplayPanel;
 
 /**
- * Interface for the status notification service.
+ * This is a panel that can go inside a display window. It displays
+ * {@link String}s. Also, it can be used inside an {@link OutputWindow}.
  * 
- * @author Curtis Rueden
+ * @author Lee Kamentsky
  */
-public interface StatusService extends Service {
+public interface TextDisplayPanel extends DisplayPanel {
 
-	/** Updates ImageJ's progress bar. */
-	void showProgress(int value, int maximum);
+	void append(String text);
 
-	/** Updates ImageJ's status message. */
-	void showStatus(String message);
+	void clear();
 
-	/** Updates ImageJ's status message and progress bar. */
-	void showStatus(int progress, int maximum, String message);
-
-	/**
-	 * Updates ImageJ's status message and progress bar, optionally flagging the
-	 * status notification as a warning.
-	 * 
-	 * @param progress New progress value
-	 * @param maximum New progress maximum
-	 * @param message New status message
-	 * @param warn Whether or not this notification constitutes a warning
-	 */
-	void showStatus(int progress, int maximum, String message, boolean warn);
-
-	/** Issues a warning message. */
-	void warn(String message);
-
-	/** Clears ImageJ's status message. */
-	void clearStatus();
+	@Override
+	TextDisplay getDisplay();
 
 }

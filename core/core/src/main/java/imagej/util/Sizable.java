@@ -33,41 +33,17 @@
  * #L%
  */
 
-package imagej.event;
-
-import imagej.service.Service;
+package imagej.util;
 
 /**
- * Interface for the status notification service.
+ * An entity with a size.
  * 
  * @author Curtis Rueden
  */
-public interface StatusService extends Service {
+public interface Sizable {
 
-	/** Updates ImageJ's progress bar. */
-	void showProgress(int value, int maximum);
+	int size();
 
-	/** Updates ImageJ's status message. */
-	void showStatus(String message);
-
-	/** Updates ImageJ's status message and progress bar. */
-	void showStatus(int progress, int maximum, String message);
-
-	/**
-	 * Updates ImageJ's status message and progress bar, optionally flagging the
-	 * status notification as a warning.
-	 * 
-	 * @param progress New progress value
-	 * @param maximum New progress maximum
-	 * @param message New status message
-	 * @param warn Whether or not this notification constitutes a warning
-	 */
-	void showStatus(int progress, int maximum, String message, boolean warn);
-
-	/** Issues a warning message. */
-	void warn(String message);
-
-	/** Clears ImageJ's status message. */
-	void clearStatus();
-
+	void setSize(final int size);
+	
 }

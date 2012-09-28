@@ -33,41 +33,62 @@
  * #L%
  */
 
-package imagej.event;
+package imagej.data.table;
 
-import imagej.service.Service;
+import java.util.List;
 
 /**
- * Interface for the status notification service.
+ * A table of values.
  * 
  * @author Curtis Rueden
+ * @param <C> The type of column used by the table.
+ * @param <T> The type of data stored in the table.
  */
-public interface StatusService extends Service {
+public interface Table<C extends Column<T>, T> extends List<C> {
 
-	/** Updates ImageJ's progress bar. */
-	void showProgress(int value, int maximum);
+	/** Gets the number of columns in the table. */
+	int getColumnCount();
 
-	/** Updates ImageJ's status message. */
-	void showStatus(String message);
+	/** Sets the number of columns in the table. */
+	void setColumnCount(int colCount);
 
-	/** Updates ImageJ's status message and progress bar. */
-	void showStatus(int progress, int maximum, String message);
+	/** Adds a column with the given header to the table. */
+	Column<T> addColumn(String header);
 
-	/**
-	 * Updates ImageJ's status message and progress bar, optionally flagging the
-	 * status notification as a warning.
-	 * 
-	 * @param progress New progress value
-	 * @param maximum New progress maximum
-	 * @param message New status message
-	 * @param warn Whether or not this notification constitutes a warning
-	 */
-	void showStatus(int progress, int maximum, String message, boolean warn);
+	/** Gets the number of rows in the table. */
+	int getRowCount();
 
-	/** Issues a warning message. */
-	void warn(String message);
+	/** Sets the number of rows in the table. */
+	void setRowCount(int rowCount);
 
-	/** Clears ImageJ's status message. */
-	void clearStatus();
+	/** Adds a row (with no header) to the table. */
+	void addRow();
+	
+	/** Adds a row with the given header to the table. */
+	void addRow(String header);
+
+	/** Sets the number of columns and rows in the table. */
+	void setDimensions(int colCount, int rowCount);
+
+	/** Gets the column header at the given column. */
+	String getColumnHeader(int col);
+
+	/** Sets the column header at the given column. */
+	void setColumnHeader(String header, int col);
+
+	/** Gets the column index of the column with the given header. */
+	int getColumnIndex(String header);
+
+	/** Gets the row header at the given row. */
+	String getRowHeader(int row);
+
+	/** Sets the row header at the given row. */
+	void setRowHeader(String header, int row);
+
+	/** Sets the table value at the given column and row. */
+	void set(T value, int col, int row);
+
+	/** Gets the table value at the given column and row. */
+	T get(int col, int row);
 
 }

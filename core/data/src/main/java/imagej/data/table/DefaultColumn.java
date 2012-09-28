@@ -33,41 +33,37 @@
  * #L%
  */
 
-package imagej.event;
+package imagej.data.table;
 
-import imagej.service.Service;
+import imagej.util.SizableArrayList;
 
 /**
- * Interface for the status notification service.
+ * Default implementation of {@link Column}.
  * 
  * @author Curtis Rueden
+ * @param <T> The type of data stored in the table.
  */
-public interface StatusService extends Service {
+public class DefaultColumn<T> extends SizableArrayList<T> implements Column<T> {
 
-	/** Updates ImageJ's progress bar. */
-	void showProgress(int value, int maximum);
+	/** The column header. */
+	private String header;
 
-	/** Updates ImageJ's status message. */
-	void showStatus(String message);
+	public DefaultColumn() {}
 
-	/** Updates ImageJ's status message and progress bar. */
-	void showStatus(int progress, int maximum, String message);
+	public DefaultColumn(final String header) {
+		this.header = header;
+	}
 
-	/**
-	 * Updates ImageJ's status message and progress bar, optionally flagging the
-	 * status notification as a warning.
-	 * 
-	 * @param progress New progress value
-	 * @param maximum New progress maximum
-	 * @param message New status message
-	 * @param warn Whether or not this notification constitutes a warning
-	 */
-	void showStatus(int progress, int maximum, String message, boolean warn);
+	// -- Column methods --
 
-	/** Issues a warning message. */
-	void warn(String message);
+	@Override
+	public String getHeader() {
+		return header;
+	}
 
-	/** Clears ImageJ's status message. */
-	void clearStatus();
+	@Override
+	public void setHeader(final String header) {
+		this.header = header;
+	}
 
 }

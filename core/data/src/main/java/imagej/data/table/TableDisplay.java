@@ -33,41 +33,15 @@
  * #L%
  */
 
-package imagej.event;
+package imagej.data.table;
 
-import imagej.service.Service;
+import imagej.display.Display;
 
 /**
- * Interface for the status notification service.
+ * Interface for {@link Table} {@link Display}s.
  * 
  * @author Curtis Rueden
  */
-public interface StatusService extends Service {
-
-	/** Updates ImageJ's progress bar. */
-	void showProgress(int value, int maximum);
-
-	/** Updates ImageJ's status message. */
-	void showStatus(String message);
-
-	/** Updates ImageJ's status message and progress bar. */
-	void showStatus(int progress, int maximum, String message);
-
-	/**
-	 * Updates ImageJ's status message and progress bar, optionally flagging the
-	 * status notification as a warning.
-	 * 
-	 * @param progress New progress value
-	 * @param maximum New progress maximum
-	 * @param message New status message
-	 * @param warn Whether or not this notification constitutes a warning
-	 */
-	void showStatus(int progress, int maximum, String message, boolean warn);
-
-	/** Issues a warning message. */
-	void warn(String message);
-
-	/** Clears ImageJ's status message. */
-	void clearStatus();
-
+public interface TableDisplay extends Display<Table<?, ?>> {
+	// This interface intentionally left blank.
 }

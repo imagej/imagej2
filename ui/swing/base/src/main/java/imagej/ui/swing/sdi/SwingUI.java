@@ -45,7 +45,7 @@ import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import imagej.ui.swing.AbstractSwingUI;
 import imagej.ui.swing.SwingApplicationFrame;
-import imagej.ui.swing.sdi.display.SwingDisplayWindow;
+import imagej.ui.swing.sdi.viewer.SwingDisplayWindow;
 
 import java.awt.BorderLayout;
 

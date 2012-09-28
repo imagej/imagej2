@@ -11,7 +11,7 @@
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>pom-script</artifactId>
+	<artifactId>pom-ij-script</artifactId>
 	<packaging>pom</packaging>
 
 	<name>ImageJ POM: Script</name>

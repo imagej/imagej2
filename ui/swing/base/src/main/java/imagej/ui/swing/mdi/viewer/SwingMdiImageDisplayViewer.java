@@ -33,41 +33,43 @@
  * #L%
  */
 
-package imagej.event;
+package imagej.ui.swing.mdi.viewer;
 
-import imagej.service.Service;
+import imagej.display.Display;
+import imagej.plugin.Plugin;
+import imagej.ui.UserInterface;
+import imagej.ui.swing.mdi.SwingMdiUI;
+import imagej.ui.swing.viewer.image.AbstractSwingImageDisplayViewer;
+import imagej.ui.swing.viewer.image.SwingImageDisplayViewer;
+import imagej.ui.viewer.DisplayWindow;
+import imagej.ui.viewer.image.ImageDisplayViewer;
+
+import javax.swing.JInternalFrame;
 
 /**
- * Interface for the status notification service.
+ * Multiple Document Interface implementation of Swing image display viewer. The
+ * MDI display is housed in a {@link JInternalFrame}.
  * 
+ * @author Grant Harris
  * @author Curtis Rueden
+ * @author Lee Kamentsky
+ * @see SwingImageDisplayViewer
  */
-public interface StatusService extends Service {
+@Plugin(type = ImageDisplayViewer.class)
+public class SwingMdiImageDisplayViewer extends AbstractSwingImageDisplayViewer
+{
 
-	/** Updates ImageJ's progress bar. */
-	void showProgress(int value, int maximum);
+	// -- DisplayViewer methods --
 
-	/** Updates ImageJ's status message. */
-	void showStatus(String message);
+	@Override
+	public boolean isCompatible(final UserInterface ui) {
+		return ui instanceof SwingMdiUI;
+	}
 
-	/** Updates ImageJ's status message and progress bar. */
-	void showStatus(int progress, int maximum, String message);
-
-	/**
-	 * Updates ImageJ's status message and progress bar, optionally flagging the
-	 * status notification as a warning.
-	 * 
-	 * @param progress New progress value
-	 * @param maximum New progress maximum
-	 * @param message New status message
-	 * @param warn Whether or not this notification constitutes a warning
-	 */
-	void showStatus(int progress, int maximum, String message, boolean warn);
-
-	/** Issues a warning message. */
-	void warn(String message);
-
-	/** Clears ImageJ's status message. */
-	void clearStatus();
+	@Override
+	public void view(final DisplayWindow w, final Display<?> d) {
+		super.view(w, d);
+		getPanel().addEventDispatcher(dispatcher);
+	}
 
 }

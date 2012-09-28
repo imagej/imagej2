@@ -33,41 +33,25 @@
  * #L%
  */
 
-package imagej.event;
+package imagej.data.table;
 
-import imagej.service.Service;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
- * Interface for the status notification service.
+ * A table of double-precision floating point values.
  * 
  * @author Curtis Rueden
  */
-public interface StatusService extends Service {
+public interface ResultsTable extends Table<DoubleColumn, Double> {
 
-	/** Updates ImageJ's progress bar. */
-	void showProgress(int value, int maximum);
+	/** Gets the value of the given table cell. */
+	double getValue(int col, int row);
 
-	/** Updates ImageJ's status message. */
-	void showStatus(String message);
+	/** Sets the value of the given table cell. */
+	void setValue(double value, int col, int row);
 
-	/** Updates ImageJ's status message and progress bar. */
-	void showStatus(int progress, int maximum, String message);
-
-	/**
-	 * Updates ImageJ's status message and progress bar, optionally flagging the
-	 * status notification as a warning.
-	 * 
-	 * @param progress New progress value
-	 * @param maximum New progress maximum
-	 * @param message New status message
-	 * @param warn Whether or not this notification constitutes a warning
-	 */
-	void showStatus(int progress, int maximum, String message, boolean warn);
-
-	/** Issues a warning message. */
-	void warn(String message);
-
-	/** Clears ImageJ's status message. */
-	void clearStatus();
+	/** Wraps the results table in an ImgLib {@link net.imglib2.img.Img}. */
+	ImgPlus<DoubleType> img();
 
 }

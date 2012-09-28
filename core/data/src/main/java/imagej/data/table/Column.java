@@ -33,41 +33,32 @@
  * #L%
  */
 
-package imagej.event;
+package imagej.data.table;
 
-import imagej.service.Service;
+import imagej.util.Sizable;
+
+import java.util.List;
 
 /**
- * Interface for the status notification service.
+ * A column of data of a {@link Table}.
  * 
  * @author Curtis Rueden
+ * @param <T> The type of data stored in the table.
  */
-public interface StatusService extends Service {
+public interface Column<T> extends List<T>, Sizable {
 
-	/** Updates ImageJ's progress bar. */
-	void showProgress(int value, int maximum);
+	/** Gets the header of this column. */
+	String getHeader();
 
-	/** Updates ImageJ's status message. */
-	void showStatus(String message);
+	/** Sets the header of this column. */
+	void setHeader(String header);
 
-	/** Updates ImageJ's status message and progress bar. */
-	void showStatus(int progress, int maximum, String message);
+	/** Gets the column's size (i.e., number of rows). */
+	@Override
+	int size();
 
-	/**
-	 * Updates ImageJ's status message and progress bar, optionally flagging the
-	 * status notification as a warning.
-	 * 
-	 * @param progress New progress value
-	 * @param maximum New progress maximum
-	 * @param message New status message
-	 * @param warn Whether or not this notification constitutes a warning
-	 */
-	void showStatus(int progress, int maximum, String message, boolean warn);
-
-	/** Issues a warning message. */
-	void warn(String message);
-
-	/** Clears ImageJ's status message. */
-	void clearStatus();
-
+	/** Sets the column's size (i.e., number of rows). */
+	@Override
+	void setSize(int size);
+	
 }

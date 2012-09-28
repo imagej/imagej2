@@ -33,41 +33,61 @@
  * #L%
  */
 
-package imagej.event;
+package imagej.data.table;
 
-import imagej.service.Service;
+import net.imglib2.img.Img;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
- * Interface for the status notification service.
+ * Default implementation of {@link ResultsTable}.
  * 
  * @author Curtis Rueden
  */
-public interface StatusService extends Service {
+public class DefaultResultsTable extends AbstractTable<DoubleColumn, Double>
+	implements ResultsTable
+{
 
-	/** Updates ImageJ's progress bar. */
-	void showProgress(int value, int maximum);
+	/** Creates an empty results table. */
+	public DefaultResultsTable() {
+		super();
+	}
 
-	/** Updates ImageJ's status message. */
-	void showStatus(String message);
+	/** Creates a results table with the given row and column dimensions. */
+	public DefaultResultsTable(final int columnCount, final int rowCount) {
+		super(columnCount, rowCount);
+	}
 
-	/** Updates ImageJ's status message and progress bar. */
-	void showStatus(int progress, int maximum, String message);
+	// -- ResultsTable methods --
 
-	/**
-	 * Updates ImageJ's status message and progress bar, optionally flagging the
-	 * status notification as a warning.
-	 * 
-	 * @param progress New progress value
-	 * @param maximum New progress maximum
-	 * @param message New status message
-	 * @param warn Whether or not this notification constitutes a warning
-	 */
-	void showStatus(int progress, int maximum, String message, boolean warn);
+	@Override
+	public double getValue(final int col, final int row) {
+		return get(col).getValue(row);
+	}
 
-	/** Issues a warning message. */
-	void warn(String message);
+	@Override
+	public void setValue(final double value, final int col, final int row) {
+		get(col).setValue(row, value);
+	}
 
-	/** Clears ImageJ's status message. */
-	void clearStatus();
+	@Override
+	public ImgPlus<DoubleType> img() {
+		final Img<DoubleType> img = new ResultsImg(this);
+		final AxisType[] axes = { Axes.X, Axes.Y };
+		final String name = "Results";
+		final ImgPlus<DoubleType> imgPlus =
+			new ImgPlus<DoubleType>(img, name, axes);
+		// TODO: Once ImgPlus has a place for row & column labels, add those too.
+		return imgPlus;
+	}
+
+	// -- Internal methods --
+
+	@Override
+	protected DoubleColumn createColumn(final String header) {
+		return new DoubleColumn(header);
+	}
 
 }

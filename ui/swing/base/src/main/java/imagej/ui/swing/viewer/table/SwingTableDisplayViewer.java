@@ -33,41 +33,38 @@
  * #L%
  */
 
-package imagej.event;
+package imagej.ui.swing.viewer.table;
 
-import imagej.service.Service;
+import imagej.data.table.Table;
+import imagej.display.Display;
+import imagej.plugin.Plugin;
+import imagej.ui.UserInterface;
+import imagej.ui.swing.AbstractSwingUI;
+import imagej.ui.viewer.DisplayWindow;
+import imagej.ui.viewer.table.AbstractTableDisplayViewer;
+import imagej.ui.viewer.table.TableDisplayViewer;
+
+import javax.swing.JTable;
 
 /**
- * Interface for the status notification service.
+ * A Swing {@link Table} display viewer, which displays tables in a
+ * {@link JTable}.
  * 
  * @author Curtis Rueden
  */
-public interface StatusService extends Service {
+@Plugin(type = TableDisplayViewer.class)
+public class SwingTableDisplayViewer extends AbstractTableDisplayViewer {
 
-	/** Updates ImageJ's progress bar. */
-	void showProgress(int value, int maximum);
+	@Override
+	public boolean isCompatible(final UserInterface ui) {
+		// TODO: Consider whether to use an interface for Swing UIs instead?
+		return ui instanceof AbstractSwingUI;
+	}
 
-	/** Updates ImageJ's status message. */
-	void showStatus(String message);
-
-	/** Updates ImageJ's status message and progress bar. */
-	void showStatus(int progress, int maximum, String message);
-
-	/**
-	 * Updates ImageJ's status message and progress bar, optionally flagging the
-	 * status notification as a warning.
-	 * 
-	 * @param progress New progress value
-	 * @param maximum New progress maximum
-	 * @param message New status message
-	 * @param warn Whether or not this notification constitutes a warning
-	 */
-	void showStatus(int progress, int maximum, String message, boolean warn);
-
-	/** Issues a warning message. */
-	void warn(String message);
-
-	/** Clears ImageJ's status message. */
-	void clearStatus();
+	@Override
+	public void view(final DisplayWindow w, final Display<?> d) {
+		super.view(w, d);
+		setPanel(new SwingTableDisplayPanel(getDisplay(), w));
+	}
 
 }

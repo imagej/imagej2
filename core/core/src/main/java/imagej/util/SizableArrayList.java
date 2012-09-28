@@ -33,41 +33,66 @@
  * #L%
  */
 
-package imagej.event;
+package imagej.util;
 
-import imagej.service.Service;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
- * Interface for the status notification service.
+ * An {@link ArrayList} whose size can be adjusted more efficiently.
+ * <p>
+ * When sizing down, elements at the end of the list are removed in one
+ * operation. When sizing up, null elements are appended to the list.
+ * </p>
  * 
  * @author Curtis Rueden
+ * @param <E> The type of data stored in the list.
  */
-public interface StatusService extends Service {
+public class SizableArrayList<E> extends ArrayList<E> implements Sizable {
 
-	/** Updates ImageJ's progress bar. */
-	void showProgress(int value, int maximum);
+	// -- Constructors --
 
-	/** Updates ImageJ's status message. */
-	void showStatus(String message);
+	public SizableArrayList(final int initialCapacity) {
+		super(initialCapacity);
+	}
 
-	/** Updates ImageJ's status message and progress bar. */
-	void showStatus(int progress, int maximum, String message);
+	public SizableArrayList() {
+		super();
+	}
 
-	/**
-	 * Updates ImageJ's status message and progress bar, optionally flagging the
-	 * status notification as a warning.
-	 * 
-	 * @param progress New progress value
-	 * @param maximum New progress maximum
-	 * @param message New status message
-	 * @param warn Whether or not this notification constitutes a warning
-	 */
-	void showStatus(int progress, int maximum, String message, boolean warn);
+	public SizableArrayList(final Collection<? extends E> c) {
+		super(c);
+	}
 
-	/** Issues a warning message. */
-	void warn(String message);
+	// -- Sizable methods --
 
-	/** Clears ImageJ's status message. */
-	void clearStatus();
+	@Override
+	public void setSize(final int size) {
+		final int oldSize = size();
+		if (oldSize == size) return; // no size change
+		if (size < oldSize) {
+			// need to remove extra elements
+			removeRange(size, oldSize);
+		}
+		else {
+			// need to add some elements
+			ensureCapacity(size);
+			try {
+				final Field sizeField = ArrayList.class.getDeclaredField("size");
+				sizeField.setAccessible(true);
+				sizeField.set(this, size);
+			}
+			catch (final NoSuchFieldException exc) {
+				throw new IllegalStateException(exc);
+			}
+			catch (final IllegalArgumentException exc) {
+				throw new IllegalStateException(exc);
+			}
+			catch (final IllegalAccessException exc) {
+				throw new IllegalStateException(exc);
+			}
+		}
+	}
 
 }

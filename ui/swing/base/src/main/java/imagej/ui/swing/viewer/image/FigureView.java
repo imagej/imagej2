@@ -33,41 +33,30 @@
  * #L%
  */
 
-package imagej.event;
+package imagej.ui.swing.viewer.image;
 
-import imagej.service.Service;
+import imagej.data.display.DataView;
+
+import org.jhotdraw.draw.Figure;
 
 /**
- * Interface for the status notification service.
+ * A figure view renders a {@link DataView} with a linked JHotDraw
+ * {@link Figure}.
  * 
- * @author Curtis Rueden
+ * @author Lee Kamentsky
  */
-public interface StatusService extends Service {
+public interface FigureView {
 
-	/** Updates ImageJ's progress bar. */
-	void showProgress(int value, int maximum);
+	/** Gets the linked JHotDraw figure. */
+	public Figure getFigure();
 
-	/** Updates ImageJ's status message. */
-	void showStatus(String message);
+	/** Gets the linked ImageJ data view. */
+	public DataView getDataView();
 
-	/** Updates ImageJ's status message and progress bar. */
-	void showStatus(int progress, int maximum, String message);
+	/** Updates the figure to match the linked data view. */
+	public void update();
 
-	/**
-	 * Updates ImageJ's status message and progress bar, optionally flagging the
-	 * status notification as a warning.
-	 * 
-	 * @param progress New progress value
-	 * @param maximum New progress maximum
-	 * @param message New status message
-	 * @param warn Whether or not this notification constitutes a warning
-	 */
-	void showStatus(int progress, int maximum, String message, boolean warn);
-
-	/** Issues a warning message. */
-	void warn(String message);
-
-	/** Clears ImageJ's status message. */
-	void clearStatus();
+	/** Removes the figure from the scene. */
+	public void dispose();
 
 }

@@ -163,7 +163,7 @@ public class ParameterTester implements Command, Previewable {
 		+ "displaying the given message in the ImageJ status bar.")
 	private String message = "Type a status message here.";
 
-	@Parameter(type = ItemIO.OUTPUT)
+	@Parameter(label = "Results", type = ItemIO.OUTPUT)
 	private String output;
 
 	public String getOutput() {

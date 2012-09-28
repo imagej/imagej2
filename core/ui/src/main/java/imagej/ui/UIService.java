@@ -50,7 +50,7 @@ import imagej.service.Service;
 import imagej.thread.ThreadService;
 import imagej.tool.ToolService;
 import imagej.ui.viewer.DisplayViewer;
-import imagej.ui.viewer.ImageDisplayViewer;
+import imagej.ui.viewer.image.ImageDisplayViewer;
 
 import java.util.List;
 

@@ -33,41 +33,24 @@
  * #L%
  */
 
-package imagej.event;
+package imagej.data.table;
 
-import imagej.service.Service;
+import imagej.display.AbstractDisplay;
+import imagej.plugin.Plugin;
 
 /**
- * Interface for the status notification service.
+ * Default display for {@link Table}s, including {@link ResultsTable}s.
  * 
  * @author Curtis Rueden
  */
-public interface StatusService extends Service {
+@Plugin(type = TableDisplay.class)
+public class DefaultTableDisplay extends AbstractDisplay<Table<?, ?>> implements
+	TableDisplay
+{
 
-	/** Updates ImageJ's progress bar. */
-	void showProgress(int value, int maximum);
-
-	/** Updates ImageJ's status message. */
-	void showStatus(String message);
-
-	/** Updates ImageJ's status message and progress bar. */
-	void showStatus(int progress, int maximum, String message);
-
-	/**
-	 * Updates ImageJ's status message and progress bar, optionally flagging the
-	 * status notification as a warning.
-	 * 
-	 * @param progress New progress value
-	 * @param maximum New progress maximum
-	 * @param message New status message
-	 * @param warn Whether or not this notification constitutes a warning
-	 */
-	void showStatus(int progress, int maximum, String message, boolean warn);
-
-	/** Issues a warning message. */
-	void warn(String message);
-
-	/** Clears ImageJ's status message. */
-	void clearStatus();
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public DefaultTableDisplay() {
+		super((Class) Table.class);
+	}
 
 }
