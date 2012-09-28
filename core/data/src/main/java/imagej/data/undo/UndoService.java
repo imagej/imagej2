@@ -153,7 +153,7 @@ public class UndoService extends AbstractService {
 	
 	// -- working variables --
 	
-	private Map<Display<?>,History> histories;
+	private Map<Display<?>,CommandHistory> histories;
 
 	// HACK TO GO AWAY SOON
 	private Map<Class<? extends Command>,Boolean> classesToIgnore =
@@ -163,7 +163,7 @@ public class UndoService extends AbstractService {
 	
 	@Override
 	public void initialize() {
-		histories = new HashMap<Display<?>,History>() ;
+		histories = new HashMap<Display<?>,CommandHistory>() ;
 		subscribeToEvents(eventService);
 	}
 
@@ -175,7 +175,7 @@ public class UndoService extends AbstractService {
 	 * @param interestedParty
 	 */
 	public void undo(Display<?> interestedParty) {
-		History history = histories.get(interestedParty);
+		CommandHistory history = histories.get(interestedParty);
 		if (history != null) history.doUndo();
 	}
 	
@@ -185,7 +185,7 @@ public class UndoService extends AbstractService {
 	 * @param interestedParty
 	 */
 	public void redo(Display<?> interestedParty) {
-		History history = histories.get(interestedParty);
+		CommandHistory history = histories.get(interestedParty);
 		if (history != null) history.doRedo();
 	}
 
@@ -193,7 +193,7 @@ public class UndoService extends AbstractService {
 	 * Clears the entire undo/redo cache for given display
 	 */
 	public void clearHistory(Display<?> interestedParty) {
-		History history = histories.get(interestedParty);
+		CommandHistory history = histories.get(interestedParty);
 		if (history != null) history.clear();
 	}
 	
@@ -201,7 +201,7 @@ public class UndoService extends AbstractService {
 	 * Clears the entire undo/redo cache for all displays
 	 */
 	public void clearAllHistory() {
-		for (History hist : histories.values()) {
+		for (CommandHistory hist : histories.values()) {
 			hist.clear();
 		}
 	}
@@ -413,7 +413,7 @@ public class UndoService extends AbstractService {
 	
 	@EventHandler
 	protected void onEvent(DisplayDeletedEvent evt) {
-		History history = histories.get(evt.getObject());
+		CommandHistory history = histories.get(evt.getObject());
 		if (history == null) return;
 		history.clear();
 		histories.remove(history);
@@ -446,10 +446,10 @@ public class UndoService extends AbstractService {
 		classesToIgnore.remove(clss);
 	}
 	
-	private History findHistory(Display<?> disp) {
-		History h = histories.get(disp);
+	private CommandHistory findHistory(Display<?> disp) {
+		CommandHistory h = histories.get(disp);
 		if (h == null) {
-			h = new History(this, commandService, MAX_BYTES);
+			h = new CommandHistory(this, commandService, MAX_BYTES);
 			histories.put(disp, h);
 		}
 		return h;
