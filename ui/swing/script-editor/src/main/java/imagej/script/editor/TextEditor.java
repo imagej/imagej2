@@ -34,8 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
-import ij.io.SaveDialog;
-
 import imagej.command.CommandService;
 import imagej.io.IOService;
 import imagej.log.LogService;
@@ -101,6 +99,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -1405,18 +1404,14 @@ public class TextEditor extends JFrame implements ActionListener,
 
 	public boolean saveAs() {
 		EditorPane editorPane = getEditorPane();
-		SaveDialog sd = new SaveDialog("Save as ",
-				editorPane.file == null ?
-				System.getProperty("ij.dir") :
-				editorPane.file.getParentFile().getAbsolutePath(),
-				editorPane.getFileName() , "");
-		grabFocus(2);
-		String name = sd.getFileName();
-		if (name == null)
-			return false;
-
-		String path = sd.getDirectory() + name;
-		return saveAs(path, true);
+		File dir = editorPane.file == null ?
+				new File(System.getProperty("ij.dir")) :
+				editorPane.file.getParentFile();
+		JFileChooser chooser = new JFileChooser(dir);
+		chooser.setDialogTitle("Save as");
+		chooser.setSelectedFile(editorPane.file);
+		if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) return false;
+		return saveAs(chooser.getSelectedFile().getAbsolutePath(), true);
 	}
 
 	public void saveAs(String path) {
@@ -1475,32 +1470,30 @@ public class TextEditor extends JFrame implements ActionListener,
 		if (name.indexOf('_') < 0)
 			name += "_";
 		name += ".jar";
-		SaveDialog sd = new SaveDialog("Export ", name, ".jar");
-		grabFocus(2);
-		name = sd.getFileName();
-		if (name == null)
-			return false;
-
-		String path = sd.getDirectory() + name;
-		if (new File(path).exists() &&
+		JFileChooser chooser = new JFileChooser(file.getParentFile());
+		chooser.setDialogTitle("Export");
+		chooser.setSelectedFile(new File(name));
+		if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) return false;
+		File selectedFile = chooser.getSelectedFile();
+		if (selectedFile.exists() &&
 				JOptionPane.showConfirmDialog(this,
-					"Do you want to replace " + path + "?",
-					"Replace " + path + "?",
+					"Do you want to replace " + selectedFile + "?",
+					"Replace " + selectedFile + "?",
 					JOptionPane.YES_NO_OPTION)
 				!= JOptionPane.YES_OPTION)
 			return false;
 		try {
-			makeJar(path, includeSources);
+			makeJar(selectedFile, includeSources);
 			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
-			error("Could not write " + path
+			error("Could not write " + selectedFile
 					+ ": " + e.getMessage());
 			return false;
 		}
 	}
 
-	public void makeJar(String path, boolean includeSources)
+	public void makeJar(File file, boolean includeSources)
 			throws IOException {
 		throw new RuntimeException("TODO, when MiniMaven was integrated");
 		/*
