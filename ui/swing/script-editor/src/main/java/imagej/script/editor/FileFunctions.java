@@ -38,8 +38,6 @@ import fiji.SimpleExecuter;
 
 import ij.gui.GenericDialog;
 
-import ij.plugin.BrowserLauncher;
-
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -63,6 +61,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -678,8 +678,13 @@ public class FileFunctions {
 		String url = getGitwebURL(file, gitDirectory, line);
 		if (url == null)
 			error("Could not get gitweb URL for " + file);
-		else
-			new BrowserLauncher().run(url);
+		else try {
+			parent.platformService.open(new URL(url));
+		} catch (MalformedURLException e) {
+			parent.handleException(e);
+		} catch (IOException e) {
+			parent.handleException(e);
+		}
 	}
 
 	public String git(File gitDirectory, File workingDirectory, String... args) {

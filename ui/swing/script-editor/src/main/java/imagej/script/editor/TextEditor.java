@@ -40,8 +40,10 @@ import ij.gui.GenericDialog;
 
 import ij.io.SaveDialog;
 
-import ij.plugin.BrowserLauncher;
+import imagej.command.CommandService;
+import imagej.io.IOService;
 import imagej.log.LogService;
+import imagej.platform.PlatformService;
 import imagej.script.ScriptService;
 import imagej.util.FileUtils;
 
@@ -156,14 +158,16 @@ public class TextEditor extends JFrame implements ActionListener,
 	protected ErrorHandler errorHandler;
 
 	protected final LogService log;
+	protected final PlatformService platformService;
 	protected final ScriptService scriptService;
 	protected Map<ScriptEngineFactory, JRadioButtonMenuItem> languageMenuItems;
 	protected JRadioButtonMenuItem noneLanguageItem;
 
-	public TextEditor(ScriptService scriptService) {
+	public TextEditor(ScriptService scriptService, PlatformService platformService) {
 		super("Script Editor");
 		this.scriptService = scriptService;
 		log = scriptService.getLogService();
+		this.platformService = platformService;
 
 		// Initialize menu
 		int ctrl = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
@@ -886,7 +890,11 @@ public class TextEditor extends JFrame implements ActionListener,
 					open(path);
 				else {
 					String url = new FileFunctions(this).getSourceURL(className);
-					new BrowserLauncher().run(url);
+					try {
+						platformService.open(new URL(url));
+					} catch (Throwable e) {
+						handleException(e);
+					}
 				}
 			} catch (ClassNotFoundException e) {
 				error("Could not open source for class " + className);
