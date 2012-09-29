@@ -34,10 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
-import fiji.SimpleExecuter;
-
 import imagej.command.CommandModule;
 import imagej.script.editor.command.NewPlugin;
+import imagej.util.LineOutputStream;
+import imagej.util.ProcessUtils;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -630,14 +630,15 @@ public class FileFunctions {
 		public void removeUpdate(DocumentEvent e) { }
 	}
 
-	public class ScreenLineHandler implements SimpleExecuter.LineHandler {
-		public void handleLine(String line) {
+	public class ScreenOutputStream extends LineOutputStream {
+		@Override
+		public void println(String line) {
 			TextEditor.Tab tab = parent.getTab();
 			tab.screen.insert(line + "\n", tab.screen.getDocument().getLength());
 		}
 	}
 
-	public static class GrepLineHandler implements SimpleExecuter.LineHandler {
+	public static class GrepLineHandler extends LineOutputStream {
 		protected static Pattern pattern = Pattern.compile("([A-Za-z]:[^:]*|[^:]+):([1-9][0-9]*):.*", Pattern.DOTALL);
 
 		public ErrorHandler errorHandler;
@@ -650,7 +651,8 @@ public class FileFunctions {
 			this.directory = directory;
 		}
 
-		public void handleLine(String line) {
+		@Override
+		public void println(String line) {
 			Matcher matcher = pattern.matcher(line);
 			if (matcher.matches())
 				errorHandler.addError(directory + matcher.group(1), Integer.parseInt(matcher.group(2)), line);
@@ -661,13 +663,12 @@ public class FileFunctions {
 
 	public void gitGrep(String searchTerm, File directory) {
 		GrepLineHandler handler = new GrepLineHandler(parent.errorScreen, directory.getAbsolutePath());
+		PrintStream out = new PrintStream(handler);
 		parent.getTab().showErrors();
 		try {
-			SimpleExecuter executer = new SimpleExecuter(new String[] {
-				"git", "grep", "-n", searchTerm
-			}, handler, handler, directory);
+			ProcessUtils.exec(directory, out, out, "git", "grep", "-n", searchTerm);
 			parent.errorHandler = handler.errorHandler;
-		} catch (IOException e) {
+		} catch (RuntimeException e) {
 			parent.handleException(e);
 		}
 	}
@@ -693,11 +694,9 @@ public class FileFunctions {
 		try {
 			args = append(gitDirectory == null ? new String[] { "git" } :
 				new String[] { "git", "--git-dir=" + gitDirectory.getAbsolutePath()}, args);
-			SimpleExecuter gitConfig = new SimpleExecuter(args, workingDirectory);
-			if (gitConfig.getExitCode() == 0)
-				return stripSuffix(gitConfig.getOutput(), "\n");
-			parent.write(gitConfig.getError());
-		} catch (IOException e) {
+			PrintStream out = new PrintStream(new ScreenOutputStream());
+			return ProcessUtils.exec(workingDirectory, out, out, args);
+		} catch (RuntimeException e) {
 			parent.write(e.getMessage());
 		}
 		return null;
