@@ -57,6 +57,7 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -198,12 +199,7 @@ public class FindAndReplaceDialog extends JDialog implements ActionListener {
 		else if (source == replace)
 			searchOrReplace(true);
 		else if (source == replaceAll) {
-			int replace = SearchEngine.replaceAll(getTextArea(),
-					text,
-					replaceField.getText(),
-					matchCase.isSelected(),
-					wholeWord.isSelected(),
-					regex.isSelected());
+			int replace = SearchEngine.replaceAll(getTextArea(), getSearchContext(true));
 			JOptionPane.showMessageDialog(this, replace
 					+ " replacements made!");
 		}
@@ -231,20 +227,23 @@ public class FindAndReplaceDialog extends JDialog implements ActionListener {
 		return searchOrReplaceFromHere(forward.isSelected());
 	}
 
+	protected SearchContext getSearchContext(boolean forward) {
+		SearchContext context = new SearchContext();
+		context.setSearchFor(searchField.getText());
+		context.setReplaceWith(replaceField.getText());
+		context.setSearchForward(forward);
+		context.setMatchCase(matchCase.isSelected());
+		context.setWholeWord(wholeWord.isSelected());
+		context.setRegularExpression(regex.isSelected());
+		return context;
+	}
+
 	protected boolean searchOrReplaceFromHere(boolean replace, boolean forward) {
 		RSyntaxTextArea textArea = getTextArea();
+		SearchContext context = getSearchContext(forward);
 		return replace ?
-			SearchEngine.replace(textArea, searchField.getText(),
-					replaceField.getText(),
-					forward,
-					matchCase.isSelected(),
-					wholeWord.isSelected(),
-					regex.isSelected()) :
-			SearchEngine.find(textArea, searchField.getText(),
-					forward,
-					matchCase.isSelected(),
-					wholeWord.isSelected(),
-					regex.isSelected());
+			SearchEngine.replace(textArea, context) :
+			SearchEngine.find(textArea, context);
 	}
 
 	public boolean isReplace() {
