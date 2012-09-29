@@ -900,8 +900,6 @@ public class TextEditor extends JFrame implements ActionListener,
 				error("Could not open source for class " + className);
 			}
 		}
-		else if (source == openSourceForMenuItem)
-			new OpenSourceForMenuItem().run(null);
 		/* TODO
 		else if (source == showDiff) {
 			new Thread() {
