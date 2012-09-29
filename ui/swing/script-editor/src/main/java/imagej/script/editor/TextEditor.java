@@ -34,8 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 package imagej.script.editor;
 
-import fiji.scripting.java.Refresh_Javas;
-
 import ij.io.SaveDialog;
 
 import imagej.command.CommandService;
@@ -1507,6 +1505,8 @@ public class TextEditor extends JFrame implements ActionListener,
 
 	public void makeJar(String path, boolean includeSources)
 			throws IOException {
+		throw new RuntimeException("TODO, when MiniMaven was integrated");
+		/*
 		List<String> paths = new ArrayList<String>();
 		List<String> names = new ArrayList<String>();
 		File tmpDir = null, file = getEditorPane().file;
@@ -1562,6 +1562,7 @@ public class TextEditor extends JFrame implements ActionListener,
 
 		if (tmpDir != null)
 			deleteRecursively(tmpDir);
+		*/
 	}
 
 	protected final static String scriptWrapper =
@@ -1991,6 +1992,8 @@ public class TextEditor extends JFrame implements ActionListener,
 	}
 
 	public void compile() {
+		throw new RuntimeException("TODO: implement using MiniMaven");
+		/*
 		if (!handleUnsavedChanges(true))
 			return;
 
@@ -2014,6 +2017,7 @@ public class TextEditor extends JFrame implements ActionListener,
 				}
 			}.start();
 		}
+		*/
 	}
 
 	public String getSelectedTextOrAsk(String label) {
