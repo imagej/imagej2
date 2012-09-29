@@ -159,15 +159,17 @@ public class TextEditor extends JFrame implements ActionListener,
 
 	protected final LogService log;
 	protected final PlatformService platformService;
+	protected final IOService ioService;
 	protected final ScriptService scriptService;
 	protected Map<ScriptEngineFactory, JRadioButtonMenuItem> languageMenuItems;
 	protected JRadioButtonMenuItem noneLanguageItem;
 
-	public TextEditor(ScriptService scriptService, PlatformService platformService) {
+	public TextEditor(ScriptService scriptService, PlatformService platformService, IOService ioService) {
 		super("Script Editor");
 		this.scriptService = scriptService;
 		log = scriptService.getLogService();
 		this.platformService = platformService;
+		this.ioService = ioService;
 
 		// Initialize menu
 		int ctrl = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
@@ -1352,7 +1354,11 @@ public class TextEditor extends JFrame implements ActionListener,
 		}
 
 		if (isBinary(path)) {
-			IJ.open(path);
+			try {
+				ioService.loadDataset(path);
+			} catch (Throwable e) {
+				handleException(e);
+			}
 			return null;
 		}
 
