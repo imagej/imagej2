@@ -43,6 +43,8 @@ import imagej.io.IOService;
 import imagej.log.LogService;
 import imagej.platform.PlatformService;
 import imagej.script.ScriptService;
+import imagej.script.editor.command.ChooseFontSize;
+import imagej.script.editor.command.ChooseTabSize;
 import imagej.script.editor.command.GitGrep;
 import imagej.script.editor.command.KillScript;
 import imagej.util.FileUtils;
@@ -849,18 +851,10 @@ public class TextEditor extends JFrame implements ActionListener,
 			getTextArea().moveCaretPosition(getTextArea().getDocument().getLength());
 		}
 		else if (source == chooseFontSize) {
-			int fontSize = (int)IJ.getNumber("Font size", getEditorPane().getFontSize());
-			if (fontSize != IJ.CANCELED) {
-				getEditorPane().setFontSize(fontSize);
-				updateTabAndFontSize(false);
-			}
+			commandService.run(ChooseFontSize.class, "editor", this);
 		}
 		else if (source == chooseTabSize) {
-			int tabSize = (int)IJ.getNumber("Tab size", getEditorPane().getTabSize());
-			if (tabSize != IJ.CANCELED) {
-				getEditorPane().setTabSize(tabSize);
-				updateTabAndFontSize(false);
-			}
+			commandService.run(ChooseTabSize.class, "editor", this);
 		}
 		else if (source == addImport)
 			addImport(null);
@@ -1704,7 +1698,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		updateTabAndFontSize(false);
 	}
 
-	protected void updateTabAndFontSize(boolean setByLanguage) {
+	public void updateTabAndFontSize(boolean setByLanguage) {
 		EditorPane pane = getEditorPane();
 		if (setByLanguage)
 			pane.setTabSize(pane.currentLanguage.getLanguageName().equals("Python") ? 4 : 8);
