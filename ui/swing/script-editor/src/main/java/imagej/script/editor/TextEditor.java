@@ -36,8 +36,6 @@ package imagej.script.editor;
 
 import fiji.scripting.java.Refresh_Javas;
 
-import ij.gui.GenericDialog;
-
 import ij.io.SaveDialog;
 
 import imagej.command.CommandService;
@@ -45,6 +43,8 @@ import imagej.io.IOService;
 import imagej.log.LogService;
 import imagej.platform.PlatformService;
 import imagej.script.ScriptService;
+import imagej.script.editor.command.GitGrep;
+import imagej.script.editor.command.KillScript;
 import imagej.util.FileUtils;
 
 import java.awt.Dimension;
@@ -160,16 +160,18 @@ public class TextEditor extends JFrame implements ActionListener,
 	protected final LogService log;
 	protected final PlatformService platformService;
 	protected final IOService ioService;
+	protected final CommandService commandService;
 	protected final ScriptService scriptService;
 	protected Map<ScriptEngineFactory, JRadioButtonMenuItem> languageMenuItems;
 	protected JRadioButtonMenuItem noneLanguageItem;
 
-	public TextEditor(ScriptService scriptService, PlatformService platformService, IOService ioService) {
+	public TextEditor(ScriptService scriptService, PlatformService platformService, IOService ioService, CommandService commandService) {
 		super("Script Editor");
 		this.scriptService = scriptService;
 		log = scriptService.getLogService();
 		this.platformService = platformService;
 		this.ioService = ioService;
+		this.commandService = commandService;
 
 		// Initialize menu
 		int ctrl = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
@@ -927,13 +929,7 @@ public class TextEditor extends JFrame implements ActionListener,
 				error("File was not yet saved; no location known!");
 			searchRoot = searchRoot.getParentFile();
 
-			GenericDialog gd = new GenericDialog("Grep options");
-			gd.addStringField("Search_term", searchTerm == null ? "" : searchTerm, 20);
-			gd.addMessage("This search will be performed in\n\n\t" + searchRoot);
-			gd.showDialog();
-			grabFocus(2);
-			if (!gd.wasCanceled())
-				new FileFunctions(this).gitGrep(gd.getNextString(), searchRoot);
+			commandService.run(GitGrep.class, "editor", this, "searchTerm", searchTerm, "searchRoot", searchRoot);
 		}
 		else if (source == openInGitweb) {
 			EditorPane editorPane = getEditorPane();
@@ -1788,7 +1784,7 @@ public class TextEditor extends JFrame implements ActionListener,
 
 	/** Generic Thread that keeps a starting time stamp,
 	 *  sets the priority to normal and starts itself. */
-	private abstract class Executer extends ThreadGroup {
+	public abstract class Executer extends ThreadGroup {
 		JTextAreaWriter output, errors;
 		Executer(final JTextAreaWriter output, final JTextAreaWriter errors) {
 			super("Script Editor Run :: " + new Date().toString());
@@ -1902,44 +1898,35 @@ public class TextEditor extends JFrame implements ActionListener,
 			executingTasks.remove(this);
 			setTitle();
 		}
+
+		@Override
+		public String toString() {
+			return getName();
+		}
+	}
+
+	/** Returns a list of currently executing tasks */
+	public List<Executer> getExecutingTasks() {
+		return executingTasks;
+	}
+
+	public void kill(Executer executer) {
+		for (int i=0; i<tabbed.getTabCount(); i++) {
+			Tab tab = (Tab)tabbed.getComponentAt(i);
+			if (executer == tab.executer) {
+				tab.kill();
+				break;
+			}
+		}
 	}
 
 	/** Query the list of running scripts and provide a dialog to choose one and kill it. */
 	public void chooseTaskToKill() {
-		Executer[] executers =
-			executingTasks.toArray(new Executer[0]);
-		if (0 == executers.length) {
-			error("\nNo tasks running!\n");
+		if (executingTasks.size() == 0) {
+			error("\nNo running scripts\n");
 			return;
 		}
-
-		String[] names = new String[executers.length];
-		for (int i = 0; i < names.length; i++)
-			names[i] = executers[i].getName();
-
-		GenericDialog gd = new GenericDialog("Kill");
-		gd.addChoice("Running scripts: ",
-				names, names[names.length - 1]);
-		gd.addCheckbox("Kill all", false);
-		gd.showDialog();
-		if (gd.wasCanceled())
-			return;
-
-		if (gd.getNextBoolean()) {
-			// Kill all
-			for (int i=0; i<tabbed.getTabCount(); i++)
-				((Tab)tabbed.getComponentAt(i)).kill();
-		} else {
-			// Kill selected only
-			Executer ex = executers[gd.getNextChoiceIndex()];
-			for (int i=0; i<tabbed.getTabCount(); i++) {
-				Tab tab = (Tab)tabbed.getComponentAt(i);
-				if (ex == tab.executer) {
-					tab.kill();
-					break;
-				}
-			}
-		}
+		commandService.run(KillScript.class, "editor", this);
 	}
 
 	/** Run the text in the textArea without compiling it, only if it's not java. */

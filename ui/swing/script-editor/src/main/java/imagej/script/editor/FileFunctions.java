@@ -36,7 +36,8 @@ package imagej.script.editor;
 
 import fiji.SimpleExecuter;
 
-import ij.gui.GenericDialog;
+import imagej.command.CommandModule;
+import imagej.script.editor.command.NewPlugin;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -73,6 +74,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import java.util.concurrent.Future;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -293,15 +295,15 @@ public class FileFunctions {
 	}
 
 	public boolean newPlugin() {
-		GenericDialog gd = new GenericDialog("New Plugin");
-		gd.addStringField("Plugin_name", "", 30);
-		gd.showDialog();
-		if (gd.wasCanceled())
+		Future<CommandModule<NewPlugin>> result =
+			parent.commandService.run(NewPlugin.class, "editor", parent);
+		try {
+			result.get();
+			return true;
+		} catch (Throwable t) {
+			parent.handleException(t);
 			return false;
-		String name = gd.getNextString();
-		if (!newPlugin(name))
-			return false;
-		return true;
+		}
 	}
 
 	public boolean newPlugin(String name) {
