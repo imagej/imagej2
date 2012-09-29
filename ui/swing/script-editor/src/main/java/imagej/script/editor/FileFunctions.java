@@ -36,12 +36,6 @@ package imagej.script.editor;
 
 import fiji.SimpleExecuter;
 
-import fiji.build.Fake;
-import fiji.build.MiniMaven.POM;
-import fiji.build.Parser;
-import fiji.build.Rule;
-import fiji.build.SubFake;
-
 import ij.gui.GenericDialog;
 
 import ij.plugin.BrowserLauncher;
@@ -194,79 +188,8 @@ public class FileFunctions {
 	 * Make a sensible effort to get the path of the source for a class.
 	 */
 	public String getSourcePath(String className) throws ClassNotFoundException {
-		// First, let's try to get the .jar file for said class.
-		String result = getJar(className);
-		if (result == null)
-			return findSourcePath(className);
-
-		// try the simple thing first
-		int slash = result.lastIndexOf('/'), backSlash = result.lastIndexOf('\\');
-		String baseName = result.substring(Math.max(slash, backSlash) + 1, result.length() - 4);
-		String dir = ijDir + "/src-plugins/" + baseName + "/";
-		String path = dir + className.replace('.', '/') + ".java";
-		if (new File(path).exists())
-			return path;
-		if (new File(dir).isDirectory())
-			for (;;) {
-				int dot = className.lastIndexOf('.');
-				if (dot < 0)
-					break;
-				className = className.substring(0, dot);
-				path = dir + className.replace('.', '/') + ".java";
-			}
-
-		// Try to find it with the help of the Fakefile
-		File fakefile = new File(ijDir, "Fakefile");
-		if (fakefile.exists()) try {
-			Fake fake = new Fake();
-			if (parent != null) {
-				final JTextAreaOutputStream output = new JTextAreaOutputStream(parent.getTab().screen);
-				final JTextAreaOutputStream errors = new JTextAreaOutputStream(parent.errorScreen);
-				fake.out = new PrintStream(output);
-				fake.err = new PrintStream(errors);
-			}
-			Parser parser = fake.parse(new FileInputStream(fakefile), new File(ijDir));
-			parser.parseRules(null);
-			Rule rule = parser.getRule("plugins/" + baseName + ".jar");
-			if (rule == null)
-				rule = parser.getRule("jars/" + baseName + ".jar");
-			if (rule != null) {
-				String stripPath = rule.getStripPath();
-				dir = ijDir + "/";
-				if (rule instanceof SubFake) {
-					SubFake subFake = (SubFake)rule;
-					stripPath = rule.getLastPrerequisite();
-					fakefile = subFake.getFakefile();
-					if (fakefile != null) {
-						dir += rule.getLastPrerequisite();
-						parser = fake.parse(new FileInputStream(fakefile), new File(dir));
-						parser.parseRules(null);
-						rule = parser.getRule(baseName + ".jar");
-						if (rule != null)
-							stripPath = rule.getStripPath();
-					}
-					else {
-						POM pom = subFake.getPOM();
-						if (pom != null) {
-							dir += rule.getLastPrerequisite();
-							stripPath = pom.getSourcePath();
-						}
-					}
-				}
-				if (stripPath != null) {
-					if (!stripPath.endsWith("/"))
-						stripPath += "/";
-					dir += stripPath;
-					path = dir + className.replace('.', '/') + ".java";
-					if (new File(path).exists())
-						return path;
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return null;
+		// move updater's stuff into ij-core and re-use here
+		throw new RuntimeException("TODO");
 	}
 
 	public String getSourceURL(String className) {
