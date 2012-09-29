@@ -136,7 +136,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		  openHelp, addImport, clearScreen, nextError, previousError,
 		  openHelpWithoutFrames, nextTab, previousTab,
 		  runSelection, extractSourceJar, toggleBookmark,
-		  listBookmarks, openSourceForClass, newPlugin, installMacro,
+		  listBookmarks, openSourceForClass, newPlugin,
 		  openSourceForMenuItem,
 		  openMacroFunctions, decreaseFontSize, increaseFontSize,
 		  chooseFontSize, chooseTabSize, gitGrep, openInGitweb,
@@ -390,10 +390,6 @@ public class TextEditor extends JFrame implements ActionListener,
 		runMenu.add(autoSave);
 		showDeprecation = new JCheckBoxMenuItem("Show deprecations");
 		runMenu.add(showDeprecation);
-
-		installMacro = addToMenu(runMenu, "Install Macro",
-				KeyEvent.VK_I, ctrl);
-		installMacro.setMnemonic(KeyEvent.VK_I);
 
 		runMenu.addSeparator();
 		nextError = addToMenu(runMenu, "Next Error", KeyEvent.VK_F4, 0);
@@ -791,8 +787,6 @@ public class TextEditor extends JFrame implements ActionListener,
 			compile();
 		else if (source == runSelection)
 			runText(true);
-		else if (source == installMacro)
-			installMacro();
 		else if (source == nextError)
 			new Thread() {
 				public void run() {
@@ -1682,7 +1676,6 @@ public class TextEditor extends JFrame implements ActionListener,
 		openSourceForMenuItem.setVisible(isJava);
 
 		boolean isMacro = language.getLanguageName().equals("ImageJ Macro");
-		installMacro.setVisible(isMacro);
 		openMacroFunctions.setVisible(isMacro);
 		openSourceForClass.setVisible(!isMacro);
 
@@ -2077,10 +2070,6 @@ public class TextEditor extends JFrame implements ActionListener,
 		} catch (BadLocationException e) {
 			// ignore
 		}
-	}
-
-	public void installMacro() {
-		new MacroFunctions().installMacro(getTitle(), getEditorPane().getText());
 	}
 
 	public boolean nextError(boolean forward) {
