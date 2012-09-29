@@ -1,36 +1,27 @@
-package fiji.scripting;
+package imagej.script.editor;
 
-import ij.IJ;
-import ij.Menus;
-
-import ij.macro.Interpreter;
-
-import ij.plugin.MacroInstaller;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import java.io.IOException;
+import java.net.URL;
 
 public class MacroFunctions {
 
-	protected final static String macroFunctionsLabel = "Macro Functions...";
+	public final String MACRO_FUNCTIONS_URL = "http://imagej.net/developer/macro/functions.html";
 
-	public void openHelp(String name) {
+	private TextEditor editor;
+
+	public MacroFunctions(TextEditor editor) {
+		this.editor = editor;
+	}
+
+	public void openHelp(String name) throws IOException {
+		String url = MACRO_FUNCTIONS_URL;
 		if (name != null) {
-			name = startsWithIdentifier(name);
-			if (name != null) {
-				String url = (String)Menus.getCommands().get(macroFunctionsLabel);
-				if (url != null && !url.equals("")) {
-					Pattern regex = Pattern.compile("^ij.plugin.BrowserLauncher\\(\"(.*)\"\\)$");
-					Matcher matcher = regex.matcher(url);
-					if (matcher.matches()) {
-						IJ.runPlugIn("ij.plugin.BrowserLauncher", matcher.group(1) + "#" + name);
-						return;
-					}
-				}
+			String functionName = startsWithIdentifier(name);
+			if (functionName != null) {
+				url += "#" + functionName;
 			}
 		}
-		IJ.run(macroFunctionsLabel);
+		editor.platformService.open(new URL(url));
 	}
 
 	protected String startsWithIdentifier(String text) {
