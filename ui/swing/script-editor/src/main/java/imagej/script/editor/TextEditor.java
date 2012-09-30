@@ -528,32 +528,6 @@ public class TextEditor extends JFrame implements ActionListener,
 			editorPane.requestFocus();
 	}
 
-	public TextEditor(String title, String text) {
-		this(null);
-		final EditorPane editorPane = getEditorPane();
-		editorPane.setText(text);
-		editorPane.setLanguageByFileName(title);
-		setFileName(title);
-		setTitle();
-	}
-
-	/**
-	 * Open a new editor to edit the given file, with a templateFile if the file does not exist yet
-	 */
-	public TextEditor(File file, File templateFile) {
-		this(file.exists() ? file.getPath() : templateFile.getPath());
-		if (!file.exists()) {
-			final EditorPane editorPane = getEditorPane();
-			try {
-				editorPane.setFile(file.getAbsolutePath());
-			} catch (IOException e) {
-				handleException(e);
-			}
-			editorPane.setLanguageByFileName(file.getName());
-			setTitle();
-		}
-	}
-
 	final public RSyntaxTextArea getTextArea() {
 		return getEditorPane();
 	}
@@ -703,6 +677,32 @@ public class TextEditor extends JFrame implements ActionListener,
 
 	public void createNewDocument() {
 		open(null);
+	}
+
+	public void createNewDocument(String title, String text) {
+		open(null);
+		final EditorPane editorPane = getEditorPane();
+		editorPane.setText(text);
+		editorPane.setLanguageByFileName(title);
+		setFileName(title);
+		setTitle();
+	}
+
+	/**
+	 * Open a new editor to edit the given file, with a templateFile if the file does not exist yet
+	 */
+	public void createNewFromTemplate(File file, File templateFile) {
+		open(file.exists() ? file.getPath() : templateFile.getPath());
+		if (!file.exists()) {
+			final EditorPane editorPane = getEditorPane();
+			try {
+				editorPane.setFile(file.getAbsolutePath());
+			} catch (IOException e) {
+				handleException(e);
+			}
+			editorPane.setLanguageByFileName(file.getName());
+			setTitle();
+		}
 	}
 
 	public boolean fileChanged() {
