@@ -2025,8 +2025,6 @@ public class TextEditor extends JFrame implements ActionListener,
 		String className = getSelectedTextOrAsk("Class name");
 		if (className != null)
 			className = className.trim();
-		if (className != null && className.indexOf('.') < 0)
-			className = getEditorPane().getClassNameFunctions().getFullName(className);
 		return className;
 	}
 
@@ -2174,8 +2172,6 @@ public class TextEditor extends JFrame implements ActionListener,
 	public void openHelp(String className, boolean withFrames) {
 		if (className == null)
 			className = getSelectedClassNameOrAsk();
-		if (className != null)
-			getEditorPane().getClassNameFunctions().openHelpForClass(className, withFrames);
 	}
 
 	public void extractSourceJar() {
