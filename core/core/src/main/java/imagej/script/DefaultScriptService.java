@@ -158,6 +158,11 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 		return scriptLanguageIndex.canHandleFile(file);
 	}
 
+	@Override
+	public boolean isCompiledLanguage(ScriptEngineFactory language) {
+		return false;
+	}
+
 	public void reloadScriptLanguages() {
 		scriptLanguageIndex.clear();
 		for (final PluginInfo<? extends ScriptLanguage> item : pluginService.getPluginsOfType(ScriptLanguage.class))

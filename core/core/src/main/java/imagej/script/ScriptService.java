@@ -81,5 +81,7 @@ public interface ScriptService extends Service {
 	void initialize(final ScriptEngine engine, final String fileName,
 			final Writer writer, final Writer errorWriter);
 
+	boolean isCompiledLanguage(ScriptEngineFactory currentLanguage);
+
 }
 
