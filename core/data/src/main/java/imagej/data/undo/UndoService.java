@@ -325,6 +325,7 @@ public class UndoService extends AbstractService {
 		Module module = evt.getModule();
 		Object theObject = module.getDelegateObject();
 		if (theObject instanceof Unrecordable) return;
+		if (theObject instanceof InvertibleCommand) return;
 		if (theObject instanceof Command) {
 			if (ignoring(module.getInfo())) {
 				//System.out.println("ModuleCanceled: ignoring - "+module.getDelegateObject().getClass());
