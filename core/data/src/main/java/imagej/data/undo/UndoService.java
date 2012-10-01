@@ -305,7 +305,8 @@ public class UndoService extends AbstractService {
 		inputs.put("display", display);
 		inputs.put("state", state);
 		return new DefaultInstantiableCommand(
-			commandService.getCommand(DisplayRestoreState.class), inputs, state.getMemoryUsage());
+			commandService.getCommand(
+				DisplayRestoreState.class), inputs, state.getMemoryUsage());
 	}
 
 	// -- protected event handlers --
@@ -317,10 +318,7 @@ public class UndoService extends AbstractService {
 		if (theObject instanceof Unrecordable) return;
 		if (theObject instanceof InvertibleCommand) return; // record later
 		if (theObject instanceof Command) {
-			if (ignoring(module.getInfo())) {
-				//System.out.println("ModuleStarted: ignoring - "+module.getDelegateObject().getClass());
-				return;
-			}
+			if (ignoring(module.getInfo())) return;
 			Display<?> display = dispService.getActiveDisplay();
 			if (!(display instanceof SupportsUndo)) return;
 			InstantiableCommand reverseCommand = createFullRestoreCommand(display);
@@ -335,10 +333,7 @@ public class UndoService extends AbstractService {
 		if (theObject instanceof Unrecordable) return;
 		if (theObject instanceof InvertibleCommand) return;
 		if (theObject instanceof Command) {
-			if (ignoring(module.getInfo())) {
-				//System.out.println("ModuleCanceled: ignoring - "+module.getDelegateObject().getClass());
-				return;
-			}
+			if (ignoring(module.getInfo())) return;
 			Display<?> display = dispService.getActiveDisplay();
 			if (!(display instanceof SupportsUndo)) return;
 			// remove last undo point
@@ -353,7 +348,6 @@ public class UndoService extends AbstractService {
 		if (theObject instanceof Unrecordable) return;
 		if (theObject instanceof Command) {
 			if (ignoring(module.getInfo())) {
-				//System.out.println("ModuleFinished: ignoring - "+module.getDelegateObject().getClass());
 				stopIgnoring(module.getInfo());
 				return;
 			}
@@ -364,7 +358,8 @@ public class UndoService extends AbstractService {
 				findHistory(display).addUndo(command.getInverseCommand());
 			}
 			InstantiableCommand forwardCommand =
-					new DefaultInstantiableCommand((CommandInfo<?>)module.getInfo(), module.getInputs(), 0);
+					new DefaultInstantiableCommand(
+						(CommandInfo<?>)module.getInfo(), module.getInputs(), 0);
 			findHistory(display).addRedo(forwardCommand);
 		}
 	}
@@ -380,7 +375,6 @@ public class UndoService extends AbstractService {
 	// -- private helpers --
 
 	void ignore(InstantiableCommand command) {
-		//System.out.println("Ignore START: "+command.getCommand().getDelegateClassName());
 		modulesToIgnore.put(command.getCommand(), true);
 	}
 	
@@ -389,7 +383,6 @@ public class UndoService extends AbstractService {
 	}
 
 	private void stopIgnoring(ModuleInfo info) {
-		//System.out.println("Ignore END: "+info.getDelegateClassName());
 		modulesToIgnore.remove(info);
 	}
 	
