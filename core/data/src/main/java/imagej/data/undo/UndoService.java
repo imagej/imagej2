@@ -95,7 +95,8 @@ import imagej.service.Service;
 //   grouping. (Later note: undo of this command seems to work. Redo will throw
 //   up the neigh specification dialog again)
 // SplitChannelsContext plugin is sometimes getting run and recorded. Is this a
-//   problem?
+//   problem? Is it putting useless undo markers in the history? If so we can
+//   make it Unrecordable.
 
 // Later TODOs
 // Support tools and gestures
