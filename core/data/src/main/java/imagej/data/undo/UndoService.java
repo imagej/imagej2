@@ -118,6 +118,14 @@ import imagej.service.Service;
 // need to walk all undo histories and trim their list to not include any
 // reference to the deleted display
 
+// Original NOTE on this same issue: what if you use ImageCalc to add two images
+// (so both displays stored as inputs to plugin in undo/redo stack. Then someone
+// deletes one of the displays. Then back to display that may have been a target
+// of the calc. Then undo. Should crash.
+// On a related topic do we store an undo operation on a Display<?>? Or Object?
+// How about a set of inputs like ImageCalc. Then cleanup all undo histories
+// that refer to deleted display?????
+
 /**
  * Provides multistep undo/redo support to IJ2.
  * 
@@ -361,14 +369,6 @@ public class UndoService extends AbstractService {
 		}
 	}
 
-	// NOTE - what if you use ImageCalc to add two images (so both displays stored
-	// as inputs to plugin in undo/redo stack. Then someone deletes one of the
-	// displays. Then back to display that may have been a target of the calc.
-	// Then undo. Should crash.
-	// On a related topic do we store an undo operation on a Display<?>? Or Object?
-	// How about a set of inputs like ImageCalc. Then cleanup all undo histories
-	// that refer to deleted display?????
-	
 	@EventHandler
 	protected void onEvent(DisplayDeletedEvent evt) {
 		CommandHistory history = histories.get(evt.getObject());
