@@ -37,6 +37,8 @@ package imagej.core.commands.rotate;
 
 import java.util.HashMap;
 
+import imagej.command.CommandInfo;
+import imagej.command.CommandService;
 import imagej.command.InstantiableCommand;
 import imagej.command.ContextCommand;
 import imagej.command.DefaultInstantiableCommand;
@@ -71,7 +73,7 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Flip Horizontally", weight = 1) }, headless = true)
 public class FlipHorizontally extends ContextCommand implements InvertibleCommand {
 
-	// -- instance variables that are Parameters --
+	// -- Parameters --
 
 	@Parameter
 	private ImageDisplayService imageDisplayService;
@@ -79,9 +81,16 @@ public class FlipHorizontally extends ContextCommand implements InvertibleComman
 	@Parameter
 	private OverlayService overlayService;
 
+	@Parameter
+	private CommandService commandService;
+
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
+	// -- private instance variables --
+	
+	private CommandInfo<?> inverseCommand;
+	
 	// -- public interface --
 
 	@Override
@@ -89,6 +98,7 @@ public class FlipHorizontally extends ContextCommand implements InvertibleComman
 		final Dataset input = imageDisplayService.getActiveDataset(display);
 		final RealRect selection = overlayService.getSelectionBounds(display);
 		flipPixels(input, selection);
+		inverseCommand = commandService.getCommand(FlipHorizontally.class);
 	}
 
 	public void setDisplay(ImageDisplay disp) {
@@ -103,7 +113,7 @@ public class FlipHorizontally extends ContextCommand implements InvertibleComman
 	public InstantiableCommand getInverseCommand() {
 		HashMap<String, Object> input = new HashMap<String, Object>();
 		input.put("display", display);
-		return new DefaultInstantiableCommand(FlipHorizontally.class,input,0);
+		return new DefaultInstantiableCommand(inverseCommand, input, 0);
 	}
 
 	// -- private interface --

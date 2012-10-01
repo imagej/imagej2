@@ -35,7 +35,8 @@
 
 package imagej.core.commands.imglib;
 
-import imagej.command.Command;
+import imagej.command.CommandInfo;
+import imagej.command.CommandService;
 import imagej.command.InstantiableCommand;
 import imagej.command.ContextCommand;
 import imagej.command.InvertibleCommand;
@@ -85,6 +86,9 @@ public class CropImage extends ContextCommand implements InvertibleCommand {
 	@Parameter
 	private OverlayService overlayService;
 
+	@Parameter
+	private CommandService commandService;
+
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
@@ -100,6 +104,7 @@ public class CropImage extends ContextCommand implements InvertibleCommand {
 	private ImgPlus<? extends RealType<?>> oldData;
 	private List<Overlay> oldOverlays;
 	private List<Overlay> newOverlays;
+	private CommandInfo<?> inverseCommand;
 	
 	// -- public interface --
 
@@ -134,6 +139,7 @@ public class CropImage extends ContextCommand implements InvertibleCommand {
 				newOverlays.add(newOverlay);
 			}
 			overlayService.removeOverlay(display, overlay);
+			inverseCommand = commandService.getCommand(UndoCropImage.class);
 		}
 
 		// BDZ - HACK - FIXME
@@ -175,8 +181,8 @@ public class CropImage extends ContextCommand implements InvertibleCommand {
 		return new InstantiableCommand() {
 
 			@Override
-			public Class<? extends Command> getCommand() {
-				return UndoCropImage.class;
+			public CommandInfo<?> getCommand() {
+				return inverseCommand;
 			}
 
 			@Override

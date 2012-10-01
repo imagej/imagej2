@@ -37,6 +37,8 @@ package imagej.core.commands.rotate;
 
 import java.util.HashMap;
 
+import imagej.command.CommandInfo;
+import imagej.command.CommandService;
 import imagej.command.InstantiableCommand;
 import imagej.command.ContextCommand;
 import imagej.command.DefaultInstantiableCommand;
@@ -69,7 +71,7 @@ import imagej.util.RealRect;
 	@Menu(label = "Rotate 90 Degrees Left", weight = 5) }, headless = true)
 public class Rotate90DegreesLeft extends ContextCommand implements InvertibleCommand {
 
-	// -- instance variables that are Parameters --
+	// -- Parameters --
 
 	@Parameter
 	private ImageDisplayService imageDisplayService;
@@ -77,9 +79,16 @@ public class Rotate90DegreesLeft extends ContextCommand implements InvertibleCom
 	@Parameter
 	private OverlayService overlayService;
 
+	@Parameter
+	private CommandService commandService;
+	
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
+	// -- private instance variables --
+	
+	private CommandInfo<?> inverseCommand;
+	
 	// -- public interface --
 
 	@Override
@@ -92,6 +101,7 @@ public class Rotate90DegreesLeft extends ContextCommand implements InvertibleCom
 		@SuppressWarnings("unchecked")
 		final ImgLibDataTransform runner = new ImgLibDataTransform(input, flipper);
 		runner.run();
+		inverseCommand = commandService.getCommand(Rotate90DegreesRight.class);
 	}
 
 	public void setDisplay(ImageDisplay disp) {
@@ -106,7 +116,7 @@ public class Rotate90DegreesLeft extends ContextCommand implements InvertibleCom
 	public InstantiableCommand getInverseCommand() {
 		HashMap<String, Object> input = new HashMap<String, Object>();
 		input.put("display", display);
-		return new DefaultInstantiableCommand(Rotate90DegreesRight.class,input,0);
+		return new DefaultInstantiableCommand(inverseCommand, input, 0);
 	}
 
 	// -- private interface --
