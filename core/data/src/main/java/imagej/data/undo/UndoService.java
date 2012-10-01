@@ -374,8 +374,8 @@ public class UndoService extends AbstractService {
 	
 	// -- private helpers --
 
-	void ignore(InstantiableCommand command) {
-		modulesToIgnore.put(command.getCommand(), true);
+	void ignore(ModuleInfo info) {
+		modulesToIgnore.put(info, true);
 	}
 	
 	private boolean ignoring(ModuleInfo info) {
