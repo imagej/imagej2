@@ -42,6 +42,8 @@ import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.type.numeric.real.DoubleType;
 
+import imagej.command.CommandInfo;
+import imagej.command.CommandService;
 import imagej.command.InstantiableCommand;
 import imagej.command.ContextCommand;
 import imagej.command.DefaultInstantiableCommand;
@@ -67,6 +69,9 @@ public class UndoSaveDataPlugin
 	@Parameter
 	private UndoService undoService;
 	
+	@Parameter
+	private CommandService commandService;
+	
 	@Parameter(type = ItemIO.INPUT)
 	private Dataset source;
 	
@@ -76,12 +81,17 @@ public class UndoSaveDataPlugin
 	@Parameter(type = ItemIO.OUTPUT)
 	private Img<DoubleType> data;
 	
+	// -- private instance variables --
+	
+	private CommandInfo<?> inverseCommand;
+	
 	// -- Command methods --
 	
 	@Override
 	public void run() {
 		// TODO - change ArrayImgFactory to some small memory ImgFactory made for undo
-		undoService.captureData(source, points, new ArrayImgFactory<DoubleType>());
+		data = undoService.captureData(source, points, new ArrayImgFactory<DoubleType>());
+		inverseCommand = commandService.getCommand(UndoRestoreDataPlugin.class);
 	}
 	
 	// -- InvertibleCommand methods --
@@ -93,7 +103,7 @@ public class UndoSaveDataPlugin
 		inverseInputs.put("points", points);
 		inverseInputs.put("data", data);
 		long size = 8 * numElements(data);
-		return new DefaultInstantiableCommand(UndoRestoreDataPlugin.class, inverseInputs, size);
+		return new DefaultInstantiableCommand(inverseCommand, inverseInputs, size);
 	}
 
 	// -- UndoSaveDataPlugin methods --

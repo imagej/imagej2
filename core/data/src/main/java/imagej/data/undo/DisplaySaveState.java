@@ -39,6 +39,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import imagej.command.Command;
+import imagej.command.CommandInfo;
+import imagej.command.CommandService;
 import imagej.command.InstantiableCommand;
 import imagej.command.DefaultInstantiableCommand;
 import imagej.command.InvertibleCommand;
@@ -56,15 +58,21 @@ import imagej.plugin.Plugin;
 @Plugin
 public class DisplaySaveState implements Command, InvertibleCommand {
 
+	@Parameter
+	private CommandService commandService;
+	
 	@Parameter(type = ItemIO.INPUT)
 	private Display<?> display;
 
 	@Parameter(type = ItemIO.OUTPUT)
 	private DisplayState state;
 	
+	private CommandInfo<?> inverseCommand; 
+	
 	@Override
 	public void run() {
 		state = display.captureState();
+		inverseCommand = commandService.getCommand(DisplayRestoreState.class);
 	}
 
 	@Override
@@ -73,7 +81,7 @@ public class DisplaySaveState implements Command, InvertibleCommand {
 		inverseInputs.put("display", display);
 		inverseInputs.put("state", state);
 		return new DefaultInstantiableCommand(
-			DisplayRestoreState.class, inverseInputs, state.getMemoryUsage());
+			inverseCommand, inverseInputs, state.getMemoryUsage());
 	}
 
 }

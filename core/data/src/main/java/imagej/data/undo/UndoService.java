@@ -49,6 +49,7 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
 import imagej.command.Command;
+import imagej.command.CommandInfo;
 import imagej.command.CommandService;
 import imagej.command.InstantiableCommand;
 import imagej.command.DefaultInstantiableCommand;
@@ -63,6 +64,7 @@ import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.module.Module;
+import imagej.module.ModuleInfo;
 import imagej.module.event.ModuleCanceledEvent;
 import imagej.module.event.ModuleFinishedEvent;
 import imagej.module.event.ModuleStartedEvent;
@@ -73,18 +75,11 @@ import imagej.service.Service;
 
 // TODO
 // This service is poorly named (recording something service is better)
-// Need a good way to avoid recording operations that are being undone. We only
-//   know the class rather than having an actual reference. If we could tag a
-//   command with metadata that the command service maintains we could look for
-//   that metadata and decide to record or not. Or we could tell command service
-//   to not generate events while executing this command. Something needs to
-//   be done.
 // More undoable ops: zoom events, pan events, display creations/deletions,
 //   setting of options values, dataset dimensions changing, setImgPlus(), etc.
 // Also what about legacy plugin run results? (Multiple things hatched)
-// ThreadLocal code for classToNotRecord. Nope, can't work.
 // Make friendly for multithreaded access.
-// Currently made to handle Datasets of ImageDisplays. Should be made to support
+// Currently command histories are tied to Displays. Should be made to support
 //   histories of arbitrary objects. The objects would need to support some
 //   duplicate/save/restore interface.
 // Note that undoing a noise reducer plugin fails because that command runs two
@@ -114,6 +109,15 @@ import imagej.service.Service;
 // user can switch between displays and undo a lot of stuff. And they can record
 // and undo app related events.
 
+// Note that when a display is deleted it could invalidate other displays' own
+// history (maybe). Have img1. Paste from Img2 into Img1. Delete Img2. Go to
+// Img1 and do undo. Now try redo. Is last display state of Img2 kept around as
+// a reference in Img1's undo history? However note that even if the undo record
+// has a handle on a deleted display the command could fail because the display
+// layer does not know about it anymore. Perhaps on display deleted events we
+// need to walk all undo histories and trim their list to not include any
+// reference to the deleted display
+
 /**
  * Provides multistep undo/redo support to IJ2.
  * 
@@ -131,10 +135,6 @@ public class UndoService extends AbstractService {
 	
 	private static final int MAX_BYTES = 20 * 1024 * 1024; // temp: 20 meg
 	
-	/*  tricky attempt to make this code ignore prerecorded commands safely
-	private static final String RECORDED_INTERNALLY = "ReallyDontRecordMePlease";
-	*/
-	
 	// -- Parameters --
 	
 	@Parameter
@@ -148,17 +148,17 @@ public class UndoService extends AbstractService {
 	
 	// -- working variables --
 	
-	private Map<Display<?>,CommandHistory> histories;
+	private Map<Display<?>,CommandHistory> histories =
+			new HashMap<Display<?>,CommandHistory>() ;
 
 	// HACK TO GO AWAY SOON
-	private Map<Class<? extends Command>,Boolean> classesToIgnore =
-			new ConcurrentHashMap<Class<? extends Command>,Boolean>();
+	private Map<ModuleInfo,Boolean> modulesToIgnore =
+			new ConcurrentHashMap<ModuleInfo,Boolean>();
 	
 	// -- service initialization code --
 	
 	@Override
 	public void initialize() {
-		histories = new HashMap<Display<?>,CommandHistory>() ;
 		subscribeToEvents(eventService);
 	}
 
@@ -297,7 +297,7 @@ public class UndoService extends AbstractService {
 		inputs.put("display", display);
 		inputs.put("state", state);
 		return new DefaultInstantiableCommand(
-			DisplayRestoreState.class, inputs, state.getMemoryUsage());
+			commandService.getCommand(DisplayRestoreState.class), inputs, state.getMemoryUsage());
 	}
 
 	// -- protected event handlers --
@@ -305,26 +305,14 @@ public class UndoService extends AbstractService {
 	@EventHandler
 	protected void onEvent(ModuleStartedEvent evt) {
 		Module module = evt.getModule();
-		/*  tricky attempt to make this code ignore prerecorded commands safely
-		if (module.getInput(RECORDED_INTERNALLY) != null) {
-			System.out.println("Skipping the recording of a prerecorded command "+module.getClass().getName());
-			return;
-		}
-		*/
-		/* tricky attempt number 2
-		if (module == moduleToIgnore) {
-			System.out.println("module start: ignoring a module");
-			return;
-		}
-		*/
 		Object theObject = module.getDelegateObject();
 		if (theObject instanceof Unrecordable) return;
 		if (theObject instanceof InvertibleCommand) return; // record later
 		if (theObject instanceof Command) {
-			@SuppressWarnings("unchecked")
-			Class<? extends Command> theClass =
-				(Class<? extends Command>) theObject.getClass(); 
-			if (ignoring(theClass)) return;
+			if (ignoring(module.getInfo())) {
+				//System.out.println("ModuleStarted: ignoring - "+module.getDelegateObject().getClass());
+				return;
+			}
 			Display<?> display = dispService.getActiveDisplay();
 			if (!(display instanceof SupportsUndo)) return;
 			InstantiableCommand reverseCommand = createFullRestoreCommand(display);
@@ -335,25 +323,13 @@ public class UndoService extends AbstractService {
 	@EventHandler
 	protected void onEvent(ModuleCanceledEvent evt) {
 		Module module = evt.getModule();
-		/*  tricky attempt to make this code ignore prerecorded commands safely
-		if (module.getInput(RECORDED_INTERNALLY) != null) {
-			System.out.println("Skipping the recording of a prerecorded command "+module.getClass().getName());
-			return;
-		}
-		*/
-		/* tricky attempt 2
-		if (module == moduleToIgnore) {
-			System.out.println("module cancel: ignoring a module");
-			return;
-		}
-		*/
 		Object theObject = module.getDelegateObject();
 		if (theObject instanceof Unrecordable) return;
 		if (theObject instanceof Command) {
-			@SuppressWarnings("unchecked")
-			Class<? extends Command> theClass =
-					(Class<? extends Command>) theObject.getClass(); 
-			if (ignoring(theClass)) return;
+			if (ignoring(module.getInfo())) {
+				//System.out.println("ModuleCanceled: ignoring - "+module.getDelegateObject().getClass());
+				return;
+			}
 			Display<?> display = dispService.getActiveDisplay();
 			if (!(display instanceof SupportsUndo)) return;
 			// remove last undo point
@@ -364,26 +340,12 @@ public class UndoService extends AbstractService {
 	@EventHandler
 	protected void onEvent(ModuleFinishedEvent evt) {
 		Module module = evt.getModule();
-		/*  tricky attempt to make this code ignore prerecorded commands safely
-		if (module.getInput(RECORDED_INTERNALLY) != null) {
-			System.out.println("Skipping the recording of a prerecorded command "+module.getClass().getName());
-			return;
-		}
-		*/
-		/* tricky attempt 2
-		if (module == moduleToIgnore) {
-			System.out.println("module finish: ignoring a module");
-			return;
-		}
-		*/
 		Object theObject = module.getDelegateObject();
 		if (theObject instanceof Unrecordable) return;
 		if (theObject instanceof Command) {
-			@SuppressWarnings("unchecked")
-			Class<? extends Command> theClass =
-					(Class<? extends Command>) theObject.getClass();
-			if (ignoring(theClass)) {
-				stopIgnoring(theClass);
+			if (ignoring(module.getInfo())) {
+				//System.out.println("ModuleFinished: ignoring - "+module.getDelegateObject().getClass());
+				stopIgnoring(module.getInfo());
 				return;
 			}
 			Display<?> display = dispService.getActiveDisplay();
@@ -393,7 +355,7 @@ public class UndoService extends AbstractService {
 				findHistory(display).addUndo(command.getInverseCommand());
 			}
 			InstantiableCommand forwardCommand =
-					new DefaultInstantiableCommand(theClass, evt.getModule().getInputs(), 0);
+					new DefaultInstantiableCommand((CommandInfo<?>)module.getInfo(), module.getInputs(), 0);
 			findHistory(display).addRedo(forwardCommand);
 		}
 	}
@@ -416,29 +378,18 @@ public class UndoService extends AbstractService {
 	
 	// -- private helpers --
 
-	/* tricky attempt 2
-
-	private Object moduleToIgnore;
-
-	private void ignore(Future<?> futureModule) {
-		try { moduleToIgnore = futureModule.get();} catch (Exception e) {}
+	void ignore(InstantiableCommand command) {
+		//System.out.println("Ignore START: "+command.getCommand().getDelegateClassName());
+		modulesToIgnore.put(command.getCommand(), true);
 	}
 	
-	*/
-	
-	// HACK TO GO AWAY SOON
-	void ignore(Class<? extends Command> clss) {
-		classesToIgnore.put(clss, true);
-	}
-	
-	// HACK TO GO AWAY SOON
-	private boolean ignoring(Class<? extends Command> clss) {
-		return classesToIgnore.get(clss) != null;
+	private boolean ignoring(ModuleInfo info) {
+		return modulesToIgnore.get(info) != null;
 	}
 
-	// HACK TO GO AWAY SOON
-	private void stopIgnoring(Class<? extends Command> clss) {
-		classesToIgnore.remove(clss);
+	private void stopIgnoring(ModuleInfo info) {
+		//System.out.println("Ignore END: "+info.getDelegateClassName());
+		modulesToIgnore.remove(info);
 	}
 	
 	private CommandHistory findHistory(Display<?> disp) {

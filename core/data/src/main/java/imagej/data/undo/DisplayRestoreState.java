@@ -39,6 +39,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import imagej.command.Command;
+import imagej.command.CommandInfo;
+import imagej.command.CommandService;
 import imagej.command.InstantiableCommand;
 import imagej.command.InvertibleCommand;
 import imagej.display.Display;
@@ -55,15 +57,21 @@ import imagej.plugin.Plugin;
 @Plugin
 public class DisplayRestoreState implements Command, InvertibleCommand {
 
+	@Parameter
+	private CommandService commandService;
+	
 	@Parameter(type = ItemIO.BOTH)
 	private Display<?> display;
 
 	@Parameter(type = ItemIO.INPUT)
 	private DisplayState state;
 	
+	private CommandInfo<?> inverseCommand;
+	
 	@Override
 	public void run() {
 		display.restoreState(state);
+		inverseCommand = commandService.getCommand(DisplaySaveState.class);
 	}
 
 	@SuppressWarnings("synthetic-access")
@@ -71,8 +79,8 @@ public class DisplayRestoreState implements Command, InvertibleCommand {
 	public InstantiableCommand getInverseCommand() {
 		return new InstantiableCommand() {
 			@Override
-			public Class<? extends Command> getCommand() {
-				return DisplaySaveState.class;
+			public CommandInfo<?> getCommand() {
+				return inverseCommand;
 			}
 
 			@Override

@@ -87,10 +87,7 @@ class CommandHistory {
 		InstantiableCommand command = redoableCommands.removeLast();
 		transitionCommands.add(command);
 		command = undoableCommands.removeLast();
-		/* tricky attempt 2
-		 * ignore(commandService.run(command, inputs));
-		 */
-		undoService.ignore(command.getCommand());
+		undoService.ignore(command);
 		commandService.run(command.getCommand(), command.getInputs());
 	}
 	
@@ -112,9 +109,6 @@ class CommandHistory {
 	}
 	
 	void addUndo(InstantiableCommand command) {
-		/*  tricky attempt to make this code ignore prerecorded commands safely
-		inputs.put(RECORDED_INTERNALLY, RECORDED_INTERNALLY);
-		*/
 		long additionalSpace = MIN_USAGE + command.getMemoryUsage();
 		while (((undoableCommands.size() > 0) || (redoableCommands.size() > 0)) &&
 				(spaceUsed() + additionalSpace > maxMemUsage)) {
@@ -127,9 +121,6 @@ class CommandHistory {
 	}
 	
 	void addRedo(InstantiableCommand command) {
-		/*  tricky attempt to make this code ignore prerecorded commands safely
-		inputs.put(RECORDED_INTERNALLY, RECORDED_INTERNALLY);
-		*/
 		if (transitionCommands.size() > 0) {
 			if (transitionCommands.getLast().getCommand().equals(command.getCommand()) &&
 					transitionCommands.getLast().getInputs().equals(command.getInputs()))

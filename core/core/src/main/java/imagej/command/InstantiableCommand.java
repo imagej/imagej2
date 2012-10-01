@@ -44,7 +44,7 @@ import java.util.Map;
  *
  */
 public interface InstantiableCommand {
-	public Class<? extends Command> getCommand();
+	public CommandInfo<?> getCommand();
 	public Map<String,Object> getInputs();
 	public long getMemoryUsage();
 }
