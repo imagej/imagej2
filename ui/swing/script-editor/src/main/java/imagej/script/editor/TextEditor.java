@@ -122,10 +122,29 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
 
+import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
+import org.fife.ui.rsyntaxtextarea.modes.JavaScriptTokenMaker;
+import org.fife.ui.rsyntaxtextarea.modes.JavaTokenMaker;
 
 public class TextEditor extends JFrame implements ActionListener,
 	       ChangeListener {
+
+	static {
+		try {
+			AbstractTokenMakerFactory factory = (AbstractTokenMakerFactory)TokenMakerFactory.getDefaultInstance();
+			// TODO: these should go to upstream RSyntaxTextArea
+			factory.putMapping("text/matlab", MatlabTokenMaker.class.getName());
+			factory.putMapping("text/ij-macro", ImageJMacroTokenMaker.class.getName());
+			factory.putMapping("text/ecmascript", JavaScriptTokenMaker.class.getName());
+			factory.putMapping("text/beanshell", JavaTokenMaker.class.getName());
+		} catch (ClassCastException t) {
+			// ignore for now, but log it to stderr
+			t.printStackTrace();
+		}
+	}
+
 	protected JTabbedPane tabbed;
 	protected JMenuItem newFile, open, save, saveas, compileAndRun, compile, close,
 		  undo, redo, cut, copy, paste, find, replace, selectAll,

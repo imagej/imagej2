@@ -367,22 +367,8 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 		}
 		currentLanguage = language;
 
-		// TODO: these should go to upstream RSyntaxTextArea
-		try {
-			if (languageName.equals("Matlab"))
-				getRSyntaxDocument()
-					.setSyntaxStyle(new MatlabTokenMaker());
-			else if (languageName.equals("IJ Macro"))
-				getRSyntaxDocument()
-					.setSyntaxStyle(new ImageJMacroTokenMaker());
-			else {
-				final String styleName = "text/" + languageName.toLowerCase().replace(' ', '-');
-				setSyntaxEditingStyle(styleName);
-			}
-		}
-		catch (NullPointerException e) {
-			// ignore; this sometimes happens in the TokenMaker...
-		}
+		final String styleName = "text/" + languageName.toLowerCase().replace(' ', '-');
+		setSyntaxEditingStyle(styleName);
 
 		frame.setTitle();
 		frame.updateLanguageMenu(language);
