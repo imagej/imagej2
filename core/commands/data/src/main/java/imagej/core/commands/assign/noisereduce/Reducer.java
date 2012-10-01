@@ -110,10 +110,12 @@ public class Reducer<U extends RealType<U>,V extends RealType<V>>
 	// -- private interface --
 	
 	private void notifyUserAtStart(String neighDescrip) {
-		statusService.showStatus(neighDescrip + " ... beginning processing");
+		if (statusService != null)
+			statusService.showStatus(neighDescrip + " ... beginning processing");
 	}
 	
 	private void notifyUserAtEnd(String neighDescrip) {
-		statusService.showStatus(neighDescrip + " ... completed processing");
+		if (statusService != null)
+			statusService.showStatus(neighDescrip + " ... completed processing");
 	}
 }
