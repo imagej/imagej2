@@ -88,7 +88,7 @@ class CommandHistory {
 		InstantiableCommand command = redoableCommands.removeLast();
 		transitionCommands.add(command);
 		command = undoableCommands.removeLast();
-		undoService.ignore(command);
+		undoService.ignore(command.getCommand());
 		commandService.run(command.getCommand(), command.getInputs());
 	}
 	
