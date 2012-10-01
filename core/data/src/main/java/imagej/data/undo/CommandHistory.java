@@ -35,12 +35,13 @@
 
 package imagej.data.undo;
 
+import imagej.command.CommandInfo;
 import imagej.command.CommandService;
 import imagej.command.InstantiableCommand;
 
 import java.awt.Toolkit;
 import java.util.LinkedList;
-
+import java.util.Map;
 
 /**
  * Package access class used internally by UndoService to record and undo
@@ -121,9 +122,11 @@ class CommandHistory {
 	}
 	
 	void addRedo(InstantiableCommand command) {
+		CommandInfo<?> info = command.getCommand();
+		Map<String, Object> input = command.getInputs();
 		if (transitionCommands.size() > 0) {
-			if (transitionCommands.getLast().getCommand().equals(command.getCommand()) &&
-					transitionCommands.getLast().getInputs().equals(command.getInputs()))
+			if (transitionCommands.getLast().getCommand().equals(info) &&
+					transitionCommands.getLast().getInputs().equals(input))
 			{
 				transitionCommands.removeLast();
 			}
