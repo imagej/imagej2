@@ -216,7 +216,8 @@ public class ObjectIndexTest {
 		objectIndex.add(new Float(2.5f));
 		objectIndex.add(new Integer(3));
 		final String[] expected =
-			{ "java.io.Serializable: {5, 2.5, 3}",
+			{ "imagej.object.ObjectIndex$All: {5, 2.5, 3}",
+				"java.io.Serializable: {5, 2.5, 3}",
 				"java.lang.Comparable: {5, 2.5, 3}", "java.lang.Float: {2.5}",
 				"java.lang.Integer: {5, 3}", "java.lang.Number: {5, 2.5, 3}",
 				"java.lang.Object: {5, 2.5, 3}" };
