@@ -52,6 +52,7 @@ import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
+// NOTE - this plugin unused as of 10-1-12. May prove useful in future.
 
 /**
  * 
