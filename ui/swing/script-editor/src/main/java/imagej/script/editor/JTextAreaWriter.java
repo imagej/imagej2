@@ -71,6 +71,10 @@ public class JTextAreaWriter extends Writer {
 		}, 10, 400, TimeUnit.MILLISECONDS);
 	}
 
+	public void print(String line) {
+		write(line + "\n");
+	}
+
 	@Override
 	public void write(final int i) {
 		write(Character.toString((char) i));
