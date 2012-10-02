@@ -227,7 +227,7 @@ public final class Colors {
 
 	/**
 	 * Gets the preset color with the given name. For example,
-	 * <code>Colors.get("red")</code> will return {@link Colors#RED}.
+	 * {@code Colors.get("red")} will return {@link Colors#RED}.
 	 */
 	public static ColorRGB getColor(final String name) {
 		return COLORS.get(name);

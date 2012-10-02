@@ -62,9 +62,9 @@ import java.util.Map;
  * A tree representing a menu structure independent of any particular user
  * interface.
  * <p>
- * A <code>ShadowMenu</code> is a tree node with links to other tree nodes. It
- * is possible to traverse the entire menu structure from any given node, though
- * by convention the root node is used to represent the menu as a whole.
+ * A {@code ShadowMenu} is a tree node with links to other tree nodes. It is
+ * possible to traverse the entire menu structure from any given node, though by
+ * convention the root node is used to represent the menu as a whole.
  * </p>
  * <p>
  * The class is implemented as a {@link Collection} of modules (i.e.,

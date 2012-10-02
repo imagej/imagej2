@@ -91,9 +91,9 @@ public class InvokeCommandTest implements Command {
 	}
 
 	/**
-	 * Invokes the <code>NewImage</code> command using the {@link CommandService}
-	 * with a list of arguments. This approach is very flexible and compact, but
-	 * the compiler cannot guarantee the correctness of the input types.
+	 * Invokes the {@code NewImage} command using the {@link CommandService} with
+	 * a list of arguments. This approach is very flexible and compact, but the
+	 * compiler cannot guarantee the correctness of the input types.
 	 */
 	public Dataset invokeWithArgs() {
 		final Future<Module> future =
@@ -105,8 +105,8 @@ public class InvokeCommandTest implements Command {
 	}
 
 	/**
-	 * Invokes the <code>NewImage</code> command using the {@link CommandService}
-	 * with arguments in a {@link Map}.
+	 * Invokes the {@code NewImage} command using the {@link CommandService} with
+	 * arguments in a {@link Map}.
 	 * <p>
 	 * This approach is extremely flexible, but the compiler cannot guarantee the
 	 * correctness of the input types.
@@ -128,7 +128,7 @@ public class InvokeCommandTest implements Command {
 	}
 
 	/**
-	 * Directly invokes the <code>NewImage</code> command using its Java API.
+	 * Directly invokes the {@code NewImage} command using its Java API.
 	 * <p>
 	 * This approach is fully compile-time safe, but only commands that expose
 	 * their Java API can be invoked in this way. Note that no pre- or

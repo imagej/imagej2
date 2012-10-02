@@ -51,9 +51,9 @@ import javax.swing.JPopupMenu;
  * not share a common interface for operations such as {@link JMenu#add}.
  * </p>
  * <p>
- * This class is called <code>SwingJPopupMenuCreator</code> rather than simply
- * <code>JPopupMenuCreator</code> for consistency with other UI implementations
- * such as <code>imagej.ui.awt.menu.AWTMenuCreator</code>.
+ * This class is called {@code SwingJPopupMenuCreator} rather than simply
+ * {@code JPopupMenuCreator} for consistency with other UI implementations
+ * such as {@code imagej.ui.awt.menu.AWTPopupMenuCreator}.
  * </p>
  * 
  * @author Curtis Rueden

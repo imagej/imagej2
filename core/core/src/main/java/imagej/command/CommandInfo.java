@@ -62,9 +62,9 @@ import java.util.Map;
 /**
  * A collection of metadata about a particular {@link Command}.
  * <p>
- * Unlike its more general superclass {@link PluginInfo}, a
- * <code>CommandInfo</code> implements {@link ModuleInfo}, allowing it to
- * describe and instantiate the command in {@link Module} form.
+ * Unlike its more general superclass {@link PluginInfo}, a {@code CommandInfo}
+ * implements {@link ModuleInfo}, allowing it to describe and instantiate the
+ * command in {@link Module} form.
  * </p>
  * 
  * @author Curtis Rueden

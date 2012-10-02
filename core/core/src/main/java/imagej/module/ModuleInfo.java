@@ -67,19 +67,19 @@ public interface ModuleInfo extends UIDetails {
 	/**
 	 * Gets the fully qualified name of the class containing the module's actual
 	 * implementation. By definition, this is the same value returned by
-	 * <code>createModule().getDelegateObject().getClass().getName()</code>, and
-	 * hence is also the class containing any callback methods specified by
+	 * {@code createModule().getDelegateObject().getClass().getName()}, and hence
+	 * is also the class containing any callback methods specified by
 	 * {@link ModuleItem#getCallback()}.
 	 * <p>
 	 * The nature of this method is implementation-specific; for example, a
-	 * <code>CommandModule</code> will return the class name of its associated
-	 * <code>Command</code>. For modules that are not commands, the result may be
+	 * {@code CommandModule} will return the class name of its associated
+	 * {@code Command}. For modules that are not commands, the result may be
 	 * something else.
 	 * </p>
 	 * <p>
 	 * If you are implementing this interface directly, a good rule of thumb is to
 	 * return the class name of the associated {@link Module} (i.e., the same
-	 * value given by <code>createModule().getClass().getName()</code>).
+	 * value given by {@code createModule().getClass().getName()}).
 	 * </p>
 	 */
 	String getDelegateClassName();

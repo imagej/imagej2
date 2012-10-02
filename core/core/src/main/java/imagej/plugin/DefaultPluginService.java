@@ -269,10 +269,10 @@ public class DefaultPluginService extends AbstractService implements
 
 	/**
 	 * Gets the plugin type of the given plugin class, as declared by its
-	 * <code>@Plugin</code> annotation (i.e., @{link Plugin#type()}).
+	 * {@code @Plugin} annotation (i.e., {@link Plugin#type()}).
 	 * 
 	 * @param pluginClass The plugin class whose plugin type is needed.
-	 * @return The plugin type, or null if no @{link Plugin} annotation exists for
+	 * @return The plugin type, or null if no {@link Plugin} annotation exists for
 	 *         the given class.
 	 */
 	public static <T extends ImageJPlugin, P extends T> Class<T> getPluginType(
