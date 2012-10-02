@@ -530,9 +530,9 @@ public final class ClassUtils {
 	 */
 	public static int compare(final Class<?> c1, final Class<?> c2) {
 		if (c1 == c2) return 0;
-		final String name1 = c1.getName();
-		final String name2 = c2.getName();
-		return name1.compareTo(name2);
+		final String name1 = c1 == null ? null : c1.getName();
+		final String name2 = c2 == null ? null : c2.getName();
+		return MiscUtils.compare(name1, name2);
 	}
 
 }

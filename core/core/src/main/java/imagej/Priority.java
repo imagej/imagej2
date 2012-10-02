@@ -102,8 +102,10 @@ public final class Priority {
 	 * @see imagej.util.ClassUtils#compare(Class, Class)
 	 */
 	public static int compare(final Prioritized p1, final Prioritized p2) {
-		final double priority1 = p1.getPriority();
-		final double priority2 = p2.getPriority();
+		final double priority1 =
+			p1 == null ? Double.NEGATIVE_INFINITY : p1.getPriority();
+		final double priority2 =
+			p2 == null ? Double.NEGATIVE_INFINITY : p2.getPriority();
 		if (priority1 == priority2) return 0;
 		// NB: We invert the ordering here, so that large values come first,
 		// rather than the typical natural ordering of smaller values first.
