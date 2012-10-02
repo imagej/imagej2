@@ -73,18 +73,25 @@ public class MethodRef {
 		final Class<?>... params)
 	{
 		if (methodName == null || methodName.isEmpty()) return null;
-		final Class<?> c = ClassUtils.loadClass(className);
-		if (c == null) return null;
-		try {
-			// TODO - support inherited methods
-			final Method m = c.getDeclaredMethod(methodName, params);
-			m.setAccessible(true);
-			return m;
+		Class<?> baseClass = ClassUtils.loadClass(className);
+		for (Class<?> c = baseClass; c != null; c = c.getSuperclass())
+		{
+			try {
+				// TODO - support inherited methods
+				final Method m = c.getDeclaredMethod(methodName, params);
+				m.setAccessible(true);
+				return m;
+			}
+			catch (final NoSuchMethodException e) {
+				// ... continue to loop into super class methods
+			}
+			catch (final Exception e) {
+				break;
+			}
 		}
-		catch (final Exception e) {
-			// NB: Multiple types of exceptions; simpler to handle them all the same.
-			Log.warn("Cannot find method: " + makeLabel(c.getName(), methodName), e);
-		}
+		// NB: Multiple types of exceptions; simpler to handle them all the same.
+		Log.warn("Cannot find suitable method: " +
+				makeLabel(baseClass.getName(), methodName));
 		return null;
 	}
 
