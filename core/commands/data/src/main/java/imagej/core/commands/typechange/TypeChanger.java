@@ -36,8 +36,10 @@
 package imagej.core.commands.typechange;
 
 import imagej.command.Command;
+import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.menu.MenuService;
+import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import net.imglib2.Cursor;
@@ -66,22 +68,67 @@ import net.imglib2.type.numeric.real.DoubleType;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public abstract class TypeChanger implements Command {
+public abstract class TypeChanger extends DynamicCommand implements Command {
 
+	// -- constants --
+	
+	private static final String FIELDNAME = "MakeComposite";
+	
+	// -- Parameters --
+	
 	@Parameter
 	private MenuService menuService;
 
-	@Parameter(label = "Combine channels")
-	private boolean makeGrayscale = false;
-	
-	@Parameter(type = ItemIO.BOTH)
+	//@Parameter(type = ItemIO.BOTH)
+	@Parameter(type = ItemIO.BOTH, initializer = "maybeAddInput")
 	private Dataset data;
 
+	//@Parameter(visibility=ItemVisibility.INVISIBLE, label = "Combine channels",
+	//		description = "Combine all channels into one channel by averaging",
+	//		initializer = "maybeReveal")
+	//private boolean makeCompositeGrayscale = false;
+
+	// -- protected methods --
+	
+	//protected void maybeReveal() {
+	//	int axisIndex = data.getAxisIndex(Axes.CHANNEL);
+	//	if (axisIndex < 0) return;
+	//	DefaultModuleItem<Boolean> input =
+	//		(DefaultModuleItem<Boolean>) getInput("makeCompositeGrayscale");
+	//	input.setVisibility(ItemVisibility.NORMAL);
+	//}
+	
+	protected void maybeAddInput() {
+		int axisIndex = data.getAxisIndex(Axes.CHANNEL);
+		if (axisIndex < 0) return;
+		DefaultModuleItem<Boolean> booleanItem =
+				new DefaultModuleItem<Boolean>(getInfo(), FIELDNAME, Boolean.class);
+		booleanItem.setLabel("Combine channels");
+		booleanItem.setDescription(
+				"Combine all channels into one channel by averaging");
+		booleanItem.setValue(this, Boolean.FALSE);
+		// TODO - remove this next call?
+		//booleanItem.loadValue();
+		addInput(booleanItem);
+	}
+	
 	protected <T extends RealType<T>> void changeType(final T newType) {
-		changeType(data, newType, makeGrayscale);
-		menuService.setSelected(this, true);
+		@SuppressWarnings("unchecked")
+		DefaultModuleItem<Boolean> module =
+				//(DefaultModuleItem<Boolean>) getInput("makeCompositeGrayscale");
+				(DefaultModuleItem<Boolean>) getInput(FIELDNAME);
+		boolean compositeMode =
+				(module == null) ? false : module.getValue(this);
+		changeType(data, newType, compositeMode);
+		// TODO
+		//menuService.setSelected(this, true);
+		
+		// TODO do we need to do this?
+		//if (module != null) module.saveValue(something);
 	}
 
+	// -- TypeChanger methods --
+	
 	public void setDataset(Dataset d) {
 		data = d;
 	}
@@ -96,21 +143,21 @@ public abstract class TypeChanger implements Command {
 	 */
 	@SuppressWarnings({"unchecked","rawtypes"})
 	public static <T extends RealType<T>> void changeType(final Dataset dataset,
-		final T newType, boolean makeCompositeGray)
+		final T newType, boolean compositeMode)
 	{
 		// see if input dataset is already typed correctly
 		if (dataset.isRGBMerged()) {
 			// fall through
 		}
 		else if (dataset.getType().getClass() == newType.getClass()) {
-			if (!makeCompositeGray) return;
+			if (!compositeMode) return;
 			int chanIndex = dataset.getAxisIndex(Axes.CHANNEL);
 			if (chanIndex < 0) return;
 		}
 		// if here then a type change of some sort is needed
 		final ImgPlus<? extends RealType<?>> inputImg = dataset.getImgPlus();
 		final ImgPlus<? extends RealType<?>> imgPlus;
-		if (makeCompositeGray) {
+		if (compositeMode) {
 			imgPlus = copyToCompositeGrayscale((ImgPlus) inputImg, newType);
 		}
 		else {
