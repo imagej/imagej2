@@ -73,11 +73,9 @@ public class MethodRef {
 		final Class<?>... params)
 	{
 		if (methodName == null || methodName.isEmpty()) return null;
-		Class<?> baseClass = ClassUtils.loadClass(className);
-		for (Class<?> c = baseClass; c != null; c = c.getSuperclass())
-		{
+		final Class<?> baseClass = ClassUtils.loadClass(className);
+		for (Class<?> c = baseClass; c != null; c = c.getSuperclass()) {
 			try {
-				// TODO - support inherited methods
 				final Method m = c.getDeclaredMethod(methodName, params);
 				m.setAccessible(true);
 				return m;
