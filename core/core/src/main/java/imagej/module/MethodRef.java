@@ -54,7 +54,8 @@ public class MethodRef {
 		final Class<?>... params)
 	{
 		method = findMethod(className, methodName, params);
-		label = method == null ? null : makeLabel(className, methodName);
+		if (method == null) label = null;
+		else label = method.getClass().getName() + "#" + method.getName();
 	}
 
 	public void execute(final Object obj, final Object... args) {
@@ -88,12 +89,8 @@ public class MethodRef {
 			}
 		}
 		// NB: Multiple types of exceptions; simpler to handle them all the same.
-		Log.warn("Cannot find suitable method: " +
-				makeLabel(baseClass.getName(), methodName));
+		Log.warn("Cannot find suitable method: " + className + "#" + methodName);
 		return null;
 	}
 
-	private String makeLabel(final String className, final String methodName) {
-		return className + "#" + methodName;
-	}
 }
