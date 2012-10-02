@@ -35,20 +35,28 @@
 
 package imagej.module;
 
+import imagej.Validated;
+import imagej.ValidityProblem;
 import imagej.util.ClassUtils;
-import imagej.util.Log;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A reference to a {@link Method}, which can be invoked at will.
  * 
  * @author Curtis Rueden
  */
-public class MethodRef {
+public class MethodRef implements Validated {
 
 	private final Method method;
 	private final String label;
+
+	/** List of problems when initializing the method reference. */
+	private final List<ValidityProblem> problems =
+		new ArrayList<ValidityProblem>();
 
 	public MethodRef(final String className, final String methodName,
 		final Class<?>... params)
@@ -60,13 +68,13 @@ public class MethodRef {
 
 	public void execute(final Object obj, final Object... args) {
 		if (method == null) return;
-		Log.debug("Executing method: " + label);
 		try {
 			method.invoke(obj, args);
 		}
 		catch (final Exception e) {
 			// NB: Several types of exceptions; simpler to handle them all the same.
-			Log.warn("Error executing method: " + label, e);
+			final String problem = "Error executing method: " + label;
+			problems.add(new ValidityProblem(problem, e));
 		}
 	}
 
@@ -82,15 +90,28 @@ public class MethodRef {
 				return m;
 			}
 			catch (final NoSuchMethodException e) {
-				// ... continue to loop into super class methods
+				// NB: Continue to loop into super class methods.
 			}
 			catch (final Exception e) {
+				// NB: Multiple types of exceptions; handle them all the same.
 				break;
 			}
 		}
-		// NB: Multiple types of exceptions; simpler to handle them all the same.
-		Log.warn("Cannot find suitable method: " + className + "#" + methodName);
+		final String problem = "Method not found: " + className + "#" + methodName;
+		problems.add(new ValidityProblem(problem));
 		return null;
+	}
+
+	// -- Validated methods --
+
+	@Override
+	public boolean isValid() {
+		return problems.isEmpty();
+	}
+
+	@Override
+	public List<ValidityProblem> getProblems() {
+		return Collections.unmodifiableList(problems);
 	}
 
 }

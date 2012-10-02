@@ -33,40 +33,34 @@
  * #L%
  */
 
-package imagej.plugin;
-
-import imagej.Priority;
-import imagej.ValidityProblem;
-import imagej.module.Module;
-import imagej.module.ModuleInfo;
+package imagej;
 
 /**
- * A preprocessor plugin that verifies module validity. If the module is not
- * valid, the module execution is canceled.
+ * An exception used to record a validity problem with a {@link Validated}
+ * object.
+ * <p>
+ * Unlike most exceptions, {@code ValidityException} is typically not thrown,
+ * but rather only recorded for future reference.
+ * <p>
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PreprocessorPlugin.class,
-	priority = Priority.VERY_HIGH_PRIORITY + 1)
-public class ValidityPreprocessor extends AbstractPreprocessorPlugin {
+public class ValidityProblem extends Exception {
 
-	// -- ModuleProcessor methods --
+	public ValidityProblem() {
+		super();
+	}
 
-	@Override
-	public void process(final Module module) {
-		final ModuleInfo info = module.getInfo();
+	public ValidityProblem(final String s) {
+		super(s);
+	}
 
-		canceled = !info.isValid();
-		if (!canceled) return;
+	public ValidityProblem(final String s, final Throwable cause) {
+		super(s, cause);
+	}
 
-		final StringBuilder sb =
-			new StringBuilder("The module \"" + info.getDelegateClassName() +
-				"\" is invalid:\n");
-		for (final ValidityProblem problem : info.getProblems()) {
-			sb.append("- " + problem.getMessage());
-			sb.append("\n");
-		}
-		cancelReason = sb.toString();
+	public ValidityProblem(final Throwable cause) {
+		super(cause);
 	}
 
 }

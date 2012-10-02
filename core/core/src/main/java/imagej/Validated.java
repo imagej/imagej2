@@ -33,40 +33,30 @@
  * #L%
  */
 
-package imagej.plugin;
+package imagej;
 
-import imagej.Priority;
-import imagej.ValidityProblem;
-import imagej.module.Module;
-import imagej.module.ModuleInfo;
+import java.util.List;
 
 /**
- * A preprocessor plugin that verifies module validity. If the module is not
- * valid, the module execution is canceled.
+ * An object whose validity can be confirmed after initialization. If the object
+ * is deemed invalid, a list of reasons for invalidity can be requested.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PreprocessorPlugin.class,
-	priority = Priority.VERY_HIGH_PRIORITY + 1)
-public class ValidityPreprocessor extends AbstractPreprocessorPlugin {
+public interface Validated {
 
-	// -- ModuleProcessor methods --
+	/**
+	 * Gets whether the object is completely valid (i.e., no problems during
+	 * initialization).
+	 */
+	boolean isValid();
 
-	@Override
-	public void process(final Module module) {
-		final ModuleInfo info = module.getInfo();
-
-		canceled = !info.isValid();
-		if (!canceled) return;
-
-		final StringBuilder sb =
-			new StringBuilder("The module \"" + info.getDelegateClassName() +
-				"\" is invalid:\n");
-		for (final ValidityProblem problem : info.getProblems()) {
-			sb.append("- " + problem.getMessage());
-			sb.append("\n");
-		}
-		cancelReason = sb.toString();
-	}
+	/**
+	 * Gets the list of problems encountered while initializing the object.
+	 * 
+	 * @return The list of problems, or a zero-length list in the case of
+	 *         {@link #isValid()} returning true.
+	 */
+	List<ValidityProblem> getProblems();
 
 }

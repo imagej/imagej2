@@ -36,6 +36,7 @@
 package imagej.module;
 
 import imagej.AbstractUIDetails;
+import imagej.ValidityProblem;
 import imagej.event.EventService;
 import imagej.module.event.ModulesUpdatedEvent;
 
@@ -185,16 +186,6 @@ public class DefaultModuleInfo extends AbstractUIDetails implements ModuleInfo
 		eventService.publish(new ModulesUpdatedEvent(this));
 	}
 
-	@Override
-	public boolean isValid() {
-		return true;
-	}
-
-	@Override
-	public List<String> getProblems() {
-		return null;
-	}
-
 	// -- UIDetails methods --
 
 	@Override
@@ -206,6 +197,18 @@ public class DefaultModuleInfo extends AbstractUIDetails implements ModuleInfo
 		final String className = getDelegateClassName();
 		final int dot = className.lastIndexOf(".");
 		return dot < 0 ? className : className.substring(dot + 1);
+	}
+
+	// -- Validated methods --
+
+	@Override
+	public boolean isValid() {
+		return true;
+	}
+
+	@Override
+	public List<ValidityProblem> getProblems() {
+		return null;
 	}
 
 }
