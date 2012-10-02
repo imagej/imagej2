@@ -37,8 +37,6 @@ package imagej.core.commands.typechange;
 
 import imagej.command.Command;
 import imagej.data.Dataset;
-import imagej.data.display.ColorMode;
-import imagej.data.display.DatasetView;
 import imagej.menu.MenuService;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
@@ -73,14 +71,14 @@ public abstract class TypeChanger implements Command {
 	@Parameter
 	private MenuService menuService;
 
-	@Parameter
-	private DatasetView view;
+	@Parameter(label = "Combine channels")
+	private boolean makeGrayscale = false;
 	
 	@Parameter(type = ItemIO.BOTH)
 	private Dataset data;
 
 	protected <T extends RealType<T>> void changeType(final T newType) {
-		changeType(data, newType, view.getColorMode() == ColorMode.COMPOSITE);
+		changeType(data, newType, makeGrayscale);
 		menuService.setSelected(this, true);
 	}
 
