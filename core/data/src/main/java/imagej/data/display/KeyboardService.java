@@ -36,6 +36,7 @@
 package imagej.data.display;
 
 import imagej.event.EventService;
+import imagej.input.KeyCode;
 import imagej.service.Service;
 
 /**
@@ -56,5 +57,7 @@ public interface KeyboardService extends Service {
 	boolean isMetaDown();
 
 	boolean isShiftDown();
+
+	boolean isKeyDown(KeyCode code);
 
 }
