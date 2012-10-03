@@ -200,7 +200,10 @@ public class StaticSwingUtils {
   }
   // == Diagnostics =======================================================
 
-  private static Point lastFramePosition = new Point(5, 5);
+  private static final int DEFAULT_X = 5;
+  private static final int DEFAULT_Y = 80;
+  
+  private static Point lastFramePosition = new Point(DEFAULT_X, DEFAULT_Y);
 
   public static void locateCenter(java.awt.Container component) {
     int w = component.getWidth();
@@ -245,8 +248,8 @@ public class StaticSwingUtils {
     lastFramePosition.x = lastFramePosition.x + 16;
     lastFramePosition.y = lastFramePosition.y + 16;
     if (lastFramePosition.x > 200) {
-      lastFramePosition.x = 5;
-      lastFramePosition.y = 5;
+      lastFramePosition.x = DEFAULT_X;
+      lastFramePosition.y = DEFAULT_Y;
     }
     return lastFramePosition;
   }
