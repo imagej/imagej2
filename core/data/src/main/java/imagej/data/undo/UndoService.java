@@ -149,7 +149,7 @@ public class UndoService extends AbstractService {
 	private DisplayService dispService;
 	
 	@Parameter
-	private CommandService commandService;
+	private CommandService cmndService;
 	
 	@Parameter
 	private EventService eventService;
@@ -299,14 +299,18 @@ public class UndoService extends AbstractService {
 		target.update();
 	}
 	
+	/**
+	 * Creates a command that can be run later which will restore a display to its
+	 * current state.
+	 */
 	public InstantiableCommand createFullRestoreCommand(Display<?> display) {
 		DisplayState state = display.captureState();
 		HashMap<String,Object> inputs = new HashMap<String, Object>();
 		inputs.put("display", display);
 		inputs.put("state", state);
-		return new DefaultInstantiableCommand(
-			commandService.getCommand(
-				DisplayRestoreState.class), inputs, state.getMemoryUsage());
+		long memUsage = state.getMemoryUsage();
+		CommandInfo<?> command = cmndService.getCommand(DisplayRestoreState.class);
+		return new DefaultInstantiableCommand(command, inputs, memUsage);
 	}
 
 	// -- protected event handlers --
@@ -389,7 +393,7 @@ public class UndoService extends AbstractService {
 	private CommandHistory findHistory(Display<?> disp) {
 		CommandHistory h = histories.get(disp);
 		if (h == null) {
-			h = new CommandHistory(this, commandService, MAX_BYTES);
+			h = new CommandHistory(this, cmndService, MAX_BYTES);
 			histories.put(disp, h);
 		}
 		return h;
