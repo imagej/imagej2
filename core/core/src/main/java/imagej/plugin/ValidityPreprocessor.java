@@ -36,6 +36,7 @@
 package imagej.plugin;
 
 import imagej.Priority;
+import imagej.ValidityProblem;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
 
@@ -61,8 +62,8 @@ public class ValidityPreprocessor extends AbstractPreprocessorPlugin {
 		final StringBuilder sb =
 			new StringBuilder("The module \"" + info.getDelegateClassName() +
 				"\" is invalid:\n");
-		for (final String problem : info.getProblems()) {
-			sb.append("- " + problem);
+		for (final ValidityProblem problem : info.getProblems()) {
+			sb.append("- " + problem.getMessage());
 			sb.append("\n");
 		}
 		cancelReason = sb.toString();

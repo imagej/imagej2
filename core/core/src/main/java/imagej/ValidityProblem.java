@@ -33,32 +33,34 @@
  * #L%
  */
 
-package imagej.core.commands.typechange;
-
-import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Plugin;
-import net.imglib2.type.numeric.integer.LongType;
+package imagej;
 
 /**
- * Changes an input Dataset's underlying ImgLib data to be of 64-bit signed
- * type.
+ * An exception used to record a validity problem with a {@link Validated}
+ * object.
+ * <p>
+ * Unlike most exceptions, {@code ValidityException} is typically not thrown,
+ * but rather only recorded for future reference.
+ * <p>
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-@Plugin(type = TypeChanger.class, selectable = true,
-	selectionGroup = "typechange", menu = {
-		@Menu(label = MenuConstants.IMAGE_LABEL,
-			weight = MenuConstants.IMAGE_WEIGHT,
-			mnemonic = MenuConstants.IMAGE_MNEMONIC),
-		@Menu(label = "Type", mnemonic = 't'),
-		@Menu(label = "Signed 64-bit", weight = 211) }, headless = true,
-		initializer = "maybeAddChannelInput")
-public class ChangeToINT64 extends TypeChanger {
+public class ValidityProblem extends Exception {
 
-	@Override
-	public void run() {
-		changeType(new LongType());
+	public ValidityProblem() {
+		super();
+	}
+
+	public ValidityProblem(final String s) {
+		super(s);
+	}
+
+	public ValidityProblem(final String s, final Throwable cause) {
+		super(s, cause);
+	}
+
+	public ValidityProblem(final Throwable cause) {
+		super(cause);
 	}
 
 }

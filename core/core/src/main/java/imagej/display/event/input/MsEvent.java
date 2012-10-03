@@ -41,8 +41,8 @@ import imagej.input.InputModifiers;
 /**
  * An event indicating mouse activity in a display.
  * <p>
- * It is named <code>MsEvent</code> rather than <code>MouseEvent</code> to avoid
- * name clashes with the {@link java.awt.event.MouseEvent} hierarchy.
+ * It is named {@code MsEvent} rather than {@code MouseEvent} to avoid name
+ * clashes with the {@link java.awt.event.MouseEvent} hierarchy.
  * </p>
  * 
  * @author Curtis Rueden

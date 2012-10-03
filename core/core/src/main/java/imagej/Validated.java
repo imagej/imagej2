@@ -33,32 +33,30 @@
  * #L%
  */
 
-package imagej.core.commands.typechange;
+package imagej;
 
-import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Plugin;
-import net.imglib2.type.numeric.integer.LongType;
+import java.util.List;
 
 /**
- * Changes an input Dataset's underlying ImgLib data to be of 64-bit signed
- * type.
+ * An object whose validity can be confirmed after initialization. If the object
+ * is deemed invalid, a list of reasons for invalidity can be requested.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-@Plugin(type = TypeChanger.class, selectable = true,
-	selectionGroup = "typechange", menu = {
-		@Menu(label = MenuConstants.IMAGE_LABEL,
-			weight = MenuConstants.IMAGE_WEIGHT,
-			mnemonic = MenuConstants.IMAGE_MNEMONIC),
-		@Menu(label = "Type", mnemonic = 't'),
-		@Menu(label = "Signed 64-bit", weight = 211) }, headless = true,
-		initializer = "maybeAddChannelInput")
-public class ChangeToINT64 extends TypeChanger {
+public interface Validated {
 
-	@Override
-	public void run() {
-		changeType(new LongType());
-	}
+	/**
+	 * Gets whether the object is completely valid (i.e., no problems during
+	 * initialization).
+	 */
+	boolean isValid();
+
+	/**
+	 * Gets the list of problems encountered while initializing the object.
+	 * 
+	 * @return The list of problems, or a zero-length list in the case of
+	 *         {@link #isValid()} returning true.
+	 */
+	List<ValidityProblem> getProblems();
 
 }

@@ -37,6 +37,7 @@ package imagej.command;
 
 import imagej.InstantiableException;
 import imagej.Previewable;
+import imagej.ValidityProblem;
 import imagej.event.EventService;
 import imagej.module.ItemVisibility;
 import imagej.module.Module;
@@ -48,7 +49,6 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginInfo;
 import imagej.util.ClassUtils;
-import imagej.util.Log;
 import imagej.util.StringMaker;
 
 import java.lang.reflect.Field;
@@ -62,9 +62,9 @@ import java.util.Map;
 /**
  * A collection of metadata about a particular {@link Command}.
  * <p>
- * Unlike its more general superclass {@link PluginInfo}, a
- * <code>CommandInfo</code> implements {@link ModuleInfo}, allowing it to
- * describe and instantiate the command in {@link Module} form.
+ * Unlike its more general superclass {@link PluginInfo}, a {@code CommandInfo}
+ * implements {@link ModuleInfo}, allowing it to describe and instantiate the
+ * command in {@link Module} form.
  * </p>
  * 
  * @author Curtis Rueden
@@ -92,7 +92,8 @@ public class CommandInfo<C extends Command> extends PluginInfo<C> implements
 	private boolean paramsParsed;
 
 	/** List of problems detected when parsing command parameters. */
-	private final List<String> paramErrors = new ArrayList<String>();
+	private final List<ValidityProblem> problems =
+		new ArrayList<ValidityProblem>();
 
 	/** Table of inputs, keyed on name. */
 	private final Map<String, ModuleItem<?>> inputMap =
@@ -240,17 +241,6 @@ public class CommandInfo<C extends Command> extends PluginInfo<C> implements
 		eventService.publish(new ModulesUpdatedEvent(this));
 	}
 
-	@Override
-	public boolean isValid() {
-		parseParams();
-		return paramErrors.isEmpty();
-	}
-
-	@Override
-	public List<String> getProblems() {
-		return isValid() ? null : Collections.unmodifiableList(paramErrors);
-	}
-
 	// -- UIDetails methods --
 
 	@Override
@@ -262,6 +252,20 @@ public class CommandInfo<C extends Command> extends PluginInfo<C> implements
 		final String className = getDelegateClassName();
 		final int dot = className.lastIndexOf(".");
 		return dot < 0 ? className : className.substring(dot + 1);
+	}
+
+	// -- Validated methods --
+
+	@Override
+	public boolean isValid() {
+		parseParams();
+		return problems.isEmpty();
+	}
+
+	@Override
+	public List<ValidityProblem> getProblems() {
+		parseParams();
+		return Collections.unmodifiableList(problems);
 	}
 
 	// -- Helper methods --
@@ -294,8 +298,7 @@ public class CommandInfo<C extends Command> extends PluginInfo<C> implements
 			if (isFinal && !isMessage) {
 				// NB: Final parameters are bad because they cannot be modified.
 				final String error = "Invalid final parameter: " + f;
-				paramErrors.add(error);
-				Log.error(error);
+				problems.add(new ValidityProblem(error));
 				valid = false;
 			}
 
@@ -303,8 +306,7 @@ public class CommandInfo<C extends Command> extends PluginInfo<C> implements
 			if (inputMap.containsKey(name) || outputMap.containsKey(name)) {
 				// NB: Shadowed parameters are bad because they are ambiguous.
 				final String error = "Invalid duplicate parameter: " + f;
-				paramErrors.add(error);
-				Log.error(error);
+				problems.add(new ValidityProblem(error));
 				valid = false;
 			}
 
@@ -334,7 +336,9 @@ public class CommandInfo<C extends Command> extends PluginInfo<C> implements
 			return loadClass();
 		}
 		catch (final InstantiableException e) {
-			Log.error("Could not initialize command class: " + getClassName(), e);
+			final String error =
+				"Could not initialize command class: " + getClassName();
+			problems.add(new ValidityProblem(error, e));
 		}
 		return null;
 	}

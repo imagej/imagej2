@@ -96,14 +96,16 @@ public final class Priority {
 	 * ordering consistent with equals is always required.
 	 * </p>
 	 * 
-	 * @return -1 if <code>p1</code>'s priority is higher than <code>p2</code>'s,
-	 *         1 if <code>p2</code>'s priority is higher than <code>p1</code>'s,
-	 *         or 0 if they have the same priority.
+	 * @return -1 if {@code p1}'s priority is higher than {@code p2}'s, 1 if
+	 *         {@code p2}'s priority is higher than {@code p1}'s, or 0 if they
+	 *         have the same priority.
 	 * @see imagej.util.ClassUtils#compare(Class, Class)
 	 */
 	public static int compare(final Prioritized p1, final Prioritized p2) {
-		final double priority1 = p1.getPriority();
-		final double priority2 = p2.getPriority();
+		final double priority1 =
+			p1 == null ? Double.NEGATIVE_INFINITY : p1.getPriority();
+		final double priority2 =
+			p2 == null ? Double.NEGATIVE_INFINITY : p2.getPriority();
 		if (priority1 == priority2) return 0;
 		// NB: We invert the ordering here, so that large values come first,
 		// rather than the typical natural ordering of smaller values first.

@@ -55,9 +55,9 @@ import imagej.plugin.PluginInfo;
  * input (e.g., keyboard and mouse events) to display and data manipulation in a
  * coherent way.
  * <p>
- * For example, a <code>PanTool</code> might pan a display when the mouse is
- * dragged or arrow key is pressed, while a <code>PencilTool</code> could draw
- * hard lines on the data within a display.
+ * For example, a {@code PanTool} might pan a display when the mouse is dragged
+ * or arrow key is pressed, while a {@code PencilTool} could draw hard lines on
+ * the data within a display.
  * </p>
  * <p>
  * Tools discoverable at runtime must implement this interface and be annotated

@@ -217,9 +217,10 @@ public class ImageJ {
 	}
 
 	/**
-	 * Gets the version of the application.
+	 * Gets the version of the application. ImageJ conforms to the <a
+	 * href="http://semver.org/">Semantic Versioning</a> specification.
 	 * 
-	 * @return The application version, in <code>major.minor.micro</code> format.
+	 * @return The application version, in {@code major.minor.micro} format.
 	 */
 	public String getVersion() {
 		return pom.getVersion();

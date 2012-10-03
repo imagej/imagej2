@@ -36,11 +36,9 @@
 package imagej.module;
 
 import imagej.UIDetails;
-import imagej.command.CommandInfo;
+import imagej.Validated;
 import imagej.event.EventService;
 import imagej.module.event.ModulesUpdatedEvent;
-
-import java.util.List;
 
 /**
  * A ModuleInfo object encapsulates metadata about a particular {@link Module}
@@ -50,7 +48,7 @@ import java.util.List;
  * @author Aivar Grislis
  * @author Curtis Rueden
  */
-public interface ModuleInfo extends UIDetails {
+public interface ModuleInfo extends UIDetails, Validated {
 
 	/** Gets the input item with the given name. */
 	ModuleItem<?> getInput(String name);
@@ -67,19 +65,19 @@ public interface ModuleInfo extends UIDetails {
 	/**
 	 * Gets the fully qualified name of the class containing the module's actual
 	 * implementation. By definition, this is the same value returned by
-	 * <code>createModule().getDelegateObject().getClass().getName()</code>, and
-	 * hence is also the class containing any callback methods specified by
+	 * {@code createModule().getDelegateObject().getClass().getName()}, and hence
+	 * is also the class containing any callback methods specified by
 	 * {@link ModuleItem#getCallback()}.
 	 * <p>
 	 * The nature of this method is implementation-specific; for example, a
-	 * <code>CommandModule</code> will return the class name of its associated
-	 * <code>Command</code>. For modules that are not commands, the result may be
+	 * {@code CommandModule} will return the class name of its associated
+	 * {@code Command}. For modules that are not commands, the result may be
 	 * something else.
 	 * </p>
 	 * <p>
 	 * If you are implementing this interface directly, a good rule of thumb is to
 	 * return the class name of the associated {@link Module} (i.e., the same
-	 * value given by <code>createModule().getClass().getName()</code>).
+	 * value given by {@code createModule().getClass().getName()}).
 	 * </p>
 	 */
 	String getDelegateClassName();
@@ -126,25 +124,5 @@ public interface ModuleInfo extends UIDetails {
 	 * </p>
 	 */
 	void update(EventService eventService);
-
-	/**
-	 * Gets whether the module info is completely valid.
-	 * <p>
-	 * In most cases, this method will return true. But this mechanism exists in
-	 * case of programmatically generated module infos whose input data comes from
-	 * an untrusted source.
-	 * </p>
-	 * 
-	 * @see CommandInfo#isValid()
-	 */
-	boolean isValid();
-
-	/**
-	 * Gets the list of problems encountered while initializing the module info.
-	 * 
-	 * @return The list of problems, or a zero-length list in the case of
-	 *         {@link #isValid()} returning true.
-	 */
-	List<String> getProblems();
 
 }

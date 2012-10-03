@@ -106,7 +106,7 @@ public interface PluginService extends Service {
 	 * Gets the list of plugins of the given class.
 	 * <p>
 	 * Most classes will have only a single match, but some special classes (such
-	 * as <code>imagej.legacy.LegacyCommand</code>) may match many entries.
+	 * as {@code imagej.legacy.LegacyCommand}) may match many entries.
 	 * </p>
 	 */
 	<P extends ImageJPlugin> List<PluginInfo<P>> getPluginsOfClass(
@@ -116,7 +116,7 @@ public interface PluginService extends Service {
 	 * Gets the list of plugins with the given class name.
 	 * <p>
 	 * Most classes will have only a single match, but some special classes (such
-	 * as <code>imagej.legacy.LegacyCommand</code>) may match many entries.
+	 * as {@code imagej.legacy.LegacyCommand}) may match many entries.
 	 * </p>
 	 */
 	List<PluginInfo<ImageJPlugin>> getPluginsOfClass(String className);
