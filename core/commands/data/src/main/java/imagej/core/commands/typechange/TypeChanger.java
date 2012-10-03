@@ -35,10 +35,8 @@
 
 package imagej.core.commands.typechange;
 
-import imagej.command.Command;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
-import imagej.menu.MenuService;
 import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
@@ -68,7 +66,7 @@ import net.imglib2.type.numeric.real.DoubleType;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public abstract class TypeChanger extends DynamicCommand implements Command {
+public abstract class TypeChanger extends DynamicCommand {
 
 	// -- constants --
 	
@@ -76,55 +74,33 @@ public abstract class TypeChanger extends DynamicCommand implements Command {
 	
 	// -- Parameters --
 	
-	@Parameter
-	private MenuService menuService;
+	// TODO
+	//@Parameter
+	//private MenuService menuService;
 
-	//@Parameter(type = ItemIO.BOTH)
-	@Parameter(type = ItemIO.BOTH, initializer = "maybeAddInput")
+	@Parameter(type = ItemIO.BOTH)
 	private Dataset data;
-
-	//@Parameter(visibility=ItemVisibility.INVISIBLE, label = "Combine channels",
-	//		description = "Combine all channels into one channel by averaging",
-	//		initializer = "maybeReveal")
-	//private boolean makeCompositeGrayscale = false;
 
 	// -- protected methods --
 	
-	//protected void maybeReveal() {
-	//	int axisIndex = data.getAxisIndex(Axes.CHANNEL);
-	//	if (axisIndex < 0) return;
-	//	DefaultModuleItem<Boolean> input =
-	//		(DefaultModuleItem<Boolean>) getInput("makeCompositeGrayscale");
-	//	input.setVisibility(ItemVisibility.NORMAL);
-	//}
-	
-	protected void maybeAddInput() {
+	protected void maybeAddChannelInput() {
 		int axisIndex = data.getAxisIndex(Axes.CHANNEL);
 		if (axisIndex < 0) return;
 		DefaultModuleItem<Boolean> booleanItem =
-				new DefaultModuleItem<Boolean>(getInfo(), FIELDNAME, Boolean.class);
+				new DefaultModuleItem<Boolean>(this, FIELDNAME, Boolean.class);
 		booleanItem.setLabel("Combine channels");
 		booleanItem.setDescription(
 				"Combine all channels into one channel by averaging");
 		booleanItem.setValue(this, Boolean.FALSE);
-		// TODO - remove this next call?
-		//booleanItem.loadValue();
 		addInput(booleanItem);
 	}
 	
 	protected <T extends RealType<T>> void changeType(final T newType) {
-		@SuppressWarnings("unchecked")
-		DefaultModuleItem<Boolean> module =
-				//(DefaultModuleItem<Boolean>) getInput("makeCompositeGrayscale");
-				(DefaultModuleItem<Boolean>) getInput(FIELDNAME);
-		boolean compositeMode =
-				(module == null) ? false : module.getValue(this);
+		Boolean b = (Boolean) getInput(FIELDNAME);
+		boolean compositeMode = (b == null) ? false : b;
 		changeType(data, newType, compositeMode);
 		// TODO
 		//menuService.setSelected(this, true);
-		
-		// TODO do we need to do this?
-		//if (module != null) module.saveValue(something);
 	}
 
 	// -- TypeChanger methods --
