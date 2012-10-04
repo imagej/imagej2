@@ -229,7 +229,18 @@ public final class AppUtils {
 			// NB: The class is a file beneath the Maven build directory
 			// ("target/classes").
 			path = path.substring(0, path.length() - targetClassesSuffix.length());
-			return new File(path);
+
+			File dir = new File(path);
+			if (baseSubdirectory == null) {
+				// NB: There is no hint as to the directory structure.
+				// So we scan up the tree to find the topmost pom.xml file.
+				while (dir.getParentFile() != null &&
+					new File(dir.getParentFile(), "pom.xml").exists())
+				{
+					dir = dir.getParentFile();
+				}
+			}
+			return dir;
 		}
 
 		final Pattern pattern =
