@@ -37,6 +37,7 @@ package imagej.util;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,8 +49,37 @@ import java.util.regex.Pattern;
  */
 public final class AppUtils {
 
+	private static final String mainClass;
+
+	static {
+		// Get the class whose main method launched the application. The heuristic
+		// will fail if the main thread has terminated before this class loads.
+		final Map<Thread, StackTraceElement[]> traceMap =
+			Thread.getAllStackTraces();
+		String className = null;
+		for (final Thread thread : traceMap.keySet()) {
+			if (!"main".equals(thread.getName())) continue;
+			final StackTraceElement[] trace = traceMap.get(thread);
+			if (trace == null || trace.length == 0) continue;
+			final StackTraceElement element = trace[trace.length - 1];
+			className = element.getClassName();
+			break;
+		}
+		mainClass = className;
+	}
+
 	private AppUtils() {
 		// prevent instantiation of utility class
+	}
+
+	/**
+	 * Gets the name of the class whose main method launched the application.
+	 * 
+	 * @return The name of the launching class, or null if the main method
+	 *         terminated before the {@code AppUtils} class was loaded.
+	 */
+	public static String getMainClass() {
+		return mainClass;
 	}
 
 	/**
