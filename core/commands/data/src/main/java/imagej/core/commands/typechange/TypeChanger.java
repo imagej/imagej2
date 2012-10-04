@@ -40,6 +40,7 @@ import imagej.data.Dataset;
 import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
+import imagej.util.Prefs;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
@@ -70,7 +71,7 @@ public abstract class TypeChanger extends DynamicCommand {
 
 	// -- constants --
 	
-	private static final String FIELDNAME = "MakeComposite";
+	private static final String FIELDNAME = "imagej.type.change.make.composite";
 	
 	// -- Parameters --
 	
@@ -91,12 +92,15 @@ public abstract class TypeChanger extends DynamicCommand {
 		booleanItem.setLabel("Combine channels");
 		booleanItem.setDescription(
 				"Combine all channels into one channel by averaging");
-		booleanItem.setValue(this, Boolean.FALSE);
+		booleanItem.setPersisted(false);
+		Boolean val = Prefs.getBoolean(FIELDNAME, Boolean.FALSE);
+		booleanItem.setValue(this, val);
 		addInput(booleanItem);
 	}
 	
 	protected <T extends RealType<T>> void changeType(final T newType) {
 		Boolean b = (Boolean) getInput(FIELDNAME);
+		if (b != null) Prefs.put(FIELDNAME,b);
 		boolean compositeMode = (b == null) ? false : b;
 		changeType(data, newType, compositeMode);
 		// TODO
