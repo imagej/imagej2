@@ -101,14 +101,14 @@ public final class AppUtils {
 			getBaseDirectory(AppUtils.class.getName(), "core/core");
 		if (corePath != null) return corePath;
 
-		// HACK: Look for valid base directory relative to ImageJ launcher class.
-		// We will reach this logic, e.g., if the application is running via
-		// "mvn exec:exec" from the app directory. In that case, most classes
+		// NB: Look for valid base directory relative to the main class which
+		// launched this environment. We will reach this logic, e.g., if the
+		// application is running via "mvn exec:exec". In this case, most classes
 		// (including this one) will be located in JARs in the local Maven
 		// repository cache (~/.m2/repository), so the corePath will be null.
-		// However, the classes of ij-app will be located in app/target/classes,
-		// so we search up the tree from one of those.
-		final File appPath = getBaseDirectory("imagej.Main", "app");
+		// However, the classes of the launching project will be located in
+		// target/classes, so we search up the tree from one of those.
+		final File appPath = getBaseDirectory(getMainClass());
 		if (appPath != null) return appPath;
 
 		// last resort: use current working directory
