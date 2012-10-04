@@ -77,6 +77,8 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 		BevelBorder.RAISED);
 
 	protected final UIService uiService;
+	
+	private final SwingIconService iconService;
 
 	private final Map<String, AbstractButton> toolButtons;
 
@@ -87,6 +89,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 
 	public SwingToolBar(final UIService uiService) {
 		this.uiService = uiService;
+		iconService = uiService.getContext().getService(SwingIconService.class);
 		toolButtons = new HashMap<String, AbstractButton>();
 		populateToolBar();
 		subscribers = uiService.getEventService().subscribe(this);
@@ -109,7 +112,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 			try {
 				final AbstractButton button = createButton(tool, tool == activeTool);
 				toolButtons.put(tool.getInfo().getName(), button);
-
+				iconService.registerButton(tool, button);
 				// add a separator between tools where applicable
 				if (getToolService().isSeparatorNeeded(tool, lastTool)) addSeparator();
 				lastTool = tool;
@@ -120,6 +123,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 				uiService.getLog().warn("Invalid tool: " + tool.getInfo(), e);
 			}
 		}
+		
 	}
 
 	private AbstractButton createButton(final Tool tool, boolean active)
