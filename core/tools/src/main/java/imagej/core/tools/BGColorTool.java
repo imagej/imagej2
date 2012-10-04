@@ -47,18 +47,18 @@ import imagej.util.Colors;
  * @author Barry DeZonia
  *
  */
-@Plugin(type = Tool.class, name = "FG", iconPath = "/icons/tools/blank.png",
-	description = "Shows the foreground color for the current display",
-	priority = -500)
-public class FgColorTool extends AbstractColorTool {
+@Plugin(type = Tool.class, name = "BG", iconPath = "/icons/tools/blankBlack.png",
+	description = "Shows the background color for the current display",
+	priority = -501)
+public class BGColorTool extends AbstractColorTool {
 
 	@Override
 	ColorRGB getOutlineColor() {
-		return Colors.WHITE;
+		return Colors.BLACK;
 	}
 
 	@Override
 	ChannelCollection getChannels(OptionsChannels options) {
-		return options.getFgValues();
+		return options.getBgValues();
 	}
 }
