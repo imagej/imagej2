@@ -69,8 +69,9 @@ public class ClassUtilsTest {
 
 		final ClassLoader classLoader =
 			new URLClassLoader(new URL[] { tmpDir.toURI().toURL() }, null);
-		assertEquals(tmpDir, ClassUtils.getLocation(getClass().getName(),
-			classLoader));
+		final URL location = ClassUtils.getLocation(getClass().getName(),
+			classLoader);
+		assertEquals(tmpDir, FileUtils.urlToFile(location));
 	}
 
 	@Test
@@ -83,8 +84,8 @@ public class ClassUtilsTest {
 
 		final ClassLoader classLoader =
 			new URLClassLoader(new URL[] { jar.toURI().toURL() }, null);
-		assertEquals(jar, ClassUtils
-			.getLocation(getClass().getName(), classLoader));
+		final URL location = ClassUtils.getLocation(getClass().getName(), classLoader);
+		assertEquals(jar, FileUtils.urlToFile(location));
 	}
 
 	/**
