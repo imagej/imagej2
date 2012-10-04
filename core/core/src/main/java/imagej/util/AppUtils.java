@@ -36,6 +36,7 @@
 package imagej.util;
 
 import java.io.File;
+import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -107,8 +108,9 @@ public final class AppUtils {
 	public static File getBaseDirectory(final String className,
 		final String baseSubdirectory)
 	{
-		final File classLocation = ClassUtils.getLocation(className);
-		return getBaseDirectory(classLocation, baseSubdirectory);
+		final URL location = ClassUtils.getLocation(className);
+		final File baseFile = FileUtils.urlToFile(location);
+		return getBaseDirectory(baseFile, baseSubdirectory);
 	}
 
 	/**

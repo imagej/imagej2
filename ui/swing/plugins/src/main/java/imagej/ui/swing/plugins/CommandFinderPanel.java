@@ -40,6 +40,7 @@ import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
 import imagej.util.AppUtils;
 import imagej.util.ClassUtils;
+import imagej.util.FileUtils;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -273,7 +274,7 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 	// -- Helper classes --
 
 	protected static class CommandTableModel extends AbstractTableModel {
-		private final static String ijLocation = AppUtils.getBaseDirectory().getAbsolutePath();
+		private final static String ijDir = AppUtils.getBaseDirectory().getAbsolutePath();
 		protected List<ModuleInfo> list;
 
 		public final static int COLUMN_COUNT = 7;
@@ -344,10 +345,11 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 			}
 			if (column == 3) return info.getDelegateClassName();
 			if (column == 4) {
-				final String location = ClassUtils.getLocation(info.getDelegateClassName()).getAbsolutePath();
-				if (location.startsWith(ijLocation))
-					return location.substring(ijLocation.length() + 1);
-				return location;
+				final URL location = ClassUtils.getLocation(info.getDelegateClassName());
+				final String file = FileUtils.urlToFile(location).getAbsolutePath();
+				if (file.startsWith(ijDir))
+					return file.substring(ijDir.length() + 1);
+				return file;
 			}
 			if (column == 5) return info.getDescription();
 			if (column == 6) return info.getPriority();
