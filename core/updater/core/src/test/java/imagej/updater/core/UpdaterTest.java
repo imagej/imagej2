@@ -1491,7 +1491,7 @@ public class UpdaterTest {
 	 * Delete a directory recursively
 	 * 
 	 * @param directory
-	 * @return whether it succeeded (see also {@link File.#delete()})
+	 * @return whether it succeeded (see also {@link File#delete()})
 	 */
 	protected boolean rmRF(final File directory) {
 		if (directory == null) {

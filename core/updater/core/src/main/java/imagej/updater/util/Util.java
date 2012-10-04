@@ -120,12 +120,15 @@ public class Util {
 
 		updateablePlatforms = new HashSet<String>();
 		updateablePlatforms.add(platform);
-		if (new File(imagejRoot, launchers[macIndex]).exists()) updateablePlatforms
-			.add("macosx");
+		if (new File(imagejRoot, launchers[macIndex]).exists()) {
+			updateablePlatforms.add("macosx");
+		}
 		final String[] files = imagejRoot.list();
-		for (final String name : files == null ? new String[0] : files)
-			if (name.startsWith("ImageJ-")) updateablePlatforms
-				.add(platformForLauncher(name));
+		for (final String name : files == null ? new String[0] : files) {
+			if (name.startsWith("ImageJ-")) {
+				updateablePlatforms.add(platformForLauncher(name));
+			}
+		}
 	}
 
 	public static String platformForLauncher(final String fileName) {
