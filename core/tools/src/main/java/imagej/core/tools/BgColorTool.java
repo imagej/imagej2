@@ -49,8 +49,10 @@ import imagej.util.Colors;
  */
 @Plugin(type = Tool.class, name = "BG", iconPath = "/icons/tools/blankBlack.png",
 	description = "Shows the background color for the current display",
-	priority = -501)
-public class BGColorTool extends AbstractColorTool {
+	priority = BgColorTool.PRIORITY)
+public class BgColorTool extends AbstractColorTool {
+
+	public static final int PRIORITY = BASE_PRIORITY - 1;
 
 	@Override
 	ColorRGB getOutlineColor() {

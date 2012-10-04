@@ -49,9 +49,10 @@ import imagej.util.Colors;
  */
 @Plugin(type = Tool.class, name = "FG", iconPath = "/icons/tools/blank.png",
 	description = "Shows the foreground color for the current display",
-	priority = -500)
+	priority = FgColorTool.PRIORITY)
 public class FgColorTool extends AbstractColorTool {
-
+	public static final int PRIORITY = BASE_PRIORITY - 0;
+	
 	@Override
 	ColorRGB getOutlineColor() {
 		return Colors.WHITE;

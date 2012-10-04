@@ -62,6 +62,8 @@ import imagej.util.ColorRGB;
  *
  */
 public abstract class AbstractColorTool extends AbstractTool implements CustomDrawnTool {
+	public static final int BASE_PRIORITY = -500;
+	
 	private IconDrawer drawer;
 	private List<EventSubscriber<?>> subscribers;
 	
