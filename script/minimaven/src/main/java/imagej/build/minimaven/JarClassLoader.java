@@ -93,7 +93,9 @@ public class JarClassLoader extends ClassLoader {
 				+ "!/" + name;
 			try {
 				return new URL("jar", "", url);
-			} catch (MalformedURLException e) { }
+			} catch (MalformedURLException e) {
+				// fall through
+			}
 		}
 		return getSystemResource(name);
 	}
@@ -113,7 +115,9 @@ public class JarClassLoader extends ClassLoader {
 				continue;
 			try {
 				return jar.getInputStream(entry);
-			} catch (IOException e) { }
+			} catch (IOException e) {
+				// fall through
+			}
 		}
 		if (nonSystemOnly)
 			return null;
@@ -150,7 +154,9 @@ public class JarClassLoader extends ClassLoader {
 				if (result != null)
 					return result;
 			}
-		} catch (Exception e) { }
+		} catch (Exception e) {
+			// fall through
+		}
 		String path = name.replace('.', '/') + ".class";
 		InputStream input = getResourceAsStream(path, !true);
 		if (input == null)

@@ -62,6 +62,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+@SuppressWarnings("hiding")
 public class BuildEnvironment {
 	protected String endLine = isInteractiveConsole() ? "\033[K\r" : "\n";
 	protected boolean verbose, debug = false, downloadAutomatically, offlineMode, ignoreMavenRepositories;
@@ -165,8 +166,8 @@ public class BuildEnvironment {
 
 		pom.children = new POM[pom.modules.size()];
 		for (int i = 0; i < pom.children.length; i++) {
-			file = new File(directory, pom.modules.get(i) + "/pom.xml");
-			pom.children[i] = parse(file, pom);
+			File child = new File(directory, pom.modules.get(i) + "/pom.xml");
+			pom.children[i] = parse(child, pom);
 		}
 
 		if (pom.target == null) {
@@ -209,14 +210,12 @@ public class BuildEnvironment {
 				throw new RuntimeException("Parent not found: " + pom.parentCoordinate
 						+ (downloadAutomatically ? "" : " (please call MiniMaven's 'download'"));
 			}
-			else {
-				// prevent infinite loops (POMs without parents get the current root as parent)
-				if (pom.parent.parent == pom)
-					pom.parent.parent = null;
-				if (pom.parent.includeImplementationBuild)
-					pom.includeImplementationBuild = true;
-				pom.parent.addChild(pom);
-			}
+			// prevent infinite loops (POMs without parents get the current root as parent)
+			if (pom.parent.parent == pom)
+				pom.parent.parent = null;
+			if (pom.parent.includeImplementationBuild)
+				pom.includeImplementationBuild = true;
+			pom.parent.addChild(pom);
 		}
 
 		file2pom.put(file, pom);
@@ -436,15 +435,16 @@ public class BuildEnvironment {
 			throw new RuntimeException("Offline!");
 		if (verbose)
 			err.println("Trying to download " + url);
-		if (fileName == null) {
-			fileName = url.getPath();
-			fileName = fileName.substring(fileName.lastIndexOf('/') + 1);
+		String name = fileName;
+		if (name == null) {
+			name = url.getPath();
+			name = name.substring(name.lastIndexOf('/') + 1);
 		}
 		InputStream in = url.openStream();
 		if (message != null)
 			err.println(message);
 		directory.mkdirs();
-		File result = new File(directory, fileName);
+		File result = new File(directory, name);
 		copy(in, result);
 		return result;
 	}
@@ -506,7 +506,8 @@ public class BuildEnvironment {
 		return length;
 	}
 
-	protected String getImplementationBuild(File file) {
+	protected String getImplementationBuild(File fileOrDirectory) {
+		File file = fileOrDirectory;
 		if (!file.isAbsolute()) try {
 			file = file.getCanonicalFile();
 		}

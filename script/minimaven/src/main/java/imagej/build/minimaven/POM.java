@@ -517,22 +517,23 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 	public String expand(String string) {
 		if (string == null)
 			return null;
+		String result = string;
 		for (;;) {
-			int dollarCurly = string.indexOf("${");
+			int dollarCurly = result.indexOf("${");
 			if (dollarCurly < 0)
-				return string;
-			int endCurly = string.indexOf("}", dollarCurly + 2);
+				return result;
+			int endCurly = result.indexOf("}", dollarCurly + 2);
 			if (endCurly < 0)
 				throw new RuntimeException("Invalid string: " + string);
-			String property = getProperty(string.substring(dollarCurly + 2, endCurly));
+			String property = getProperty(result.substring(dollarCurly + 2, endCurly));
 			if (property == null) {
-				if (dollarCurly == 0 && endCurly == string.length() - 1)
+				if (dollarCurly == 0 && endCurly == result.length() - 1)
 					return null;
 				property = "";
 			}
-			string = string.substring(0, dollarCurly)
+			result = result.substring(0, dollarCurly)
 				+ property
-				+ string.substring(endCurly + 1);
+				+ result.substring(endCurly + 1);
 		}
 	}
 
@@ -886,7 +887,8 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 	protected void checkParentTag(String tag, String string1, String string2) {
 		String expanded1 = expand(string1);
 		String expanded2 = expand(string2);
-		if (((expanded1 == null || expanded2 == null) && expanded1 != expanded2) || !expanded1.equals(expanded2))
+		if ((expanded1 == null && expanded2 != null) ||
+				(expanded1 != null && !expanded1.equals(expanded2)))
 			env.err.println("Warning: " + tag + " mismatch in " + directory + "'s parent: " + string1 + " != " + string2);
 	}
 

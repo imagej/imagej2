@@ -147,8 +147,9 @@ public class JavaCompiler {
 	}
 
 	public static String quoteArg(String arg, String quotables) {
-		for (int j = 0; j < arg.length(); j++) {
-			char c = arg.charAt(j);
+		String result = arg;
+		for (int j = 0; j < result.length(); j++) {
+			char c = result.charAt(j);
 			if (quotables.indexOf(c) >= 0) {
 				String replacement;
 				if (c == '"') {
@@ -159,13 +160,13 @@ public class JavaCompiler {
 				}
 				else
 					replacement = "\"" + c + "\"";
-				arg = arg.substring(0, j)
+				result = result.substring(0, j)
 					+ replacement
-					+ arg.substring(j + 1);
+					+ result.substring(j + 1);
 				j += replacement.length() - 1;
 			}
 		}
-		return arg;
+		return result;
 	}
 
 	protected static JarClassLoader discoverJavac() throws IOException {
