@@ -42,7 +42,9 @@ import imagej.command.CommandService;
 import imagej.data.ChannelCollection;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplayService;
+import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.options.OptionsChannels;
+import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
@@ -179,8 +181,14 @@ public abstract class AbstractColorTool extends AbstractTool implements CustomDr
 
 	@EventHandler
 	protected void onEvent(OptionsEvent evt) {
-		// could have changed OptionsChannels so update
-		drawIcon();
+		if (evt.getOptions() instanceof OptionsChannels) drawIcon();
+	}
+	
+	@EventHandler
+	protected void onEvent(AxisPositionEvent evt) {
+		DisplayService dispSrv = getContext().getService(DisplayService.class);
+		Display<?> activeDisplay = dispSrv.getActiveDisplay();
+		if (evt.getDisplay() == activeDisplay) drawIcon();
 	}
 	
 	// -- private helpers --
