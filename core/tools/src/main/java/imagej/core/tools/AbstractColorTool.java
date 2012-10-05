@@ -38,6 +38,7 @@ package imagej.core.tools;
 import java.util.List;
 
 import imagej.ImageJ;
+import imagej.command.CommandService;
 import imagej.data.ChannelCollection;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplayService;
@@ -45,9 +46,12 @@ import imagej.data.options.OptionsChannels;
 import imagej.display.DisplayService;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
+import imagej.display.event.input.MsButtonEvent;
+import imagej.display.event.input.MsClickedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
+import imagej.event.StatusService;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
 import imagej.tool.AbstractTool;
@@ -62,13 +66,27 @@ import imagej.util.ColorRGB;
  *
  */
 public abstract class AbstractColorTool extends AbstractTool implements CustomDrawnTool {
+	
+	// -- constants --
+	
 	public static final int BASE_PRIORITY = -500;
+	
+	// -- instance variables --
 	
 	private IconDrawer drawer;
 	private List<EventSubscriber<?>> subscribers;
+	private final PixelRecorder recorder = new PixelRecorder(true);
+	private StatusService statusService = null;
+	
+	// -- abstract methods --
 	
 	abstract ColorRGB getOutlineColor();
 	abstract ChannelCollection getChannels(OptionsChannels options);
+	abstract void setChannels(OptionsChannels options, ChannelCollection chans);
+	abstract void setLastColor(OptionsChannels options, ColorRGB color);
+	abstract String getLabel();
+	
+	// -- Tool methods --
 	
 	@Override
 	public void setContext(ImageJ context) {
@@ -76,6 +94,59 @@ public abstract class AbstractColorTool extends AbstractTool implements CustomDr
 		EventService service = context.getService(EventService.class);
 		subscribers = service.subscribe(this);
 	}
+	
+	
+	@Override
+	public void configure() {
+		final CommandService commandService =
+			getContext().getService(CommandService.class);
+		
+		commandService.run(OptionsChannels.class);
+	}
+	
+	@Override
+	public void onMouseClick(final MsClickedEvent evt) {
+
+		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
+
+		// if click did not happen within the bounds of an ImageDisplay then
+		// just consume event and return
+		if (!recorder.record(evt)) {
+			evt.consume();
+			return;
+		}
+
+		statusService = getContext().getService(StatusService.class);
+
+		final OptionsChannels options = getOptions();
+
+		final ChannelCollection values = recorder.getValues();
+
+		setChannels(options, values);
+
+		setLastColor(options, recorder.getColor());
+
+		// make sure future options reflect those new values
+		options.save();
+
+		// let user know the FG or BG values changed
+		statusMessage(getLabel(), values);
+
+		evt.consume();
+	}
+	
+	@Override
+	public String getDescription() {
+		OptionsChannels opts = getOptions();
+		ChannelCollection channels = getChannels(opts);
+		StringBuilder sb = new StringBuilder();
+		sb.append(getLabel());
+		sb.append(" = ");
+		sb.append(valuesString(channels));
+		return sb.toString();
+	}
+
+	// -- CustomDrawnTool methods --
 	
 	@Override
 	public void drawIcon() {
@@ -92,6 +163,8 @@ public abstract class AbstractColorTool extends AbstractTool implements CustomDr
 		}
 		draw(color);
 	}
+
+	// -- event handlers --
 	
 	@EventHandler
 	protected void onEvent(DisplayActivatedEvent evt) {
@@ -109,6 +182,8 @@ public abstract class AbstractColorTool extends AbstractTool implements CustomDr
 		// could have changed OptionsChannels so update
 		drawIcon();
 	}
+	
+	// -- private helpers --
 	
 	private void draw(ColorRGB fillColor) {
 		if (drawer == null) drawer = acquireDrawer();
@@ -132,5 +207,35 @@ public abstract class AbstractColorTool extends AbstractTool implements CustomDr
 	private IconDrawer acquireDrawer() {
 		IconService service = getContext().getService(IconService.class);
 		return service.acquireDrawer(this);
+	}
+	private String valuesString(ChannelCollection chans) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("(");
+		for (int i = 0; i < chans.getChannelCount(); i++) {
+			if (i != 0) builder.append(",");
+			String valString;
+			if (chans.areInteger())
+				valString = String.format("%d", (long)chans.getChannelValue(i));
+			else
+				valString = String.format("%f", chans.getChannelValue(i));
+			builder.append(valString);
+		}
+		builder.append(")");
+		return builder.toString();
+	}
+	
+	private void statusMessage(final String label, ChannelCollection values) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(label);
+		builder.append(" = ");
+		builder.append(valuesString(values));
+		statusService.showStatus(builder.toString());
+	}
+
+	private OptionsChannels getOptions() {
+		final OptionsService service =
+			getContext().getService(OptionsService.class);
+
+		return service.getOptions(OptionsChannels.class);
 	}
 }

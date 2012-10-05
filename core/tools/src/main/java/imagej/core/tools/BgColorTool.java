@@ -63,4 +63,19 @@ public class BgColorTool extends AbstractColorTool {
 	ChannelCollection getChannels(OptionsChannels options) {
 		return options.getBgValues();
 	}
+
+	@Override
+	void setChannels(OptionsChannels options, ChannelCollection chans) {
+		options.setBgValues(chans);
+	}
+
+	@Override
+	void setLastColor(OptionsChannels options, ColorRGB color) {
+		options.setLastBgColor(color);
+	}
+
+	@Override
+	String getLabel() {
+		return "BG";
+	}
 }

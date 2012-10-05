@@ -62,4 +62,19 @@ public class FgColorTool extends AbstractColorTool {
 	ChannelCollection getChannels(OptionsChannels options) {
 		return options.getFgValues();
 	}
+
+	@Override
+	void setChannels(OptionsChannels options, ChannelCollection chans) {
+		options.setFgValues(chans);
+	}
+
+	@Override
+	void setLastColor(OptionsChannels options, ColorRGB color) {
+		options.setLastFgColor(color);
+	}
+
+	@Override
+	String getLabel() {
+		return "FG";
+	}
 }
