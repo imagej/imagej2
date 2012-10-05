@@ -155,6 +155,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	private Map<String, UpdateSite> updateSites;
 
 	private DependencyAnalyzer dependencyAnalyzer;
+	public final Util util;
 
 	/**
 	 * This constructor takes the imagejRoot primarily for testing purposes.
@@ -173,6 +174,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	public FilesCollection(final LogService log, final File imagejRoot) {
 		this.log = log;
 		this.imagejRoot = imagejRoot;
+		util = new Util(imagejRoot);
 		updateSites = new LinkedHashMap<String, UpdateSite>();
 		addUpdateSite(DEFAULT_UPDATE_SITE, Util.MAIN_URL, null, null,
 			imagejRoot == null ? 0 : Util.getTimestamp(prefix(Util.XML_COMPRESSED)));
@@ -549,7 +551,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 
 			@Override
 			public boolean matches(final FileObject file) {
-				return file.isUpdateablePlatform();
+				return file.isUpdateablePlatform(FilesCollection.this);
 			}
 		};
 	}
@@ -740,7 +742,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 
 			@Override
 			public boolean matches(final FileObject file) {
-				return file.isUpdateable(evenForcedOnes) && file.isUpdateablePlatform();
+				return file.isUpdateable(evenForcedOnes) && file.isUpdateablePlatform(FilesCollection.this);
 			}
 		});
 	}
@@ -788,7 +790,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		for (final Dependency dependency : file.getDependencies()) {
 			final FileObject other = get(dependency.filename);
 			if (other == null || overriding != dependency.overrides ||
-				!other.isUpdateablePlatform()) continue;
+				!other.isUpdateablePlatform(this)) continue;
 			if (dependency.overrides) {
 				if (other.willNotBeInstalled()) continue;
 			}

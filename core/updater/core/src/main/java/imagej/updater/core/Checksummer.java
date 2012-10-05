@@ -376,7 +376,7 @@ public class Checksummer extends AbstractProgressable {
 		handleQueue();
 	}
 
-	protected static boolean tryToGuessPlatform(final FileObject file) {
+	protected boolean tryToGuessPlatform(final FileObject file) {
 		// Look for platform names as subdirectories of lib/ and mm/
 		String platform;
 		if (file.executable) {
@@ -397,7 +397,7 @@ public class Checksummer extends AbstractProgressable {
 
 		if (platform.equals("linux")) platform = "linux32";
 
-		for (final String valid : Util.platforms)
+		for (final String valid : files.util.platforms)
 			if (platform.equals(valid)) {
 				file.addPlatform(platform);
 				return true;
@@ -426,10 +426,10 @@ public class Checksummer extends AbstractProgressable {
 		}
 	}
 
-	public static boolean isCandidate(String path) {
+	public boolean isCandidate(String path) {
 		path = path.replace('\\', '/'); // Microsoft time toll
 		final int slash = path.indexOf('/');
-		if (slash < 0) return Util.isLauncher(path);
+		if (slash < 0) return files.util.isLauncher(path);
 		final Set<String> exts = extensions.get(path.substring(0, slash));
 		final int dot = path.lastIndexOf('.');
 		return exts == null || dot < 0 ? false : exts.contains(path.substring(dot));
@@ -438,7 +438,7 @@ public class Checksummer extends AbstractProgressable {
 	protected void initializeQueue() {
 		queue = new LinkedHashMap<String, List<StringAndFile>>();
 
-		for (final String launcher : Util.launchers)
+		for (final String launcher : files.util.launchers)
 			queueIfExists(launcher);
 
 		for (int i = 0; i < directories.length; i += 2)

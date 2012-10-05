@@ -36,7 +36,6 @@
 package imagej.updater.ui;
 
 import imagej.log.LogService;
-import imagej.log.StderrLogService;
 import imagej.updater.core.Conflicts;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.Dependency;
@@ -54,7 +53,7 @@ import imagej.updater.util.Progress;
 import imagej.updater.util.StderrProgress;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
-import imagej.util.FileUtils;
+import imagej.util.AppUtils;
 
 import java.awt.Frame;
 import java.io.Console;
@@ -88,7 +87,7 @@ public class CommandLine {
 		SAXException
 	{
 		progress = new StderrProgress(80);
-		files = new FilesCollection(log, FileUtils.getBaseDirectory());
+		files = new FilesCollection(log, AppUtils.getBaseDirectory());
 		String warnings = files.downloadIndexAndChecksum(progress);
 		if (!warnings.equals("")) System.err.println(warnings);
 	}
@@ -107,7 +106,7 @@ public class CommandLine {
 
 		@Override
 		public boolean matches(final FileObject file) {
-			if (!file.isUpdateablePlatform()) return false;
+			if (!file.isUpdateablePlatform(files)) return false;
 			if (fileNames != null && !fileNames.contains(file.getFilename(true))) return false;
 			return file.getStatus() != Status.OBSOLETE_UNINSTALLED;
 		}
@@ -180,7 +179,7 @@ public class CommandLine {
 	public void download(final FileObject file) {
 		try {
 			new Downloader(progress).start(new OneFile(file));
-			if (file.executable && !Util.platform.startsWith("win")) try {
+			if (file.executable && !files.util.platform.startsWith("win")) try {
 				Runtime.getRuntime()
 					.exec(
 						new String[] { "chmod", "0755",
@@ -277,7 +276,7 @@ public class CommandLine {
 				continue;
 			}
 			if (file.getStatus() == Status.LOCAL_ONLY &&
-				Util.isLauncher(file.filename))
+				files.util.isLauncher(file.filename))
 			{
 				file.executable = true;
 				file.addPlatform(Util.platformForLauncher(file.filename));

@@ -307,7 +307,7 @@ public class Installer extends Downloader {
 		file.setLocalVersion(file.getFilename(), digest, file.getTimestamp());
 		file.setStatus(FileObject.Status.INSTALLED);
 
-		if (file.executable && !Util.platform.startsWith("win")) try {
+		if (file.executable && !files.util.platform.startsWith("win")) try {
 			Runtime.getRuntime()
 				.exec(
 					new String[] { "chmod", "0755",
