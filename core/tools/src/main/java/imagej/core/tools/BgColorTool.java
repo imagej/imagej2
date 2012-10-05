@@ -56,7 +56,7 @@ public class BgColorTool extends AbstractColorTool {
 
 	@Override
 	ColorRGB getOutlineColor() {
-		return Colors.BLACK;
+		return Colors.ORANGE;
 	}
 
 	@Override

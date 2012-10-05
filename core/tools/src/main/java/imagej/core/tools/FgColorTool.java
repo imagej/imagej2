@@ -55,7 +55,7 @@ public class FgColorTool extends AbstractColorTool {
 	
 	@Override
 	ColorRGB getOutlineColor() {
-		return Colors.WHITE;
+		return Colors.ORANGE;
 	}
 
 	@Override
