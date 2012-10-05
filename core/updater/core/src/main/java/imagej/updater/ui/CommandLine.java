@@ -36,7 +36,6 @@
 package imagej.updater.ui;
 
 import imagej.log.LogService;
-import imagej.log.StderrLogService;
 import imagej.updater.core.Conflicts;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.Dependency;
@@ -54,7 +53,7 @@ import imagej.updater.util.Progress;
 import imagej.updater.util.StderrProgress;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
-import imagej.util.FileUtils;
+import imagej.util.AppUtils;
 
 import java.awt.Frame;
 import java.io.Console;
@@ -88,7 +87,7 @@ public class CommandLine {
 		SAXException
 	{
 		progress = new StderrProgress(80);
-		files = new FilesCollection(log, FileUtils.getBaseDirectory());
+		files = new FilesCollection(log, AppUtils.getBaseDirectory());
 		String warnings = files.downloadIndexAndChecksum(progress);
 		if (!warnings.equals("")) System.err.println(warnings);
 	}
