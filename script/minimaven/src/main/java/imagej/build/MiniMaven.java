@@ -1,4 +1,7 @@
-package fiji.build;
+package imagej.build;
+
+import imagej.build.minimaven.BuildEnvironment;
+import imagej.build.minimaven.POM;
 
 import java.io.File;
 import java.io.PrintStream;
@@ -9,8 +12,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
-import fiji.build.minimaven.BuildEnvironment;
-import fiji.build.minimaven.POM;
 
 public class MiniMaven {
 	public static void ensureIJDirIsSet() {

@@ -1,4 +1,4 @@
-package fiji.build.minimaven;
+package imagej.build.minimaven;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

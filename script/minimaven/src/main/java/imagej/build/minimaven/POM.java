@@ -1,4 +1,6 @@
-package fiji.build.minimaven;
+package imagej.build.minimaven;
+
+import imagej.build.minimaven.JavaCompiler.CompileError;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,7 +26,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import fiji.build.minimaven.JavaCompiler.CompileError;
 
 public class POM extends DefaultHandler implements Comparable<POM> {
 	protected final BuildEnvironment env;

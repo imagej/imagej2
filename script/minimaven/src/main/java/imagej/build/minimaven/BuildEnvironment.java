@@ -1,4 +1,4 @@
-package fiji.build.minimaven;
+package imagej.build.minimaven;
 
 import java.io.File;
 import java.io.FileInputStream;
