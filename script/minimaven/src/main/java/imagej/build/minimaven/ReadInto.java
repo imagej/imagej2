@@ -51,6 +51,7 @@ public class ReadInto extends Thread {
 		start();
 	}
 
+	@Override
 	public void run() {
 		for (;;) try {
 			String line = reader.readLine();
@@ -69,6 +70,7 @@ public class ReadInto extends Thread {
 		catch (IOException e) { /* just stop */ }
 	}
 
+	@Override
 	public String toString() {
 		return buffer.toString();
 	}

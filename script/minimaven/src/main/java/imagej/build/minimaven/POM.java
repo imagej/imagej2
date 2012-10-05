@@ -747,8 +747,7 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 
 	// XML parsing
 
-	public void startDocument() {}
-
+	@Override
 	public void endDocument() {
 		if (!properties.containsKey("project.groupId"))
 			properties.put("project.groupId", coordinate.groupId);
@@ -756,12 +755,14 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 			properties.put("project.version", coordinate.getVersion());
 	}
 
+	@Override
 	public void startElement(String uri, String name, String qualifiedName, Attributes attributes) {
 		prefix += ">" + qualifiedName;
 		if (env.debug)
 			env.err.println("start(" + uri + ", " + name + ", " + qualifiedName + ", " + toString(attributes) + ")");
 	}
 
+	@Override
 	public void endElement(String uri, String name, String qualifiedName) {
 		if (prefix.equals(">project>dependencies>dependency") || (isCurrentProfile && prefix.equals(">project>profiles>profile>dependencies>dependency"))) {
 			if (env.debug)
@@ -778,6 +779,7 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 			env.err.println("end(" + uri + ", " + name + ", " + qualifiedName + ")");
 	}
 
+	@Override
 	public void characters(char[] buffer, int offset, int length) {
 		String string = new String(buffer, offset, length);
 		if (env.debug)
@@ -899,6 +901,7 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 		return builder.toString();
 	}
 
+	@Override
 	public int compareTo(POM other) {
 		int result = coordinate.artifactId.compareTo(other.coordinate.artifactId);
 		if (result != 0)
@@ -910,6 +913,7 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 		return BuildEnvironment.compareVersion(coordinate.getVersion(), other.coordinate.getVersion());
 	}
 
+	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		append(builder, "");

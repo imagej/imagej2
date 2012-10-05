@@ -52,14 +52,17 @@ public class VersionPOMHandler extends DefaultHandler {
 	protected String qName;
 	protected String version;
 
+	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes) {
 		this.qName = qName;
 	}
 
+	@Override
 	public void endElement(String uri, String localName, String qName) {
 		this.qName = null;
 	}
 
+	@Override
 	public void characters(char[] ch, int start, int length) {
 		if (qName == null)
 			; // ignore

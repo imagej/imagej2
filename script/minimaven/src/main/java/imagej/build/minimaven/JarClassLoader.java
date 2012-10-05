@@ -80,6 +80,7 @@ public class JarClassLoader extends ClassLoader {
 		jarFilesObjects.add(jar);
 	}
 
+	@Override
 	public URL getResource(String name) {
 		int n = jarFilesNames.size();
 		for (int i = n - 1; i >= 0; --i) {
@@ -97,6 +98,7 @@ public class JarClassLoader extends ClassLoader {
 		return getSystemResource(name);
 	}
 
+	@Override
 	public InputStream getResourceAsStream(String name) {
 		return getResourceAsStream(name, false);
 	}
@@ -123,11 +125,13 @@ public class JarClassLoader extends ClassLoader {
 		return loadClass(name, true, true);
 	}
 
+	@Override
 	public Class<?> loadClass(String name)
 			throws ClassNotFoundException {
 		return loadClass(name, true);
 	}
 
+	@Override
 	public synchronized Class<?> loadClass(String name,
 			boolean resolve) throws ClassNotFoundException {
 		return loadClass(name, resolve, false);
