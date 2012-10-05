@@ -47,8 +47,7 @@ import imagej.util.Colors;
  * @author Barry DeZonia
  *
  */
-@Plugin(type = Tool.class, name = "FG", iconPath = "/icons/tools/blank.png",
-	description = "Shows the foreground color for the current display",
+@Plugin(type = Tool.class, name = "Foreground", iconPath = "/icons/tools/blank.png",
 	priority = FgColorTool.PRIORITY)
 public class FgColorTool extends AbstractColorTool {
 	public static final int PRIORITY = BASE_PRIORITY - 0;

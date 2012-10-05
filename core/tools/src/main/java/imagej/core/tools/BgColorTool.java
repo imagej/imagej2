@@ -47,8 +47,7 @@ import imagej.util.Colors;
  * @author Barry DeZonia
  *
  */
-@Plugin(type = Tool.class, name = "BG", iconPath = "/icons/tools/blankBlack.png",
-	description = "Shows the background color for the current display",
+@Plugin(type = Tool.class, name = "Background", iconPath = "/icons/tools/blankBlack.png",
 	priority = BgColorTool.PRIORITY)
 public class BgColorTool extends AbstractColorTool {
 
