@@ -19,6 +19,7 @@
 
 	<modules>
 		<module>beanshell</module>
+		<module>minimaven</module>
 	</modules>
 
 	<!-- NB: for project parent, in case of partial checkout -->
