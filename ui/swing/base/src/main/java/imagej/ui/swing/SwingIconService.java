@@ -57,26 +57,36 @@ import javax.swing.AbstractButton;
 @Plugin(type = Service.class)
 public class SwingIconService extends AbstractService implements IconService {
 
+	// -- instance variables --
+	
 	private HashMap<Tool,AbstractButton> buttonMap = new HashMap<Tool, AbstractButton>();
+	
+	// -- IconService methods --
 	
 	@Override
 	public IconDrawer acquireDrawer(Tool tool) {
 		return new SwingIconDrawer(tool);
 	}
 	
+	// -- SwingIconService methods --
+	
 	public void registerButton(Tool tool, AbstractButton button) {
 		buttonMap.put(tool,button);
 	}
 	
+	// -- private helpers --
+	
 	private class SwingIconDrawer implements IconDrawer {
-		private Tool tool;
 		private AbstractButton button;
 		private Graphics graphics;
 		
 		public SwingIconDrawer(Tool tool) {
-			this.tool = tool;
 			this.button = buttonMap.get(tool);
-			this.graphics = button.getGraphics();
+			if (button == null)
+				throw new IllegalArgumentException(
+					"There is no button associated with the specified tool");
+			// TODO - eliminate this ref. But experiment below doesn't draw correctly.
+			graphics = button.getGraphics();
 		}
 		
 		@Override
@@ -91,7 +101,15 @@ public class SwingIconService extends AbstractService implements IconService {
 
 		@Override
 		public void setIconPixel(int x, int y, ColorRGB color) {
-			Color awtColor = new Color(color.getRed(), color.getGreen(), color.getBlue());
+			
+			Color awtColor =
+					new Color(color.getRed(), color.getGreen(), color.getBlue());
+			
+			// TODO this would be nice but doesn't work
+			//button.getGraphics().setColor(awtColor);
+			//button.getGraphics().drawLine(x, y, x, y);
+			
+			// But using an old reference does work
 			graphics.setColor(awtColor);
 			graphics.drawLine(x, y, x, y);
 		}
