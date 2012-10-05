@@ -67,8 +67,10 @@ import imagej.util.ColorRGB;
  * @author Barry DeZonia
  *
  */
-public abstract class AbstractColorTool extends AbstractTool implements CustomDrawnTool {
-	
+public abstract class AbstractColorTool
+	extends AbstractTool
+	implements CustomDrawnTool
+{
 	// -- constants --
 	
 	public static final int BASE_PRIORITY = -500;
@@ -152,7 +154,8 @@ public abstract class AbstractColorTool extends AbstractTool implements CustomDr
 	
 	@Override
 	public void drawIcon() {
-		ImageDisplayService dispSrv = getContext().getService(ImageDisplayService.class);
+		ImageDisplayService dispSrv =
+				getContext().getService(ImageDisplayService.class);
 		DatasetView view = dispSrv == null ? null : dispSrv.getActiveDatasetView();
 		ColorRGB color = getOutlineColor();
 		if (view != null) {
@@ -216,6 +219,7 @@ public abstract class AbstractColorTool extends AbstractTool implements CustomDr
 		IconService service = getContext().getService(IconService.class);
 		return service.acquireDrawer(this);
 	}
+	
 	private String valuesString(ChannelCollection chans) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("(");
