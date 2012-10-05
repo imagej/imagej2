@@ -36,6 +36,8 @@
 package imagej.util;
 
 import java.io.File;
+import java.net.URL;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,8 +49,37 @@ import java.util.regex.Pattern;
  */
 public final class AppUtils {
 
+	private static final String mainClass;
+
+	static {
+		// Get the class whose main method launched the application. The heuristic
+		// will fail if the main thread has terminated before this class loads.
+		final Map<Thread, StackTraceElement[]> traceMap =
+			Thread.getAllStackTraces();
+		String className = null;
+		for (final Thread thread : traceMap.keySet()) {
+			if (!"main".equals(thread.getName())) continue;
+			final StackTraceElement[] trace = traceMap.get(thread);
+			if (trace == null || trace.length == 0) continue;
+			final StackTraceElement element = trace[trace.length - 1];
+			className = element.getClassName();
+			break;
+		}
+		mainClass = className;
+	}
+
 	private AppUtils() {
 		// prevent instantiation of utility class
+	}
+
+	/**
+	 * Gets the name of the class whose main method launched the application.
+	 * 
+	 * @return The name of the launching class, or null if the main method
+	 *         terminated before the {@code AppUtils} class was loaded.
+	 */
+	public static String getMainClass() {
+		return mainClass;
 	}
 
 	/**
@@ -70,14 +101,14 @@ public final class AppUtils {
 			getBaseDirectory(AppUtils.class.getName(), "core/core");
 		if (corePath != null) return corePath;
 
-		// HACK: Look for valid base directory relative to ImageJ launcher class.
-		// We will reach this logic, e.g., if the application is running via
-		// "mvn exec:exec" from the app directory. In that case, most classes
+		// NB: Look for valid base directory relative to the main class which
+		// launched this environment. We will reach this logic, e.g., if the
+		// application is running via "mvn exec:exec". In this case, most classes
 		// (including this one) will be located in JARs in the local Maven
 		// repository cache (~/.m2/repository), so the corePath will be null.
-		// However, the classes of ij-app will be located in app/target/classes,
-		// so we search up the tree from one of those.
-		final File appPath = getBaseDirectory("imagej.Main", "app");
+		// However, the classes of the launching project will be located in
+		// target/classes, so we search up the tree from one of those.
+		final File appPath = getBaseDirectory(getMainClass());
 		if (appPath != null) return appPath;
 
 		// last resort: use current working directory
@@ -107,8 +138,9 @@ public final class AppUtils {
 	public static File getBaseDirectory(final String className,
 		final String baseSubdirectory)
 	{
-		final File classLocation = ClassUtils.getLocation(className);
-		return getBaseDirectory(classLocation, baseSubdirectory);
+		final URL location = ClassUtils.getLocation(className);
+		final File baseFile = FileUtils.urlToFile(location);
+		return getBaseDirectory(baseFile, baseSubdirectory);
 	}
 
 	/**
@@ -197,7 +229,18 @@ public final class AppUtils {
 			// NB: The class is a file beneath the Maven build directory
 			// ("target/classes").
 			path = path.substring(0, path.length() - targetClassesSuffix.length());
-			return new File(path);
+
+			File dir = new File(path);
+			if (baseSubdirectory == null) {
+				// NB: There is no hint as to the directory structure.
+				// So we scan up the tree to find the topmost pom.xml file.
+				while (dir.getParentFile() != null &&
+					new File(dir.getParentFile(), "pom.xml").exists())
+				{
+					dir = dir.getParentFile();
+				}
+			}
+			return dir;
 		}
 
 		final Pattern pattern =
