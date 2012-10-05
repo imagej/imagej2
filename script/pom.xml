@@ -19,6 +19,7 @@
 
 	<modules>
 		<module>beanshell</module>
+		<module>java</module>
 		<module>minimaven</module>
 	</modules>
 

@@ -95,6 +95,12 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-script-java</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-platforms</artifactId>
 			<version>${project.version}</version>
 			<scope>runtime</scope>
