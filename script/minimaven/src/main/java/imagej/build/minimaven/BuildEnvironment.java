@@ -342,8 +342,9 @@ public class BuildEnvironment {
 		FileInputStream fileStream = new FileInputStream(file);
 		DigestInputStream digestStream = new DigestInputStream(fileStream, digest);
 		byte[] buffer = new byte[131072];
-		while (digestStream.read(buffer) >= 0)
-			; /* do nothing */
+		while (digestStream.read(buffer) >= 0) {
+			/* do nothing */
+		}
 		digestStream.close();
 
 		byte[] digestBytes = digest.digest();

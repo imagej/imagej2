@@ -48,6 +48,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+@SuppressWarnings("hiding")
 public class VersionPOMHandler extends DefaultHandler {
 	protected String qName;
 	protected String version;
@@ -64,9 +65,7 @@ public class VersionPOMHandler extends DefaultHandler {
 
 	@Override
 	public void characters(char[] ch, int start, int length) {
-		if (qName == null)
-			; // ignore
-		else if (qName.equals("version")) {
+		if (qName != null && qName.equals("version")) {
 			version = new String(ch, start, length).trim();
 		}
 	}

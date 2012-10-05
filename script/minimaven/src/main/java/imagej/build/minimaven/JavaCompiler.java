@@ -40,6 +40,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 
+@SuppressWarnings("hiding")
 public class JavaCompiler {
 	protected PrintStream err, out;
 	protected static Method javac;

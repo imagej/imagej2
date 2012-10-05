@@ -60,7 +60,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-
+@SuppressWarnings("hiding")
 public class POM extends DefaultHandler implements Comparable<POM> {
 	protected final BuildEnvironment env;
 	protected boolean buildFromSource, built;

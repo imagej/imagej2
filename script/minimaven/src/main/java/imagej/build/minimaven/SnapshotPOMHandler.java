@@ -48,6 +48,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+@SuppressWarnings("hiding")
 public class SnapshotPOMHandler extends DefaultHandler {
 	protected String qName;
 	protected String snapshotVersion, timestamp, buildNumber;
@@ -65,7 +66,7 @@ public class SnapshotPOMHandler extends DefaultHandler {
 	@Override
 	public void characters(char[] ch, int start, int length) {
 		if (qName == null)
-			; // ignore
+			return;
 		else if (qName.equals("version")) {
 			String version = new String(ch, start, length).trim();
 			if (version.endsWith("-SNAPSHOT"))
