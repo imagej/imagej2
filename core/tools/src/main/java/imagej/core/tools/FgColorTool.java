@@ -45,7 +45,7 @@ import imagej.util.Colors;
 /**
  * 
  * @author Barry DeZonia
- *
+ * 
  */
 @Plugin(type = Tool.class, name = "Foreground", iconPath = "/icons/tools/blank.png",
 	priority = FgColorTool.PRIORITY)

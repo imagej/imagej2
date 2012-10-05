@@ -45,7 +45,7 @@ import imagej.util.Colors;
 /**
  * 
  * @author Barry DeZonia
- *
+ * 
  */
 @Plugin(type = Tool.class, name = "Background", iconPath = "/icons/tools/blankBlack.png",
 	priority = BgColorTool.PRIORITY)
