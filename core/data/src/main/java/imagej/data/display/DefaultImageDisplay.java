@@ -47,7 +47,7 @@ import imagej.data.undo.UndoService;
 import imagej.display.AbstractDisplay;
 import imagej.display.DisplayService;
 import imagej.display.DisplayState;
-import imagej.display.SupportsUndo;
+import imagej.display.SupportsDisplayStates;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
@@ -76,7 +76,7 @@ import net.imglib2.type.numeric.real.DoubleType;
  */
 @Plugin(type = ImageDisplay.class)
 public class DefaultImageDisplay extends AbstractDisplay<DataView>
-	implements ImageDisplay, SupportsUndo
+	implements ImageDisplay, SupportsDisplayStates
 {
 	private List<EventSubscriber<?>> subscribers;
 
@@ -157,7 +157,7 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 	 * Designed to fully capture a display's state for later restore purposes.
 	 */
 	@Override
-	public DisplayState captureState() {
+	public DisplayState getCurrentState() {
 		ImageDisplayService idSrv = getContext().getService(ImageDisplayService.class);
 		UndoService undoSrv = getContext().getService(UndoService.class);
 		Dataset ds = idSrv.getActiveDataset(this);
@@ -172,7 +172,7 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 	 * Designed to fully restore a display's state to an earlier state.
 	 */
 	@Override
-	public void restoreState(DisplayState dispState) {
+	public void setCurrentState(DisplayState dispState) {
 		if (!(dispState instanceof ImageDisplayState))
 			throw new IllegalArgumentException("given wrong kind of DisplayState");
 		ImageDisplayState state = (ImageDisplayState) dispState;

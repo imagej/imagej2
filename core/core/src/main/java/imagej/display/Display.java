@@ -115,8 +115,4 @@ public interface Display<T> extends List<T>, ImageJPlugin, Contextual,
 
 	/** Sets the name of the display. */
 	void setName(String name);
-
-	void restoreState(DisplayState state);
-	
-	DisplayState captureState();
 }
