@@ -59,7 +59,7 @@ import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.display.DisplayState;
-import imagej.display.SupportsUndo;
+import imagej.display.SupportsDisplayStates;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
@@ -303,8 +303,8 @@ public class UndoService extends AbstractService {
 	 * Creates a command that can be run later which will restore a display to its
 	 * current state.
 	 */
-	public InstantiableCommand createFullRestoreCommand(Display<?> display) {
-		DisplayState state = display.captureState();
+	public InstantiableCommand createFullRestoreCommand(SupportsDisplayStates display) {
+		DisplayState state = display.getCurrentState();
 		HashMap<String,Object> inputs = new HashMap<String, Object>();
 		inputs.put("display", display);
 		inputs.put("state", state);
@@ -324,8 +324,9 @@ public class UndoService extends AbstractService {
 		if (theObject instanceof Command) {
 			if (ignoring(module.getInfo())) return;
 			Display<?> display = dispService.getActiveDisplay();
-			if (!(display instanceof SupportsUndo)) return;
-			InstantiableCommand reverseCommand = createFullRestoreCommand(display);
+			if (!(display instanceof SupportsDisplayStates)) return;
+			InstantiableCommand reverseCommand =
+					createFullRestoreCommand((SupportsDisplayStates) display);
 			findHistory(display).addUndo(reverseCommand);
 		}
 	}
@@ -339,7 +340,7 @@ public class UndoService extends AbstractService {
 		if (theObject instanceof Command) {
 			if (ignoring(module.getInfo())) return;
 			Display<?> display = dispService.getActiveDisplay();
-			if (!(display instanceof SupportsUndo)) return;
+			if (!(display instanceof SupportsDisplayStates)) return;
 			// remove last undo point
 			findHistory(display).removeNewestUndo();
 		}
@@ -356,7 +357,7 @@ public class UndoService extends AbstractService {
 				return;
 			}
 			Display<?> display = dispService.getActiveDisplay();
-			if (!(display instanceof SupportsUndo)) return;
+			if (!(display instanceof SupportsDisplayStates)) return;
 			if (theObject instanceof InvertibleCommand) {
 				InvertibleCommand command = (InvertibleCommand) theObject;
 				findHistory(display).addUndo(command.getInverseCommand());

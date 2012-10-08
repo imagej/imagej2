@@ -44,8 +44,8 @@ import imagej.command.CommandService;
 import imagej.command.InstantiableCommand;
 import imagej.command.DefaultInstantiableCommand;
 import imagej.command.InvertibleCommand;
-import imagej.display.Display;
 import imagej.display.DisplayState;
+import imagej.display.SupportsDisplayStates;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -62,7 +62,7 @@ public class DisplaySaveState implements Command, InvertibleCommand {
 	private CommandService commandService;
 	
 	@Parameter(type = ItemIO.INPUT)
-	private Display<?> display;
+	private SupportsDisplayStates display;
 
 	@Parameter(type = ItemIO.OUTPUT)
 	private DisplayState state;
@@ -71,7 +71,7 @@ public class DisplaySaveState implements Command, InvertibleCommand {
 	
 	@Override
 	public void run() {
-		state = display.captureState();
+		state = display.getCurrentState();
 		inverseCommand = commandService.getCommand(DisplayRestoreState.class);
 	}
 
