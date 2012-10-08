@@ -53,6 +53,11 @@ public class FgColorTool extends AbstractColorTool {
 	public static final int PRIORITY = BASE_PRIORITY - 0;
 	
 	@Override
+	ColorRGB getEmptyColor() {
+		return Colors.WHITE;
+	}
+
+	@Override
 	ColorRGB getOutlineColor() {
 		return Colors.ORANGE;
 	}

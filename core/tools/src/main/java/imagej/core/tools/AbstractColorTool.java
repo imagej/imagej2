@@ -84,6 +84,7 @@ public abstract class AbstractColorTool
 	
 	// -- abstract methods --
 	
+	abstract ColorRGB getEmptyColor();
 	abstract ColorRGB getOutlineColor();
 	abstract ChannelCollection getChannels(OptionsChannels options);
 	abstract void setChannels(OptionsChannels options, ChannelCollection chans);
@@ -157,7 +158,7 @@ public abstract class AbstractColorTool
 		ImageDisplayService dispSrv =
 				getContext().getService(ImageDisplayService.class);
 		DatasetView view = dispSrv == null ? null : dispSrv.getActiveDatasetView();
-		ColorRGB color = getOutlineColor();
+		ColorRGB color = getEmptyColor();
 		if (view != null) {
 			OptionsService oSrv =  getContext().getService(OptionsService.class);
 			if (oSrv != null) {

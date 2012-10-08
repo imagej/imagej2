@@ -54,6 +54,11 @@ public class BgColorTool extends AbstractColorTool {
 	public static final int PRIORITY = BASE_PRIORITY - 1;
 
 	@Override
+	ColorRGB getEmptyColor() {
+		return Colors.BLACK;
+	}
+
+	@Override
 	ColorRGB getOutlineColor() {
 		return Colors.ORANGE;
 	}
