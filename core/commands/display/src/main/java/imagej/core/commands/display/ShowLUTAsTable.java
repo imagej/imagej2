@@ -73,7 +73,7 @@ public class ShowLUTAsTable extends ContextCommand {
 	@Parameter
 	private ImageDisplay display;
 	
-	@Parameter(type = ItemIO.OUTPUT, label = "Color Table")
+	@Parameter(type = ItemIO.OUTPUT, label = "Look-Up Table")
 	private ResultsTable table;
 	
 	// -- Command methods --
