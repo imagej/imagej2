@@ -49,7 +49,7 @@ public interface ResultsTable extends Table<DoubleColumn, Double> {
 	double getValue(int col, int row);
 
 	/** Sets the value of the given table cell. */
-	void setValue(double value, int col, int row);
+	void setValue(int col, int row, double value);
 
 	/** Wraps the results table in an ImgLib {@link net.imglib2.img.Img}. */
 	ImgPlus<DoubleType> img();

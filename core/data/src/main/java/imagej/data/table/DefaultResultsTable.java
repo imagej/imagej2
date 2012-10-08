@@ -68,7 +68,7 @@ public class DefaultResultsTable extends AbstractTable<DoubleColumn, Double>
 	}
 
 	@Override
-	public void setValue(final double value, final int col, final int row) {
+	public void setValue(final int col, final int row, final double value) {
 		get(col).setValue(row, value);
 	}
 

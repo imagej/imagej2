@@ -53,7 +53,7 @@ public class ResultsTableTest implements Command {
 		baseball.setColumnHeader("BA", 2);
 		for (int row = 0; row < data.length; row++) {
 			for (int col = 0; col < data[row].length; col++) {
-				baseball.setValue(data[row][col], col, row);
+				baseball.setValue(col, row, data[row][col]);
 			}
 		}
 
@@ -64,7 +64,7 @@ public class ResultsTableTest implements Command {
 		for (int col = 0; col < colCount; col++) {
 			statusService.showProgress(col, colCount);
 			for (int row = 0; row < rowCount; row++) {
-				big.setValue(row + col, col, row);
+				big.setValue(col, row, row + col);
 			}
 		}
 		statusService.clearStatus();

@@ -44,7 +44,7 @@ public class DefaultResultsTableTest {
 		table.setColumnHeader("BA", 2);
 		for (int row=0; row<data.length; row++) {
 			for (int col=0; col<data[row].length; col++) {
-				table.setValue(data[row][col], col, row);
+				table.setValue(col, row, data[row][col]);
 			}
 		}
 		return table;
