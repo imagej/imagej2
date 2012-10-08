@@ -46,8 +46,6 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.table.DefaultResultsTable;
 import imagej.data.table.ResultsTable;
-import imagej.display.Display;
-import imagej.display.DisplayService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.plugin.Menu;
@@ -55,6 +53,11 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
 
+/**
+ * 
+ * @author Barry DeZonia
+ *
+ */
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
@@ -62,17 +65,18 @@ import imagej.plugin.Plugin;
 	@Menu(label = "Show LUT As Table", weight = 13) })
 public class ShowLUTAsTable extends ContextCommand {
 
+	// -- Parameters --
+	
 	@Parameter
 	private ImageDisplayService imgDispService;
 	
 	@Parameter
-	private DisplayService displayService;
-	
-	@Parameter
 	private ImageDisplay display;
 	
-	@Parameter(type = ItemIO.OUTPUT)
-	private Display<?> output;
+	@Parameter(type = ItemIO.OUTPUT, label = "Color Table")
+	private ResultsTable table;
+	
+	// -- Command methods --
 	
 	@Override
 	public void run() {
@@ -85,7 +89,15 @@ public class ShowLUTAsTable extends ContextCommand {
 		int rowCount = colorTable.getLength();
 		int componentCount = colorTable.getComponentCount();
 		int colCount = componentCount + 1;
-		ResultsTable table = new DefaultResultsTable(colCount, rowCount);
+		table = new DefaultResultsTable(colCount, rowCount);
+		// TODO - provide default channel name column headers
+		// At some point we hope to have dimensional position labels which we could
+		// use here. For now
+		table.setColumnHeader("Index", 0);
+		for (int x = 0; x < componentCount; x++) {
+			table.setColumnHeader("CH"+x, x+1);
+		}
+		// fill in values
 		for (int y = 0; y < rowCount; y++) {
 			table.setValue(y, 0, y);
 			for (int x = 0; x < componentCount; x++) {
@@ -93,7 +105,5 @@ public class ShowLUTAsTable extends ContextCommand {
 				table.setValue(value, x+1, y);
 			}
 		}
-		output = displayService.createDisplay(table);
-		output.setName("Color table");
 	}
 }
