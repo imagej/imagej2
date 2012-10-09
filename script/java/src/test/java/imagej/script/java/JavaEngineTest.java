@@ -18,23 +18,11 @@ public class JavaEngineTest {
 
 	@Test
 	public void minimalProject() throws Exception {
-		final String source = "package minimaven;\n"
-			+ "public class MinimalTest {\n"
-			+ "\tpublic static void main(final String[] args) throws Exception {\n"
-			+ "\t\tthrow new RuntimeException(\"success\");\n"
-			+ "\t}\n"
-			+ "}\n";
-		final File dir = makeProject("minimaven.MinimalTest", "minimaven/MinimalTest.java", source);
-
-		ScriptEngine miniMaven = new JavaEngineFactory().getScriptEngine();
-		miniMaven.put(ScriptEngine.FILENAME, new File(dir, "pom.xml").getPath());
-		final ScriptContext context = miniMaven.getContext();
-		context.setWriter(new OutputStreamWriter(System.out));
-		context.setErrorWriter(new OutputStreamWriter(System.err));
+		final File dir = makeMinimalProject();
 
 		boolean result = false;
 		try {
-			miniMaven.eval((Reader)null);
+			evalJava(new File(dir, "pom.xml"));
 		} catch (ScriptException e) {
 			result = e.getCause().getCause().getMessage().equals("success");
 		}
@@ -49,9 +37,28 @@ public class JavaEngineTest {
 
 	// -- helper functions
 
-	private File makeProject(final String mainClass, final String... args) throws IOException {
-		assertTrue("need filename/content pairs", (args.length % 2) == 0);
+	private File makeMinimalProject() throws IOException {
+		final String source = "package minimaven;\n"
+			+ "public class MinimalTest {\n"
+			+ "\tpublic static void main(final String[] args) throws Exception {\n"
+			+ "\t\tthrow new RuntimeException(\"success\");\n"
+			+ "\t}\n"
+			+ "}\n";
+		final File dir = makeProject("minimaven.MinimalTest", "minimaven/MinimalTest.java", source);
+		return dir;
+	}
 
+	private ScriptEngine evalJava(final File file) throws ScriptException {
+		ScriptEngine miniMaven = new JavaEngineFactory().getScriptEngine();
+		miniMaven.put(ScriptEngine.FILENAME, file.getPath());
+		final ScriptContext context = miniMaven.getContext();
+		context.setWriter(new OutputStreamWriter(System.out));
+		context.setErrorWriter(new OutputStreamWriter(System.err));
+		miniMaven.eval((Reader)null);
+		return miniMaven;
+	}
+
+	private File makeProject(final String mainClass, final String... args) throws IOException {
 		final File dir = File.createTempFile("java-", "");
 		assertTrue(dir.delete());
 		assertTrue(dir.mkdir());
@@ -83,6 +90,16 @@ public class JavaEngineTest {
 			+ "</project>\n");
 		pom.close();
 
+		writeFiles(dir, args);
+
+		return dir;
+	}
+
+	private void writeFiles(final File dir, final String... args)
+		throws IOException
+	{
+		assertTrue("need filename/content pairs", (args.length % 2) == 0);
+
 		for (int i = 0; i < args.length; i += 2) {
 			final File src = new File(dir, "src/main/java/" + args[i]);
 			final File srcDir = src.getParentFile();
@@ -91,8 +108,6 @@ public class JavaEngineTest {
 			writer.write(args[i + 1]);
 			writer.close();
 		}
-
-		return dir;
 	}
 }
 
