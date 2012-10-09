@@ -17,7 +17,7 @@ import org.junit.Test;
 public class JavaEngineTest {
 
 	@Test
-	public void minimalProject() throws Exception {
+	public void minimalProjectFromPOM() throws Exception {
 		final File dir = makeMinimalProject();
 
 		boolean result = false;
@@ -25,6 +25,37 @@ public class JavaEngineTest {
 			evalJava(new File(dir, "pom.xml"));
 		} catch (ScriptException e) {
 			result = e.getCause().getCause().getMessage().equals("success");
+		}
+		assertTrue(result);
+
+		assertTrue(new File(dir, "target").isDirectory());
+
+		final File jar = new File(dir, "target/MinimalTest-1.0.0.jar");
+		assertTrue(jar.exists());
+
+	}
+
+	@Test
+	public void minimalProjectFromSource() throws Exception {
+		final File dir = makeMinimalProject();
+
+		final String source = "package minimaven;\n"
+				+ "public class MinimalTest2 {\n"
+				+ "\tpublic static void main(final String[] args) throws Exception {\n"
+				+ "\t\tthrow new RuntimeException(\"other main class\");\n"
+				+ "\t}\n"
+				+ "}\n";
+		final String path = "minimaven/MinimalTest2.java";
+		writeFiles(dir, path, source);
+		boolean result = false;
+		try {
+			evalJava(new File(dir, "src/main/java/" + path));
+		} catch (ScriptException e) {
+			try {
+				result = e.getCause().getCause().getMessage().equals("other main class");
+			} catch (Throwable t) {
+				e.printStackTrace();
+			}
 		}
 		assertTrue(result);
 

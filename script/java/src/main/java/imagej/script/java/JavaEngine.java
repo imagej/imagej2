@@ -5,7 +5,9 @@ import imagej.build.minimaven.MavenProject;
 import imagej.script.AbstractScriptEngine;
 import imagej.util.LineOutputStream;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
@@ -14,6 +16,8 @@ import java.io.Writer;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.script.ScriptException;
 
@@ -34,10 +38,16 @@ public class JavaEngine extends AbstractScriptEngine {
 		if (!file.exists()) {
 			throw new ScriptException("TODO: write temporary file");
 		}
+		String mainClass = null;
 		final File pomFile;
 		if (file.getName().equals("pom.xml")) {
 			pomFile = file;
 		} else {
+			try {
+				mainClass = getFullClassName(file);
+			} catch (IOException e) {
+				throw new ScriptException(e);
+			}
 			pomFile = getPOMFile(file);
 		}
 		final Writer writer = getContext().getErrorWriter();
@@ -53,7 +63,12 @@ public class JavaEngine extends AbstractScriptEngine {
 		try {
 			MavenProject project = env.parse(pomFile, null);
 			project.build(true);
-			String mainClass = project.getMainClass();
+			if (mainClass == null) {
+				mainClass = project.getMainClass();
+				if (mainClass == null) {
+					throw new ScriptException("No main class found for file " + file);
+				}
+			}
 
 			// make class loader
 			String[] paths = project.getClassPath(false).split(File.pathSeparator);
@@ -85,4 +100,33 @@ public class JavaEngine extends AbstractScriptEngine {
 		throw new ScriptException("TODO: Generate pom.xml on the fly");
 	}
 
+	private static String getFullClassName(final File file) throws IOException {
+		String name = file.getName();
+		if (!name.endsWith(".java")) {
+			throw new UnsupportedOperationException();
+		}
+		name = name.substring(0, name.length() - 5);
+
+		Pattern packagePattern = Pattern.compile("package ([a-zA-Z0-9_]*).*");
+		final BufferedReader reader = new BufferedReader(new FileReader(file));
+		for (;;) {
+			String line = reader.readLine().trim();
+			if (line == null) return name;
+			Matcher matcher = packagePattern.matcher(line);
+			while (line.startsWith("/*")) {
+				int end = line.indexOf("*/", 2);
+				while (end < 0) {
+						line = reader.readLine();
+						if (line == null) return name;
+						end = line.indexOf("*/");
+				}
+				line = line.substring(end + 2).trim();
+			}
+			if (line.equals("") || line.startsWith("//")) continue;
+			if (matcher.matches()) {
+				return matcher.group(1) + "." + name;
+			}
+			return name; // the 'package' statement must be the first in the file
+		}
+	}
 }
