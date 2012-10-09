@@ -44,6 +44,8 @@ import java.lang.reflect.Method;
 public class JavaCompiler {
 	protected PrintStream err, out;
 	protected static Method javac;
+	private final static String CLASS_NAME = "com.sun.tools.javac.Main";
+
 
 	public JavaCompiler(PrintStream err, PrintStream out) {
 		this.err = err;
@@ -57,8 +59,9 @@ public class JavaCompiler {
 			try {
 				if (javac == null) {
 					JarClassLoader loader = discoverJavac();
-					String className = "com.sun.tools.javac.Main";
-					Class<?> main = loader.forceLoadClass(className);
+					Class<?> main = loader == null ?
+						Thread.currentThread().getContextClassLoader().loadClass(CLASS_NAME) :
+						loader.forceLoadClass(CLASS_NAME);
 					Class<?>[] argsType = new Class[] {
 						arguments.getClass(),
 						PrintWriter.class
@@ -170,7 +173,9 @@ public class JavaCompiler {
 	}
 
 	protected static JarClassLoader discoverJavac() throws IOException {
-		File ijHome = new File(System.getProperty("ij.dir"));
+		final String ijDir = System.getProperty("ij.dir");
+		if (ijDir == null) return null;
+		File ijHome = new File(ijDir);
 		File javac = new File(ijHome, "jars/javac.jar");
 		if (!javac.exists()) {
 			javac = new File(ijHome, "precompiled/javac.jar");
