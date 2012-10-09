@@ -276,7 +276,7 @@ public abstract class TypeChanger extends DynamicCommand {
 			if (value < outTypeMin) value = outTypeMin;
 			if (value > outTypeMax) value = outTypeMax;
 			if (inputIs1Bit && value > 0) value = outTypeMax;
-			computeOutputPoint(chIndex, inputPointset.getAnchor(), outputPt);
+			computeOutputPoint(chIndex, inputPointset.getOrigin(), outputPt);
 			out.setPosition(outputPt);
 			out.get().setReal(value);
 		}
