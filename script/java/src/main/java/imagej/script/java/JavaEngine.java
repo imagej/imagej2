@@ -34,42 +34,55 @@ public class JavaEngine extends AbstractScriptEngine {
 		if (!file.exists()) {
 			throw new ScriptException("TODO: write temporary file");
 		}
+		final File pomFile;
 		if (file.getName().equals("pom.xml")) {
-			final Writer writer = getContext().getErrorWriter();
-			final PrintStream err = writer == null ? System.err : new PrintStream(new LineOutputStream() {
+			pomFile = file;
+		} else {
+			pomFile = getPOMFile(file);
+		}
+		final Writer writer = getContext().getErrorWriter();
+		final PrintStream err = writer == null ? System.err : new PrintStream(new LineOutputStream() {
 
-				@Override
-				public void println(final String line) throws IOException {
-					writer.append(line).append('\n');
-				}
-
-			});
-			BuildEnvironment env = new BuildEnvironment(err, true, true, false);
-			try {
-				MavenProject pom = env.parse(file, null);
-				pom.build(true);
-				String mainClass = pom.getMainClass();
-
-				// make class loader
-				String[] paths = pom.getClassPath(false).split(File.pathSeparator);
-				URL[] urls = new URL[paths.length];
-				for (int i = 0; i < urls.length; i++)
-					urls[i] = new URL("file:" + paths[i] + (paths[i].endsWith(".jar") ? "" : "/"));
-				URLClassLoader classLoader = new URLClassLoader(urls);
-
-				// needed for sezpoz
-				Thread.currentThread().setContextClassLoader(classLoader);
-
-				// launch main class
-				Class<?> clazz = classLoader.loadClass(mainClass);
-				Method main = clazz.getMethod("main", new Class[] { String[].class });
-				main.invoke(null, new Object[] { new String[0] });
-			} catch (Exception e) {
-				throw new ScriptException(e);
+			@Override
+			public void println(final String line) throws IOException {
+				writer.append(line).append('\n');
 			}
 
+		});
+		BuildEnvironment env = new BuildEnvironment(err, true, true, false);
+		try {
+			MavenProject project = env.parse(pomFile, null);
+			project.build(true);
+			String mainClass = project.getMainClass();
+
+			// make class loader
+			String[] paths = project.getClassPath(false).split(File.pathSeparator);
+			URL[] urls = new URL[paths.length];
+			for (int i = 0; i < urls.length; i++)
+				urls[i] = new URL("file:" + paths[i] + (paths[i].endsWith(".jar") ? "" : "/"));
+			URLClassLoader classLoader = new URLClassLoader(urls);
+
+			// needed for sezpoz
+			Thread.currentThread().setContextClassLoader(classLoader);
+
+			// launch main class
+			Class<?> clazz = classLoader.loadClass(mainClass);
+			Method main = clazz.getMethod("main", new Class[] { String[].class });
+			main.invoke(null, new Object[] { new String[0] });
+		} catch (Exception e) {
+			throw new ScriptException(e);
 		}
 		return null;
+	}
+
+	private File getPOMFile(final File file) throws ScriptException {
+		for (File dir = file.isDirectory() ? file : file.getParentFile(); dir != null; dir = dir.getParentFile()) {
+			final File candidate = new File(dir, "pom.xml");
+			if (candidate.exists()) {
+				return candidate;
+			}
+		}
+		throw new ScriptException("TODO: Generate pom.xml on the fly");
 	}
 
 }
