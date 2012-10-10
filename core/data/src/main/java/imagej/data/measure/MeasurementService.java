@@ -226,7 +226,7 @@ public class MeasurementService extends AbstractService {
 	// Example on how to invoke code
 	
 	@SuppressWarnings("unused")
-	private void testMe() {
+	public void testMe() {
 		DatasetService dsSrv = getContext().getService(DatasetService.class);
 		Dataset ds = dsSrv.create(
 			new long[]{5,5}, "junk", new AxisType[]{Axes.X, Axes.Y}, 8, false, false);
@@ -237,15 +237,18 @@ public class MeasurementService extends AbstractService {
 		}
 		PointSet pts = new HyperVolumePointSet(ds.getDims());
 		DoubleType output = new DoubleType();
-		measure(ds, pts, RealMedianFunction.class, output);
-		System.out.println("Median is " + output.getRealDouble());
+		// the desired version of code with less informative compiler warning
 		measure(ds, pts, RealMinFunction.class, output);
 		System.out.println("Min is " + output.getRealDouble());
 		measure(ds, pts, RealMaxFunction.class, output);
 		System.out.println("Max is " + output.getRealDouble());
+		// version of code with more informative compiler warning (in Eclipse)
+		RealMedianFunction<DoubleType> median = new RealMedianFunction<DoubleType>(null);
+		measure(ds, pts, (Class<Function<PointSet,DoubleType>>)median.getClass(), output);
+		System.out.println("Median is " + output.getRealDouble());
 		// NOTE: this one should fail to construct since it has no 1-arg constructor
 		// which points out a limitation with the whole service approach.
 		measure(ds, pts, RealAdaptiveMedianFunction.class, output);
-		System.out.println("Max is " + output.getRealDouble());
+		System.out.println("Adaptive Median is " + output.getRealDouble());
 	}
 }
