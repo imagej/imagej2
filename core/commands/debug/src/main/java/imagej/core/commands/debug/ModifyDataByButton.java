@@ -49,7 +49,7 @@ import imagej.widget.Button;
 
 /**
  * This command is example code that shows how one can make @Parameters that are
- * {@link Buttons} which can fire callbacks when pressed.
+ * {@link Button}s which can fire callbacks when pressed.
  * 
  * @author Barry DeZonia
  *
