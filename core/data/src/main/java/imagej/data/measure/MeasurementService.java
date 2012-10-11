@@ -36,20 +36,26 @@
 package imagej.data.measure;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.ops.function.Function;
+import net.imglib2.ops.function.real.PrimitiveDoubleArray;
 import net.imglib2.ops.function.real.RealAdaptiveMedianFunction;
+import net.imglib2.ops.function.real.RealArithmeticMeanFunction;
 import net.imglib2.ops.function.real.RealImageFunction;
 import net.imglib2.ops.function.real.RealMaxFunction;
 import net.imglib2.ops.function.real.RealMedianFunction;
 import net.imglib2.ops.function.real.RealMinFunction;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
+import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.complex.ComplexDoubleType;
 import net.imglib2.type.numeric.real.DoubleType;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
@@ -69,7 +75,7 @@ import imagej.service.Service;
 // need as @Parameters. I'll need to investigate but this might lead to code
 // duplication (a Command for Median and a Function for Median).
 
-// After discussing optimization with Aivar some ideas:
+// After discussing optimization with Aivar some ideas: (fleshed out below)
 //   - optimize measurement api so that values can be reused rather than recalc
 //     For instance you could write a Function<PointSet,BundleOfStats>.
 //     The function could gather a family of stats and utilize partial results.
@@ -232,8 +238,200 @@ public class MeasurementService extends AbstractService {
 	private interface SettableFunction<T> {
 		void setFunction(Function<PointSet,T> function);
 	}
+
+	private <T> void measure(Function<PointSet,T> func, PointSet region, T output) {
+		func.compute(region, output);
+	}
 	
-	// Example on how to invoke code
+	/*
+			------------------------------------------------------------------------
+ 			Here is an example that would be a measurement that can reuse values in
+ 			a specific way that the function wants. This can save some cpu cycles.
+			------------------------------------------------------------------------
+	 */
+	private class MeanAndStdDev {
+		private double mean, stdDev;
+		public double getMean() { return mean; }
+		public double getStdDev() { return stdDev; }
+		public void setMean(double val) { mean = val; }
+		public void setStdDev(double val) { stdDev = val; }
+		public MeanAndStdDev create() { return new MeanAndStdDev(); }
+	}
+	
+	private class MeanAndStdDevFunction<T extends RealType<T>>
+		implements Function<PointSet,MeanAndStdDev>
+	{
+		private final Function<long[],T> otherFunc;
+		private final MeanAndStdDev type;
+		private final T tmp;
+		private PointSet lastPointSet; 
+		private PointSetIterator iter;
+		
+		public MeanAndStdDevFunction(Function<long[],T> func, T tmp,
+			MeanAndStdDev type)
+		{
+			this.otherFunc = func;
+			this.tmp = tmp.createVariable();
+			this.type = type;
+			this.iter = null;
+		}
+		
+		@Override
+		public void compute(PointSet input, MeanAndStdDev output) {
+			if (iter == null || lastPointSet != input)
+				iter = input.createIterator();
+			else
+				iter.reset();
+			PrimitiveDoubleArray data = new PrimitiveDoubleArray();
+			while (iter.hasNext()) {
+				long[] coord = iter.next();
+				otherFunc.compute(coord, tmp);
+				data.add(tmp.getRealDouble());
+			}
+			int numElems = data.size();
+			double sumMean = 0;
+			for (int i = 0; i < numElems; i++) {
+				sumMean += data.get(i);
+			}
+			double mean = (numElems == 0) ? 0 : sumMean / numElems;
+			double sumVariance = 0;
+			for (int i = 0; i < numElems; i++) {
+				double term = data.get(i) - sumMean;
+				sumVariance += (term * term);
+			}
+			double variance = (numElems <= 1) ? 0 : sumVariance / (numElems-1);
+			double stdDev = Math.sqrt(variance);
+			output.setMean(mean);
+			output.setStdDev(stdDev);
+		}
+
+		@Override
+		public MeanAndStdDev createOutput() {
+			return type.create();
+		}
+
+		@Override
+		public Function<PointSet, MeanAndStdDev> copy() {
+			return new MeanAndStdDevFunction<T>(otherFunc, tmp, type.create());
+		}
+		
+	}
+
+	private void example1() {
+		Function<PointSet,MeanAndStdDev> func = null;
+		PointSet region = null;
+		MeanAndStdDev output = null;
+		measure(func,region,output);
+		System.out.println("mean    = " + output.getMean());
+		System.out.println("std dev = " + output.getStdDev());
+	}
+	
+	/*
+	------------------------------------------------------------------------
+		Here is an example of grabbing multiple measurements for the same set
+		of input data (allowing one pass over big images).
+	------------------------------------------------------------------------
+	 */
+
+	// Limitation: all the measures have to be of the same output type T
+	
+	private class MeasurementSet<T> {
+		
+		private List<String> names = new ArrayList<String>();
+		private List<Function<PointSet,T>> funcs =
+				new ArrayList<Function<PointSet,T>>();
+		private List<T> variables = new ArrayList<T>();
+		
+		public int getNumMeasurements() {
+			return names.size();
+		}
+		
+		public void add(String name, Function<PointSet,T> func, T variable) {
+			names.add(name);
+			funcs.add(func);
+			variables.add(variable);
+		}
+		
+		public String getMeasurementName(int i) {
+			return names.get(i);
+		}
+		
+		public Function<PointSet,T> getFunction(int i) {
+			return funcs.get(i);
+		}
+		
+		public T getVariable(int i) {
+			return variables.get(i);
+		}
+		
+		public MeasurementSet<T> create() {
+			return new MeasurementSet<T>();
+		}
+	}
+	
+	private class MultiMeasureFunction<T> implements Function<PointSet,MeasurementSet<T>> {
+
+		private MeasurementSet<T> set;
+
+		public MultiMeasureFunction(MeasurementSet<T> set) {
+			this.set = set;
+		}
+		
+		@Override
+		public void compute(PointSet input, MeasurementSet<T> output) {
+			for (int i = 0; i < output.getNumMeasurements(); i++) {
+				T variable = output.getVariable(i); 
+				output.getFunction(i).compute(input, variable);
+			}
+		}
+
+		@Override
+		public MeasurementSet<T> createOutput() {
+			return set.create();
+		}
+
+		@Override
+		public Function<PointSet, MeasurementSet<T>> copy() {
+			return new MultiMeasureFunction<T>(set.create());
+		}
+		
+	}
+	
+	private void example2() {
+		PointSet region = null;
+		
+		MeasurementSet<ComplexDoubleType> measurements = null;
+		MultiMeasureFunction<ComplexDoubleType> multimeasureFunc = null;
+		measure(multimeasureFunc, region, measurements);
+		for (int i = 0; i < measurements.getNumMeasurements(); i++) {
+			System.out.println(measurements.getMeasurementName(i) + " = " +
+					measurements.getVariable(i));
+		}
+
+		RealImageFunction<?, DoubleType> imgFunc = null;
+		RealMinFunction<DoubleType> minFunc =
+				new RealMinFunction<DoubleType>(imgFunc);
+		RealMaxFunction<DoubleType> maxFunc =
+				new RealMaxFunction<DoubleType>(imgFunc);
+		RealArithmeticMeanFunction<DoubleType> avgFunc =
+				new RealArithmeticMeanFunction<DoubleType>(imgFunc);
+		MeasurementSet<DoubleType> mSet2 = new MeasurementSet<DoubleType>();
+		mSet2.add("min", minFunc, new DoubleType());
+		mSet2.add("max", maxFunc, new DoubleType());
+		mSet2.add("avg", avgFunc, new DoubleType());
+		MultiMeasureFunction<DoubleType> mFunc2 = null;
+		measure(mFunc2, region, mSet2);
+		for (int i = 0; i < mSet2.getNumMeasurements(); i++) {
+			System.out.println(mSet2.getMeasurementName(i) + " = " +
+					mSet2.getVariable(i));
+		}
+	}
+
+	/*
+	------------------------------------------------------------------------
+		Example on how to invoke code
+	------------------------------------------------------------------------
+	 */
 	
 	@SuppressWarnings("unused")
 	public void testMe() {
