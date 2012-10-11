@@ -92,7 +92,7 @@ public class MeasureTestPlugin implements Command {
 		example3();
 	}
 
-	// -- Code to move elsewhere as publi API to simplify measurement --
+	// -- Code to move elsewhere as public API to simplify measurement --
 	
 	// TODO - make this part of some service
 
