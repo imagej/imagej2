@@ -101,6 +101,7 @@ public class MeasurementService extends AbstractService {
 	
 	// -- MeasurementService methods --
 
+	// OBSOLETE
 	/**
 	 * Makes a measurable function. Takes an <@link Img> and wraps a (presumably)
 	 * statistical function around it. The function can then be queried for values.
@@ -112,6 +113,7 @@ public class MeasurementService extends AbstractService {
 	 * @return
 	 * 	A measurable function.
 	 */
+	// OBSOLETE
 	@SuppressWarnings("unchecked")
 	public <T extends RealType<T>, C extends Function<PointSet,T>>
 		Function<PointSet,T> getMeasureFunction(
@@ -146,8 +148,10 @@ public class MeasurementService extends AbstractService {
 			);
 		return null;
 	}
+	// OBSOLETE
 
 	
+	// OBSOLETE
 	/**
 	 * Makes a measurable function. Takes an <@link Dataset> and wraps a
 	 * (presumably) statistical function around it. The function can then be
@@ -160,13 +164,16 @@ public class MeasurementService extends AbstractService {
 	 * @return
 	 * 	A measurable function.
 	 */
+	// OBSOLETE
 	public <T extends RealType<T>, C extends Function<PointSet,T>>
 	Function<PointSet,T> getMeasureFunction(
 		Dataset ds, Class<C> funcClass, T type)
 	{
 		return getMeasureFunction(ds.getImgPlus(), funcClass, type);
 	}
+	// OBSOLETE
 	
+	// OBSOLETE
 	/**
 	 * Computes a measurement from a set of points and a provided measurable
 	 * {@link Function}. The measurable function is queried for its value.
@@ -179,11 +186,14 @@ public class MeasurementService extends AbstractService {
 	 * @param output
 	 * The variable that will be filled with the measurement value
 	 */
+	// OBSOLETE
 	public <T> void measure(PointSet ps, Function<PointSet,T> func, T output)
 	{
 		func.compute(ps, output);
 	}
+	// OBSOLETE
 
+	// OBSOLETE
 	/**
 	 * Computes a measurement from a set of points of a {@link Img}. The class
 	 * of a measurable function is provided. From this class a measurable function
@@ -200,6 +210,7 @@ public class MeasurementService extends AbstractService {
 	 * @param output
 	 * The variable that will be filled with the measurement value
 	 */
+	// OBSOLETE
 	public <T extends RealType<T>, C extends Function<PointSet,T>>
 	void measure(Img<? extends RealType<?>> img,
 								PointSet ps, Class<C> funcClass, T output)
@@ -207,7 +218,9 @@ public class MeasurementService extends AbstractService {
 		Function<PointSet,T> func = getMeasureFunction(img, funcClass, output);
 		measure(ps, func, output);
 	}
+	// OBSOLETE
 
+	// OBSOLETE
 	/**
 	 * Computes a measurement from a set of points of a {@link Dataset}. The class
 	 * of a measurable function is provided. From this class a measurable function
@@ -224,11 +237,13 @@ public class MeasurementService extends AbstractService {
 	 * @param output
 	 * The variable that will be filled with the measurement value
 	 */
+	// OBSOLETE
 	public <T extends RealType<T>, C extends Function<PointSet,T>>
 	void measure(Dataset ds, PointSet ps, Class<C> funcClass, T output)
 	{
 		measure(ds.getImgPlus(), ps, funcClass, output);
 	}
+	// OBSOLETE
 
 	// -- private helpers --
 
@@ -239,10 +254,29 @@ public class MeasurementService extends AbstractService {
 		void setFunction(Function<PointSet,T> function);
 	}
 
+	/*
+	 * This code to become public API. It really does nothing of consequence.
+	 */
+	
 	private <T> void measure(Function<PointSet,T> func, PointSet region, T output) {
 		func.compute(region, output);
 	}
-	
+
+	@SuppressWarnings({"unchecked","rawtypes"})
+	private <T extends RealType<T>>
+		RealImageFunction<?,T>
+			imgFunction(Img<? extends RealType<?>> img, T outputType)
+	{
+		return new RealImageFunction(img, outputType);
+	}
+
+	private <T extends RealType<T>>
+		RealImageFunction<?,T>
+			imgFunction(Dataset ds, T outputType)
+	{
+		return imgFunction(ds.getImgPlus(), outputType);
+	}
+
 	/*
 			------------------------------------------------------------------------
  			Here is an example that would be a measurement that can reuse values in
@@ -282,6 +316,7 @@ public class MeasurementService extends AbstractService {
 				iter = input.createIterator();
 			else
 				iter.reset();
+			lastPointSet = input;
 			PrimitiveDoubleArray data = new PrimitiveDoubleArray();
 			while (iter.hasNext()) {
 				long[] coord = iter.next();
