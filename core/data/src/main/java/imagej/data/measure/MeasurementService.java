@@ -69,6 +69,16 @@ import imagej.service.Service;
 // need as @Parameters. I'll need to investigate but this might lead to code
 // duplication (a Command for Median and a Function for Median).
 
+// After discussing optimization with Aivar some ideas:
+//   - optimize measurement api so that values can be reused rather than recalc
+//     For instance you could write a Function<PointSet,BundleOfStats>.
+//     The function could gather a family of stats and utilize partial results.
+//     So have a function that computes mean AND std dev and uses the result of
+//     the mean to calc the std dev. Gathering all moments is similar idea.
+//   - make general where you can pass it a set of measurements to make and it
+//     will do so passing over data once for efficiency.
+//     i.e. calc(avg, skew, median, ...)
+
 /**
  * A service that simplifies the measurement of statistics from data.
  * 
