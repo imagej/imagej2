@@ -41,6 +41,7 @@ import net.imglib2.ops.img.ImageCombiner;
 import net.imglib2.ops.operation.real.unary.RealAddConstant;
 import net.imglib2.ops.operation.real.unary.RealSubtractConstant;
 import imagej.command.Command;
+import imagej.core.tools.TunePlayer;
 import imagej.data.Dataset;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -54,8 +55,8 @@ import imagej.widget.Button;
  * @author Barry DeZonia
  *
  */
-@Plugin(menuPath = "Plugins>Sandbox>Plugin Button Demo")
-public class ModifyDataByButton implements Command {
+@Plugin(menuPath = "Plugins>Sandbox>Button Demo")
+public class ButtonDemo implements Command {
 
 	@Parameter
 	private Dataset data;
@@ -65,6 +66,9 @@ public class ModifyDataByButton implements Command {
 	
 	@Parameter(label="Subtract 25", callback = "subtract")
 	private Button subtract;
+	
+	@Parameter(label="Play Song", callback = "playSong")
+	private Button playSong;
 	
 	@Override
 	public void run() {
@@ -89,5 +93,9 @@ public class ModifyDataByButton implements Command {
 		RealSubtractConstant subConstantOp = new RealSubtractConstant(25);
 		ImageCombiner.applyOp(subConstantOp, (Img) data.getImgPlus(), (Img) data.getImgPlus());
 		data.update();
+	}
+	
+	protected void playSong() {
+		new TunePlayer().play("T100 L32 A B C D E F G F E D C B A");
 	}
 }
