@@ -54,17 +54,14 @@ import net.imglib2.outofbounds.OutOfBoundsFactory;
 import net.imglib2.outofbounds.OutOfBoundsMirrorFactory;
 import net.imglib2.outofbounds.OutOfBoundsMirrorFactory.Boundary;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.DoubleType;
-import imagej.ImageJ;
 import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.measure.MeasurementService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-
-// TODO - below is just a place to collect code that could make its way into a
-// measurement service.
 
 /**
  * Shows how to use the MeasurementService.
@@ -78,7 +75,7 @@ public class MeasureTest implements Command {
 	// -- Parameters --
 	
 	@Parameter
-	private ImageJ context;
+	private DatasetService dsSrv;
 	
 	@Parameter
 	private MeasurementService mSrv;
@@ -110,14 +107,15 @@ public class MeasureTest implements Command {
 	}
 
 	// a basic measurement with out of bounds data handling
-	private <T extends RealType<T>> void example2() {
+	private void example2() {
 		Dataset ds = getTestData();
 		DoubleType output = new DoubleType();
-		OutOfBoundsFactory<T, Img<T>> oobFactory = getOobFactory();
+		OutOfBoundsFactory<UnsignedByteType, Img<UnsignedByteType>>
+			oobFactory = getOobFactory();
 		@SuppressWarnings("unchecked")
-		RealImageFunction<T,DoubleType> imgFuncWithOOB = new
-				RealImageFunction<T,DoubleType>(
-						(Img<T>)ds.getImgPlus(), oobFactory, output);
+		RealImageFunction<?,DoubleType> imgFuncWithOOB =
+			new	RealImageFunction<UnsignedByteType,DoubleType>(
+						(Img<UnsignedByteType>)ds.getImgPlus(), oobFactory, output);
 		RealMaxFunction<DoubleType> maxFunc =
 				new RealMaxFunction<DoubleType>(imgFuncWithOOB);
 		PointSet region = new HyperVolumePointSet(ds.getDims());
@@ -126,14 +124,15 @@ public class MeasureTest implements Command {
 	}
 
 	// a measurement that has a metric with nondefault constructor and oob
-	private <T extends RealType<T>> void example3() {
+	private void example3() {
 		Dataset ds = getTestData();
 		DoubleType output = new DoubleType();
-		OutOfBoundsFactory<T, Img<T>> oobFactory = getOobFactory();
+		OutOfBoundsFactory<UnsignedByteType, Img<UnsignedByteType>>
+			oobFactory = getOobFactory();
 		@SuppressWarnings("unchecked")
-		RealImageFunction<T,DoubleType> imgFuncWithOOB = new
-				RealImageFunction<T,DoubleType>(
-						(Img<T>)ds.getImgPlus(), oobFactory, output);
+		RealImageFunction<?,DoubleType> imgFuncWithOOB =
+			new RealImageFunction<UnsignedByteType,DoubleType>(
+						(Img<UnsignedByteType>)ds.getImgPlus(), oobFactory, output);
 		// force to (0,0) - tests that oob code is working
 		long ctrX = 0; //ds.dimension(0) / 2;
 		long ctrY = 0; //ds.dimension(1) / 2;
@@ -183,7 +182,6 @@ public class MeasureTest implements Command {
 	}
 	
 	private Dataset getTestData() {
-		DatasetService dsSrv = context.getService(DatasetService.class);
 		Dataset ds =
 				dsSrv.create(new long[]{7,7}, "tmp", new AxisType[]{Axes.X, Axes.Y},
 											8, false, false);
