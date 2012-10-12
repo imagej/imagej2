@@ -47,6 +47,7 @@ import net.imglib2.ops.function.real.RealAdaptiveMedianFunction;
 import net.imglib2.ops.function.real.RealArithmeticMeanFunction;
 import net.imglib2.ops.function.real.RealImageFunction;
 import net.imglib2.ops.function.real.RealMaxFunction;
+import net.imglib2.ops.function.real.RealMedianFunction;
 import net.imglib2.ops.function.real.RealMinFunction;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
@@ -59,9 +60,16 @@ import net.imglib2.type.numeric.real.DoubleType;
 import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.OverlayService;
+import imagej.data.measure.BasicStats;
+import imagej.data.measure.BasicStatsFunction;
 import imagej.data.measure.MeasurementService;
+import imagej.event.StatusService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.util.RealRect;
+import imagej.widget.Button;
 
 /**
  * Shows how to use the MeasurementService.
@@ -80,19 +88,132 @@ public class MeasureTest implements Command {
 	@Parameter
 	private MeasurementService mSrv;
 	
-	// -- Comand methods --
+	@Parameter
+	private OverlayService oSrv;
+	
+	@Parameter
+	private StatusService sSrv;
+	
+	@Parameter
+	private ImageDisplay display;
+	
+	@Parameter
+	private Dataset dataset;
+	
+	@Parameter(label="Calc mean", callback = "chooseMean")
+	private Button mean;
+	
+	@Parameter(label="Calc min", callback = "chooseMin")
+	private Button min;
+	
+	@Parameter(label="Calc max", callback = "chooseMax")
+	private Button max;
+
+	@Parameter(label="Calc median", callback = "chooseMedian")
+	private Button median;
+
+	// -- private variables --
+	
+	private Function<PointSet,DoubleType> function;
+	
+	private String name;
+	
+	// -- Command methods --
 	
 	@Override
 	public void run() {
-		example1();
-		example2();
-		example3();
-		example4();
 	}
 
-	// -- Examples --
+	// -- MeasureTest methods --
 	
-	// standard ways of measuring various values. figure out ways to generalize
+	protected void chooseMean() {
+		RealImageFunction<?,DoubleType> imgFunc =
+				mSrv.imgFunction(dataset, new DoubleType());
+		function = new RealArithmeticMeanFunction<DoubleType>(imgFunc);
+		name = "Mean";
+		calc();
+	}
+	
+	protected void chooseMin() {
+		RealImageFunction<?,DoubleType> imgFunc =
+				mSrv.imgFunction(dataset, new DoubleType());
+		function = new RealMinFunction<DoubleType>(imgFunc);
+		name = "Min";
+		calc();
+	}
+	
+	protected void chooseMax() {
+		RealImageFunction<?,DoubleType> imgFunc =
+				mSrv.imgFunction(dataset, new DoubleType());
+		function = new RealMaxFunction<DoubleType>(imgFunc);
+		name = "Max";
+		calc();
+	}
+	
+	protected void chooseMedian() {
+		RealImageFunction<?,DoubleType> imgFunc =
+				mSrv.imgFunction(dataset, new DoubleType());
+		function = new RealMedianFunction<DoubleType>(imgFunc);
+		name = "Median";
+		calc();
+	}
+	
+	// -- private helpers --
+
+	private void calc() {
+		RealRect bounds = oSrv.getSelectionBounds(display);
+		long[] minPt = new long[display.numDimensions()];
+		long[] maxPt = new long[display.numDimensions()];
+		minPt[0] = (long) bounds.x;
+		minPt[1] = (long) bounds.y;
+		maxPt[0] = (long) (bounds.x + bounds.width);
+		maxPt[1] = (long) (bounds.y + bounds.height);
+		HyperVolumePointSet points = new HyperVolumePointSet(minPt,maxPt);
+		DoubleType output = new DoubleType();
+		mSrv.measure(function, points, output);
+		sSrv.showStatus(name+" of selected region is "+output.getRealDouble());
+	}
+	
+	private <T extends RealType<T>> OutOfBoundsFactory<T, Img<T>> getOobFactory()
+	{
+		return new OutOfBoundsMirrorFactory<T,Img<T>>(Boundary.DOUBLE);
+	}
+	
+	private Dataset getTestData() {
+		Dataset ds =
+				dsSrv.create(new long[]{7,7}, "tmp", new AxisType[]{Axes.X, Axes.Y},
+											8, false, false);
+		Cursor<? extends RealType<?>> cursor = ds.getImgPlus().cursor();
+		int i = 0;
+		while (cursor.hasNext()) {
+			cursor.next().setReal(i++);
+		}
+		return ds;
+	}
+
+	// this returns a list of PointSets that are progressively bigger.
+	// for illustration.
+	private List<PointSet>
+		getNestedNeighborhoods(long delta)
+	{
+		long[] zeroOrigin = new long[2];
+		long[] tmpNeg = new long[]{delta, delta};
+		long[] tmpPos = new long[]{delta, delta};
+		List<PointSet> regions = new ArrayList<PointSet>();
+		for (int i = 0; i < 5; i++) {
+			PointSet ps = new HyperVolumePointSet(zeroOrigin, tmpNeg, tmpPos);
+			regions.add(ps);
+			tmpNeg = tmpNeg.clone();
+			tmpPos = tmpPos.clone();
+			tmpNeg[0]++; tmpNeg[1]++;
+			tmpPos[0]++; tmpPos[1]++;
+		}
+		return regions;
+	}
+	
+	// -- Other examples --
+	
+	// standard ways of measuring various values.
 	
 	// a basic measurement
 	private void example1() {
@@ -174,43 +295,16 @@ public class MeasureTest implements Command {
 		System.out.println("max = "+outputList.get(2).getRealDouble());
 	}
 	
-	// -- private helpers -
-
-	private <T extends RealType<T>> OutOfBoundsFactory<T, Img<T>> getOobFactory()
-	{
-		return new OutOfBoundsMirrorFactory<T,Img<T>>(Boundary.DOUBLE);
+	private void example5() {
+		Dataset ds = getTestData();
+		DoubleType output = new DoubleType();
+		RealImageFunction<?, DoubleType> imgFunc = mSrv.imgFunction(ds, output);
+		BasicStatsFunction<DoubleType> statFunc =
+				new BasicStatsFunction<DoubleType>(imgFunc, new DoubleType());
+		PointSet region = new HyperVolumePointSet(ds.getDims());
+		BasicStats stats = new BasicStats();
+		mSrv.measure(statFunc, region, stats);
+		System.out.println("mean = "+stats.getXBar());
+		System.out.println("var = "+stats.getS2n1());
 	}
-	
-	private Dataset getTestData() {
-		Dataset ds =
-				dsSrv.create(new long[]{7,7}, "tmp", new AxisType[]{Axes.X, Axes.Y},
-											8, false, false);
-		Cursor<? extends RealType<?>> cursor = ds.getImgPlus().cursor();
-		int i = 0;
-		while (cursor.hasNext()) {
-			cursor.next().setReal(i++);
-		}
-		return ds;
-	}
-
-	// this returns a list of PointSets that are progressively bigger.
-	// for illustration.
-	private List<PointSet>
-		getNestedNeighborhoods(long delta)
-	{
-		long[] zeroOrigin = new long[2];
-		long[] tmpNeg = new long[]{delta, delta};
-		long[] tmpPos = new long[]{delta, delta};
-		List<PointSet> regions = new ArrayList<PointSet>();
-		for (int i = 0; i < 5; i++) {
-			PointSet ps = new HyperVolumePointSet(zeroOrigin, tmpNeg, tmpPos);
-			regions.add(ps);
-			tmpNeg = tmpNeg.clone();
-			tmpPos = tmpPos.clone();
-			tmpNeg[0]++; tmpNeg[1]++;
-			tmpPos[0]++; tmpPos[1]++;
-		}
-		return regions;
-	}
-	
 }
