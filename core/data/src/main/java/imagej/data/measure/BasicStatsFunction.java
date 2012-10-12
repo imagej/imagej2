@@ -36,7 +36,6 @@
 package imagej.data.measure;
 
 import net.imglib2.ops.function.Function;
-import net.imglib2.ops.function.real.PrimitiveDoubleArray;
 import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
@@ -47,16 +46,20 @@ import net.imglib2.type.numeric.RealType;
  * from another input Function.
  * <p>
  * This Function can be seen as an example of a Function that computes multiple
- * output values at one time. Another method available is via the {@link
- * MeasurementService} API.
+ * output values at one time by providing an aggregating class. A simpler
+ * preferred method is available via the {@link MeasurementService} API using
+ * the measure() method that takes multiple arguments.
  * <p>
- * The advantage of a method like this is that such custom Functions can reuse
- * their computations internally as needed to improve performance.
+ * The advantage of using an aggregating class is that such custom Functions can
+ * reuse their computations internally as needed to improve performance. And the
+ * aggregating class can return values of different types via getter methods.
+ * The MeasurementServicve is limited to a set of outputs of a single type. In
+ * practice this is not much of a limitation.
  * 
  * @author Barry DeZonia
  *
  * @param <T>
- * The backing type of the input Function. 
+ * The output type of the input Function. 
  * 
  */
 public class BasicStatsFunction<T extends RealType<T>>
@@ -66,7 +69,7 @@ public class BasicStatsFunction<T extends RealType<T>>
 	
 	private final Function<long[],T> otherFunc;
 	private final T tmp;
-	private final PrimitiveDoubleArray data;
+	private double[] data;
 	private PointSet lastPointSet; 
 	private PointSetIterator iter;
 	
@@ -84,7 +87,7 @@ public class BasicStatsFunction<T extends RealType<T>>
 	{
 		this.otherFunc = func;
 		this.tmp = tmp.createVariable();
-		this.data = new PrimitiveDoubleArray();
+		this.data = null;
 		this.lastPointSet = null;
 		this.iter = null;
 	}
@@ -100,33 +103,21 @@ public class BasicStatsFunction<T extends RealType<T>>
 	 */
 	@Override
 	public void compute(PointSet input, BasicStats output) {
-		if (iter == null || lastPointSet != input)
+		if (iter == null || lastPointSet != input) {
+			// TODO - use an Img<DoubleType> to break limitations
+			data = new double[(int)input.calcSize()];
 			iter = input.createIterator();
+		}
 		else
 			iter.reset();
 		lastPointSet = input;
-		data.clear();
-		double sumMean = 0;
+		int i = 0;
 		while (iter.hasNext()) {
 			long[] coord = iter.next();
 			otherFunc.compute(coord, tmp);
-			// for some functions the previous compute() could be expensive (think of
-			// virtual Imgs for instance) and thus cache values and use them in later
-			// calculations.
-			data.add(tmp.getRealDouble());
-			sumMean += tmp.getRealDouble();
+			data[i++] = tmp.getRealDouble();
 		}
-		int numElems = data.size();
-		double mean = (numElems == 0) ? 0 : sumMean / numElems;
-		double sumVariance = 0;
-		for (int i = 0; i < numElems; i++) {
-			double term = data.get(i) - sumMean;
-			sumVariance += (term * term);
-		}
-		double variance = (numElems <= 1) ? 0 : sumVariance / (numElems-1);
-		double stdDev = Math.sqrt(variance);
-		output.setMean(mean);
-		output.setStdDev(stdDev);
+		output.calcStats(data);
 	}
 
 	/**
