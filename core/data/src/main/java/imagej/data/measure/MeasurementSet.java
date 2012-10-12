@@ -46,7 +46,9 @@ import net.imglib2.ops.pointset.PointSet;
  * MeasurementSet is a collection of {@link Function}s and associated outputs.
  * It is used by the {@link MeasurementService} to measure multiple Functions
  * at a time. Note that a MeasurementSet is limited to one type of output. If
- * multiple output types are needed then use multiple MeasurementSets.
+ * multiple output types are needed then use multiple MeasurementSets or create
+ * your own aggregating class and associated Function (similar to {@link
+ * BasicStats} and {@link BasicStatsFunction}).
  *  
  * @author Barry DeZonia
  *

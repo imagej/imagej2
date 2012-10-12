@@ -35,12 +35,12 @@
 
 package imagej.data.measure;
 
-// TODO - add skew, kurtosis, etc. Or add functionality that takes a list of
-// doubles and computes them all and provides getters.
+// TODO - add skew, kurtosis, etc. Optionally add flags that specify which ones
+// to calculate and only calc those of interest to speed computation time.
 
 /**
- * A class that packages together a set of basic statistics such as mean,
- * variance, etc.
+ * A class that packages together a set of basic statistics such as sample mean,
+ * sample variance, etc.
  * 
  * @author Barry DeZonia
  *
@@ -106,6 +106,7 @@ public class BasicStats {
 	 * The set of values in the sample of the population.
 	 */
 	public void calcStats(double[] data) {
+		// Reference: MathWorld.com
 		int n = data.length;
 		double sum;
 		sum = 0;

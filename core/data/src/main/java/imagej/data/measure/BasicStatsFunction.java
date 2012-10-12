@@ -53,8 +53,8 @@ import net.imglib2.type.numeric.RealType;
  * The advantage of using an aggregating class is that such custom Functions can
  * reuse their computations internally as needed to improve performance. And the
  * aggregating class can return values of different types via getter methods.
- * The MeasurementServicve is limited to a set of outputs of a single type. In
- * practice this is not much of a limitation.
+ * The MeasurementService is limited to a set of outputs of a single type. In
+ * practice this is probably not much of a limitation.
  * 
  * @author Barry DeZonia
  *
@@ -77,11 +77,12 @@ public class BasicStatsFunction<T extends RealType<T>>
 
 	/**
 	 * Creates a BasicStatsFunction on another {@link Function}.
+
 	 * @param func
-	 * The other Function to compute the BasicStats of.
+	 *  The other Function to compute the BasicStats of.
 	 * @param tmp
-	 * A variable of the type of the other Function that can be used for temporary
-	 * calculations.
+	 *  A variable of the type of the other Function that can be used for
+	 *  temporary calculations.
 	 */
 	public BasicStatsFunction(Function<long[],T> func, T tmp)
 	{
@@ -94,9 +95,6 @@ public class BasicStatsFunction<T extends RealType<T>>
 	
 	// -- Function methods --
 
-	// TODO - this was written as an example. Check actual definitions at
-	// mathworld.com to make sure our stat definitions are correct.
-	
 	/**
 	 * Computes the {@link BasicStats} of the other {@link Function} over the
 	 * input region {@PointSet}.

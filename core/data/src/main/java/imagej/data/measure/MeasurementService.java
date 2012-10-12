@@ -47,6 +47,14 @@ import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 
+// TODO - this service and all related classes do not have to be in the
+// imagej.data package (ij-data subproject). There is only the one reliance on
+// Dataset that is only for a convenience function that can reside elsewhere.
+// Maybe MeasurementService should move to ij-core and we eliminate the Dataset
+// convenience function from this class. Of course that would make core reliant
+// on Imglib2 OPS.
+
+
 /**
  * A service that simplifies the measurement of values from data.
  * 
