@@ -116,12 +116,14 @@ public class MeasureTest implements Command {
 	
 	private Function<PointSet,DoubleType> function;
 	
-	private String name;
+	private String funcName;
 	
 	// -- Command methods --
 	
 	@Override
 	public void run() {
+		// does nothing. the whole of this plugin is the interactivity of the button
+		// presses with updates to the status line.
 	}
 
 	// -- MeasureTest methods --
@@ -130,7 +132,7 @@ public class MeasureTest implements Command {
 		RealImageFunction<?,DoubleType> imgFunc =
 				mSrv.imgFunction(dataset, new DoubleType());
 		function = new RealArithmeticMeanFunction<DoubleType>(imgFunc);
-		name = "Mean";
+		funcName = "Mean";
 		calc();
 	}
 	
@@ -138,7 +140,7 @@ public class MeasureTest implements Command {
 		RealImageFunction<?,DoubleType> imgFunc =
 				mSrv.imgFunction(dataset, new DoubleType());
 		function = new RealMinFunction<DoubleType>(imgFunc);
-		name = "Min";
+		funcName = "Min";
 		calc();
 	}
 	
@@ -146,7 +148,7 @@ public class MeasureTest implements Command {
 		RealImageFunction<?,DoubleType> imgFunc =
 				mSrv.imgFunction(dataset, new DoubleType());
 		function = new RealMaxFunction<DoubleType>(imgFunc);
-		name = "Max";
+		funcName = "Max";
 		calc();
 	}
 	
@@ -154,7 +156,7 @@ public class MeasureTest implements Command {
 		RealImageFunction<?,DoubleType> imgFunc =
 				mSrv.imgFunction(dataset, new DoubleType());
 		function = new RealMedianFunction<DoubleType>(imgFunc);
-		name = "Median";
+		funcName = "Median";
 		calc();
 	}
 	
@@ -171,7 +173,7 @@ public class MeasureTest implements Command {
 		HyperVolumePointSet points = new HyperVolumePointSet(minPt,maxPt);
 		DoubleType output = new DoubleType();
 		mSrv.measure(function, points, output);
-		sSrv.showStatus(name+" of selected region is "+output.getRealDouble());
+		sSrv.showStatus(funcName+" of selected region is "+output.getRealDouble());
 	}
 	
 	private <T extends RealType<T>> OutOfBoundsFactory<T, Img<T>> getOobFactory()
