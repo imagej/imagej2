@@ -52,6 +52,7 @@ import net.imglib2.ops.function.real.RealMinFunction;
 import net.imglib2.ops.function.real.RealPointCountFunction;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
+import net.imglib2.ops.pointset.RoiPointSet;
 import net.imglib2.outofbounds.OutOfBoundsFactory;
 import net.imglib2.outofbounds.OutOfBoundsMirrorFactory;
 import net.imglib2.outofbounds.OutOfBoundsMirrorFactory.Boundary;
@@ -66,10 +67,10 @@ import imagej.data.display.OverlayService;
 import imagej.data.measure.BasicStats;
 import imagej.data.measure.BasicStatsFunction;
 import imagej.data.measure.MeasurementService;
+import imagej.data.overlay.Overlay;
 import imagej.event.StatusService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.util.RealRect;
 import imagej.widget.Button;
 
 /**
@@ -101,20 +102,20 @@ public class MeasureTest implements Command {
 	@Parameter
 	private Dataset dataset;
 	
-	@Parameter(label="Calc mean", callback = "chooseMean")
+	@Parameter(label="Measure mean", callback = "mean")
 	private Button mean;
 	
-	@Parameter(label="Calc min", callback = "chooseMin")
+	@Parameter(label="Measure min", callback = "min")
 	private Button min;
 	
-	@Parameter(label="Calc max", callback = "chooseMax")
+	@Parameter(label="Measure max", callback = "max")
 	private Button max;
 
-	@Parameter(label="Calc median", callback = "chooseMedian")
+	@Parameter(label="Measure median", callback = "median")
 	private Button median;
 
-	@Parameter(label="Calc area", callback = "chooseArea")
-	private Button area;
+	@Parameter(label="Measure region size", callback = "regionSize")
+	private Button regionSize;
 
 	// -- private variables --
 	
@@ -132,7 +133,7 @@ public class MeasureTest implements Command {
 
 	// -- MeasureTest methods --
 	
-	protected void chooseMean() {
+	protected void mean() {
 		RealImageFunction<?,DoubleType> imgFunc =
 				mSrv.imgFunction(dataset, new DoubleType());
 		function = new RealArithmeticMeanFunction<DoubleType>(imgFunc);
@@ -140,7 +141,7 @@ public class MeasureTest implements Command {
 		calc();
 	}
 	
-	protected void chooseMin() {
+	protected void min() {
 		RealImageFunction<?,DoubleType> imgFunc =
 				mSrv.imgFunction(dataset, new DoubleType());
 		function = new RealMinFunction<DoubleType>(imgFunc);
@@ -148,7 +149,7 @@ public class MeasureTest implements Command {
 		calc();
 	}
 	
-	protected void chooseMax() {
+	protected void max() {
 		RealImageFunction<?,DoubleType> imgFunc =
 				mSrv.imgFunction(dataset, new DoubleType());
 		function = new RealMaxFunction<DoubleType>(imgFunc);
@@ -156,7 +157,7 @@ public class MeasureTest implements Command {
 		calc();
 	}
 	
-	protected void chooseMedian() {
+	protected void median() {
 		RealImageFunction<?,DoubleType> imgFunc =
 				mSrv.imgFunction(dataset, new DoubleType());
 		function = new RealMedianFunction<DoubleType>(imgFunc);
@@ -164,22 +165,27 @@ public class MeasureTest implements Command {
 		calc();
 	}
 	
-	protected void chooseArea() {
+	protected void regionSize() {
 		function = new RealPointCountFunction<DoubleType>(new DoubleType());
-		funcName = "Area";
+		funcName = "Region size";
 		calc();
 	}
 	// -- private helpers --
 
 	private void calc() {
-		RealRect bounds = oSrv.getSelectionBounds(display);
-		long[] minPt = new long[display.numDimensions()];
-		long[] maxPt = new long[display.numDimensions()];
-		minPt[0] = (long) bounds.x;
-		minPt[1] = (long) bounds.y;
-		maxPt[0] = (long) (bounds.x + bounds.width);
-		maxPt[1] = (long) (bounds.y + bounds.height);
-		HyperVolumePointSet points = new HyperVolumePointSet(minPt,maxPt);
+		PointSet points;
+		Overlay overlay = oSrv.getActiveOverlay(display);
+		if (overlay != null) {
+			points = new RoiPointSet(overlay.getRegionOfInterest());
+		}
+		else {
+			long[] dims = display.getDims();
+			// 1st plane only
+			for (int i = 2; i < dims.length; i++) {
+				dims[i] = 1;
+			}
+			points = new HyperVolumePointSet(dims);
+		}
 		DoubleType output = new DoubleType();
 		mSrv.measure(function, points, output);
 		sSrv.showStatus(funcName+" of selected region is "+output.getRealDouble());
