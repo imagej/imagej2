@@ -49,6 +49,7 @@ import net.imglib2.ops.function.real.RealImageFunction;
 import net.imglib2.ops.function.real.RealMaxFunction;
 import net.imglib2.ops.function.real.RealMedianFunction;
 import net.imglib2.ops.function.real.RealMinFunction;
+import net.imglib2.ops.function.real.RealPointCountFunction;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.outofbounds.OutOfBoundsFactory;
@@ -112,6 +113,9 @@ public class MeasureTest implements Command {
 	@Parameter(label="Calc median", callback = "chooseMedian")
 	private Button median;
 
+	@Parameter(label="Calc area", callback = "chooseArea")
+	private Button area;
+
 	// -- private variables --
 	
 	private Function<PointSet,DoubleType> function;
@@ -160,6 +164,11 @@ public class MeasureTest implements Command {
 		calc();
 	}
 	
+	protected void chooseArea() {
+		function = new RealPointCountFunction<DoubleType>(new DoubleType());
+		funcName = "Area";
+		calc();
+	}
 	// -- private helpers --
 
 	private void calc() {
