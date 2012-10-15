@@ -55,6 +55,7 @@ import imagej.render.TextRenderer.TextJustification;
 import imagej.util.AppUtils;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
+import imagej.util.Manifest;
 import imagej.util.MersenneTwisterFast;
 
 import java.io.BufferedReader;
@@ -279,8 +280,13 @@ public class AboutImageJ extends ContextCommand {
 	 * image.
 	 */
 	private List<String> getTextBlock() {
-		final LinkedList<String> stringList = new LinkedList<String>();
+		Manifest mft = context.getManifest();
 
+		final LinkedList<String> stringList = new LinkedList<String>();
+		if (mft != null) {
+			stringList.add("Build: " + mft.getImplementationBuild());
+			stringList.add("Date: " + mft.getImplementationDate());
+		}
 		stringList.add("Open source image processing software");
 		stringList.add("Copyright 2010, 2011, 2012");
 		stringList.add("http://developer.imagej.net/");
