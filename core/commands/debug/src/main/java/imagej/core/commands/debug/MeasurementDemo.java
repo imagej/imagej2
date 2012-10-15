@@ -79,8 +79,8 @@ import imagej.widget.Button;
  * @author Barry DeZonia
  *
  */
-@Plugin(menuPath = "Plugins>Sandbox>Measure Tester")
-public class MeasureTest implements Command {
+@Plugin(menuPath = "Plugins>Sandbox>Measurement Demo")
+public class MeasurementDemo implements Command {
 
 	// -- Parameters --
 	
