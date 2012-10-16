@@ -39,6 +39,7 @@
 package imagej.util;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 
 /**
@@ -215,6 +216,59 @@ public final class FileUtils {
 			}
 		}
 		return new String(shortPathArray);
+	}
+
+	/**
+	 * Creates a temporary directory.
+	 * 
+	 * Since there is no atomic operation to do that, we create a temporary file,
+	 * delete it and create a directory in its place. To avoid race conditions, we
+	 * use the optimistic approach: if the directory cannot be created, we try to
+	 * obtain a new temporary file rather than erroring out.
+	 * 
+	 * It is the caller's responsibility to make sure that the directory is deleted.
+	 * 
+	 * @param prefix The prefix string to be used in generating the file's name;
+	 *  see {@link File#createTempFile(String, String, File)}
+	 * @param suffix The suffix string to be used in generating the file's name;
+	 *  see {@link File#createTempFile(String, String, File)}
+	 * @return: An abstract pathname denoting a newly-created empty directory
+	 * @throws IOException 
+	 */
+	public static File createTemporaryDirectory(final String prefix, final String suffix) throws IOException {
+		return createTemporaryDirectory(prefix, suffix, null);
+	}
+
+	/**
+	 * Creates a temporary directory.
+	 * 
+	 * Since there is no atomic operation to do that, we create a temporary file,
+	 * delete it and create a directory in its place. To avoid race conditions, we
+	 * use the optimistic approach: if the directory cannot be created, we try to
+	 * obtain a new temporary file rather than erroring out.
+	 * 
+	 * It is the caller's responsibility to make sure that the directory is deleted.
+	 * 
+	 * @param prefix The prefix string to be used in generating the file's name;
+	 *  see {@link File#createTempFile(String, String, File)}
+	 * @param suffix The suffix string to be used in generating the file's name;
+	 *  see {@link File#createTempFile(String, String, File)}
+	 * @param directory The directory in which the file is to be created, or null
+	 *  if the default temporary-file directory is to be used
+	 * @return: An abstract pathname denoting a newly-created empty directory
+	 * @throws IOException 
+	 */
+	public static File createTemporaryDirectory(final String prefix, final String suffix, final File directory) throws IOException {
+		for (int counter = 0; counter < 10; counter++) {
+			final File file = File.createTempFile(prefix, suffix, directory);
+
+			if (!file.delete())
+				throw new IOException("Could not delete file " + file);
+
+			// in case of a race condition, just try again
+			if (file.mkdir()) return file;
+		}
+		throw new IOException("Could not create temporary directory (too many race conditions?)");
 	}
 
 	// -- Deprecated methods --
