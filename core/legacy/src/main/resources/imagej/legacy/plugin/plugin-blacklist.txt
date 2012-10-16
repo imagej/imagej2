@@ -48,6 +48,7 @@ ij.plugin.filter.ImageMath("macro")        # Process > Math > Macro
 ij.plugin.frame.RoiManager                 # Image > Analyze > Tools > ROI Manager
 ij.plugin.ImageJ_Updater                   # Help > Update ImageJ...
 ij.plugin.filter.Benchmark                 # Plugins > Utilities > Benchmark
+ij.plugin.Hotkeys("install")               # Plugins > Shortcuts > Create Shortcut...
 ###### PHASE THESE OUT SOON
 #ij.plugin.Converter("8-bit Color")         # Image > Type > 8-bit Color
 #ij.plugin.Converter("RGB Color")           # Image > Type > RGB Color
