@@ -61,13 +61,13 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 @SuppressWarnings("hiding")
-public class POM extends DefaultHandler implements Comparable<POM> {
+public class MavenProject extends DefaultHandler implements Comparable<MavenProject> {
 	protected final BuildEnvironment env;
 	protected boolean buildFromSource, built;
 	protected File directory, target;
 	protected String sourceDirectory = "src/main/java";
-	protected POM parent;
-	protected POM[] children;
+	protected MavenProject parent;
+	protected MavenProject[] children;
 
 	protected Coordinate coordinate = new Coordinate(), parentCoordinate;
 	protected Map<String, String> properties = new HashMap<String, String>();
@@ -84,19 +84,19 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 	protected boolean isCurrentProfile;
 	protected String currentPluginName;
 
-	protected POM addModule(String name) throws IOException, ParserConfigurationException, SAXException {
+	protected MavenProject addModule(String name) throws IOException, ParserConfigurationException, SAXException {
 		return addChild(env.parse(new File(new File(directory, name), "pom.xml"), this));
 	}
 
-	protected POM addChild(POM child) {
-		POM[] newChildren = new POM[children.length + 1];
+	protected MavenProject addChild(MavenProject child) {
+		MavenProject[] newChildren = new MavenProject[children.length + 1];
 		System.arraycopy(children, 0, newChildren, 0, children.length);
 		newChildren[children.length] = child;
 		children = newChildren;
 		return child;
 	}
 
-	protected POM(final BuildEnvironment miniMaven, File directory, POM parent) {
+	protected MavenProject(final BuildEnvironment miniMaven, File directory, MavenProject parent) {
 		env = miniMaven;
 		this.directory = directory;
 		this.parent = parent;
@@ -111,7 +111,7 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 	public void clean() throws IOException, ParserConfigurationException, SAXException {
 		if (!buildFromSource)
 			return;
-		for (POM child : getDependencies(true, env.downloadAutomatically))
+		for (MavenProject child : getDependencies(true, env.downloadAutomatically))
 			if (child != null)
 				child.clean();
 		if (target.isDirectory())
@@ -148,7 +148,7 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 	public boolean upToDate(boolean includingJar) throws IOException, ParserConfigurationException, SAXException {
 		if (!buildFromSource)
 			return true;
-		for (POM child : getDependencies(true, env.downloadAutomatically, "test"))
+		for (MavenProject child : getDependencies(true, env.downloadAutomatically, "test"))
 			if (child != null && !child.upToDate(includingJar)) {
 				if (env.verbose) {
 					env.err.println(getArtifactId() + " not up-to-date because of " + child.getArtifactId());
@@ -237,7 +237,7 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 		if (!buildFromSource || built)
 			return;
 		boolean forceFullBuild = false;
-		for (POM child : getDependencies(true, env.downloadAutomatically, "test"))
+		for (MavenProject child : getDependencies(true, env.downloadAutomatically, "test"))
 			if (child != null && !child.upToDate(makeJar)) {
 				child.build(makeJar);
 				forceFullBuild = true;
@@ -253,7 +253,7 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 		List<String> arguments = new ArrayList<String>();
 		// classpath
 		String classPath = getClassPath(true);
-		POM pom2 = this;
+		MavenProject pom2 = this;
 		while (pom2 != null && pom2.sourceVersion == null)
 			pom2 = pom2.parent;
 		if (pom2 != null) {
@@ -422,7 +422,7 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 		builder.append(target);
 		if (env.debug)
 			env.err.println("Get classpath for " + coordinate + " for " + (forCompile ? "compile" : "runtime"));
-		for (POM pom : getDependencies(true, env.downloadAutomatically, "test", forCompile ? "runtime" : "provided")) {
+		for (MavenProject pom : getDependencies(true, env.downloadAutomatically, "test", forCompile ? "runtime" : "provided")) {
 			if (env.debug)
 				env.err.println("Adding dependency " + pom.coordinate + " to classpath");
 			builder.append(File.pathSeparator).append(pom.getTarget());
@@ -440,7 +440,7 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 	 * @throws SAXException
 	 */
 	public void copyDependencies(File directory, boolean onlyNewer) throws IOException, ParserConfigurationException, SAXException {
-		for (POM pom : getDependencies(true, env.downloadAutomatically, "test", "provided")) {
+		for (MavenProject pom : getDependencies(true, env.downloadAutomatically, "test", "provided")) {
 			File file = pom.getTarget();
 			File destination = new File(directory, pom.coordinate.artifactId + ".jar");
 			if (file.exists() && (!onlyNewer || (!destination.exists() || destination.lastModified() < file.lastModified())))
@@ -448,17 +448,17 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 		}
 	}
 
-	public Set<POM> getDependencies() throws IOException, ParserConfigurationException, SAXException {
+	public Set<MavenProject> getDependencies() throws IOException, ParserConfigurationException, SAXException {
 		return getDependencies(false, env.downloadAutomatically);
 	}
 
-	public Set<POM> getDependencies(boolean excludeOptionals, boolean downloadAutomatically, String... excludeScopes) throws IOException, ParserConfigurationException, SAXException {
-		Set<POM> set = new TreeSet<POM>();
+	public Set<MavenProject> getDependencies(boolean excludeOptionals, boolean downloadAutomatically, String... excludeScopes) throws IOException, ParserConfigurationException, SAXException {
+		Set<MavenProject> set = new TreeSet<MavenProject>();
 		getDependencies(set, excludeOptionals, downloadAutomatically, excludeScopes);
 		return set;
 	}
 
-	public void getDependencies(Set<POM> result, boolean excludeOptionals, boolean downloadAutomatically, String... excludeScopes) throws IOException, ParserConfigurationException, SAXException {
+	public void getDependencies(Set<MavenProject> result, boolean excludeOptionals, boolean downloadAutomatically, String... excludeScopes) throws IOException, ParserConfigurationException, SAXException {
 		for (Coordinate dependency : dependencies) {
 			if (excludeOptionals && dependency.optional)
 				continue;
@@ -466,7 +466,7 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 			if (scope != null && excludeScopes != null && arrayContainsString(excludeScopes, scope))
 				continue;
 			Coordinate expanded = expand(dependency);
-			POM pom = findPOM(expanded, !env.verbose, false);
+			MavenProject pom = findPOM(expanded, !env.verbose, false);
 			String systemPath = expand(dependency.systemPath);
 			if (pom == null && systemPath != null) {
 				File file = new File(systemPath);
@@ -557,14 +557,14 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 		return parent.getProperty(key);
 	}
 
-	public POM[] getChildren() {
+	public MavenProject[] getChildren() {
 		if (children == null)
-			return new POM[0];
+			return new MavenProject[0];
 		return children;
 	}
 
-	public POM getRoot() {
-		POM result = this;
+	public MavenProject getRoot() {
+		MavenProject result = this;
 		while (result.parent != null)
 			result = result.parent;
 		return result;
@@ -581,12 +581,12 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 		if (parent == null)
 			result.add("http://repo1.maven.org/maven2/");
 		result.addAll(repositories);
-		for (POM child : getChildren())
+		for (MavenProject child : getChildren())
 			if (child != null)
 				child.getRepositories(result);
 	}
 
-	public POM findPOM(Coordinate dependency, boolean quiet, boolean downloadAutomatically) throws IOException, ParserConfigurationException, SAXException {
+	public MavenProject findPOM(Coordinate dependency, boolean quiet, boolean downloadAutomatically) throws IOException, ParserConfigurationException, SAXException {
 		if (dependency.version == null && "aopalliance".equals(dependency.artifactId))
 			dependency.version = "1.0";
 		if (dependency.version == null && "provided".equals(dependency.scope))
@@ -598,12 +598,12 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 		// fall back to Fiji's modules/, $HOME/.m2/repository/ and Fiji's jars/ and plugins/ directories
 		String key = dependency.getKey();
 		if (env.localPOMCache.containsKey(key)) {
-			POM result = env.localPOMCache.get(key); // may be null
+			MavenProject result = env.localPOMCache.get(key); // may be null
 			if (result == null || BuildEnvironment.compareVersion(dependency.getVersion(), result.coordinate.getVersion()) <= 0)
 				return result;
 		}
 
-		POM pom = findInMultiProjects(dependency);
+		MavenProject pom = findInMultiProjects(dependency);
 		if (pom != null)
 			return pom;
 
@@ -659,7 +659,7 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 			}
 		}
 
-		POM result = env.parse(new File(path, dependency.getPOMName()), null, dependency.classifier);
+		MavenProject result = env.parse(new File(path, dependency.getPOMName()), null, dependency.classifier);
 		if (result != null) {
 			if (result.target.getName().endsWith("-SNAPSHOT.jar")) {
 				result.coordinate.version = dependency.version;
@@ -681,10 +681,10 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 		return result;
 	}
 
-	protected POM findInMultiProjects(Coordinate dependency) throws IOException, ParserConfigurationException, SAXException {
+	protected MavenProject findInMultiProjects(Coordinate dependency) throws IOException, ParserConfigurationException, SAXException {
 		env.parseMultiProjects();
 		String key = dependency.getKey();
-		POM result = env.localPOMCache.get(key);
+		MavenProject result = env.localPOMCache.get(key);
 		if (result != null && BuildEnvironment.compareVersion(dependency.getVersion(), result.coordinate.getVersion()) <= 0)
 			return result;
 		return null;
@@ -704,7 +704,7 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 		return null;
 	}
 
-	protected POM cacheAndReturn(String key, POM pom) {
+	protected MavenProject cacheAndReturn(String key, MavenProject pom) {
 		env.localPOMCache.put(key, pom);
 		return pom;
 	}
@@ -904,7 +904,7 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 	}
 
 	@Override
-	public int compareTo(POM other) {
+	public int compareTo(MavenProject other) {
 		int result = coordinate.artifactId.compareTo(other.coordinate.artifactId);
 		if (result != 0)
 			return result;
@@ -925,7 +925,7 @@ public class POM extends DefaultHandler implements Comparable<POM> {
 	public void append(StringBuilder builder, String indent) {
 		builder.append(indent + coordinate.getKey() + "\n");
 		if (children != null)
-			for (POM child : getChildren())
+			for (MavenProject child : getChildren())
 				if (child == null)
 					builder.append(indent).append("  (null)\n");
 				else

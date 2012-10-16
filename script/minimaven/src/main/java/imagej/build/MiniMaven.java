@@ -35,7 +35,7 @@ package imagej.build;
  */
 
 import imagej.build.minimaven.BuildEnvironment;
-import imagej.build.minimaven.POM;
+import imagej.build.minimaven.MavenProject;
 
 import java.io.File;
 import java.io.PrintStream;
@@ -82,11 +82,11 @@ public class MiniMaven {
 			"true".equals(getSystemProperty("minimaven.download.automatically", "true")),
 			"true".equals(getSystemProperty("minimaven.verbose", "false")),
 			false);
-		POM root = env.parse(new File("pom.xml"), null);
+		MavenProject root = env.parse(new File("pom.xml"), null);
 		String command = args.length == 0 ? "compile-and-run" : args[0];
 		String artifactId = getSystemProperty("artifactId", root.getArtifactId().equals("pom-ij-base") ? "ij-app" : root.getArtifactId());
 
-		POM pom = findPOM(root, artifactId);
+		MavenProject pom = findPOM(root, artifactId);
 		if (pom == null)
 			pom = root;
 		if (command.equals("compile") || command.equals("build") || command.equals("compile-and-run")) {
@@ -130,29 +130,29 @@ public class MiniMaven {
 		else if (command.equals("classpath"))
 			err.println(pom.getClassPath(false));
 		else if (command.equals("list")) {
-			Set<POM> result = new TreeSet<POM>();
-			Stack<POM> stack = new Stack<POM>();
+			Set<MavenProject> result = new TreeSet<MavenProject>();
+			Stack<MavenProject> stack = new Stack<MavenProject>();
 			stack.push(pom.getRoot());
 			while (!stack.empty()) {
 				pom = stack.pop();
 				if (result.contains(pom) || !pom.getBuildFromSource())
 					continue;
 				result.add(pom);
-				for (POM child : pom.getChildren())
+				for (MavenProject child : pom.getChildren())
 					stack.push(child);
 			}
-			for (POM pom2 : result)
+			for (MavenProject pom2 : result)
 				System.err.println(pom2);
 		}
 		else
 			err.println("Unhandled command: " + command + "\n" + usage);
 	}
 
-	protected static POM findPOM(POM root, String artifactId) {
+	protected static MavenProject findPOM(MavenProject root, String artifactId) {
 		if (artifactId == null || artifactId.equals(root.getArtifactId()))
 			return root;
-		for (POM child : root.getChildren()) {
-			POM pom = findPOM(child, artifactId);
+		for (MavenProject child : root.getChildren()) {
+			MavenProject pom = findPOM(child, artifactId);
 			if (pom != null)
 				return pom;
 		}

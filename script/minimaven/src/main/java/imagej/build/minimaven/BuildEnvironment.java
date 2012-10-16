@@ -69,8 +69,8 @@ public class BuildEnvironment {
 	protected int updateInterval = 24 * 60; // by default, check once per 24h for new snapshot versions
 	protected PrintStream err;
 	protected JavaCompiler javac;
-	protected Map<String, POM> localPOMCache = new HashMap<String, POM>();
-	protected Map<File, POM> file2pom = new HashMap<File, POM>();
+	protected Map<String, MavenProject> localPOMCache = new HashMap<String, MavenProject>();
+	protected Map<File, MavenProject> file2pom = new HashMap<File, MavenProject>();
 	protected Stack<File> multiProjectRoots = new Stack<File>();
 	protected Set<File> excludedFromMultiProjects = new HashSet<File>();
 	protected final static File mavenRepository;
@@ -127,15 +127,15 @@ public class BuildEnvironment {
 		err.print((verbose || length < 80 ? string : string.substring(0, 80)) + endLine);
 	}
 
-	public POM parse(File file) throws IOException, ParserConfigurationException, SAXException {
+	public MavenProject parse(File file) throws IOException, ParserConfigurationException, SAXException {
 		return parse(file, null);
 	}
 
-	public POM parse(File file, POM parent) throws IOException, ParserConfigurationException, SAXException {
+	public MavenProject parse(File file, MavenProject parent) throws IOException, ParserConfigurationException, SAXException {
 		return parse(file, parent, null);
 	}
 
-	public POM parse(File file, POM parent, String classifier) throws IOException, ParserConfigurationException, SAXException {
+	public MavenProject parse(File file, MavenProject parent, String classifier) throws IOException, ParserConfigurationException, SAXException {
 		if (file2pom.containsKey(file))
 			return file2pom.get(file);
 
@@ -144,7 +144,7 @@ public class BuildEnvironment {
 		if (verbose)
 			print80("Parsing " + file);
 		File directory = file.getCanonicalFile().getParentFile();
-		POM pom = new POM(this, directory, parent);
+		MavenProject pom = new MavenProject(this, directory, parent);
 		pom.coordinate.classifier = classifier;
 		if (parent != null) {
 			pom.sourceDirectory = parent.sourceDirectory;
@@ -164,7 +164,7 @@ public class BuildEnvironment {
 		if (version == null || version.equals(""))
 			throw new SAXException("Missing version: " + file);
 
-		pom.children = new POM[pom.modules.size()];
+		pom.children = new MavenProject[pom.modules.size()];
 		for (int i = 0; i < pom.children.length; i++) {
 			File child = new File(directory, pom.modules.get(i) + "/pom.xml");
 			pom.children[i] = parse(child, pom);
@@ -222,11 +222,11 @@ public class BuildEnvironment {
 		return pom;
 	}
 
-	protected POM fakePOM(File target, Coordinate dependency) {
-		POM pom = new POM(this, target, null);
+	protected MavenProject fakePOM(File target, Coordinate dependency) {
+		MavenProject pom = new MavenProject(this, target, null);
 		pom.directory = target.getParentFile();
 		pom.target = target;
-		pom.children = new POM[0];
+		pom.children = new MavenProject[0];
 		pom.coordinate = dependency;
 		if (dependency.artifactId.equals("ij")) {
 			String javac = pom.expand("${java.home}/../lib/tools.jar");
