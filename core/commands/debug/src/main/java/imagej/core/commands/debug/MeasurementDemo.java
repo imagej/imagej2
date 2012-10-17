@@ -52,11 +52,13 @@ import net.imglib2.ops.function.real.RealMinFunction;
 import net.imglib2.ops.function.real.RealPointCountFunction;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
+import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.ops.pointset.RoiPointSet;
 import net.imglib2.outofbounds.OutOfBoundsFactory;
 import net.imglib2.outofbounds.OutOfBoundsMirrorFactory;
 import net.imglib2.outofbounds.OutOfBoundsMirrorFactory.Boundary;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.DoubleType;
 import imagej.command.Command;
@@ -285,7 +287,7 @@ public class MeasurementDemo implements Command {
 		System.out.println("adaptive median is " + output.getRealDouble());
 	}
 
-	// measuring ,multiple things at a time
+	// measuring multiple things at a time
 	private void example4() {
 		Dataset ds = getTestData();
 		DoubleType output = new DoubleType();
@@ -312,6 +314,7 @@ public class MeasurementDemo implements Command {
 		System.out.println("max = "+outputList.get(2).getRealDouble());
 	}
 	
+	// measuring a custom set of data using an aggregating class
 	private void example5() {
 		Dataset ds = getTestData();
 		DoubleType output = new DoubleType();
@@ -323,5 +326,51 @@ public class MeasurementDemo implements Command {
 		mSrv.measure(statFunc, region, stats);
 		System.out.println("mean = "+stats.getXBar());
 		System.out.println("var = "+stats.getS2n1());
+	}
+	
+	// measuring a user defined function with the service
+	private void example6() {
+		Dataset ds = getTestData();
+		IntType output = new IntType();
+		RealImageFunction<?, IntType> imgFunc = mSrv.imgFunction(ds, output);
+		CustomFunction func = new CustomFunction(imgFunc);
+		PointSet region = new HyperVolumePointSet(ds.getDims());
+		mSrv.measure(func, region, output);
+		System.out.println("total 7's = "+output.get());
+	}
+	
+	// user defined function for example6 : count the number of 7's in the data
+	private class CustomFunction implements Function<PointSet,IntType> {
+
+		private Function<long[],IntType> data;
+		private IntType tmp;
+		
+		public CustomFunction(Function<long[],IntType> data) {
+			this.data = data;
+			this.tmp = new IntType();
+		}
+		
+		@Override
+		public void compute(PointSet input, IntType output) {
+			int numSevens = 0;
+			PointSetIterator iter = input.createIterator();
+			while (iter.hasNext()) {
+				long[] coord = iter.next();
+				data.compute(coord, tmp);
+				if (tmp.get() == 7) numSevens++;
+			}
+			output.set(numSevens);
+		}
+
+		@Override
+		public IntType createOutput() {
+			return new IntType();
+		}
+
+		@Override
+		public Function<PointSet, IntType> copy() {
+			return new CustomFunction(data.copy());
+		}
+		
 	}
 }
