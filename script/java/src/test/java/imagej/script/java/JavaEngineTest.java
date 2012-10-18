@@ -66,6 +66,29 @@ public class JavaEngineTest {
 
 	}
 
+	@Test
+	public void testEvalReader() throws Exception {
+		final String source = "package pinky.brain;\n" +
+				"public class TakeOverTheWorld {\n" +
+				"\tpublic static void main(final String[] arguments) {\n" +
+				"\t\tthrow new RuntimeException(\"Egads!\");\n" +
+				"\t}\n" +
+				"}";
+
+		ScriptEngine miniMaven = new JavaEngineFactory().getScriptEngine();
+		boolean result = false;
+		try {
+			miniMaven.eval(source);
+		} catch (ScriptException e) {
+			try {
+				result = e.getCause().getCause().getMessage().equals("Egads!");
+			} catch (Throwable t) {
+				e.printStackTrace();
+			}
+		}
+		assertTrue(result);
+	}
+
 	// -- helper functions
 
 	private File makeMinimalProject() throws IOException {
