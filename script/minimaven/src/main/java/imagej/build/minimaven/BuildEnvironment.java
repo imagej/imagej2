@@ -226,7 +226,7 @@ public class BuildEnvironment {
 		return pom;
 	}
 
-	protected MavenProject fakePOM(File target, Coordinate dependency) {
+	public MavenProject fakePOM(File target, Coordinate dependency) {
 		MavenProject pom = new MavenProject(this, target, null);
 		pom.directory = target.getParentFile();
 		pom.target = target;
@@ -248,6 +248,14 @@ public class BuildEnvironment {
 		localPOMCache.put(key, pom);
 
 		return pom;
+	}
+
+	public boolean containsProject(final String groupId, final String artifactId) {
+		return containsProject(new Coordinate(groupId, artifactId, null));
+	}
+
+	public boolean containsProject(final Coordinate coordinate) {
+		return localPOMCache.containsKey(coordinate.getKey());
 	}
 
 	public void addMultiProjectRoot(File root) {
