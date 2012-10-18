@@ -144,6 +144,12 @@ public class BuildEnvironment {
 		if (verbose)
 			print80("Parsing " + file);
 		File directory = file.getCanonicalFile().getParentFile();
+		final MavenProject pom = parse(new FileInputStream(file), directory, parent, classifier);
+		file2pom.put(file, pom);
+		return pom;
+	}
+
+	public MavenProject parse(final InputStream in, final File directory, final MavenProject parent, final String classifier) throws SAXException, ParserConfigurationException, IOException {
 		MavenProject pom = new MavenProject(this, directory, parent);
 		pom.coordinate.classifier = classifier;
 		if (parent != null) {
@@ -153,16 +159,15 @@ public class BuildEnvironment {
 		XMLReader reader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
 		reader.setContentHandler(pom);
 		//reader.setXMLErrorHandler(...);
-		FileInputStream in = new FileInputStream(file);
 		reader.parse(new InputSource(in));
 		in.close();
 		if (pom.coordinate.artifactId == null || pom.coordinate.artifactId.equals(""))
-			throw new SAXException("Missing artifactId: " + file);
+			throw new SAXException("Missing artifactId: " + new File(directory, "pom.xml"));
 		if (pom.coordinate.groupId == null || pom.coordinate.groupId.equals(""))
-			throw new SAXException("Missing groupId: " + file);
+			throw new SAXException("Missing groupId: " + new File(directory, "pom.xml"));
 		String version = pom.coordinate.getVersion();
 		if (version == null || version.equals(""))
-			throw new SAXException("Missing version: " + file);
+			throw new SAXException("Missing version: " + new File(directory, "pom.xml"));
 
 		pom.children = new MavenProject[pom.modules.size()];
 		for (int i = 0; i < pom.children.length; i++) {
@@ -218,7 +223,6 @@ public class BuildEnvironment {
 			pom.parent.addChild(pom);
 		}
 
-		file2pom.put(file, pom);
 		return pom;
 	}
 
