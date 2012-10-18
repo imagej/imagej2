@@ -93,6 +93,14 @@ public class Coordinate {
 		snapshotVersion = version;
 	}
 
+	public String getGroupId() {
+		return groupId;
+	}
+
+	public String getArtifactId() {
+		return artifactId;
+	}
+
 	public String getVersion() {
 		return snapshotVersion != null ? snapshotVersion : version;
 	}
