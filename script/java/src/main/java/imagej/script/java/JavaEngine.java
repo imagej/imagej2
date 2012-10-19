@@ -78,7 +78,9 @@ public class JavaEngine extends AbstractScriptEngine {
 		}
 
 		try {
-			BuildEnvironment env = new BuildEnvironment(err, true, true, false);
+			boolean verbose = "true".equals(get("verbose"));
+			boolean debug = "true".equals(get("debug"));
+			BuildEnvironment env = new BuildEnvironment(err, true, verbose, debug);
 			final MavenProject project;
 			String mainClass = null;
 
