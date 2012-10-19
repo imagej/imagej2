@@ -1251,6 +1251,8 @@ public class TextEditor extends JFrame implements ActionListener,
 						errors.flush();
 						markCompileEnd();
 					} catch (Throwable t) {
+						output.flush();
+						errors.flush();
 						handleException(t);
 					} finally {
 						restore();
