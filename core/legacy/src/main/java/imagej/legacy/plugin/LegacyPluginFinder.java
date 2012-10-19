@@ -179,16 +179,14 @@ public class LegacyPluginFinder {
 		final Map<String, Object> presets = new HashMap<String, Object>();
 		presets.put("className", className);
 		presets.put("arg", arg);
-		final CommandInfo<Command> pe =
-			new CommandInfo<Command>(LEGACY_PLUGIN_CLASS,
-				Command.class);
-		pe.setMenuPath(menuPath);
-		pe.setPresets(presets);
+		final CommandInfo ci = new CommandInfo(LEGACY_PLUGIN_CLASS);
+		ci.setMenuPath(menuPath);
+		ci.setPresets(presets);
 
 		// flag legacy command with special icon
 		menuPath.getLeaf().setIconPath(LEGACY_PLUGIN_ICON);
 
-		return pe;
+		return ci;
 	}
 
 	/** Creates a table mapping IJ1 command labels to menu paths. */

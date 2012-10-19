@@ -90,9 +90,9 @@ public final class TypeChangeService extends AbstractService {
 			dataset == null ? "" : dataset.getTypeLabelShort();
 		final String suffix = ".ChangeTo" + typeLabel.toUpperCase();
 
-		final List<CommandInfo<TypeChanger>> commands =
+		final List<CommandInfo> commands =
 			commandService.getCommandsOfType(TypeChanger.class);
-		for (final CommandInfo<TypeChanger> info : commands) {
+		for (final CommandInfo info : commands) {
 			final boolean selected = info.getDelegateClassName().endsWith(suffix);
 			info.setSelected(selected);
 		}

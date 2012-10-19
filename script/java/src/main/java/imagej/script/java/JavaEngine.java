@@ -128,10 +128,11 @@ public class JavaEngine extends AbstractScriptEngine {
 			if (Command.class.isAssignableFrom(clazz)) {
 				final ImageJ context = (ImageJ)get(ScriptService.CONTEXT);
 				final Plugin annotation = clazz.getAnnotation(Plugin.class);
-				final CommandInfo<Command> info = new CommandInfo<Command>(mainClass, Command.class, annotation) {
+				final CommandInfo info = new CommandInfo(mainClass, annotation) {
+
 					@Override
 					public Class<Command> loadClass() {
-						return (Class<Command>)clazz;
+						return (Class<Command>) clazz;
 					}
 				};
 

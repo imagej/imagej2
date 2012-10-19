@@ -115,7 +115,7 @@ public class SplitChannelsContextMonitor extends AbstractService {
 	// WinActivated does fire before MsPressed, so the behavior is mysterious.
 
 	private void setContextAppropriate(final boolean enabled) {
-		final CommandInfo<SplitChannelsContext> info =
+		final CommandInfo info =
 			commandService.getCommand(SplitChannelsContext.class);
 		info.setEnabled(enabled);
 		info.update(eventService); // TODO: Is this needed here?

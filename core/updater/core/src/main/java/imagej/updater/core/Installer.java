@@ -166,7 +166,9 @@ public class Installer extends Downloader {
 			final FileObject file = files.get(hardcoded);
 			if (file != null) topLevel.add(file);
 		} else {
-			for (final CommandInfo<UpdaterUI> info : commandService.getCommandsOfType(UpdaterUI.class)) {
+			for (final CommandInfo info : commandService
+				.getCommandsOfType(UpdaterUI.class))
+			{
 				final FileObject file = getFileObject(files, info.getClassName());
 				if (file != null) {
 					topLevel.add(file);

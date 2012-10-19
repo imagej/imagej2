@@ -48,12 +48,12 @@ import imagej.module.ModuleException;
 public class DefaultCommandModuleFactory implements CommandModuleFactory {
 
 	@Override
-	public <C extends Command> Module createModule(final CommandInfo<C> info)
+	public Module createModule(final CommandInfo info)
 		throws ModuleException
 	{
 		// if the command implements Module, return a new instance directly
 		try {
-			final Class<C> commandClass = info.loadClass();
+			final Class<?> commandClass = info.loadClass();
 			if (Module.class.isAssignableFrom(commandClass)) {
 				return (Module) commandClass.newInstance();
 			}
@@ -69,20 +69,18 @@ public class DefaultCommandModuleFactory implements CommandModuleFactory {
 		}
 
 		// command does not implement Module; wrap it in a CommandModule instance
-		return new CommandModule<C>(info);
+		return new CommandModule(info);
 	}
 
 	@Override
-	public <C extends Command> Module createModule(final CommandInfo<C> info,
-		final C command)
-	{
+	public Module createModule(final CommandInfo info, final Command command) {
 		// if the command implements Module, return the instance directly
 		if (command instanceof Module) {
 			return (Module) command;
 		}
 
 		// command does not implement Module; wrap it in a CommandModule instance
-		return new CommandModule<C>(info, command);
+		return new CommandModule(info, command);
 	}
 
 }

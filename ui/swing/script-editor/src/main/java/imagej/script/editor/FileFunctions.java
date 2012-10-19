@@ -289,7 +289,7 @@ public class FileFunctions {
 	}
 
 	public boolean newPlugin() {
-		Future<CommandModule<NewPlugin>> result =
+		Future<CommandModule> result =
 			parent.commandService.run(NewPlugin.class, "editor", parent);
 		try {
 			result.get();

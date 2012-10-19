@@ -138,8 +138,7 @@ public class MacOSXPlatform extends AbstractPlatform {
 		// (the Mac application menu will trigger them instead)
 		final ArrayList<ModuleInfo> infos = new ArrayList<ModuleInfo>();
 		for (final Class<? extends Command> command : commands) {
-			final CommandInfo<? extends Command> info =
-				commandService.getCommand(command);
+			final CommandInfo info = commandService.getCommand(command);
 			info.setMenuPath(null);
 			infos.add(info);
 		}

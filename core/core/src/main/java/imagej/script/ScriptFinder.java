@@ -36,7 +36,6 @@ package imagej.script;
 
 import imagej.MenuEntry;
 import imagej.MenuPath;
-import imagej.command.Command;
 import imagej.command.CommandInfo;
 import imagej.log.LogService;
 
@@ -75,7 +74,7 @@ public class ScriptFinder {
 	 * 
 	 * @param plugins The collection to which the discovered scripts are added
 	 */
-	public void findPlugins(final List<CommandInfo<?>> plugins) {
+	public void findPlugins(final List<CommandInfo> plugins) {
 		final String path = System.getProperty("plugins.dir");
 		if (path == null) return;
 
@@ -98,7 +97,7 @@ public class ScriptFinder {
 	 *          except for the subdirectory <i>Scripts/</i> whose entries will be
 	 *          pulled into the top-level menu structure
 	 */
-	private void discoverScripts(final List<CommandInfo<?>> plugins,
+	private void discoverScripts(final List<CommandInfo> plugins,
 		final File directory, MenuPath menuPath)
 	{
 		final File[] fileList = directory.listFiles();
@@ -131,14 +130,12 @@ public class ScriptFinder {
 		return result;
 	}
 
-	private CommandInfo<Command> createEntry(final File scriptPath,
+	private CommandInfo createEntry(final File scriptPath,
 		final MenuPath menuPath)
 	{
 		final Map<String, Object> presets = new HashMap<String, Object>();
 		presets.put("file", scriptPath);
-		final CommandInfo<Command> pe =
-			new CommandInfo<Command>(SCRIPT_PLUGIN_CLASS,
-				Command.class);
+		final CommandInfo pe = new CommandInfo(SCRIPT_PLUGIN_CLASS);
 		pe.setMenuPath(menuPath);
 		pe.setPresets(presets);
 

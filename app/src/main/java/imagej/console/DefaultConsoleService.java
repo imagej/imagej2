@@ -35,7 +35,6 @@
 
 package imagej.console;
 
-import imagej.command.Command;
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
 import imagej.data.Dataset;
@@ -115,8 +114,8 @@ public class DefaultConsoleService extends AbstractService implements
 	/** Implements the "--run <label> <optionString>" legacy handling */
 	private boolean run(String menuLabel, final String optionString) {
 		final String label = menuLabel.replace('_', ' ');
-		CommandInfo<Command> info = null;
-		for (final CommandInfo<Command> info2 : commandService.getCommands()) {
+		CommandInfo info = null;
+		for (final CommandInfo info2 : commandService.getCommands()) {
 			if (label.equals(info2.getTitle())) {
 				info = info2;
 				break;

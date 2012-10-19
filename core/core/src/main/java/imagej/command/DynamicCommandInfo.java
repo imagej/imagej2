@@ -52,21 +52,22 @@ import java.lang.reflect.Field;
  * Helper class for maintaining a {@link DynamicCommand}'s associated
  * {@link ModuleInfo}.
  * <p>
- * The {@link PluginService} has a plain {@link PluginInfo} object in its index,
- * populated from the {@link DynamicCommand}'s @{@link Plugin} annotation. So
- * this class adapts that object, delegating to it for the {@link UIDetails}
- * methods. The plain {@link PluginInfo} cannot be used as-is, however, because
- * we need to override the {@link ModuleInfo} methods as well as provide new
- * functionality such as {@link DefaultModuleInfo#addInput(ModuleItem)}.
+ * The {@link CommandService} has a plain {@link CommandInfo} object in its
+ * index, populated from the {@link DynamicCommand}'s @{@link Plugin}
+ * annotation. So this class adapts that object, delegating to it for the
+ * {@link UIDetails} methods. The plain {@link CommandInfo} cannot be used
+ * as-is, however, because we need to override the {@link ModuleInfo} methods as
+ * well as provide new functionality such as
+ * {@link DefaultModuleInfo#addInput(ModuleItem)}.
  * </p>
  * 
  * @author Curtis Rueden
  */
 public class DynamicCommandInfo extends DefaultModuleInfo {
 
-	private final CommandInfo<? extends DynamicCommand> info;
+	private final CommandInfo info;
 
-	public DynamicCommandInfo(final CommandInfo<? extends DynamicCommand> info,
+	public DynamicCommandInfo(final CommandInfo info,
 		final Class<? extends DynamicCommand> moduleClass)
 	{
 		this.info = info;

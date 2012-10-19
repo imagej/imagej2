@@ -96,7 +96,7 @@ public interface OptionsService extends Service {
 	 * Sets the option with the given name, from the specified options plugin, to
 	 * the given value.
 	 */
-	<O extends OptionsPlugin> void setOption(CommandInfo<O> info, String name,
+	<O extends OptionsPlugin> void setOption(CommandInfo info, String name,
 		Object value);
 
 }

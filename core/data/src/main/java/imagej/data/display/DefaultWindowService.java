@@ -37,7 +37,6 @@ package imagej.data.display;
 
 import imagej.MenuEntry;
 import imagej.MenuPath;
-import imagej.command.Command;
 import imagej.command.CommandInfo;
 import imagej.display.Display;
 import imagej.display.event.DisplayActivatedEvent;
@@ -179,9 +178,7 @@ public final class DefaultWindowService extends AbstractService implements
 
 	/** Creates a {@link ModuleInfo} to reopen data at the given path. */
 	private ModuleInfo createInfo(final String displayName) {
-		final CommandInfo<Command> info =
-			new CommandInfo<Command>(SelectWindow.class.getName(),
-				Command.class);
+		final CommandInfo info = new CommandInfo(SelectWindow.class.getName());
 
 		// hard code path to open as a preset
 		final HashMap<String, Object> presets = new HashMap<String, Object>();
