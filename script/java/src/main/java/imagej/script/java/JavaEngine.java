@@ -1,8 +1,12 @@
 package imagej.script.java;
 
+import imagej.ImageJ;
 import imagej.build.minimaven.BuildEnvironment;
 import imagej.build.minimaven.Coordinate;
 import imagej.build.minimaven.MavenProject;
+import imagej.command.Command;
+import imagej.command.CommandInfo;
+import imagej.command.CommandService;
 import imagej.script.AbstractScriptEngine;
 import imagej.util.FileUtils;
 import imagej.util.LineOutputStream;
@@ -55,6 +59,7 @@ public class JavaEngine extends AbstractScriptEngine {
 		return eval(new StringReader(script));
 	}
 
+	@SuppressWarnings({ "unchecked" })
 	@Override
 	public Object eval(Reader reader) throws ScriptException {
 		final Writer writer = getContext().getErrorWriter();
@@ -106,15 +111,27 @@ public class JavaEngine extends AbstractScriptEngine {
 			URL[] urls = new URL[paths.length];
 			for (int i = 0; i < urls.length; i++)
 				urls[i] = new URL("file:" + paths[i] + (paths[i].endsWith(".jar") ? "" : "/"));
-			URLClassLoader classLoader = new URLClassLoader(urls);
+			URLClassLoader classLoader = new URLClassLoader(urls, getClass().getClassLoader());
 
 			// needed for sezpoz
 			Thread.currentThread().setContextClassLoader(classLoader);
 
 			// launch main class
-			Class<?> clazz = classLoader.loadClass(mainClass);
-			Method main = clazz.getMethod("main", new Class[] { String[].class });
-			main.invoke(null, new Object[] { new String[0] });
+			final Class<?> clazz = classLoader.loadClass(mainClass);
+			if (Command.class.isAssignableFrom(clazz)) {
+				final ImageJ context = (ImageJ)get("IJ");
+				final CommandService commandService = context.getService(CommandService.class);
+				final CommandInfo<Command> info = new CommandInfo<Command>(mainClass, Command.class) {
+					@Override
+					public Class<Command> loadClass() {
+						return (Class<Command>)clazz;
+					}
+				};
+				commandService.run(info);
+			} else {
+				Method main = clazz.getMethod("main", new Class[] { String[].class });
+				main.invoke(null, new Object[] { new String[0] });
+			}
 		} catch (Exception e) {
 			if (err != null) err.close();
 			if (e instanceof ScriptException) throw (ScriptException)e;
