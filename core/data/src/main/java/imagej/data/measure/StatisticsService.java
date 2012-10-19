@@ -124,7 +124,25 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealAlphaTrimmedMeanFunction<DoubleType>(imgFunc,halfTrimSize);
-		return measure(func,region);
+		return measure(func, region);
+	}
+
+	/**
+	 * Returns an estimate of the trimmed mean of the values of a {@link Dataset}.
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @param halfTrimSize
+	 * The number of values to trim from each end of the set of samples collected
+	 * @return
+	 * The measured value
+	 */
+	public double alphaTrimmedMean(Dataset ds, int halfTrimSize)
+	{
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealAlphaTrimmedMeanFunction<DoubleType>(imgFunc,halfTrimSize);
+		return measure(func, allOf(ds));
 	}
 
 	/**
@@ -142,7 +160,23 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealArithmeticMeanFunction<DoubleType>(imgFunc);
-		return measure(func,region);
+		return measure(func, region);
+	}
+	
+	/**
+	 * Returns an estimate of the arithmetic mean of the values of a
+	 * {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double arithmeticMean(Dataset ds) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealArithmeticMeanFunction<DoubleType>(imgFunc);
+		return measure(func, allOf(ds));
 	}
 	
 	/**
@@ -162,7 +196,25 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealContraharmonicMeanFunction<DoubleType>(imgFunc, order);
-		return measure(func,region);
+		return measure(func, region);
+	}
+
+	/**
+	 * Returns an estimate of the contraharmonic mean of the values within a
+	 * {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @param order
+	 * The desired order of the contraharmonic mean
+	 * @return
+	 * The measured value
+	 */
+	public double contraharmomicMean(Dataset ds, double order) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealContraharmonicMeanFunction<DoubleType>(imgFunc, order);
+		return measure(func, allOf(ds));
 	}
 
 	/**
@@ -180,7 +232,23 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealGeometricMeanFunction<DoubleType>(imgFunc);
-		return measure(func,region);
+		return measure(func, region);
+	}
+	
+	/**
+	 * Returns an estimate of the geometric mean of the values within a
+	 * {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double geometricMean(Dataset ds) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealGeometricMeanFunction<DoubleType>(imgFunc);
+		return measure(func, allOf(ds));
 	}
 	
 	/**
@@ -198,7 +266,23 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealHarmonicMeanFunction<DoubleType>(imgFunc);
-		return measure(func,region);
+		return measure(func, region);
+	}
+
+	/**
+	 * Returns an estimate of the harmonic mean of the values within a
+	 * {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double harmonicMean(Dataset ds) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealHarmonicMeanFunction<DoubleType>(imgFunc);
+		return measure(func, allOf(ds));
 	}
 
 	/**
@@ -216,7 +300,22 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealKurtosisBiasedFunction<DoubleType>(imgFunc);
-		return measure(func,region);
+		return measure(func, region);
+	}
+
+	/**
+	 * Returns the (biased) kurtosis of all the values within a {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double kurtosisBiased(Dataset ds) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealKurtosisBiasedFunction<DoubleType>(imgFunc);
+		return measure(func, allOf(ds));
 	}
 
 	/**
@@ -234,7 +333,22 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealKurtosisUnbiasedFunction<DoubleType>(imgFunc);
-		return measure(func,region);
+		return measure(func, region);
+	}
+
+	/**
+	 * Returns the (unbiased) kurtosis of all the values within a {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double kurtosisUnbiased(Dataset ds) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealKurtosisUnbiasedFunction<DoubleType>(imgFunc);
+		return measure(func, allOf(ds));
 	}
 
 	/**
@@ -252,7 +366,23 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealKurtosisExcessBiasedFunction<DoubleType>(imgFunc);
-		return measure(func,region);
+		return measure(func, region);
+	}
+
+	/**
+	 * Returns the (biased) kurtosis excess of all the values within a
+	 * {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double kurtosisExcessBiased(Dataset ds) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealKurtosisExcessBiasedFunction<DoubleType>(imgFunc);
+		return measure(func, allOf(ds));
 	}
 
 	/**
@@ -270,7 +400,23 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealKurtosisExcessUnbiasedFunction<DoubleType>(imgFunc);
-		return measure(func,region);
+		return measure(func, region);
+	}
+
+	/**
+	 * Returns the (unbiased) kurtosis excess of all the values within a
+	 * {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double kurtosisExcessUnbiased(Dataset ds) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealKurtosisExcessUnbiasedFunction<DoubleType>(imgFunc);
+		return measure(func, allOf(ds));
 	}
 
 	/**
@@ -288,7 +434,23 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealMaxFunction<DoubleType>(imgFunc);
-		return measure(func,region);
+		return measure(func, region);
+	}
+	
+	/**
+	 * Returns the maximum value from the set of values within a
+	 * {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double maximum(Dataset ds) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealMaxFunction<DoubleType>(imgFunc);
+		return measure(func, allOf(ds));
 	}
 	
 	/**
@@ -306,7 +468,23 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealMedianFunction<DoubleType>(imgFunc);
-		return measure(func,region);
+		return measure(func, region);
+	}
+
+	/**
+	 * Returns the median value from the set of values within a
+	 * {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double median(Dataset ds) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealMedianFunction<DoubleType>(imgFunc);
+		return measure(func, allOf(ds));
 	}
 
 	/**
@@ -325,7 +503,23 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealMidpointFunction<DoubleType>(imgFunc);
-		return measure(func,region);
+		return measure(func, region);
+	}
+	
+	/**
+	 * Returns the point midway between the minimum value and the maximum value
+	 * from the set of values within a {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double midpoint(Dataset ds) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealMidpointFunction<DoubleType>(imgFunc);
+		return measure(func, allOf(ds));
 	}
 	
 	/**
@@ -343,7 +537,23 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealMinFunction<DoubleType>(imgFunc);
-		return measure(func,region);
+		return measure(func, region);
+	}
+	
+	/**
+	 * Returns the minimum value from the set of values within a
+	 * {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double minimum(Dataset ds) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealMinFunction<DoubleType>(imgFunc);
+		return measure(func, allOf(ds));
 	}
 	
 	/**
@@ -361,7 +571,22 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealProductFunction<DoubleType>(imgFunc);
-		return measure(func,region);
+		return measure(func, region);
+	}
+	
+	/**
+	 * Returns the product of all the values within a {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double product(Dataset ds) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealProductFunction<DoubleType>(imgFunc);
+		return measure(func, allOf(ds));
 	}
 	
 	/**
@@ -379,7 +604,22 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealSkewBiasedFunction<DoubleType>(imgFunc);
-		return measure(func,region);
+		return measure(func, region);
+	}
+
+	/**
+	 * Returns the (biased) skew of all the values within a {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double skewBiased(Dataset ds) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealSkewBiasedFunction<DoubleType>(imgFunc);
+		return measure(func, allOf(ds));
 	}
 
 	/**
@@ -397,7 +637,22 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealSkewUnbiasedFunction<DoubleType>(imgFunc);
-		return measure(func,region);
+		return measure(func, region);
+	}
+
+	/**
+	 * Returns the (unbiased) skew of all the values within a {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double skewUnbiased(Dataset ds) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealSkewUnbiasedFunction<DoubleType>(imgFunc);
+		return measure(func, allOf(ds));
 	}
 
 	/**
@@ -416,7 +671,24 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealStdDevBiasedFunction<DoubleType>(imgFunc);
-		return measure(func,region);
+		return measure(func, region);
+	}
+	
+	/**
+	 * Returns the (biased) estimate of the sample standard deviation of the
+	 * values within a {@link Dataset}. It equals
+	 * the square root of the (biased) estimate of the sample variance.
+	 * 
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double stdDevBiased(Dataset ds) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealStdDevBiasedFunction<DoubleType>(imgFunc);
+		return measure(func, allOf(ds));
 	}
 	
 	/**
@@ -435,7 +707,24 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealStdDevUnbiasedFunction<DoubleType>(imgFunc);
-		return measure(func,region);
+		return measure(func, region);
+	}
+
+	/**
+	 * Returns the (unbiased) estimate of the sample standard deviation of the
+	 * values within a {@link Dataset}. It equals
+	 * the square root of the (unbiased) estimate of the sample variance.
+	 * 
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double stdDevUnbiased(Dataset ds) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealStdDevUnbiasedFunction<DoubleType>(imgFunc);
+		return measure(func, allOf(ds));
 	}
 
 	/**
@@ -453,11 +742,26 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealSumFunction<DoubleType>(imgFunc);
-		return measure(func,region);
+		return measure(func, region);
 	}
 	
 	/**
-	 * Returns the sum of squared deviations from the meane for a set of values
+	 * Returns the sum of all the values within a {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double sum(Dataset ds) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealSumFunction<DoubleType>(imgFunc);
+		return measure(func, allOf(ds));
+	}
+	
+	/**
+	 * Returns the sum of squared deviations from the mean for a set of values
 	 * within a {@link PointSet} region of a {@link Dataset}
 	 *  
 	 * @param ds
@@ -471,7 +775,23 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealSumOfSquaredDeviationsFunction<DoubleType>(imgFunc);
-		return measure(func,region);
+		return measure(func, region);
+	}
+	
+	/**
+	 * Returns the sum of squared deviations from the mean for a set of values
+	 * within a {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double sumOfSquaredDeviations(Dataset ds) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealSumOfSquaredDeviationsFunction<DoubleType>(imgFunc);
+		return measure(func, allOf(ds));
 	}
 	
 	/**
@@ -490,7 +810,24 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealVarianceBiasedFunction<DoubleType>(imgFunc);
-		return measure(func,region);
+		return measure(func, region);
+	}
+	
+	/**
+	 * Returns the (biased) estimate of the sample variance of the values within
+	 * a {@link Dataset}. It divides the sum of
+	 * squared deviations from the mean by N (N == number of samples).
+	 * 
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double varianceBiased(Dataset ds) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealVarianceBiasedFunction<DoubleType>(imgFunc);
+		return measure(func, allOf(ds));
 	}
 	
 	/**
@@ -509,7 +846,24 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealVarianceUnbiasedFunction<DoubleType>(imgFunc);
-		return measure(func,region);
+		return measure(func, region);
+	}
+
+	/**
+	 * Returns the (unbiased) estimate of the sample variance of the values within
+	 * a {@link Dataset}. It divides the sum of
+	 * squared deviations from the mean by N-1 (N == number of samples).
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double varianceUnbiased(Dataset ds) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealVarianceUnbiasedFunction<DoubleType>(imgFunc);
+		return measure(func, allOf(ds));
 	}
 
 	/**
@@ -530,7 +884,7 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealWeightedAverageFunction<DoubleType>(imgFunc,weights);
-		return measure(func,region);
+		return measure(func, region);
 	}
 	
 	/**
@@ -551,7 +905,7 @@ public class StatisticsService extends AbstractService {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
 				new RealWeightedSumFunction<DoubleType>(imgFunc,weights);
-		return measure(func,region);
+		return measure(func, region);
 	}
 
 	/**
