@@ -92,6 +92,7 @@ import java.util.zip.ZipException;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
+import javax.script.ScriptException;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -1253,7 +1254,14 @@ public class TextEditor extends JFrame implements ActionListener,
 					} catch (Throwable t) {
 						output.flush();
 						errors.flush();
-						handleException(t);
+						if (t instanceof ScriptException &&
+								t.getCause() != null &&
+								t.getCause().getClass().getName().endsWith("CompileError")) {
+							errorScreen.append("Compilation failed");
+							showErrors();
+						} else {
+							handleException(t);
+						}
 					} finally {
 						restore();
 					}
