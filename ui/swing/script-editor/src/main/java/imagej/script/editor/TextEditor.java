@@ -445,6 +445,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		newPlugin = addToMenu(toolsMenu,
 			"Create new plugin...", 0, 0);
 		newPlugin.setMnemonic(KeyEvent.VK_C);
+		newPlugin.setEnabled(false); // CTR TEMP: disabled for 2.0.0-beta5
 		openSourceForClass = addToMenu(toolsMenu,
 			"Open .java file for class...", 0, 0);
 		openSourceForClass.setMnemonic(KeyEvent.VK_J);
