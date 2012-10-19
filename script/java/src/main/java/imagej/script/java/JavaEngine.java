@@ -58,14 +58,19 @@ public class JavaEngine extends AbstractScriptEngine {
 	@Override
 	public Object eval(Reader reader) throws ScriptException {
 		final Writer writer = getContext().getErrorWriter();
-		final PrintStream err = writer == null ? System.err : new PrintStream(new LineOutputStream() {
+		final PrintStream err;
+		if (writer == null) {
+			err = null;
+		} else {
+			err = new PrintStream(new LineOutputStream() {
 
-			@Override
-			public void println(final String line) throws IOException {
-				writer.append(line).append('\n');
-			}
+				@Override
+				public void println(final String line) throws IOException {
+					writer.append(line).append('\n');
+				}
 
-		});
+			});
+		}
 
 		try {
 			BuildEnvironment env = new BuildEnvironment(err, true, true, false);
@@ -111,8 +116,11 @@ public class JavaEngine extends AbstractScriptEngine {
 			Method main = clazz.getMethod("main", new Class[] { String[].class });
 			main.invoke(null, new Object[] { new String[0] });
 		} catch (Exception e) {
+			if (err != null) err.close();
+			if (e instanceof ScriptException) throw (ScriptException)e;
 			throw new ScriptException(e);
 		}
+		if (err != null) err.close();
 		return null;
 	}
 
@@ -144,11 +152,12 @@ public class JavaEngine extends AbstractScriptEngine {
 		for (;;) {
 			String line = reader.readLine().trim();
 			if (line == null) break;
+		outerLoop:
 			while (line.startsWith("/*")) {
 				int end = line.indexOf("*/", 2);
 				while (end < 0) {
 						line = reader.readLine();
-						if (line == null) return name;
+						if (line == null) break outerLoop;
 						end = line.indexOf("*/");
 				}
 				line = line.substring(end + 2).trim();
@@ -160,9 +169,11 @@ public class JavaEngine extends AbstractScriptEngine {
 			}
 			final Matcher classMatcher = classPattern.matcher(line);
 			if (classMatcher.matches()) {
-				return packageName + classMatcher.group(1);
+				name = classMatcher.group(1);
+				break;
 			}
 		}
+		reader.close();
 		return packageName + name; // the 'package' statement must be the first in the file
 	}
 
