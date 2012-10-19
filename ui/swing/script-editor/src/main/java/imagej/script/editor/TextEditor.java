@@ -1356,20 +1356,6 @@ public class TextEditor extends JFrame implements ActionListener,
 			// return null;
 		}
 
-		/*
-		 * We need to remove RSyntaxTextArea's cached key, input and
-		 * action map if there is even the slightest chance that a new
-		 * TextArea is instantiated from a different class loader than
-		 * the map's actions.
-		 *
-		 * Otherwise the instanceof check will pretend that the new text
-		 * area is not an instance of RTextArea, and as a consequence,
-		 * no keyboard input will be possible.
-		 */
-		JTextComponent.removeKeymap("RTextAreaKeymap");
-		UIManager.put("RSyntaxTextAreaUI.actionMap", null);
-		UIManager.put("RSyntaxTextAreaUI.inputMap", null);
-
 		try {
 			Tab tab = getTab();
 			boolean wasNew = tab != null && tab.editorPane.isNew();
