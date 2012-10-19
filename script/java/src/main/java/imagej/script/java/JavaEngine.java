@@ -12,6 +12,8 @@ import imagej.util.FileUtils;
 import imagej.util.LineOutputStream;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -143,7 +145,11 @@ public class JavaEngine extends AbstractScriptEngine {
 		return null;
 	}
 
-	private MavenProject getMavenProject(final BuildEnvironment env, final File file, final String mainClass) throws ScriptException, IOException, ParserConfigurationException, SAXException {
+	private MavenProject getMavenProject(final BuildEnvironment env,
+			final File file, final String mainClass) throws IOException,
+			ParserConfigurationException, SAXException, ScriptException,
+			TransformerConfigurationException, TransformerException,
+			TransformerFactoryConfigurationError {
 		String path = file.getAbsolutePath();
 		if (!path.replace(File.separatorChar, '.').endsWith("." + mainClass + ".java")) {
 			throw new ScriptException("Class " + mainClass + " in invalid directory: " + path);
@@ -154,7 +160,9 @@ public class JavaEngine extends AbstractScriptEngine {
 			final File pom = new File(path + "pom.xml");
 			if (pom.exists()) return env.parse(pom, null);
 		}
-		throw new ScriptException("TODO: Generate pom.xml on the fly");
+		final File rootDirectory = file.getParentFile();
+		final String artifactId = fakeArtifactId(env, file.getName());
+		return fakePOM(env, rootDirectory, artifactId, mainClass);
 	}
 
 	private static String getFullClassName(final File file) throws IOException {
@@ -279,14 +287,22 @@ public class JavaEngine extends AbstractScriptEngine {
 			append(pom, dep, "artifactId", dependency.getArtifactId());
 			append(pom, dep, "version", dependency.getVersion());
 		}
-		final File pomFile = new File(directory, "pom.xml");
-		final FileWriter writer = new FileWriter(pomFile);
 		final Transformer transformer = TransformerFactory.newInstance().newTransformer();
 		transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 		transformer.setOutputProperty(XALAN_INDENT_AMOUNT, "4");
-		transformer.transform(new DOMSource(pom), new StreamResult(writer));
-		return env.parse(pomFile);
+		if (directory.getPath().replace(File.separatorChar, '/').endsWith("/src/main/java")) {
+			final File projectRootDirectory = directory.getParentFile().getParentFile().getParentFile();
+			final File pomFile = new File(projectRootDirectory, "pom.xml");
+			if (!pomFile.exists()) {
+				final FileWriter writer = new FileWriter(pomFile);
+				transformer.transform(new DOMSource(pom), new StreamResult(writer));
+				return env.parse(pomFile);
+			}
+		}
+		final ByteArrayOutputStream out = new ByteArrayOutputStream();
+		transformer.transform(new DOMSource(pom), new StreamResult(out));
+		return env.parse(new ByteArrayInputStream(out.toByteArray()), directory, null, null);
 	}
 
 	private static Element append(final Document document, final Element parent, final String tag, final String content) {
