@@ -38,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.lang.reflect.Method;
 
 @SuppressWarnings("hiding")
@@ -45,7 +46,6 @@ public class JavaCompiler {
 	protected PrintStream err, out;
 	protected static Method javac;
 	private final static String CLASS_NAME = "com.sun.tools.javac.Main";
-
 
 	public JavaCompiler(PrintStream err, PrintStream out) {
 		this.err = err;
@@ -69,8 +69,10 @@ public class JavaCompiler {
 					javac = main.getMethod("compile", argsType);
 				}
 
+				final Writer writer = new PrintWriter(err);
 				Object result = javac.invoke(null,
-						new Object[] { arguments, new PrintWriter(err) });
+						new Object[] { arguments, writer });
+				writer.flush();
 				if (!result.equals(new Integer(0)))
 					throw new CompileError(result);
 				return;
