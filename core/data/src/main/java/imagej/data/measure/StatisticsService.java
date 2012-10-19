@@ -63,6 +63,7 @@ import net.imglib2.ops.function.real.RealVarianceBiasedFunction;
 import net.imglib2.ops.function.real.RealVarianceUnbiasedFunction;
 import net.imglib2.ops.function.real.RealWeightedAverageFunction;
 import net.imglib2.ops.function.real.RealWeightedSumFunction;
+import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
@@ -551,6 +552,19 @@ public class StatisticsService extends AbstractService {
 		Function<PointSet,DoubleType> func =
 				new RealWeightedSumFunction<DoubleType>(imgFunc,weights);
 		return measure(func,region);
+	}
+
+	/**
+	 * A convenience function for defining a {@link PointSet} that encompasses
+	 * all the points within a {@link Dataset}.
+	 * 
+	 * @param ds
+	 * The Dataset of interest
+	 * @return
+	 * A PointSet that includes all points within the Dataset
+	 */
+	public PointSet allOf(Dataset ds) {
+		return new HyperVolumePointSet(ds.getDims());
 	}
 	
 	// -- private helpers --
