@@ -41,26 +41,25 @@ import java.util.Iterator;
 /**
  * A class that provides more thorough support for iteration. Any
  * {@link Enumeration}, {@link Iterator} or {@link Iterable} object can be
- * provided to the constructor, and the resultant <code>IteratorPlus</code> will
+ * provided to the constructor, and the resultant {@code IteratorPlus} will
  * provide all three access mechanisms. In the case of {@link #iterator()} it
- * simply returns <code>this</code>, for more convenient usage with <a
+ * simply returns {@code this}, for more convenient usage with <a
  * href="http://docs.oracle.com/javase/1.5.0/docs/guide/language/foreach.html"
  * >for-each loops</a>. Note, however, that because of this fact, multiple calls
  * to {#iterator()} will produce the same {@link Iterator} every time (in fact,
  * the {@link IteratorPlus} object itself).
  * <p>
- * For example, let's say you have an <code>Enumeration&lt;String&gt;</code> and
- * you want to loop over it with the for-each syntax. You could write:
+ * For example, let's say you have an {@code Enumeration<String>} and you want
+ * to loop over it with the for-each syntax. You could write:
  * </p>
- * 
- * <pre>
- * final Enumeration&lt;String&gt; en = ...;
- * for (final String s : new IteratorPlus(en)) {
+ * {@code
+ * final Enumeration<String> en = ...;
+ * for (final String s : new IteratorPlus(en))
  *   // do something with the string
  * }
- * </pre>
  * <p>
  * The same technique works with {@link Iterator}.
+ * </p>
  * 
  * @author Curtis Rueden
  */

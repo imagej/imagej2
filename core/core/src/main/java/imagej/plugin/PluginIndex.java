@@ -52,13 +52,12 @@ import java.util.List;
  * </p>
  * <p>
  * NB: This type hierarchy will typically <em>not</em> include the plugin class
- * itself; for example, the <code>imagej.core.plugins.app.AboutImageJ</code>
- * command has a plugin type of {@link imagej.command.Command}, and hence will
- * be categorized beneath <code>Command.class</code>, not
- * <code>AboutImageJ.class</code>. The rationale is that to fully classify each
- * plugin including its own class, said class would need to be loaded, which
- * ImageJ makes an effort not to do until the plugin is actually executed for
- * the first time.
+ * itself; for example, the {@code imagej.core.plugins.app.AboutImageJ} command
+ * has a plugin type of {@link imagej.command.Command}, and hence will be
+ * categorized beneath {@code Command.class}, not {@code AboutImageJ.class}. The
+ * rationale is that to fully classify each plugin including its own class, said
+ * class would need to be loaded, which ImageJ makes an effort not to do until
+ * the plugin is actually executed for the first time.
  * </p>
  * 
  * @author Curtis Rueden
@@ -91,8 +90,8 @@ public class PluginIndex extends SortedObjectIndex<PluginInfo<?>> {
 	 * Gets a list of registered plugins compatible with the given type.
 	 * <p>
 	 * This method is more specific than {@link #get(Class)} since that method
-	 * returns only a <code>List&lt;PluginInfo&lt;?&gt;&gt;</code>, whereas this
-	 * one is guaranteed to return a <code>List&lt;PluginInfo&lt;P&gt;&gt;</code>.
+	 * returns only a {@code List<PluginInfo<?>>}, whereas this one is guaranteed
+	 * to return a {@code List<PluginInfo<P>>}.
 	 * </p>
 	 * 
 	 * @return Read-only list of registered objects of the given type, or an empty
@@ -113,7 +112,7 @@ public class PluginIndex extends SortedObjectIndex<PluginInfo<?>> {
 	 * Adds the plugin to all type lists compatible with its plugin type.
 	 * <p>
 	 * NB: This behavior differs from the default
-	 * {@link imagej.object.ObjectIndex} behavior in that the <code>info</code>
+	 * {@link imagej.object.ObjectIndex} behavior in that the {@code info}
 	 * object's actual type hierarchy is not used for classification, but rather
 	 * the object is classified according to {@link PluginInfo#getPluginType()}.
 	 * </p>
@@ -129,7 +128,7 @@ public class PluginIndex extends SortedObjectIndex<PluginInfo<?>> {
 	 * Removes the plugin from all type lists compatible with its plugin type.
 	 * <p>
 	 * NB: This behavior differs from the default
-	 * {@link imagej.object.ObjectIndex} behavior in that the <code>info</code>
+	 * {@link imagej.object.ObjectIndex} behavior in that the {@code info}
 	 * object's actual type hierarchy is not used for classification, but rather
 	 * the object is classified according to {@link PluginInfo#getPluginType()}.
 	 * </p>

@@ -52,7 +52,8 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
 			weight = MenuConstants.IMAGE_WEIGHT,
 			mnemonic = MenuConstants.IMAGE_MNEMONIC),
 		@Menu(label = "Type", mnemonic = 't'),
-		@Menu(label = "Unsigned 8-bit", weight = 202) }, headless = true)
+		@Menu(label = "Unsigned 8-bit", weight = 202) }, headless = true,
+		initializer = "maybeAddChannelInput")
 public class ChangeToUINT8 extends TypeChanger {
 
 	@Override

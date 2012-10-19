@@ -44,7 +44,7 @@ import imagej.widget.InputHarvester;
 /**
  * AbstractInputHarvesterPlugin is an {@link InputHarvester} that implements the
  * {@link PreprocessorPlugin} interface. It is intended to be extended by
- * UI-specific implementations such as <code>SwingInputHarvester</code>.
+ * UI-specific implementations such as {@code SwingInputHarvester}.
  * <p>
  * The input harvester will first check whether the default UI matches that of
  * its implementation; for example, the Swing-based input harvester plugin will

@@ -199,7 +199,7 @@ public class FileTable extends JTable {
 
 	public void maybeShowPopupMenu(final MouseEvent e) {
 		if (!e.isPopupTrigger() &&
-			(Util.isMacOSX() || (e.getModifiers() & InputEvent.META_MASK) == 0)) return;
+			(files.util.isMacOSX() || (e.getModifiers() & InputEvent.META_MASK) == 0)) return;
 		final Iterable<FileObject> selected =
 			getSelectedFiles(e.getY() / getRowHeight());
 		if (!selected.iterator().hasNext()) return;

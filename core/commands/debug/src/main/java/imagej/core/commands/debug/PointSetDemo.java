@@ -35,13 +35,17 @@
 
 package imagej.core.commands.debug;
 
+import java.net.URL;
+
 import imagej.Cancelable;
 import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.module.ItemIO;
+import imagej.platform.PlatformService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.widget.Button;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.ops.pointset.PointSetIterator;
@@ -56,6 +60,9 @@ import net.imglib2.type.numeric.RealType;
 @Plugin(menuPath = "Plugins>Sandbox>PointSet Demo")
 public class PointSetDemo implements Command, Cancelable {
 
+	@Parameter
+	private PlatformService platformService;
+	
 	@Parameter(label="PointSet specification", type = ItemIO.INPUT)
 	private String specification;
 
@@ -64,6 +71,11 @@ public class PointSetDemo implements Command, Cancelable {
 	
 	@Parameter
 	private DatasetService ds;
+	
+	@Parameter(label = "Help",
+			description="View a web page detailing the point set language",
+			callback="openWebPage", persist = false)
+	private Button openWebPage;
 	
 	private String err;
 
@@ -112,4 +124,16 @@ public class PointSetDemo implements Command, Cancelable {
 		return err;
 	}
 
+	// -- callbacks --
+	
+	protected void openWebPage() {
+		try {
+			String urlString =
+					"http://wiki.imagej.net/ImageJ2/Documentation/PointSetDemo";
+			URL url = new URL(urlString);
+			platformService.open(url);
+		} catch (Exception e) {
+			// do nothing
+		}
+	}
 }

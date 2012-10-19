@@ -47,31 +47,30 @@ import imagej.plugin.ServicePreprocessor;
  * <p>
  * Here is an example command execution using {@link CommandService#run}:
  * </p>
- * <pre>
- * Future&lt;CommandModule&lt;FindEdges&gt;&gt; future =
- *   commandService.run(findEdges.class, &quot;display&quot;, myDisplay);
- * CommandModule&lt;FindEdges&gt; module = future.get(); // block till complete
- * ImageDisplay outDisplay = (ImageDisplay) module.getOutput(&quot;display&quot;);
- * </pre>
+ * {@code
+ * Future<CommandModule<FindEdges>> future =
+ *   commandService.run(findEdges.class, "display", myDisplay);
+ * CommandModule<FindEdges> module = future.get(); // block till complete
+ * ImageDisplay outDisplay = (ImageDisplay) module.getOutput("display");
+ * }
  * <p>
- * Note that <code>FindEdges</code> also has two other inputs, a
- * <code>ImageDisplayService</code> and an <code>OverlayService</code>, which
- * get automatically populated by the {@link ServicePreprocessor}.
+ * Note that {@code FindEdges} also has two other inputs, a
+ * {@code ImageDisplayService} and an {@code OverlayService}, which get
+ * automatically populated by the {@link ServicePreprocessor}.
  * </p>
  * <p>
  * Here is the same command execution via direct Java calls:
  * </p>
- * <pre>
+ * {@code
  * FindEdges findEdges = new FindEdges();
  * findEdges.setContext(context); // populates service parameters
  * findEdges.setDisplay(myDisplay);
  * findEdges.run(); // execute on the same thread
  * ImageDisplay outDisplay = findEdges.getDisplay();
- * </pre>
+ * }
  * <p>
  * We believe the latter is more intuitive for most Java programmers, and so
- * encourage commands to extend this class and provide API to use them
- * directly.
+ * encourage commands to extend this class and provide API to use them directly.
  * </p>
  * <p>
  * That said, there are times when you cannot extend a particular class (usually
@@ -80,6 +79,7 @@ import imagej.plugin.ServicePreprocessor;
  * serviceable command. The consequence is only that other Java programmers will
  * not be able to use the latter paradigm above to invoke your code in a fully
  * compile-time-safe way.
+ * </p>
  * 
  * @author Curtis Rueden
  */

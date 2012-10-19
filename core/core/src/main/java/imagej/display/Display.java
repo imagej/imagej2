@@ -45,7 +45,7 @@ import java.util.List;
 /**
  * A display is a particular type of {@link ImageJPlugin} intended to collect
  * objects for visualization. The most common type of display is the
- * <code>imagej.data.display.ImageDisplay</code>, which displays images.
+ * {@code imagej.data.display.ImageDisplay}, which displays images.
  * However, in principle there are no limits to the sorts of objects that can be
  * handled.
  * <p>
@@ -96,11 +96,10 @@ public interface Display<T> extends List<T>, ImageJPlugin, Contextual,
 	 * Note that this method may behave differently than {@link #contains}; in
 	 * general, any time {@link #contains} returns true, this method will also
 	 * return true, but not vice versa. For example, an
-	 * <code>imagej.data.display.ImageDisplay</code> is a
-	 * <code>Display&lt;DataView&gt;</code> but calling <code>isDisplaying</code>
-	 * an a <code>Dataset</code> (which is not a <code>DataView</code>) will
-	 * return true if the <code>ImageDisplay</code> currently contains a
-	 * <code>DatasetView</code> that wraps that <code>Dataset</code>.
+	 * {@code imagej.data.display.ImageDisplay} is a {@code Display<DataView>} but
+	 * calling {@code isDisplaying} an a {@code Dataset} (which is not a
+	 * {@code DataView}) will return true if the {@code ImageDisplay} currently
+	 * contains a {@code DatasetView} that wraps that {@code Dataset}.
 	 * </p>
 	 */
 	boolean isDisplaying(Object o);

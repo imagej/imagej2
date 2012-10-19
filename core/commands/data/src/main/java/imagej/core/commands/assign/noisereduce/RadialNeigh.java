@@ -62,7 +62,7 @@ public class RadialNeigh implements Neighborhood {
 		}
 		PointSet space = new HyperVolumePointSet(new long[numDims], posOff, negOff);
 		Condition<long[]> condition =
-				new WithinRadiusOfPointCondition(radius, space.getAnchor());
+				new WithinRadiusOfPointSetOriginCondition(radius, space);
 		this.points = new ConditionalPointSet(space, condition);
 	}
 	

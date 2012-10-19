@@ -282,8 +282,9 @@ public class DefaultDataset extends AbstractData implements Dataset {
 
 	@Override
 	public void setRGBMerged(final boolean rgbMerged) {
-		if (rgbMerged != this.rgbMerged) rgbChange();
+		if (rgbMerged == this.rgbMerged) return;
 		this.rgbMerged = rgbMerged;
+		rgbChange();
 	}
 
 	@Override

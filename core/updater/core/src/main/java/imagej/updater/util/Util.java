@@ -97,13 +97,11 @@ public class Util {
 
 	public final static String macPrefix = "Contents/MacOS/";
 
-	public final static String platform;
-	public final static String[] platforms, launchers;
-	protected final static Set<String> updateablePlatforms;
+	public final String platform;
+	public final String[] platforms, launchers;
+	protected final Set<String> updateablePlatforms;
 
-	static {
-		// TODO: since this is all dependent on the ijRoot, don't make it static.
-		final File imagejRoot = AppUtils.getBaseDirectory(Util.class.getName());
+	public Util(final File imagejRoot) {
 		platform = getPlatform();
 
 		platforms =
@@ -120,12 +118,15 @@ public class Util {
 
 		updateablePlatforms = new HashSet<String>();
 		updateablePlatforms.add(platform);
-		if (new File(imagejRoot, launchers[macIndex]).exists()) updateablePlatforms
-			.add("macosx");
-		final String[] files = imagejRoot.list();
-		for (final String name : files == null ? new String[0] : files)
-			if (name.startsWith("ImageJ-")) updateablePlatforms
-				.add(platformForLauncher(name));
+		if (imagejRoot != null && new File(imagejRoot, launchers[macIndex]).exists()) {
+			updateablePlatforms.add("macosx");
+		}
+		final String[] files = imagejRoot == null ? null : imagejRoot.list();
+		for (final String name : files == null ? new String[0] : files) {
+			if (name.startsWith("ImageJ-")) {
+				updateablePlatforms.add(platformForLauncher(name));
+			}
+		}
 	}
 
 	public static String platformForLauncher(final String fileName) {
@@ -137,8 +138,6 @@ public class Util {
 		else if (name.equals("linux")) name = "linux32";
 		return name;
 	}
-
-	private Util() {} // make sure this class is not instantiated
 
 	public static String stripSuffix(final String string, final String suffix) {
 		if (!string.endsWith(suffix)) return string;
@@ -309,15 +308,15 @@ public class Util {
 		return calendar.getTimeInMillis();
 	}
 
-	public static boolean isLauncher(final String filename) {
+	public boolean isLauncher(final String filename) {
 		return Arrays.binarySearch(launchers, filename) >= 0;
 	}
 
-	public static boolean isUpdateablePlatform(final String platform) {
+	public boolean isUpdateablePlatform(final String platform) {
 		return updateablePlatforms.contains(platform);
 	}
 
-	public static boolean isMacOSX() {
+	public boolean isMacOSX() {
 		return platform.equals("macosx");
 	}
 

@@ -50,7 +50,7 @@ import imagej.service.Service;
 import net.imglib2.meta.Axes;
 
 /**
- * Service that monitors context for the @{link SplitChannelsContext} plugin.
+ * Service that monitors context for the {@link SplitChannelsContext} plugin.
  * 
  * @author Curtis Rueden
  */

@@ -38,6 +38,7 @@ package imagej.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -107,10 +108,11 @@ public class POM extends XML {
 		final String artifactId)
 	{
 		try {
-			final File location = ClassUtils.getLocation(c);
-			if (location.getAbsolutePath().endsWith(".jar")) {
+			final URL location = ClassUtils.getLocation(c);
+			final File file = FileUtils.urlToFile(location);
+			if (file.getAbsolutePath().endsWith(".jar")) {
 				// look for pom.xml in JAR's META-INF/maven subdirectory
-				final JarFile jarFile = new JarFile(location);
+				final JarFile jarFile = new JarFile(file);
 				final String pomPath =
 					"META-INF/maven/" + groupId + "/" + artifactId + "/pom.xml";
 				final ZipEntry entry = jarFile.getEntry(pomPath);
@@ -119,7 +121,7 @@ public class POM extends XML {
 				return new POM(pomStream);
 			}
 			// look for the POM in the class's base directory
-			final File baseDir = AppUtils.getBaseDirectory(location, null);
+			final File baseDir = AppUtils.getBaseDirectory(file, null);
 			final File pomFile = new File(baseDir, "pom.xml");
 			return new POM(pomFile);
 		}

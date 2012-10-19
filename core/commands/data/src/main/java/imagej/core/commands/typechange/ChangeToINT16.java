@@ -52,7 +52,8 @@ import net.imglib2.type.numeric.integer.ShortType;
 			weight = MenuConstants.IMAGE_WEIGHT,
 			mnemonic = MenuConstants.IMAGE_MNEMONIC),
 		@Menu(label = "Type", mnemonic = 't'),
-		@Menu(label = "Signed 16-bit", weight = 209) }, headless = true)
+		@Menu(label = "Signed 16-bit", weight = 209) }, headless = true,
+		initializer = "maybeAddChannelInput")
 public class ChangeToINT16 extends TypeChanger {
 
 	@Override

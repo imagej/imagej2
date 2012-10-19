@@ -44,6 +44,8 @@ import imagej.data.display.ColorTables;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.display.Display;
+import imagej.display.DisplayService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.plugin.Menu;
@@ -86,16 +88,19 @@ public class ShowLUT extends ContextCommand {
 	private ImageDisplayService imgDispService;
 
 	@Parameter
+	private DisplayService displayService;
+	
+	@Parameter
 	private DatasetService datasetService;
 	
 	@Parameter
 	private RenderingService renderingService;
-
+	
 	@Parameter
 	private ImageDisplay display;
 	
 	@Parameter(type = ItemIO.OUTPUT)
-	private Dataset output;
+	private Display<?> output;
 	
 	// -- public interface --
 	
@@ -105,7 +110,10 @@ public class ShowLUT extends ContextCommand {
 		List<ColorTable> colorTables = view.getColorTables();
 		int currChannel = display.getIntPosition(Axes.CHANNEL);
 		ColorTable colorTable = colorTables.get(currChannel);
-		output = createDataset(colorTable);
+		Dataset ds = createDataset(colorTable);
+		output = displayService.createDisplay(ds);
+		// TODO
+		// output.addButton("List", ShowLUTAsTable.class);
 	}
 	
 	public void setDisplay(ImageDisplay disp) {
@@ -116,7 +124,7 @@ public class ShowLUT extends ContextCommand {
 		return display;
 	}
 
-	public Dataset getOutput() {
+	public Display<?> getOutput() {
 		return output;
 	}
 

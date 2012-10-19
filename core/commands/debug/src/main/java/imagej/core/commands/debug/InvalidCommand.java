@@ -57,7 +57,7 @@ public class InvalidCommand extends ParameterTester {
 	private int q;
 
 	/**
-	 * This parameter is invalid because it is declared <code>final</code> without
+	 * This parameter is invalid because it is declared {@code final} without
 	 * being {@link imagej.module.ItemVisibility#MESSAGE} visibility. Java does
 	 * not allow such parameter values to be set by the framework.
 	 */

@@ -93,7 +93,7 @@ public class StatusEvent extends ImageJEvent {
 		return maximum;
 	}
 
-	/** Gets status message. */
+	/** Gets status message, or null for no change. */
 	public String getStatusMessage() {
 		return status;
 	}

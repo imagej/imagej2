@@ -165,12 +165,22 @@ public class DefaultPluginService extends AbstractService implements
 		final Class<P> pluginClass)
 	{
 		final ArrayList<PluginInfo<P>> result = new ArrayList<PluginInfo<P>>();
-		// NB: Since we have the class in question, we can determine its
+		// NB: Since we have the class in question, we attempt to determine its
 		// plugin type and limit our search to plugins of that type.
 		final String className = pluginClass.getName();
-		final Class<? extends ImageJPlugin> pluginType =
-			getPluginType(pluginClass);
-		getPluginsOfClass(className, getPluginsOfType(pluginType), result);
+		final Class<? extends ImageJPlugin> pluginType = getPluginType(pluginClass);
+		final Class<? extends ImageJPlugin> type;
+		if (pluginType == null) {
+			// NB: We failed to guess the type hierarchy of the class in question.
+			// We must scan *all* plugins for a match.
+			type = ImageJPlugin.class;
+		}
+		else {
+			// NB: We successfully determined the plugin's type.
+			// We limit our search to plugins of that type.
+			type = pluginType;
+		}
+		getPluginsOfClass(className, getPluginsOfType(type), result);
 		return result;
 	}
 
@@ -259,10 +269,10 @@ public class DefaultPluginService extends AbstractService implements
 
 	/**
 	 * Gets the plugin type of the given plugin class, as declared by its
-	 * <code>@Plugin</code> annotation (i.e., @{link Plugin#type()}).
+	 * {@code @Plugin} annotation (i.e., {@link Plugin#type()}).
 	 * 
 	 * @param pluginClass The plugin class whose plugin type is needed.
-	 * @return The plugin type, or null if no @{link Plugin} annotation exists for
+	 * @return The plugin type, or null if no {@link Plugin} annotation exists for
 	 *         the given class.
 	 */
 	public static <T extends ImageJPlugin, P extends T> Class<T> getPluginType(

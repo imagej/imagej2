@@ -36,9 +36,9 @@
 package imagej.render;
 
 /**
- * Basic text renderer interface. Implementers render text into an
- * <code>int[]</code> buffer. Values range from 0 to 255 (for now) and represent
- * grayscale intensities. The buffer is then available afterwards including its
+ * Basic text renderer interface, which renders text into an {@code int[]}
+ * buffer. Values range from 0 to 255 (for now) and represent grayscale
+ * intensities. The buffer is then available afterwards including its
  * dimensions. Users can set font attributes before rendering.
  * 
  * @author Barry DeZonia

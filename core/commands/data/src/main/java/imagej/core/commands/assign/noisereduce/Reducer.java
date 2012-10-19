@@ -42,8 +42,10 @@ import imagej.event.StatusService;
 
 import net.imglib2.img.ImgPlus;
 import net.imglib2.ops.function.Function;
+import net.imglib2.ops.img.ImageAssignment;
 import net.imglib2.ops.img.SerialImageAssignment;
 import net.imglib2.ops.input.PointSetInputIterator;
+import net.imglib2.ops.input.PointSetInputIteratorFactory;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.type.numeric.RealType;
@@ -82,7 +84,7 @@ public class Reducer<U extends RealType<U>,V extends RealType<V>>
 	// relies on a WithinRadiusOfPointCondition we cannot parallelize this
 	// algorithm. If we did we'd get one point per Thread with only one being
 	// updated correctly. One can see by trial that using a regular
-	// ImageAssignment hereresults in only a portion of the image getting noise
+	// ImageAssignment here results in only a portion of the image getting noise
 	// reduced.
 	
 	public Dataset reduceNoise(String neighDescrip) {
@@ -96,6 +98,9 @@ public class Reducer<U extends RealType<U>,V extends RealType<V>>
 		long[] outputOrigin = new long[input.numDimensions()];
 		long[] outputSpan = outputOrigin.clone();
 		input.dimensions(outputSpan);
+		// NB - regular ImageAssignement won't work here for radial neighborhood due
+		// to the duplication of neighborhoods for parallelization and its
+		// interference with the WithinRadiusOfPointSetOriginCondition.
 		SerialImageAssignment<U,V,PointSet> assigner =
 				new SerialImageAssignment<U,V,PointSet>(
 					newImg,
@@ -110,10 +115,12 @@ public class Reducer<U extends RealType<U>,V extends RealType<V>>
 	// -- private interface --
 	
 	private void notifyUserAtStart(String neighDescrip) {
-		statusService.showStatus(neighDescrip + " ... beginning processing");
+		if (statusService != null)
+			statusService.showStatus(neighDescrip + " ... beginning processing");
 	}
 	
 	private void notifyUserAtEnd(String neighDescrip) {
-		statusService.showStatus(neighDescrip + " ... completed processing");
+		if (statusService != null)
+			statusService.showStatus(neighDescrip + " ... completed processing");
 	}
 }

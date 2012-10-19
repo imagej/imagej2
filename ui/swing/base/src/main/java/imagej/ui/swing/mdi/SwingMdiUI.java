@@ -44,7 +44,7 @@ import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.UserInterface;
 import imagej.ui.swing.AbstractSwingUI;
 import imagej.ui.swing.SwingApplicationFrame;
-import imagej.ui.swing.mdi.display.SwingMdiDisplayWindow;
+import imagej.ui.swing.mdi.viewer.SwingMdiDisplayWindow;
 
 import java.awt.Color;
 import java.awt.GraphicsEnvironment;

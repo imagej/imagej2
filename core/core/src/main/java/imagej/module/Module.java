@@ -45,7 +45,7 @@ import java.util.Map;
  * inputs and outputs are connected.
  * </p>
  * <p>
- * The <code>Module</code> interface represents a specific instance of a module,
+ * The {@code Module} interface represents a specific instance of a module,
  * while the corresponding {@link ModuleInfo} represents metadata about that
  * module, particularly its input and output names and types.
  * </p>
@@ -87,14 +87,14 @@ public interface Module extends Runnable {
 	/**
 	 * Gets the object containing the module's actual implementation. By
 	 * definition, this is an object whose fully qualified class name is given by
-	 * <code>getInfo().getImplementationClassName()</code>. This object must
-	 * possess all callback methods specified by {@link ModuleItem#getCallback()}.
+	 * {@code getInfo().getImplementationClassName()}. This object must possess
+	 * all callback methods specified by {@link ModuleItem#getCallback()}.
 	 * <p>
 	 * The nature of this method is implementation-specific; e.g., a
-	 * <code>CommandModule</code> will return its associated <code>Command</code>.
-	 * For modules that are not plugins, the result may be something else. If you
-	 * are implementing this interface directly, a good rule of thumb is to return
-	 * <code>this</code>.
+	 * {@code CommandModule} will return its associated {@code Command}. For
+	 * modules that are not plugins, the result may be something else. If you are
+	 * implementing this interface directly, a good rule of thumb is to return
+	 * {@code this}.
 	 * </p>
 	 */
 	Object getDelegateObject();

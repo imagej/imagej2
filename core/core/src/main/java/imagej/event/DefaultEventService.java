@@ -195,7 +195,7 @@ public class DefaultEventService extends AbstractService implements
 	 * class implements {@link org.bushe.swing.event.EventSubscriber} as a raw
 	 * type, which is incompatible with this class implementing ImageJ's
 	 * {@link EventSubscriber} as a typed interface; it becomes impossible to
-	 * implement both <code>onEvent(Object)</code> and <code>onEvent(E)</code>.
+	 * implement both {@code onEvent(Object)} and {@code onEvent(E)}.
 	 * </p>
 	 */
 	private class ProxySubscriber<E extends ImageJEvent> extends

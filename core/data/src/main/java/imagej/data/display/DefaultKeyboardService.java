@@ -35,10 +35,13 @@
 
 package imagej.data.display;
 
+import java.util.HashSet;
+
 import imagej.display.event.input.KyPressedEvent;
 import imagej.display.event.input.KyReleasedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
+import imagej.input.KeyCode;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
@@ -62,6 +65,8 @@ public class DefaultKeyboardService extends AbstractService implements
 	private boolean ctrlDown = false;
 	private boolean metaDown = false;
 	private boolean shiftDown = false;
+
+	private HashSet<KeyCode> pressedKeys = new HashSet<KeyCode>();
 
 	// -- KeyboardService methods --
 
@@ -95,6 +100,11 @@ public class DefaultKeyboardService extends AbstractService implements
 		return shiftDown;
 	}
 
+	@Override
+	public boolean isKeyDown(final KeyCode code) {
+		return pressedKeys.contains(code);
+	}
+
 	// -- Service methods --
 
 	@Override
@@ -111,6 +121,7 @@ public class DefaultKeyboardService extends AbstractService implements
 		ctrlDown = evt.getModifiers().isCtrlDown();
 		metaDown = evt.getModifiers().isMetaDown();
 		shiftDown = evt.getModifiers().isShiftDown();
+		pressedKeys.add(evt.getCode());
 	}
 
 	@EventHandler
@@ -120,6 +131,7 @@ public class DefaultKeyboardService extends AbstractService implements
 		ctrlDown = evt.getModifiers().isCtrlDown();
 		metaDown = evt.getModifiers().isMetaDown();
 		shiftDown = evt.getModifiers().isShiftDown();
+		pressedKeys.remove(evt.getCode());
 	}
 
 }

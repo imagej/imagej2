@@ -55,8 +55,8 @@ public final class MiscUtils {
 	 * 
 	 * @param o1 The first object to compare.
 	 * @param o2 The second object to compare.
-	 * @return The result of <code>o1.compareTo(o2)</code> unless one or both of
-	 *         them is null, in which case nulls are considered less than non-null
+	 * @return The result of {@code o1.compareTo(o2)} unless one or both of them
+	 *         is null, in which case nulls are considered less than non-null
 	 *         objects.
 	 */
 	public static <T extends Comparable<? super T>> int compare(final T o1,
@@ -72,10 +72,10 @@ public final class MiscUtils {
 	 * @param o2 The second object to compare.
 	 * @param heavyNulls If true, nulls will be treated as greater than non-nulls,
 	 *          and hence "sink to the bottom" of e.g. sorted lists.
-	 * @return The result of <code>o1.compareTo(o2)</code> unless one or both of
-	 *         them is null, in which case the null strategy defined by the
-	 *         <code>heavyNulls</code> flag is used, to define nulls as either
-	 *         less than, or greater than, non-null objects.
+	 * @return The result of {@code o1.compareTo(o2)} unless one or both of them
+	 *         is null, in which case the null strategy defined by the
+	 *         {@code heavyNulls} flag is used, to define nulls as either less
+	 *         than, or greater than, non-null objects.
 	 */
 	public static <T extends Comparable<? super T>> int compare(final T o1,
 		final T o2, final boolean heavyNulls)
@@ -92,7 +92,7 @@ public final class MiscUtils {
 	 * @param o1 The first object to compare.
 	 * @param o2 The second object to compare.
 	 * @return True if the two objects are both null, or both are non-null and
-	 *         <code>o1.equals(o2)</code> holds.
+	 *         {@code o1.equals(o2)} holds.
 	 */
 	public static boolean equal(final Object o1, final Object o2) {
 		if (o1 == null && o2 == null) return true;

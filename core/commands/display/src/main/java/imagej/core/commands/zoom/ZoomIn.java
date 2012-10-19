@@ -74,7 +74,7 @@ public class ZoomIn extends ContextCommand {
 		}
 		else {
 			// no mouse coordinates available; use default behavior
-			display.getCanvas().zoomOut();
+			display.getCanvas().zoomIn();
 		}
 	}
 

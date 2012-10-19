@@ -207,7 +207,7 @@ public class WidgetModel {
 
 	/**
 	 * Gets whether the input is a text type (i.e., {@link String},
-	 * {@link Character} or <code>char</code>.
+	 * {@link Character} or {@code char}.
 	 */
 	public boolean isText() {
 		return ClassUtils.isText(getItem().getType());
@@ -215,15 +215,15 @@ public class WidgetModel {
 
 	/**
 	 * Gets whether the input is a character type (i.e., {@link Character} or
-	 * <code>char</code>).
+	 * {@code char}).
 	 */
 	public boolean isCharacter() {
 		return ClassUtils.isCharacter(getItem().getType());
 	}
 
 	/**
-	 * Gets whether the input is a number type (e.g., <code>int</code>,
-	 * <code>float</code> or any {@link Number} implementation.
+	 * Gets whether the input is a number type (e.g., {@code int}, {@code float}
+	 * or any {@link Number} implementation.
 	 */
 	public boolean isNumber() {
 		return ClassUtils.isNumber(getItem().getType());
@@ -231,7 +231,7 @@ public class WidgetModel {
 
 	/**
 	 * Gets whether the input is a boolean type (i.e., {@link Boolean} or
-	 * <code>boolean</code>).
+	 * {@code boolean}).
 	 */
 	public boolean isBoolean() {
 		return ClassUtils.isBoolean(getItem().getType());

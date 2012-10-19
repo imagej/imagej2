@@ -36,6 +36,11 @@
 package imagej.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.junit.Test;
 
@@ -53,6 +58,49 @@ public class FileUtilsTest {
 		assertEquals("", FileUtils.getExtension("/path/to/file"));
 		assertEquals("a", FileUtils.getExtension("/etc/init.d/xyz/file.a"));
 		assertEquals("", FileUtils.getExtension("/etc/init.d/xyz/file"));
+	}
+
+	@Test
+	public void testURLToFile() throws MalformedURLException {
+		// verify that 'file:' URL works
+		final String filePath = "/Users/jqpublic/imagej/ImageJ.class";
+		final String fileURL = "file:" + filePath;
+		final File fileFile = FileUtils.urlToFile(fileURL);
+		assertEquals(filePath, fileFile.getPath());
+
+		// verify that file path with spaces works
+		final File spaceFileOriginal =
+			new File("/Users/Spaceman Spiff/stun/Blaster.class");
+		final URL spaceURL = spaceFileOriginal.toURI().toURL();
+		final File spaceFileResult = FileUtils.urlToFile(spaceURL);
+		assertEquals(spaceFileOriginal.getPath(), spaceFileResult.getPath());
+
+		// verify that file path with various characters works
+		final String alphaLo = "abcdefghijklmnopqrstuvwxyz";
+		final String alphaHi = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		final String numbers = "1234567890";
+		final String special = "_~!@#$%^&*()+`-=";
+		final File specialFileOriginal = new File("/Users/" + alphaLo + "/" +
+			alphaHi + "/" + numbers + "/" + special + "/foo/Bar.class");
+		final URL specialURL = specialFileOriginal.toURI().toURL();
+		final File specialFileResult = FileUtils.urlToFile(specialURL);
+		assertEquals(specialFileOriginal.getPath(), specialFileResult.getPath());
+
+		// verify that 'jar:' URL works
+		final String jarPath = "/Users/jqpublic/imagej/ij-core.jar";
+		final String jarURL = "jar:file:" + jarPath + "!/imagej/ImageJ.class";
+		final File jarFile = FileUtils.urlToFile(jarURL);
+		assertEquals(jarPath, jarFile.getPath());
+
+		// verify that OSGi 'bundleresource:' URL fails
+		final String bundleURL = "bundleresource://346.fwk2106232034:4/imagej/ImageJ.class";
+		try {
+			final File bundleFile = FileUtils.urlToFile(bundleURL);
+			fail("Expected exception not thrown; result=" + bundleFile);
+		}
+		catch (IllegalArgumentException exc) {
+			// NB: Expected behavior.
+		}
 	}
 
 	@Test

@@ -52,7 +52,8 @@ import net.imglib2.type.logic.BitType;
 			weight = MenuConstants.IMAGE_WEIGHT,
 			mnemonic = MenuConstants.IMAGE_MNEMONIC),
 		@Menu(label = "Type", mnemonic = 't'),
-		@Menu(label = "Unsigned 1-bit", weight = 201) }, headless = true)
+		@Menu(label = "Unsigned 1-bit", weight = 201) }, headless = true,
+		initializer = "maybeAddChannelInput")
 public class ChangeToUINT1 extends TypeChanger {
 
 	@Override

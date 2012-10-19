@@ -49,11 +49,10 @@ import java.awt.event.ActionListener;
 /**
  * Populates an AWT menu structure with menu items from a {@link ShadowMenu}.
  * <p>
- * This class is called <code>AbstractAWTMenuCreator</code> rather than simply
- * <code>AbstractMenuCreator</code> to avoid having multiple classes with the
- * same name in different packages (e.g.,
- * <code>imagej.menu.AbstractMenuCreator</code> and
- * <code>imagej.ui.swing.menu.AbstractMenuCreator</code>).
+ * This class is called {@code AbstractAWTMenuCreator} rather than simply
+ * {@code AbstractMenuCreator} to avoid having multiple classes with the same
+ * name in different packages (e.g., {@code imagej.menu.AbstractMenuCreator} and
+ * {@code imagej.ui.swing.menu.AbstractMenuCreator}).
  * </p>
  * 
  * @author Curtis Rueden

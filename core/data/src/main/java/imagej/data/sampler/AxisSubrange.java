@@ -100,16 +100,15 @@ public class AxisSubrange {
 	 */
 	public AxisSubrange(final long pos1, final long pos2) {
 		this();
-		final int numElements =
-			(int) (Math.max(pos1, pos2) - Math.min(pos1, pos2) + 1);
+		final long numElements = Math.max(pos1, pos2) - Math.min(pos1, pos2) + 1;
 		if (numElements > Integer.MAX_VALUE) {
 			err = "AxisSubrange: the number of axis elements cannot exceed " + Integer.MAX_VALUE;
 			return;
 		}
-		int inc;
-		if (pos1 <= pos2) inc = 1;
-		else inc = -1;
-		for (long l = pos1; l <= pos2; l += inc) {
+		int by;
+		if (pos1 <= pos2) by = 1;
+		else by = -1;
+		for (long l = pos1; (by > 0) ? l <= pos2: l >= pos2; l += by) {
 			indices.add(l);
 		}
 	}
@@ -129,14 +128,13 @@ public class AxisSubrange {
 			err = "AxisSubrange: increment by must not be 0";
 			return;
 		}
-		final int numElements =
-			(int) ((Math.max(pos1, pos2) - Math.min(pos1, pos2) + 1) / Math.abs(by));
+		final long numElements =
+				(Math.max(pos1, pos2) - Math.min(pos1, pos2) + 1) / Math.abs(by);
 		if (numElements > Integer.MAX_VALUE) {
 			err = "AxisSubrange: the number of axis elements cannot exceed " + Integer.MAX_VALUE;
 			return;
 		}
-		final long startPos = pos1, endPos = pos2;
-		for (long l = startPos; l <= endPos; l += by) {
+		for (long l = pos1; (by > 0) ? l <= pos2 : l >= pos2; l += by) {
 			indices.add(l);
 		}
 	}
@@ -188,13 +186,15 @@ public class AxisSubrange {
 	 * @param min The min value of the language (0 or 1)
 	 * @param max The max value of an axis (dim-1 or dim)
 	 * @param description The textual description of the axis subrange
-	 * @return True if parsed successfully. Otherwise returns false and sets the
-	 *         error state of the AxisSubrange.
 	 */
-	private boolean parseAxisDefinition(final long min, final long max,
+	private void parseAxisDefinition(final long min, final long max,
 		final String description)
 	{
 		final String[] terms = description.split(",");
+		if (terms.length == 0) {
+			err = "AxisSubrange: description string is empty";
+			return;
+		}
 		for (int i = 0; i < terms.length; i++) {
 			terms[i] = terms[i].trim();
 		}
@@ -263,16 +263,13 @@ public class AxisSubrange {
 			else { // not num or numDashNum or numDashNumDashNum
 				err = "AxisSubrange: could not parse definition: " + description;
 			}
-			if (err != null) {
-				return false;
-			}
+			if (err != null) return;
 			for (final long l : subrange.getIndices()) { // invalid warning here
 				if (indices.contains(l)) continue;
 				indices.add(l);
 			}
 		}
 		Collections.sort(indices);
-		return true;
 	}
 
 	/**

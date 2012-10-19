@@ -97,21 +97,25 @@ public class ObjectIndex<E> implements Collection<E> {
 	}
 
 	/**
-	 * Gets a list of all registered objects.
-	 * <p>
-	 * This method is equivalent to calling <code>get(Object.class)</code>.
-	 * </p>
+	 * Gets a list of <em>all</em> registered objects.
 	 * 
 	 * @return Read-only list of all registered objects, or an empty list if none
 	 *         (this method never returns null).
 	 */
 	public List<E> getAll() {
-		// NB: We *must* pass Object.class here rather than getBaseClass()! The
-		// reason is that the base class of the objects stored in the index may
-		// differ from the type hierarchy beneath which they are classified.
-		// In particular, PluginIndex classifies its PluginInfo objects beneath
-		// the ImageJPlugin type hierarchy, and not that of PluginInfo.
-		return get(Object.class);
+		// NB: We return the special "All" list here, since in some cases,
+		// *no* other list contains *all* elements of the index.
+
+		// We cannot use Object.class, since interface type hierarchies do not
+		// extend Object. In particular, PluginIndex classifies objects beneath the
+		// ImageJPlugin type hierarchy, which does not extend Object.
+
+		// And we cannot use getBaseClass() because the actual base class of the
+		// objects stored in the index may differ from the type hierarchy beneath
+		// which they are classified. In particular, PluginIndex classifies its
+		// PluginInfo objects beneath the ImageJPlugin type hierarchy, and not that
+		// of PluginInfo.
+		return get(All.class);
 	}
 
 	/**
@@ -284,6 +288,7 @@ public class ObjectIndex<E> implements Collection<E> {
 	/** Gets a new set containing the type and all its supertypes. */
 	private HashSet<Class<?>> getTypes(final Class<?> type) {
 		final HashSet<Class<?>> types = new HashSet<Class<?>>();
+		types.add(All.class); // NB: Always include the "All" class.
 		getTypes(type, types);
 		return types;
 	}
@@ -308,6 +313,10 @@ public class ObjectIndex<E> implements Collection<E> {
 			hoard.put(type, list);
 		}
 		return list;
+	}
+
+	private static class All {
+		// NB: A special class beneath which *all* elements of the index are listed.
 	}
 
 }

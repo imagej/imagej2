@@ -621,14 +621,14 @@ public class FileObject {
 		return platforms.contains(platform);
 	}
 
-	public boolean isForThisPlatform() {
-		return platforms.size() == 0 || isForPlatform(Util.platform);
+	public boolean isForThisPlatform(final FilesCollection files) {
+		return platforms.size() == 0 || isForPlatform(files.util.platform);
 	}
 
-	public boolean isUpdateablePlatform() {
+	public boolean isUpdateablePlatform(final FilesCollection files) {
 		if (platforms.size() == 0) return true;
 		for (final String platform : platforms)
-			if (Util.isUpdateablePlatform(platform)) return true;
+			if (files.util.isUpdateablePlatform(platform)) return true;
 		return false;
 	}
 

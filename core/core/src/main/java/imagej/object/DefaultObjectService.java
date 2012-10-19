@@ -54,7 +54,7 @@ import java.util.List;
  * from {@link ObjectDeletedEvent}s.
  * <p>
  * This is useful to retrieve available objects of a particular type, such as
- * the list of <code>imagej.data.Dataset</code>s upon which a user can choose to
+ * the list of {@code imagej.data.Dataset}s upon which a user can choose to
  * operate.
  * </p>
  * 

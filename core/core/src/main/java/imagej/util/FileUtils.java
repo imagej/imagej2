@@ -39,8 +39,12 @@
 package imagej.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 /**
  * Useful methods for working with file paths.
@@ -84,6 +88,52 @@ public final class FileUtils {
 	 */
 	public static String getExtension(final String path) {
 		return getExtension(new File(path));
+	}
+
+	/**
+	 * Converts the given {@link URL} to its corresponding {@link File}.
+	 * <p>
+	 * This method is similar to calling {@code new File(url.toURI())} except
+	 * that it also handles "jar:file:" URLs, returning the path to the JAR file.
+	 * </p>
+	 * 
+	 * @param url The URL to convert.
+	 * @return A file path suitable for use with e.g. {@link FileInputStream}
+	 * @throws IllegalArgumentException if the URL does not correspond to a file.
+	 */
+	public static File urlToFile(final URL url) {
+		return urlToFile(url.toString());
+	}
+
+	/**
+	 * Converts the given URL string to its corresponding {@link File}.
+	 * 
+	 * @param url The URL to convert.
+	 * @return A file path suitable for use with e.g. {@link FileInputStream}
+	 * @throws IllegalArgumentException if the URL does not correspond to a file.
+	 */
+	public static File urlToFile(final String url) {
+		String path = url;
+		if (path.startsWith("jar:")) {
+			// remove "jar:" prefix and "!/" suffix
+			final int index = path.indexOf("!/");
+			path = path.substring(4, index);
+		}
+		try {
+			return new File(new URL(path).toURI());
+		}
+		catch (MalformedURLException e) {
+			// NB: URL is not completely well-formed.
+		}
+		catch (URISyntaxException e) {
+			// NB: URL is not completely well-formed.
+		}
+		if (path.startsWith("file:")) {
+			// pass through the URL as-is, minus "file:" prefix
+			path = path.substring(5);
+			return new File(path);
+		}
+		throw new IllegalArgumentException("Invalid URL: " + url);
 	}
 
 	/**

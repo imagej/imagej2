@@ -35,13 +35,12 @@
 
 package imagej.core.commands.typechange;
 
-import imagej.command.Command;
+import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
-import imagej.data.display.ColorMode;
-import imagej.data.display.DatasetView;
-import imagej.menu.MenuService;
+import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
+import imagej.util.Prefs;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
@@ -68,22 +67,48 @@ import net.imglib2.type.numeric.real.DoubleType;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public abstract class TypeChanger implements Command {
+public abstract class TypeChanger extends DynamicCommand {
 
-	@Parameter
-	private MenuService menuService;
-
-	@Parameter
-	private DatasetView view;
+	// -- constants --
 	
+	private static final String FIELDNAME = "imagej.type.change.make.composite";
+	
+	// -- Parameters --
+	
+	// TODO
+	//@Parameter
+	//private MenuService menuService;
+
 	@Parameter(type = ItemIO.BOTH)
 	private Dataset data;
 
+	// -- protected methods --
+	
+	protected void maybeAddChannelInput() {
+		int axisIndex = data.getAxisIndex(Axes.CHANNEL);
+		if (axisIndex < 0) return;
+		DefaultModuleItem<Boolean> booleanItem =
+				new DefaultModuleItem<Boolean>(this, FIELDNAME, Boolean.class);
+		booleanItem.setLabel("Combine channels");
+		booleanItem.setDescription(
+				"Combine all channels into one channel by averaging");
+		booleanItem.setPersisted(false);
+		Boolean val = Prefs.getBoolean(FIELDNAME, Boolean.FALSE);
+		booleanItem.setValue(this, val);
+		addInput(booleanItem);
+	}
+	
 	protected <T extends RealType<T>> void changeType(final T newType) {
-		changeType(data, newType, view.getColorMode() == ColorMode.COMPOSITE);
-		menuService.setSelected(this, true);
+		Boolean b = (Boolean) getInput(FIELDNAME);
+		if (b != null) Prefs.put(FIELDNAME,b);
+		boolean compositeMode = (b == null) ? false : b;
+		changeType(data, newType, compositeMode);
+		// TODO
+		//menuService.setSelected(this, true);
 	}
 
+	// -- TypeChanger methods --
+	
 	public void setDataset(Dataset d) {
 		data = d;
 	}
@@ -98,21 +123,21 @@ public abstract class TypeChanger implements Command {
 	 */
 	@SuppressWarnings({"unchecked","rawtypes"})
 	public static <T extends RealType<T>> void changeType(final Dataset dataset,
-		final T newType, boolean makeCompositeGray)
+		final T newType, boolean compositeMode)
 	{
 		// see if input dataset is already typed correctly
 		if (dataset.isRGBMerged()) {
 			// fall through
 		}
 		else if (dataset.getType().getClass() == newType.getClass()) {
-			if (!makeCompositeGray) return;
+			if (!compositeMode) return;
 			int chanIndex = dataset.getAxisIndex(Axes.CHANNEL);
 			if (chanIndex < 0) return;
 		}
 		// if here then a type change of some sort is needed
 		final ImgPlus<? extends RealType<?>> inputImg = dataset.getImgPlus();
 		final ImgPlus<? extends RealType<?>> imgPlus;
-		if (makeCompositeGray) {
+		if (compositeMode) {
 			imgPlus = copyToCompositeGrayscale((ImgPlus) inputImg, newType);
 		}
 		else {
@@ -251,7 +276,7 @@ public abstract class TypeChanger implements Command {
 			if (value < outTypeMin) value = outTypeMin;
 			if (value > outTypeMax) value = outTypeMax;
 			if (inputIs1Bit && value > 0) value = outTypeMax;
-			computeOutputPoint(chIndex, inputPointset.getAnchor(), outputPt);
+			computeOutputPoint(chIndex, inputPointset.getOrigin(), outputPt);
 			out.setPosition(outputPt);
 			out.get().setReal(value);
 		}

@@ -35,10 +35,11 @@
 
 package imagej.util;
 
-import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -282,7 +283,7 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Gets the classpath component containing the given class.
+	 * Gets the base location of the given class.
 	 * <p>
 	 * If the class is directly on the file system (e.g.,
 	 * "/path/to/my/package/MyClass.class") then it will return the base directory
@@ -295,13 +296,14 @@ public final class ClassUtils {
 	 * </p>
 	 * 
 	 * @param className The name of the class whose location is desired.
+	 * @see FileUtils#urlToFile(URL) to convert the result to a {@link File}.
 	 */
-	public static File getLocation(final String className) {
+	public static URL getLocation(final String className) {
 		return getLocation(className, null);
 	}
 
 	/**
-	 * Gets the classpath component containing the given class.
+	 * Gets the base location of the given class.
 	 * <p>
 	 * If the class is directly on the file system (e.g.,
 	 * "/path/to/my/package/MyClass.class") then it will return the base directory
@@ -315,8 +317,9 @@ public final class ClassUtils {
 	 * 
 	 * @param className The name of the class whose location is desired.
 	 * @param classLoader The class loader to use when loading the class.
+	 * @see FileUtils#urlToFile(URL) to convert the result to a {@link File}.
 	 */
-	public static File getLocation(final String className,
+	public static URL getLocation(final String className,
 		final ClassLoader classLoader)
 	{
 		final Class<?> c = loadClass(className, classLoader);
@@ -324,44 +327,64 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Gets the classpath component containing the given class.
+	 * Gets the base location of the given class.
 	 * <p>
 	 * If the class is directly on the file system (e.g.,
 	 * "/path/to/my/package/MyClass.class") then it will return the base directory
-	 * (e.g., "/path/to").
+	 * (e.g., "file:/path/to").
 	 * </p>
 	 * <p>
 	 * If the class is within a JAR file (e.g.,
 	 * "/path/to/my-jar.jar!/my/package/MyClass.class") then it will return the
-	 * path to the JAR (e.g., "/path/to/my-jar.jar").
+	 * path to the JAR (e.g., "file:/path/to/my-jar.jar").
 	 * </p>
 	 * 
 	 * @param c The class whose location is desired.
+	 * @see FileUtils#urlToFile(URL) to convert the result to a {@link File}.
 	 */
-	public static File getLocation(final Class<?> c) {
+	public static URL getLocation(final Class<?> c) {
 		if (c == null) return null; // could not load the class
 
+		// try the easy way first
+		try {
+			final URL codeSourceLocation =
+				c.getProtectionDomain().getCodeSource().getLocation();
+			if (codeSourceLocation != null) return codeSourceLocation;
+		}
+		catch (SecurityException e) {
+			// NB: Cannot access protection domain.
+		}
+		catch (NullPointerException e) {
+			// NB: Protection domain or code source is null.
+		}
+
+		// NB: The easy way failed, so we try the hard way. We ask for the class
+		// itself as a resource, then strip the class's path from the URL string,
+		// leaving the base path.
+
 		// get the class's raw resource path
-		String path = c.getResource(c.getSimpleName() + ".class").getPath();
+		final URL classResource = c.getResource(c.getSimpleName() + ".class");
+		if (classResource == null) return null; // cannot find class resource
 
-		// remove the "jar:" prefix, if present
-		if (path.startsWith("jar:")) path = path.substring(4);
-
-		// remove the "file:" prefix, if present
-		if (path.startsWith("file:")) path = path.substring(5);
-
-		// remove the fully qualified class suffix
+		final String url = classResource.toString();
 		final String suffix = c.getCanonicalName().replace('.', '/') + ".class";
-		if (path.endsWith(suffix)) {
-			path = path.substring(0, path.length() - suffix.length());
-		}
+		if (!url.endsWith(suffix)) return null; // weird URL
 
-		// remove any remaining JAR-specific suffix
-		if (path.endsWith(".jar!/")) {
-			path = path.substring(0, path.length() - 2);
-		}
+		// strip the class's path from the URL string
+		final String base = url.substring(0, url.length() - suffix.length());
 
-		return new File(path);
+		String path = base;
+
+		// remove the "jar:" prefix and "!/" suffix, if present
+		if (path.startsWith("jar:")) path = path.substring(4, path.length() - 2);
+
+		try {
+			return new URL(path);
+		}
+		catch (MalformedURLException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	/**
@@ -530,9 +553,9 @@ public final class ClassUtils {
 	 */
 	public static int compare(final Class<?> c1, final Class<?> c2) {
 		if (c1 == c2) return 0;
-		final String name1 = c1.getName();
-		final String name2 = c2.getName();
-		return name1.compareTo(name2);
+		final String name1 = c1 == null ? null : c1.getName();
+		final String name2 = c2 == null ? null : c2.getName();
+		return MiscUtils.compare(name1, name2);
 	}
 
 }

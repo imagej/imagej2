@@ -36,6 +36,8 @@
 package imagej.util;
 
 import java.io.File;
+import java.net.URL;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,13 +49,42 @@ import java.util.regex.Pattern;
  */
 public final class AppUtils {
 
+	private static final String mainClass;
+
+	static {
+		// Get the class whose main method launched the application. The heuristic
+		// will fail if the main thread has terminated before this class loads.
+		final Map<Thread, StackTraceElement[]> traceMap =
+			Thread.getAllStackTraces();
+		String className = null;
+		for (final Thread thread : traceMap.keySet()) {
+			if (!"main".equals(thread.getName())) continue;
+			final StackTraceElement[] trace = traceMap.get(thread);
+			if (trace == null || trace.length == 0) continue;
+			final StackTraceElement element = trace[trace.length - 1];
+			className = element.getClassName();
+			break;
+		}
+		mainClass = className;
+	}
+
 	private AppUtils() {
 		// prevent instantiation of utility class
 	}
 
 	/**
-	 * Gets the ImageJ root directory. If the <code>ij.dir</code> property is set,
-	 * it is used. Otherwise, we scan up the tree from this class for a suitable
+	 * Gets the name of the class whose main method launched the application.
+	 * 
+	 * @return The name of the launching class, or null if the main method
+	 *         terminated before the {@code AppUtils} class was loaded.
+	 */
+	public static String getMainClass() {
+		return mainClass;
+	}
+
+	/**
+	 * Gets the ImageJ root directory. If the {@code ij.dir} property is set, it
+	 * is used. Otherwise, we scan up the tree from this class for a suitable
 	 * directory.
 	 * 
 	 * @see #getBaseDirectory(File, String)
@@ -70,14 +101,14 @@ public final class AppUtils {
 			getBaseDirectory(AppUtils.class.getName(), "core/core");
 		if (corePath != null) return corePath;
 
-		// HACK: Look for valid base directory relative to ImageJ launcher class.
-		// We will reach this logic, e.g., if the application is running via
-		// "mvn exec:exec" from the app directory. In that case, most classes
+		// NB: Look for valid base directory relative to the main class which
+		// launched this environment. We will reach this logic, e.g., if the
+		// application is running via "mvn exec:exec". In this case, most classes
 		// (including this one) will be located in JARs in the local Maven
 		// repository cache (~/.m2/repository), so the corePath will be null.
-		// However, the classes of ij-app will be located in app/target/classes,
-		// so we search up the tree from one of those.
-		final File appPath = getBaseDirectory("imagej.Main", "app");
+		// However, the classes of the launching project will be located in
+		// target/classes, so we search up the tree from one of those.
+		final File appPath = getBaseDirectory(getMainClass());
 		if (appPath != null) return appPath;
 
 		// last resort: use current working directory
@@ -107,8 +138,9 @@ public final class AppUtils {
 	public static File getBaseDirectory(final String className,
 		final String baseSubdirectory)
 	{
-		final File classLocation = ClassUtils.getLocation(className);
-		return getBaseDirectory(classLocation, baseSubdirectory);
+		final URL location = ClassUtils.getLocation(className);
+		final File baseFile = FileUtils.urlToFile(location);
+		return getBaseDirectory(baseFile, baseSubdirectory);
 	}
 
 	/**
@@ -120,32 +152,31 @@ public final class AppUtils {
 	 * </p>
 	 * <ol>
 	 * <li><b>In the Maven build directory.</b> Typically this is the
-	 * <code>target/classes</code> folder of a given component. In this case, the
-	 * class files reside directly on the file system (not in a JAR file). The
-	 * base directory is defined as the toplevel Maven directory for the
-	 * multi-module project. For example, if your have checked out
-	 * <code>imagej.git</code> to <code>~/code/imagej</code>, the
-	 * <code>imagej.ImageJ</code> class will be located at
-	 * <code>~/code/imagej/core/core/target/classes/imagej/ImageJ.class</code>.
-	 * Asking for the base directory for that class will yield
-	 * <code>~/code/imagej</code>, as long as you correctly specify
-	 * <code>core/core</code> for the <code>baseSubdirectory</code>.</li>
+	 * {@code target/classes} folder of a given component. In this case, the class
+	 * files reside directly on the file system (not in a JAR file). The base
+	 * directory is defined as the toplevel Maven directory for the multi-module
+	 * project. For example, if your have checked out {@code imagej.git} to
+	 * {@code ~/code/imagej}, the {@code imagej.ImageJ} class will be located at
+	 * {@code ~/code/imagej/core/core/target/classes/imagej/ImageJ.class}. Asking
+	 * for the base directory for that class will yield {@code ~/code/imagej}, as
+	 * long as you correctly specify {@code core/core} for the
+	 * {@code  baseSubdirectory}.</li>
 	 * <li><b>Within a JAR file in the Maven local repository cache.</b> Typically
-	 * this cache is located in <code>~/.m2/repository</code>. The location will
-	 * be <code>groupId/artifactId/version/artifactId-version.jar</code> where
-	 * <code>groupId</code>, <code>artifactId</code> and <code>version</code> are
-	 * the <a href="http://maven.apache.org/pom.html#Maven_Coordinates">Maven GAV
+	 * this cache is located in {@code ~/.m2/repository}. The location will be
+	 * {@code groupId/artifactId/version/artifactId-version.jar} where
+	 * {@code groupId}, {@code artifactId} and {@code version} are the <a
+	 * href="http://maven.apache.org/pom.html#Maven_Coordinates">Maven GAV
 	 * coordinates</a>. Note that in this case, no base directory with respect to
 	 * the given class can be found, and this method will return null.</li>
 	 * <li><b>Within a JAR file beneath the base directory.</b> Common cases
 	 * include running the application from a standalone application bundle (e.g.,
-	 * the JARs may all be located within a <code>jars</code> folder of the
-	 * application distribution archive) or using a JAR packaged by Maven and
-	 * residing in the Maven build folder (typically
-	 * <code>target/artifactId-version.jar</code>). However, this could
-	 * potentially be anywhere beneath the base directory. This method assumes the
-	 * JAR will be nested exactly one level deep; i.e., it computes the base
-	 * directory as the parent directory of the one containing the JAR file.</li>
+	 * the JARs may all be located within a {@code jars} folder of the application
+	 * distribution archive) or using a JAR packaged by Maven and residing in the
+	 * Maven build folder (typically {@code target/artifactId-version.jar}).
+	 * However, this could potentially be anywhere beneath the base directory.
+	 * This method assumes the JAR will be nested exactly one level deep; i.e., it
+	 * computes the base directory as the parent directory of the one containing
+	 * the JAR file.</li>
 	 * </ol>
 	 * <p>
 	 * As you can see, it is quite complicated to find the base directory properly
@@ -159,18 +190,18 @@ public final class AppUtils {
 	 * classpath entry <b>within a JAR file in the Maven local repository
 	 * cache</b>.</li>
 	 * <li><b>Running via Maven.</b> If you execute the application using Maven
-	 * (e.g., <code>mvn exec:exec</code>, or with a fully Maven-compatible IDE
-	 * such as NetBeans or IntelliJ IDEA) then all dependencies will reside
-	 * <b>within JAR files in the local Maven repository cache</b>. But the
-	 * executed project itself will reside <b>in its Maven build directory</b>. So
-	 * as long as you ask for the base directory relative to a class
+	 * (e.g., {@code mvn exec:exec}, or with a fully Maven-compatible IDE such as
+	 * NetBeans or IntelliJ IDEA) then all dependencies will reside <b>within JAR
+	 * files in the local Maven repository cache</b>. But the executed project
+	 * itself will reside <b>in its Maven build directory</b>. So as long as you
+	 * ask for the base directory relative to a class
 	 * <em>of the executed project</em> it will be found.</li>
 	 * <li><b>Running the ImageJ application bundle.</b> Typically this means
 	 * downloading ImageJ from the web site, unpacking it and running the ImageJ
 	 * launcher (double-clicking ImageJ-win32.exe on Windows, double-clicking the
-	 * <code>ImageJ.app</code> on OS X, etc.). In this case, all components reside
-	 * in the <code>jars</code> folder of the application bundle, and the base
-	 * directory will be found one level above that.</li>
+	 * {@code ImageJ.app} on OS X, etc.). In this case, all components reside in
+	 * the {@code jars} folder of the application bundle, and the base directory
+	 * will be found one level above that.</li>
 	 * </ol>
 	 * 
 	 * @param classLocation The location from which the base directory should be
@@ -198,7 +229,18 @@ public final class AppUtils {
 			// NB: The class is a file beneath the Maven build directory
 			// ("target/classes").
 			path = path.substring(0, path.length() - targetClassesSuffix.length());
-			return new File(path);
+
+			File dir = new File(path);
+			if (baseSubdirectory == null) {
+				// NB: There is no hint as to the directory structure.
+				// So we scan up the tree to find the topmost pom.xml file.
+				while (dir.getParentFile() != null &&
+					new File(dir.getParentFile(), "pom.xml").exists())
+				{
+					dir = dir.getParentFile();
+				}
+			}
+			return dir;
 		}
 
 		final Pattern pattern =

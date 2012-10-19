@@ -51,9 +51,9 @@ import java.awt.PopupMenu;
  * a common interface for operations such as {@link Menu#add}.
  * </p>
  * <p>
- * This class is called <code>AWTMenuBarCreator</code> rather than simply
- * <code>MenuBarCreator</code> for consistency with other UI implementations
- * such as {@link AWTMenuCreator}</code>.
+ * This class is called {@code AWTMenuBarCreator} rather than simply
+ * {@code MenuBarCreator} for consistency with other UI implementations such as
+ * {@link AWTMenuCreator}.
  * </p>
  * 
  * @author Curtis Rueden
