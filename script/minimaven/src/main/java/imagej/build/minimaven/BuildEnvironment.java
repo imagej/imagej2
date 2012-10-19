@@ -103,8 +103,8 @@ public class BuildEnvironment {
 	}
 
 	public BuildEnvironment(PrintStream err, boolean downloadAutomatically, boolean verbose, boolean debug) {
-		this.err = err;
-		javac = new JavaCompiler(err, err);
+		this.err = err == null ? System.err : err;
+		javac = new JavaCompiler(this.err, this.err);
 		this.downloadAutomatically = downloadAutomatically;
 		this.verbose = verbose;
 		this.debug = debug;
@@ -116,9 +116,9 @@ public class BuildEnvironment {
 		if (updateInterval != null && !updateInterval.equals("")) try {
 			this.updateInterval = Integer.parseInt(updateInterval);
 			if (verbose)
-				err.println("Setting update interval to " + this.updateInterval + " minutes");
+				this.err.println("Setting update interval to " + this.updateInterval + " minutes");
 		} catch (NumberFormatException e) {
-			err.println("Warning: ignoring invalid update interval " + updateInterval);
+			this.err.println("Warning: ignoring invalid update interval " + updateInterval);
 		}
 	}
 
