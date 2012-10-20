@@ -13,7 +13,7 @@
 
 	<artifactId>ij-script-java</artifactId>
 
-	<name>A "script" engine for Java</name>
+	<name>A script engine for Java</name>
 	<description>Pretends that Java is a script language and offers it via the script framework of ImageJ</description>
 
 	<dependencies>
