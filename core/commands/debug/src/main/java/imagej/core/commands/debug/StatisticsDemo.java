@@ -78,6 +78,18 @@ public class StatisticsDemo implements Command {
 	@Parameter(label="Measure mean", callback = "mean")
 	private Button mean;
 	
+	@Parameter(label="Measure variance", callback = "variance")
+	private Button variance;
+
+	@Parameter(label="Measure std dev", callback = "stdDev")
+	private Button stdDev;
+
+	@Parameter(label="Measure skew", callback = "skew")
+	private Button skew;
+
+	@Parameter(label="Measure kurtosis excess", callback = "kurtosisExcess")
+	private Button kurtosis;
+
 	@Parameter(label="Measure min", callback = "min")
 	private Button min;
 	
@@ -115,6 +127,22 @@ public class StatisticsDemo implements Command {
 	
 	protected void mean() {
 		display("Mean", statSrv.arithmeticMean(dataset, getRegion()));
+	}
+	
+	protected void variance() {
+		display("Variance", statSrv.sampleVariance(dataset, getRegion()));
+	}
+	
+	protected void stdDev() {
+		display("Std Dev", statSrv.sampleStdDev(dataset, getRegion()));
+	}
+	
+	protected void skew() {
+		display("Skew", statSrv.sampleSkew(dataset, getRegion()));
+	}
+	
+	protected void kurtosisExcess() {
+		display("Kurtotis excess", statSrv.sampleKurtosisExcess(dataset, getRegion()));
 	}
 	
 	protected void min() {
