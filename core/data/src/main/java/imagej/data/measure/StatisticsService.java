@@ -44,23 +44,23 @@ import net.imglib2.ops.function.real.RealContraharmonicMeanFunction;
 import net.imglib2.ops.function.real.RealGeometricMeanFunction;
 import net.imglib2.ops.function.real.RealHarmonicMeanFunction;
 import net.imglib2.ops.function.real.RealImageFunction;
-import net.imglib2.ops.function.real.RealKurtosisExcessBiasedFunction;
-import net.imglib2.ops.function.real.RealKurtosisBiasedFunction;
-import net.imglib2.ops.function.real.RealKurtosisExcessUnbiasedFunction;
-import net.imglib2.ops.function.real.RealKurtosisUnbiasedFunction;
+import net.imglib2.ops.function.real.RealPopulationKurtosisExcessFunction;
+import net.imglib2.ops.function.real.RealPopulationKurtosisFunction;
+import net.imglib2.ops.function.real.RealSampleKurtosisExcessFunction;
+import net.imglib2.ops.function.real.RealSampleKurtosisFunction;
 import net.imglib2.ops.function.real.RealMaxFunction;
 import net.imglib2.ops.function.real.RealMedianFunction;
 import net.imglib2.ops.function.real.RealMidpointFunction;
 import net.imglib2.ops.function.real.RealMinFunction;
 import net.imglib2.ops.function.real.RealProductFunction;
-import net.imglib2.ops.function.real.RealSkewBiasedFunction;
-import net.imglib2.ops.function.real.RealSkewUnbiasedFunction;
-import net.imglib2.ops.function.real.RealStdDevBiasedFunction;
-import net.imglib2.ops.function.real.RealStdDevUnbiasedFunction;
+import net.imglib2.ops.function.real.RealPopulationSkewFunction;
+import net.imglib2.ops.function.real.RealSampleSkewFunction;
+import net.imglib2.ops.function.real.RealPopulationStdDevFunction;
+import net.imglib2.ops.function.real.RealSampleStdDevFunction;
 import net.imglib2.ops.function.real.RealSumFunction;
 import net.imglib2.ops.function.real.RealSumOfSquaredDeviationsFunction;
-import net.imglib2.ops.function.real.RealVarianceBiasedFunction;
-import net.imglib2.ops.function.real.RealVarianceUnbiasedFunction;
+import net.imglib2.ops.function.real.RealPopulationVarianceFunction;
+import net.imglib2.ops.function.real.RealSampleVarianceFunction;
 import net.imglib2.ops.function.real.RealWeightedAverageFunction;
 import net.imglib2.ops.function.real.RealWeightedSumFunction;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
@@ -271,128 +271,6 @@ public class StatisticsService extends AbstractService {
 	}
 
 	/**
-	 * Returns the (biased) kurtosis of all the values within a {@link PointSet}
-	 * region of a {@link Dataset}
-	 *  
-	 * @param ds
-	 * The Dataset to measure
-	 * @param region
-	 * The PointSet region upon which to calculate
-	 * @return
-	 * The measured value
-	 */
-	public double kurtosisBiased(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealKurtosisBiasedFunction<DoubleType>(imgFunc);
-		return measure(func, region);
-	}
-
-	/**
-	 * Returns the (biased) kurtosis of all the values within a {@link Dataset}
-	 *  
-	 * @param ds
-	 * The Dataset to measure
-	 * @return
-	 * The measured value
-	 */
-	public double kurtosisBiased(Dataset ds) {
-		return kurtosisBiased(ds, allOf(ds));
-	}
-
-	/**
-	 * Returns the (unbiased) kurtosis of all the values within a {@link PointSet}
-	 * region of a {@link Dataset}
-	 *  
-	 * @param ds
-	 * The Dataset to measure
-	 * @param region
-	 * The PointSet region upon which to calculate
-	 * @return
-	 * The measured value
-	 */
-	public double kurtosisUnbiased(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealKurtosisUnbiasedFunction<DoubleType>(imgFunc);
-		return measure(func, region);
-	}
-
-	/**
-	 * Returns the (unbiased) kurtosis of all the values within a {@link Dataset}
-	 *  
-	 * @param ds
-	 * The Dataset to measure
-	 * @return
-	 * The measured value
-	 */
-	public double kurtosisUnbiased(Dataset ds) {
-		return kurtosisUnbiased(ds, allOf(ds));
-	}
-
-	/**
-	 * Returns the (biased) kurtosis excess of all the values within a
-	 * {@link PointSet} region of a {@link Dataset}
-	 *  
-	 * @param ds
-	 * The Dataset to measure
-	 * @param region
-	 * The PointSet region upon which to calculate
-	 * @return
-	 * The measured value
-	 */
-	public double kurtosisExcessBiased(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealKurtosisExcessBiasedFunction<DoubleType>(imgFunc);
-		return measure(func, region);
-	}
-
-	/**
-	 * Returns the (biased) kurtosis excess of all the values within a
-	 * {@link Dataset}
-	 *  
-	 * @param ds
-	 * The Dataset to measure
-	 * @return
-	 * The measured value
-	 */
-	public double kurtosisExcessBiased(Dataset ds) {
-		return kurtosisExcessBiased(ds, allOf(ds));
-	}
-
-	/**
-	 * Returns the (unbiased) kurtosis excess of all the values within a
-	 * {@link PointSet} region of a {@link Dataset}
-	 *  
-	 * @param ds
-	 * The Dataset to measure
-	 * @param region
-	 * The PointSet region upon which to calculate
-	 * @return
-	 * The measured value
-	 */
-	public double kurtosisExcessUnbiased(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealKurtosisExcessUnbiasedFunction<DoubleType>(imgFunc);
-		return measure(func, region);
-	}
-
-	/**
-	 * Returns the (unbiased) kurtosis excess of all the values within a
-	 * {@link Dataset}
-	 *  
-	 * @param ds
-	 * The Dataset to measure
-	 * @return
-	 * The measured value
-	 */
-	public double kurtosisExcessUnbiased(Dataset ds) {
-		return kurtosisExcessUnbiased(ds, allOf(ds));
-	}
-
-	/**
 	 * Returns the maximum value from the set of values within a
 	 * {@link PointSet} region of a {@link Dataset}
 	 *  
@@ -517,6 +395,164 @@ public class StatisticsService extends AbstractService {
 		return minimum(ds, allOf(ds));
 	}
 	
+
+	/**
+	 * Returns the (biased) kurtosis of all the values within a {@link PointSet}
+	 * region of a {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @param region
+	 * The PointSet region upon which to calculate
+	 * @return
+	 * The measured value
+	 */
+	public double populationKurtosis(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealPopulationKurtosisFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
+
+	/**
+	 * Returns the (biased) kurtosis of all the values within a {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double populationKurtosis(Dataset ds) {
+		return populationKurtosis(ds, allOf(ds));
+	}
+
+	/**
+	 * Returns the (biased) kurtosis excess of all the values within a
+	 * {@link PointSet} region of a {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @param region
+	 * The PointSet region upon which to calculate
+	 * @return
+	 * The measured value
+	 */
+	public double populationKurtosisExcess(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealPopulationKurtosisExcessFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
+
+	/**
+	 * Returns the (biased) kurtosis excess of all the values within a
+	 * {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double populationKurtosisExcess(Dataset ds) {
+		return populationKurtosisExcess(ds, allOf(ds));
+	}
+
+	/**
+	 * Returns the (biased) skew of all the values within a {@link PointSet}
+	 * region of a {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @param region
+	 * The PointSet region upon which to calculate
+	 * @return
+	 * The measured value
+	 */
+	public double populationSkew(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealPopulationSkewFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
+
+	/**
+	 * Returns the (biased) skew of all the values within a {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double populationSkew(Dataset ds) {
+		return populationSkew(ds, allOf(ds));
+	}
+
+	/**
+	 * Returns the (biased) estimate of the sample standard deviation of the
+	 * values within a {@link PointSet} region of a {@link Dataset}. It equals
+	 * the square root of the (biased) estimate of the sample variance.
+	 * 
+	 * @param ds
+	 * The Dataset to measure
+	 * @param region
+	 * The PointSet region upon which to calculate
+	 * @return
+	 * The measured value
+	 */
+	public double populationStdDev(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealPopulationStdDevFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
+	
+	/**
+	 * Returns the (biased) estimate of the sample standard deviation of the
+	 * values within a {@link Dataset}. It equals
+	 * the square root of the (biased) estimate of the sample variance.
+	 * 
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double populationStdDev(Dataset ds) {
+		return populationStdDev(ds, allOf(ds));
+	}
+	
+	/**
+	 * Returns the (biased) estimate of the sample variance of the values within
+	 * a {@link PointSet} region of a {@link Dataset}. It divides the sum of
+	 * squared deviations from the mean by N (N == number of samples).
+	 * 
+	 * @param ds
+	 * The Dataset to measure
+	 * @param region
+	 * The PointSet region upon which to calculate
+	 * @return
+	 * The measured value
+	 */
+	public double populationVariance(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealPopulationVarianceFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
+	
+	/**
+	 * Returns the (biased) estimate of the sample variance of the values within
+	 * a {@link Dataset}. It divides the sum of
+	 * squared deviations from the mean by N (N == number of samples).
+	 * 
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double populationVariance(Dataset ds) {
+		return populationVariance(ds, allOf(ds));
+	}
+	
 	/**
 	 * Returns the product of all the values within a {@link PointSet} region
 	 * of a {@link Dataset}
@@ -548,7 +584,7 @@ public class StatisticsService extends AbstractService {
 	}
 	
 	/**
-	 * Returns the (biased) skew of all the values within a {@link PointSet}
+	 * Returns the (unbiased) kurtosis of all the values within a {@link PointSet}
 	 * region of a {@link Dataset}
 	 *  
 	 * @param ds
@@ -558,23 +594,54 @@ public class StatisticsService extends AbstractService {
 	 * @return
 	 * The measured value
 	 */
-	public double skewBiased(Dataset ds, PointSet region) {
+	public double sampleKurtosis(Dataset ds, PointSet region) {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
-				new RealSkewBiasedFunction<DoubleType>(imgFunc);
+				new RealSampleKurtosisFunction<DoubleType>(imgFunc);
 		return measure(func, region);
 	}
 
 	/**
-	 * Returns the (biased) skew of all the values within a {@link Dataset}
+	 * Returns the (unbiased) kurtosis of all the values within a {@link Dataset}
 	 *  
 	 * @param ds
 	 * The Dataset to measure
 	 * @return
 	 * The measured value
 	 */
-	public double skewBiased(Dataset ds) {
-		return skewBiased(ds, allOf(ds));
+	public double sampleKurtosis(Dataset ds) {
+		return sampleKurtosis(ds, allOf(ds));
+	}
+
+	/**
+	 * Returns the (unbiased) kurtosis excess of all the values within a
+	 * {@link PointSet} region of a {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @param region
+	 * The PointSet region upon which to calculate
+	 * @return
+	 * The measured value
+	 */
+	public double sampleKurtosisExcess(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealSampleKurtosisExcessFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
+
+	/**
+	 * Returns the (unbiased) kurtosis excess of all the values within a
+	 * {@link Dataset}
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double sampleKurtosisExcess(Dataset ds) {
+		return sampleKurtosisExcess(ds, allOf(ds));
 	}
 
 	/**
@@ -588,10 +655,10 @@ public class StatisticsService extends AbstractService {
 	 * @return
 	 * The measured value
 	 */
-	public double skewUnbiased(Dataset ds, PointSet region) {
+	public double sampleSkew(Dataset ds, PointSet region) {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
-				new RealSkewUnbiasedFunction<DoubleType>(imgFunc);
+				new RealSampleSkewFunction<DoubleType>(imgFunc);
 		return measure(func, region);
 	}
 
@@ -603,43 +670,10 @@ public class StatisticsService extends AbstractService {
 	 * @return
 	 * The measured value
 	 */
-	public double skewUnbiased(Dataset ds) {
-		return skewUnbiased(ds, allOf(ds));
+	public double sampleSkew(Dataset ds) {
+		return sampleSkew(ds, allOf(ds));
 	}
 
-	/**
-	 * Returns the (biased) estimate of the sample standard deviation of the
-	 * values within a {@link PointSet} region of a {@link Dataset}. It equals
-	 * the square root of the (biased) estimate of the sample variance.
-	 * 
-	 * @param ds
-	 * The Dataset to measure
-	 * @param region
-	 * The PointSet region upon which to calculate
-	 * @return
-	 * The measured value
-	 */
-	public double stdDevBiased(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealStdDevBiasedFunction<DoubleType>(imgFunc);
-		return measure(func, region);
-	}
-	
-	/**
-	 * Returns the (biased) estimate of the sample standard deviation of the
-	 * values within a {@link Dataset}. It equals
-	 * the square root of the (biased) estimate of the sample variance.
-	 * 
-	 * @param ds
-	 * The Dataset to measure
-	 * @return
-	 * The measured value
-	 */
-	public double stdDevBiased(Dataset ds) {
-		return stdDevBiased(ds, allOf(ds));
-	}
-	
 	/**
 	 * Returns the (unbiased) estimate of the sample standard deviation of the
 	 * values within a {@link PointSet} region of a {@link Dataset}. It equals
@@ -652,10 +686,10 @@ public class StatisticsService extends AbstractService {
 	 * @return
 	 * The measured value
 	 */
-	public double stdDevUnbiased(Dataset ds, PointSet region) {
+	public double sampleStdDev(Dataset ds, PointSet region) {
 		Function<long[],DoubleType> imgFunc = imgFunc(ds);
 		Function<PointSet,DoubleType> func =
-				new RealStdDevUnbiasedFunction<DoubleType>(imgFunc);
+				new RealSampleStdDevFunction<DoubleType>(imgFunc);
 		return measure(func, region);
 	}
 
@@ -669,8 +703,41 @@ public class StatisticsService extends AbstractService {
 	 * @return
 	 * The measured value
 	 */
-	public double stdDevUnbiased(Dataset ds) {
-		return stdDevUnbiased(ds, allOf(ds));
+	public double sampleStdDev(Dataset ds) {
+		return sampleStdDev(ds, allOf(ds));
+	}
+
+	/**
+	 * Returns the (unbiased) estimate of the sample variance of the values within
+	 * a {@link PointSet} region of a {@link Dataset}. It divides the sum of
+	 * squared deviations from the mean by N-1 (N == number of samples).
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @param region
+	 * The PointSet region upon which to calculate
+	 * @return
+	 * The measured value
+	 */
+	public double sampleVariance(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealSampleVarianceFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
+
+	/**
+	 * Returns the (unbiased) estimate of the sample variance of the values within
+	 * a {@link Dataset}. It divides the sum of
+	 * squared deviations from the mean by N-1 (N == number of samples).
+	 *  
+	 * @param ds
+	 * The Dataset to measure
+	 * @return
+	 * The measured value
+	 */
+	public double sampleVariance(Dataset ds) {
+		return sampleVariance(ds, allOf(ds));
 	}
 
 	/**
@@ -734,72 +801,6 @@ public class StatisticsService extends AbstractService {
 		return sumOfSquaredDeviations(ds, allOf(ds));
 	}
 	
-	/**
-	 * Returns the (biased) estimate of the sample variance of the values within
-	 * a {@link PointSet} region of a {@link Dataset}. It divides the sum of
-	 * squared deviations from the mean by N (N == number of samples).
-	 * 
-	 * @param ds
-	 * The Dataset to measure
-	 * @param region
-	 * The PointSet region upon which to calculate
-	 * @return
-	 * The measured value
-	 */
-	public double varianceBiased(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealVarianceBiasedFunction<DoubleType>(imgFunc);
-		return measure(func, region);
-	}
-	
-	/**
-	 * Returns the (biased) estimate of the sample variance of the values within
-	 * a {@link Dataset}. It divides the sum of
-	 * squared deviations from the mean by N (N == number of samples).
-	 * 
-	 * @param ds
-	 * The Dataset to measure
-	 * @return
-	 * The measured value
-	 */
-	public double varianceBiased(Dataset ds) {
-		return varianceBiased(ds, allOf(ds));
-	}
-	
-	/**
-	 * Returns the (unbiased) estimate of the sample variance of the values within
-	 * a {@link PointSet} region of a {@link Dataset}. It divides the sum of
-	 * squared deviations from the mean by N-1 (N == number of samples).
-	 *  
-	 * @param ds
-	 * The Dataset to measure
-	 * @param region
-	 * The PointSet region upon which to calculate
-	 * @return
-	 * The measured value
-	 */
-	public double varianceUnbiased(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealVarianceUnbiasedFunction<DoubleType>(imgFunc);
-		return measure(func, region);
-	}
-
-	/**
-	 * Returns the (unbiased) estimate of the sample variance of the values within
-	 * a {@link Dataset}. It divides the sum of
-	 * squared deviations from the mean by N-1 (N == number of samples).
-	 *  
-	 * @param ds
-	 * The Dataset to measure
-	 * @return
-	 * The measured value
-	 */
-	public double varianceUnbiased(Dataset ds) {
-		return varianceUnbiased(ds, allOf(ds));
-	}
-
 	/**
 	 * Returns the weighted average of the values within a {@link PointSet}
 	 * region of a {@link Dataset}. The weights must be provided and there must

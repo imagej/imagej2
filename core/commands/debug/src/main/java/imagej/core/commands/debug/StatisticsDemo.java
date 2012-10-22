@@ -130,19 +130,19 @@ public class StatisticsDemo implements Command {
 	}
 	
 	protected void variance() {
-		display("Variance", statSrv.varianceUnbiased(dataset, getRegion()));
+		display("Variance", statSrv.sampleVariance(dataset, getRegion()));
 	}
 	
 	protected void stdDev() {
-		display("Std Dev", statSrv.stdDevUnbiased(dataset, getRegion()));
+		display("Std Dev", statSrv.sampleStdDev(dataset, getRegion()));
 	}
 	
 	protected void skew() {
-		display("Skew", statSrv.skewUnbiased(dataset, getRegion()));
+		display("Skew", statSrv.sampleSkew(dataset, getRegion()));
 	}
 	
 	protected void kurtosisExcess() {
-		display("Kurtotis excess", statSrv.kurtosisExcessUnbiased(dataset, getRegion()));
+		display("Kurtotis excess", statSrv.sampleKurtosisExcess(dataset, getRegion()));
 	}
 	
 	protected void min() {
