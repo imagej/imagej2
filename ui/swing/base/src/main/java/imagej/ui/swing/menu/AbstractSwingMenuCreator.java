@@ -36,6 +36,7 @@
 package imagej.ui.swing.menu;
 
 import imagej.input.Accelerator;
+import imagej.input.KeyCode;
 import imagej.menu.AbstractMenuCreator;
 import imagej.menu.ShadowMenu;
 import imagej.module.ModuleInfo;
@@ -141,7 +142,7 @@ public abstract class AbstractSwingMenuCreator<T> extends
 
 	private KeyStroke getKeyStroke(final ShadowMenu shadow) {
 		final Accelerator accelerator = shadow.getMenuEntry().getAccelerator();
-		if (accelerator == null) return null;
+		if (accelerator == null || accelerator.getKeyCode() == KeyCode.UNDEFINED) return null;
 		return KeyStroke.getKeyStroke(accelerator.toString());
 	}
 
