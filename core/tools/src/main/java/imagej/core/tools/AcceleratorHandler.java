@@ -72,6 +72,9 @@ public class AcceleratorHandler extends AbstractTool {
 
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {
+		final Accelerator acc = evt.getAccelerator();
+		if (acc.getKeyCode() == KeyCode.UNDEFINED) return;
+
 		final ModuleService moduleService =
 			getContext().getService(ModuleService.class);
 		final CommandService commandService =
@@ -80,7 +83,6 @@ public class AcceleratorHandler extends AbstractTool {
 		ModuleInfo moduleInfo = null;
 
 		// look up the module corresponding to this key press
-		final Accelerator acc = evt.getAccelerator();
 		moduleInfo = moduleService.getModuleForAccelerator(acc);
 
 		// TODO: ask options service whether the default modifier should be forced
