@@ -7,6 +7,8 @@ import imagej.build.minimaven.MavenProject;
 import imagej.command.Command;
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
+import imagej.plugin.Plugin;
+import imagej.plugin.PluginService;
 import imagej.script.AbstractScriptEngine;
 import imagej.util.FileUtils;
 import imagej.util.LineOutputStream;
@@ -124,13 +126,18 @@ public class JavaEngine extends AbstractScriptEngine {
 			final Class<?> clazz = classLoader.loadClass(mainClass);
 			if (Command.class.isAssignableFrom(clazz)) {
 				final ImageJ context = (ImageJ)get("IJ");
-				final CommandService commandService = context.getService(CommandService.class);
-				final CommandInfo<Command> info = new CommandInfo<Command>(mainClass, Command.class) {
+				final Plugin annotation = clazz.getAnnotation(Plugin.class);
+				final CommandInfo<Command> info = new CommandInfo<Command>(mainClass, Command.class, annotation) {
 					@Override
 					public Class<Command> loadClass() {
 						return (Class<Command>)clazz;
 					}
 				};
+
+				final PluginService pluginService = context.getService(PluginService.class);
+				pluginService.addPlugin(info);
+
+				final CommandService commandService = context.getService(CommandService.class);
 				commandService.run(info);
 			} else {
 				Method main = clazz.getMethod("main", new Class[] { String[].class });
