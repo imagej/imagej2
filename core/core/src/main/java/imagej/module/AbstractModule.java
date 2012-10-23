@@ -77,12 +77,12 @@ public abstract class AbstractModule implements Module {
 
 	@Override
 	public void initialize() {
+		final Object delegateObject = getDelegateObject();
 		if (initializerRef == null) {
-			final String delegateClassName = getInfo().getDelegateClassName();
 			final String initializer = getInfo().getInitializer();
-			initializerRef = new MethodRef(delegateClassName, initializer);
+			initializerRef = new MethodRef(delegateObject.getClass(), initializer);
 		}
-		initializerRef.execute(getDelegateObject());
+		initializerRef.execute(delegateObject);
 	}
 
 	@Override

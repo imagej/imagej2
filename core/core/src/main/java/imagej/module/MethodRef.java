@@ -37,7 +37,6 @@ package imagej.module;
 
 import imagej.Validated;
 import imagej.ValidityProblem;
-import imagej.util.ClassUtils;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -58,12 +57,12 @@ public class MethodRef implements Validated {
 	private final List<ValidityProblem> problems =
 		new ArrayList<ValidityProblem>();
 
-	public MethodRef(final String className, final String methodName,
+	public MethodRef(final Class<?> clazz, final String methodName,
 		final Class<?>... params)
 	{
-		method = findMethod(className, methodName, params);
+		method = findMethod(clazz, methodName, params);
 		if (method == null) label = null;
-		else label = method.getClass().getName() + "#" + method.getName();
+		else label = clazz.getName() + "#" + method.getName();
 	}
 
 	public void execute(final Object obj, final Object... args) {
@@ -78,12 +77,12 @@ public class MethodRef implements Validated {
 		}
 	}
 
-	private Method findMethod(final String className, final String methodName,
+	private Method findMethod(final Class<?> clazz, final String methodName,
 		final Class<?>... params)
 	{
+		if (clazz == null) return null;
 		if (methodName == null || methodName.isEmpty()) return null;
-		final Class<?> baseClass = ClassUtils.loadClass(className);
-		for (Class<?> c = baseClass; c != null; c = c.getSuperclass()) {
+		for (Class<?> c = clazz; c != null; c = c.getSuperclass()) {
 			try {
 				final Method m = c.getDeclaredMethod(methodName, params);
 				m.setAccessible(true);
@@ -97,7 +96,7 @@ public class MethodRef implements Validated {
 				break;
 			}
 		}
-		final String problem = "Method not found: " + className + "#" + methodName;
+		final String problem = "Method not found: " + clazz.getName() + "#" + methodName;
 		problems.add(new ValidityProblem(problem));
 		return null;
 	}
