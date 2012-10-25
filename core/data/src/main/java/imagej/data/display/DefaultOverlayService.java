@@ -60,8 +60,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.imglib2.RealRandomAccess;
-import net.imglib2.ops.pointset.HyperVolumePointSet;
+import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.ops.pointset.PointSetIterator;
+import net.imglib2.ops.pointset.RoiPointSet;
 import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.logic.BitType;
 
@@ -342,28 +343,18 @@ public final class DefaultOverlayService extends AbstractService implements
 	private static class OverlayOutliner implements Drawer {
 		@Override
 		public void draw(Overlay o, DrawingTool tool) {
-			final RegionOfInterest reg = o.getRegionOfInterest();
-			final int numDims = reg.numDimensions();
-			final double[] minD = new double[numDims];
-			final double[] maxD = new double[numDims];
-			reg.realMin(minD);
-			reg.realMax(maxD);
-			final long[] minL = new long[numDims];
-			final long[] maxL = new long[numDims];
-			for (int i = 0; i < numDims; i++) {
-				minL[i] = (long) Math.floor(minD[i]);
-				maxL[i] = (long) Math.ceil(maxD[i]);
-			}
+			final RegionOfInterest region = o.getRegionOfInterest();
+			PointSet pointSet = new RoiPointSet(region);
 			// TODO - rather than a pointSet use an IterableInterval? Investigate.
-			final HyperVolumePointSet pointSet = new HyperVolumePointSet(minL, maxL);
-			final RealRandomAccess<BitType> accessor = reg.realRandomAccess();
+			final RealRandomAccess<BitType> accessor = region.realRandomAccess();
 			final PointSetIterator iter = pointSet.createIterator();
+			final long[] max = pointSet.findBoundMax();
 			long[] pos;
 			while (iter.hasNext()) {
 				pos = iter.next();
 				accessor.setPosition(pos);
 				if (accessor.get().get())
-					if (isBorderPixel(accessor, pos, maxL[0], maxL[1]))
+					if (isBorderPixel(accessor, pos, max[0], max[1]))
 						tool.drawPixel(pos[0], pos[1]);
 			}
 		}
@@ -392,20 +383,9 @@ public final class DefaultOverlayService extends AbstractService implements
 	private static class OverlayFiller implements Drawer {
 		@Override
 		public void draw(Overlay o, DrawingTool tool) {
-			final RegionOfInterest reg = o.getRegionOfInterest();
-			final int numDims = reg.numDimensions();
-			final double[] minD = new double[numDims];
-			final double[] maxD = new double[numDims];
-			reg.realMin(minD);
-			reg.realMax(maxD);
-			final long[] minL = new long[numDims];
-			final long[] maxL = new long[numDims];
-			for (int i = 0; i < numDims; i++) {
-				minL[i] = (long) Math.floor(minD[i]);
-				maxL[i] = (long) Math.ceil(maxD[i]);
-			}
-			final HyperVolumePointSet pointSet = new HyperVolumePointSet(minL, maxL);
-			final RealRandomAccess<BitType> accessor = reg.realRandomAccess();
+			final RegionOfInterest region = o.getRegionOfInterest();
+			final RoiPointSet pointSet = new RoiPointSet(region);
+			final RealRandomAccess<BitType> accessor = region.realRandomAccess();
 			final PointSetIterator iter = pointSet.createIterator();
 			long[] pos;
 			while (iter.hasNext()) {
