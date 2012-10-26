@@ -40,6 +40,7 @@ import ij.ImageStack;
 import ij.WindowManager;
 import ij.gui.ImageWindow;
 import ij.macro.Interpreter;
+import ij.process.ImageProcessor;
 import imagej.data.Dataset;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.meta.Axes;
@@ -409,10 +410,16 @@ public class LegacyUtils {
 	 */
 	public static boolean isBinary(final ImagePlus imp) {
 		final int numSlices = imp.getStackSize();
-		if (numSlices == 1) return imp.getProcessor().isBinary();
+		if (numSlices == 1) {
+			final ImageProcessor ip = imp.getProcessor();
+			if (ip != null) return ip.isBinary();
+		}
 		final ImageStack stack = imp.getStack();
-		for (int i = 1; i <= numSlices; i++) {
-			if (!stack.getProcessor(i).isBinary()) return false;
+		if (stack != null) {
+			for (int i = 1; i <= numSlices; i++) {
+				final ImageProcessor ip = stack.getProcessor(i);
+				if (ip != null && !ip.isBinary()) return false;
+			}
 		}
 		return true;
 	}
