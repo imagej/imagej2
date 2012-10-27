@@ -57,6 +57,8 @@ import javax.script.ScriptException;
  */
 public interface ScriptService extends Service {
 
+	final static String CONTEXT = "IJ";
+
 	PluginService getPluginService();
 
 	LogService getLogService();

@@ -10,6 +10,7 @@ import imagej.command.CommandService;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginService;
 import imagej.script.AbstractScriptEngine;
+import imagej.script.ScriptService;
 import imagej.util.FileUtils;
 import imagej.util.LineOutputStream;
 
@@ -125,7 +126,7 @@ public class JavaEngine extends AbstractScriptEngine {
 			// launch main class
 			final Class<?> clazz = classLoader.loadClass(mainClass);
 			if (Command.class.isAssignableFrom(clazz)) {
-				final ImageJ context = (ImageJ)get("IJ");
+				final ImageJ context = (ImageJ)get(ScriptService.CONTEXT);
 				final Plugin annotation = clazz.getAnnotation(Plugin.class);
 				final CommandInfo<Command> info = new CommandInfo<Command>(mainClass, Command.class, annotation) {
 					@Override

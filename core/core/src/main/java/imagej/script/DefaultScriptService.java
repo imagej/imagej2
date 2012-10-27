@@ -75,8 +75,6 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 	@Parameter
 	private LogService log;
 
-	public final static String CONTEXT = "IJ";
-
 	/** Index of registered script languages. */
 	private final ScriptLanguageIndex scriptLanguageIndex =
 		new ScriptLanguageIndex();
