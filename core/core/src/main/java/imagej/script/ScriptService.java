@@ -57,6 +57,11 @@ import javax.script.ScriptException;
  */
 public interface ScriptService extends Service {
 
+	/**
+	 * The script service puts the current ImageJ context into the engine's bindings
+	 * using this key. That way, scripts can access the context by accessing the global
+	 * variable of that name.
+	 */
 	final static String CONTEXT = "IJ";
 
 	PluginService getPluginService();
