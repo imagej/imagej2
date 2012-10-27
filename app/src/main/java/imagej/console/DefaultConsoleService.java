@@ -42,7 +42,6 @@ import imagej.data.Dataset;
 import imagej.display.DisplayService;
 import imagej.io.IOService;
 import imagej.log.LogService;
-import imagej.options.OptionsService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
@@ -62,9 +61,6 @@ public class DefaultConsoleService extends AbstractService implements
 
 	@Parameter
 	private LogService log;
-
-	@Parameter
-	private OptionsService optionsService;
 
 	@Parameter
 	private CommandService commandService;
@@ -117,7 +113,7 @@ public class DefaultConsoleService extends AbstractService implements
 	}
 
 	/** Implements the "--run <label> <optionString>" legacy handling */
-	private boolean run(String menuLabel, @SuppressWarnings("unused") final String optionString) {
+	private boolean run(String menuLabel, final String optionString) {
 		final String label = menuLabel.replace('_', ' ');
 		CommandInfo<Command> info = null;
 		for (final CommandInfo<Command> info2 : commandService.getCommands()) {
