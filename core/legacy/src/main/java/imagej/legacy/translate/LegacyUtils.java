@@ -410,16 +410,19 @@ public class LegacyUtils {
 	 */
 	public static boolean isBinary(final ImagePlus imp) {
 		final int numSlices = imp.getStackSize();
+		// don't let degenerate images report themselves as binary
+		if (numSlices == 0) return false;
 		if (numSlices == 1) {
 			final ImageProcessor ip = imp.getProcessor();
-			if (ip != null) return ip.isBinary();
+			if (ip == null) return false; // null possible : treat as numeric data
+			return ip.isBinary();
 		}
 		final ImageStack stack = imp.getStack();
-		if (stack != null) {
-			for (int i = 1; i <= numSlices; i++) {
-				final ImageProcessor ip = stack.getProcessor(i);
-				if (ip != null && !ip.isBinary()) return false;
-			}
+		// stack cannot be null here as numSlices > 1
+		//   and in such cases you always get a non-null processor
+		for (int i = 1; i <= numSlices; i++) {
+			final ImageProcessor ip = stack.getProcessor(i);
+			if (!ip.isBinary()) return false;
 		}
 		return true;
 	}
