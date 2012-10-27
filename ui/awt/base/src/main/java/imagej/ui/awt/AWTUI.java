@@ -55,6 +55,7 @@ import java.awt.BorderLayout;
 import java.awt.MenuBar;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 
 /**
  * AWT-based user interface for ImageJ.
@@ -107,6 +108,11 @@ public class AWTUI extends AbstractUserInterface {
 	public DialogPrompt dialogPrompt(final String message, final String title,
 		final MessageType msg, final OptionType option)
 	{
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public File chooseFile(File file, String style) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 

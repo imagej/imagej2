@@ -51,7 +51,9 @@ import imagej.thread.ThreadService;
 import imagej.tool.ToolService;
 import imagej.ui.viewer.DisplayViewer;
 import imagej.ui.viewer.image.ImageDisplayViewer;
+import imagej.widget.FileWidget;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -271,6 +273,22 @@ public interface UIService extends Service {
 	 */
 	DialogPrompt.Result showDialog(String message, String title,
 		DialogPrompt.MessageType messageType, DialogPrompt.OptionType optionType);
+
+	/**
+	 * Prompts the user to choose a file.
+	 * <p>
+	 * The prompt is displayed in the default user interface.
+	 * </p>
+	 * 
+	 * @param file The initial value displayed in the file chooser prompt.
+	 * @param style The style of chooser to use:
+	 *          <ul>
+	 *          <li>{@link FileWidget#OPEN_STYLE}</li>
+	 *          <li>{@link FileWidget#SAVE_STYLE}</li>
+	 *          <li>{@link FileWidget#DIRECTORY_STYLE}</li>
+	 *          </ul>
+	 */
+	File chooseFile(final File file, final String style);
 
 	/**
 	 * Displays a popup context menu for the given display at the specified

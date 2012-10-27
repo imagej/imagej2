@@ -48,13 +48,16 @@ import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.swing.menu.SwingJMenuBarCreator;
 import imagej.ui.swing.menu.SwingJPopupMenuCreator;
 import imagej.ui.viewer.DisplayViewer;
+import imagej.widget.FileWidget;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.dnd.DropTarget;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 
+import javax.swing.JFileChooser;
 import javax.swing.JMenuBar;
 import javax.swing.JPopupMenu;
 import javax.swing.WindowConstants;
@@ -99,6 +102,23 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	@Override
 	public OutputWindow newOutputWindow(final String title) {
 		return new SwingOutputWindow(title);
+	}
+
+	@Override
+	public File chooseFile(File file, String style) {
+		final JFileChooser chooser = new JFileChooser(file);
+		if (FileWidget.DIRECTORY_STYLE.equals(style)) {
+			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		}
+		final int rval;
+		if (FileWidget.SAVE_STYLE.equals(style)) {
+			rval = chooser.showSaveDialog(appFrame);
+		}
+		else { // default behavior
+			rval = chooser.showOpenDialog(appFrame);
+		}
+		if (rval != JFileChooser.APPROVE_OPTION) return null;
+		return chooser.getSelectedFile();
 	}
 
 	@Override

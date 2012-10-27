@@ -115,6 +115,7 @@ public class SwingFileWidget extends SwingInputWidget<File> implements
 
 		// display file chooser in appropriate mode
 		final String style = getModel().getItem().getWidgetStyle();
+		// TODO: Use uiService.chooseFile(file, style) instead.
 		final JFileChooser chooser = new JFileChooser(file);
 		if (FileWidget.DIRECTORY_STYLE.equals(style)) {
 			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);

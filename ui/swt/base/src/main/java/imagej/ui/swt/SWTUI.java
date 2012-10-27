@@ -49,6 +49,9 @@ import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 import imagej.ui.swt.menu.SWTMenuCreator;
 import imagej.ui.viewer.DisplayWindow;
+
+import java.io.File;
+
 import net.miginfocom.swt.MigLayout;
 
 import org.eclipse.swt.widgets.Display;
@@ -110,6 +113,11 @@ public class SWTUI extends AbstractUserInterface implements Runnable {
 	public DialogPrompt dialogPrompt(final String message, final String title,
 		final MessageType msg, final OptionType option)
 	{
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public File chooseFile(File file, String style) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 

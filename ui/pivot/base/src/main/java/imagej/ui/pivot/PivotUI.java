@@ -47,6 +47,7 @@ import imagej.ui.SystemClipboard;
 import imagej.ui.UserInterface;
 import imagej.ui.viewer.DisplayWindow;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.concurrent.ExecutionException;
 
@@ -101,6 +102,11 @@ public class PivotUI extends AbstractUserInterface implements Runnable {
 	public DialogPrompt dialogPrompt(final String message, final String title,
 		final MessageType msg, final OptionType option)
 	{
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public File chooseFile(File file, String style) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 

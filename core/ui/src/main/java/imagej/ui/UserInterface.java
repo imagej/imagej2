@@ -41,6 +41,9 @@ import imagej.display.Display;
 import imagej.plugin.ImageJPlugin;
 import imagej.plugin.Plugin;
 import imagej.ui.viewer.DisplayWindow;
+import imagej.widget.FileWidget;
+
+import java.io.File;
 
 /**
  * An end-user ImageJ application user interface.
@@ -109,6 +112,19 @@ public interface UserInterface extends ImageJPlugin, Contextual, Prioritized {
 	 */
 	DialogPrompt dialogPrompt(String message, String title,
 		DialogPrompt.MessageType messageType, DialogPrompt.OptionType optionType);
+
+	/**
+	 * Prompts the user to choose a file.
+	 * 
+	 * @param file The initial value displayed in the file chooser prompt.
+	 * @param style The style of chooser to use:
+	 *          <ul>
+	 *          <li>{@link FileWidget#OPEN_STYLE}</li>
+	 *          <li>{@link FileWidget#SAVE_STYLE}</li>
+	 *          <li>{@link FileWidget#DIRECTORY_STYLE}</li>
+	 *          </ul>
+	 */
+	File chooseFile(File file, String style);
 
 	/**
 	 * Displays a popup context menu for the given display at the specified

@@ -68,6 +68,7 @@ import imagej.ui.viewer.DisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.image.ImageDisplayViewer;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -347,6 +348,13 @@ public final class DefaultUIService extends AbstractService implements
 		final DialogPrompt dialogPrompt =
 			ui.dialogPrompt(message, title, messageType, optionType);
 		return dialogPrompt.prompt();
+	}
+
+	@Override
+	public File chooseFile(final File file, final String style) {
+		final UserInterface ui = getDefaultUI();
+		if (ui == null) return null;
+		return ui.chooseFile(file, style);
 	}
 
 	@Override
