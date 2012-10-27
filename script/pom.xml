@@ -21,7 +21,6 @@
 		<module>beanshell</module>
 		<module>java</module>
 		<module>minimaven</module>
-		<module>r</module>
 	</modules>
 
 	<!-- NB: for project parent, in case of partial checkout -->
