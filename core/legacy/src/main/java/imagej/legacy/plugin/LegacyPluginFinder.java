@@ -182,7 +182,6 @@ public class LegacyPluginFinder {
 		final CommandInfo<Command> pe =
 			new CommandInfo<Command>(LEGACY_PLUGIN_CLASS,
 				Command.class);
-		pe.setLabel(makeLabel(menuPath));
 		pe.setMenuPath(menuPath);
 		pe.setPresets(presets);
 
@@ -257,24 +256,6 @@ public class LegacyPluginFinder {
 		final int quote2 = ij1PluginString.indexOf("\"", quote + 1);
 		if (quote2 < 0) return ij1PluginString.substring(quote + 1);
 		return ij1PluginString.substring(quote + 1, quote2);
-	}
-
-	/**
-	 * Generates a reasonable label from the menu path, using all but the first
-	 * menu path element. For example, the label for "File > Import > AVI..." will
-	 * be "Import AVI..."
-	 * 
-	 * @param menuPath The menu path from which to produce a label.
-	 * @return The label produced from the menu path.
-	 */
-	private String makeLabel(final MenuPath menuPath) {
-		final StringBuilder sb = new StringBuilder();
-		boolean first = true;
-		for (final MenuEntry entry : menuPath) {
-			if (first) first = false;
-			else sb.append(entry.getName() + " ");
-		}
-		return sb.toString().trim();
 	}
 
 }
