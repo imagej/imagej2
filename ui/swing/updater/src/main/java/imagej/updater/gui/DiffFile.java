@@ -42,7 +42,7 @@ import imagej.updater.core.FileObject;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.util.ByteCodeAnalyzer;
 import imagej.updater.util.Util;
-import imagej.util.FileUtils;
+import imagej.util.ProcessUtils;
 
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
@@ -278,7 +278,7 @@ public class DiffFile extends JFrame {
 						final PrintStream out = diffView.getPrintStream();
 						out.println("\n");
 						if (warning != null) diffView.warn(warning + "\n\n");
-						FileUtils.exec(gitWorkingDirectory,  out, out, "git", "log", "-M", "-p", since, commitRange, "--", relativePath);
+						ProcessUtils.exec(gitWorkingDirectory,  out, out, "git", "log", "-M", "-p", since, commitRange, "--", relativePath);
 					}
 				});
 			}
@@ -331,7 +331,7 @@ public class DiffFile extends JFrame {
 				if (sourceFile == null) continue;
 				final String suffix = path.substring(0, path.lastIndexOf('/') + 1) + sourceFile;
 				try {
-					path = FileUtils.exec(gitWorkingDirectory, null, null, "git", "ls-files", "*/" + suffix);
+					path = ProcessUtils.exec(gitWorkingDirectory, null, null, "git", "ls-files", "*/" + suffix);
 					if (path.length() <= suffix.length()) continue;
 					if (path.endsWith("\n")) path = path.substring(0, path.length() - 1);
 				} catch (RuntimeException e) {

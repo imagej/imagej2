@@ -49,7 +49,7 @@ import imagej.updater.core.UploaderService;
 import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.Progress;
 import imagej.updater.util.UpdaterUserInterface;
-import imagej.util.FileUtils;
+import imagej.util.ProcessUtils;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -126,7 +126,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	static {
 		String version = null;
 		try {
-			version = FileUtils.exec(null,  null, null, "git", "--version");
+			version = ProcessUtils.exec(null,  null, null, "git", "--version");
 		} catch (Throwable t) { /* ignore */ }
 		gitVersion = version;
 	}

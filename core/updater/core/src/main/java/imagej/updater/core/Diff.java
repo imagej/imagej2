@@ -38,6 +38,7 @@ package imagej.updater.core;
 import imagej.updater.util.ByteCodeAnalyzer;
 import imagej.updater.util.Util;
 import imagej.util.FileUtils;
+import imagej.util.ProcessUtils;
 import imagej.util.IteratorPlus;
 
 import java.io.BufferedInputStream;
@@ -256,7 +257,7 @@ public class Diff {
 
 		try {
 			boolean color = false;
-			FileUtils.exec(null, out, out, "git", "diff",
+			ProcessUtils.exec(null, out, out, "git", "diff",
 					"--color=" + (color ? "always" : "auto"),
 					"--no-index",
 					"--src-prefix=remote/" + name + "/", "--dst-prefix=local/" + name + "/",
@@ -305,7 +306,7 @@ public class Diff {
 	 * @throws IOException
 	 */
 	protected void hexdump(File inputFile, File outputFile) throws FileNotFoundException, IOException {
-		final String result = FileUtils.exec(null, out, null, "hexdump", "-C", inputFile.getAbsolutePath());
+		final String result = ProcessUtils.exec(null, out, null, "hexdump", "-C", inputFile.getAbsolutePath());
 		copy(new ByteArrayInputStream(result.getBytes()), new FileOutputStream(outputFile), true, true);
 	}
 
@@ -350,7 +351,7 @@ public class Diff {
 	protected File javap(final File jarFile, final String className) throws IOException {
 		File file = File.createTempFile("javap-", "");
 		try {
-			final String result = FileUtils.exec(null, out, null, "javap", "-classpath", jarFile.getAbsolutePath(), "-c", className);
+			final String result = ProcessUtils.exec(null, out, null, "javap", "-classpath", jarFile.getAbsolutePath(), "-c", className);
 			copy(new ByteArrayInputStream(result.getBytes()), new FileOutputStream(file), true, true);
 		} catch (RuntimeException e) {
 			if (e.getCause() != null && e.getCause() instanceof InterruptedException)
@@ -376,7 +377,7 @@ public class Diff {
 		File classFile = new File(file, path);
 		classFile.getParentFile().mkdirs();
 		copy(new ByteArrayInputStream(buffer), new FileOutputStream(classFile), true, true);
-		final String result = FileUtils.exec(null, out, null, "javap", "-classpath", file.getAbsolutePath(), "-c", path.replace('/', '.'));
+		final String result = ProcessUtils.exec(null, out, null, "javap", "-classpath", file.getAbsolutePath(), "-c", path.replace('/', '.'));
 		while (!classFile.equals(file)) {
 			classFile.delete();
 			classFile = classFile.getParentFile();

@@ -35,7 +35,7 @@
 
 package imagej.updater.gui;
 
-import imagej.util.FileUtils;
+import imagej.util.ProcessUtils;
 import imagej.util.LineOutputStream;
 
 import java.awt.Color;
@@ -68,7 +68,7 @@ import javax.swing.text.StyledDocument;
  * A scroll pane that colorizes diff output.
  * 
  * It offers a {@link PrintStream} for use with
- * {@link FileUtils#exec(java.io.File, PrintStream, PrintStream, String...)}. It
+ * {@link ProcessUtils#exec(java.io.File, PrintStream, PrintStream, String...)}. It
  * can also show links that might update the view by calling an
  * {@link ActionListener}. Otherwise, this class is pretty dumb.
  * 
@@ -373,7 +373,7 @@ public class DiffView extends JScrollPane {
 			@Override
 			public void run() {
 				try {
-					FileUtils.exec(null, diff.getPrintStream(), diff.getPrintStream(), "git", "show");
+					ProcessUtils.exec(null, diff.getPrintStream(), diff.getPrintStream(), "git", "show");
 				} catch (RuntimeException e) {
 					if (!(e.getCause() instanceof InterruptedException))
 						e.printStackTrace();
