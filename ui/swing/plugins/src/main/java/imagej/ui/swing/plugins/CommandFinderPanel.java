@@ -255,7 +255,7 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 		final String regex = getRegex();
 		final List<ModuleInfo> matches = new ArrayList<ModuleInfo>();
 		for (final ModuleInfo command : commands) {
-			if (!command.getTitle().toLowerCase().matches(regex)) continue; // no match
+			if (!command.getMenuPath().toString().toLowerCase().matches(regex)) continue; // no match
 			matches.add(command);
 			if (command == selected) selectedRow = counter;
 			counter++;
