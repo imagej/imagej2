@@ -35,8 +35,6 @@
 
 package imagej.module;
 
-import imagej.widget.WidgetStyle;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -57,7 +55,7 @@ public class DefaultModuleItem<T> extends AbstractModuleItem<T> {
 	private String persistKey;
 	private String initializer;
 	private String callback;
-	private WidgetStyle widgetStyle;
+	private String widgetStyle;
 	private T minimumValue;
 	private T maximumValue;
 	private Number stepSize;
@@ -150,7 +148,7 @@ public class DefaultModuleItem<T> extends AbstractModuleItem<T> {
 		this.callback = callback;
 	}
 
-	public void setWidgetStyle(final WidgetStyle widgetStyle) {
+	public void setWidgetStyle(final String widgetStyle) {
 		this.widgetStyle = widgetStyle;
 	}
 
@@ -218,7 +216,7 @@ public class DefaultModuleItem<T> extends AbstractModuleItem<T> {
 	}
 
 	@Override
-	public WidgetStyle getWidgetStyle() {
+	public String getWidgetStyle() {
 		return widgetStyle;
 	}
 

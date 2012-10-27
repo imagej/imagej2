@@ -51,7 +51,7 @@ import imagej.plugin.Plugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.Result;
 import imagej.ui.UIService;
-import imagej.widget.WidgetStyle;
+import imagej.widget.FileWidget;
 
 import java.io.File;
 
@@ -83,7 +83,7 @@ public class SaveAsImage extends ContextCommand {
 	@Parameter
 	private UIService uiService;
 
-	@Parameter(label = "File to save", style = WidgetStyle.FILE_SAVE,
+	@Parameter(label = "File to save", style = FileWidget.SAVE_STYLE,
 		initializer = "initOutputFile", persist = false)
 	private File outputFile;
 
@@ -125,13 +125,15 @@ public class SaveAsImage extends ContextCommand {
 			try {
 				imageSaver.addStatusListener(new StatusDispatcher(statusService));
 
-				if (imageSaver.isCompressible(img)) result =
+				if (imageSaver.isCompressible(img)) {
+					result =
 					uiService.showDialog("Your image contains axes other than XYZCT.\n"
 						+ "When saving, these may be compressed to the "
 						+ "Channel axis (or the save process may simply fail).\n"
 						+ "Would you like to continue?", "Save [IJ2]",
 						DialogPrompt.MessageType.WARNING_MESSAGE,
 						DialogPrompt.OptionType.YES_NO_OPTION);
+				}
 
 				saveImage = result == DialogPrompt.Result.YES_OPTION;
 				imageSaver.saveImg(outputFile.getAbsolutePath(), img);

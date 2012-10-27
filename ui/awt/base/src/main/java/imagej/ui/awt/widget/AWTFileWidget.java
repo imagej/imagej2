@@ -39,7 +39,6 @@ import imagej.plugin.Plugin;
 import imagej.widget.FileWidget;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
-import imagej.widget.WidgetStyle;
 
 import java.awt.BorderLayout;
 import java.awt.Button;
@@ -113,9 +112,9 @@ public class AWTFileWidget extends AWTInputWidget<File> implements
 		}
 
 		// display file chooser in appropriate mode
-		final WidgetStyle style = getModel().getItem().getWidgetStyle();
+		final String style = getModel().getItem().getWidgetStyle();
 		final FileDialog fileDialog = new FileDialog((Frame) null);
-		if (style == WidgetStyle.FILE_SAVE) {
+		if (FileWidget.SAVE_STYLE.equals(style)) {
 			fileDialog.setMode(FileDialog.SAVE);
 		}
 		else { // default behavior

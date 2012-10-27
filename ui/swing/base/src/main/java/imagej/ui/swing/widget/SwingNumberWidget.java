@@ -40,7 +40,6 @@ import imagej.util.NumberUtils;
 import imagej.widget.InputWidget;
 import imagej.widget.NumberWidget;
 import imagej.widget.WidgetModel;
-import imagej.widget.WidgetStyle;
 
 import java.awt.Adjustable;
 import java.awt.Dimension;
@@ -90,8 +89,8 @@ public class SwingNumberWidget extends SwingInputWidget<Number> implements
 		final Number stepSize = model.getStepSize();
 
 		// add optional widgets, if specified
-		final WidgetStyle style = model.getItem().getWidgetStyle();
-		if (style == WidgetStyle.NUMBER_SCROLL_BAR) {
+		final String style = model.getItem().getWidgetStyle();
+		if (NumberWidget.SCROLL_BAR_STYLE.equals(style)) {
 			scrollBar =
 				new JScrollBar(Adjustable.HORIZONTAL, min.intValue(), 1,
 					min.intValue(), max.intValue() + 1);
@@ -100,7 +99,7 @@ public class SwingNumberWidget extends SwingInputWidget<Number> implements
 			getComponent().add(scrollBar);
 			scrollBar.addAdjustmentListener(this);
 		}
-		else if (style == WidgetStyle.NUMBER_SLIDER) {
+		else if (NumberWidget.SLIDER_STYLE.equals(style)) {
 			slider = new JSlider(min.intValue(), max.intValue(), min.intValue());
 			slider.setMajorTickSpacing((max.intValue() - min.intValue()) / 4);
 			slider.setMinorTickSpacing(stepSize.intValue());

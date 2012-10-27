@@ -38,8 +38,8 @@ package imagej.ui.pivot.widget;
 import imagej.plugin.Plugin;
 import imagej.util.NumberUtils;
 import imagej.widget.InputWidget;
+import imagej.widget.NumberWidget;
 import imagej.widget.WidgetModel;
-import imagej.widget.WidgetStyle;
 
 import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.ScrollBar;
@@ -62,8 +62,8 @@ public class PivotNumberScrollBarWidget extends PivotNumberWidget implements
 
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
-		final WidgetStyle style = model.getItem().getWidgetStyle();
-		if (style != WidgetStyle.NUMBER_SCROLL_BAR) return false;
+		final String style = model.getItem().getWidgetStyle();
+		if (!NumberWidget.SCROLL_BAR_STYLE.equals(style)) return false;
 		return super.isCompatible(model);
 	}
 

@@ -45,7 +45,7 @@ import imagej.module.ItemVisibility;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.util.ColorRGB;
-import imagej.widget.WidgetStyle;
+import imagej.widget.NumberWidget;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -139,15 +139,15 @@ public class ParameterTester implements Command, Previewable {
 	@Parameter
 	private Dataset dataset;
 
-	@Parameter(label = "spinner", style = WidgetStyle.NUMBER_SPINNER, min = "0",
+	@Parameter(label = "spinner", style = NumberWidget.SPINNER_STYLE, min = "0",
 		max = "1000")
 	private int spinnerNumber;
 
-	@Parameter(label = "slider", style = WidgetStyle.NUMBER_SLIDER, min = "0",
+	@Parameter(label = "slider", style = NumberWidget.SLIDER_STYLE, min = "0",
 		max = "1000", stepSize = "50")
 	private int sliderNumber;
 
-	@Parameter(label = "scroll bar", style = WidgetStyle.NUMBER_SCROLL_BAR,
+	@Parameter(label = "scroll bar", style = NumberWidget.SCROLL_BAR_STYLE,
 		min = "0", max = "1000")
 	private int scrollBarNumber;
 

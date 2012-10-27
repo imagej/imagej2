@@ -45,7 +45,7 @@ import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.widget.WidgetStyle;
+import imagej.widget.NumberWidget;
 
 import java.util.List;
 
@@ -96,11 +96,11 @@ public class BrightnessContrast extends ContextCommand implements Previewable {
 	private double max = Double.NaN;
 
 	@Parameter(callback = "brightnessContrastChanged", persist = false,
-		style = WidgetStyle.NUMBER_SCROLL_BAR, min = S_MIN, max = S_MAX)
+		style = NumberWidget.SCROLL_BAR_STYLE, min = S_MIN, max = S_MAX)
 	private int brightness;
 
 	@Parameter(callback = "brightnessContrastChanged", persist = false,
-		style = WidgetStyle.NUMBER_SCROLL_BAR, min = S_MIN, max = S_MAX)
+		style = NumberWidget.SCROLL_BAR_STYLE, min = S_MIN, max = S_MAX)
 	private int contrast;
 
 	/** The minimum and maximum values of the data itself. */

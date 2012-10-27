@@ -39,7 +39,6 @@ import imagej.command.CommandInfo;
 import imagej.module.ItemIO;
 import imagej.module.ItemVisibility;
 import imagej.module.ModuleInfo;
-import imagej.widget.WidgetStyle;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -142,18 +141,29 @@ public @interface Parameter {
 	 * Defines a function that is called whenever this parameter changes.
 	 * <p>
 	 * This mechanism enables interdependent parameters of various types. For
-	 * example, two int parameters "width" and "height" could update each other
-	 * when another boolean "Preserve aspect ratio" flag is set.
+	 * example, two {@code int} parameters "width" and "height" could update each
+	 * other when another {@code boolean} "Preserve aspect ratio" flag is set.
 	 * </p>
 	 */
 	String callback() default "";
 
-	/** Defines the preferred widget style. */
-	// NB: We use the fully qualified name to work around a javac bug:
-	// http://bugs.sun.com/view_bug.do?bug_id=6512707
-	// See:
-	// http://groups.google.com/group/project-lombok/browse_thread/thread/c5568eb659cab203
-	WidgetStyle style() default imagej.widget.WidgetStyle.DEFAULT;
+	/**
+	 * Defines the preferred widget style.
+	 * <p>
+	 * We do not use an {@code enum} because the styles need to be extensible. And
+	 * we cannot use an interface-driven extensible enum pattern, because
+	 * interfaces cannot be used as attributes within a Java annotation interface.
+	 * So we fall back to strings!
+	 * </p>
+	 * 
+	 * @see imagej.widget.FileWidget#OPEN_STYLE
+	 * @see imagej.widget.FileWidget#SAVE_STYLE
+	 * @see imagej.widget.FileWidget#DIRECTORY_STYLE
+	 * @see imagej.widget.NumberWidget#SPINNER_STYLE
+	 * @see imagej.widget.NumberWidget#SCROLL_BAR_STYLE
+	 * @see imagej.widget.NumberWidget#SLIDER_STYLE
+	 */
+	String style() default "";
 
 	/** Defines the minimum allowed value (numeric parameters only). */
 	String min() default "";

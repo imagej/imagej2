@@ -39,7 +39,6 @@ import imagej.plugin.Plugin;
 import imagej.widget.FileWidget;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
-import imagej.widget.WidgetStyle;
 
 import java.io.File;
 
@@ -108,9 +107,9 @@ public class PivotFileWidget extends PivotInputWidget<File> implements
 		}
 
 		// display file chooser in appropriate mode
-		final WidgetStyle style = getModel().getItem().getWidgetStyle();
+		final String style = getModel().getItem().getWidgetStyle();
 		final FileBrowserSheet browser;
-		if (style == WidgetStyle.FILE_SAVE) {
+		if (FileWidget.SAVE_STYLE.equals(style)) {
 			browser = new FileBrowserSheet(Mode.SAVE_AS);
 		}
 		else { // default behavior

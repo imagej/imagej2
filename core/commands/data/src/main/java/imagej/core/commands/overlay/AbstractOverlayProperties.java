@@ -45,7 +45,7 @@ import imagej.options.OptionsService;
 import imagej.plugin.Parameter;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
-import imagej.widget.WidgetStyle;
+import imagej.widget.NumberWidget;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +83,7 @@ public abstract class AbstractOverlayProperties
 
 	@Parameter(label = "Alpha", description = "The opacity or alpha of the "
 		+ "interior of the overlay (0=transparent, 255=opaque)", persist = false,
-		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255")
+		style = NumberWidget.SCROLL_BAR_STYLE, min = "0", max = "255")
 	private int alpha = 0;
 
 	@Parameter(

@@ -43,5 +43,14 @@ import java.io.File;
  * @author Curtis Rueden
  */
 public interface FileWidget<U> extends InputWidget<File, U> {
-	// NB: No changes to interface.
+
+	/** Widget style for file opener dialogs. */
+	String OPEN_STYLE = "open";
+
+	/** Widget style for file saver dialogs. */
+	String SAVE_STYLE = "save";
+
+	/** Widget style for directory chooser dialogs. */
+	String DIRECTORY_STYLE = "directory";
+
 }

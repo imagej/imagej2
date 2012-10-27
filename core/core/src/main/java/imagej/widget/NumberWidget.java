@@ -42,4 +42,9 @@ package imagej.widget;
  */
 public interface NumberWidget<U> extends InputWidget<Number, U> {
 	// NB: No changes to interface.
+
+	String SLIDER_STYLE = "slider";
+	String SPINNER_STYLE = "spinner";
+	String SCROLL_BAR_STYLE = "scroll bar";
+
 }

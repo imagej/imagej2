@@ -39,7 +39,6 @@ import imagej.util.ClassUtils;
 import imagej.util.NumberUtils;
 import imagej.util.Prefs;
 import imagej.util.StringMaker;
-import imagej.widget.WidgetStyle;
 
 import java.util.List;
 
@@ -71,7 +70,7 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 		sm.append("persisted", isPersisted());
 		sm.append("persistKey", getPersistKey());
 		sm.append("callback", getCallback());
-		sm.append("widgetStyle", getWidgetStyle(), WidgetStyle.DEFAULT);
+		sm.append("widgetStyle", getWidgetStyle());
 		sm.append("min", getMinimumValue());
 		sm.append("max", getMaximumValue());
 		sm.append("stepSize", getStepSize(), NumberUtils.toNumber("1", getType()));
@@ -197,8 +196,8 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 	}
 
 	@Override
-	public WidgetStyle getWidgetStyle() {
-		return WidgetStyle.DEFAULT;
+	public String getWidgetStyle() {
+		return null;
 	}
 
 	@Override

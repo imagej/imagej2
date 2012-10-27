@@ -36,7 +36,6 @@
 package imagej.module;
 
 import imagej.BasicDetails;
-import imagej.widget.WidgetStyle;
 
 import java.util.List;
 
@@ -122,7 +121,7 @@ public interface ModuleItem<T> extends BasicDetails {
 	 * Gets the preferred widget style to use when rendering the item in a user
 	 * interface.
 	 */
-	WidgetStyle getWidgetStyle();
+	String getWidgetStyle();
 
 	/** Gets the minimum allowed value (if applicable). */
 	T getMinimumValue();

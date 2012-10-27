@@ -42,7 +42,7 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
-import imagej.widget.WidgetStyle;
+import imagej.widget.NumberWidget;
 
 // TODO - FIXME?
 //
@@ -78,7 +78,7 @@ public class OptionsRoundedRectangleTool extends OptionsPlugin {
 	@Parameter(label = "Fill Opacity",
 		description = "The opacity or alpha of the "
 			+ "interior of the rounded rectangle (0=transparent, 255=opaque)",
-		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255")
+		style = NumberWidget.SCROLL_BAR_STYLE, min = "0", max = "255")
 	private int alpha = 0;
 
 	// -- OptionsRoundedRectangle methods --

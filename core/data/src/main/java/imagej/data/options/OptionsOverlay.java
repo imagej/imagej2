@@ -46,7 +46,7 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
-import imagej.widget.WidgetStyle;
+import imagej.widget.NumberWidget;
 
 /**
  * Runs the Edit::Options::Overlay... dialog.
@@ -93,7 +93,8 @@ public class OptionsOverlay extends OptionsPlugin {
 	@Parameter(label = "Fill opacity",
 		description = "The opacity or alpha of the "
 			+ "interior of the overlay (0=transparent, 255=opaque)",
-		style = WidgetStyle.NUMBER_SCROLL_BAR, min = "0", max = "255", persistKey = "alpha.1")
+		style = NumberWidget.SCROLL_BAR_STYLE, min = "0", max = "255",
+		persistKey = "alpha.1")
 	private int alpha = 63;
 
 	@Parameter(

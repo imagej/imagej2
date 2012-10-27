@@ -43,7 +43,6 @@ import imagej.module.ModuleItem;
 import imagej.plugin.Parameter;
 import imagej.util.ClassUtils;
 import imagej.util.NumberUtils;
-import imagej.widget.WidgetStyle;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -137,7 +136,7 @@ public class CommandModuleItem<T> extends AbstractModuleItem<T> {
 	}
 
 	@Override
-	public WidgetStyle getWidgetStyle() {
+	public String getWidgetStyle() {
 		return getParameter().style();
 	}
 

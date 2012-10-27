@@ -39,7 +39,6 @@ import imagej.plugin.Plugin;
 import imagej.widget.FileWidget;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
-import imagej.widget.WidgetStyle;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -115,13 +114,13 @@ public class SwingFileWidget extends SwingInputWidget<File> implements
 		}
 
 		// display file chooser in appropriate mode
-		final WidgetStyle style = getModel().getItem().getWidgetStyle();
+		final String style = getModel().getItem().getWidgetStyle();
 		final JFileChooser chooser = new JFileChooser(file);
-		if (style == WidgetStyle.FILE_DIRECTORY) {
+		if (FileWidget.DIRECTORY_STYLE.equals(style)) {
 			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		}
 		final int rval;
-		if (style == WidgetStyle.FILE_SAVE) {
+		if (FileWidget.SAVE_STYLE.equals(style)) {
 			rval = chooser.showSaveDialog(getComponent());
 		}
 		else { // default behavior
