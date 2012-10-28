@@ -277,7 +277,7 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 		private final static String ijDir = AppUtils.getBaseDirectory().getAbsolutePath();
 		protected List<ModuleInfo> list;
 
-		public final static int COLUMN_COUNT = 7;
+		public final static int COLUMN_COUNT = 8;
 
 		public CommandTableModel(final List<ModuleInfo> list) {
 			this.list = list;
@@ -289,7 +289,7 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 		}
 
 		public void setColumnWidths(TableColumnModel columnModel) {
-			int[] widths = { 32, 250, 150, 250, 200, 50, 20 };
+			int[] widths = { 32, 250, 150, 150, 250, 200, 50, 20 };
 			for (int i = 0; i < widths.length; i++) {
 				columnModel.getColumn(i).setPreferredWidth(widths[i]);
 			}
@@ -317,10 +317,11 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 			if (column == 0) return "Icon";
 			if (column == 1) return "Command";
 			if (column == 2) return "Menu Path";
-			if (column == 3) return "Class";
-			if (column == 4) return "File";
-			if (column == 5) return "Description";
-			if (column == 6) return "Priority";
+			if (column == 3) return "Shortcut";
+			if (column == 4) return "Class";
+			if (column == 5) return "File";
+			if (column == 6) return "Description";
+			if (column == 7) return "Priority";
 			return null;
 		}
 
@@ -341,18 +342,24 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 			if (column == 1) return info.getTitle();
 			if (column == 2) {
 				final MenuPath menuPath = info.getMenuPath();
+				if (menuPath == null) return "";
 				return menuPath.getMenuString(false);
 			}
-			if (column == 3) return info.getDelegateClassName();
-			if (column == 4) {
+			if (column == 3) {
+				final MenuPath menuPath = info.getMenuPath();
+				if (menuPath == null) return "";
+				return menuPath.getLeaf().getAccelerator();
+			}
+			if (column == 4) return info.getDelegateClassName();
+			if (column == 5) {
 				final URL location = ClassUtils.getLocation(info.getDelegateClassName());
 				final String file = FileUtils.urlToFile(location).getAbsolutePath();
 				if (file.startsWith(ijDir))
 					return file.substring(ijDir.length() + 1);
 				return file;
 			}
-			if (column == 5) return info.getDescription();
-			if (column == 6) return info.getPriority();
+			if (column == 6) return info.getDescription();
+			if (column == 7) return info.getPriority();
 			return null;
 		}
 	}
