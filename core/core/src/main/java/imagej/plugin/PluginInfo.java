@@ -78,7 +78,14 @@ public class PluginInfo<P extends ImageJPlugin> extends AbstractUIDetails
 	/** Annotation describing the plugin. */
 	private Plugin annotation;
 
-	/** TODO */
+	/**
+	 * Creates a new plugin metadata object.
+	 * 
+	 * @param className The name of the class, which must implement
+	 *          {@link ImageJPlugin}.
+	 * @param pluginType The <em>type</em> of plugin described by this metadata.
+	 *          See {@link ImageJPlugin} for a list of common plugin types.
+	 */
 	public PluginInfo(final String className, final Class<P> pluginType) {
 		setClassName(className);
 		setPluginType(pluginType);
@@ -86,7 +93,16 @@ public class PluginInfo<P extends ImageJPlugin> extends AbstractUIDetails
 		setMenuRoot(Plugin.APPLICATION_MENU_ROOT);
 	}
 
-	/** TODO */
+	/**
+	 * Creates a new plugin metadata object.
+	 * 
+	 * @param className The name of the class, which must implement
+	 *          {@link ImageJPlugin}.
+	 * @param pluginType The <em>type</em> of plugin described by this metadata.
+	 *          See {@link ImageJPlugin} for a list of common plugin types.
+	 * @param annotation The @{@link Plugin} annotation to associate with this
+	 *          metadata object.
+	 */
 	public PluginInfo(final String className, final Class<P> pluginType,
 		final Plugin annotation)
 	{
