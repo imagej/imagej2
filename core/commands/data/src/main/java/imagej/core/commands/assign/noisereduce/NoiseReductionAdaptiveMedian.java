@@ -46,7 +46,7 @@ import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import net.imglib2.img.Img;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.ops.function.Function;
 import net.imglib2.ops.function.real.RealAdaptiveMedianFunction;
@@ -106,8 +106,8 @@ public class NoiseReductionAdaptiveMedian<U extends RealType<U>>
 	public void run() {
 		@SuppressWarnings("unchecked")
 		ImgPlus<U> inputImg = (ImgPlus<U>) input.getImgPlus();
-		OutOfBoundsMirrorFactory<U, Img<U>> oobFactory =
-				new OutOfBoundsMirrorFactory<U,Img<U>>(Boundary.DOUBLE);
+		OutOfBoundsMirrorFactory<U, RandomAccessibleInterval<U>> oobFactory =
+				new OutOfBoundsMirrorFactory<U,RandomAccessibleInterval<U>>(Boundary.DOUBLE);
 		Function<long[],DoubleType> otherFunc =
 				new RealImageFunction<U,DoubleType>(inputImg, oobFactory, new DoubleType());
 		List<PointSet> pointSets = getNeighborhoods(input.numDimensions());

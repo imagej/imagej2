@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.imglib2.Cursor;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
@@ -193,9 +194,9 @@ public class MeasurementDemo implements Command {
 		sSrv.showStatus(funcName+" of selected region is "+output.getRealDouble());
 	}
 	
-	private <T extends RealType<T>> OutOfBoundsFactory<T, Img<T>> getOobFactory()
+	private <T extends RealType<T>> OutOfBoundsFactory<T, RandomAccessibleInterval<T>> getOobFactory()
 	{
-		return new OutOfBoundsMirrorFactory<T,Img<T>>(Boundary.DOUBLE);
+		return new OutOfBoundsMirrorFactory<T,RandomAccessibleInterval<T>>(Boundary.DOUBLE);
 	}
 	
 	private Dataset getTestData() {
@@ -250,7 +251,7 @@ public class MeasurementDemo implements Command {
 	private void example2() {
 		Dataset ds = getTestData();
 		DoubleType output = new DoubleType();
-		OutOfBoundsFactory<UnsignedByteType, Img<UnsignedByteType>>
+		OutOfBoundsFactory<UnsignedByteType, RandomAccessibleInterval<UnsignedByteType>>
 			oobFactory = getOobFactory();
 		@SuppressWarnings("unchecked")
 		RealImageFunction<?,DoubleType> imgFuncWithOOB =
@@ -267,7 +268,7 @@ public class MeasurementDemo implements Command {
 	private void example3() {
 		Dataset ds = getTestData();
 		DoubleType output = new DoubleType();
-		OutOfBoundsFactory<UnsignedByteType, Img<UnsignedByteType>>
+		OutOfBoundsFactory<UnsignedByteType, RandomAccessibleInterval<UnsignedByteType>>
 			oobFactory = getOobFactory();
 		@SuppressWarnings("unchecked")
 		RealImageFunction<?,DoubleType> imgFuncWithOOB =
