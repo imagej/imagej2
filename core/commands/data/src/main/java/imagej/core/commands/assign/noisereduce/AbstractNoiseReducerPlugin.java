@@ -39,7 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-import net.imglib2.img.Img;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.ops.function.Function;
 import net.imglib2.ops.function.real.RealImageFunction;
@@ -112,8 +112,8 @@ public abstract class AbstractNoiseReducerPlugin<U extends RealType<U>>
 		if (neighborhood == null) return;
 		@SuppressWarnings("unchecked")
 		ImgPlus<U> inputImg = (ImgPlus<U>) input.getImgPlus();
-		OutOfBoundsMirrorFactory<U, Img<U>> oobFactory =
-				new OutOfBoundsMirrorFactory<U,Img<U>>(Boundary.DOUBLE);
+		OutOfBoundsMirrorFactory<U, RandomAccessibleInterval<U>> oobFactory =
+				new OutOfBoundsMirrorFactory<U,RandomAccessibleInterval<U>>(Boundary.DOUBLE);
 		Function<long[],DoubleType> otherFunc =
 				new RealImageFunction<U,DoubleType>(inputImg, oobFactory, new DoubleType());
 		PointSet ps = neighborhood.getPoints();
