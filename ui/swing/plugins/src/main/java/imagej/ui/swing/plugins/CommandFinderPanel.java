@@ -80,6 +80,7 @@ import net.miginfocom.swing.MigLayout;
  * 
  * @author Curtis Rueden
  */
+@SuppressWarnings("serial")
 public class CommandFinderPanel extends JPanel implements ActionListener,
 	DocumentListener
 {
