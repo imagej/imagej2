@@ -347,7 +347,7 @@ public final class DefaultOverlayService extends AbstractService implements
 			PointSet pointSet = new RoiPointSet(region);
 			// TODO - rather than a pointSet use an IterableInterval? Investigate.
 			final RealRandomAccess<BitType> accessor = region.realRandomAccess();
-			final PointSetIterator iter = pointSet.createIterator();
+			final PointSetIterator iter = pointSet.iterator();
 			final long[] max = pointSet.findBoundMax();
 			long[] pos;
 			while (iter.hasNext()) {
@@ -386,7 +386,7 @@ public final class DefaultOverlayService extends AbstractService implements
 			final RegionOfInterest region = o.getRegionOfInterest();
 			final RoiPointSet pointSet = new RoiPointSet(region);
 			final RealRandomAccess<BitType> accessor = region.realRandomAccess();
-			final PointSetIterator iter = pointSet.createIterator();
+			final PointSetIterator iter = pointSet.iterator();
 			long[] pos;
 			while (iter.hasNext()) {
 				pos = iter.next();

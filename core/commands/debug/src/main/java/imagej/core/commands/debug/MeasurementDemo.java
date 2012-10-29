@@ -354,7 +354,7 @@ public class MeasurementDemo implements Command {
 		@Override
 		public void compute(PointSet input, IntType output) {
 			int numSevens = 0;
-			PointSetIterator iter = input.createIterator();
+			PointSetIterator iter = input.iterator();
 			while (iter.hasNext()) {
 				long[] coord = iter.next();
 				data.compute(coord, tmp);

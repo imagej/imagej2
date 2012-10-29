@@ -104,7 +104,7 @@ public class BasicStatsFunction<T extends RealType<T>>
 		if (iter == null || lastPointSet != input) {
 			// TODO - use an Img<DoubleType> to break limitations
 			data = new double[(int)input.calcSize()];
-			iter = input.createIterator();
+			iter = input.iterator();
 		}
 		else
 			iter.reset();

@@ -265,7 +265,7 @@ public class ImageCalculator<U extends RealType<U>,V extends RealType<V>>
 		RandomAccess<? extends RealType<?>> src = in.randomAccess();
 		RandomAccess<? extends RealType<?>> dst = out.randomAccess();
 		HyperVolumePointSet ps = new HyperVolumePointSet(span);
-		PointSetIterator iter = ps.createIterator();
+		PointSetIterator iter = ps.iterator();
 		long[] pos = null;
 		while (iter.hasNext()) {
 			pos = iter.next();

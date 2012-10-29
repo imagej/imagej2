@@ -104,7 +104,7 @@ public class PointSetDemo implements Command, Cancelable {
 		
 		RandomAccess<? extends RealType<?>> accessor = imgplus.randomAccess();
 
-		PointSetIterator iter = pointSet.createIterator();
+		PointSetIterator iter = pointSet.iterator();
 		
 		while (iter.hasNext()) {
 			long[] pos = iter.next();

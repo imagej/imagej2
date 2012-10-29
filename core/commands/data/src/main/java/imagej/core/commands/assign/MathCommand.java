@@ -191,7 +191,7 @@ public abstract class MathCommand<I extends ComplexType<I>, O extends ComplexTyp
 			offsets[i]--;
 		return new HyperVolumePointSet(
 						origin, new long[origin.length],
-						offsets).createIterator();
+						offsets).iterator();
 	}
 	
 	// NB

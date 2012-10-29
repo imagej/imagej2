@@ -137,8 +137,8 @@ public class RestructureUtils {
 				new HyperVolumePointSet(srcOrigin, srcMax);
 		final HyperVolumePointSet dstPointSet =
 				new HyperVolumePointSet(dstOrigin, dstMax);
-		final PointSetIterator iterS = srcPointSet.createIterator();
-		final PointSetIterator iterD = dstPointSet.createIterator();
+		final PointSetIterator iterS = srcPointSet.iterator();
+		final PointSetIterator iterD = dstPointSet.iterator();
 		long[] srcPos = null;
 		long[] dstPos = null;
 		while (iterS.hasNext() && iterD.hasNext()) {

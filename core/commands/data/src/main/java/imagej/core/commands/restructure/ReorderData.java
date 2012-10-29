@@ -244,7 +244,7 @@ public class ReorderData extends DynamicCommand {
 		final long[] inputSpan = new long[dataset.getImgPlus().numDimensions()];
 		dataset.getImgPlus().dimensions(inputSpan);
 		final HyperVolumePointSet volume = new HyperVolumePointSet(inputSpan);
-		final PointSetIterator iter = volume.createIterator();
+		final PointSetIterator iter = volume.iterator();
 		final long[] origDims = dataset.getDims();
 		final AxisType[] origAxes = dataset.getAxes();
 		final long[] newDims = getNewDims(origDims);
