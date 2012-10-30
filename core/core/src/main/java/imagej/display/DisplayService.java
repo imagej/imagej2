@@ -74,7 +74,8 @@ public interface DisplayService extends Service {
 	/**
 	 * Gets the display plugin of the given class, or null if none.
 	 */
-	<D extends Display<?>> PluginInfo<D> getDisplayPlugin(Class<D> pluginClass);
+	<D extends Display<?>> PluginInfo<Display<?>> getDisplayPlugin(
+		Class<D> pluginClass);
 
 	/**
 	 * Gets the display plugin of the given class name, or null if none.
@@ -87,8 +88,8 @@ public interface DisplayService extends Service {
 	 * Gets the list of display plugins of the given type (e.g.,
 	 * {@code ImageDisplay.class}).
 	 */
-	<D extends Display<?>> List<PluginInfo<D>> getDisplayPluginsOfType(
-		Class<D> type);
+	<DT extends Display<?>> List<PluginInfo<DT>> getDisplayPluginsOfType(
+		Class<DT> type);
 
 	/** Gets a list of all available displays. */
 	List<Display<?>> getDisplays();
@@ -97,7 +98,7 @@ public interface DisplayService extends Service {
 	 * Gets a list of all available displays of the given type (e.g.,
 	 * {@code ImageDisplay.class}).
 	 */
-	<D extends Display<?>> List<D> getDisplaysOfType(Class<D> type);
+	<DT extends Display<?>> List<DT> getDisplaysOfType(Class<DT> type);
 
 	/** Gets a display by its name. */
 	Display<?> getDisplay(String name);

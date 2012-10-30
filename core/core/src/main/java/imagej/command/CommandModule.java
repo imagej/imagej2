@@ -53,18 +53,16 @@ import java.util.Map;
  * @author Johannes Schindelin
  * @author Grant Harris
  */
-public class CommandModule<C extends Command> extends AbstractModule implements
-	Cancelable
-{
+public class CommandModule extends AbstractModule implements Cancelable {
 
 	/** The metadata describing the command. */
-	private final CommandInfo<C> info;
+	private final CommandInfo info;
 
 	/** The command instance handled by this module. */
-	private final C command;
+	private final Command command;
 
 	/** Creates a command module for the given {@link PluginInfo}. */
-	public CommandModule(final CommandInfo<C> info) throws ModuleException {
+	public CommandModule(final CommandInfo info) throws ModuleException {
 		super();
 		this.info = info;
 		command = instantiateCommand();
@@ -75,7 +73,7 @@ public class CommandModule<C extends Command> extends AbstractModule implements
 	 * Creates a command module for the given {@link CommandInfo}, around the
 	 * specified {@link Command} instance.
 	 */
-	public CommandModule(final CommandInfo<C> info, final C command) {
+	public CommandModule(final CommandInfo info, final Command command) {
 		super();
 		this.info = info;
 		this.command = command;
@@ -85,7 +83,7 @@ public class CommandModule<C extends Command> extends AbstractModule implements
 	// -- CommandModule methods --
 
 	/** Gets the command instance handled by this module. */
-	public C getCommand() {
+	public Command getCommand() {
 		return command;
 	}
 
@@ -115,7 +113,7 @@ public class CommandModule<C extends Command> extends AbstractModule implements
 	}
 
 	@Override
-	public CommandInfo<C> getInfo() {
+	public CommandInfo getInfo() {
 		return info;
 	}
 
@@ -183,7 +181,7 @@ public class CommandModule<C extends Command> extends AbstractModule implements
 
 	// -- Helper methods --
 
-	private C instantiateCommand() throws ModuleException {
+	private Command instantiateCommand() throws ModuleException {
 		try {
 			return info.createInstance();
 		}

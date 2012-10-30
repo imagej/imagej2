@@ -74,9 +74,7 @@ import java.util.Map;
  * @see CommandModule
  * @see Command
  */
-public class CommandInfo<C extends Command> extends PluginInfo<C> implements
-	ModuleInfo
-{
+public class CommandInfo extends PluginInfo<Command> implements ModuleInfo {
 
 	/** List of items with fixed, preset values. */
 	private Map<String, Object> presets;
@@ -112,16 +110,14 @@ public class CommandInfo<C extends Command> extends PluginInfo<C> implements
 
 	// -- Constructors --
 
-	public CommandInfo(final String className, final Class<C> commandType) {
-		super(className, commandType);
+	public CommandInfo(final String className) {
+		super(className, Command.class);
 		setPresets(null);
 		setCommandModuleFactory(null);
 	}
 
-	public CommandInfo(final String className, final Class<C> commandType,
-		final Plugin annotation)
-	{
-		super(className, commandType, annotation);
+	public CommandInfo(final String className, final Plugin annotation) {
+		super(className, Command.class, annotation);
 		setPresets(null);
 		setCommandModuleFactory(null);
 	}
@@ -162,7 +158,7 @@ public class CommandInfo<C extends Command> extends PluginInfo<C> implements
 	 * Instantiates the module described by this module info, around the specified
 	 * existing command instance.
 	 */
-	public Module createModule(final C commandInstance) {
+	public Module createModule(final Command commandInstance) {
 		return factory.createModule(this, commandInstance);
 	}
 

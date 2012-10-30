@@ -46,14 +46,13 @@ import imagej.module.ModuleException;
 public interface CommandModuleFactory {
 
 	/** Constructs a module to work with the given {@link CommandInfo}. */
-	<C extends Command> Module createModule(CommandInfo<C> info)
+	Module createModule(CommandInfo info)
 		throws ModuleException;
 
 	/**
 	 * Constructs a module to work with the given {@link CommandInfo}, around the
 	 * specified {@link Command} instance.
 	 */
-	<C extends Command> Module
-		createModule(CommandInfo<C> info, final C command);
+	Module createModule(CommandInfo info, final Command command);
 
 }

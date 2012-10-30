@@ -72,7 +72,7 @@ public class UpdatesAvailable implements Command {
 	@Override
 	public void run() {
 		if (updateAction.equals(YES)) {
-			final List<CommandInfo<UpdaterUI>> updaters =
+			final List<CommandInfo> updaters =
 				commandService.getCommandsOfType(UpdaterUI.class);
 			if (updaters.size() > 0) {
 				commandService.run(updaters.get(0));

@@ -87,7 +87,7 @@ public class DefaultCommandService extends AbstractService implements
 	private ModuleService moduleService;
 
 	/** Mapping from vanilla plugin metadata to command metadata objects. */
-	private HashMap<PluginInfo<?>, CommandInfo<?>> commandMap;
+	private HashMap<PluginInfo<?>, CommandInfo> commandMap;
 
 	// -- CommandService methods --
 
@@ -107,56 +107,62 @@ public class DefaultCommandService extends AbstractService implements
 	}
 
 	@Override
-	public List<CommandInfo<Command>> getCommands() {
+	public List<CommandInfo> getCommands() {
 		return getCommandsOfType(Command.class);
 	}
 
 	@Override
-	public <C extends Command> CommandInfo<C> getCommand(
+	public <CT extends Command> List<CommandInfo> getCommands(
+		final List<PluginInfo<CT>> plugins)
+	{
+		final List<CommandInfo> commands = getCommandsUnknown(downcast(plugins));
+		return commands;
+	}
+
+	@Override
+	public <CT extends Command> List<CommandInfo> getCommandsOfType(
+		Class<CT> type)
+	{
+		return getCommands(pluginService.getPluginsOfType(type));
+	}
+
+	@Override
+	public <C extends Command> CommandInfo getCommand(
 		final Class<C> commandClass)
 	{
 		return ListUtils.first(getCommandsOfClass(commandClass));
 	}
 
 	@Override
-	public CommandInfo<Command> getCommand(final String className) {
+	public CommandInfo getCommand(final String className) {
 		return ListUtils.first(getCommandsOfClass(className));
 	}
 
 	@Override
-	public <C extends Command> List<CommandInfo<C>> getCommandsOfType(
-		final Class<C> type)
-	{
-		final List<PluginInfo<C>> plugins = pluginService.getPluginsOfType(type);
-		final List<CommandInfo<C>> commands = getTypedCommands(plugins);
-		return commands;
-	}
-
-	@Override
-	public <C extends Command> List<CommandInfo<C>> getCommandsOfClass(
+	public <C extends Command> List<CommandInfo> getCommandsOfClass(
 		final Class<C> commandClass)
 	{
-		final List<PluginInfo<C>> plugins =
-			pluginService.getPluginsOfClass(commandClass);
-		final List<CommandInfo<C>> commands = getTypedCommands(plugins);
+		final List<PluginInfo<Command>> plugins =
+			pluginService.getPluginsOfClass(commandClass, Command.class);
+		final List<CommandInfo> commands = getCommands(plugins);
 		return commands;
 	}
 
 	@Override
-	public List<CommandInfo<Command>> getCommandsOfClass(final String className)
+	public List<CommandInfo> getCommandsOfClass(final String className)
 	{
 		final List<PluginInfo<ImageJPlugin>> plugins =
 			pluginService.getPluginsOfClass(className);
-		final List<CommandInfo<Command>> commands = getCommands(downcast(plugins));
+		final List<CommandInfo> commands = getCommandsUnknown(downcast(plugins));
 		return commands;
 	}
 
 	@Override
-	public <C extends Command> CommandInfo<C> populateServices(final C command) {
+	public <C extends Command> CommandInfo populateServices(final C command) {
 		@SuppressWarnings("unchecked")
 		final Class<C> c = (Class<C>) command.getClass();
-		final CommandInfo<C> info = getCommand(c);
-		final CommandModule<C> module = new CommandModule<C>(info, command);
+		final CommandInfo info = getCommand(c);
+		final CommandModule module = new CommandModule(info, command);
 		final ServicePreprocessor servicePreprocessor = new ServicePreprocessor();
 		servicePreprocessor.setContext(getContext());
 		servicePreprocessor.process(module);
@@ -165,7 +171,7 @@ public class DefaultCommandService extends AbstractService implements
 
 	@Override
 	public Future<Module> run(final String className, final Object... inputs) {
-		final CommandInfo<?> command = getCommand(className);
+		final CommandInfo command = getCommand(className);
 		if (!checkCommand(command, className)) return null;
 		return run(command, inputs);
 	}
@@ -174,30 +180,30 @@ public class DefaultCommandService extends AbstractService implements
 	public Future<Module> run(final String className,
 		final Map<String, Object> inputMap)
 	{
-		final CommandInfo<?> command = getCommand(className);
+		final CommandInfo command = getCommand(className);
 		if (!checkCommand(command, className)) return null;
 		return run(command, inputMap);
 	}
 
 	@Override
-	public <C extends Command> Future<CommandModule<C>> run(
+	public <C extends Command> Future<CommandModule> run(
 		final Class<C> commandClass, final Object... inputs)
 	{
-		final CommandInfo<C> command = getCommand(commandClass);
+		final CommandInfo command = getCommand(commandClass);
 		if (!checkCommand(command, commandClass.getName())) return null;
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final Future<CommandModule<C>> future = (Future) run(command, inputs);
+		final Future<CommandModule> future = (Future) run(command, inputs);
 		return future;
 	}
 
 	@Override
-	public <C extends Command> Future<CommandModule<C>> run(
+	public <C extends Command> Future<CommandModule> run(
 		final Class<C> commandClass, final Map<String, Object> inputMap)
 	{
-		final CommandInfo<C> command = getCommand(commandClass);
+		final CommandInfo command = getCommand(commandClass);
 		if (!checkCommand(command, commandClass.getName())) return null;
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final Future<CommandModule<C>> future = (Future) run(command, inputMap);
+		final Future<CommandModule> future = (Future) run(command, inputMap);
 		return future;
 	}
 
@@ -231,12 +237,12 @@ public class DefaultCommandService extends AbstractService implements
 
 	@Override
 	public void initialize() {
-		commandMap = new HashMap<PluginInfo<?>, CommandInfo<?>>();
+		commandMap = new HashMap<PluginInfo<?>, CommandInfo>();
 
 		// inform the module service of available commands
 		final List<PluginInfo<Command>> plugins =
 			pluginService.getPluginsOfType(Command.class);
-		addCommands(downcast(plugins));
+		addCommands(plugins);
 
 		subscribeToEvents(eventService);
 	}
@@ -250,7 +256,10 @@ public class DefaultCommandService extends AbstractService implements
 
 	@EventHandler
 	protected void onEvent(final PluginsAddedEvent event) {
-		addCommands(event.getItems());
+		final ArrayList<PluginInfo<Command>> commands =
+			new ArrayList<PluginInfo<Command>>();
+		findCommandPlugins(event.getItems(), commands);
+		addCommands(commands);
 	}
 
 	// -- Helper methods --
@@ -266,9 +275,7 @@ public class DefaultCommandService extends AbstractService implements
 	}
 
 	/** Logs an error if the given command is null. */
-	private boolean
-		checkCommand(final CommandInfo<?> command, final String name)
-	{
+	private boolean checkCommand(final CommandInfo command, final String name) {
 		if (command == null) {
 			log.error("No such command: " + name);
 			return false;
@@ -277,15 +284,11 @@ public class DefaultCommandService extends AbstractService implements
 	}
 
 	/** Adds new commands to the module service. */
-	private void addCommands(final List<PluginInfo<?>> plugins) {
+	private void addCommands(final List<PluginInfo<Command>> plugins) {
 		// extract commands from the list of plugins
-		final List<CommandInfo<?>> commands = new ArrayList<CommandInfo<?>>();
-		for (final PluginInfo<?> info : plugins) {
-			if (!isCommand(info)) continue;
-			@SuppressWarnings("unchecked")
-			final PluginInfo<? extends Command> typedInfo =
-				(PluginInfo<? extends Command>) info;
-			final CommandInfo<?> commandInfo = wrapAsCommand(typedInfo);
+		final List<CommandInfo> commands = new ArrayList<CommandInfo>();
+		for (final PluginInfo<Command> info : plugins) {
+			final CommandInfo commandInfo = wrapAsCommand(info);
 			commands.add(commandInfo);
 
 			// record association between plugin info and derived command info
@@ -298,9 +301,9 @@ public class DefaultCommandService extends AbstractService implements
 
 	/** Removes old commands from the module service. */
 	private void removeCommands(final List<PluginInfo<?>> plugins) {
-		final List<CommandInfo<Command>> commands = getCommands(plugins);
+		final List<CommandInfo> commands = getCommandsUnknown(plugins);
 
-		for (final CommandInfo<Command> info : commands) {
+		for (final CommandInfo info : commands) {
 			// clear association between plugin info and derived command info
 			commandMap.remove(info);
 		}
@@ -313,15 +316,12 @@ public class DefaultCommandService extends AbstractService implements
 	 * Gets the command corresponding to each plugin on the given list. The
 	 * linkage is obtained from the {@link #commandMap}.
 	 */
-	private List<CommandInfo<Command>> getCommands(
+	private List<CommandInfo> getCommandsUnknown(
 		final List<PluginInfo<?>> plugins)
 	{
-		final List<CommandInfo<Command>> commands =
-			new ArrayList<CommandInfo<Command>>();
+		final List<CommandInfo> commands = new ArrayList<CommandInfo>();
 		for (final PluginInfo<?> info : plugins) {
-			@SuppressWarnings("unchecked")
-			final CommandInfo<Command> commandInfo =
-				(CommandInfo<Command>) commandMap.get(info);
+			final CommandInfo commandInfo = commandMap.get(info);
 			if (commandInfo == null) continue;
 			commands.add(commandInfo);
 		}
@@ -329,16 +329,21 @@ public class DefaultCommandService extends AbstractService implements
 	}
 
 	/**
-	 * Gets the command corresponding to each plugin on the given list. The
-	 * linkage is obtained from the {@link #commandMap}.
+	 * Transfers command plugins from the source list to the destination list.
+	 * 
+	 * @param srcList The list to scan for matching plugins.
+	 * @param destList The list to which matching plugins are added.
 	 */
-	private <C extends Command> List<CommandInfo<C>> getTypedCommands(
-		final List<PluginInfo<C>> plugins)
+	private void findCommandPlugins(final List<? extends PluginInfo<?>> srcList,
+		final List<PluginInfo<Command>> destList)
 	{
-		final List<CommandInfo<Command>> commands = getCommands(downcast(plugins));
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final List<CommandInfo<C>> typedCommands = (List) commands;
-		return typedCommands;
+		for (final PluginInfo<?> info : srcList) {
+			if (isCommand(info)) {
+				@SuppressWarnings("unchecked")
+				final PluginInfo<Command> match = (PluginInfo<Command>) info;
+				destList.add(match);
+			}
+		}
 	}
 
 	/** Determines whether the given plugin is a command. */
@@ -347,28 +352,26 @@ public class DefaultCommandService extends AbstractService implements
 	}
 
 	/** Converts the given plugin into a command. */
-	private <C extends Command> CommandInfo<C> wrapAsCommand(
-		final PluginInfo<C> pluginInfo)
-	{
+	private CommandInfo wrapAsCommand(final PluginInfo<Command> pluginInfo) {
 		if (pluginInfo instanceof CommandInfo) {
 			// plugin info is already a command info
-			return (CommandInfo<C>) pluginInfo;
+			return (CommandInfo) pluginInfo;
 		}
 		// wrap the plugin's metadata in a command info
 		final String className = pluginInfo.getClassName();
-		final Class<C> type = pluginInfo.getPluginType();
 		final Plugin annotation = pluginInfo.getAnnotation();
-		return new CommandInfo<C>(className, type, annotation);
+		return new CommandInfo(className, annotation);
 	}
 
 	/** A HACK for downcasting a list of plugins. */
-	private <P extends ImageJPlugin> List<PluginInfo<?>> downcast(
-		final List<PluginInfo<P>> plugins)
+	private <PT extends ImageJPlugin> List<PluginInfo<?>> downcast(
+		final List<PluginInfo<PT>> plugins)
 	{
-		// HACK: It seems that List<PluginInfo<? extends P>> cannot be used to
-		// fulfill a method argument of type List<PluginInfo<?>>. Probably something
-		// relating to (lack of) covariance of generics that I am too stupid to
-		// understand. So we brute force it!
+		// HACK: It seems that neither List<PluginInfo<PT>> nor
+		// List<PluginInfo<? extends PT>> are usable to fulfill a method argument
+		// of type List<PluginInfo<?>>. Probably something relating to (lack of)
+		// covariance of generics that I am too stupid to understand.
+		// So we brute force it!
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		final List<PluginInfo<?>> typedPlugins = (List) plugins;
 		return typedPlugins;

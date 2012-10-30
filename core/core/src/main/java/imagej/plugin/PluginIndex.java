@@ -97,12 +97,12 @@ public class PluginIndex extends SortedObjectIndex<PluginInfo<?>> {
 	 * @return Read-only list of registered objects of the given type, or an empty
 	 *         list if no such objects exist (this method never returns null).
 	 */
-	public <P extends ImageJPlugin> List<PluginInfo<P>> getPlugins(
-		final Class<P> type)
+	public <PT extends ImageJPlugin> List<PluginInfo<PT>> getPlugins(
+		final Class<PT> type)
 	{
 		final List<PluginInfo<?>> list = get(type);
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final List<PluginInfo<P>> result = (List) list;
+		final List<PluginInfo<PT>> result = (List) list;
 		return result;
 	}
 

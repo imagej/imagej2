@@ -83,7 +83,7 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 	public void initialize() {
 		reloadScriptLanguages();
 
-		final ArrayList<CommandInfo<?>> plugins = new ArrayList<CommandInfo<?>>();
+		final ArrayList<CommandInfo> plugins = new ArrayList<CommandInfo>();
 		new ScriptFinder(this).findPlugins(plugins);
 		pluginService.addPlugins(plugins);
 

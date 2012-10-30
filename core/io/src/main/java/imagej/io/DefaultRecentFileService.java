@@ -37,7 +37,6 @@ package imagej.io;
 
 import imagej.MenuEntry;
 import imagej.MenuPath;
-import imagej.command.Command;
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
 import imagej.event.EventHandler;
@@ -196,9 +195,7 @@ public final class DefaultRecentFileService extends AbstractService implements
 
 	/** Creates a {@link ModuleInfo} to reopen data at the given path. */
 	private ModuleInfo createInfo(final String path) {
-		final CommandInfo<Command> info =
-			new CommandInfo<Command>("imagej.io.plugins.OpenImage",
-				Command.class);
+		final CommandInfo info = new CommandInfo("imagej.io.plugins.OpenImage");
 
 		// hard code path to open as a preset
 		final HashMap<String, Object> presets = new HashMap<String, Object>();
@@ -217,8 +214,7 @@ public final class DefaultRecentFileService extends AbstractService implements
 		leaf.setWeight(0); // TODO - do this properly
 
 		// use the same icon as File > Open
-		final CommandInfo<OpenImage> fileOpen =
-			commandService.getCommand(OpenImage.class);
+		final CommandInfo fileOpen = commandService.getCommand(OpenImage.class);
 		final String iconPath = fileOpen.getIconPath();
 		info.setIconPath(iconPath);
 

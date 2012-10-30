@@ -40,6 +40,7 @@ import imagej.module.Module;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.PluginInfo;
 import imagej.plugin.PluginService;
 import imagej.plugin.PostprocessorPlugin;
 import imagej.plugin.PreprocessorPlugin;
@@ -74,19 +75,23 @@ public interface CommandService extends Service {
 
 	ModuleService getModuleService();
 
-	/** Gets the list of available {@link Command}s). */
-	List<CommandInfo<Command>> getCommands();
+	/** Gets the list of all available {@link Command}s). */
+	List<CommandInfo> getCommands();
+
+	/** Gets the list of {@link Command}s corresponding to the given plugins. */
+	<CT extends Command> List<CommandInfo> getCommands(
+		final List<PluginInfo<CT>> plugins);
 
 	/** Gets the first available command of the given class, or null if none. */
-	<C extends Command> CommandInfo<C> getCommand(Class<C> commandClass);
+	<C extends Command> CommandInfo getCommand(Class<C> commandClass);
 
 	/**
 	 * Gets the first available command of the given class name, or null if none.
 	 */
-	CommandInfo<Command> getCommand(String className);
+	CommandInfo getCommand(String className);
 
-	/** Gets the list of commands of the given type. */
-	<C extends Command> List<CommandInfo<C>> getCommandsOfType(Class<C> type);
+	/** Gets the list of {@link Command}s of the given type. */
+	<CT extends Command> List<CommandInfo> getCommandsOfType(Class<CT> type);
 
 	/**
 	 * Gets the list of commands of the given class.
@@ -95,7 +100,7 @@ public interface CommandService extends Service {
 	 * as {@code imagej.legacy.LegacyCommand}) may match many entries.
 	 * </p>
 	 */
-	<C extends Command> List<CommandInfo<C>> getCommandsOfClass(
+	<C extends Command> List<CommandInfo> getCommandsOfClass(
 		Class<C> commandClass);
 
 	/**
@@ -105,7 +110,7 @@ public interface CommandService extends Service {
 	 * as {@code imagej.legacy.LegacyCommand}) may match many entries.
 	 * </p>
 	 */
-	List<CommandInfo<Command>> getCommandsOfClass(String className);
+	List<CommandInfo> getCommandsOfClass(String className);
 
 	/**
 	 * Populates any {@link Service} parameters for the given command instance,
@@ -113,7 +118,7 @@ public interface CommandService extends Service {
 	 * 
 	 * @return The {@link CommandInfo} associated with the given command.
 	 */
-	<C extends Command> CommandInfo<C> populateServices(final C command);
+	<C extends Command> CommandInfo populateServices(final C command);
 
 	/**
 	 * Executes the first command of the given class name.
@@ -157,7 +162,7 @@ public interface CommandService extends Service {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	<C extends Command> Future<CommandModule<C>> run(Class<C> commandClass,
+	<C extends Command> Future<CommandModule> run(Class<C> commandClass,
 		Object... inputs);
 
 	/**
@@ -172,7 +177,7 @@ public interface CommandService extends Service {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	<C extends Command> Future<CommandModule<C>> run(Class<C> commandClass,
+	<C extends Command> Future<CommandModule> run(Class<C> commandClass,
 		Map<String, Object> inputMap);
 
 	/**

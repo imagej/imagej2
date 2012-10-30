@@ -88,8 +88,23 @@ public interface PluginService extends Service {
 	/** Gets the list of known plugins. */
 	List<PluginInfo<?>> getPlugins();
 
-	/** Gets the first available plugin of the given class, or null if none. */
-	<P extends ImageJPlugin> PluginInfo<P> getPlugin(Class<P> pluginClass);
+	/**
+	 * Gets the first available plugin of the given class, or null if none.
+	 * 
+	 * @param <P> The <em>class</em> of the plugin to look up.
+	 */
+	<P extends ImageJPlugin> PluginInfo<ImageJPlugin>
+		getPlugin(Class<P> pluginClass);
+
+	/**
+	 * Gets the first available plugin of the given class, or null if none.
+	 * 
+	 * @param <PT> The <em>type</em> of the plugin to look up. See
+	 *          {@link ImageJPlugin} for a list of common plugin types.
+	 * @param <P> The <em>class</em> of the plugin to look up.
+	 */
+	<PT extends ImageJPlugin, P extends PT> PluginInfo<PT>
+		getPlugin(Class<P> pluginClass, Class<PT> type);
 
 	/**
 	 * Gets the first available plugin of the given class name, or null if none.
@@ -99,8 +114,12 @@ public interface PluginService extends Service {
 	/**
 	 * Gets the list of plugins of the given type (e.g.,
 	 * {@link imagej.command.Command}).
+	 * 
+	 * @param <PT> The <em>type</em> of plugins to look up. See
+	 *          {@link ImageJPlugin} for a list of common plugin types.
 	 */
-	<P extends ImageJPlugin> List<PluginInfo<P>> getPluginsOfType(Class<P> type);
+	<PT extends ImageJPlugin> List<PluginInfo<PT>>
+		getPluginsOfType(Class<PT> type);
 
 	/**
 	 * Gets the list of plugins of the given class.
@@ -108,9 +127,25 @@ public interface PluginService extends Service {
 	 * Most classes will have only a single match, but some special classes (such
 	 * as {@code imagej.legacy.LegacyCommand}) may match many entries.
 	 * </p>
+	 * 
+	 * @param <P> The <em>class</em> of plugins to look up.
 	 */
-	<P extends ImageJPlugin> List<PluginInfo<P>> getPluginsOfClass(
-		Class<P> pluginClass);
+	<P extends ImageJPlugin> List<PluginInfo<ImageJPlugin>>
+		getPluginsOfClass(Class<P> pluginClass);
+
+	/**
+	 * Gets the list of plugins of the given class.
+	 * <p>
+	 * Most classes will have only a single match, but some special classes (such
+	 * as {@code imagej.legacy.LegacyCommand}) may match many entries.
+	 * </p>
+	 * 
+	 * @param <PT> The <em>type</em> of plugins to look up. See
+	 *          {@link ImageJPlugin} for a list of common plugin types.
+	 * @param <P> The <em>class</em> of plugins to look up.
+	 */
+	<PT extends ImageJPlugin, P extends PT> List<PluginInfo<PT>>
+		getPluginsOfClass(Class<P> pluginClass, Class<PT> type);
 
 	/**
 	 * Gets the list of plugins with the given class name.
@@ -128,8 +163,11 @@ public interface PluginService extends Service {
 	 * preprocessing on the command instances, so parameters will not be
 	 * auto-populated, initializers will not be executed, etc.
 	 * </p>
+	 * 
+	 * @param <PT> The <em>type</em> of plugins to instantiate. See
+	 *          {@link ImageJPlugin} for a list of common plugin types.
 	 */
-	<P extends ImageJPlugin> List<P> createInstancesOfType(Class<P> type);
+	<PT extends ImageJPlugin> List<PT> createInstancesOfType(Class<PT> type);
 
 	/**
 	 * Creates an instance of each of the plugins on the given list.
@@ -143,9 +181,12 @@ public interface PluginService extends Service {
 	 * preprocessing on the command instances, so parameters will not be
 	 * auto-populated, initializers will not be executed, etc.
 	 * </p>
+	 * 
+	 * @param <PT> The <em>type</em> of plugins to instantiate. See
+	 *          {@link ImageJPlugin} for a list of common plugin types.
 	 */
-	<P extends ImageJPlugin> List<? extends P> createInstances(
-		List<PluginInfo<? extends P>> infos);
+	<PT extends ImageJPlugin> List<PT>
+		createInstances(List<PluginInfo<PT>> infos);
 
 	/**
 	 * Creates an instance of the given plugin.
@@ -159,7 +200,10 @@ public interface PluginService extends Service {
 	 * preprocessing on the command instances, so parameters will not be
 	 * auto-populated, initializers will not be executed, etc.
 	 * </p>
+	 * 
+	 * @param <PT> The <em>type</em> of plugin to instantiate. See
+	 *          {@link ImageJPlugin} for a list of common plugin types.
 	 */
-	<P extends ImageJPlugin> P createInstance(PluginInfo<P> info);
+	<PT extends ImageJPlugin> PT createInstance(PluginInfo<PT> info);
 
 }

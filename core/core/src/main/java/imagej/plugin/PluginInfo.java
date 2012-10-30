@@ -57,37 +57,55 @@ import java.net.URL;
  * {@link Command}s without waiting for the Java class loader.
  * </p>
  * 
+ * @param <PT> The <em>type</em> of plugin described by this metadata. See
+ *          {@link ImageJPlugin} for a list of common plugin types.
  * @author Curtis Rueden
  * @see Command
  * @see Plugin
  * @see PluginService
  */
-public class PluginInfo<P extends ImageJPlugin> extends AbstractUIDetails
-	implements Instantiable<P>
+public class PluginInfo<PT extends ImageJPlugin> extends AbstractUIDetails
+	implements Instantiable<PT>
 {
 
 	/** Fully qualified class name of this plugin. */
 	private String className;
 
 	/** Class object for this plugin. Lazily loaded. */
-	private Class<P> pluginClass;
+	private Class<? extends PT> pluginClass;
 
 	/** Type of this entry's plugin; e.g., {@link Command}. */
-	private Class<P> pluginType;
+	private Class<PT> pluginType;
 
 	/** Annotation describing the plugin. */
 	private Plugin annotation;
 
-	/** TODO */
-	public PluginInfo(final String className, final Class<P> pluginType) {
+	/**
+	 * Creates a new plugin metadata object.
+	 * 
+	 * @param className The name of the class, which must implement
+	 *          {@link ImageJPlugin}.
+	 * @param pluginType The <em>type</em> of plugin described by this metadata.
+	 *          See {@link ImageJPlugin} for a list of common plugin types.
+	 */
+	public PluginInfo(final String className, final Class<PT> pluginType) {
 		setClassName(className);
 		setPluginType(pluginType);
 		setMenuPath(null);
 		setMenuRoot(Plugin.APPLICATION_MENU_ROOT);
 	}
 
-	/** TODO */
-	public PluginInfo(final String className, final Class<P> pluginType,
+	/**
+	 * Creates a new plugin metadata object.
+	 * 
+	 * @param className The name of the class, which must implement
+	 *          {@link ImageJPlugin}.
+	 * @param pluginType The <em>type</em> of plugin described by this metadata.
+	 *          See {@link ImageJPlugin} for a list of common plugin types.
+	 * @param annotation The @{@link Plugin} annotation to associate with this
+	 *          metadata object.
+	 */
+	public PluginInfo(final String className, final Class<PT> pluginType,
 		final Plugin annotation)
 	{
 		this(className, pluginType);
@@ -102,13 +120,30 @@ public class PluginInfo<P extends ImageJPlugin> extends AbstractUIDetails
 		this.className = className;
 	}
 
-	/** TODO */
-	public void setPluginType(final Class<P> pluginType) {
+	/**
+	 * Explicitly sets the {@link Class} of the item objects.
+	 * <p>
+	 * This is useful if your class is produced by something other than the system
+	 * classloader.
+	 * </p>
+	 */
+	public void setPluginClass(final Class<? extends PT> pluginClass) {
+		this.pluginClass = pluginClass;
+	}
+
+	/**
+	 * Sets the <em>type</em> of plugin described by the metadata.
+	 * @see ImageJPlugin for a list of common plugin types.
+	 */
+	public void setPluginType(final Class<PT> pluginType) {
 		this.pluginType = pluginType;
 	}
 
-	/** TODO */
-	public Class<P> getPluginType() {
+	/**
+	 * Gets the <em>type</em> of plugin described by the metadata.
+	 * @see ImageJPlugin for a list of common plugin types.
+	 */
+	public Class<PT> getPluginType() {
 		return pluginType;
 	}
 
@@ -161,8 +196,7 @@ public class PluginInfo<P extends ImageJPlugin> extends AbstractUIDetails
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Class<P> loadClass() throws InstantiableException {
+	public Class<PT> loadClass() throws InstantiableException {
 		if (pluginClass == null) {
 			final Class<?> c;
 			try {
@@ -171,17 +205,25 @@ public class PluginInfo<P extends ImageJPlugin> extends AbstractUIDetails
 			catch (final ClassNotFoundException e) {
 				throw new InstantiableException("Class not found: " + className, e);
 			}
-			pluginClass = (Class<P>) c;
+			@SuppressWarnings("unchecked")
+			final Class<? extends PT> typedClass = (Class<? extends PT>) c;
+			pluginClass = typedClass;
 		}
-		return pluginClass;
+
+		// NB: The pluginClass is usually not a PT, though it extends PT.
+		// We cast the result here to conform to the Instantiable interface.
+		@SuppressWarnings("unchecked")
+		final Class<PT> result = (Class<PT>) pluginClass;
+
+		return result;
 	}
 
 	@Override
-	public P createInstance() throws InstantiableException {
-		final Class<P> c = loadClass();
+	public PT createInstance() throws InstantiableException {
+		final Class<PT> c = loadClass();
 
 		// instantiate plugin
-		final P instance;
+		final PT instance;
 		try {
 			instance = c.newInstance();
 		}

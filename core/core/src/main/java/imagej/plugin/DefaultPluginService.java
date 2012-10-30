@@ -142,10 +142,17 @@ public class DefaultPluginService extends AbstractService implements
 	}
 
 	@Override
-	public <P extends ImageJPlugin> PluginInfo<P> getPlugin(
+	public <P extends ImageJPlugin> PluginInfo<ImageJPlugin> getPlugin(
 		final Class<P> pluginClass)
 	{
 		return ListUtils.first(getPluginsOfClass(pluginClass));
+	}
+
+	@Override
+	public <PT extends ImageJPlugin, P extends PT> PluginInfo<PT>
+		getPlugin(final Class<P> pluginClass, final Class<PT> type)
+	{
+		return ListUtils.first(getPluginsOfClass(pluginClass, type));
 	}
 
 	@Override
@@ -154,33 +161,40 @@ public class DefaultPluginService extends AbstractService implements
 	}
 
 	@Override
-	public <P extends ImageJPlugin> List<PluginInfo<P>> getPluginsOfType(
-		final Class<P> type)
+	public <PT extends ImageJPlugin> List<PluginInfo<PT>> getPluginsOfType(
+		final Class<PT> type)
 	{
 		return pluginIndex.getPlugins(type);
 	}
 
 	@Override
-	public <P extends ImageJPlugin> List<PluginInfo<P>> getPluginsOfClass(
-		final Class<P> pluginClass)
+	public <P extends ImageJPlugin> List<PluginInfo<ImageJPlugin>>
+		getPluginsOfClass(final Class<P> pluginClass)
 	{
-		final ArrayList<PluginInfo<P>> result = new ArrayList<PluginInfo<P>>();
 		// NB: Since we have the class in question, we attempt to determine its
 		// plugin type and limit our search to plugins of that type.
-		final String className = pluginClass.getName();
 		final Class<? extends ImageJPlugin> pluginType = getPluginType(pluginClass);
-		final Class<? extends ImageJPlugin> type;
 		if (pluginType == null) {
 			// NB: We failed to guess the type hierarchy of the class in question.
 			// We must scan *all* plugins for a match.
-			type = ImageJPlugin.class;
+			return getPluginsOfClass(pluginClass, ImageJPlugin.class);
 		}
-		else {
-			// NB: We successfully determined the plugin's type.
-			// We limit our search to plugins of that type.
-			type = pluginType;
-		}
-		getPluginsOfClass(className, getPluginsOfType(type), result);
+		// NB: We successfully determined the plugin's type.
+		// We limit our search to plugins of that type.
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		final List<PluginInfo<ImageJPlugin>> result =
+			(List) getPluginsOfClass(pluginClass, getPluginType(pluginClass));
+		return result;
+	}
+
+	@Override
+	public <PT extends ImageJPlugin, P extends PT> List<PluginInfo<PT>>
+		getPluginsOfClass(final Class<P> pluginClass, final Class<PT> type)
+	{
+		final ArrayList<PluginInfo<PT>> result =
+			new ArrayList<PluginInfo<PT>>();
+		final String className = pluginClass.getName();
+		findPluginsOfClass(className, getPluginsOfType(type), result);
 		return result;
 	}
 
@@ -193,39 +207,34 @@ public class DefaultPluginService extends AbstractService implements
 		// NB: Since we cannot load the class in question, and hence cannot
 		// know its type hierarchy, we must scan *all* plugins for a match.
 		final List<PluginInfo<?>> allPlugins = getPlugins();
-		getPluginsOfClass(className, allPlugins, result);
+		findPluginsOfClass(className, allPlugins, result);
 		return result;
 	}
 
 	@Override
-	public <P extends ImageJPlugin> List<P> createInstancesOfType(
-		final Class<P> type)
+	public <PT extends ImageJPlugin> List<PT> createInstancesOfType(
+		final Class<PT> type)
 	{
-		final List<PluginInfo<P>> plugins = getPluginsOfType(type);
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final List<PluginInfo<? extends P>> typedPlugins = (List) plugins;
-		final List<? extends P> instances = createInstances(typedPlugins);
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final List<P> typedInstances = (List) instances;
-		return typedInstances;
+		final List<PluginInfo<PT>> plugins = getPluginsOfType(type);
+		return createInstances(plugins);
 	}
 
 	@Override
-	public <P extends ImageJPlugin> List<? extends P> createInstances(
-		final List<PluginInfo<? extends P>> infos)
+	public <PT extends ImageJPlugin> List<PT> createInstances(
+		final List<PluginInfo<PT>> infos)
 	{
-		final ArrayList<P> list = new ArrayList<P>();
-		for (final PluginInfo<? extends P> info : infos) {
-			final P p = createInstance(info);
+		final ArrayList<PT> list = new ArrayList<PT>();
+		for (final PluginInfo<? extends PT> info : infos) {
+			final PT p = createInstance(info);
 			if (p != null) list.add(p);
 		}
 		return list;
 	}
 
 	@Override
-	public <P extends ImageJPlugin> P createInstance(final PluginInfo<P> info) {
+	public <PT extends ImageJPlugin> PT createInstance(final PluginInfo<PT> info) {
 		try {
-			final P p = info.createInstance();
+			final PT p = info.createInstance();
 			getContext().inject(p);
 			Priority.inject(p, info.getPriority());
 			return p;
@@ -254,7 +263,7 @@ public class DefaultPluginService extends AbstractService implements
 	 * @param srcList The list to scan for matching plugins.
 	 * @param destList The list to which matching plugins are added.
 	 */
-	public static <T extends PluginInfo<?>> void getPluginsOfClass(
+	public static <T extends PluginInfo<?>> void findPluginsOfClass(
 		final String className, final List<? extends PluginInfo<?>> srcList,
 		final List<T> destList)
 	{
@@ -275,13 +284,13 @@ public class DefaultPluginService extends AbstractService implements
 	 * @return The plugin type, or null if no {@link Plugin} annotation exists for
 	 *         the given class.
 	 */
-	public static <T extends ImageJPlugin, P extends T> Class<T> getPluginType(
+	public static <PT extends ImageJPlugin, P extends PT> Class<PT> getPluginType(
 		final Class<P> pluginClass)
 	{
 		final Plugin annotation = pluginClass.getAnnotation(Plugin.class);
 		if (annotation == null) return null;
 		@SuppressWarnings("unchecked")
-		final Class<T> type = (Class<T>) annotation.type();
+		final Class<PT> type = (Class<PT>) annotation.type();
 		return type;
 	}
 

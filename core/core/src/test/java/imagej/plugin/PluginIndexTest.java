@@ -69,13 +69,14 @@ public class PluginIndexTest {
 
 		// retrieve the plugin from the index, by class
 		final PluginService pluginService = context.getService(PluginService.class);
-		final List<PluginInfo<FooBar>> plugins =
+		final List<PluginInfo<ImageJPlugin>> plugins =
 			pluginService.getPluginsOfClass(FooBar.class);
 
 		assertEquals(1, plugins.size());
 		assertSame(testPlugin, plugins.get(0));
 
-		final PluginInfo<FooBar> plugin = pluginService.getPlugin(FooBar.class);
+		final PluginInfo<ImageJPlugin> plugin =
+			pluginService.getPlugin(FooBar.class);
 		assertSame(testPlugin, plugin);
 	}
 
