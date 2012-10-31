@@ -45,6 +45,7 @@ import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.regex.Pattern;
 
 /**
  * Useful methods for working with file paths.
@@ -63,6 +64,21 @@ public final class FileUtils {
 
 	private FileUtils() {
 		// prevent instantiation of utility class
+	}
+
+	/**
+	 * Gets the absolute path to the given file, with the directory separator
+	 * standardized to forward slash, like most platforms use.
+	 * 
+	 * @param file The file whose path will be obtained and standardized.
+	 * @return The file's standardized absolute path.
+	 */
+	public static String getPath(final File file) {
+		final String path = file.getAbsolutePath();
+
+		// NB: Standardize directory separator (i.e., avoid Windows nonsense!).
+		final String slash = System.getProperty("file.separator");
+		return path.replaceAll(Pattern.quote(slash), "/");
 	}
 
 	/**
