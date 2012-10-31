@@ -33,31 +33,65 @@
  * #L%
  */
 
-package imagej.ui.swing.plugins;
+package imagej.ui.swing.commands.debug;
 
-import imagej.ImageJ;
-import imagej.command.ContextCommand;
-import imagej.plugin.Menu;
+import imagej.command.Command;
+import imagej.event.EventDetails;
+import imagej.event.EventHistory;
+import imagej.event.EventHistoryListener;
+import imagej.log.LogService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.ui.swing.SwingOverlayManager;
+
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
- * Plugin to pop up the {@link SwingOverlayManager}.
+ * Listens for events, displaying results in a text window.
  * 
- * @author Adam Fraser
+ * @author Curtis Rueden
  */
-@Plugin(menu = { @Menu(label = "Image"), @Menu(label = "Overlay"),
-	@Menu(label = "Overlay Manager") })
-public class OverlayManager extends ContextCommand {
+@Plugin(menuPath = "Plugins>Debug>Watch Events")
+public class WatchEvents implements Command, EventHistoryListener {
+
+	// -- Parameters --
 
 	@Parameter
-	private ImageJ context;
+	private EventHistory eventHistory;
+
+	@Parameter
+	private LogService log;
+
+	// -- Fields --
+
+	private WatchEventsFrame watchEventsFrame;
+
+	// -- Runnable methods --
 
 	@Override
 	public void run() {
-		final SwingOverlayManager overlaymgr = new SwingOverlayManager(context);
-		overlaymgr.setVisible(true);
+		watchEventsFrame = new WatchEventsFrame(eventHistory, log);
+
+		// update UI when event history changes
+		eventHistory.addListener(this);
+
+		// stop listening for history changes when the UI goes away
+		watchEventsFrame.addWindowListener(new WindowAdapter() {
+
+			@Override
+			public void windowClosing(final WindowEvent e) {
+				eventHistory.removeListener(WatchEvents.this);
+			}
+		});
+
+		watchEventsFrame.setVisible(true);
+	}
+
+	// -- EventHistoryListener methods --
+
+	@Override
+	public void eventOccurred(final EventDetails details) {
+		watchEventsFrame.append(details);
 	}
 
 }

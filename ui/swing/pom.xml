@@ -19,7 +19,7 @@
 
 	<modules>
 		<module>base</module>
-		<module>plugins</module>
+		<module>commands</module>
 		<module>script-editor</module>
 		<module>tools</module>
 		<module>updater</module>

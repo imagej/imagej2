@@ -33,49 +33,29 @@
  * #L%
  */
 
-package imagej.ui.swing.plugins;
+package imagej.ui.swing.commands.debug;
 
-import imagej.command.CommandService;
-import imagej.command.ContextCommand;
-import imagej.menu.MenuConstants;
-import imagej.module.ModuleInfo;
-import imagej.plugin.Menu;
+import com.github.sbridges.objectinspector.Inspector;
+
+import imagej.command.Command;
+import imagej.object.ObjectService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.util.swing.SwingUtils;
-
-import javax.swing.JOptionPane;
 
 /**
- * A plugin to display the {@link CommandFinderPanel} in a dialog.
+ * Inspect the ObjectService
  * 
- * @author Curtis Rueden
+ * @author Grant Harris
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.PLUGINS_LABEL,
-		weight = MenuConstants.PLUGINS_WEIGHT,
-		mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Utilities"),
-	@Menu(label = "Find Commands...", accelerator = "control L") })
-public class CommandFinder extends ContextCommand {
+@Plugin(menuPath = "Plugins>Debug>Inspect Objects")
+public class InspectObjects implements Command {
 
 	@Parameter
-	private CommandService commandService;
+	private ObjectService objectService;
 
 	@Override
 	public void run() {
-		final CommandFinderPanel commandFinderPanel =
-			new CommandFinderPanel(commandService.getModuleService());
-		final int rval =
-			SwingUtils.showDialog(null, commandFinderPanel, "Find Commands",
-				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, false,
-				commandFinderPanel.getSearchField());
-		if (rval != JOptionPane.OK_OPTION) return; // dialog canceled
-
-		final ModuleInfo info = commandFinderPanel.getCommand();
-		if (info == null) return; // no command selected
-
-		// execute selected command
-		commandService.run(info);
+		Inspector.inspect(objectService);
 	}
 
 }

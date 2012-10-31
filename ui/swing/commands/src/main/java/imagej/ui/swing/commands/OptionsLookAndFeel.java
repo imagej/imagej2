@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ui.swing.plugins;
+package imagej.ui.swing.commands;
 
 import imagej.log.LogService;
 import imagej.menu.MenuConstants;
