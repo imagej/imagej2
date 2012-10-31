@@ -133,7 +133,7 @@ public class CheckSezpoz {
 	 * @throws IOException
 	 */
 	public static boolean checkDirectory(final File classes) throws IOException {
-		if (!classes.getPath().endsWith("target/classes")) {
+		if (!FileUtils.getPath(classes).endsWith("target/classes")) {
 			System.err.println("WARN: Ignoring non-Maven build directory: " +
 				classes.getPath());
 			return true;
