@@ -108,7 +108,7 @@ public final class FileUtils {
 	}
 
 	/**
-	 * Extracts the file extension from a file name.
+	 * Extracts the file extension from a file path.
 	 * 
 	 * @param path the path to the file (relative or absolute)
 	 * @return the file extension (excluding the dot), or the empty string when
