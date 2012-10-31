@@ -75,10 +75,22 @@ public final class FileUtils {
 	 */
 	public static String getPath(final File file) {
 		final String path = file.getAbsolutePath();
-
-		// NB: Standardize directory separator (i.e., avoid Windows nonsense!).
 		final String slash = System.getProperty("file.separator");
-		return path.replaceAll(Pattern.quote(slash), "/");
+		return getPath(path, slash);
+	}
+
+	/**
+	 * Gets a standardized path based on the given one, with the directory
+	 * separator standardized from the specific separator to forward slash, like
+	 * most platforms use.
+	 * 
+	 * @param path The path to standardize.
+	 * @param separator The directory separator to be standardized.
+	 * @return The standardized path.
+	 */
+	public static String getPath(final String path, final String separator) {
+		// NB: Standardize directory separator (i.e., avoid Windows nonsense!).
+		return path.replaceAll(Pattern.quote(separator), "/");
 	}
 
 	/**
