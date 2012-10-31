@@ -49,7 +49,13 @@ public final class Main {
 		// prevent instantiation of utility class
 	}
 
-	public static void main(final String... args) {
+	/**
+	 * Launches a new instance of ImageJ.
+	 * 
+	 * @param args The arguments to pass to the new ImageJ instance.
+	 * @return The context of the newly launched ImageJ instance.
+	 */
+	public static ImageJ launch(final String... args) {
 		final ImageJ context = ImageJ.createContext();
 
 		// parse command line arguments
@@ -60,6 +66,12 @@ public final class Main {
 		// display the user interface
 		final UIService uiService = context.getService(UIService.class);
 		if (uiService != null) uiService.createUI();
+
+		return context;
+	}
+
+	public static void main(final String... args) {
+		launch(args);
 	}
 
 }
