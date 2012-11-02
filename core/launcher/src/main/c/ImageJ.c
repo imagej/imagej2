@@ -2723,6 +2723,8 @@ static void __attribute__((__noreturn__)) usage(void)
 		"\tuse the G1 garbage collector\n"
 		"--debug-gc\n"
 		"\tshow debug info about the garbage collector on stderr\n"
+		"--debugger=<port>\n"
+		"\tstart the JVM in a mode so Eclipse's debugger can attach to it\n"
 		"--no-splash\n"
 		"\tsuppress showing a splash screen upon startup\n"
 		"\n",
@@ -3132,6 +3134,10 @@ static int handle_one_option2(int *i, int argc, const char **argv)
 		advanced_gc = 2;
 	else if (!strcmp("--debug-gc", argv[*i]))
 		debug_gc = 1;
+	else if (handle_one_option(i, argv, "--debugger", &arg)) {
+		string_replace_range(&arg, 0, 0, "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=localhost:");
+		add_option_string(&options, &arg, 0);
+	}
 	else if (!strcmp("--no-splash", argv[*i]))
 		no_splash = 1;
 	else if (!strcmp("--help", argv[*i]) ||
