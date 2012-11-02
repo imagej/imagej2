@@ -35,8 +35,6 @@
 
 package imagej.core.commands.debug;
 
-import java.net.URL;
-
 import imagej.Cancelable;
 import imagej.command.Command;
 import imagej.data.Dataset;
@@ -46,6 +44,9 @@ import imagej.platform.PlatformService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.widget.Button;
+
+import java.net.URL;
+
 import net.imglib2.RandomAccess;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.ops.pointset.PointSetIterator;
@@ -86,8 +87,10 @@ public class PointSetDemo implements Command, Cancelable {
 			err = pointSet.getErrorString();
 			return;
 		}
-		long[] minBound = pointSet.findBoundMin();
-		long[] maxBound = pointSet.findBoundMax();
+		long[] minBound = new long[pointSet.numDimensions()];
+		long[] maxBound = new long[pointSet.numDimensions()];
+		pointSet.min(minBound);
+		pointSet.max(maxBound);
 		
 		for (int i = 0; i < minBound.length; i++) {
 			if ((minBound[i] < 0) || (maxBound[i] < 0)) {

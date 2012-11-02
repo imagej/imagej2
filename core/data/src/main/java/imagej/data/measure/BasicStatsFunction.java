@@ -103,7 +103,7 @@ public class BasicStatsFunction<T extends RealType<T>>
 	public void compute(PointSet input, BasicStats output) {
 		if (iter == null || lastPointSet != input) {
 			// TODO - use an Img<DoubleType> to break limitations
-			data = new double[(int)input.calcSize()];
+			data = new double[(int) input.size()];
 			iter = input.iterator();
 		}
 		else
