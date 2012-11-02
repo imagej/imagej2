@@ -45,6 +45,7 @@ import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.regex.Pattern;
 
 /**
  * Useful methods for working with file paths.
@@ -66,11 +67,38 @@ public final class FileUtils {
 	}
 
 	/**
+	 * Gets the absolute path to the given file, with the directory separator
+	 * standardized to forward slash, like most platforms use.
+	 * 
+	 * @param file The file whose path will be obtained and standardized.
+	 * @return The file's standardized absolute path.
+	 */
+	public static String getPath(final File file) {
+		final String path = file.getAbsolutePath();
+		final String slash = System.getProperty("file.separator");
+		return getPath(path, slash);
+	}
+
+	/**
+	 * Gets a standardized path based on the given one, with the directory
+	 * separator standardized from the specific separator to forward slash, like
+	 * most platforms use.
+	 * 
+	 * @param path The path to standardize.
+	 * @param separator The directory separator to be standardized.
+	 * @return The standardized path.
+	 */
+	public static String getPath(final String path, final String separator) {
+		// NB: Standardize directory separator (i.e., avoid Windows nonsense!).
+		return path.replaceAll(Pattern.quote(separator), "/");
+	}
+
+	/**
 	 * Extracts the file extension from a file.
 	 * 
 	 * @param file the file object
-	 * @return the file extension (excluding the dot), or the empty string when the
-	 *         file name does not contain dots
+	 * @return the file extension (excluding the dot), or the empty string when
+	 *         the file name does not contain dots
 	 */
 	public static String getExtension(final File file) {
 		final String name = file.getName();
@@ -80,11 +108,11 @@ public final class FileUtils {
 	}
 
 	/**
-	 * Extracts the file extension from a file name.
+	 * Extracts the file extension from a file path.
 	 * 
 	 * @param path the path to the file (relative or absolute)
-	 * @return the file extension (excluding the dot), or the empty string when the
-	 *         file name does not contain dots
+	 * @return the file extension (excluding the dot), or the empty string when
+	 *         the file name does not contain dots
 	 */
 	public static String getExtension(final String path) {
 		return getExtension(new File(path));
@@ -93,8 +121,8 @@ public final class FileUtils {
 	/**
 	 * Converts the given {@link URL} to its corresponding {@link File}.
 	 * <p>
-	 * This method is similar to calling {@code new File(url.toURI())} except
-	 * that it also handles "jar:file:" URLs, returning the path to the JAR file.
+	 * This method is similar to calling {@code new File(url.toURI())} except that
+	 * it also handles "jar:file:" URLs, returning the path to the JAR file.
 	 * </p>
 	 * 
 	 * @param url The URL to convert.
@@ -122,10 +150,10 @@ public final class FileUtils {
 		try {
 			return new File(new URL(path).toURI());
 		}
-		catch (MalformedURLException e) {
+		catch (final MalformedURLException e) {
 			// NB: URL is not completely well-formed.
 		}
-		catch (URISyntaxException e) {
+		catch (final URISyntaxException e) {
 			// NB: URL is not completely well-formed.
 		}
 		if (path.startsWith("file:")) {
@@ -237,8 +265,7 @@ public final class FileUtils {
 		// fill the array from the end
 		int i = 0;
 		for (; i < limit; i++) {
-			if (pathArray[pathindex - i] != '/' && pathArray[pathindex - i] != '\\')
-			{
+			if (pathArray[pathindex - i] != '/' && pathArray[pathindex - i] != '\\') {
 				shortPathArray[shortpathindex - i] = pathArray[pathindex - i];
 			}
 			else {
@@ -270,55 +297,67 @@ public final class FileUtils {
 
 	/**
 	 * Creates a temporary directory.
-	 * 
+	 * <p>
 	 * Since there is no atomic operation to do that, we create a temporary file,
 	 * delete it and create a directory in its place. To avoid race conditions, we
 	 * use the optimistic approach: if the directory cannot be created, we try to
 	 * obtain a new temporary file rather than erroring out.
-	 * 
-	 * It is the caller's responsibility to make sure that the directory is deleted.
+	 * </p>
+	 * <p>
+	 * It is the caller's responsibility to make sure that the directory is
+	 * deleted.
+	 * </p>
 	 * 
 	 * @param prefix The prefix string to be used in generating the file's name;
-	 *  see {@link File#createTempFile(String, String, File)}
+	 *          see {@link File#createTempFile(String, String, File)}
 	 * @param suffix The suffix string to be used in generating the file's name;
-	 *  see {@link File#createTempFile(String, String, File)}
-	 * @return: An abstract pathname denoting a newly-created empty directory
-	 * @throws IOException 
+	 *          see {@link File#createTempFile(String, String, File)}
+	 * @return An abstract pathname denoting a newly-created empty directory
+	 * @throws IOException
 	 */
-	public static File createTemporaryDirectory(final String prefix, final String suffix) throws IOException {
+	public static File createTemporaryDirectory(final String prefix,
+		final String suffix) throws IOException
+	{
 		return createTemporaryDirectory(prefix, suffix, null);
 	}
 
 	/**
 	 * Creates a temporary directory.
-	 * 
+	 * <p>
 	 * Since there is no atomic operation to do that, we create a temporary file,
 	 * delete it and create a directory in its place. To avoid race conditions, we
 	 * use the optimistic approach: if the directory cannot be created, we try to
 	 * obtain a new temporary file rather than erroring out.
-	 * 
-	 * It is the caller's responsibility to make sure that the directory is deleted.
+	 * </p>
+	 * <p>
+	 * It is the caller's responsibility to make sure that the directory is
+	 * deleted.
+	 * </p>
 	 * 
 	 * @param prefix The prefix string to be used in generating the file's name;
-	 *  see {@link File#createTempFile(String, String, File)}
+	 *          see {@link File#createTempFile(String, String, File)}
 	 * @param suffix The suffix string to be used in generating the file's name;
-	 *  see {@link File#createTempFile(String, String, File)}
+	 *          see {@link File#createTempFile(String, String, File)}
 	 * @param directory The directory in which the file is to be created, or null
-	 *  if the default temporary-file directory is to be used
+	 *          if the default temporary-file directory is to be used
 	 * @return: An abstract pathname denoting a newly-created empty directory
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	public static File createTemporaryDirectory(final String prefix, final String suffix, final File directory) throws IOException {
+	public static File createTemporaryDirectory(final String prefix,
+		final String suffix, final File directory) throws IOException
+	{
 		for (int counter = 0; counter < 10; counter++) {
 			final File file = File.createTempFile(prefix, suffix, directory);
 
-			if (!file.delete())
+			if (!file.delete()) {
 				throw new IOException("Could not delete file " + file);
+			}
 
 			// in case of a race condition, just try again
 			if (file.mkdir()) return file;
 		}
-		throw new IOException("Could not create temporary directory (too many race conditions?)");
+		throw new IOException(
+			"Could not create temporary directory (too many race conditions?)");
 	}
 
 	// -- Deprecated methods --
@@ -338,8 +377,8 @@ public final class FileUtils {
 
 	/** @deprecated Use {@link ProcessUtils#exec} instead. */
 	@Deprecated
-	public static String exec(final File workingDirectory,
-		final PrintStream err, final PrintStream out, final String... args)
+	public static String exec(final File workingDirectory, final PrintStream err,
+		final PrintStream out, final String... args)
 	{
 		return ProcessUtils.exec(workingDirectory, err, out, args);
 	}

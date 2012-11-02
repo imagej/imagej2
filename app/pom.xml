@@ -125,7 +125,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ui-swing-plugins</artifactId>
+			<artifactId>ij-ui-swing-commands</artifactId>
 			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>

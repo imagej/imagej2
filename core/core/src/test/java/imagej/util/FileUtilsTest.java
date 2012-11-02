@@ -53,6 +53,21 @@ import org.junit.Test;
 public class FileUtilsTest {
 
 	@Test
+	public void testGetPath() {
+		// test that Windows-style paths get standardized
+		assertEquals("C:/path/to/my-windows-file", FileUtils.getPath(
+			"C:\\path\\to\\my-windows-file", "\\"));
+
+		// test that there are no changes to *nix-style paths
+		assertEquals("/path/to/my-nix-file", FileUtils.getPath(
+			"/path/to/my-nix-file", "/"));
+
+		// test that an already-standardized path stays good on Windows
+		assertEquals("/path/to/my-nix-file", FileUtils.getPath(
+			"/path/to/my-nix-file", "\\"));
+	}
+
+	@Test
 	public void testGetExtension() {
 		assertEquals("ext", FileUtils.getExtension("/path/to/file.ext"));
 		assertEquals("", FileUtils.getExtension("/path/to/file"));

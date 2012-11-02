@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ui.swing.plugins.debug;
+package imagej.ui.swing.commands.debug;
 
 import imagej.command.Command;
 import imagej.plugin.Parameter;

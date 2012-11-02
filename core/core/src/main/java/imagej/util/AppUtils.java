@@ -155,7 +155,7 @@ public final class AppUtils {
 	 * {@code target/classes} folder of a given component. In this case, the class
 	 * files reside directly on the file system (not in a JAR file). The base
 	 * directory is defined as the toplevel Maven directory for the multi-module
-	 * project. For example, if your have checked out {@code imagej.git} to
+	 * project. For example, if you have checked out {@code imagej.git} to
 	 * {@code ~/code/imagej}, the {@code imagej.ImageJ} class will be located at
 	 * {@code ~/code/imagej/core/core/target/classes/imagej/ImageJ.class}. Asking
 	 * for the base directory for that class will yield {@code ~/code/imagej}, as
@@ -207,12 +207,14 @@ public final class AppUtils {
 	 * @param classLocation The location from which the base directory should be
 	 *          derived.
 	 * @param baseSubdirectory A hint for what to expect for a directory structure
-	 *          beneath the application base directory.
+	 *          beneath the application base directory. If this value is null
+	 *          (i.e., no hint is given), the heuristic scans up the directory
+	 *          tree looking for the topmost pom.xml file.
 	 */
 	public static File getBaseDirectory(final File classLocation,
 		final String baseSubdirectory)
 	{
-		String path = classLocation.getAbsolutePath();
+		String path = FileUtils.getPath(classLocation);
 
 		if (path.contains("/.m2/repository/")) {
 			// NB: The class is in a JAR in the Maven repository cache.

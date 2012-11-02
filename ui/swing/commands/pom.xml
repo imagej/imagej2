@@ -11,10 +11,10 @@
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-ui-swing-plugins</artifactId>
+	<artifactId>ij-ui-swing-commands</artifactId>
 
-	<name>ImageJ UI: Swing Plugins</name>
-	<description>Plugins for Swing-based ImageJ user interfaces.</description>
+	<name>ImageJ UI: Swing Commands</name>
+	<description>Commands for Swing-based ImageJ user interfaces.</description>
 
 	<dependencies>
 		<dependency>
@@ -87,7 +87,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.ui.swing.plugins</packageName>
+							<packageName>imagej.ui.swing.commands</packageName>
 						</manifest>
 					</archive>
 				</configuration>
