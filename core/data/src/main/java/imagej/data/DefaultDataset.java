@@ -151,10 +151,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 
 		// set rgb merged status
 		if (wasRgbMerged) {
-			if ((isSigned()) || (!isInteger()) ||
-				(getType().getBitsPerPixel() != 8) ||
-				(imgPlus.getAxisIndex(Axes.CHANNEL) < 0) ||
-				(imgPlus.dimension(getAxisIndex(Axes.CHANNEL)) != 3))
+			if (!mergedColorCompatible())
 			{
 				setRGBMerged(false);
 			}
@@ -283,6 +280,9 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	@Override
 	public void setRGBMerged(final boolean rgbMerged) {
 		if (rgbMerged == this.rgbMerged) return;
+		if (rgbMerged && !mergedColorCompatible()) {
+			throw new IllegalArgumentException("This dataset is not color compatible");
+		}
 		this.rgbMerged = rgbMerged;
 		rgbChange();
 	}
@@ -738,4 +738,12 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		publish(new DatasetUpdatedEvent(this, metadataOnly));
 	}
 
+	private boolean mergedColorCompatible() {
+		if (isSigned()) return false;
+		if (!isInteger()) return false;
+		if (getType().getBitsPerPixel() != 8) return false;
+		if (imgPlus.getAxisIndex(Axes.CHANNEL) < 0) return false;
+		if (imgPlus.dimension(getAxisIndex(Axes.CHANNEL)) != 3) return false;
+		return true;
+	}
 }
