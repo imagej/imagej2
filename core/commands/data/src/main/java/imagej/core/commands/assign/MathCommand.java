@@ -47,13 +47,16 @@ import imagej.data.overlay.Overlay;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import net.imglib2.RandomAccess;
+import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.meta.Axes;
-import net.imglib2.ops.function.real.PrimitiveDoubleArray;
 import net.imglib2.ops.operation.complex.unary.ComplexUnaryOperation;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
+import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.ComplexType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 /**
  * Base class for previewable math commands.
@@ -83,9 +86,10 @@ public abstract class MathCommand<I extends ComplexType<I>, O extends ComplexTyp
 	// -- instance variables --
 
 	private O outType;
-	private PrimitiveDoubleArray dataBackup;
+	private Img<DoubleType> dataBackup;
 	private PointSetIterator iter;
-	private RandomAccess<? extends RealType<?>> accessor;
+	private RandomAccess<? extends RealType<?>> dataAccess;
+	private RandomAccess<? extends RealType<?>> backupAccess;
 	private Dataset dataset;
 	private Overlay overlay;
 	private Position planePos;
@@ -150,9 +154,13 @@ public abstract class MathCommand<I extends ComplexType<I>, O extends ComplexTyp
 
 		InplaceUnaryTransform<?,?> xform =
 				getPreviewTransform(dataset, overlay);
-		accessor = dataset.getImgPlus().randomAccess();
-		iter = initIterator(dataset, xform.getRegionOrigin(), xform.getRegionSpan());
-		dataBackup = new PrimitiveDoubleArray();
+		PointSet region =
+			determineRegion(dataset, xform.getRegionOrigin(), xform.getRegionSpan());
+		iter = region.iterator();
+		ArrayImgFactory<DoubleType> factory = new ArrayImgFactory<DoubleType>();
+		dataBackup = factory.create(new long[] { region.size() }, new DoubleType());
+		backupAccess = dataBackup.randomAccess();
+		dataAccess = dataset.getImgPlus().randomAccess();
 
 		// check dimensions of Dataset
 		final long w = xform.getRegionSpan()[0];
@@ -178,7 +186,9 @@ public abstract class MathCommand<I extends ComplexType<I>, O extends ComplexTyp
 		return getPreviewTransform(ds, ov);
 	}
 
-	private PointSetIterator initIterator(Dataset ds, long[] planeOrigin, long[] planeSpan) {
+	private PointSet determineRegion(Dataset ds, long[] planeOrigin,
+		long[] planeSpan)
+	{
 		// copy data to a double[]
 		final long[] origin = planeOrigin.clone();
 		final long[] offsets = planeSpan.clone();
@@ -189,9 +199,7 @@ public abstract class MathCommand<I extends ComplexType<I>, O extends ComplexTyp
 		}
 		for (int i = 0; i < offsets.length; i++)
 			offsets[i]--;
-		return new HyperVolumePointSet(
-						origin, new long[origin.length],
-						offsets).iterator();
+		return new HyperVolumePointSet(origin, new long[origin.length], offsets);
 	}
 	
 	// NB
@@ -202,18 +210,23 @@ public abstract class MathCommand<I extends ComplexType<I>, O extends ComplexTyp
 
 	private void savePreviewRegion() {
 		iter.reset();
+		long pos = 0;
 		while (iter.hasNext()) {
-			accessor.setPosition(iter.next());
-			dataBackup.add(accessor.get().getRealDouble());
+			dataAccess.setPosition(iter.next());
+			double value = dataAccess.get().getRealDouble();
+			backupAccess.setPosition(pos++, 0);
+			backupAccess.get().setReal(value);
 		}
 	}
 
 	private void restorePreviewRegion() {
-		int index = 0;
 		iter.reset();
+		long pos = 0;
 		while (iter.hasNext()) {
-			accessor.setPosition(iter.next());
-			accessor.get().setReal(dataBackup.get(index++));
+			backupAccess.setPosition(pos++, 0);
+			double value = backupAccess.get().getRealDouble();
+			dataAccess.setPosition(iter.next());
+			dataAccess.get().setReal(value);
 		}
 		dataset.update();
 	}
