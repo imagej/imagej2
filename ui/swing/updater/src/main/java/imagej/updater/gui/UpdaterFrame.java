@@ -475,7 +475,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 				instance.run = instance.file.getClass().getMethod("run", String.class);
 				return instance;
 			}
-			catch (final Exception e) {
+			catch (final Throwable e) {
 				return null;
 			}
 		}
