@@ -37,6 +37,7 @@ package imagej.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
@@ -133,10 +134,8 @@ public class Manifest {
 	public static Manifest getManifest(final Class<?> c) {
 		try {
 			// try to grab manifest from the JAR
-			final URL location = ClassUtils.getLocation(c);
-			final File file = FileUtils.urlToFile(location);
-			final JarFile jarFile = new JarFile(file);
-			return new Manifest(jarFile.getManifest());
+			final URL location = new URL("jar:" + ClassUtils.getLocation(c) + "!/");
+			return new Manifest(((JarURLConnection)location.openConnection()).getManifest());
 		}
 		catch (final IOException e) {
 			return null;

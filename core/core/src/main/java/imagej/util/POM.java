@@ -109,7 +109,7 @@ public class POM extends XML {
 	{
 		try {
 			final URL location = ClassUtils.getLocation(c);
-			if (location.toString().endsWith(".jar")) {
+			if (!location.getProtocol().equals("file") || location.toString().endsWith(".jar")) {
 				// look for pom.xml in JAR's META-INF/maven subdirectory
 				final String pomPath =
 					"META-INF/maven/" + groupId + "/" + artifactId + "/pom.xml";
