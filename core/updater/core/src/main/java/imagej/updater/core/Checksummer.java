@@ -412,6 +412,7 @@ public class Checksummer extends AbstractProgressable {
 		{ "macros" }, { ".txt", ".ijm" },
 		{ "luts" }, { ".lut" },
 		{ "images" }, { ".png" },
+		{ "Contents" }, { ".icns", ".plist" },
 		{ "lib" }, { "" },
 		{ "mm" }, { "" },
 		{ "mmautofocus" }, { "" },
