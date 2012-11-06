@@ -79,9 +79,11 @@ public class DefaultPluginFinder implements PluginFinder {
 		}
 
 		final int oldSize = plugins.size();
-		for (final IndexItem<Plugin, ImageJPlugin> item : pluginIndex) {
+		for (final IndexItem<Plugin, ImageJPlugin> item : pluginIndex) try {
 			final PluginInfo<?> info = createInfo(item);
 			plugins.add(info);
+		} catch (Throwable t) {
+			Log.debug(t);
 		}
 		final int newSize = plugins.size();
 
