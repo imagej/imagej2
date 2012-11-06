@@ -405,13 +405,18 @@ public class Checksummer extends AbstractProgressable {
 		return false;
 	}
 
-	public static final String[][] directories = { { "jars", "retro", "misc" },
-		{ ".jar", ".class" }, { "plugins" },
-		{ ".jar", ".class", ".txt", ".ijm", ".py", ".rb", ".clj", ".js", ".bsh" },
-		{ "scripts" }, { ".py", ".rb", ".clj", ".js", ".bsh", ".m" }, { "macros" },
-		{ ".txt", ".ijm" }, { "luts" }, { ".lut" }, { "images" }, { ".png" },
-		{ "lib" }, { "" }, { "mm" }, { "" }, { "mmautofocus" }, { "" },
-		{ "mmplugins" }, { "" } };
+	public static final String[][] directories = {
+		{ "jars", "retro", "misc" }, { ".jar", ".class" },
+		{ "plugins" }, { ".jar", ".class", ".txt", ".ijm", ".py", ".rb", ".clj", ".js", ".bsh" },
+		{ "scripts" }, { ".py", ".rb", ".clj", ".js", ".bsh", ".m" },
+		{ "macros" }, { ".txt", ".ijm" },
+		{ "luts" }, { ".lut" },
+		{ "images" }, { ".png" },
+		{ "lib" }, { "" },
+		{ "mm" }, { "" },
+		{ "mmautofocus" }, { "" },
+		{ "mmplugins" }, { "" }
+	};
 
 	protected static final Map<String, Set<String>> extensions;
 
