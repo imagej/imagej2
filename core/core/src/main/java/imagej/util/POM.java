@@ -109,18 +109,16 @@ public class POM extends XML {
 	{
 		try {
 			final URL location = ClassUtils.getLocation(c);
-			final File file = FileUtils.urlToFile(location);
-			if (file.getAbsolutePath().endsWith(".jar")) {
+			if (location.toString().endsWith(".jar")) {
 				// look for pom.xml in JAR's META-INF/maven subdirectory
-				final JarFile jarFile = new JarFile(file);
 				final String pomPath =
 					"META-INF/maven/" + groupId + "/" + artifactId + "/pom.xml";
-				final ZipEntry entry = jarFile.getEntry(pomPath);
-				if (entry == null) return null;
-				final InputStream pomStream = jarFile.getInputStream(entry);
+				final URL pomURL = new URL("jar:" + location.toString() + "!/" + pomPath);
+				final InputStream pomStream = pomURL.openStream();
 				return new POM(pomStream);
 			}
 			// look for the POM in the class's base directory
+			final File file = FileUtils.urlToFile(location);
 			final File baseDir = AppUtils.getBaseDirectory(file, null);
 			final File pomFile = new File(baseDir, "pom.xml");
 			return new POM(pomFile);
