@@ -79,7 +79,7 @@ public class Checksummer extends AbstractProgressable {
 	public Checksummer(final FilesCollection files, final Progress progress) {
 		this.files = files;
 		if (progress != null) addProgress(progress);
-		setTitle("Czechsummer");
+		setTitle("Checksummer");
 		isWindows = Util.getPlatform().startsWith("win");
 	}
 
