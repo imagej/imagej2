@@ -249,6 +249,13 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 
 	@Override
 	public void update() {
+		// NB - this combinedinterval.update() call rebuilds the interval. We have
+		// found cases where this is necessary to avoid situations where the we try
+		// to access a no longer existing axis. As an example of this try running
+		// legacy command Type > 8-bit Color on Clowns. Without this line, when you
+		// run the command, an exception is thrown.
+		// TODO - is this a performance issue?
+		combinedInterval.update();
 		for (final DataView view : this) {
 			for (final AxisType axis : getAxes()) {
 				if (Axes.isXY(axis)) continue;
