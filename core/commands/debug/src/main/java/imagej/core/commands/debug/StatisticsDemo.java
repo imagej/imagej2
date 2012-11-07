@@ -35,9 +35,6 @@
 
 package imagej.core.commands.debug;
 
-import net.imglib2.ops.pointset.HyperVolumePointSet;
-import net.imglib2.ops.pointset.PointSet;
-import net.imglib2.ops.pointset.RoiPointSet;
 import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
@@ -48,6 +45,9 @@ import imagej.event.StatusService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.widget.Button;
+import net.imglib2.ops.pointset.HyperVolumePointSet;
+import net.imglib2.ops.pointset.PointSet;
+import net.imglib2.ops.pointset.RoiPointSet;
 
 /**
  * Shows how to use the StatisticsService.
@@ -108,11 +108,17 @@ public class StatisticsDemo implements Command {
 			return new RoiPointSet(overlay.getRegionOfInterest());
 		}
 		long[] dims = display.getDims();
-		// 1st plane only
+		long[] pt1 = new long[dims.length];
+		long[] pt2 = pt1.clone();
+		// current plane only
+		pt1[0] = 0;
+		pt1[1] = 0;
+		pt2[0] = dims[0] - 1;
+		pt2[1] = dims[1] - 1;
 		for (int i = 2; i < dims.length; i++) {
-			dims[i] = 1;
+			pt1[i] = pt2[i] = display.getLongPosition(i);
 		}
-		return new HyperVolumePointSet(dims);
+		return new HyperVolumePointSet(pt1, pt2);
 	}
 	
 	// -- Command methods --
