@@ -222,15 +222,16 @@ public abstract class TypeChanger extends DynamicCommand {
 		final ImgFactory<O> typedFactory = (ImgFactory<O>) factory;
 		final Img<O> outputImg = typedFactory.create(dims, newType);
 
+		// Would be nice
 		// for each set of channels in the image
 		// figure out what color it is
-		// turn that into an intensity value from 0 to 255
+		// turn that color into an intensity value for the given type
 		// set the output pixel to that value
-
-		// problems though: we don't have color table info except for view
-
+		//
+		// problem though: we don't have color table info except for view
+		//
 		// so instead of color just average the channel intensities
-		// and could do a special case for rgb that uses formula
+		// and we could do a special case for rgb that uses formula later
 
 		// determine channel space
 		final int chIndex = inputImg.getAxisIndex(Axes.CHANNEL);
@@ -263,11 +264,11 @@ public abstract class TypeChanger extends DynamicCommand {
 
 		// do the iteration and copy the data
 		final RandomAccess<? extends RealType<?>> out = outputImg.randomAccess();
-		final boolean inputIs1Bit = inputImg.cursor().get().getBitsPerPixel() == 1;
+		final boolean inputIs1Bit = inputImg.firstElement().getBitsPerPixel() == 1;
 		final double outTypeMin = out.get().getMinValue();
 		final double outTypeMax = out.get().getMaxValue();
 		PointSet inputPointset = null;
-		final long[] outputPt = new long[outputImg.numDimensions()];
+		final long[] outputCoord = new long[outputImg.numDimensions()];
 		final DoubleType avg = new DoubleType();
 		while (iter.hasNext()) {
 			inputPointset = iter.next(inputPointset);
@@ -276,8 +277,8 @@ public abstract class TypeChanger extends DynamicCommand {
 			if (value < outTypeMin) value = outTypeMin;
 			if (value > outTypeMax) value = outTypeMax;
 			if (inputIs1Bit && value > 0) value = outTypeMax;
-			computeOutputPoint(chIndex, inputPointset.getOrigin(), outputPt);
-			out.setPosition(outputPt);
+			determineOutputCoordinate(chIndex, inputPointset.getOrigin(), outputCoord);
+			out.setPosition(outputCoord);
 			out.get().setReal(value);
 		}
 
@@ -337,10 +338,10 @@ public abstract class TypeChanger extends DynamicCommand {
 	}
 
 	/**
-	 * Computes an output point from an input point ignoring the channel axis if
-	 * necessary.
+	 * Determines an output coordinate from an input coordinate ignoring the
+	 * channel axis if necessary.
 	 */
-	private static void computeOutputPoint(final int chIndex,
+	private static void determineOutputCoordinate(final int chIndex,
 		final long[] inputPt, final long[] outputPt)
 	{
 		int p = 0;
