@@ -147,6 +147,40 @@ public class CommandLine {
 		list(list, files.is(Status.MODIFIED));
 	}
 
+	public void show(final List<String> list) {
+		for (String filename : list) {
+			show(filename);
+		}
+	}
+
+	public void show(final String filename) {
+		final FileObject file = files.get(filename);
+		if (file == null) {
+			System.err.println("\nERROR: File not found: " + filename);
+		} else {
+			show(file);
+		}
+	}
+
+	public void show(final FileObject file) {
+		System.out.println();
+		System.out.println("File: " + file.getFilename(true));
+		if (!file.getFilename(true).equals(file.localFilename)) {
+			System.out.println("(Local filename: " + file.localFilename + ")");
+		}
+		System.out.println("Update site: " + file.updateSite);
+		if (file.current == null) {
+			System.out.println("Removed from update site");
+		} else {
+			System.out.println("URL: " + files.getURL(file));
+			System.out.println("checksum: " + file.current.checksum + ", timestamp: " + file.current.timestamp);
+		}
+		if (file.localChecksum != null && (file.current == null || !file.localChecksum.equals(file.current.checksum))) {
+			System.out.println("Local checksum: " + file.localChecksum
+					+ " (" + (file.hasPreviousVersion(file.localChecksum) ? "" : "NOT a ") + "previous version)");
+		}
+	}
+
 	class OneFile implements Downloadable {
 
 		FileObject file;
@@ -435,6 +469,7 @@ public class CommandLine {
 			+ "\tlist-updateable [<files>]\n"
 			+ "\tlist-modified [<files>]\n"
 			+ "\tlist-current [<files>]\n"
+			+ "\tshow [<files>]\n"
 			+ "\tupdate [<files>]\n"
 			+ "\tupdate-force [<files>]\n"
 			+ "\tupdate-force-pristine [<files>]\n"
@@ -482,6 +517,7 @@ public class CommandLine {
 			makeList(args, 1));
 		else if (command.equals("list-modified")) getInstance().listModified(
 			makeList(args, 1));
+		else if (command.equals("show")) getInstance().show(makeList(args, 1));
 		else if (command.equals("update")) getInstance().update(makeList(args, 1));
 		else if (command.equals("update-force")) getInstance().update(
 			makeList(args, 1), true);
