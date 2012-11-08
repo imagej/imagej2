@@ -301,6 +301,9 @@ public class Checksummer extends AbstractProgressable {
 				object =
 					new FileObject(null, pair.path, pair.file.length(), pair.checksum, pair.timestamp,
 						Status.LOCAL_ONLY);
+				object.localFilename = pair.path;
+				object.localChecksum = pair.checksum;
+				object.localTimestamp = pair.timestamp;
 				if ((!isWindows && Util.canExecute(pair.file)) || pair.path.endsWith(".exe")) object.executable =
 					true;
 				tryToGuessPlatform(object);
