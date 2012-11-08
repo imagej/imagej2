@@ -651,6 +651,8 @@ public class UpdaterTest {
 		assertTrue(file.hasPreviousVersion("b"));
 		assertTrue(file.hasPreviousVersion("c"));
 		assertStatus(Status.NEW, files, "ImageJ-linux64");
+
+		FileUtils.deleteRecursively(webRoot2);
 	}
 
 	@Test
@@ -710,6 +712,8 @@ public class UpdaterTest {
 
 		files.reReadUpdateSite("second", progress);
 		assertStatus(Status.MODIFIED, files.get("jars/hello.jar"));
+
+		FileUtils.deleteRecursively(webRoot2);
 	}
 
 	@Test
@@ -1076,6 +1080,8 @@ public class UpdaterTest {
 		FileObject obsolete = files.get("jars/to-be-removed.jar");
 		assertStatus(Status.OBSOLETE, obsolete);
 		assertAction(Action.OBSOLETE, obsolete);
+
+		FileUtils.deleteRecursively(ijRoot2);
 	}
 
 	@Test
@@ -1177,6 +1183,8 @@ public class UpdaterTest {
 		String db = readGzippedStream(new FileInputStream(new File(webRoot2, "db.xml.gz")));
 		assertTrue(db.indexOf("<plugin filename=\"jars/overridden.jar\"") > 0);
 		assertTrue(db.indexOf(obsoleteChecksum) > 0);
+
+		FileUtils.deleteRecursively(webRoot2);
 	}
 
 	@Test
@@ -1208,6 +1216,8 @@ public class UpdaterTest {
 
 		files2 = readDb(true, true, ijRoot2, webRoot, progress);
 		assertAction(Action.INSTALL, files2, "jars/dependency.jar");
+
+		FileUtils.deleteRecursively(ijRoot2);
 	}
 
 	//
