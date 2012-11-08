@@ -66,7 +66,7 @@ public class CheckSezpozTest {
 
 	@Test
 	public void testIsAnnotation() throws Exception {
-		final File tmpDirectory = createTempDirectory("test-sezpoz");
+		final File tmpDirectory = FileUtils.createTemporaryDirectory("test-sezpoz", "");
 		final File file = new File(tmpDirectory, "Charlieee.java");
 		assertAnnotation(file, "/* Hello */ @Is", true);
 		assertAnnotation(file, "/* Hello class \n" + "*/@Blob", true);
@@ -88,7 +88,7 @@ public class CheckSezpozTest {
 
 	@Test
 	public void testBasic() throws Exception {
-		final File tmpDirectory = createTempDirectory("test-sezpoz");
+		final File tmpDirectory = FileUtils.createTemporaryDirectory("test-sezpoz", "");
 		final File classes = new File(tmpDirectory, "target/classes");
 		assertTrue(classes.mkdirs());
 		final File sources = new File(tmpDirectory, "src/main/java");
@@ -144,22 +144,6 @@ public class CheckSezpozTest {
 			if (item.className().equals(className)) return true;
 		}
 		return false;
-	}
-
-	/**
-	 * Create a temporary directory
-	 * 
-	 * @param prefix the prefix as for {@link File#createTempFile}
-	 * @return the File object describing the directory
-	 * @throws IOException
-	 */
-	protected static File createTempDirectory(final String prefix)
-		throws IOException
-	{
-		final File file = File.createTempFile(prefix, "");
-		file.delete();
-		file.mkdir();
-		return file;
 	}
 
 	/**
