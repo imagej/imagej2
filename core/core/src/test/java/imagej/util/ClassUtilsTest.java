@@ -59,7 +59,7 @@ public class ClassUtilsTest {
 
 	@Test
 	public void testUnpackedClass() throws IOException {
-		final File tmpDir = createTempDirectory("class-utils-test");
+		final File tmpDir = FileUtils.createTemporaryDirectory("class-utils-test", "");
 		final String path = getClass().getName().replace('.', '/') + ".class";
 		final File classFile = new File(tmpDir, path);
 		assertTrue(classFile.getParentFile().exists() ||
@@ -86,22 +86,6 @@ public class ClassUtilsTest {
 			new URLClassLoader(new URL[] { jar.toURI().toURL() }, null);
 		final URL location = ClassUtils.getLocation(getClass().getName(), classLoader);
 		assertEquals(jar, FileUtils.urlToFile(location));
-	}
-
-	/**
-	 * Creates a temporary directory.
-	 * 
-	 * @param prefix the prefix as for {@link File#createTempFile(String, String)}
-	 * @return the File object describing the directory
-	 * @throws IOException
-	 */
-	private static File createTempDirectory(final String prefix)
-		throws IOException
-	{
-		final File file = File.createTempFile(prefix, "");
-		file.delete();
-		file.mkdir();
-		return file;
 	}
 
 	/**
