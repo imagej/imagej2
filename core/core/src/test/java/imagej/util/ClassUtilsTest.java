@@ -72,6 +72,7 @@ public class ClassUtilsTest {
 		final URL location = ClassUtils.getLocation(getClass().getName(),
 			classLoader);
 		assertEquals(tmpDir, FileUtils.urlToFile(location));
+		FileUtils.deleteRecursively(tmpDir);
 	}
 
 	@Test
