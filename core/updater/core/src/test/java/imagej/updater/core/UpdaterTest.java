@@ -1220,6 +1220,42 @@ public class UpdaterTest {
 		FileUtils.deleteRecursively(ijRoot2);
 	}
 
+	/**
+	 * Verifies that old update sites still work.
+	 *
+	 * Old update sites might have entries with checksums using the old way to calculate checksums.
+	 * Mark such entries up-to-date if the obsolete checksum matches.
+	 */
+	@Test
+	public void testHandleObsoleteChecksum() throws Exception {
+		initializeUpdateSite();
+
+		final String contents =
+				"blub = true\n" + "#Tue Jun 17 09:47:43 CST 2012\n"
+				+ "narf.egads = pinkie\n";
+		final String fileName =
+			"META-INF/maven/net.imagej/new/pom.properties";
+		assertTrue(new File(ijRoot, "jars").mkdirs());
+		File jar =
+			writeJarWithDatedFile("jars/new.jar", 2012, 6, 17, fileName, contents);
+
+		final String checksumOld = Util.getJarDigest(jar, false, false);
+		final String checksumNew = Util.getJarDigest(jar, true, true);
+
+		FilesCollection files = new FilesCollection(ijRoot);
+		final FileObject file =
+			new FileObject(FilesCollection.DEFAULT_UPDATE_SITE, "jars/new.jar", jar.length(), checksumOld, Util
+				.getTimestamp(jar), Status.INSTALLED);
+		file.addPreviousVersion(checksumNew, Util.getTimestamp(jar) - 1l, null);
+		files.add(file);
+
+		new XMLFileWriter(files).write(new GZIPOutputStream(new FileOutputStream(
+				new File(webRoot, "db.xml.gz"))), false);
+
+		files = readDb(true, true);
+		assertStatus(Status.INSTALLED, files.get("jars/new.jar"));
+	}
+
 	//
 	// Debug functions
 	//

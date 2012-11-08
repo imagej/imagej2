@@ -307,9 +307,9 @@ public class Checksummer extends AbstractProgressable {
 				files.add(object);
 			}
 			else {
-				if (!object.hasPreviousVersion(pair.checksum)) {
-					final FileObject.Version obsoletes =
+				final FileObject.Version obsoletes =
 						cachedChecksums.get(":" + pair.checksum);
+				if (!object.hasPreviousVersion(pair.checksum)) {
 					if (obsoletes != null) {
 						for (final String obsolete : obsoletes.checksum.split(":")) {
 							if (object.hasPreviousVersion(obsolete)) {
@@ -318,6 +318,10 @@ public class Checksummer extends AbstractProgressable {
 							}
 						}
 					}
+				} else if (object.current != null && obsoletes != null
+						&& (":" + obsoletes.checksum + ":").indexOf(":" + object.current.checksum + ":") >= 0) {
+					// if the recorded checksum is an obsolete equivalent of the current one, use the obsolete one
+					pair.checksum = object.current.checksum;
 				}
 				object.setLocalVersion(pair.path, pair.checksum, pair.timestamp);
 				if (object.getStatus() == Status.OBSOLETE_UNINSTALLED) object
