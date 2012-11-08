@@ -758,6 +758,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		final String siteName = file.updateSite;
 		assert (siteName != null && !siteName.equals(""));
 		final UpdateSite site = getUpdateSite(siteName);
+		if (site == null) return null;
 		return site.url + file.filename.replace(" ", "%20") + "-" +
 			file.getTimestamp();
 	}
