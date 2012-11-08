@@ -1350,6 +1350,17 @@ public class UpdaterTest {
 			final boolean runChecksummer, final File ijRoot, final File webRoot, final Progress progress) throws IOException,
 			ParserConfigurationException, SAXException {
 		final FilesCollection files = new FilesCollection(ijRoot);
+
+		// Initialize default update site
+
+		final UpdateSite updateSite =
+			files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE);
+		assertNotNull(updateSite);
+
+		updateSite.url = webRoot.toURI().toURL().toString() + "/";
+		updateSite.sshHost = "file:localhost";
+		updateSite.uploadDirectory = webRoot.getAbsolutePath() + "/";
+
 		final File localDb = new File(ijRoot, "db.xml.gz");
 		if (runChecksummer) {
 			// We're too fast, cannot trust the cached checksums
@@ -1363,15 +1374,6 @@ public class UpdaterTest {
 		else {
 			assertFalse(localDb.exists());
 
-			// Initialize default update site
-
-			final UpdateSite updateSite =
-				files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE);
-			assertNotNull(updateSite);
-
-			updateSite.url = webRoot.toURI().toURL().toString() + "/";
-			updateSite.sshHost = "file:localhost";
-			updateSite.uploadDirectory = webRoot.getAbsolutePath() + "/";
 		}
 		new XMLFileReader(files).read(FilesCollection.DEFAULT_UPDATE_SITE);
 		if (runChecksummer) {
