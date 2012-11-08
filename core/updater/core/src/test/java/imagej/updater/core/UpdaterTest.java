@@ -58,6 +58,7 @@ import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Progress;
 import imagej.updater.util.StderrProgress;
 import imagej.updater.util.Util;
+import imagej.util.FileUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -101,8 +102,8 @@ public class UpdaterTest {
 
 	@Before
 	public void setup() throws IOException {
-		ijRoot = createTempDirectory("testUpdaterIJRoot");
-		webRoot = createTempDirectory("testUpdaterWebRoot");
+		ijRoot = FileUtils.createTemporaryDirectory("testUpdaterIJRoot", "");
+		webRoot = FileUtils.createTemporaryDirectory("testUpdaterWebRoot", "");
 
 		System.err.println("ij: " + ijRoot + ", web: " + webRoot);
 	}
@@ -615,7 +616,7 @@ public class UpdaterTest {
 				+ " </plugin>"
 				+ "</pluginRecords>";
 		writeGZippedFile(webRoot, "db.xml.gz", db);
-		File webRoot2 = createTempDirectory("testUpdaterWebRoot2");
+		File webRoot2 = FileUtils.createTemporaryDirectory("testUpdaterWebRoot2", "");
 		final String db2 = "<pluginRecords>"
 				+ " <plugin filename=\"ImageJ-linux64\">"
 				+ "  <version checksum=\"c\" timestamp=\"3\" filesize=\"10\" />"
@@ -682,7 +683,7 @@ public class UpdaterTest {
 	@Test
 	public void testMultipleUpdateSites() throws Exception {
 		// initialize secondary update site
-		File webRoot2 = createTempDirectory("testUpdaterWebRoot2");
+		File webRoot2 = FileUtils.createTemporaryDirectory("testUpdaterWebRoot2", "");
 		initializeUpdateSite(ijRoot, webRoot2, progress, "jars/hello.jar");
 		assertFalse(new File(webRoot, "db.xml.gz").exists());
 
@@ -1141,7 +1142,7 @@ public class UpdaterTest {
 		// upload to secondary
 		writeFile("jars/overridden.jar");
 		FilesCollection files = readDb(false, true);
-		File webRoot2 = createTempDirectory("testUpdaterWebRoot2");
+		File webRoot2 = FileUtils.createTemporaryDirectory("testUpdaterWebRoot2", "");
 		files.addUpdateSite("Second", webRoot2.toURI().toURL().toString(), "file:localhost", webRoot2.getAbsolutePath() + "/", 0l);
 		files.get("jars/overridden.jar").stageForUpload(files, "Second");
 		upload(files, "Second");
@@ -1257,7 +1258,7 @@ public class UpdaterTest {
 	//
 
 	protected static File makeIJRoot(final File webRoot) throws IOException {
-		final File ijRoot = createTempDirectory("testUpdaterIJRoot");
+		final File ijRoot = FileUtils.createTemporaryDirectory("testUpdaterIJRoot", "");
 		writeGZippedFile(ijRoot, "db.xml.gz", "<pluginRecords><update-site name=\""
 				+ FilesCollection.DEFAULT_UPDATE_SITE + "\" timestamp=\"0\" url=\""
 				+ webRoot.toURI().toURL().toString() + "\" ssh-host=\"file:localhost\" "
@@ -1471,20 +1472,6 @@ public class UpdaterTest {
 					((FileObject) object).getAction() : ""));
 		}
 		System.err.println("}");
-	}
-
-	/**
-	 * Create a temporary directory
-	 * 
-	 * @param prefix the prefix as for {@link File#createTempFile(String, String)}
-	 * @return the File object describing the directory
-	 * @throws IOException
-	 */
-	protected static File createTempDirectory(final String prefix) throws IOException {
-		final File file = File.createTempFile(prefix, "");
-		file.delete();
-		file.mkdir();
-		return file;
 	}
 
 	/**
