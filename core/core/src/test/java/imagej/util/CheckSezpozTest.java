@@ -74,6 +74,7 @@ public class CheckSezpozTest {
 			false);
 		assertAnnotation(file,
 			"/* Hello class */ import Someclass; /* nothing */ @Annotation", true);
+		FileUtils.deleteRecursively(tmpDirectory);
 	}
 
 	protected void assertAnnotation(final File file, final String contents,
@@ -135,6 +136,7 @@ public class CheckSezpozTest {
 			new URLClassLoader(new URL[] { classes.toURI().toURL() }));
 		assertTrue(sezpozFindsClass(Plugin.class, ImageJPlugin.class, "Annotated"));
 		Thread.currentThread().setContextClassLoader(savedLoader);
+		FileUtils.deleteRecursively(tmpDirectory);
 	}
 
 	protected <S extends Annotation, T> boolean sezpozFindsClass(
