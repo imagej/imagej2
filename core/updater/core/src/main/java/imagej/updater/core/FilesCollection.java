@@ -975,7 +975,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		// When upstream fixed dependencies, heed them
 		for (final FileObject file : upToDate()) {
 			for (final FileObject dependency : file.getFileDependencies(this, false)) {
-				if (dependency.getAction() == Action.NOT_INSTALLED) {
+				if (dependency.getAction() == Action.NOT_INSTALLED && dependency.isUpdateablePlatform(this)) {
 					dependency.setAction(this, Action.INSTALL);
 				}
 			}
