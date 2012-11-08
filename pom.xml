@@ -233,8 +233,8 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 	<mailingLists>
 		<mailingList>
 			<name>ImageJ</name>
-			<subscribe>http://imagej.nih.gov/ij/list.html</subscribe>
-			<unsubscribe>http://imagej.nih.gov/ij/list.html</unsubscribe>
+			<subscribe>http://imagej.net/list.html</subscribe>
+			<unsubscribe>http://imagej.net/list.html</unsubscribe>
 			<post>imagej@list.nih.gov</post>
 			<archive>http://list.nih.gov/archives/imagej.html</archive>
 		</mailingList>

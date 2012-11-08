@@ -125,7 +125,7 @@ public class AutoContrast extends ContextCommand {
 			min = histMin + hmin * binSize;
 			max = histMin + hmax * binSize;
 			// XXX:
-			// http://rsbweb.nih.gov/ij/source/ij/plugin/frame/ContrastAdjuster.java
+			// http://imagej.net/source/ij/plugin/frame/ContrastAdjuster.java
 //			if (RGBImage && roi!=null) 
 //				imp.setRoi(roi);
 		}

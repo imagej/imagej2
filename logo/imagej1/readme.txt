@@ -5,4 +5,4 @@ The ImageJ1 icon is based on a photograph by Tom Grill
    http://www.arsmachina.com/s-hart1209.htm
 
 The ImageJ1 logo (imagej-logo.gif) was created using a macro:
-   http://imagej.nih.gov/ij/macros/MakeImageJLogo.txt
+   http://imagej.net/macros/MakeImageJLogo.txt
