@@ -109,8 +109,8 @@ public class UpdaterTest {
 
 	@After
 	public void release() {
-		rmRF(ijRoot);
-		rmRF(webRoot);
+		FileUtils.deleteRecursively(ijRoot);
+		FileUtils.deleteRecursively(webRoot);
 	}
 
 	//
@@ -1485,35 +1485,6 @@ public class UpdaterTest {
 		file.delete();
 		file.mkdir();
 		return file;
-	}
-
-	/**
-	 * Delete a directory recursively
-	 * 
-	 * @param directory
-	 * @return whether it succeeded (see also {@link File#delete()})
-	 */
-	protected boolean rmRF(final File directory) {
-		if (directory == null) {
-			return true;
-		}
-		final File[] list = directory.listFiles();
-		if (list == null) {
-			return true;
-		}
-		for (final File file : list) {
-			if (file.isFile()) {
-				if (!file.delete()) {
-					return false;
-				}
-			}
-			else if (file.isDirectory()) {
-				if (!rmRF(file)) {
-					return false;
-				}
-			}
-		}
-		return directory.delete();
 	}
 
 	/**

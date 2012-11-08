@@ -360,6 +360,35 @@ public final class FileUtils {
 			"Could not create temporary directory (too many race conditions?)");
 	}
 
+	/**
+	 * Delete a directory recursively
+	 * 
+	 * @param directory
+	 * @return whether it succeeded (see also {@link File#delete()})
+	 */
+	public static boolean deleteRecursively(final File directory) {
+		if (directory == null) {
+			return true;
+		}
+		final File[] list = directory.listFiles();
+		if (list == null) {
+			return true;
+		}
+		for (final File file : list) {
+			if (file.isFile()) {
+				if (!file.delete()) {
+					return false;
+				}
+			}
+			else if (file.isDirectory()) {
+				if (!deleteRecursively(file)) {
+					return false;
+				}
+			}
+		}
+		return directory.delete();
+	}
+
 	// -- Deprecated methods --
 
 	/** @deprecated Use {@link AppUtils#getBaseDirectory()} instead. */
