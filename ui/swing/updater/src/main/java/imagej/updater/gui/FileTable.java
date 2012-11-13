@@ -43,7 +43,6 @@ import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.core.Installer;
 import imagej.updater.core.UploaderService;
 import imagej.updater.util.UpdaterUserInterface;
-import imagej.updater.util.Util;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -60,8 +59,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -318,13 +317,6 @@ public class FileTable extends JTable {
 		return -1;
 	}
 
-	public String[] getUpdateSitesWithUploads(final FilesCollection files) {
-		final Set<String> sites = new HashSet<String>();
-		for (final FileObject file : files.toUpload())
-			sites.add(file.updateSite);
-		return sites.toArray(new String[sites.size()]);
-	}
-
 	public boolean areAllSelectedFilesUploadable() {
 		if (getSelectedRows().length == 0) return false;
 		for (final FileObject file : getSelectedFiles())
@@ -362,14 +354,14 @@ public class FileTable extends JTable {
 	protected void setFileAction(final FileObject file, final Action action) {
 		if (!file.getStatus().isValid(action)) return;
 		if (action == Action.UPLOAD) {
-			final String[] sitesWithUploads =
-				getUpdateSitesWithUploads(updaterFrame.files);
-			if (sitesWithUploads.length > 1) {
+			final Collection<String> sitesWithUploads =
+				updaterFrame.files.getSiteNamesToUpload();
+			if (sitesWithUploads.size() > 1) {
 				error("Internal error: multiple upload sites selected");
 				return;
 			}
 			final boolean isNew = file.getStatus() == Status.LOCAL_ONLY;
-			if (sitesWithUploads.length == 0) {
+			if (sitesWithUploads.size() == 0) {
 				if (isNew && !chooseUpdateSite(updaterFrame.files, file)) return;
 				String protocol = updaterFrame.files.getUpdateSite(file.updateSite).getUploadProtocol();
 				if (!uploaderService.hasUploader(protocol) && (!protocol.equals("ssh") || !getSSHUploader())) {
@@ -378,7 +370,7 @@ public class FileTable extends JTable {
 				}
 			}
 			else {
-				final String siteName = sitesWithUploads[0];
+				final String siteName = sitesWithUploads.iterator().next();
 				if (isNew) file.updateSite = siteName;
 				else if (!file.updateSite.equals(siteName)) {
 					error("Already have uploads for site '" + siteName +
