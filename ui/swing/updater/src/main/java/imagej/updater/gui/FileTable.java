@@ -88,7 +88,6 @@ import javax.swing.table.TableColumn;
 public class FileTable extends JTable {
 
 	protected UpdaterFrame updaterFrame;
-	protected UploaderService uploaderService;
 	protected FilesCollection files;
 	protected List<FileObject> row2file;
 	private FileTableModel fileTableModel;
@@ -96,7 +95,6 @@ public class FileTable extends JTable {
 
 	public FileTable(final UpdaterFrame updaterFrame) {
 		this.updaterFrame = updaterFrame;
-		this.uploaderService = updaterFrame.getUploaderService();
 		files = updaterFrame.files;
 		row2file = new ArrayList<FileObject>();
 		for (final FileObject file : files) {
@@ -247,7 +245,7 @@ public class FileTable extends JTable {
 		}
 		String result = null;
 		for (String protocol : protocols)
-			if (!uploaderService.hasUploader(protocol)) {
+			if (!updaterFrame.getUploaderService().hasUploader(protocol)) {
 				if (result == null)
 					result = protocol;
 				else
@@ -364,7 +362,7 @@ public class FileTable extends JTable {
 			if (sitesWithUploads.size() == 0) {
 				if (isNew && !chooseUpdateSite(updaterFrame.files, file)) return;
 				String protocol = updaterFrame.files.getUpdateSite(file.updateSite).getUploadProtocol();
-				if (!uploaderService.hasUploader(protocol) && (!protocol.equals("ssh") || !getSSHUploader())) {
+				if (!updaterFrame.getUploaderService().hasUploader(protocol) && (!protocol.equals("ssh") || !getSSHUploader())) {
 					UpdaterUserInterface.get().error("Missing uploader for protocol " + protocol);
 					return;
 				}
