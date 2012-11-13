@@ -35,7 +35,6 @@
 
 package imagej.updater.gui;
 
-import imagej.ImageJ;
 import imagej.command.CommandService;
 import imagej.event.StatusService;
 import imagej.log.LogService;
@@ -94,11 +93,6 @@ public class ImageJUpdater implements UpdaterUI {
 
 		if (log == null) {
 			log = Util.getLogService();
-		}
-
-		if (uploaderService == null) {
-			final ImageJ context = ImageJ.createContext(UploaderService.class);
-			uploaderService = context.getService(UploaderService.class);
 		}
 
 		UpdaterUserInterface.set(new SwingUserInterface(log, statusService));
