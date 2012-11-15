@@ -784,7 +784,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 
 	// TODO: for developers, there should be a consistency check:
 	// no dependencies on local-only files, no circular dependencies,
-	// and no overring circular dependencies.
+	// and no overriding circular dependencies.
 	void addDependencies(final FileObject file, final DependencyMap map,
 		final boolean overriding)
 	{
