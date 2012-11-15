@@ -1256,6 +1256,55 @@ public class UpdaterTest {
 		assertStatus(Status.INSTALLED, files.get("jars/new.jar"));
 	}
 
+	/**
+	 * Verify that dependencies from another update site are handled gracefully when they become obsolete.
+	 * 
+	 * Example: blub.jar depends on something-cool.jar on another update site. The latter is then renamed
+	 * to some new name. We do not want to force blub.jar to require the (now obsolete) something-cool.jar
+	 * in that case.
+	 */
+	@Test
+	public void obsoletedDependencies() throws Exception {
+		initializeUpdateSite("jars/something-cool.jar");
+
+		// add another update site
+		final File webRoot2 = FileUtils.createTemporaryDirectory("testUpdaterWebRoot2", "");
+		FilesCollection files = readDb(true, true);
+		files.addUpdateSite("Second", webRoot2.toURI().toURL().toString(), "file:localhost", webRoot2.getAbsolutePath(), -1);
+		files.write();
+
+		final UpdateSite second = files.getUpdateSite("Second");
+		FilesUploader uploader = FilesUploader.initialUpload(second.url, second.sshHost, second.uploadDirectory);
+		assertTrue(uploader.login());
+		uploader.upload(progress);
+
+		// upload a new .jar file to the second update site which depends on one of the first update site's .jar files
+		writeFile("jars/blub.jar");
+		files = readDb(true, true);
+		final FileObject blub = files.get("jars/blub.jar");
+		assertNotNull(blub);
+		blub.addDependency(files, files.get("jars/something-cool.jar"));
+		blub.updateSite = "Second";
+		blub.setAction(files, Action.UPLOAD);
+		upload(files, "Second");
+
+		// remove the dependency from the first update site
+		assertTrue(new File(ijRoot, "jars/something-cool.jar").delete());
+		files = readDb(true, true);
+		files.removeUpdateSite("Second");
+		files.get("jars/something-cool.jar").setAction(files, Action.REMOVE);
+		upload(files, FilesCollection.DEFAULT_UPDATE_SITE);
+
+		final File ijRoot2 = FileUtils.createTemporaryDirectory("testUpdaterIJRoot2", "");
+		files = new FilesCollection(ijRoot2);
+		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).url = webRoot.toURI().toURL().toString();
+		files.addUpdateSite("Second", webRoot2.toURI().toURL().toString(), "file:localhost", webRoot2.getAbsolutePath(), -1);
+		files.downloadIndexAndChecksum(progress);
+		files.markForUpdate(false);
+
+		assertStatus(Status.OBSOLETE_UNINSTALLED, files.get("jars/something-cool.jar"));
+	}
+
 	//
 	// Debug functions
 	//
