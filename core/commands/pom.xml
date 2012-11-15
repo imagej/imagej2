@@ -22,7 +22,6 @@
 		<module>data</module>
 		<module>debug</module>
 		<module>display</module>
-		<module>misc</module>
 	</modules>
 
 	<properties>

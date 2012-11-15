@@ -33,8 +33,6 @@
  * #L%
  */
 
-package imagej.core.commands.misc;
-
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.ComplexType;
