@@ -95,6 +95,10 @@ public class BuildEnvironment {
 		this.verbose = verbose;
 	}
 
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+	}
+
 	public boolean getDownloadAutomatically() {
 		return downloadAutomatically && !offlineMode;
 	}
