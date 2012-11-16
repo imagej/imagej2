@@ -142,6 +142,9 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 
 	protected void download(Coordinate dependency, boolean quiet) throws FileNotFoundException {
 		for (String url : getRoot().getRepositories()) try {
+			if (env.debug) {
+				env.err.println("Trying to download from " + url);
+			}
 			env.downloadAndVerify(url, dependency, quiet);
 			return;
 		} catch (Exception e) {
