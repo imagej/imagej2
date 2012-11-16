@@ -48,6 +48,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -161,8 +162,18 @@ public class FilesUploader {
 		uploadables = new ArrayList<Uploadable>();
 		final List<String> locks = new ArrayList<String>();
 		uploadables.add(new DbXmlFile());
-		for (final FileObject file : files.toUpload(siteName))
+		for (final FileObject file : files.toUpload(siteName)) {
+			// remove obsolete/invalid dependencies
+			for (Iterator<Dependency> iter = file.getDependencies().iterator(); iter.hasNext(); ) {
+				final String filename = iter.next().filename;
+				final FileObject other = files.get(filename);
+				if (other == null || other.isObsolete()) {
+					files.log.warn("Removed obsolete dependency " + filename + " of " + file.filename);
+					iter.remove();
+				}
+			}
 			uploadables.add(new UploadableFile(files, file));
+		}
 
 		// must be last lock
 		locks.add(Util.XML_COMPRESSED);
