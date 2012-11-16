@@ -138,6 +138,13 @@ public class CheckSezpoz {
 				classes.getPath());
 			return true;
 		}
+		for (File file : classes.listFiles()) {
+			if (file.isFile() && file.getName().startsWith(".netbeans_")) {
+				System.err.println("WARN: Ignoring NetBeans build directory: " +
+						classes.getPath());
+				return true;
+			}
+		}
 		final File projectRoot = classes.getParentFile().getParentFile();
 		final File source = new File(projectRoot, "src/main/java");
 		if (!source.isDirectory()) {
