@@ -22,6 +22,7 @@
 		<module>data</module>
 		<module>debug</module>
 		<module>display</module>
+		<module>upload</module>
 	</modules>
 
 	<properties>
