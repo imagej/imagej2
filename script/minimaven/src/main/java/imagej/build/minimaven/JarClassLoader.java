@@ -1,4 +1,3 @@
-package imagej.build.minimaven;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -33,6 +32,8 @@ package imagej.build.minimaven;
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
+package imagej.build.minimaven;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

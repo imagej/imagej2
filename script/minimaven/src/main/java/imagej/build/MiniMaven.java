@@ -1,4 +1,3 @@
-package imagej.build;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -33,6 +32,8 @@ package imagej.build;
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
+package imagej.build;
 
 import imagej.build.minimaven.BuildEnvironment;
 import imagej.build.minimaven.MavenProject;
