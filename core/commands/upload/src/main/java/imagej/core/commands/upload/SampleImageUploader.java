@@ -1,8 +1,12 @@
 package imagej.core.commands.upload;
 
 import imagej.ImageJ;
-import imagej.Prioritized;
-import imagej.Priority;
+import imagej.command.Command;
+import imagej.command.CommandInfo;
+import imagej.command.CommandService;
+import imagej.event.EventHandler;
+import imagej.event.EventService;
+import imagej.event.StatusEvent;
 import imagej.event.StatusService;
 import imagej.log.LogService;
 import imagej.plugin.Parameter;
@@ -22,8 +26,8 @@ import java.net.URL;
 
 import net.iharder.Base64;
 
-@Plugin
-public class SampleImageUploader {
+@Plugin(menuPath = "Help>Upload Sample Image")
+public class SampleImageUploader implements Command {
 	@Parameter
 	private File sampleImage;
 
@@ -35,6 +39,7 @@ public class SampleImageUploader {
 
 	private static String baseURL = "http://upload.imagej.net/";
 
+	@Override
 	public void run() {
 		try {
 			uploadFile(sampleImage);
@@ -80,82 +85,30 @@ public class SampleImageUploader {
 		if (status != null) status.clearStatus();
 	}
 
-	private static class StderrStatusService implements StatusService {
-		private double priority;
-
-		@Override
-		public int compareTo(Prioritized o) {
-			return Priority.compare(this, o);
-		}
-		
-		@Override
-		public void setPriority(double priority) {
-			this.priority = priority;
-		}
-		
-		@Override
-		public double getPriority() {
-			return priority;
-		}
-		
-		@Override
-		public void setContext(ImageJ context) {
-			if (context != null) throw new IllegalArgumentException();
-		}
-		
-		@Override
-		public ImageJ getContext() {
-			return null;
-		}
-		
-		@Override
-		public void initialize() {
-			showStatus("Starting stderr status service");
-		}
-		
-		@Override
-		public void warn(String message) {
-			System.err.println("WARN: " + message);
-		}
-		
-		@Override
-		public void showStatus(String message) {
-			System.err.println(message);
-		}
-		
-		@Override
-		public void showStatus(int progress, int maximum, String message, boolean warn) {
-			System.err.print("(" + progress + "/" + maximum + ") ");
-			if (message == null) {
-				System.err.println();
-			} else if (warn) {
-				warn(message);
-			} else {
-				showStatus(message);
-			}
-		}
-		
-		@Override
-		public void showStatus(int progress, int maximum, String message) {
-			showStatus(progress, maximum, message, false);
-		}
-		
-		@Override
-		public void showProgress(int value, int maximum) {
-			showStatus(value, maximum, null, false);
-		}
-		
-		@Override
-		public void clearStatus() {
-			System.err.println();
-		}
-	}
-
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
+		Thread.currentThread().setContextClassLoader(SampleImageUploader.class.getClassLoader());
 		try {
-			SampleImageUploader uploader = new SampleImageUploader();
-			uploader.status = new StderrStatusService();
-			uploader.uploadFile(new File("/tmp/test.tif"));
+			final ImageJ context = ImageJ.createContext(CommandService.class, StatusService.class, EventService.class);
+			context.getService(EventService.class).subscribe(new Object() {
+				@SuppressWarnings("unused")
+				@EventHandler
+				protected void onEvent(final StatusEvent e) {
+					final int value = e.getProgressValue();
+					final int maximum = e.getProgressMaximum();
+					final String message = e.getStatusMessage();
+					if (maximum > 0) System.err.print("(" + value + "/" + maximum + ")");
+					if (message != null) System.err.print(" " + message);
+					System.err.println();
+				}
+			});
+			final CommandInfo info = new CommandInfo(SampleImageUploader.class.getName()) {
+				@Override
+				public Class<Command> loadClass() {
+					return (Class<Command>)(Class<?>)SampleImageUploader.class;
+				}
+			};
+			context.getService(CommandService.class).run(info, "sampleImage", new File("/tmp/test.tif"));
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
