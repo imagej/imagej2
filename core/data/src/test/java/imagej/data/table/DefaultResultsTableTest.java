@@ -73,9 +73,9 @@ public class DefaultResultsTableTest {
 		};
 		final ResultsTable table =
 			new DefaultResultsTable(data[0].length, data.length);
-		table.setColumnHeader("Year", 0);
-		table.setColumnHeader("Age", 1);
-		table.setColumnHeader("BA", 2);
+		table.setColumnHeader(0, "Year");
+		table.setColumnHeader(1, "Age");
+		table.setColumnHeader(2, "BA");
 		for (int row=0; row<data.length; row++) {
 			for (int col=0; col<data[row].length; col++) {
 				table.setValue(col, row, data[row][col]);

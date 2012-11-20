@@ -55,8 +55,92 @@ public interface Table<C extends Column<T>, T> extends List<C> {
 	/** Sets the number of columns in the table. */
 	void setColumnCount(int colCount);
 
-	/** Appends a column with the given header to the table. */
-	Column<T> addColumn(String header);
+	/**
+	 * Appends a column (with no header) to the table.
+	 * 
+	 * @return the column that was appended
+	 */
+	C appendColumn();
+
+	/**
+	 * Appends a column with the given header to the table.
+	 * 
+	 * @return the column that was appended
+	 */
+	C appendColumn(String header);
+
+	/**
+	 * Appends a number of columns (with no headers) to the table.
+	 * 
+	 * @return the columns that were appended
+	 */
+	List<C> appendColumns(int count);
+
+	/**
+	 * Appends a block of columns with the given headers to the table.
+	 * 
+	 * @return the columns that were appended
+	 */
+	List<C> appendColumns(String... headers);
+
+	/**
+	 * Inserts a column (with no header) at the given position in the table.
+	 * 
+	 * @return the column that was inserted
+	 */
+	C insertColumn(int col);
+
+	/**
+	 * Inserts a column with the specified header at the given position in the
+	 * table.
+	 * 
+	 * @return the column that was inserted
+	 */
+	C insertColumn(int col, String header);
+
+	/**
+	 * Inserts a block of columns (with no headers) at the given position in the
+	 * table.
+	 * 
+	 * @return the columns that were inserted
+	 */
+	List<C> insertColumns(int col, int count);
+
+	/**
+	 * Inserts a block of columns with the specified headers at the given position
+	 * in the table.
+	 * 
+	 * @return the columns that were inserted
+	 */
+	List<C> insertColumns(int col, String... headers);
+
+	/**
+	 * Removes the column at the given position from the table.
+	 * 
+	 * @return the column that was removed
+	 */
+	C removeColumn(int col);
+
+	/**
+	 * Removes the first column with the given header from the table.
+	 * 
+	 * @return the column that was removed
+	 */
+	C removeColumn(String header);
+
+	/**
+	 * Removes a block of columns starting at the given position from the table.
+	 * 
+	 * @return the columns that were removed
+	 */
+	List<C> removeColumns(int col, int count);
+
+	/**
+	 * Removes the first columns with the given headers from the table.
+	 * 
+	 * @return the columns that were removed
+	 */
+	List<C> removeColumns(String... headers);
 
 	/** Gets the number of rows in the table. */
 	int getRowCount();
@@ -65,10 +149,50 @@ public interface Table<C extends Column<T>, T> extends List<C> {
 	void setRowCount(int rowCount);
 
 	/** Appends a row (with no header) to the table. */
-	void addRow();
+	void appendRow();
 
 	/** Appends a row with the given header to the table. */
-	void addRow(String header);
+	void appendRow(String header);
+
+	/** Appends a block of rows (with no headers) to the table. */
+	void appendRows(int count);
+
+	/** Appends a block of rows with the given headers to the table. */
+	void appendRows(String... headers);
+
+	/** Inserts a row (with no header) at the given position in the table. */
+	void insertRow(int row);
+
+	/**
+	 * Inserts a row with the specified header at the given position in the table.
+	 */
+	void insertRow(int row, String header);
+
+	/**
+	 * Inserts a block of rows (with no headers) at the given position in the
+	 * table.
+	 */
+	void insertRows(int row, int count);
+
+	/**
+	 * Inserts a block of rows with the specified headers at the given position in
+	 * the table.
+	 */
+	void insertRows(int row, String... headers);
+
+	/** Removes the row at the given position from the table. */
+	void removeRow(int row);
+
+	/** Removes the first row with the given header from the table. */
+	void removeRow(String header);
+
+	/**
+	 * Removes a block of rows starting at the given position from the table.
+	 */
+	void removeRows(int row, int count);
+
+	/** Removes the first rows with the given headers from the table. */
+	void removeRows(String... headers);
 
 	/** Sets the number of columns and rows in the table. */
 	void setDimensions(int colCount, int rowCount);
@@ -77,7 +201,7 @@ public interface Table<C extends Column<T>, T> extends List<C> {
 	String getColumnHeader(int col);
 
 	/** Sets the column header at the given column. */
-	void setColumnHeader(String header, int col);
+	void setColumnHeader(int col, String header);
 
 	/** Gets the column index of the column with the given header. */
 	int getColumnIndex(String header);
@@ -86,16 +210,22 @@ public interface Table<C extends Column<T>, T> extends List<C> {
 	String getRowHeader(int row);
 
 	/** Sets the row header at the given row. */
-	void setRowHeader(String header, int row);
+	void setRowHeader(int row, String header);
+
+	/** Gets the row index of the row with the given header. */
+	int getRowIndex(String header);
 
 	/** Sets the table value at the given column and row. */
-	void set(T value, int col, int row);
+	void set(int col, int row, T value);
+
+	/** Sets the table value at the given column and row. */
+	void set(String colHeader, int row, T value);
 
 	/** Gets the table value at the given column and row. */
 	T get(int col, int row);
 
-	/** Removes the row at the given position from the table. */
-	void removeRow(int rowNum);
+	/** Gets the table value at the given column and row. */
+	T get(String colHeader, int row);
 
 	// -- List methods --
 

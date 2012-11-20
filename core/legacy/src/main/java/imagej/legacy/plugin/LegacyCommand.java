@@ -544,11 +544,11 @@ public class LegacyCommand implements Command {
 		table.clear();
 		for (int c = 0; c <= ij1Table.getLastColumn(); c++) {
 			if (ij1Table.columnExists(c)) {
-				table.addColumn(ij1Table.getColumnHeading(c));
+				table.appendColumn(ij1Table.getColumnHeading(c));
 			}
 		}
 		for (int r = 0; r < ij1Table.getCounter(); r++) {
-			table.addRow(ij1Table.getLabel(r));
+			table.appendRow(ij1Table.getLabel(r));
 			int col = 0;
 			for (int c = 0; c <= ij1Table.getLastColumn(); c++) {
 				if (ij1Table.columnExists(c)) {

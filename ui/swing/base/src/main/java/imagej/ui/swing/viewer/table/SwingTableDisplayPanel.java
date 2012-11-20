@@ -175,7 +175,7 @@ public class SwingTableDisplayPanel extends JScrollPane implements
 		{
 			@SuppressWarnings("unchecked")
 			final T typedValue = (T) value;
-			table.set(typedValue, col, row); // NB: coord reversal required
+			table.set(col, row, typedValue); // NB: coord reversal required
 		}
 
 	}
