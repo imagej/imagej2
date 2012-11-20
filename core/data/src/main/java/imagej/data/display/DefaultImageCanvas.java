@@ -100,7 +100,7 @@ public class DefaultImageCanvas implements ImageCanvas {
 		midLevelZooms.add(24d);
 		midLevelZooms.add(32d);
 
-		final int EXTRA_ZOOMS = 25;
+		final int EXTRA_ZOOMS = 30;
 
 		final List<Double> loZooms = new ArrayList<Double>();
 		double prevDenom = 1 / midLevelZooms.get(0);
