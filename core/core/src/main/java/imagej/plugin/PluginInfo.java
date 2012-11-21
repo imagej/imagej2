@@ -175,6 +175,17 @@ public class PluginInfo<PT extends ImageJPlugin> extends AbstractUIDetails
 	}
 
 	/**
+	 * Obtains the {@link Class} of the item objects, if that class has already
+	 * been loaded.
+	 * 
+	 * @return The {@link Class}, or null if it has not yet been loaded by
+	 *         {@link #loadClass}.
+	 */
+	public Class<? extends PT> getPluginClass() {
+		return pluginClass;
+	}
+
+	/**
 	 * Sets the <em>type</em> of plugin described by the metadata.
 	 * @see ImageJPlugin for a list of common plugin types.
 	 */
