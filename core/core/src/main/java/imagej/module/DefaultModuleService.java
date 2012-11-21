@@ -170,7 +170,9 @@ public class DefaultModuleService extends AbstractService implements
 	}
 
 	@Override
-	public Future<Module> run(final Module module, final Object... inputs) {
+	public <M extends Module> Future<M> run(final M module,
+		final Object... inputs)
+	{
 		return run(module, null, null, inputs);
 	}
 
