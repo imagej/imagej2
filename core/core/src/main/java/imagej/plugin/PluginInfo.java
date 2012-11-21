@@ -196,7 +196,7 @@ public class PluginInfo<PT extends ImageJPlugin> extends AbstractUIDetails
 	}
 
 	@Override
-	public Class<PT> loadClass() throws InstantiableException {
+	public Class<? extends PT> loadClass() throws InstantiableException {
 		if (pluginClass == null) {
 			final Class<?> c;
 			try {
@@ -210,17 +210,12 @@ public class PluginInfo<PT extends ImageJPlugin> extends AbstractUIDetails
 			pluginClass = typedClass;
 		}
 
-		// NB: The pluginClass is usually not a PT, though it extends PT.
-		// We cast the result here to conform to the Instantiable interface.
-		@SuppressWarnings("unchecked")
-		final Class<PT> result = (Class<PT>) pluginClass;
-
-		return result;
+		return pluginClass;
 	}
 
 	@Override
 	public PT createInstance() throws InstantiableException {
-		final Class<PT> c = loadClass();
+		final Class<? extends PT> c = loadClass();
 
 		// instantiate plugin
 		final PT instance;

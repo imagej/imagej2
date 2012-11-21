@@ -49,8 +49,19 @@ public interface Instantiable<T> {
 	 */
 	String getClassName();
 
-	/** Loads the class corresponding to the objects that can be created. */
-	Class<T> loadClass() throws InstantiableException;
+	/**
+	 * Loads the class corresponding to the objects that are created by
+	 * {@link #createInstance()}.
+	 * <p>
+	 * Note that this class may not be precisely {@code T.class} but instead a
+	 * subclass thereof.
+	 * </p>
+	 * 
+	 * @see imagej.plugin.PluginInfo for an example of an {@code Instantiable}
+	 *      type that typically instantiates objects of a subtype of {@code T}
+	 *      rather than {@code T} itself.
+	 */
+	Class<? extends T> loadClass() throws InstantiableException;
 
 	/** Creates an object. */
 	T createInstance() throws InstantiableException;

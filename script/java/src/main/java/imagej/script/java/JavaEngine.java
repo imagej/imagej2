@@ -166,8 +166,8 @@ public class JavaEngine extends AbstractScriptEngine {
 				final CommandInfo info = new CommandInfo(mainClass, annotation) {
 
 					@Override
-					public Class<Command> loadClass() {
-						return (Class<Command>) clazz;
+					public Class<? extends Command> loadClass() {
+						return (Class<? extends Command>) clazz;
 					}
 				};
 

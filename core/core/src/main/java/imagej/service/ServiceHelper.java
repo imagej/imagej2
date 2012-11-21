@@ -214,7 +214,7 @@ public class ServiceHelper extends AbstractContextual {
 
 		for (final PluginInfo<Service> info : services) {
 			try {
-				final Class<Service> c = info.loadClass();
+				final Class<? extends Service> c = info.loadClass();
 				final double priority = info.getPriority();
 				serviceMap.put(c, priority);
 				serviceList.add(c);
