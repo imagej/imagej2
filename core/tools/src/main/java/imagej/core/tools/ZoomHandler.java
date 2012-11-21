@@ -35,7 +35,7 @@
 
 package imagej.core.tools;
 
-import imagej.Priority;
+import imagej.command.CommandService;
 import imagej.data.display.ImageDisplay;
 import imagej.display.Display;
 import imagej.display.event.input.KyPressedEvent;
@@ -43,40 +43,30 @@ import imagej.input.KeyCode;
 import imagej.plugin.Plugin;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
-import imagej.util.IntCoords;
 
 /**
- * Handles keyboard operations that change the zoom.
+ * Handles the second key mapping for zoom in (not just + but instead here =).
+ * The current plugin annotation system does not allow two keyboard accelerators
+ * to be defined for one plugin. We define a special key handler here.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = Tool.class, name = "Zoom Shortcuts", alwaysActive = true,
-	activeInAppFrame = true, priority = Priority.NORMAL_PRIORITY)
+	activeInAppFrame = true)
 public class ZoomHandler extends AbstractTool {
 
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {
 		final Display<?> display = evt.getDisplay();
 		if (!(display instanceof ImageDisplay)) return;
-		final ImageDisplay imageDisplay = (ImageDisplay) display;
-
-		final int x = evt.getX();
-		final int y = evt.getY();
-		final IntCoords center = x < 0 || y < 0 ? null : new IntCoords(x, y);
 
 		final KeyCode keyCode = evt.getCode();
 		final char keyChar = evt.getCharacter();
 
-		if (keyCode == KeyCode.EQUALS || keyCode == KeyCode.PLUS ||
-			keyChar == '=' || keyChar == '+')
+		if (keyCode == KeyCode.EQUALS || keyChar == '=')
 		{
-			if (center == null) imageDisplay.getCanvas().zoomIn();
-			else imageDisplay.getCanvas().zoomIn(center);
-			evt.consume();
-		}
-		else if (keyCode == KeyCode.MINUS || keyChar == '-') {
-			if (center == null) imageDisplay.getCanvas().zoomOut();
-			else imageDisplay.getCanvas().zoomOut(center);
+			CommandService cSrv = evt.getContext().getService(CommandService.class);
+			cSrv.run("imagej.core.commands.zoom.ZoomIn");
 			evt.consume();
 		}
 	}

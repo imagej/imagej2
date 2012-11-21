@@ -43,6 +43,7 @@ import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.thread.ThreadService;
 import imagej.util.IntCoords;
 
 /**
@@ -59,6 +60,9 @@ import imagej.util.IntCoords;
 public class ZoomIn extends ContextCommand {
 
 	@Parameter
+	private ThreadService threadService;
+
+	@Parameter
 	private MouseService mouseService;
 
 	@Parameter(type = ItemIO.BOTH)
@@ -66,16 +70,24 @@ public class ZoomIn extends ContextCommand {
 
 	@Override
 	public void run() {
-		if (mouseService.getDisplay() == display) {
-			// zoom in centered around the mouse cursor
-			final int x = mouseService.getX();
-			final int y = mouseService.getY();
-			display.getCanvas().zoomIn(new IntCoords(x, y));
-		}
-		else {
-			// no mouse coordinates available; use default behavior
-			display.getCanvas().zoomIn();
-		}
+
+		threadService.queue(new Runnable() {
+
+			@Override
+			public void run() {
+				if (mouseService.getDisplay() == getDisplay()) {
+					// zoom in centered around the mouse cursor
+					final int x = mouseService.getX();
+					final int y = mouseService.getY();
+
+					getDisplay().getCanvas().zoomIn(new IntCoords(x, y));
+				}
+				else {
+					// no mouse coordinates available; use default behavior
+					getDisplay().getCanvas().zoomIn();
+				}
+			}
+		});
 	}
 
 	public void setDisplay(ImageDisplay disp) {
