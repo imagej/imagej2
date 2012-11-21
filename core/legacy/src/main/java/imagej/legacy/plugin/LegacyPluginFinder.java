@@ -76,9 +76,6 @@ import java.util.Set;
  */
 public class LegacyPluginFinder {
 
-	private static final String LEGACY_PLUGIN_CLASS = LegacyCommand.class
-		.getName();
-
 	private static final String PLUGIN_BLACKLIST = "plugin-blacklist.txt";
 	private static final String LEGACY_PLUGIN_ICON = "/icons/legacy.png";
 
@@ -179,7 +176,7 @@ public class LegacyPluginFinder {
 		final Map<String, Object> presets = new HashMap<String, Object>();
 		presets.put("className", className);
 		presets.put("arg", arg);
-		final CommandInfo ci = new CommandInfo(LEGACY_PLUGIN_CLASS);
+		final CommandInfo ci = new CommandInfo(LegacyCommand.class);
 		ci.setMenuPath(menuPath);
 		ci.setPresets(presets);
 
