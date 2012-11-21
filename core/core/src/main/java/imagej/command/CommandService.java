@@ -122,6 +122,11 @@ public interface CommandService extends Service {
 
 	/**
 	 * Executes the first command of the given class name.
+	 * <p>
+	 * If no command with the given class name is registered with the service,
+	 * then a default one is created and then executed. This default command is
+	 * <em>not</em> registered with the service for subsequent usage.
+	 * </p>
 	 * 
 	 * @param className Class name of the command to execute.
 	 * @param inputs List of input parameter names and values. The expected order
@@ -137,6 +142,11 @@ public interface CommandService extends Service {
 
 	/**
 	 * Executes the first command of the given class name.
+	 * <p>
+	 * If no command with the given class name is registered with the service,
+	 * then a default one is created and then executed. This default command is
+	 * <em>not</em> registered with the service for subsequent usage.
+	 * </p>
 	 * 
 	 * @param className Class name of the command to execute.
 	 * @param inputMap Table of input parameter values, with keys matching the
@@ -150,6 +160,11 @@ public interface CommandService extends Service {
 
 	/**
 	 * Executes the first command of the given class.
+	 * <p>
+	 * If no command of the given class is registered with the service, then a
+	 * default one is created and then executed. This default command is
+	 * <em>not</em> registered with the service for subsequent usage.
+	 * </p>
 	 * 
 	 * @param <C> Class of the command to execute.
 	 * @param commandClass Class object of the command to execute.
@@ -167,6 +182,11 @@ public interface CommandService extends Service {
 
 	/**
 	 * Executes the first command of the given class.
+	 * <p>
+	 * If no command of the given class is registered with the service, then a
+	 * default one is created and then executed. This default command is
+	 * <em>not</em> registered with the service for subsequent usage.
+	 * </p>
 	 * 
 	 * @param <C> Class of the command to execute.
 	 * @param commandClass Class object of the command to execute.
