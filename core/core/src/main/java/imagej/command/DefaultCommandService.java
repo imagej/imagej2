@@ -358,9 +358,7 @@ public class DefaultCommandService extends AbstractService implements
 			return (CommandInfo) pluginInfo;
 		}
 		// wrap the plugin's metadata in a command info
-		final String className = pluginInfo.getClassName();
-		final Plugin annotation = pluginInfo.getAnnotation();
-		return new CommandInfo(className, annotation);
+		return new CommandInfo(pluginInfo);
 	}
 
 	/** A HACK for downcasting a list of plugins. */
