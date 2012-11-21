@@ -374,8 +374,12 @@ public class BuildEnvironment {
 			int value = (hexNybble(fileStream.read()) << 4) |
 				hexNybble(fileStream.read());
 			int d = digestBytes[i] & 0xff;
-			if (value != d)
-				throw new IOException("SHA1 mismatch: " + sha1 + ": " + Integer.toHexString(value) + " != " + Integer.toHexString(d));
+			if (value != d) {
+				String actual = "";
+				for (byte b : digestBytes)
+					actual += String.format("%02x", b & 0xff);
+				throw new IOException("SHA1 mismatch: " + sha1 + ": " + Integer.toHexString(value) + " != " + Integer.toHexString(d) + " (actual SHA-1: " + actual + ")");
+			}
 		}
 		fileStream.close();
 	}
@@ -467,6 +471,8 @@ public class BuildEnvironment {
 			err.println(message);
 		directory.mkdirs();
 		File result = new File(directory, name);
+		if (verbose)
+			err.println("Downloading " + url + " to " + result.getAbsolutePath());
 		copy(in, result);
 		return result;
 	}
