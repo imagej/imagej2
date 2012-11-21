@@ -89,10 +89,7 @@ public class PluginInfo<PT extends ImageJPlugin> extends AbstractUIDetails
 	 *          See {@link ImageJPlugin} for a list of common plugin types.
 	 */
 	public PluginInfo(final String className, final Class<PT> pluginType) {
-		this.className = className;
-		setPluginType(pluginType);
-		setMenuPath(null);
-		setMenuRoot(Plugin.APPLICATION_MENU_ROOT);
+		this(className, null, pluginType, null);
 	}
 
 	/**
@@ -108,9 +105,60 @@ public class PluginInfo<PT extends ImageJPlugin> extends AbstractUIDetails
 	public PluginInfo(final String className, final Class<PT> pluginType,
 		final Plugin annotation)
 	{
-		this(className, pluginType);
-		this.annotation = annotation;
-		populateValues();
+		this(className, null, pluginType, annotation);
+	}
+
+	/**
+	 * Creates a new plugin metadata object.
+	 * 
+	 * @param pluginClass The plugin class, which must implement
+	 *          {@link ImageJPlugin}.
+	 * @param pluginType The <em>type</em> of plugin described by this metadata.
+	 *          See {@link ImageJPlugin} for a list of common plugin types.
+	 */
+	public PluginInfo(final Class<? extends PT> pluginClass,
+		final Class<PT> pluginType)
+	{
+		this(null, pluginClass, pluginType, null);
+	}
+
+	/**
+	 * Creates a new plugin metadata object.
+	 * 
+	 * @param pluginClass The plugin class, which must implement
+	 *          {@link ImageJPlugin}.
+	 * @param pluginType The <em>type</em> of plugin described by this metadata.
+	 *          See {@link ImageJPlugin} for a list of common plugin types.
+	 * @param annotation The @{@link Plugin} annotation to associate with this
+	 *          metadata object.
+	 */
+	public PluginInfo(final Class<? extends PT> pluginClass,
+		final Class<PT> pluginType, final Plugin annotation)
+	{
+		this(null, pluginClass, pluginType, annotation);
+	}
+
+	protected PluginInfo(final String className,
+		final Class<? extends PT> pluginClass, final Class<PT> pluginType,
+		final Plugin annotation)
+	{
+		if (pluginClass != null) {
+			if (className != null) {
+				throw new IllegalArgumentException(
+					"className and pluginClass are mutually exclusive");
+			}
+			setPluginClass(pluginClass);
+		}
+		else {
+			this.className = className;
+		}
+		setPluginType(pluginType);
+		setMenuPath(null);
+		setMenuRoot(Plugin.APPLICATION_MENU_ROOT);
+		if (annotation != null) {
+			this.annotation = annotation;
+			populateValues();
+		}
 	}
 
 	// -- PluginInfo methods --
