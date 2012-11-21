@@ -89,7 +89,7 @@ public class PluginInfo<PT extends ImageJPlugin> extends AbstractUIDetails
 	 *          See {@link ImageJPlugin} for a list of common plugin types.
 	 */
 	public PluginInfo(final String className, final Class<PT> pluginType) {
-		setClassName(className);
+		this.className = className;
 		setPluginType(pluginType);
 		setMenuPath(null);
 		setMenuRoot(Plugin.APPLICATION_MENU_ROOT);
@@ -114,11 +114,6 @@ public class PluginInfo<PT extends ImageJPlugin> extends AbstractUIDetails
 	}
 
 	// -- PluginInfo methods --
-
-	/** Sets the fully qualified name of the {@link Class} of the item objects. */
-	public void setClassName(final String className) {
-		this.className = className;
-	}
 
 	/**
 	 * Explicitly sets the {@link Class} of the item objects.
