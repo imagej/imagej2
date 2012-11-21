@@ -185,7 +185,7 @@ public final class DefaultPlatformService extends AbstractService implements
 				platforms.add(platform);
 			}
 			catch (final InstantiableException e) {
-				log.warn("Invalid platform: " + info.getClassName(), e);
+				log.warn("Invalid platform: " + info, e);
 			}
 		}
 		return platforms;

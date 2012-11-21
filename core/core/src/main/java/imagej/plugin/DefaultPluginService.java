@@ -240,7 +240,7 @@ public class DefaultPluginService extends AbstractService implements
 			return p;
 		}
 		catch (final InstantiableException exc) {
-			log.error("Cannot create plugin: " + info.getClassName());
+			log.error("Cannot create plugin: " + info);
 		}
 		return null;
 	}

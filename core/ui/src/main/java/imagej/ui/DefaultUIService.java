@@ -407,7 +407,7 @@ public final class DefaultUIService extends AbstractService implements
 					break; // found a suitable viewer; move on to the next UI
 				}
 				catch (final InstantiableException exc) {
-					log.warn("Failed to create instance of " + info.getClassName(), exc);
+					log.warn("Failed to create instance of " + info, exc);
 				}
 			}
 			if (displayViewer == null) {
@@ -504,7 +504,7 @@ public final class DefaultUIService extends AbstractService implements
 				addUI(info.getName(), ui);
 			}
 			catch (final InstantiableException e) {
-				log.warn("Invalid user interface: " + info.getClassName(), e);
+				log.warn("Invalid user interface: " + info, e);
 			}
 		}
 

@@ -222,7 +222,7 @@ public class ServiceHelper extends AbstractContextual {
 			catch (final Throwable e) {
 				final LogService log = getContext().getService(LogService.class);
 				if (log != null) {
-					log.error("Invalid service: " + info.getClassName(), e);
+					log.error("Invalid service: " + info, e);
 				}
 			}
 		}
