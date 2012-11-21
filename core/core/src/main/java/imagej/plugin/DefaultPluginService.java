@@ -171,20 +171,12 @@ public class DefaultPluginService extends AbstractService implements
 	public <P extends ImageJPlugin> List<PluginInfo<ImageJPlugin>>
 		getPluginsOfClass(final Class<P> pluginClass)
 	{
-		// NB: Since we have the class in question, we attempt to determine its
-		// plugin type and limit our search to plugins of that type.
-		final Class<? extends ImageJPlugin> pluginType = getPluginType(pluginClass);
-		if (pluginType == null) {
-			// NB: We failed to guess the type hierarchy of the class in question.
-			// We must scan *all* plugins for a match.
-			return getPluginsOfClass(pluginClass, ImageJPlugin.class);
-		}
-		// NB: We successfully determined the plugin's type.
-		// We limit our search to plugins of that type.
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final List<PluginInfo<ImageJPlugin>> result =
-			(List) getPluginsOfClass(pluginClass, getPluginType(pluginClass));
-		return result;
+		// NB: We must scan *all* plugins for a match. In theory, the same plugin
+		// Class could be associated with multiple PluginInfo entries of differing
+		// type anyway. If performance of this method is insufficient, the solution
+		// will be to rework the PluginIndex data structure to include an index on
+		// plugin class names.
+		return getPluginsOfClass(pluginClass, ImageJPlugin.class);
 	}
 
 	@Override
