@@ -187,6 +187,7 @@ public class PluginInfo<PT extends ImageJPlugin> extends AbstractUIDetails
 
 	@Override
 	public String getClassName() {
+		if (pluginClass != null) return pluginClass.getName();
 		return className;
 	}
 
