@@ -34,22 +34,19 @@ package imagej.core.commands.upload;
  * #L%
  */
 
-import java.io.File;
-
 import imagej.ImageJ;
-import imagej.command.Command;
-import imagej.command.CommandInfo;
 import imagej.command.CommandService;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.StatusEvent;
 import imagej.event.StatusService;
 
+import java.io.File;
+
 public class InteractiveUploadTest {
 
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
-		Thread.currentThread().setContextClassLoader(SampleImageUploader.class.getClassLoader());
 		try {
 			final ImageJ context = ImageJ.createContext(CommandService.class, StatusService.class, EventService.class);
 			context.getService(EventService.class).subscribe(new Object() {
@@ -64,13 +61,7 @@ public class InteractiveUploadTest {
 					System.err.println();
 				}
 			});
-			final CommandInfo info = new CommandInfo(SampleImageUploader.class.getName()) {
-				@Override
-				public Class<Command> loadClass() {
-					return (Class<Command>)(Class<?>)SampleImageUploader.class;
-				}
-			};
-			context.getService(CommandService.class).run(info, "sampleImage", new File("/tmp/test.tif"));
+			context.getService(CommandService.class).run(SampleImageUploader.class, "sampleImage", new File("/tmp/test.tif"));
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
