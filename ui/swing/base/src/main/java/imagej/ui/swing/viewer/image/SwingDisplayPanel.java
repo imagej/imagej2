@@ -327,7 +327,12 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 		// calc height variables
 		final int labelHeight = imageLabel.getPreferredSize().height;
 		final int sliderHeight = sliderPanel.getPreferredSize().height;
-		final int extraSpace = 64;
+
+		// NB - extraSpace used to be 64. But this caused some images to come in at
+		// an inappropriate scale. I think extraSpace was just a hopeful fudge
+		// factor. I am eliminating it for now but leaving machinery in place in
+		// case we want to restore such code. This fixes bug #1472.
+		final int extraSpace = 0;
 
 		// determine largest viewable panel sizes
 		final int maxViewHeight =
