@@ -35,24 +35,11 @@
 
 package imagej.data.undo;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import net.imglib2.RandomAccess;
-import net.imglib2.img.Img;
-import net.imglib2.img.ImgFactory;
-import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.ops.pointset.PointSet;
-import net.imglib2.ops.pointset.PointSetIterator;
-import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.real.DoubleType;
-
 import imagej.command.Command;
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
-import imagej.command.InstantiableCommand;
 import imagej.command.DefaultInstantiableCommand;
+import imagej.command.InstantiableCommand;
 import imagej.command.InvertibleCommand;
 import imagej.command.Unrecordable;
 import imagej.data.Dataset;
@@ -72,6 +59,21 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
+
+import java.awt.Toolkit;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import net.imglib2.RandomAccess;
+import net.imglib2.img.Img;
+import net.imglib2.img.ImgFactory;
+import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.ops.pointset.PointSet;
+import net.imglib2.ops.pointset.PointSetIterator;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 // TODO
 // This service is poorly named (recording something service is better)
@@ -400,4 +402,139 @@ public class UndoService extends AbstractService {
 		return h;
 	}
 	
+	// -- Helper classes --
+
+	/**
+	 * Package access class used internally by UndoService to record and undo
+	 * a history of commands.
+	 * 
+	 * @author Barry DeZonia
+	 *
+	 */
+	private static class CommandHistory {
+
+		// -- constants --
+
+		private static final int MIN_USAGE = 500;
+
+		// -- instance variables --
+
+		private final UndoService undoService;
+		private final CommandService commandService;
+		private final long maxMemUsage;
+		private final LinkedList<InstantiableCommand> undoableCommands;
+		private final LinkedList<InstantiableCommand> redoableCommands;
+		private final LinkedList<InstantiableCommand> transitionCommands;
+
+		// -- constructor --
+
+		private CommandHistory(UndoService uSrv, CommandService cSrv, long maxMem) {
+			undoService = uSrv;
+			commandService = cSrv;
+			maxMemUsage = maxMem;
+			undoableCommands = new LinkedList<InstantiableCommand>();
+			redoableCommands = new LinkedList<InstantiableCommand>();
+			transitionCommands = new LinkedList<InstantiableCommand>();
+		}
+
+		// -- api to be used externally --
+
+		private void doUndo() {
+			//System.out.println("doUndo() : undoPos = "+undoPos+" redoPos = "+redoPos);
+			if (undoableCommands.size() <= 0) {
+				// TODO eliminate AWT dependency with a BeepService!
+				Toolkit.getDefaultToolkit().beep();
+				return;
+			}
+			InstantiableCommand command = redoableCommands.removeLast();
+			transitionCommands.add(command);
+			command = undoableCommands.removeLast();
+			undoService.ignore(command.getCommand());
+			commandService.run(command.getCommand(), command.getInputs());
+		}
+
+		private void doRedo() {
+			//System.out.println("doRedo() : undoPos = "+undoPos+" redoPos = "+redoPos);
+			if (transitionCommands.size() <= 0) {
+				// TODO eliminate AWT dependency with a BeepService!
+				Toolkit.getDefaultToolkit().beep();
+				return;
+			}
+			InstantiableCommand command = transitionCommands.getLast();
+			commandService.run(command.getCommand(), command.getInputs());
+		}
+
+		private void clear() {
+			undoableCommands.clear();
+			redoableCommands.clear();
+			transitionCommands.clear();
+		}
+
+		private void addUndo(InstantiableCommand command) {
+			long additionalSpace = MIN_USAGE + command.getMemoryUsage();
+			while (((undoableCommands.size() > 0) || (redoableCommands.size() > 0)) &&
+					(spaceUsed() + additionalSpace > maxMemUsage)) {
+				if (undoableCommands.size() > 0) removeOldestUndo();
+				if (redoableCommands.size() > 0) removeOldestRedo();
+				// TODO - what about transitionCommands???
+			}
+			// at this point we have enough space or no history has been stored
+			undoableCommands.add(command);
+		}
+
+		private void addRedo(InstantiableCommand command) {
+			CommandInfo info = command.getCommand();
+			Map<String, Object> input = command.getInputs();
+			if (transitionCommands.size() > 0) {
+				if (transitionCommands.getLast().getCommand().equals(info) &&
+						transitionCommands.getLast().getInputs().equals(input))
+				{
+					transitionCommands.removeLast();
+				}
+				else {
+					transitionCommands.clear();
+				}
+			}
+			long additionalSpace = MIN_USAGE + command.getMemoryUsage();
+			while (((undoableCommands.size() > 0) || (redoableCommands.size() > 0)) &&
+					(spaceUsed() + additionalSpace > maxMemUsage)) {
+				if (undoableCommands.size() > 0) removeOldestUndo();
+				if (redoableCommands.size() > 0) removeOldestRedo();
+				// TODO - what about transitionCommands???
+			}
+			// at this point we have enough space or no history has been stored
+			redoableCommands.add(command);
+		}
+
+		private void removeNewestUndo() {
+			undoableCommands.removeLast();
+		}
+
+		private void removeNewestRedo() {
+			redoableCommands.removeLast();
+		}
+
+		private void removeOldestUndo() {
+			undoableCommands.removeFirst();
+		}
+
+		private void removeOldestRedo() {
+			redoableCommands.removeFirst();
+		}
+
+		private long spaceUsed() {
+			long used = 0;
+			for (InstantiableCommand command : undoableCommands) {
+				used += command.getMemoryUsage() + MIN_USAGE;
+			}
+			for (InstantiableCommand command : redoableCommands) {
+				used += command.getMemoryUsage() + MIN_USAGE;
+			}
+			for (InstantiableCommand command : transitionCommands) {
+				used += command.getMemoryUsage() + MIN_USAGE;
+			}
+			return used;
+		}
+	}
+
 }
