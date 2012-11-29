@@ -66,7 +66,7 @@ public class DisplayRestoreState implements Command, InvertibleCommand {
 	@Parameter(type = ItemIO.INPUT)
 	private DisplayState state;
 	
-	private CommandInfo<?> inverseCommand;
+	private CommandInfo inverseCommand;
 	
 	@Override
 	public void run() {
@@ -79,7 +79,7 @@ public class DisplayRestoreState implements Command, InvertibleCommand {
 	public InstantiableCommand getInverseCommand() {
 		return new InstantiableCommand() {
 			@Override
-			public CommandInfo<?> getCommand() {
+			public CommandInfo getCommand() {
 				return inverseCommand;
 			}
 

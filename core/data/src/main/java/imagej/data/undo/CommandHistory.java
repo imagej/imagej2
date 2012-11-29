@@ -122,7 +122,7 @@ class CommandHistory {
 	}
 	
 	void addRedo(InstantiableCommand command) {
-		CommandInfo<?> info = command.getCommand();
+		CommandInfo info = command.getCommand();
 		Map<String, Object> input = command.getInputs();
 		if (transitionCommands.size() > 0) {
 			if (transitionCommands.getLast().getCommand().equals(info) &&

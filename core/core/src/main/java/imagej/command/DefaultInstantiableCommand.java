@@ -45,11 +45,11 @@ import java.util.Map;
  */
 public class DefaultInstantiableCommand implements InstantiableCommand {
 
-	private final CommandInfo<?> command;
+	private final CommandInfo command;
 	private final Map<String, Object> inputs;
 	private final long memUsage;
 
-	public DefaultInstantiableCommand(CommandInfo<?> command,
+	public DefaultInstantiableCommand(CommandInfo command,
 		Map<String, Object> inputs, long memUsage)
 	{
 		this.command = command;
@@ -58,7 +58,7 @@ public class DefaultInstantiableCommand implements InstantiableCommand {
 	}
 	
 	@Override
-	public CommandInfo<?> getCommand() {
+	public CommandInfo getCommand() {
 		return command;
 	}
 

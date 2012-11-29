@@ -104,7 +104,7 @@ public class CropImage extends ContextCommand implements InvertibleCommand {
 	private ImgPlus<? extends RealType<?>> oldData;
 	private List<Overlay> oldOverlays;
 	private List<Overlay> newOverlays;
-	private CommandInfo<?> inverseCommand;
+	private CommandInfo inverseCommand;
 	
 	// -- public interface --
 
@@ -181,7 +181,7 @@ public class CropImage extends ContextCommand implements InvertibleCommand {
 		return new InstantiableCommand() {
 
 			@Override
-			public CommandInfo<?> getCommand() {
+			public CommandInfo getCommand() {
 				return inverseCommand;
 			}
 

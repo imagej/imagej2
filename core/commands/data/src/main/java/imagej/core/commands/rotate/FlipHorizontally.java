@@ -89,7 +89,7 @@ public class FlipHorizontally extends ContextCommand implements InvertibleComman
 
 	// -- private instance variables --
 	
-	private CommandInfo<?> inverseCommand;
+	private CommandInfo inverseCommand;
 	
 	// -- public interface --
 

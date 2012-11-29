@@ -87,7 +87,7 @@ public class Rotate90DegreesLeft extends ContextCommand implements InvertibleCom
 
 	// -- private instance variables --
 	
-	private CommandInfo<?> inverseCommand;
+	private CommandInfo inverseCommand;
 	
 	// -- public interface --
 

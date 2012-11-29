@@ -84,7 +84,7 @@ public class UndoSaveDataPlugin
 	
 	// -- private instance variables --
 	
-	private CommandInfo<?> inverseCommand;
+	private CommandInfo inverseCommand;
 	
 	// -- Command methods --
 	

@@ -250,14 +250,14 @@ public class UndoService extends AbstractService {
 	public Img<DoubleType> captureData(Dataset source, PointSet points,
 		ImgFactory<DoubleType> factory)
 	{
-		long numPoints = points.calcSize();
+		long numPoints = points.size();
 		Img<DoubleType> backup =
 				factory.create(new long[]{numPoints}, new DoubleType());
 		long i = 0;
 		RandomAccess<? extends RealType<?>> dataAccessor =
 				source.getImgPlus().randomAccess();
 		RandomAccess<DoubleType> backupAccessor = backup.randomAccess();
-		PointSetIterator iter = points.createIterator();
+		PointSetIterator iter = points.iterator();
 		while (iter.hasNext()) {
 			long[] pos = iter.next();
 			dataAccessor.setPosition(pos);
@@ -288,7 +288,7 @@ public class UndoService extends AbstractService {
 		RandomAccess<? extends RealType<?>> dataAccessor =
 				target.getImgPlus().randomAccess();
 		RandomAccess<DoubleType> backupAccessor = backup.randomAccess();
-		PointSetIterator iter = points.createIterator();
+		PointSetIterator iter = points.iterator();
 		while (iter.hasNext()) {
 			long[] pos = iter.next();
 			backupAccessor.setPosition(i++,0);
@@ -309,7 +309,7 @@ public class UndoService extends AbstractService {
 		inputs.put("display", display);
 		inputs.put("state", state);
 		long memUsage = state.getMemoryUsage();
-		CommandInfo<?> command = cmndService.getCommand(DisplayRestoreState.class);
+		CommandInfo command = cmndService.getCommand(DisplayRestoreState.class);
 		return new DefaultInstantiableCommand(command, inputs, memUsage);
 	}
 
@@ -364,7 +364,7 @@ public class UndoService extends AbstractService {
 			}
 			InstantiableCommand forwardCommand =
 					new DefaultInstantiableCommand(
-						(CommandInfo<?>)module.getInfo(), module.getInputs(), 0);
+						(CommandInfo)module.getInfo(), module.getInputs(), 0);
 			findHistory(display).addRedo(forwardCommand);
 		}
 	}

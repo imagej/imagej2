@@ -67,7 +67,7 @@ public class DisplaySaveState implements Command, InvertibleCommand {
 	@Parameter(type = ItemIO.OUTPUT)
 	private DisplayState state;
 	
-	private CommandInfo<?> inverseCommand; 
+	private CommandInfo inverseCommand; 
 	
 	@Override
 	public void run() {

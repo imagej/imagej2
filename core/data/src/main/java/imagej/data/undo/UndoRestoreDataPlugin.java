@@ -83,7 +83,7 @@ public class UndoRestoreDataPlugin
 	
 	// -- private instance variables --
 	
-	private CommandInfo<?> inverseCommand;
+	private CommandInfo inverseCommand;
 	
 	// -- Command methods --
 	
