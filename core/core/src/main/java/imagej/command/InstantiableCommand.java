@@ -35,16 +35,15 @@
 
 package imagej.command;
 
-
 import java.util.Map;
 
 /**
+ * TODO
  * 
  * @author Barry DeZonia
- *
  */
 public interface InstantiableCommand {
-	public CommandInfo<?> getCommand();
-	public Map<String,Object> getInputs();
-	public long getMemoryUsage();
+	CommandInfo<?> getCommand();
+	Map<String,Object> getInputs();
+	long getMemoryUsage();
 }

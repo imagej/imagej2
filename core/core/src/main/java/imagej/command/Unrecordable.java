@@ -43,7 +43,5 @@ package imagej.command;
  * @author Barry DeZonia
  */
 public interface Unrecordable {
-	// empty interface
-	//   This interface is used as 
-	public static final String RECORDING_MARKER = "DoNotRecordMePlease";
+	// NB: This interface intentionally left blank.
 }

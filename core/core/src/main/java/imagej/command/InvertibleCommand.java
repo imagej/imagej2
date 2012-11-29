@@ -41,7 +41,6 @@ package imagej.command;
  * less memory.
  * 
  * @author Barry DeZonia
- *
  */
 public interface InvertibleCommand {
 	InstantiableCommand getInverseCommand();

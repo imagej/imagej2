@@ -35,25 +35,24 @@
 
 package imagej.data.undo;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import imagej.command.Command;
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
 import imagej.command.InstantiableCommand;
 import imagej.command.InvertibleCommand;
-import imagej.display.Display;
 import imagej.display.DisplayState;
 import imagej.display.SupportsDisplayStates;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
+ * TODO
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin
 public class DisplayRestoreState implements Command, InvertibleCommand {
