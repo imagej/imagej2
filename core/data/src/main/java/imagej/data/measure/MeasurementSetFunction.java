@@ -96,7 +96,7 @@ public class MeasurementSetFunction<T>
 	 * {@link Function} api and is useful for parallelization.
 	 */
 	@Override
-	public Function<PointSet, MeasurementSet<T>> copy() {
+	public MeasurementSetFunction<T> copy() {
 		return new MeasurementSetFunction<T>(set.create());
 	}
 	
