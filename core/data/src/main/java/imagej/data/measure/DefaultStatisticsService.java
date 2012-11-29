@@ -37,8 +37,40 @@ package imagej.data.measure;
 
 
 import imagej.data.Dataset;
+import imagej.plugin.Plugin;
+import imagej.service.AbstractService;
 import imagej.service.Service;
+import net.imglib2.img.Img;
+import net.imglib2.ops.function.Function;
+import net.imglib2.ops.function.real.RealAlphaTrimmedMeanFunction;
+import net.imglib2.ops.function.real.RealArithmeticMeanFunction;
+import net.imglib2.ops.function.real.RealContraharmonicMeanFunction;
+import net.imglib2.ops.function.real.RealGeometricMeanFunction;
+import net.imglib2.ops.function.real.RealHarmonicMeanFunction;
+import net.imglib2.ops.function.real.RealImageFunction;
+import net.imglib2.ops.function.real.RealMaxFunction;
+import net.imglib2.ops.function.real.RealMedianFunction;
+import net.imglib2.ops.function.real.RealMidpointFunction;
+import net.imglib2.ops.function.real.RealMinFunction;
+import net.imglib2.ops.function.real.RealPopulationKurtosisExcessFunction;
+import net.imglib2.ops.function.real.RealPopulationKurtosisFunction;
+import net.imglib2.ops.function.real.RealPopulationSkewFunction;
+import net.imglib2.ops.function.real.RealPopulationStdDevFunction;
+import net.imglib2.ops.function.real.RealPopulationVarianceFunction;
+import net.imglib2.ops.function.real.RealProductFunction;
+import net.imglib2.ops.function.real.RealSampleKurtosisExcessFunction;
+import net.imglib2.ops.function.real.RealSampleKurtosisFunction;
+import net.imglib2.ops.function.real.RealSampleSkewFunction;
+import net.imglib2.ops.function.real.RealSampleStdDevFunction;
+import net.imglib2.ops.function.real.RealSampleVarianceFunction;
+import net.imglib2.ops.function.real.RealSumFunction;
+import net.imglib2.ops.function.real.RealSumOfSquaredDeviationsFunction;
+import net.imglib2.ops.function.real.RealWeightedAverageFunction;
+import net.imglib2.ops.function.real.RealWeightedSumFunction;
+import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 // TODO - make MeasurementService smarter. Compute values without always
 // revisiting the pixels. This current impl goes over pixels once for each
@@ -63,8 +95,16 @@ import net.imglib2.ops.pointset.PointSet;
  * @author Barry DeZonia
  *
  */
-public interface StatisticsService extends Service {
-
+@Plugin(type=Service.class)
+public class DefaultStatisticsService extends AbstractService implements
+	StatisticsService
+{
+	// -- Parameters --
+	
+	// later
+	//@Parameter
+	//private MeasurementService mSrv;
+	
 	// -- StatisticsService methods --
 	
 	/**
@@ -80,7 +120,14 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double alphaTrimmedMean(Dataset ds, PointSet region, int halfTrimSize);
+	@Override
+	public double alphaTrimmedMean(Dataset ds, PointSet region, int halfTrimSize)
+	{
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealAlphaTrimmedMeanFunction<DoubleType>(imgFunc, halfTrimSize);
+		return measure(func, region);
+	}
 
 	/**
 	 * Returns an estimate of the trimmed mean of the values of a {@link Dataset}.
@@ -92,7 +139,11 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double alphaTrimmedMean(Dataset ds, int halfTrimSize);
+	@Override
+	public double alphaTrimmedMean(Dataset ds, int halfTrimSize)
+	{
+		return alphaTrimmedMean(ds, allOf(ds), halfTrimSize);
+	}
 
 	/**
 	 * Returns an estimate of the arithmetic mean of the values within a
@@ -105,7 +156,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double arithmeticMean(Dataset ds, PointSet region);
+	@Override
+	public double arithmeticMean(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealArithmeticMeanFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
 	
 	/**
 	 * Returns an estimate of the arithmetic mean of the values of a
@@ -116,7 +173,10 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double arithmeticMean(Dataset ds);
+	@Override
+	public double arithmeticMean(Dataset ds) {
+		return arithmeticMean(ds, allOf(ds));
+	}
 	
 	/**
 	 * Returns an estimate of the contraharmonic mean of the values within a
@@ -131,7 +191,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double contraharmomicMean(Dataset ds, PointSet region, double order);
+	@Override
+	public double contraharmomicMean(Dataset ds, PointSet region, double order) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealContraharmonicMeanFunction<DoubleType>(imgFunc, order);
+		return measure(func, region);
+	}
 
 	/**
 	 * Returns an estimate of the contraharmonic mean of the values within a
@@ -144,7 +210,10 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double contraharmomicMean(Dataset ds, double order);
+	@Override
+	public double contraharmomicMean(Dataset ds, double order) {
+		return contraharmomicMean(ds, allOf(ds), order);
+	}
 
 	/**
 	 * Returns an estimate of the geometric mean of the values within a
@@ -157,7 +226,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double geometricMean(Dataset ds, PointSet region);
+	@Override
+	public double geometricMean(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealGeometricMeanFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
 	
 	/**
 	 * Returns an estimate of the geometric mean of the values within a
@@ -168,7 +243,10 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double geometricMean(Dataset ds);
+	@Override
+	public double geometricMean(Dataset ds) {
+		return geometricMean(ds, allOf(ds));
+	}
 	
 	/**
 	 * Returns an estimate of the harmonic mean of the values within a
@@ -181,7 +259,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double harmonicMean(Dataset ds, PointSet region);
+	@Override
+	public double harmonicMean(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealHarmonicMeanFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
 
 	/**
 	 * Returns an estimate of the harmonic mean of the values within a
@@ -192,7 +276,10 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double harmonicMean(Dataset ds);
+	@Override
+	public double harmonicMean(Dataset ds) {
+		return harmonicMean(ds, allOf(ds));
+	}
 
 	/**
 	 * Returns the maximum value from the set of values within a
@@ -205,7 +292,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double maximum(Dataset ds, PointSet region);
+	@Override
+	public double maximum(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealMaxFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
 	
 	/**
 	 * Returns the maximum value from the set of values within a
@@ -216,7 +309,10 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double maximum(Dataset ds);
+	@Override
+	public double maximum(Dataset ds) {
+		return maximum(ds, allOf(ds));
+	}
 	
 	/**
 	 * Returns the median value from the set of values within a
@@ -229,7 +325,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double median(Dataset ds, PointSet region);
+	@Override
+	public double median(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealMedianFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
 
 	/**
 	 * Returns the median value from the set of values within a
@@ -240,7 +342,10 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double median(Dataset ds);
+	@Override
+	public double median(Dataset ds) {
+		return median(ds, allOf(ds));
+	}
 
 	/**
 	 * Returns the point midway between the minimum value and the maximum value
@@ -254,7 +359,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double midpoint(Dataset ds, PointSet region);
+	@Override
+	public double midpoint(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealMidpointFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
 	
 	/**
 	 * Returns the point midway between the minimum value and the maximum value
@@ -265,7 +376,10 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double midpoint(Dataset ds);
+	@Override
+	public double midpoint(Dataset ds) {
+		return midpoint(ds, allOf(ds));
+	}
 	
 	/**
 	 * Returns the minimum value from the set of values within a
@@ -278,7 +392,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double minimum(Dataset ds, PointSet region);
+	@Override
+	public double minimum(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealMinFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
 	
 	/**
 	 * Returns the minimum value from the set of values within a
@@ -289,7 +409,11 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double minimum(Dataset ds);
+	@Override
+	public double minimum(Dataset ds) {
+		return minimum(ds, allOf(ds));
+	}
+	
 
 	/**
 	 * Returns the (biased) kurtosis of all the values within a {@link PointSet}
@@ -302,7 +426,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double populationKurtosis(Dataset ds, PointSet region);
+	@Override
+	public double populationKurtosis(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealPopulationKurtosisFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
 
 	/**
 	 * Returns the (biased) kurtosis of all the values within a {@link Dataset}
@@ -312,7 +442,10 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double populationKurtosis(Dataset ds);
+	@Override
+	public double populationKurtosis(Dataset ds) {
+		return populationKurtosis(ds, allOf(ds));
+	}
 
 	/**
 	 * Returns the (biased) kurtosis excess of all the values within a
@@ -325,7 +458,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double populationKurtosisExcess(Dataset ds, PointSet region);
+	@Override
+	public double populationKurtosisExcess(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealPopulationKurtosisExcessFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
 
 	/**
 	 * Returns the (biased) kurtosis excess of all the values within a
@@ -336,7 +475,10 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double populationKurtosisExcess(Dataset ds);
+	@Override
+	public double populationKurtosisExcess(Dataset ds) {
+		return populationKurtosisExcess(ds, allOf(ds));
+	}
 
 	/**
 	 * Returns the (biased) skew of all the values within a {@link PointSet}
@@ -349,7 +491,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double populationSkew(Dataset ds, PointSet region);
+	@Override
+	public double populationSkew(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealPopulationSkewFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
 
 	/**
 	 * Returns the (biased) skew of all the values within a {@link Dataset}
@@ -359,7 +507,10 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double populationSkew(Dataset ds);
+	@Override
+	public double populationSkew(Dataset ds) {
+		return populationSkew(ds, allOf(ds));
+	}
 
 	/**
 	 * Returns the (biased) estimate of the sample standard deviation of the
@@ -373,7 +524,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double populationStdDev(Dataset ds, PointSet region);
+	@Override
+	public double populationStdDev(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealPopulationStdDevFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
 	
 	/**
 	 * Returns the (biased) estimate of the sample standard deviation of the
@@ -385,7 +542,10 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double populationStdDev(Dataset ds);
+	@Override
+	public double populationStdDev(Dataset ds) {
+		return populationStdDev(ds, allOf(ds));
+	}
 	
 	/**
 	 * Returns the (biased) estimate of the sample variance of the values within
@@ -399,7 +559,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double populationVariance(Dataset ds, PointSet region);
+	@Override
+	public double populationVariance(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealPopulationVarianceFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
 	
 	/**
 	 * Returns the (biased) estimate of the sample variance of the values within
@@ -411,7 +577,10 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double populationVariance(Dataset ds);
+	@Override
+	public double populationVariance(Dataset ds) {
+		return populationVariance(ds, allOf(ds));
+	}
 	
 	/**
 	 * Returns the product of all the values within a {@link PointSet} region
@@ -424,7 +593,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double product(Dataset ds, PointSet region);
+	@Override
+	public double product(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealProductFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
 	
 	/**
 	 * Returns the product of all the values within a {@link Dataset}
@@ -434,7 +609,10 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double product(Dataset ds);
+	@Override
+	public double product(Dataset ds) {
+		return product(ds, allOf(ds));
+	}
 	
 	/**
 	 * Returns the (unbiased) kurtosis of all the values within a {@link PointSet}
@@ -447,7 +625,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double sampleKurtosis(Dataset ds, PointSet region);
+	@Override
+	public double sampleKurtosis(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealSampleKurtosisFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
 
 	/**
 	 * Returns the (unbiased) kurtosis of all the values within a {@link Dataset}
@@ -457,7 +641,10 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double sampleKurtosis(Dataset ds);
+	@Override
+	public double sampleKurtosis(Dataset ds) {
+		return sampleKurtosis(ds, allOf(ds));
+	}
 
 	/**
 	 * Returns the (unbiased) kurtosis excess of all the values within a
@@ -470,7 +657,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double sampleKurtosisExcess(Dataset ds, PointSet region);
+	@Override
+	public double sampleKurtosisExcess(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealSampleKurtosisExcessFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
 
 	/**
 	 * Returns the (unbiased) kurtosis excess of all the values within a
@@ -481,7 +674,10 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double sampleKurtosisExcess(Dataset ds);
+	@Override
+	public double sampleKurtosisExcess(Dataset ds) {
+		return sampleKurtosisExcess(ds, allOf(ds));
+	}
 
 	/**
 	 * Returns the (unbiased) skew of all the values within a {@link PointSet}
@@ -494,7 +690,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double sampleSkew(Dataset ds, PointSet region);
+	@Override
+	public double sampleSkew(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealSampleSkewFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
 
 	/**
 	 * Returns the (unbiased) skew of all the values within a {@link Dataset}
@@ -504,7 +706,10 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double sampleSkew(Dataset ds);
+	@Override
+	public double sampleSkew(Dataset ds) {
+		return sampleSkew(ds, allOf(ds));
+	}
 
 	/**
 	 * Returns the (unbiased) estimate of the sample standard deviation of the
@@ -518,7 +723,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double sampleStdDev(Dataset ds, PointSet region);
+	@Override
+	public double sampleStdDev(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealSampleStdDevFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
 
 	/**
 	 * Returns the (unbiased) estimate of the sample standard deviation of the
@@ -530,7 +741,10 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double sampleStdDev(Dataset ds);
+	@Override
+	public double sampleStdDev(Dataset ds) {
+		return sampleStdDev(ds, allOf(ds));
+	}
 
 	/**
 	 * Returns the (unbiased) estimate of the sample variance of the values within
@@ -544,7 +758,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double sampleVariance(Dataset ds, PointSet region);
+	@Override
+	public double sampleVariance(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealSampleVarianceFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
 
 	/**
 	 * Returns the (unbiased) estimate of the sample variance of the values within
@@ -556,7 +776,10 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double sampleVariance(Dataset ds);
+	@Override
+	public double sampleVariance(Dataset ds) {
+		return sampleVariance(ds, allOf(ds));
+	}
 
 	/**
 	 * Returns the sum of all the values within a {@link PointSet} region
@@ -569,7 +792,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double sum(Dataset ds, PointSet region);
+	@Override
+	public double sum(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealSumFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
 	
 	/**
 	 * Returns the sum of all the values within a {@link Dataset}
@@ -579,7 +808,10 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double sum(Dataset ds);
+	@Override
+	public double sum(Dataset ds) {
+		return sum(ds, allOf(ds));
+	}
 	
 	/**
 	 * Returns the sum of squared deviations from the mean for a set of values
@@ -592,7 +824,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double sumOfSquaredDeviations(Dataset ds, PointSet region);
+	@Override
+	public double sumOfSquaredDeviations(Dataset ds, PointSet region) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealSumOfSquaredDeviationsFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
 	
 	/**
 	 * Returns the sum of squared deviations from the mean for a set of values
@@ -603,7 +841,10 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double sumOfSquaredDeviations(Dataset ds);
+	@Override
+	public double sumOfSquaredDeviations(Dataset ds) {
+		return sumOfSquaredDeviations(ds, allOf(ds));
+	}
 	
 	/**
 	 * Returns the weighted average of the values within a {@link PointSet}
@@ -619,7 +860,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double weightedAverage(Dataset ds, PointSet region, double[] weights);
+	@Override
+	public double weightedAverage(Dataset ds, PointSet region, double[] weights) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealWeightedAverageFunction<DoubleType>(imgFunc,weights);
+		return measure(func, region);
+	}
 	
 	/**
 	 * Returns the weighted sum of the values within a {@link PointSet}
@@ -635,7 +882,13 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * The measured value
 	 */
-	double weightedSum(Dataset ds, PointSet region, double[] weights);
+	@Override
+	public double weightedSum(Dataset ds, PointSet region, double[] weights) {
+		Function<long[],DoubleType> imgFunc = imgFunc(ds);
+		Function<PointSet,DoubleType> func =
+				new RealWeightedSumFunction<DoubleType>(imgFunc,weights);
+		return measure(func, region);
+	}
 
 	/**
 	 * A convenience function for defining a {@link PointSet} that encompasses
@@ -646,6 +899,22 @@ public interface StatisticsService extends Service {
 	 * @return
 	 * A PointSet that includes all points within the Dataset
 	 */
-	PointSet allOf(Dataset ds);
-
+	@Override
+	public PointSet allOf(Dataset ds) {
+		return new HyperVolumePointSet(ds.getDims());
+	}
+	
+	// -- private helpers --
+	
+	@SuppressWarnings({"unchecked","rawtypes"})
+	private RealImageFunction<?,DoubleType> imgFunc(Dataset ds) {
+		Img<? extends RealType<?>> imgPlus = ds.getImgPlus();
+		return new RealImageFunction(imgPlus, new DoubleType());
+	}
+	
+	private double measure(Function<PointSet,DoubleType> func, PointSet region) {
+		DoubleType output = new DoubleType();
+		func.compute(region, output);
+		return output.getRealDouble();
+	}
 }
