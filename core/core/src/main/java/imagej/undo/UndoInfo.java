@@ -35,7 +35,7 @@
 
 package imagej.undo;
 
-import imagej.command.CommandInfo;
+import imagej.module.ModuleInfo;
 
 import java.util.Map;
 
@@ -44,8 +44,11 @@ import java.util.Map;
  * 
  * @author Barry DeZonia
  */
-public interface InstantiableCommand {
-	CommandInfo getCommand();
-	Map<String,Object> getInputs();
+public interface UndoInfo {
+
+	ModuleInfo getModule();
+
+	Map<String, Object> getInputs();
+
 	long getMemoryUsage();
 }

@@ -51,9 +51,9 @@ import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.undo.DefaultInstantiableCommand;
-import imagej.undo.InstantiableCommand;
-import imagej.undo.InvertibleCommand;
+import imagej.undo.DefaultUndoInfo;
+import imagej.undo.UndoInfo;
+import imagej.undo.Invertible;
 import imagej.util.RealRect;
 
 //TODO - IJ1 updates the calibration so that pixel width & depth swap after this operation. Must implement here.
@@ -69,7 +69,7 @@ import imagej.util.RealRect;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Transform", mnemonic = 't'),
 	@Menu(label = "Rotate 90 Degrees Right", weight = 4) }, headless = true)
-public class Rotate90DegreesRight extends ContextCommand implements InvertibleCommand {
+public class Rotate90DegreesRight extends ContextCommand implements Invertible {
 
 	// -- Parameters --
 
@@ -113,10 +113,10 @@ public class Rotate90DegreesRight extends ContextCommand implements InvertibleCo
 	}
 
 	@Override
-	public InstantiableCommand getInverseCommand() {
+	public UndoInfo getInverse() {
 		HashMap<String, Object> input = new HashMap<String, Object>();
 		input.put("display", display);
-		return new DefaultInstantiableCommand(inverseCommand, input, 0);
+		return new DefaultUndoInfo(inverseCommand, input, 0);
 	}
 
 	// -- private interface --

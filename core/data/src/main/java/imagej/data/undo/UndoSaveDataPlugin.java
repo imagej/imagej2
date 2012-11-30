@@ -35,16 +35,16 @@
 
 package imagej.data.undo;
 
-import imagej.command.CommandInfo;
 import imagej.command.CommandService;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.module.ItemIO;
+import imagej.module.ModuleInfo;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.undo.DefaultInstantiableCommand;
-import imagej.undo.InstantiableCommand;
-import imagej.undo.InvertibleCommand;
+import imagej.undo.DefaultUndoInfo;
+import imagej.undo.UndoInfo;
+import imagej.undo.Invertible;
 
 import java.util.HashMap;
 
@@ -62,7 +62,7 @@ import net.imglib2.type.numeric.real.DoubleType;
  */
 @Plugin
 public class UndoSaveDataPlugin extends ContextCommand implements
-	InvertibleCommand
+	Invertible
 {
 
 	// -- Parameters --
@@ -84,7 +84,7 @@ public class UndoSaveDataPlugin extends ContextCommand implements
 
 	// -- private instance variables --
 
-	private CommandInfo inverseCommand;
+	private ModuleInfo inverse;
 
 	// -- Command methods --
 
@@ -95,19 +95,19 @@ public class UndoSaveDataPlugin extends ContextCommand implements
 		data =
 			undoService
 				.captureData(source, points, new ArrayImgFactory<DoubleType>());
-		inverseCommand = commandService.getCommand(UndoRestoreDataPlugin.class);
+		inverse = commandService.getCommand(UndoRestoreDataPlugin.class);
 	}
 
 	// -- InvertibleCommand methods --
 
 	@Override
-	public InstantiableCommand getInverseCommand() {
+	public UndoInfo getInverse() {
 		final HashMap<String, Object> inverseInputs = new HashMap<String, Object>();
 		inverseInputs.put("target", source);
 		inverseInputs.put("points", points);
 		inverseInputs.put("data", data);
 		final long size = 8 * numElements(data);
-		return new DefaultInstantiableCommand(inverseCommand, inverseInputs, size);
+		return new DefaultUndoInfo(inverse, inverseInputs, size);
 	}
 
 	// -- UndoSaveDataPlugin methods --

@@ -51,9 +51,9 @@ import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.undo.DefaultInstantiableCommand;
-import imagej.undo.InstantiableCommand;
-import imagej.undo.InvertibleCommand;
+import imagej.undo.DefaultUndoInfo;
+import imagej.undo.UndoInfo;
+import imagej.undo.Invertible;
 import imagej.util.RealRect;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.ImgPlus;
@@ -71,7 +71,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Transform", mnemonic = 't'),
 	@Menu(label = "Flip Vertically", weight = 2) }, headless = true)
-public class FlipVertically extends ContextCommand implements InvertibleCommand {
+public class FlipVertically extends ContextCommand implements Invertible {
 
 	// -- Parameters --
 
@@ -110,10 +110,10 @@ public class FlipVertically extends ContextCommand implements InvertibleCommand 
 	}
 
 	@Override
-	public InstantiableCommand getInverseCommand() {
+	public UndoInfo getInverse() {
 		HashMap<String, Object> input = new HashMap<String, Object>();
 		input.put("display", display);
-		return new DefaultInstantiableCommand(inverseCommand, input, 0);
+		return new DefaultUndoInfo(inverseCommand, input, 0);
 	}
 
 	// -- private interface --

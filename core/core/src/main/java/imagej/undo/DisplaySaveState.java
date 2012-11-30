@@ -51,7 +51,7 @@ import java.util.Map;
  * @author Barry DeZonia
  */
 @Plugin
-public class DisplaySaveState implements Command, InvertibleCommand {
+public class DisplaySaveState implements Command, Invertible {
 
 	@Parameter
 	private CommandService commandService;
@@ -71,11 +71,11 @@ public class DisplaySaveState implements Command, InvertibleCommand {
 	}
 
 	@Override
-	public InstantiableCommand getInverseCommand() {
+	public UndoInfo getInverse() {
 		final Map<String, Object> inverseInputs = new HashMap<String, Object>();
 		inverseInputs.put("display", display);
 		inverseInputs.put("state", state);
-		return new DefaultInstantiableCommand(inverseCommand, inverseInputs, state
+		return new DefaultUndoInfo(inverseCommand, inverseInputs, state
 			.getMemoryUsage());
 	}
 

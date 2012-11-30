@@ -36,9 +36,9 @@
 package imagej.undo;
 
 import imagej.command.Command;
-import imagej.command.CommandInfo;
 import imagej.command.CommandService;
 import imagej.module.ItemIO;
+import imagej.module.ModuleInfo;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
@@ -51,7 +51,7 @@ import java.util.Map;
  * @author Barry DeZonia
  */
 @Plugin
-public class DisplayRestoreState implements Command, InvertibleCommand {
+public class DisplayRestoreState implements Command, Invertible {
 
 	@Parameter
 	private CommandService commandService;
@@ -59,25 +59,25 @@ public class DisplayRestoreState implements Command, InvertibleCommand {
 	@Parameter(type = ItemIO.BOTH)
 	private SupportsDisplayStates display;
 
-	@Parameter(type = ItemIO.INPUT)
+	@Parameter
 	private DisplayState state;
 
-	private CommandInfo inverseCommand;
+	private ModuleInfo inverseModule;
 
 	@Override
 	public void run() {
 		display.setCurrentState(state);
-		inverseCommand = commandService.getCommand(DisplaySaveState.class);
+		inverseModule = commandService.getCommand(DisplaySaveState.class);
 	}
 
 	@SuppressWarnings("synthetic-access")
 	@Override
-	public InstantiableCommand getInverseCommand() {
-		return new InstantiableCommand() {
+	public UndoInfo getInverse() {
+		return new UndoInfo() {
 
 			@Override
-			public CommandInfo getCommand() {
-				return inverseCommand;
+			public ModuleInfo getModule() {
+				return inverseModule;
 			}
 
 			@Override

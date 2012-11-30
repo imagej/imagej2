@@ -36,7 +36,6 @@
 package imagej.data.undo;
 
 import imagej.command.Command;
-import imagej.command.CommandInfo;
 import imagej.command.CommandService;
 import imagej.data.Dataset;
 import imagej.display.Display;
@@ -53,11 +52,11 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
-import imagej.undo.DefaultInstantiableCommand;
+import imagej.undo.DefaultUndoInfo;
 import imagej.undo.DisplayRestoreState;
 import imagej.undo.DisplayState;
-import imagej.undo.InstantiableCommand;
-import imagej.undo.InvertibleCommand;
+import imagej.undo.UndoInfo;
+import imagej.undo.Invertible;
 import imagej.undo.SupportsDisplayStates;
 import imagej.undo.Unrecordable;
 
@@ -158,8 +157,8 @@ public class UndoService extends AbstractService {
 
 	// -- working variables --
 
-	private final Map<Display<?>, CommandHistory> histories =
-		new HashMap<Display<?>, CommandHistory>();
+	private final Map<Display<?>, ModuleHistory> histories =
+		new HashMap<Display<?>, ModuleHistory>();
 
 	// HACK TO GO AWAY SOON
 	private final Map<ModuleInfo, Boolean> modulesToIgnore =
@@ -180,7 +179,7 @@ public class UndoService extends AbstractService {
 	 * @param interestedParty
 	 */
 	public void undo(final Display<?> interestedParty) {
-		final CommandHistory history = histories.get(interestedParty);
+		final ModuleHistory history = histories.get(interestedParty);
 		if (history != null) history.doUndo();
 	}
 
@@ -190,7 +189,7 @@ public class UndoService extends AbstractService {
 	 * @param interestedParty
 	 */
 	public void redo(final Display<?> interestedParty) {
-		final CommandHistory history = histories.get(interestedParty);
+		final ModuleHistory history = histories.get(interestedParty);
 		if (history != null) history.doRedo();
 	}
 
@@ -198,7 +197,7 @@ public class UndoService extends AbstractService {
 	 * Clears the entire undo/redo cache for given display
 	 */
 	public void clearHistory(final Display<?> interestedParty) {
-		final CommandHistory history = histories.get(interestedParty);
+		final ModuleHistory history = histories.get(interestedParty);
 		if (history != null) history.clear();
 	}
 
@@ -206,7 +205,7 @@ public class UndoService extends AbstractService {
 	 * Clears the entire undo/redo cache for all displays
 	 */
 	public void clearAllHistory() {
-		for (final CommandHistory hist : histories.values()) {
+		for (final ModuleHistory hist : histories.values()) {
 			hist.clear();
 		}
 	}
@@ -295,10 +294,10 @@ public class UndoService extends AbstractService {
 	}
 
 	/**
-	 * Creates a command that can be run later which will restore a display to its
+	 * Creates a module that can be run later which will restore a display to its
 	 * current state.
 	 */
-	public InstantiableCommand createFullRestoreCommand(
+	public UndoInfo createFullRestoreModule(
 		final SupportsDisplayStates display)
 	{
 		final DisplayState state = display.getCurrentState();
@@ -306,9 +305,9 @@ public class UndoService extends AbstractService {
 		inputs.put("display", display);
 		inputs.put("state", state);
 		final long memUsage = state.getMemoryUsage();
-		final CommandInfo command =
+		final ModuleInfo displayRestoreState =
 			commandService.getCommand(DisplayRestoreState.class);
-		return new DefaultInstantiableCommand(command, inputs, memUsage);
+		return new DefaultUndoInfo(displayRestoreState, inputs, memUsage);
 	}
 
 	// -- protected event handlers --
@@ -318,14 +317,15 @@ public class UndoService extends AbstractService {
 		final Module module = evt.getModule();
 		final Object theObject = module.getDelegateObject();
 		if (theObject instanceof Unrecordable) return;
-		if (theObject instanceof InvertibleCommand) return; // record later
+		if (theObject instanceof Invertible) return; // record later
+		// CTR CHECK
 		if (theObject instanceof Command) {
 			if (ignoring(module.getInfo())) return;
 			final Display<?> display = displayService.getActiveDisplay();
 			if (!(display instanceof SupportsDisplayStates)) return;
-			final InstantiableCommand reverseCommand =
-				createFullRestoreCommand((SupportsDisplayStates) display);
-			findHistory(display).addUndo(reverseCommand);
+			final UndoInfo inverse =
+				createFullRestoreModule((SupportsDisplayStates) display);
+			findHistory(display).addUndo(inverse);
 		}
 	}
 
@@ -334,7 +334,8 @@ public class UndoService extends AbstractService {
 		final Module module = evt.getModule();
 		final Object theObject = module.getDelegateObject();
 		if (theObject instanceof Unrecordable) return;
-		if (theObject instanceof InvertibleCommand) return;
+		if (theObject instanceof Invertible) return;
+		// CTR CHECK
 		if (theObject instanceof Command) {
 			if (ignoring(module.getInfo())) return;
 			final Display<?> display = displayService.getActiveDisplay();
@@ -349,6 +350,7 @@ public class UndoService extends AbstractService {
 		final Module module = evt.getModule();
 		final Object theObject = module.getDelegateObject();
 		if (theObject instanceof Unrecordable) return;
+		// CTR CHECK
 		if (theObject instanceof Command) {
 			if (ignoring(module.getInfo())) {
 				stopIgnoring(module.getInfo());
@@ -356,20 +358,19 @@ public class UndoService extends AbstractService {
 			}
 			final Display<?> display = displayService.getActiveDisplay();
 			if (!(display instanceof SupportsDisplayStates)) return;
-			if (theObject instanceof InvertibleCommand) {
-				final InvertibleCommand command = (InvertibleCommand) theObject;
-				findHistory(display).addUndo(command.getInverseCommand());
+			if (theObject instanceof Invertible) {
+				final Invertible invertible = (Invertible) theObject;
+				findHistory(display).addUndo(invertible.getInverse());
 			}
-			final InstantiableCommand forwardCommand =
-				new DefaultInstantiableCommand((CommandInfo) module.getInfo(), module
-					.getInputs(), 0);
-			findHistory(display).addRedo(forwardCommand);
+			final UndoInfo redo =
+				new DefaultUndoInfo(module.getInfo(), module.getInputs(), 0);
+			findHistory(display).addRedo(redo);
 		}
 	}
 
 	@EventHandler
 	protected void onEvent(final DisplayDeletedEvent evt) {
-		final CommandHistory history = histories.get(evt.getObject());
+		final ModuleHistory history = histories.get(evt.getObject());
 		if (history == null) return;
 		history.clear();
 		histories.remove(history);
@@ -389,10 +390,10 @@ public class UndoService extends AbstractService {
 		modulesToIgnore.remove(info);
 	}
 
-	private CommandHistory findHistory(final Display<?> disp) {
-		CommandHistory h = histories.get(disp);
+	private ModuleHistory findHistory(final Display<?> disp) {
+		ModuleHistory h = histories.get(disp);
 		if (h == null) {
-			h = new CommandHistory(MAX_BYTES);
+			h = new ModuleHistory(MAX_BYTES);
 			histories.put(disp, h);
 		}
 		return h;
@@ -406,7 +407,7 @@ public class UndoService extends AbstractService {
 	 * 
 	 * @author Barry DeZonia
 	 */
-	private class CommandHistory {
+	private class ModuleHistory {
 
 		// -- constants --
 
@@ -415,116 +416,116 @@ public class UndoService extends AbstractService {
 		// -- instance variables --
 
 		private final long maxMemUsage;
-		private final LinkedList<InstantiableCommand> undoableCommands;
-		private final LinkedList<InstantiableCommand> redoableCommands;
-		private final LinkedList<InstantiableCommand> transitionCommands;
+		private final LinkedList<UndoInfo> undoables;
+		private final LinkedList<UndoInfo> redoables;
+		private final LinkedList<UndoInfo> transitions;
 
 		// -- constructor --
 
-		private CommandHistory(final long maxMem) {
+		private ModuleHistory(final long maxMem) {
 			maxMemUsage = maxMem;
-			undoableCommands = new LinkedList<InstantiableCommand>();
-			redoableCommands = new LinkedList<InstantiableCommand>();
-			transitionCommands = new LinkedList<InstantiableCommand>();
+			undoables = new LinkedList<UndoInfo>();
+			redoables = new LinkedList<UndoInfo>();
+			transitions = new LinkedList<UndoInfo>();
 		}
 
 		// -- api to be used externally --
 
 		private void doUndo() {
 			// System.out.println("doUndo() : undoPos = "+undoPos+" redoPos = "+redoPos);
-			if (undoableCommands.size() <= 0) {
+			if (undoables.size() <= 0) {
 				// TODO eliminate AWT dependency with a BeepService!
 				Toolkit.getDefaultToolkit().beep();
 				return;
 			}
-			InstantiableCommand command = redoableCommands.removeLast();
-			transitionCommands.add(command);
-			command = undoableCommands.removeLast();
-			ignore(command.getCommand());
-			commandService.run(command.getCommand(), command.getInputs());
+			UndoInfo command = redoables.removeLast();
+			transitions.add(command);
+			command = undoables.removeLast();
+			ignore(command.getModule());
+			commandService.run(command.getModule(), command.getInputs());
 		}
 
 		private void doRedo() {
 			// System.out.println("doRedo() : undoPos = "+undoPos+" redoPos = "+redoPos);
-			if (transitionCommands.size() <= 0) {
+			if (transitions.size() <= 0) {
 				// TODO eliminate AWT dependency with a BeepService!
 				Toolkit.getDefaultToolkit().beep();
 				return;
 			}
-			final InstantiableCommand command = transitionCommands.getLast();
-			commandService.run(command.getCommand(), command.getInputs());
+			final UndoInfo command = transitions.getLast();
+			commandService.run(command.getModule(), command.getInputs());
 		}
 
 		private void clear() {
-			undoableCommands.clear();
-			redoableCommands.clear();
-			transitionCommands.clear();
+			undoables.clear();
+			redoables.clear();
+			transitions.clear();
 		}
 
-		private void addUndo(final InstantiableCommand command) {
+		private void addUndo(final UndoInfo command) {
 			final long additionalSpace = MIN_USAGE + command.getMemoryUsage();
-			while (((undoableCommands.size() > 0) || (redoableCommands.size() > 0)) &&
+			while (((undoables.size() > 0) || (redoables.size() > 0)) &&
 				(spaceUsed() + additionalSpace > maxMemUsage))
 			{
-				if (undoableCommands.size() > 0) removeOldestUndo();
-				if (redoableCommands.size() > 0) removeOldestRedo();
-				// TODO - what about transitionCommands???
+				if (undoables.size() > 0) removeOldestUndo();
+				if (redoables.size() > 0) removeOldestRedo();
+				// TODO - what about transitionModules???
 			}
 			// at this point we have enough space or no history has been stored
-			undoableCommands.add(command);
+			undoables.add(command);
 		}
 
-		private void addRedo(final InstantiableCommand command) {
-			final CommandInfo info = command.getCommand();
+		private void addRedo(final UndoInfo command) {
+			final ModuleInfo info = command.getModule();
 			final Map<String, Object> input = command.getInputs();
-			if (transitionCommands.size() > 0) {
-				if (transitionCommands.getLast().getCommand().equals(info) &&
-					transitionCommands.getLast().getInputs().equals(input))
+			if (transitions.size() > 0) {
+				if (transitions.getLast().getModule().equals(info) &&
+					transitions.getLast().getInputs().equals(input))
 				{
-					transitionCommands.removeLast();
+					transitions.removeLast();
 				}
 				else {
-					transitionCommands.clear();
+					transitions.clear();
 				}
 			}
 			final long additionalSpace = MIN_USAGE + command.getMemoryUsage();
-			while ((undoableCommands.size() > 0 || redoableCommands.size() > 0) &&
+			while ((undoables.size() > 0 || redoables.size() > 0) &&
 				spaceUsed() + additionalSpace > maxMemUsage)
 			{
-				if (undoableCommands.size() > 0) removeOldestUndo();
-				if (redoableCommands.size() > 0) removeOldestRedo();
-				// TODO - what about transitionCommands???
+				if (undoables.size() > 0) removeOldestUndo();
+				if (redoables.size() > 0) removeOldestRedo();
+				// TODO - what about transitionModules???
 			}
 			// at this point we have enough space or no history has been stored
-			redoableCommands.add(command);
+			redoables.add(command);
 		}
 
 		private void removeNewestUndo() {
-			undoableCommands.removeLast();
+			undoables.removeLast();
 		}
 
 		private void removeNewestRedo() {
-			redoableCommands.removeLast();
+			redoables.removeLast();
 		}
 
 		private void removeOldestUndo() {
-			undoableCommands.removeFirst();
+			undoables.removeFirst();
 		}
 
 		private void removeOldestRedo() {
-			redoableCommands.removeFirst();
+			redoables.removeFirst();
 		}
 
 		private long spaceUsed() {
 			long used = 0;
-			for (final InstantiableCommand command : undoableCommands) {
-				used += command.getMemoryUsage() + MIN_USAGE;
+			for (final UndoInfo undoable : undoables) {
+				used += undoable.getMemoryUsage() + MIN_USAGE;
 			}
-			for (final InstantiableCommand command : redoableCommands) {
-				used += command.getMemoryUsage() + MIN_USAGE;
+			for (final UndoInfo redoable : redoables) {
+				used += redoable.getMemoryUsage() + MIN_USAGE;
 			}
-			for (final InstantiableCommand command : transitionCommands) {
-				used += command.getMemoryUsage() + MIN_USAGE;
+			for (final UndoInfo transition : transitions) {
+				used += transition.getMemoryUsage() + MIN_USAGE;
 			}
 			return used;
 		}

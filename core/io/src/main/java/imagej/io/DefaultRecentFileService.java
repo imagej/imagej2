@@ -101,7 +101,7 @@ public final class DefaultRecentFileService extends AbstractService implements
 	private CommandService commandService;
 
 	private List<String> recentFiles;
-	private Map<String, ModuleInfo> recentModules;
+	private Map<String, CommandInfo> recentModules;
 
 	// -- RecentFileService methods --
 
@@ -118,13 +118,13 @@ public final class DefaultRecentFileService extends AbstractService implements
 
 		if (present) {
 			// path already present; update linked module info
-			final ModuleInfo info = recentModules.get(path);
+			final CommandInfo info = recentModules.get(path);
 			// TODO - update module weights
 			info.update(eventService);
 		}
 		else {
 			// new path; create linked module info
-			final ModuleInfo info = createInfo(path);
+			final CommandInfo info = createInfo(path);
 			recentModules.put(path, info);
 
 			// register the module with the module service
@@ -141,7 +141,7 @@ public final class DefaultRecentFileService extends AbstractService implements
 		Prefs.putList(recentFiles, RECENT_FILES_KEY);
 
 		// remove linked module info
-		final ModuleInfo info = recentModules.remove(path);
+		final CommandInfo info = recentModules.remove(path);
 		if (info != null) moduleService.removeModule(info);
 
 		return success;
@@ -168,7 +168,7 @@ public final class DefaultRecentFileService extends AbstractService implements
 	@Override
 	public void initialize() {
 		recentFiles = Prefs.getList(RECENT_FILES_KEY);
-		recentModules = new HashMap<String, ModuleInfo>();
+		recentModules = new HashMap<String, CommandInfo>();
 		for (final String path : recentFiles) {
 			recentModules.put(path, createInfo(path));
 		}
@@ -193,8 +193,8 @@ public final class DefaultRecentFileService extends AbstractService implements
 
 	// -- Helper methods --
 
-	/** Creates a {@link ModuleInfo} to reopen data at the given path. */
-	private ModuleInfo createInfo(final String path) {
+	/** Creates a {@link CommandInfo} to reopen data at the given path. */
+	private CommandInfo createInfo(final String path) {
 		final CommandInfo info = new CommandInfo("imagej.io.plugins.OpenImage");
 
 		// hard code path to open as a preset

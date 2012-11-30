@@ -136,7 +136,7 @@ public class MacOSXPlatform extends AbstractPlatform {
 
 		// remove said commands from the main menu bar
 		// (the Mac application menu will trigger them instead)
-		final ArrayList<ModuleInfo> infos = new ArrayList<ModuleInfo>();
+		final ArrayList<CommandInfo> infos = new ArrayList<CommandInfo>();
 		for (final Class<? extends Command> command : commands) {
 			final CommandInfo info = commandService.getCommand(command);
 			info.setMenuPath(null);

@@ -32,46 +32,17 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
 package imagej.undo;
 
-
-import imagej.command.CommandInfo;
-
-import java.util.Map;
-
-
 /**
+ * Commands implement this interface to provide the {@link UndoService} with
+ * efficient means of undoing an operation. This allows the {@link UndoService}
+ * to use less memory.
  * 
  * @author Barry DeZonia
- *
  */
-public class DefaultInstantiableCommand implements InstantiableCommand {
+public interface Invertible {
 
-	private final CommandInfo command;
-	private final Map<String, Object> inputs;
-	private final long memUsage;
-
-	public DefaultInstantiableCommand(CommandInfo command,
-		Map<String, Object> inputs, long memUsage)
-	{
-		this.command = command;
-		this.inputs = inputs;
-		this.memUsage = memUsage;
-	}
-	
-	@Override
-	public CommandInfo getCommand() {
-		return command;
-	}
-
-	@Override
-	public Map<String, Object> getInputs() {
-		return inputs;
-	}
-
-	@Override
-	public long getMemoryUsage() {
-		return memUsage;
-	}
-
+	UndoInfo getInverse();
 }

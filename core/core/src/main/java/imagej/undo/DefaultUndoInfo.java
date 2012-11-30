@@ -35,13 +35,42 @@
 
 package imagej.undo;
 
+import imagej.module.ModuleInfo;
+
+import java.util.Map;
+
 /**
- * Command classes implement this interface to provide the UndoService with
- * efficient means of undoing an operation. This allows the UndoService to use
- * less memory.
+ * TODO
  * 
  * @author Barry DeZonia
  */
-public interface InvertibleCommand {
-	InstantiableCommand getInverseCommand();
+public class DefaultUndoInfo implements UndoInfo {
+
+	private final ModuleInfo module;
+	private final Map<String, Object> inputs;
+	private final long memUsage;
+
+	public DefaultUndoInfo(final ModuleInfo module,
+		final Map<String, Object> inputs, final long memUsage)
+	{
+		this.module = module;
+		this.inputs = inputs;
+		this.memUsage = memUsage;
+	}
+
+	@Override
+	public ModuleInfo getModule() {
+		return module;
+	}
+
+	@Override
+	public Map<String, Object> getInputs() {
+		return inputs;
+	}
+
+	@Override
+	public long getMemoryUsage() {
+		return memUsage;
+	}
+
 }

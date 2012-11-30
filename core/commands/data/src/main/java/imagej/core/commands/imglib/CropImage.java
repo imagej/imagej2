@@ -35,7 +35,6 @@
 
 package imagej.core.commands.imglib;
 
-import imagej.command.CommandInfo;
 import imagej.command.CommandService;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
@@ -44,11 +43,12 @@ import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.module.ModuleInfo;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.undo.InstantiableCommand;
-import imagej.undo.InvertibleCommand;
+import imagej.undo.UndoInfo;
+import imagej.undo.Invertible;
 import imagej.util.RealRect;
 
 import java.util.ArrayList;
@@ -79,7 +79,7 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Crop", accelerator = "shift control X") }, headless = true)
-public class CropImage extends ContextCommand implements InvertibleCommand {
+public class CropImage extends ContextCommand implements Invertible {
 
 	// -- instance variables that are Parameters --
 
@@ -104,8 +104,8 @@ public class CropImage extends ContextCommand implements InvertibleCommand {
 	private ImgPlus<? extends RealType<?>> oldData;
 	private List<Overlay> oldOverlays;
 	private List<Overlay> newOverlays;
-	private CommandInfo inverseCommand;
-	
+	private ModuleInfo inverse;
+
 	// -- public interface --
 
 	/**
@@ -139,7 +139,7 @@ public class CropImage extends ContextCommand implements InvertibleCommand {
 				newOverlays.add(newOverlay);
 			}
 			overlayService.removeOverlay(display, overlay);
-			inverseCommand = commandService.getCommand(UndoCropImage.class);
+			inverse = commandService.getCommand(UndoCropImage.class);
 		}
 
 		// BDZ - HACK - FIXME
@@ -175,14 +175,13 @@ public class CropImage extends ContextCommand implements InvertibleCommand {
 	}
 
 
-	@SuppressWarnings("synthetic-access")
 	@Override
-	public InstantiableCommand getInverseCommand() {
-		return new InstantiableCommand() {
+	public UndoInfo getInverse() {
+		return new UndoInfo() {
 
 			@Override
-			public CommandInfo getCommand() {
-				return inverseCommand;
+			public ModuleInfo getModule() {
+				return inverse;
 			}
 
 			@Override

@@ -35,10 +35,12 @@
 
 package imagej.undo;
 
+import imagej.command.Command;
+import imagej.module.Module;
 
 /**
- * Any Command class that implements this interface will not be recorded by
- * the UndoService when it is run.
+ * Any {@link Module} or {@link Command} that implements this interface will not
+ * be recorded by the {@link UndoService} when it is run.
  * 
  * @author Barry DeZonia
  */
