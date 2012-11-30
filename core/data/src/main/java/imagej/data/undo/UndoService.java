@@ -132,286 +132,280 @@ import net.imglib2.type.numeric.real.DoubleType;
  * Provides multistep undo/redo support to IJ2.
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin(type = Service.class)
 public class UndoService extends AbstractService {
 
 	// -- constants --
-	
+
 	// TODO we really need max mem for combined histories and max mem of one
 	// history. It will work as a test bed for now. Max should be
 	// a settable value in some options plugin
-	
+
 	private static final int MAX_BYTES = 20 * 1024 * 1024; // temp: 20 meg
-	
+
 	// -- Parameters --
-	
+
 	@Parameter
-	private DisplayService dispService;
-	
+	private DisplayService displayService;
+
 	@Parameter
-	private CommandService cmndService;
-	
+	private CommandService commandService;
+
 	@Parameter
 	private EventService eventService;
-	
+
 	// -- working variables --
-	
-	private Map<Display<?>,CommandHistory> histories =
-			new HashMap<Display<?>,CommandHistory>() ;
+
+	private final Map<Display<?>, CommandHistory> histories =
+		new HashMap<Display<?>, CommandHistory>();
 
 	// HACK TO GO AWAY SOON
-	private Map<ModuleInfo,Boolean> modulesToIgnore =
-			new ConcurrentHashMap<ModuleInfo,Boolean>();
-	
+	private final Map<ModuleInfo, Boolean> modulesToIgnore =
+		new ConcurrentHashMap<ModuleInfo, Boolean>();
+
 	// -- service initialization code --
-	
+
 	@Override
 	public void initialize() {
 		subscribeToEvents(eventService);
 	}
 
 	// -- public api --
-	
+
 	/**
 	 * Undoes the previous command associated with the given display.
 	 * 
 	 * @param interestedParty
 	 */
-	public void undo(Display<?> interestedParty) {
-		CommandHistory history = histories.get(interestedParty);
+	public void undo(final Display<?> interestedParty) {
+		final CommandHistory history = histories.get(interestedParty);
 		if (history != null) history.doUndo();
 	}
-	
+
 	/**
 	 * Redoes the next command associated with the given display.
 	 * 
 	 * @param interestedParty
 	 */
-	public void redo(Display<?> interestedParty) {
-		CommandHistory history = histories.get(interestedParty);
+	public void redo(final Display<?> interestedParty) {
+		final CommandHistory history = histories.get(interestedParty);
 		if (history != null) history.doRedo();
 	}
 
 	/**
 	 * Clears the entire undo/redo cache for given display
 	 */
-	public void clearHistory(Display<?> interestedParty) {
-		CommandHistory history = histories.get(interestedParty);
+	public void clearHistory(final Display<?> interestedParty) {
+		final CommandHistory history = histories.get(interestedParty);
 		if (history != null) history.clear();
 	}
-	
+
 	/**
 	 * Clears the entire undo/redo cache for all displays
 	 */
 	public void clearAllHistory() {
-		for (CommandHistory hist : histories.values()) {
+		for (final CommandHistory hist : histories.values()) {
 			hist.clear();
 		}
 	}
 
 	/**
-	 * Captures a region of a Dataset to a one dimensional Img<DoubleType>.
-	 * The region is defined with a PointSet. The data is stored in the order of
+	 * Captures a region of a Dataset to a one dimensional Img<DoubleType>. The
+	 * region is defined with a PointSet. The data is stored in the order of
 	 * iteration of the input PointSet. Using the Img<DoubleType> and the original
 	 * PointSet one can easily restore the data using restoreData(). The
 	 * Img<DoubleType> will reside completely in memory and is limited to about
 	 * two gig of elements.
 	 * 
-	 * @param source
-	 * 	The Dataset to capture from.
-	 * @param points
-	 *  The set of coordinate points that hold the values to backup.
-	 * @return
-	 * 	An Img<DoubleType> that contains the backup data.
+	 * @param source The Dataset to capture from.
+	 * @param points The set of coordinate points that hold the values to backup.
+	 * @return An Img<DoubleType> that contains the backup data.
 	 */
-	public Img<DoubleType> captureData(Dataset source, PointSet points) {
+	public Img<DoubleType>
+		captureData(final Dataset source, final PointSet points)
+	{
 		return captureData(source, points, new ArrayImgFactory<DoubleType>());
 	}
-	
+
 	/**
-	 * Captures a region of a Dataset to a one dimensional Img<DoubleType>.
-	 * The region is defined with a PointSet. The data is stored in the order of
+	 * Captures a region of a Dataset to a one dimensional Img<DoubleType>. The
+	 * region is defined with a PointSet. The data is stored in the order of
 	 * iteration of the input PointSet. Using the Img<DoubleType> and the original
 	 * PointSet one can easily restore the data using restoreData(). The
 	 * Img<DoubleType> will reside in a structure provided by the user specified
 	 * ImgFactory. This allows memory use and element count limitations of the
 	 * default implementation to be avoided.
 	 * 
-	 * @param source
-	 * 	The Dataset to capture from.
-	 * @param points
-	 *  The set of coordinate points that hold the values to backup.
-	 * @param factory
-	 *  The factory used to make the Img<DoubleType>. This allows API users to
-	 *  determine the most efficient way to store backup data.
-	 * @return
-	 * 	An Img<DoubleType> that contains the backup data.
+	 * @param source The Dataset to capture from.
+	 * @param points The set of coordinate points that hold the values to backup.
+	 * @param factory The factory used to make the Img<DoubleType>. This allows
+	 *          API users to determine the most efficient way to store backup
+	 *          data.
+	 * @return An Img<DoubleType> that contains the backup data.
 	 */
-	public Img<DoubleType> captureData(Dataset source, PointSet points,
-		ImgFactory<DoubleType> factory)
+	public Img<DoubleType> captureData(final Dataset source,
+		final PointSet points, final ImgFactory<DoubleType> factory)
 	{
-		long numPoints = points.size();
-		Img<DoubleType> backup =
-				factory.create(new long[]{numPoints}, new DoubleType());
+		final long numPoints = points.size();
+		final Img<DoubleType> backup =
+			factory.create(new long[] { numPoints }, new DoubleType());
 		long i = 0;
-		RandomAccess<? extends RealType<?>> dataAccessor =
-				source.getImgPlus().randomAccess();
-		RandomAccess<DoubleType> backupAccessor = backup.randomAccess();
-		PointSetIterator iter = points.iterator();
+		final RandomAccess<? extends RealType<?>> dataAccessor =
+			source.getImgPlus().randomAccess();
+		final RandomAccess<DoubleType> backupAccessor = backup.randomAccess();
+		final PointSetIterator iter = points.iterator();
 		while (iter.hasNext()) {
-			long[] pos = iter.next();
+			final long[] pos = iter.next();
 			dataAccessor.setPosition(pos);
-			double val = dataAccessor.get().getRealDouble();
-			backupAccessor.setPosition(i++,0);
+			final double val = dataAccessor.get().getRealDouble();
+			backupAccessor.setPosition(i++, 0);
 			backupAccessor.get().setReal(val);
 		}
 		return backup;
 	}
 
 	/**
-	 * Restores a region of a Dataset from a one dimensional Img<DoubleType>.
-	 * The region is defined by a PointSet. The data is stored in the order of
+	 * Restores a region of a Dataset from a one dimensional Img<DoubleType>. The
+	 * region is defined by a PointSet. The data is stored in the order of
 	 * iteration of the input PointSet. The Img<DoubleType> should have been
 	 * previously recorded by captureData().
-	 *
-	 * @param target
-	 * 	The Dataset to restore data to.
-	 * @param points
-	 *  The set of coordinate points of the Dataset to restore to.
-	 * @param backup
-	 * 	An Img<DoubleType> that contains the backup data.
+	 * 
+	 * @param target The Dataset to restore data to.
+	 * @param points The set of coordinate points of the Dataset to restore to.
+	 * @param backup An Img<DoubleType> that contains the backup data.
 	 */
-	public void restoreData(Dataset target, PointSet points,
-		Img<DoubleType> backup)
+	public void restoreData(final Dataset target, final PointSet points,
+		final Img<DoubleType> backup)
 	{
 		long i = 0;
-		RandomAccess<? extends RealType<?>> dataAccessor =
-				target.getImgPlus().randomAccess();
-		RandomAccess<DoubleType> backupAccessor = backup.randomAccess();
-		PointSetIterator iter = points.iterator();
+		final RandomAccess<? extends RealType<?>> dataAccessor =
+			target.getImgPlus().randomAccess();
+		final RandomAccess<DoubleType> backupAccessor = backup.randomAccess();
+		final PointSetIterator iter = points.iterator();
 		while (iter.hasNext()) {
-			long[] pos = iter.next();
-			backupAccessor.setPosition(i++,0);
-			double val = backupAccessor.get().getRealDouble();
+			final long[] pos = iter.next();
+			backupAccessor.setPosition(i++, 0);
+			final double val = backupAccessor.get().getRealDouble();
 			dataAccessor.setPosition(pos);
 			dataAccessor.get().setReal(val);
 		}
 		target.update();
 	}
-	
+
 	/**
 	 * Creates a command that can be run later which will restore a display to its
 	 * current state.
 	 */
-	public InstantiableCommand createFullRestoreCommand(SupportsDisplayStates display) {
-		DisplayState state = display.getCurrentState();
-		HashMap<String,Object> inputs = new HashMap<String, Object>();
+	public InstantiableCommand createFullRestoreCommand(
+		final SupportsDisplayStates display)
+	{
+		final DisplayState state = display.getCurrentState();
+		final HashMap<String, Object> inputs = new HashMap<String, Object>();
 		inputs.put("display", display);
 		inputs.put("state", state);
-		long memUsage = state.getMemoryUsage();
-		CommandInfo command = cmndService.getCommand(DisplayRestoreState.class);
+		final long memUsage = state.getMemoryUsage();
+		final CommandInfo command =
+			commandService.getCommand(DisplayRestoreState.class);
 		return new DefaultInstantiableCommand(command, inputs, memUsage);
 	}
 
 	// -- protected event handlers --
-	
+
 	@EventHandler
-	protected void onEvent(ModuleStartedEvent evt) {
-		Module module = evt.getModule();
-		Object theObject = module.getDelegateObject();
+	protected void onEvent(final ModuleStartedEvent evt) {
+		final Module module = evt.getModule();
+		final Object theObject = module.getDelegateObject();
 		if (theObject instanceof Unrecordable) return;
 		if (theObject instanceof InvertibleCommand) return; // record later
 		if (theObject instanceof Command) {
 			if (ignoring(module.getInfo())) return;
-			Display<?> display = dispService.getActiveDisplay();
+			final Display<?> display = displayService.getActiveDisplay();
 			if (!(display instanceof SupportsDisplayStates)) return;
-			InstantiableCommand reverseCommand =
-					createFullRestoreCommand((SupportsDisplayStates) display);
+			final InstantiableCommand reverseCommand =
+				createFullRestoreCommand((SupportsDisplayStates) display);
 			findHistory(display).addUndo(reverseCommand);
 		}
 	}
-	
+
 	@EventHandler
-	protected void onEvent(ModuleCanceledEvent evt) {
-		Module module = evt.getModule();
-		Object theObject = module.getDelegateObject();
+	protected void onEvent(final ModuleCanceledEvent evt) {
+		final Module module = evt.getModule();
+		final Object theObject = module.getDelegateObject();
 		if (theObject instanceof Unrecordable) return;
 		if (theObject instanceof InvertibleCommand) return;
 		if (theObject instanceof Command) {
 			if (ignoring(module.getInfo())) return;
-			Display<?> display = dispService.getActiveDisplay();
+			final Display<?> display = displayService.getActiveDisplay();
 			if (!(display instanceof SupportsDisplayStates)) return;
 			// remove last undo point
 			findHistory(display).removeNewestUndo();
 		}
 	}
-	
+
 	@EventHandler
-	protected void onEvent(ModuleFinishedEvent evt) {
-		Module module = evt.getModule();
-		Object theObject = module.getDelegateObject();
+	protected void onEvent(final ModuleFinishedEvent evt) {
+		final Module module = evt.getModule();
+		final Object theObject = module.getDelegateObject();
 		if (theObject instanceof Unrecordable) return;
 		if (theObject instanceof Command) {
 			if (ignoring(module.getInfo())) {
 				stopIgnoring(module.getInfo());
 				return;
 			}
-			Display<?> display = dispService.getActiveDisplay();
+			final Display<?> display = displayService.getActiveDisplay();
 			if (!(display instanceof SupportsDisplayStates)) return;
 			if (theObject instanceof InvertibleCommand) {
-				InvertibleCommand command = (InvertibleCommand) theObject;
+				final InvertibleCommand command = (InvertibleCommand) theObject;
 				findHistory(display).addUndo(command.getInverseCommand());
 			}
-			InstantiableCommand forwardCommand =
-					new DefaultInstantiableCommand(
-						(CommandInfo)module.getInfo(), module.getInputs(), 0);
+			final InstantiableCommand forwardCommand =
+				new DefaultInstantiableCommand((CommandInfo) module.getInfo(), module
+					.getInputs(), 0);
 			findHistory(display).addRedo(forwardCommand);
 		}
 	}
 
 	@EventHandler
-	protected void onEvent(DisplayDeletedEvent evt) {
-		CommandHistory history = histories.get(evt.getObject());
+	protected void onEvent(final DisplayDeletedEvent evt) {
+		final CommandHistory history = histories.get(evt.getObject());
 		if (history == null) return;
 		history.clear();
 		histories.remove(history);
 	}
-	
+
 	// -- private helpers --
 
-	void ignore(ModuleInfo info) {
+	void ignore(final ModuleInfo info) {
 		modulesToIgnore.put(info, true);
 	}
-	
-	private boolean ignoring(ModuleInfo info) {
+
+	private boolean ignoring(final ModuleInfo info) {
 		return modulesToIgnore.get(info) != null;
 	}
 
-	private void stopIgnoring(ModuleInfo info) {
+	private void stopIgnoring(final ModuleInfo info) {
 		modulesToIgnore.remove(info);
 	}
-	
-	private CommandHistory findHistory(Display<?> disp) {
+
+	private CommandHistory findHistory(final Display<?> disp) {
 		CommandHistory h = histories.get(disp);
 		if (h == null) {
-			h = new CommandHistory(this, cmndService, MAX_BYTES);
+			h = new CommandHistory(MAX_BYTES);
 			histories.put(disp, h);
 		}
 		return h;
 	}
-	
+
 	// -- Helper classes --
 
 	/**
-	 * Package access class used internally by UndoService to record and undo
-	 * a history of commands.
+	 * Package access class used internally by UndoService to record and undo a
+	 * history of commands.
 	 * 
 	 * @author Barry DeZonia
-	 *
 	 */
-	private static class CommandHistory {
+	private class CommandHistory {
 
 		// -- constants --
 
@@ -419,8 +413,6 @@ public class UndoService extends AbstractService {
 
 		// -- instance variables --
 
-		private final UndoService undoService;
-		private final CommandService commandService;
 		private final long maxMemUsage;
 		private final LinkedList<InstantiableCommand> undoableCommands;
 		private final LinkedList<InstantiableCommand> redoableCommands;
@@ -428,9 +420,7 @@ public class UndoService extends AbstractService {
 
 		// -- constructor --
 
-		private CommandHistory(UndoService uSrv, CommandService cSrv, long maxMem) {
-			undoService = uSrv;
-			commandService = cSrv;
+		private CommandHistory(final long maxMem) {
 			maxMemUsage = maxMem;
 			undoableCommands = new LinkedList<InstantiableCommand>();
 			redoableCommands = new LinkedList<InstantiableCommand>();
@@ -440,7 +430,7 @@ public class UndoService extends AbstractService {
 		// -- api to be used externally --
 
 		private void doUndo() {
-			//System.out.println("doUndo() : undoPos = "+undoPos+" redoPos = "+redoPos);
+			// System.out.println("doUndo() : undoPos = "+undoPos+" redoPos = "+redoPos);
 			if (undoableCommands.size() <= 0) {
 				// TODO eliminate AWT dependency with a BeepService!
 				Toolkit.getDefaultToolkit().beep();
@@ -449,18 +439,18 @@ public class UndoService extends AbstractService {
 			InstantiableCommand command = redoableCommands.removeLast();
 			transitionCommands.add(command);
 			command = undoableCommands.removeLast();
-			undoService.ignore(command.getCommand());
+			ignore(command.getCommand());
 			commandService.run(command.getCommand(), command.getInputs());
 		}
 
 		private void doRedo() {
-			//System.out.println("doRedo() : undoPos = "+undoPos+" redoPos = "+redoPos);
+			// System.out.println("doRedo() : undoPos = "+undoPos+" redoPos = "+redoPos);
 			if (transitionCommands.size() <= 0) {
 				// TODO eliminate AWT dependency with a BeepService!
 				Toolkit.getDefaultToolkit().beep();
 				return;
 			}
-			InstantiableCommand command = transitionCommands.getLast();
+			final InstantiableCommand command = transitionCommands.getLast();
 			commandService.run(command.getCommand(), command.getInputs());
 		}
 
@@ -470,10 +460,11 @@ public class UndoService extends AbstractService {
 			transitionCommands.clear();
 		}
 
-		private void addUndo(InstantiableCommand command) {
-			long additionalSpace = MIN_USAGE + command.getMemoryUsage();
+		private void addUndo(final InstantiableCommand command) {
+			final long additionalSpace = MIN_USAGE + command.getMemoryUsage();
 			while (((undoableCommands.size() > 0) || (redoableCommands.size() > 0)) &&
-					(spaceUsed() + additionalSpace > maxMemUsage)) {
+				(spaceUsed() + additionalSpace > maxMemUsage))
+			{
 				if (undoableCommands.size() > 0) removeOldestUndo();
 				if (redoableCommands.size() > 0) removeOldestRedo();
 				// TODO - what about transitionCommands???
@@ -482,12 +473,12 @@ public class UndoService extends AbstractService {
 			undoableCommands.add(command);
 		}
 
-		private void addRedo(InstantiableCommand command) {
-			CommandInfo info = command.getCommand();
-			Map<String, Object> input = command.getInputs();
+		private void addRedo(final InstantiableCommand command) {
+			final CommandInfo info = command.getCommand();
+			final Map<String, Object> input = command.getInputs();
 			if (transitionCommands.size() > 0) {
 				if (transitionCommands.getLast().getCommand().equals(info) &&
-						transitionCommands.getLast().getInputs().equals(input))
+					transitionCommands.getLast().getInputs().equals(input))
 				{
 					transitionCommands.removeLast();
 				}
@@ -495,9 +486,10 @@ public class UndoService extends AbstractService {
 					transitionCommands.clear();
 				}
 			}
-			long additionalSpace = MIN_USAGE + command.getMemoryUsage();
-			while (((undoableCommands.size() > 0) || (redoableCommands.size() > 0)) &&
-					(spaceUsed() + additionalSpace > maxMemUsage)) {
+			final long additionalSpace = MIN_USAGE + command.getMemoryUsage();
+			while ((undoableCommands.size() > 0 || redoableCommands.size() > 0) &&
+				spaceUsed() + additionalSpace > maxMemUsage)
+			{
 				if (undoableCommands.size() > 0) removeOldestUndo();
 				if (redoableCommands.size() > 0) removeOldestRedo();
 				// TODO - what about transitionCommands???
@@ -524,13 +516,13 @@ public class UndoService extends AbstractService {
 
 		private long spaceUsed() {
 			long used = 0;
-			for (InstantiableCommand command : undoableCommands) {
+			for (final InstantiableCommand command : undoableCommands) {
 				used += command.getMemoryUsage() + MIN_USAGE;
 			}
-			for (InstantiableCommand command : redoableCommands) {
+			for (final InstantiableCommand command : redoableCommands) {
 				used += command.getMemoryUsage() + MIN_USAGE;
 			}
-			for (InstantiableCommand command : transitionCommands) {
+			for (final InstantiableCommand command : transitionCommands) {
 				used += command.getMemoryUsage() + MIN_USAGE;
 			}
 			return used;
