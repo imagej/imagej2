@@ -37,10 +37,11 @@ package imagej.legacy.translate;
 
 import ij.ImagePlus;
 import ij.ImageStack;
+import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
-import imagej.util.Log;
+import imagej.log.LogService;
 import net.imglib2.meta.Axes;
 
 /**
@@ -51,6 +52,12 @@ import net.imglib2.meta.Axes;
  * @author Barry DeZonia
  */
 public class PlaneHarmonizer implements DataHarmonizer {
+
+	private final LogService log;
+
+	public PlaneHarmonizer(ImageJ context) {
+		log = context.getService(LogService.class);
+	}
 
 	/**
 	 * Assigns a planar {@link Dataset}'s plane references to match those of a
@@ -88,7 +95,7 @@ public class PlaneHarmonizer implements DataHarmonizer {
 						if (cIndex >= 0) planePos.setPosition(ci, cIndex - 2);
 						final Object plane = imp.getStack().getPixels(stackPosition++);
 						if (plane == null) {
-							Log.error("Could not extract plane from ImageStack: " +
+							log.error("Could not extract plane from ImageStack: " +
 								(stackPosition - 1));
 						}
 						final int planeNum = (int) planePos.getIndex();
@@ -143,7 +150,7 @@ public class PlaneHarmonizer implements DataHarmonizer {
 					final int planeNum = (int) planePos.getIndex();
 					plane = ds.getPlane(planeNum, false);
 					if (plane == null) {
-						Log.error(message("Can't extract plane from Dataset ", c, z, t));
+						log.error(message("Can't extract plane from Dataset ", c, z, t));
 					}
 					stack.setPixels(plane, stackPosition++);
 				}
