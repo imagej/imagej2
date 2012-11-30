@@ -100,10 +100,12 @@ public class OverlayHarmonizer extends AbstractContextual implements
 	DisplayHarmonizer
 {
 	private final LogService log;
+	private final OverlayService overlayService;
 
 	public OverlayHarmonizer(final ImageJ context) {
 		setContext(context);
 		log = context.getService(LogService.class);
+		overlayService = context.getService(OverlayService.class);
 	}
 
 	/**
@@ -112,30 +114,6 @@ public class OverlayHarmonizer extends AbstractContextual implements
 	 */
 	@Override
 	public void updateDisplay(final ImageDisplay display, final ImagePlus imp) {
-		final OverlayService overlayService =
-			getContext().getService(OverlayService.class);
-		final Roi oldRoi = createRoi(overlayService.getOverlays(display));
-		if (oldRoi instanceof ShapeRoi) {
-			final float[] oldPath = ((ShapeRoi) oldRoi).getShapeAsArray();
-			final Roi newRoi = imp.getRoi();
-			if (newRoi instanceof ShapeRoi) {
-				final float[] newPath = ((ShapeRoi) newRoi).getShapeAsArray();
-				if (oldPath.length == newPath.length) {
-					boolean same = true;
-					for (int i = 0; i < oldPath.length; i++) {
-						if (oldPath[i] != newPath[i]) {
-							same = false;
-							break;
-						}
-					}
-					if (same)
-						if (oldRoi.getStrokeWidth() == newRoi.getStrokeWidth())
-							if (sameColor(oldRoi.getFillColor(), newRoi.getFillColor()))
-								if (sameColor(oldRoi.getStrokeColor(), newRoi.getStrokeColor()))
-									return;
-				}
-			}
-		}
 		final List<Overlay> overlaysToRemove = overlayService.getOverlays(display);
 		for (final Overlay overlay : overlaysToRemove) {
 			overlayService.removeOverlay(display, overlay);
@@ -160,10 +138,8 @@ public class OverlayHarmonizer extends AbstractContextual implements
 	public void
 		updateLegacyImage(final ImageDisplay display, final ImagePlus imp)
 	{
-		final OverlayService overlayService =
-			getContext().getService(OverlayService.class);
 		final List<Overlay> overlays = overlayService.getOverlays(display);
-		setOverlays(overlays, imp);
+		setOverlays(overlays, overlayService.getActiveOverlay(display), imp);
 	}
 
 	/** Extracts a list of {@link Overlay}s from the given {@link ImagePlus}. */
@@ -173,41 +149,49 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		createOverlays(roi, overlays);
 		final ij.gui.Overlay overlay = imp.getOverlay();
 		if (overlay != null) {
+			final ArrayList<Overlay> list = new ArrayList<Overlay>();
 			for (int i = 0; i < overlay.size(); i++) {
+				list.clear();
 				roi = overlay.get(i);
-				final ArrayList<Overlay> fromRoi = new ArrayList<Overlay>();
-				createOverlays(roi, fromRoi);
-				overlays.addAll(fromRoi);
+				createOverlays(roi, list);
+				overlays.addAll(list);
 			}
 		}
 		return overlays;
 	}
 
-	/** Assigns a list of {@link Overlay}s to the given {@link ImagePlus}. */
-	public void setOverlays(final List<Overlay> overlays, final ImagePlus imp) {
-		final Roi roi = createRoi(overlays);
+	/**
+	 * Assigns a list of {@link Overlay}s to the given {@link ImagePlus}. The
+	 * active overlay becomes the {@link Roi} of the ImagePlus. The other overlays
+	 * become Roi's in the Overlay of the ImagePlus.
+	 */
+	public void setOverlays(List<Overlay> overlays, Overlay activeOverlay,
+		final ImagePlus imp)
+	{
+		final Roi roi = createRoi(activeOverlay);
+		final ij.gui.Overlay o = createIJ1Overlay(overlays, activeOverlay);
 		imp.setRoi(roi);
-	}
-
-	private Roi createRoi(final List<Overlay> overlays) {
-		if (overlays.size() == 0) return null;
-		if (overlays.size() == 1) return createRoi(overlays.get(0));
-
-		// Else make a composite shape
-
-		// TODO - this currently can take a TextRoi and it will make a rectangle
-		// for each one. This is not very desirable. Need to determine how to
-		// create a Roi from a set of various Rois that can include TextRois.
-
-		ShapeRoi roi = new ShapeRoi(createRoi(overlays.get(0)));
-		for (int i = 1; i < overlays.size(); i++) {
-			final Roi overlayRoi = createRoi(overlays.get(i));
-			if (overlayRoi != null) roi = roi.or(new ShapeRoi(overlayRoi));
-		}
-		return roi;
+		imp.setOverlay(o);
 	}
 
 	// -- Helper methods - legacy Roi creation --
+
+	private ij.gui.Overlay createIJ1Overlay(final List<Overlay> overlays,
+		Overlay activeOverlay)
+	{
+		List<Roi> rois = new ArrayList<Roi>();
+		for (Overlay o : overlays) {
+			if (o != activeOverlay) {
+				rois.add(createRoi(o));
+			}
+		}
+		if (rois.size() == 0) return null;
+		ij.gui.Overlay overlay = new ij.gui.Overlay();
+		for (Roi roi : rois) {
+			overlay.add(roi);
+		}
+		return overlay;
+	}
 
 	private Roi createRoi(final Overlay overlay) {
 		Roi roi = null;
@@ -742,10 +726,4 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		}
 	}
 
-	private boolean sameColor(Color c1, Color c2) {
-		if (c1 == null) {
-			return c2 == null;
-		}
-		return c1.equals(c2);
-	}
 }
