@@ -38,13 +38,13 @@ package imagej.data.undo;
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
 import imagej.command.ContextCommand;
-import imagej.command.DefaultInstantiableCommand;
-import imagej.command.InstantiableCommand;
-import imagej.command.InvertibleCommand;
 import imagej.data.Dataset;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.undo.DefaultInstantiableCommand;
+import imagej.undo.InstantiableCommand;
+import imagej.undo.InvertibleCommand;
 
 import java.util.HashMap;
 

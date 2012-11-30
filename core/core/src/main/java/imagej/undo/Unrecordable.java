@@ -33,17 +33,15 @@
  * #L%
  */
 
-package imagej.command;
+package imagej.undo;
 
-import java.util.Map;
 
 /**
- * TODO
+ * Any Command class that implements this interface will not be recorded by
+ * the UndoService when it is run.
  * 
  * @author Barry DeZonia
  */
-public interface InstantiableCommand {
-	CommandInfo getCommand();
-	Map<String,Object> getInputs();
-	long getMemoryUsage();
+public interface Unrecordable {
+	// NB: This interface intentionally left blank.
 }

@@ -46,13 +46,13 @@ import imagej.data.event.DataUpdatedEvent;
 import imagej.data.undo.UndoService;
 import imagej.display.AbstractDisplay;
 import imagej.display.DisplayService;
-import imagej.display.DisplayState;
-import imagej.display.SupportsDisplayStates;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.plugin.Plugin;
+import imagej.undo.DisplayState;
+import imagej.undo.SupportsDisplayStates;
 import imagej.util.RealRect;
 
 import java.util.List;

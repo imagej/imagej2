@@ -39,10 +39,7 @@ import java.util.HashMap;
 
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
-import imagej.command.InstantiableCommand;
 import imagej.command.ContextCommand;
-import imagej.command.DefaultInstantiableCommand;
-import imagej.command.InvertibleCommand;
 import imagej.core.commands.imglib.ImgLibDataTransform;
 import imagej.core.commands.rotate.XYFlipper.FlipCoordinateTransformer;
 import imagej.data.Dataset;
@@ -54,6 +51,9 @@ import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.undo.DefaultInstantiableCommand;
+import imagej.undo.InstantiableCommand;
+import imagej.undo.InvertibleCommand;
 import imagej.util.RealRect;
 
 // TODO - IJ1 updates the calibration so that pixel width & depth swap after this operation. Must implement here.

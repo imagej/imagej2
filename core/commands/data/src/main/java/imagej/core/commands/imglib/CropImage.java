@@ -37,9 +37,7 @@ package imagej.core.commands.imglib;
 
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
-import imagej.command.InstantiableCommand;
 import imagej.command.ContextCommand;
-import imagej.command.InvertibleCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayService;
@@ -49,6 +47,8 @@ import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.undo.InstantiableCommand;
+import imagej.undo.InvertibleCommand;
 import imagej.util.RealRect;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package imagej.display;
+package imagej.undo;
 
 
 public interface SupportsDisplayStates {

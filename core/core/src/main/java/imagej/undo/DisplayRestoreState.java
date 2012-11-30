@@ -33,16 +33,64 @@
  * #L%
  */
 
-package imagej.display;
+package imagej.undo;
 
+import imagej.command.Command;
+import imagej.command.CommandInfo;
+import imagej.command.CommandService;
+import imagej.module.ItemIO;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * This interface represents a display agnostic way to save and restore state.
- * Each display type needs to define its specific DisplayState implementation.
+ * TODO
  * 
  * @author Barry DeZonia
- *
  */
-public interface DisplayState {
-	long getMemoryUsage();
+@Plugin
+public class DisplayRestoreState implements Command, InvertibleCommand {
+
+	@Parameter
+	private CommandService commandService;
+
+	@Parameter(type = ItemIO.BOTH)
+	private SupportsDisplayStates display;
+
+	@Parameter(type = ItemIO.INPUT)
+	private DisplayState state;
+
+	private CommandInfo inverseCommand;
+
+	@Override
+	public void run() {
+		display.setCurrentState(state);
+		inverseCommand = commandService.getCommand(DisplaySaveState.class);
+	}
+
+	@SuppressWarnings("synthetic-access")
+	@Override
+	public InstantiableCommand getInverseCommand() {
+		return new InstantiableCommand() {
+
+			@Override
+			public CommandInfo getCommand() {
+				return inverseCommand;
+			}
+
+			@Override
+			public Map<String, Object> getInputs() {
+				final Map<String, Object> inverseInputs = new HashMap<String, Object>();
+				inverseInputs.put("display", display);
+				return inverseInputs;
+			}
+
+			@Override
+			public long getMemoryUsage() {
+				return state.getMemoryUsage();
+			}
+		};
+	}
 }

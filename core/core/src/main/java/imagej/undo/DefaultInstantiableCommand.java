@@ -32,69 +32,46 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+package imagej.undo;
 
-package imagej.data.undo;
 
-import imagej.command.Command;
 import imagej.command.CommandInfo;
-import imagej.command.CommandService;
-import imagej.command.InstantiableCommand;
-import imagej.command.InvertibleCommand;
-import imagej.display.DisplayState;
-import imagej.display.SupportsDisplayStates;
-import imagej.module.ItemIO;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
-import java.util.HashMap;
 import java.util.Map;
 
+
 /**
- * TODO
  * 
  * @author Barry DeZonia
+ *
  */
-@Plugin
-public class DisplayRestoreState implements Command, InvertibleCommand {
+public class DefaultInstantiableCommand implements InstantiableCommand {
 
-	@Parameter
-	private CommandService commandService;
+	private final CommandInfo command;
+	private final Map<String, Object> inputs;
+	private final long memUsage;
 
-	@Parameter(type = ItemIO.BOTH)
-	private SupportsDisplayStates display;
-
-	@Parameter(type = ItemIO.INPUT)
-	private DisplayState state;
-
-	private CommandInfo inverseCommand;
-
+	public DefaultInstantiableCommand(CommandInfo command,
+		Map<String, Object> inputs, long memUsage)
+	{
+		this.command = command;
+		this.inputs = inputs;
+		this.memUsage = memUsage;
+	}
+	
 	@Override
-	public void run() {
-		display.setCurrentState(state);
-		inverseCommand = commandService.getCommand(DisplaySaveState.class);
+	public CommandInfo getCommand() {
+		return command;
 	}
 
-	@SuppressWarnings("synthetic-access")
 	@Override
-	public InstantiableCommand getInverseCommand() {
-		return new InstantiableCommand() {
-
-			@Override
-			public CommandInfo getCommand() {
-				return inverseCommand;
-			}
-
-			@Override
-			public Map<String, Object> getInputs() {
-				final Map<String, Object> inverseInputs = new HashMap<String, Object>();
-				inverseInputs.put("display", display);
-				return inverseInputs;
-			}
-
-			@Override
-			public long getMemoryUsage() {
-				return state.getMemoryUsage();
-			}
-		};
+	public Map<String, Object> getInputs() {
+		return inputs;
 	}
+
+	@Override
+	public long getMemoryUsage() {
+		return memUsage;
+	}
+
 }

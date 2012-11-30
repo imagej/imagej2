@@ -32,44 +32,17 @@
  * policies, either expressed or implied, of any organization.
  * #L%
  */
-package imagej.command;
 
-
-import java.util.Map;
+package imagej.undo;
 
 
 /**
+ * This interface represents a display agnostic way to save and restore state.
+ * Each display type needs to define its specific DisplayState implementation.
  * 
  * @author Barry DeZonia
  *
  */
-public class DefaultInstantiableCommand implements InstantiableCommand {
-
-	private final CommandInfo command;
-	private final Map<String, Object> inputs;
-	private final long memUsage;
-
-	public DefaultInstantiableCommand(CommandInfo command,
-		Map<String, Object> inputs, long memUsage)
-	{
-		this.command = command;
-		this.inputs = inputs;
-		this.memUsage = memUsage;
-	}
-	
-	@Override
-	public CommandInfo getCommand() {
-		return command;
-	}
-
-	@Override
-	public Map<String, Object> getInputs() {
-		return inputs;
-	}
-
-	@Override
-	public long getMemoryUsage() {
-		return memUsage;
-	}
-
+public interface DisplayState {
+	long getMemoryUsage();
 }

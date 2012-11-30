@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.command;
+package imagej.undo;
 
 /**
  * Command classes implement this interface to provide the UndoService with
