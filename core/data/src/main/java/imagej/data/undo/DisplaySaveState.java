@@ -35,14 +35,11 @@
 
 package imagej.data.undo;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import imagej.command.Command;
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
-import imagej.command.InstantiableCommand;
 import imagej.command.DefaultInstantiableCommand;
+import imagej.command.InstantiableCommand;
 import imagej.command.InvertibleCommand;
 import imagej.display.DisplayState;
 import imagej.display.SupportsDisplayStates;
@@ -50,25 +47,28 @@ import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
+ * TODO
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin
 public class DisplaySaveState implements Command, InvertibleCommand {
 
 	@Parameter
 	private CommandService commandService;
-	
+
 	@Parameter(type = ItemIO.INPUT)
 	private SupportsDisplayStates display;
 
 	@Parameter(type = ItemIO.OUTPUT)
 	private DisplayState state;
-	
-	private CommandInfo inverseCommand; 
-	
+
+	private CommandInfo inverseCommand;
+
 	@Override
 	public void run() {
 		state = display.getCurrentState();
@@ -77,11 +77,11 @@ public class DisplaySaveState implements Command, InvertibleCommand {
 
 	@Override
 	public InstantiableCommand getInverseCommand() {
-		Map<String,Object> inverseInputs = new HashMap<String, Object>();
+		final Map<String, Object> inverseInputs = new HashMap<String, Object>();
 		inverseInputs.put("display", display);
 		inverseInputs.put("state", state);
-		return new DefaultInstantiableCommand(
-			inverseCommand, inverseInputs, state.getMemoryUsage());
+		return new DefaultInstantiableCommand(inverseCommand, inverseInputs, state
+			.getMemoryUsage());
 	}
 
 }

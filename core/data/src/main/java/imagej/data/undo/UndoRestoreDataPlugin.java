@@ -35,105 +35,105 @@
 
 package imagej.data.undo;
 
-import java.util.HashMap;
-
-import net.imglib2.img.Img;
-import net.imglib2.ops.pointset.PointSet;
-import net.imglib2.type.numeric.real.DoubleType;
-
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
-import imagej.command.InstantiableCommand;
 import imagej.command.ContextCommand;
 import imagej.command.DefaultInstantiableCommand;
+import imagej.command.InstantiableCommand;
 import imagej.command.InvertibleCommand;
 import imagej.data.Dataset;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
+import java.util.HashMap;
+
+import net.imglib2.img.Img;
+import net.imglib2.ops.pointset.PointSet;
+import net.imglib2.type.numeric.real.DoubleType;
+
 // NOTE - this plugin unused as of 10-1-12. May prove useful in future.
 
 /**
+ * TODO
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin
-public class UndoRestoreDataPlugin
-	extends ContextCommand
-	implements InvertibleCommand
+public class UndoRestoreDataPlugin extends ContextCommand implements
+	InvertibleCommand
 {
+
 	// -- Parameters --
-	
+
 	@Parameter
 	private UndoService undoService;
-	
+
 	@Parameter
 	private CommandService commandService;
-	
+
 	@Parameter(type = ItemIO.BOTH)
 	private Dataset target;
-	
+
 	@Parameter(type = ItemIO.INPUT)
 	private PointSet points;
-	
+
 	@Parameter(type = ItemIO.INPUT)
 	private Img<DoubleType> data;
-	
+
 	// -- private instance variables --
-	
+
 	private CommandInfo inverseCommand;
-	
+
 	// -- Command methods --
-	
+
 	@Override
 	public void run() {
 		undoService.restoreData(target, points, data);
 		inverseCommand = commandService.getCommand(UndoSaveDataPlugin.class);
 	}
-	
+
 	// -- InvertibleCommand methods --
 
 	@Override
 	public InstantiableCommand getInverseCommand() {
-		HashMap<String, Object> inverseInputs = new HashMap<String, Object>();
+		final HashMap<String, Object> inverseInputs = new HashMap<String, Object>();
 		inverseInputs.put("source", target);
 		inverseInputs.put("points", points);
-		long size = 8 * numElements(data);
+		final long size = 8 * numElements(data);
 		return new DefaultInstantiableCommand(inverseCommand, inverseInputs, size);
 	}
 
 	// -- UndoRestorDataPlugin methods --
-	
-	public void setTarget(Dataset ds) {
+
+	public void setTarget(final Dataset ds) {
 		target = ds;
 	}
-	
+
 	public Dataset getTarget() {
 		return target;
 	}
-	
-	public void setPoints(PointSet ps) {
+
+	public void setPoints(final PointSet ps) {
 		points = ps;
 	}
 
 	public PointSet getPoints() {
 		return points;
 	}
-	
-	public void setData(Img<DoubleType> data) {
+
+	public void setData(final Img<DoubleType> data) {
 		this.data = data;
 	}
-	
+
 	public Img<DoubleType> getData() {
 		return data;
 	}
 
 	// -- private helpers --
-	
-	private long numElements(Img<?> img) {
-		int numDims = img.numDimensions();
+
+	private long numElements(final Img<?> img) {
+		final int numDims = img.numDimensions();
 		if (numDims < 1) return 0;
 		long totElems = 1;
 		for (int i = 0; i < numDims; i++) {

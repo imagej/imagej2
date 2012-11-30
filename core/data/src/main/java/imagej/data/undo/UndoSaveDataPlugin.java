@@ -35,6 +35,17 @@
 
 package imagej.data.undo;
 
+import imagej.command.CommandInfo;
+import imagej.command.CommandService;
+import imagej.command.ContextCommand;
+import imagej.command.DefaultInstantiableCommand;
+import imagej.command.InstantiableCommand;
+import imagej.command.InvertibleCommand;
+import imagej.data.Dataset;
+import imagej.module.ItemIO;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+
 import java.util.HashMap;
 
 import net.imglib2.img.Img;
@@ -42,97 +53,89 @@ import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.type.numeric.real.DoubleType;
 
-import imagej.command.CommandInfo;
-import imagej.command.CommandService;
-import imagej.command.InstantiableCommand;
-import imagej.command.ContextCommand;
-import imagej.command.DefaultInstantiableCommand;
-import imagej.command.InvertibleCommand;
-import imagej.data.Dataset;
-import imagej.module.ItemIO;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-
 // NOTE - this plugin unused as of 10-1-12. May prove useful in future.
 
 /**
+ * TODO
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin
-public class UndoSaveDataPlugin
-	extends ContextCommand
-	implements InvertibleCommand
+public class UndoSaveDataPlugin extends ContextCommand implements
+	InvertibleCommand
 {
+
 	// -- Parameters --
-	
+
 	@Parameter
 	private UndoService undoService;
-	
+
 	@Parameter
 	private CommandService commandService;
-	
+
 	@Parameter(type = ItemIO.INPUT)
 	private Dataset source;
-	
+
 	@Parameter(type = ItemIO.INPUT)
 	private PointSet points;
-	
+
 	@Parameter(type = ItemIO.OUTPUT)
 	private Img<DoubleType> data;
-	
+
 	// -- private instance variables --
-	
+
 	private CommandInfo inverseCommand;
-	
+
 	// -- Command methods --
-	
+
 	@Override
 	public void run() {
-		// TODO - change ArrayImgFactory to some small memory ImgFactory made for undo
-		data = undoService.captureData(source, points, new ArrayImgFactory<DoubleType>());
+		// TODO - change ArrayImgFactory to some small memory ImgFactory made for
+		// undo
+		data =
+			undoService
+				.captureData(source, points, new ArrayImgFactory<DoubleType>());
 		inverseCommand = commandService.getCommand(UndoRestoreDataPlugin.class);
 	}
-	
+
 	// -- InvertibleCommand methods --
-	
+
 	@Override
 	public InstantiableCommand getInverseCommand() {
-		HashMap<String, Object> inverseInputs = new HashMap<String, Object>();
+		final HashMap<String, Object> inverseInputs = new HashMap<String, Object>();
 		inverseInputs.put("target", source);
 		inverseInputs.put("points", points);
 		inverseInputs.put("data", data);
-		long size = 8 * numElements(data);
+		final long size = 8 * numElements(data);
 		return new DefaultInstantiableCommand(inverseCommand, inverseInputs, size);
 	}
 
 	// -- UndoSaveDataPlugin methods --
-	
-	public void setSource(Dataset ds) {
+
+	public void setSource(final Dataset ds) {
 		source = ds;
 	}
-	
+
 	public Dataset getSource() {
 		return source;
 	}
-	
-	public void setPoints(PointSet ps) {
+
+	public void setPoints(final PointSet ps) {
 		points = ps;
 	}
 
 	public PointSet getPoints() {
 		return points;
 	}
-	
+
 	public Img<DoubleType> getData() {
 		return data;
 	}
-	
+
 	// -- private helpers --
-	
-	private long numElements(Img<?> img) {
-		int numDims = img.numDimensions();
+
+	private long numElements(final Img<?> img) {
+		final int numDims = img.numDimensions();
 		if (numDims < 1) return 0;
 		long totElems = 1;
 		for (int i = 0; i < numDims; i++) {

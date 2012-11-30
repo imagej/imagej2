@@ -59,15 +59,15 @@ public class DisplayRestoreState implements Command, InvertibleCommand {
 
 	@Parameter
 	private CommandService commandService;
-	
+
 	@Parameter(type = ItemIO.BOTH)
 	private SupportsDisplayStates display;
 
 	@Parameter(type = ItemIO.INPUT)
 	private DisplayState state;
-	
+
 	private CommandInfo inverseCommand;
-	
+
 	@Override
 	public void run() {
 		display.setCurrentState(state);
@@ -78,6 +78,7 @@ public class DisplayRestoreState implements Command, InvertibleCommand {
 	@Override
 	public InstantiableCommand getInverseCommand() {
 		return new InstantiableCommand() {
+
 			@Override
 			public CommandInfo getCommand() {
 				return inverseCommand;
@@ -85,7 +86,7 @@ public class DisplayRestoreState implements Command, InvertibleCommand {
 
 			@Override
 			public Map<String, Object> getInputs() {
-				Map<String,Object> inverseInputs = new HashMap<String, Object>();
+				final Map<String, Object> inverseInputs = new HashMap<String, Object>();
 				inverseInputs.put("display", display);
 				return inverseInputs;
 			}
