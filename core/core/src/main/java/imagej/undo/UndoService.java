@@ -112,12 +112,12 @@ import java.util.concurrent.ConcurrentHashMap;
 // that refer to deleted display?????
 
 /**
- * Provides multistep undo/redo support to IJ2.
+ * Provides multistep undo/redo capabilities.
  * 
  * @author Barry DeZonia
  */
 @Plugin(type = Service.class)
-public class UndoService extends AbstractService {
+public class UndoService extends AbstractService implements IUndoService {
 
 	// -- constants --
 
@@ -156,47 +156,32 @@ public class UndoService extends AbstractService {
 
 	// -- public api --
 
-	/**
-	 * Undoes the previous command associated with the given display.
-	 * 
-	 * @param interestedParty
-	 */
+	@Override
 	public void undo(final Display<?> interestedParty) {
 		final ModuleHistory history = histories.get(interestedParty);
 		if (history != null) history.doUndo();
 	}
 
-	/**
-	 * Redoes the next command associated with the given display.
-	 * 
-	 * @param interestedParty
-	 */
+	@Override
 	public void redo(final Display<?> interestedParty) {
 		final ModuleHistory history = histories.get(interestedParty);
 		if (history != null) history.doRedo();
 	}
 
-	/**
-	 * Clears the entire undo/redo cache for given display
-	 */
+	@Override
 	public void clearHistory(final Display<?> interestedParty) {
 		final ModuleHistory history = histories.get(interestedParty);
 		if (history != null) history.clear();
 	}
 
-	/**
-	 * Clears the entire undo/redo cache for all displays
-	 */
+	@Override
 	public void clearAllHistory() {
 		for (final ModuleHistory hist : histories.values()) {
 			hist.clear();
 		}
 	}
 
-	/**
-	 * Creates a module that can be run later which will restore a display to its
-	 * current state.
-	 */
+	@Override
 	public UndoInfo createFullRestoreModule(
 		final SupportsDisplayStates display)
 	{

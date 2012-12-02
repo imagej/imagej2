@@ -123,47 +123,60 @@ public interface DatasetService extends Service {
 	<T extends RealType<T>> Dataset create(ImgPlus<T> imgPlus);
 
 	/**
-	 * Captures a region of a Dataset to a one dimensional Img<DoubleType>. The
-	 * region is defined with a PointSet. The data is stored in the order of
-	 * iteration of the input PointSet. Using the Img<DoubleType> and the original
-	 * PointSet one can easily restore the data using restoreData(). The
-	 * Img<DoubleType> will reside completely in memory and is limited to about
-	 * two gig of elements.
+	 * Captures a region of a {@link Dataset} to a one-dimensional
+	 * {@code Img<DoubleType>}.
+	 * <p>
+	 * The region is defined with a {@link PointSet}. The data is stored in the
+	 * order of iteration of the input {@link PointSet}. Using the
+	 * {@code Img<DoubleType>} and the original {@link PointSet} one can easily
+	 * restore the data using {@link #restoreData}. The {@code Img<DoubleType>}
+	 * will reside completely in memory and is limited to about two gig of
+	 * elements.
+	 * </p>
 	 * 
-	 * @param source The Dataset to capture from.
+	 * @param source The {@link Dataset} to capture from.
 	 * @param points The set of coordinate points that hold the values to backup.
-	 * @return An Img<DoubleType> that contains the backup data.
+	 * @return An {@code Img<DoubleType>} that contains the backup data.
 	 */
 	Img<DoubleType> captureData(final Dataset source, final PointSet points);
 
 	/**
-	 * Captures a region of a Dataset to a one dimensional Img<DoubleType>. The
-	 * region is defined with a PointSet. The data is stored in the order of
-	 * iteration of the input PointSet. Using the Img<DoubleType> and the original
-	 * PointSet one can easily restore the data using restoreData(). The
-	 * Img<DoubleType> will reside in a structure provided by the user specified
-	 * ImgFactory. This allows memory use and element count limitations of the
-	 * default implementation to be avoided.
+	 * Captures a region of a {@link Dataset} to a one-dimensional
+	 * {@code Img<DoubleType>}.
+	 * <p>
+	 * The region is defined with a {@link PointSet}. The data is stored in the
+	 * order of iteration of the input {@link PointSet}. Using the
+	 * {@code Img<DoubleType>} and the original {@link PointSet} one can easily
+	 * restore the data using restoreData(). The {@code Img<DoubleType>} will
+	 * reside in a structure provided by the user-specified {@link ImgFactory}.
+	 * This allows memory use and element count limitations of the default
+	 * implementation to be avoided.
+	 * </p>
 	 * 
-	 * @param source The Dataset to capture from.
+	 * @param source The {@link Dataset} to capture from.
 	 * @param points The set of coordinate points that hold the values to backup.
-	 * @param factory The factory used to make the Img<DoubleType>. This allows
-	 *          API users to determine the most efficient way to store backup
-	 *          data.
-	 * @return An Img<DoubleType> that contains the backup data.
+	 * @param factory The factory used to make the {@code Img<DoubleType>}. This
+	 *          allows API users to determine the most efficient way to store
+	 *          backup data.
+	 * @return An {@code Img<DoubleType>} that contains the backup data.
 	 */
 	Img<DoubleType> captureData(final Dataset source, final PointSet points,
 		final ImgFactory<DoubleType> factory);
 
 	/**
-	 * Restores a region of a Dataset from a one dimensional Img<DoubleType>. The
-	 * region is defined by a PointSet. The data is stored in the order of
-	 * iteration of the input PointSet. The Img<DoubleType> should have been
-	 * previously recorded by captureData().
+	 * Restores a region of a {@link Dataset} from a one-dimensional
+	 * {@code Img<DoubleType>}.
+	 * <p>
+	 * The region is defined by a {@link PointSet}. The data is stored in the
+	 * order of iteration of the input {@link PointSet}. The
+	 * {@code Img<DoubleType>} should have been previously recorded by
+	 * {@link #captureData}.
+	 * </p>
 	 * 
-	 * @param target The Dataset to restore data to.
-	 * @param points The set of coordinate points of the Dataset to restore to.
-	 * @param backup An Img<DoubleType> that contains the backup data.
+	 * @param target The {@link Dataset} to restore data to.
+	 * @param points The set of coordinate points of the {@link Dataset} to
+	 *          restore to.
+	 * @param backup An {@code Img<DoubleType>} that contains the backup data.
 	 */
 	void restoreData(final Dataset target, final PointSet points,
 		final Img<DoubleType> backup);

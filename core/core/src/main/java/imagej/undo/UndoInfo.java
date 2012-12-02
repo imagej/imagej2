@@ -40,9 +40,11 @@ import imagej.module.ModuleInfo;
 import java.util.Map;
 
 /**
- * TODO
+ * Metadata about a module execution, for use with undo and redo.
  * 
  * @author Barry DeZonia
+ * @see Invertible
+ * @see UndoService
  */
 public interface UndoInfo {
 

@@ -45,4 +45,5 @@ package imagej.undo;
 public interface Invertible {
 
 	UndoInfo getInverse();
+
 }

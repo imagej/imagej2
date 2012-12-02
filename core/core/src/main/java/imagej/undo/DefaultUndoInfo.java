@@ -40,7 +40,7 @@ import imagej.module.ModuleInfo;
 import java.util.Map;
 
 /**
- * TODO
+ * Default implementation of {@link UndoInfo}.
  * 
  * @author Barry DeZonia
  */
