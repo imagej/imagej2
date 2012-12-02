@@ -38,13 +38,14 @@ package imagej.data.undo;
 import imagej.command.CommandService;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
+import imagej.data.DatasetService;
 import imagej.module.ItemIO;
 import imagej.module.ModuleInfo;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.undo.DefaultUndoInfo;
-import imagej.undo.UndoInfo;
 import imagej.undo.Invertible;
+import imagej.undo.UndoInfo;
 
 import java.util.HashMap;
 
@@ -67,7 +68,7 @@ public class UndoRestoreDataPlugin extends ContextCommand implements
 	// -- Parameters --
 
 	@Parameter
-	private UndoService undoService;
+	private DatasetService datasetService;
 
 	@Parameter
 	private CommandService commandService;
@@ -89,7 +90,7 @@ public class UndoRestoreDataPlugin extends ContextCommand implements
 
 	@Override
 	public void run() {
-		undoService.restoreData(target, points, data);
+		datasetService.restoreData(target, points, data);
 		inverse = commandService.getCommand(UndoSaveDataPlugin.class);
 	}
 

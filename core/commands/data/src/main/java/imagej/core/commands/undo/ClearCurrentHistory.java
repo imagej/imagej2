@@ -36,12 +36,12 @@
 package imagej.core.commands.undo;
 
 import imagej.command.Command;
-import imagej.data.undo.UndoService;
 import imagej.display.Display;
 import imagej.menu.MenuConstants;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.undo.UndoService;
 import imagej.undo.Unrecordable;
 
 /**

@@ -39,11 +39,11 @@ import imagej.ImageJ;
 import imagej.data.CombinedInterval;
 import imagej.data.Data;
 import imagej.data.Dataset;
+import imagej.data.DatasetService;
 import imagej.data.Extents;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.event.DataRestructuredEvent;
 import imagej.data.event.DataUpdatedEvent;
-import imagej.data.undo.UndoService;
 import imagej.display.AbstractDisplay;
 import imagej.display.DisplayService;
 import imagej.display.event.DisplayDeletedEvent;
@@ -159,10 +159,10 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 	@Override
 	public DisplayState getCurrentState() {
 		ImageDisplayService idSrv = getContext().getService(ImageDisplayService.class);
-		UndoService undoSrv = getContext().getService(UndoService.class);
+		DatasetService datasetSrv = getContext().getService(DatasetService.class);
 		Dataset ds = idSrv.getActiveDataset(this);
 		PointSet points = new HyperVolumePointSet(ds.getDims());
-		Img<DoubleType> data = undoSrv.captureData(ds,points);
+		Img<DoubleType> data = datasetSrv.captureData(ds, points);
 		return new ImageDisplayState(ds, points, data);
 	}
 
@@ -176,8 +176,8 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		if (!(dispState instanceof ImageDisplayState))
 			throw new IllegalArgumentException("given wrong kind of DisplayState");
 		ImageDisplayState state = (ImageDisplayState) dispState;
-		UndoService undoSrv = getContext().getService(UndoService.class);
-		undoSrv.restoreData(state.ds, state.points, state.data);
+		DatasetService datasetSrv = getContext().getService(DatasetService.class);
+		datasetSrv.restoreData(state.ds, state.points, state.data);
 	}
 	
 	private class ImageDisplayState implements DisplayState {

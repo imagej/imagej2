@@ -46,11 +46,15 @@ import imagej.service.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
+import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.planar.PlanarImgFactory;
 import net.imglib2.meta.AxisType;
+import net.imglib2.ops.pointset.PointSet;
+import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
@@ -166,6 +170,54 @@ public final class DefaultDatasetService extends AbstractService implements
 	public <T extends RealType<T>> Dataset create(final ImgPlus<T> imgPlus)
 	{
 		return new DefaultDataset(getContext(), imgPlus);
+	}
+
+	@Override
+	public Img<DoubleType> captureData(final Dataset source,
+		final PointSet points)
+	{
+		return captureData(source, points, new ArrayImgFactory<DoubleType>());
+	}
+
+	@Override
+	public Img<DoubleType> captureData(final Dataset source,
+		final PointSet points, final ImgFactory<DoubleType> factory)
+	{
+		final long numPoints = points.size();
+		final Img<DoubleType> backup =
+			factory.create(new long[] { numPoints }, new DoubleType());
+		long i = 0;
+		final RandomAccess<? extends RealType<?>> dataAccessor =
+			source.getImgPlus().randomAccess();
+		final RandomAccess<DoubleType> backupAccessor = backup.randomAccess();
+		final PointSetIterator iter = points.iterator();
+		while (iter.hasNext()) {
+			final long[] pos = iter.next();
+			dataAccessor.setPosition(pos);
+			final double val = dataAccessor.get().getRealDouble();
+			backupAccessor.setPosition(i++, 0);
+			backupAccessor.get().setReal(val);
+		}
+		return backup;
+	}
+
+	@Override
+	public void restoreData(final Dataset target, final PointSet points,
+		final Img<DoubleType> backup)
+	{
+		long i = 0;
+		final RandomAccess<? extends RealType<?>> dataAccessor =
+			target.getImgPlus().randomAccess();
+		final RandomAccess<DoubleType> backupAccessor = backup.randomAccess();
+		final PointSetIterator iter = points.iterator();
+		while (iter.hasNext()) {
+			final long[] pos = iter.next();
+			backupAccessor.setPosition(i++, 0);
+			final double val = backupAccessor.get().getRealDouble();
+			dataAccessor.setPosition(pos);
+			dataAccessor.get().setReal(val);
+		}
+		target.update();
 	}
 
 	// -- Helper methods --

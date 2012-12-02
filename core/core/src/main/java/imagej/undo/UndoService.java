@@ -33,11 +33,10 @@
  * #L%
  */
 
-package imagej.data.undo;
+package imagej.undo;
 
 import imagej.command.Command;
 import imagej.command.CommandService;
-import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.display.event.DisplayDeletedEvent;
@@ -52,28 +51,12 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
-import imagej.undo.DefaultUndoInfo;
-import imagej.undo.DisplayRestoreState;
-import imagej.undo.DisplayState;
-import imagej.undo.UndoInfo;
-import imagej.undo.Invertible;
-import imagej.undo.SupportsDisplayStates;
-import imagej.undo.Unrecordable;
 
 import java.awt.Toolkit;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import net.imglib2.RandomAccess;
-import net.imglib2.img.Img;
-import net.imglib2.img.ImgFactory;
-import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.ops.pointset.PointSet;
-import net.imglib2.ops.pointset.PointSetIterator;
-import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.real.DoubleType;
 
 // TODO
 // This service is poorly named (recording something service is better)
@@ -208,89 +191,6 @@ public class UndoService extends AbstractService {
 		for (final ModuleHistory hist : histories.values()) {
 			hist.clear();
 		}
-	}
-
-	/**
-	 * Captures a region of a Dataset to a one dimensional Img<DoubleType>. The
-	 * region is defined with a PointSet. The data is stored in the order of
-	 * iteration of the input PointSet. Using the Img<DoubleType> and the original
-	 * PointSet one can easily restore the data using restoreData(). The
-	 * Img<DoubleType> will reside completely in memory and is limited to about
-	 * two gig of elements.
-	 * 
-	 * @param source The Dataset to capture from.
-	 * @param points The set of coordinate points that hold the values to backup.
-	 * @return An Img<DoubleType> that contains the backup data.
-	 */
-	public Img<DoubleType>
-		captureData(final Dataset source, final PointSet points)
-	{
-		return captureData(source, points, new ArrayImgFactory<DoubleType>());
-	}
-
-	/**
-	 * Captures a region of a Dataset to a one dimensional Img<DoubleType>. The
-	 * region is defined with a PointSet. The data is stored in the order of
-	 * iteration of the input PointSet. Using the Img<DoubleType> and the original
-	 * PointSet one can easily restore the data using restoreData(). The
-	 * Img<DoubleType> will reside in a structure provided by the user specified
-	 * ImgFactory. This allows memory use and element count limitations of the
-	 * default implementation to be avoided.
-	 * 
-	 * @param source The Dataset to capture from.
-	 * @param points The set of coordinate points that hold the values to backup.
-	 * @param factory The factory used to make the Img<DoubleType>. This allows
-	 *          API users to determine the most efficient way to store backup
-	 *          data.
-	 * @return An Img<DoubleType> that contains the backup data.
-	 */
-	public Img<DoubleType> captureData(final Dataset source,
-		final PointSet points, final ImgFactory<DoubleType> factory)
-	{
-		final long numPoints = points.size();
-		final Img<DoubleType> backup =
-			factory.create(new long[] { numPoints }, new DoubleType());
-		long i = 0;
-		final RandomAccess<? extends RealType<?>> dataAccessor =
-			source.getImgPlus().randomAccess();
-		final RandomAccess<DoubleType> backupAccessor = backup.randomAccess();
-		final PointSetIterator iter = points.iterator();
-		while (iter.hasNext()) {
-			final long[] pos = iter.next();
-			dataAccessor.setPosition(pos);
-			final double val = dataAccessor.get().getRealDouble();
-			backupAccessor.setPosition(i++, 0);
-			backupAccessor.get().setReal(val);
-		}
-		return backup;
-	}
-
-	/**
-	 * Restores a region of a Dataset from a one dimensional Img<DoubleType>. The
-	 * region is defined by a PointSet. The data is stored in the order of
-	 * iteration of the input PointSet. The Img<DoubleType> should have been
-	 * previously recorded by captureData().
-	 * 
-	 * @param target The Dataset to restore data to.
-	 * @param points The set of coordinate points of the Dataset to restore to.
-	 * @param backup An Img<DoubleType> that contains the backup data.
-	 */
-	public void restoreData(final Dataset target, final PointSet points,
-		final Img<DoubleType> backup)
-	{
-		long i = 0;
-		final RandomAccess<? extends RealType<?>> dataAccessor =
-			target.getImgPlus().randomAccess();
-		final RandomAccess<DoubleType> backupAccessor = backup.randomAccess();
-		final PointSetIterator iter = points.iterator();
-		while (iter.hasNext()) {
-			final long[] pos = iter.next();
-			backupAccessor.setPosition(i++, 0);
-			final double val = backupAccessor.get().getRealDouble();
-			dataAccessor.setPosition(pos);
-			dataAccessor.get().setReal(val);
-		}
-		target.update();
 	}
 
 	/**
