@@ -1610,7 +1610,7 @@ static int mkdir_p(const char *path)
 static char *find_jar(const char *jars_directory, const char *prefix)
 {
 	int prefix_length = strlen(prefix);
-	struct string *buffer = string_initf("%s", jars_directory);
+	struct string *buffer;
 	int length;
 	time_t mtime = 0;
 	DIR *directory = opendir(jars_directory);
@@ -1618,6 +1618,10 @@ static char *find_jar(const char *jars_directory, const char *prefix)
 	struct stat st;
 	char *result = NULL;
 
+	if (directory == NULL)
+		return NULL;
+
+	buffer = string_initf("%s", jars_directory);
 	length = buffer->length;
 	if (length == 0 || buffer->buffer[length - 1] != '/') {
 		string_add_char(buffer, '/');
