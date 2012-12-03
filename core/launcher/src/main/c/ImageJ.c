@@ -935,8 +935,15 @@ static const char *get_jre_home(void)
 	if (jre)
 		return jre->buffer;
 
-	if (!result)
-		return NULL;
+	if (!result) {
+		/* ImageJ 1.x ships the JRE in <ij.dir>/jre/ */
+		const char *ij1_jre = ij_path("jre");
+		if (!dir_exists(ij1_jre))
+			return NULL;
+		jre = string_initf("%s", ij1_jre);
+		return jre->buffer;
+	}
+
 	len = strlen(result);
 	if (len > 4 && !strcmp(result + len - 4, "/jre"))
 		return result;
