@@ -1975,10 +1975,10 @@ static int find_closing_quote(const char *s, char quote, int index, int len)
 
 static void add_options(struct options *options, const char *cmd_line, int for_ij)
 {
-	int len = strlen(cmd_line), i;
+	int len = strlen(cmd_line), i, cp_option = 0;
 	struct string *current = string_init(32);
 
-	for (i = 0; i < len; i++) {
+	for (i = 0; i <= len; i++) {
 		char c = cmd_line[i];
 		if (is_quote(c)) {
 			int i2 = find_closing_quote(cmd_line, c, i + 1, len);
@@ -1986,16 +1986,22 @@ static void add_options(struct options *options, const char *cmd_line, int for_i
 			i = i2;
 			continue;
 		}
-		if (c == ' ' || c == '\t' || c == '\n') {
+		if (!c || c == ' ' || c == '\t' || c == '\n') {
 			if (!current->length)
 				continue;
-			add_option_string(options, current, for_ij);
+			if (!strcmp(current->buffer, "-cp"))
+				cp_option = 1;
+			else if (cp_option) {
+				if (strcmp(current->buffer, "ij.jar"))
+					add_launcher_option(options,
+						"--ijcp", current->buffer);
+				cp_option = 0;
+			} else
+				add_option_string(options, current, for_ij);
 			string_set_length(current, 0);
 		} else
 			string_add_char(current, c);
 	}
-	if (current->length)
-		add_option_string(options, current, for_ij);
 
 	string_release(current);
 }
