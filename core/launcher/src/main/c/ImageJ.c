@@ -553,6 +553,7 @@ static const char *absolute_java_home;
 static const char *relative_java_home;
 static const char *default_library_path;
 static const char *library_path;
+static const char *legacy_ij1_class = "ij.ImageJ";
 static const char *default_fiji1_class = "fiji.Main";
 static const char *default_main_class = "imagej.Main";
 static int legacy_mode;
@@ -560,7 +561,8 @@ static int retrotranslator;
 
 static int is_default_ij1_class(const char *name)
 {
-	return name && (!strcmp(name, default_fiji1_class) || !strcmp(name, "ij.ImageJ"));
+	return name && (!strcmp(name, default_fiji1_class) ||
+			!strcmp(name, legacy_ij1_class));
 }
 
 /* Dynamic library loading stuff */
