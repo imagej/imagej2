@@ -558,6 +558,7 @@ static const char *default_fiji1_class = "fiji.Main";
 static const char *default_main_class = "imagej.Main";
 static int legacy_mode;
 static int retrotranslator;
+static int verbose;
 
 static int is_default_ij1_class(const char *name)
 {
@@ -1314,7 +1315,8 @@ static void maybe_reexec_with_correct_lib_path(struct string *java_library_path)
 		return;
 
 	setenv_or_exit("LD_LIBRARY_PATH", java_library_path->buffer, 1);
-	error("Re-executing with correct library lookup path (%s)", java_library_path->buffer);
+	if (verbose)
+		error("Re-executing with correct library lookup path (%s)", java_library_path->buffer);
 	hide_splash();
 	execvp(main_argv_backup[0], main_argv_backup);
 	die("Could not re-exec with correct library lookup (%d: %s)!", errno, strerror(errno));
@@ -2714,6 +2716,8 @@ static void __attribute__((__noreturn__)) usage(void)
 		"\tshow this help\n",
 		"--dry-run\n"
 		"\tshow the command line, but do not run anything\n"
+		"--verbose, -v\n"
+		"\tverbose output\n"
 		"--system\n"
 		"\tdo not try to run bundled Java\n"
 		"--java-home <path>\n"
@@ -2896,7 +2900,8 @@ static void try_with_less_memory(long megabytes)
 	}
 	new_argv[j] = NULL;
 
-	error("Trying with a smaller heap: %s", buffer->buffer);
+	if (verbose)
+		error("Trying with a smaller heap: %s", buffer->buffer);
 
 	hide_splash();
 
@@ -3005,6 +3010,8 @@ static int handle_one_option2(int *i, int argc, const char **argv)
 {
 	if (!strcmp(argv[*i], "--dry-run"))
 		options.debug++;
+	else if (!strcmp(argv[*i], "--verbose") || !strcmp(argv[*i], "-n"))
+		verbose++;
 	else if (handle_one_option(i, argv, "--java-home", &arg)) {
 		absolute_java_home = xstrdup(arg.buffer);
 		setenv_or_exit("JAVA_HOME", xstrdup(arg.buffer), 1);
