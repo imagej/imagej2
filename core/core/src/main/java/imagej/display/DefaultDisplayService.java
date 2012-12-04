@@ -84,7 +84,7 @@ public final class DefaultDisplayService extends AbstractService implements
 
 	// -- instance variables --
 
-	private List<Display<?>> displayList = new LinkedList<Display<?>>();
+	private LinkedList<Display<?>> displayList = new LinkedList<Display<?>>();
 
 
 	// -- DisplayService methods --
@@ -114,9 +114,9 @@ public final class DefaultDisplayService extends AbstractService implements
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T extends Display<?>> T getActiveDisplay(Class<T> displayClass) {
+	public <D extends Display<?>> D getActiveDisplay(Class<D> displayClass) {
 		for (Display<?> disp : displayList) {
-			if (displayClass.isAssignableFrom(disp.getClass())) return (T) disp;
+			if (displayClass.isAssignableFrom(disp.getClass())) return (D) disp;
 		}
 		return null;
 	}
@@ -125,7 +125,7 @@ public final class DefaultDisplayService extends AbstractService implements
 	public void setActiveDisplay(final Display<?> display) {
 		if (display != null) {
 			displayList.remove(display);
-			displayList.add(0, display);
+			displayList.addFirst(display);
 			eventService.publish(new DisplayActivatedEvent(display));
 		}
 	}

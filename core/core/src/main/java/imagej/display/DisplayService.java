@@ -62,7 +62,7 @@ public interface DisplayService extends Service {
 	Display<?> getActiveDisplay();
 
 	/** Gets the most recently active display (of the specified Display type). */
-	<T extends Display<?>> T getActiveDisplay(Class<T> displayClass);
+	<D extends Display<?>> D getActiveDisplay(Class<D> displayClass);
 
 	/**
 	 * Set the active display.
