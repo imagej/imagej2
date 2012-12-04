@@ -1657,6 +1657,16 @@ static char *find_jar(const char *jars_directory, const char *prefix)
 	return result;
 }
 
+static int has_jar(const char *jars_directory, const char *prefix)
+{
+	char *result = find_jar(jars_directory, prefix);
+
+	if (!result)
+		return 0;
+	free(result);
+	return 1;
+}
+
 static void initialize_ij_launcher_jar_path(void)
 {
 	ij_launcher_jar = find_jar(ij_path("jars/"), "ij-launcher");
@@ -4421,12 +4431,12 @@ int main(int argc, char **argv, char **e)
 	main_argc_backup = argc;
 
 	/* For now, launch Fiji1 when fiji-compat.jar was found */
-	{
-		char *fiji_compat_jar = find_jar(ij_path("jars/"), "fiji-compat");
-		if (fiji_compat_jar) {
-			free(fiji_compat_jar);
-			legacy_mode = 1;
-		}
+	if (has_jar(ij_path("jars/"), "fiji-compat"))
+		legacy_mode = 1;
+	/* If no ImageJ2 was found, try to fall back to ImageJ 1.x */
+	else if (!has_jar(ij_path("jars/"), "ij-app")) {
+		legacy_mode = 1;
+		main_class = legacy_ij1_class;
 	}
 
 	initialize_ij_launcher_jar_path();
