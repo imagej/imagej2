@@ -3492,6 +3492,9 @@ static void parse_command_line(void)
 
 	keep_only_one_memory_option(&options.java_options);
 
+	if (ij_launcher_jar == NULL)
+		skip_class_launcher = 1;
+
 	if (!skip_class_launcher && strcmp(main_class, "org.apache.tools.ant.Main")) {
 		struct string *string = string_initf("-Djava.class.path=%s", ij_launcher_jar);
 		if (retrotranslator && !add_retrotranslator_to_path(string))
