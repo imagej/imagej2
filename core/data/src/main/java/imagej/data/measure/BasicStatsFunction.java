@@ -40,7 +40,6 @@ import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
 
-
 /**
  * BasicStatsFunction is a {@link Function} that will calculate basic statistics
  * from another input Function.
@@ -49,50 +48,47 @@ import net.imglib2.type.numeric.RealType;
  * output values at one time by providing an aggregating class. A simpler
  * preferred method is available via the {@link MeasurementService} API using
  * the measure() method that takes multiple arguments.
+ * </p>
  * <p>
  * The advantage of using an aggregating class is that such custom Functions can
  * reuse their computations internally as needed to improve performance. And the
  * aggregating class can return values of different types via getter methods.
  * The MeasurementService is limited to a set of outputs of a single type. In
  * practice this is probably not much of a limitation.
+ * </p>
  * 
  * @author Barry DeZonia
- *
- * @param <T>
- * The output type of the input Function. 
- * 
+ * @param <T> The output type of the input Function.
  */
-public class BasicStatsFunction<T extends RealType<T>>
-	implements Function<PointSet,BasicStats>
+public class BasicStatsFunction<T extends RealType<T>> implements
+	Function<PointSet, BasicStats>
 {
+
 	// -- instance variables --
-	
-	private final Function<long[],T> otherFunc;
+
+	private final Function<long[], T> otherFunc;
 	private final T tmp;
 	private double[] data;
-	private PointSet lastPointSet; 
+	private PointSet lastPointSet;
 	private PointSetIterator iter;
-	
+
 	// -- constructor --
 
 	/**
 	 * Creates a BasicStatsFunction on another {@link Function}.
-
-	 * @param func
-	 *  The other Function to compute the BasicStats of.
-	 * @param tmp
-	 *  A variable of the type of the other Function that can be used for
-	 *  temporary calculations.
+	 * 
+	 * @param func The other Function to compute the BasicStats of.
+	 * @param tmp A variable of the type of the other Function that can be used
+	 *          for temporary calculations.
 	 */
-	public BasicStatsFunction(Function<long[],T> func, T tmp)
-	{
+	public BasicStatsFunction(final Function<long[], T> func, final T tmp) {
 		this.otherFunc = func;
 		this.tmp = tmp.createVariable();
 		this.data = null;
 		this.lastPointSet = null;
 		this.iter = null;
 	}
-	
+
 	// -- Function methods --
 
 	/**
@@ -100,18 +96,17 @@ public class BasicStatsFunction<T extends RealType<T>>
 	 * input region {@PointSet}.
 	 */
 	@Override
-	public void compute(PointSet input, BasicStats output) {
+	public void compute(final PointSet input, final BasicStats output) {
 		if (iter == null || lastPointSet != input) {
 			// TODO - use an Img<DoubleType> to break limitations
 			data = new double[(int) input.size()];
 			iter = input.iterator();
 		}
-		else
-			iter.reset();
+		else iter.reset();
 		lastPointSet = input;
 		int i = 0;
 		while (iter.hasNext()) {
-			long[] coord = iter.next();
+			final long[] coord = iter.next();
 			otherFunc.compute(coord, tmp);
 			data[i++] = tmp.getRealDouble();
 		}
@@ -120,20 +115,20 @@ public class BasicStatsFunction<T extends RealType<T>>
 
 	/**
 	 * Creates a {@link BasicStats}. This is part of the {@link Function} api and
-	 * helps support parallelization. 
+	 * helps support parallelization.
 	 */
 	@Override
 	public BasicStats createOutput() {
 		return new BasicStats();
 	}
-	
+
 	/**
-	 * Creates a copy of this BasicStatsFunction. This is part of the {@link
-	 * Function} api and helps support parallelization. 
+	 * Creates a copy of this BasicStatsFunction. This is part of the
+	 * {@link Function} api and helps support parallelization.
 	 */
 	@Override
 	public Function<PointSet, BasicStats> copy() {
 		return new BasicStatsFunction<T>(otherFunc, tmp);
 	}
-	
+
 }

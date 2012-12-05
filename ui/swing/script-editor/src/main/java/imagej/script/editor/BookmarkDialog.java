@@ -54,6 +54,11 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class BookmarkDialog extends JDialog implements ActionListener {
 	JList list;
 	JButton okay, cancel;

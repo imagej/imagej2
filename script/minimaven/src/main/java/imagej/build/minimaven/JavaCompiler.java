@@ -42,6 +42,11 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.lang.reflect.Method;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 @SuppressWarnings("hiding")
 public class JavaCompiler {
 	protected PrintStream err, out;

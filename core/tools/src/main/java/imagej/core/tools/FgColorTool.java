@@ -43,15 +43,16 @@ import imagej.util.ColorRGB;
 import imagej.util.Colors;
 
 /**
+ * TODO
  * 
  * @author Barry DeZonia
- * 
  */
-@Plugin(type = Tool.class, name = "Foreground", iconPath = "/icons/tools/blank.png",
-	priority = FgColorTool.PRIORITY)
+@Plugin(type = Tool.class, name = "Foreground",
+	iconPath = "/icons/tools/blank.png", priority = FgColorTool.PRIORITY)
 public class FgColorTool extends AbstractColorTool {
+
 	public static final int PRIORITY = BASE_PRIORITY - 0;
-	
+
 	@Override
 	ColorRGB getEmptyColor() {
 		return Colors.WHITE;
@@ -63,17 +64,19 @@ public class FgColorTool extends AbstractColorTool {
 	}
 
 	@Override
-	ChannelCollection getChannels(OptionsChannels options) {
+	ChannelCollection getChannels(final OptionsChannels options) {
 		return options.getFgValues();
 	}
 
 	@Override
-	void setChannels(OptionsChannels options, ChannelCollection chans) {
+	void
+		setChannels(final OptionsChannels options, final ChannelCollection chans)
+	{
 		options.setFgValues(chans);
 	}
 
 	@Override
-	void setLastColor(OptionsChannels options, ColorRGB color) {
+	void setLastColor(final OptionsChannels options, final ColorRGB color) {
 		options.setLastFgColor(color);
 	}
 
@@ -81,4 +84,5 @@ public class FgColorTool extends AbstractColorTool {
 	String getLabel() {
 		return "FG";
 	}
+
 }

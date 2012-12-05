@@ -38,7 +38,6 @@ package imagej.data.measure;
 import net.imglib2.ops.function.Function;
 import net.imglib2.ops.pointset.PointSet;
 
-
 /**
  * MeasurementSetFunction is used by the {@link MeasurementService} to measure
  * multiple {@link Function}s at one time. It is a {@link Function} that changes
@@ -46,16 +45,16 @@ import net.imglib2.ops.pointset.PointSet;
  * computed.
  * 
  * @author Barry DeZonia
- *
- * @param <T>
- * 	The type of output data calculated by functions in the MeasurementSet.
+ * @param <T> The type of output data calculated by functions in the
+ *          MeasurementSet.
  */
-public class MeasurementSetFunction<T>
-	implements Function<PointSet,MeasurementSet<T>>
+public class MeasurementSetFunction<T> implements
+	Function<PointSet, MeasurementSet<T>>
 {
+
 	// -- instance variables --
-	
-	private MeasurementSet<T> set;
+
+	private final MeasurementSet<T> set;
 
 	// -- MeasurementSetFunction methods --
 
@@ -64,20 +63,20 @@ public class MeasurementSetFunction<T>
 	 * A MeasurementSet is a collection of {@link Function}s and associated output
 	 * values.
 	 */
-	public MeasurementSetFunction(MeasurementSet<T> set) {
+	public MeasurementSetFunction(final MeasurementSet<T> set) {
 		this.set = set;
 	}
-	
+
 	// -- Function methods --
 
 	/**
-	 *  Fills all the outputs within a {@link MeasurementSet} from a given
-	 *  {@link PointSet}.
-	 */ 
+	 * Fills all the outputs within a {@link MeasurementSet} from a given
+	 * {@link PointSet}.
+	 */
 	@Override
-	public void compute(PointSet input, MeasurementSet<T> output) {
+	public void compute(final PointSet input, final MeasurementSet<T> output) {
 		for (int i = 0; i < output.getNumMeasurements(); i++) {
-			T variable = output.getVariable(i); 
+			final T variable = output.getVariable(i);
 			output.getFunction(i).compute(input, variable);
 		}
 	}
@@ -96,9 +95,8 @@ public class MeasurementSetFunction<T>
 	 * {@link Function} api and is useful for parallelization.
 	 */
 	@Override
-	public Function<PointSet, MeasurementSet<T>> copy() {
+	public MeasurementSetFunction<T> copy() {
 		return new MeasurementSetFunction<T>(set.create());
 	}
-	
-}
 
+}

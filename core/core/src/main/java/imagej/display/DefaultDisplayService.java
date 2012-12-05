@@ -38,6 +38,7 @@ package imagej.display;
 import imagej.InstantiableException;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.DisplayCreatedEvent;
+import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.display.event.window.WinClosedEvent;
 import imagej.event.EventHandler;
@@ -52,6 +53,7 @@ import imagej.service.AbstractService;
 import imagej.service.Service;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -66,6 +68,8 @@ public final class DefaultDisplayService extends AbstractService implements
 	DisplayService
 {
 
+	// -- Parameters --
+
 	@Parameter
 	private LogService log;
 
@@ -78,13 +82,10 @@ public final class DefaultDisplayService extends AbstractService implements
 	@Parameter
 	private PluginService pluginService;
 
-	// TODO - implement queue of most recently activated displays.
-	// Can actually keep a list of all known displays in this class, and pull
-	// the most recently activated one to the front. Then can have an API method
-	// for asking for "active" display of a particular type, and it will just
-	// iterate through the list of known displays for the first match.
+	// -- instance variables --
 
-	private Display<?> activeDisplay;
+	private LinkedList<Display<?>> displayList = new LinkedList<Display<?>>();
+
 
 	// -- DisplayService methods --
 
@@ -107,13 +108,24 @@ public final class DefaultDisplayService extends AbstractService implements
 
 	@Override
 	public Display<?> getActiveDisplay() {
-		return activeDisplay;
+		if (displayList.size() == 0) return null;
+		return displayList.get(0);
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
+	public <D extends Display<?>> D getActiveDisplay(Class<D> displayClass) {
+		for (Display<?> disp : displayList) {
+			if (displayClass.isAssignableFrom(disp.getClass())) return (D) disp;
+		}
+		return null;
+	}
+	
+	@Override
 	public void setActiveDisplay(final Display<?> display) {
-		activeDisplay = display;
 		if (display != null) {
+			displayList.remove(display);
+			displayList.addFirst(display);
 			eventService.publish(new DisplayActivatedEvent(display));
 		}
 	}
@@ -249,4 +261,22 @@ public final class DefaultDisplayService extends AbstractService implements
 		setActiveDisplay(display);
 	}
 
+	/** Makes sure newly created display is placed in the display list */
+	@EventHandler
+	protected void onEvent(final DisplayCreatedEvent evt) {
+		// HACK? If you open boats and then run Analyze::Measure the created
+		// TableDisplay was not making its way into the displayList without this
+		// piece of code. Not sure if this issue correctly handled here or if
+		// instead changes are required elsewhere. Its apparent that when
+		// TableDisplay was created a WindowActivated event was never created at the
+		// appropriate time.
+		final Display<?> display = evt.getObject();
+		if (!displayList.contains(display)) displayList.add(display);
+	}
+
+	/** Removes a display from the display list when it is deleted */
+	@EventHandler
+	protected void onEvent(final DisplayDeletedEvent evt) {
+		displayList.remove(evt.getObject());
+	}
 }

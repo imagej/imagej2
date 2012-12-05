@@ -36,6 +36,8 @@
 package imagej.data.measure;
 
 import imagej.data.Dataset;
+import imagej.plugin.Plugin;
+import imagej.service.AbstractService;
 import imagej.service.Service;
 
 import java.util.List;
@@ -58,7 +60,12 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Barry DeZonia
  */
-public interface MeasurementService extends Service {
+@Plugin(type = Service.class)
+public class DefaultMeasurementService extends AbstractService implements
+	MeasurementService
+{
+
+	// -- MeasurementService methods --
 
 	/**
 	 * Measures the value of a {@link Function} given an input region
@@ -68,7 +75,12 @@ public interface MeasurementService extends Service {
 	 * @param region The set of points over which to evaluate the function.
 	 * @param output The variable to place the measurement result in.
 	 */
-	<T> void measure(Function<PointSet, T> func, PointSet region, T output);
+	@Override
+	public <T> void
+		measure(Function<PointSet, T> func, PointSet region, T output)
+	{
+		func.compute(region, output);
+	}
 
 	/**
 	 * Measures the values of a list of {@link Function}s given an input region
@@ -78,8 +90,19 @@ public interface MeasurementService extends Service {
 	 * @param region The set of points over which to evaluate the functions.
 	 * @param outputs The list of variables to place the measurement results in.
 	 */
-	<T> void measure(List<Function<PointSet, T>> funcs, PointSet region,
-		List<T> outputs);
+	@Override
+	public <T> void measure(List<Function<PointSet, T>> funcs, PointSet region,
+		List<T> outputs)
+	{
+		if (funcs.size() != outputs.size()) throw new IllegalArgumentException(
+			"measure(): number of functions must equal number of outputs");
+		MeasurementSet<T> set = new MeasurementSet<T>();
+		for (int i = 0; i < funcs.size(); i++) {
+			set.add(funcs.get(i), outputs.get(i));
+		}
+		MeasurementSetFunction<T> group = new MeasurementSetFunction<T>(set);
+		measure(group, region, set);
+	}
 
 	/**
 	 * Creates a {@link RealImageFunction} from an {@link Img} and a given output
@@ -91,8 +114,13 @@ public interface MeasurementService extends Service {
 	 *          during computation.
 	 * @return A Function wrapping the Img.
 	 */
-	<T extends RealType<T>> RealImageFunction<?, T> imgFunction(
-		Img<? extends RealType<?>> img, T outputType);
+	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public <T extends RealType<T>> RealImageFunction<?, T> imgFunction(
+		Img<? extends RealType<?>> img, T outputType)
+	{
+		return new RealImageFunction(img, outputType);
+	}
 
 	/**
 	 * Creates a {@link RealImageFunction} from an {@link Dataset} and a given
@@ -104,7 +132,11 @@ public interface MeasurementService extends Service {
 	 *          during computation.
 	 * @return A Function wrapping the Dataset data.
 	 */
-	<T extends RealType<T>> RealImageFunction<?, T> imgFunction(Dataset ds,
-		T outputType);
+	@Override
+	public <T extends RealType<T>> RealImageFunction<?, T> imgFunction(
+		Dataset ds, T outputType)
+	{
+		return imgFunction(ds.getImgPlus(), outputType);
+	}
 
 }

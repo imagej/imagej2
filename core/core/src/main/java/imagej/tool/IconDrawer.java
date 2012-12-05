@@ -38,9 +38,9 @@ package imagej.tool;
 import imagej.util.ColorRGB;
 
 /**
+ * TODO
  * 
  * @author Barry DeZonia
- *
  */
 public interface IconDrawer {
 	int getIconRectangleWidth();

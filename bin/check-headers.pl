@@ -32,6 +32,7 @@ my %knownAuthors = (
   "Jarek Sacha" => 1,
   "Melinda Green" => 1,
   "Sean Luke" => 1,
+  "Sumit Dubey" => 1,
   "Werner Randelshofer" => 1,
   "Yap Chin Kiet" => 1,
 );
@@ -66,10 +67,14 @@ my $cmd = "find @args -name '*.java'";
 my @src = `$cmd`;
 
 # process files
+my $rval = 0;
 for my $file (@src) {
   chop $file;
-  process($file);
+  my $result = process($file);
+  if ($result) { $rval = $result; }
 }
+
+exit $rval;
 
 sub process($) {
   my ($file) = @_;
@@ -88,14 +93,14 @@ sub process($) {
   my @header = ('/*', ' * #%L');
   if (!match(\@header, \@data, $i)) {
     print "$file: invalid header\n";
-    return;
+    return 1;
   }
   $i += @header;
 
   # check copyright statement
   if (!match(\@copyright, \@data, $i)) {
     print "$file: invalid copyright\n";
-    return;
+    return 2;
   }
   $i += @copyright;
 
@@ -114,7 +119,7 @@ sub process($) {
     elsif ($data[$i] =~ /^\s*$/) {
       if ($blank) {
         print "$file: duplicate blank line at line #$i\n";
-        return;
+        return 3;
       }
       $blank = 1;
     }
@@ -128,7 +133,7 @@ sub process($) {
   # check package statement
   if ($data[$i++] !~ /^package .*;$/) {
     print "$file: invalid package\n";
-    return;
+    return 4;
   }
 
   # check import statements
@@ -138,7 +143,7 @@ sub process($) {
     if ($line =~ /^$/) {
       if ($blank) {
         print "$file: duplicate blank line at line #$i\n";
-        return;
+        return 5;
       }
       $blank = 1;
     }
@@ -149,14 +154,14 @@ sub process($) {
       }
       elsif ($line !~ /\/\// && $line !~ /^import /) {
         print "$file: unexpected text at line #$i\n";
-        return;
+        return 6;
       }
     }
   }
 
   if ($data[$i] !~ /^ \* [^\s]/) {
     print "$file: malformed class comment at line #$i\n";
-    return;
+    return 7;
   }
 
   # check class comment
@@ -168,13 +173,13 @@ sub process($) {
     }
     if ($line !~ /^ \* ?/) {
       print "$file: malformed class comment at line #$i\n";
-      return;
+      return 8;
     }
     if ($line =~ /^ \* \@author (.*)$/) {
       my $authorName = $1;
       if (!exists($knownAuthors{$authorName})) {
         print "$file: unknown author: $authorName\n";
-        return;
+        return 9;
       }
       $author = 1;
     }
@@ -182,7 +187,7 @@ sub process($) {
 
   if (!$author) {
     print "$file: missing author tag\n";
-    return;
+    return 10;
   }
 
   # skip annotations
@@ -194,6 +199,9 @@ sub process($) {
   my $keywords = '(public )?(abstract )?(final )?(strictfp )?';
   if ($data[$i++] !~ /^$keywords(class)|(enum)|(interface) $class[ <]/) {
     print "$file: invalid type declaration at line #$i\n";
-    return;
+    return 11;
   }
+
+  # all OK
+  return 0;
 }

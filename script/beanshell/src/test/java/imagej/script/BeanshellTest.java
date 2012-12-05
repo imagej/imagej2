@@ -43,6 +43,11 @@ import java.io.StringReader;
 
 import org.junit.Test;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class BeanshellTest {
 
 	@Test

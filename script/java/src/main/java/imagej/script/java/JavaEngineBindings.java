@@ -35,8 +35,6 @@
 
 package imagej.script.java;
 
-import imagej.script.AbstractScriptEngine;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +43,11 @@ import java.util.Set;
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
 
-
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class JavaEngineBindings implements Bindings {
 
 	private Map<String, Object> map = new HashMap<String, Object>();

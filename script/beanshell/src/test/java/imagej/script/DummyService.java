@@ -38,6 +38,11 @@ package imagej.script;
 import imagej.ImageJ;
 import imagej.service.AbstractService;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class DummyService extends AbstractService {
 
 		public ImageJ context;

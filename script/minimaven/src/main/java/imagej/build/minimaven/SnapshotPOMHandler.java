@@ -49,6 +49,11 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 @SuppressWarnings("hiding")
 public class SnapshotPOMHandler extends DefaultHandler {
 	protected String qName;

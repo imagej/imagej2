@@ -33,17 +33,66 @@
  * #L%
  */
 
-package imagej.tool;
+package imagej.data.overlay;
 
-import imagej.service.Service;
+import imagej.ImageJ;
+import net.imglib2.roi.RectangleRegionOfInterest;
+
+// TODO - this code is a place holder for when we really support text overlays.
+// This version allows IJ1 TextRois to survive translations back and forth
+// across the legacy layer somewhat intact.
 
 /**
- * TODO
- * 
  * @author Barry DeZonia
  */
-public interface IconService extends Service {
+public class TextOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> {
 
-	IconDrawer acquireDrawer(Tool t);
+	public enum Justification {
+		LEFT, CENTER, RIGHT
+	}
 
+	private String text;
+	private Justification just;
+
+	public TextOverlay(ImageJ context, double x, double y, String text,
+		Justification j)
+	{
+		super(context, new RectangleRegionOfInterest(new double[] { x, y },
+			new double[] { 0, 0 }));
+		this.text = text;
+		this.just = j;
+	}
+
+	public TextOverlay(ImageJ context, double x, double y, String text) {
+		this(context, x, y, text, Justification.LEFT);
+	}
+
+	public TextOverlay(ImageJ context, double x, double y) {
+		this(context, x, y, "Default Text");
+	}
+
+	public TextOverlay(ImageJ context) {
+		this(context, 0, 0);
+	}
+
+	@Override
+	public void move(double[] deltas) {
+		getRegionOfInterest().move(deltas);
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
+	}
+
+	public Justification getJustification() {
+		return just;
+	}
+
+	public void setJustification(Justification j) {
+		just = j;
+	}
 }

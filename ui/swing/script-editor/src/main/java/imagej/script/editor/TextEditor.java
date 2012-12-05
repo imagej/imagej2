@@ -44,21 +44,19 @@ import imagej.script.editor.command.ChooseFontSize;
 import imagej.script.editor.command.ChooseTabSize;
 import imagej.script.editor.command.GitGrep;
 import imagej.script.editor.command.KillScript;
-import imagej.util.FileUtils;
 import imagej.util.AppUtils;
+import imagej.util.FileUtils;
 
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Toolkit;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import java.io.BufferedReader;
 import java.io.CharArrayWriter;
 import java.io.File;
@@ -73,9 +71,7 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintWriter;
-
 import java.net.URL;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -85,10 +81,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
-
 import java.util.zip.ZipException;
 
 import javax.script.ScriptEngine;
@@ -114,14 +108,10 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
 
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
@@ -130,6 +120,11 @@ import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.modes.JavaScriptTokenMaker;
 import org.fife.ui.rsyntaxtextarea.modes.JavaTokenMaker;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class TextEditor extends JFrame implements ActionListener,
 	       ChangeListener {
 

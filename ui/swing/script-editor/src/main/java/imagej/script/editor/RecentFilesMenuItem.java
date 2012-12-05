@@ -47,6 +47,11 @@ import java.util.Stack;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class RecentFilesMenuItem extends JMenu {
 	protected TextEditor editor;
 	protected int maxCount = 10, maxLength = 35;

@@ -48,6 +48,11 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class JTextAreaWriter extends Writer {
 
 	JTextArea textArea;

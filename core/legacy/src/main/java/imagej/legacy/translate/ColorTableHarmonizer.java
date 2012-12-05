@@ -52,7 +52,6 @@ import java.awt.image.IndexColorModel;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.imglib2.display.AbstractColorTable;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.display.RealLUTConverter;

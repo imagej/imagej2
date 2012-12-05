@@ -35,7 +35,6 @@
 
 package imagej.widget;
 
-
 /**
  * A interface used for marking input fields of plugin parameter dialogs as
  * button fields.

@@ -48,6 +48,11 @@ import bsh.Interpreter;
 import bsh.NameSpace;
 import bsh.UtilEvalError;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class BeanshellBindings implements Bindings {
 
 	protected final Interpreter interpreter;

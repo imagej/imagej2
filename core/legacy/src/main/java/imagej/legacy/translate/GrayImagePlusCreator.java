@@ -71,7 +71,7 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 		pixelHarmonizer = new GrayPixelHarmonizer();
 		colorTableHarmonizer = new ColorTableHarmonizer(context);
 		metadataHarmonizer = new MetadataHarmonizer();
-		planeHarmonizer = new PlaneHarmonizer();
+		planeHarmonizer = new PlaneHarmonizer(context);
 		positionHarmonizer = new PositionHarmonizer();
 		nameHarmonizer = new NameHarmonizer();
 	}

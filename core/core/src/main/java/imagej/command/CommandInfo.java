@@ -53,6 +53,7 @@ import imagej.util.StringMaker;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -75,6 +76,9 @@ import java.util.Map;
  * @see Command
  */
 public class CommandInfo extends PluginInfo<Command> implements ModuleInfo {
+
+	/** Wrapped {@link PluginInfo}, if any. */
+	private PluginInfo<Command> info;
 
 	/** List of items with fixed, preset values. */
 	private Map<String, Object> presets;
@@ -108,11 +112,6 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo {
 	private final List<ModuleItem<?>> outputList =
 		new ArrayList<ModuleItem<?>>();
 
-	private static String className(PluginInfo<Command> info) {
-		// Blergh... Yacc yacc yacc...
-		return info.getPluginClass() == null ? info.getClassName() : null;
-	}
-
 	// -- Constructors --
 
 	/**
@@ -122,7 +121,7 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo {
 	 *          {@link Command}.
 	 */
 	public CommandInfo(final String className) {
-		this(className, null, null);
+		this(null, className, null, null);
 	}
 
 	/**
@@ -134,7 +133,7 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo {
 	 *          metadata object.
 	 */
 	public CommandInfo(final String className, final Plugin annotation) {
-		this(className, null, annotation);
+		this(null, className, null, annotation);
 	}
 
 	/**
@@ -143,7 +142,7 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo {
 	 * @param commandClass The plugin class, which must implement {@link Command}.
 	 */
 	public CommandInfo(final Class<? extends Command> commandClass) {
-		this(null, commandClass, null);
+		this(null, null, commandClass, null);
 	}
 
 	/**
@@ -156,7 +155,7 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo {
 	public CommandInfo(final Class<? extends Command> commandClass,
 		final Plugin annotation)
 	{
-		this(null, commandClass, annotation);
+		this(null, null, commandClass, annotation);
 	}
 
 	/**
@@ -166,13 +165,14 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo {
 	 * @param info The plugin metadata to wrap.
 	 */
 	public CommandInfo(final PluginInfo<Command> info) {
-		this(className(info), info.getPluginClass(), info.getAnnotation());
+		this(info, null, null, info.getAnnotation());
 	}
 
-	protected CommandInfo(final String className,
+	protected CommandInfo(final PluginInfo<Command> info, final String className,
 		final Class<? extends Command> commandClass, final Plugin annotation)
 	{
 		super(className, commandClass, Command.class, annotation);
+		this.info = info;
 		setPresets(null);
 		setCommandModuleFactory(null);
 	}
@@ -217,6 +217,24 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo {
 		return factory.createModule(this, commandInstance);
 	}
 
+	// -- PluginInfo methods --
+
+	@Override
+	public void setPluginClass(final Class<? extends Command> pluginClass) {
+		if (info == null) super.setPluginClass(pluginClass);
+		else info.setPluginClass(pluginClass);
+	}
+
+	@Override
+	public Class<? extends Command> getPluginClass() {
+		return info == null ? super.getPluginClass() : info.getPluginClass();
+	}
+
+	@Override
+	public URL getIconURL() throws InstantiableException {
+		return info == null ? super.getIconURL() : info.getIconURL();
+	}
+
 	// -- Object methods --
 
 	@Override
@@ -227,6 +245,23 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo {
 			sm.append(key, value);
 		}
 		return sm.toString();
+	}
+
+	// -- Instantiable methods --
+
+	@Override
+	public String getClassName() {
+		return info == null ? super.getClassName() : info.getClassName();
+	}
+
+	@Override
+	public Class<? extends Command> loadClass() throws InstantiableException {
+		return info == null ? super.loadClass() : info.loadClass();
+	}
+
+	@Override
+	public Command createInstance() throws InstantiableException {
+		return info == null ? super.createInstance() : info.createInstance();
 	}
 
 	// -- ModuleInfo methods --

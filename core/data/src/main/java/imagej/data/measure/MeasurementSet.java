@@ -41,39 +41,36 @@ import java.util.List;
 import net.imglib2.ops.function.Function;
 import net.imglib2.ops.pointset.PointSet;
 
-
 /**
  * MeasurementSet is a collection of {@link Function}s and associated outputs.
- * It is used by the {@link MeasurementService} to measure multiple Functions
- * at a time. Note that a MeasurementSet is limited to one type of output. If
+ * It is used by the {@link MeasurementService} to measure multiple Functions at
+ * a time. Note that a MeasurementSet is limited to one type of output. If
  * multiple output types are needed then use multiple MeasurementSets or create
- * your own aggregating class and associated Function (similar to {@link
- * BasicStats} and {@link BasicStatsFunction}).
- *  
+ * your own aggregating class and associated Function (similar to
+ * {@link BasicStats} and {@link BasicStatsFunction}).
+ * 
  * @author Barry DeZonia
- *
- * @param <T>
- * The type of the output variables that are associated with the Functions to
- * be measured.
+ * @param <T> The type of the output variables that are associated with the
+ *          Functions to be measured.
  */
 public class MeasurementSet<T> {
 
 	// -- instance variables --
-	
-	private List<Function<PointSet,T>> funcs =
-			new ArrayList<Function<PointSet,T>>();
-	private List<T> variables = new ArrayList<T>();
-	
+
+	private final List<Function<PointSet, T>> funcs =
+		new ArrayList<Function<PointSet, T>>();
+	private final List<T> variables = new ArrayList<T>();
+
 	// -- constructor --
-	
-	public MeasurementSet() { }
-	
+
+	public MeasurementSet() {}
+
 	// -- MeasurementSet methods --
 
 	/**
 	 * Add a {@link Function} and an associated output to the MeasurementSet.
 	 */
-	public void add(Function<PointSet,T> func, T variable) {
+	public void add(final Function<PointSet, T> func, final T variable) {
 		funcs.add(func);
 		variables.add(variable);
 	}
@@ -88,14 +85,14 @@ public class MeasurementSet<T> {
 	/**
 	 * Returns the {@link Function} at position i within the MeasurementSet.
 	 */
-	public Function<PointSet,T> getFunction(int i) {
+	public Function<PointSet, T> getFunction(final int i) {
 		return funcs.get(i);
 	}
-	
+
 	/**
 	 * Returns the output at position i within the MeasurementSet.
 	 */
-	public T getVariable(int i) {
+	public T getVariable(final int i) {
 		return variables.get(i);
 	}
 
@@ -105,5 +102,5 @@ public class MeasurementSet<T> {
 	public MeasurementSet<T> create() {
 		return new MeasurementSet<T>();
 	}
-}
 
+}

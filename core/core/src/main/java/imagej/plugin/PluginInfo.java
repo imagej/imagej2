@@ -290,31 +290,31 @@ public class PluginInfo<PT extends ImageJPlugin> extends AbstractUIDetails
 
 	/** Populates the entry to match the associated @{@link Plugin} annotation. */
 	private void populateValues() {
-		Plugin annotation = getAnnotation();
-		if (annotation == null) return;
-		setName(annotation.name());
-		setLabel(annotation.label());
-		setDescription(annotation.description());
+		final Plugin ann = getAnnotation();
+		if (ann == null) return;
+		setName(ann.name());
+		setLabel(ann.label());
+		setDescription(ann.description());
 
 		final MenuPath menuPath;
-		final Menu[] menu = annotation.menu();
+		final Menu[] menu = ann.menu();
 		if (menu.length > 0) {
 			menuPath = parseMenuPath(menu);
 		}
 		else {
 			// parse menuPath attribute
-			menuPath = new MenuPath(annotation.menuPath());
+			menuPath = new MenuPath(ann.menuPath());
 		}
 		setMenuPath(menuPath);
 
-		setMenuRoot(annotation.menuRoot());
+		setMenuRoot(ann.menuRoot());
 
-		final String iconPath = annotation.iconPath();
+		final String iconPath = ann.iconPath();
 		setIconPath(iconPath);
-		setPriority(annotation.priority());
-		setEnabled(annotation.enabled());
-		setSelectable(annotation.selectable());
-		setSelectionGroup(annotation.selectionGroup());
+		setPriority(ann.priority());
+		setEnabled(ann.enabled());
+		setSelectable(ann.selectable());
+		setSelectionGroup(ann.selectionGroup());
 
 		// add default icon if none attached to leaf
 		final MenuEntry menuLeaf = menuPath.getLeaf();
