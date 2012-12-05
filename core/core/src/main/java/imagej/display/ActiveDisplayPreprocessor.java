@@ -66,21 +66,26 @@ public class ActiveDisplayPreprocessor extends AbstractPreprocessorPlugin {
 		final DisplayService displayService =
 			getContext().getService(DisplayService.class);
 		if (displayService == null) return;
-		final Display<?> activeDisplay = displayService.getActiveDisplay();
-		if (activeDisplay == null) return;
 
 		final ModuleService moduleService =
 			getContext().getService(ModuleService.class);
 		if (moduleService == null) return;
 
-		// assign active display to single Display input
 		final ModuleItem<?> displayInput =
 			moduleService.getSingleInput(module, Display.class);
-		if (displayInput != null && displayInput.isAutoFill()) {
-			final String name = displayInput.getName();
-			module.setInput(name, activeDisplay);
-			module.setResolved(name, true);
-		}
+		if (displayInput == null || !displayInput.isAutoFill()) return;
+
+		@SuppressWarnings("unchecked")
+		final Class<? extends Display<?>> displayType =
+			(Class<? extends Display<?>>) displayInput.getType();
+
+		final Display<?> activeDisplay =
+			displayService.getActiveDisplay(displayType);
+		if (activeDisplay == null) return;
+
+		final String name = displayInput.getName();
+		module.setInput(name, activeDisplay);
+		module.setResolved(name, true);
 	}
 
 }
