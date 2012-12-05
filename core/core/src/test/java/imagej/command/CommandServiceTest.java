@@ -33,37 +33,43 @@
  * #L%
  */
 
-package imagej;
+package imagej.command;
+
+import static org.junit.Assert.assertEquals;
+import imagej.ImageJ;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+
+import org.junit.Test;
 
 /**
- * An interface declaring the ability to create objects.
+ * Tests {@link CommandService}.
  * 
- * @param <T> The type of objects that can be created.
- * @author Curtis Rueden
+ * @author Johannes Schindelin
  */
-public interface Instantiable<T> {
+public class CommandServiceTest {
 
-	/**
-	 * Gets the fully qualified name of the {@link Class} of the objects that can
-	 * be created.
-	 */
-	String getClassName();
+	@Test
+	public void runClass() throws Exception {
+		final ImageJ context = ImageJ.createContext(CommandService.class);
+		final CommandService commandService =
+			context.getService(CommandService.class);
+		final StringBuffer string = new StringBuffer();
+		commandService.run(TestCommand.class, "string", string).get();
+		assertEquals("Hello, World!", string.toString());
+	}
 
-	/**
-	 * Loads the class corresponding to the objects that are created by
-	 * {@link #createInstance()}.
-	 * <p>
-	 * Note that this class may not be precisely {@code T.class} but instead a
-	 * subclass thereof.
-	 * </p>
-	 * 
-	 * @see imagej.plugin.PluginInfo for an example of an {@code Instantiable}
-	 *      type that typically instantiates objects of a subtype of {@code T}
-	 *      rather than {@code T} itself.
-	 */
-	Class<? extends T> loadClass() throws InstantiableException;
+	@Plugin
+	public static class TestCommand implements Command {
 
-	/** Creates an object. */
-	T createInstance() throws InstantiableException;
+		@Parameter
+		public StringBuffer string;
+
+		@Override
+		public void run() {
+			string.setLength(0);
+			string.append("Hello, World!");
+		}
+	}
 
 }

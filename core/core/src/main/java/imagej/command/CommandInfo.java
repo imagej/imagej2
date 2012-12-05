@@ -108,16 +108,71 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo {
 	private final List<ModuleItem<?>> outputList =
 		new ArrayList<ModuleItem<?>>();
 
-	// -- Constructors --
-
-	public CommandInfo(final String className) {
-		super(className, Command.class);
-		setPresets(null);
-		setCommandModuleFactory(null);
+	private static String className(PluginInfo<Command> info) {
+		// Blergh... Yacc yacc yacc...
+		return info.getPluginClass() == null ? info.getClassName() : null;
 	}
 
+	// -- Constructors --
+
+	/**
+	 * Creates a new command metadata object.
+	 * 
+	 * @param className The name of the class, which must implement
+	 *          {@link Command}.
+	 */
+	public CommandInfo(final String className) {
+		this(className, null, null);
+	}
+
+	/**
+	 * Creates a new command metadata object.
+	 * 
+	 * @param className The name of the class, which must implement
+	 *          {@link Command}.
+	 * @param annotation The @{@link Plugin} annotation to associate with this
+	 *          metadata object.
+	 */
 	public CommandInfo(final String className, final Plugin annotation) {
-		super(className, Command.class, annotation);
+		this(className, null, annotation);
+	}
+
+	/**
+	 * Creates a new command metadata object.
+	 * 
+	 * @param commandClass The plugin class, which must implement {@link Command}.
+	 */
+	public CommandInfo(final Class<? extends Command> commandClass) {
+		this(null, commandClass, null);
+	}
+
+	/**
+	 * Creates a new command metadata object.
+	 * 
+	 * @param commandClass The plugin class, which must implement {@link Command}.
+	 * @param annotation The @{@link Plugin} annotation to associate with this
+	 *          metadata object.
+	 */
+	public CommandInfo(final Class<? extends Command> commandClass,
+		final Plugin annotation)
+	{
+		this(null, commandClass, annotation);
+	}
+
+	/**
+	 * Creates a new command metadata object describing the same command as the
+	 * given {@link PluginInfo}.
+	 * 
+	 * @param info The plugin metadata to wrap.
+	 */
+	public CommandInfo(final PluginInfo<Command> info) {
+		this(className(info), info.getPluginClass(), info.getAnnotation());
+	}
+
+	protected CommandInfo(final String className,
+		final Class<? extends Command> commandClass, final Plugin annotation)
+	{
+		super(className, commandClass, Command.class, annotation);
 		setPresets(null);
 		setCommandModuleFactory(null);
 	}

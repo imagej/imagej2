@@ -77,7 +77,7 @@ public class DefaultWidgetService extends AbstractService implements
 				widget = info.createInstance();
 			}
 			catch (final InstantiableException e) {
-				log.error("Invalid widget: " + info.getClassName(), e);
+				log.error("Invalid widget: " + info, e);
 				continue;
 			}
 			if (widget.isCompatible(model)) {

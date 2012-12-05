@@ -47,6 +47,7 @@ import imagej.util.ListUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -63,6 +64,7 @@ import java.util.List;
  * </p>
  * 
  * @author Curtis Rueden
+ * @author Johannes Schindelin
  * @see ImageJPlugin
  * @see Plugin
  */
@@ -171,30 +173,21 @@ public class DefaultPluginService extends AbstractService implements
 	public <P extends ImageJPlugin> List<PluginInfo<ImageJPlugin>>
 		getPluginsOfClass(final Class<P> pluginClass)
 	{
-		// NB: Since we have the class in question, we attempt to determine its
-		// plugin type and limit our search to plugins of that type.
-		final Class<? extends ImageJPlugin> pluginType = getPluginType(pluginClass);
-		if (pluginType == null) {
-			// NB: We failed to guess the type hierarchy of the class in question.
-			// We must scan *all* plugins for a match.
-			return getPluginsOfClass(pluginClass, ImageJPlugin.class);
-		}
-		// NB: We successfully determined the plugin's type.
-		// We limit our search to plugins of that type.
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final List<PluginInfo<ImageJPlugin>> result =
-			(List) getPluginsOfClass(pluginClass, getPluginType(pluginClass));
-		return result;
+		// NB: We must scan *all* plugins for a match. In theory, the same plugin
+		// Class could be associated with multiple PluginInfo entries of differing
+		// type anyway. If performance of this method is insufficient, the solution
+		// will be to rework the PluginIndex data structure to include an index on
+		// plugin class names.
+		return getPluginsOfClass(pluginClass, ImageJPlugin.class);
 	}
 
 	@Override
 	public <PT extends ImageJPlugin, P extends PT> List<PluginInfo<PT>>
 		getPluginsOfClass(final Class<P> pluginClass, final Class<PT> type)
 	{
-		final ArrayList<PluginInfo<PT>> result =
-			new ArrayList<PluginInfo<PT>>();
-		final String className = pluginClass.getName();
-		findPluginsOfClass(className, getPluginsOfType(type), result);
+		final ArrayList<PluginInfo<PT>> result = new ArrayList<PluginInfo<PT>>();
+		findPluginsOfClass(pluginClass, getPluginsOfType(type), result);
+		filterNonmatchingClasses(pluginClass, result);
 		return result;
 	}
 
@@ -202,12 +195,18 @@ public class DefaultPluginService extends AbstractService implements
 	public List<PluginInfo<ImageJPlugin>> getPluginsOfClass(
 		final String className)
 	{
+		// NB: Since we cannot load the class in question, and cannot know its type
+		// hierarch(y/ies) even if we did, we must scan *all* plugins for a match.
+		return getPluginsOfClass(className, ImageJPlugin.class);
+	}
+
+	@Override
+	public <PT extends ImageJPlugin> List<PluginInfo<ImageJPlugin>>
+		getPluginsOfClass(final String className, final Class<PT> type)
+	{
 		final ArrayList<PluginInfo<ImageJPlugin>> result =
 			new ArrayList<PluginInfo<ImageJPlugin>>();
-		// NB: Since we cannot load the class in question, and hence cannot
-		// know its type hierarchy, we must scan *all* plugins for a match.
-		final List<PluginInfo<?>> allPlugins = getPlugins();
-		findPluginsOfClass(className, allPlugins, result);
+		findPluginsOfClass(className, getPluginsOfType(type), result);
 		return result;
 	}
 
@@ -240,7 +239,7 @@ public class DefaultPluginService extends AbstractService implements
 			return p;
 		}
 		catch (final InstantiableException exc) {
-			log.error("Cannot create plugin: " + info.getClassName());
+			log.error("Cannot create plugin: " + info);
 		}
 		return null;
 	}
@@ -292,6 +291,60 @@ public class DefaultPluginService extends AbstractService implements
 		@SuppressWarnings("unchecked")
 		final Class<PT> type = (Class<PT>) annotation.type();
 		return type;
+	}
+
+	// -- Helper methods --
+
+	/**
+	 * Transfers plugins of the given class from the source list to the
+	 * destination list. Note that because this method compares class objects, it
+	 * <em>must</em> load the classes in question.
+	 * 
+	 * @param pluginClass The class of the desired plugins.
+	 * @param srcList The list to scan for matching plugins.
+	 * @param destList The list to which matching plugins are added.
+	 */
+	private <T extends PluginInfo<?>> void findPluginsOfClass(
+		final Class<?> pluginClass, final List<? extends PluginInfo<?>> srcList,
+		final List<T> destList)
+	{
+		final String className = pluginClass.getName();
+		for (final PluginInfo<?> info : srcList) {
+			try {
+				final Class<?> clazz2 = info.getPluginClass();
+				if (clazz2 == pluginClass ||
+					(info.getClassName().equals(className) && info.loadClass() == pluginClass))
+				{
+					@SuppressWarnings("unchecked")
+					final T match = (T) info;
+					destList.add(match);
+				}
+			}
+			catch (InstantiableException exc) {
+				log.debug("Ignoring plugin: " + info, exc);
+			}
+		}
+	}
+
+	/**
+	 * Filters the given list to include only entries with matching
+	 * <em>classes</em> (not just class <em>names</em>).
+	 */
+	private <PT extends ImageJPlugin, P extends PT> void
+		filterNonmatchingClasses(final Class<P> pluginClass,
+			final ArrayList<PluginInfo<PT>> result)
+	{
+		for (final Iterator<PluginInfo<PT>> iter = result.iterator();
+			iter.hasNext(); )
+		{
+			try {
+				if (iter.next().loadClass() != pluginClass) iter.remove();
+			}
+			catch (InstantiableException exc) {
+				log.debug(exc);
+				iter.remove();
+			}
+		}
 	}
 
 }

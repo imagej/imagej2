@@ -89,10 +89,7 @@ public class PluginInfo<PT extends ImageJPlugin> extends AbstractUIDetails
 	 *          See {@link ImageJPlugin} for a list of common plugin types.
 	 */
 	public PluginInfo(final String className, final Class<PT> pluginType) {
-		setClassName(className);
-		setPluginType(pluginType);
-		setMenuPath(null);
-		setMenuRoot(Plugin.APPLICATION_MENU_ROOT);
+		this(className, null, pluginType, null);
 	}
 
 	/**
@@ -108,17 +105,63 @@ public class PluginInfo<PT extends ImageJPlugin> extends AbstractUIDetails
 	public PluginInfo(final String className, final Class<PT> pluginType,
 		final Plugin annotation)
 	{
-		this(className, pluginType);
-		this.annotation = annotation;
-		populateValues();
+		this(className, null, pluginType, annotation);
+	}
+
+	/**
+	 * Creates a new plugin metadata object.
+	 * 
+	 * @param pluginClass The plugin class, which must implement
+	 *          {@link ImageJPlugin}.
+	 * @param pluginType The <em>type</em> of plugin described by this metadata.
+	 *          See {@link ImageJPlugin} for a list of common plugin types.
+	 */
+	public PluginInfo(final Class<? extends PT> pluginClass,
+		final Class<PT> pluginType)
+	{
+		this(null, pluginClass, pluginType, null);
+	}
+
+	/**
+	 * Creates a new plugin metadata object.
+	 * 
+	 * @param pluginClass The plugin class, which must implement
+	 *          {@link ImageJPlugin}.
+	 * @param pluginType The <em>type</em> of plugin described by this metadata.
+	 *          See {@link ImageJPlugin} for a list of common plugin types.
+	 * @param annotation The @{@link Plugin} annotation to associate with this
+	 *          metadata object.
+	 */
+	public PluginInfo(final Class<? extends PT> pluginClass,
+		final Class<PT> pluginType, final Plugin annotation)
+	{
+		this(null, pluginClass, pluginType, annotation);
+	}
+
+	protected PluginInfo(final String className,
+		final Class<? extends PT> pluginClass, final Class<PT> pluginType,
+		final Plugin annotation)
+	{
+		if (pluginClass != null) {
+			if (className != null) {
+				throw new IllegalArgumentException(
+					"className and pluginClass are mutually exclusive");
+			}
+			setPluginClass(pluginClass);
+		}
+		else {
+			this.className = className;
+		}
+		setPluginType(pluginType);
+		setMenuPath(null);
+		setMenuRoot(Plugin.APPLICATION_MENU_ROOT);
+		if (annotation != null) {
+			this.annotation = annotation;
+			populateValues();
+		}
 	}
 
 	// -- PluginInfo methods --
-
-	/** Sets the fully qualified name of the {@link Class} of the item objects. */
-	public void setClassName(final String className) {
-		this.className = className;
-	}
 
 	/**
 	 * Explicitly sets the {@link Class} of the item objects.
@@ -129,6 +172,17 @@ public class PluginInfo<PT extends ImageJPlugin> extends AbstractUIDetails
 	 */
 	public void setPluginClass(final Class<? extends PT> pluginClass) {
 		this.pluginClass = pluginClass;
+	}
+
+	/**
+	 * Obtains the {@link Class} of the item objects, if that class has already
+	 * been loaded.
+	 * 
+	 * @return The {@link Class}, or null if it has not yet been loaded by
+	 *         {@link #loadClass}.
+	 */
+	public Class<? extends PT> getPluginClass() {
+		return pluginClass;
 	}
 
 	/**
@@ -192,11 +246,12 @@ public class PluginInfo<PT extends ImageJPlugin> extends AbstractUIDetails
 
 	@Override
 	public String getClassName() {
+		if (pluginClass != null) return pluginClass.getName();
 		return className;
 	}
 
 	@Override
-	public Class<PT> loadClass() throws InstantiableException {
+	public Class<? extends PT> loadClass() throws InstantiableException {
 		if (pluginClass == null) {
 			final Class<?> c;
 			try {
@@ -210,17 +265,12 @@ public class PluginInfo<PT extends ImageJPlugin> extends AbstractUIDetails
 			pluginClass = typedClass;
 		}
 
-		// NB: The pluginClass is usually not a PT, though it extends PT.
-		// We cast the result here to conform to the Instantiable interface.
-		@SuppressWarnings("unchecked")
-		final Class<PT> result = (Class<PT>) pluginClass;
-
-		return result;
+		return pluginClass;
 	}
 
 	@Override
 	public PT createInstance() throws InstantiableException {
-		final Class<PT> c = loadClass();
+		final Class<? extends PT> c = loadClass();
 
 		// instantiate plugin
 		final PT instance;
