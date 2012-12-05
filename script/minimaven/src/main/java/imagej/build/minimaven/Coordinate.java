@@ -35,6 +35,11 @@
 
 package imagej.build.minimaven;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class Coordinate {
 	protected String groupId, artifactId, version, systemPath, classifier, scope, snapshotVersion;
 	protected boolean optional;

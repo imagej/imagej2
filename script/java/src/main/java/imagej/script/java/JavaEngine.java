@@ -84,6 +84,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class JavaEngine extends AbstractScriptEngine {
 
 	private final static String DEFAULT_GROUP_ID = "net.imagej";

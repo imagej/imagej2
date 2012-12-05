@@ -47,7 +47,11 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
-
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class MiniMaven {
 	public static void ensureIJDirIsSet() {
 		String ijDir = System.getProperty("ij.dir");

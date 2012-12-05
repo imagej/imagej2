@@ -35,6 +35,8 @@
 
 package imagej.script;
 
+import bsh.EvalError;
+import bsh.Interpreter;
 import imagej.util.LineOutputStream;
 import imagej.util.Log;
 
@@ -47,9 +49,11 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
-import bsh.EvalError;
-import bsh.Interpreter;
-
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class BeanshellScriptEngine extends AbstractScriptEngine
 {
 

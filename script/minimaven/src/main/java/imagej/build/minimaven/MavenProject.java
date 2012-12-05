@@ -61,6 +61,11 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 @SuppressWarnings("hiding")
 public class MavenProject extends DefaultHandler implements Comparable<MavenProject> {
 	protected final BuildEnvironment env;

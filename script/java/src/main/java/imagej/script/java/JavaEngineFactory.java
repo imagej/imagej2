@@ -44,6 +44,11 @@ import imagej.plugin.Plugin;
 import imagej.script.AbstractScriptEngineFactory;
 import imagej.script.ScriptLanguage;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 @Plugin(type = ScriptLanguage.class)
 public class JavaEngineFactory extends AbstractScriptEngineFactory {
 
