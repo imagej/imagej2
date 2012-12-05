@@ -45,7 +45,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${scifio.groupId}</groupId>
-			<artifactId>loci-common</artifactId>
+			<artifactId>scifio</artifactId>
 			<version>${scifio.version}</version>
 		</dependency>
 	</dependencies>
