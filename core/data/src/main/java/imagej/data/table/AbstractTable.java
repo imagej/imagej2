@@ -82,8 +82,11 @@ public abstract class AbstractTable<C extends Column<T>, T> extends
 	@Override
 	public C addColumn(final String header) {
 		setColumnCount(getColumnCount() + 1);
-		final C column = createColumn(header);
-		add(column);
+		final C column = get(getColumnCount() - 1);
+		column.setHeader(header);
+		// old way caused double column additions since setColumnCount() did too
+		// final C column = createColumn(header);
+		// add(column);
 		return column;
 	}
 
@@ -144,7 +147,7 @@ public abstract class AbstractTable<C extends Column<T>, T> extends
 	@Override
 	public void setRowHeader(final String header, final int row) {
 		rowHeaders.setSize(getRowCount());
-		rowHeaders.set(row, header);
+		if (row < getRowCount()) rowHeaders.set(row, header);
 	}
 
 	@Override
@@ -157,6 +160,23 @@ public abstract class AbstractTable<C extends Column<T>, T> extends
 	public T get(final int col, final int row) {
 		check(col, row);
 		return get(col).get(row);
+	}
+
+	@Override
+	public void removeRow(int rowNum) {
+		final int rows = getRowCount();
+		if (rows == 0) return;
+		checkRow(rowNum);
+		for (int r = rowNum; r < rows - 1; r++) {
+			final String nextRowHeader = getRowHeader(r + 1);
+			setRowHeader(nextRowHeader, r);
+			for (int c = 0; c < getColumnCount(); c++) {
+				final T nextRowValue = get(c, r + 1);
+				set(nextRowValue, c, r);
+			}
+		}
+		setRowHeader(null, rows - 1);
+		setRowCount(rows - 1);
 	}
 
 	// -- Internal methods --

@@ -91,4 +91,6 @@ public interface Table<C extends Column<T>, T> extends List<C> {
 	/** Gets the table value at the given column and row. */
 	T get(int col, int row);
 
+	void removeRow(int rowNum);
+
 }
