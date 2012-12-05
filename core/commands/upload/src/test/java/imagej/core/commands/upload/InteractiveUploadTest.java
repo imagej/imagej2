@@ -1,4 +1,3 @@
-package imagej.core.commands.upload;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -34,6 +33,8 @@ package imagej.core.commands.upload;
  * #L%
  */
 
+package imagej.core.commands.upload;
+
 import imagej.ImageJ;
 import imagej.command.CommandService;
 import imagej.event.EventHandler;
@@ -43,6 +44,14 @@ import imagej.event.StatusService;
 
 import java.io.File;
 
+/**
+ * Tests the upload functionality.
+ *
+ * This test is not automated since it requires interaction with the upload
+ * server, possibly overwriting existing files.
+ *
+ * @author Johannes Schindelin
+ */
 public class InteractiveUploadTest {
 
 	@SuppressWarnings("unchecked")

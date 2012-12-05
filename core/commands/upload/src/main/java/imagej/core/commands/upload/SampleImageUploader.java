@@ -1,4 +1,3 @@
-package imagej.core.commands.upload;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -34,6 +33,8 @@ package imagej.core.commands.upload;
  * #L%
  */
 
+package imagej.core.commands.upload;
+
 import imagej.command.Command;
 import imagej.event.StatusService;
 import imagej.log.LogService;
@@ -54,6 +55,12 @@ import java.net.URL;
 
 import net.iharder.Base64;
 
+/**
+ * Uploads a sample image to the ImageJDev server for further inspection
+ * by the developers.
+ *
+ * @author Johannes Schindelin
+ */
 @Plugin(menuPath = "Help>Upload Sample Image")
 public class SampleImageUploader implements Command {
 	@Parameter
