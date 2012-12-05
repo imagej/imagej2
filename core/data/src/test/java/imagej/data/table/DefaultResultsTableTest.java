@@ -1,5 +1,3 @@
-
-package imagej.data.table;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -34,6 +32,8 @@ package imagej.data.table;
  * policies, either expressed or implied, of any organization.
  * #L%
  */
+
+package imagej.data.table;
 
 import static org.junit.Assert.assertEquals;
 

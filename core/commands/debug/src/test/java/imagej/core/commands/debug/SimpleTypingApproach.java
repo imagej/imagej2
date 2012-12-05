@@ -33,6 +33,8 @@
  * #L%
  */
 
+package imagej.core.commands.debug;
+
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.ComplexType;
@@ -41,24 +43,21 @@ import net.imglib2.type.numeric.complex.ComplexDoubleType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 /**
- * This class shows a possible refactoring that could be made to handle
- * stronger typing as needed. It also shows support for complex and real images.
- * Finally it implements an inversion method that shows how a user might access
- * the API in a simple fashion.
+ * This class shows a possible refactoring that could be made to handle stronger
+ * typing as needed. It also shows support for complex and real images. Finally
+ * it implements an inversion method that shows how a user might access the API
+ * in a simple fashion.
  * 
  * @author Barry DeZonia
- *
  */
 public class SimpleTypingApproach {
 
-	/**
-	 * A container of complex typed image data.
-	 */
-	private static class ComplexImage<T extends ComplexType<T>>
-	{
+	/** A container of complex typed image data. */
+	private static class ComplexImage<T extends ComplexType<T>> {
+
 		final Img<T> img;
-		
-		public ComplexImage(Img<T> img) {
+
+		public ComplexImage(final Img<T> img) {
 			this.img = img;
 		}
 
@@ -67,35 +66,32 @@ public class SimpleTypingApproach {
 		}
 
 		// in general one should not assume that a Img<SubClassOfA> is a Img<A>.
-		//   But I think we can safely cast here since ComplexType is only an
-		//   interface and not an actual class. all implementations of complex
-		//   numbers implement the interface and should have the correct signatures.
+		// But I think we can safely cast here since ComplexType is only an
+		// interface and not an actual class. all implementations of complex
+		// numbers implement the interface and should have the correct signatures.
 		// note this method is useful if an external user has a ComplexImage<?>
-		//   rather than a ComplexImage<T>.
-		@SuppressWarnings({"rawtypes", "unchecked"})
+		// rather than a ComplexImage<T>.
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		public Cursor<ComplexType<?>> complexCursor() {
 			return (Cursor) cursor();
 		}
 	}
-	
 
-	/**
-	 * A container of real typed image data.
-	 */
-	private static class RealImage<T extends RealType<T>>
-		extends ComplexImage<T>
+	/** A container of real typed image data. */
+	private static class RealImage<T extends RealType<T>> extends ComplexImage<T>
 	{
-		public RealImage(Img<T> img) {
+
+		public RealImage(final Img<T> img) {
 			super(img);
 		}
 
 		// in general one should not assume that a Img<SubClassOfA> is a Img<A>.
-		//   But I think we can safely cast here since RealType is only an
-		//   interface and not an actual class. all implementations of real
-		//   numbers implement the interface and should have the correct signatures.
+		// But I think we can safely cast here since RealType is only an
+		// interface and not an actual class. all implementations of real
+		// numbers implement the interface and should have the correct signatures.
 		// note this method is useful if an external user has a RealImage<?>
-		//   rather than a RealImage<T>.
-		@SuppressWarnings({"rawtypes", "unchecked"})
+		// rather than a RealImage<T>.
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		public Cursor<RealType<?>> realCursor() {
 			return (Cursor) cursor();
 		}
@@ -104,21 +100,20 @@ public class SimpleTypingApproach {
 	// NB - it is worth noting we can write algorithms that work on ComplexImages
 	// or RealImages. Due to inheritance a RealImage can be passed to any
 	// algorithm that works on ComplexImages while vice versa is not the case.
-	
-	/**
-	 * API examples
-	 */
+
+	/** API examples. */
 	@SuppressWarnings("unused")
 	private static void apiExample() {
-	
-		Img<UnsignedByteType> bytes = null;
-		
-		RealImage<UnsignedByteType> rImage = new RealImage<UnsignedByteType>(bytes);
 
-		Cursor<UnsignedByteType> c1 = rImage.cursor();
+		final Img<UnsignedByteType> bytes = null;
+
+		final RealImage<UnsignedByteType> rImage =
+			new RealImage<UnsignedByteType>(bytes);
+
+		final Cursor<UnsignedByteType> c1 = rImage.cursor();
 		while (c1.hasNext()) {
-			UnsignedByteType b = c1.next();
-			UnsignedByteType x = new UnsignedByteType();
+			final UnsignedByteType b = c1.next();
+			final UnsignedByteType x = new UnsignedByteType();
 			b.set(x);
 			b.set(1);
 			b.setInteger(100);
@@ -129,19 +124,19 @@ public class SimpleTypingApproach {
 			b.getInteger();
 			b.getRealDouble();
 		}
-		
-		Cursor<RealType<?>> c2 = rImage.realCursor();
+
+		final Cursor<RealType<?>> c2 = rImage.realCursor();
 		while (c2.hasNext()) {
-			RealType<?> r = c2.next();
+			final RealType<?> r = c2.next();
 			r.setOne();
 			r.setReal(10);
 			r.setZero();
 			r.getRealDouble();
 		}
-		
-		Cursor<ComplexType<?>> c3 = rImage.complexCursor();
+
+		final Cursor<ComplexType<?>> c3 = rImage.complexCursor();
 		while (c3.hasNext()) {
-			ComplexType<?> c = c3.next();
+			final ComplexType<?> c = c3.next();
 			c.setComplexNumber(5.3, 17.8);
 			c.setImaginary(4.3);
 			c.setOne();
@@ -153,15 +148,15 @@ public class SimpleTypingApproach {
 			c.getPowerDouble();
 		}
 
-		Img<ComplexDoubleType> complexes = null;
-		
-		ComplexImage<ComplexDoubleType> cImage =
-				new ComplexImage<ComplexDoubleType>(complexes);
+		final Img<ComplexDoubleType> complexes = null;
 
-		Cursor<ComplexDoubleType> c4 = cImage.cursor();
+		final ComplexImage<ComplexDoubleType> cImage =
+			new ComplexImage<ComplexDoubleType>(complexes);
+
+		final Cursor<ComplexDoubleType> c4 = cImage.cursor();
 		while (c4.hasNext()) {
-			ComplexDoubleType c = c4.next();
-			ComplexDoubleType x = new ComplexDoubleType();
+			final ComplexDoubleType c = c4.next();
+			final ComplexDoubleType x = new ComplexDoubleType();
 			c.set(x);
 			c.set(1.4, 8.3);
 			c.setComplexNumber(5.3, 17.8);
@@ -174,10 +169,10 @@ public class SimpleTypingApproach {
 			c.getPhaseDouble();
 			c.getPowerDouble();
 		}
-		
-		Cursor<ComplexType<?>> c5 = cImage.complexCursor();
+
+		final Cursor<ComplexType<?>> c5 = cImage.complexCursor();
 		while (c5.hasNext()) {
-			ComplexType<?> c = c5.next();
+			final ComplexType<?> c = c5.next();
 			c.setComplexNumber(5.3, 17.8);
 			c.setImaginary(4.3);
 			c.setOne();
@@ -191,35 +186,34 @@ public class SimpleTypingApproach {
 
 	}
 
-	/**
-	 * A realistic example on how to invert an image
-	 */
+	/** A realistic example on how to invert an image. */
 	@SuppressWarnings("unused")
 	private static void inversionExample() {
-		Img<UnsignedByteType> img = null;
-		RealImage<UnsignedByteType> rImage = new RealImage<UnsignedByteType>(img);
+		final Img<UnsignedByteType> img = null;
+		final RealImage<UnsignedByteType> rImage =
+			new RealImage<UnsignedByteType>(img);
 
 		// strongly typed version
-		Cursor<UnsignedByteType> cursor = rImage.cursor();
-		int imin = (int) cursor.get().getMinValue();
-		int imax = (int) cursor.get().getMaxValue();
+		final Cursor<UnsignedByteType> cursor = rImage.cursor();
+		final int imin = (int) cursor.get().getMinValue();
+		final int imax = (int) cursor.get().getMaxValue();
 		UnsignedByteType b;
 		while (cursor.hasNext()) {
 			b = cursor.next();
-			int invertedVal = imax - (b.get() - imin);
+			final int invertedVal = imax - (b.get() - imin);
 			b.set(invertedVal);
 		}
-		
+
 		// weakly typed version
-		Cursor<RealType<?>> rCursor = rImage.realCursor();
-		double rmin = rCursor.get().getMinValue();
-		double rmax = rCursor.get().getMaxValue();
+		final Cursor<RealType<?>> rCursor = rImage.realCursor();
+		final double rmin = rCursor.get().getMinValue();
+		final double rmax = rCursor.get().getMaxValue();
 		RealType<?> r;
 		while (rCursor.hasNext()) {
 			r = rCursor.next();
-			double invertedVal = rmax - (r.getRealDouble() - rmin);
+			final double invertedVal = rmax - (r.getRealDouble() - rmin);
 			r.setReal(invertedVal);
 		}
 	}
-	
+
 }

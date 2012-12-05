@@ -35,8 +35,6 @@
 
 package imagej.core.tools;
 
-import java.util.List;
-
 import imagej.ImageJ;
 import imagej.command.CommandService;
 import imagej.data.ChannelCollection;
@@ -62,53 +60,59 @@ import imagej.tool.IconDrawer;
 import imagej.tool.IconService;
 import imagej.util.ColorRGB;
 
+import java.util.List;
+
 /**
+ * TODO
  * 
  * @author Barry DeZonia
- *
  */
-public abstract class AbstractColorTool
-	extends AbstractTool
-	implements CustomDrawnTool
+public abstract class AbstractColorTool extends AbstractTool implements
+	CustomDrawnTool
 {
+
 	// -- constants --
-	
+
 	public static final int BASE_PRIORITY = -500;
-	
+
 	// -- instance variables --
-	
+
 	private IconDrawer drawer;
 	private List<EventSubscriber<?>> subscribers;
 	private final PixelRecorder recorder = new PixelRecorder(true);
 	private StatusService statusService = null;
-	
+
 	// -- abstract methods --
-	
+
 	abstract ColorRGB getEmptyColor();
+
 	abstract ColorRGB getOutlineColor();
+
 	abstract ChannelCollection getChannels(OptionsChannels options);
+
 	abstract void setChannels(OptionsChannels options, ChannelCollection chans);
+
 	abstract void setLastColor(OptionsChannels options, ColorRGB color);
+
 	abstract String getLabel();
-	
+
 	// -- Tool methods --
-	
+
 	@Override
-	public void setContext(ImageJ context) {
+	public void setContext(final ImageJ context) {
 		super.setContext(context);
-		EventService service = context.getService(EventService.class);
+		final EventService service = context.getService(EventService.class);
 		subscribers = service.subscribe(this);
 	}
-	
-	
+
 	@Override
 	public void configure() {
 		final CommandService commandService =
 			getContext().getService(CommandService.class);
-		
+
 		commandService.run(OptionsChannels.class);
 	}
-	
+
 	@Override
 	public void onMouseClick(final MsClickedEvent evt) {
 
@@ -139,12 +143,12 @@ public abstract class AbstractColorTool
 
 		evt.consume();
 	}
-	
+
 	@Override
 	public String getDescription() {
-		OptionsChannels opts = getOptions();
-		ChannelCollection channels = getChannels(opts);
-		StringBuilder sb = new StringBuilder();
+		final OptionsChannels opts = getOptions();
+		final ChannelCollection channels = getChannels(opts);
+		final StringBuilder sb = new StringBuilder();
 		sb.append(getLabel());
 		sb.append(" = ");
 		sb.append(valuesString(channels));
@@ -152,18 +156,19 @@ public abstract class AbstractColorTool
 	}
 
 	// -- CustomDrawnTool methods --
-	
+
 	@Override
 	public void drawIcon() {
-		ImageDisplayService dispSrv =
-				getContext().getService(ImageDisplayService.class);
-		DatasetView view = dispSrv == null ? null : dispSrv.getActiveDatasetView();
+		final ImageDisplayService dispSrv =
+			getContext().getService(ImageDisplayService.class);
+		final DatasetView view =
+			dispSrv == null ? null : dispSrv.getActiveDatasetView();
 		ColorRGB color = getEmptyColor();
 		if (view != null) {
-			OptionsService oSrv =  getContext().getService(OptionsService.class);
+			final OptionsService oSrv = getContext().getService(OptionsService.class);
 			if (oSrv != null) {
-				OptionsChannels options = oSrv.getOptions(OptionsChannels.class);
-				ChannelCollection channels = getChannels(options);
+				final OptionsChannels options = oSrv.getOptions(OptionsChannels.class);
+				final ChannelCollection channels = getChannels(options);
 				color = view.getColor(channels);
 			}
 		}
@@ -171,74 +176,76 @@ public abstract class AbstractColorTool
 	}
 
 	// -- event handlers --
-	
+
 	@EventHandler
-	protected void onEvent(DisplayActivatedEvent evt) {
+	protected void onEvent(final DisplayActivatedEvent evt) {
 		drawIcon();
 	}
 
 	@EventHandler
-	protected void onEvent(DisplayDeletedEvent evt) {
-		DisplayService srv = getContext().getService(DisplayService.class);
+	protected void onEvent(final DisplayDeletedEvent evt) {
+		final DisplayService srv = getContext().getService(DisplayService.class);
 		if (srv.getActiveDisplay() == null) drawIcon();
 	}
 
 	@EventHandler
-	protected void onEvent(OptionsEvent evt) {
+	protected void onEvent(final OptionsEvent evt) {
 		if (evt.getOptions() instanceof OptionsChannels) drawIcon();
 	}
-	
+
 	@EventHandler
-	protected void onEvent(AxisPositionEvent evt) {
-		DisplayService dispSrv = getContext().getService(DisplayService.class);
-		Display<?> activeDisplay = dispSrv.getActiveDisplay();
+	protected void onEvent(final AxisPositionEvent evt) {
+		final DisplayService dispSrv =
+			getContext().getService(DisplayService.class);
+		final Display<?> activeDisplay = dispSrv.getActiveDisplay();
 		if (evt.getDisplay() == activeDisplay) drawIcon();
 	}
-	
+
 	// -- private helpers --
-	
-	private void draw(ColorRGB fillColor) {
+
+	private void draw(final ColorRGB fillColor) {
 		if (drawer == null) drawer = acquireDrawer();
-		int width = drawer.getIconRectangleWidth();
-		int height = drawer.getIconRectangleHeight();
+		final int width = drawer.getIconRectangleWidth();
+		final int height = drawer.getIconRectangleHeight();
 		for (int y = 0; y < height; y++) {
 			drawer.setIconPixel(0, y, getOutlineColor());
-			drawer.setIconPixel(width-1, y, getOutlineColor());
+			drawer.setIconPixel(width - 1, y, getOutlineColor());
 		}
 		for (int x = 0; x < width; x++) {
 			drawer.setIconPixel(x, 0, getOutlineColor());
-			drawer.setIconPixel(x, height-1, getOutlineColor());
+			drawer.setIconPixel(x, height - 1, getOutlineColor());
 		}
-		for (int x = 1; x < drawer.getIconRectangleWidth()-1; x++) {
-			for (int y = 1; y < drawer.getIconRectangleHeight()-1; y++) {
+		for (int x = 1; x < drawer.getIconRectangleWidth() - 1; x++) {
+			for (int y = 1; y < drawer.getIconRectangleHeight() - 1; y++) {
 				drawer.setIconPixel(x, y, fillColor);
 			}
 		}
 	}
 
 	private IconDrawer acquireDrawer() {
-		IconService service = getContext().getService(IconService.class);
+		final IconService service = getContext().getService(IconService.class);
 		return service.acquireDrawer(this);
 	}
-	
-	private String valuesString(ChannelCollection chans) {
-		StringBuilder builder = new StringBuilder();
+
+	private String valuesString(final ChannelCollection chans) {
+		final StringBuilder builder = new StringBuilder();
 		builder.append("(");
 		for (int i = 0; i < chans.getChannelCount(); i++) {
 			if (i != 0) builder.append(",");
 			String valString;
-			if (chans.areInteger())
-				valString = String.format("%d", (long)chans.getChannelValue(i));
-			else
-				valString = String.format("%f", chans.getChannelValue(i));
+			if (chans.areInteger()) valString =
+				String.format("%d", (long) chans.getChannelValue(i));
+			else valString = String.format("%f", chans.getChannelValue(i));
 			builder.append(valString);
 		}
 		builder.append(")");
 		return builder.toString();
 	}
-	
-	private void statusMessage(final String label, ChannelCollection values) {
-		StringBuilder builder = new StringBuilder();
+
+	private void
+		statusMessage(final String label, final ChannelCollection values)
+	{
+		final StringBuilder builder = new StringBuilder();
 		builder.append(label);
 		builder.append(" = ");
 		builder.append(valuesString(values));
@@ -251,4 +258,5 @@ public abstract class AbstractColorTool
 
 		return service.getOptions(OptionsChannels.class);
 	}
+
 }

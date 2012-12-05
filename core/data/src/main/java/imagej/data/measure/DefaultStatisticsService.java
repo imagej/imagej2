@@ -35,7 +35,6 @@
 
 package imagej.data.measure;
 
-
 import imagej.data.Dataset;
 import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
@@ -89,345 +88,355 @@ import net.imglib2.type.numeric.real.DoubleType;
 // NOTE - this could be done down in OPS with less trouble maybe
 
 /**
- * A service for computing some basic statistics upon regions of
- * {@link Dataset}s.
+ * A service for computing some statistics upon regions of {@link Dataset}s.
  * 
  * @author Barry DeZonia
- *
  */
-@Plugin(type=Service.class)
+@Plugin(type = Service.class)
 public class DefaultStatisticsService extends AbstractService implements
 	StatisticsService
 {
+
 	// -- Parameters --
-	
+
 	// later
-	//@Parameter
-	//private MeasurementService mSrv;
-	
+	// @Parameter
+	// private MeasurementService mSrv;
+
 	// -- StatisticsService methods --
-	
+
 	@Override
-	public double alphaTrimmedMean(Dataset ds, PointSet region, int halfTrimSize)
+	public double alphaTrimmedMean(final Dataset ds, final PointSet region,
+		final int halfTrimSize)
 	{
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealAlphaTrimmedMeanFunction<DoubleType>(imgFunc, halfTrimSize);
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealAlphaTrimmedMeanFunction<DoubleType>(imgFunc, halfTrimSize);
 		return measure(func, region);
 	}
 
 	@Override
-	public double alphaTrimmedMean(Dataset ds, int halfTrimSize)
-	{
+	public double alphaTrimmedMean(final Dataset ds, final int halfTrimSize) {
 		return alphaTrimmedMean(ds, allOf(ds), halfTrimSize);
 	}
 
 	@Override
-	public double arithmeticMean(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealArithmeticMeanFunction<DoubleType>(imgFunc);
-		return measure(func, region);
-	}
-	
-	@Override
-	public double arithmeticMean(Dataset ds) {
-		return arithmeticMean(ds, allOf(ds));
-	}
-	
-	@Override
-	public double contraharmomicMean(Dataset ds, PointSet region, double order) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealContraharmonicMeanFunction<DoubleType>(imgFunc, order);
+	public double arithmeticMean(final Dataset ds, final PointSet region) {
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealArithmeticMeanFunction<DoubleType>(imgFunc);
 		return measure(func, region);
 	}
 
 	@Override
-	public double contraharmomicMean(Dataset ds, double order) {
+	public double arithmeticMean(final Dataset ds) {
+		return arithmeticMean(ds, allOf(ds));
+	}
+
+	@Override
+	public double contraharmomicMean(final Dataset ds, final PointSet region,
+		final double order)
+	{
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealContraharmonicMeanFunction<DoubleType>(imgFunc, order);
+		return measure(func, region);
+	}
+
+	@Override
+	public double contraharmomicMean(final Dataset ds, final double order) {
 		return contraharmomicMean(ds, allOf(ds), order);
 	}
 
 	@Override
-	public double geometricMean(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealGeometricMeanFunction<DoubleType>(imgFunc);
-		return measure(func, region);
-	}
-	
-	@Override
-	public double geometricMean(Dataset ds) {
-		return geometricMean(ds, allOf(ds));
-	}
-	
-	@Override
-	public double harmonicMean(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealHarmonicMeanFunction<DoubleType>(imgFunc);
+	public double geometricMean(final Dataset ds, final PointSet region) {
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealGeometricMeanFunction<DoubleType>(imgFunc);
 		return measure(func, region);
 	}
 
 	@Override
-	public double harmonicMean(Dataset ds) {
+	public double geometricMean(final Dataset ds) {
+		return geometricMean(ds, allOf(ds));
+	}
+
+	@Override
+	public double harmonicMean(final Dataset ds, final PointSet region) {
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealHarmonicMeanFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
+
+	@Override
+	public double harmonicMean(final Dataset ds) {
 		return harmonicMean(ds, allOf(ds));
 	}
 
 	@Override
-	public double maximum(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealMaxFunction<DoubleType>(imgFunc);
-		return measure(func, region);
-	}
-	
-	@Override
-	public double maximum(Dataset ds) {
-		return maximum(ds, allOf(ds));
-	}
-	
-	@Override
-	public double median(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealMedianFunction<DoubleType>(imgFunc);
+	public double maximum(final Dataset ds, final PointSet region) {
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealMaxFunction<DoubleType>(imgFunc);
 		return measure(func, region);
 	}
 
 	@Override
-	public double median(Dataset ds) {
+	public double maximum(final Dataset ds) {
+		return maximum(ds, allOf(ds));
+	}
+
+	@Override
+	public double median(final Dataset ds, final PointSet region) {
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealMedianFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
+
+	@Override
+	public double median(final Dataset ds) {
 		return median(ds, allOf(ds));
 	}
 
 	@Override
-	public double midpoint(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealMidpointFunction<DoubleType>(imgFunc);
+	public double midpoint(final Dataset ds, final PointSet region) {
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealMidpointFunction<DoubleType>(imgFunc);
 		return measure(func, region);
 	}
-	
+
 	@Override
-	public double midpoint(Dataset ds) {
+	public double midpoint(final Dataset ds) {
 		return midpoint(ds, allOf(ds));
 	}
-	
+
 	@Override
-	public double minimum(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealMinFunction<DoubleType>(imgFunc);
+	public double minimum(final Dataset ds, final PointSet region) {
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealMinFunction<DoubleType>(imgFunc);
 		return measure(func, region);
 	}
-	
+
 	@Override
-	public double minimum(Dataset ds) {
+	public double minimum(final Dataset ds) {
 		return minimum(ds, allOf(ds));
 	}
-	
 
 	@Override
-	public double populationKurtosis(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealPopulationKurtosisFunction<DoubleType>(imgFunc);
+	public double populationKurtosis(final Dataset ds, final PointSet region) {
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealPopulationKurtosisFunction<DoubleType>(imgFunc);
 		return measure(func, region);
 	}
 
 	@Override
-	public double populationKurtosis(Dataset ds) {
+	public double populationKurtosis(final Dataset ds) {
 		return populationKurtosis(ds, allOf(ds));
 	}
 
 	@Override
-	public double populationKurtosisExcess(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealPopulationKurtosisExcessFunction<DoubleType>(imgFunc);
+	public double
+		populationKurtosisExcess(final Dataset ds, final PointSet region)
+	{
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealPopulationKurtosisExcessFunction<DoubleType>(imgFunc);
 		return measure(func, region);
 	}
 
 	@Override
-	public double populationKurtosisExcess(Dataset ds) {
+	public double populationKurtosisExcess(final Dataset ds) {
 		return populationKurtosisExcess(ds, allOf(ds));
 	}
 
 	@Override
-	public double populationSkew(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealPopulationSkewFunction<DoubleType>(imgFunc);
+	public double populationSkew(final Dataset ds, final PointSet region) {
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealPopulationSkewFunction<DoubleType>(imgFunc);
 		return measure(func, region);
 	}
 
 	@Override
-	public double populationSkew(Dataset ds) {
+	public double populationSkew(final Dataset ds) {
 		return populationSkew(ds, allOf(ds));
 	}
 
 	@Override
-	public double populationStdDev(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealPopulationStdDevFunction<DoubleType>(imgFunc);
-		return measure(func, region);
-	}
-	
-	@Override
-	public double populationStdDev(Dataset ds) {
-		return populationStdDev(ds, allOf(ds));
-	}
-	
-	@Override
-	public double populationVariance(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealPopulationVarianceFunction<DoubleType>(imgFunc);
-		return measure(func, region);
-	}
-	
-	@Override
-	public double populationVariance(Dataset ds) {
-		return populationVariance(ds, allOf(ds));
-	}
-	
-	@Override
-	public double product(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealProductFunction<DoubleType>(imgFunc);
-		return measure(func, region);
-	}
-	
-	@Override
-	public double product(Dataset ds) {
-		return product(ds, allOf(ds));
-	}
-	
-	@Override
-	public double sampleKurtosis(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealSampleKurtosisFunction<DoubleType>(imgFunc);
+	public double populationStdDev(final Dataset ds, final PointSet region) {
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealPopulationStdDevFunction<DoubleType>(imgFunc);
 		return measure(func, region);
 	}
 
 	@Override
-	public double sampleKurtosis(Dataset ds) {
+	public double populationStdDev(final Dataset ds) {
+		return populationStdDev(ds, allOf(ds));
+	}
+
+	@Override
+	public double populationVariance(final Dataset ds, final PointSet region) {
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealPopulationVarianceFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
+
+	@Override
+	public double populationVariance(final Dataset ds) {
+		return populationVariance(ds, allOf(ds));
+	}
+
+	@Override
+	public double product(final Dataset ds, final PointSet region) {
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealProductFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
+
+	@Override
+	public double product(final Dataset ds) {
+		return product(ds, allOf(ds));
+	}
+
+	@Override
+	public double sampleKurtosis(final Dataset ds, final PointSet region) {
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealSampleKurtosisFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
+
+	@Override
+	public double sampleKurtosis(final Dataset ds) {
 		return sampleKurtosis(ds, allOf(ds));
 	}
 
 	@Override
-	public double sampleKurtosisExcess(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealSampleKurtosisExcessFunction<DoubleType>(imgFunc);
+	public double sampleKurtosisExcess(final Dataset ds, final PointSet region) {
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealSampleKurtosisExcessFunction<DoubleType>(imgFunc);
 		return measure(func, region);
 	}
 
 	@Override
-	public double sampleKurtosisExcess(Dataset ds) {
+	public double sampleKurtosisExcess(final Dataset ds) {
 		return sampleKurtosisExcess(ds, allOf(ds));
 	}
 
 	@Override
-	public double sampleSkew(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealSampleSkewFunction<DoubleType>(imgFunc);
+	public double sampleSkew(final Dataset ds, final PointSet region) {
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealSampleSkewFunction<DoubleType>(imgFunc);
 		return measure(func, region);
 	}
 
 	@Override
-	public double sampleSkew(Dataset ds) {
+	public double sampleSkew(final Dataset ds) {
 		return sampleSkew(ds, allOf(ds));
 	}
 
 	@Override
-	public double sampleStdDev(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealSampleStdDevFunction<DoubleType>(imgFunc);
+	public double sampleStdDev(final Dataset ds, final PointSet region) {
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealSampleStdDevFunction<DoubleType>(imgFunc);
 		return measure(func, region);
 	}
 
 	@Override
-	public double sampleStdDev(Dataset ds) {
+	public double sampleStdDev(final Dataset ds) {
 		return sampleStdDev(ds, allOf(ds));
 	}
 
 	@Override
-	public double sampleVariance(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealSampleVarianceFunction<DoubleType>(imgFunc);
+	public double sampleVariance(final Dataset ds, final PointSet region) {
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealSampleVarianceFunction<DoubleType>(imgFunc);
 		return measure(func, region);
 	}
 
 	@Override
-	public double sampleVariance(Dataset ds) {
+	public double sampleVariance(final Dataset ds) {
 		return sampleVariance(ds, allOf(ds));
 	}
 
 	@Override
-	public double sum(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealSumFunction<DoubleType>(imgFunc);
-		return measure(func, region);
-	}
-	
-	@Override
-	public double sum(Dataset ds) {
-		return sum(ds, allOf(ds));
-	}
-	
-	@Override
-	public double sumOfSquaredDeviations(Dataset ds, PointSet region) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealSumOfSquaredDeviationsFunction<DoubleType>(imgFunc);
-		return measure(func, region);
-	}
-	
-	@Override
-	public double sumOfSquaredDeviations(Dataset ds) {
-		return sumOfSquaredDeviations(ds, allOf(ds));
-	}
-	
-	@Override
-	public double weightedAverage(Dataset ds, PointSet region, double[] weights) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealWeightedAverageFunction<DoubleType>(imgFunc,weights);
-		return measure(func, region);
-	}
-	
-	@Override
-	public double weightedSum(Dataset ds, PointSet region, double[] weights) {
-		Function<long[],DoubleType> imgFunc = imgFunc(ds);
-		Function<PointSet,DoubleType> func =
-				new RealWeightedSumFunction<DoubleType>(imgFunc,weights);
+	public double sum(final Dataset ds, final PointSet region) {
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealSumFunction<DoubleType>(imgFunc);
 		return measure(func, region);
 	}
 
 	@Override
-	public PointSet allOf(Dataset ds) {
+	public double sum(final Dataset ds) {
+		return sum(ds, allOf(ds));
+	}
+
+	@Override
+	public double sumOfSquaredDeviations(final Dataset ds, final PointSet region)
+	{
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealSumOfSquaredDeviationsFunction<DoubleType>(imgFunc);
+		return measure(func, region);
+	}
+
+	@Override
+	public double sumOfSquaredDeviations(final Dataset ds) {
+		return sumOfSquaredDeviations(ds, allOf(ds));
+	}
+
+	@Override
+	public double weightedAverage(final Dataset ds, final PointSet region,
+		final double[] weights)
+	{
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealWeightedAverageFunction<DoubleType>(imgFunc, weights);
+		return measure(func, region);
+	}
+
+	@Override
+	public double weightedSum(final Dataset ds, final PointSet region,
+		final double[] weights)
+	{
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealWeightedSumFunction<DoubleType>(imgFunc, weights);
+		return measure(func, region);
+	}
+
+	@Override
+	public PointSet allOf(final Dataset ds) {
 		return new HyperVolumePointSet(ds.getDims());
 	}
-	
+
 	// -- private helpers --
-	
-	@SuppressWarnings({"unchecked","rawtypes"})
-	private RealImageFunction<?,DoubleType> imgFunc(Dataset ds) {
-		Img<? extends RealType<?>> imgPlus = ds.getImgPlus();
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private RealImageFunction<?, DoubleType> imgFunc(final Dataset ds) {
+		final Img<? extends RealType<?>> imgPlus = ds.getImgPlus();
 		return new RealImageFunction(imgPlus, new DoubleType());
 	}
-	
-	private double measure(Function<PointSet,DoubleType> func, PointSet region) {
-		DoubleType output = new DoubleType();
+
+	private double measure(final Function<PointSet, DoubleType> func,
+		final PointSet region)
+	{
+		final DoubleType output = new DoubleType();
 		func.compute(region, output);
 		return output.getRealDouble();
 	}
+
 }

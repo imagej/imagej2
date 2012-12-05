@@ -1,4 +1,3 @@
-package imagej.core.commands.debug;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -34,6 +33,8 @@ package imagej.core.commands.debug;
  * #L%
  */
 
+package imagej.core.commands.debug;
+
 import imagej.command.Command;
 import imagej.data.table.DefaultResultsTable;
 import imagej.data.table.ResultsTable;
@@ -42,7 +43,11 @@ import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
-/** A test of {@link ResultsTable}. */
+/**
+ * A test of {@link ResultsTable}.
+ * 
+ * @author Curtis Rueden
+ */
 @Plugin(menuPath = "Plugins>Sandbox>Results Table Test", headless = true)
 public class ResultsTableTest implements Command {
 

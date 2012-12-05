@@ -38,11 +38,6 @@ package imagej.display;
 import imagej.Priority;
 import imagej.plugin.Plugin;
 
-/**
- * Default display for objects, when no other displays are available.
- * 
- * @author Curtis Rueden
- */
 // TODO - For the moment, we have disabled discovery and automatic usage of the
 // default display. In order to be useful for anything other than headless
 // operation, it needs a corresponding display viewer in the Swing UI. The
@@ -51,6 +46,11 @@ import imagej.plugin.Plugin;
 // merely causes the UIService to eventually issue some warnings anyway
 // ("No suitable viewer found for display" and "No viewer found for display").
 //@Plugin(type = Display.class, priority = Priority.VERY_LOW_PRIORITY)
+/**
+ * Default display for objects, when no other displays are available.
+ * 
+ * @author Curtis Rueden
+ */
 public class DefaultDisplay extends AbstractDisplay<Object> {
 
 	public DefaultDisplay() {

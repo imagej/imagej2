@@ -35,9 +35,6 @@
 
 package imagej.core.commands.assign.noisereduce;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import imagej.ImageJ;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
@@ -46,6 +43,10 @@ import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.ops.function.Function;
@@ -58,7 +59,6 @@ import net.imglib2.outofbounds.OutOfBoundsMirrorFactory.Boundary;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
-
 /**
  * TODO
  * 
@@ -66,37 +66,38 @@ import net.imglib2.type.numeric.real.DoubleType;
  */
 @Plugin(menu = {
 	@Menu(label = MenuConstants.PROCESS_LABEL,
-			weight = MenuConstants.PROCESS_WEIGHT,
-			mnemonic = MenuConstants.PROCESS_MNEMONIC),
-		@Menu(label = "Noise", mnemonic = 'n'),
-		@Menu(label = "Noise Reduction", mnemonic = 'r'),
-		@Menu(label = "Adaptive Median") })
-public class NoiseReductionAdaptiveMedian<U extends RealType<U>>
-	extends ContextCommand
+		weight = MenuConstants.PROCESS_WEIGHT,
+		mnemonic = MenuConstants.PROCESS_MNEMONIC),
+	@Menu(label = "Noise", mnemonic = 'n'),
+	@Menu(label = "Noise Reduction", mnemonic = 'r'),
+	@Menu(label = "Adaptive Median") })
+public class NoiseReductionAdaptiveMedian<U extends RealType<U>> extends
+	ContextCommand
 {
+
 	// -- Parameters --
 
 	@Parameter
 	private ImageJ context;
-	
+
 	@Parameter
 	private Dataset input;
-	
-	@Parameter(label="Neighborhood: negative width", min="0")
-	private int windowNegWidthSpan = 1;
-	
-	@Parameter(label="Neighborhood: negative height", min="0")
-	private int windowNegHeightSpan = 1;
-	
-	@Parameter(label="Neighborhood: positive width", min="0")
-	private int windowPosWidthSpan = 1;
-	
-	@Parameter(label="Neighborhood: positive height", min="0")
-	private int windowPosHeightSpan = 1;
-	
-	@Parameter(label="Number of expansions",min="1")
-	private int windowExpansions = 1;
-	
+
+	@Parameter(label = "Neighborhood: negative width", min = "0")
+	private final int windowNegWidthSpan = 1;
+
+	@Parameter(label = "Neighborhood: negative height", min = "0")
+	private final int windowNegHeightSpan = 1;
+
+	@Parameter(label = "Neighborhood: positive width", min = "0")
+	private final int windowPosWidthSpan = 1;
+
+	@Parameter(label = "Neighborhood: positive height", min = "0")
+	private final int windowPosHeightSpan = 1;
+
+	@Parameter(label = "Number of expansions", min = "1")
+	private final int windowExpansions = 1;
+
 	@Parameter(type = ItemIO.OUTPUT)
 	private Dataset output;
 
@@ -105,43 +106,47 @@ public class NoiseReductionAdaptiveMedian<U extends RealType<U>>
 	@Override
 	public void run() {
 		@SuppressWarnings("unchecked")
-		ImgPlus<U> inputImg = (ImgPlus<U>) input.getImgPlus();
-		OutOfBoundsMirrorFactory<U, RandomAccessibleInterval<U>> oobFactory =
-				new OutOfBoundsMirrorFactory<U,RandomAccessibleInterval<U>>(Boundary.DOUBLE);
-		Function<long[],DoubleType> otherFunc =
-				new RealImageFunction<U,DoubleType>(inputImg, oobFactory, new DoubleType());
-		List<PointSet> pointSets = getNeighborhoods(input.numDimensions());
-		Reducer<U,DoubleType> reducer =
-				new Reducer<U,DoubleType>(
-						context, inputImg, getFunction(otherFunc, pointSets), pointSets.get(0));
+		final ImgPlus<U> inputImg = (ImgPlus<U>) input.getImgPlus();
+		final OutOfBoundsMirrorFactory<U, RandomAccessibleInterval<U>> oobFactory =
+			new OutOfBoundsMirrorFactory<U, RandomAccessibleInterval<U>>(
+				Boundary.DOUBLE);
+		final Function<long[], DoubleType> otherFunc =
+			new RealImageFunction<U, DoubleType>(inputImg, oobFactory,
+				new DoubleType());
+		final List<PointSet> pointSets = getNeighborhoods(input.numDimensions());
+		final Reducer<U, DoubleType> reducer =
+			new Reducer<U, DoubleType>(context, inputImg, getFunction(otherFunc,
+				pointSets), pointSets.get(0));
 		output = reducer.reduceNoise("Adaptive window neighborhood");
 	}
 
 	// -- private helpers --
 
-	private Function<PointSet,DoubleType>
-		getFunction(Function<long[], DoubleType> otherFunc, List<PointSet> neighs)
+	private Function<PointSet, DoubleType> getFunction(
+		final Function<long[], DoubleType> otherFunc, final List<PointSet> neighs)
 	{
 		return new RealAdaptiveMedianFunction<DoubleType>(otherFunc, neighs);
 	}
 
-	private List<PointSet> getNeighborhoods(int numDims) {
-		ArrayList<PointSet> pointSets = new ArrayList<PointSet>();
+	private List<PointSet> getNeighborhoods(final int numDims) {
+		final ArrayList<PointSet> pointSets = new ArrayList<PointSet>();
 		for (int i = 0; i < windowExpansions; i++) {
-			PointSet rect =
-					new HyperVolumePointSet(
-						new long[numDims],
-						offsets(windowNegWidthSpan+i, windowNegHeightSpan+i, numDims),
-						offsets(windowPosWidthSpan+i, windowPosHeightSpan+i, numDims));
+			final PointSet rect =
+				new HyperVolumePointSet(new long[numDims], offsets(windowNegWidthSpan +
+					i, windowNegHeightSpan + i, numDims), offsets(windowPosWidthSpan + i,
+					windowPosHeightSpan + i, numDims));
 			pointSets.add(rect);
 		}
 		return pointSets;
 	}
 
-	private long[] offsets(int xOffset, int yOffset, int numDims) {
-		long[] offsets = new long[numDims];
+	private long[]
+		offsets(final int xOffset, final int yOffset, final int numDims)
+	{
+		final long[] offsets = new long[numDims];
 		offsets[0] = xOffset;
 		offsets[1] = yOffset;
 		return offsets;
 	}
+
 }

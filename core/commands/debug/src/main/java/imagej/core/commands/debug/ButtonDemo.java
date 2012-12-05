@@ -35,41 +35,38 @@
 
 package imagej.core.commands.debug;
 
-
-import net.imglib2.img.Img;
-import net.imglib2.ops.img.ImageCombiner;
-import net.imglib2.ops.operation.real.unary.RealAddConstant;
-import net.imglib2.ops.operation.real.unary.RealSubtractConstant;
 import imagej.command.Command;
 import imagej.core.tools.TunePlayer;
 import imagej.data.Dataset;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.widget.Button;
-
+import net.imglib2.img.Img;
+import net.imglib2.ops.img.ImageCombiner;
+import net.imglib2.ops.operation.real.unary.RealAddConstant;
+import net.imglib2.ops.operation.real.unary.RealSubtractConstant;
 
 /**
  * This command is example code that shows how one can make @Parameters that are
  * {@link Button}s which can fire callbacks when pressed.
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin(menuPath = "Plugins>Sandbox>Button Demo")
 public class ButtonDemo implements Command {
 
 	@Parameter
 	private Dataset data;
-	
-	@Parameter(label="Add 25", callback = "add")
+
+	@Parameter(label = "Add 25", callback = "add")
 	private Button add;
-	
-	@Parameter(label="Subtract 25", callback = "subtract")
+
+	@Parameter(label = "Subtract 25", callback = "subtract")
 	private Button subtract;
-	
-	@Parameter(label="Play Song", callback = "playSong")
+
+	@Parameter(label = "Play Song", callback = "playSong")
 	private Button playSong;
-	
+
 	@Override
 	public void run() {
 		// anything to do?? maybe not
@@ -78,23 +75,25 @@ public class ButtonDemo implements Command {
 	// NOTE in real life you'd use the preview() capability of a PreviewCommand.
 	// We just want to show that a Button can generate a callback that the command
 	// can respond to.
-	
+
 	protected void add() {
-		RealAddConstant addConstantOp = new RealAddConstant(25);
-		ImageCombiner.applyOp(addConstantOp, (Img) data.getImgPlus(), (Img) data.getImgPlus());
+		final RealAddConstant addConstantOp = new RealAddConstant(25);
+		ImageCombiner.applyOp(addConstantOp, (Img) data.getImgPlus(), (Img) data
+			.getImgPlus());
 		data.update();
 	}
 
 	// NOTE in real life you'd use the preview() capability of a PreviewCommand.
 	// We just want to show that a Button can generate a callback that the command
 	// can respond to.
-	
+
 	protected void subtract() {
-		RealSubtractConstant subConstantOp = new RealSubtractConstant(25);
-		ImageCombiner.applyOp(subConstantOp, (Img) data.getImgPlus(), (Img) data.getImgPlus());
+		final RealSubtractConstant subConstantOp = new RealSubtractConstant(25);
+		ImageCombiner.applyOp(subConstantOp, (Img) data.getImgPlus(), (Img) data
+			.getImgPlus());
 		data.update();
 	}
-	
+
 	protected void playSong() {
 		new TunePlayer().play("T100 L32 A B C D E F G F E D C B A");
 	}

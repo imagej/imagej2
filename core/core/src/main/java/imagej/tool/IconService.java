@@ -38,10 +38,12 @@ package imagej.tool;
 import imagej.service.Service;
 
 /**
+ * TODO
  * 
  * @author Barry DeZonia
- *
  */
 public interface IconService extends Service {
+
 	IconDrawer acquireDrawer(Tool t);
+
 }

@@ -36,10 +36,12 @@
 package imagej.tool;
 
 /**
+ * TODO
  * 
  * @author Barry DeZonia
- *
  */
 public interface CustomDrawnTool {
+
 	void drawIcon();
+
 }
