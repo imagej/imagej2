@@ -13,22 +13,11 @@ Or to display them as a tree:
 As of this writing, the full list is as follows:
 
 ===============================================================================
-Apache log4j - http://logging.apache.org/log4j/
+Beanshell - http://www.beanshell.org/
 
-License: Apache 2.0
+License: Sun Public License or LGPL 3+
 
-Artifact: log4j:log4j:1.2.14
-
-===============================================================================
-Apache Velocity - http://velocity.apache.org/
-
-License: Apache 2.0
-
-Artifact: org.apache.velocity:velocity:1.7
-
-Dependencies:
-commons-collections:commons-collections:3.2.1
-commons-lang:commons-lang:2.4
+Artifact: org.beanshell:bsh:2.0b4
 
 ===============================================================================
 EventBus - http://eventbus.org/
@@ -47,6 +36,21 @@ net.imglib2:imglib2:2.0.0-SNAPSHOT
 net.imglib2:imglib2-algorithms:2.0.0-SNAPSHOT
 net.imglib2:imglib2-io:2.0.0-SNAPSHOT
 net.imglib2:imglib2-ops:2.0.0-SNAPSHOT
+
+Dependencies:
+com.jgoodies:forms:1.2.1
+loci:jai_imageio:4.5-SNAPSHOT
+loci:loci-legacy:4.5-SNAPSHOT
+loci:lwf-stubs:4.5-SNAPSHOT
+loci:ome-xml:4.5-SNAPSHOT
+loci:scifio-devel:4.5-SNAPSHOT
+loci:scifio:4.5-SNAPSHOT
+log4j:log4j:1.2.14
+org.slf4j:slf4j-api:1.5.10
+org.slf4j:slf4j-log4j12:1.5.10
+xalan:serializer:2.7.1
+xalan:xalan:2.7.1
+xml-apis:xml-apis:1.3.04
 
 ===============================================================================
 Javassist - http://www.javassist.org/
@@ -69,7 +73,6 @@ com.lowagie:itext:2.1.5
 org.jfree:jcommon:1.0.17
 xml-apis:xml-apis:1.3.04
 
-
 ===============================================================================
 JHotDraw7 - http://www.randelshofer.ch/oop/jhotdraw/index.html
 
@@ -85,41 +88,39 @@ License: 3-clause BSD
 Artifact: com.jcraft:jsch:0.1.42
 
 ===============================================================================
-LOCI Common - http://loci.wisc.edu/software/bio-formats
-
-License: 2-clause BSD
-
-Artifact: loci:loci-common:4.4-SNAPSHOT
-
-===============================================================================
 MigLayout - http://www.miglayout.com/
 
 License: 3-clause BSD or GPL
 
 Artifact: com.miglayout:miglayout:swing:3.7.3.1
 
-===============================================================================
-Object Inspector - https://github.com/sbridges/object-inspector
+=============================================================================== Object Inspector - https://github.com/sbridges/object-inspector
 
 License: 2-clause BSD
 
 Artifact: com.github.sbridges.object-inspector:object-inspector:0.1
 
 ===============================================================================
+RSyntaxTextArea - http://fifesoft.com/rsyntaxtextarea/
+
+License: 3-clause BSD
+
+Artifact: com.fifesoft:rsyntaxtextarea:2.0.4.1
+
+===============================================================================
 SCIFIO - http://loci.wisc.edu/software/scifio
 
 License: 2-clause BSD
 
-Artifact: loci:scifio:4.4-SNAPSHOT
+Artifact: loci:scifio-devel:4.4-SNAPSHOT
 
 Dependencies:
-com.jgoodies:forms:1.2.1
-com.sun:clibwrapper_jiio:1.1
-loci:jai_imageio:4.4-SNAPSHOT
-loci:lwf-stubs:4.4-SNAPSHOT
-loci:ome-xml:4.4-SNAPSHOT
+log4j:log4j:1.2.14
+org.slf4j:slf4j-api:1.5.10
+org.slf4j:slf4j-log4j12:1.5.10
 xalan:serializer:2.7.1
 xalan:xalan:2.7.1
+xml-apis:xml-apis:1.3.04
 
 ===============================================================================
 SezPoz - http://sezpoz.java.net/
@@ -127,12 +128,3 @@ SezPoz - http://sezpoz.java.net/
 License: CDDL 1.0 or GPL 2.0
 
 Artifact: net.java.sezpoz:sezpoz:1.9
-
-===============================================================================
-SLF4J - http://www.slf4j.org/
-
-License: MIT
-
-Artifacts:
-org.slf4j:slf4j-api:1.5.10
-org.slf4j:slf4j-log4j12:1.5.10
