@@ -45,42 +45,40 @@ import imagej.undo.UndoService;
 import imagej.undo.Unrecordable;
 
 /**
+ * TODO
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin(menu = {
-	@Menu(label = MenuConstants.EDIT_LABEL,
-		weight = MenuConstants.EDIT_WEIGHT,
+	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
-	@Menu(label = "Undo", accelerator = "control Z", weight=50)},
+	@Menu(label = "Undo", accelerator = "control Z", weight = 50) },
 	headless = true)
-public class Undo
-	extends ContextCommand
-	implements Unrecordable
-{
+public class Undo extends ContextCommand implements Unrecordable {
+
 	// -- Parameters --
-	
+
 	@Parameter
 	private UndoService service;
-	
+
 	@Parameter(required = false)
 	private Display<?> display;
-	
-	// -- Command members --
-	
+
+	// -- Undo methods --
+
+	public Display<?> getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(final Display<?> display) {
+		this.display = display;
+	}
+
+	// -- Runnable methods --
+
 	@Override
 	public void run() {
 		service.undo(display);
 	}
 
-	// -- Undo members --
-	
-	public Display<?> getDisplay() {
-		return display;
-	}
-
-	public void setDisplay(Display<?> display) {
-		this.display = display;
-	}
 }
