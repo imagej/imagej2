@@ -38,6 +38,11 @@ package imagej.script.editor;
 import java.io.IOException;
 import java.net.URL;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class MacroFunctions {
 
 	public final String MACRO_FUNCTIONS_URL = "http://imagej.net/developer/macro/functions.html";

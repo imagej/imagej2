@@ -37,21 +37,18 @@ package imagej.script.editor;
 
 import imagej.log.LogService;
 
-import java.io.CharArrayWriter;
 import java.io.File;
-import java.io.PrintWriter;
-
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-
 import java.util.Map;
 import java.util.WeakHashMap;
 
 import javax.swing.JTextArea;
 
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class ExceptionHandler {
 	private static ExceptionHandler instance;
 	private final LogService log;

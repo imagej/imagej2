@@ -32,6 +32,7 @@ my %knownAuthors = (
   "Jarek Sacha" => 1,
   "Melinda Green" => 1,
   "Sean Luke" => 1,
+  "Sumit Dubey" => 1,
   "Werner Randelshofer" => 1,
   "Yap Chin Kiet" => 1,
 );

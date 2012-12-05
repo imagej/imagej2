@@ -35,34 +35,32 @@
 
 package imagej.script.editor;
 
-import java.awt.Container;
-import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-import javax.swing.BorderFactory;
-import javax.swing.JCheckBox;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
 
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class FindAndReplaceDialog extends JDialog implements ActionListener {
 	TextEditor textEditor;
 	JTextField searchField, replaceField;

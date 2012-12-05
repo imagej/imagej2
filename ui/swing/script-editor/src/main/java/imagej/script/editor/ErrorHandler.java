@@ -35,21 +35,21 @@
 
 package imagej.script.editor;
 
-import java.io.CharArrayWriter;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.swing.JTextArea;
-
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Document;
 import javax.swing.text.Position;
 
-
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class ErrorHandler {
 	protected List<Error> list = new ArrayList<Error>();
 	protected int current = -1;

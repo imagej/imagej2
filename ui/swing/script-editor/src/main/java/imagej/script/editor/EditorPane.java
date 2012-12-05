@@ -80,6 +80,11 @@ import org.fife.ui.rtextarea.RTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.fife.ui.rtextarea.RecordableTextAction;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 	TextEditor frame;
 	String fallBackBaseName;
