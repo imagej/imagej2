@@ -261,6 +261,19 @@ public final class DefaultDisplayService extends AbstractService implements
 		setActiveDisplay(display);
 	}
 
+	/** Makes sure newly created display is placed in the display list */
+	@EventHandler
+	protected void onEvent(final DisplayCreatedEvent evt) {
+		// HACK? If you open boats and then run Analyze::Measure the created
+		// TableDisplay was not making its way into the displayList without this
+		// piece of code. Not sure if this issue correctly handled here or if
+		// instead changes are required elsewhere. Its apparent that when
+		// TableDisplay was created a WindowActivated event was never created at the
+		// appropriate time.
+		final Display<?> display = evt.getObject();
+		if (!displayList.contains(display)) displayList.add(display);
+	}
+
 	/** Removes a display from the display list when it is deleted */
 	@EventHandler
 	protected void onEvent(final DisplayDeletedEvent evt) {
