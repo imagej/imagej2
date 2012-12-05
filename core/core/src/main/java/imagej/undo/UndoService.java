@@ -45,10 +45,16 @@ import imagej.service.Service;
  */
 public interface UndoService extends Service {
 
-	/** Undoes the previous module execution associated with the given display. */
+	/**
+	 * Undoes the previous action (i.e., module execution) associated with the
+	 * given display.
+	 */
 	void undo(Display<?> display);
 
-	/** Redoes the last module execution associated with the given display. */
+	/**
+	 * Redoes the last action (i.e., module execution) associated with the given
+	 * display.
+	 */
 	void redo(Display<?> display);
 
 	/** Clears the entire undo/redo cache for given display. */
