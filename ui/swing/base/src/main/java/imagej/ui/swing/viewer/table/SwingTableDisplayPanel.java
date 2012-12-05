@@ -109,7 +109,9 @@ public class SwingTableDisplayPanel extends JScrollPane implements
 
 	@Override
 	public void redraw() {
-		// TODO
+		// BDZ - I found a TODO here saying implement me. Not sure if my one liner
+		// is correct but it seems to work.
+		table.update(table.getGraphics());
 	}
 
 	// -- Helper methods --
@@ -131,7 +133,8 @@ public class SwingTableDisplayPanel extends JScrollPane implements
 
 		@Override
 		public String getColumnName(final int col) {
-			return table.getColumnHeader(col);
+			if (col == 0) return "";
+			return table.getColumnHeader(col - 1);
 		}
 
 		@Override
@@ -141,26 +144,38 @@ public class SwingTableDisplayPanel extends JScrollPane implements
 
 		@Override
 		public int getColumnCount() {
-			return table.getColumnCount();
+			return table.getColumnCount() + 1; // +1 for row number column
 		}
 
 		@Override
 		public Object getValueAt(final int row, final int col) {
-			return table.get(col, row);
+			if (row < 0 || row >= getRowCount()) return null;
+			if (col < 0 || col >= getColumnCount()) return null;
+
+			// Get the row number when in col 0. Assumes the JTable can handle
+			// Integers equally as well as underlying type of Table<?,?>.
+			if (col == 0) return row + 1;
+
+			// get the underlying table value by offsetting column
+			return table.get(col - 1, row);
 		}
 
 		@Override
 		public void setValueAt(final Object value, final int row, final int col) {
-			set(table, value, col, row);
+			if (row < 0 || row >= getRowCount()) return;
+			if (col < 0 || col >= getColumnCount()) return;
+			// col 0 == row number - do not allow it to be set by user
+			if (col == 0) return;
+			set(table, value, col - 1, row);
 			fireTableCellUpdated(row, col);
 		}
 
 		private <T> void set(final Table<?, T> table, final Object value,
-			final int row, final int col)
+			final int col, final int row)
 		{
 			@SuppressWarnings("unchecked")
 			final T typedValue = (T) value;
-			table.set(typedValue, row, col);
+			table.set(typedValue, col, row); // NB: coord reversal required
 		}
 
 	}
