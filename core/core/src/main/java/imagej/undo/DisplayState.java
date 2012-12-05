@@ -35,14 +35,13 @@
 
 package imagej.undo;
 
-
 /**
  * This interface represents a display agnostic way to save and restore state.
  * Each display type needs to define its specific DisplayState implementation.
  * 
  * @author Barry DeZonia
- *
  */
 public interface DisplayState {
+
 	long getMemoryUsage();
 }

@@ -35,10 +35,6 @@
 
 package imagej.core.commands.imglib;
 
-import java.util.List;
-
-import net.imglib2.img.ImgPlus;
-import net.imglib2.type.numeric.RealType;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
@@ -48,25 +44,30 @@ import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
+import java.util.List;
+
+import net.imglib2.img.ImgPlus;
+import net.imglib2.type.numeric.RealType;
+
 /**
+ * TODO
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin
 public class UndoCropImage extends ContextCommand {
 
 	// -- Parameters --
-	
+
 	@Parameter
 	private OverlayService ovrSrv;
-	
+
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
-	
+
 	@Parameter
 	private Dataset dataset;
-	
+
 	@Parameter
 	private ImgPlus<? extends RealType<?>> deletedData;
 
@@ -75,15 +76,16 @@ public class UndoCropImage extends ContextCommand {
 
 	@Parameter
 	private List<Overlay> addedOverlays;
-	
+
 	// -- Command methods --
-	
+
 	@Override
 	public void run() {
-		for (Overlay overlay : addedOverlays) {
+		for (final Overlay overlay : addedOverlays) {
 			ovrSrv.removeOverlay(display, overlay);
 		}
 		dataset.setImgPlus(deletedData);
 		ovrSrv.addOverlays(display, removedOverlays);
 	}
+
 }

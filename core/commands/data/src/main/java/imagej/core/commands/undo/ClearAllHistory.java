@@ -44,25 +44,23 @@ import imagej.undo.UndoService;
 import imagej.undo.Unrecordable;
 
 /**
+ * TODO
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin(menu = {
-	@Menu(label = MenuConstants.EDIT_LABEL,
-		weight = MenuConstants.EDIT_WEIGHT,
+	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
-	@Menu(label = "Clear All History", weight=53)},
-	headless = true)
+	@Menu(label = "Clear All History", weight = 53) }, headless = true)
 public class ClearAllHistory implements Command, Unrecordable {
 
 	// -- Parameters --
-	
+
 	@Parameter
 	private UndoService service;
-	
+
 	// -- Command methods --
-	
+
 	@Override
 	public void run() {
 		service.clearAllHistory();

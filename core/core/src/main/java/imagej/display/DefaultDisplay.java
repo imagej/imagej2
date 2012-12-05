@@ -52,11 +52,6 @@ import imagej.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-/**
- * Default display for objects, when no other displays are available.
- * 
- * @author Curtis Rueden
- */
 public class DefaultDisplay extends AbstractDisplay<Object> {
 
 	public DefaultDisplay() {
