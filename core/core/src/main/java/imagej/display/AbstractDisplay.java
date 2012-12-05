@@ -168,13 +168,13 @@ public abstract class AbstractDisplay<T> extends SortablePlugin implements
 	@Override
 	public void add(final int index, final T element) {
 		objects.add(index, element);
-		announceStructureChange();
+		noteStructureChange();
 	}
 
 	@Override
 	public boolean addAll(final int index, final Collection<? extends T> c) {
 		final boolean changed = objects.addAll(index, c);
-		if (changed) announceStructureChange();
+		if (changed) noteStructureChange();
 		return changed;
 	}
 
@@ -206,14 +206,14 @@ public abstract class AbstractDisplay<T> extends SortablePlugin implements
 	@Override
 	public T remove(final int index) {
 		final T result = objects.remove(index);
-		if (result != null) announceStructureChange();
+		if (result != null) noteStructureChange();
 		return result;
 	}
 
 	@Override
 	public T set(final int index, final T element) {
 		final T result = objects.set(index, element);
-		if (result != null) announceStructureChange();
+		if (result != null) noteStructureChange();
 		return result;
 	}
 
@@ -228,7 +228,7 @@ public abstract class AbstractDisplay<T> extends SortablePlugin implements
 	public boolean add(final T o) {
 		checkObject(o);
 		final boolean changed = objects.add(o);
-		if (changed) announceStructureChange();
+		if (changed) noteStructureChange();
 		return changed;
 	}
 
@@ -238,7 +238,7 @@ public abstract class AbstractDisplay<T> extends SortablePlugin implements
 			checkObject(o);
 		}
 		final boolean changed = objects.addAll(c);
-		if (changed) announceStructureChange();
+		if (changed) noteStructureChange();
 		return changed;
 	}
 
@@ -246,7 +246,7 @@ public abstract class AbstractDisplay<T> extends SortablePlugin implements
 	public void clear() {
 		final boolean changed = objects.size() > 0;
 		objects.clear();
-		if (changed) announceStructureChange();
+		if (changed) noteStructureChange();
 	}
 
 	@Override
@@ -272,21 +272,21 @@ public abstract class AbstractDisplay<T> extends SortablePlugin implements
 	@Override
 	public boolean remove(final Object o) {
 		final boolean changed = objects.remove(o);
-		if (changed) announceStructureChange();
+		if (changed) noteStructureChange();
 		return changed;
 	}
 
 	@Override
 	public boolean removeAll(final Collection<?> c) {
 		final boolean changed = objects.removeAll(c);
-		if (changed) announceStructureChange();
+		if (changed) noteStructureChange();
 		return changed;
 	}
 
 	@Override
 	public boolean retainAll(final Collection<?> c) {
 		final boolean changed = objects.retainAll(c);
-		if (changed) announceStructureChange();
+		if (changed) noteStructureChange();
 		return changed;
 	}
 
@@ -317,7 +317,7 @@ public abstract class AbstractDisplay<T> extends SortablePlugin implements
 		}
 	}
 
-	protected void announceStructureChange() {
+	protected void noteStructureChange() {
 		structureChanged = true;
 	}
 
