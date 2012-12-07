@@ -934,9 +934,14 @@ static const char *get_jre_home(void)
 	const char *result;
 	int len;
 	static struct string *jre;
+	static int initialized;
 
 	if (jre)
 		return jre->buffer;
+
+	if (initialized)
+		return NULL;
+	initialized = 1;
 
 	/* ImageJ 1.x ships the JRE in <ij.dir>/jre/ */
 	result = ij_path("jre");
