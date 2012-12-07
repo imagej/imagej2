@@ -43,7 +43,11 @@ import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+
+import java.util.List;
+
 import net.imglib2.Cursor;
+import net.imglib2.display.RealLUTConverter;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 
@@ -116,6 +120,7 @@ public class AutoContrast extends ContextCommand {
 		final double histMin = dataset.getType().getMinValue();
 		final double histMax = dataset.getType().getMaxValue();
 		final double binSize = (histMax - histMin) / (BINS - 1);
+		System.out.println("Bin size = " + binSize);
 		if (hmax >= hmin) {
 			min = histMin + hmin * binSize;
 			max = histMin + hmax * binSize;
@@ -140,6 +145,7 @@ public class AutoContrast extends ContextCommand {
 //			max = histMax;
 			autoThreshold = AUTO_THRESHOLD;
 		}
+		System.out.println("New min,max = " + min + ", " + max);
 		setMinMax(min, max);
 	}
 
@@ -161,6 +167,7 @@ public class AutoContrast extends ContextCommand {
 		//
 		final double histMin = dataset.getType().getMinValue();
 		final double histMax = dataset.getType().getMaxValue();
+		System.out.println(histMin + " -- " + histMax);
 //		final double[] range = computeMinMax(dataset);
 
 		final Cursor<? extends RealType<?>> c = dataset.getImgPlus().cursor();
@@ -192,7 +199,12 @@ public class AutoContrast extends ContextCommand {
 	}
 
 	private void setMinMax(final double min, final double max) {
-		view.setChannelRanges(min, max);
+		final List<RealLUTConverter<? extends RealType<?>>> converters =
+			view.getConverters();
+		for (final RealLUTConverter<? extends RealType<?>> conv : converters) {
+			conv.setMin(min);
+			conv.setMax(max);
+		}
 		view.getProjector().map();
 		view.update();
 	}
