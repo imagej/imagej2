@@ -57,18 +57,24 @@ public class SwingTableDisplayPanel extends JScrollPane implements
 	TableDisplayPanel
 {
 
+	// -- instance variables --
+
 	private final DisplayWindow window;
 	private final TableDisplay display;
 	private final JTable table;
+	private final NullTableModel nullModel;
 
 	@SuppressWarnings("unused")
 	private final List<EventSubscriber<?>> subscribers;
+
+	// -- constructor --
 
 	public SwingTableDisplayPanel(final TableDisplay display,
 		final DisplayWindow window)
 	{
 		this.display = display;
 		this.window = window;
+		nullModel = new NullTableModel();
 		table = makeTable();
 		table.setAutoCreateRowSorter(true);
 		setViewportView(table);
@@ -77,10 +83,6 @@ public class SwingTableDisplayPanel extends JScrollPane implements
 		final EventService eventService =
 			display.getContext().getService(EventService.class);
 		subscribers = eventService.subscribe(this);
-	}
-
-	private JTable makeTable() {
-		return new JTable(new TableModel(getTable()));
 	}
 
 	// -- TableDisplayPanel methods --
@@ -111,10 +113,46 @@ public class SwingTableDisplayPanel extends JScrollPane implements
 	public void redraw() {
 		// BDZ - I found a TODO here saying implement me. Not sure if my one liner
 		// is correct but it seems to work.
-		table.update(table.getGraphics());
+		// one liner:
+		// table.update(table.getGraphics());
+		// BDZ now try something more intuitive
+		// table.repaint(); // nope
+		// BDZ this?
+		// table.doLayout(); // nope
+
+		// note that our table is not attached to the table model as a listener.
+		// we might need to do that. but try to find a simple way to enforce a
+		// reread of the table because when it gets in here it's contents are ok
+
+		javax.swing.table.TableModel model = table.getModel();
+
+		// BDZ attempt to force a rebuild. no luck. and also fails the Clear test.
+		// Object v = model.getValueAt(0, 0);
+		// model.setValueAt(v, 0, 0);
+
+		// BDZ hacky hack way that works
+		table.setModel(nullModel);
+		table.setModel(model);
+		// table.repaint();
 	}
 
+	// -- Event Handlers
+
+	/*
+	@EventHandler
+	protected void onEvent(DisplayUpdatedEvent evt) {
+		if (evt.getDisplay() != display) return;
+		System.out.println("JTable.getModel().getRowCount() == " +
+			table.getModel().getRowCount());
+		redraw();
+	}
+	*/
+
 	// -- Helper methods --
+
+	private JTable makeTable() {
+		return new JTable(new TableModel(getTable()));
+	}
 
 	private Table<?, ?> getTable() {
 		return display.size() == 0 ? null : display.get(0);
@@ -122,29 +160,48 @@ public class SwingTableDisplayPanel extends JScrollPane implements
 
 	// -- Helper classes --
 
+	public static class NullTableModel extends AbstractTableModel {
+
+		@Override
+		public int getColumnCount() {
+			return 0;
+		}
+
+		@Override
+		public int getRowCount() {
+			return 0;
+		}
+
+		@Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			return null;
+		}
+
+	}
+
 	/** A Swing {@link TableModel} backed by an ImageJ {@link Table}. */
 	public static class TableModel extends AbstractTableModel {
 
-		private final Table<?, ?> table;
+		private final Table<?, ?> tab;
 
 		public TableModel(final Table<?, ?> table) {
-			this.table = table;
+			this.tab = table;
 		}
 
 		@Override
 		public String getColumnName(final int col) {
 			if (col == 0) return "";
-			return table.getColumnHeader(col - 1);
+			return tab.getColumnHeader(col - 1);
 		}
 
 		@Override
 		public int getRowCount() {
-			return table.getRowCount();
+			return tab.getRowCount();
 		}
 
 		@Override
 		public int getColumnCount() {
-			return table.getColumnCount() + 1; // +1 for row number column
+			return tab.getColumnCount() + 1; // +1 for row number column
 		}
 
 		@Override
@@ -157,7 +214,7 @@ public class SwingTableDisplayPanel extends JScrollPane implements
 			if (col == 0) return row + 1;
 
 			// get the underlying table value by offsetting column
-			return table.get(col - 1, row);
+			return tab.get(col - 1, row);
 		}
 
 		@Override
@@ -166,7 +223,7 @@ public class SwingTableDisplayPanel extends JScrollPane implements
 			if (col < 0 || col >= getColumnCount()) return;
 			// col 0 == row number - do not allow it to be set by user
 			if (col == 0) return;
-			set(table, value, col - 1, row);
+			set(tab, value, col - 1, row);
 			fireTableCellUpdated(row, col);
 		}
 

@@ -500,6 +500,7 @@ public class LegacyCommand implements Command {
 			return;
 		}
 		ij.measure.ResultsTable ij1Table = new ij.measure.ResultsTable();
+		ij1Table.setDefaultHeadings();
 		for (int r = 0; r < table.getRowCount(); r++) {
 			ij1Table.incrementCounter();
 			ij1Table.setLabel(table.getRowHeader(r), r);
@@ -508,6 +509,7 @@ public class LegacyCommand implements Command {
 				ij1Table.setValue(table.getColumnHeader(c), r, value);
 			}
 		}
+		IJ.getTextPanel(); // HACK - force IJ1 to append data
 		Analyzer.setResultsTable(ij1Table);
 	}
 
@@ -542,6 +544,7 @@ public class LegacyCommand implements Command {
 
 		// rebuild table
 		table.clear();
+		table.setRowCount(0);
 		for (int c = 0; c <= ij1Table.getLastColumn(); c++) {
 			if (ij1Table.columnExists(c)) {
 				table.addColumn(ij1Table.getColumnHeading(c));
@@ -549,11 +552,10 @@ public class LegacyCommand implements Command {
 		}
 		for (int r = 0; r < ij1Table.getCounter(); r++) {
 			table.addRow(ij1Table.getLabel(r));
-			int col = 0;
-			for (int c = 0; c <= ij1Table.getLastColumn(); c++) {
+			for (int ij2Col = 0, c = 0; c <= ij1Table.getLastColumn(); c++) {
 				if (ij1Table.columnExists(c)) {
 					double value = ij1Table.getValueAsDouble(c, r);
-					table.setValue(col++, r, value);
+					table.setValue(ij2Col++, r, value);
 				}
 			}
 		}
