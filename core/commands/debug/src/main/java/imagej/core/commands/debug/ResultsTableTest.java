@@ -96,9 +96,9 @@ public class ResultsTableTest implements Command {
 			}
 		}
 
-		// create a larger table with 10 million elements
+		// create a larger table with 10K elements
 		statusService.showStatus("Creating a large table...");
-		final int colCount = 10, rowCount = 1000000;
+		final int colCount = 10, rowCount = 10000;
 		big = new DefaultResultsTable(colCount, rowCount);
 		for (int col = 0; col < colCount; col++) {
 			statusService.showProgress(col, colCount);
