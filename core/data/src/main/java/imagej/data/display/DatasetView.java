@@ -64,6 +64,7 @@ public interface DatasetView extends DataView {
 
 	CompositeXYProjector<? extends RealType<?>> getProjector();
 
+	/** Gets the number of channels in the displayed data. */
 	int getChannelCount();
 
 	/**
@@ -102,6 +103,18 @@ public interface DatasetView extends DataView {
 	 */
 	void setChannelRange(int c, double min, double max);
 
+	/**
+	 * Sets the minimum and maximum values of the <em>display</em> range, globally
+	 * for all channels.
+	 * <p>
+	 * NB: This is a different range than that set by
+	 * {@link Dataset#setChannelMinimum(int, double)} and
+	 * {@link Dataset#setChannelMaximum(int, double)}; the latter methods set the
+	 * minimum and maximum <em>data</em> values for that channel, independent of
+	 * any visualization. They are typically kept synced with the actual data via
+	 * code such as {@link ComputeMinMax}.
+	 * </p>
+	 */
 	void setChannelRanges(double min, double max);
 
 	/**
