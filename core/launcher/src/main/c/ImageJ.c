@@ -931,25 +931,46 @@ static const char *get_java_home(void)
 
 static const char *get_jre_home(void)
 {
-	const char *result = get_java_home();
+	const char *result;
 	int len;
 	static struct string *jre;
 
 	if (jre)
 		return jre->buffer;
 
-	if (!result) {
-		/* ImageJ 1.x ships the JRE in <ij.dir>/jre/ */
-		const char *ij1_jre = ij_path("jre");
-		if (!dir_exists(ij1_jre)) {
+	/* ImageJ 1.x ships the JRE in <ij.dir>/jre/ */
+	result = ij_path("jre");
+	if (dir_exists(result)) {
+		struct string *libjvm = string_initf("%s/%s", result, default_library_path);
+		if (!file_exists(libjvm->buffer)) {
 			if (verbose)
-				error("JRE not found in '%s'", ij1_jre);
-			return NULL;
+				error("Invalid jre/: '%s' does not exist!",
+						libjvm->buffer);
 		}
-		jre = string_initf("%s", ij1_jre);
+		else if (!is_native_library(libjvm->buffer)) {
+			if (verbose)
+				error("Invalid jre/: '%s' is not a %s library!",
+						libjvm->buffer, get_platform());
+		}
+		else {
+			string_release(libjvm);
+			jre = string_initf("%s", result);
+			if (verbose)
+				error("JRE found in '%s'", jre->buffer);
+			return jre->buffer;
+		}
+		string_release(libjvm);
+	}
+	else {
 		if (verbose)
-			error("JRE found in '%s'", jre->buffer);
-		return jre->buffer;
+			error("JRE not found in '%s'", result);
+	}
+
+	result = get_java_home();
+	if (!result) {
+		if (verbose)
+			error("No JRE was found in default locations");
+		return NULL;
 	}
 
 	len = strlen(result);
