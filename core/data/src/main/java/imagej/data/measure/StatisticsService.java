@@ -65,26 +65,28 @@ public interface StatisticsService extends Service {
 	// -- StatisticsService methods --
 
 	/**
-	 * Returns an estimate of the trimmed mean of the values within a
-	 * {@link PointSet} region of a {@link Dataset}.
+	 * Returns an estimate of the alpha trimmed mean of the values within a
+	 * {@link PointSet} region of a {@link Dataset}. Alpha must range be >= 0 and
+	 * < 0.5.
 	 * 
 	 * @param ds The Dataset to measure
 	 * @param region The PointSet region upon which to calculate
-	 * @param halfTrimSize The number of values to trim from each end of the set
-	 *          of samples collected
+	 * @param alpha The proportion of values to trim from each end of the set of
+	 *          samples collected
 	 * @return The measured value
 	 */
-	double alphaTrimmedMean(Dataset ds, PointSet region, int halfTrimSize);
+	double alphaTrimmedMean(Dataset ds, PointSet region, double alpha);
 
 	/**
-	 * Returns an estimate of the trimmed mean of the values of a {@link Dataset}.
+	 * Returns an estimate of the alpha trimmed mean of the values of a
+	 * {@link Dataset}. Alpha must range be >= 0 and < 0.5.
 	 * 
 	 * @param ds The Dataset to measure
-	 * @param halfTrimSize The number of values to trim from each end of the set
-	 *          of samples collected
+	 * @param alpha The proportion of values to trim from each end of the set of
+	 *          samples collected
 	 * @return The measured value
 	 */
-	double alphaTrimmedMean(Dataset ds, int halfTrimSize);
+	double alphaTrimmedMean(Dataset ds, double alpha);
 
 	/**
 	 * Returns an estimate of the arithmetic mean of the values within a
@@ -486,6 +488,28 @@ public interface StatisticsService extends Service {
 	 * @return The measured value
 	 */
 	double sumOfSquaredDeviations(Dataset ds);
+
+	/**
+	 * Returns an estimate of the trimmed mean of the values within a
+	 * {@link PointSet} region of a {@link Dataset}.
+	 * 
+	 * @param ds The Dataset to measure
+	 * @param region The PointSet region upon which to calculate
+	 * @param halfTrimSize The number of values to trim from each end of the set
+	 *          of samples collected
+	 * @return The measured value
+	 */
+	double trimmedMean(Dataset ds, PointSet region, int halfTrimSize);
+
+	/**
+	 * Returns an estimate of the trimmed mean of the values of a {@link Dataset}.
+	 * 
+	 * @param ds The Dataset to measure
+	 * @param halfTrimSize The number of values to trim from each end of the set
+	 *          of samples collected
+	 * @return The measured value
+	 */
+	double trimmedMean(Dataset ds, int halfTrimSize);
 
 	/**
 	 * Returns the weighted average of the values within a {@link PointSet} region

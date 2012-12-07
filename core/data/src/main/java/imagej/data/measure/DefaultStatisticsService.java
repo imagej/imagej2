@@ -64,6 +64,7 @@ import net.imglib2.ops.function.real.RealSampleStdDevFunction;
 import net.imglib2.ops.function.real.RealSampleVarianceFunction;
 import net.imglib2.ops.function.real.RealSumFunction;
 import net.imglib2.ops.function.real.RealSumOfSquaredDeviationsFunction;
+import net.imglib2.ops.function.real.RealTrimmedMeanFunction;
 import net.imglib2.ops.function.real.RealWeightedAverageFunction;
 import net.imglib2.ops.function.real.RealWeightedSumFunction;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
@@ -107,17 +108,17 @@ public class DefaultStatisticsService extends AbstractService implements
 
 	@Override
 	public double alphaTrimmedMean(final Dataset ds, final PointSet region,
-		final int halfTrimSize)
+		final double alpha)
 	{
 		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
 		final Function<PointSet, DoubleType> func =
-			new RealAlphaTrimmedMeanFunction<DoubleType>(imgFunc, halfTrimSize);
+			new RealAlphaTrimmedMeanFunction<DoubleType>(imgFunc, alpha);
 		return measure(func, region);
 	}
 
 	@Override
-	public double alphaTrimmedMean(final Dataset ds, final int halfTrimSize) {
-		return alphaTrimmedMean(ds, allOf(ds), halfTrimSize);
+	public double alphaTrimmedMean(final Dataset ds, final double alpha) {
+		return alphaTrimmedMean(ds, allOf(ds), alpha);
 	}
 
 	@Override
@@ -396,6 +397,19 @@ public class DefaultStatisticsService extends AbstractService implements
 	@Override
 	public double sumOfSquaredDeviations(final Dataset ds) {
 		return sumOfSquaredDeviations(ds, allOf(ds));
+	}
+
+	@Override
+	public double trimmedMean(Dataset ds, PointSet region, int halfTrimSize) {
+		final Function<long[], DoubleType> imgFunc = imgFunc(ds);
+		final Function<PointSet, DoubleType> func =
+			new RealTrimmedMeanFunction<DoubleType>(imgFunc, halfTrimSize);
+		return measure(func, region);
+	}
+
+	@Override
+	public double trimmedMean(Dataset ds, int halfTrimSize) {
+		return trimmedMean(ds, allOf(ds), halfTrimSize);
 	}
 
 	@Override

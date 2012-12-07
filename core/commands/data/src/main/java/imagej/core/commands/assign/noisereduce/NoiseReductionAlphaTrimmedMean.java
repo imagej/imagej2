@@ -40,7 +40,7 @@ import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import net.imglib2.ops.function.Function;
-import net.imglib2.ops.function.real.RealTrimmedMeanFunction;
+import net.imglib2.ops.function.real.RealAlphaTrimmedMeanFunction;
 import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
@@ -56,29 +56,29 @@ import net.imglib2.type.numeric.real.DoubleType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Noise", mnemonic = 'n'),
 	@Menu(label = "Noise Reduction", mnemonic = 'r'),
-	@Menu(label = "Trimmed Mean", mnemonic = 't') })
-public class NoiseReductionTrimmedMean<T extends RealType<T>> extends
+	@Menu(label = "Alpha Trimmed Mean", mnemonic = 'a') })
+public class NoiseReductionAlphaTrimmedMean<T extends RealType<T>> extends
 	AbstractNoiseReducerPlugin<T>
 {
 
 	// -- Parameters --
 
-	@Parameter(label = "Numbers of samples to trim (per end)")
-	private int halfTrimWidth = 1;
+	@Parameter(label = "Proportion of samples to trim (per end)", min = "0.0",
+		max = "0.49999999")
+	private double alpha = 0.05;
 
 	@Override
 	public Function<PointSet, DoubleType> getFunction(
 		final Function<long[], DoubleType> otherFunc)
 	{
-		return new RealTrimmedMeanFunction<DoubleType>(otherFunc,
-			halfTrimWidth);
+		return new RealAlphaTrimmedMeanFunction<DoubleType>(otherFunc, alpha);
 	}
 
-	public void setHalfTrimWidth(final int halfWidth) {
-		halfTrimWidth = halfWidth;
+	public void setAlpha(final double alpha) {
+		this.alpha = alpha;
 	}
 
-	public int getHalfTrimWidth() {
-		return halfTrimWidth;
+	public double getAlpha() {
+		return alpha;
 	}
 }
