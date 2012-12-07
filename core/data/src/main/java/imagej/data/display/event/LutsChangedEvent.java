@@ -33,15 +33,15 @@
  * #L%
  */
 
+package imagej.data.display.event;
+
+import imagej.data.display.DataView;
+
 /**
  * An event indicating a change in the composition of color tables of a view.
  * 
  * @author Barry DeZonia
  */
-package imagej.data.display.event;
-
-import imagej.data.display.DataView;
-
 public class LutsChangedEvent extends DataViewEvent {
 
 	public LutsChangedEvent(DataView view) {
