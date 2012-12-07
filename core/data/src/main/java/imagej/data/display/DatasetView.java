@@ -64,7 +64,7 @@ public interface DatasetView extends DataView {
 
 	CompositeXYProjector<? extends RealType<?>> getProjector();
 
-	long getChannelCount();
+	int getChannelCount();
 
 	/**
 	 * Gets the minimum value in the <em>display</em> range, for the given

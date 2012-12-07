@@ -97,9 +97,9 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	// -- DatasetView methods --
 
 	@Override
-	public long getChannelCount() {
+	public int getChannelCount() {
 		if (channelDimIndex < 0) return 1;
-		return getData().getExtents().dimension(channelDimIndex);
+		return (int) getData().getExtents().dimension(channelDimIndex);
 	}
 
 	@Override
@@ -194,7 +194,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 
 	@Override
 	public void resetColorTables(final boolean grayscale) {
-		final int channelCount = (int) getChannelCount();
+		final int channelCount = getChannelCount();
 		defaultLUTs.clear();
 		defaultLUTs.ensureCapacity(channelCount);
 		if (grayscale || channelCount == 1) {
@@ -247,7 +247,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 		if (!isInitialized()) return null;
 
 		final int r, g, b;
-		final long channelCount = getChannelCount();
+		final int channelCount = getChannelCount();
 		final ColorMode mode = getColorMode();
 		if (mode == ColorMode.COMPOSITE) {
 			double rSum = 0, gSum = 0, bSum = 0;
@@ -437,7 +437,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void initializeView(final boolean composite) {
 		converters.clear();
-		final long channelCount = getChannelCount();
+		final int channelCount = getChannelCount();
 		for (int c = 0; c < channelCount; c++) {
 			autoscale(c);
 			final RealLUTConverter converter =
@@ -454,7 +454,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	private void updateLUTs() {
 		if (!isInitialized()) return;
 
-		final long channelCount = getChannelCount();
+		final int channelCount = getChannelCount();
 		for (int c = 0; c < channelCount; c++) {
 			final ColorTable lut = getCurrentLUT(c);
 			converters.get(c).setLUT(lut);

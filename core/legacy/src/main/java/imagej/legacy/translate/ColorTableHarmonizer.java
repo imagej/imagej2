@@ -219,7 +219,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 		final DataView dataView = disp.getActiveView();
 		if (!(dataView instanceof DatasetView)) return;
 		final DatasetView view = (DatasetView) dataView;
-		final int channelCount = (int) view.getChannelCount();
+		final int channelCount = view.getChannelCount();
 		final double[] min = new double[channelCount];
 		final double[] max = new double[channelCount];
 		double overallMin = Double.POSITIVE_INFINITY;
@@ -379,7 +379,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 		final DataView dataView = disp.getActiveView();
 		if (!(dataView instanceof DatasetView)) return;
 		final DatasetView view = (DatasetView) dataView;
-		final int channelCount = (int) view.getChannelCount();
+		final int channelCount = view.getChannelCount();
 		final double[] min = new double[channelCount];
 		final double[] max = new double[channelCount];
 
