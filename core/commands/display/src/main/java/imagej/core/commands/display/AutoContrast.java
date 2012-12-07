@@ -198,6 +198,8 @@ public class AutoContrast extends ContextCommand {
 		view.update();
 	}
 
+	// TODO - rewrite this ugly code unless we just throw this impl away
+
 	private int getNumChannels(final Dataset dataset) {
 		final AxisType[] axes = dataset.getAxes();
 		for (int d = 0; d < axes.length; d++) {
