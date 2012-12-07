@@ -941,21 +941,34 @@ static const char *get_jre_home(void)
 	if (!result) {
 		/* ImageJ 1.x ships the JRE in <ij.dir>/jre/ */
 		const char *ij1_jre = ij_path("jre");
-		if (!dir_exists(ij1_jre))
+		if (!dir_exists(ij1_jre)) {
+			if (verbose)
+				error("JRE not found in '%s'", ij1_jre);
 			return NULL;
+		}
 		jre = string_initf("%s", ij1_jre);
+		if (verbose)
+			error("JRE found in '%s'", jre->buffer);
 		return jre->buffer;
 	}
 
 	len = strlen(result);
-	if (len > 4 && !strcmp(result + len - 4, "/jre"))
-		return result;
+	if (len > 4 && !strcmp(result + len - 4, "/jre")) {
+		string_setf(jre, "%s", result);
+		if (verbose)
+			error("JAVA_HOME points to a JRE: '%s'", result);
+		return jre->buffer;
+	}
 
 	jre = string_initf("%s/jre", result);
-	if (dir_exists(jre->buffer))
+	if (dir_exists(jre->buffer)) {
+		if (verbose)
+			error("JAVA_HOME contains a JRE: '%s'", jre->buffer);
 		return jre->buffer;
+	}
 	string_setf(jre, "%s", result);
-	return result;
+	error("JAVA_HOME appears to be a JRE: '%s'", jre->buffer);
+	return jre->buffer;
 }
 
 static size_t mystrlcpy(char *dest, const char *src, size_t size)
