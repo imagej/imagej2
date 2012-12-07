@@ -36,6 +36,7 @@
 package imagej.data.table;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 import org.junit.Test;
 
@@ -45,6 +46,8 @@ import org.junit.Test;
  * @author Curtis Rueden
  */
 public class DefaultResultsTableTest {
+
+	private static final String[] HEADERS = {"Year", "Age", "BA"};
 
 	// Paul Molitor
 	private static final double[][] DATA = {
@@ -75,9 +78,9 @@ public class DefaultResultsTableTest {
 		final ResultsTable table =
 			new DefaultResultsTable(DATA[0].length, DATA.length);
 
-		table.setColumnHeader(0, "Year");
-		table.setColumnHeader(1, "Age");
-		table.setColumnHeader(2, "BA");
+		for (int c=0; c<HEADERS.length; c++) {
+			table.setColumnHeader(c, HEADERS[c]);
+		}
 
 		for (int r = 0; r < DATA.length; r++) {
 			for (int c = 0; c < DATA[r].length; c++) {
@@ -102,11 +105,13 @@ public class DefaultResultsTableTest {
 		assertEquals("BA", table.getColumnHeader(2));
 
 		for (int c = 0; c < table.getColumnCount(); c++) {
-			final DoubleColumn column = table.get(c);
-			assertEquals(DATA.length, column.size());
+			final DoubleColumn columnByHeader = table.get(HEADERS[c]);
+			final DoubleColumn columnByIndex = table.get(c);
+			assertSame(columnByHeader, columnByIndex);
+			assertEquals(DATA.length, columnByHeader.size());
 			for (int r = 0; r < table.getRowCount(); r++) {
 				assertEquals(DATA[r][c], table.getValue(c, r), 0);
-				assertEquals(DATA[r][c], column.getValue(r), 0);
+				assertEquals(DATA[r][c], columnByHeader.getValue(r), 0);
 			}
 		}
 	}
