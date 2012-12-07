@@ -84,6 +84,11 @@ public abstract class AbstractTable<C extends Column<T>, T> extends
 	}
 
 	@Override
+	public C get(final String colHeader) {
+		return get(colIndex(colHeader));
+	}
+
+	@Override
 	public C appendColumn() {
 		return appendColumn(null);
 	}

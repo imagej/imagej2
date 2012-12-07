@@ -55,6 +55,9 @@ public interface Table<C extends Column<T>, T> extends List<C> {
 	/** Sets the number of columns in the table. */
 	void setColumnCount(int colCount);
 
+	/** Returns the first column with the given header in the table. */
+	C get(String colHeader);
+
 	/**
 	 * Appends a column (with no header) to the table.
 	 * 
