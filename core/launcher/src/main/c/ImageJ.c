@@ -4564,16 +4564,14 @@ int main(int argc, char **argv, char **e)
 #if defined(__APPLE__)
 	launch_32bit_on_tiger(argc, argv);
 #elif defined(WIN32)
-	int len;
 #ifdef WIN64
 	/* work around MinGW64 breakage */
 	argc = __argc;
 	argv = __argv;
 	argv[0] = _pgmptr;
 #endif
-	len = strlen(argv[0]);
-	if (!suffixcmp(argv[0], len, "ImageJ.exe") ||
-			!suffixcmp(argv[0], len, "ImageJ"))
+	if (!suffixcmp(argv[0], -1, "debug.exe") ||
+			!suffixcmp(argv[0], -1, "debug"))
 		open_win_console();
 #endif
 	adjust_java_home_if_necessary();
