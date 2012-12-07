@@ -43,11 +43,7 @@ import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-
-import java.util.List;
-
 import net.imglib2.Cursor;
-import net.imglib2.display.RealLUTConverter;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 
@@ -199,12 +195,7 @@ public class AutoContrast extends ContextCommand {
 	}
 
 	private void setMinMax(final double min, final double max) {
-		final List<RealLUTConverter<? extends RealType<?>>> converters =
-			view.getConverters();
-		for (final RealLUTConverter<? extends RealType<?>> conv : converters) {
-			conv.setMin(min);
-			conv.setMax(max);
-		}
+		view.setChannelRanges(min, max);
 		view.getProjector().map();
 		view.update();
 	}

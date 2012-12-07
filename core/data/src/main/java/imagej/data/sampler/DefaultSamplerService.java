@@ -54,7 +54,6 @@ import java.util.List;
 
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable;
-import net.imglib2.display.RealLUTConverter;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
@@ -404,12 +403,7 @@ public class DefaultSamplerService extends AbstractService implements
 	private void setDisplayRange(ImageDisplay output, double min, double max) {
 		// TODO - remove evil cast
 		DatasetView view = (DatasetView) output.getActiveView();
-		List<RealLUTConverter<? extends RealType<?>>> converters =
-				view.getConverters();
-		for (RealLUTConverter<? extends RealType<?>> conv : converters) {
-			conv.setMin(min);
-			conv.setMax(max);
-		}
+		view.setChannelRanges(min, max);
 		// NB - no need to do this here
 		//view.getProjector().map();
 		//view.update();
