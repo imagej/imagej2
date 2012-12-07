@@ -103,9 +103,6 @@ public class ResultsTableHarmonizer {
 		if (ij1Table.getCounter() == 0) {
 			if (display == null) return;
 			if (table == null) return;
-			for (int i = 0; i < table.getRowCount(); i++) {
-				table.removeRow(table.getRowCount() - 1);
-			}
 		}
 
 		// if here there are nonempty ij1 results to harmonize
