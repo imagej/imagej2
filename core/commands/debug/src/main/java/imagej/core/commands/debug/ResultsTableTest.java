@@ -87,9 +87,9 @@ public class ResultsTableTest implements Command {
 			{1998, 41, .281},
 		};
 		baseball = new DefaultResultsTable(data[0].length, data.length);
-		baseball.setColumnHeader("Year", 0);
-		baseball.setColumnHeader("Age", 1);
-		baseball.setColumnHeader("BA", 2);
+		baseball.setColumnHeader(0, "Year");
+		baseball.setColumnHeader(1, "Age");
+		baseball.setColumnHeader(2, "BA");
 		for (int row = 0; row < data.length; row++) {
 			for (int col = 0; col < data[row].length; col++) {
 				baseball.setValue(col, row, data[row][col]);

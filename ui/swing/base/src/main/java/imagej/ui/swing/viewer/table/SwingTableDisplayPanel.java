@@ -52,6 +52,7 @@ import javax.swing.table.AbstractTableModel;
  * This is the display panel for {@link Table}s.
  * 
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 public class SwingTableDisplayPanel extends JScrollPane implements
 	TableDisplayPanel
@@ -201,7 +202,7 @@ public class SwingTableDisplayPanel extends JScrollPane implements
 
 		@Override
 		public int getColumnCount() {
-			return tab.getColumnCount() + 1; // +1 for row number column
+			return tab.getColumnCount() + 1; // +1 for row header column
 		}
 
 		@Override
@@ -209,11 +210,17 @@ public class SwingTableDisplayPanel extends JScrollPane implements
 			if (row < 0 || row >= getRowCount()) return null;
 			if (col < 0 || col >= getColumnCount()) return null;
 
-			// Get the row number when in col 0. Assumes the JTable can handle
-			// Integers equally as well as underlying type of Table<?,?>.
-			if (col == 0) return row + 1;
+			if (col == 0) {
+				// get row header, or row number if none
+				// NB: Assumes the JTable can handle Strings equally as well as the
+				// underlying type T of the Table.
+				final String header = tab.getRowHeader(row);
+				if (header != null) return header;
+				return "" + (row + 1);
+			}
 
-			// get the underlying table value by offsetting column
+			// get the underlying table value
+			// NB: The column is offset by one to accommodate the row header/number.
 			return tab.get(col - 1, row);
 		}
 
@@ -221,18 +228,23 @@ public class SwingTableDisplayPanel extends JScrollPane implements
 		public void setValueAt(final Object value, final int row, final int col) {
 			if (row < 0 || row >= getRowCount()) return;
 			if (col < 0 || col >= getColumnCount()) return;
-			// col 0 == row number - do not allow it to be set by user
-			if (col == 0) return;
-			set(tab, value, col - 1, row);
+			if (col == 0) {
+				// set row header
+				tab.setRowHeader(row, value == null ? null : value.toString());
+				return;
+			}
+			set(tab, col - 1, row, value);
 			fireTableCellUpdated(row, col);
 		}
 
-		private <T> void set(final Table<?, T> table, final Object value,
-			final int col, final int row)
+		// -- Helper methods --
+
+		private <T> void set(final Table<?, T> table,
+			final int col, final int row, final Object value)
 		{
 			@SuppressWarnings("unchecked")
 			final T typedValue = (T) value;
-			table.set(typedValue, col, row); // NB: coord reversal required
+			table.set(col, row, typedValue);
 		}
 
 	}

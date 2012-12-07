@@ -88,12 +88,12 @@ public class ShowLUTAsTable extends ContextCommand {
 		final int componentCount = colorTable.getComponentCount();
 		final int colCount = componentCount + 1;
 		table = new DefaultResultsTable(colCount, rowCount);
-		table.setColumnHeader("Index", 0);
+		table.setColumnHeader(0, "Index");
 		// TODO - For now provide default channel name column headers
 		// At some point we hope to have dimensional position labels which we could
 		// use here.
 		for (int x = 0; x < componentCount; x++) {
-			table.setColumnHeader("CH" + x, x + 1);
+			table.setColumnHeader(x + 1, "CH" + x);
 		}
 		// fill in values
 		for (int y = 0; y < rowCount; y++) {
