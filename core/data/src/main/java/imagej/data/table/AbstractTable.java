@@ -168,11 +168,7 @@ public abstract class AbstractTable<C extends Column<T>, T> extends
 
 	@Override
 	public C removeColumn(final String header) {
-		final int col = getColumnIndex(header);
-		if (col < 0) {
-			throw new IllegalArgumentException("No such column: " + header);
-		}
-		return removeColumn(col);
+		return removeColumn(colIndex(header));
 	}
 
 	@Override
