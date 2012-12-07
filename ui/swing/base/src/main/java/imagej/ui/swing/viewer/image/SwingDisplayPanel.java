@@ -42,6 +42,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.display.event.DelayedPositionEvent;
+import imagej.data.display.event.LutsChangedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
@@ -72,10 +73,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import net.imglib2.display.ColorTable;
-import net.imglib2.display.RealLUTConverter;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import net.imglib2.type.numeric.RealType;
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -222,6 +221,13 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 		eventService.publish(new DelayedPositionEvent(display, axis));
 	}
 
+	@EventHandler
+	protected void onEvent(LutsChangedEvent event) {
+		if (!getDisplay().contains(event.getView())) return;
+		final int value = (int) display.getLongPosition(Axes.CHANNEL);
+		updateColorBar(value);
+	}
+
 	// -- Helper methods --
 
 	private void createSliders() {
@@ -284,11 +290,9 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 			display.getContext().getService(ImageDisplayService.class);
 		final DatasetView view = imageDisplayService.getActiveDatasetView(display);
 		if (view == null) return; // no active dataset
-		final List<RealLUTConverter<? extends RealType<?>>> converters =
-			view.getConverters();
-		if (c >= converters.size()) return;
-		final RealLUTConverter<? extends RealType<?>> converter = converters.get(c);
-		final ColorTable lut = converter.getLUT();
+		List<ColorTable> colorTables = view.getColorTables();
+		if (c >= colorTables.size()) return;
+		final ColorTable lut = colorTables.get(c);
 		colorBar.setColorTable(lut);
 		colorBar.repaint();
 	}

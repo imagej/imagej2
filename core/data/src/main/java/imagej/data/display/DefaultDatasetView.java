@@ -35,15 +35,18 @@
 
 package imagej.data.display;
 
+import imagej.ImageJ;
 import imagej.data.ChannelCollection;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.display.event.DataViewUpdatedEvent;
+import imagej.data.display.event.LutsChangedEvent;
 import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.event.EventHandler;
+import imagej.event.EventService;
 import imagej.plugin.Plugin;
 import imagej.util.ColorRGB;
 
@@ -448,6 +451,12 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			final ColorTable lut = getCurrentLUT(c);
 			converters.get(c).setLUT(lut);
 		}
+		
+		ImageJ context = getContext();
+		if (context == null) return;
+		EventService evtSrv = context.getService(EventService.class);
+		if (evtSrv == null) return;
+		evtSrv.publishLater(new LutsChangedEvent(this));
 	}
 
 	private ColorTable getCurrentLUT(final int cPos) {
