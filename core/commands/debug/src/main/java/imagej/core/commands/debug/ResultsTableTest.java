@@ -90,6 +90,7 @@ public class ResultsTableTest implements Command {
 		baseball.setColumnHeader(0, "Year");
 		baseball.setColumnHeader(1, "Age");
 		baseball.setColumnHeader(2, "BA");
+		baseball.setRowHeader(9, "Best");
 		for (int row = 0; row < data.length; row++) {
 			for (int col = 0; col < data[row].length; col++) {
 				baseball.setValue(col, row, data[row][col]);
