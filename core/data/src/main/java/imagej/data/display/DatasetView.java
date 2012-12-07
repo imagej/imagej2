@@ -66,6 +66,8 @@ public interface DatasetView extends DataView {
 
 	List<RealLUTConverter<? extends RealType<?>>> getConverters();
 
+	long getChannelCount();
+
 	/**
 	 * Gets the minimum value in the <em>display</em> range, for the given
 	 * channel.
@@ -101,6 +103,8 @@ public interface DatasetView extends DataView {
 	 * </p>
 	 */
 	void setChannelRange(int c, double min, double max);
+
+	void setChannelRanges(double min, double max);
 
 	/**
 	 * Autoscales the <em>display</em> range to match the <em>data</em> range, for

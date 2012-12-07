@@ -97,6 +97,12 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	// -- DatasetView methods --
 
 	@Override
+	public long getChannelCount() {
+		if (channelDimIndex < 0) return 1;
+		return getData().getExtents().dimension(channelDimIndex);
+	}
+
+	@Override
 	public ARGBScreenImage getScreenImage() {
 		return screenImage;
 	}
@@ -136,6 +142,13 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 
 		converters.get(c).setMin(min);
 		converters.get(c).setMax(max);
+	}
+
+	@Override
+	public void setChannelRanges(double min, double max) {
+		for (int c = 0; c < converters.size(); c++) {
+			setChannelRange(c, min, max);
+		}
 	}
 
 	@Override
@@ -470,11 +483,6 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			return lut; // return dataset-specific LUT
 		}
 		return defaultLUTs.get(cPos); // return default channel LUT
-	}
-
-	private long getChannelCount() {
-		if (channelDimIndex < 0) return 1;
-		return getData().getExtents().dimension(channelDimIndex);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
