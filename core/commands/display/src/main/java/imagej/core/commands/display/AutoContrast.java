@@ -116,7 +116,7 @@ public class AutoContrast extends ContextCommand {
 		final double histMin = dataset.getType().getMinValue();
 		final double histMax = dataset.getType().getMaxValue();
 		final double binSize = (histMax - histMin) / (BINS - 1);
-		System.out.println("Bin size = " + binSize);
+
 		if (hmax >= hmin) {
 			min = histMin + hmin * binSize;
 			max = histMin + hmax * binSize;
@@ -141,7 +141,7 @@ public class AutoContrast extends ContextCommand {
 //			max = histMax;
 			autoThreshold = AUTO_THRESHOLD;
 		}
-		System.out.println("New min,max = " + min + ", " + max);
+
 		setMinMax(min, max);
 	}
 
@@ -163,8 +163,6 @@ public class AutoContrast extends ContextCommand {
 		//
 		final double histMin = dataset.getType().getMinValue();
 		final double histMax = dataset.getType().getMaxValue();
-		System.out.println(histMin + " -- " + histMax);
-//		final double[] range = computeMinMax(dataset);
 
 		final Cursor<? extends RealType<?>> c = dataset.getImgPlus().cursor();
 		final int[] histogram = new int[BINS];
