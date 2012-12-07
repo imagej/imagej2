@@ -140,7 +140,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	}
 
 	@Override
-	public void setChannelRanges(double min, double max) {
+	public void setChannelRanges(final double min, final double max) {
 		for (int c = 0; c < converters.size(); c++) {
 			setChannelRange(c, min, max);
 		}
@@ -254,7 +254,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			for (int c = 0; c < channelCount; c++) {
 				final double value = channels.getChannelValue(c);
 				final RealLUTConverter<? extends RealType<?>> converter =
-						converters.get(c);
+					converters.get(c);
 				final double min = converter.getMin();
 				final double max = converter.getMax();
 				final int grayValue = Binning.valueToBin(256, min, max, value);
@@ -271,7 +271,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			final long currChannel = getLongPosition(Axes.CHANNEL);
 			final double value = channels.getChannelValue(currChannel);
 			final RealLUTConverter<? extends RealType<?>> converter =
-					converters.get((int) currChannel);
+				converters.get((int) currChannel);
 			final double min = converter.getMin();
 			final double max = converter.getMax();
 			final int grayValue = Binning.valueToBin(256, min, max, value);
@@ -459,10 +459,10 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			final ColorTable lut = getCurrentLUT(c);
 			converters.get(c).setLUT(lut);
 		}
-		
-		ImageJ context = getContext();
+
+		final ImageJ context = getContext();
 		if (context == null) return;
-		EventService evtSrv = context.getService(EventService.class);
+		final EventService evtSrv = context.getService(EventService.class);
 		if (evtSrv == null) return;
 		evtSrv.publishLater(new LutsChangedEvent(this));
 	}
@@ -500,4 +500,5 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			(RandomAccessibleInterval<RealType>) (RandomAccessibleInterval) imgPlus,
 			mn, mx);
 	}
+
 }

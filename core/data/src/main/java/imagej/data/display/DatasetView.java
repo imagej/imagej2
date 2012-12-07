@@ -54,6 +54,7 @@ import net.imglib2.type.numeric.RealType;
  * showing onscreen.
  * 
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 public interface DatasetView extends DataView {
 
