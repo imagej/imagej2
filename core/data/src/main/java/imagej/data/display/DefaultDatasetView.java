@@ -118,11 +118,6 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	}
 
 	@Override
-	public List<RealLUTConverter<? extends RealType<?>>> getConverters() {
-		return Collections.unmodifiableList(converters);
-	}
-
-	@Override
 	public double getChannelMin(final int c) {
 		if (!isInitialized()) return Double.NaN;
 

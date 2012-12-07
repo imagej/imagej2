@@ -46,7 +46,6 @@ import net.imglib2.algorithm.stats.ComputeMinMax;
 import net.imglib2.display.ARGBScreenImage;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.CompositeXYProjector;
-import net.imglib2.display.RealLUTConverter;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -63,8 +62,6 @@ public interface DatasetView extends DataView {
 	int getCompositeDimIndex();
 
 	CompositeXYProjector<? extends RealType<?>> getProjector();
-
-	List<RealLUTConverter<? extends RealType<?>>> getConverters();
 
 	long getChannelCount();
 
