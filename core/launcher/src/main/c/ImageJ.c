@@ -3831,7 +3831,7 @@ static void parse_command_line(void)
 		main_class = "net.sf.retrotranslator.transformer.JITRetrotranslator";
 	}
 
-	if (options.debug) {
+	if (options.debug || verbose) {
 		for (i = 0; properties[i]; i += 2) {
 			if (!properties[i] || !properties[i + 1])
 				continue;
@@ -3840,7 +3840,8 @@ static void parse_command_line(void)
 		}
 
 		show_commandline(&options);
-		exit(0);
+		if (options.debug)
+			exit(0);
 	}
 
 }
