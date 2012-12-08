@@ -561,6 +561,7 @@ static int verbose;
 
 static const char *legacy_ij1_class = "ij.ImageJ";
 static struct string *legacy_jre_path;
+static struct string *legacy_ij1_options;
 
 static int is_default_ij1_class(const char *name)
 {
@@ -2784,8 +2785,20 @@ static void parse_legacy_config(struct string *jvm_options)
 
 			*eol = '\0';
 			main_class = strstr(p, " ij.ImageJ");
-			if (main_class)
+			if (main_class) {
+				const char *rest = main_class + 10;
+
+				while (*rest == ' ')
+					rest++;
+				if (rest < eol) {
+					if (!legacy_ij1_options)
+						legacy_ij1_options = string_init(32);
+					string_setf(legacy_ij1_options, "%.*s", eol - rest, rest);
+					if (verbose)
+						error("Found ImageJ options in ImageJ.cfg: '%s'", legacy_ij1_options->buffer);
+				}
 				eol = main_class;
+			}
 
 			string_replace_range(jvm_options, 0, p - jvm_options->buffer, "");
 			string_set_length(jvm_options, eol - p);
@@ -3708,6 +3721,15 @@ static void parse_command_line(void)
 			}
 			i += count - 1;
 		}
+	}
+
+	if (legacy_ij1_options && is_default_ij1_class(main_class)) {
+		struct options dummy;
+
+		memset(&dummy, 0, sizeof(dummy));
+		add_options(&dummy, legacy_ij1_options->buffer, 1);
+		prepend_string_array(&options.ij_options, &dummy.ij_options);
+		free(dummy.ij_options.list);
 	}
 
 	if (dashdash) {
