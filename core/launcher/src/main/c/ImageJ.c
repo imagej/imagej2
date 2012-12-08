@@ -553,12 +553,14 @@ static const char *absolute_java_home;
 static const char *relative_java_home;
 static const char *default_library_path;
 static const char *library_path;
-static const char *legacy_ij1_class = "ij.ImageJ";
 static const char *default_fiji1_class = "fiji.Main";
 static const char *default_main_class = "imagej.Main";
 static int legacy_mode;
 static int retrotranslator;
 static int verbose;
+
+static const char *legacy_ij1_class = "ij.ImageJ";
+static struct string *legacy_jre_path;
 
 static int is_default_ij1_class(const char *name)
 {
@@ -944,7 +946,7 @@ static const char *get_jre_home(void)
 	initialized = 1;
 
 	/* ImageJ 1.x ships the JRE in <ij.dir>/jre/ */
-	result = ij_path("jre");
+	result = legacy_jre_path ? legacy_jre_path->buffer : ij_path("jre");
 	if (dir_exists(result)) {
 		struct string *libjvm = string_initf("%s/%s", result, default_library_path);
 		if (!file_exists(libjvm->buffer)) {
@@ -2739,23 +2741,66 @@ static int check_subcommand_classpath(struct subcommand *subcommand)
 
 static void parse_legacy_config(struct string *jvm_options)
 {
-	const char *p;
-	p = strchr(jvm_options->buffer, '\n');
-	if (p) {
-		p = strchr(p + 1, '\n');
-		if (p) {
-			int new_length;
-			p++;
-			new_length = jvm_options->length - (p - jvm_options->buffer);
-			memmove(jvm_options->buffer, p, new_length);
-			p = strchr(jvm_options->buffer, '\n');
-			if (p)
-				new_length = p - jvm_options->buffer;
-			if (new_length > 10 && !strncmp(jvm_options->buffer + new_length - 10, " ij.ImageJ", 10))
-				new_length -= 10;
-			string_set_length(jvm_options, new_length);
+	char *p = jvm_options->buffer;
+	int line = 1;
+
+	for (;;) {
+		char *eol = strchr(p, '\n');
+
+		/* strchrnul() is not portable */
+		if (!eol)
+			eol = p + strlen(p);
+
+		if (verbose > 1)
+			error("ImageJ.cfg:%d: %.*s", line, eol - p, p);
+
+		if (line == 2) {
+			int jre_len = -1;
+#ifdef WIN32
+			if (!suffixcmp(p, eol - p, "\\bin\\javaw.exe"))
+				jre_len = eol - p - 14;
+			else if (!suffixcmp(p, eol - p, "\\bin\\java.exe")) {
+				jre_len = eol - p - 13;
+				verbose++;
+				open_win_console();
+				error("Enabling verbose mode due to ImageJ.cfg mentioning java.exe");
+			}
+#else
+			if (!suffixcmp(p, eol - p, "/bin/java"))
+				jre_len = eol - p - 9;
+#endif
+			if (jre_len > 0) {
+				p[jre_len] = '\0';
+				if (!legacy_jre_path)
+					legacy_jre_path = string_init(32);
+				string_set(legacy_jre_path, is_absolute_path(p) ? p : ij_path(p));
+				if (verbose)
+					error("Using JRE from ImageJ.cfg: %s",
+						legacy_jre_path->buffer);
+			}
+		}
+		else if (line == 3) {
+			char *main_class;
+
+			*eol = '\0';
+			main_class = strstr(p, " ij.ImageJ");
+			if (main_class)
+				eol = main_class;
+
+			string_replace_range(jvm_options, 0, p - jvm_options->buffer, "");
+			string_set_length(jvm_options, eol - p);
+			if (verbose)
+				error("Found Java options in ImageJ.cfg: '%s'", jvm_options->buffer);
 			return;
 		}
+
+		if (*eol == '\0')
+			break;
+
+		p = eol + 1;
+		line++;
+		if (line > 3)
+			break;
 	}
 	string_set_length(jvm_options, 0);
 }
