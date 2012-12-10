@@ -18,8 +18,8 @@ system, a bug tracker and more.
 
 We are collaborating closely with related projects including Fiji, Bio-Formats
 and OMERO, and are striving to deliver a coherent software stack reusable
-throughout the life sciences community and beyond. For more details, see:
-  http://scijava.github.com/
+throughout the life sciences community and beyond. For more details, see the
+[SciJava web site](http://scijava.org/).
 
 ImageJ2 is currently in the "beta" stage, meaning the code is not finished. It
 is being released for early community feedback and testing. Comments, questions
@@ -32,29 +32,31 @@ provides backward compatibility with older versions of ImageJ by bundling the
 latest v1.x code and translating between "legacy" and "modern" image
 structures.
 
-For more details on the project, see the ImageJ2 web site at:
-  http://developer.imagej.net/
+For more details on the project, see the
+[ImageJ2 web site](http://developer.imagej.net/).
 
 
 LICENSING
 ---------
 
 ImageJ2 is distributed under a Simplified BSD License; for the full text of the
-license, see the LICENSE.txt file. For further reading, see:
-  http://en.wikipedia.org/wiki/BSD_licenses
+license, see
+[LICENSE.txt](https://github.com/imagej/imagej/blob/master/LICENSE.txt).
+For further reading, see the
+[Wikipedia page on BSD licenses](http://en.wikipedia.org/wiki/BSD_licenses).
 
-For the list of developers and contributors, see pom.xml in the source code:
-  https://github.com/imagej/imagej/blob/master/pom.xml
+For the list of developers and contributors, see
+[pom.xml](https://github.com/imagej/imagej/blob/master/pom.xml).
 
 
 BUGS
 ----
 
-For a list of known issues, see the issue tracking system:
-  http://trac.imagej.net/report/1
+For a list of known issues, see the
+[issue tracking system](http://trac.imagej.net/report/1).
 
-Please report any bugs by following the instructions at:
-  http://developer.imagej.net/reporting-bugs
+Please report any bugs by following the
+[instructions online](http://developer.imagej.net/reporting-bugs).
 
 
 OTHER NOTES
@@ -63,9 +65,9 @@ OTHER NOTES
 Menus: IJ2 is currently made up of both IJ1 & IJ2 commands. IJ1 commands are
 distinguished with a small microscope icon next to their name in the menus,
 while IJ2 commands have either a green puzzle piece or a custom icon. Many IJ1
-commands work, but many do not, for various reasons. We are still working to
-improve the number of working IJ1 commands, and/or update them to pure IJ2
-commands.
+  commands work, but many do not, for various reasons. We are still working to
+  improve the number of working IJ1 commands, and/or update them to pure IJ2
+  commands.
 
 Macros and scripts: It is possible to execute IJ1 macros in IJ2, though you may
 experience mixed results. You can even include calls to overridden IJ2 commands
