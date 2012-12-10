@@ -39,11 +39,10 @@ For more details on the project, see the
 LICENSING
 ---------
 
-ImageJ2 is distributed under a Simplified BSD License; for the full text of the
-license, see
+ImageJ2 is distributed under a
+[Simplified BSD License](http://en.wikipedia.org/wiki/BSD_licenses);
+for the full text of the license, see
 [LICENSE.txt](https://github.com/imagej/imagej/blob/master/LICENSE.txt).
-For further reading, see the
-[Wikipedia page on BSD licenses](http://en.wikipedia.org/wiki/BSD_licenses).
 
 For the list of developers and contributors, see
 [pom.xml](https://github.com/imagej/imagej/blob/master/pom.xml).
