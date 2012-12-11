@@ -160,8 +160,8 @@ public class ServiceHelper extends AbstractContextual {
 			if (log != null) log.info("Created service: " + c.getName());
 			return service;
 		}
-		catch (final Exception e) {
-			if (log != null) log.error("Invalid service: " + c.getName(), e);
+		catch (final Throwable t) {
+			if (log != null) log.error("Invalid service: " + c.getName(), t);
 		}
 		return null;
 	}
