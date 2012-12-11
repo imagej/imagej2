@@ -45,10 +45,9 @@ import imagej.util.Manifest;
 import imagej.util.POM;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 /**
  * Top-level application context for ImageJ, which initializes and maintains a
@@ -64,76 +63,43 @@ public class ImageJ {
 	public static final String VERSION =
 		POM.getPOM(ImageJ.class, "net.imagej", "ij-core").getVersion();
 
-	/** Creates a new ImageJ application context with all available services. */
+	/** @deprecated Use {@link #ImageJ()} instead. */
+	@Deprecated
 	public static ImageJ createContext() {
-		try {
-			if (!CheckSezpoz.check(false)) {
-				// SezPoz uses ClassLoader.getResources() which will now pick up the
-				// apt-generated annotations.
-				System.err.println("SezPoz generated annotations."); // no log service
-			}
-		}
-		catch (final IOException e) {
-			e.printStackTrace();
-		}
-		return createContext((List<Class<? extends Service>>) null);
+		return new ImageJ();
 	}
 
-	/** Creates a new ImageJ application context with no services. */
+	/** @deprecated Use {@code new ImageJ(true)} instead. */
+	@Deprecated
 	public static ImageJ createEmptyContext() {
-		return createContext(new ArrayList<Class<? extends Service>>());
+		return new ImageJ(true);
 	}
 
-	/**
-	 * Creates a new ImageJ application context with the specified service (and
-	 * any required service dependencies).
-	 */
+	/** @deprecated Use {@link #ImageJ(Class)} instead. */
+	@Deprecated
 	public static ImageJ createContext(
 		final Class<? extends Service> serviceClass)
 	{
-		// NB: Although the createContext(Class<? extends Service>...) method
-		// covers a superset of this case, it results in a warning in client code.
-		// Needing a single service (e.g., for unit testing) is common enough to
-		// warrant this extra method to avoid the problem for this special case.
-		final List<Class<? extends Service>> serviceClassList =
-			new ArrayList<Class<? extends Service>>();
-		serviceClassList.add(serviceClass);
-		return createContext(serviceClassList);
+		return new ImageJ(serviceClass);
 	}
 
-	/**
-	 * Creates a new ImageJ application context with the specified services (and
-	 * any required service dependencies).
-	 */
+	/** @deprecated Use {@link #ImageJ(Class...)} instead. */
+	@Deprecated
 	public static ImageJ createContext(
 		final Class<? extends Service>... serviceClasses)
 	{
-		final List<Class<? extends Service>> serviceClassList;
-		if (serviceClasses == null || serviceClasses.length == 0) {
-			serviceClassList = null;
-		}
-		else {
-			serviceClassList = Arrays.asList(serviceClasses);
-		}
-		return createContext(serviceClassList);
+		return new ImageJ(serviceClasses);
 	}
 
 	// TODO - remove this!
 	private static ImageJ staticContext;
 
-	/**
-	 * Creates a new ImageJ application context with the specified services (and
-	 * any required service dependencies).
-	 */
+	/** @deprecated Use {@link #ImageJ(Collection)} instead. */
+	@Deprecated
 	public static ImageJ createContext(
 		final Collection<Class<? extends Service>> serviceClasses)
 	{
-		final ImageJ context = new ImageJ();
-		staticContext = context; // TEMP
-		final ServiceHelper serviceHelper =
-			new ServiceHelper(context, serviceClasses);
-		serviceHelper.loadServices();
-		return context;
+		return new ImageJ(serviceClasses);
 	}
 
 	/**
@@ -190,8 +156,61 @@ public class ImageJ {
 	/** JAR manifest with metadata about ImageJ. */
 	private final Manifest manifest;
 
-	/** Creates a new ImageJ context. */
+	/** Creates a new ImageJ application context with all available services. */
 	public ImageJ() {
+		this(false);
+	}
+
+	/**
+	 * Creates a new ImageJ application context.
+	 * 
+	 * @param empty If true, the context will be empty; otherwise, it will be
+	 *          initialized with all available services.
+	 */
+	public ImageJ(final boolean empty) {
+		this(empty ? Collections.<Class<? extends Service>> emptyList() : null);
+	}
+
+	/**
+	 * Creates a new ImageJ application context with the specified service (and
+	 * any required service dependencies).
+	 */
+	public ImageJ(final Class<? extends Service> serviceClass) {
+		// NB: Although the ImageJ(Class<? extends Service>...) constructor covers a
+		// superset of this case, it results in a warning in client code. Needing a
+		// single service (e.g., for unit testing) is common enough to warrant this
+		// extra constructor to avoid the problem for this special case.
+		this(Collections.<Class<? extends Service>> singleton(serviceClass));
+	}
+
+	/**
+	 * Creates a new ImageJ application context with the specified services (and
+	 * any required service dependencies).
+	 */
+	public ImageJ(final Class<? extends Service>... serviceClasses) {
+		this(serviceClasses != null ? Arrays.asList(serviceClasses) : null);
+	}
+
+	/**
+	 * Creates a new ImageJ application context with the specified services (and
+	 * any required service dependencies).
+	 */
+	public ImageJ(final Collection<Class<? extends Service>> serviceClasses) {
+		if (staticContext == null) {
+			// First context! Check that annotations were generated properly.
+			try {
+				if (!CheckSezpoz.check(false)) {
+					// SezPoz uses ClassLoader.getResources() which will now pick up the
+					// apt-generated annotations.
+					System.err.println("SezPoz generated annotations."); // no log service
+				}
+			}
+			catch (final IOException e) {
+				e.printStackTrace();
+			}
+		}
+		staticContext = this; // TEMP
+
 		serviceIndex = new ServiceIndex();
 
 		pluginIndex = new PluginIndex();
@@ -199,6 +218,10 @@ public class ImageJ {
 
 		pom = POM.getPOM(ImageJ.class, "net.imagej", "ij-core");
 		manifest = Manifest.getManifest(ImageJ.class);
+
+		final ServiceHelper serviceHelper =
+			new ServiceHelper(this, serviceClasses);
+		serviceHelper.loadServices();
 	}
 
 	// -- ImageJ methods --
