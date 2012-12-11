@@ -11,7 +11,7 @@ then tell Jenkins to go ahead. After a successful deployment, you can
 remove that temporary branch from the repository.
 
 Choose whether to build and deploy the ImageJ launcher ('launcher') or
-ImageJ itself ('app').
+ImageJ release itself ('app').
 
 The token must match the secret stored in the Jenkins job.
 
@@ -51,7 +51,7 @@ launcher)
 	JOB=ImageJ-launcher
 	;;
 app)
-	JOB=ImageJ
+	JOB=ImageJ-release
 	;;
 *)
 	usage "Unknown project: $1"
