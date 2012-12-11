@@ -44,6 +44,7 @@ import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.gui.TextRoi;
 import ij.plugin.filter.ThresholdToSelection;
+import ij.plugin.frame.RoiManager;
 import ij.process.ByteProcessor;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
@@ -163,7 +164,8 @@ public class OverlayHarmonizer extends AbstractContextual implements
 	/**
 	 * Assigns a list of {@link Overlay}s to the given {@link ImagePlus}. The
 	 * active overlay becomes the {@link Roi} of the ImagePlus. The other overlays
-	 * become Roi's in the Overlay of the ImagePlus.
+	 * become Roi's in the Overlay of the ImagePlus. Also populates IJ1's
+	 * RoiManager.
 	 */
 	public void setOverlays(List<Overlay> overlays, Overlay activeOverlay,
 		final ImagePlus imp)
@@ -172,6 +174,19 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		final ij.gui.Overlay o = createIJ1Overlay(overlays, activeOverlay);
 		imp.setRoi(roi);
 		imp.setOverlay(o);
+
+		// now make sure the correct rois end up in the RoiManager
+		RoiManager mgr = RoiManager.getInstance();
+		if (mgr == null) mgr = new RoiManager();
+		mgr.removeAll();
+		if (roi != null) mgr.addRoi(roi);
+		// TODO: do the rois in the IJ1 Overlay belong in the manager? In IJ1 if you
+		// load a file that has a saved overlay it does not auto fill into Roi Mgr.
+		// However when you select ROIs in Mgr and run Overlay > From ROI Manager
+		// the rois go into the overlay and stay in the Roi Mgr. Decide later.
+
+		// finally hide the broken manager UI
+		mgr.setVisible(false);
 	}
 
 	// -- Helper methods - legacy Roi creation --
