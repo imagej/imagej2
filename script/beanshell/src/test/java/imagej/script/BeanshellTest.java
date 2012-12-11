@@ -52,7 +52,7 @@ public class BeanshellTest {
 
 	@Test
 	public void testBasic() throws Exception {
-		final ImageJ context = ImageJ.createContext();
+		final ImageJ context = new ImageJ();
 		new ServiceHelper(context).createExactService(DefaultScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
 		new ServiceHelper(context).createExactService(DummyService.class);

@@ -57,7 +57,7 @@ public class InteractiveUploadTest {
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 		try {
-			final ImageJ context = ImageJ.createContext(CommandService.class, StatusService.class, EventService.class);
+			final ImageJ context = new ImageJ(CommandService.class, StatusService.class, EventService.class);
 			context.getService(EventService.class).subscribe(new Object() {
 				@SuppressWarnings("unused")
 				@EventHandler

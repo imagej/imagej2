@@ -61,7 +61,7 @@ public class ServiceIndexTest {
 
 	@Test
 	public void testGetAll() {
-		final ImageJ context = ImageJ.createContext(PlatformService.class);
+		final ImageJ context = new ImageJ(PlatformService.class);
 		final ServiceIndex serviceIndex = context.getServiceIndex();
 		final List<Service> all = serviceIndex.getAll();
 		assertEquals(8, all.size());

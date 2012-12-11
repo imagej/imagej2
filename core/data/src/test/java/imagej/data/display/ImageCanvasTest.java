@@ -221,7 +221,7 @@ public class ImageCanvasTest {
 	// -- Helper methods --
 
 	private ImageCanvas createImageCanvas() {
-		final ImageJ context = ImageJ.createContext(EventService.class);
+		final ImageJ context = new ImageJ(EventService.class);
 		final ImageDisplay display = new DefaultImageDisplay() {
 
 			@Override

@@ -505,7 +505,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	/** Gets the uploader service associated with this updater frame. */
 	public UploaderService getUploaderService() {
 		if (uploaderService == null) {
-			final ImageJ context = ImageJ.createContext(UploaderService.class);
+			final ImageJ context = new ImageJ(UploaderService.class);
 			uploaderService = context.getService(UploaderService.class);
 		}
 

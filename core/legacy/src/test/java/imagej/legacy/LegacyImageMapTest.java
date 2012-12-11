@@ -60,7 +60,7 @@ public class LegacyImageMapTest {
 
 	// TODO - fix tests
 //	@SuppressWarnings("unchecked")
-//	private final ImageJ context = ImageJ.createContext(EventService.class);
+//	private final ImageJ context = new ImageJ(EventService.class);
 //	private final LegacyImageMap map = new LegacyImageMap(context
 //		.getService(EventService.class));
 
@@ -79,7 +79,7 @@ public class LegacyImageMapTest {
 
 	@Test
 	public void testRegisterDataset() {
-		final ImageJ context = ImageJ.createContext(DatasetService.class);
+		final ImageJ context = new ImageJ(DatasetService.class);
 		final DatasetService datasetService =
 			context.getService(DatasetService.class);
 

@@ -96,7 +96,7 @@ public class TestBinaryMaskOverlay {
 
 	@Test
 	public void testWriteExternal() {
-		final ImageJ context = ImageJ.createContext();
+		final ImageJ context = new ImageJ();
 		final LogService log = context.getService(LogService.class);
 		final BinaryMaskOverlay overlay =
 			makeOverlay(context, new boolean[][] { { true } });
@@ -114,7 +114,7 @@ public class TestBinaryMaskOverlay {
 
 	@Test
 	public void testReadExternal() {
-		final ImageJ context = ImageJ.createContext();
+		final ImageJ context = new ImageJ();
 		final LogService log = context.getService(LogService.class);
 		final Random r = new Random(54321);
 		for (int iter = 0; iter < 100; iter++) {
@@ -166,7 +166,7 @@ public class TestBinaryMaskOverlay {
 
 	@Test
 	public void testBinaryMaskOverlay() {
-		final ImageJ context = ImageJ.createContext();
+		final ImageJ context = new ImageJ();
 		makeOverlay(context, new boolean[][] { { true } });
 	}
 

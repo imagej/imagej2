@@ -51,7 +51,7 @@ public class CommandServiceTest {
 
 	@Test
 	public void runClass() throws Exception {
-		final ImageJ context = ImageJ.createContext(CommandService.class);
+		final ImageJ context = new ImageJ(CommandService.class);
 		final CommandService commandService =
 			context.getService(CommandService.class);
 		final StringBuffer string = new StringBuffer();

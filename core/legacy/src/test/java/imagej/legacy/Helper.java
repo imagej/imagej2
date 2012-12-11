@@ -73,7 +73,7 @@ import net.imglib2.type.numeric.integer.ByteType;
 
 /**
  * This class exists purely so that the ij.ImagePlus class is not defined before
- * OverlayHarmonizerTest's methods call ImageJ.createContext() which in turn
+ * OverlayHarmonizerTest's methods call new ImageJ() which in turn
  * will initialize the LegacyService that wants to re-define the ImageJ class.
  * 
  * @author Johannes Schindelin
