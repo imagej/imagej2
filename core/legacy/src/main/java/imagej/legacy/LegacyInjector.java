@@ -103,6 +103,13 @@ public class LegacyInjector {
 				"public void run(java.lang.String arg)", ";");
 			hacker.loadClass("MacAdapter");
 		}
+
+		// override behavior of ij.plugin.frame.RoiManager
+		hacker
+			.insertMethod("ij.plugin.frame.RoiManager", "public void show()", ";");
+		hacker.insertMethod("ij.plugin.frame.RoiManager",
+			"public void setVisible(boolean b)", ";");
+		hacker.loadClass("ij.plugin.frame.RoiManager");
 	}
 
 }

@@ -184,9 +184,6 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		// load a file that has a saved overlay it does not auto fill into Roi Mgr.
 		// However when you select ROIs in Mgr and run Overlay > From ROI Manager
 		// the rois go into the overlay and stay in the Roi Mgr. Decide later.
-
-		// finally hide the broken manager UI
-		mgr.setVisible(false);
 	}
 
 	// -- Helper methods - legacy Roi creation --
