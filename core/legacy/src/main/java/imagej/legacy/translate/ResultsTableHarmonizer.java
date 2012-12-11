@@ -64,6 +64,10 @@ public class ResultsTableHarmonizer {
 
 	// -- ResultsTableHarmonizer methods --
 
+
+	// NB - since IJ2 currently supports null (empty) column names we
+	// need to set values by r & c which is deprecated in IJ1.
+	@SuppressWarnings("deprecation")
 	public void setIJ1ResultsTable() {
 		TableDisplay display = displayService.getActiveDisplay(TableDisplay.class);
 		ResultsTable table = getFirstResultsTable(display);
