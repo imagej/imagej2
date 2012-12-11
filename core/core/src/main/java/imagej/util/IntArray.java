@@ -146,7 +146,7 @@ public class IntArray extends AbstractPrimitiveArray<int[], Integer> {
 
 	@Override
 	public Integer set(final int index, final Integer element) {
-		return setValue(index, element);
+		return setValue(index, element == null ? defaultValue() : element);
 	}
 
 	@Override
@@ -225,4 +225,8 @@ public class IntArray extends AbstractPrimitiveArray<int[], Integer> {
 		return changed;
 	}
 
+	@Override
+	public Integer defaultValue() {
+		return 0;
+	}
 }

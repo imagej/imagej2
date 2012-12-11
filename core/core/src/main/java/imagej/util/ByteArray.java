@@ -146,7 +146,7 @@ public class ByteArray extends AbstractPrimitiveArray<byte[], Byte> {
 
 	@Override
 	public Byte set(final int index, final Byte element) {
-		return setValue(index, element);
+		return setValue(index, element == null ? defaultValue() : element);
 	}
 
 	@Override
@@ -225,4 +225,8 @@ public class ByteArray extends AbstractPrimitiveArray<byte[], Byte> {
 		return changed;
 	}
 
+	@Override
+	public Byte defaultValue() {
+		return 0;
+	}
 }

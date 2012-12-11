@@ -146,7 +146,7 @@ public class FloatArray extends AbstractPrimitiveArray<float[], Float> {
 
 	@Override
 	public Float set(final int index, final Float element) {
-		return setValue(index, element);
+		return setValue(index, element == null ? defaultValue() : element);
 	}
 
 	@Override
@@ -222,6 +222,11 @@ public class FloatArray extends AbstractPrimitiveArray<float[], Float> {
 			if (result) changed = true;
 		}
 		return changed;
+	}
+
+	@Override
+	public Float defaultValue() {
+		return 0.0f;
 	}
 
 }

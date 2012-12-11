@@ -146,7 +146,7 @@ public class LongArray extends AbstractPrimitiveArray<long[], Long> {
 
 	@Override
 	public Long set(final int index, final Long element) {
-		return setValue(index, element);
+		return setValue(index, element == null ? defaultValue() : element);
 	}
 
 	@Override
@@ -222,6 +222,11 @@ public class LongArray extends AbstractPrimitiveArray<long[], Long> {
 			if (result) changed = true;
 		}
 		return changed;
+	}
+
+	@Override
+	public Long defaultValue() {
+		return 0L;
 	}
 
 }

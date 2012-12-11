@@ -146,7 +146,7 @@ public class DoubleArray extends AbstractPrimitiveArray<double[], Double> {
 
 	@Override
 	public Double set(final int index, final Double element) {
-		return setValue(index, element);
+		return setValue(index, element == null ? defaultValue() : element);
 	}
 
 	@Override
@@ -224,4 +224,8 @@ public class DoubleArray extends AbstractPrimitiveArray<double[], Double> {
 		return changed;
 	}
 
+	@Override
+	public Double defaultValue() {
+		return 0.0;
+	}
 }
