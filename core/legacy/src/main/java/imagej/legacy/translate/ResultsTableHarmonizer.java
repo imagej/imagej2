@@ -66,8 +66,10 @@ public class ResultsTableHarmonizer {
 
 
 	// NB - since IJ2 currently supports null (empty) column names we
-	// need to set values by r & c which is deprecated in IJ1.
+	// need to set headings by col which is deprecated in IJ1.
+
 	@SuppressWarnings("deprecation")
+
 	public void setIJ1ResultsTable() {
 		TableDisplay display = displayService.getActiveDisplay(TableDisplay.class);
 		ResultsTable table = getFirstResultsTable(display);
@@ -89,6 +91,9 @@ public class ResultsTableHarmonizer {
 					int newCol = ij1Table.getFreeColumn(header);
 					// TODO - can't help but to use deprecated API
 					ij1Table.setHeading(newCol, header);
+				}
+				else {
+					ij1Table.setHeading(colIndex, header);
 				}
 			}
 		}
