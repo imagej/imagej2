@@ -73,12 +73,32 @@ public class ResultsTableHarmonizer {
 		}
 		ij.measure.ResultsTable ij1Table = new ij.measure.ResultsTable();
 		ij1Table.setDefaultHeadings();
+		for (int c = 0; c < table.getColumnCount(); c++) {
+			String header = table.getColumnHeader(c);
+			if (header == null) {
+				// TODO - can't help but to use deprecated API
+				ij1Table.setHeading(c, null);
+			}
+			else { // ij2 col header != null
+				int colIndex = ij1Table.getColumnIndex(header);
+				if (colIndex < 0) {
+					int newCol = ij1Table.getFreeColumn(header);
+					// TODO - can't help but to use deprecated API
+					ij1Table.setHeading(newCol, header);
+				}
+			}
+		}
 		for (int r = 0; r < table.getRowCount(); r++) {
 			ij1Table.incrementCounter();
 			ij1Table.setLabel(table.getRowHeader(r), r);
 			for (int c = 0; c < table.getColumnCount(); c++) {
+				String header = table.getColumnHeader(c);
+				int ij1ColIndex = c;
+				if (header != null) {
+					ij1ColIndex = ij1Table.getColumnIndex(header);
+				}
 				double value = table.get(c, r);
-				ij1Table.setValue(table.getColumnHeader(c), r, value);
+				ij1Table.setValue(ij1ColIndex, r, value);
 			}
 		}
 		IJ.getTextPanel(); // HACK - force IJ1 to append data
