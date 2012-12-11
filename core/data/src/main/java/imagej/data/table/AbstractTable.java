@@ -378,14 +378,12 @@ public abstract class AbstractTable<C extends Column<T>, T> extends
 	@Override
 	public void setRowHeader(final int row, final String header) {
 		checkRow(row, 1);
-		if (header != null && row >= rowHeaders.size()) {
+		if (row >= rowHeaders.size()) {
 			// ensure row headers list is long enough to accommodate the header
 			rowHeaders.setSize(row + 1);
 		}
 		// update the row header value, where applicable
-		if (row >= rowHeaders.size()) {
-			rowHeaders.set(row, header);
-		}
+		rowHeaders.set(row, header);
 	}
 
 	@Override
