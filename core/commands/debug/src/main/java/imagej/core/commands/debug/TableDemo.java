@@ -36,12 +36,16 @@
 package imagej.core.commands.debug;
 
 import imagej.command.Command;
+import imagej.data.table.DefaultGenericTable;
 import imagej.data.table.DefaultResultsTable;
+import imagej.data.table.GenericTable;
 import imagej.data.table.ResultsTable;
 import imagej.event.StatusService;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+
+import java.util.Random;
 
 /**
  * A demonstration of the {@link imagej.data.table} package.
@@ -60,9 +64,26 @@ public class TableDemo implements Command {
 	@Parameter(label = "Big Table", type = ItemIO.OUTPUT)
 	private ResultsTable big;
 
+	@Parameter(label = "Spreadsheet", type = ItemIO.OUTPUT)
+	private GenericTable spreadsheet;
+
 	@Override
 	public void run() {
 		statusService.showStatus("Creating a small table...");
+		createBaseballTable();
+
+		// create a larger table with 10K elements
+		statusService.showStatus("Creating a large table...");
+		createBigTable();
+
+		// create a simple spreadsheet (with string data values)
+		statusService.showStatus("Creating spreadsheet...");
+		createSpreadsheet();
+
+		statusService.clearStatus();
+	}
+
+	private void createBaseballTable() {
 		final double[][] data = {
 			{1978, 21, .273},
 			{1979, 22, .322},
@@ -96,9 +117,9 @@ public class TableDemo implements Command {
 				baseball.setValue(col, row, data[row][col]);
 			}
 		}
+	}
 
-		// create a larger table with 10K elements
-		statusService.showStatus("Creating a large table...");
+	private void createBigTable() {
 		final int colCount = 10, rowCount = 10000;
 		big = new DefaultResultsTable(colCount, rowCount);
 		for (int col = 0; col < colCount; col++) {
@@ -107,7 +128,34 @@ public class TableDemo implements Command {
 				big.setValue(col, row, row + col);
 			}
 		}
-		statusService.clearStatus();
+	}
+
+	private void createSpreadsheet() {
+		spreadsheet = new DefaultGenericTable(26, 50);
+		for (int col = 0; col < spreadsheet.getColumnCount(); col++) {
+			final char letter = (char) ('A' + col);
+			spreadsheet.setColumnHeader(col, "" + letter);
+			for (int row = 0; row < spreadsheet.getRowCount(); row++) {
+				final String data = randomWord(2, 4);
+				spreadsheet.set(col, row, data);
+			}
+		}
+	}
+
+	/**
+	 * Generates a random word between {@code min} and {@code max} characters
+	 * long, inclusive.
+	 */
+	private String randomWord(final int min, final int max) {
+		final StringBuilder sb = new StringBuilder();
+//		final MersenneTwisterFast rand = new MersenneTwisterFast();
+		final Random rand = new Random();
+		final int length = rand.nextInt(max - min + 1) + min;
+		for (int i = 0; i< length; i++) {
+			final char letter = (char) ('a' + rand.nextInt(26));
+			sb.append(letter);
+		}
+		return sb.toString();
 	}
 
 }
