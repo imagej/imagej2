@@ -44,6 +44,9 @@ import imagej.plugin.Plugin;
 // Test to see this can work
 // a command that mixes IJ1 and IJ2 code without dealing with the legacy layer
 
+/**
+ * @author Barry DeZonia
+ */
 @Plugin(menuPath = "Plugins>Sandbox>Mixed World Command")
 public class TestMixedModeCommand implements Command {
 
