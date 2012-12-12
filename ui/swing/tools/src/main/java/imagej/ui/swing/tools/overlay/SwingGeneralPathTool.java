@@ -59,7 +59,7 @@ import org.jhotdraw.draw.Figure;
  */
 @Plugin(type = JHotDrawAdapter.class, name = "GeneralPath",
 	description = "General path overlays", iconPath = "/icons/tools/polygon.png",
-	priority = SwingGeneralPathTool.PRIORITY, enabled = false)
+	priority = SwingGeneralPathTool.PRIORITY, visible = false)
 public class SwingGeneralPathTool extends AbstractJHotDrawAdapter<GeneralPathOverlay, SwingGeneralPathFigure> {
 
 	public static final double PRIORITY = SwingPolygonTool.PRIORITY + 0.5;
