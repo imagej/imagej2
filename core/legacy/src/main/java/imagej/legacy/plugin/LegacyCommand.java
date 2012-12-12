@@ -73,7 +73,7 @@ import java.util.Set;
 public class LegacyCommand implements Command {
 
 	public static final String GROUP_NAME = "IJ1 legacy group";
-	public static final String THREAD_NAME = "IJ2 legacy thread";
+	public static final String THREAD_NAME = "IJ1 legacy thread";
 
 	@Parameter
 	private String className;
