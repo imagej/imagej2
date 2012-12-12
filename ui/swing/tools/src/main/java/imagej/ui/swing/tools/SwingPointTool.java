@@ -60,7 +60,7 @@ import org.jhotdraw.draw.Figure;
  */
 @Plugin(type = JHotDrawAdapter.class, name = "Point",
 	description = "Point overlays", iconPath = "/icons/tools/point.png",
-	priority = SwingPointTool.PRIORITY, enabled = true)
+	priority = SwingPointTool.PRIORITY)
 public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay, SwingPointFigure> {
 
 	public static final double PRIORITY = SwingAngleTool.PRIORITY - 1;

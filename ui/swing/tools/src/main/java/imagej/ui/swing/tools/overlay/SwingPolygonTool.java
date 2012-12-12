@@ -66,7 +66,7 @@ import org.jhotdraw.geom.BezierPath.Node;
  */
 @Plugin(type = JHotDrawAdapter.class, name = "Polygon",
 	description = "Polygon overlays", iconPath = "/icons/tools/polygon.png",
-	priority = SwingPolygonTool.PRIORITY, enabled = true)
+	priority = SwingPolygonTool.PRIORITY)
 public class SwingPolygonTool extends AbstractJHotDrawAdapter<PolygonOverlay, BezierFigure> {
 
 	public static final double PRIORITY = SwingEllipseTool.PRIORITY - 1;

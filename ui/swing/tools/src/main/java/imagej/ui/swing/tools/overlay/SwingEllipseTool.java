@@ -62,7 +62,7 @@ import org.jhotdraw.draw.Figure;
  */
 @Plugin(type = JHotDrawAdapter.class, name = "Oval",
 	description = "Oval selections", iconPath = "/icons/tools/oval.png",
-	priority = SwingEllipseTool.PRIORITY, enabled = true)
+	priority = SwingEllipseTool.PRIORITY)
 public class SwingEllipseTool extends AbstractJHotDrawAdapter<EllipseOverlay, EllipseFigure> {
 
 	public static final double PRIORITY = SwingRectangleTool.PRIORITY - 1;

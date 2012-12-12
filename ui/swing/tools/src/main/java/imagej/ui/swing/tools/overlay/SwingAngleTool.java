@@ -60,7 +60,7 @@ import org.jhotdraw.geom.BezierPath;
  */
 @Plugin(type = JHotDrawAdapter.class, name = "Angle",
 	description = "Angle overlays", iconPath = "/icons/tools/angle.png",
-	priority = SwingAngleTool.PRIORITY, enabled = true)
+	priority = SwingAngleTool.PRIORITY)
 public class SwingAngleTool extends AbstractJHotDrawAdapter<AngleOverlay, SwingAngleTool.AngleFigure> {
 
 	public static final double PRIORITY = SwingLineTool.PRIORITY - 1;

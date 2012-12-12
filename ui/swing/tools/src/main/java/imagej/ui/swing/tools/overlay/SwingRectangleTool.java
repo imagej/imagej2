@@ -63,7 +63,7 @@ import org.jhotdraw.draw.RectangleFigure;
 @Plugin(type = JHotDrawAdapter.class, name = "Rectangle",
 	description = "Rectangular overlays",
 	iconPath = "/icons/tools/rectangle.png",
-	priority = SwingRectangleTool.PRIORITY, enabled = true)
+	priority = SwingRectangleTool.PRIORITY)
 public class SwingRectangleTool extends
 	AbstractJHotDrawAdapter<RectangleOverlay, RectangleFigure>
 {
