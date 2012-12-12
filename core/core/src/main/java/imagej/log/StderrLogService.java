@@ -44,6 +44,7 @@ import imagej.service.Service;
  * Implementation of {@link LogService} using the standard error stream.
  * 
  * @author Johannes Schindelin
+ * @author Curtis Rueden
  */
 @Plugin(type = Service.class, priority = Priority.LOW_PRIORITY)
 public class StderrLogService extends AbstractService implements LogService {
@@ -74,66 +75,90 @@ public class StderrLogService extends AbstractService implements LogService {
 
 	@Override
 	public void error(final Object msg) {
-		System.err.println(msg.toString());
+		if (isError()) {
+			System.err.println(msg.toString());
+		}
 	}
 
 	@Override
 	public void error(final Throwable t) {
-		t.printStackTrace();
+		if (isError()) {
+			t.printStackTrace();
+		}
 	}
 
 	@Override
 	public void error(final Object msg, final Throwable t) {
-		System.err.println(msg.toString());
-		t.printStackTrace();
+		if (isError()) {
+			System.err.println(msg.toString());
+			t.printStackTrace();
+		}
 	}
 
 	@Override
 	public void info(final Object msg) {
-		System.err.println(msg.toString());
+		if (isInfo()) {
+			System.err.println(msg.toString());
+		}
 	}
 
 	@Override
 	public void info(final Throwable t) {
-		t.printStackTrace();
+		if (isInfo()) {
+			t.printStackTrace();
+		}
 	}
 
 	@Override
 	public void info(final Object msg, final Throwable t) {
-		System.err.println(msg.toString());
-		t.printStackTrace();
+		if (isInfo()) {
+			System.err.println(msg.toString());
+			t.printStackTrace();
+		}
 	}
 
 	@Override
 	public void trace(final Object msg) {
-		System.err.println(msg.toString());
+		if (isTrace()) {
+			System.err.println(msg.toString());
+		}
 	}
 
 	@Override
 	public void trace(final Throwable t) {
-		t.printStackTrace();
+		if (isTrace()) {
+			t.printStackTrace();
+		}
 	}
 
 	@Override
 	public void trace(final Object msg, final Throwable t) {
-		System.err.println(msg.toString());
-		t.printStackTrace();
+		if (isTrace()) {
+			System.err.println(msg.toString());
+			t.printStackTrace();
+		}
 	}
 
 	@Override
 	public void warn(final Object msg) {
-		System.err.println(msg.toString());
+		if (isWarn()) {
+			System.err.println(msg.toString());
+		}
 	}
 
 	@Override
 	public void warn(final Throwable t) {
-		t.printStackTrace();
+		if (isWarn()) {
+			t.printStackTrace();
+		}
 	}
 
 	@Override
 	public void warn(final Object msg, final Throwable t) {
-		System.err.println(msg.toString());
-		t.printStackTrace();
+		if (isWarn()) {
+			System.err.println(msg.toString());
+			t.printStackTrace();
+		}
 	}
 
 	@Override
