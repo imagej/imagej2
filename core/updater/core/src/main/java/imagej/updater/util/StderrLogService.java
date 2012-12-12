@@ -77,4 +77,6 @@ public class StderrLogService implements LogService {
 	@Override public boolean isInfo() { return true; }
 	@Override public boolean isTrace() { return true; }
 	@Override public boolean isWarn() { return true; }
+	@Override public int getLevel() { return TRACE; }
+	@Override public void setLevel(int level) { }
 }

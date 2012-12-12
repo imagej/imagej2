@@ -40,14 +40,22 @@ import imagej.service.Service;
 /**
  * Interface for the logging service.
  * <p>
- * The service supports five common logging levels: error, warn, info, trace and
- * debug. It provides methods for logging messages, exception stack traces and
- * combinations of the two.
+ * The service supports five common logging levels: {@link #ERROR},
+ * {@link #WARN}, {@link #INFO}, {@link #TRACE} and {@link #DEBUG}. It provides
+ * methods for logging messages, exception stack traces and combinations of the
+ * two.
  * </p>
  * 
  * @author Curtis Rueden
  */
 public interface LogService extends Service {
+
+	int NONE = 0;
+	int ERROR = 1;
+	int WARN = 2;
+	int INFO = 3;
+	int DEBUG = 4;
+	int TRACE = 5;
 
 	void debug(Object msg);
 
@@ -88,5 +96,9 @@ public interface LogService extends Service {
 	boolean isTrace();
 
 	boolean isWarn();
+
+	int getLevel();
+
+	void setLevel(int level);
 
 }

@@ -49,6 +49,37 @@ import imagej.service.Service;
 @Plugin(type = Service.class, priority = Priority.LOW_PRIORITY)
 public class StderrLogService extends AbstractService implements LogService {
 
+	private int level;
+
+	public StderrLogService() {
+		// check ImageJ log level system property for initial logging level
+		final String logProp = System.getProperty("imagej.log.level");
+		if (logProp != null) {
+			// check whether it's a string label (e.g., "debug")
+			final String log = logProp.trim().toLowerCase();
+			if (log.startsWith("n")) level = NONE;
+			else if (log.startsWith("e")) level = ERROR;
+			else if (log.startsWith("w")) level = WARN;
+			else if (log.startsWith("i")) level = INFO;
+			else if (log.startsWith("d")) level = DEBUG;
+			else if (log.startsWith("t")) level = TRACE;
+			else {
+				// check whether it's a numerical value (e.g., 5)
+				try {
+					level = Integer.parseInt(log);
+				}
+				catch (final NumberFormatException exc) {
+					// nope!
+				}
+			}
+		}
+
+		if (level == 0) {
+			// use the default, which is INFO unless the DEBUG env. variable is set
+			level = System.getenv("DEBUG") == null ? INFO : DEBUG;
+		}
+	}
+
 	// -- LogService methods --
 
 	@Override
@@ -163,27 +194,37 @@ public class StderrLogService extends AbstractService implements LogService {
 
 	@Override
 	public boolean isDebug() {
-		return System.getenv("DEBUG") != null;
+		return getLevel() >= DEBUG;
 	}
 
 	@Override
 	public boolean isError() {
-		return false;
+		return getLevel() >= ERROR;
 	}
 
 	@Override
 	public boolean isInfo() {
-		return true;
+		return getLevel() >= INFO;
 	}
 
 	@Override
 	public boolean isTrace() {
-		return false;
+		return getLevel() >= TRACE;
 	}
 
 	@Override
 	public boolean isWarn() {
-		return false;
+		return getLevel() >= WARN;
+	}
+
+	@Override
+	public int getLevel() {
+		return level;
+	}
+
+	@Override
+	public void setLevel(int level) {
+		this.level = level;
 	}
 
 	// -- Service methods --

@@ -168,6 +168,21 @@ public final class SLF4JLogService extends AbstractService implements
 		return logger.isWarnEnabled();
 	}
 
+	@Override
+	public int getLevel() {
+		if (isTrace()) return TRACE;
+		if (isDebug()) return DEBUG;
+		if (isInfo()) return INFO;
+		if (isWarn()) return WARN;
+		if (isError()) return ERROR;
+		return NONE;
+	}
+
+	@Override
+	public void setLevel(int level) {
+		throw new UnsupportedOperationException();
+	}
+
 	// -- Service methods --
 
 	@Override
