@@ -44,8 +44,7 @@ import imagej.event.StatusService;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-
-import java.util.Random;
+import imagej.util.MersenneTwisterFast;
 
 /**
  * A demonstration of the {@link imagej.data.table} package.
@@ -132,11 +131,12 @@ public class TableDemo implements Command {
 
 	private void createSpreadsheet() {
 		spreadsheet = new DefaultGenericTable(26, 50);
+		final MersenneTwisterFast rand = new MersenneTwisterFast();
 		for (int col = 0; col < spreadsheet.getColumnCount(); col++) {
 			final char letter = (char) ('A' + col);
 			spreadsheet.setColumnHeader(col, "" + letter);
 			for (int row = 0; row < spreadsheet.getRowCount(); row++) {
-				final String data = randomWord(2, 4);
+				final String data = randomWord(rand, 2, 4);
 				spreadsheet.set(col, row, data);
 			}
 		}
@@ -146,10 +146,10 @@ public class TableDemo implements Command {
 	 * Generates a random word between {@code min} and {@code max} characters
 	 * long, inclusive.
 	 */
-	private String randomWord(final int min, final int max) {
+	private String randomWord(final MersenneTwisterFast rand, final int min,
+		final int max)
+	{
 		final StringBuilder sb = new StringBuilder();
-//		final MersenneTwisterFast rand = new MersenneTwisterFast();
-		final Random rand = new Random();
 		final int length = rand.nextInt(max - min + 1) + min;
 		for (int i = 0; i< length; i++) {
 			final char letter = (char) ('a' + rand.nextInt(26));
