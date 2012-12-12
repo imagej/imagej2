@@ -35,51 +35,27 @@
 
 package imagej.legacy.patches;
 
-import ij.ImagePlus;
-import ij.WindowManager;
-import ij.gui.ImageWindow;
-import imagej.ImageJ;
-import imagej.legacy.LegacyOutputTracker;
-import imagej.legacy.LegacyService;
-import imagej.util.Log;
+import imagej.legacy.plugin.LegacyCommand;
+
 
 /**
- * Overrides {@link ImageWindow} methods.
+ * Static utility methods used in the imagej.legacy.patches package
  * 
- * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public final class ImageWindowMethods {
+public class Utils {
 
-	private ImageWindowMethods() {
-		// prevent instantiation of utility class
-	}
-
-	/** Replaces {@link ImageWindow#setVisible(boolean)}. */
-	public static void setVisible(final ImageWindow obj, final boolean visible) {
-		Log.debug("ImageWindow.setVisible(" + visible + "): " + obj);
-		if (!visible) return;
-		if (Utils.isLegacyThread()) {
-			final LegacyService legacyService = ImageJ.get(LegacyService.class);
-			legacyService.legacyImageChanged(obj.getImagePlus());
+	/**
+	 * Returns true if the current thread is in any way a child of a
+	 * {@link LegacyCommand} thread. Returns false otherwise.
+	 */
+	public static boolean isLegacyThread() {
+		ThreadGroup group = Thread.currentThread().getThreadGroup();
+		while (group != null) {
+			String groupName = group.getName();
+			if (LegacyCommand.GROUP_NAME.equals(groupName)) return true;
+			group = group.getParent();
 		}
-		// TODO - not sure this is correct. Does setVisible(true) imply that it
-		// becomes the current window? This arose in fixing a bug with 3d Project
-		// support.
-		WindowManager.setCurrentWindow(obj);
-	}
-
-	/** Replaces {@link ImageWindow#show()}. */
-	public static void show(final ImageWindow obj) {
-		setVisible(obj, true);
-	}
-
-	/** Appends {@link ImageWindow#close()}. */
-	public static void close(final ImageWindow obj) {
-		if (!Utils.isLegacyThread()) return;
-		final ImagePlus imp = obj.getImagePlus();
-		if ((imp != null) && (!LegacyOutputTracker.isBeingClosedbyIJ2(imp))) {
-			LegacyOutputTracker.getClosedImps().add(imp);
-		}
+		return false;
 	}
 }
