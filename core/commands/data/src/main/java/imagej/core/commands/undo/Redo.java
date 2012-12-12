@@ -52,7 +52,7 @@ import imagej.undo.Unrecordable;
 @Plugin(menu = {
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
-	@Menu(label = "Redo", accelerator = "shift control Z", weight = 51) },
+	@Menu(label = "Redo", accelerator = "shift control Z", weight = 2) },
 	headless = true)
 public class Redo extends ContextCommand implements Unrecordable {
 
