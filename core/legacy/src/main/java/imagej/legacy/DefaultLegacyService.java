@@ -65,6 +65,7 @@ import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.util.ColorRGB;
 
+import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -126,6 +127,13 @@ public final class DefaultLegacyService extends AbstractService implements
 
 	/** Method of synchronizing IJ2 & IJ1 options. */
 	private OptionsSynchronizer optionsSynchronizer;
+
+	public DefaultLegacyService() {
+		if (GraphicsEnvironment.isHeadless()) {
+			throw new IllegalStateException(
+				"Legacy support not available in headless mode.");
+		}
+	}
 
 	// -- LegacyService methods --
 
