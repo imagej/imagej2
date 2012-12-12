@@ -79,6 +79,9 @@ public abstract class AbstractUIDetails implements UIDetails {
 	/** Whether the object is enabled in the user interface. */
 	private boolean enabled = true;
 
+	/** Whether the object is visible in the user interface. */
+	private boolean visible = true;
+
 	// -- Object methods --
 
 	@Override
@@ -140,6 +143,11 @@ public abstract class AbstractUIDetails implements UIDetails {
 	}
 
 	@Override
+	public boolean isVisible() {
+		return visible;
+	}
+
+	@Override
 	public boolean isSelectable() {
 		return selectable;
 	}
@@ -177,6 +185,11 @@ public abstract class AbstractUIDetails implements UIDetails {
 	@Override
 	public void setEnabled(final boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	@Override
+	public void setVisible(final boolean visible) {
+		this.visible = visible;
 	}
 
 	@Override

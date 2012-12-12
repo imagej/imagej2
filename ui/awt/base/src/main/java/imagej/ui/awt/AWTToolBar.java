@@ -111,6 +111,7 @@ public class AWTToolBar extends Panel implements ToolBar {
 		final URL iconURL = info.getIconURL();
 		final Image iconImage = loadImage(iconURL);
 		final boolean enabled = info.isEnabled();
+		final boolean visible = info.isVisible();
 
 		final Button button = new Button() {
 
@@ -158,6 +159,7 @@ public class AWTToolBar extends Panel implements ToolBar {
 		});
 
 		button.setEnabled(enabled);
+		button.setVisible(visible);
 
 		return button;
 	}

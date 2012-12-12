@@ -313,6 +313,7 @@ public class PluginInfo<PT extends ImageJPlugin> extends AbstractUIDetails
 		setIconPath(iconPath);
 		setPriority(ann.priority());
 		setEnabled(ann.enabled());
+		setVisible(ann.visible());
 		setSelectable(ann.selectable());
 		setSelectionGroup(ann.selectionGroup());
 

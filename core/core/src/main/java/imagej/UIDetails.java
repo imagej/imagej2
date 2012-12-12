@@ -85,6 +85,9 @@ public interface UIDetails extends BasicDetails, Prioritized {
 	/** Gets whether the object should be enabled in the user interface. */
 	boolean isEnabled();
 
+	/** Gets whether the object should be visible in the user interface. */
+	boolean isVisible();
+
 	/** Sets the path to the object's suggested position in the menu structure. */
 	void setMenuPath(MenuPath menuPath);
 
@@ -96,6 +99,9 @@ public interface UIDetails extends BasicDetails, Prioritized {
 
 	/** Sets whether the object should be enabled in the user interface. */
 	void setEnabled(boolean enabled);
+
+	/** Sets whether the object should be visible in the user interface. */
+	void setVisible(boolean visible);
 
 	/**
 	 * Sets whether the object can be selected (e.g., checking and unchecking its

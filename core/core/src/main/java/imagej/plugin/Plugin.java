@@ -149,6 +149,9 @@ public @interface Plugin {
 	/** When false, grays out the plugin in the user interface. */
 	boolean enabled() default true;
 
+	/** When false, the plugin is not displayed in the user interface. */
+	boolean visible() default true;
+
 	/** When false, the user interface will not provide a cancel button. */
 	boolean cancelable() default true;
 

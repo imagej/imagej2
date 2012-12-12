@@ -134,6 +134,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 		final String label = info.getLabel();
 		final URL iconURL = info.getIconURL();
 		final boolean enabled = info.isEnabled();
+		final boolean visible = info.isVisible();
 
 		final JToggleButton button = new JToggleButton();
 
@@ -190,6 +191,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 		button.setBorder(active ? ACTIVE_BORDER : INACTIVE_BORDER);
 		if (active) button.setSelected(true);
 		button.setEnabled(enabled);
+		button.setVisible(visible);
 
 		return button;
 	}
