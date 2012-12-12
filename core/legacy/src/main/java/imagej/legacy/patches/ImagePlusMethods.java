@@ -60,7 +60,7 @@ public final class ImagePlusMethods {
 		if (obj == null) return;
 		if (!obj.isProcessor()) return;
 		if (obj.getWindow() == null) return;
-		if (!Utils.isLegacyThread()) return;
+		if (!Utils.isLegacyThread(Thread.currentThread())) return;
 		Log.debug("ImagePlus.updateAndDraw(): " + obj);
 		final LegacyService legacyService = ImageJ.get(LegacyService.class);
 		legacyService.legacyImageChanged(obj);
@@ -72,7 +72,7 @@ public final class ImagePlusMethods {
 	public static void repaintWindow(final ImagePlus obj) {
 		if (obj == null) return;
 		if (obj.getWindow() == null) return;
-		if (!Utils.isLegacyThread()) return;
+		if (!Utils.isLegacyThread(Thread.currentThread())) return;
 		Log.debug("ImagePlus.repaintWindow(): " + obj);
 		final LegacyService legacyService = ImageJ.get(LegacyService.class);
 		legacyService.legacyImageChanged(obj);
@@ -85,7 +85,7 @@ public final class ImagePlusMethods {
 		@SuppressWarnings("unused") final String message)
 	{
 		if (obj == null) return;
-		if (!Utils.isLegacyThread()) return;
+		if (!Utils.isLegacyThread(Thread.currentThread())) return;
 		Log.debug("ImagePlus.show(): " + obj);
 		final LegacyService legacyService = ImageJ.get(LegacyService.class);
 		legacyService.legacyImageChanged(obj);
@@ -95,9 +95,9 @@ public final class ImagePlusMethods {
 	/** Appends {@link ImagePlus#hide()}. */
 	public static void hide(final ImagePlus obj) {
 		if (obj == null) return;
-		if (!Utils.isLegacyThread()) return;
+		if (!Utils.isLegacyThread(Thread.currentThread())) return;
 		Log.debug("ImagePlus.hide(): " + obj);
-		LegacyOutputTracker.getOutputImps().remove(obj);
+		LegacyOutputTracker.removeOutput(obj);
 		// Original method
 		//LegacyOutputTracker.getClosedImps().add(obj);
 		// Alternate method
@@ -116,13 +116,13 @@ public final class ImagePlusMethods {
 	/** Appends {@link ImagePlus#close()}. */
 	public static void close(final ImagePlus obj) {
 		if (obj == null) return;
-		if (!Utils.isLegacyThread()) return;
+		if (!Utils.isLegacyThread(Thread.currentThread())) return;
 		// TODO - what is correct here?????
 		//else if (obj.getWindow() == null)
 		//	LegacyUtils.deleteImagePlus(obj);
 		//else
 		if (!LegacyOutputTracker.isBeingClosedbyIJ2(obj)) {
-			LegacyOutputTracker.getClosedImps().add(obj);
+			LegacyOutputTracker.addOutput(obj);
 		}
 	}
 }

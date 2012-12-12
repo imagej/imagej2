@@ -62,7 +62,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Executes an ImageJ v1.x command.
@@ -179,9 +178,6 @@ public class LegacyCommand implements Command {
 
 			rtHarmonizer.setIJ1ResultsTable();
 
-			final Set<ImagePlus> outputSet = LegacyOutputTracker.getOutputImps();
-			final Set<ImagePlus> closedSet = LegacyOutputTracker.getClosedImps();
-
 			harmonizer.resetTypeTracking();
 
 			updateImagePlusesFromDisplays();
@@ -189,8 +185,8 @@ public class LegacyCommand implements Command {
 			//reportStackIssues("Before IJ1 plugin run");
 			
 			// must happen after updateImagePlusesFromDisplays()
-			outputSet.clear();
-			closedSet.clear();
+			LegacyOutputTracker.clearOutputs();
+			LegacyOutputTracker.clearClosed();
 
 			// set ImageJ1's active image
 			legacyService.syncActiveImage();
@@ -216,7 +212,7 @@ public class LegacyCommand implements Command {
 				outputs = updateDisplaysFromImagePluses();
 
 				// close any displays that IJ1 wants closed
-				for (final ImagePlus imp : closedSet) {
+				for (final ImagePlus imp : LegacyOutputTracker.getClosedImps()) {
 					final ImageDisplay disp = map.lookupDisplay(imp);
 					if (disp != null) {
 						// only close displays that have not been changed
@@ -241,8 +237,8 @@ public class LegacyCommand implements Command {
 			finally {
 				// clean up - basically avoid dangling refs to large objects
 				harmonizer.resetTypeTracking();
-				outputSet.clear();
-				closedSet.clear();
+				LegacyOutputTracker.clearOutputs();
+				LegacyOutputTracker.clearClosed();
 			}
 			
 			rtHarmonizer.setIJ2ResultsTable();
@@ -363,7 +359,7 @@ public class LegacyCommand implements Command {
 			// flag does not track everything (such as metadata changes?) and thus
 			// we might still have to do some minor harmonization. Investigate.
 
-			final Set<ImagePlus> imps = LegacyOutputTracker.getOutputImps();
+			final ImagePlus[] imps = LegacyOutputTracker.getOutputImps();
 			final ImagePlus currImp = WindowManager.getCurrentImage();
 
 			// see method below
@@ -441,7 +437,7 @@ public class LegacyCommand implements Command {
 		// problems. This is a simple fix.
 
 		private void finishInProgressPastes(final ImagePlus currImp,
-			final Set<ImagePlus> outputList)
+			final ImagePlus[] outputList)
 		{
 			endPaste(currImp);
 			for (final ImagePlus imp : outputList) { // potentially empty list

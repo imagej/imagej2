@@ -59,7 +59,7 @@ public final class ImageWindowMethods {
 	public static void setVisible(final ImageWindow obj, final boolean visible) {
 		Log.debug("ImageWindow.setVisible(" + visible + "): " + obj);
 		if (!visible) return;
-		if (Utils.isLegacyThread()) {
+		if (Utils.isLegacyThread(Thread.currentThread())) {
 			final LegacyService legacyService = ImageJ.get(LegacyService.class);
 			legacyService.legacyImageChanged(obj.getImagePlus());
 		}
@@ -76,10 +76,10 @@ public final class ImageWindowMethods {
 
 	/** Appends {@link ImageWindow#close()}. */
 	public static void close(final ImageWindow obj) {
-		if (!Utils.isLegacyThread()) return;
+		if (!Utils.isLegacyThread(Thread.currentThread())) return;
 		final ImagePlus imp = obj.getImagePlus();
 		if ((imp != null) && (!LegacyOutputTracker.isBeingClosedbyIJ2(imp))) {
-			LegacyOutputTracker.getClosedImps().add(imp);
+			LegacyOutputTracker.addOutput(imp);
 		}
 	}
 }
