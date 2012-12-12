@@ -44,12 +44,12 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
 /**
- * A test of {@link ResultsTable}.
+ * A demonstration of the {@link imagej.data.table} package.
  * 
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins>Sandbox>Results Table Test", headless = true)
-public class ResultsTableTest implements Command {
+@Plugin(menuPath = "Plugins>Sandbox>Table Demo", headless = true)
+public class TableDemo implements Command {
 
 	@Parameter
 	private StatusService statusService;
