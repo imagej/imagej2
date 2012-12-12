@@ -42,9 +42,14 @@ import ij.ImageStack;
 import ij.process.ByteProcessor;
 import imagej.data.Extents;
 import imagej.data.Position;
+
+import java.awt.GraphicsEnvironment;
+
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -53,6 +58,12 @@ import org.junit.Test;
  * @author Barry DeZonia
  */
 public class LegacyUtilsTest {
+
+	@Before
+	public void beforeMethod() {
+		// NB: Skip these tests when in headless mode!
+		Assume.assumeTrue(!GraphicsEnvironment.isHeadless());
+	}
 
 	/*
 	 * This test is illustrative of an issue in IJ1 where the internal stack gets

@@ -48,6 +48,7 @@ import imagej.data.overlay.Overlay;
 import imagej.data.overlay.PolygonOverlay;
 import imagej.legacy.translate.OverlayHarmonizer;
 
+import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -58,6 +59,8 @@ import net.imglib2.roi.PolygonRegionOfInterest;
 import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.logic.BitType;
 
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -66,6 +69,12 @@ import org.junit.Test;
  * @author Lee Kamentsky
  */
 public class OverlayHarmonizerTest {
+
+	@Before
+	public void beforeMethod() {
+		// NB: Skip these tests when in headless mode!
+		Assume.assumeTrue(!GraphicsEnvironment.isHeadless());
+	}
 
 	/**
 	 * Test method for
