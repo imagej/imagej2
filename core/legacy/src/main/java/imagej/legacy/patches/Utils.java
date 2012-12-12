@@ -37,7 +37,6 @@ package imagej.legacy.patches;
 
 import imagej.legacy.plugin.LegacyCommand;
 
-
 /**
  * Static utility methods used in the imagej.legacy.patches package
  * 
