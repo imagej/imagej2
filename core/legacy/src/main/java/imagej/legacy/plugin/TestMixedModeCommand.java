@@ -41,7 +41,6 @@ import imagej.command.Command;
 import imagej.legacy.LegacyOutputTracker;
 import imagej.plugin.Plugin;
 
-
 // Test to see this can work
 // a command that mixes IJ1 and IJ2 code without dealing with the legacy layer
 
