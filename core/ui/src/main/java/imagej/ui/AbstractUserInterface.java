@@ -86,6 +86,27 @@ public abstract class AbstractUserInterface extends SortablePlugin
 	}
 
 	@Override
+	public void show(final Object o) {
+		show(null, o);
+	}
+
+	@Override
+	public void show(final String name, final Object o) {
+		final Display<?> display;
+		if (o instanceof Display) {
+			display = (Display<?>) o;
+		}
+		else {
+			display = getUIService().getDisplayService().createDisplay(name, o);
+		}
+		if (!isVisible()) {
+			// NB: If this UI is invisible, the display will not be automatically
+			// shown. So in that case, we show it explicitly here.
+			show(display);
+		}
+	}
+
+	@Override
 	public void show(final Display<?> display) {
 		final List<PluginInfo<DisplayViewer<?>>> viewers =
 			getUIService().getViewerPlugins();

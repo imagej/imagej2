@@ -177,6 +177,21 @@ public interface UIService extends Service {
 	DisplayViewer<?> getDisplayViewer(Display<?> display);
 
 	/**
+	 * Creates a {@link Display} for the given object, and shows it using an
+	 * appropriate UI widget of the default user interface.
+	 */
+	void show(Object o);
+
+	/**
+	 * Creates a {@link Display} for the given object, and shows it using an
+	 * appropriate UI widget of the default user interface.
+	 * 
+	 * @param name The name to use when displaying the object.
+	 * @param o The object to be displayed.
+	 */
+	void show(String name, Object o);
+
+	/**
 	 * Creates and shows the given {@link Display} using an appropriate UI widget
 	 * of the default user interface.
 	 */
