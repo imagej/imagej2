@@ -42,12 +42,12 @@ import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 
 /**
- * TODO
+ * A demonstration of ImageJ's UI-agnostic dialog prompt capabilities.
  * 
  * @author Grant Harris
  */
-@Plugin(menuPath = "Plugins>Sandbox>TestDialogPrompt")
-public class TestDialogPrompt implements Command {
+@Plugin(menuPath = "Plugins>Sandbox>Dialog Prompt Demo")
+public class DialogPromptDemo implements Command {
 
 	@Parameter
 	private UIService uiService;
