@@ -205,6 +205,7 @@ public abstract class AbstractColorTool extends AbstractTool implements
 
 	private void draw(final ColorRGB fillColor) {
 		if (drawer == null) drawer = acquireDrawer();
+		if (drawer == null) return; // no IconDrawer available
 		final int width = drawer.getIconRectangleWidth();
 		final int height = drawer.getIconRectangleHeight();
 		for (int y = 0; y < height; y++) {
@@ -224,7 +225,7 @@ public abstract class AbstractColorTool extends AbstractTool implements
 
 	private IconDrawer acquireDrawer() {
 		final IconService service = getContext().getService(IconService.class);
-		return service.acquireDrawer(this);
+		return service == null ? null : service.acquireDrawer(this);
 	}
 
 	private String valuesString(final ChannelCollection chans) {
