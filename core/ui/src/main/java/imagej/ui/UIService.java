@@ -284,7 +284,7 @@ public interface UIService extends Service {
 	 *          <li>{@link FileWidget#DIRECTORY_STYLE}</li>
 	 *          </ul>
 	 */
-	File chooseFile(final File file, final String style);
+	File chooseFile(File file, String style);
 
 	/**
 	 * Displays a popup context menu for the given display at the specified
