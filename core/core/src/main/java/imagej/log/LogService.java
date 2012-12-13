@@ -50,6 +50,9 @@ import imagej.service.Service;
  */
 public interface LogService extends Service {
 
+	/** System property to set for overriding the default logging level. */
+	String LOG_LEVEL_PROPERTY = "ij.log.level";
+
 	int NONE = 0;
 	int ERROR = 1;
 	int WARN = 2;

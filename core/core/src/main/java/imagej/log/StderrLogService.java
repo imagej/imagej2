@@ -53,7 +53,7 @@ public class StderrLogService extends AbstractService implements LogService {
 
 	public StderrLogService() {
 		// check ImageJ log level system property for initial logging level
-		final String logProp = System.getProperty("imagej.log.level");
+		final String logProp = System.getProperty(LOG_LEVEL_PROPERTY);
 		if (logProp != null) {
 			// check whether it's a string label (e.g., "debug")
 			final String log = logProp.trim().toLowerCase();
