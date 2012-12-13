@@ -36,7 +36,6 @@
 package imagej.ui;
 
 import imagej.command.CommandService;
-import imagej.data.display.ImageDisplay;
 import imagej.display.Display;
 import imagej.event.EventService;
 import imagej.event.StatusService;
@@ -50,7 +49,6 @@ import imagej.service.Service;
 import imagej.thread.ThreadService;
 import imagej.tool.ToolService;
 import imagej.ui.viewer.DisplayViewer;
-import imagej.ui.viewer.image.ImageDisplayViewer;
 import imagej.widget.FileWidget;
 
 import java.io.File;
@@ -167,11 +165,6 @@ public interface UIService extends Service {
 
 	/** Gets the UI widget being used to visualize the given {@link Display}. */
 	DisplayViewer<?> getDisplayViewer(Display<?> display);
-
-	/**
-	 * Gets the UI widget being used to visualize the given {@link ImageDisplay}.
-	 */
-	ImageDisplayViewer getImageDisplayViewer(ImageDisplay display);
 
 	/**
 	 * Creates a new output window.

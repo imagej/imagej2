@@ -37,7 +37,6 @@ package imagej.ui;
 
 import imagej.InstantiableException;
 import imagej.command.CommandService;
-import imagej.data.display.ImageDisplay;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.display.event.DisplayActivatedEvent;
@@ -66,7 +65,6 @@ import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.DialogPrompt.Result;
 import imagej.ui.viewer.DisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
-import imagej.ui.viewer.image.ImageDisplayViewer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -284,17 +282,6 @@ public final class DefaultUIService extends AbstractService implements
 			if (displayViewer.getDisplay() == display) return displayViewer;
 		}
 		log.warn("No viewer found for display: '" + display.getName() + "'");
-		return null;
-	}
-
-	@Override
-	public ImageDisplayViewer getImageDisplayViewer(final ImageDisplay display) {
-		for (final DisplayViewer<?> displayViewer : displayViewers) {
-			if (displayViewer.getDisplay() == display)
-				if (displayViewer instanceof ImageDisplayViewer)
-					return (ImageDisplayViewer) displayViewer;
-		}
-		log.warn("No image viewer found for display: '" + display.getName() + "'");
 		return null;
 	}
 
