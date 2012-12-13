@@ -286,8 +286,8 @@ public final class DefaultUIService extends AbstractService implements
 	@Override
 	public List<PluginInfo<DisplayViewer<?>>> getViewerPlugins() {
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final List<PluginInfo<DisplayViewer<?>>> viewers = (List)
-			pluginService.getPluginsOfType(DisplayViewer.class);
+		final List<PluginInfo<DisplayViewer<?>>> viewers =
+			(List) pluginService.getPluginsOfType(DisplayViewer.class);
 		return viewers;
 	}
 
@@ -307,7 +307,7 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
-	public void addDisplayViewer(DisplayViewer<?> viewer) {
+	public void addDisplayViewer(final DisplayViewer<?> viewer) {
 		displayViewers.add(viewer);
 	}
 
@@ -326,20 +326,21 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
-	public Result showDialog(String message, MessageType messageType) {
+	public Result showDialog(final String message, final MessageType messageType)
+	{
 		return showDialog(message, getContext().getTitle(), messageType);
 	}
 
 	@Override
-	public Result showDialog(String message, MessageType messageType,
-		OptionType optionType)
+	public Result showDialog(final String message, final MessageType messageType,
+		final OptionType optionType)
 	{
 		return showDialog(message, getContext().getTitle(), messageType, optionType);
 	}
 
 	@Override
-	public DialogPrompt.Result showDialog(final String message,
-		final String title)
+	public DialogPrompt.Result
+		showDialog(final String message, final String title)
 	{
 		return showDialog(message, title,
 			DialogPrompt.MessageType.INFORMATION_MESSAGE);
@@ -410,8 +411,8 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	/**
-	 * Called when a display is deleted. The display viewer is not removed
-	 * from the list of viewers until after this returns.
+	 * Called when a display is deleted. The display viewer is not removed from
+	 * the list of viewers until after this returns.
 	 */
 	@EventHandler
 	protected void onEvent(final DisplayDeletedEvent e) {
