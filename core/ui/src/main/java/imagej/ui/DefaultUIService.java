@@ -213,25 +213,25 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
-	public void createUI() {
+	public void showUI() {
 		final UserInterface ui = getDefaultUI();
 		if (ui == null) {
 			throw new IllegalStateException("No UIs available.");
 		}
-		createUI(ui);
+		showUI(ui);
 	}
 
 	@Override
-	public void createUI(final String name) {
+	public void showUI(final String name) {
 		final UserInterface ui = uiMap.get(name);
 		if (ui == null) {
 			throw new IllegalArgumentException("No such user interface: " + name);
 		}
-		createUI(ui);
+		showUI(ui);
 	}
 
 	@Override
-	public void createUI(final UserInterface ui) {
+	public void showUI(final UserInterface ui) {
 		log.info("Launching user interface: " + ui.getClass().getName());
 		ui.show();
 	}

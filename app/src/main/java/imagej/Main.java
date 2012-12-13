@@ -65,7 +65,7 @@ public final class Main {
 
 		// display the user interface
 		final UIService uiService = context.getService(UIService.class);
-		if (uiService != null) uiService.createUI();
+		if (uiService != null) uiService.showUI();
 
 		return context;
 	}

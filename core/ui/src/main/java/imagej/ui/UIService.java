@@ -119,13 +119,13 @@ public interface UIService extends Service {
 	 * @see #getDefaultUI()
 	 * @see #setDefaultUI(UserInterface)
 	 */
-	void createUI();
+	void showUI();
 
 	/** Displays the UI with the given name (or class name). */
-	void createUI(String name);
+	void showUI(String name);
 
 	/** Displays the given UI. */
-	void createUI(UserInterface ui);
+	void showUI(UserInterface ui);
 
 	/**
 	 * Gets whether the default UI is visible.
@@ -141,7 +141,7 @@ public interface UIService extends Service {
 	/**
 	 * Gets the default user interface.
 	 * 
-	 * @see #createUI()
+	 * @see #showUI()
 	 * @see #isVisible()
 	 */
 	UserInterface getDefaultUI();
@@ -149,7 +149,7 @@ public interface UIService extends Service {
 	/**
 	 * Sets the default user interface.
 	 * 
-	 * @see #createUI()
+	 * @see #showUI()
 	 */
 	void setDefaultUI(UserInterface ui);
 
