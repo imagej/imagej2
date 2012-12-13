@@ -105,6 +105,9 @@ public final class DefaultUIService extends AbstractService implements
 	private CommandService commandService;
 
 	@Parameter
+	private DisplayService displayService;
+
+	@Parameter
 	private MenuService menuService;
 
 	@Parameter
@@ -163,6 +166,11 @@ public final class DefaultUIService extends AbstractService implements
 	@Override
 	public PluginService getPluginService() {
 		return pluginService;
+	}
+
+	@Override
+	public DisplayService getDisplayService() {
+		return displayService;
 	}
 
 	@Override
@@ -454,8 +462,6 @@ public final class DefaultUIService extends AbstractService implements
 
 			@Override
 			public void run() {
-				final DisplayService displayService =
-					e.getContext().getService(DisplayService.class);
 				final Display<?> activeDisplay = displayService.getActiveDisplay();
 				if (activeDisplay != null) {
 					final DisplayViewer<?> displayViewer =
