@@ -88,7 +88,8 @@ public class Flatten extends ContextCommand {
 	
 	@Override
 	public void run() {
-		ImageDisplayViewer viewer = uiService.getImageDisplayViewer(display);
+		final ImageDisplayViewer viewer =
+			(ImageDisplayViewer) uiService.getDisplayViewer(display);
 		if (viewer == null) return;
 		dataset = viewer.capture();
 	}

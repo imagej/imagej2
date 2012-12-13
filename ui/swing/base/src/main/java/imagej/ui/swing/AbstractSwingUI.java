@@ -40,7 +40,6 @@ import imagej.menu.MenuService;
 import imagej.menu.ShadowMenu;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.ui.AbstractUserInterface;
-import imagej.ui.OutputWindow;
 import imagej.ui.SystemClipboard;
 import imagej.ui.common.awt.AWTClipboard;
 import imagej.ui.common.awt.AWTDropListener;
@@ -97,11 +96,6 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	@Override
 	public SystemClipboard getSystemClipboard() {
 		return systemClipboard;
-	}
-
-	@Override
-	public OutputWindow newOutputWindow(final String title) {
-		return new SwingOutputWindow(title);
 	}
 
 	@Override

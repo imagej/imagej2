@@ -44,7 +44,6 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.io.plugins.NewImage;
 import imagej.io.plugins.OpenImage;
-import imagej.ui.OutputWindow;
 import imagej.ui.UIService;
 
 import java.awt.datatransfer.DataFlavor;
@@ -269,10 +268,11 @@ public class AWTDropListener implements DropTargetListener {
 		private void openAsTextFile(final String filename) {
 			final String title = shortName(filename);
 			final List<String> fileContents = loadFileContents(filename);
-			final OutputWindow window = uiService.createOutputWindow(title);
+			final StringBuilder sb = new StringBuilder();
 			for (final String line : fileContents)
-				window.append(line + '\n');
-			window.setVisible(true);
+				sb.append(line + '\n');
+			// FIXME: Show the String using the UIService.
+//			uiService.show(sb.toString());
 		}
 
 		private void importLut(final String filename) {

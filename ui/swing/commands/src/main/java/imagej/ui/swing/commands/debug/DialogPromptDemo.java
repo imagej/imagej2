@@ -42,12 +42,13 @@ import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 
 /**
- * TODO
+ * A demonstration of ImageJ's UI-agnostic dialog prompt capabilities.
  * 
  * @author Grant Harris
+ * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins>Sandbox>TestDialogPrompt")
-public class TestDialogPrompt implements Command {
+@Plugin(menuPath = "Plugins>Sandbox>Dialog Prompt Demo")
+public class DialogPromptDemo implements Command {
 
 	@Parameter
 	private UIService uiService;
@@ -55,13 +56,12 @@ public class TestDialogPrompt implements Command {
 	@Override
 	public void run() {
 		final DialogPrompt.Result result =
-			uiService.showDialog("This is the Question", "Question Dialog",
+			uiService.showDialog("Do you like green eggs and ham?", "Sam I Am",
 				DialogPrompt.MessageType.QUESTION_MESSAGE,
 				DialogPrompt.OptionType.YES_NO_OPTION);
-		if (result == DialogPrompt.Result.YES_OPTION) {
-			System.out.println("That's a YES");
-			uiService.createOutputWindow("Output Window");
-		}
+
+		boolean yes = result == DialogPrompt.Result.YES_OPTION;
+		uiService.showDialog(yes ? "Good for you!" : "Why not?");
 	}
 
 }

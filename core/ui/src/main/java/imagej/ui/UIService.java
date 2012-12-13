@@ -36,8 +36,8 @@
 package imagej.ui;
 
 import imagej.command.CommandService;
-import imagej.data.display.ImageDisplay;
 import imagej.display.Display;
+import imagej.display.DisplayService;
 import imagej.event.EventService;
 import imagej.event.StatusService;
 import imagej.log.LogService;
@@ -45,12 +45,12 @@ import imagej.menu.MenuService;
 import imagej.options.OptionsService;
 import imagej.platform.AppService;
 import imagej.platform.PlatformService;
+import imagej.plugin.PluginInfo;
 import imagej.plugin.PluginService;
 import imagej.service.Service;
 import imagej.thread.ThreadService;
 import imagej.tool.ToolService;
 import imagej.ui.viewer.DisplayViewer;
-import imagej.ui.viewer.image.ImageDisplayViewer;
 import imagej.widget.FileWidget;
 
 import java.io.File;
@@ -79,6 +79,8 @@ public interface UIService extends Service {
 	PluginService getPluginService();
 
 	CommandService getCommandService();
+
+	DisplayService getDisplayService();
 
 	MenuService getMenuService();
 
@@ -117,13 +119,13 @@ public interface UIService extends Service {
 	 * @see #getDefaultUI()
 	 * @see #setDefaultUI(UserInterface)
 	 */
-	void createUI();
+	void showUI();
 
 	/** Displays the UI with the given name (or class name). */
-	void createUI(String name);
+	void showUI(String name);
 
 	/** Displays the given UI. */
-	void createUI(UserInterface ui);
+	void showUI(UserInterface ui);
 
 	/**
 	 * Gets whether the default UI is visible.
@@ -139,7 +141,7 @@ public interface UIService extends Service {
 	/**
 	 * Gets the default user interface.
 	 * 
-	 * @see #createUI()
+	 * @see #showUI()
 	 * @see #isVisible()
 	 */
 	UserInterface getDefaultUI();
@@ -147,7 +149,7 @@ public interface UIService extends Service {
 	/**
 	 * Sets the default user interface.
 	 * 
-	 * @see #createUI()
+	 * @see #showUI()
 	 */
 	void setDefaultUI(UserInterface ui);
 
@@ -165,21 +167,35 @@ public interface UIService extends Service {
 	/** Gets the user interfaces that are currently visible. */
 	List<UserInterface> getVisibleUIs();
 
+	/** Gets the list of known viewer plugins. */
+	List<PluginInfo<DisplayViewer<?>>> getViewerPlugins();
+
+	/** Registers the given viewer with the service. */
+	void addDisplayViewer(DisplayViewer<?> viewer);
+
 	/** Gets the UI widget being used to visualize the given {@link Display}. */
 	DisplayViewer<?> getDisplayViewer(Display<?> display);
 
 	/**
-	 * Gets the UI widget being used to visualize the given {@link ImageDisplay}.
+	 * Creates a {@link Display} for the given object, and shows it using an
+	 * appropriate UI widget of the default user interface.
 	 */
-	ImageDisplayViewer getImageDisplayViewer(ImageDisplay display);
+	void show(Object o);
 
 	/**
-	 * Creates a new output window.
-	 * <p>
-	 * The output window is displayed in the default user interface.
-	 * </p>
+	 * Creates a {@link Display} for the given object, and shows it using an
+	 * appropriate UI widget of the default user interface.
+	 * 
+	 * @param name The name to use when displaying the object.
+	 * @param o The object to be displayed.
 	 */
-	OutputWindow createOutputWindow(String title);
+	void show(String name, Object o);
+
+	/**
+	 * Creates and shows the given {@link Display} using an appropriate UI widget
+	 * of the default user interface.
+	 */
+	void show(Display<?> display);
 
 	/**
 	 * Displays a dialog prompt.
@@ -288,7 +304,7 @@ public interface UIService extends Service {
 	 *          <li>{@link FileWidget#DIRECTORY_STYLE}</li>
 	 *          </ul>
 	 */
-	File chooseFile(final File file, final String style);
+	File chooseFile(File file, String style);
 
 	/**
 	 * Displays a popup context menu for the given display at the specified

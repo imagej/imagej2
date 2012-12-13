@@ -76,6 +76,20 @@ public interface UserInterface extends ImageJPlugin, Contextual, Prioritized {
 	/** Whether this UI is visible onscreen. */
 	boolean isVisible();
 
+	/** Shows the object onscreen using an appropriate UI widget. */
+	void show(Object o);
+
+	/**
+	 * Shows the object onscreen using an appropriate UI widget.
+	 * 
+	 * @param name The name to use when displaying the object.
+	 * @param o The object to be displayed.
+	 */
+	void show(String name, Object o);
+
+	/** Shows the display onscreen using an appropriate UI widget. */
+	void show(Display<?> display);
+
 	/** Gets the desktop, for use with multi-document interfaces (MDI). */
 	Desktop getDesktop();
 
@@ -93,9 +107,6 @@ public interface UserInterface extends ImageJPlugin, Contextual, Prioritized {
 	
 	/** Creates a new display window housing the given display. */
 	DisplayWindow createDisplayWindow(Display<?> display);
-
-	/** Creates a new {@link OutputWindow} with the given title. */
-	OutputWindow newOutputWindow(String title);
 
 	/**
 	 * Creates a dialog prompter.

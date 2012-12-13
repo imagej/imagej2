@@ -37,7 +37,6 @@ package imagej.ui;
 
 import imagej.InstantiableException;
 import imagej.command.CommandService;
-import imagej.data.display.ImageDisplay;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.display.event.DisplayActivatedEvent;
@@ -65,8 +64,6 @@ import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.DialogPrompt.Result;
 import imagej.ui.viewer.DisplayViewer;
-import imagej.ui.viewer.DisplayWindow;
-import imagej.ui.viewer.image.ImageDisplayViewer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -105,6 +102,9 @@ public final class DefaultUIService extends AbstractService implements
 
 	@Parameter
 	private CommandService commandService;
+
+	@Parameter
+	private DisplayService displayService;
 
 	@Parameter
 	private MenuService menuService;
@@ -168,6 +168,11 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
+	public DisplayService getDisplayService() {
+		return displayService;
+	}
+
+	@Override
 	public CommandService getCommandService() {
 		return commandService;
 	}
@@ -208,25 +213,25 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
-	public void createUI() {
+	public void showUI() {
 		final UserInterface ui = getDefaultUI();
 		if (ui == null) {
 			throw new IllegalStateException("No UIs available.");
 		}
-		createUI(ui);
+		showUI(ui);
 	}
 
 	@Override
-	public void createUI(final String name) {
+	public void showUI(final String name) {
 		final UserInterface ui = uiMap.get(name);
 		if (ui == null) {
 			throw new IllegalArgumentException("No such user interface: " + name);
 		}
-		createUI(ui);
+		showUI(ui);
 	}
 
 	@Override
-	public void createUI(final UserInterface ui) {
+	public void showUI(final UserInterface ui) {
 		log.info("Launching user interface: " + ui.getClass().getName());
 		ui.show();
 	}
@@ -279,6 +284,34 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
+	public List<PluginInfo<DisplayViewer<?>>> getViewerPlugins() {
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		final List<PluginInfo<DisplayViewer<?>>> viewers =
+			(List) pluginService.getPluginsOfType(DisplayViewer.class);
+		return viewers;
+	}
+
+	@Override
+	public void show(final Object o) {
+		getDefaultUI().show(o);
+	}
+
+	@Override
+	public void show(final String name, final Object o) {
+		getDefaultUI().show(name, o);
+	}
+
+	@Override
+	public void show(final Display<?> display) {
+		getDefaultUI().show(display);
+	}
+
+	@Override
+	public void addDisplayViewer(final DisplayViewer<?> viewer) {
+		displayViewers.add(viewer);
+	}
+
+	@Override
 	public DisplayViewer<?> getDisplayViewer(final Display<?> display) {
 		for (final DisplayViewer<?> displayViewer : displayViewers) {
 			if (displayViewer.getDisplay() == display) return displayViewer;
@@ -288,43 +321,26 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
-	public ImageDisplayViewer getImageDisplayViewer(final ImageDisplay display) {
-		for (final DisplayViewer<?> displayViewer : displayViewers) {
-			if (displayViewer.getDisplay() == display)
-				if (displayViewer instanceof ImageDisplayViewer)
-					return (ImageDisplayViewer) displayViewer;
-		}
-		log.warn("No image viewer found for display: '" + display.getName() + "'");
-		return null;
-	}
-
-	@Override
-	public OutputWindow createOutputWindow(final String title) {
-		final UserInterface ui = getDefaultUI();
-		if (ui == null) return null;
-		return ui.newOutputWindow(title);
-	}
-
-	@Override
 	public DialogPrompt.Result showDialog(final String message) {
 		return showDialog(message, getContext().getTitle());
 	}
 
 	@Override
-	public Result showDialog(String message, MessageType messageType) {
+	public Result showDialog(final String message, final MessageType messageType)
+	{
 		return showDialog(message, getContext().getTitle(), messageType);
 	}
 
 	@Override
-	public Result showDialog(String message, MessageType messageType,
-		OptionType optionType)
+	public Result showDialog(final String message, final MessageType messageType,
+		final OptionType optionType)
 	{
 		return showDialog(message, getContext().getTitle(), messageType, optionType);
 	}
 
 	@Override
-	public DialogPrompt.Result showDialog(final String message,
-		final String title)
+	public DialogPrompt.Result
+		showDialog(final String message, final String title)
 	{
 		return showDialog(message, title,
 			DialogPrompt.MessageType.INFORMATION_MESSAGE);
@@ -389,45 +405,14 @@ public final class DefaultUIService extends AbstractService implements
 	protected void onEvent(final DisplayCreatedEvent e) {
 		final Display<?> display = e.getObject();
 
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final List<PluginInfo<DisplayViewer<?>>> viewers = (List)
-			pluginService.getPluginsOfType(DisplayViewer.class);
-
 		for (final UserInterface ui : getVisibleUIs()) {
-			DisplayViewer<?> displayViewer = null;
-			for (final PluginInfo<DisplayViewer<?>> info : viewers) {
-				// check that viewer can actually handle the given display
-				try {
-					final DisplayViewer<?> viewer = info.createInstance();
-					viewer.setContext(getContext());
-					viewer.setPriority(info.getPriority());
-					if (!viewer.canView(display)) continue;
-					if (!viewer.isCompatible(ui)) continue;
-					displayViewer = viewer;
-					break; // found a suitable viewer; move on to the next UI
-				}
-				catch (final InstantiableException exc) {
-					log.warn("Failed to create instance of " + info, exc);
-				}
-			}
-			if (displayViewer == null) {
-				log.warn("For UI '" + ui.getClass().getName() +
-					"': no suitable viewer for display: " + display);
-			}
-			else {
-				final DisplayWindow displayWindow =
-						getDefaultUI().createDisplayWindow(display);
-				displayViewer.view(displayWindow, display);
-				displayWindow.setTitle(display.getName());
-				displayViewers.add(displayViewer);
-				displayWindow.showDisplay(true);
-			}
+			ui.show(display);
 		}
 	}
 
 	/**
-	 * Called when a display is deleted. The display viewer is not removed
-	 * from the list of viewers until after this returns.
+	 * Called when a display is deleted. The display viewer is not removed from
+	 * the list of viewers until after this returns.
 	 */
 	@EventHandler
 	protected void onEvent(final DisplayDeletedEvent e) {
@@ -467,8 +452,6 @@ public final class DefaultUIService extends AbstractService implements
 
 			@Override
 			public void run() {
-				final DisplayService displayService =
-					e.getContext().getService(DisplayService.class);
 				final Display<?> activeDisplay = displayService.getActiveDisplay();
 				if (activeDisplay != null) {
 					final DisplayViewer<?> displayViewer =
@@ -482,9 +465,9 @@ public final class DefaultUIService extends AbstractService implements
 
 	@EventHandler
 	protected void onEvent(@SuppressWarnings("unused") final AppQuitEvent event) {
-		// FIXME: Why only the default one? Move to AbstractUserInterface!
-		final UserInterface ui = getDefaultUI();
-		ui.saveLocation();
+		for (final UserInterface ui : getVisibleUIs()) {
+			ui.saveLocation();
+		}
 	}
 
 	// -- Helper methods --
