@@ -36,12 +36,11 @@
 package imagej.ui.viewer.text;
 
 import imagej.display.TextDisplay;
-import imagej.ui.OutputWindow;
 import imagej.ui.viewer.DisplayPanel;
 
 /**
  * This is a panel that can go inside a display window. It displays
- * {@link String}s. Also, it can be used inside an {@link OutputWindow}.
+ * {@link String}s.
  * 
  * @author Lee Kamentsky
  */

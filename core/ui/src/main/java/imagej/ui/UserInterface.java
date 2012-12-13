@@ -94,9 +94,6 @@ public interface UserInterface extends ImageJPlugin, Contextual, Prioritized {
 	/** Creates a new display window housing the given display. */
 	DisplayWindow createDisplayWindow(Display<?> display);
 
-	/** Creates a new {@link OutputWindow} with the given title. */
-	OutputWindow newOutputWindow(String title);
-
 	/**
 	 * Creates a dialog prompter.
 	 * 

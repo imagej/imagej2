@@ -44,7 +44,6 @@ import imagej.ui.ApplicationFrame;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
-import imagej.ui.OutputWindow;
 import imagej.ui.SystemClipboard;
 import imagej.ui.UserInterface;
 import imagej.ui.awt.menu.AWTMenuBarCreator;
@@ -96,11 +95,6 @@ public class AWTUI extends AbstractUserInterface {
 
 	@Override
 	public DisplayWindow createDisplayWindow(final Display<?> display) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	@Override
-	public OutputWindow newOutputWindow(final String title) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 

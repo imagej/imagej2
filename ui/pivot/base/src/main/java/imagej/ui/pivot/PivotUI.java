@@ -42,7 +42,6 @@ import imagej.ui.AbstractUserInterface;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
-import imagej.ui.OutputWindow;
 import imagej.ui.SystemClipboard;
 import imagej.ui.UserInterface;
 import imagej.ui.viewer.DisplayWindow;
@@ -90,11 +89,6 @@ public class PivotUI extends AbstractUserInterface implements Runnable {
 
 	@Override
 	public DisplayWindow createDisplayWindow(final Display<?> display) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	@Override
-	public OutputWindow newOutputWindow(final String title) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 

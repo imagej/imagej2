@@ -170,12 +170,7 @@ public interface UIService extends Service {
 	DisplayViewer<?> getDisplayViewer(Display<?> display);
 
 	/**
-	 * Creates a new output window.
-	 * <p>
-	 * The output window is displayed in the default user interface.
-	 * </p>
 	 */
-	OutputWindow createOutputWindow(String title);
 
 	/**
 	 * Displays a dialog prompt.

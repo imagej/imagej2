@@ -294,13 +294,6 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
-	public OutputWindow createOutputWindow(final String title) {
-		final UserInterface ui = getDefaultUI();
-		if (ui == null) return null;
-		return ui.newOutputWindow(title);
-	}
-
-	@Override
 	public DialogPrompt.Result showDialog(final String message) {
 		return showDialog(message, getContext().getTitle());
 	}
