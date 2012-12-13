@@ -64,7 +64,6 @@ import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.DialogPrompt.Result;
 import imagej.ui.viewer.DisplayViewer;
-import imagej.ui.viewer.DisplayWindow;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -285,6 +284,24 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
+	public List<PluginInfo<DisplayViewer<?>>> getViewerPlugins() {
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		final List<PluginInfo<DisplayViewer<?>>> viewers = (List)
+			pluginService.getPluginsOfType(DisplayViewer.class);
+		return viewers;
+	}
+
+	@Override
+	public void show(final Display<?> display) {
+		getDefaultUI().show(display);
+	}
+
+	@Override
+	public void addDisplayViewer(DisplayViewer<?> viewer) {
+		displayViewers.add(viewer);
+	}
+
+	@Override
 	public DisplayViewer<?> getDisplayViewer(final Display<?> display) {
 		for (final DisplayViewer<?> displayViewer : displayViewers) {
 			if (displayViewer.getDisplay() == display) return displayViewer;
@@ -377,39 +394,8 @@ public final class DefaultUIService extends AbstractService implements
 	protected void onEvent(final DisplayCreatedEvent e) {
 		final Display<?> display = e.getObject();
 
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final List<PluginInfo<DisplayViewer<?>>> viewers = (List)
-			pluginService.getPluginsOfType(DisplayViewer.class);
-
 		for (final UserInterface ui : getVisibleUIs()) {
-			DisplayViewer<?> displayViewer = null;
-			for (final PluginInfo<DisplayViewer<?>> info : viewers) {
-				// check that viewer can actually handle the given display
-				try {
-					final DisplayViewer<?> viewer = info.createInstance();
-					viewer.setContext(getContext());
-					viewer.setPriority(info.getPriority());
-					if (!viewer.canView(display)) continue;
-					if (!viewer.isCompatible(ui)) continue;
-					displayViewer = viewer;
-					break; // found a suitable viewer; move on to the next UI
-				}
-				catch (final InstantiableException exc) {
-					log.warn("Failed to create instance of " + info, exc);
-				}
-			}
-			if (displayViewer == null) {
-				log.warn("For UI '" + ui.getClass().getName() +
-					"': no suitable viewer for display: " + display);
-			}
-			else {
-				final DisplayWindow displayWindow =
-						getDefaultUI().createDisplayWindow(display);
-				displayViewer.view(displayWindow, display);
-				displayWindow.setTitle(display.getName());
-				displayViewers.add(displayViewer);
-				displayWindow.showDisplay(true);
-			}
+			ui.show(display);
 		}
 	}
 

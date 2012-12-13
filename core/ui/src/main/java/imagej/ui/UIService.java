@@ -45,6 +45,7 @@ import imagej.menu.MenuService;
 import imagej.options.OptionsService;
 import imagej.platform.AppService;
 import imagej.platform.PlatformService;
+import imagej.plugin.PluginInfo;
 import imagej.plugin.PluginService;
 import imagej.service.Service;
 import imagej.thread.ThreadService;
@@ -166,11 +167,20 @@ public interface UIService extends Service {
 	/** Gets the user interfaces that are currently visible. */
 	List<UserInterface> getVisibleUIs();
 
+	/** Gets the list of known viewer plugins. */
+	List<PluginInfo<DisplayViewer<?>>> getViewerPlugins();
+
+	/** Registers the given viewer with the service. */
+	void addDisplayViewer(DisplayViewer<?> viewer);
+
 	/** Gets the UI widget being used to visualize the given {@link Display}. */
 	DisplayViewer<?> getDisplayViewer(Display<?> display);
 
 	/**
+	 * Creates and shows the given {@link Display} using an appropriate UI widget
+	 * of the default user interface.
 	 */
+	void show(Display<?> display);
 
 	/**
 	 * Displays a dialog prompt.

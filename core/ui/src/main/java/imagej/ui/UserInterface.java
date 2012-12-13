@@ -76,6 +76,9 @@ public interface UserInterface extends ImageJPlugin, Contextual, Prioritized {
 	/** Whether this UI is visible onscreen. */
 	boolean isVisible();
 
+	/** Shows the display onscreen using an appropriate UI widget. */
+	void show(Display<?> display);
+
 	/** Gets the desktop, for use with multi-document interfaces (MDI). */
 	Desktop getDesktop();
 
