@@ -75,7 +75,7 @@ public class ImageJ {
 		return new ImageJ(true);
 	}
 
-	/** @deprecated Use {@link #ImageJ(Class)} instead. */
+	/** @deprecated Use {@link #ImageJ(Class...)} instead. */
 	@Deprecated
 	public static ImageJ createContext(
 		final Class<? extends Service> serviceClass)
@@ -172,28 +172,39 @@ public class ImageJ {
 	}
 
 	/**
-	 * Creates a new ImageJ application context with the specified service (and
+	 * Creates a new ImageJ application context with the specified services (and
 	 * any required service dependencies).
+	 * <p>
+	 * <b>Developer's note:</b> This constructor's argument is raw (
+	 * {@code Class...} instead of {@code Class<? extends Service>...}) because
+	 * otherwise, downstream invocations (e.g.,
+	 * {@code new ImageJ(DisplayService.class)}) yield the potentially confusing
+	 * warning:
+	 * </p>
+	 * <blockquote>Type safety: A generic array of Class<? extends Service> is
+	 * created for a varargs parameter</blockquote>
+	 * <p>
+	 * To avoid this, we have opted to use raw types and suppress the relevant
+	 * warnings here instead.
+	 * </p>
+	 * 
+	 * @param serviceClasses A list of types that implement the {@link Service}
+	 *          interface (e.g., {@code DisplayService.class}).
+	 * @throws ClassCastException If any of the given arguments do not implement
+	 *           the {@link Service} interface.
 	 */
-	public ImageJ(final Class<? extends Service> serviceClass) {
-		// NB: Although the ImageJ(Class<? extends Service>...) constructor covers a
-		// superset of this case, it results in a warning in client code. Needing a
-		// single service (e.g., for unit testing) is common enough to warrant this
-		// extra constructor to avoid the problem for this special case.
-		this(Collections.<Class<? extends Service>> singleton(serviceClass));
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public ImageJ(final Class... serviceClasses) {
+		this(serviceClasses != null ? (Collection) Arrays.asList(serviceClasses)
+			: null);
 	}
 
 	/**
 	 * Creates a new ImageJ application context with the specified services (and
 	 * any required service dependencies).
-	 */
-	public ImageJ(final Class<? extends Service>... serviceClasses) {
-		this(serviceClasses != null ? Arrays.asList(serviceClasses) : null);
-	}
-
-	/**
-	 * Creates a new ImageJ application context with the specified services (and
-	 * any required service dependencies).
+	 * 
+	 * @param serviceClasses A collection of types that implement the
+	 *          {@link Service} interface (e.g., {@code DisplayService.class}).
 	 */
 	public ImageJ(final Collection<Class<? extends Service>> serviceClasses) {
 		if (staticContext == null) {
