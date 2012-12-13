@@ -52,8 +52,7 @@ import java.util.Set;
  * window has closed.
  * <p>
  * The design maintains a pair of lists for each running {@link LegacyCommand}.
- * This is done by ThreadGroup rather than by Thread. This is safer than earlier
- * approaches.
+ * This is done by {@link ThreadGroup} rather than by {@link Thread}.
  * 
  * @author Curtis Rueden
  * @author Barry DeZonia
@@ -63,23 +62,25 @@ public class LegacyOutputTracker {
 	// -- instance variables --
 
 	/**
-	 * Used to provide one list of {@link ImagePlus} per LegacyCommand derived
-	 * thread group.
+	 * Used to provide one list of {@link ImagePlus} per {@link LegacyCommand}
+	 * derived thread group.
 	 */
 	private static Map<ThreadGroup, Set<ImagePlus>> outputImps =
 		new HashMap<ThreadGroup, Set<ImagePlus>>();
 
 	/**
-	 * Used to provide one list of {@link ImagePlus} per LegacyCommand derived
-	 * thread group.
+	 * Used to provide one list of {@link ImagePlus} per {@link LegacyCommand}
+	 * derived thread group.
 	 */
 	private static Map<ThreadGroup, Set<ImagePlus>> closedImps =
 		new HashMap<ThreadGroup, Set<ImagePlus>>();
 
 	/**
-	 * Tracks which {@link ImagePlus}es have their close() method initiated by IJ2.
+	 * Tracks which {@link ImagePlus}es have their close() method initiated by
+	 * ImageJ.
 	 */
-	private static Set<ImagePlus> ij2InitiatedClosings = new HashSet<ImagePlus>();
+	private static Set<ImagePlus> modernImageJInitiatedClosings =
+		new HashSet<ImagePlus>();
 
 	// -- public interface --
 
@@ -91,16 +92,13 @@ public class LegacyOutputTracker {
 	 * is thread safe.
 	 */
 	public static synchronized ImagePlus[] getOutputImps() {
-		ImagePlus[] emptyList = new ImagePlus[0];
-		ThreadGroup legacyGroup = getGroup();
-		if (legacyGroup == null) return emptyList;
-		return outputImps.get(legacyGroup).toArray(emptyList);
+		return toArray(outputImps);
 	}
 
 	/**
 	 * Add an {@link ImagePlus} to the current output list. Output lists are
-	 * associated with ThreadGroups hatched by {@link LegacyCommand}s. This code
-	 * is thread safe.
+	 * associated with {@link ThreadGroup}s hatched by {@link LegacyCommand}s.
+	 * This code is thread safe.
 	 */
 	public static synchronized void addOutput(ImagePlus imp) {
 		add(outputImps, imp);
@@ -108,23 +106,23 @@ public class LegacyOutputTracker {
 
 	/**
 	 * Remove an {@link ImagePlus} from the current output list. Output lists are
-	 * associated with ThreadGroups hatched by {@link LegacyCommand}s. This code
-	 * is thread safe.
+	 * associated with {@link ThreadGroup}s hatched by {@link LegacyCommand}s.
+	 * This code is thread safe.
 	 */
 	public static synchronized void removeOutput(ImagePlus imp) {
 		remove(outputImps, imp);
 	}
 
 	/**
-	 * Return true if the current output list contains the given ImagePlus. This
-	 * code is thread safe.
+	 * Return true if the current output list contains the given {@link ImagePlus}
+	 * . This code is thread safe.
 	 */
 	public static synchronized boolean containsOutput(ImagePlus imp) {
 		return contains(outputImps, imp);
 	}
 
 	/**
-	 * Clears the list of {@link ImagePluses} stored in the current output list.
+	 * Clears the list of {@link ImagePlus}es stored in the current output list.
 	 * This code is thread safe.
 	 */
 	public static synchronized void clearOutputs() {
@@ -139,18 +137,13 @@ public class LegacyOutputTracker {
 	 * is thread safe.
 	 */
 	public static synchronized ImagePlus[] getClosedImps() {
-		ImagePlus[] emptyList = new ImagePlus[0];
-		ThreadGroup legacyGroup = getGroup();
-		if (legacyGroup == null) return emptyList;
-		Set<ImagePlus> set = closedImps.get(legacyGroup);
-		if (set == null) return emptyList;
-		return set.toArray(emptyList);
+		return toArray(closedImps);
 	}
 
 	/**
 	 * Add an {@link ImagePlus} to the current closed list. Closed lists are
-	 * associated with ThreadGroups hatched by {@link LegacyCommand}s. This code
-	 * is thread safe.
+	 * associated with {@link ThreadGroup}s hatched by {@link LegacyCommand}s.
+	 * This code is thread safe.
 	 */
 	public static synchronized void addClosed(ImagePlus imp) {
 		add(closedImps, imp);
@@ -158,51 +151,59 @@ public class LegacyOutputTracker {
 
 	/**
 	 * Remove an {@link ImagePlus} from the current closed list. Closed lists are
-	 * associated with ThreadGroups hatched by {@link LegacyCommand}s. This code
-	 * is thread safe.
+	 * associated with {@link ThreadGroup}s hatched by {@link LegacyCommand}s.
+	 * This code is thread safe.
 	 */
 	public static synchronized void removeClosed(ImagePlus imp) {
 		remove(closedImps, imp);
 	}
 
 	/**
-	 * Return true if the current closed list contains the given ImagePlus. This
-	 * code is thread safe.
+	 * Return true if the current closed list contains the given {@link ImagePlus}
+	 * . This code is thread safe.
 	 */
 	public static synchronized boolean containsClosed(ImagePlus imp) {
 		return contains(closedImps, imp);
 	}
 
 	/**
-	 * Clears the list of {@link ImagePluses} stored in the current closed list.
+	 * Clears the list of {@link ImagePlus}es stored in the current closed list.
 	 * This code is thread safe.
 	 */
 	public static synchronized void clearClosed() {
 		clear(closedImps);
 	}
 
-	// -- METHODS FRO TRACKING IJ2 INITIATED CLOSES --
+	// -- METHODS FOR TRACKING MODERN IMAGEJ INITIATED CLOSES --
 
 	/**
-	 * Informs tracker that IJ2 has initiated the close() of an {@link ImagePlus}.
+	 * Informs tracker that ImageJ has initiated the close() of an
+	 * {@link ImagePlus}.
 	 */
-	public static synchronized void closeInitiatedByIJ2(final ImagePlus imp) {
-		ij2InitiatedClosings.add(imp);
+	public static synchronized void closeInitiatedByModernImageJ(
+		final ImagePlus imp)
+	{
+		modernImageJInitiatedClosings.add(imp);
 	}
 
 	/**
-	 * Informs tracker that IJ2 has finished the close() of an {@link ImagePlus}.
+	 * Informs tracker that ImageJ has finished the close() of an
+	 * {@link ImagePlus}.
 	 */
-	public static synchronized void closeCompletedByIJ2(final ImagePlus imp) {
-		ij2InitiatedClosings.remove(imp);
+	public static synchronized void closeCompletedByModernImageJ(
+		final ImagePlus imp)
+	{
+		modernImageJInitiatedClosings.remove(imp);
 	}
 
 	/**
 	 * Returns true if a given {@link ImagePlus} is currently being closed by
-	 * ImageJ2.
+	 * ImageJ.
 	 */
-	public static synchronized boolean isBeingClosedbyIJ2(final ImagePlus imp) {
-		return ij2InitiatedClosings.contains(imp);
+	public static synchronized boolean isBeingClosedByModernImageJ(
+		final ImagePlus imp)
+	{
+		return modernImageJInitiatedClosings.contains(imp);
 	}
 
 	// -- helpers --
@@ -246,5 +247,14 @@ public class LegacyOutputTracker {
 		if (legacyGroup == null) return;
 		Set<ImagePlus> set = map.get(legacyGroup);
 		if (set != null) set.remove(imp);
+	}
+
+	private static ImagePlus[] toArray(Map<ThreadGroup, Set<ImagePlus>> map) {
+		ImagePlus[] emptyList = new ImagePlus[0];
+		ThreadGroup legacyGroup = getGroup();
+		if (legacyGroup == null) return emptyList;
+		Set<ImagePlus> set = map.get(legacyGroup);
+		if (set == null) return emptyList;
+		return set.toArray(emptyList);
 	}
 }

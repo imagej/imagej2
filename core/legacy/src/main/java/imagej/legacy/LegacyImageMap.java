@@ -241,11 +241,11 @@ public class LegacyImageMap {
 		if (event.getObject() instanceof ImageDisplay) {
 			final ImagePlus imp = lookupImagePlus((ImageDisplay) event.getObject());
 
-			if (imp != null) LegacyOutputTracker.closeInitiatedByIJ2(imp);
+			if (imp != null) LegacyOutputTracker.closeInitiatedByModernImageJ(imp);
 
 			unregisterDisplay((ImageDisplay) event.getObject());
 
-			if (imp != null) LegacyOutputTracker.closeCompletedByIJ2(imp);
+			if (imp != null) LegacyOutputTracker.closeCompletedByModernImageJ(imp);
 		}
 	}
 

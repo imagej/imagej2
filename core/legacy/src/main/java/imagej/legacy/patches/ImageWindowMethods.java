@@ -78,7 +78,9 @@ public final class ImageWindowMethods {
 	public static void close(final ImageWindow obj) {
 		if (!Utils.isLegacyThread(Thread.currentThread())) return;
 		final ImagePlus imp = obj.getImagePlus();
-		if ((imp != null) && (!LegacyOutputTracker.isBeingClosedbyIJ2(imp))) {
+		if ((imp != null) &&
+			(!LegacyOutputTracker.isBeingClosedByModernImageJ(imp)))
+		{
 			LegacyOutputTracker.addOutput(imp);
 		}
 	}

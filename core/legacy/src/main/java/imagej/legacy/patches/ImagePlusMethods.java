@@ -121,7 +121,7 @@ public final class ImagePlusMethods {
 		//else if (obj.getWindow() == null)
 		//	LegacyUtils.deleteImagePlus(obj);
 		//else
-		if (!LegacyOutputTracker.isBeingClosedbyIJ2(obj)) {
+		if (!LegacyOutputTracker.isBeingClosedByModernImageJ(obj)) {
 			LegacyOutputTracker.addOutput(obj);
 		}
 	}
