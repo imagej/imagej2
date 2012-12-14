@@ -75,14 +75,11 @@ public final class ImageWindowMethods {
 		setVisible(obj, true);
 	}
 
-	/** Appends {@link ImageWindow#close()}. */
+	/** Prepends {@link ImageWindow#close()}. */
 	public static void close(final ImageWindow obj) {
 		if (!Utils.isLegacyThread(Thread.currentThread())) return;
 		final ImagePlus imp = obj.getImagePlus();
-		if ((imp != null) &&
-			(!LegacyOutputTracker.isBeingClosedByModernImageJ(imp)))
-		{
-			LegacyOutputTracker.addOutput(imp);
-		}
+		if (imp == null) return;
+		LegacyOutputTracker.addClosed(imp);
 	}
 }

@@ -118,12 +118,6 @@ public final class ImagePlusMethods {
 	public static void close(final ImagePlus obj) {
 		if (obj == null) return;
 		if (!Utils.isLegacyThread(Thread.currentThread())) return;
-		// TODO - what is correct here?????
-		//else if (obj.getWindow() == null)
-		//	LegacyUtils.deleteImagePlus(obj);
-		//else
-		if (!LegacyOutputTracker.isBeingClosedByModernImageJ(obj)) {
-			LegacyOutputTracker.addOutput(obj);
-		}
+		LegacyOutputTracker.addClosed(obj);
 	}
 }
