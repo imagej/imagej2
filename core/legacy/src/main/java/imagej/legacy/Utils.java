@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.legacy.patches;
+package imagej.legacy;
 
 import imagej.legacy.plugin.LegacyCommand;
 

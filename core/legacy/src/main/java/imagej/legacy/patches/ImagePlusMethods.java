@@ -41,6 +41,7 @@ import imagej.ImageJ;
 import imagej.data.display.ImageDisplay;
 import imagej.legacy.LegacyOutputTracker;
 import imagej.legacy.LegacyService;
+import imagej.legacy.Utils;
 import imagej.util.Log;
 
 /**

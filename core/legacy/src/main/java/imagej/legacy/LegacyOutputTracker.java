@@ -36,12 +36,10 @@
 package imagej.legacy;
 
 import ij.ImagePlus;
-import imagej.legacy.patches.Utils;
 import imagej.legacy.plugin.LegacyCommand;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -59,23 +57,17 @@ import java.util.Set;
  */
 public class LegacyOutputTracker {
 
-	// -- instance variables --
+	// TODO this class is loaded with static methods. There are certainly ways to
+	// remove this need.
+
+	// -- static variables --
 
 	/**
-	 * Used to provide one list of {@link ImagePlus} per {@link LegacyCommand}
-	 * derived thread group. outputImps holds the list ImagePluses created by a
-	 * LegacyCommand.
+	 * Tracks the tracker associated with each {@link LegacyCommand}'s
+	 * {@link ThreadGroup}.
 	 */
-	private static Map<ThreadGroup, Set<ImagePlus>> outputImps =
-		new HashMap<ThreadGroup, Set<ImagePlus>>();
-
-	/**
-	 * Used to provide one list of {@link ImagePlus} per {@link LegacyCommand}
-	 * derived thread group. closedImps holds the list ImagePluses closed by a
-	 * LegacyCommand.
-	 */
-	private static Map<ThreadGroup, Set<ImagePlus>> closedImps =
-		new HashMap<ThreadGroup, Set<ImagePlus>>();
+	private static HashMap<ThreadGroup, LegacyOutputTracker> trackers =
+		new HashMap<ThreadGroup, LegacyOutputTracker>();
 
 	/**
 	 * Tracks which {@link ImagePlus}es have their close() method initiated by
@@ -83,6 +75,20 @@ public class LegacyOutputTracker {
 	 */
 	private static Set<ImagePlus> modernImageJInitiatedClosings =
 		new HashSet<ImagePlus>();
+
+	// -- instance variables --
+
+	/**
+	 * Used to provide the list of output {@link ImagePlus}es associated with a
+	 * {@link LegacyCommand}'s {@link ThreadGroup}.
+	 */
+	private Set<ImagePlus> outputs = new HashSet<ImagePlus>();
+
+	/**
+	 * Used to provide the list of closed {@link ImagePlus}es associated with a
+	 * {@link LegacyCommand}'s {@link ThreadGroup}.
+	 */
+	private Set<ImagePlus> closed = new HashSet<ImagePlus>();
 
 	// -- public interface --
 
@@ -94,7 +100,10 @@ public class LegacyOutputTracker {
 	 * is thread safe.
 	 */
 	public static synchronized ImagePlus[] getOutputImps() {
-		return toArray(outputImps);
+		ImagePlus[] emptyList = new ImagePlus[0];
+		LegacyOutputTracker tracker = getTracker();
+		if (tracker == null) return emptyList;
+		return tracker.outputs.toArray(emptyList);
 	}
 
 	/**
@@ -103,7 +112,14 @@ public class LegacyOutputTracker {
 	 * This code is thread safe.
 	 */
 	public static synchronized void addOutput(ImagePlus imp) {
-		add(outputImps, imp);
+		ThreadGroup group = getGroup();
+		if (group == null) return;
+		LegacyOutputTracker tracker = trackers.get(group);
+		if (tracker == null) {
+			tracker = new LegacyOutputTracker();
+			trackers.put(group, tracker);
+		}
+		tracker.outputs.add(imp);
 	}
 
 	/**
@@ -112,7 +128,9 @@ public class LegacyOutputTracker {
 	 * This code is thread safe.
 	 */
 	public static synchronized void removeOutput(ImagePlus imp) {
-		remove(outputImps, imp);
+		LegacyOutputTracker tracker = getTracker();
+		if (tracker == null) return;
+		tracker.outputs.remove(imp);
 	}
 
 	/**
@@ -120,7 +138,9 @@ public class LegacyOutputTracker {
 	 * . This code is thread safe.
 	 */
 	public static synchronized boolean containsOutput(ImagePlus imp) {
-		return contains(outputImps, imp);
+		LegacyOutputTracker tracker = getTracker();
+		if (tracker == null) return false;
+		return tracker.outputs.contains(imp);
 	}
 
 	/**
@@ -128,7 +148,9 @@ public class LegacyOutputTracker {
 	 * This code is thread safe.
 	 */
 	public static synchronized void clearOutputs() {
-		clear(outputImps);
+		LegacyOutputTracker tracker = getTracker();
+		if (tracker == null) return;
+		tracker.outputs.clear();
 	}
 
 	// -- METHODS FOR TRACKING CLOSED IMAGES --
@@ -139,7 +161,10 @@ public class LegacyOutputTracker {
 	 * is thread safe.
 	 */
 	public static synchronized ImagePlus[] getClosedImps() {
-		return toArray(closedImps);
+		ImagePlus[] emptyList = new ImagePlus[0];
+		LegacyOutputTracker tracker = getTracker();
+		if (tracker == null) return emptyList;
+		return tracker.closed.toArray(emptyList);
 	}
 
 	/**
@@ -148,7 +173,14 @@ public class LegacyOutputTracker {
 	 * This code is thread safe.
 	 */
 	public static synchronized void addClosed(ImagePlus imp) {
-		add(closedImps, imp);
+		ThreadGroup group = getGroup();
+		if (group == null) return;
+		LegacyOutputTracker tracker = trackers.get(group);
+		if (tracker == null) {
+			tracker = new LegacyOutputTracker();
+			trackers.put(group, tracker);
+		}
+		tracker.closed.add(imp);
 	}
 
 	/**
@@ -157,7 +189,9 @@ public class LegacyOutputTracker {
 	 * This code is thread safe.
 	 */
 	public static synchronized void removeClosed(ImagePlus imp) {
-		remove(closedImps, imp);
+		LegacyOutputTracker tracker = getTracker();
+		if (tracker == null) return;
+		tracker.closed.remove(imp);
 	}
 
 	/**
@@ -165,7 +199,9 @@ public class LegacyOutputTracker {
 	 * . This code is thread safe.
 	 */
 	public static synchronized boolean containsClosed(ImagePlus imp) {
-		return contains(closedImps, imp);
+		LegacyOutputTracker tracker = getTracker();
+		if (tracker == null) return false;
+		return tracker.closed.contains(imp);
 	}
 
 	/**
@@ -173,14 +209,15 @@ public class LegacyOutputTracker {
 	 * This code is thread safe.
 	 */
 	public static synchronized void clearClosed() {
-		clear(closedImps);
+		LegacyOutputTracker tracker = getTracker();
+		if (tracker == null) return;
+		tracker.closed.clear();
 	}
 
 	// -- METHODS FOR TRACKING MODERN IMAGEJ INITIATED CLOSES --
 
 	/**
-	 * Informs tracker that ImageJ has initiated the close() of an
-	 * {@link ImagePlus}.
+	 * Records fact that ImageJ has initiated the close() of an {@link ImagePlus}.
 	 */
 	public static synchronized void closeInitiatedByModernImageJ(
 		final ImagePlus imp)
@@ -189,8 +226,7 @@ public class LegacyOutputTracker {
 	}
 
 	/**
-	 * Informs tracker that ImageJ has finished the close() of an
-	 * {@link ImagePlus}.
+	 * Record fact that ImageJ has finished the close() of an {@link ImagePlus}.
 	 */
 	public static synchronized void closeCompletedByModernImageJ(
 		final ImagePlus imp)
@@ -214,49 +250,10 @@ public class LegacyOutputTracker {
 		return Utils.findLegacyThreadGroup(Thread.currentThread());
 	}
 
-	private static void add(Map<ThreadGroup, Set<ImagePlus>> map, ImagePlus imp) {
-		ThreadGroup legacyGroup = getGroup();
-		if (legacyGroup == null) return;
-		Set<ImagePlus> set = map.get(legacyGroup);
-		if (set == null) {
-			set = new HashSet<ImagePlus>();
-			map.put(legacyGroup, set);
-		}
-		set.add(imp);
+	private static LegacyOutputTracker getTracker() {
+		ThreadGroup group = getGroup();
+		if (group == null) return null;
+		return trackers.get(group);
 	}
 
-	private static void clear(Map<ThreadGroup, Set<ImagePlus>> map) {
-		ThreadGroup legacyGroup = getGroup();
-		if (legacyGroup == null) return;
-		Set<ImagePlus> imps = map.get(legacyGroup);
-		if (imps != null) imps.clear();
-	}
-
-	private static boolean contains(Map<ThreadGroup, Set<ImagePlus>> map,
-		ImagePlus imp)
-	{
-		ThreadGroup legacyGroup = getGroup();
-		if (legacyGroup == null) return false;
-		Set<ImagePlus> imps = map.get(legacyGroup);
-		if (imps == null) return false;
-		return imps.contains(imp);
-	}
-
-	private static void
-		remove(Map<ThreadGroup, Set<ImagePlus>> map, ImagePlus imp)
-	{
-		ThreadGroup legacyGroup = getGroup();
-		if (legacyGroup == null) return;
-		Set<ImagePlus> set = map.get(legacyGroup);
-		if (set != null) set.remove(imp);
-	}
-
-	private static ImagePlus[] toArray(Map<ThreadGroup, Set<ImagePlus>> map) {
-		ImagePlus[] emptyList = new ImagePlus[0];
-		ThreadGroup legacyGroup = getGroup();
-		if (legacyGroup == null) return emptyList;
-		Set<ImagePlus> set = map.get(legacyGroup);
-		if (set == null) return emptyList;
-		return set.toArray(emptyList);
-	}
 }
