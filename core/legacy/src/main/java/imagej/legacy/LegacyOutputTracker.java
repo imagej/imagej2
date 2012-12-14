@@ -69,13 +69,6 @@ public class LegacyOutputTracker {
 	private static HashMap<ThreadGroup, LegacyOutputTracker> trackers =
 		new HashMap<ThreadGroup, LegacyOutputTracker>();
 
-	/**
-	 * Tracks which {@link ImagePlus}es have their close() method initiated by
-	 * ImageJ.
-	 */
-	private static Set<ImagePlus> modernImageJInitiatedClosings =
-		new HashSet<ImagePlus>();
-
 	// -- instance variables --
 
 	/**
@@ -212,36 +205,6 @@ public class LegacyOutputTracker {
 		LegacyOutputTracker tracker = getTracker();
 		if (tracker == null) return;
 		tracker.closed.clear();
-	}
-
-	// -- METHODS FOR TRACKING MODERN IMAGEJ INITIATED CLOSES --
-
-	/**
-	 * Records fact that ImageJ has initiated the close() of an {@link ImagePlus}.
-	 */
-	public static synchronized void closeInitiatedByModernImageJ(
-		final ImagePlus imp)
-	{
-		modernImageJInitiatedClosings.add(imp);
-	}
-
-	/**
-	 * Record fact that ImageJ has finished the close() of an {@link ImagePlus}.
-	 */
-	public static synchronized void closeCompletedByModernImageJ(
-		final ImagePlus imp)
-	{
-		modernImageJInitiatedClosings.remove(imp);
-	}
-
-	/**
-	 * Returns true if a given {@link ImagePlus} is currently being closed by
-	 * ImageJ.
-	 */
-	public static synchronized boolean isBeingClosedByModernImageJ(
-		final ImagePlus imp)
-	{
-		return modernImageJInitiatedClosings.contains(imp);
 	}
 
 	// -- helpers --

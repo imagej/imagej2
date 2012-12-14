@@ -232,20 +232,16 @@ public class LegacyImageMap {
 	@EventHandler
 	protected void onEvent(final DisplayDeletedEvent event) {
 
+		/* OLD COMMENT : no longer relevant except for testing purposes
 		// Need to make sure:
 		// - IJ2 Windows always close when IJ1 close expected
 		// Stack to Images, Split Channels, etc.
 		// - No ImagePlus/Display mapping becomes a zombie in the
 		// LegacyImageMap failing to get garbage collected.
 		// - That IJ2 does not think IJ1 initiated the ij1.close()
+		 */
 		if (event.getObject() instanceof ImageDisplay) {
-			final ImagePlus imp = lookupImagePlus((ImageDisplay) event.getObject());
-
-			if (imp != null) LegacyOutputTracker.closeInitiatedByModernImageJ(imp);
-
 			unregisterDisplay((ImageDisplay) event.getObject());
-
-			if (imp != null) LegacyOutputTracker.closeCompletedByModernImageJ(imp);
 		}
 	}
 
