@@ -42,7 +42,7 @@ import net.imglib2.meta.AxisType;
 
 /**
  * This class is responsible for harmonizing slider position values (and active
- * plane position) between IJ1 and IJ2.
+ * plane position) between legacy ImageJ and modern ImageJ.
  * 
  * @author Barry DeZonia
  */
@@ -57,7 +57,7 @@ public class PositionHarmonizer implements DisplayHarmonizer {
 		final long[] dimensions = disp.getDims();
 		final AxisType[] axes = disp.getAxes();
 		final long[] workspace = new long[dimensions.length];
-		fillIJ2Position(disp, imp, dimensions, axes, workspace);
+		fillModernIJPosition(disp, imp, dimensions, axes, workspace);
 		for (int i = 0; i < axes.length; i++) {
 			final long pos = workspace[i];
 			disp.setPosition(pos, i);
@@ -89,7 +89,7 @@ public class PositionHarmonizer implements DisplayHarmonizer {
 		return LegacyUtils.calcIJ1ChannelPos(dims, axes, pos);
 	}
 	
-	private void fillIJ2Position(ImageDisplay disp, ImagePlus imp,
+	private void fillModernIJPosition(ImageDisplay disp, ImagePlus imp,
 		long[] dimensions, AxisType[] axes, long[] workspace)
 	{
 		fillIndex(disp, Axes.X, workspace);

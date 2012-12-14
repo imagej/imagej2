@@ -54,7 +54,7 @@ import net.imglib2.meta.AxisType;
 
 /**
  * A plugin that creates a simple multidimensional image with axes beyond those
- * IJ1 provides.
+ * legacy ImageJ provides.
  * 
  * @author Barry DeZonia
  */

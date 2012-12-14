@@ -61,7 +61,7 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
 /**
- * Implements IJ1's Shadows Demo plugin functionality.
+ * Implements legacy ImageJ's Shadows Demo plugin functionality.
  * 
  * @author Barry DeZonia
  */
@@ -189,7 +189,7 @@ public class ShadowsDemo extends ContextCommand implements Cancelable
 	
 	/**
 	 * Returns true if image cannot be represented as a single plane for display.
-	 * This mirrors IJ1's behavior.
+	 * This mirrors legacy ImageJ's behavior.
 	 */
 	private boolean unsupportedImage(ImageDisplay disp) {
 		final Dataset input = imgDispService.getActiveDataset(disp);

@@ -42,7 +42,8 @@ import imagej.legacy.LegacyOutputTracker;
 import imagej.plugin.Plugin;
 
 // Test to see this can work
-// a command that mixes IJ1 and IJ2 code without dealing with the legacy layer
+// a command that mixes legacy and modern code without dealing with the legacy
+// layer
 
 /**
  * @author Barry DeZonia

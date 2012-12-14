@@ -48,7 +48,7 @@ import imagej.plugin.Plugin;
 import imagej.util.RealRect;
 
 /**
- * Implements IJ1's Sharpen plugin functionality
+ * Implements legacy ImageJ's Sharpen plugin functionality
  * 
  * @author Barry DeZonia
  */

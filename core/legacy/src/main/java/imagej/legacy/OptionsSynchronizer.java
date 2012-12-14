@@ -77,8 +77,8 @@ import java.awt.Font;
 import java.lang.reflect.Field;
 
 /**
- * The options synchronizer bidirectionally synchronizes IJ2 options with IJ1
- * settings and preferences.
+ * The options synchronizer bidirectionally synchronizes modern ImageJ options
+ * with legacy ImageJ settings and preferences.
  * 
  * @author Barry DeZonia
  */
@@ -92,9 +92,10 @@ public class OptionsSynchronizer {
 	}
 
 	/**
-	 * Updates IJ1 settings and preferences to reflect values set in IJ2 dialogs.
+	 * Updates legacy ImageJ settings and preferences to reflect values set in
+	 * modern ImageJ dialogs.
 	 */
-	public void updateIJ1SettingsFromIJ2() {
+	public void updateLegacyImageJSettingsFromModernImageJ() {
 		appearanceOptions();
 		arrowOptions();
 		colorOptions();
@@ -115,9 +116,10 @@ public class OptionsSynchronizer {
 	}
 
 	/**
-	 * Updates IJ2 options dialog settings to reflect values set by IJ1 plugins.
+	 * Updates modern ImageJ options dialog settings to reflect values set by
+	 * legacy ImageJ plugins.
 	 */
-	public void updateIJ2SettingsFromIJ1() {
+	public void updateModernImageJSettingsFromLegacyImageJ() {
 		setOptionsFromStatics();
 	}
 
@@ -137,7 +139,8 @@ public class OptionsSynchronizer {
 		Roi.setColor(AWTColors.getColor(optionsAppearance.getSelectionColor()));
 		
 		// TODO
-		// this one needs to have code applied to IJ2. Nothing to set for IJ1.
+		// this one needs to have code applied to modern ImageJ. Nothing to set for
+		// legacy ImageJ.
 		// Prefs.get(SettingsKeys.OPTIONS_APPEARANCE_MENU_FONT_SIZE);
 	}
 
@@ -287,7 +290,7 @@ public class OptionsSynchronizer {
 		Prefs.noClickToGC = !optionsMemoryAndThreads.isRunGcOnClick();
 		Prefs.setThreads(optionsMemoryAndThreads.getStackThreads());
 		// TODO
-		// nothing to set in this next case. Need IJ2 to fire some code as
+		// nothing to set in this next case. Need modern ImageJ to fire some code as
 		// appropriate
 		// Prefs.get(SettingsKeys.OPTIONS_MEMORYTHREADS_MAX_MEMORY);
 	}
@@ -408,13 +411,14 @@ public class OptionsSynchronizer {
 		// TODO
 		// IJ1 RectToolOptions does not manipulate Prefs much. It fires
 		// code to change behavior when dialog entries changed. No programmatic
-		// way to make our settings affect IJ1. Need pure IJ2 support elsewhere.
+		// way to make our settings affect legacy ImageJ. Need pure modern ImageJ
+		// support elsewhere.
 		// Prefs.get(SettingsKeys.OPTIONS_ROUND_RECT_FILL_COLOR, none); ?how to
 		// handle "none"?
 		// Prefs.get(SettingsKeys.OPTIONS_ROUND_RECT_STROKE_COLOR, Color.black);
 
 		// NB BDZ thinks these prefs are unimportant. We use Overlay "Properties"
-		// dialog in IJ2 to change these.
+		// dialog in modern ImageJ to change these.
 	}
 
 	private void wandToolOptions() {
@@ -678,11 +682,11 @@ public class OptionsSynchronizer {
 	}
 
 	/**
-	 * IJ1 directly refers to compiler that may not be loaded (since it may not be
-	 * on class path). Thus have a safe accessor that does not cause runtime
-	 * exceptions when user misconfigures their java tools. Instead we should
-	 * avoid issues here and we should safely report the issue to the user if they
-	 * try to run the Compile/Run plugin.
+	 * legacy ImageJ directly refers to compiler that may not be loaded (since it
+	 * may not be on class path). Thus have a safe accessor that does not cause
+	 * runtime exceptions when user misconfigures their java tools. Instead we
+	 * should avoid issues here and we should safely report the issue to the user
+	 * if they try to run the Compile/Run plugin.
 	 */
 	private Field getCompilerField(String fieldName) {
 		try {

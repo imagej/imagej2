@@ -94,11 +94,11 @@ public interface LegacyService extends Service {
 	 */
 	boolean isInitialized();
 
-	/** Updates ImageJ 1.x option settings from ImageJ 2.x options values. */
-	void updateIJ1Settings();
+	/** Updates legacy ImageJ option settings from modern ImageJ options values. */
+	void updateLegacyImageJSettings();
 
-	/** Updates ImageJ 2.x option settings from ImageJ 1.x options values. */
-	void updateIJ2Settings();
+	/** Updates modern ImageJ option settings from legacy ImageJ options values. */
+	void updateModernImageJSettings();
 
 	/**
 	 * Sets the foreground and background colors in ImageJ 1.x from the current

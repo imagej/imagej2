@@ -54,8 +54,8 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
 /**
- * Fills an output Dataset by taking reciprocal values of an input Dataset. IJ1
- * did nothing for integral values and so we mirror here.
+ * Fills an output Dataset by taking reciprocal values of an input Dataset.
+ * Legacy ImageJ did nothing for integral values and so we mirror here.
  * 
  * @author Barry DeZonia
  */

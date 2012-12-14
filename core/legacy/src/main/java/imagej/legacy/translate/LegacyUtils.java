@@ -66,8 +66,8 @@ public class LegacyUtils {
 	// in this class.
 
 	/**
-	 * Modifies IJ1 data structures so that there are no dangling references to an
-	 * obsolete ImagePlus.
+	 * Modifies legacy ImageJ data structures so that there are no dangling
+	 * references to an obsolete ImagePlus.
 	 */
 	public static void deleteImagePlus(final ImagePlus imp) {
 		final ImagePlus currImagePlus = WindowManager.getCurrentImage();
@@ -81,8 +81,8 @@ public class LegacyUtils {
 	}
 
 	/**
-	 * Returns true if any of the given Axes cannot be represented in an IJ1
-	 * ImagePlus.
+	 * Returns true if any of the given Axes cannot be represented in an legacy
+	 * ImageJ ImagePlus.
 	 */
 	static boolean hasNonIJ1Axes(final AxisType[] axes) {
 		for (final AxisType axis : axes) {
@@ -97,8 +97,9 @@ public class LegacyUtils {
 	}
 
 	/**
-	 * Returns the number of channels required in IJ1 to represent all the axes of
-	 * an IJ2 Dataset. Incompatible IJ2 axes are encoded as extra channels in IJ1.
+	 * Returns the number of channels required in legacy ImageJ to represent all
+	 * the axes of a modern ImageJ Dataset. Incompatible modern axes are encoded
+	 * as extra channels in the legacy ImageJ image.
 	 */
 	static long ij1ChannelCount(final long[] dims, final AxisType[] axes) {
 		long cCount = 1;
@@ -115,10 +116,10 @@ public class LegacyUtils {
 	}
 
 	/**
-	 * Determines if a Dataset's dimensions cannot be represented within an IJ1
-	 * ImageStack. Returns true if the Dataset does not have X or Y axes. Returns
-	 * true if the XY plane size is greater than Integer.MAX_VALUE. Returns true
-	 * if the number of planes is greater than Integer.MAX_VALUE.
+	 * Determines if a Dataset's dimensions cannot be represented within a legacy
+	 * ImageJ ImageStack. Returns true if the Dataset does not have X or Y axes.
+	 * Returns true if the XY plane size is greater than Integer.MAX_VALUE.
+	 * Returns true if the number of planes is greater than Integer.MAX_VALUE.
 	 */
 	public static boolean dimensionsIJ1Compatible(final Dataset ds) {
 		final int xIndex = ds.getAxisIndex(Axes.X);
@@ -289,7 +290,8 @@ public class LegacyUtils {
 	}
 
 	/**
-	 * Throws an Exception if the planes of a Dataset are not compatible with IJ1.
+	 * Throws an Exception if the planes of a Dataset are not compatible with
+	 * legacy ImageJ.
 	 */
 	static void assertXYPlanesCorrectlyOriented(final int[] dimIndices) {
 		if (dimIndices[0] != 0) {
@@ -303,7 +305,8 @@ public class LegacyUtils {
 	}
 
 	/**
-	 * Returns true if a {@link Dataset} can be represented by reference in IJ1.
+	 * Returns true if a {@link Dataset} can be represented by reference in legacy
+	 * ImageJ.
 	 */
 	static boolean datasetIsIJ1Compatible(final Dataset ds) {
 		if (ds == null) return true;
@@ -313,15 +316,17 @@ public class LegacyUtils {
 	}
 
 	/**
-	 * Fills IJ1 incompatible indices of a position array. The channel from IJ1 is
-	 * rasterized into potentially multiple indices in IJ2's position array. For
-	 * instance an IJ2 image with CHANNELs and SPECTRA gets encoded with multiple
-	 * channels in IJ1. When coming back from IJ1 need to rasterize the single
-	 * IJ1 channel position back into (CHANNEL,SPECTRA) pairs.
+	 * Fills legacy ImageJ incompatible indices of a position array. The channel
+	 * from legacy ImageJ is rasterized into potentially multiple indices in the
+	 * modern ImageJ image's position array. For instance a modern image with
+	 * CHANNELs and SPECTRA gets encoded with multiple channels in legacy ImageJ.
+	 * When coming back from legacy ImageJ need to rasterize the single legacy
+	 * channel position back into (CHANNEL,SPECTRA) pairs.
 	 * 
-	 * @param dims - the dimensions of the IJ2 Dataset
+	 * @param dims - the dimensions of the modern ImageJ Dataset
 	 * @param axes - the axes labels that match the Dataset dimensions
-	 * @param ij1Channel - the channel value in IJ1 (to be decoded for IJ2)
+	 * @param ij1Channel - the channel value in legacy ImageJ (to be decoded for
+	 *          modern ImageJ)
 	 * @param pos - the position array to fill with rasterized values
 	 */
 	static void fillChannelIndices(final long[] dims, final AxisType[] axes,
@@ -380,7 +385,7 @@ public class LegacyUtils {
 
 	/**
 	 * Returns true if a {@link Dataset} has a type that can be directly
-	 * represented in an IJ1 ImagePlus.
+	 * represented in an legacy ImageJ ImagePlus.
 	 */
 	private static boolean ij1TypeCompatible(final Dataset ds) {
 		final RealType<?> type = ds.getType();
@@ -405,8 +410,8 @@ public class LegacyUtils {
 	}
 
 	/**
-	 * Determines whether an ImagePlus is an IJ1 binary image (i.e. it is unsigned
-	 * 8 bit data with only values 0 & 255 present)
+	 * Determines whether an ImagePlus is an legacy ImageJ binary image (i.e. it
+	 * is unsigned 8 bit data with only values 0 & 255 present)
 	 */
 	public static boolean isBinary(final ImagePlus imp) {
 		final int numSlices = imp.getStackSize();

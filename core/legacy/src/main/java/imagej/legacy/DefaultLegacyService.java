@@ -73,12 +73,13 @@ import java.util.Map;
 /**
  * Default service for working with legacy ImageJ 1.x.
  * <p>
- * The legacy service overrides the behavior of various IJ1 methods, inserting
- * seams so that (e.g.) the modern UI is aware of IJ1 events as they occur.
+ * The legacy service overrides the behavior of various legacy ImageJ methods,
+ * inserting seams so that (e.g.) the modern UI is aware of legacy ImageJ events
+ * as they occur.
  * </p>
  * <p>
- * It also maintains an image map between IJ1 {@link ImagePlus} objects and IJ2
- * {@link Dataset}s.
+ * It also maintains an image map between legacy ImageJ {@link ImagePlus}
+ * objects and modern ImageJ {@link Dataset}s.
  * </p>
  * <p>
  * In this fashion, when a legacy command is executed on a {@link Dataset}, the
@@ -125,7 +126,7 @@ public final class DefaultLegacyService extends AbstractService implements
 	/** Mapping between modern and legacy image data structures. */
 	private LegacyImageMap imageMap;
 
-	/** Method of synchronizing IJ2 & IJ1 options. */
+	/** Method of synchronizing modern & legacy options. */
 	private OptionsSynchronizer optionsSynchronizer;
 
 	public DefaultLegacyService() {
@@ -208,15 +209,15 @@ public final class DefaultLegacyService extends AbstractService implements
 	// TODO - make private only???
 
 	@Override
-	public void updateIJ1Settings() {
-		optionsSynchronizer.updateIJ1SettingsFromIJ2();
+	public void updateLegacyImageJSettings() {
+		optionsSynchronizer.updateLegacyImageJSettingsFromModernImageJ();
 	}
 
 	// TODO - make private only???
 
 	@Override
-	public void updateIJ2Settings() {
-		optionsSynchronizer.updateIJ2SettingsFromIJ1();
+	public void updateModernImageJSettings() {
+		optionsSynchronizer.updateModernImageJSettingsFromLegacyImageJ();
 	}
 
 	@Override
@@ -250,7 +251,7 @@ public final class DefaultLegacyService extends AbstractService implements
 		final boolean enableBlacklist = !optsMisc.isDebugMode();
 		addLegacyCommands(enableBlacklist);
 
-		updateIJ1Settings();
+		updateLegacyImageJSettings();
 
 		subscribeToEvents(eventService);
 
@@ -276,7 +277,7 @@ public final class DefaultLegacyService extends AbstractService implements
 			final OptionsMisc opts = (OptionsMisc) event.getOptions();
 			if (opts.isDebugMode() != lastDebugMode) updateMenus(opts);
 		}
-		updateIJ1Settings();
+		updateLegacyImageJSettings();
 	}
 
 	@EventHandler
@@ -329,7 +330,7 @@ public final class DefaultLegacyService extends AbstractService implements
 
 	/* 3-1-12
 
-	 We are no longer going to synchronize colors from IJ1 to IJ2
+	 We are no longer going to synchronize colors from IJ1 to modern ImageJ
 
 	protected class IJ1EventListener implements IJEventListener {
 

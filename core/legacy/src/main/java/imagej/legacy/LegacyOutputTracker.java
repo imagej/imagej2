@@ -45,9 +45,9 @@ import java.util.Set;
 /**
  * <p>
  * The legacy output tracker is responsible for tracking important changes to
- * the IJ1 environment as a result of running a plugin. Important changes
- * include newly created {@link ImagePlus}es and {@link ImagePlus}es whose
- * window has closed.
+ * the legacy ImageJ environment as a result of running a plugin. Important
+ * changes include newly created {@link ImagePlus}es and {@link ImagePlus}es
+ * whose window has closed.
  * <p>
  * The design maintains a pair of lists for each running {@link LegacyCommand}.
  * This is done by {@link ThreadGroup} rather than by {@link Thread}.

@@ -82,7 +82,7 @@ public class AbstractScriptContext implements ScriptContext {
 		this.errorWriter = errorWriter;
 	}
 
-	// (Possibly) unsupported operations (IJ2 does not need them)
+	// (Possibly) unsupported operations (modern ImageJ does not need them)
 
 	@Override
 	public Object getAttribute(final String key) {

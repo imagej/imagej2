@@ -71,8 +71,8 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	}
 	
 	/**
-	 * Sets the ColorTables of the active view of an IJ2 ImageDisplay from the
-	 * LUTs of a given ImagePlus or CompositeImage.
+	 * Sets the ColorTables of the active view of an modern ImageJ ImageDisplay
+	 * from the LUTs of a given ImagePlus or CompositeImage.
 	 */
 	@Override
 	public void updateDisplay(final ImageDisplay disp, final ImagePlus imp) {
@@ -162,8 +162,8 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	}
 
 	/**
-	 * Sets the correct IJ1 CompositeImage display mode based upon input data
-	 * values.
+	 * Sets the correct legacy ImageJ CompositeImage display mode based upon input
+	 * data values.
 	 */
 	private void setCompositeImageMode(final CompositeImage ci,
 		final int composCount, final List<ColorTable> cTables)
@@ -280,8 +280,8 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	}
 
 	/**
-	 * Makes a ColorTable8 from an IndexColorModel. Note that IJ1 LUT's are a kind
-	 * of IndexColorModel.
+	 * Makes a ColorTable8 from an IndexColorModel. Note that legacy ImageJ LUT's
+	 * are a kind of IndexColorModel.
 	 */
 	private ColorTable8 make8BitColorTable(final IndexColorModel icm) {
 		final byte[] reds = new byte[256];

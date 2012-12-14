@@ -118,11 +118,11 @@ public class LegacyTestUtils {
 							pos[xIndex] = x;
 							accessor.setPosition(pos);
 							final double ij1Value = proc.getf(x, y);
-							final double ij2Value = accessor.get().getRealDouble();
-							if (Math.abs(ij1Value - ij2Value) > 0.1) System.out
+							final double modernValue = accessor.get().getRealDouble();
+							if (Math.abs(ij1Value - modernValue) > 0.1) System.out
 								.println("x=" + x + " y=" + y + " c=" + c + " z=" + z + " t=" +
-									t + " && ij1=" + ij1Value + " ij2=" + ij2Value);
-							assertEquals(ij1Value, ij2Value, 0.0001);
+									t + " && ij1=" + ij1Value + " modern=" + modernValue);
+							assertEquals(ij1Value, modernValue, 0.0001);
 						}
 					}
 				}
@@ -181,9 +181,9 @@ public class LegacyTestUtils {
 							final int b = (int) accessor.get().getRealDouble();
 
 							final int ij1Value = proc.get(x, y);
-							final int ij2Value = 0xff000000 | (r << 16) | (g << 8) | b;
+							final int modernValue = 0xff000000 | (r << 16) | (g << 8) | b;
 
-							assertEquals(ij1Value, ij2Value);
+							assertEquals(ij1Value, modernValue);
 						}
 					}
 				}

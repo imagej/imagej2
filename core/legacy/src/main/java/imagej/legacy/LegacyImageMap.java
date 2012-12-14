@@ -56,11 +56,11 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * An image map between IJ1 {@link ImagePlus} objects and IJ2
- * {@link ImageDisplay}s. Because every {@link ImagePlus} has a corresponding
- * {@link ImageWindow} and vice versa, it works out best to associate each
- * {@link ImagePlus} with a {@link ImageDisplay} rather than with a
- * {@link Dataset}.
+ * An image map between legacy ImageJ {@link ImagePlus} objects and modern
+ * ImageJ {@link ImageDisplay}s. Because every {@link ImagePlus} has a
+ * corresponding {@link ImageWindow} and vice versa, it works out best to
+ * associate each {@link ImagePlus} with a {@link ImageDisplay} rather than with
+ * a {@link Dataset}.
  * <p>
  * Any {@link Overlay}s present in the {@link ImageDisplay} are translated to a
  * {@link Roi} attached to the {@link ImagePlus}, and vice versa.
@@ -234,11 +234,11 @@ public class LegacyImageMap {
 
 		/* OLD COMMENT : no longer relevant except for testing purposes
 		// Need to make sure:
-		// - IJ2 Windows always close when IJ1 close expected
+		// - modern IJ Windows always close when legacy IJ close expected
 		// Stack to Images, Split Channels, etc.
 		// - No ImagePlus/Display mapping becomes a zombie in the
 		// LegacyImageMap failing to get garbage collected.
-		// - That IJ2 does not think IJ1 initiated the ij1.close()
+		// - That modern IJ does not think legacy IJ initiated the ij1.close()
 		 */
 		if (event.getObject() instanceof ImageDisplay) {
 			unregisterDisplay((ImageDisplay) event.getObject());

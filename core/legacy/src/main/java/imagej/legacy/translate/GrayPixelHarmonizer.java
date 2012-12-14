@@ -61,8 +61,8 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 	 * {@link ImagePlus}. Assumes the Dataset and ImagePlus have compatible
 	 * dimensions and that the data planes are not directly mapped. Gets values
 	 * via {@link ImageProcessor}::getf(). In cases where there is a narrowing of
-	 * data into IJ2 types the data is range clamped. Does not change the
-	 * Dataset's metadata.
+	 * data into modern ImageJ types the data is range clamped. Does not change
+	 * the Dataset's metadata.
 	 */
 	@Override
 	public void updateDataset(final Dataset ds, final ImagePlus imp) {
@@ -114,10 +114,11 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 	/**
 	 * Assigns the data values of an {@link ImagePlus} from a paired
 	 * {@link Dataset}. Assumes the Dataset and ImagePlus are not directly mapped.
-	 * It is possible that multiple IJ2 axes are encoded as a single set of
-	 * channels in the ImagePlus. Sets values via {@link ImageProcessor}::setf().
-	 * Some special case code is in place to assure that BitType images go to IJ1
-	 * as 0/255 value images. Does not change the ImagePlus' metadata.
+	 * It is possible that multiple modern ImageJ axes are encoded as a single set
+	 * of channels in the ImagePlus. Sets values via {@link ImageProcessor}
+	 * ::setf(). Some special case code is in place to assure that BitType images
+	 * go to legacy ImageJ as 0/255 value images. Does not change the ImagePlus'
+	 * metadata.
 	 */
 	@Override
 	public void updateLegacyImage(final Dataset ds, final ImagePlus imp) {

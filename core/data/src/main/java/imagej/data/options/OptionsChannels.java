@@ -82,8 +82,8 @@ public class OptionsChannels extends OptionsPlugin {
 
 	// -- instance variables that are not Parameters --
 
-	private ChannelCollection fgValues; // used by IJ2 consumers
-	private ChannelCollection bgValues; // used by IJ2 consumers
+	private ChannelCollection fgValues; // used by modern ImageJ consumers
+	private ChannelCollection bgValues; // used by modern ImageJ consumers
 
 	// -- OptionsChannels methods --
 

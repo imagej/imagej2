@@ -52,7 +52,7 @@ public class ImageJMethods {
 		@SuppressWarnings("unused") final ImageJ obj)
 	{
 		Log.debug("getLocationOnScreen");
-		// TODO: Return coordinates of IJ2 window.
+		// TODO: Return coordinates of modern ImageJ window.
 		return new Point(0, 0);
 	}
 

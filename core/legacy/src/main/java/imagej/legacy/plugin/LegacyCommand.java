@@ -176,7 +176,7 @@ public class LegacyCommand implements Command {
 			
 			ResultsTableHarmonizer rtHarmonizer = new ResultsTableHarmonizer(context);
 
-			rtHarmonizer.setIJ1ResultsTable();
+			rtHarmonizer.setLegacyImageJResultsTable();
 
 			harmonizer.resetTypeTracking();
 
@@ -220,8 +220,8 @@ public class LegacyCommand implements Command {
 					}
 				}
 
-				// reflect any changes to globals in IJ2 options/prefs
-				legacyService.updateIJ2Settings();
+				// reflect any changes to globals in modern ImageJ options/prefs
+				legacyService.updateModernImageJSettings();
 
 				//reportStackIssues("After IJ1 plugin run");
 			}
@@ -241,7 +241,7 @@ public class LegacyCommand implements Command {
 				LegacyOutputTracker.clearClosed();
 			}
 			
-			rtHarmonizer.setIJ2ResultsTable();
+			rtHarmonizer.setModernImageJResultsTable();
 		}
 
 		private void waitForPluginThreads() {
@@ -286,7 +286,8 @@ public class LegacyCommand implements Command {
 		}
 
 		/**
-		 * Identifies threads that IJ1 hatches that don't terminate in a timely way.
+		 * Identifies threads that legacy ImageJ hatches that don't terminate in a
+		 * timely way.
 		 */
 		private boolean whitelisted(final Thread thread) {
 
@@ -325,10 +326,10 @@ public class LegacyCommand implements Command {
 			return false;
 		}
 
-		// TODO - IJ2 could modify an image to go outside IJ1's legal bounds. If it
-		// has a existing ImagePlus mapping then we are likely assuming its legal
-		// when its not. Put in tests to address this situation rather than having
-		// harmonization or something else fail.
+		// TODO - modern ImageJ could modify an image to go outside legacy ImageJ's
+		// legal bounds. If it has a existing ImagePlus mapping then we are likely
+		// assuming its legal when its not. Put in tests to address this situation
+		// rather than having harmonization or something else fail.
 
 		private void updateImagePlusesFromDisplays() {
 			// TODO - track events and keep a dirty bit, then only harmonize those
@@ -431,10 +432,10 @@ public class LegacyCommand implements Command {
 		*/
 
 		// Finishes any in progress paste() operations. Done before harmonization.
-		// In IJ1 the paste operations are usually handled by ImageCanvas::paint().
-		// In IJ2 that method is never called. It would be nice to hook something
-		// that calls paint() via the legacy injector but that may raise additional
-		// problems. This is a simple fix.
+		// In legacy ImageJ the paste operations are usually handled by
+		// ImageCanvas::paint(). In modern ImageJ that method is never called. It
+		// would be nice to hook something that calls paint() via the legacy
+		// injector but that may raise additional problems. This is a simple fix.
 
 		private void finishInProgressPastes(final ImagePlus currImp,
 			final ImagePlus[] outputList)

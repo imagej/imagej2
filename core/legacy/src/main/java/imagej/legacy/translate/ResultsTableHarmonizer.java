@@ -46,7 +46,7 @@ import imagej.data.table.TableDisplay;
 import imagej.display.DisplayService;
 
 /**
- * Harmonizes data between IJ1 and IJ2 ResultsTables
+ * Harmonizes data between legacy ImageJ and modern ImageJ ResultsTables
  * 
  * @author Barry DeZonia
  */
@@ -65,12 +65,12 @@ public class ResultsTableHarmonizer {
 	// -- ResultsTableHarmonizer methods --
 
 
-	// NB - since IJ2 currently supports null (empty) column names we
+	// NB - since modern ImageJ currently supports null (empty) column names we
 	// need to set headings by col which is deprecated in IJ1.
 
 	@SuppressWarnings("deprecation")
 
-	public void setIJ1ResultsTable() {
+	public void setLegacyImageJResultsTable() {
 		TableDisplay display = displayService.getActiveDisplay(TableDisplay.class);
 		ResultsTable table = getFirstResultsTable(display);
 		if (table == null) {
@@ -85,7 +85,7 @@ public class ResultsTableHarmonizer {
 				// TODO - can't help but to use deprecated API
 				ij1Table.setHeading(c, null);
 			}
-			else { // ij2 col header != null
+			else { // modern ij col header != null
 				int colIndex = ij1Table.getColumnIndex(header);
 				if (colIndex < 0) {
 					int newCol = ij1Table.getFreeColumn(header);
@@ -114,7 +114,7 @@ public class ResultsTableHarmonizer {
 		Analyzer.setResultsTable(ij1Table);
 	}
 
-	public void setIJ2ResultsTable() {
+	public void setModernImageJResultsTable() {
 		TableDisplay display = displayService.getActiveDisplay(TableDisplay.class);
 		ResultsTable table = getFirstResultsTable(display);
 		ij.measure.ResultsTable ij1Table = Analyzer.getResultsTable();
@@ -150,10 +150,10 @@ public class ResultsTableHarmonizer {
 		}
 		for (int r = 0; r < ij1Table.getCounter(); r++) {
 			table.appendRow(ij1Table.getLabel(r));
-			for (int ij2Col = 0, c = 0; c <= ij1Table.getLastColumn(); c++) {
+			for (int modIjCol = 0, c = 0; c <= ij1Table.getLastColumn(); c++) {
 				if (ij1Table.columnExists(c)) {
 					double value = ij1Table.getValueAsDouble(c, r);
-					table.setValue(ij2Col++, r, value);
+					table.setValue(modIjCol++, r, value);
 				}
 			}
 		}
@@ -162,7 +162,7 @@ public class ResultsTableHarmonizer {
 		TextWindow window = ij.measure.ResultsTable.getResultsWindow();
 		if (window != null) window.close(false);
 
-		// display results in IJ2 as appropriate
+		// display results in modern ImageJ as appropriate
 		if (display == null) {
 			displayService.createDisplay(table);
 		}

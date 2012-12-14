@@ -60,7 +60,7 @@ import imagej.ui.viewer.DisplayWindow;
 // In IJ1 Flatten and Image Capture are different beasts.
 //   Flatten makes an RGB image from the current view. 
 //     Zoom level is ignored and the data dimensions match the input image.
-//     IJ2's flatten seems to be working correctly.
+//     Modern IJ's flatten seems to be working correctly.
 //   Image Capture does a screen grab of the current image window. So its pixel
 //     format can be a number of things (though in practice I always get RGB).
 //     Regardless since its is represented by an ImagePlus it must end up one
@@ -69,8 +69,8 @@ import imagej.ui.viewer.DisplayWindow;
 //
 // So we probably need a way to capture data in screen pixel format of the
 // current image window view (i.e. current zoom matters). And in Imglib world
-// we only have ARGB data. So we should do a screen grab like IJ2 of the coords
-// of the current image window. All without using AWT.
+// we only have ARGB data. So we should do a screen grab like modern ImageJ of
+// the coords of the current image window. All without using AWT.
 
 /**
  * Captures the current view of an {@link ImageDisplay} to a {@link Dataset}.

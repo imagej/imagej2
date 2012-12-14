@@ -164,8 +164,8 @@ public class OverlayHarmonizer extends AbstractContextual implements
 	/**
 	 * Assigns a list of {@link Overlay}s to the given {@link ImagePlus}. The
 	 * active overlay becomes the {@link Roi} of the ImagePlus. The other overlays
-	 * become Roi's in the Overlay of the ImagePlus. Also populates IJ1's
-	 * RoiManager.
+	 * become Roi's in the Overlay of the ImagePlus. Also populates legacy
+	 * ImageJ's RoiManager.
 	 */
 	public void setOverlays(List<Overlay> overlays, Overlay activeOverlay,
 		final ImagePlus imp)
@@ -450,7 +450,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		roi.setFillColor(colorWithAlpha);
 	}
 
-	// -- Helper methods - IJ2 overlay creation --
+	// -- Helper methods - modern ImageJ overlay creation --
 
 	/*
 	private boolean fullySelected(ImageDisplay display, ImagePlus imp) {

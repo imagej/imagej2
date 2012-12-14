@@ -79,7 +79,8 @@ public class OptionsAppearance extends OptionsPlugin {
 	@Parameter(label = "Menu font size (points)", min = "0")
 	private int menuFontSize = 0;
 
-	// NOTE - this one is not part of IJ1 but an IJ2 enhancement
+	// NOTE - this one is not part of legacy ImageJ but is a modern ImageJ
+	// enhancement
 	@Parameter(label = "Display fractional scales")
 	private boolean displayFractionalScales = false;
 

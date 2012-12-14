@@ -236,11 +236,11 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	}
 
 	// TODO - add this kind of mapping code to the Imglib Projector classes. Here
-	// it is just a workaround to make IJ2/IJ1 color syncing happy. BDZ
+	// it is just a workaround to make modern<->legacy color syncing happy. BDZ
 
 	/**
 	 * Reason from a channel collection and internal state what the closest color
-	 * is. This is needed for color synchronization with IJ1.
+	 * is. This is needed for color synchronization with legacy ImageJ.
 	 */
 	@Override
 	public ColorRGB getColor(final ChannelCollection channels) {

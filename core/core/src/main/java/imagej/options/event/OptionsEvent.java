@@ -39,8 +39,8 @@ import imagej.event.ImageJEvent;
 import imagej.options.OptionsPlugin;
 
 /**
- * Fired when an IJ2 plugin has changed an option. Used by the legacy layer keep
- * IJ1 and IJ2 options in sync.
+ * Fired when an modern ImageJ plugin has changed an option. Used by the legacy
+ * layer keep legacy and modern ImageJ options in sync.
  * 
  * @author Barry DeZonia
  * @author Curtis Rueden

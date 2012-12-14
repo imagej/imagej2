@@ -50,7 +50,8 @@ import javassist.NotFoundException;
  * altering existing ones.
  * <p>
  * In ImageJ, this mechanism is used to provide new seams into legacy ImageJ1
- * code, so that (e.g.) the modern UI is aware of IJ1 events as they occur.
+ * code, so that (e.g.) the modern UI is aware of legacy ImageJ events as they
+ * occur.
  * </p>
  * 
  * @author Curtis Rueden
