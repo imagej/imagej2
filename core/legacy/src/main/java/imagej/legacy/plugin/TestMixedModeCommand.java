@@ -61,24 +61,24 @@ public class TestMixedModeCommand implements Command {
 		if (imp.getBitDepth() != 8) System.out.println("Error: bit depth wrong");
 		if (!imp.getTitle().equals(title)) System.out.println("Error: title wrong");
 		imp.show();
-		if (LegacyOutputTracker.getOutputImps().contains(imp)) System.out
+		if (LegacyOutputTracker.containsOutput(imp)) System.out
 			.println("Error: output imp is in output list");
-		if (LegacyOutputTracker.getClosedImps().contains(imp)) System.out
+		if (LegacyOutputTracker.containsClosed(imp)) System.out
 			.println("Error: output imp is in closed list");
 		imp.repaintWindow();
-		if (LegacyOutputTracker.getOutputImps().contains(imp)) System.out
+		if (LegacyOutputTracker.containsOutput(imp)) System.out
 			.println("Error: output imp is in output list");
-		if (LegacyOutputTracker.getClosedImps().contains(imp)) System.out
+		if (LegacyOutputTracker.containsClosed(imp)) System.out
 			.println("Error: output imp is in closed list");
 		imp.hide();
-		if (LegacyOutputTracker.getOutputImps().contains(imp)) System.out
+		if (LegacyOutputTracker.containsOutput(imp)) System.out
 			.println("Error: output imp is in output list");
-		if (LegacyOutputTracker.getClosedImps().contains(imp)) System.out
+		if (LegacyOutputTracker.containsClosed(imp)) System.out
 			.println("Error: output imp is in closed list");
 		imp.close();
-		if (LegacyOutputTracker.getOutputImps().contains(imp)) System.out
+		if (LegacyOutputTracker.containsOutput(imp)) System.out
 			.println("Error: output imp is in output list");
-		if (LegacyOutputTracker.getClosedImps().contains(imp)) System.out
+		if (LegacyOutputTracker.containsClosed(imp)) System.out
 			.println("Error: output imp is in closed list");
 		System.out
 			.println("If no messages before this then terminated successfully");

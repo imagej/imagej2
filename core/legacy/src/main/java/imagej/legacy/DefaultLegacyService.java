@@ -183,7 +183,7 @@ public final class DefaultLegacyService extends AbstractService implements
 		imageMap.registerLegacyImage(imp);
 
 		// record resultant ImagePlus as a legacy command output
-		LegacyOutputTracker.getOutputImps().add(imp);
+		LegacyOutputTracker.addOutput(imp);
 	}
 
 	@Override
