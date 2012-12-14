@@ -63,14 +63,16 @@ public class LegacyOutputTracker {
 
 	/**
 	 * Used to provide one list of {@link ImagePlus} per {@link LegacyCommand}
-	 * derived thread group.
+	 * derived thread group. outputImps holds the list ImagePluses created by a
+	 * LegacyCommand.
 	 */
 	private static Map<ThreadGroup, Set<ImagePlus>> outputImps =
 		new HashMap<ThreadGroup, Set<ImagePlus>>();
 
 	/**
 	 * Used to provide one list of {@link ImagePlus} per {@link LegacyCommand}
-	 * derived thread group.
+	 * derived thread group. closedImps holds the list ImagePluses closed by a
+	 * LegacyCommand.
 	 */
 	private static Map<ThreadGroup, Set<ImagePlus>> closedImps =
 		new HashMap<ThreadGroup, Set<ImagePlus>>();
