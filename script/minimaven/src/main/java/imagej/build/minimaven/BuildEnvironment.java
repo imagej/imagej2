@@ -505,11 +505,27 @@ public class BuildEnvironment {
 			out.close();
 	}
 
+	protected static boolean isSnapshotVersion(String version) {
+		return version != null && version.endsWith("-SNAPSHOT");
+	}
+
+	protected static boolean isTimestampVersion(String version) {
+		return version != null && version.matches("2\\d{7,13}");
+	}
+
 	protected static int compareVersion(String version1, String version2) {
 		if (version1 == null)
 			return version2 == null ? 0 : -1;
 		if (version1.equals(version2))
 			return 0;
+
+		// prefer snapshot over timestamp versions
+		// (AKA the mpicbg problem)
+		if (isTimestampVersion(version1) && isSnapshotVersion(version2))
+			return -1;
+		if (isSnapshotVersion(version1) && isTimestampVersion(version2))
+			return +1;
+
 		String[] split1 = version1.split("\\.");
 		String[] split2 = version2.split("\\.");
 
