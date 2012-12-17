@@ -90,7 +90,7 @@ import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.logic.BitType;
 
 /**
- * OverlayTranslator moves regions of interest back and forth between
+ * OverlayTranslator translates regions of interest back and forth between
  * {@link Overlay}s and {@link ImagePlus} {@link Roi}s.
  * 
  * @author Lee Kamentsky
@@ -111,7 +111,8 @@ public class OverlayHarmonizer extends AbstractContextual implements
 
 	/**
 	 * Updates the given {@link ImageDisplay} to contain {@link Overlay}s
-	 * corresponding to the given {@link ImagePlus}'s Roi.
+	 * corresponding to all the given {@link ImagePlus}'s Rois (both the active
+	 * Roi and the Rois stored in ImageJ 1.x's current Overlay).
 	 */
 	@Override
 	public void updateDisplay(final ImageDisplay display, final ImagePlus imp) {
@@ -132,8 +133,8 @@ public class OverlayHarmonizer extends AbstractContextual implements
 	}
 
 	/**
-	 * Updates the given {@link ImagePlus}'s Roi to match the {@link Overlay}s
-	 * being visualized in the given {@link ImageDisplay}.
+	 * Updates the given {@link ImagePlus}'s Roi and Overlay to match the modern
+	 * ImageJ {@link Overlay}s being visualized in the given {@link ImageDisplay}.
 	 */
 	@Override
 	public void
@@ -143,7 +144,11 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		setOverlays(overlays, overlayService.getActiveOverlay(display), imp);
 	}
 
-	/** Extracts a list of {@link Overlay}s from the given {@link ImagePlus}. */
+	/**
+	 * Extracts a list of {@link Overlay}s from the given {@link ImagePlus}. The
+	 * Overlays are created from the {@link ImagePlus}' Roi and ImageJ 1.x
+	 * Overlay.
+	 */
 	public List<Overlay> getOverlays(final ImagePlus imp) {
 		Roi roi = imp.getRoi();
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
