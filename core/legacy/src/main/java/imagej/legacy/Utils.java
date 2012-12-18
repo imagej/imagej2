@@ -56,9 +56,9 @@ public class Utils {
 	 * If the given thread is not derived from a LegacyCommand returns null. Else
 	 * it returns the ThreadGroup at the base of the LegacyCommand.
 	 */
-	public static ThreadGroup findLegacyThreadGroup(Thread t) {
+	public static LegacyThreadGroup findLegacyThreadGroup(Thread t) {
 		for (ThreadGroup group = t.getThreadGroup(); group != null; group = group.getParent()) {
-			if (group instanceof LegacyThreadGroup) return group;
+			if (group instanceof LegacyThreadGroup) return (LegacyThreadGroup)group;
 		}
 		return null;
 	}

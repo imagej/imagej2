@@ -35,12 +35,20 @@
 
 package imagej.legacy.plugin;
 
+import imagej.legacy.LegacyService;
+
 public class LegacyThreadGroup extends ThreadGroup {
 
 	private static final String GROUP_NAME = "IJ1 legacy group";
+	private LegacyService legacyService;
 
-	public LegacyThreadGroup() {
+	public LegacyThreadGroup(final LegacyService legacyService) {
 		super(GROUP_NAME);
+		this.legacyService = legacyService;
+	}
+
+	public LegacyService getLegacyService() {
+		return legacyService;
 	}
 
 }
