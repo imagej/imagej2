@@ -33,33 +33,12 @@
  * #L%
  */
 
-package imagej.legacy;
+package imagej.legacy.plugin;
 
-import imagej.legacy.plugin.LegacyThreadGroup;
+public class LegacyThreadGroup extends ThreadGroup {
 
-/**
- * Static utility methods used in the imagej.legacy package
- * 
- * @author Barry DeZonia
- */
-public class Utils {
-
-	/**
-	 * Returns true if the given thread is in any way a child of a
-	 * {@link LegacyThreadGroup}. Returns false otherwise.
-	 */
-	public static boolean isLegacyThread(Thread t) {
-		return findLegacyThreadGroup(t) != null;
+	public LegacyThreadGroup() {
+		super(LegacyCommand.GROUP_NAME);
 	}
 
-	/**
-	 * If the given thread is not derived from a LegacyCommand returns null. Else
-	 * it returns the ThreadGroup at the base of the LegacyCommand.
-	 */
-	public static ThreadGroup findLegacyThreadGroup(Thread t) {
-		for (ThreadGroup group = t.getThreadGroup(); group != null; group = group.getParent()) {
-			if (group instanceof LegacyThreadGroup) return group;
-		}
-		return null;
-	}
 }

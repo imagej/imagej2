@@ -163,7 +163,7 @@ public class LegacyCommand implements Command {
 		// threads in its group.
 
 		public LegacyCommandThread() {
-			super(new ThreadGroup(GROUP_NAME), THREAD_NAME);
+			super(new LegacyThreadGroup(), THREAD_NAME);
 			this.group = getThreadGroup();
 			this.map = legacyService.getImageMap();
 			final ImageTranslator imageTranslator =
