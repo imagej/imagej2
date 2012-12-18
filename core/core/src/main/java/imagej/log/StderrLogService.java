@@ -85,57 +85,58 @@ public class StderrLogService extends AbstractService implements LogService {
 	@Override
 	public void debug(final Object msg) {
 		if (isDebug()) {
-			System.err.println(msg.toString());
+			log("[DEBUG] ", msg);
 		}
 	}
 
 	@Override
 	public void debug(final Throwable t) {
 		if (isDebug()) {
-			t.printStackTrace();
+			log("[DEBUG] ", t);
 		}
 	}
 
 	@Override
 	public void debug(final Object msg, final Throwable t) {
 		if (isDebug()) {
-			System.err.println(msg.toString());
-			t.printStackTrace();
+			debug(msg);
+			debug(t);
 		}
 	}
 
 	@Override
 	public void error(final Object msg) {
 		if (isError()) {
-			System.err.println(msg.toString());
+			log("[ERROR] ", msg);
 		}
 	}
 
 	@Override
 	public void error(final Throwable t) {
 		if (isError()) {
-			t.printStackTrace();
+			log("[ERROR] ", t);
 		}
 	}
 
 	@Override
 	public void error(final Object msg, final Throwable t) {
 		if (isError()) {
-			System.err.println(msg.toString());
-			t.printStackTrace();
+			error(msg);
+			error(t);
 		}
 	}
 
 	@Override
 	public void info(final Object msg) {
 		if (isInfo()) {
-			System.err.println(msg.toString());
+			log("[INFO] ", msg);
 		}
 	}
 
 	@Override
 	public void info(final Throwable t) {
 		if (isInfo()) {
+			log("[INFO] ", t);
 			t.printStackTrace();
 		}
 	}
@@ -143,52 +144,52 @@ public class StderrLogService extends AbstractService implements LogService {
 	@Override
 	public void info(final Object msg, final Throwable t) {
 		if (isInfo()) {
-			System.err.println(msg.toString());
-			t.printStackTrace();
+			info(msg);
+			info(t);
 		}
 	}
 
 	@Override
 	public void trace(final Object msg) {
 		if (isTrace()) {
-			System.err.println(msg.toString());
+			log("[TRACE] ", msg);
 		}
 	}
 
 	@Override
 	public void trace(final Throwable t) {
 		if (isTrace()) {
-			t.printStackTrace();
+			log("[TRACE] ", t);
 		}
 	}
 
 	@Override
 	public void trace(final Object msg, final Throwable t) {
 		if (isTrace()) {
-			System.err.println(msg.toString());
-			t.printStackTrace();
+			trace(msg);
+			trace(t);
 		}
 	}
 
 	@Override
 	public void warn(final Object msg) {
 		if (isWarn()) {
-			System.err.println(msg.toString());
+			log("[WARN] ", msg);
 		}
 	}
 
 	@Override
 	public void warn(final Throwable t) {
 		if (isWarn()) {
-			t.printStackTrace();
+			log("[WARN] ", t);
 		}
 	}
 
 	@Override
 	public void warn(final Object msg, final Throwable t) {
 		if (isWarn()) {
-			System.err.println(msg.toString());
-			t.printStackTrace();
+			warn(msg);
+			warn(t);
 		}
 	}
 
@@ -234,6 +235,34 @@ public class StderrLogService extends AbstractService implements LogService {
 		// HACK: Dirty, because every time a new ImageJ context is created with a
 		// StderrLogService, it will "steal" the default exception handling.
 		DefaultUncaughtExceptionHandler.install(this);
+	}
+
+	// -- private helper methods
+
+	/**
+	 * Prints a message to stderr.
+	 * 
+	 * @param prefix the prefix (can be an empty string)
+	 * @param message the message
+	 */
+	private void log(final String prefix, final Object message) {
+		System.err.print(prefix);
+		System.err.println(message);
+	}
+
+	/**
+	 * Prints an exception to stderr.
+	 * 
+	 * @param prefix the prefix (can be an empty string)
+	 * @param t the exception
+	 */
+	private void log(final String prefix, final Throwable t) {
+		System.err.print(prefix);
+		t.printStackTrace();
+		final Throwable cause = t.getCause();
+		if (cause != null) {
+			log("", cause);
+		}
 	}
 
 }
