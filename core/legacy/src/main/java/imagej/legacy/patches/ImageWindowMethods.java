@@ -48,6 +48,7 @@ import imagej.legacy.Utils;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
+@SuppressWarnings("javadoc")
 public final class ImageWindowMethods {
 
 	private ImageWindowMethods() {

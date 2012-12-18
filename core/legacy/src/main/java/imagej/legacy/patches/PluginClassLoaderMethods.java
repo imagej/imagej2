@@ -52,6 +52,7 @@ import java.net.URLClassLoader;
  * 
  * @author Johannes Schindelin
  */
+@SuppressWarnings("javadoc")
 public final class PluginClassLoaderMethods {
 
 	private PluginClassLoaderMethods() {

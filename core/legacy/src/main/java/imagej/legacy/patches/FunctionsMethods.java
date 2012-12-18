@@ -45,6 +45,7 @@ import imagej.legacy.LegacyService;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
+@SuppressWarnings("javadoc")
 public class FunctionsMethods {
 
 	// TODO - this class was written to get around bug #554. The reliance on a
