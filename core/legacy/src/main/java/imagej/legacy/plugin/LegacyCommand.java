@@ -71,8 +71,7 @@ import java.util.List;
  */
 public class LegacyCommand implements Command {
 
-	public static final String GROUP_NAME = "IJ1 legacy group";
-	public static final String THREAD_NAME = "IJ1 legacy thread";
+	private static final String THREAD_NAME = "IJ1 legacy thread";
 
 	@Parameter
 	private String className;
