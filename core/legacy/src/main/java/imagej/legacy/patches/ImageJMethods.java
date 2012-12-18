@@ -37,7 +37,6 @@ package imagej.legacy.patches;
 
 import ij.ImageJ;
 import imagej.legacy.LegacyService;
-import imagej.util.Log;
 
 import java.awt.Point;
 
@@ -50,10 +49,10 @@ public class ImageJMethods {
 
 	/** Replaces {@link ImageJ#getLocationOnScreen()}. */
 	public static Point getLocationOnScreen(
-		@SuppressWarnings("unused") final LegacyService legacyService,
+		final LegacyService legacyService,
 		@SuppressWarnings("unused") final ImageJ obj)
 	{
-		Log.debug("getLocationOnScreen");
+		legacyService.getLogService().debug("getLocationOnScreen");
 		// TODO: Return coordinates of modern ImageJ window.
 		return new Point(0, 0);
 	}

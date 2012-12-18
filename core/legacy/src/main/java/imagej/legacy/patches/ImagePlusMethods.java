@@ -41,7 +41,6 @@ import imagej.data.display.ImageDisplay;
 import imagej.legacy.LegacyOutputTracker;
 import imagej.legacy.LegacyService;
 import imagej.legacy.Utils;
-import imagej.util.Log;
 
 /**
  * Overrides {@link ImagePlus} methods.
@@ -61,7 +60,7 @@ public final class ImagePlusMethods {
 		if (!obj.isProcessor()) return;
 		if (obj.getWindow() == null) return;
 		if (!Utils.isLegacyThread(Thread.currentThread())) return;
-		Log.debug("ImagePlus.updateAndDraw(): " + obj);
+		legacyService.getLogService().debug("ImagePlus.updateAndDraw(): " + obj);
 		legacyService.legacyImageChanged(obj);
 		// TODO - add here too?
 		//WindowManager.setCurrentWindow(obj.getWindow());
@@ -72,7 +71,7 @@ public final class ImagePlusMethods {
 		if (obj == null) return;
 		if (obj.getWindow() == null) return;
 		if (!Utils.isLegacyThread(Thread.currentThread())) return;
-		Log.debug("ImagePlus.repaintWindow(): " + obj);
+		legacyService.getLogService().debug("ImagePlus.repaintWindow(): " + obj);
 		legacyService.legacyImageChanged(obj);
 		// TODO - add here too?
 		//WindowManager.setCurrentWindow(obj.getWindow());
@@ -84,7 +83,7 @@ public final class ImagePlusMethods {
 	{
 		if (obj == null) return;
 		if (!Utils.isLegacyThread(Thread.currentThread())) return;
-		Log.debug("ImagePlus.show(): " + obj);
+		legacyService.getLogService().debug("ImagePlus.show(): " + obj);
 		legacyService.legacyImageChanged(obj);
 		WindowManager.setCurrentWindow(obj.getWindow());
 	}
@@ -93,7 +92,7 @@ public final class ImagePlusMethods {
 	public static void hide(final LegacyService legacyService, final ImagePlus obj) {
 		if (obj == null) return;
 		if (!Utils.isLegacyThread(Thread.currentThread())) return;
-		Log.debug("ImagePlus.hide(): " + obj);
+		legacyService.getLogService().debug("ImagePlus.hide(): " + obj);
 		LegacyOutputTracker.removeOutput(obj);
 		// Original method
 		//LegacyOutputTracker.getClosedImps().add(obj);

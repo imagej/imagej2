@@ -41,7 +41,6 @@ import ij.gui.ImageWindow;
 import imagej.legacy.LegacyOutputTracker;
 import imagej.legacy.LegacyService;
 import imagej.legacy.Utils;
-import imagej.util.Log;
 
 /**
  * Overrides {@link ImageWindow} methods.
@@ -57,7 +56,7 @@ public final class ImageWindowMethods {
 
 	/** Replaces {@link ImageWindow#setVisible(boolean)}. */
 	public static void setVisible(final LegacyService legacyService, final ImageWindow obj, final boolean visible) {
-		Log.debug("ImageWindow.setVisible(" + visible + "): " + obj);
+		legacyService.getLogService().debug("ImageWindow.setVisible(" + visible + "): " + obj);
 		if (!visible) return;
 		if (Utils.isLegacyThread(Thread.currentThread())) {
 			legacyService.legacyImageChanged(obj.getImagePlus());

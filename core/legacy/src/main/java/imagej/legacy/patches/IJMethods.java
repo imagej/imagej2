@@ -36,10 +36,8 @@
 package imagej.legacy.patches;
 
 import ij.IJ;
-import imagej.ImageJ;
 import imagej.event.StatusService;
 import imagej.legacy.LegacyService;
-import imagej.util.Log;
 
 /**
  * Overrides {@link IJ} methods.
@@ -63,22 +61,22 @@ public class IJMethods {
 	public static void
 		showProgress(final LegacyService legacyService, final int currentIndex, final int finalIndex)
 	{
-		Log.debug("showProgress: " + currentIndex + "/" + finalIndex);
+		legacyService.getLogService().debug("showProgress: " + currentIndex + "/" + finalIndex);
 		// report progress through global event mechanism
-		final StatusService statusService = ImageJ.get(StatusService.class);
+		final StatusService statusService = legacyService.getContext().getService(StatusService.class);
 		if (statusService == null) return;
 		statusService.showProgress(currentIndex, finalIndex);
 	}
 
 	/** Appends {@link IJ#showStatus(String)}. */
 	public static void showStatus(final LegacyService legacyService, final String s) {
-		Log.debug("showStatus: " + s);
-		if (legacyService == null || !legacyService.isInitialized()) {
+		legacyService.getLogService().debug("showStatus: " + s);
+		if (!legacyService.isInitialized()) {
 			// suppress ImageJ1 bootup messages
 			return;
 		}
 		// report status through global event mechanism
-		final StatusService statusService = ImageJ.get(StatusService.class);
+		final StatusService statusService = legacyService.getContext().getService(StatusService.class);
 		if (statusService == null) return;
 		statusService.showStatus(s);
 	}

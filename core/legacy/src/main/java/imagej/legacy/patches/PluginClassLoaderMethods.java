@@ -37,7 +37,6 @@ package imagej.legacy.patches;
 
 import ij.io.PluginClassLoader;
 import imagej.legacy.LegacyService;
-import imagej.util.Log;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -59,28 +58,33 @@ public final class PluginClassLoaderMethods {
 		// prevent instantiation of utility class
 	}
 
-	protected static Method addURL;
+	private static Method addURLMethod;
 
-	static {
-		try {
-			addURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-		} catch (SecurityException e) {
-			Log.error(e);
-		} catch (NoSuchMethodException e) {
-			Log.error(e);
+	private static void addURL(final LegacyService legacyService, final PluginClassLoader loader, final URL url) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+		synchronized(PluginClassLoaderMethods.class) {
+			if (addURLMethod == null) {
+				try {
+					addURLMethod = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+				} catch (SecurityException e) {
+					legacyService.getLogService().error(e);
+				} catch (NoSuchMethodException e) {
+					legacyService.getLogService().error(e);
+				}
+				addURLMethod.setAccessible(true);
+			}
 		}
-		addURL.setAccessible(true);
+		addURLMethod.invoke(loader, url);
 	}
 
 	/** Appends {@link PluginClassLoader#init(String)}. */
-	public static void init(@SuppressWarnings("unused") final LegacyService legacyService, final PluginClassLoader obj, final String path) {
+	public static void init(final LegacyService legacyService, final PluginClassLoader obj, final String path) {
 		final File pluginsDirectory = new File(path);
 		if (!pluginsDirectory.getName().equals("plugins")) return;
 		final File ij1Directory = pluginsDirectory.getParentFile();
 		if (ij1Directory != null) addJars(legacyService, obj, new File(ij1Directory, "jars"));
 	}
 
-	protected static void addJars(@SuppressWarnings("unused") final LegacyService legacyService, final PluginClassLoader obj, final File directory) {
+	protected static void addJars(final LegacyService legacyService, final PluginClassLoader obj, final File directory) {
 		final File[] list = directory.listFiles();
 		if (list == null) return;
 		for (final File file : list) {
@@ -89,18 +93,18 @@ public final class PluginClassLoaderMethods {
 		}
 	}
 
-	protected static void addJar(@SuppressWarnings("unused") final LegacyService legacyService, final PluginClassLoader obj, final File jar) {
+	protected static void addJar(final LegacyService legacyService, final PluginClassLoader obj, final File jar) {
 		try {
-			addURL.invoke(obj, jar.toURI().toURL());
+			addURL(legacyService, obj, jar.toURI().toURL());
 		} catch (IllegalArgumentException e) {
-			Log.error(e);
+			legacyService.getLogService().error(e);
 		} catch (MalformedURLException e) {
-			Log.error(e);
+			legacyService.getLogService().error(e);
 		} catch (IllegalAccessException e) {
-			Log.error(e);
+			legacyService.getLogService().error(e);
 		} catch (InvocationTargetException e) {
-			Log.error(e);
-			Log.error(e.getCause());
+			legacyService.getLogService().error(e);
+			legacyService.getLogService().error(e.getCause());
 		}
 	}
 }
