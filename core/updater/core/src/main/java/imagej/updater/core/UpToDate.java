@@ -91,7 +91,7 @@ public class UpToDate {
 	/**
 	 * Check the update status of a given ImageJ installation.
 	 * 
-	 * @param imagejRoot the root directory of the ImageJ installation to check
+	 * @param ijRoot the root directory of the ImageJ installation to check
 	 * @return the status
 	 * @throws IOException
 	 * @throws ParserConfigurationException
@@ -183,7 +183,7 @@ public class UpToDate {
 					if (!addresses.nextElement().isLoopbackAddress()) return true;
 			}
 		}
-		catch (final SocketException e) {}
+		catch (final SocketException e) { /* ignore */ }
 		return false;
 	}
 
