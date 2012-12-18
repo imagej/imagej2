@@ -336,29 +336,37 @@ public class OverlayHarmonizer extends AbstractContextual implements
 
 	// NB - there is some overloading here with createPointRoi.
 	
-	// From a PolygonOverlay that has one point
+	// From a PolygonOverlay
 	private Roi createPointRoi(final PolygonOverlay overlay) {
-		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
-		final RealLocalizable point = region.getVertex(0);
-		double ptX = point.getDoublePosition(0);
-		double ptY = point.getDoublePosition(1);
-		return createPointRoi(overlay, ptX, ptY);
+		PolygonRegionOfInterest region = overlay.getRegionOfInterest();
+		int nPoints = region.getVertexCount();
+		float[] xPts = new float[nPoints];
+		float[] yPts = new float[nPoints];
+		for (int i = 0; i < nPoints; i++) {
+			RealLocalizable vertex = region.getVertex(i);
+			xPts[i] = vertex.getFloatPosition(0);
+			yPts[i] = vertex.getFloatPosition(1);
+		}
+		PointRoi roi = new PointRoi(xPts, yPts, nPoints);
+		assignPropertiesToRoi(roi, overlay);
+		return roi;
 	}
 
 	// From a PointOverlay
 	private Roi createPointRoi(final PointOverlay overlay) {
-		return createPointRoi(overlay, overlay.getPoint(0), overlay.getPoint(1));
+		List<double[]> points = overlay.getPoints();
+		float[] xPts = new float[points.size()];
+		float[] yPts = new float[points.size()];
+		for (int i = 0; i < points.size(); i++) {
+			double[] pt = points.get(i);
+			xPts[i] = (float) pt[0];
+			yPts[i] = (float) pt[1];
+		}
+		PointRoi roi = new PointRoi(xPts, yPts, points.size());
+		assignPropertiesToRoi(roi, overlay);
+		return roi;
 	}
 
-	// helper to support other createPointRoi() methods
-	private Roi createPointRoi(final Overlay overlay, double ptX, double ptY) {
-		final double x = ptX;
-		final double y = ptY;
-		final PointRoi point = new PointRoi(x,y);
-		assignPropertiesToRoi(point, overlay);
-		return point;
-	}
-	
 	// TODO - subpixel resolution
 	private Roi createAngleRoi(final AngleOverlay overlay) {
 		double[] pt = new double[overlay.numDimensions()];
@@ -529,7 +537,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 				break;
 			case Roi.POINT:
 				log.warn("====> POINT: " + roi);
-				overlays.addAll(createPointOverlays(roi));
+				overlays.add(createPointOverlay(roi));
 				break;
 			case Roi.COMPOSITE:
 				log.warn("====> COMPOSITE: " + roi);
@@ -656,20 +664,20 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		return overlay;
 	}
 
-	private List<PointOverlay> createPointOverlays(final Roi roi)
+	private PointOverlay createPointOverlay(final Roi roi)
 	{
 		assert roi instanceof PointRoi;
 		final PointRoi ptRoi = (PointRoi) roi;
-		final List<PointOverlay> overlays = new ArrayList<PointOverlay>();
+		List<double[]> points = new ArrayList<double[]>();
 		for (int i = 0; i < ptRoi.getNCoordinates(); i++) {
 			final double x = ptRoi.getXCoordinates()[i] + roi.getBounds().x;
 			final double y = ptRoi.getYCoordinates()[i] + roi.getBounds().y;
 			final double[] pt = new double[]{x,y};
-			final PointOverlay pointOverlay = new PointOverlay(getContext(), pt);
-			assignPropertiesToOverlay(pointOverlay, roi);
-			overlays.add(pointOverlay);
+			points.add(pt);
 		}
-		return overlays;
+		final PointOverlay overlay = new PointOverlay(getContext(), points);
+		assignPropertiesToOverlay(overlay, roi);
+		return overlay;
 	}
 
 	@SuppressWarnings("unused")

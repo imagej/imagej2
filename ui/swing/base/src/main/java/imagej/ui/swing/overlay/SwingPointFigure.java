@@ -43,11 +43,13 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.jhotdraw.draw.AbstractAttributedFigure;
 import org.jhotdraw.draw.AttributeKeys;
+import org.jhotdraw.draw.handle.DragHandle;
 import org.jhotdraw.draw.handle.Handle;
 import org.jhotdraw.geom.Geom;
 
@@ -55,28 +57,50 @@ import org.jhotdraw.geom.Geom;
  * TODO
  * 
  * @author Johannes Schindelin
+ * @author Barry DeZonia
  */
 public class SwingPointFigure extends AbstractAttributedFigure {
 
 	protected Rectangle2D.Double bounds;
 	private final Rectangle2D.Double rect;
+	private final List<double[]> points;
 	private Color fillColor = Color.yellow;
 	private Color lineColor = Color.white;
 
 	/** Creates a new instance.
 	 * @param swingPointTool TODO*/
 	public SwingPointFigure() {
-		this(0, 0);
+		this(new double[2]);
 	}
 
-	public SwingPointFigure(final double x, final double y) {
-		bounds = new Rectangle2D.Double(x, y, 1, 1);
+	public SwingPointFigure(double[] pt) {
+		this(Arrays.asList(pt));
+	}
+
+	public SwingPointFigure(List<double[]> pts) {
+		bounds = new Rectangle2D.Double();
 		rect = new Rectangle2D.Double();
+		points = new ArrayList<double[]>();
+		setPoints(pts);
 	}
 
-	public void setPoint(final double x, final double y) {
-		bounds.x = x;
-		bounds.y = y;
+	public void setPoints(List<double[]> pts) {
+		points.clear();
+		double minX = Double.POSITIVE_INFINITY;
+		double minY = Double.POSITIVE_INFINITY;
+		double maxX = Double.NEGATIVE_INFINITY;
+		double maxY = Double.NEGATIVE_INFINITY;
+		for (double[] pt : pts) {
+			points.add(pt.clone());
+			if (pt[0] < minX) minX = pt[0];
+			if (pt[0] > maxX) maxX = pt[0];
+			if (pt[1] < minY) minY = pt[1];
+			if (pt[1] > maxY) maxY = pt[1];
+		}
+		bounds.x = minX;
+		bounds.y = minY;
+		bounds.width = maxX - minX;
+		bounds.height = maxY - minY;
 	}
 
 	public void setFillColor(final ColorRGB c) {
@@ -93,6 +117,19 @@ public class SwingPointFigure extends AbstractAttributedFigure {
 
 	public double getY() {
 		return bounds.y;
+	}
+
+	public List<double[]> getPoints() {
+		return points;
+	}
+
+	public void move(double dx, double dy) {
+		bounds.x += dx;
+		bounds.y += dy;
+		for (double[] pt : points) {
+			pt[0] += dx;
+			pt[1] += dy;
+		}
 	}
 
 	// DRAWING
@@ -128,24 +165,31 @@ public class SwingPointFigure extends AbstractAttributedFigure {
 	}
 
 	/**
-	 * Checks if a Point2D.Double is inside the figure.
+	 * Checks if a Point2D.Double is near any point contained in the figure
 	 */
 	@Override
 	public boolean contains(final Point2D.Double p) {
-		final Rectangle2D.Double r = (Rectangle2D.Double) bounds.clone();
-		final double grow = AttributeKeys.getPerpendicularHitGrowth(this) + 1d;
-		Geom.grow(r, grow, grow);
-		return r.contains(p);
+		final Rectangle2D.Double r = new Rectangle2D.Double();
+		for (double[] pt : points) {
+			r.x = pt[0];
+			r.y = pt[1];
+			// NB - 0.1 works, 1.0 works, even 0.0 works but selection harder
+			r.width = 1.0;
+			r.height = 1.0;
+			final double grow = AttributeKeys.getPerpendicularHitGrowth(this) + 1d;
+			Geom.grow(r, grow, grow);
+			if (r.contains(p)) return true;
+		}
+		return false;
 	}
 
 	@Override
 	public void
 		setBounds(final Point2D.Double anchor, final Point2D.Double lead)
 	{
-		bounds.x = anchor.x;
-		bounds.y = anchor.y;
-		bounds.width = 1;
-		bounds.height = 1;
+		double dx = anchor.x - bounds.x;
+		double dy = anchor.y - bounds.y;
+		move(dx, dy);
 	}
 
 	/**
@@ -179,7 +223,13 @@ public class SwingPointFigure extends AbstractAttributedFigure {
 
 	@Override
 	public List<Handle> createHandles(final int detailLevel) {
-		final Handle handle = new SwingPointHandle(this);
+
+		// NB - original code that was not dragging correctly - BDZ
+		// final Handle handle = new SwingPointHandle(this);
+
+		// NB - new approach here:
+		final Handle handle = new DragHandle(this);
+
 		return Arrays.asList(handle);
 	}
 
@@ -190,58 +240,62 @@ public class SwingPointFigure extends AbstractAttributedFigure {
 		final Color origC = g.getColor();
 		final double sx = g.getTransform().getScaleX();
 		final double sy = g.getTransform().getScaleY();
-		final double ctrX = getX();
-		final double ctrY = getY();
 
-		g.setColor(Color.black);
+		for (double[] pt : points) {
+			final double ctrX = pt[0];
+			final double ctrY = pt[1];
 
-		// black outline around center region
-		rect.x = ctrX - 2 / sx;
-		rect.y = ctrY - 2 / sy;
-		rect.width = 5 / sx;
-		rect.height = 5 / sy;
-		g.fill(rect);
+			g.setColor(Color.black);
 
-		g.setColor(fillColor);
+			// black outline around center region
+			rect.x = ctrX - 2 / sx;
+			rect.y = ctrY - 2 / sy;
+			rect.width = 5 / sx;
+			rect.height = 5 / sy;
+			g.fill(rect);
 
-		// center region
-		rect.x = ctrX - 1 / sx;
-		rect.y = ctrY - 1 / sy;
-		rect.width = 3 / sx;
-		rect.height = 3 / sy;
-		g.fill(rect);
+			g.setColor(fillColor);
 
-		g.setColor(lineColor);
+			// center region
+			rect.x = ctrX - 1 / sx;
+			rect.y = ctrY - 1 / sy;
+			rect.width = 3 / sx;
+			rect.height = 3 / sy;
+			g.fill(rect);
 
-		// tick mark line # 1
-		rect.x = ctrX + 3 / sx;
-		rect.y = ctrY;
-		rect.width = 4 / sx;
-		rect.height = 1 / sy;
-		g.fill(rect);
+			g.setColor(lineColor);
 
-		// tick mark line # 2
-		rect.x = ctrX - 6 / sx;
-		rect.y = ctrY;
-		rect.width = 4 / sx;
-		rect.height = 1 / sy;
-		g.fill(rect);
+			// tick mark line # 1
+			rect.x = ctrX + 3 / sx;
+			rect.y = ctrY;
+			rect.width = 4 / sx;
+			rect.height = 1 / sy;
+			g.fill(rect);
 
-		// tick mark line # 3
-		rect.x = ctrX;
-		rect.y = ctrY - 6 / sy;
-		rect.width = 1 / sx;
-		rect.height = 4 / sy;
-		g.fill(rect);
+			// tick mark line # 2
+			rect.x = ctrX - 6 / sx;
+			rect.y = ctrY;
+			rect.width = 4 / sx;
+			rect.height = 1 / sy;
+			g.fill(rect);
 
-		// tick mark line # 4
-		rect.x = ctrX;
-		rect.y = ctrY + 3 / sy;
-		rect.width = 1 / sx;
-		rect.height = 4 / sy;
-		g.fill(rect);
+			// tick mark line # 3
+			rect.x = ctrX;
+			rect.y = ctrY - 6 / sy;
+			rect.width = 1 / sx;
+			rect.height = 4 / sy;
+			g.fill(rect);
 
-		g.setColor(origC);
+			// tick mark line # 4
+			rect.x = ctrX;
+			rect.y = ctrY + 3 / sy;
+			rect.width = 1 / sx;
+			rect.height = 4 / sy;
+			g.fill(rect);
+
+			g.setColor(origC);
+		}
 	}
+
 
 }

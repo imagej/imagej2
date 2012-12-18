@@ -35,8 +35,6 @@
 
 package imagej.ui.swing.tools;
 
-import java.awt.Shape;
-
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
@@ -50,6 +48,8 @@ import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.SwingPointFigure;
 import imagej.ui.swing.tools.overlay.SwingAngleTool;
 import imagej.util.ColorRGB;
+
+import java.awt.Shape;
 
 import org.jhotdraw.draw.Figure;
 
@@ -95,7 +95,7 @@ public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay, SwingP
 		final PointOverlay pointOverlay = (PointOverlay) overlay;
 		pointFigure.setFillColor(pointOverlay.getFillColor());
 		pointFigure.setLineColor(pointOverlay.getLineColor());
-		pointFigure.setPoint(pointOverlay.getPoint(0), pointOverlay.getPoint(1));
+		pointFigure.setPoints(pointOverlay.getPoints());
 	}
 
 	@Override
@@ -112,15 +112,11 @@ public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay, SwingP
 		// call super in case it initializes anything of importance
 		super.updateOverlay(figure, view);
 		// and restore colors to what we really want
-		overlay.setFillColor(fillColor);
-		overlay.setLineColor(lineColor);
-		// set location
-		final double x = point.getX();
-		final double y = point.getY();
-		pointOverlay.setPoint(x, 0);
-		pointOverlay.setPoint(y, 1);
-		overlay.update();
-		reportPoint(x, y);
+		pointOverlay.setFillColor(fillColor);
+		pointOverlay.setLineColor(lineColor);
+		// set points
+		pointOverlay.setPoints(figure.getPoints());
+		pointOverlay.update();
 	}
 
 	@Override
