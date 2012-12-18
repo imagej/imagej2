@@ -39,6 +39,7 @@ import ij.ImagePlus;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.event.EventService;
+import imagej.log.LogService;
 import imagej.options.OptionsService;
 import imagej.plugin.PluginService;
 import imagej.service.Service;
@@ -63,6 +64,9 @@ public interface LegacyService extends Service {
 
 	/** Gets the ImageDisplayService associated with this LegacyService. */
 	ImageDisplayService getImageDisplayService();
+
+	/** Gets the LogService associated with this LegacyService. */
+	LogService getLogService();
 
 	/** Gets the LegacyImageMap associated with this LegacyService. */
 	LegacyImageMap getImageMap();

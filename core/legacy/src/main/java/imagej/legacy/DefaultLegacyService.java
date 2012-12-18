@@ -159,6 +159,11 @@ public final class DefaultLegacyService extends AbstractService implements
 	}
 
 	@Override
+	public LogService getLogService() {
+		return log;
+	}
+
+	@Override
 	public LegacyImageMap getImageMap() {
 		return imageMap;
 	}
