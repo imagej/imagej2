@@ -85,23 +85,23 @@ public class ClassLauncher {
 		for (; i < arguments.length && arguments[i].charAt(0) == '-'; i++) {
 			final String option = arguments[i];
 			if (option.equals("-cp") || option.equals("-classpath")) {
-				classLoader = ClassLoaderPlus.get(null, new File(arguments[++i]));
+				classLoader = ClassLoaderPlus.get(classLoader, new File(arguments[++i]));
 			}
 			else if (option.equals("-ijcp") || option.equals("-ijclasspath")) {
-				classLoader = ClassLoaderPlus.getInImageJDirectory(null, arguments[++i]);
+				classLoader = ClassLoaderPlus.getInImageJDirectory(classLoader, arguments[++i]);
 			}
 			else if (option.equals("-jarpath")) {
 				classLoader =
-					ClassLoaderPlus.getRecursively(null, true, new File(arguments[++i]));
+					ClassLoaderPlus.getRecursively(classLoader, true, new File(arguments[++i]));
 			}
 			else if (option.equals("-ijjarpath")) {
 				classLoader =
-					ClassLoaderPlus.getRecursivelyInImageJDirectory(null, true, arguments[++i]);
+					ClassLoaderPlus.getRecursivelyInImageJDirectory(classLoader, true, arguments[++i]);
 			}
 			else if (option.equals("-jdb")) jdb = true;
 			else if (option.equals("-retrotranslator")) {
 				classLoader =
-					ClassLoaderPlus.getRecursivelyInImageJDirectory(null, true, "retro");
+					ClassLoaderPlus.getRecursivelyInImageJDirectory(classLoader, true, "retro");
 				retrotranslator = true;
 			}
 			else if (option.equals("-pass-classpath")) passClasspath = true;
