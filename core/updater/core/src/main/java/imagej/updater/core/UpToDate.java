@@ -37,7 +37,7 @@ package imagej.updater.core;
 
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Util;
-import imagej.util.FileUtils;
+import imagej.util.AppUtils;
 import imagej.util.Prefs;
 
 import java.io.File;
@@ -85,7 +85,7 @@ public class UpToDate {
 	public static Result check() throws IOException,
 		ParserConfigurationException, SAXException
 	{
-		return check(FileUtils.getBaseDirectory());
+		return check(AppUtils.getBaseDirectory());
 	}
 
 	/**
