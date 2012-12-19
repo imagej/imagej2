@@ -48,7 +48,7 @@ import imagej.plugin.Plugin;
  * @author Barry DeZonia
  */
 @Plugin(menuPath = "Plugins>Sandbox>Mixed World Command")
-public class TestMixedModeCommand implements Command {
+public class MixedWorldCommand implements Command {
 
 	@Override
 	public void run() {
