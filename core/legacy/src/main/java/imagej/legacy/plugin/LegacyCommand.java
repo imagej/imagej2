@@ -212,7 +212,7 @@ public class LegacyCommand implements Command {
 				outputs = updateDisplaysFromImagePluses();
 
 				// close any displays that IJ1 wants closed
-				for (final ImagePlus imp : LegacyOutputTracker.getClosedImps()) {
+				for (final ImagePlus imp : LegacyOutputTracker.getClosed()) {
 					final ImageDisplay disp = map.lookupDisplay(imp);
 					if (disp != null) {
 						// only close displays that have not been changed
@@ -360,7 +360,7 @@ public class LegacyCommand implements Command {
 			// flag does not track everything (such as metadata changes?) and thus
 			// we might still have to do some minor harmonization. Investigate.
 
-			final ImagePlus[] imps = LegacyOutputTracker.getOutputImps();
+			final ImagePlus[] imps = LegacyOutputTracker.getOutputs();
 			final ImagePlus currImp = WindowManager.getCurrentImage();
 
 			// see method below
