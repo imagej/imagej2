@@ -39,6 +39,7 @@ import ij.ImagePlus;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.event.EventService;
+import imagej.log.LogService;
 import imagej.options.OptionsService;
 import imagej.plugin.PluginService;
 import imagej.service.Service;
@@ -63,6 +64,9 @@ public interface LegacyService extends Service {
 
 	/** Gets the ImageDisplayService associated with this LegacyService. */
 	ImageDisplayService getImageDisplayService();
+
+	/** Gets the LogService associated with this LegacyService. */
+	LogService getLogService();
 
 	/** Gets the LegacyImageMap associated with this LegacyService. */
 	LegacyImageMap getImageMap();
@@ -105,5 +109,20 @@ public interface LegacyService extends Service {
 	 * view using the current channel values.
 	 */
 	void syncColors();
+
+	/**
+	 * States whether we're running in legacy ImageJ 1.x mode.
+	 * 
+	 * To support work flows which are incompatible with ImageJ2, we want to allow
+	 * users to run in legacy ImageJ 1.x mode, where the ImageJ2 GUI is hidden and
+	 * the ImageJ 1.x GUI is shown. During this time, no synchronization should take
+	 * place.
+	 */
+	public boolean isLegacyMode();
+
+	/**
+	 * Switch to/from running legacy ImageJ 1.x mode.
+	 */
+	void toggleLegacyMode(boolean toggle);
 
 }

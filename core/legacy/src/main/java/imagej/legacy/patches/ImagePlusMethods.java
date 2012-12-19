@@ -37,12 +37,10 @@ package imagej.legacy.patches;
 
 import ij.ImagePlus;
 import ij.WindowManager;
-import imagej.ImageJ;
 import imagej.data.display.ImageDisplay;
 import imagej.legacy.LegacyOutputTracker;
 import imagej.legacy.LegacyService;
 import imagej.legacy.Utils;
-import imagej.util.Log;
 
 /**
  * Overrides {@link ImagePlus} methods.
@@ -57,53 +55,56 @@ public final class ImagePlusMethods {
 	}
 
 	/** Appends {@link ImagePlus#updateAndDraw()}. */
-	public static void updateAndDraw(final ImagePlus obj) {
+	public static void updateAndDraw(final LegacyService legacyService, final ImagePlus obj) {
 		if (obj == null) return;
 		if (!obj.isProcessor()) return;
 		if (obj.getWindow() == null) return;
-		if (!Utils.isLegacyThread(Thread.currentThread())) return;
-		Log.debug("ImagePlus.updateAndDraw(): " + obj);
-		final LegacyService legacyService = ImageJ.get(LegacyService.class);
+		if (!legacyService.isLegacyMode()) {
+			if (!Utils.isLegacyThread(Thread.currentThread())) return;
+			legacyService.getLogService().debug("ImagePlus.updateAndDraw(): " + obj);
+		}
 		legacyService.legacyImageChanged(obj);
 		// TODO - add here too?
 		//WindowManager.setCurrentWindow(obj.getWindow());
 	}
 
 	/** Appends {@link ImagePlus#repaintWindow()}. */
-	public static void repaintWindow(final ImagePlus obj) {
+	public static void repaintWindow(final LegacyService legacyService, final ImagePlus obj) {
 		if (obj == null) return;
 		if (obj.getWindow() == null) return;
-		if (!Utils.isLegacyThread(Thread.currentThread())) return;
-		Log.debug("ImagePlus.repaintWindow(): " + obj);
-		final LegacyService legacyService = ImageJ.get(LegacyService.class);
+		if (!legacyService.isLegacyMode()) {
+			if (!Utils.isLegacyThread(Thread.currentThread())) return;
+			legacyService.getLogService().debug("ImagePlus.repaintWindow(): " + obj);
+		}
 		legacyService.legacyImageChanged(obj);
 		// TODO - add here too?
 		//WindowManager.setCurrentWindow(obj.getWindow());
 	}
 
 	/** Appends {@link ImagePlus#show(String message)}. */
-	public static void show(final ImagePlus obj,
+	public static void show(final LegacyService legacyService, final ImagePlus obj,
 		@SuppressWarnings("unused") final String message)
 	{
 		if (obj == null) return;
-		if (!Utils.isLegacyThread(Thread.currentThread())) return;
-		Log.debug("ImagePlus.show(): " + obj);
-		final LegacyService legacyService = ImageJ.get(LegacyService.class);
+		if (!legacyService.isLegacyMode()) {
+			if (!Utils.isLegacyThread(Thread.currentThread())) return;
+			legacyService.getLogService().debug("ImagePlus.show(): " + obj);
+		}
 		legacyService.legacyImageChanged(obj);
 		WindowManager.setCurrentWindow(obj.getWindow());
 	}
 
 	/** Appends {@link ImagePlus#hide()}. */
-	public static void hide(final ImagePlus obj) {
+	public static void hide(final LegacyService legacyService, final ImagePlus obj) {
+		if (legacyService.isLegacyMode()) return;
 		if (obj == null) return;
-		if (!Utils.isLegacyThread(Thread.currentThread())) return;
-		Log.debug("ImagePlus.hide(): " + obj);
+		if (!legacyService.isLegacyMode() && !Utils.isLegacyThread(Thread.currentThread())) return;
+		legacyService.getLogService().debug("ImagePlus.hide(): " + obj);
 		LegacyOutputTracker.removeOutput(obj);
 		// Original method
 		//LegacyOutputTracker.getClosedImps().add(obj);
 		// Alternate method
 		// begin alternate
-		final LegacyService legacyService = ImageJ.get(LegacyService.class);
 		ImageDisplay disp = legacyService.getImageMap().lookupDisplay(obj);
 		if (disp == null) {
 			legacyService.getImageMap().unregisterLegacyImage(obj);
@@ -115,9 +116,10 @@ public final class ImagePlusMethods {
 	}
 
 	/** Appends {@link ImagePlus#close()}. */
-	public static void close(final ImagePlus obj) {
+	// TODO: LegacyOutputTracker should not be a singleton
+	public static void close(final LegacyService legacyService, final ImagePlus obj) {
 		if (obj == null) return;
-		if (!Utils.isLegacyThread(Thread.currentThread())) return;
+		if (!legacyService.isLegacyMode() && !Utils.isLegacyThread(Thread.currentThread())) return;
 		LegacyOutputTracker.addClosed(obj);
 	}
 }

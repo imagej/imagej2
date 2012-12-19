@@ -36,10 +36,8 @@
 package imagej.legacy.patches;
 
 import ij.IJ;
-import imagej.ImageJ;
 import imagej.event.StatusService;
 import imagej.legacy.LegacyService;
-import imagej.util.Log;
 
 /**
  * Overrides {@link IJ} methods.
@@ -52,34 +50,36 @@ public class IJMethods {
 	private static final int PROGRESS_GRANULARITY = 1000;
 
 	/** Appends {@link IJ#showProgress(double)}. */
-	public static void showProgress(final double progress) {
+	public static void showProgress(final LegacyService legacyService, final double progress) {
+		if (legacyService.isLegacyMode()) return;
 		// approximate progress as int ratio
 		final int currentIndex = (int) (PROGRESS_GRANULARITY * progress);
 		final int finalIndex = PROGRESS_GRANULARITY;
-		showProgress(currentIndex, finalIndex);
+		showProgress(legacyService, currentIndex, finalIndex);
 	}
 
 	/** Appends {@link IJ#showProgress(int, int)}. */
 	public static void
-		showProgress(final int currentIndex, final int finalIndex)
+		showProgress(final LegacyService legacyService, final int currentIndex, final int finalIndex)
 	{
-		Log.debug("showProgress: " + currentIndex + "/" + finalIndex);
+		if (legacyService.isLegacyMode()) return;
+		legacyService.getLogService().debug("showProgress: " + currentIndex + "/" + finalIndex);
 		// report progress through global event mechanism
-		final StatusService statusService = ImageJ.get(StatusService.class);
+		final StatusService statusService = legacyService.getContext().getService(StatusService.class);
 		if (statusService == null) return;
 		statusService.showProgress(currentIndex, finalIndex);
 	}
 
 	/** Appends {@link IJ#showStatus(String)}. */
-	public static void showStatus(final String s) {
-		Log.debug("showStatus: " + s);
-		final LegacyService legacyService = ImageJ.get(LegacyService.class);
-		if (legacyService == null || !legacyService.isInitialized()) {
+	public static void showStatus(final LegacyService legacyService, final String s) {
+		if (legacyService.isLegacyMode()) return;
+		legacyService.getLogService().debug("showStatus: " + s);
+		if (!legacyService.isInitialized()) {
 			// suppress ImageJ1 bootup messages
 			return;
 		}
 		// report status through global event mechanism
-		final StatusService statusService = ImageJ.get(StatusService.class);
+		final StatusService statusService = legacyService.getContext().getService(StatusService.class);
 		if (statusService == null) return;
 		statusService.showStatus(s);
 	}

@@ -33,39 +33,65 @@
  * #L%
  */
 
-package imagej.ui.pivot;
+package imagej.legacy;
 
-import imagej.ui.ApplicationFrame;
+import java.awt.Menu;
+import java.awt.MenuItem;
+import java.util.Hashtable;
 
-import org.apache.pivot.wtk.Frame;
+import ij.IJ;
+import ij.Menus;
+import ij.plugin.PlugIn;
+
+import javax.swing.SwingUtilities;
 
 /**
- * Pivot implementation of {@link ApplicationFrame}.
+ * An ImageJ 1.x plugin to switch back from the legacy mode.
  * 
- * @author Curtis Rueden
+ * @author Johannes Schindelin
  */
-public class PivotApplicationFrame extends Frame implements ApplicationFrame {
-
-	// -- ApplicationFrame methods --
-
-	@Override
-	public int getLocationX() {
-		return getLocation().x;
-	}
-
-	@Override
-	public int getLocationY() {
-		return getLocation().y;
-	}
+public class SwitchToModernMode implements PlugIn {
+	/**
+	 * The LegacyService which has the ImageJ context.
+	 * 
+	 * Since ImageJ 1.x had no context, we have to set this variable just before
+	 * switching to the legacy mode.
+	 */
+	static LegacyService legacyService;
 
 	@Override
-	public void activate() {
-		requestActive();
+	public void run(String arg) {
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				@Override
+				public void run() {
+					legacyService.toggleLegacyMode(false);
+				}
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	@Override
-	public void setVisible(boolean visible) {
-		// unsupported operation; ignore
-	}
+	/**
+	 * Register this ImageJ 1.x plugin.
+	 * 
+	 * @param service the legacy service holding the ImageJ context
+	 */
+	static void registerMenuItem(final LegacyService service) {
+		SwitchToModernMode.legacyService = service;
 
+		// inject Help>Switch to Modern Mode
+		final String menuLabel = "Switch to Modern Mode";
+		@SuppressWarnings("unchecked")
+		final Hashtable<String, String> commands = Menus.getCommands();
+		if (!commands.containsKey(menuLabel)) {
+			final Menu helpMenu = Menus.getMenuBar().getHelpMenu();
+			final MenuItem item = new MenuItem(menuLabel);
+			item.addActionListener(IJ.getInstance());
+			helpMenu.add(item);
+
+			commands.put(menuLabel, SwitchToModernMode.class.getName());
+		}
+	}
 }

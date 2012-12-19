@@ -37,6 +37,7 @@ package imagej.legacy.patches;
 
 import ij.ImagePlus;
 import ij.macro.Functions;
+import imagej.legacy.LegacyService;
 
 /**
  * Overrides {@link Functions} methods.
@@ -44,6 +45,7 @@ import ij.macro.Functions;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
+@SuppressWarnings("javadoc")
 public class FunctionsMethods {
 
 	// TODO - this class was written to get around bug #554. The reliance on a
@@ -61,7 +63,7 @@ public class FunctionsMethods {
 	}
 
 	/** Prepends {@link ij.macro.Functions#displayBatchModeImage(ImagePlus)}. */
-	public static void displayBatchModeImageBefore(
+	public static void displayBatchModeImageBefore(@SuppressWarnings("unused") final LegacyService legacyService,
 		@SuppressWarnings("unused") final ImagePlus imp2)
 	{
 		// NOTE - BDZ - removing for now - see if any problems rear their head.
@@ -70,7 +72,7 @@ public class FunctionsMethods {
 	}
 
 	/** Appends {@link ij.macro.Functions#displayBatchModeImage(ImagePlus)}. */
-	public static void displayBatchModeImageAfter(
+	public static void displayBatchModeImageAfter(@SuppressWarnings("unused") final LegacyService legacyService,
 		@SuppressWarnings("unused") final ImagePlus imp2)
 	{
 		// NOTE - BDZ - removing for now - see if any problems rear their head.

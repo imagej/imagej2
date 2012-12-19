@@ -50,9 +50,12 @@ import imagej.legacy.translate.DefaultImageTranslator;
 import imagej.legacy.translate.ImageTranslator;
 import imagej.legacy.translate.LegacyUtils;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -91,10 +94,20 @@ public class LegacyImageMap {
 	private final Map<ImagePlus, ImageDisplay> displayTable;
 
 	/**
+	 * The list of ImagePlus instances accumulated during the legacy mode.
+	 */
+	private Set<ImagePlus> legacyModeImages = new HashSet<ImagePlus>();
+
+	/**
 	 * The {@link ImageTranslator} to use when creating {@link ImagePlus} and
 	 * {@link ImageDisplay} objects corresponding to one another.
 	 */
 	private final DefaultImageTranslator imageTranslator;
+
+	/**
+	 * The legacy service corresponding to this image map.
+	 */
+	private final DefaultLegacyService legacyService;
 
 	/** List of event subscribers, to avoid garbage collection. */
 	@SuppressWarnings("unused")
@@ -102,7 +115,9 @@ public class LegacyImageMap {
 
 	// -- Constructor --
 
-	public LegacyImageMap(final ImageJ context) {
+	public LegacyImageMap(final DefaultLegacyService legacyService) {
+		this.legacyService = legacyService;
+		final ImageJ context = legacyService.getContext();
 		imagePlusTable = new ConcurrentHashMap<ImageDisplay, ImagePlus>();
 		displayTable = new ConcurrentHashMap<ImagePlus, ImageDisplay>();
 		imageTranslator = new DefaultImageTranslator(context);
@@ -150,6 +165,28 @@ public class LegacyImageMap {
 		return imp;
 	}
 
+	public synchronized void toggleLegacyMode(boolean toggle) {
+		if (!toggle) {
+			for (ImagePlus imp : displayTable.keySet()) {
+				final ImageWindow window = imp.getWindow();
+				final ImageDisplay display = displayTable.get(imp);
+				if (window == null || window.isClosed()) {
+					unregisterLegacyImage(imp);
+					display.close();
+				} else {
+					display.update();
+				}
+			}
+			for (final ImagePlus imp : legacyModeImages) {
+				final ImageWindow window = imp.getWindow();
+				if (window != null && !window.isClosed()) {
+					registerLegacyImage(imp);
+				}
+			}
+		}
+		legacyModeImages.clear();
+	}
+
 	/**
 	 * Ensures that the given legacy image has a corresponding
 	 * {@link ImageDisplay}.
@@ -159,6 +196,10 @@ public class LegacyImageMap {
 	 *         {@link ImageTranslator}.
 	 */
 	public ImageDisplay registerLegacyImage(final ImagePlus imp) {
+		if (legacyService.isLegacyMode()) {
+			legacyModeImages.add(imp);
+			return null;
+		}
 		ImageDisplay display = lookupDisplay(imp);
 		if (display == null) {
 			// mapping does not exist; mirror legacy image to display
@@ -178,6 +219,27 @@ public class LegacyImageMap {
 	public void unregisterLegacyImage(final ImagePlus imp) {
 		final ImageDisplay display = lookupDisplay(imp);
 		removeMapping(display, imp);
+	}
+
+	/**
+	 * Gets a list of {@link ImageDisplay} instances known to this legacy service.
+	 * 
+	 * @return a collection of {@link ImageDisplay} instances linked to legacy {@link ImagePlus} instances.
+	 */
+	public Collection<ImageDisplay> getImageDisplays() {
+		return imagePlusTable.keySet();
+	}
+
+	/**
+	 * Gets a list of {@link ImagePlus} instances known to this legacy service.
+	 * 
+	 * @return a collection of legacy {@link ImagePlus} instances linked to {@link ImageDisplay} instances.
+	 */
+	public Collection<ImagePlus> getImagePlusInstances() {
+		Collection<ImagePlus> result = new HashSet<ImagePlus>();
+		result.addAll(displayTable.keySet());
+		result.addAll(legacyModeImages);
+		return result;
 	}
 
 	// -- Helper methods --
