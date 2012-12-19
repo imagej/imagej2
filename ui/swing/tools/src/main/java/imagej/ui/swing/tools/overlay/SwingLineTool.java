@@ -126,7 +126,7 @@ public class SwingLineTool extends AbstractJHotDrawAdapter<LineOverlay, LineFigu
 
 	@Override
 	public JHotDrawTool getCreationTool(final ImageDisplay display) {
-		return new IJCreationTool(display, this);
+		return new IJCreationTool<LineFigure>(display, this);
 	}
 
 	@Override

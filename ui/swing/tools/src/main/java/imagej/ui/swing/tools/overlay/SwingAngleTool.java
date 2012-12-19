@@ -68,7 +68,7 @@ public class SwingAngleTool extends AbstractJHotDrawAdapter<AngleOverlay, SwingA
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
 		if (!(overlay instanceof AngleOverlay)) return false;
-		return (figure == null) || (figure instanceof AngleFigure);
+		return figure == null || figure instanceof AngleFigure;
 	}
 
 	@Override
