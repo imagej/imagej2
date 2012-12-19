@@ -36,21 +36,28 @@ II. BUILD IMAGEJ2 RELEASE BINARIES:
 2) Push the tag; e.g.:
        git push origin v2.0.0-beta3
 
-3) Tell Jenkins to build and deploy the launcher for the just-pushed tag (the
-   TOKEN is here: http://jenkins.imagej.net/job/ImageJ-launcher/configure):
+3) Look up the ImageJ Jenkins <TOKEN> from:
+       http://jenkins.imagej.net/job/ImageJ/configure
+
+4) Tell Jenkins to build and deploy the launcher for the just-pushed tag:
        bin/trigger-jenkins-deploy.sh --no-push launcher <TOKEN> <TAG>
 
-4) Tell Jenkins to build and deploy ImageJ2 itself for the just-pushed tag (the
-   TOKEN is here: http://jenkins.imagej.net/job/ImageJ/configure):
+5) Tell Jenkins to build ImageJ2 itself for the just-pushed tag:
        bin/trigger-jenkins-deploy.sh --no-push app <TOKEN> <TAG>
+
+6) Download the new application ZIP from Jenkins and perform desired tests:
+       http://jenkins.imagej.net/job/ImageJ-release-build/lastSuccessfulBuild/artifact/app/target/
+
+7) As needed: fix any bugs, delete & repush the tag, and repeat steps 5-6.
+
+8) Tell Jenkins to deploy the release:
+       http://jenkins.imagej.net/job/ImageJ-release-deploy/build?delay=0sec
+
 
 -------------------------------------------------------------------------------
 III. UPDATE ONLINE RESOURCES:
 
-1) Download the new application ZIP from the Jenkins build:
-       http://jenkins.imagej.net/job/ImageJ/lastSuccessfulBuild/artifact/app/target/
-
-   Rename the ZIP to delete the "-application" suffix.
+1) Rename the application ZIP to delete the "-application" suffix.
 
 2) Upload the new JARs to the ImageJ2 update site.
 
