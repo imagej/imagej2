@@ -41,7 +41,6 @@ import ij.WindowManager;
 import ij.gui.ImageWindow;
 import imagej.command.CommandService;
 import imagej.core.options.OptionsMisc;
-import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -84,11 +83,11 @@ import java.util.Map;
  * </p>
  * <p>
  * It also maintains an image map between legacy ImageJ {@link ImagePlus}
- * objects and modern ImageJ {@link Dataset}s.
+ * objects and modern ImageJ {@link ImageDisplay}s.
  * </p>
  * <p>
- * In this fashion, when a legacy command is executed on a {@link Dataset}, the
- * service transparently translates it into an {@link ImagePlus}, and vice
+ * In this fashion, when a legacy command is executed on a {@link ImageDisplay},
+ * the service transparently translates it into an {@link ImagePlus}, and vice
  * versa, enabling backward compatibility with legacy commands.
  * </p>
  * 
@@ -101,7 +100,9 @@ public final class DefaultLegacyService extends AbstractService implements
 {
 
 	static {
-		new LegacyInjector().injectHooks(Thread.currentThread().getContextClassLoader());
+		final ClassLoader contextClassLoader =
+			Thread.currentThread().getContextClassLoader();
+		new LegacyInjector().injectHooks(contextClassLoader);
 	}
 
 	@Parameter
@@ -177,7 +178,8 @@ public final class DefaultLegacyService extends AbstractService implements
 	}
 
 	@Override
-	public void runLegacyCommand(final String ij1ClassName, final String argument)
+	public void
+		runLegacyCommand(final String ij1ClassName, final String argument)
 	{
 		final String arg = argument == null ? "" : argument;
 		final Map<String, Object> inputMap = new HashMap<String, Object>();
@@ -206,12 +208,10 @@ public final class DefaultLegacyService extends AbstractService implements
 			imageDisplayService.getActiveImageDisplay();
 		final ImagePlus activeImagePlus = imageMap.lookupImagePlus(activeDisplay);
 		// NB - old way - caused probs with 3d Project
-		//WindowManager.setTempCurrentImage(activeImagePlus);
+		// WindowManager.setTempCurrentImage(activeImagePlus);
 		// NB - new way - test thoroughly
-		if (activeImagePlus == null)
-			WindowManager.setCurrentWindow(null);
-		else
-			WindowManager.setCurrentWindow(activeImagePlus.getWindow());
+		if (activeImagePlus == null) WindowManager.setCurrentWindow(null);
+		else WindowManager.setCurrentWindow(activeImagePlus.getWindow());
 	}
 
 	@Override
@@ -235,21 +235,22 @@ public final class DefaultLegacyService extends AbstractService implements
 
 	@Override
 	public void syncColors() {
-		DatasetView view = imageDisplayService.getActiveDatasetView();
+		final DatasetView view = imageDisplayService.getActiveDatasetView();
 		if (view == null) return;
-		OptionsChannels channels = getChannels();
-		ColorRGB fgColor = view.getColor(channels.getFgValues());
-		ColorRGB bgColor = view.getColor(channels.getBgValues());
+		final OptionsChannels channels = getChannels();
+		final ColorRGB fgColor = view.getColor(channels.getFgValues());
+		final ColorRGB bgColor = view.getColor(channels.getBgValues());
 		optionsSynchronizer.colorOptions(fgColor, bgColor);
 	}
 
 	/**
 	 * States whether we're running in legacy ImageJ 1.x mode.
-	 * 
+	 * <p>
 	 * To support work flows which are incompatible with ImageJ2, we want to allow
 	 * users to run in legacy ImageJ 1.x mode, where the ImageJ2 GUI is hidden and
-	 * the ImageJ 1.x GUI is shown. During this time, no synchronization should take
-	 * place.
+	 * the ImageJ 1.x GUI is shown. During this time, no synchronization should
+	 * take place.
+	 * </p>
 	 */
 	@Override
 	public boolean isLegacyMode() {
@@ -260,7 +261,7 @@ public final class DefaultLegacyService extends AbstractService implements
 	 * Switch to/from running legacy ImageJ 1.x mode.
 	 */
 	@Override
-	public synchronized void toggleLegacyMode(boolean toggle) {
+	public synchronized void toggleLegacyMode(final boolean toggle) {
 		if (toggle) legacyIJ1Mode = toggle;
 
 		final ij.ImageJ ij = IJ.getInstance();
@@ -269,28 +270,29 @@ public final class DefaultLegacyService extends AbstractService implements
 
 		// TODO: prevent IJ1 from quitting without IJ2 quitting, too
 
-		final UIService uiService = imageDisplayService.getContext().getService(UIService.class);
+		final UIService uiService =
+			imageDisplayService.getContext().getService(UIService.class);
 		if (uiService != null) {
-			// hide or show the IJ2 main window
-			ApplicationFrame appFrame = uiService.getDefaultUI().getApplicationFrame();
+			// hide/show the IJ2 main window
+			final ApplicationFrame appFrame =
+				uiService.getDefaultUI().getApplicationFrame();
 			appFrame.setVisible(!toggle);
 
-			// hide or show the IJ2 datasets corresponding to legacy ImagePlus instances
+			// hide/show the IJ2 datasets corresponding to legacy ImagePlus instances
 			for (final ImageDisplay display : imageMap.getImageDisplays()) {
-				final ImageDisplayViewer viewer = (ImageDisplayViewer)uiService.getDisplayViewer(display);
+				final ImageDisplayViewer viewer =
+					(ImageDisplayViewer) uiService.getDisplayViewer(display);
 				if (viewer == null) continue;
 				final DisplayWindow window = viewer.getWindow();
 				if (window != null) window.showDisplay(!toggle);
 			}
 		}
 
-		// show or hide IJ1 main window
-		if (toggle) {
-			ij.pack();
-		}
+		// hide/show IJ1 main window
+		if (toggle) ij.pack();
 		ij.setVisible(toggle);
 
-		// show or hide the legacy ImagePlus instances
+		// hide/show the legacy ImagePlus instances
 		for (final ImagePlus imp : imageMap.getImagePlusInstances()) {
 			final ImageWindow window = imp.getWindow();
 			if (window != null) window.setVisible(toggle);
@@ -304,17 +306,13 @@ public final class DefaultLegacyService extends AbstractService implements
 
 	@Override
 	public void initialize() {
-		if (instance != null) {
-			throw new UnsupportedOperationException("Cannot instantiate more than one DefaultLegacyService");
-		}
+		checkInstance();
 
 		imageMap = new LegacyImageMap(this);
 		optionsSynchronizer = new OptionsSynchronizer(optionsService);
 
 		synchronized (DefaultLegacyService.class) {
-			if (instance != null) {
-				throw new UnsupportedOperationException("Cannot instantiate more than one DefaultLegacyService");
-			}
+			checkInstance();
 			instance = this;
 		}
 
@@ -386,15 +384,25 @@ public final class DefaultLegacyService extends AbstractService implements
 	// -- helpers --
 
 	/**
-	 * Returns the legacy service associated with the ImageJ 1.x instance in the current class loader.
-	 * 
-	 * This method is intended to be used by the CodeHacker; it is invoked by the javassisted
-	 * methods.
+	 * Returns the legacy service associated with the ImageJ 1.x instance in the
+	 * current class loader. This method is intended to be used by the
+	 * {@link CodeHacker}; it is invoked by the javassisted methods.
 	 * 
 	 * @return the legacy service
 	 */
 	public static DefaultLegacyService getInstance() {
 		return instance;
+	}
+
+	/**
+	 * @throws UnsupportedOperationException if the singleton
+	 *           {@code DefaultLegacyService} already exists.
+	 */
+	private void checkInstance() {
+		if (instance != null) {
+			throw new UnsupportedOperationException(
+				"Cannot instantiate more than one DefaultLegacyService");
+		}
 	}
 
 	private OptionsChannels getChannels() {
