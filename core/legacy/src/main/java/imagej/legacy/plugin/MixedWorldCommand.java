@@ -39,6 +39,8 @@ import ij.ImagePlus;
 import ij.process.ByteProcessor;
 import imagej.command.Command;
 import imagej.legacy.LegacyOutputTracker;
+import imagej.log.LogService;
+import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
 /**
@@ -50,46 +52,55 @@ import imagej.plugin.Plugin;
 @Plugin(menuPath = "Plugins>Sandbox>Mixed World Command")
 public class MixedWorldCommand implements Command {
 
+	@Parameter
+	private LogService log;
+
+	private boolean ok = true;
+
 	@Override
 	public void run() {
 		final String title = "junkolaTheFourth";
 		final int size = 100;
 		final ByteProcessor proc = new ByteProcessor(size, size);
 		final ImagePlus imp = new ImagePlus(title, proc);
-		if (imp.getWidth() != size) System.out.println("Error: size wrong");
-		if (imp.getHeight() != size) System.out.println("Error: size wrong");
-		if (imp.getBitDepth() != 8) System.out.println("Error: bit depth wrong");
-		if (!imp.getTitle().equals(title)) System.out.println("Error: title wrong");
+		if (imp.getWidth() != size) error("size wrong");
+		if (imp.getHeight() != size) error("size wrong");
+		if (imp.getBitDepth() != 8) error("bit depth wrong");
+		if (!imp.getTitle().equals(title)) error("title wrong");
 		imp.show();
 		if (LegacyOutputTracker.containsOutput(imp)) {
-			System.out.println("Error: output imp is in output list");
+			error("output imp is in output list");
 		}
 		if (LegacyOutputTracker.containsClosed(imp)) {
-			System.out.println("Error: output imp is in closed list");
+			error("output imp is in closed list");
 		}
 		imp.repaintWindow();
 		if (LegacyOutputTracker.containsOutput(imp)) {
-			System.out.println("Error: output imp is in output list");
+			error("output imp is in output list");
 		}
 		if (LegacyOutputTracker.containsClosed(imp)) {
-			System.out.println("Error: output imp is in closed list");
+			error("output imp is in closed list");
 		}
 		imp.hide();
 		if (LegacyOutputTracker.containsOutput(imp)) {
-			System.out.println("Error: output imp is in output list");
+			error("output imp is in output list");
 		}
 		if (LegacyOutputTracker.containsClosed(imp)) {
-			System.out.println("Error: output imp is in closed list");
+			error("output imp is in closed list");
 		}
 		imp.close();
 		if (LegacyOutputTracker.containsOutput(imp)) {
-			System.out.println("Error: output imp is in output list");
+			error("output imp is in output list");
 		}
 		if (LegacyOutputTracker.containsClosed(imp)) {
-			System.out.println("Error: output imp is in closed list");
+			error("output imp is in closed list");
 		}
-		System.out
-			.println("If no messages before this then terminated successfully");
+		if (ok) log.info("terminated successfully!");
+	}
+
+	private void error(final String msg) {
+		log.error(msg);
+		ok = false;
 	}
 
 }
