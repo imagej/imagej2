@@ -37,6 +37,11 @@ package imagej.legacy.plugin;
 
 import imagej.legacy.LegacyService;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class LegacyThreadGroup extends ThreadGroup {
 
 	private static final String GROUP_NAME = "IJ1 legacy group";
