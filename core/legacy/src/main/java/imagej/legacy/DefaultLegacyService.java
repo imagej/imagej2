@@ -265,7 +265,7 @@ public final class DefaultLegacyService extends AbstractService implements
 
 		final ij.ImageJ ij = IJ.getInstance();
 
-		RestartIJ2Plugin.registerMenuItem(this);
+		SwitchToModernMode.registerMenuItem(this);
 
 		// TODO: prevent IJ1 from quitting without IJ2 quitting, too
 

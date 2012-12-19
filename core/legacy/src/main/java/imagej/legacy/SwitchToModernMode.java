@@ -50,7 +50,7 @@ import javax.swing.SwingUtilities;
  * 
  * @author Johannes Schindelin
  */
-public class RestartIJ2Plugin implements PlugIn {
+public class SwitchToModernMode implements PlugIn {
 	/**
 	 * The LegacyService which has the ImageJ context.
 	 * 
@@ -79,10 +79,10 @@ public class RestartIJ2Plugin implements PlugIn {
 	 * @param service the legacy service holding the ImageJ context
 	 */
 	static void registerMenuItem(final LegacyService service) {
-		RestartIJ2Plugin.legacyService = service;
+		SwitchToModernMode.legacyService = service;
 
-		// inject Help>Stop Legacy ImageJ 1.x Mode
-		final String menuLabel = "Stop Legacy ImageJ 1.x Mode";
+		// inject Help>Switch to Modern Mode
+		final String menuLabel = "Switch to Modern Mode";
 		@SuppressWarnings("unchecked")
 		final Hashtable<String, String> commands = Menus.getCommands();
 		if (!commands.containsKey(menuLabel)) {
@@ -91,7 +91,7 @@ public class RestartIJ2Plugin implements PlugIn {
 			item.addActionListener(IJ.getInstance());
 			helpMenu.add(item);
 
-			commands.put(menuLabel, RestartIJ2Plugin.class.getName());
+			commands.put(menuLabel, SwitchToModernMode.class.getName());
 		}
 	}
 }

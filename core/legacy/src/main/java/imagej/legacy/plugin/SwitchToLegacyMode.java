@@ -47,8 +47,8 @@ import imagej.plugin.Plugin;
  * @author Johannes Schindelin
  */
 @Plugin(menu = { @Menu(label = "Help"),
-	@Menu(label = "Start Legacy ImageJ 1.x Mode") })
-public class LegacyImageJ1Mode extends ContextCommand {
+	@Menu(label = "Switch to Legacy Mode") })
+public class SwitchToLegacyMode extends ContextCommand {
 
 	@Parameter
 	private LegacyService legacyService;
