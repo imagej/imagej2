@@ -171,12 +171,12 @@ public class LegacyImageMap {
 	}
 
 	public synchronized void toggleLegacyMode(boolean toggle) {
+		final Harmonizer harmonizer =
+				new Harmonizer(legacyService.getContext(), imageTranslator);
 		if (toggle) {
 			// make sure that all ImageDisplays have a corresponding ImagePlus
 			final ImageDisplayService imageDisplayService =
 					legacyService.getImageDisplayService();
-			final Harmonizer harmonizer =
-					new Harmonizer(legacyService.getContext(), imageTranslator);
 			final List<ImageDisplay> imageDisplays =
 					imageDisplayService.getImageDisplays();
 			final UIService uiService =
@@ -211,7 +211,7 @@ public class LegacyImageMap {
 					unregisterLegacyImage(imp);
 					display.close();
 				} else {
-					display.update();
+					harmonizer.updateDisplay(display, imp);
 				}
 			}
 			for (final ImagePlus imp : legacyModeImages) {
