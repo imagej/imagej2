@@ -268,6 +268,7 @@ public final class DefaultLegacyService extends AbstractService implements
 
 		SwitchToModernMode.registerMenuItem(this);
 
+		// TODO: hide/show Brightness/Contrast, Color Picker, Command Launcher, etc
 		// TODO: prevent IJ1 from quitting without IJ2 quitting, too
 
 		final UIService uiService =
