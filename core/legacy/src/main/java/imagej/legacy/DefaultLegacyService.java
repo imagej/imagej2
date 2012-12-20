@@ -278,6 +278,7 @@ public final class DefaultLegacyService extends AbstractService implements
 				uiService.getDefaultUI().getApplicationFrame();
 			appFrame.setVisible(!toggle);
 
+			// TODO: move this into the LegacyImageMap's toggleLegacyMode, passing the uiService
 			// hide/show the IJ2 datasets corresponding to legacy ImagePlus instances
 			for (final ImageDisplay display : imageMap.getImageDisplays()) {
 				final ImageDisplayViewer viewer =

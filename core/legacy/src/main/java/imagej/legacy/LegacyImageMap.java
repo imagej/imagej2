@@ -41,14 +41,19 @@ import ij.gui.Roi;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.data.overlay.Overlay;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
 import imagej.legacy.translate.DefaultImageTranslator;
+import imagej.legacy.translate.Harmonizer;
 import imagej.legacy.translate.ImageTranslator;
 import imagej.legacy.translate.LegacyUtils;
+import imagej.ui.UIService;
+import imagej.ui.viewer.DisplayWindow;
+import imagej.ui.viewer.image.ImageDisplayViewer;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -166,7 +171,39 @@ public class LegacyImageMap {
 	}
 
 	public synchronized void toggleLegacyMode(boolean toggle) {
-		if (!toggle) {
+		if (toggle) {
+			// make sure that all ImageDisplays have a corresponding ImagePlus
+			final ImageDisplayService imageDisplayService =
+					legacyService.getImageDisplayService();
+			final Harmonizer harmonizer =
+					new Harmonizer(legacyService.getContext(), imageTranslator);
+			final List<ImageDisplay> imageDisplays =
+					imageDisplayService.getImageDisplays();
+			final UIService uiService =
+					imageDisplayService.getContext().getService(UIService.class);
+			// TODO: this is almost exactly what LegacyCommand does, so it is
+			// pretty obvious that it is misplaced in there.
+			for (final ImageDisplay display : imageDisplays) {
+				ImagePlus imp = lookupImagePlus(display);
+				if (imp == null) {
+					final Dataset ds = imageDisplayService.getActiveDataset(display);
+					if (LegacyUtils.dimensionsIJ1Compatible(ds)) {
+						imp = registerDisplay(display);
+						final ImageDisplayViewer viewer =
+								(ImageDisplayViewer)uiService.getDisplayViewer(display);
+						if (viewer != null) {
+							final DisplayWindow window = viewer.getWindow();
+							if (window != null) window.showDisplay(!toggle);
+						}
+					}
+				}
+				else {
+					imp.unlock();
+				}
+				harmonizer.updateLegacyImage(display, imp);
+				harmonizer.registerType(imp);
+			}
+		} else {
 			for (ImagePlus imp : displayTable.keySet()) {
 				final ImageWindow window = imp.getWindow();
 				final ImageDisplay display = displayTable.get(imp);
