@@ -37,6 +37,8 @@ package imagej.legacy.patches;
 
 import ij.io.PluginClassLoader;
 import imagej.legacy.LegacyService;
+import imagej.log.LogService;
+import imagej.log.StderrLogService;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -59,6 +61,10 @@ public final class PluginClassLoaderMethods {
 		// prevent instantiation of utility class
 	}
 
+	private static LogService getLogService(final LegacyService legacyService) {
+		return legacyService != null ? legacyService.getLogService() : new StderrLogService();
+	}
+
 	private static Method addURLMethod;
 
 	private static void addURL(final LegacyService legacyService, final PluginClassLoader loader, final URL url) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
@@ -67,9 +73,9 @@ public final class PluginClassLoaderMethods {
 				try {
 					addURLMethod = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
 				} catch (SecurityException e) {
-					legacyService.getLogService().error(e);
+					getLogService(legacyService).error(e);
 				} catch (NoSuchMethodException e) {
-					legacyService.getLogService().error(e);
+					getLogService(legacyService).error(e);
 				}
 				addURLMethod.setAccessible(true);
 			}

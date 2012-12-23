@@ -268,6 +268,7 @@ public final class DefaultLegacyService extends AbstractService implements
 
 		SwitchToModernMode.registerMenuItem(this);
 
+		// TODO: hide/show Brightness/Contrast, Color Picker, Command Launcher, etc
 		// TODO: prevent IJ1 from quitting without IJ2 quitting, too
 
 		final UIService uiService =
@@ -278,6 +279,7 @@ public final class DefaultLegacyService extends AbstractService implements
 				uiService.getDefaultUI().getApplicationFrame();
 			appFrame.setVisible(!toggle);
 
+			// TODO: move this into the LegacyImageMap's toggleLegacyMode, passing the uiService
 			// hide/show the IJ2 datasets corresponding to legacy ImagePlus instances
 			for (final ImageDisplay display : imageMap.getImageDisplays()) {
 				final ImageDisplayViewer viewer =

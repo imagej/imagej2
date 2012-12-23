@@ -110,7 +110,7 @@ public class LegacyInjector {
 			// NB: If com.apple.eawt package is present, override IJ1's MacAdapter.
 			hacker.insertBeforeMethod("MacAdapter",
 				"public void run(java.lang.String arg)",
-				"if (!imagej.legacy.LegacyService.isLegacyMode()) return;");
+				"if (!$service.isLegacyMode()) return;");
 			hacker.loadClass("MacAdapter");
 		}
 
