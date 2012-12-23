@@ -62,4 +62,9 @@ public class Utils {
 		}
 		return null;
 	}
+
+	public static boolean isLegacyMode(final LegacyService legacyService) {
+		return legacyService == null || legacyService.isLegacyMode();
+	}
+
 }
