@@ -294,7 +294,9 @@ public class CodeHacker {
 
 	/** Patches in the current legacy service for '$service' */
 	private String expand(final String code) {
-		return code.replace("$service", "imagej.legacy.DefaultLegacyService.getInstance()");
+		return code
+			.replace("$isLegacyMode()", "imagej.legacy.Utils.isLegacyMode($service)")
+			.replace("$service", "imagej.legacy.DefaultLegacyService.getInstance()");
 	}
 
 	/** Extracts the method name from the given method signature. */

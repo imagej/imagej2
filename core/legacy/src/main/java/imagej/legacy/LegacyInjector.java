@@ -56,7 +56,7 @@ public class LegacyInjector {
 			"public java.awt.Point getLocationOnScreen()");
 		hacker.insertBeforeMethod("ij.ImageJ",
 			"public java.awt.Point getLocationOnScreen()",
-			"if ($service.isLegacyMode()) return super.getLocationOnScreen();");
+			"if ($isLegacyMode()) return super.getLocationOnScreen();");
 		hacker.loadClass("ij.ImageJ");
 
 		// override behavior of ij.IJ
@@ -82,11 +82,11 @@ public class LegacyInjector {
 			"public void setVisible(boolean vis)");
 		hacker.insertBeforeMethod("ij.gui.ImageWindow",
 			"public void setVisible(boolean vis)",
-			"if ($service.isLegacyMode()) { super.setVisible($1); }");
+			"if ($isLegacyMode()) { super.setVisible($1); }");
 		hacker.insertMethod("ij.gui.ImageWindow", "public void show()");
 		hacker.insertBeforeMethod("ij.gui.ImageWindow",
 			"public void show()",
-			"if ($service.isLegacyMode()) { super.show(); }");
+			"if ($isLegacyMode()) { super.show(); }");
 		hacker.insertBeforeMethod("ij.gui.ImageWindow", "public void close()");
 		hacker.loadClass("ij.gui.ImageWindow");
 
@@ -110,7 +110,7 @@ public class LegacyInjector {
 			// NB: If com.apple.eawt package is present, override IJ1's MacAdapter.
 			hacker.insertBeforeMethod("MacAdapter",
 				"public void run(java.lang.String arg)",
-				"if (!$service.isLegacyMode()) return;");
+				"if (!$isLegacyMode()) return;");
 			hacker.loadClass("MacAdapter");
 		}
 
