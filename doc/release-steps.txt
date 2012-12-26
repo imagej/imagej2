@@ -61,10 +61,7 @@ III. UPDATE ONLINE RESOURCES:
 
 2) Upload the new JARs to the ImageJ2 update site.
 
-3) Upload the ZIP to GitHub's Downloads section:
-       https://github.com/imagej/imagej/downloads
-
-4) Create a blog post on developer.imagej.net:
+3) Create a blog post on developer.imagej.net:
        http://developer.imagej.net/node/add/blog
 
    It should be modeled after previous blog entries; e.g.:
@@ -72,10 +69,10 @@ III. UPDATE ONLINE RESOURCES:
 
    Make sure to add the ZIP file as an attachment to the post.
 
-5) Update the Downloads page at:
+4) Update the Downloads page at:
        http://developer.imagej.net/downloads
 
-6) Send a release announcement to the mailing lists (ImageJ and imagej-devel).
+5) Send a release announcement to the mailing lists (ImageJ and imagej-devel).
 
    It should be an abbreviated version of the blog post, modeled after
    previous release announcements; e.g.:
