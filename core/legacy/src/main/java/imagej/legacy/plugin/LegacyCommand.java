@@ -71,8 +71,7 @@ import java.util.List;
  */
 public class LegacyCommand implements Command {
 
-	public static final String GROUP_NAME = "IJ1 legacy group";
-	public static final String THREAD_NAME = "IJ1 legacy thread";
+	private static final String THREAD_NAME = "IJ1 legacy thread";
 
 	@Parameter
 	private String className;
@@ -163,7 +162,7 @@ public class LegacyCommand implements Command {
 		// threads in its group.
 
 		public LegacyCommandThread() {
-			super(new ThreadGroup(GROUP_NAME), THREAD_NAME);
+			super(new LegacyThreadGroup(legacyService), THREAD_NAME);
 			this.group = getThreadGroup();
 			this.map = legacyService.getImageMap();
 			final ImageTranslator imageTranslator =

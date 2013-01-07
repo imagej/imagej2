@@ -35,7 +35,7 @@
 
 package imagej.legacy;
 
-import imagej.legacy.plugin.LegacyCommand;
+import imagej.legacy.plugin.LegacyThreadGroup;
 
 /**
  * Static utility methods used in the imagej.legacy package
@@ -46,7 +46,7 @@ public class Utils {
 
 	/**
 	 * Returns true if the given thread is in any way a child of a
-	 * {@link LegacyCommand} thread. Returns false otherwise.
+	 * {@link LegacyThreadGroup}. Returns false otherwise.
 	 */
 	public static boolean isLegacyThread(Thread t) {
 		return findLegacyThreadGroup(t) != null;
@@ -56,13 +56,15 @@ public class Utils {
 	 * If the given thread is not derived from a LegacyCommand returns null. Else
 	 * it returns the ThreadGroup at the base of the LegacyCommand.
 	 */
-	public static ThreadGroup findLegacyThreadGroup(Thread t) {
-		ThreadGroup group = t.getThreadGroup();
-		while (group != null) {
-			String groupName = group.getName();
-			if (LegacyCommand.GROUP_NAME.equals(groupName)) return group;
-			group = group.getParent();
+	public static LegacyThreadGroup findLegacyThreadGroup(Thread t) {
+		for (ThreadGroup group = t.getThreadGroup(); group != null; group = group.getParent()) {
+			if (group instanceof LegacyThreadGroup) return (LegacyThreadGroup)group;
 		}
 		return null;
 	}
+
+	public static boolean isLegacyMode(final LegacyService legacyService) {
+		return legacyService == null || legacyService.isLegacyMode();
+	}
+
 }

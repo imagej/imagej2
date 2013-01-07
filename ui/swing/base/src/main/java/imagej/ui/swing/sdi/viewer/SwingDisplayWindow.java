@@ -74,7 +74,7 @@ public class SwingDisplayWindow extends JFrame implements DisplayWindow {
 
 	@Override
 	public void showDisplay(final boolean visible) {
-		pack();
+		if (visible) pack();
 		setVisible(visible);
 	}
 

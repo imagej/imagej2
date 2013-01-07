@@ -81,8 +81,8 @@ public class SwingEllipseTool extends AbstractJHotDrawAdapter<EllipseOverlay, El
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
-		if (figure != null && !(figure instanceof EllipseFigure)) return false;
-		return overlay instanceof EllipseOverlay;
+		if (!(overlay instanceof EllipseOverlay)) return false;
+		return figure == null || figure instanceof EllipseFigure;
 	}
 
 	@Override
@@ -129,7 +129,7 @@ public class SwingEllipseTool extends AbstractJHotDrawAdapter<EllipseOverlay, El
 
 	@Override
 	public JHotDrawTool getCreationTool(final ImageDisplay display) {
-		return new IJCreationTool(display, this);
+		return new IJCreationTool<EllipseFigure>(display, this);
 	}
 
 	@Override

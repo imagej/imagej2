@@ -100,8 +100,6 @@ public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay, SwingP
 
 	@Override
 	public void updateOverlay(final SwingPointFigure figure, final OverlayView view) {
-		assert figure instanceof SwingPointFigure;
-		final SwingPointFigure point = (SwingPointFigure) figure;
 		final Overlay overlay = view.getData();
 		assert overlay instanceof PointOverlay;
 		final PointOverlay pointOverlay = (PointOverlay) overlay;

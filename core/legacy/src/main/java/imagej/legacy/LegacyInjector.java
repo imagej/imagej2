@@ -47,13 +47,16 @@ import imagej.util.ClassUtils;
 public class LegacyInjector {
 
 	/** Overrides class behavior of ImageJ1 classes by injecting method hooks. */
-	public void injectHooks() {
+	public void injectHooks(final ClassLoader classLoader) {
 		// NB: Override class behavior before class loading gets too far along.
-		final CodeHacker hacker = new CodeHacker();
+		final CodeHacker hacker = new CodeHacker(classLoader);
 
 		// override behavior of ij.ImageJ
 		hacker.insertMethod("ij.ImageJ",
 			"public java.awt.Point getLocationOnScreen()");
+		hacker.insertBeforeMethod("ij.ImageJ",
+			"public java.awt.Point getLocationOnScreen()",
+			"if ($isLegacyMode()) return super.getLocationOnScreen();");
 		hacker.loadClass("ij.ImageJ");
 
 		// override behavior of ij.IJ
@@ -77,7 +80,13 @@ public class LegacyInjector {
 		// override behavior of ij.gui.ImageWindow
 		hacker.insertMethod("ij.gui.ImageWindow",
 			"public void setVisible(boolean vis)");
+		hacker.insertBeforeMethod("ij.gui.ImageWindow",
+			"public void setVisible(boolean vis)",
+			"if ($isLegacyMode()) { super.setVisible($1); }");
 		hacker.insertMethod("ij.gui.ImageWindow", "public void show()");
+		hacker.insertBeforeMethod("ij.gui.ImageWindow",
+			"public void show()",
+			"if ($isLegacyMode()) { super.show(); }");
 		hacker.insertBeforeMethod("ij.gui.ImageWindow", "public void close()");
 		hacker.loadClass("ij.gui.ImageWindow");
 
@@ -89,18 +98,19 @@ public class LegacyInjector {
 		hacker
 			.insertBeforeMethod("ij.macro.Functions",
 				"void displayBatchModeImage(ij.ImagePlus imp2)",
-				"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageBefore($1);");
+				"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageBefore($service, $1);");
 		hacker
 			.insertAfterMethod("ij.macro.Functions",
 				"void displayBatchModeImage(ij.ImagePlus imp2)",
-				"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageAfter($1);");
+				"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageAfter($service, $1);");
 		hacker.loadClass("ij.macro.Functions");
 
 		// override behavior of MacAdapter, if needed
 		if (ClassUtils.hasClass("com.apple.eawt.ApplicationListener")) {
 			// NB: If com.apple.eawt package is present, override IJ1's MacAdapter.
-			hacker.replaceMethod("MacAdapter",
-				"public void run(java.lang.String arg)", ";");
+			hacker.insertBeforeMethod("MacAdapter",
+				"public void run(java.lang.String arg)",
+				"if (!$isLegacyMode()) return;");
 			hacker.loadClass("MacAdapter");
 		}
 

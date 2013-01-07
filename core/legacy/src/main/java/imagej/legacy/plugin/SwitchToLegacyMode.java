@@ -33,39 +33,29 @@
  * #L%
  */
 
-package imagej.ui.pivot;
+package imagej.legacy.plugin;
 
-import imagej.ui.ApplicationFrame;
-
-import org.apache.pivot.wtk.Frame;
+import imagej.command.ContextCommand;
+import imagej.legacy.LegacyService;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 
 /**
- * Pivot implementation of {@link ApplicationFrame}.
+ * Command for switching to the legacy ImageJ 1.x compatibility mode.
  * 
- * @author Curtis Rueden
+ * @author Johannes Schindelin
  */
-public class PivotApplicationFrame extends Frame implements ApplicationFrame {
+@Plugin(menu = { @Menu(label = "Help"),
+	@Menu(label = "Switch to Legacy Mode") })
+public class SwitchToLegacyMode extends ContextCommand {
 
-	// -- ApplicationFrame methods --
-
-	@Override
-	public int getLocationX() {
-		return getLocation().x;
-	}
+	@Parameter
+	private LegacyService legacyService;
 
 	@Override
-	public int getLocationY() {
-		return getLocation().y;
-	}
-
-	@Override
-	public void activate() {
-		requestActive();
-	}
-
-	@Override
-	public void setVisible(boolean visible) {
-		// unsupported operation; ignore
+	public void run() {
+		legacyService.toggleLegacyMode(true);
 	}
 
 }

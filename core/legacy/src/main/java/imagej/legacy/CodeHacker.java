@@ -35,13 +35,13 @@
 
 package imagej.legacy;
 
-import imagej.util.Log;
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
+import javassist.Modifier;
 import javassist.NotFoundException;
 
 /**
@@ -63,9 +63,11 @@ public class CodeHacker {
 	private static final String PATCH_SUFFIX = "Methods";
 
 	private final ClassPool pool;
+	private final ClassLoader classLoader;
 
-	public CodeHacker() {
-		pool = ClassPool.getDefault();
+	public CodeHacker(ClassLoader classLoader) {
+		this.classLoader = classLoader;
+		pool = new ClassPool();
 		pool.appendClassPath(new ClassClassPath(getClass()));
 	}
 
@@ -101,7 +103,7 @@ public class CodeHacker {
 		final String methodSig, final String newCode)
 	{
 		try {
-			getMethod(fullClass, methodSig).insertAfter(newCode);
+			getMethod(fullClass, methodSig).insertAfter(expand(newCode));
 		}
 		catch (final CannotCompileException e) {
 			throw new IllegalArgumentException("Cannot modify method: " + methodSig,
@@ -141,7 +143,7 @@ public class CodeHacker {
 		final String methodSig, final String newCode)
 	{
 		try {
-			getMethod(fullClass, methodSig).insertBefore(newCode);
+			getMethod(fullClass, methodSig).insertBefore(expand(newCode));
 		}
 		catch (final CannotCompileException e) {
 			throw new IllegalArgumentException("Cannot modify method: " + methodSig,
@@ -187,7 +189,7 @@ public class CodeHacker {
 		final String newCode)
 	{
 		final CtClass classRef = getClass(fullClass);
-		final String methodBody = methodSig + " { " + newCode + " } ";
+		final String methodBody = methodSig + " { " + expand(newCode) + " } ";
 		try {
 			final CtMethod methodRef = CtNewMethod.make(methodBody, classRef);
 			classRef.addMethod(methodRef);
@@ -198,48 +200,11 @@ public class CodeHacker {
 	}
 
 	/**
-	 * Modifies a class by replacing the specified method.
-	 * <p>
-	 * The new code is defined in the imagej.legacy.patches package, as described
-	 * in the documentation for {@link #insertMethod(String, String)}.
-	 * </p>
-	 * 
-	 * @param fullClass Fully qualified name of the class to override.
-	 * @param methodSig Method signature of the method to replace; e.g.,
-	 *          "public void setVisible(boolean vis)"
-	 */
-	public void replaceMethod(final String fullClass, final String methodSig) {
-		replaceMethod(fullClass, methodSig, newCode(fullClass, methodSig));
-	}
-
-	/**
-	 * Modifies a class by replacing the specified method with the provided code
-	 * string.
-	 * 
-	 * @param fullClass Fully qualified name of the class to override.
-	 * @param methodSig Method signature of the method to replace; e.g.,
-	 *          "public void setVisible(boolean vis)"
-	 * @param newCode The string of code to add; e.g., System.out.println(\"Hello
-	 *          World!\");
-	 */
-	public void replaceMethod(final String fullClass, final String methodSig,
-		final String newCode)
-	{
-		try {
-			getMethod(fullClass, methodSig).setBody(newCode);
-		}
-		catch (final CannotCompileException e) {
-			throw new IllegalArgumentException("Cannot modify method: " + methodSig,
-				e);
-		}
-	}
-
-	/**
 	 * Loads the given, possibly modified, class.
 	 * <p>
 	 * This method must be called to confirm any changes made with
 	 * {@link #insertAfterMethod}, {@link #insertBeforeMethod},
-	 * {@link #insertMethod} or {@link #replaceMethod}.
+	 * or {@link #insertMethod}.
 	 * </p>
 	 * 
 	 * @param fullClass Fully qualified class name to load.
@@ -248,10 +213,13 @@ public class CodeHacker {
 	public Class<?> loadClass(final String fullClass) {
 		final CtClass classRef = getClass(fullClass);
 		try {
-			return classRef.toClass();
+			return classRef.toClass(classLoader, null);
 		}
 		catch (final CannotCompileException e) {
-			Log.warn("Cannot load class: " + fullClass, e);
+			// Cannot use LogService; it will not be initialized by the time the DefaultLegacyService
+			// class is loaded, which is when the CodeHacker is run
+			System.err.println("Warning: Cannot load class: " + fullClass);
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -298,23 +266,37 @@ public class CodeHacker {
 		final boolean isStatic = isStatic(methodSig);
 		final boolean isVoid = isVoid(methodSig);
 
+		final String patchClass = PATCH_PKG + "." + className + PATCH_SUFFIX;
+		for (final CtMethod method : getClass(patchClass).getMethods()) try {
+			if ((method.getModifiers() & Modifier.STATIC) == 0) continue;
+			final CtClass[] types = method.getParameterTypes();
+			if (types.length == 0 || !types[0].getName().equals("imagej.legacy.LegacyService")) {
+				throw new UnsupportedOperationException("Method " + method + " of class " + patchClass + " has wrong type!");
+			}
+		} catch (NotFoundException e) {
+			e.printStackTrace();
+		}
+
 		final StringBuilder newCode =
-			new StringBuilder((isVoid ? "" : "return ") + PATCH_PKG + "." +
-				className + PATCH_SUFFIX + "." + methodName + "(");
-		boolean firstArg = true;
+			new StringBuilder((isVoid ? "" : "return ") + patchClass + "." + methodName + "(");
+		newCode.append("$service");
 		if (!isStatic) {
-			newCode.append("this");
-			firstArg = false;
+			newCode.append(", this");
 		}
 		final int argCount = getMethodArgTypes(methodSig).length;
 		for (int i = 1; i <= argCount; i++) {
-			if (firstArg) firstArg = false;
-			else newCode.append(", ");
-			newCode.append("$" + i);
+			newCode.append(", $" + i);
 		}
 		newCode.append(");");
 
 		return newCode.toString();
+	}
+
+	/** Patches in the current legacy service for '$service' */
+	private String expand(final String code) {
+		return code
+			.replace("$isLegacyMode()", "imagej.legacy.Utils.isLegacyMode($service)")
+			.replace("$service", "imagej.legacy.DefaultLegacyService.getInstance()");
 	}
 
 	/** Extracts the method name from the given method signature. */

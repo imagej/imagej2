@@ -37,7 +37,7 @@ package imagej.updater.core;
 
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Util;
-import imagej.util.FileUtils;
+import imagej.util.AppUtils;
 import imagej.util.Prefs;
 
 import java.io.File;
@@ -85,13 +85,13 @@ public class UpToDate {
 	public static Result check() throws IOException,
 		ParserConfigurationException, SAXException
 	{
-		return check(FileUtils.getBaseDirectory());
+		return check(AppUtils.getBaseDirectory());
 	}
 
 	/**
 	 * Check the update status of a given ImageJ installation.
 	 * 
-	 * @param imagejRoot the root directory of the ImageJ installation to check
+	 * @param ijRoot the root directory of the ImageJ installation to check
 	 * @return the status
 	 * @throws IOException
 	 * @throws ParserConfigurationException
@@ -183,7 +183,7 @@ public class UpToDate {
 					if (!addresses.nextElement().isLoopbackAddress()) return true;
 			}
 		}
-		catch (final SocketException e) {}
+		catch (final SocketException e) { /* ignore */ }
 		return false;
 	}
 

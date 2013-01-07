@@ -51,7 +51,7 @@ launcher)
 	JOB=ImageJ-launcher
 	;;
 app)
-	JOB=ImageJ-release
+	JOB=ImageJ-release-build
 	;;
 *)
 	usage "Unknown project: $1"

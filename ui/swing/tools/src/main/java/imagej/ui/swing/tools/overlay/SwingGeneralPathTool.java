@@ -47,6 +47,7 @@ import imagej.ui.swing.overlay.SwingGeneralPathFigure;
 import imagej.ui.swing.overlay.SwingPolygonFigure;
 
 import java.awt.Shape;
+
 import net.imglib2.roi.GeneralPathRegionOfInterest;
 
 import org.jhotdraw.draw.AttributeKeys;
@@ -73,8 +74,8 @@ public class SwingGeneralPathTool extends AbstractJHotDrawAdapter<GeneralPathOve
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
-		if (figure != null && !(figure instanceof SwingGeneralPathFigure)) return false;
-		return overlay instanceof GeneralPathOverlay;
+		if (!(overlay instanceof GeneralPathOverlay)) return false;
+		return figure == null || figure instanceof SwingGeneralPathFigure;
 	}
 
 	@Override

@@ -99,8 +99,8 @@ public class SwingPointFigure extends AbstractAttributedFigure {
 		}
 		bounds.x = minX;
 		bounds.y = minY;
-		bounds.width = maxX - minX;
-		bounds.height = maxY - minY;
+		bounds.width = maxX - minX + 0.1;
+		bounds.height = maxY - minY + 0.1;
 	}
 
 	public void setFillColor(final ColorRGB c) {
@@ -206,12 +206,12 @@ public class SwingPointFigure extends AbstractAttributedFigure {
 
 	@Override
 	public void restoreTransformTo(final Object geometry) {
-		bounds.setRect((Rectangle2D.Double) geometry);
+		setBounds((Point2D.Double) geometry, (Point2D.Double) geometry);
 	}
 
 	@Override
 	public Object getTransformRestoreData() {
-		return bounds.clone();
+		return new Point2D.Double(bounds.x, bounds.y);
 	}
 
 	@Override

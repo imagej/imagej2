@@ -33,39 +33,27 @@
  * #L%
  */
 
-package imagej.ui.pivot;
+package imagej.legacy.plugin;
 
-import imagej.ui.ApplicationFrame;
-
-import org.apache.pivot.wtk.Frame;
+import imagej.legacy.LegacyService;
 
 /**
- * Pivot implementation of {@link ApplicationFrame}.
+ * TODO
  * 
- * @author Curtis Rueden
+ * @author Johannes Schindelin
  */
-public class PivotApplicationFrame extends Frame implements ApplicationFrame {
+public class LegacyThreadGroup extends ThreadGroup {
 
-	// -- ApplicationFrame methods --
+	private static final String GROUP_NAME = "IJ1 legacy group";
+	private LegacyService legacyService;
 
-	@Override
-	public int getLocationX() {
-		return getLocation().x;
+	public LegacyThreadGroup(final LegacyService legacyService) {
+		super(GROUP_NAME);
+		this.legacyService = legacyService;
 	}
 
-	@Override
-	public int getLocationY() {
-		return getLocation().y;
-	}
-
-	@Override
-	public void activate() {
-		requestActive();
-	}
-
-	@Override
-	public void setVisible(boolean visible) {
-		// unsupported operation; ignore
+	public LegacyService getLegacyService() {
+		return legacyService;
 	}
 
 }
