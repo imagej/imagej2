@@ -51,7 +51,6 @@ import java.net.URL;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 
-
 // Attribution: Much of this code was adapted from ImageJ 1.x LutLoader class
 // courtesy of Wayne Rasband.
 
