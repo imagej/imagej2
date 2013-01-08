@@ -630,9 +630,6 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 			return pom;
 
 		if (env.ignoreMavenRepositories) {
-			File file = findInFijiDirectories(dependency);
-			if (file != null)
-				return env.fakePOM(file, dependency);
 			if (!quiet && !dependency.optional)
 				env.err.println("Skipping artifact " + dependency.artifactId + " (for " + coordinate.artifactId + "): not in jars/ nor plugins/");
 			return cacheAndReturn(key, null);
@@ -652,19 +649,11 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		path += dependency.getVersion() + "/";
 		if (dependency.version.endsWith("-SNAPSHOT")) try {
 			if (!maybeDownloadAutomatically(dependency, quiet, downloadAutomatically)) {
-				File file = findInFijiDirectories(dependency);
-				if (file != null)
-					return env.fakePOM(file, dependency);
 				return null;
 			}
 			if (dependency.version.endsWith("-SNAPSHOT"))
 				dependency.setSnapshotVersion(SnapshotPOMHandler.parse(new File(path, "maven-metadata-snapshot.xml")));
 		} catch (FileNotFoundException e) { /* ignore */ }
-		else if (env.ignoreMavenRepositories) {
-			File file = findInFijiDirectories(dependency);
-			if (file != null)
-				return env.fakePOM(file, dependency);
-		}
 
 		File file = new File(path, dependency.getPOMName());
 		if (!file.exists()) {
@@ -709,20 +698,6 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		MavenProject result = env.localPOMCache.get(key);
 		if (result != null && BuildEnvironment.compareVersion(dependency.getVersion(), result.coordinate.getVersion()) <= 0)
 			return result;
-		return null;
-	}
-
-	protected File findInFijiDirectories(Coordinate dependency) {
-		for (String jarName : new String[] {
-			"jars/" + dependency.artifactId + "-" + dependency.getVersion() + ".jar",
-			"plugins/" + dependency.artifactId + "-" + dependency.getVersion() + ".jar",
-			"jars/" + dependency.artifactId + ".jar",
-			"plugins/" + dependency.artifactId + ".jar"
-		}) {
-			File file = new File(System.getProperty("ij.dir"), jarName);
-			if (file.exists())
-				return file;
-		}
 		return null;
 	}
 
