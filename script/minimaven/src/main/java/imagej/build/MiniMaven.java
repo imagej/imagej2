@@ -53,35 +53,10 @@ import java.util.TreeSet;
  * @author Johannes Schindelin
  */
 public class MiniMaven {
-	public static void ensureIJDirIsSet() {
-		String ijDir = System.getProperty("ij.dir");
-		if (ijDir != null && new File(ijDir).isDirectory())
-			return;
-		ijDir = MiniMaven.class.getResource("MiniMaven.class").toString();
-		for (String prefix : new String[] { "jar:", "file:" })
-			if (ijDir.startsWith(prefix))
-				ijDir = ijDir.substring(prefix.length());
-		int bang = ijDir.indexOf("!/");
-		if (bang >= 0)
-			ijDir = ijDir.substring(0, bang);
-		else {
-			String suffix = "/" + MiniMaven.class.getName().replace('.', '/') + ".class";
-			if (ijDir.endsWith(suffix))
-				ijDir = ijDir.substring(0, ijDir.length() - suffix.length());
-			else
-				throw new RuntimeException("Funny ?-) " + ijDir);
-		}
-		for (String suffix : new String[] { "src-plugins/fake/target/classes", "fake.jar", "fake", "/", "jars", "/", "build", "/" })
-			if (ijDir.endsWith(suffix))
-				ijDir = ijDir.substring(0, ijDir.length() - suffix.length());
-		System.setProperty("ij.dir", ijDir);
-	}
-
 	private final static String usage = "Usage: MiniMaven [command]\n"
 		+ "\tSupported commands: compile, run, compile-and-run, clean, get-dependencies";
 
 	public static void main(String[] args) throws Exception {
-		ensureIJDirIsSet();
 		PrintStream err = System.err;
 		BuildEnvironment env = new BuildEnvironment(err,
 			"true".equals(getSystemProperty("minimaven.download.automatically", "true")),
