@@ -54,7 +54,7 @@ import imagej.plugin.ServicePreprocessor;
  * ImageDisplay outDisplay = (ImageDisplay) module.getOutput("display");
  * }
  * <p>
- * Note that {@code FindEdges} also has two other inputs, a
+ * Note that {@code FindEdges} also has two other inputs, an
  * {@code ImageDisplayService} and an {@code OverlayService}, which get
  * automatically populated by the {@link ServicePreprocessor}.
  * </p>
