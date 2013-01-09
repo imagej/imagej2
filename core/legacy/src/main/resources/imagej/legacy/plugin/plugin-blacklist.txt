@@ -49,6 +49,18 @@ ij.plugin.Hotkeys("install")               # Plugins > Shortcuts > Create Shortc
 ij.plugin.filter.Benchmark                 # Plugins > Utilities > Benchmark
 ij.plugin.AboutBox                         # Help > About ImageJ...
 ij.plugin.ImageJ_Updater                   # Help > Update ImageJ...
+ij.plugin.LutLoader("fire")                # Lookup Tables > Fire
+ij.plugin.LutLoader("grays")               # Lookup Tables > Grays
+ij.plugin.LutLoader("ice")                 # Lookup Tables > Ice
+ij.plugin.LutLoader("spectrum")            # Lookup Tables > Spectrum
+ij.plugin.LutLoader("3-3-2 RGB")           # Lookup Tables > 3-3-2 RGB
+ij.plugin.LutLoader("red")                 # Lookup Tables > Red
+ij.plugin.LutLoader("green")               # Lookup Tables > Green
+ij.plugin.LutLoader("blue")                # Lookup Tables > Blue
+ij.plugin.LutLoader("cyan")                # Lookup Tables > Cyan
+ij.plugin.LutLoader("magenta")             # Lookup Tables > Magenta
+ij.plugin.LutLoader("yellow")              # Lookup Tables > Yellow
+ij.plugin.LutLoader("redgreen")            # Lookup Tables > Red/Green
 ###### PHASE THESE OUT SOON
 #ij.plugin.Converter("8-bit Color")         # Image > Type > 8-bit Color
 #ij.plugin.Converter("RGB Color")           # Image > Type > RGB Color
