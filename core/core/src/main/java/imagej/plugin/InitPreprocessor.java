@@ -56,6 +56,7 @@ public class InitPreprocessor extends AbstractPreprocessorPlugin {
 
 	@Override
 	public void process(final Module module) {
+		System.out.println("InitPreprocessor: " + module.getDelegateObject().getClass().getName());//TEMP
 		module.initialize();
 		for (final ModuleItem<?> item : module.getInfo().inputs()) {
 			item.initialize(module);

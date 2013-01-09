@@ -58,6 +58,7 @@ public class ServicePreprocessor extends AbstractPreprocessorPlugin {
 
 	@Override
 	public void process(final Module module) {
+		System.out.println("ServicePreprocessor: " + module.getDelegateObject().getClass().getName());//TEMP
 		for (final ModuleItem<?> input : module.getInfo().inputs()) {
 			if (!input.isAutoFill()) continue; // cannot auto-fill this input
 			final Class<?> type = input.getType();
