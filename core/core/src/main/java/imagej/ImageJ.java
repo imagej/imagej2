@@ -175,7 +175,7 @@ public class ImageJ {
 	 * Creates a new ImageJ application context with the specified services (and
 	 * any required service dependencies).
 	 * <p>
-	 * <b>Developer's note:</b> This constructor's argument is raw (
+	 * <b>Developer's note:</b> This constructor's argument is raw (i.e.,
 	 * {@code Class...} instead of {@code Class<? extends Service>...}) because
 	 * otherwise, downstream invocations (e.g.,
 	 * {@code new ImageJ(DisplayService.class)}) yield the potentially confusing
