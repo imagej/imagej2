@@ -126,8 +126,6 @@ public class AnimationService extends AbstractService {
 	@Override
 	public void initialize() {
 		animations = new ConcurrentHashMap<ImageDisplay, Animation>();
-
-		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

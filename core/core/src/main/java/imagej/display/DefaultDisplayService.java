@@ -237,13 +237,6 @@ public final class DefaultDisplayService extends AbstractService implements
 		return null;
 	}
 
-	// -- Service methods --
-
-	@Override
-	public void initialize() {
-		subscribeToEvents(eventService);
-	}
-
 	// -- Event handlers --
 
 	/** Deletes the display when display window is closed. */

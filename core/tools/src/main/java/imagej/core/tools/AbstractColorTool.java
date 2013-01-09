@@ -35,7 +35,6 @@
 
 package imagej.core.tools;
 
-import imagej.ImageJ;
 import imagej.command.CommandService;
 import imagej.data.ChannelCollection;
 import imagej.data.display.DatasetView;
@@ -49,8 +48,6 @@ import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.input.MsButtonEvent;
 import imagej.display.event.input.MsClickedEvent;
 import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.event.StatusService;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
@@ -59,8 +56,6 @@ import imagej.tool.CustomDrawnTool;
 import imagej.tool.IconDrawer;
 import imagej.tool.IconService;
 import imagej.util.ColorRGB;
-
-import java.util.List;
 
 /**
  * TODO
@@ -78,7 +73,6 @@ public abstract class AbstractColorTool extends AbstractTool implements
 	// -- instance variables --
 
 	private IconDrawer drawer;
-	private List<EventSubscriber<?>> subscribers;
 	private final PixelRecorder recorder = new PixelRecorder(true);
 	private StatusService statusService = null;
 
@@ -99,13 +93,6 @@ public abstract class AbstractColorTool extends AbstractTool implements
 	// -- Tool methods --
 
 	@Override
-	public void setContext(final ImageJ context) {
-		super.setContext(context);
-		final EventService service = context.getService(EventService.class);
-		subscribers = service.subscribe(this);
-	}
-
-	@Override
 	public void configure() {
 		final CommandService commandService =
 			getContext().getService(CommandService.class);
@@ -115,7 +102,6 @@ public abstract class AbstractColorTool extends AbstractTool implements
 
 	@Override
 	public void onMouseClick(final MsClickedEvent evt) {
-
 		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
 
 		// if click did not happen within the bounds of an ImageDisplay then

@@ -46,7 +46,6 @@ import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.input.KyPressedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.event.StatusService;
 import imagej.input.KeyCode;
 import imagej.menu.MenuConstants;
@@ -54,9 +53,6 @@ import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.util.RealRect;
-
-import java.util.List;
-
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
@@ -99,8 +95,6 @@ public class ShadowsDemo extends ContextCommand implements Cancelable
 
 	private boolean userHasQuit = false;
 
-	private List<EventSubscriber<?>> subscribers;
-	
 	private String err;
 
 	// -- public interface --
@@ -115,7 +109,6 @@ public class ShadowsDemo extends ContextCommand implements Cancelable
 			err = "This command only works with a single plane of data";
 			return;
 		}
-		subscribers = eventService.subscribe(this);
 		statusService.showStatus("Press ESC to terminate");
 
 		final Dataset input = imgDispService.getActiveDataset(display);
@@ -138,12 +131,7 @@ public class ShadowsDemo extends ContextCommand implements Cancelable
 			}
 		}
 		statusService.showStatus("Shadows demo terminated");
-
-		// unsubscribe from events; this keeps ImageJ from maintaining
-		// dangling references to obsolete event listeners
-		eventService.unsubscribe(subscribers);
 	}
-
 
 	@Override
 	public boolean isCanceled() {

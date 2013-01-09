@@ -391,8 +391,6 @@ public final class DefaultUIService extends AbstractService implements
 		uiMap = new HashMap<String, UserInterface>();
 
 		discoverUIs();
-
-		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

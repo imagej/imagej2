@@ -35,7 +35,6 @@
 
 package imagej.data.display;
 
-import imagej.ImageJ;
 import imagej.data.CombinedInterval;
 import imagej.data.Data;
 import imagej.data.Extents;
@@ -47,11 +46,9 @@ import imagej.display.DisplayService;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.plugin.Plugin;
 import imagej.util.RealRect;
 
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.imglib2.Localizable;
@@ -70,7 +67,6 @@ import net.imglib2.meta.AxisType;
 public class DefaultImageDisplay extends AbstractDisplay<DataView>
 	implements ImageDisplay
 {
-	private List<EventSubscriber<?>> subscribers;
 
 	/** Data structure that aggregates dimensional axes from constituent views. */
 	private final CombinedInterval combinedInterval = new CombinedInterval();
@@ -581,19 +577,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		setPosition(position, axis(d));
 	}
 
-	// -- Contextual methods --
-
-	@Override
-	public void setContext(final ImageJ context) {
-		super.setContext(context);
-		assert subscribers == null;
-		final EventService eventService =
-			getContext().getService(EventService.class);
-		if (eventService != null) {
-			subscribers = eventService.subscribe(this);
-		}
-	}
-
 	// -- Event handlers --
 
 	// TODO - displays should not listen for Data events. Views should listen for
@@ -686,11 +669,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		}
 		clear();
 		combinedInterval.clear();
-		// NB - this is necessary to make sure resources get returned via GC.
-		// Else there is a memory leak.
-		final EventService eventService =
-			getContext().getService(EventService.class);
-		if (eventService != null) eventService.unsubscribe(subscribers);
 	}
 
 }

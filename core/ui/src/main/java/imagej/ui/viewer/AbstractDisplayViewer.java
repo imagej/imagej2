@@ -43,10 +43,7 @@ import imagej.display.event.DisplayUpdatedEvent;
 import imagej.display.event.DisplayUpdatedEvent.DisplayUpdateLevel;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.plugin.SortablePlugin;
-
-import java.util.List;
 
 /**
  * The AbstractDisplayViewer provides some basic generic implementations for a
@@ -64,8 +61,6 @@ public abstract class AbstractDisplayViewer<T> extends SortablePlugin implements
 	private DisplayWindow window;
 	private DisplayPanel panel;
 
-	private List<EventSubscriber<?>> subscribers;
-
 	@Override
 	public void view(final DisplayWindow w, final Display<?> d) {
 		if (!canView(d)) {
@@ -75,9 +70,6 @@ public abstract class AbstractDisplayViewer<T> extends SortablePlugin implements
 		final Display<T> typedDisplay = (Display<T>) d;
 		display = typedDisplay;
 		window = w;
-
-		if (subscribers != null) getEventService().unsubscribe(subscribers);
-		subscribers = getEventService().subscribe(this);
 	}
 
 	@Override

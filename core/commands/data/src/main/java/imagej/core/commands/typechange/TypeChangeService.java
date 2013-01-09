@@ -101,13 +101,6 @@ public final class TypeChangeService extends AbstractService {
 		eventService.publish(new ModulesUpdatedEvent(commands));
 	}
 
-	// -- Service methods --
-
-	@Override
-	public void initialize() {
-		subscribeToEvents(eventService);
-	}
-
 	// -- Event handlers --
 
 	@EventHandler

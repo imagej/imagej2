@@ -333,8 +333,6 @@ public final class DefaultLegacyService extends AbstractService implements
 		addLegacyCommands(enableBlacklist);
 
 		updateLegacyImageJSettings();
-
-		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --
