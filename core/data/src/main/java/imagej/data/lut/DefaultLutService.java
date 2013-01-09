@@ -35,18 +35,29 @@
 
 package imagej.data.lut;
 
+import imagej.MenuEntry;
+import imagej.MenuPath;
+import imagej.command.CommandInfo;
 import imagej.data.table.ResultsTable;
 import imagej.data.table.TableLoader;
 import imagej.log.LogService;
+import imagej.menu.MenuConstants;
+import imagej.module.ModuleInfo;
+import imagej.module.ModuleService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
+import imagej.util.AppUtils;
 
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
@@ -68,6 +79,14 @@ public class DefaultLutService extends AbstractService implements LutService {
 
 	@Parameter
 	private LogService logService;
+
+	@Parameter
+	private ModuleService moduleService;
+
+	// -- instance variables --
+
+	private static final String LUT_DIRECTORY = AppUtils.getBaseDirectory() +
+		File.separator + "luts";
 
 	// -- LutService methods --
 
@@ -101,6 +120,92 @@ public class DefaultLutService extends AbstractService implements LutService {
 	@Override
 	public ColorTable loadLut(URL url) {
 		return loadLut(url.toString()); // TODO - untested
+	}
+
+	@Override
+	public void initialize() {
+		List<String> filenames = findLuts();
+		HashMap<String, ModuleInfo> modules = new HashMap<String, ModuleInfo>();
+		for (final String filename : filenames) {
+			modules.put(filename, createInfo(filename));
+		}
+
+		// register the modules with the module service
+		moduleService.addModules(modules.values());
+	}
+
+	// -- private initialization code --
+
+	private ModuleInfo createInfo(final String filename) {
+		final CommandInfo info =
+			new CommandInfo("imagej.core.commands.misc.ApplyLookupTablePlugin");
+
+		// hard code path to open as a preset
+		final HashMap<String, Object> presets = new HashMap<String, Object>();
+		presets.put("tableURL", "file://" + filename);
+		info.setPresets(presets);
+
+		// set menu path
+		String shortenedName = nameBeyondBase(filename);
+		String[] subPaths = shortenedName.split(File.separator);
+		final MenuPath menuPath = new MenuPath();
+		menuPath.add(new MenuEntry(MenuConstants.IMAGE_LABEL));
+		menuPath.add(new MenuEntry("Lookup Tables"));
+		for (int i = 0; i < subPaths.length - 1; i++) {
+			menuPath.add(new MenuEntry(subPaths[i]));
+		}
+		final MenuEntry leaf = new MenuEntry(tableName(filename));
+		menuPath.add(leaf);
+		info.setMenuPath(menuPath);
+
+		// set menu position
+		leaf.setWeight(50); // TODO - do this properly
+
+		// use the default icon
+		// info.setIconPath(iconPath);
+
+		return info;
+	}
+
+	private String nameBeyondBase(String path) {
+		int start = path.indexOf(LUT_DIRECTORY);
+		return path.substring(start + LUT_DIRECTORY.length() + 1);
+	}
+
+	private String tableName(final String path) {
+		int lastSlash = path.lastIndexOf(File.separator);
+		int ext = path.lastIndexOf(".");
+		int start = lastSlash + 1;
+		int end = (ext == -1) ? path.length() : ext;
+		return path.substring(start, end);
+	}
+
+	private List<String> findLuts() {
+		ArrayList<String> filenames = new ArrayList<String>();
+		find(LUT_DIRECTORY, filenames);
+		return filenames;
+	}
+
+	private void find(String dirName, List<String> filenameCollection) {
+		File f = new File(dirName);
+		if (!f.isDirectory()) return;
+		String[] files = f.list();
+		for (String file : files) {
+			StringBuilder builder = new StringBuilder();
+			builder.append(dirName);
+			builder.append(File.separator);
+			builder.append(file);
+			String fullName = builder.toString();
+			if (file.endsWith(".lut")) {
+				filenameCollection.add(fullName);
+			}
+			else {
+				if (file.equals(".")) continue;
+				if (file.equals("..")) continue;
+				f = new File(fullName);
+				if (f.isDirectory()) find(fullName, filenameCollection);
+			}
+		}
 	}
 
 	// -- private modern lut loading method --
