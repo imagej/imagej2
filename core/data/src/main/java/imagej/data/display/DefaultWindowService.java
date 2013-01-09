@@ -59,6 +59,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//TODO - DefaultRecentFileService, DefaultWindowService, and DefaultLutService
+//all build menus dynamically (see createInfo()). We may be able to abstract a
+//helper class out of these that can be used by them and future services.
+
 /**
  * Default service for keeping track of open windows, including management of
  * the Windows menu.

@@ -65,6 +65,10 @@ import net.imglib2.display.ColorTable8;
 // Attribution: Much of this code was adapted from ImageJ 1.x LutLoader class
 // courtesy of Wayne Rasband.
 
+//TODO - DefaultRecentFileService, DefaultWindowService, and DefaultLutService
+//all build menus dynamically (see createInfo()). We may be able to abstract a
+//helper class out of these that can be used by them and future services.
+
 /**
  * The DefaultLutService loads {@link ColorTable}s from files (hosted locally or
  * externally).
