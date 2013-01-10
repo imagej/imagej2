@@ -36,12 +36,10 @@
 package imagej.data.display.event;
 
 import imagej.data.display.DataView;
-import imagej.data.display.ImageDisplay;
 import imagej.event.ImageJEvent;
 
 /**
- * An event indicating something has happened to a {@link DataView} with respect
- * to a particular {@link ImageDisplay}.
+ * An event indicating something has happened to a {@link DataView}.
  * 
  * @author Lee Kamentsky
  * @author Curtis Rueden

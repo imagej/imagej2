@@ -39,7 +39,7 @@ import imagej.display.Display;
 import imagej.event.ImageJEvent;
 
 /**
- * An event indicating something has happened to a display.
+ * An event indicating something has happened to a {@link Display}.
  * 
  * @author Curtis Rueden
  */
