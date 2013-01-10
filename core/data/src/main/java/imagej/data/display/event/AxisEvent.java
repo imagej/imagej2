@@ -39,18 +39,38 @@ import imagej.data.display.ImageDisplay;
 import net.imglib2.meta.AxisType;
 
 /**
- * An event indicating that a display's dimensional position has changed.
+ * An event indicating that one of an {@link ImageDisplay}'s dimensional axes
+ * has changed.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-public class AxisPositionEvent extends AxisEvent {
+public abstract class AxisEvent extends ImageDisplayEvent {
 
-	public AxisPositionEvent(final ImageDisplay display) {
-		super(display);
+	private final AxisType axis;
+
+	public AxisEvent(final ImageDisplay display) {
+		this(display, display.getActiveAxis());
 	}
 
-	public AxisPositionEvent(final ImageDisplay display, final AxisType axis) {
-		super(display, axis);
+	public AxisEvent(final ImageDisplay display, final AxisType axis) {
+		super(display);
+		if (display.getAxisIndex(axis) < 0) {
+			throw new IllegalArgumentException("Invalid axis: " + axis);
+		}
+		this.axis = axis;
+	}
+
+	// -- AxisEvent methods --
+
+	public AxisType getAxis() {
+		return axis;
+	}
+
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\taxis = " + axis;
 	}
 
 }
