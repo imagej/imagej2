@@ -67,8 +67,8 @@ import net.imglib2.meta.AxisType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Shadows", mnemonic = 's'),
 	@Menu(label = "Shadows Demo", weight = 200) }, headless = true)
-public class ShadowsDemo extends ContextCommand implements Cancelable
-{
+public class ShadowsDemo extends ContextCommand implements Cancelable {
+
 	private static final double[][] KERNELS = new double[][] {
 		ShadowsNorth.KERNEL, ShadowsNortheast.KERNEL, ShadowsEast.KERNEL,
 		ShadowsSoutheast.KERNEL, ShadowsSouth.KERNEL, ShadowsSouthwest.KERNEL,
@@ -187,7 +187,7 @@ public class ShadowsDemo extends ContextCommand implements Cancelable
 			final AxisType axis = axes[i];
 			if (axis == Axes.X) continue;
 			if (axis == Axes.Y) continue;
-			if ((axis == Axes.CHANNEL) && input.isRGBMerged()) continue;
+			if (axis == Axes.CHANNEL && input.isRGBMerged()) continue;
 			if (dims[i] != 1) return true;
 		}
 		return false;
