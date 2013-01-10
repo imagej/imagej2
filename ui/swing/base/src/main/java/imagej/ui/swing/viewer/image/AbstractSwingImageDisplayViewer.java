@@ -35,7 +35,6 @@
 
 package imagej.ui.swing.viewer.image;
 
-import imagej.ImageJ;
 import imagej.core.options.OptionsAppearance;
 import imagej.data.Dataset;
 import imagej.display.Display;
@@ -105,9 +104,8 @@ public abstract class AbstractSwingImageDisplayViewer extends
 
 	@Override
 	protected ZoomScaleOption getZoomScaleOption() {
-		final ImageJ context = getDisplay().getContext();
 		final OptionsService optionsService =
-			context.getService(OptionsService.class);
+			getContext().getService(OptionsService.class);
 		return optionsService.getOptions(OptionsAppearance.class)
 			.isDisplayFractionalScales() ? ZoomScaleOption.OPTIONS_FRACTIONAL_SCALE
 			: ZoomScaleOption.OPTIONS_PERCENT_SCALE;

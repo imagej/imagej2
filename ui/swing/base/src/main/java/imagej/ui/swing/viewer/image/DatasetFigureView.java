@@ -91,8 +91,7 @@ public class DatasetFigureView extends AbstractContextual implements FigureView
 
 	@Override
 	public void update() {
-		final LogService log =
-			datasetView.getData().getContext().getService(LogService.class);
+		final LogService log = getContext().getService(LogService.class);
 		log.debug("Updating image figure: " + this);
 		final Image image = datasetView.getScreenImage().image();
 		final BufferedImage bufImage = AWTImageTools.makeBuffered(image);

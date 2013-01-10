@@ -114,11 +114,7 @@ public abstract class AbstractDisplayViewer<T> extends SortablePlugin implements
 
 	/** Convenience method to obtain the appropriate {@link EventService}. */
 	protected EventService getEventService() {
-		// NB: It is best to use the direct reference to display here rather than
-		// calling getDisplay(), since it has access to the context, and should
-		// always be populated via an initial call to super.view(w, d).
-		if (display == null) return null;
-		return display.getContext().getService(EventService.class);
+		return getContext().getService(EventService.class);
 	}
 
 	protected void updateTitle() {

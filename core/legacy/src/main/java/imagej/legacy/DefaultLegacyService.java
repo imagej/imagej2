@@ -271,8 +271,7 @@ public final class DefaultLegacyService extends AbstractService implements
 		// TODO: hide/show Brightness/Contrast, Color Picker, Command Launcher, etc
 		// TODO: prevent IJ1 from quitting without IJ2 quitting, too
 
-		final UIService uiService =
-			imageDisplayService.getContext().getService(UIService.class);
+		final UIService uiService = getContext().getService(UIService.class);
 		if (uiService != null) {
 			// hide/show the IJ2 main window
 			final ApplicationFrame appFrame =
