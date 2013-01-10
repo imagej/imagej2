@@ -35,34 +35,18 @@
 
 package imagej.data.display.event;
 
-import imagej.data.display.DataView;
-import imagej.event.ImageJEvent;
+import imagej.data.display.ImageDisplay;
+import net.imglib2.meta.AxisType;
 
 /**
- * An event indicating something has happened to a {@link DataView}.
+ * An event indicating an axis has become the active one.
  * 
- * @author Lee Kamentsky
  * @author Curtis Rueden
  */
-public abstract class DataViewEvent extends ImageJEvent {
+public class AxisActivatedEvent extends AxisEvent {
 
-	private final DataView view;
-
-	public DataViewEvent(final DataView view) {
-		this.view = view;
-	}
-
-	// -- DataViewEvent methods --
-
-	public DataView getView() {
-		return view;
-	}
-
-	// -- Object methods --
-
-	@Override
-	public String toString() {
-		return super.toString() + "\n\tview = " + view;
+	public AxisActivatedEvent(final ImageDisplay display, final AxisType axis) {
+		super(display, axis);
 	}
 
 }

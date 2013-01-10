@@ -36,7 +36,6 @@
 package imagej.data.display.event;
 
 import imagej.data.display.ImageDisplay;
-import imagej.display.event.DisplayEvent;
 import net.imglib2.meta.AxisType;
 
 /**
@@ -44,31 +43,14 @@ import net.imglib2.meta.AxisType;
  * 
  * @author Barry DeZonia
  */
-public class AxisPositionEvent extends DisplayEvent {
-
-	private final AxisType axis;
+public class AxisPositionEvent extends AxisEvent {
 
 	public AxisPositionEvent(final ImageDisplay display) {
-		this(display, display.getActiveAxis());
+		super(display);
 	}
 
 	public AxisPositionEvent(final ImageDisplay display, final AxisType axis) {
-		super(display);
-		if (display.getAxisIndex(axis) < 0) {
-			throw new IllegalArgumentException("Invalid axis: " + axis);
-		}
-		this.axis = axis;
-	}
-
-	public AxisType getAxis() {
-		return axis;
-	}
-
-	// -- Object methods --
-
-	@Override
-	public String toString() {
-		return super.toString() + "\n\taxis = " + axis;
+		super(display, axis);
 	}
 
 }

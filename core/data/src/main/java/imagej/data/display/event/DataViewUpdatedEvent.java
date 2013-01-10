@@ -38,7 +38,7 @@ package imagej.data.display.event;
 import imagej.data.display.DataView;
 
 /**
- * This event signals that the data view's appearance has changed.
+ * This event signals that a {@link DataView}'s appearance has changed.
  * 
  * @author Lee Kamentsky
  */

@@ -35,34 +35,42 @@
 
 package imagej.data.display.event;
 
-import imagej.data.display.DataView;
-import imagej.event.ImageJEvent;
+import imagej.data.display.ImageDisplay;
+import net.imglib2.meta.AxisType;
 
 /**
- * An event indicating something has happened to a {@link DataView}.
+ * An event indicating that one of an {@link ImageDisplay}'s dimensional axes
+ * has changed.
  * 
- * @author Lee Kamentsky
  * @author Curtis Rueden
  */
-public abstract class DataViewEvent extends ImageJEvent {
+public abstract class AxisEvent extends ImageDisplayEvent {
 
-	private final DataView view;
+	private final AxisType axis;
 
-	public DataViewEvent(final DataView view) {
-		this.view = view;
+	public AxisEvent(final ImageDisplay display) {
+		this(display, display.getActiveAxis());
 	}
 
-	// -- DataViewEvent methods --
+	public AxisEvent(final ImageDisplay display, final AxisType axis) {
+		super(display);
+		if (display.getAxisIndex(axis) < 0) {
+			throw new IllegalArgumentException("Invalid axis: " + axis);
+		}
+		this.axis = axis;
+	}
 
-	public DataView getView() {
-		return view;
+	// -- AxisEvent methods --
+
+	public AxisType getAxis() {
+		return axis;
 	}
 
 	// -- Object methods --
 
 	@Override
 	public String toString() {
-		return super.toString() + "\n\tview = " + view;
+		return super.toString() + "\n\taxis = " + axis;
 	}
 
 }

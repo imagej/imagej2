@@ -55,6 +55,8 @@ public abstract class DataViewSelectionEvent extends DataViewEvent {
 		this.selected = selected;
 	}
 
+	// -- DataViewSelectionEvent methods --
+
 	/**
 	 * @return true if the event signals that the associated {@link DataView} is
 	 *         selected, false if deselected

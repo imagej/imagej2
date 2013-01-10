@@ -35,34 +35,28 @@
 
 package imagej.data.display.event;
 
-import imagej.data.display.DataView;
-import imagej.event.ImageJEvent;
+import imagej.data.display.ImageDisplay;
+import imagej.display.event.DisplayEvent;
 
 /**
- * An event indicating something has happened to a {@link DataView}.
+ * An event indicating something has happened to an {@link ImageDisplay}.
  * 
- * @author Lee Kamentsky
  * @author Curtis Rueden
  */
-public abstract class DataViewEvent extends ImageJEvent {
+public abstract class ImageDisplayEvent extends DisplayEvent {
 
-	private final DataView view;
+	private final ImageDisplay display;
 
-	public DataViewEvent(final DataView view) {
-		this.view = view;
+	public ImageDisplayEvent(final ImageDisplay display) {
+		super(display);
+		this.display = display;
 	}
 
-	// -- DataViewEvent methods --
-
-	public DataView getView() {
-		return view;
-	}
-
-	// -- Object methods --
+	// -- DisplayEvent methods --
 
 	@Override
-	public String toString() {
-		return super.toString() + "\n\tview = " + view;
+	public ImageDisplay getDisplay() {
+		return display;
 	}
 
 }
