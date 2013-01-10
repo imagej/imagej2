@@ -41,7 +41,7 @@ import imagej.plugin.Plugin;
 import imagej.plugin.PreprocessorPlugin;
 import imagej.ui.AbstractInputHarvesterPlugin;
 import imagej.ui.swing.sdi.SwingUI;
-import imagej.util.swing.SwingUtils;
+import imagej.util.swing.SwingDialog;
 import imagej.widget.InputHarvester;
 import imagej.widget.InputPanel;
 
@@ -85,9 +85,9 @@ public class SwingInputHarvester extends
 		}
 		else messageType = JOptionPane.PLAIN_MESSAGE;
 		final boolean doScrollBars = messageType == JOptionPane.PLAIN_MESSAGE;
-		final int rval =
-			SwingUtils.showDialog(null, pane, title, optionType, messageType,
-				doScrollBars, null);
+		final SwingDialog dialog = new SwingDialog(pane, optionType, messageType, doScrollBars);
+		dialog.setTitle(title);
+		final int rval = dialog.show();
 
 		// verify return value of dialog
 		return rval == JOptionPane.OK_OPTION;
