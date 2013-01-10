@@ -41,6 +41,9 @@ import imagej.data.Dataset;
  * An event indicating a {@link Dataset}'s data has been updated. This means
  * that sample values may have changed, but the dimensional structure is the
  * same as before.
+ * <p>
+ * This event is typically fired as part of a call to {@link Dataset#update()}.
+ * </p>
  * 
  * @author Curtis Rueden
  */

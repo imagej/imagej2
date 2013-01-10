@@ -40,6 +40,9 @@ import imagej.data.overlay.Overlay;
 /**
  * An event indicating an {@link Overlay}'s dimensional extents may have
  * changed.
+ * <p>
+ * This event is typically fired as part of a call to {@link Overlay#rebuild()}.
+ * </p>
  * 
  * @author Curtis Rueden
  */

@@ -50,12 +50,16 @@ public interface Data extends CalibratedInterval, Contextual {
 	/**
 	 * Informs interested parties that the data object has undergone a
 	 * non-structural change, such as sample values being updated.
+	 * 
+	 * @see imagej.data.event.DataUpdatedEvent
 	 */
 	void update();
 
 	/**
 	 * Informs interested parties that the data object has undergone a major
 	 * change, such as the dimensional extents changing.
+	 * 
+	 * @see imagej.data.event.DataRestructuredEvent
 	 */
 	void rebuild();
 
