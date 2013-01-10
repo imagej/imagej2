@@ -37,6 +37,7 @@ package imagej.data.lut;
 
 import imagej.service.Service;
 
+import java.io.File;
 import java.net.URL;
 
 import net.imglib2.display.ColorTable;
@@ -64,4 +65,12 @@ public interface LutService extends Service {
 	 * @return The color table loaded from the given url.
 	 */
 	ColorTable loadLut(URL url);
+
+	/**
+	 * Loads a {@link ColorTable} from a {@link File}.
+	 * 
+	 * @param file The File containing the color table.
+	 * @return The color table loaded from the given File.
+	 */
+	ColorTable loadLut(File file);
 }

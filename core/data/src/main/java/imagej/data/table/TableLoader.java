@@ -36,6 +36,7 @@
 package imagej.data.table;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -103,6 +104,17 @@ public class TableLoader {
 	 */
 	public ResultsTable valuesFromTextFile(String urlString) throws IOException {
 		return valuesFromTextFile(new URL(urlString));
+	}
+
+	/**
+	 * Loads the values of a table stored in a text file as a ResultsTable.
+	 * 
+	 * @param file The File containing the text table
+	 * @return A ResultsTable containing the values (and not the headers)
+	 * @throws IOException
+	 */
+	public ResultsTable valuesFromTextFile(File file) throws IOException {
+		return valuesFromTextFile("file://" + file.getAbsolutePath());
 	}
 
 	// -- private helpers -

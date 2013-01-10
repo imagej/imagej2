@@ -132,6 +132,17 @@ public class DefaultLutService extends AbstractService implements LutService {
 		return table;
 	}
 
+	/**
+	 * Loads a {@link ColorTable} from a {@link File}.
+	 * 
+	 * @param file The File containing the color table.
+	 * @return The color table loaded from the given File.
+	 */
+	@Override
+	public ColorTable loadLut(File file) {
+		return loadLut("file://" + file.getAbsolutePath());
+	}
+
 	@Override
 	public void initialize() {
 		List<String> filenames = findLuts();
