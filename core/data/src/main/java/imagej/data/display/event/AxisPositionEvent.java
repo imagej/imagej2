@@ -36,7 +36,6 @@
 package imagej.data.display.event;
 
 import imagej.data.display.ImageDisplay;
-import imagej.display.event.DisplayEvent;
 import net.imglib2.meta.AxisType;
 
 /**
@@ -44,7 +43,7 @@ import net.imglib2.meta.AxisType;
  * 
  * @author Barry DeZonia
  */
-public class AxisPositionEvent extends DisplayEvent {
+public class AxisPositionEvent extends ImageDisplayEvent {
 
 	private final AxisType axis;
 

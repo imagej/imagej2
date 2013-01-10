@@ -36,7 +36,6 @@
 package imagej.data.display.event;
 
 import imagej.data.display.ImageCanvas;
-import imagej.display.event.DisplayEvent;
 
 /**
  * An event indicating something has happened to an {@link ImageCanvas}.
@@ -44,7 +43,7 @@ import imagej.display.event.DisplayEvent;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public abstract class CanvasEvent extends DisplayEvent {
+public abstract class CanvasEvent extends ImageDisplayEvent {
 
 	private final ImageCanvas canvas;
 

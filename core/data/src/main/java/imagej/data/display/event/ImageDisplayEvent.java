@@ -36,40 +36,27 @@
 package imagej.data.display.event;
 
 import imagej.data.display.ImageDisplay;
-import net.imglib2.meta.AxisType;
+import imagej.display.event.DisplayEvent;
 
 /**
- * An event indicating that a display's dimensional position has changed. A 2nd
- * step event that follows an AxisPositionEvent. Used to correctly sequence
- * axis position event handling.
+ * An event indicating something has happened to an {@link ImageDisplay}.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-public class DelayedPositionEvent extends ImageDisplayEvent {
+public abstract class ImageDisplayEvent extends DisplayEvent {
 
-	private final AxisType axis;
+	private final ImageDisplay display;
 
-	public DelayedPositionEvent(final ImageDisplay display) {
-		this(display, display.getActiveAxis());
-	}
-
-	public DelayedPositionEvent(final ImageDisplay display, final AxisType axis) {
+	public ImageDisplayEvent(final ImageDisplay display) {
 		super(display);
-		if (display.getAxisIndex(axis) < 0) {
-			throw new IllegalArgumentException("Invalid axis: " + axis);
-		}
-		this.axis = axis;
+		this.display = display;
 	}
 
-	public AxisType getAxis() {
-		return axis;
-	}
-
-	// -- Object methods --
+	// -- DisplayEvent methods --
 
 	@Override
-	public String toString() {
-		return super.toString() + "\n\taxis = " + axis;
+	public ImageDisplay getDisplay() {
+		return display;
 	}
 
 }
