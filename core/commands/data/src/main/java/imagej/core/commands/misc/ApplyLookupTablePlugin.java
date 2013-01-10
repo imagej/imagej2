@@ -36,21 +36,31 @@
 package imagej.core.commands.misc;
 
 import imagej.command.Command;
+import imagej.data.Dataset;
+import imagej.data.DatasetService;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.data.lut.LutService;
+import imagej.display.DisplayService;
 import imagej.log.LogService;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
+import net.imglib2.type.numeric.RealType;
 
 /**
- * Reads a lookup table from a URL and applies it to the current view of the
- * current {@link ImageDisplay}. Designed to be used by menu code. Lookup tables
- * are discovered and menu entries are constructed using their URLS with
- * instances of this class.
+ * <p>
+ * Reads a lookup table from a URL. If there is an active {@link ImageDisplay}
+ * the lookup table is applied to its current view. Otherwise it creates a new
+ * {@link ImageDisplay} in which in can display the lookup table.
+ * <p>
+ * Designed to be used by menu code. Lookup tables are discovered and menu
+ * entries are constructed using their URLs with instances of this class.
  * 
  * @author Barry DeZonia
  */
@@ -59,22 +69,38 @@ public class ApplyLookupTablePlugin implements Command {
 
 	// -- Parameters --
 
-	@Parameter(type = ItemIO.BOTH)
-	private ImageDisplay display;
-
-	@Parameter(type = ItemIO.INPUT)
-	private DatasetView view;
-
-	@Parameter(type = ItemIO.INPUT)
-	private String tableURL;
-	// = "file:///Users/bdezonia/Desktop/ImageJ/luts/6_shades.lut";
-
 	@Parameter
 	private LogService logService;
 
 	@Parameter
 	private LutService lutService;
 
+	@Parameter
+	private DisplayService displayService;
+
+	@Parameter
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter
+	private DatasetService datasetService;
+
+	@Parameter(required = false)
+	private ImageDisplay display;
+
+	@Parameter(required = false)
+	private DatasetView view;
+
+	@Parameter
+	private String tableURL;
+	// = "file:///Users/bdezonia/Desktop/ImageJ/luts/6_shades.lut";
+
+	@Parameter(type = ItemIO.OUTPUT)
+	private ImageDisplay output;
+
+	// -- constants --
+
+	private static final int WIDTH = 256;
+	private static final int HEIGHT = 32;
 
 	// -- Command methods --
 
@@ -90,8 +116,43 @@ public class ApplyLookupTablePlugin implements Command {
 				tableURL);
 			return;
 		}
+		if (display == null) {
+			Dataset ds = makeData();
+			display = (ImageDisplay) displayService.createDisplay(ds);
+		}
+		if (view == null) {
+			view = imageDisplayService.getActiveDatasetView(display);
+		}
 		int channel = (int) view.getLongPosition(Axes.CHANNEL);
 		view.setColorTable(colorTable, channel);
+		output = display;
 	}
 
+	// -- private helpers --
+
+	private Dataset makeData() {
+		String name =
+			tableURL.substring(tableURL.lastIndexOf("/") + 1, tableURL.length());
+		long[] dims = new long[] { WIDTH, HEIGHT };
+		AxisType[] axes = new AxisType[] { Axes.X, Axes.Y };
+		int bitsPerPixel = 8;
+		boolean signed = false;
+		boolean floating = false;
+		Dataset ds =
+			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
+		ramp(ds);
+		return ds;
+	}
+
+	private void ramp(Dataset ds) {
+		RandomAccess<? extends RealType<?>> accessor =
+			ds.getImgPlus().randomAccess();
+		for (int x = 0; x < WIDTH; x++) {
+			accessor.setPosition(x, 0);
+			for (int y = 0; y < HEIGHT; y++) {
+				accessor.setPosition(y, 1);
+				accessor.get().setReal(x);
+			}
+		}
+	}
 }
