@@ -63,16 +63,16 @@ public class TableLoader {
 	/**
 	 * Loads the values of a table stored in a text file as a ResultsTable.
 	 * 
-	 * @param urlString The url (as a string) of the text table
+	 * @param url The url (as a URL) of the text table
 	 * @return A ResultsTable containing the values (and not the headers)
 	 * @throws IOException
 	 */
-	public ResultsTable valuesFromTextFile(String urlString) throws IOException {
+	public ResultsTable valuesFromTextFile(URL url) throws IOException {
 		ResultsTable values = null;
-		countRowsAndCols(urlString);
+		countRowsAndCols(url);
 		if (rows == 0) return null;
 		values = new DefaultResultsTable(cols, rows);
-		read(urlString, values);
+		read(url, values);
 		int firstRowNaNCount = 0;
 		for (int i = 0; i < cols; i++) {
 			if (Double.isNaN(values.getValue(i, 0))) firstRowNaNCount++;
@@ -94,10 +94,21 @@ public class TableLoader {
 		return values;
 	}
 
+	/**
+	 * Loads the values of a table stored in a text file as a ResultsTable.
+	 * 
+	 * @param urlString The url (as a string) of the text table
+	 * @return A ResultsTable containing the values (and not the headers)
+	 * @throws IOException
+	 */
+	public ResultsTable valuesFromTextFile(String urlString) throws IOException {
+		return valuesFromTextFile(new URL(urlString));
+	}
+
 	// -- private helpers -
 
-	private void countRowsAndCols(String url) throws IOException {
-		InputStream str = new URL(url).openStream();
+	private void countRowsAndCols(URL url) throws IOException {
+		InputStream str = url.openStream();
 		Reader r = new BufferedReader(new InputStreamReader(str));
 		StreamTokenizer tok = new StreamTokenizer(r);
 		tok.resetSyntax();
@@ -132,8 +143,8 @@ public class TableLoader {
 		if (words == cols) rows++; // last line does not end with EOL
 	}
 
-	private void read(String url, ResultsTable values) throws IOException {
-		InputStream str = new URL(url).openStream();
+	private void read(URL url, ResultsTable values) throws IOException {
+		InputStream str = url.openStream();
 		Reader r = new BufferedReader(new InputStreamReader(str));
 		StreamTokenizer tok = new StreamTokenizer(r);
 		tok.resetSyntax();

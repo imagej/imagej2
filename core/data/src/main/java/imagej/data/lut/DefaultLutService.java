@@ -102,17 +102,13 @@ public class DefaultLutService extends AbstractService implements LutService {
 	 */
 	@Override
 	public ColorTable loadLut(String urlString) {
-		ColorTable table = null;
 		try {
-			table = openNihImageBinaryLut(urlString);
-			if (table == null) table = openLegacyImageJBinaryLut(urlString);
-			if (table == null) table = openLegacyImageJTextLut(urlString);
-			if (table == null) table = openModernImageJLut(urlString);
+			return loadLut(new URL(urlString));
 		}
-		catch (IOException e) {
-			logService.error(e.getMessage());
+		catch (Exception e) {
+			logService.error(e);
+			return null;
 		}
-		return table;
 	}
 
 	/**
@@ -123,7 +119,17 @@ public class DefaultLutService extends AbstractService implements LutService {
 	 */
 	@Override
 	public ColorTable loadLut(URL url) {
-		return loadLut(url.toString()); // TODO - untested
+		ColorTable table = null;
+		try {
+			table = openNihImageBinaryLut(url);
+			if (table == null) table = openLegacyImageJBinaryLut(url);
+			if (table == null) table = openLegacyImageJTextLut(url);
+			if (table == null) table = openModernImageJLut(url);
+		}
+		catch (IOException e) {
+			logService.error(e.getMessage());
+		}
+		return table;
 	}
 
 	@Override
@@ -214,7 +220,7 @@ public class DefaultLutService extends AbstractService implements LutService {
 
 	// -- private modern lut loading method --
 
-	private ColorTable openModernImageJLut(String url) throws IOException {
+	private ColorTable openModernImageJLut(URL url) throws IOException {
 		// TODO : support some new more flexible format
 		return null;
 	}
@@ -223,15 +229,21 @@ public class DefaultLutService extends AbstractService implements LutService {
 
 	// note: adapted from IJ1 LutLoader class
 
-	private ColorTable8 openNihImageBinaryLut(String url) throws IOException {
+	private ColorTable8 openNihImageBinaryLut(URL url)
+		throws IOException
+	{
 		return openOldBinaryLut(false, url);
 	}
 
-	private ColorTable8 openLegacyImageJBinaryLut(String url) throws IOException {
+	private ColorTable8 openLegacyImageJBinaryLut(URL url)
+		throws IOException
+	{
 		return openOldBinaryLut(true, url);
 	}
 
-	private ColorTable8 openLegacyImageJTextLut(String url) throws IOException {
+	private ColorTable8 openLegacyImageJTextLut(URL url)
+		throws IOException
+	{
 		ResultsTable table = new TableLoader().valuesFromTextFile(url);
 		if (table == null) return null;
 		byte[] reds = new byte[256];
@@ -250,10 +262,10 @@ public class DefaultLutService extends AbstractService implements LutService {
 		return new ColorTable8(reds, greens, blues);
 	}
 
-	private ColorTable8 openOldBinaryLut(boolean raw, String url)
+	private ColorTable8 openOldBinaryLut(boolean raw, URL url)
 		throws IOException
 	{
-		InputStream is = new URL(url).openStream();
+		InputStream is = url.openStream();
 		DataInputStream f = new DataInputStream(is);
 		int nColors = 256;
 		if (!raw) {
