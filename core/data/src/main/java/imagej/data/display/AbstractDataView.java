@@ -44,11 +44,9 @@ import imagej.data.display.event.DataViewDeselectedEvent;
 import imagej.data.display.event.DataViewSelectedEvent;
 import imagej.data.display.event.DataViewSelectionEvent;
 import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.event.ImageJEvent;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import net.imglib2.Localizable;
@@ -78,9 +76,6 @@ public abstract class AbstractDataView extends AbstractContextual implements
 	/** {@link Data} object linked to the view. */
 	private Data data;
 
-	@SuppressWarnings("unused")
-	private List<EventSubscriber<?>> subscribers;
-
 	/** Indicates the view is no longer in use. */
 	private boolean disposed;
 
@@ -104,9 +99,6 @@ public abstract class AbstractDataView extends AbstractContextual implements
 
 		data.incrementReferences();
 		pos = new HashMap<AxisType, Long>();
-
-		final EventService eventService = getEventService();
-		subscribers = eventService == null ? null : eventService.subscribe(this);
 	}
 
 	@Override

@@ -38,6 +38,7 @@ package imagej.legacy;
 import ij.ImagePlus;
 import ij.gui.ImageWindow;
 import ij.gui.Roi;
+import imagej.AbstractContextual;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
@@ -45,8 +46,6 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.overlay.Overlay;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.legacy.translate.DefaultImageTranslator;
 import imagej.legacy.translate.Harmonizer;
 import imagej.legacy.translate.ImageTranslator;
@@ -86,7 +85,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public class LegacyImageMap {
+public class LegacyImageMap extends AbstractContextual {
 
 	// -- Fields --
 
@@ -114,20 +113,15 @@ public class LegacyImageMap {
 	 */
 	private final DefaultLegacyService legacyService;
 
-	/** List of event subscribers, to avoid garbage collection. */
-	@SuppressWarnings("unused")
-	private final List<EventSubscriber<?>> subscribers;
-
 	// -- Constructor --
 
 	public LegacyImageMap(final DefaultLegacyService legacyService) {
+		setContext(legacyService.getContext());
 		this.legacyService = legacyService;
 		final ImageJ context = legacyService.getContext();
 		imagePlusTable = new ConcurrentHashMap<ImageDisplay, ImagePlus>();
 		displayTable = new ConcurrentHashMap<ImagePlus, ImageDisplay>();
 		imageTranslator = new DefaultImageTranslator(context);
-		final EventService eventService = context.getService(EventService.class);
-		subscribers = eventService.subscribe(this);
 	}
 
 	// -- LegacyImageMap methods --

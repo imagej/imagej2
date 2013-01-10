@@ -66,13 +66,6 @@ public class SplitChannelsContextMonitor extends AbstractService {
 	@Parameter
 	private ImageDisplayService imageDisplayService;
 
-	// -- Service methods --
-
-	@Override
-	public void initialize() {
-		subscribeToEvents(eventService);
-	}
-
 	// -- Event handlers --
 
 	@EventHandler

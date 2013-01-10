@@ -179,8 +179,6 @@ public final class DefaultRecentFileService extends AbstractService implements
 
 		// register the modules with the module service
 		moduleService.addModules(recentModules.values());
-
-		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

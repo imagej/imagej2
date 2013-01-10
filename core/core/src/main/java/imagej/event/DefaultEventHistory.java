@@ -124,7 +124,6 @@ public class DefaultEventHistory extends AbstractService implements
 	public void initialize() {
 		history = new ArrayList<EventDetails>();
 		listeners = new ArrayList<EventHistoryListener>();
-		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

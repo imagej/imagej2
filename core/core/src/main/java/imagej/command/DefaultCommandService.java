@@ -239,8 +239,6 @@ public class DefaultCommandService extends AbstractService implements
 		final List<PluginInfo<Command>> plugins =
 			pluginService.getPluginsOfType(Command.class);
 		addCommands(plugins);
-
-		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

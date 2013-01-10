@@ -101,8 +101,6 @@ public class DefaultMouseService extends AbstractService implements
 	public void initialize() {
 		buttonsDown = new HashSet<Integer>();
 		clearCoords();
-
-		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

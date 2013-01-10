@@ -35,13 +35,11 @@
 
 package imagej.ui.swing.viewer.image;
 
-import imagej.ImageJ;
+import imagej.AbstractContextual;
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
 import imagej.data.display.event.DataViewUpdatedEvent;
 import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.log.LogService;
 import imagej.util.awt.AWTImageTools;
 
@@ -49,7 +47,6 @@ import java.awt.Image;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.List;
 
 import org.jhotdraw.draw.Drawing;
 import org.jhotdraw.draw.ImageFigure;
@@ -61,17 +58,16 @@ import org.jhotdraw.draw.ImageFigure;
  * @author Curtis Rueden
  * @author Lee Kamentsky
  */
-public class DatasetFigureView implements FigureView {
+public class DatasetFigureView extends AbstractContextual implements FigureView
+{
 
 	private final DatasetView datasetView;
 	private final ImageFigure figure;
 
-	@SuppressWarnings("unused")
-	private final List<EventSubscriber<?>> subscribers;
-
 	public DatasetFigureView(final SwingImageDisplayViewer displayViewer,
 		final DatasetView datasetView)
 	{
+		setContext(datasetView.getContext());
 		this.datasetView = datasetView;
 		final JHotDrawImageCanvas canvas = displayViewer.getCanvas();
 		final Drawing drawing = canvas.getDrawing();
@@ -86,9 +82,6 @@ public class DatasetFigureView implements FigureView {
 		figure.setBounds(new Point2D.Double(minX, minY), new Point2D.Double(maxX,
 			maxY));
 		drawing.add(figure);
-		final ImageJ context = dataset.getContext();
-		final EventService eventService = context.getService(EventService.class);
-		subscribers = eventService.subscribe(this);
 	}
 
 	@EventHandler
@@ -98,8 +91,7 @@ public class DatasetFigureView implements FigureView {
 
 	@Override
 	public void update() {
-		final LogService log =
-			datasetView.getData().getContext().getService(LogService.class);
+		final LogService log = getContext().getService(LogService.class);
 		log.debug("Updating image figure: " + this);
 		final Image image = datasetView.getScreenImage().image();
 		final BufferedImage bufImage = AWTImageTools.makeBuffered(image);

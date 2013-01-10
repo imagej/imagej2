@@ -153,8 +153,6 @@ public final class DefaultWindowService extends AbstractService implements
 	public void initialize() {
 		openWindows = new ArrayList<String>();
 		windowModules = new HashMap<String, ModuleInfo>();
-
-		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

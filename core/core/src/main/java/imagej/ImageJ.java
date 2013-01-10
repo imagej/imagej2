@@ -328,12 +328,16 @@ public class ImageJ {
 	 * interface.
 	 * 
 	 * @param o The object to which the context should be assigned.
-	 * @return true If the context was successfully injected.
-	 * @throws IllegalStateException If the object already has a context.
+	 * @return true If the context was successfully injected, or if the object
+	 *         already has this context.
+	 * @throws IllegalStateException If the object already has a different
+	 *           context.
 	 */
 	public boolean inject(final Object o) {
 		if (!(o instanceof Contextual)) return false;
-		((Contextual) o).setContext(this);
+		final Contextual c = (Contextual) o;
+		if (c.getContext() == this) return true;
+		c.setContext(this);
 		return true;
 	}
 

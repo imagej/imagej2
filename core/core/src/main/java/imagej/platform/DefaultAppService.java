@@ -115,13 +115,6 @@ public final class DefaultAppService extends AbstractService implements
 		return handledCommands;
 	}
 
-	// -- Service methods --
-
-	@Override
-	public void initialize() {
-		subscribeToEvents(eventService);
-	}
-
 	// -- Event handlers --
 
 	@EventHandler
