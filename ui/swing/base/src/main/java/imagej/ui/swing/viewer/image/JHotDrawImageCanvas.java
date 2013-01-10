@@ -205,12 +205,13 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 	public Dataset capture() {
 		final ImageDisplay display = getDisplay();
 		if (display == null) return null;
-		final ImageDisplayService dispSrv =
+		final ImageDisplayService imageDisplayService =
 			display.getContext().getService(ImageDisplayService.class);
-		final DatasetView dsView = dispSrv.getActiveDatasetView(display);
-		if (dsView == null) return null;
+		final DatasetView datasetView =
+			imageDisplayService.getActiveDatasetView(display);
+		if (datasetView == null) return null;
 
-		final ARGBScreenImage screenImage = dsView.getScreenImage();
+		final ARGBScreenImage screenImage = datasetView.getScreenImage();
 		final Image pixels = screenImage.image();
 
 		final int w = pixels.getWidth(null);
@@ -228,11 +229,11 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 		}
 
 		// create a dataset that has view data with overlay info on top
-		final DatasetService dss =
+		final DatasetService datasetService =
 			display.getContext().getService(DatasetService.class);
 		final Dataset dataset =
-			dss.create(new long[] { w, h, 3 }, "Captured view", new AxisType[] {
-				Axes.X, Axes.Y, Axes.CHANNEL }, 8, false, false);
+			datasetService.create(new long[] { w, h, 3 }, "Captured view",
+				new AxisType[] { Axes.X, Axes.Y, Axes.CHANNEL }, 8, false, false);
 		dataset.setRGBMerged(true);
 		final RandomAccess<? extends RealType<?>> accessor =
 			dataset.getImgPlus().randomAccess();
