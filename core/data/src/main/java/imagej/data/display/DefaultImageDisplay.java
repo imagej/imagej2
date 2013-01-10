@@ -38,6 +38,7 @@ package imagej.data.display;
 import imagej.data.CombinedInterval;
 import imagej.data.Data;
 import imagej.data.Extents;
+import imagej.data.display.event.AxisActivatedEvent;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.event.DataRestructuredEvent;
 import imagej.data.event.DataUpdatedEvent;
@@ -152,6 +153,13 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 			throw new IllegalArgumentException("Unknown axis: " + axis);
 		}
 		activeAxis = axis;
+
+		// notify interested parties of the change
+		final EventService eventService =
+			getContext().getService(EventService.class);
+		if (eventService != null) {
+			eventService.publish(new AxisActivatedEvent(this, activeAxis));
+		}
 	}
 
 	@Override
@@ -449,8 +457,10 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		if (value < min) value = min;
 		if (value > max) value = max;
 
-		// update position and notify interested parties of the change
+		// update position
 		pos.put(axis, value);
+
+		// notify interested parties of the change
 		// NB: DataView.setPosition is called only in update method.
 		final EventService eventService =
 			getContext().getService(EventService.class);
