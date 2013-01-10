@@ -76,6 +76,10 @@ public class ModuleRunner extends AbstractContextual implements
 		final List<? extends ModulePostprocessor> post)
 	{
 		setContext(context);
+
+		// Associate the module with the same context, if applicable.
+		context.inject(module);
+
 		this.module = module;
 		this.pre = pre;
 		this.post = post;
