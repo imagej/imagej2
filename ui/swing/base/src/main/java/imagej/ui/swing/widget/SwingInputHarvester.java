@@ -36,6 +36,7 @@
 package imagej.ui.swing.widget;
 
 import imagej.Priority;
+import imagej.core.commands.display.interactive.InteractiveCommand;
 import imagej.module.Module;
 import imagej.plugin.Plugin;
 import imagej.plugin.PreprocessorPlugin;
@@ -75,6 +76,7 @@ public class SwingInputHarvester extends
 
 		// display input panel in a dialog
 		final String title = module.getInfo().getTitle();
+		final boolean modal = !(module instanceof InteractiveCommand);
 		final boolean allowCancel = module.getInfo().canCancel();
 		final int optionType, messageType;
 		if (allowCancel) optionType = JOptionPane.OK_CANCEL_OPTION;
@@ -87,6 +89,7 @@ public class SwingInputHarvester extends
 		final boolean doScrollBars = messageType == JOptionPane.PLAIN_MESSAGE;
 		final SwingDialog dialog = new SwingDialog(pane, optionType, messageType, doScrollBars);
 		dialog.setTitle(title);
+		dialog.setModal(modal);
 		final int rval = dialog.show();
 
 		// verify return value of dialog
