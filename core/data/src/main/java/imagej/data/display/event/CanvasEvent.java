@@ -52,6 +52,8 @@ public abstract class CanvasEvent extends ImageDisplayEvent {
 		this.canvas = canvas;
 	}
 
+	// -- CanvasEvent methods --
+
 	public ImageCanvas getCanvas() {
 		return canvas;
 	}

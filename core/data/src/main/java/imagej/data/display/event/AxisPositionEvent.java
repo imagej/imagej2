@@ -59,6 +59,8 @@ public class AxisPositionEvent extends ImageDisplayEvent {
 		this.axis = axis;
 	}
 
+	// -- AxisPositionEvent methods --
+
 	public AxisType getAxis() {
 		return axis;
 	}

@@ -51,6 +51,8 @@ public abstract class DisplayEvent extends ImageJEvent {
 		this.display = display;
 	}
 
+	// -- DisplayEvent methods --
+
 	public Display<?> getDisplay() {
 		return display;
 	}

@@ -61,6 +61,8 @@ public class DelayedPositionEvent extends ImageDisplayEvent {
 		this.axis = axis;
 	}
 
+	// -- DelayedPositionEvent methods --
+
 	public AxisType getAxis() {
 		return axis;
 	}

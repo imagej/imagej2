@@ -52,6 +52,8 @@ public abstract class DataViewEvent extends ImageJEvent {
 		this.view = view;
 	}
 
+	// -- DataViewEvent methods --
+
 	public DataView getView() {
 		return view;
 	}
