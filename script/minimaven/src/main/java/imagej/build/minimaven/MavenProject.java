@@ -254,7 +254,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 
 		// do not build aggregator projects
 		File source = getSourceDirectory();
-		if (!source.exists())
+		if (!source.exists() && !new File(source.getParentFile(), "resources").exists())
 			return;
 
 		target.mkdirs();
