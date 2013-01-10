@@ -35,11 +35,8 @@
 
 package imagej.core.commands.display.interactive;
 
-import imagej.Previewable;
-import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
-import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.plugin.Menu;
@@ -64,7 +61,7 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Brightness/Contrast...", accelerator = "control shift C",
 		weight = 0) }, iconPath = "/icons/plugins/contrast.png", headless = true,
 	initializer = "initValues")
-public class BrightnessContrast extends ContextCommand implements Previewable {
+public class BrightnessContrast extends InteractiveCommand {
 
 	private static final int SLIDER_MIN = 0;
 	private static final int SLIDER_MAX = 100;
@@ -79,10 +76,7 @@ public class BrightnessContrast extends ContextCommand implements Previewable {
 	 */
 	private static final int MAX_POWER = 4;
 
-	@Parameter
-	private LogService log;
-
-	@Parameter(type = ItemIO.BOTH)
+	@Parameter(type = ItemIO.BOTH, callback = "initValues")
 	private DatasetView view;
 
 	@Parameter(label = "Minimum", persist = false, callback = "minMaxChanged")
@@ -104,6 +98,10 @@ public class BrightnessContrast extends ContextCommand implements Previewable {
 
 	/** The initial minimum and maximum values of the data view. */
 	private double initialMin, initialMax;
+
+	public BrightnessContrast() {
+		super("view");
+	}
 
 	// -- Runnable methods --
 
