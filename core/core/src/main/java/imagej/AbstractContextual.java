@@ -89,11 +89,13 @@ public abstract class AbstractContextual implements Contextual {
 		this.context = context;
 
 		// register any event handling methods defined in subclasses
-		final EventService eventService = context.getService(EventService.class);
-		if (eventService != null) {
-			// NB: Subscribe to all events handled by this object.
-			// This greatly simplifies event handling for subclasses.
-			subscribers = eventService.subscribe(this);
+		if (context != null) {
+			final EventService eventService = context.getService(EventService.class);
+			if (eventService != null) {
+				// NB: Subscribe to all events handled by this object.
+				// This greatly simplifies event handling for subclasses.
+				subscribers = eventService.subscribe(this);
+			}
 		}
 	}
 
