@@ -189,8 +189,9 @@ public class DefaultLutService extends AbstractService implements LutService {
 	}
 
 	private String nameBeyondBase(String filename) {
-		int start = filename.indexOf(LutFinder.LUT_DIRECTORY);
-		return filename.substring(start + LutFinder.LUT_DIRECTORY.length() + 1);
+		int lutsIndex = filename.indexOf("/luts/");
+		if (lutsIndex < 0) return filename;
+		return filename.substring(lutsIndex + 6, filename.length());
 	}
 
 	private String tableName(final String filename) {
