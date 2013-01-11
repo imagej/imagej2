@@ -75,6 +75,8 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 @SuppressWarnings("hiding")
 public class BuildEnvironment {
+	public final static String IMAGEJ_APP_DIRECTORY = "imagej.app.directory";
+
 	protected String endLine = isInteractiveConsole() ? "\033[K\r" : "\n";
 	protected boolean verbose, debug = false, downloadAutomatically, offlineMode, ignoreMavenRepositories;
 	protected int updateInterval = 24 * 60; // by default, check once per 24h for new snapshot versions

@@ -36,6 +36,7 @@
 package imagej.build.minimaven;
 
 import imagej.build.minimaven.JavaCompiler.CompileError;
+import imagej.util.FileUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -45,12 +46,15 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.jar.Attributes.Name;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
@@ -235,6 +239,31 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 			}
 			else if (file.isDirectory())
 				addToJarRecursively(out, file, prefix + file.getName() + "/");
+	}
+
+	/**
+	 * Builds the artifact and installs it and its dependencies into ${imagej.app.directory}.
+	 * 
+	 * If the property <tt>imagej.app.directory</tt> does not point to a valid directory, the
+	 * install step is skipped.
+	 * 
+	 * @throws CompileError
+	 * @throws IOException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 */
+	public void buildAndInstallJar() throws CompileError, IOException, ParserConfigurationException, SAXException {
+		buildJar();
+		final String ijDirProperty = getProperty(BuildEnvironment.IMAGEJ_APP_DIRECTORY);
+		if (ijDirProperty != null) {
+			final File ijDir = new File(ijDirProperty);
+			if (ijDir.isDirectory()) {
+				for (final MavenProject project : getDependencies(true, false, "test", "provided", "system")) {
+					project.copyToImageJAppDirectory(ijDir, true);
+				}
+				copyToImageJAppDirectory(ijDir, true);
+			}
+		}
 	}
 
 	/**
@@ -464,6 +493,74 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 			builder.append(File.pathSeparator).append(pom.getTarget());
 		}
 		return builder.toString();
+	}
+
+	private final void deleteVersions(final File directory, final String filename) {
+		final File[] versioned = FileUtils.getAllVersions(directory, filename);
+		if (versioned == null)
+			return;
+		for (final File file : versioned) {
+			if (!file.getName().equals(filename))
+				env.err.println("Warning: deleting '" + file + "'");
+			if (!file.delete())
+				env.err.println("Warning: could not delete '" + file + "'");
+		}
+	}
+
+	/**
+	 * Copies the current artifact and all its dependencies into an ImageJ.app/ directory structure.
+	 * 
+	 * In the ImageJ.app/ directory structure, plugin .jar files live in the plugins/ subdirectory
+	 * while libraries not providing any plugins should go to jars/.
+	 * 
+	 * @param ijDir the ImageJ.app/ directory
+	 * @throws IOException 
+	 */
+	private void copyToImageJAppDirectory(final File ijDir, boolean deleteOtherVersions) throws IOException {
+		if ("pom".equals(getPackaging())) return;
+		final File source = getTarget();
+		if (!source.exists()) throw new IOException("Artifact does not exist: " + source);
+
+		final File targetDir = new File(ijDir, isImageJ1Plugin(source) ? "plugins" : "jars");
+		final File target = new File(targetDir,
+				"Fiji_Updater".equals(getArtifactId()) ? "Fiji_Updater.jar" : getJarName());
+		if (!targetDir.exists()) {
+			if (!targetDir.mkdirs()) {
+				throw new IOException("Could not make directory " + targetDir);
+			}
+		} else if (target.exists() && target.lastModified() >= source.lastModified()) {
+			return;
+		}
+		if (deleteOtherVersions) deleteVersions(targetDir, target.getName());
+		BuildEnvironment.copyFile(source, target);
+	}
+
+	/**
+	 * Determines whether a .jar file contains ImageJ 1.x plugins.
+	 * 
+	 * The test is simple: does it contain a <tt>plugins.config</tt> file?
+	 * 
+	 * @param file the .jar file
+	 * @return whether it contains at least one ImageJ 1.x plugin.
+	 */
+	private static boolean isImageJ1Plugin(File file) {
+		String name = file.getName();
+		if (name.indexOf('_') < 0 || !file.exists())
+			return false;
+		if (file.isDirectory())
+			return new File(file, "src/main/resources/plugins.config").exists();
+		if (name.endsWith(".jar")) try {
+			JarFile jar = new JarFile(file);
+			for (JarEntry entry : Collections.list(jar.entries()))
+				if (entry.getName().equals("plugins.config")) {
+					jar.close();
+					return true;
+			}
+			jar.close();
+		} catch (Throwable t) {
+			// obviously not a plugin...
+		}
+		return false;
 	}
 
 	/**

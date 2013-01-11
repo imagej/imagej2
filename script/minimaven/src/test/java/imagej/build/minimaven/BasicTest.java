@@ -36,6 +36,7 @@
 package imagej.build.minimaven;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import imagej.util.FileUtils;
 
@@ -60,34 +61,58 @@ import org.junit.Test;
 public class BasicTest {
 	@Test
 	public void testResources() throws Exception {
+		final File tmp = writeExampleProject();
+		final BuildEnvironment env = new BuildEnvironment(null, false,
+				false, false);
+		final MavenProject project = env.parse(new File(tmp, "pom.xml"));
+		project.buildJar();
+
+		final File blub = new File(tmp, "target/blub-1.0.0.jar");
+		assertTrue(blub.exists());
+		assertEquals("1.0.0\n", read(new JarFile(blub), "version.txt"));
+		FileUtils.deleteRecursively(tmp);
+	}
+
+	@Test
+	public void testCopyToImageJApp() throws Exception {
+		final File tmp = writeExampleProject();
+		final File ijDir = FileUtils.createTemporaryDirectory("ImageJ.app-", "");
+		final File jarsDir = new File(ijDir, "jars");
+		assertTrue(jarsDir.mkdir());
+		final File oldVersion = new File(jarsDir, "blub-0.0.5.jar");
+		writeFile(oldVersion, "old");
+		assertTrue(oldVersion.exists());
+
+		final BuildEnvironment env = new BuildEnvironment(null, false,
+				false, false);
+		final MavenProject project = env.parse(new File(tmp, "pom.xml"));
+		System.setProperty(BuildEnvironment.IMAGEJ_APP_DIRECTORY, ijDir.getAbsolutePath());
+		project.buildAndInstallJar();
+
+		final File blub = new File(jarsDir, "blub-1.0.0.jar");
+		assertTrue(blub.exists());
+		assertFalse(oldVersion.exists());
+
+		FileUtils.deleteRecursively(tmp);
+		FileUtils.deleteRecursively(ijDir);
+	}
+
+	private File writeExampleProject() throws IOException {
 		final File tmp = FileUtils.createTemporaryDirectory("minimaven-", "");
-		System.err.println("tmp: " + tmp);
-		try {
-			writeFile(new File(tmp, "src/main/resources/version.txt"),
-					"1.0.0\n");
-			writeFile(
-					new File(tmp, "pom.xml"),
-					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-							+ "<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n"
-							+ "\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
-							+ "\txsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0"
-							+ "\t\thttp://maven.apache.org/xsd/maven-4.0.0.xsd\">\n"
-							+ "\t<modelVersion>4.0.0</modelVersion>\n"
-							+ "\t<groupId>test</groupId>\n"
-							+ "\t<artifactId>blub</artifactId>\n"
-							+ "\t<version>1.0.0</version>\n" + "</project>");
-
-			final BuildEnvironment env = new BuildEnvironment(null, false,
-					false, false);
-			final MavenProject project = env.parse(new File(tmp, "pom.xml"));
-			project.buildJar();
-
-			final File blub = new File(tmp, "target/blub-1.0.0.jar");
-			assertTrue(blub.exists());
-			assertEquals("1.0.0\n", read(new JarFile(blub), "version.txt"));
-		} finally {
-			FileUtils.deleteRecursively(tmp);
-		}
+		writeFile(new File(tmp, "src/main/resources/version.txt"),
+				"1.0.0\n");
+		writeFile(
+				new File(tmp, "pom.xml"),
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+						+ "<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n"
+						+ "\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+						+ "\txsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0"
+						+ "\t\thttp://maven.apache.org/xsd/maven-4.0.0.xsd\">\n"
+						+ "\t<modelVersion>4.0.0</modelVersion>\n"
+						+ "\t<groupId>test</groupId>\n"
+						+ "\t<artifactId>blub</artifactId>\n"
+						+ "\t<version>1.0.0</version>\n" + "</project>");
+		return tmp;
 	}
 
 	private static void writeFile(final File file, final String contents)
