@@ -78,6 +78,12 @@ public class LutFinder {
 		return combined.values();
 	}
 
+	// -- private helpers --
+
+	private URL getJarURL() {
+		return ClassUtils.getLocation(this.getClass());
+	}
+
 	private URL getDirectoryURL() {
 		try {
 			return new URL("file://" + LUT_DIRECTORY);
@@ -87,11 +93,9 @@ public class LutFinder {
 		}
 	}
 
-	// -- private helpers --
-
-	private URL getJarURL() {
-		// TODO FIXME HACK this is not done
-		return ClassUtils.getLocation(this.getClass());
+	private Collection<URL> getLuts(URL base) {
+		Collection<URL> urls = FileUtils.listContents(base);
+		return filter(urls, ".*\\.lut$");
 	}
 
 	private Collection<URL> filter(Collection<URL> urlCollection, String regex) {
@@ -101,11 +105,6 @@ public class LutFinder {
 			if (p.matcher(url.toString()).matches()) list.add(url);
 		}
 		return list;
-	}
-
-	private Collection<URL> getLuts(URL base) {
-		Collection<URL> urls = FileUtils.listContents(base);
-		return filter(urls, ".*\\.lut$");
 	}
 
 	private void putAll(Collection<URL> urls, Map<String, URL> map) {
