@@ -66,7 +66,10 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * TODO
+ * The build environment of MiniMaven.
+ * 
+ * This class contains settings and methods that are not specific to a single {@link MavenProject},
+ * but rather specific to a tree of projects.
  * 
  * @author Johannes Schindelin
  */

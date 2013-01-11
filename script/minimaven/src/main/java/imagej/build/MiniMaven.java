@@ -48,7 +48,11 @@ import java.util.Stack;
 import java.util.TreeSet;
 
 /**
- * TODO
+ * The main-class for a simple and small drop-in replacement of Maven.
+ * 
+ * Naturally, MiniMaven does not pretend to be as powerful as Maven. But it does the job
+ * as far as ImageJ2 and Fiji are concerned, and it does not download half the internet
+ * upon initial operation.
  * 
  * @author Johannes Schindelin
  */

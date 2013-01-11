@@ -62,7 +62,10 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * TODO
+ * This class represents a parsed pom.xml file.
+ * 
+ * Every pom.xml file is parsed into an instance of this class; the tree of projects shares
+ * a {@link BuildEnvironment} instance.
  * 
  * @author Johannes Schindelin
  */
@@ -234,14 +237,38 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 				addToJarRecursively(out, file, prefix + file.getName() + "/");
 	}
 
+	/**
+	 * Builds the artifact.
+	 * 
+	 * @throws CompileError
+	 * @throws IOException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 */
 	public void buildJar() throws CompileError, IOException, ParserConfigurationException, SAXException {
 		build(true);
 	}
 
+	/**
+	 * Compiles the project.
+	 * 
+	 * @throws CompileError
+	 * @throws IOException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 */
 	public void build() throws CompileError, IOException, ParserConfigurationException, SAXException {
 		build(false);
 	}
 
+	/**
+	 * Compiles the project and optionally builds the .jar artifact.
+	 * 
+	 * @throws CompileError
+	 * @throws IOException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 */
 	public void build(boolean makeJar) throws CompileError, IOException, ParserConfigurationException, SAXException {
 		if (!buildFromSource || built)
 			return;
