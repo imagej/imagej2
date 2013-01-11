@@ -47,6 +47,9 @@ import imagej.log.LogService;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+
+import java.net.URL;
+
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
@@ -65,7 +68,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Barry DeZonia
  */
 @Plugin
-public class ApplyLookupTablePlugin implements Command {
+public class ApplyLookupTable implements Command {
 
 	// -- Parameters --
 
@@ -91,7 +94,7 @@ public class ApplyLookupTablePlugin implements Command {
 	private DatasetView view;
 
 	@Parameter
-	private String tableURL;
+	private URL tableURL;
 	// = "file:///Users/bdezonia/Desktop/ImageJ/luts/6_shades.lut";
 
 	@Parameter(type = ItemIO.OUTPUT)
@@ -107,12 +110,12 @@ public class ApplyLookupTablePlugin implements Command {
 	@Override
 	public void run() {
 		if (tableURL == null) {
-			logService.warn("ApplyLookupTablePlugin: no url string provided.");
+			logService.warn("ApplyLookupTable: no url string provided.");
 			return;
 		}
 		ColorTable colorTable = lutService.loadLut(tableURL);
 		if (colorTable == null) {
-			logService.error("ApplyLookupTablePlugin: could not load color table - " +
+			logService.error("ApplyLookupTable: could not load color table - " +
 				tableURL);
 			return;
 		}
@@ -131,8 +134,9 @@ public class ApplyLookupTablePlugin implements Command {
 	// -- private helpers --
 
 	private Dataset makeData() {
+		String urlString = tableURL.toString();
 		String name =
-			tableURL.substring(tableURL.lastIndexOf("/") + 1, tableURL.length());
+			urlString.substring(urlString.lastIndexOf("/") + 1, urlString.length());
 		long[] dims = new long[] { WIDTH, HEIGHT };
 		AxisType[] axes = new AxisType[] { Axes.X, Axes.Y };
 		int bitsPerPixel = 8;
