@@ -415,7 +415,7 @@ public final class FileUtils {
 		if (directory == null) return result; // nothing to append
 		final String protocol = directory.getProtocol();
 		if (protocol.equals("file")) {
-			// begin: stolen
+			// begin: stolen by BDZ
 			// http://weblogs.java.net/blog/kohsuke/archive/2007/04/how_to_convert.html
 			// This improves similar discussions on StackOverflow
 			File dir;
