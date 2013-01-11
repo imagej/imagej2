@@ -40,17 +40,12 @@ import imagej.util.ClassUtils;
 import imagej.util.FileUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.jar.JarEntry;
-import java.util.jar.JarException;
-import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
 /**
@@ -92,6 +87,8 @@ public class LutFinder {
 		}
 	}
 
+	// -- private helpers --
+
 	private URL getJarURL() {
 		// TODO FIXME HACK this is not done
 		return ClassUtils.getLocation(this.getClass());
@@ -120,118 +117,6 @@ public class LutFinder {
 			if (lastSlash >= 0) id = id.substring(lastSlash + 1, id.length());
 			map.put(id, url);
 		}
-	}
-
-
-	// *************************************************************************
-	// OLD OLD OLD
-	// *************************************************************************
-
-	/**
-	 * Finds the {@link URL}s of the .lut files known to the system. .lut files
-	 * can reside in the standard Jar file or in the luts subdirectory of the
-	 * application. This discovery could be extended to allow .lut files from the
-	 * web.
-	 * 
-	 * @return A collection of URLs referencing the known .lut files
-	 */
-	public Collection<URL> oldFindLuts() {
-		HashMap<String, URL> urls = new HashMap<String, URL>();
-		findJarLuts(urls); // do 1st - Jar LUTs
-		findFileSystemLuts(LUT_DIRECTORY, urls); // do 2nd - can override Jar LUTs
-		return urls.values();
-	}
-
-	// -- private helpers --
-
-	private void findFileSystemLuts(String dirName, Map<String, URL> urls) {
-		File f = new File(dirName);
-		if (!f.exists()) return;
-		if (!f.isDirectory()) return;
-		String[] files = f.list();
-		for (String file : files) {
-			StringBuilder builder = new StringBuilder();
-			builder.append(dirName);
-			builder.append(File.separator);
-			builder.append(file);
-			String pathSoFar = builder.toString();
-			if (file.endsWith(".lut")) {
-				try {
-					URL url = new URL("file", "", pathSoFar);
-					urls.put(file, url);
-				}
-				catch (Exception e) {
-					// ignore MalformedURLs
-				}
-			}
-			else { // not a .lut file but maybe a directory
-				if (file.equals(".")) continue;
-				if (file.equals("..")) continue;
-				f = new File(pathSoFar);
-				if (f.isDirectory()) findFileSystemLuts(pathSoFar, urls);
-			}
-		}
-	}
-
-	private void findJarLuts(Map<String, URL> urls) {
-		File jar = new File("jarFileName"); // FIXME
-		Pattern pattern = Pattern.compile(".*\\.lut$");
-		Collection<String> lutNames = getResourceNamesFromJar(jar, pattern);
-		for (String lutName : lutNames) {
-			URL url = getClass().getResource("/luts/" + lutName);
-			urls.put(lutName, url);
-		}
-		/*
-		// URL location = ClassUtils.getLocation(this.getClass());
-		// System.out.println("Location of LutFinder class is " + location);
-		// String tmp = location.toString();
-		// String name = tmp.substring(0, tmp.lastIndexOf("/"));
-
-		URL url = getClass().getResource("/luts/luts.jar");
-		System.out.println("Location of /luts resource in correct jar is " + url);
-		String fname = url.toString();
-		fname = fname.substring(5, fname.length());
-		File file = new File(fname);
-		Pattern pattern = Pattern.compile(".*\\.lut$");
-		Collection<String> lutNames = getResourceNamesFromJarFile(file, pattern);
-		for (String lutName : lutNames) {
-			URL u = getClass().getResource("luts/luts.jar/" + lutName);
-			System.out.println(u.toString());
-		}
-		*/
-	}
-
-
-	/**
-	 * Adapted from some StackOverflow code
-	 * 
-	 * @author Barry DeZonia
-	 */
-	private static Collection<String> getResourceNamesFromJar(
-		final File file,
-		final Pattern pattern)
-	{
-		final ArrayList<String> retval = new ArrayList<String>();
-		try {
-			JarFile jf = new JarFile(file);
-			final Enumeration<? extends JarEntry> e = jf.entries();
-			while (e.hasMoreElements()) {
-				final JarEntry je = e.nextElement();
-				final String fileName = je.getName();
-				final boolean accept = pattern.matcher(fileName).matches();
-				if (accept) {
-					retval.add(fileName);
-				}
-			}
-			jf.close();
-		}
-		catch (final JarException e) {
-			throw new Error(e);
-		}
-		catch (final IOException e) {
-			throw new Error(e);
-		}
-		return retval;
 	}
 
 }
