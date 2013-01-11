@@ -50,6 +50,13 @@ import java.util.zip.ZipEntry;
 
 import org.junit.Test;
 
+/**
+ * A simple test for MiniMaven.
+ * 
+ * This tests the rudimentary function of MiniMaven.
+ * 
+ * @author Johannes Schindelin
+ */
 public class BasicTest {
 	@Test
 	public void testResources() throws Exception {
