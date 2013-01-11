@@ -57,18 +57,43 @@ import java.util.TreeSet;
  * @author Johannes Schindelin
  */
 public class MiniMaven {
-	private final static String usage = "Usage: MiniMaven [command]\n"
-		+ "\tSupported commands: compile, run, compile-and-run, clean, get-dependencies";
+	private final static void usage() {
+		System.err.println("Usage: MiniMaven [options...] [command]\n\n"
+				+ "Supported commands:\n"
+				+ "\tcompile, run, compile-and-run, clean, get-dependencies\n\n"
+				+ "Options:\n"
+				+ "\t-D<key>=<value>");
+		System.exit(1);
+	}
 
 	public static void main(String[] args) throws Exception {
-		PrintStream err = System.err;
-		BuildEnvironment env = new BuildEnvironment(err,
+		int offset;
+		for (offset = 0; offset < args.length && args[offset].charAt(0) == '-'; offset++) {
+			final String option = args[offset];
+			if (option.startsWith("-D")) {
+				int equals = option.indexOf('=', 2);
+				if (equals < 0)
+					System.getProperties().remove(option.substring(2));
+				else
+					System.setProperty(option.substring(2, equals), option.substring(equals + 1));
+			}
+			else {
+				usage();
+			}
+		}
+		String command = "compile-and-run";
+		if (args.length == offset + 1)
+			command = args[offset];
+		else if (args.length > offset + 1)
+			usage();
+
+		final PrintStream err = System.err;
+		final BuildEnvironment env = new BuildEnvironment(err,
 			"true".equals(getSystemProperty("minimaven.download.automatically", "true")),
 			"true".equals(getSystemProperty("minimaven.verbose", "false")),
 			false);
-		MavenProject root = env.parse(new File("pom.xml"), null);
-		String command = args.length == 0 ? "compile-and-run" : args[0];
-		String artifactId = getSystemProperty("artifactId", root.getArtifactId().equals("pom-ij-base") ? "ij-app" : root.getArtifactId());
+		final MavenProject root = env.parse(new File("pom.xml"), null);
+		final String artifactId = getSystemProperty("artifactId", root.getArtifactId().equals("pom-ij-base") ? "ij-app" : root.getArtifactId());
 
 		MavenProject pom = findPOM(root, artifactId);
 		if (pom == null)
@@ -95,27 +120,27 @@ public class MiniMaven {
 		else if (command.equals("get") || command.equals("get-dependencies"))
 			pom.downloadDependencies();
 		else if (command.equals("run")) {
-			String mainClass = getSystemProperty("mainClass", pom.getMainClass());
+			final String mainClass = getSystemProperty("mainClass", pom.getMainClass());
 			if (mainClass == null) {
 				err.println("No main class specified in pom " + pom.getCoordinate());
 				System.exit(1);
 			}
-			String[] paths = pom.getClassPath(false).split(File.pathSeparator);
-			URL[] urls = new URL[paths.length];
+			final String[] paths = pom.getClassPath(false).split(File.pathSeparator);
+			final URL[] urls = new URL[paths.length];
 			for (int i = 0; i < urls.length; i++)
 				urls[i] = new URL("file:" + paths[i] + (paths[i].endsWith(".jar") ? "" : "/"));
-			URLClassLoader classLoader = new URLClassLoader(urls);
+			final URLClassLoader classLoader = new URLClassLoader(urls);
 			// needed for sezpoz
 			Thread.currentThread().setContextClassLoader(classLoader);
-			Class<?> clazz = classLoader.loadClass(mainClass);
-			Method main = clazz.getMethod("main", new Class[] { String[].class });
+			final Class<?> clazz = classLoader.loadClass(mainClass);
+			final Method main = clazz.getMethod("main", new Class[] { String[].class });
 			main.invoke(null, new Object[] { new String[0] });
 		}
 		else if (command.equals("classpath"))
 			err.println(pom.getClassPath(false));
 		else if (command.equals("list")) {
-			Set<MavenProject> result = new TreeSet<MavenProject>();
-			Stack<MavenProject> stack = new Stack<MavenProject>();
+			final Set<MavenProject> result = new TreeSet<MavenProject>();
+			final Stack<MavenProject> stack = new Stack<MavenProject>();
 			stack.push(pom.getRoot());
 			while (!stack.empty()) {
 				pom = stack.pop();
@@ -125,11 +150,13 @@ public class MiniMaven {
 				for (MavenProject child : pom.getChildren())
 					stack.push(child);
 			}
-			for (MavenProject pom2 : result)
+			for (final MavenProject pom2 : result)
 				System.err.println(pom2);
 		}
-		else
-			err.println("Unhandled command: " + command + "\n" + usage);
+		else {
+			err.println("Unhandled command: " + command);
+			usage();
+		}
 	}
 
 	protected static MavenProject findPOM(MavenProject root, String artifactId) {
