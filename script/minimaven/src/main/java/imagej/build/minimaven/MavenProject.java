@@ -556,7 +556,18 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		}
 	}
 
+	/**
+	 * Returns the (possibly project-specific) value of a property.
+	 * 
+	 * System properties override project-specific properties to allow the user
+	 * to overrule a setting by specifying it on the command-line.
+	 * 
+	 * @param key the name of the property
+	 * @return the value of the property
+	 */
 	public String getProperty(String key) {
+		final String systemProperty = System.getProperty(key);
+		if (systemProperty != null) return systemProperty;
 		if (properties.containsKey(key))
 			return properties.get(key);
 		if (key.equals("project.basedir"))
@@ -569,8 +580,6 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 				return "4.4-SNAPSHOT";
 			if (key.equals("imagej.groupId"))
 				return "imagej";
-			if (key.equals("java.home"))
-				return System.getProperty("java.home");
 			return null;
 		}
 		return parent.getProperty(key);
