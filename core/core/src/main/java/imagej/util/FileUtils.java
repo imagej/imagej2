@@ -42,9 +42,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
 /**
@@ -387,6 +392,52 @@ public final class FileUtils {
 			}
 		}
 		return directory.delete();
+	}
+
+	/**
+	 * Lists all contents of the referenced directory.
+	 */
+	public static Collection<URL> listContents(final URL directory) {
+		final Collection<URL> result = new ArrayList<URL>();
+		return appendContents(result, directory);
+	}
+
+	/**
+	 * Lists all contents of the referenced directory.
+	 */
+	public static Collection<URL> appendContents(final Collection<URL> result, final URL directory) {
+		final String protocol = directory.getProtocol();
+		if (protocol.equals("file")) {
+			for (final File file : new File(directory.getFile()).listFiles()) {
+				try {
+					if (file.isFile()) {
+						result.add(file.toURI().toURL());
+					} else if (file.isDirectory()) {
+						appendContents(result, file.toURI().toURL());
+					}
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				}
+			}
+		} else if (protocol.equals("jar")) {
+			try {
+				final String url = directory.toString();
+				final int bang = url.indexOf("!/");
+				if (bang < 0) return result;
+				final String prefix = url.substring(bang + 1);
+
+				final JarURLConnection connection = (JarURLConnection) directory.openConnection();
+				final JarFile jar = connection.getJarFile();
+				for (final JarEntry entry : new IteratorPlus<JarEntry>(jar.entries())) {
+					if (entry.getName().startsWith(prefix)) {
+						result.add(new URL(url.substring(0, bang + 2) + entry.getName()));
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
 	}
 
 	// -- Deprecated methods --
