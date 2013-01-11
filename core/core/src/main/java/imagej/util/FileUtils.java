@@ -40,11 +40,13 @@ package imagej.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -116,6 +118,49 @@ public final class FileUtils {
 	 */
 	public static String getExtension(final String path) {
 		return getExtension(new File(path));
+	}
+
+	/**
+	 * A regular expression to match filenames containing version information.
+	 * 
+	 * Keep this synchronized with imagej.updater.core.FileObject.
+	 */
+	private final static Pattern versionPattern =
+		Pattern.compile("(.+?)(-\\d+(\\.\\d+|\\d{7})+[a-z]?\\d?(-[A-Za-z0-9.]+|\\.GA)*)(\\.jar(-[a-z]*)?)");
+
+	/**
+	 * Returns the {@link Matcher} object dissecting a versioned file name.
+	 * 
+	 * @param filename the file name
+	 * @return the {@link Matcher} object
+	 */
+	public static Matcher matchVersionedFilename(String filename) {
+		return versionPattern.matcher(filename);
+	}
+
+	/**
+	 * Lists all versions of a given (possibly versioned) file name.
+	 * 
+	 * @param directory the directory to scan
+	 * @param filename the file name to use
+	 * @return the list of matches
+	 */
+	public static File[] getAllVersions(final File directory, final String filename) {
+		final Matcher matcher = matchVersionedFilename(filename);
+		if (!matcher.matches()) {
+			final File file = new File(directory, filename);
+			return file.exists() ? new File[] { file } : null;
+		}
+		final String baseName = matcher.group(1);
+		return directory.listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(final File dir, final String name) {
+				if (!name.startsWith(baseName))
+					return false;
+				final Matcher matcher2 = matchVersionedFilename(name);
+				return matcher2.matches() && baseName.equals(matcher2.group(1));
+			}
+		});
 	}
 
 	/**

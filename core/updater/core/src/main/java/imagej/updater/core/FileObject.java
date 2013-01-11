@@ -51,7 +51,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * TODO
@@ -476,16 +475,14 @@ public class FileObject {
 		return filename + " (local: " + localFilename + ")";
 	}
 
-	public String getFilename() {
-		return getFilename(false);
+	private static Matcher matchVersion(final String filename) {
+		if (!filename.endsWith(".jar")) return null;
+		final Matcher matcher = FileUtils.matchVersionedFilename(filename);
+		return matcher.matches() ? matcher : null;
 	}
 
-	private final static Pattern versionPattern = Pattern.compile("(.+?)(-\\d+(\\.\\d+|\\d{7})+[a-z]?\\d?(-[A-Za-z0-9.]+|\\.GA)*)(\\.jar)");
-
-	protected static Matcher matchVersion(String filename) {
-		if (!filename.endsWith(".jar")) return null;
-		final Matcher matcher = versionPattern.matcher(filename);
-		return matcher.matches() ? matcher : null;
+	public String getFilename() {
+		return getFilename(false);
 	}
 
 	public String getFilename(boolean stripVersion) {
