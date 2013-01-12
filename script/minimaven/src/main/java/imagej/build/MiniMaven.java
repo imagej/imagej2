@@ -62,6 +62,8 @@ public class MiniMaven {
 				+ "Supported commands:\n"
 				+ "compile\n"
 				+ "\tcompile the project\n"
+				+ "jar\n"
+				+ "\tcompile the project into a .jar file\n"
 				+ "run\n"
 				+ "\trun the project\n"
 				+ "compile-and-run\n"
