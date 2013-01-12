@@ -60,9 +60,19 @@ public class MiniMaven {
 	private final static void usage() {
 		System.err.println("Usage: MiniMaven [options...] [command]\n\n"
 				+ "Supported commands:\n"
-				+ "\tcompile, run, compile-and-run, clean, get-dependencies\n\n"
+				+ "compile\n"
+				+ "\tcompile the project\n"
+				+ "run\n"
+				+ "\trun the project\n"
+				+ "compile-and-run\n"
+				+ "\tcompile and run the project\n"
+				+ "clean\n"
+				+ "\tclean the project\n"
+				+ "get-dependencies\n"
+				+ "\tdownload the dependencies of the project\n\n"
 				+ "Options:\n"
-				+ "\t-D<key>=<value>");
+				+ "-D<key>=<value>\n"
+				+ "\tset a system property");
 		System.exit(1);
 	}
 
