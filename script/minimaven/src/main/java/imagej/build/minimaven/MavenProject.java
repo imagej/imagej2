@@ -253,6 +253,14 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 	 * @throws SAXException
 	 */
 	public void buildAndInstallJar() throws CompileError, IOException, ParserConfigurationException, SAXException {
+		if ("pom".equals(getPackaging())) {
+			env.err.println("Looking at children of " + getArtifactId());
+			for (final MavenProject child : getChildren()) {
+				child.buildAndInstallJar();
+			}
+			return;
+		}
+
 		buildJar();
 		final String ijDirProperty = getProperty(BuildEnvironment.IMAGEJ_APP_DIRECTORY);
 		if (ijDirProperty != null) {
