@@ -91,7 +91,7 @@ public class MiniMaven {
 		final BuildEnvironment env = new BuildEnvironment(err,
 			"true".equals(getSystemProperty("minimaven.download.automatically", "true")),
 			"true".equals(getSystemProperty("minimaven.verbose", "false")),
-			false);
+			"true".equals(getSystemProperty("minimaven.debug", "false")));
 		final MavenProject root = env.parse(new File("pom.xml"), null);
 		final String artifactId = getSystemProperty("artifactId", root.getArtifactId().equals("pom-ij-base") ? "ij-app" : root.getArtifactId());
 
