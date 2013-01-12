@@ -86,8 +86,7 @@ public class BasicTest {
 		final BuildEnvironment env = new BuildEnvironment(null, false,
 				false, false);
 		final MavenProject project = env.parse(new File(tmp, "pom.xml"));
-		System.setProperty(BuildEnvironment.IMAGEJ_APP_DIRECTORY, ijDir.getAbsolutePath());
-		project.buildAndInstallJar();
+		project.buildAndInstall(ijDir);
 
 		final File blub = new File(jarsDir, "blub-1.0.0.jar");
 		assertTrue(blub.exists());
