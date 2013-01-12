@@ -64,6 +64,8 @@ public class MiniMaven {
 				+ "\tcompile the project\n"
 				+ "jar\n"
 				+ "\tcompile the project into a .jar file\n"
+				+ "install\n"
+				+ "\tcompile & install the project and its dependencies\n"
 				+ "run\n"
 				+ "\trun the project\n"
 				+ "compile-and-run\n"
@@ -125,6 +127,10 @@ public class MiniMaven {
 			pom.buildJar();
 			if (command.equals("jars"))
 				pom.copyDependencies(pom.getTarget(), true);
+			return;
+		}
+		else if (command.equals("install")) {
+			pom.buildAndInstall();
 			return;
 		}
 		if (command.equals("clean"))
