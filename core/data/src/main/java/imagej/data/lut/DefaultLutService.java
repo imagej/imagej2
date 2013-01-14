@@ -163,14 +163,15 @@ public class DefaultLutService extends AbstractService implements LutService {
 			filename = url.getPath();
 		}
 		String shortenedName = nameBeyondBase(filename);
-		String[] subPaths = shortenedName.split(File.separator);
+		String[] subPaths = shortenedName.split("/");
 		final MenuPath menuPath = new MenuPath();
 		menuPath.add(new MenuEntry(MenuConstants.IMAGE_LABEL));
 		menuPath.add(new MenuEntry("Lookup Tables"));
 		for (int i = 0; i < subPaths.length - 1; i++) {
 			menuPath.add(new MenuEntry(subPaths[i]));
 		}
-		final MenuEntry leaf = new MenuEntry(tableName(filename));
+		final MenuEntry leaf =
+			new MenuEntry(tableName(subPaths[subPaths.length - 1]));
 		leaf.setWeight(50); // set menu position: TODO - do this properly
 		menuPath.add(leaf);
 
@@ -195,11 +196,8 @@ public class DefaultLutService extends AbstractService implements LutService {
 	}
 
 	private String tableName(final String filename) {
-		int lastSlash = filename.lastIndexOf(File.separator);
-		int ext = filename.lastIndexOf(".");
-		int start = lastSlash + 1;
-		int end = (ext == -1) ? filename.length() : ext;
-		return filename.substring(start, end);
+		int ext = filename.lastIndexOf(".lut");
+		return filename.substring(0, ext);
 	}
 
 

@@ -134,7 +134,13 @@ public class ApplyLookupTable implements Command {
 	// -- private helpers --
 
 	private Dataset makeData() {
-		String urlString = tableURL.toString();
+		String urlString;
+		try {
+			urlString = tableURL.toURI().getPath();
+		}
+		catch (Exception e) {
+			urlString = tableURL.getPath();
+		}
 		String name =
 			urlString.substring(urlString.lastIndexOf("/") + 1, urlString.length());
 		long[] dims = new long[] { WIDTH, HEIGHT };

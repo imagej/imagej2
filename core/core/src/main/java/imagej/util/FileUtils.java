@@ -422,7 +422,7 @@ public final class FileUtils {
 			try {
 				dir = new File(directory.toURI());
 			}
-			catch (URISyntaxException e) {
+			catch (Exception e) {
 				dir = new File(directory.getPath());
 			}
 			// end : stolen

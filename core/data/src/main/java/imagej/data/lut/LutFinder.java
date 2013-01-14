@@ -116,7 +116,7 @@ public class LutFinder {
 		for (URL url : urls) {
 			String id = url.toString();
 			int lutIndex = id.lastIndexOf("/luts/");
-			if (lutIndex >= 0) id = id.substring(lutIndex + 1, id.length());
+			if (lutIndex >= 0) id = id.substring(lutIndex, id.length());
 			map.put(id, url);
 		}
 	}
