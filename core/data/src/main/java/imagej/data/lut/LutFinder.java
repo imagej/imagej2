@@ -107,13 +107,16 @@ public class LutFinder {
 		return list;
 	}
 
+	// this will put urls into a map. the names are determined relative to the
+	// "/luts" directory. Since there is a luts dir in the app and in the jar
+	// one set can overwrite the other. Above we have order such that user luts
+	// can override jar luts.
+
 	private void putAll(Collection<URL> urls, Map<String, URL> map) {
 		for (URL url : urls) {
-			// TODO - this id form is limiting. One can only have one lut per short
-			// name no matter where in tree hierarchy it is.
 			String id = url.toString();
-			int lastSlash = id.lastIndexOf("/");
-			if (lastSlash >= 0) id = id.substring(lastSlash + 1, id.length());
+			int lutIndex = id.lastIndexOf("/luts/");
+			if (lutIndex >= 0) id = id.substring(lutIndex + 1, id.length());
 			map.put(id, url);
 		}
 	}
