@@ -212,6 +212,7 @@ public class Harmonizer {
 	 * a call to a plugin to see if the ImagePlus underwent a type change.
 	 */
 	public void registerType(final ImagePlus imp) {
+		if (imp == null) return;
 		bitDepthMap.put(imp, imp.getBitDepth());
 	}
 
