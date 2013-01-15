@@ -58,6 +58,7 @@
 				<include>NOTICE*</include>
 				<include>README*</include>
 				<include>about/*</include>
+				<include>luts/*</include>
 			</includes>
 		</fileSet>
 
