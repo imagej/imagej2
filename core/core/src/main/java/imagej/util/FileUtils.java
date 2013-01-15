@@ -131,7 +131,7 @@ public final class FileUtils {
 	 * Keep this synchronized with imagej.updater.core.FileObject.
 	 */
 	private final static Pattern versionPattern =
-		Pattern.compile("(.+?)(-\\d+(\\.\\d+|\\d{7})+[a-z]?\\d?(-[A-Za-z0-9.]+|\\.GA)*)(\\.jar(-[a-z]*)?)");
+		Pattern.compile("(.+?)(-\\d+(\\.\\d+|\\d{7})+[a-z]?\\d?(-[A-Za-z0-9.]+|\\.GA)*)?(\\.jar(-[a-z]*)?)");
 
 	/**
 	 * Returns the {@link Matcher} object dissecting a versioned file name.
