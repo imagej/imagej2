@@ -169,22 +169,28 @@ public class TableLoader {
 		tok.whitespaceChars(128, 255);
 		// tok.parseNumbers();
 
-		int row = 0, col = 0;
+		int row = 0, col = 0, hOffset = 0;
 		while (tok.nextToken() != StreamTokenizer.TT_EOF) {
 			if (tok.ttype == StreamTokenizer.TT_WORD) {
 				double value;
 				try {
 					value = Double.parseDouble(tok.sval);
+					values.setValue(col, row - hOffset, value);
 				}
 				catch (NumberFormatException e) {
-					value = Double.NaN;
+					if (row == 0) {
+						values.setColumnHeader(col, tok.sval);
+						hOffset = 1;
+					}
+					else {
+						values.setValue(col, row - hOffset, Double.NaN);
+					}
 				}
 				col++;
 				if (col == cols) {
 					row++;
 					col = 0;
 				}
-				values.setValue(col, row, value);
 			}
 		}
 	}

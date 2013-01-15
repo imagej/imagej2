@@ -62,6 +62,7 @@ import java.util.List;
 
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
+import net.imglib2.ops.util.Tuple2;
 
 // Attribution: Much of this code was adapted from ImageJ 1.x LutLoader class
 // courtesy of Wayne Rasband.
@@ -115,17 +116,27 @@ public class DefaultLutService extends AbstractService implements LutService {
 	 */
 	@Override
 	public ColorTable loadLut(URL url) {
-		ColorTable table = null;
+		Tuple2<Integer, ColorTable> result = new Tuple2<Integer, ColorTable>(0, null);
 		try {
-			table = openNihImageBinaryLut(url);
-			if (table == null) table = openLegacyImageJBinaryLut(url);
-			if (table == null) table = openLegacyImageJTextLut(url);
-			if (table == null) table = openModernImageJLut(url);
-		}
-		catch (IOException e) {
+			int length = determineByteCount(url);
+			if (length > 768) {
+				// attempt to read NIH Image LUT
+				result = openNihImageBinaryLut(url);
+			}
+			if (result.get1() == 0 && (length == 0 || length == 768 || length == 970)) {
+				// otherwise read raw LUT
+				result = openLegacyImageJBinaryLut(url);
+			}
+			if (result.get1() == 0 && length > 768) {
+				result = openLegacyImageJTextLut(url);
+			}
+			if (result.get1() == 0) {
+				result = openModernImageJLut(url);
+			}
+		}		catch (IOException e) {
 			logService.error(e.getMessage());
 		}
-		return table;
+		return result.get2();
 	}
 
 	/**
@@ -201,30 +212,47 @@ public class DefaultLutService extends AbstractService implements LutService {
 	}
 
 
+	// -- private lut loading helpers --
+
+	private int determineByteCount(URL url) {
+		try {
+			InputStream stream = url.openStream();
+			int size = 0;
+			while (stream.read() != -1)
+				size++;
+			return size;
+		}
+		catch (IOException e) {
+			return 0;
+		}
+	}
+
 	// -- private modern lut loading method --
 
-	private ColorTable openModernImageJLut(URL url) throws IOException {
+	private Tuple2<Integer, ColorTable> openModernImageJLut(URL url)
+		throws IOException
+	{
 		// TODO : support some new more flexible format
-		return null;
+		return new Tuple2<Integer, ColorTable>(0, null);
 	}
 
 	// -- private legacy lut loading methods --
 
 	// note: adapted from IJ1 LutLoader class
 
-	private ColorTable8 openNihImageBinaryLut(URL url)
+	private Tuple2<Integer, ColorTable> openNihImageBinaryLut(URL url)
 		throws IOException
 	{
 		return openOldBinaryLut(false, url);
 	}
 
-	private ColorTable8 openLegacyImageJBinaryLut(URL url)
+	private Tuple2<Integer, ColorTable> openLegacyImageJBinaryLut(URL url)
 		throws IOException
 	{
 		return openOldBinaryLut(true, url);
 	}
 
-	private ColorTable8 openLegacyImageJTextLut(URL url)
+	private Tuple2<Integer, ColorTable> openLegacyImageJTextLut(URL url)
 		throws IOException
 	{
 		ResultsTable table = new TableLoader().valuesFromTextFile(url);
@@ -242,10 +270,11 @@ public class DefaultLutService extends AbstractService implements LutService {
 			greens[r] = (byte) table.getValue(x + 1, y + r);
 			blues[r] = (byte) table.getValue(x + 2, y + r);
 		}
-		return new ColorTable8(reds, greens, blues);
+		ColorTable colorTable = new ColorTable8(reds, greens, blues);
+		return new Tuple2<Integer, ColorTable>(256, colorTable);
 	}
 
-	private ColorTable8 openOldBinaryLut(boolean raw, URL url)
+	private Tuple2<Integer, ColorTable> openOldBinaryLut(boolean raw, URL url)
 		throws IOException
 	{
 		InputStream is = url.openStream();
@@ -256,7 +285,7 @@ public class DefaultLutService extends AbstractService implements LutService {
 			int id = f.readInt();
 			if (id != 1229147980) { // 'ICOL'
 				f.close();
-				return null;
+				return new Tuple2<Integer, ColorTable>(0, null);
 			}
 			int version = f.readShort();
 			nColors = f.readShort();
@@ -274,7 +303,8 @@ public class DefaultLutService extends AbstractService implements LutService {
 		f.read(blues, 0, nColors);
 		if (nColors < 256) interpolate(reds, greens, blues, nColors);
 		f.close();
-		return new ColorTable8(reds, greens, blues);
+		ColorTable colorTable = new ColorTable8(reds, greens, blues);
+		return new Tuple2<Integer, ColorTable>(256, colorTable);
 	}
 
 	private void
