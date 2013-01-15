@@ -347,8 +347,8 @@ public class LegacyCommand implements Command {
 					// NB - it is possible a runtime exception in an IJ1 plugin left the
 					// ImagePlus in a locked state. Make sure its unlocked going forward.
 					imp.unlock();
+					harmonizer.updateLegacyImage(display, imp);
 				}
-				harmonizer.updateLegacyImage(display, imp);
 				harmonizer.registerType(imp);
 			}
 		}
