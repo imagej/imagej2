@@ -65,7 +65,7 @@ public class TableLoader {
 	 * Loads the values of a table stored in a text file as a ResultsTable.
 	 * 
 	 * @param url The url (as a URL) of the text table
-	 * @return A ResultsTable containing the values (and not the headers)
+	 * @return A ResultsTable containing the values (and headers)
 	 * @throws IOException
 	 */
 	public ResultsTable valuesFromTextFile(URL url) throws IOException {
@@ -83,14 +83,16 @@ public class TableLoader {
 			rows--;
 			ResultsTable oldValues = values;
 			values = new DefaultResultsTable(cols, rows);
+			for (int c = 0; c < cols; c++) {
+				String colHeader = oldValues.getColumnHeader(c);
+				values.setColumnHeader(c, colHeader);
+			}
 			for (int row = 0; row < rows; row++) {
 				for (int col = 0; col < cols; col++) {
 					double val = oldValues.getValue(col, row + 1);
 					values.setValue(col, row, val);
 				}
 			}
-			// TODO - rather than throwing away headers we could populate table's
-			// column headers by reading file a little differently.
 		}
 		return values;
 	}
@@ -99,7 +101,7 @@ public class TableLoader {
 	 * Loads the values of a table stored in a text file as a ResultsTable.
 	 * 
 	 * @param urlString The url (as a string) of the text table
-	 * @return A ResultsTable containing the values (and not the headers)
+	 * @return A ResultsTable containing the values (and headers)
 	 * @throws IOException
 	 */
 	public ResultsTable valuesFromTextFile(String urlString) throws IOException {
@@ -110,7 +112,7 @@ public class TableLoader {
 	 * Loads the values of a table stored in a text file as a ResultsTable.
 	 * 
 	 * @param file The File containing the text table
-	 * @return A ResultsTable containing the values (and not the headers)
+	 * @return A ResultsTable containing the values (and headers)
 	 * @throws IOException
 	 */
 	public ResultsTable valuesFromTextFile(File file) throws IOException {
@@ -169,23 +171,18 @@ public class TableLoader {
 		tok.whitespaceChars(128, 255);
 		// tok.parseNumbers();
 
-		int row = 0, col = 0, hOffset = 0;
+		int row = 0, col = 0;
 		while (tok.nextToken() != StreamTokenizer.TT_EOF) {
 			if (tok.ttype == StreamTokenizer.TT_WORD) {
 				double value;
 				try {
 					value = Double.parseDouble(tok.sval);
-					values.setValue(col, row - hOffset, value);
 				}
 				catch (NumberFormatException e) {
-					if (row == 0) {
-						values.setColumnHeader(col, tok.sval);
-						hOffset = 1;
-					}
-					else {
-						values.setValue(col, row - hOffset, Double.NaN);
-					}
+					value = Double.NaN;
+					if (row == 0) values.setColumnHeader(col, tok.sval);
 				}
+				values.setValue(col, row, value);
 				col++;
 				if (col == cols) {
 					row++;
