@@ -545,8 +545,9 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		if (!source.exists()) throw new IOException("Artifact does not exist: " + source);
 
 		final File targetDir = new File(ijDir, isImageJ1Plugin(source) ? "plugins" : "jars");
-		final File target = new File(targetDir,
-				"Fiji_Updater".equals(getArtifactId()) ? "Fiji_Updater.jar" : getJarName());
+		final File target = new File(targetDir, getArtifactId()
+				+ ("Fiji_Updater".equals(getArtifactId()) ? "" : "-" + getVersion())
+				+ ".jar");
 		if (!targetDir.exists()) {
 			if (!targetDir.mkdirs()) {
 				throw new IOException("Could not make directory " + targetDir);
