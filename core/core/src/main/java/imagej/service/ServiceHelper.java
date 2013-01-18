@@ -152,23 +152,15 @@ public class ServiceHelper extends AbstractContextual {
 	 *         instantiated
 	 */
 	public <S extends Service> S createExactService(final Class<S> c) {
-		final LogService log = getContext().getService(LogService.class);
-		if (log != null) log.debug("Creating service: " + c.getName());
+		debug("Creating service: " + c.getName());
 		try {
 			final S service = createService(c);
 			getContext().getServiceIndex().add(service);
-			if (log != null) log.info("Created service: " + c.getName());
+			info("Created service: " + c.getName());
 			return service;
 		}
 		catch (final Throwable t) {
-			if (log != null) log.error("Invalid service: " + c.getName(), t);
-			else {
-				t.printStackTrace();
-				if (t.getCause() != null) {
-					System.err.print("Cause: ");
-					t.getCause().printStackTrace();
-				}
-			}
+			error("Invalid service: " + c.getName(), t);
 		}
 		return null;
 	}
@@ -227,15 +219,27 @@ public class ServiceHelper extends AbstractContextual {
 				serviceList.add(c);
 			}
 			catch (final Throwable e) {
-				final LogService log = getContext().getService(LogService.class);
-				if (log == null) {
-					e.printStackTrace();
-					if (e.getCause() != null) e.getCause().printStackTrace();
-				} else {
-					log.error("Invalid service: " + info, e);
-				}
+				error("Invalid service: " + info, e);
 			}
 		}
+	}
+
+	/** Logs the given message, if a {@link LogService} is available. */
+	private void info(final String msg) {
+		final LogService log = getContext().getService(LogService.class);
+		if (log != null) log.info(msg);
+	}
+
+	/** Logs the given error, if a {@link LogService} is available. */
+	private void error(final String msg, final Throwable t) {
+		final LogService log = getContext().getService(LogService.class);
+		if (log != null) log.error(msg, t);
+	}
+
+	/** Logs the given debug message, if a {@link LogService} is available. */
+	private void debug(final String msg) {
+		final LogService log = getContext().getService(LogService.class);
+		if (log != null) log.debug(msg);
 	}
 
 }
