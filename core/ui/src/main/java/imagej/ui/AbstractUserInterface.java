@@ -134,11 +134,17 @@ public abstract class AbstractUserInterface extends SortablePlugin
 			return;
 		}
 
-		final DisplayWindow displayWindow = createDisplayWindow(display);
-		displayViewer.view(displayWindow, display);
-		displayWindow.setTitle(display.getName());
-		getUIService().addDisplayViewer(displayViewer);
-		displayWindow.showDisplay(true);
+		final DisplayViewer<?> finalViewer = displayViewer;
+		getUIService().getThreadService().queue(new Runnable() {
+			@Override
+			public void run() {
+				final DisplayWindow displayWindow = createDisplayWindow(display);
+				finalViewer.view(displayWindow, display);
+				displayWindow.setTitle(display.getName());
+				getUIService().addDisplayViewer(finalViewer);
+				displayWindow.showDisplay(true);
+			}
+		});
 	}
 
 	@Override
