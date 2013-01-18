@@ -66,6 +66,10 @@ public class SwingIconService extends AbstractService implements IconService {
 
 	@Override
 	public IconDrawer acquireDrawer(final Tool tool) {
+		if (!buttonMap.containsKey(tool)) {
+			// no button associated with the specified tool; no drawing needed
+			return null;
+		}
 		return new SwingIconDrawer(tool);
 	}
 
@@ -84,8 +88,6 @@ public class SwingIconService extends AbstractService implements IconService {
 
 		public SwingIconDrawer(final Tool tool) {
 			this.button = buttonMap.get(tool);
-			if (button == null) throw new IllegalArgumentException(
-				"There is no button associated with the specified tool");
 			// TODO - eliminate this ref. But experiment below doesn't draw correctly.
 			graphics = button.getGraphics();
 		}
