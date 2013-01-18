@@ -35,6 +35,7 @@
 
 package imagej.event;
 
+import imagej.Priority;
 import imagej.log.LogService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -58,13 +59,25 @@ import org.bushe.swing.event.annotation.ReferenceStrength;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-@Plugin(type = Service.class)
+@Plugin(type = Service.class, priority = DefaultEventService.PRIORITY)
 public class DefaultEventService extends AbstractService implements
 	EventService
 {
 
-	@Parameter
-	private ThreadService threadService;
+	/**
+	 * The default event service's priority.
+	 * <p>
+	 * It is paramount that the event service be created and initialized before
+	 * other services. Any service created before the event service may not have
+	 * its event handling methods registered correctly.
+	 * </p>
+	 * <p>
+	 * Alternative event service implementations that wish to prioritize
+	 * themselves above this one can still ensure preferential usage via
+	 * {@code priority = DefaultEventService.PRIORITY + 1} or similar.
+	 * </p>
+	 */
+	public static final double PRIORITY = 10 * Priority.VERY_HIGH_PRIORITY;
 
 	@Parameter
 	private LogService log;
