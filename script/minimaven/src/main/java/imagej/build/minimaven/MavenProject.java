@@ -91,6 +91,12 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 	protected boolean includeImplementationBuild;
 	protected String packaging = "jar";
 
+	private static enum BooleanState {
+		UNKNOWN, YES, NO
+	};
+	private BooleanState upToDate = BooleanState.UNKNOWN,
+		jarUpToDate = BooleanState.UNKNOWN;
+
 	// only used during parsing
 	protected String prefix = "";
 	protected Coordinate latestDependency = new Coordinate();
@@ -162,6 +168,22 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 	}
 
 	public boolean upToDate(boolean includingJar) throws IOException, ParserConfigurationException, SAXException {
+		if (includingJar) {
+			if (jarUpToDate == BooleanState.UNKNOWN) {
+				jarUpToDate = checkUpToDate(true) ?
+					BooleanState.YES : BooleanState.NO;
+			}
+			return jarUpToDate == BooleanState.YES;
+		} else {
+			if (upToDate == BooleanState.UNKNOWN) {
+				upToDate = checkUpToDate(false) ?
+					BooleanState.YES : BooleanState.NO;
+			}
+			return upToDate == BooleanState.YES;
+		}
+	}
+
+	public boolean checkUpToDate(boolean includingJar) throws IOException, ParserConfigurationException, SAXException {
 		if (!buildFromSource)
 			return true;
 		for (MavenProject child : getDependencies(true, env.downloadAutomatically, "test"))
