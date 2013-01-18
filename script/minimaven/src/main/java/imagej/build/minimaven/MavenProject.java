@@ -279,7 +279,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		if (ijDirProperty == null) {
 			throw new IOException(BuildEnvironment.IMAGEJ_APP_DIRECTORY + " does not point to an ImageJ.app/ directory!");
 		}
-		buildAndInstall(new File(ijDirProperty));
+		buildAndInstall(new File(ijDirProperty), false);
 	}
 
 	/**
@@ -296,15 +296,36 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 	 * @throws SAXException
 	 */
 	public void buildAndInstall(final File ijDir) throws CompileError, IOException, ParserConfigurationException, SAXException {
+		buildAndInstall(ijDir, false);
+	}
+
+	/**
+	 * Builds the project an its dependencies, and installs them into the given ImageJ.app/ directory structure.
+	 * 
+	 * If the property <tt>imagej.app.directory</tt> does not point to a valid directory, the
+	 * install step is skipped.
+	 * 
+	 * @param ijDir the ImageJ.app/ directory
+	 * @param forceBuild recompile even if the artifact is up-to-date
+	 * 
+	 * @throws CompileError
+	 * @throws IOException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 */
+	public void buildAndInstall(final File ijDir, final boolean forceBuild) throws CompileError, IOException, ParserConfigurationException, SAXException {
 		if ("pom".equals(getPackaging())) {
 			env.err.println("Looking at children of " + getArtifactId());
 			for (final MavenProject child : getChildren()) {
-				child.buildAndInstall(ijDir);
+				child.buildAndInstall(ijDir, forceBuild);
 			}
 			return;
 		}
 
-		buildJar();
+		if (forceBuild || !upToDate(true)) {
+			buildJar();
+		}
+
 		for (final MavenProject project : getDependencies(true, false, "test", "provided", "system")) {
 			project.copyToImageJAppDirectory(ijDir, true);
 		}
