@@ -82,6 +82,9 @@ public class DefaultEventService extends AbstractService implements
 	@Parameter
 	private LogService log;
 
+	@Parameter
+	private ThreadService threadService;
+
 	private DefaultEventBus eventBus;
 
 	// -- EventService methods --
