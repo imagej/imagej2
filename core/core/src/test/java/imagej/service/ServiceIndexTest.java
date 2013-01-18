@@ -65,8 +65,8 @@ public class ServiceIndexTest {
 		final ServiceIndex serviceIndex = context.getServiceIndex();
 		final List<Service> all = serviceIndex.getAll();
 		assertEquals(8, all.size());
-		assertSame(DefaultCommandService.class, all.get(0).getClass());
-		assertSame(DefaultEventService.class, all.get(1).getClass());
+		assertSame(DefaultEventService.class, all.get(0).getClass());
+		assertSame(DefaultCommandService.class, all.get(1).getClass());
 		assertSame(DefaultModuleService.class, all.get(2).getClass());
 		assertSame(DefaultAppService.class, all.get(3).getClass());
 		assertSame(DefaultPlatformService.class, all.get(4).getClass());
