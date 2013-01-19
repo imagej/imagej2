@@ -322,9 +322,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 			return;
 		}
 
-		if (forceBuild || !upToDate(true)) {
-			buildJar();
-		}
+		build(true, forceBuild);
 
 		for (final MavenProject project : getDependencies(true, false, "test", "provided", "system")) {
 			project.copyToImageJAppDirectory(ijDir, true);
@@ -341,7 +339,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 	 * @throws SAXException
 	 */
 	public void buildJar() throws CompileError, IOException, ParserConfigurationException, SAXException {
-		build(true);
+		build(true, false);
 	}
 
 	/**
@@ -359,12 +357,32 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 	/**
 	 * Compiles the project and optionally builds the .jar artifact.
 	 * 
+	 * @param makeJar build a .jar file
+	 * 
 	 * @throws CompileError
 	 * @throws IOException
 	 * @throws ParserConfigurationException
 	 * @throws SAXException
 	 */
 	public void build(boolean makeJar) throws CompileError, IOException, ParserConfigurationException, SAXException {
+		build(makeJar, false);
+	}
+
+	/**
+	 * Compiles the project and optionally builds the .jar artifact.
+	 * 
+	 * @param makeJar build a .jar file
+	 * @param forceBuild for recompilation even if the artifact is up-to-date
+	 * 
+	 * @throws CompileError
+	 * @throws IOException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 */
+	public void build(boolean makeJar, boolean forceBuild) throws CompileError, IOException, ParserConfigurationException, SAXException {
+		if (!forceBuild && upToDate(makeJar)) {
+			return;
+		}
 		if (!buildFromSource || built)
 			return;
 		boolean forceFullBuild = false;
