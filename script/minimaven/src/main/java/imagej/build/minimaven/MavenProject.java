@@ -128,6 +128,12 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 	}
 
 	public void clean() throws IOException, ParserConfigurationException, SAXException {
+		if ("pom".equals(getPackaging())) {
+			for (final MavenProject child : getChildren()) {
+				child.clean();
+			}
+			return;
+		}
 		if (!buildFromSource)
 			return;
 		for (MavenProject child : getDependencies(true, env.downloadAutomatically))
