@@ -45,7 +45,7 @@ echo "Tag = $tag"
 cd "$DIR"
 
 msg '====== Fetching the latest commits and tags ======'
-git fetch --all --tags --prune
+git remote update --prune
 
 if [ -n "$(git tag -l "$tag")" ];
 then

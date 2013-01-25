@@ -35,7 +35,6 @@
 
 package imagej.service;
 
-import imagej.event.EventService;
 import imagej.plugin.SortablePlugin;
 
 /**
@@ -46,10 +45,6 @@ import imagej.plugin.SortablePlugin;
 public abstract class AbstractService extends SortablePlugin implements
 	Service
 {
-
-	/** Maintain list of event subscribers, to avoid garbage collection. */
-	@SuppressWarnings("unused")
-	private Object eventSubscribers;
 
 	// -- Service methods --
 
@@ -63,13 +58,6 @@ public abstract class AbstractService extends SortablePlugin implements
 	@Override
 	public String toString() {
 		return getClass().getName() + " [priority = " + getPriority() + "]";
-	}
-
-	// -- Internal methods --
-
-	protected void subscribeToEvents(final EventService eventService) {
-		if (eventService == null) return;
-		eventSubscribers = eventService.subscribe(this);
 	}
 
 }

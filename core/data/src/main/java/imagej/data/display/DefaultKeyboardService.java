@@ -105,13 +105,6 @@ public class DefaultKeyboardService extends AbstractService implements
 		return pressedKeys.contains(code);
 	}
 
-	// -- Service methods --
-
-	@Override
-	public void initialize() {
-		subscribeToEvents(eventService);
-	}
-
 	// -- Event handlers --
 
 	@EventHandler

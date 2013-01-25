@@ -52,7 +52,7 @@ public class DisplayTest {
 
 	@Test
 	public void testCreate() {
-		final ImageJ context = ImageJ.createContext(DisplayService.class);
+		final ImageJ context = new ImageJ(DisplayService.class);
 		final DisplayService displayService =
 			context.getService(DisplayService.class);
 		final String name = "Create";
@@ -78,7 +78,7 @@ public class DisplayTest {
 
 	@Test
 	public void testAddRemove() {
-		final ImageJ context = ImageJ.createContext(DisplayService.class);
+		final ImageJ context = new ImageJ(DisplayService.class);
 		final DisplayService displayService =
 			context.getService(DisplayService.class);
 		final String name = "AddRemove";
@@ -117,7 +117,7 @@ public class DisplayTest {
 
 	@Test
 	public void testText() {
-		final ImageJ context = ImageJ.createContext(DisplayService.class);
+		final ImageJ context = new ImageJ(DisplayService.class);
 		final DisplayService displayService =
 			context.getService(DisplayService.class);
 		final String name = "Text";

@@ -33,21 +33,13 @@
  * #L%
  */
 
-package imagej.ui;
+package imagej.data.table;
 
 /**
- * UI-independent scrolling text output window.
+ * A flexible table capable of storing any values as {@link Object}s.
  * 
- * @author Grant Harris
+ * @author Curtis Rueden
  */
-public interface OutputWindow {
-
-	void append(String text);
-
-	void clear();
-
-	void setVisible(boolean visible);
-
-	void dispose();
-
+public interface GenericTable extends Table<GenericColumn, Object> {
+	// NB: No implementation needed.
 }

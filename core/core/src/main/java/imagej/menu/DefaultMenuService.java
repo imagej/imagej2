@@ -147,8 +147,6 @@ public class DefaultMenuService extends AbstractService implements MenuService
 		final List<ModuleInfo> allModules =
 			getCommandService().getModuleService().getModules();
 		addModules(allModules);
-
-		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

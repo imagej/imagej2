@@ -1,4 +1,3 @@
-package imagej.build.minimaven;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -34,12 +33,19 @@ package imagej.build.minimaven;
  * #L%
  */
 
+package imagej.build.minimaven;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class ReadInto extends Thread {
 	protected BufferedReader reader;
 	protected PrintStream err;

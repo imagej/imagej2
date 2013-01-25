@@ -1,4 +1,3 @@
-package imagej.build.minimaven;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -34,6 +33,8 @@ package imagej.build.minimaven;
  * #L%
  */
 
+package imagej.build.minimaven;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -41,6 +42,11 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.lang.reflect.Method;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 @SuppressWarnings("hiding")
 public class JavaCompiler {
 	protected PrintStream err, out;

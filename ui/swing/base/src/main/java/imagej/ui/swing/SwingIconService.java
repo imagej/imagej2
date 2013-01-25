@@ -35,10 +35,6 @@
 
 package imagej.ui.swing;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.util.HashMap;
-
 import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
@@ -47,48 +43,55 @@ import imagej.tool.IconService;
 import imagej.tool.Tool;
 import imagej.util.ColorRGB;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.util.HashMap;
+
 import javax.swing.AbstractButton;
 
 /**
+ * TODO
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin(type = Service.class)
 public class SwingIconService extends AbstractService implements IconService {
 
 	// -- instance variables --
-	
-	private HashMap<Tool,AbstractButton> buttonMap = new HashMap<Tool, AbstractButton>();
-	
+
+	private final HashMap<Tool, AbstractButton> buttonMap =
+		new HashMap<Tool, AbstractButton>();
+
 	// -- IconService methods --
-	
+
 	@Override
-	public IconDrawer acquireDrawer(Tool tool) {
+	public IconDrawer acquireDrawer(final Tool tool) {
+		if (!buttonMap.containsKey(tool)) {
+			// no button associated with the specified tool; no drawing needed
+			return null;
+		}
 		return new SwingIconDrawer(tool);
 	}
-	
+
 	// -- SwingIconService methods --
-	
-	public void registerButton(Tool tool, AbstractButton button) {
-		buttonMap.put(tool,button);
+
+	public void registerButton(final Tool tool, final AbstractButton button) {
+		buttonMap.put(tool, button);
 	}
-	
+
 	// -- private helpers --
-	
+
 	private class SwingIconDrawer implements IconDrawer {
-		private AbstractButton button;
-		private Graphics graphics;
-		
-		public SwingIconDrawer(Tool tool) {
+
+		private final AbstractButton button;
+		private final Graphics graphics;
+
+		public SwingIconDrawer(final Tool tool) {
 			this.button = buttonMap.get(tool);
-			if (button == null)
-				throw new IllegalArgumentException(
-					"There is no button associated with the specified tool");
 			// TODO - eliminate this ref. But experiment below doesn't draw correctly.
 			graphics = button.getGraphics();
 		}
-		
+
 		@Override
 		public int getIconRectangleWidth() {
 			return button.getWidth();
@@ -100,20 +103,20 @@ public class SwingIconService extends AbstractService implements IconService {
 		}
 
 		@Override
-		public void setIconPixel(int x, int y, ColorRGB color) {
-			
-			Color awtColor =
-					new Color(color.getRed(), color.getGreen(), color.getBlue());
-			
+		public void setIconPixel(final int x, final int y, final ColorRGB color) {
+
+			final Color awtColor =
+				new Color(color.getRed(), color.getGreen(), color.getBlue());
+
 			// TODO this would be nice but doesn't work
-			//button.getGraphics().setColor(awtColor);
-			//button.getGraphics().drawLine(x, y, x, y);
-			
+			// button.getGraphics().setColor(awtColor);
+			// button.getGraphics().drawLine(x, y, x, y);
+
 			// But using an old reference does work
 			graphics.setColor(awtColor);
 			graphics.drawLine(x, y, x, y);
 		}
-		
+
 	}
 
 }

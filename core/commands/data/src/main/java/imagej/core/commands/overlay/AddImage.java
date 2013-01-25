@@ -33,55 +33,62 @@
  * #L%
  */
 
-package imagej.ui.swing;
+package imagej.core.commands.overlay;
 
-import imagej.ui.OutputWindow;
+import imagej.Cancelable;
+import imagej.command.ContextCommand;
+import imagej.data.display.ImageDisplay;
+import imagej.menu.MenuConstants;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
 
-import java.awt.BorderLayout;
-import java.awt.Font;
-
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+// TODO - replace the kind of functionality that IJ1's Overlay > Add Image
+// command has. It needs to create an ImageOverlay (not yet defined) that can
+// draw over an image nondestructively at a location with an specified opacity.
 
 /**
- * Generalized textual output window.
- * 
- * @author Grant Harris
+ * @author Barry DeZonia
  */
-public class SwingOutputWindow extends JFrame implements OutputWindow {
+@Plugin(iconPath = "/icons/bricks.png", menu = {
+	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
+		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Overlay"),
+	@Menu(label = "Add Image", weight = 7) })
+public class AddImage extends ContextCommand implements Cancelable {
 
-	private final JTextArea textArea;
-	private final JScrollPane scrollPane;
+	private String err;
 
-	// TODO: add tabular functionality
+	// -- Parameters --
 
-	public SwingOutputWindow(final String title) {
-		super(title);
-		textArea = new JTextArea();
-		textArea.setEditable(false);
-		textArea.setRows(25);
-		textArea.setColumns(84);
-		final Font font = new Font(Font.MONOSPACED, Font.PLAIN, 12);
-		textArea.setFont(font);
-		scrollPane = new JScrollPane(textArea);
-		getContentPane().setLayout(new BorderLayout());
-		getContentPane().add(scrollPane, BorderLayout.CENTER);
-		pack();
+	@Parameter
+	private ImageDisplay display;
+
+	// -- accessors --
+
+	public void setImageDisplay(ImageDisplay disp) {
+		display = disp;
 	}
 
-	// -- OutputWindow methods --
+	public ImageDisplay getImageDisplay() {
+		return display;
+	}
+
+	// -- run() method --
 
 	@Override
-	public void append(final String text) {
-		textArea.append(text);
-		// make sure the last line is always visible
-		textArea.setCaretPosition(textArea.getDocument().getLength());
+	public void run() {
+		// TODO
+		err = "This command is not yet implemented.";
 	}
 
 	@Override
-	public void clear() {
-		textArea.setText("");
+	public boolean isCanceled() {
+		return err != null;
+	}
+
+	@Override
+	public String getCancelReason() {
+		return err;
 	}
 
 }

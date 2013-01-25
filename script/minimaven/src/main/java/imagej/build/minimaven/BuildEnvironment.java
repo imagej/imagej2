@@ -1,4 +1,3 @@
-package imagej.build.minimaven;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -34,6 +33,8 @@ package imagej.build.minimaven;
  * #L%
  */
 
+package imagej.build.minimaven;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -41,8 +42,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -62,8 +65,18 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+/**
+ * The build environment of MiniMaven.
+ * 
+ * This class contains settings and methods that are not specific to a single {@link MavenProject},
+ * but rather specific to a tree of projects.
+ * 
+ * @author Johannes Schindelin
+ */
 @SuppressWarnings("hiding")
 public class BuildEnvironment {
+	public final static String IMAGEJ_APP_DIRECTORY = "imagej.app.directory";
+
 	protected String endLine = isInteractiveConsole() ? "\033[K\r" : "\n";
 	protected boolean verbose, debug = false, downloadAutomatically, offlineMode, ignoreMavenRepositories;
 	protected int updateInterval = 24 * 60; // by default, check once per 24h for new snapshot versions
@@ -87,6 +100,10 @@ public class BuildEnvironment {
 
 	public void setVerbose(boolean verbose) {
 		this.verbose = verbose;
+	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
 	}
 
 	public boolean getDownloadAutomatically() {
@@ -364,8 +381,12 @@ public class BuildEnvironment {
 			int value = (hexNybble(fileStream.read()) << 4) |
 				hexNybble(fileStream.read());
 			int d = digestBytes[i] & 0xff;
-			if (value != d)
-				throw new IOException("SHA1 mismatch: " + sha1 + ": " + Integer.toHexString(value) + " != " + Integer.toHexString(d));
+			if (value != d) {
+				String actual = "";
+				for (byte b : digestBytes)
+					actual += String.format("%02x", b & 0xff);
+				throw new IOException("SHA1 mismatch: " + sha1 + ": " + Integer.toHexString(value) + " != " + Integer.toHexString(d) + " (actual SHA-1: " + actual + ")");
+			}
 		}
 		fileStream.close();
 	}
@@ -452,11 +473,18 @@ public class BuildEnvironment {
 			name = url.getPath();
 			name = name.substring(name.lastIndexOf('/') + 1);
 		}
-		InputStream in = url.openStream();
+		URLConnection connection = url.openConnection();
+		if (connection instanceof HttpURLConnection) {
+			HttpURLConnection http = (HttpURLConnection)connection;
+			http.setRequestProperty("User-Agent", "MiniMaven/2.0.0-SNAPSHOT");
+		}
+		InputStream in = connection.getInputStream();
 		if (message != null)
 			err.println(message);
 		directory.mkdirs();
 		File result = new File(directory, name);
+		if (verbose)
+			err.println("Downloading " + url + " to " + result.getAbsolutePath());
 		copy(in, result);
 		return result;
 	}
@@ -482,11 +510,27 @@ public class BuildEnvironment {
 			out.close();
 	}
 
+	protected static boolean isSnapshotVersion(String version) {
+		return version != null && version.endsWith("-SNAPSHOT");
+	}
+
+	protected static boolean isTimestampVersion(String version) {
+		return version != null && version.matches("2\\d{7,13}");
+	}
+
 	protected static int compareVersion(String version1, String version2) {
 		if (version1 == null)
 			return version2 == null ? 0 : -1;
 		if (version1.equals(version2))
 			return 0;
+
+		// prefer snapshot over timestamp versions
+		// (AKA the mpicbg problem)
+		if (isTimestampVersion(version1) && isSnapshotVersion(version2))
+			return -1;
+		if (isSnapshotVersion(version1) && isTimestampVersion(version2))
+			return +1;
+
 		String[] split1 = version1.split("\\.");
 		String[] split2 = version2.split("\\.");
 

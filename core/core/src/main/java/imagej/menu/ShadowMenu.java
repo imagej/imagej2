@@ -320,8 +320,16 @@ public class ShadowMenu extends AbstractContextual implements
 
 	// -- Collection methods --
 
+	/**
+	 * Adds the given module to the menu structure. If the module is not visible
+	 * (i.e., {@link ModuleInfo#isVisible()} returns false), it is ignored.
+	 * <p>
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean add(final ModuleInfo o) {
+		if (!o.isVisible()) return false;
+
 		final ShadowMenu node = addInternal(o);
 		if (node == null) return false;
 		final EventService es = getContext().getService(EventService.class);
@@ -329,10 +337,17 @@ public class ShadowMenu extends AbstractContextual implements
 		return true;
 	}
 
+	/**
+	 * Adds the given modules to the menu structure. If a module is not visible
+	 * (i.e., {@link ModuleInfo#isVisible()} returns false), it is ignored.
+	 * <p>
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean addAll(final Collection<? extends ModuleInfo> c) {
 		final HashSet<ShadowMenu> nodes = new HashSet<ShadowMenu>();
 		for (final ModuleInfo info : c) {
+			if (!info.isVisible()) continue;
 			final ShadowMenu node = addInternal(info);
 			if (node != null) nodes.add(node);
 		}

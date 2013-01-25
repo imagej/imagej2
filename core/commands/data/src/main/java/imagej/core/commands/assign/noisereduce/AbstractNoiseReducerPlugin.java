@@ -58,7 +58,6 @@ import imagej.data.Dataset;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
 
-
 /**
  * TODO
  * 

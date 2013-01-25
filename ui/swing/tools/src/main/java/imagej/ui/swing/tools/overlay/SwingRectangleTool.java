@@ -63,7 +63,7 @@ import org.jhotdraw.draw.RectangleFigure;
 @Plugin(type = JHotDrawAdapter.class, name = "Rectangle",
 	description = "Rectangular overlays",
 	iconPath = "/icons/tools/rectangle.png",
-	priority = SwingRectangleTool.PRIORITY, enabled = true)
+	priority = SwingRectangleTool.PRIORITY)
 public class SwingRectangleTool extends
 	AbstractJHotDrawAdapter<RectangleOverlay, RectangleFigure>
 {
@@ -79,9 +79,8 @@ public class SwingRectangleTool extends
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
-		if (figure != null && !(figure instanceof RectangleFigure)) return false;
-		if (overlay instanceof RectangleOverlay) return true;
-		return false;
+		if (!(overlay instanceof RectangleOverlay)) return false;
+		return figure == null || figure instanceof RectangleFigure;
 	}
 
 	@Override
@@ -128,7 +127,7 @@ public class SwingRectangleTool extends
 
 	@Override
 	public JHotDrawTool getCreationTool(final ImageDisplay display) {
-		return new IJCreationTool(display, this);
+		return new IJCreationTool<RectangleFigure>(display, this);
 	}
 
 	@Override

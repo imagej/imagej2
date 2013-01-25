@@ -44,121 +44,188 @@ import imagej.service.Service;
  * Implementation of {@link LogService} using the standard error stream.
  * 
  * @author Johannes Schindelin
+ * @author Curtis Rueden
  */
 @Plugin(type = Service.class, priority = Priority.LOW_PRIORITY)
 public class StderrLogService extends AbstractService implements LogService {
+
+	private int level;
+
+	public StderrLogService() {
+		// check ImageJ log level system property for initial logging level
+		final String logProp = System.getProperty(LOG_LEVEL_PROPERTY);
+		if (logProp != null) {
+			// check whether it's a string label (e.g., "debug")
+			final String log = logProp.trim().toLowerCase();
+			if (log.startsWith("n")) level = NONE;
+			else if (log.startsWith("e")) level = ERROR;
+			else if (log.startsWith("w")) level = WARN;
+			else if (log.startsWith("i")) level = INFO;
+			else if (log.startsWith("d")) level = DEBUG;
+			else if (log.startsWith("t")) level = TRACE;
+			else {
+				// check whether it's a numerical value (e.g., 5)
+				try {
+					level = Integer.parseInt(log);
+				}
+				catch (final NumberFormatException exc) {
+					// nope!
+				}
+			}
+		}
+
+		if (level == 0) {
+			// use the default, which is INFO unless the DEBUG env. variable is set
+			level = System.getenv("DEBUG") == null ? INFO : DEBUG;
+		}
+	}
 
 	// -- LogService methods --
 
 	@Override
 	public void debug(final Object msg) {
 		if (isDebug()) {
-			System.err.println(msg.toString());
+			log("[DEBUG] ", msg);
 		}
 	}
 
 	@Override
 	public void debug(final Throwable t) {
 		if (isDebug()) {
-			t.printStackTrace();
+			log("[DEBUG] ", t);
 		}
 	}
 
 	@Override
 	public void debug(final Object msg, final Throwable t) {
 		if (isDebug()) {
-			System.err.println(msg.toString());
-			t.printStackTrace();
+			debug(msg);
+			debug(t);
 		}
 	}
 
 	@Override
 	public void error(final Object msg) {
-		System.err.println(msg.toString());
+		if (isError()) {
+			log("[ERROR] ", msg);
+		}
 	}
 
 	@Override
 	public void error(final Throwable t) {
-		t.printStackTrace();
+		if (isError()) {
+			log("[ERROR] ", t);
+		}
 	}
 
 	@Override
 	public void error(final Object msg, final Throwable t) {
-		System.err.println(msg.toString());
-		t.printStackTrace();
+		if (isError()) {
+			error(msg);
+			error(t);
+		}
 	}
 
 	@Override
 	public void info(final Object msg) {
-		System.err.println(msg.toString());
+		if (isInfo()) {
+			log("[INFO] ", msg);
+		}
 	}
 
 	@Override
 	public void info(final Throwable t) {
-		t.printStackTrace();
+		if (isInfo()) {
+			log("[INFO] ", t);
+			t.printStackTrace();
+		}
 	}
 
 	@Override
 	public void info(final Object msg, final Throwable t) {
-		System.err.println(msg.toString());
-		t.printStackTrace();
+		if (isInfo()) {
+			info(msg);
+			info(t);
+		}
 	}
 
 	@Override
 	public void trace(final Object msg) {
-		System.err.println(msg.toString());
+		if (isTrace()) {
+			log("[TRACE] ", msg);
+		}
 	}
 
 	@Override
 	public void trace(final Throwable t) {
-		t.printStackTrace();
+		if (isTrace()) {
+			log("[TRACE] ", t);
+		}
 	}
 
 	@Override
 	public void trace(final Object msg, final Throwable t) {
-		System.err.println(msg.toString());
-		t.printStackTrace();
+		if (isTrace()) {
+			trace(msg);
+			trace(t);
+		}
 	}
 
 	@Override
 	public void warn(final Object msg) {
-		System.err.println(msg.toString());
+		if (isWarn()) {
+			log("[WARN] ", msg);
+		}
 	}
 
 	@Override
 	public void warn(final Throwable t) {
-		t.printStackTrace();
+		if (isWarn()) {
+			log("[WARN] ", t);
+		}
 	}
 
 	@Override
 	public void warn(final Object msg, final Throwable t) {
-		System.err.println(msg.toString());
-		t.printStackTrace();
+		if (isWarn()) {
+			warn(msg);
+			warn(t);
+		}
 	}
 
 	@Override
 	public boolean isDebug() {
-		return System.getenv("DEBUG") != null;
+		return getLevel() >= DEBUG;
 	}
 
 	@Override
 	public boolean isError() {
-		return false;
+		return getLevel() >= ERROR;
 	}
 
 	@Override
 	public boolean isInfo() {
-		return true;
+		return getLevel() >= INFO;
 	}
 
 	@Override
 	public boolean isTrace() {
-		return false;
+		return getLevel() >= TRACE;
 	}
 
 	@Override
 	public boolean isWarn() {
-		return false;
+		return getLevel() >= WARN;
+	}
+
+	@Override
+	public int getLevel() {
+		return level;
+	}
+
+	@Override
+	public void setLevel(int level) {
+		this.level = level;
 	}
 
 	// -- Service methods --
@@ -168,6 +235,34 @@ public class StderrLogService extends AbstractService implements LogService {
 		// HACK: Dirty, because every time a new ImageJ context is created with a
 		// StderrLogService, it will "steal" the default exception handling.
 		DefaultUncaughtExceptionHandler.install(this);
+	}
+
+	// -- private helper methods
+
+	/**
+	 * Prints a message to stderr.
+	 * 
+	 * @param prefix the prefix (can be an empty string)
+	 * @param message the message
+	 */
+	private void log(final String prefix, final Object message) {
+		System.err.print(prefix);
+		System.err.println(message);
+	}
+
+	/**
+	 * Prints an exception to stderr.
+	 * 
+	 * @param prefix the prefix (can be an empty string)
+	 * @param t the exception
+	 */
+	private void log(final String prefix, final Throwable t) {
+		System.err.print(prefix);
+		t.printStackTrace();
+		final Throwable cause = t.getCause();
+		if (cause != null) {
+			log("", cause);
+		}
 	}
 
 }

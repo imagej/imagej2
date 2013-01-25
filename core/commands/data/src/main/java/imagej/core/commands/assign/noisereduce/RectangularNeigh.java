@@ -38,7 +38,6 @@ package imagej.core.commands.assign.noisereduce;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
 
-
 /**
  * TODO
  * 
@@ -49,14 +48,14 @@ public class RectangularNeigh implements Neighborhood {
 	private final long[] posOffsets;
 	private final long[] negOffsets;
 	private final PointSet points;
-	
-	public RectangularNeigh(long[] posOffsets, long[] negOffsets) {
+
+	public RectangularNeigh(final long[] posOffsets, final long[] negOffsets) {
 		this.posOffsets = posOffsets;
 		this.negOffsets = negOffsets;
-		long[] origin = new long[posOffsets.length];
+		final long[] origin = new long[posOffsets.length];
 		points = new HyperVolumePointSet(origin, posOffsets, negOffsets);
 	}
-	
+
 	@Override
 	public PointSet getPoints() {
 		return points;
@@ -64,7 +63,7 @@ public class RectangularNeigh implements Neighborhood {
 
 	@Override
 	public String getDescription() {
-		StringBuilder builder = new StringBuilder();
+		final StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < posOffsets.length; i++) {
 			if (i != 0) {
 				builder.append(" x ");
@@ -74,6 +73,5 @@ public class RectangularNeigh implements Neighborhood {
 		builder.append(" rectangular neighborhood");
 		return builder.toString();
 	}
-	
-}
 
+}

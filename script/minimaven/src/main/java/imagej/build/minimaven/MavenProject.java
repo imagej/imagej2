@@ -1,4 +1,3 @@
-package imagej.build.minimaven;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -34,7 +33,10 @@ package imagej.build.minimaven;
  * #L%
  */
 
+package imagej.build.minimaven;
+
 import imagej.build.minimaven.JavaCompiler.CompileError;
+import imagej.util.FileUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -44,12 +46,15 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.jar.Attributes.Name;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
@@ -60,6 +65,14 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+/**
+ * This class represents a parsed pom.xml file.
+ * 
+ * Every pom.xml file is parsed into an instance of this class; the tree of projects shares
+ * a {@link BuildEnvironment} instance.
+ * 
+ * @author Johannes Schindelin
+ */
 @SuppressWarnings("hiding")
 public class MavenProject extends DefaultHandler implements Comparable<MavenProject> {
 	protected final BuildEnvironment env;
@@ -77,6 +90,12 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 	protected String sourceVersion, targetVersion, mainClass;
 	protected boolean includeImplementationBuild;
 	protected String packaging = "jar";
+
+	private static enum BooleanState {
+		UNKNOWN, YES, NO
+	};
+	private BooleanState upToDate = BooleanState.UNKNOWN,
+		jarUpToDate = BooleanState.UNKNOWN;
 
 	// only used during parsing
 	protected String prefix = "";
@@ -109,6 +128,12 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 	}
 
 	public void clean() throws IOException, ParserConfigurationException, SAXException {
+		if ("pom".equals(getPackaging())) {
+			for (final MavenProject child : getChildren()) {
+				child.clean();
+			}
+			return;
+		}
 		if (!buildFromSource)
 			return;
 		for (MavenProject child : getDependencies(true, env.downloadAutomatically))
@@ -136,6 +161,9 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 
 	protected void download(Coordinate dependency, boolean quiet) throws FileNotFoundException {
 		for (String url : getRoot().getRepositories()) try {
+			if (env.debug) {
+				env.err.println("Trying to download from " + url);
+			}
 			env.downloadAndVerify(url, dependency, quiet);
 			return;
 		} catch (Exception e) {
@@ -146,6 +174,22 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 	}
 
 	public boolean upToDate(boolean includingJar) throws IOException, ParserConfigurationException, SAXException {
+		if (includingJar) {
+			if (jarUpToDate == BooleanState.UNKNOWN) {
+				jarUpToDate = checkUpToDate(true) ?
+					BooleanState.YES : BooleanState.NO;
+			}
+			return jarUpToDate == BooleanState.YES;
+		} else {
+			if (upToDate == BooleanState.UNKNOWN) {
+				upToDate = checkUpToDate(false) ?
+					BooleanState.YES : BooleanState.NO;
+			}
+			return upToDate == BooleanState.YES;
+		}
+	}
+
+	public boolean checkUpToDate(boolean includingJar) throws IOException, ParserConfigurationException, SAXException {
 		if (!buildFromSource)
 			return true;
 		for (MavenProject child : getDependencies(true, env.downloadAutomatically, "test"))
@@ -225,15 +269,126 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 				addToJarRecursively(out, file, prefix + file.getName() + "/");
 	}
 
-	public void buildJar() throws CompileError, IOException, ParserConfigurationException, SAXException {
-		build(true);
+	/**
+	 * Builds the artifact and installs it and its dependencies into ${imagej.app.directory}.
+	 * 
+	 * If the property <tt>imagej.app.directory</tt> does not point to a valid directory, the
+	 * install step is skipped.
+	 * 
+	 * @throws CompileError
+	 * @throws IOException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 */
+	public void buildAndInstall() throws CompileError, IOException, ParserConfigurationException, SAXException {
+		final String ijDirProperty = getProperty(BuildEnvironment.IMAGEJ_APP_DIRECTORY);
+		if (ijDirProperty == null) {
+			throw new IOException(BuildEnvironment.IMAGEJ_APP_DIRECTORY + " does not point to an ImageJ.app/ directory!");
+		}
+		buildAndInstall(new File(ijDirProperty), false);
 	}
 
+	/**
+	 * Builds the project an its dependencies, and installs them into the given ImageJ.app/ directory structure.
+	 * 
+	 * If the property <tt>imagej.app.directory</tt> does not point to a valid directory, the
+	 * install step is skipped.
+	 * 
+	 * @param ijDir the ImageJ.app/ directory
+	 * 
+	 * @throws CompileError
+	 * @throws IOException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 */
+	public void buildAndInstall(final File ijDir) throws CompileError, IOException, ParserConfigurationException, SAXException {
+		buildAndInstall(ijDir, false);
+	}
+
+	/**
+	 * Builds the project an its dependencies, and installs them into the given ImageJ.app/ directory structure.
+	 * 
+	 * If the property <tt>imagej.app.directory</tt> does not point to a valid directory, the
+	 * install step is skipped.
+	 * 
+	 * @param ijDir the ImageJ.app/ directory
+	 * @param forceBuild recompile even if the artifact is up-to-date
+	 * 
+	 * @throws CompileError
+	 * @throws IOException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 */
+	public void buildAndInstall(final File ijDir, final boolean forceBuild) throws CompileError, IOException, ParserConfigurationException, SAXException {
+		if ("pom".equals(getPackaging())) {
+			env.err.println("Looking at children of " + getArtifactId());
+			for (final MavenProject child : getChildren()) {
+				child.buildAndInstall(ijDir, forceBuild);
+			}
+			return;
+		}
+
+		build(true, forceBuild);
+
+		for (final MavenProject project : getDependencies(true, false, "test", "provided", "system")) {
+			project.copyToImageJAppDirectory(ijDir, true);
+		}
+		copyToImageJAppDirectory(ijDir, true);
+	}
+
+	/**
+	 * Builds the artifact.
+	 * 
+	 * @throws CompileError
+	 * @throws IOException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 */
+	public void buildJar() throws CompileError, IOException, ParserConfigurationException, SAXException {
+		build(true, false);
+	}
+
+	/**
+	 * Compiles the project.
+	 * 
+	 * @throws CompileError
+	 * @throws IOException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 */
 	public void build() throws CompileError, IOException, ParserConfigurationException, SAXException {
 		build(false);
 	}
 
+	/**
+	 * Compiles the project and optionally builds the .jar artifact.
+	 * 
+	 * @param makeJar build a .jar file
+	 * 
+	 * @throws CompileError
+	 * @throws IOException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 */
 	public void build(boolean makeJar) throws CompileError, IOException, ParserConfigurationException, SAXException {
+		build(makeJar, false);
+	}
+
+	/**
+	 * Compiles the project and optionally builds the .jar artifact.
+	 * 
+	 * @param makeJar build a .jar file
+	 * @param forceBuild for recompilation even if the artifact is up-to-date
+	 * 
+	 * @throws CompileError
+	 * @throws IOException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 */
+	public void build(boolean makeJar, boolean forceBuild) throws CompileError, IOException, ParserConfigurationException, SAXException {
+		if (!forceBuild && upToDate(makeJar)) {
+			return;
+		}
 		if (!buildFromSource || built)
 			return;
 		boolean forceFullBuild = false;
@@ -245,7 +400,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 
 		// do not build aggregator projects
 		File source = getSourceDirectory();
-		if (!source.exists())
+		if (!source.exists() && !new File(source.getParentFile(), "resources").exists())
 			return;
 
 		target.mkdirs();
@@ -430,6 +585,75 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		return builder.toString();
 	}
 
+	private final void deleteVersions(final File directory, final String filename) {
+		final File[] versioned = FileUtils.getAllVersions(directory, filename);
+		if (versioned == null)
+			return;
+		for (final File file : versioned) {
+			if (!file.getName().equals(filename))
+				env.err.println("Warning: deleting '" + file + "'");
+			if (!file.delete())
+				env.err.println("Warning: could not delete '" + file + "'");
+		}
+	}
+
+	/**
+	 * Copies the current artifact and all its dependencies into an ImageJ.app/ directory structure.
+	 * 
+	 * In the ImageJ.app/ directory structure, plugin .jar files live in the plugins/ subdirectory
+	 * while libraries not providing any plugins should go to jars/.
+	 * 
+	 * @param ijDir the ImageJ.app/ directory
+	 * @throws IOException 
+	 */
+	private void copyToImageJAppDirectory(final File ijDir, boolean deleteOtherVersions) throws IOException {
+		if ("pom".equals(getPackaging())) return;
+		final File source = getTarget();
+		if (!source.exists()) throw new IOException("Artifact does not exist: " + source);
+
+		final File targetDir = new File(ijDir, isImageJ1Plugin(source) ? "plugins" : "jars");
+		final File target = new File(targetDir, getArtifactId()
+				+ ("Fiji_Updater".equals(getArtifactId()) ? "" : "-" + getVersion())
+				+ ".jar");
+		if (!targetDir.exists()) {
+			if (!targetDir.mkdirs()) {
+				throw new IOException("Could not make directory " + targetDir);
+			}
+		} else if (target.exists() && target.lastModified() >= source.lastModified()) {
+			return;
+		}
+		if (deleteOtherVersions) deleteVersions(targetDir, target.getName());
+		BuildEnvironment.copyFile(source, target);
+	}
+
+	/**
+	 * Determines whether a .jar file contains ImageJ 1.x plugins.
+	 * 
+	 * The test is simple: does it contain a <tt>plugins.config</tt> file?
+	 * 
+	 * @param file the .jar file
+	 * @return whether it contains at least one ImageJ 1.x plugin.
+	 */
+	private static boolean isImageJ1Plugin(File file) {
+		String name = file.getName();
+		if (name.indexOf('_') < 0 || !file.exists())
+			return false;
+		if (file.isDirectory())
+			return new File(file, "src/main/resources/plugins.config").exists();
+		if (name.endsWith(".jar")) try {
+			JarFile jar = new JarFile(file);
+			for (JarEntry entry : Collections.list(jar.entries()))
+				if (entry.getName().equals("plugins.config")) {
+					jar.close();
+					return true;
+			}
+			jar.close();
+		} catch (Throwable t) {
+			// obviously not a plugin...
+		}
+		return false;
+	}
+
 	/**
 	 * Copy the runtime dependencies
 	 *
@@ -476,22 +700,32 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 				}
 			}
 			// make sure that snapshot .pom files are updated once a day
-			if (!env.offlineMode && downloadAutomatically && pom != null && dependency.version != null &&
-					(dependency.version.startsWith("[") || dependency.version.endsWith("-SNAPSHOT")) &&
+			if (!env.offlineMode && downloadAutomatically && pom != null && pom.coordinate.version != null &&
+					(pom.coordinate.version.startsWith("[") || pom.coordinate.version.endsWith("-SNAPSHOT")) &&
 					pom.directory.getPath().startsWith(BuildEnvironment.mavenRepository.getPath())) {
-				if (maybeDownloadAutomatically(dependency, !env.verbose, downloadAutomatically)) {
-					if (dependency.version.startsWith("["))
-						dependency.setSnapshotVersion(VersionPOMHandler.parse(new File(pom.directory.getParentFile(), "maven-metadata-version.xml")));
+				if (maybeDownloadAutomatically(pom.coordinate, !env.verbose, downloadAutomatically)) {
+					if (pom.coordinate.version.startsWith("["))
+						pom.coordinate.setSnapshotVersion(VersionPOMHandler.parse(new File(pom.directory.getParentFile(), "maven-metadata-version.xml")));
 					else
-						dependency.setSnapshotVersion(SnapshotPOMHandler.parse(new File(pom.directory, "maven-metadata-snapshot.xml")));
+						pom.coordinate.setSnapshotVersion(SnapshotPOMHandler.parse(new File(pom.directory, "maven-metadata-snapshot.xml")));
+					dependency.setSnapshotVersion(pom.coordinate.getVersion());
 				}
 			}
-			if (pom == null && downloadAutomatically)
+			if (pom == null && downloadAutomatically) try {
 				pom = findPOM(expanded, !env.verbose, downloadAutomatically);
+			} catch (IOException e) {
+				env.err.println("Failed to download dependency " + expanded.artifactId + " of " + getArtifactId());
+				throw e;
+			}
 			if (pom == null || result.contains(pom))
 				continue;
 			result.add(pom);
-			pom.getDependencies(result, env.downloadAutomatically, excludeOptionals, excludeScopes);
+			try {
+				pom.getDependencies(result, env.downloadAutomatically, excludeOptionals, excludeScopes);
+			} catch (IOException e) {
+				env.err.println("Problems downloading the dependencies of " + getArtifactId());
+				throw e;
+			}
 		}
 	}
 
@@ -537,7 +771,18 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		}
 	}
 
+	/**
+	 * Returns the (possibly project-specific) value of a property.
+	 * 
+	 * System properties override project-specific properties to allow the user
+	 * to overrule a setting by specifying it on the command-line.
+	 * 
+	 * @param key the name of the property
+	 * @return the value of the property
+	 */
 	public String getProperty(String key) {
+		final String systemProperty = System.getProperty(key);
+		if (systemProperty != null) return systemProperty;
 		if (properties.containsKey(key))
 			return properties.get(key);
 		if (key.equals("project.basedir"))
@@ -550,8 +795,6 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 				return "4.4-SNAPSHOT";
 			if (key.equals("imagej.groupId"))
 				return "imagej";
-			if (key.equals("java.home"))
-				return System.getProperty("java.home");
 			return null;
 		}
 		return parent.getProperty(key);
@@ -578,8 +821,11 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 
 	protected void getRepositories(Set<String> result) {
 		// add a default to the root
-		if (parent == null)
+		if (parent == null) {
 			result.add("http://repo1.maven.org/maven2/");
+			result.add("http://maven.imagej.net/content/repositories/releases/");
+			result.add("http://maven.imagej.net/content/repositories/snapshots/");
+		}
 		result.addAll(repositories);
 		for (MavenProject child : getChildren())
 			if (child != null)
@@ -608,9 +854,6 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 			return pom;
 
 		if (env.ignoreMavenRepositories) {
-			File file = findInFijiDirectories(dependency);
-			if (file != null)
-				return env.fakePOM(file, dependency);
 			if (!quiet && !dependency.optional)
 				env.err.println("Skipping artifact " + dependency.artifactId + " (for " + coordinate.artifactId + "): not in jars/ nor plugins/");
 			return cacheAndReturn(key, null);
@@ -630,19 +873,11 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		path += dependency.getVersion() + "/";
 		if (dependency.version.endsWith("-SNAPSHOT")) try {
 			if (!maybeDownloadAutomatically(dependency, quiet, downloadAutomatically)) {
-				File file = findInFijiDirectories(dependency);
-				if (file != null)
-					return env.fakePOM(file, dependency);
 				return null;
 			}
 			if (dependency.version.endsWith("-SNAPSHOT"))
 				dependency.setSnapshotVersion(SnapshotPOMHandler.parse(new File(path, "maven-metadata-snapshot.xml")));
 		} catch (FileNotFoundException e) { /* ignore */ }
-		else if (env.ignoreMavenRepositories) {
-			File file = findInFijiDirectories(dependency);
-			if (file != null)
-				return env.fakePOM(file, dependency);
-		}
 
 		File file = new File(path, dependency.getPOMName());
 		if (!file.exists()) {
@@ -687,20 +922,6 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		MavenProject result = env.localPOMCache.get(key);
 		if (result != null && BuildEnvironment.compareVersion(dependency.getVersion(), result.coordinate.getVersion()) <= 0)
 			return result;
-		return null;
-	}
-
-	protected File findInFijiDirectories(Coordinate dependency) {
-		for (String jarName : new String[] {
-			"jars/" + dependency.artifactId + "-" + dependency.getVersion() + ".jar",
-			"plugins/" + dependency.artifactId + "-" + dependency.getVersion() + ".jar",
-			"jars/" + dependency.artifactId + ".jar",
-			"plugins/" + dependency.artifactId + ".jar"
-		}) {
-			File file = new File(System.getProperty("ij.dir"), jarName);
-			if (file.exists())
-				return file;
-		}
 		return null;
 	}
 

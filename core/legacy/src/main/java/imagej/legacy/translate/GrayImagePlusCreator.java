@@ -71,7 +71,7 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 		pixelHarmonizer = new GrayPixelHarmonizer();
 		colorTableHarmonizer = new ColorTableHarmonizer(context);
 		metadataHarmonizer = new MetadataHarmonizer();
-		planeHarmonizer = new PlaneHarmonizer();
+		planeHarmonizer = new PlaneHarmonizer(context);
 		positionHarmonizer = new PositionHarmonizer();
 		nameHarmonizer = new NameHarmonizer();
 	}
@@ -161,9 +161,9 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 	 * Makes an {@link ImagePlus} from a {@link Dataset}. Data is exactly the same
 	 * between them as planes of data are shared by reference. Assumes the Dataset
 	 * can be represented via plane references (thus XYCZT and backed by
-	 * {@link PlanarAccess} and in a type compatible with IJ1). Does not set the
-	 * metadata of the ImagePlus. Throws an exception if Dataset axis 0 is not X
-	 * or Dataset axis 1 is not Y.
+	 * {@link PlanarAccess} and in a type compatible with legacy ImageJ). Does not
+	 * set the metadata of the ImagePlus. Throws an exception if Dataset axis 0 is
+	 * not X or Dataset axis 1 is not Y.
 	 */
 	// TODO - check that Dataset can be represented exactly
 	private ImagePlus makeExactImagePlus(final Dataset ds) {
@@ -187,10 +187,10 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 
 	/**
 	 * Makes an {@link ImagePlus} from a {@link Dataset} whose dimensions match.
-	 * The type of the ImagePlus is an IJ1 type that can best represent the data
-	 * with the least loss of data. Sometimes the IJ1 & IJ2 types are the same
-	 * type and sometimes they are not. The data values and metadata are not
-	 * assigned. Assumes it will never be sent a color Dataset.
+	 * The type of the ImagePlus is a legacy ImageJ type that can best represent
+	 * the data with the least loss of data. Sometimes the legacy and modern types
+	 * are the same type and sometimes they are not. The data values and metadata
+	 * are not assigned. Assumes it will never be sent a color Dataset.
 	 */
 	private ImagePlus makeNearestTypeGrayImagePlus(final Dataset ds) {
 		final PlaneMaker planeMaker = getPlaneMaker(ds);
@@ -208,9 +208,9 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 
 	/**
 	 * Makes a {@link CompositeImage} that wraps a given {@link ImagePlus} and
-	 * sets channel LUTs to match how IJ2 displays given paired {@link Dataset}.
-	 * Assumes given ImagePlus has channels in range 2..7 and that if Dataset View
-	 * has ColorTables defined there is one per channel.
+	 * sets channel LUTs to match how modern ImageJ displays the given paired
+	 * {@link Dataset}. Assumes given ImagePlus has channels in range 2..7 and
+	 * that if Dataset View has ColorTables defined there is one per channel.
 	 */
 	// TODO - last assumption may be bad. If I have a 6 channel Dataset with
 	// compos chann count == 2 then maybe I only have 2 or 3 ColorTables. Is
@@ -219,8 +219,10 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 		return new CompositeImage(imp, CompositeImage.COMPOSITE);
 	}
 
-	/** Updates an {@link ImagePlus} so that IJ1 treats it as a signed
-	 *  16 bit image */
+	/**
+	 * Updates an {@link ImagePlus} so that legacy ImageJ treats it as a signed 16
+	 * bit image
+	 */
 	private void markAsSigned16Bit(ImagePlus imp) {
 		Calibration cal = imp.getCalibration();
 		cal.setSigned16BitCalibration();
@@ -229,7 +231,7 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 	/**
 	 * Finds the best {@link PlaneMaker} for a given {@link Dataset}. The best
 	 * PlaneMaker is the one that makes planes in the type that can best represent
-	 * the Dataset's data values in IJ1.
+	 * the Dataset's data values in legacy ImageJ.
 	 */
 	private PlaneMaker getPlaneMaker(final Dataset ds) {
 		final boolean signed = ds.isSigned();

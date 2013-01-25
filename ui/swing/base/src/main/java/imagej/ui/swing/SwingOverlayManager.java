@@ -59,7 +59,6 @@ import imagej.data.overlay.Overlay;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
-import imagej.log.LogService;
 import imagej.options.OptionsService;
 import imagej.platform.PlatformService;
 import imagej.ui.UIService;
@@ -108,9 +107,9 @@ import javax.swing.event.ListSelectionListener;
 // - implement methods that actually do stuff
 // - since it knows its a Swing UI it uses Swing UI features. Ideally we should
 //   make OverlayManager a Display<Overlay> and work as much as possible in
-//   an agnostic fashion. Thus no swing style listeners but instead IJ2
-//   listeners. And rather than swing input dialogs we should make IJ2 input
-//   dialogs.
+//   an agnostic fashion. Thus no swing style listeners but instead modern
+//   ImageJ listeners. And rather than swing input dialogs we should make modern
+//   ImageJ input dialogs.
 
 /**
  * Overlay Manager Swing UI

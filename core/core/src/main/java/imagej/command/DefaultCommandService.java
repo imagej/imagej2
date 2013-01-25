@@ -171,8 +171,7 @@ public class DefaultCommandService extends AbstractService implements
 
 	@Override
 	public Future<Module> run(final String className, final Object... inputs) {
-		final CommandInfo command = getCommand(className);
-		if (!checkCommand(command, className)) return null;
+		final CommandInfo command = getOrCreate(className);
 		return run(command, inputs);
 	}
 
@@ -180,8 +179,7 @@ public class DefaultCommandService extends AbstractService implements
 	public Future<Module> run(final String className,
 		final Map<String, Object> inputMap)
 	{
-		final CommandInfo command = getCommand(className);
-		if (!checkCommand(command, className)) return null;
+		final CommandInfo command = getOrCreate(className);
 		return run(command, inputMap);
 	}
 
@@ -189,8 +187,7 @@ public class DefaultCommandService extends AbstractService implements
 	public <C extends Command> Future<CommandModule> run(
 		final Class<C> commandClass, final Object... inputs)
 	{
-		final CommandInfo command = getCommand(commandClass);
-		if (!checkCommand(command, commandClass.getName())) return null;
+		final CommandInfo command = getOrCreate(commandClass);
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		final Future<CommandModule> future = (Future) run(command, inputs);
 		return future;
@@ -200,8 +197,7 @@ public class DefaultCommandService extends AbstractService implements
 	public <C extends Command> Future<CommandModule> run(
 		final Class<C> commandClass, final Map<String, Object> inputMap)
 	{
-		final CommandInfo command = getCommand(commandClass);
-		if (!checkCommand(command, commandClass.getName())) return null;
+		final CommandInfo command = getOrCreate(commandClass);
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		final Future<CommandModule> future = (Future) run(command, inputMap);
 		return future;
@@ -243,8 +239,6 @@ public class DefaultCommandService extends AbstractService implements
 		final List<PluginInfo<Command>> plugins =
 			pluginService.getPluginsOfType(Command.class);
 		addCommands(plugins);
-
-		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --
@@ -274,13 +268,24 @@ public class DefaultCommandService extends AbstractService implements
 		return pluginService.createInstancesOfType(PostprocessorPlugin.class);
 	}
 
-	/** Logs an error if the given command is null. */
-	private boolean checkCommand(final CommandInfo command, final String name) {
-		if (command == null) {
-			log.error("No such command: " + name);
-			return false;
-		}
-		return true;
+	/**
+	 * Gets a {@link CommandInfo} for the given class name, creating a new one if
+	 * none are registered with the service.
+	 */
+	private CommandInfo getOrCreate(String className) {
+		final CommandInfo command = getCommand(className);
+		if (command != null) return command;
+		return new CommandInfo(className);
+	}
+
+	/**
+	 * Gets a {@link CommandInfo} for the given class, creating a new one if
+	 * none are registered with the service.
+	 */
+	private <C extends Command> CommandInfo getOrCreate(Class<C> commandClass) {
+		final CommandInfo command = getCommand(commandClass);
+		if (command != null) return command;
+		return new CommandInfo(commandClass);
 	}
 
 	/** Adds new commands to the module service. */
@@ -358,9 +363,7 @@ public class DefaultCommandService extends AbstractService implements
 			return (CommandInfo) pluginInfo;
 		}
 		// wrap the plugin's metadata in a command info
-		final String className = pluginInfo.getClassName();
-		final Plugin annotation = pluginInfo.getAnnotation();
-		return new CommandInfo(className, annotation);
+		return new CommandInfo(pluginInfo);
 	}
 
 	/** A HACK for downcasting a list of plugins. */

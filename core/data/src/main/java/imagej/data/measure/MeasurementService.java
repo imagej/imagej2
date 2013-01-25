@@ -35,6 +35,9 @@
 
 package imagej.data.measure;
 
+import imagej.data.Dataset;
+import imagej.service.Service;
+
 import java.util.List;
 
 import net.imglib2.img.Img;
@@ -42,10 +45,6 @@ import net.imglib2.ops.function.Function;
 import net.imglib2.ops.function.real.RealImageFunction;
 import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.type.numeric.RealType;
-import imagej.data.Dataset;
-import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
-import imagej.service.Service;
 
 // TODO - this service and all related classes do not have to be in the
 // imagej.data package (ij-data subproject). There is only the one reliance on
@@ -54,95 +53,58 @@ import imagej.service.Service;
 // convenience function from this class. Of course that would make core reliant
 // on Imglib2 OPS.
 
-
 /**
  * A service that simplifies the measurement of values from data.
  * 
  * @author Barry DeZonia
- *
  */
-@Plugin(type = Service.class)
-public class MeasurementService extends AbstractService {
-
-	// -- MeasurementService methods --
+public interface MeasurementService extends Service {
 
 	/**
 	 * Measures the value of a {@link Function} given an input region
 	 * {@link PointSet} and places it in a given output value.
 	 * 
-	 * @param func
-	 * The function to measure.
-	 * @param region
-	 * The set of points over which to evaluate the function.
-	 * @param output
-	 * The variable to place the measurement result in.
+	 * @param func The function to measure.
+	 * @param region The set of points over which to evaluate the function.
+	 * @param output The variable to place the measurement result in.
 	 */
-	public <T> void measure(Function<PointSet,T> func, PointSet region, T output){
-		func.compute(region, output);
-	}
+	<T> void measure(Function<PointSet, T> func, PointSet region, T output);
 
 	/**
 	 * Measures the values of a list of {@link Function}s given an input region
 	 * {@link PointSet} and places the computed values in the given output list.
 	 * 
-	 * @param funcs
-	 * The list of functions to measure.
-	 * @param region
-	 * The set of points over which to evaluate the functions.
-	 * @param outputs
-	 * The list of variables to place the measurement results in.
+	 * @param funcs The list of functions to measure.
+	 * @param region The set of points over which to evaluate the functions.
+	 * @param outputs The list of variables to place the measurement results in.
 	 */
-	public <T> void measure(
-		List<Function<PointSet,T>> funcs, PointSet region, List<T> outputs)
-	{
-		if (funcs.size() != outputs.size())
-			throw new IllegalArgumentException(
-				"measure(): number of functions must equal number of outputs");
-		MeasurementSet<T> set = new MeasurementSet<T>();
-		for (int i = 0; i < funcs.size(); i++) {
-			set.add(funcs.get(i), outputs.get(i));
-		}
-		MeasurementSetFunction<T> group = new MeasurementSetFunction<T>(set);
-		measure(group, region, set);
-	}
+	<T> void measure(List<Function<PointSet, T>> funcs, PointSet region,
+		List<T> outputs);
 
 	/**
 	 * Creates a {@link RealImageFunction} from an {@link Img} and a given output
 	 * type. This is a convenience constructor. RealImageFunctions give read
 	 * access to Img data.
 	 * 
-	 * @param img
-	 * The Img containing the data values we want read access to.
-	 * @param outputType
-	 * The type of output that the wrapped Function will fill during computation.
-	 * @return
-	 * A Function wrapping the Img.
+	 * @param img The Img containing the data values we want read access to.
+	 * @param outputType The type of output that the wrapped Function will fill
+	 *          during computation.
+	 * @return A Function wrapping the Img.
 	 */
-	@SuppressWarnings({"unchecked","rawtypes"})
-	public <T extends RealType<T>>
-		RealImageFunction<?,T>
-			imgFunction(Img<? extends RealType<?>> img, T outputType)
-	{
-		return new RealImageFunction(img, outputType);
-	}
-	
+	<T extends RealType<T>> RealImageFunction<?, T> imgFunction(
+		Img<? extends RealType<?>> img, T outputType);
+
 	/**
 	 * Creates a {@link RealImageFunction} from an {@link Dataset} and a given
 	 * output type. This is a convenience constructor. RealImageFunctions give
 	 * read access to data.
 	 * 
-	 * @param ds
-	 * The Dataset containing the data values we want read access to.
-	 * @param outputType
-	 * The type of output that the wrapped Function will fill during computation.
-	 * @return
-	 * A Function wrapping the Dataset data.
+	 * @param ds The Dataset containing the data values we want read access to.
+	 * @param outputType The type of output that the wrapped Function will fill
+	 *          during computation.
+	 * @return A Function wrapping the Dataset data.
 	 */
-	public <T extends RealType<T>>
-		RealImageFunction<?,T>
-			imgFunction(Dataset ds, T outputType)
-	{
-		return imgFunction(ds.getImgPlus(), outputType);
-	}
+	<T extends RealType<T>> RealImageFunction<?, T> imgFunction(Dataset ds,
+		T outputType);
 
 }

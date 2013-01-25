@@ -236,7 +236,7 @@ public class ConfigFileParameters {
 		}
 	}
 
-	/** Loads launcher config file values from a modern IJ2 style file. */
+	/** Loads launcher config file values from a modern ImageJ style file. */
 	private boolean loadModernConfigValues(final Map<String, String> map,
 		final File file)
 	{
@@ -269,7 +269,10 @@ public class ConfigFileParameters {
 		}
 	}
 
-	/** Writes launcher config values to an IJ2 style launcher config file. */
+	/**
+	 * Writes launcher config values to a modern ImageJ style launcher config
+	 * file.
+	 */
 	private void
 		saveConfigValues(final Map<String, String> map, final File file)
 	{

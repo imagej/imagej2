@@ -35,6 +35,7 @@
 
 package imagej.core.tools;
 
+import imagej.Priority;
 import imagej.command.CommandService;
 import imagej.display.event.input.KyPressedEvent;
 import imagej.input.Accelerator;
@@ -67,7 +68,7 @@ import imagej.tool.Tool;
  * @author Curtis Rueden
  */
 @Plugin(type = Tool.class, name = "Keyboard Shortcuts", alwaysActive = true,
-	activeInAppFrame = true)
+	activeInAppFrame = true, priority = Priority.VERY_LOW_PRIORITY)
 public class AcceleratorHandler extends AbstractTool {
 
 	@Override

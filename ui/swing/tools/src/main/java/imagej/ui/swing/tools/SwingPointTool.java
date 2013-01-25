@@ -35,8 +35,6 @@
 
 package imagej.ui.swing.tools;
 
-import java.awt.Shape;
-
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
@@ -51,6 +49,8 @@ import imagej.ui.swing.overlay.SwingPointFigure;
 import imagej.ui.swing.tools.overlay.SwingAngleTool;
 import imagej.util.ColorRGB;
 
+import java.awt.Shape;
+
 import org.jhotdraw.draw.Figure;
 
 /**
@@ -60,7 +60,7 @@ import org.jhotdraw.draw.Figure;
  */
 @Plugin(type = JHotDrawAdapter.class, name = "Point",
 	description = "Point overlays", iconPath = "/icons/tools/point.png",
-	priority = SwingPointTool.PRIORITY, enabled = true)
+	priority = SwingPointTool.PRIORITY)
 public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay, SwingPointFigure> {
 
 	public static final double PRIORITY = SwingAngleTool.PRIORITY - 1;
@@ -95,13 +95,11 @@ public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay, SwingP
 		final PointOverlay pointOverlay = (PointOverlay) overlay;
 		pointFigure.setFillColor(pointOverlay.getFillColor());
 		pointFigure.setLineColor(pointOverlay.getLineColor());
-		pointFigure.setPoint(pointOverlay.getPoint(0), pointOverlay.getPoint(1));
+		pointFigure.setPoints(pointOverlay.getPoints());
 	}
 
 	@Override
 	public void updateOverlay(final SwingPointFigure figure, final OverlayView view) {
-		assert figure instanceof SwingPointFigure;
-		final SwingPointFigure point = (SwingPointFigure) figure;
 		final Overlay overlay = view.getData();
 		assert overlay instanceof PointOverlay;
 		final PointOverlay pointOverlay = (PointOverlay) overlay;
@@ -112,15 +110,11 @@ public class SwingPointTool extends AbstractJHotDrawAdapter<PointOverlay, SwingP
 		// call super in case it initializes anything of importance
 		super.updateOverlay(figure, view);
 		// and restore colors to what we really want
-		overlay.setFillColor(fillColor);
-		overlay.setLineColor(lineColor);
-		// set location
-		final double x = point.getX();
-		final double y = point.getY();
-		pointOverlay.setPoint(x, 0);
-		pointOverlay.setPoint(y, 1);
-		overlay.update();
-		reportPoint(x, y);
+		pointOverlay.setFillColor(fillColor);
+		pointOverlay.setLineColor(lineColor);
+		// set points
+		pointOverlay.setPoints(figure.getPoints());
+		pointOverlay.update();
 	}
 
 	@Override

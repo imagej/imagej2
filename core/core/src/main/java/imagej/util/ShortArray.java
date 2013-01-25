@@ -146,7 +146,7 @@ public class ShortArray extends AbstractPrimitiveArray<short[], Short> {
 
 	@Override
 	public Short set(final int index, final Short element) {
-		return setValue(index, element);
+		return setValue(index, element == null ? defaultValue() : element);
 	}
 
 	@Override
@@ -223,6 +223,11 @@ public class ShortArray extends AbstractPrimitiveArray<short[], Short> {
 			if (result) changed = true;
 		}
 		return changed;
+	}
+
+	@Override
+	public Short defaultValue() {
+		return 0;
 	}
 
 }

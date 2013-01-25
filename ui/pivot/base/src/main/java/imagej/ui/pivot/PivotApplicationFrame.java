@@ -63,4 +63,9 @@ public class PivotApplicationFrame extends Frame implements ApplicationFrame {
 		requestActive();
 	}
 
+	@Override
+	public void setVisible(boolean visible) {
+		// unsupported operation; ignore
+	}
+
 }

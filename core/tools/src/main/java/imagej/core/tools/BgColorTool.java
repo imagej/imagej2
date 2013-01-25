@@ -43,12 +43,12 @@ import imagej.util.ColorRGB;
 import imagej.util.Colors;
 
 /**
+ * TODO
  * 
  * @author Barry DeZonia
- * 
  */
-@Plugin(type = Tool.class, name = "Background", iconPath = "/icons/tools/blankBlack.png",
-	priority = BgColorTool.PRIORITY)
+@Plugin(type = Tool.class, name = "Background",
+	iconPath = "/icons/tools/blankBlack.png", priority = BgColorTool.PRIORITY)
 public class BgColorTool extends AbstractColorTool {
 
 	public static final int PRIORITY = BASE_PRIORITY - 1;
@@ -64,17 +64,19 @@ public class BgColorTool extends AbstractColorTool {
 	}
 
 	@Override
-	ChannelCollection getChannels(OptionsChannels options) {
+	ChannelCollection getChannels(final OptionsChannels options) {
 		return options.getBgValues();
 	}
 
 	@Override
-	void setChannels(OptionsChannels options, ChannelCollection chans) {
+	void
+		setChannels(final OptionsChannels options, final ChannelCollection chans)
+	{
 		options.setBgValues(chans);
 	}
 
 	@Override
-	void setLastColor(OptionsChannels options, ColorRGB color) {
+	void setLastColor(final OptionsChannels options, final ColorRGB color) {
 		options.setLastBgColor(color);
 	}
 
@@ -82,4 +84,5 @@ public class BgColorTool extends AbstractColorTool {
 	String getLabel() {
 		return "BG";
 	}
+
 }

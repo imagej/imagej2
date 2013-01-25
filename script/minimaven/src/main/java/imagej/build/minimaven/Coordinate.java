@@ -1,4 +1,3 @@
-package imagej.build.minimaven;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -34,6 +33,13 @@ package imagej.build.minimaven;
  * #L%
  */
 
+package imagej.build.minimaven;
+
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class Coordinate {
 	protected String groupId, artifactId, version, systemPath, classifier, scope, snapshotVersion;
 	protected boolean optional;

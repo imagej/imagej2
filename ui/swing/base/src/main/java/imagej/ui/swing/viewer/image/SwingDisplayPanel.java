@@ -42,6 +42,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.display.event.DelayedPositionEvent;
+import imagej.data.display.event.LutsChangedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.event.EventSubscriber;
@@ -72,10 +73,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import net.imglib2.display.ColorTable;
-import net.imglib2.display.RealLUTConverter;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import net.imglib2.type.numeric.RealType;
 import net.miginfocom.swing.MigLayout;
 
 /**
@@ -222,6 +221,13 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 		eventService.publish(new DelayedPositionEvent(display, axis));
 	}
 
+	@EventHandler
+	protected void onEvent(LutsChangedEvent event) {
+		if (!getDisplay().contains(event.getView())) return;
+		final int value = (int) display.getLongPosition(Axes.CHANNEL);
+		updateColorBar(value);
+	}
+
 	// -- Helper methods --
 
 	private void createSliders() {
@@ -284,11 +290,9 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 			display.getContext().getService(ImageDisplayService.class);
 		final DatasetView view = imageDisplayService.getActiveDatasetView(display);
 		if (view == null) return; // no active dataset
-		final List<RealLUTConverter<? extends RealType<?>>> converters =
-			view.getConverters();
-		if (c >= converters.size()) return;
-		final RealLUTConverter<? extends RealType<?>> converter = converters.get(c);
-		final ColorTable lut = converter.getLUT();
+		List<ColorTable> colorTables = view.getColorTables();
+		if (c >= colorTables.size()) return;
+		final ColorTable lut = colorTables.get(c);
 		colorBar.setColorTable(lut);
 		colorBar.repaint();
 	}
@@ -327,7 +331,12 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 		// calc height variables
 		final int labelHeight = imageLabel.getPreferredSize().height;
 		final int sliderHeight = sliderPanel.getPreferredSize().height;
-		final int extraSpace = 64;
+
+		// NB - extraSpace used to be 64. But this caused some images to come in at
+		// an inappropriate scale. I think extraSpace was just a hopeful fudge
+		// factor. I am eliminating it for now but leaving machinery in place in
+		// case we want to restore such code. This fixes bug #1472.
+		final int extraSpace = 0;
 
 		// determine largest viewable panel sizes
 		final int maxViewHeight =

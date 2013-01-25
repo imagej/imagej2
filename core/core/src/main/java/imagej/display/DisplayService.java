@@ -58,8 +58,11 @@ public interface DisplayService extends Service {
 
 	PluginService getPluginService();
 
-	/** Gets the currently active display. */
+	/** Gets the currently active display (of any Display type). */
 	Display<?> getActiveDisplay();
+
+	/** Gets the most recently active display (of the specified Display type). */
+	<D extends Display<?>> D getActiveDisplay(Class<D> displayClass);
 
 	/**
 	 * Set the active display.

@@ -147,13 +147,13 @@ public class DefaultModuleInfo extends AbstractUIDetails implements ModuleInfo
 
 	@Override
 	public String getDelegateClassName() {
-		return moduleClass.getName();
+		return getModuleClass().getName();
 	}
 
 	@Override
 	public Module createModule() throws ModuleException {
 		try {
-			return moduleClass.newInstance();
+			return getModuleClass().newInstance();
 		}
 		catch (final Exception e) {
 			// NB: Several types of exceptions; simpler to handle them all the same.

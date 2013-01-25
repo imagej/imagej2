@@ -152,16 +152,15 @@ public class ServiceHelper extends AbstractContextual {
 	 *         instantiated
 	 */
 	public <S extends Service> S createExactService(final Class<S> c) {
-		final LogService log = getContext().getService(LogService.class);
-		if (log != null) log.debug("Creating service: " + c.getName());
+		debug("Creating service: " + c.getName());
 		try {
 			final S service = createService(c);
 			getContext().getServiceIndex().add(service);
-			if (log != null) log.info("Created service: " + c.getName());
+			info("Created service: " + c.getName());
 			return service;
 		}
-		catch (final Exception e) {
-			if (log != null) log.error("Invalid service: " + c.getName(), e);
+		catch (final Throwable t) {
+			error("Invalid service: " + c.getName(), t);
 		}
 		return null;
 	}
@@ -214,18 +213,33 @@ public class ServiceHelper extends AbstractContextual {
 
 		for (final PluginInfo<Service> info : services) {
 			try {
-				final Class<Service> c = info.loadClass();
+				final Class<? extends Service> c = info.loadClass();
 				final double priority = info.getPriority();
 				serviceMap.put(c, priority);
 				serviceList.add(c);
 			}
 			catch (final Throwable e) {
-				final LogService log = getContext().getService(LogService.class);
-				if (log != null) {
-					log.error("Invalid service: " + info.getClassName(), e);
-				}
+				error("Invalid service: " + info, e);
 			}
 		}
+	}
+
+	/** Logs the given message, if a {@link LogService} is available. */
+	private void info(final String msg) {
+		final LogService log = getContext().getService(LogService.class);
+		if (log != null) log.info(msg);
+	}
+
+	/** Logs the given error, if a {@link LogService} is available. */
+	private void error(final String msg, final Throwable t) {
+		final LogService log = getContext().getService(LogService.class);
+		if (log != null) log.error(msg, t);
+	}
+
+	/** Logs the given debug message, if a {@link LogService} is available. */
+	private void debug(final String msg) {
+		final LogService log = getContext().getService(LogService.class);
+		if (log != null) log.debug(msg);
 	}
 
 }

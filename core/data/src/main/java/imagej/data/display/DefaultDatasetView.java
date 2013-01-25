@@ -35,15 +35,18 @@
 
 package imagej.data.display;
 
+import imagej.ImageJ;
 import imagej.data.ChannelCollection;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.display.event.DataViewUpdatedEvent;
+import imagej.data.display.event.LutsChangedEvent;
 import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.event.EventHandler;
+import imagej.event.EventService;
 import imagej.plugin.Plugin;
 import imagej.util.ColorRGB;
 
@@ -94,6 +97,12 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	// -- DatasetView methods --
 
 	@Override
+	public int getChannelCount() {
+		if (channelDimIndex < 0) return 1;
+		return (int) getData().getExtents().dimension(channelDimIndex);
+	}
+
+	@Override
 	public ARGBScreenImage getScreenImage() {
 		return screenImage;
 	}
@@ -106,11 +115,6 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	@Override
 	public CompositeXYProjector<? extends RealType<?>> getProjector() {
 		return projector;
-	}
-
-	@Override
-	public List<RealLUTConverter<? extends RealType<?>>> getConverters() {
-		return Collections.unmodifiableList(converters);
 	}
 
 	@Override
@@ -133,6 +137,13 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 
 		converters.get(c).setMin(min);
 		converters.get(c).setMax(max);
+	}
+
+	@Override
+	public void setChannelRanges(final double min, final double max) {
+		for (int c = 0; c < converters.size(); c++) {
+			setChannelRange(c, min, max);
+		}
 	}
 
 	@Override
@@ -183,7 +194,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 
 	@Override
 	public void resetColorTables(final boolean grayscale) {
-		final int channelCount = (int) getChannelCount();
+		final int channelCount = getChannelCount();
 		defaultLUTs.clear();
 		defaultLUTs.ensureCapacity(channelCount);
 		if (grayscale || channelCount == 1) {
@@ -225,25 +236,25 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	}
 
 	// TODO - add this kind of mapping code to the Imglib Projector classes. Here
-	// it is just a workaround to make IJ2/IJ1 color syncing happy. BDZ
+	// it is just a workaround to make modern<->legacy color syncing happy. BDZ
 
 	/**
 	 * Reason from a channel collection and internal state what the closest color
-	 * is. This is needed for color synchronization with IJ1.
+	 * is. This is needed for color synchronization with legacy ImageJ.
 	 */
 	@Override
 	public ColorRGB getColor(final ChannelCollection channels) {
 		if (!isInitialized()) return null;
 
 		final int r, g, b;
-		final long channelCount = getChannelCount();
+		final int channelCount = getChannelCount();
 		final ColorMode mode = getColorMode();
 		if (mode == ColorMode.COMPOSITE) {
 			double rSum = 0, gSum = 0, bSum = 0;
 			for (int c = 0; c < channelCount; c++) {
 				final double value = channels.getChannelValue(c);
 				final RealLUTConverter<? extends RealType<?>> converter =
-						converters.get(c);
+					converters.get(c);
 				final double min = converter.getMin();
 				final double max = converter.getMax();
 				final int grayValue = Binning.valueToBin(256, min, max, value);
@@ -260,7 +271,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			final long currChannel = getLongPosition(Axes.CHANNEL);
 			final double value = channels.getChannelValue(currChannel);
 			final RealLUTConverter<? extends RealType<?>> converter =
-					converters.get((int) currChannel);
+				converters.get((int) currChannel);
 			final double min = converter.getMin();
 			final double max = converter.getMax();
 			final int grayValue = Binning.valueToBin(256, min, max, value);
@@ -426,7 +437,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void initializeView(final boolean composite) {
 		converters.clear();
-		final long channelCount = getChannelCount();
+		final int channelCount = getChannelCount();
 		for (int c = 0; c < channelCount; c++) {
 			autoscale(c);
 			final RealLUTConverter converter =
@@ -443,11 +454,17 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	private void updateLUTs() {
 		if (!isInitialized()) return;
 
-		final long channelCount = getChannelCount();
+		final int channelCount = getChannelCount();
 		for (int c = 0; c < channelCount; c++) {
 			final ColorTable lut = getCurrentLUT(c);
 			converters.get(c).setLUT(lut);
 		}
+
+		final ImageJ context = getContext();
+		if (context == null) return;
+		final EventService evtSrv = context.getService(EventService.class);
+		if (evtSrv == null) return;
+		evtSrv.publishLater(new LutsChangedEvent(this));
 	}
 
 	private ColorTable getCurrentLUT(final int cPos) {
@@ -461,11 +478,6 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			return lut; // return dataset-specific LUT
 		}
 		return defaultLUTs.get(cPos); // return default channel LUT
-	}
-
-	private long getChannelCount() {
-		if (channelDimIndex < 0) return 1;
-		return getData().getExtents().dimension(channelDimIndex);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -488,4 +500,5 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			(RandomAccessibleInterval<RealType>) (RandomAccessibleInterval) imgPlus,
 			mn, mx);
 	}
+
 }

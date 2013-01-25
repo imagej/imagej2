@@ -43,7 +43,7 @@ import imagej.plugin.Plugin;
 
 // TODO - replace the kind of functionality that IJ1's Create Shortcut command
 // has. Since we have our own menu handling code we need this functionality in
-// a pure IJ2 form.
+// a pure modern ImageJ form.
 
 /**
  * @author Barry DeZonia

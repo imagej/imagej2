@@ -52,10 +52,8 @@ import java.awt.image.IndexColorModel;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.imglib2.display.AbstractColorTable;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
-import net.imglib2.display.RealLUTConverter;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -73,8 +71,8 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	}
 	
 	/**
-	 * Sets the ColorTables of the active view of an IJ2 ImageDisplay from the
-	 * LUTs of a given ImagePlus or CompositeImage.
+	 * Sets the ColorTables of the active view of an modern ImageJ ImageDisplay
+	 * from the LUTs of a given ImagePlus or CompositeImage.
 	 */
 	@Override
 	public void updateDisplay(final ImageDisplay disp, final ImagePlus imp) {
@@ -164,8 +162,8 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	}
 
 	/**
-	 * Sets the correct IJ1 CompositeImage display mode based upon input data
-	 * values.
+	 * Sets the correct legacy ImageJ CompositeImage display mode based upon input
+	 * data values.
 	 */
 	private void setCompositeImageMode(final CompositeImage ci,
 		final int composCount, final List<ColorTable> cTables)
@@ -221,17 +219,14 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 		final DataView dataView = disp.getActiveView();
 		if (!(dataView instanceof DatasetView)) return;
 		final DatasetView view = (DatasetView) dataView;
-		final List<RealLUTConverter<? extends RealType<?>>> converters =
-			view.getConverters();
-		final int channelCount = converters.size();
+		final int channelCount = view.getChannelCount();
 		final double[] min = new double[channelCount];
 		final double[] max = new double[channelCount];
 		double overallMin = Double.POSITIVE_INFINITY;
 		double overallMax = Double.NEGATIVE_INFINITY;
 		for (int c = 0; c < channelCount; c++) {
-			final RealLUTConverter<? extends RealType<?>> conv = converters.get(c);
-			double lo = conv.getMin();
-			double hi = conv.getMax();
+			double lo = view.getChannelMin(c);
+			double hi = view.getChannelMax(c);
 			// ShortProcessor backed data cannot handle negative display range
 			if ((imp.getBitDepth() == 16) && (imp.getCalibration().isSigned16Bit())) {
 				lo += 32768;
@@ -248,7 +243,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			final CompositeImage ci = (CompositeImage) imp;
 			if (channelCount != ci.getNChannels()) {
 				throw new IllegalArgumentException("Channel mismatch: " +
-					converters.size() + " vs. " + ci.getNChannels());
+					channelCount + " vs. " + ci.getNChannels());
 			}
 			// NB
 			//   Originally I used ci.getLUTs() and modified each LUT's min and max.
@@ -285,8 +280,8 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	}
 
 	/**
-	 * Makes a ColorTable8 from an IndexColorModel. Note that IJ1 LUT's are a kind
-	 * of IndexColorModel.
+	 * Makes a ColorTable8 from an IndexColorModel. Note that legacy ImageJ LUT's
+	 * are a kind of IndexColorModel.
 	 */
 	private ColorTable8 make8BitColorTable(final IndexColorModel icm) {
 		final byte[] reds = new byte[256];
@@ -384,9 +379,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 		final DataView dataView = disp.getActiveView();
 		if (!(dataView instanceof DatasetView)) return;
 		final DatasetView view = (DatasetView) dataView;
-		final List<RealLUTConverter<? extends RealType<?>>> converters =
-			view.getConverters();
-		final int channelCount = converters.size();
+		final int channelCount = view.getChannelCount();
 		final double[] min = new double[channelCount];
 		final double[] max = new double[channelCount];
 
@@ -395,7 +388,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			final LUT[] luts = ci.getLuts();
 			if (channelCount != luts.length) {
 				throw new IllegalArgumentException("Channel mismatch: " +
-					converters.size() + " vs. " + luts.length);
+					channelCount + " vs. " + luts.length);
 			}
 			for (int c = 0; c < channelCount; c++) {
 				min[c] = luts[c].min;
@@ -421,9 +414,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 		for (int c = 0; c < channelCount; c++) {
 			double mn = (min[c] > type.getMinValue()) ? min[c] : type.getMinValue(); 
 			double mx = (max[c] < type.getMaxValue()) ? max[c] : type.getMaxValue(); 
-			final RealLUTConverter<? extends RealType<?>> conv = converters.get(c);
-			conv.setMin(mn);
-			conv.setMax(mx);
+			view.setChannelRange(c, mn, mx);
 		}
 	}
 

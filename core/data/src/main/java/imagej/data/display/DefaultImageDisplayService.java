@@ -37,7 +37,6 @@ package imagej.data.display;
 
 import imagej.data.Data;
 import imagej.data.Dataset;
-import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.event.EventService;
 import imagej.plugin.Parameter;
@@ -104,11 +103,7 @@ public final class DefaultImageDisplayService extends AbstractService
 
 	@Override
 	public ImageDisplay getActiveImageDisplay() {
-		final Display<?> activeDisplay = displayService.getActiveDisplay();
-		if (activeDisplay == null || !(activeDisplay instanceof ImageDisplay)) {
-			return null;
-		}
-		return (ImageDisplay) activeDisplay;
+		return displayService.getActiveDisplay(ImageDisplay.class);
 	}
 
 	@Override

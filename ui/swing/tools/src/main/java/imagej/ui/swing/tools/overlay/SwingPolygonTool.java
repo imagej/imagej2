@@ -49,6 +49,7 @@ import imagej.ui.swing.overlay.SwingPolygonFigure;
 
 import java.awt.Shape;
 import java.util.Arrays;
+
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.roi.PolygonRegionOfInterest;
@@ -66,7 +67,7 @@ import org.jhotdraw.geom.BezierPath.Node;
  */
 @Plugin(type = JHotDrawAdapter.class, name = "Polygon",
 	description = "Polygon overlays", iconPath = "/icons/tools/polygon.png",
-	priority = SwingPolygonTool.PRIORITY, enabled = true)
+	priority = SwingPolygonTool.PRIORITY)
 public class SwingPolygonTool extends AbstractJHotDrawAdapter<PolygonOverlay, BezierFigure> {
 
 	public static final double PRIORITY = SwingEllipseTool.PRIORITY - 1;
@@ -80,8 +81,8 @@ public class SwingPolygonTool extends AbstractJHotDrawAdapter<PolygonOverlay, Be
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
-		if (figure != null && !(figure instanceof BezierFigure)) return false;
-		return overlay instanceof PolygonOverlay;
+		if (!(overlay instanceof PolygonOverlay)) return false;
+		return figure == null || figure instanceof BezierFigure;
 	}
 
 	@Override

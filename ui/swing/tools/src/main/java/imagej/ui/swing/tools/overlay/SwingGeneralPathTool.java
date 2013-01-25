@@ -47,6 +47,7 @@ import imagej.ui.swing.overlay.SwingGeneralPathFigure;
 import imagej.ui.swing.overlay.SwingPolygonFigure;
 
 import java.awt.Shape;
+
 import net.imglib2.roi.GeneralPathRegionOfInterest;
 
 import org.jhotdraw.draw.AttributeKeys;
@@ -59,7 +60,7 @@ import org.jhotdraw.draw.Figure;
  */
 @Plugin(type = JHotDrawAdapter.class, name = "GeneralPath",
 	description = "General path overlays", iconPath = "/icons/tools/polygon.png",
-	priority = SwingGeneralPathTool.PRIORITY, enabled = false)
+	priority = SwingGeneralPathTool.PRIORITY, visible = false)
 public class SwingGeneralPathTool extends AbstractJHotDrawAdapter<GeneralPathOverlay, SwingGeneralPathFigure> {
 
 	public static final double PRIORITY = SwingPolygonTool.PRIORITY + 0.5;
@@ -73,8 +74,8 @@ public class SwingGeneralPathTool extends AbstractJHotDrawAdapter<GeneralPathOve
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
-		if (figure != null && !(figure instanceof SwingGeneralPathFigure)) return false;
-		return overlay instanceof GeneralPathOverlay;
+		if (!(overlay instanceof GeneralPathOverlay)) return false;
+		return figure == null || figure instanceof SwingGeneralPathFigure;
 	}
 
 	@Override

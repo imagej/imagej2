@@ -138,8 +138,8 @@ public class FindEdges extends ContextCommand {
 		}
 
 		/**
-		 * Calculates the value of a pixel from the input neighborhood. algorithm
-		 * taken from IJ1.
+		 * Calculates the value of a pixel from the input neighborhood. Algorithm
+		 * taken from legacy ImageJ.
 		 */
 		@Override
 		public double calcOutputValue() {

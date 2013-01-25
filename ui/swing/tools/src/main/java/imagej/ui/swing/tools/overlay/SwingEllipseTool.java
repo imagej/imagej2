@@ -62,7 +62,7 @@ import org.jhotdraw.draw.Figure;
  */
 @Plugin(type = JHotDrawAdapter.class, name = "Oval",
 	description = "Oval selections", iconPath = "/icons/tools/oval.png",
-	priority = SwingEllipseTool.PRIORITY, enabled = true)
+	priority = SwingEllipseTool.PRIORITY)
 public class SwingEllipseTool extends AbstractJHotDrawAdapter<EllipseOverlay, EllipseFigure> {
 
 	public static final double PRIORITY = SwingRectangleTool.PRIORITY - 1;
@@ -81,8 +81,8 @@ public class SwingEllipseTool extends AbstractJHotDrawAdapter<EllipseOverlay, El
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
-		if (figure != null && !(figure instanceof EllipseFigure)) return false;
-		return overlay instanceof EllipseOverlay;
+		if (!(overlay instanceof EllipseOverlay)) return false;
+		return figure == null || figure instanceof EllipseFigure;
 	}
 
 	@Override
@@ -129,7 +129,7 @@ public class SwingEllipseTool extends AbstractJHotDrawAdapter<EllipseOverlay, El
 
 	@Override
 	public JHotDrawTool getCreationTool(final ImageDisplay display) {
-		return new IJCreationTool(display, this);
+		return new IJCreationTool<EllipseFigure>(display, this);
 	}
 
 	@Override

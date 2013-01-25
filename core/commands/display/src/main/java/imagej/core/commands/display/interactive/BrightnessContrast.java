@@ -46,11 +46,7 @@ import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.widget.NumberWidget;
-
-import java.util.List;
-
 import net.imglib2.algorithm.stats.ComputeMinMax;
-import net.imglib2.display.RealLUTConverter;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
 
@@ -208,13 +204,9 @@ public class BrightnessContrast extends ContextCommand implements Previewable {
 	}
 
 	private void computeInitialMinMax() {
-		final List<RealLUTConverter<? extends RealType<?>>> converters =
-			view.getConverters();
-		for (final RealLUTConverter<? extends RealType<?>> conv : converters) {
-			initialMin = conv.getMin();
-			initialMax = conv.getMax();
-			break; // use only first channel, for now
-		}
+		// use only first channel, for now
+		initialMin = view.getChannelMin(0);
+		initialMax = view.getChannelMax(0);
 		log.debug("computeInitialMinMax: initialMin=" + initialMin +
 			", initialMax=" + initialMax);
 	}
@@ -280,12 +272,7 @@ public class BrightnessContrast extends ContextCommand implements Previewable {
 
 	/** Updates the displayed min/max range to match min and max values. */
 	private void updateDisplay() {
-		final List<RealLUTConverter<? extends RealType<?>>> converters =
-			view.getConverters();
-		for (final RealLUTConverter<? extends RealType<?>> conv : converters) {
-			conv.setMin(min);
-			conv.setMax(max);
-		}
+		view.setChannelRanges(min, max);
 		view.getProjector().map();
 		view.update();
 	}

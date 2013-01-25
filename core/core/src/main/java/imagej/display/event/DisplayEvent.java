@@ -39,7 +39,7 @@ import imagej.display.Display;
 import imagej.event.ImageJEvent;
 
 /**
- * An event indicating something has happened to a display.
+ * An event indicating something has happened to a {@link Display}.
  * 
  * @author Curtis Rueden
  */
@@ -50,6 +50,8 @@ public abstract class DisplayEvent extends ImageJEvent {
 	public DisplayEvent(final Display<?> display) {
 		this.display = display;
 	}
+
+	// -- DisplayEvent methods --
 
 	public Display<?> getDisplay() {
 		return display;

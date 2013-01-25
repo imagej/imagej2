@@ -51,13 +51,16 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
- * TODO
+ * This class represents a file handled by the updater.
  * 
+ * The ImageJ updater knows about certain files (see {@link Checksummer#directories} for details).
+ * These files can be local-only, up-to-date, updateable, etc.
+ *  
  * @author Johannes Schindelin
  */
+@SuppressWarnings("hiding")
 public class FileObject {
 
 	public static class Version implements Comparable<Version> {
@@ -352,8 +355,8 @@ public class FileObject {
 	}
 
 	public void addPlatform(String platform) {
-		if (platform.equals("linux")) platform = "linux32";
-		if (platform != null && !platform.trim().equals("")) platforms.add(platform
+		if ("linux".equals(platform)) platforms.add("linux32");
+		else if (platform != null && !platform.trim().equals("")) platforms.add(platform
 			.trim());
 	}
 
@@ -394,6 +397,7 @@ public class FileObject {
 			tag.equals("Link") ? links : tag.equals("Author") ? authors : tag
 				.equals("Platform") ? platforms : tag.equals("Category") ? categories
 				: null;
+		if (map == null) return;
 		map.clear();
 		for (final String string : list)
 			map.add(string.trim());
@@ -476,16 +480,14 @@ public class FileObject {
 		return filename + " (local: " + localFilename + ")";
 	}
 
-	public String getFilename() {
-		return getFilename(false);
+	private static Matcher matchVersion(final String filename) {
+		if (!filename.endsWith(".jar")) return null;
+		final Matcher matcher = FileUtils.matchVersionedFilename(filename);
+		return matcher.matches() ? matcher : null;
 	}
 
-	private final static Pattern versionPattern = Pattern.compile("(.+?)(-\\d+(\\.\\d+|\\d{7})+[a-z]?\\d?(-[A-Za-z0-9.]+|\\.GA)*)(\\.jar)");
-
-	protected static Matcher matchVersion(String filename) {
-		if (!filename.endsWith(".jar")) return null;
-		final Matcher matcher = versionPattern.matcher(filename);
-		return matcher.matches() ? matcher : null;
+	public String getFilename() {
+		return getFilename(false);
 	}
 
 	public String getFilename(boolean stripVersion) {
@@ -580,6 +582,7 @@ public class FileObject {
 		switch (status) {
 			case INSTALLED:
 				return false;
+			default:
 		}
 		if (updateSite == null) return files.hasUploadableSites();
 		final FilesCollection.UpdateSite updateSite =
@@ -613,8 +616,9 @@ public class FileObject {
 			case OBSOLETE_MODIFIED:
 			case OBSOLETE_UNINSTALLED:
 				return true;
+			default:
+				return false;
 		}
-		return false;
 	}
 
 	public boolean isForPlatform(final String platform) {

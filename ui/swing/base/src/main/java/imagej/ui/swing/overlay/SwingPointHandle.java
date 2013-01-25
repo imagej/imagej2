@@ -35,11 +35,15 @@
 
 package imagej.ui.swing.overlay;
 
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 
 import org.jhotdraw.draw.handle.AbstractHandle;
+
+// FIXME : I think this class is no longer necessary. Currently it is avoided
+// in SwingPointFigure by using a DragHandle instead. BDZ 12-18-12
 
 /**
  * TODO
@@ -59,11 +63,9 @@ public class SwingPointHandle extends AbstractHandle {
 	public void trackEnd(final Point anchor, final Point lead,
 		final int modifiers)
 	{
-		final double currX = figure.getX();
-		final double currY = figure.getY();
 		final double dx = lead.x - anchor.x;
 		final double dy = lead.y - anchor.y;
-		figure.setPoint(currX + dx, currY + dy);
+		figure.move(dx, dy);
 	}
 
 	@Override
@@ -87,5 +89,10 @@ public class SwingPointHandle extends AbstractHandle {
 		rect.width = (int) bounds.width;
 		rect.height = (int) bounds.height;
 		return rect;
+	}
+
+	@Override
+	public void draw(Graphics2D g) {
+		// do nothing
 	}
 }

@@ -127,8 +127,15 @@ public interface PluginService extends Service {
 	 * Most classes will have only a single match, but some special classes (such
 	 * as {@code imagej.legacy.LegacyCommand}) may match many entries.
 	 * </p>
+	 * <p>
+	 * Note that this method will result in {@link PluginInfo}s with matching
+	 * class <em>names</em> to load their plugin {@link Class}es so that they can
+	 * be compared with the given one.
+	 * </p>
 	 * 
 	 * @param <P> The <em>class</em> of plugins to look up.
+	 * @param pluginClass The class for which to obtain the list of matching
+	 *          plugins.
 	 */
 	<P extends ImageJPlugin> List<PluginInfo<ImageJPlugin>>
 		getPluginsOfClass(Class<P> pluginClass);
@@ -139,10 +146,19 @@ public interface PluginService extends Service {
 	 * Most classes will have only a single match, but some special classes (such
 	 * as {@code imagej.legacy.LegacyCommand}) may match many entries.
 	 * </p>
+	 * <p>
+	 * Note that this method will result in {@link PluginInfo}s with matching
+	 * class <em>names</em> and types to load their plugin {@link Class}es so that
+	 * they can be compared with the given one.
+	 * </p>
 	 * 
 	 * @param <PT> The <em>type</em> of plugins to look up. See
 	 *          {@link ImageJPlugin} for a list of common plugin types.
 	 * @param <P> The <em>class</em> of plugins to look up.
+	 * @param pluginClass The class for which to obtain the list of matching
+	 *          plugins.
+	 * @param type The <em>type</em> of plugins to which the search should be
+	 *          limited.
 	 */
 	<PT extends ImageJPlugin, P extends PT> List<PluginInfo<PT>>
 		getPluginsOfClass(Class<P> pluginClass, Class<PT> type);
@@ -153,8 +169,28 @@ public interface PluginService extends Service {
 	 * Most classes will have only a single match, but some special classes (such
 	 * as {@code imagej.legacy.LegacyCommand}) may match many entries.
 	 * </p>
+	 * 
+	 * @param className The class name for which to obtain the list of matching
+	 *          plugins.
 	 */
 	List<PluginInfo<ImageJPlugin>> getPluginsOfClass(String className);
+
+	/**
+	 * Gets the list of plugins with the given class name.
+	 * <p>
+	 * Most classes will have only a single match, but some special classes (such
+	 * as {@code imagej.legacy.LegacyCommand}) may match many entries.
+	 * </p>
+	 * 
+	 * @param <PT> The <em>type</em> of plugins to look up. See
+	 *          {@link ImageJPlugin} for a list of common plugin types.
+	 * @param className The class name for which to obtain the list of matching
+	 *          plugins.
+	 * @param type The <em>type</em> of plugins to which the search should be
+	 *          limited.
+	 */
+	<PT extends ImageJPlugin> List<PluginInfo<ImageJPlugin>>
+		getPluginsOfClass(final String className, final Class<PT> type);
 
 	/**
 	 * Creates one instance each of the available plugins of the given type.

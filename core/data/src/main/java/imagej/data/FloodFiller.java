@@ -47,10 +47,11 @@ import net.imglib2.type.numeric.RealType;
 
 /**
  * This class, which does flood filling, is used by the FloodFillTool. It was
- * adapted from IJ1's FloodFiller class. That class implements the flood filling
- * code used by IJ1's macro language and IJ1's particle analyzer. The Wikipedia
- * article at "http://en.wikipedia.org/wiki/Flood_fill" has a good description
- * of the algorithm used here as well as examples in C and Java.
+ * adapted from legacy ImageJ's FloodFiller class. That class implements the
+ * flood filling code used by legacy ImageJ's macro language and legacy ImageJ's
+ * particle analyzer. The Wikipedia article at
+ * "http://en.wikipedia.org/wiki/Flood_fill" has a good description of the
+ * algorithm used here as well as examples in C and Java.
  * 
  * @author Wayne Rasband
  * @author Barry DeZonia

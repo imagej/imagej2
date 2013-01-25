@@ -99,7 +99,7 @@ public class SSHFileUploader extends AbstractUploader {
 		final List<String> locks) throws IOException
 	{
 
-		setCommand("date --utc +%Y%m%d%H%M%S");
+		setCommand("date -u +%Y%m%d%H%M%S");
 		timestamp = readNumber(in);
 		setTitle("Uploading");
 

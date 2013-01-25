@@ -89,7 +89,7 @@ public class Harmonizer {
 		colorTableHarmonizer = new ColorTableHarmonizer(context);
 		metadataHarmonizer = new MetadataHarmonizer();
 		compositeHarmonizer = new CompositeHarmonizer();
-		planeHarmonizer = new PlaneHarmonizer();
+		planeHarmonizer = new PlaneHarmonizer(context);
 		overlayHarmonizer = new OverlayHarmonizer(context);
 		positionHarmonizer = new PositionHarmonizer();
 		nameHarmonizer = new NameHarmonizer();
@@ -99,8 +99,8 @@ public class Harmonizer {
 
 	/**
 	 * Changes the data within an {@link ImagePlus} to match data in a
-	 * {@link ImageDisplay}. Assumes Dataset has planar primitive access in an IJ1
-	 * compatible format.
+	 * {@link ImageDisplay}. Assumes Dataset has planar primitive access in a
+	 * legacy ImageJ compatible format.
 	 */
 	public void
 		updateLegacyImage(final ImageDisplay display, final ImagePlus imp)
@@ -212,6 +212,7 @@ public class Harmonizer {
 	 * a call to a plugin to see if the ImagePlus underwent a type change.
 	 */
 	public void registerType(final ImagePlus imp) {
+		if (imp == null) return;
 		bitDepthMap.put(imp, imp.getBitDepth());
 	}
 
@@ -227,8 +228,8 @@ public class Harmonizer {
 
 	/**
 	 * Returns true if an {@link ImagePlus}' type is the best fit for a given
-	 * {@link Dataset}. Best fit means the IJ1 type that is the best at preserving
-	 * data.
+	 * {@link Dataset}. Best fit means the legacy ImageJ type that is the best at
+	 * preserving data.
 	 */
 	private boolean
 		imagePlusIsNearestType(final Dataset ds, final ImagePlus imp)

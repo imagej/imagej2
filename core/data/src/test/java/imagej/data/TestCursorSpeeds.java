@@ -60,7 +60,7 @@ public class TestCursorSpeeds {
 
 	@Test
 	public void testCursorSpeeds() {
-		final ImageJ context = ImageJ.createContext(DatasetService.class);
+		final ImageJ context = new ImageJ(DatasetService.class);
 		final DatasetService datasetService =
 			context.getService(DatasetService.class);
 

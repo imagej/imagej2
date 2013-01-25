@@ -56,7 +56,7 @@ public final class Main {
 	 * @return The context of the newly launched ImageJ instance.
 	 */
 	public static ImageJ launch(final String... args) {
-		final ImageJ context = ImageJ.createContext();
+		final ImageJ context = new ImageJ();
 
 		// parse command line arguments
 		final ConsoleService consoleService =
@@ -65,7 +65,7 @@ public final class Main {
 
 		// display the user interface
 		final UIService uiService = context.getService(UIService.class);
-		if (uiService != null) uiService.createUI();
+		if (uiService != null) uiService.showUI();
 
 		return context;
 	}

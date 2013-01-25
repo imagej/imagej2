@@ -78,7 +78,7 @@ public class FilesUploader {
 	private boolean loggedIn;
 
 	private static UploaderService createUploaderService() {
-		final ImageJ context = ImageJ.createContext(UploaderService.class);
+		final ImageJ context = new ImageJ(UploaderService.class);
 		return context.getService(UploaderService.class);
 	}
 

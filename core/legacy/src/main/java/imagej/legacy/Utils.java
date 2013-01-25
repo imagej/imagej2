@@ -33,35 +33,38 @@
  * #L%
  */
 
-package imagej.ui.swing.commands.debug;
+package imagej.legacy;
 
-import imagej.command.Command;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.ui.DialogPrompt;
-import imagej.ui.UIService;
+import imagej.legacy.plugin.LegacyThreadGroup;
 
 /**
- * TODO
+ * Static utility methods used in the imagej.legacy package
  * 
- * @author Grant Harris
+ * @author Barry DeZonia
  */
-@Plugin(menuPath = "Plugins>Sandbox>TestDialogPrompt")
-public class TestDialogPrompt implements Command {
+public class Utils {
 
-	@Parameter
-	private UIService uiService;
+	/**
+	 * Returns true if the given thread is in any way a child of a
+	 * {@link LegacyThreadGroup}. Returns false otherwise.
+	 */
+	public static boolean isLegacyThread(Thread t) {
+		return findLegacyThreadGroup(t) != null;
+	}
 
-	@Override
-	public void run() {
-		final DialogPrompt.Result result =
-			uiService.showDialog("This is the Question", "Question Dialog",
-				DialogPrompt.MessageType.QUESTION_MESSAGE,
-				DialogPrompt.OptionType.YES_NO_OPTION);
-		if (result == DialogPrompt.Result.YES_OPTION) {
-			System.out.println("That's a YES");
-			uiService.createOutputWindow("Output Window");
+	/**
+	 * If the given thread is not derived from a LegacyCommand returns null. Else
+	 * it returns the ThreadGroup at the base of the LegacyCommand.
+	 */
+	public static LegacyThreadGroup findLegacyThreadGroup(Thread t) {
+		for (ThreadGroup group = t.getThreadGroup(); group != null; group = group.getParent()) {
+			if (group instanceof LegacyThreadGroup) return (LegacyThreadGroup)group;
 		}
+		return null;
+	}
+
+	public static boolean isLegacyMode(final LegacyService legacyService) {
+		return legacyService == null || legacyService.isLegacyMode();
 	}
 
 }

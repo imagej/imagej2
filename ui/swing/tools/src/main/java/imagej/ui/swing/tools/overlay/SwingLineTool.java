@@ -61,7 +61,7 @@ import org.jhotdraw.geom.BezierPath.Node;
  */
 @Plugin(type = JHotDrawAdapter.class, name = "Line",
 	description = "Straight line overlays", iconPath = "/icons/tools/line.png",
-	priority = SwingLineTool.PRIORITY, enabled = true)
+	priority = SwingLineTool.PRIORITY)
 public class SwingLineTool extends AbstractJHotDrawAdapter<LineOverlay, LineFigure> {
 
 	public static final double PRIORITY = SwingPolygonTool.PRIORITY - 1;
@@ -126,7 +126,7 @@ public class SwingLineTool extends AbstractJHotDrawAdapter<LineOverlay, LineFigu
 
 	@Override
 	public JHotDrawTool getCreationTool(final ImageDisplay display) {
-		return new IJCreationTool(display, this);
+		return new IJCreationTool<LineFigure>(display, this);
 	}
 
 	@Override

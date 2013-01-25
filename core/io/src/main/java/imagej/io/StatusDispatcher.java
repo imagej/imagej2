@@ -36,10 +36,11 @@
 package imagej.io;
 
 import imagej.event.StatusService;
-import loci.common.StatusListener;
+import ome.scifio.common.StatusEvent;
+import ome.scifio.common.StatusListener;
 
 /**
- * Rebroadcasts {@link loci.common.StatusEvent}s as ImageJ status notifications.
+ * Rebroadcasts {@link StatusEvent}s as ImageJ status notifications.
  * 
  * @author Curtis Rueden
  */
@@ -56,7 +57,7 @@ public class StatusDispatcher implements StatusListener {
 	// -- StatusListener methods --
 
 	@Override
-	public void statusUpdated(final loci.common.StatusEvent e) {
+	public void statusUpdated(final StatusEvent e) {
 		final long time = System.currentTimeMillis();
 		final int progress = e.getProgressValue();
 		final int maximum = e.getProgressMaximum();

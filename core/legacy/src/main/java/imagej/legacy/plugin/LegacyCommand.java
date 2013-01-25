@@ -51,6 +51,7 @@ import imagej.legacy.translate.DefaultImageTranslator;
 import imagej.legacy.translate.Harmonizer;
 import imagej.legacy.translate.ImageTranslator;
 import imagej.legacy.translate.LegacyUtils;
+import imagej.legacy.translate.ResultsTableHarmonizer;
 import imagej.log.LogService;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
@@ -61,7 +62,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Executes an ImageJ v1.x command.
@@ -70,6 +70,8 @@ import java.util.Set;
  * @author Barry DeZonia
  */
 public class LegacyCommand implements Command {
+
+	private static final String THREAD_NAME = "IJ1 legacy thread";
 
 	@Parameter
 	private String className;
@@ -151,6 +153,7 @@ public class LegacyCommand implements Command {
 		final private ThreadGroup group;
 		final private LegacyImageMap map;
 		final private Harmonizer harmonizer;
+		
 
 		// NB - BDZ
 		// In order to keep threads from waiting on each other unnecessarily when
@@ -159,7 +162,7 @@ public class LegacyCommand implements Command {
 		// threads in its group.
 
 		public LegacyCommandThread() {
-			super(new ThreadGroup("plugin thread group"), "plugin thread");
+			super(new LegacyThreadGroup(legacyService), THREAD_NAME);
 			this.group = getThreadGroup();
 			this.map = legacyService.getImageMap();
 			final ImageTranslator imageTranslator =
@@ -169,8 +172,10 @@ public class LegacyCommand implements Command {
 
 		@Override
 		public void run() {
-			final Set<ImagePlus> outputSet = LegacyOutputTracker.getOutputImps();
-			final Set<ImagePlus> closedSet = LegacyOutputTracker.getClosedImps();
+			
+			ResultsTableHarmonizer rtHarmonizer = new ResultsTableHarmonizer(context);
+
+			rtHarmonizer.setLegacyImageJResultsTable();
 
 			harmonizer.resetTypeTracking();
 
@@ -179,8 +184,8 @@ public class LegacyCommand implements Command {
 			//reportStackIssues("Before IJ1 plugin run");
 			
 			// must happen after updateImagePlusesFromDisplays()
-			outputSet.clear();
-			closedSet.clear();
+			LegacyOutputTracker.clearOutputs();
+			LegacyOutputTracker.clearClosed();
 
 			// set ImageJ1's active image
 			legacyService.syncActiveImage();
@@ -206,7 +211,7 @@ public class LegacyCommand implements Command {
 				outputs = updateDisplaysFromImagePluses();
 
 				// close any displays that IJ1 wants closed
-				for (final ImagePlus imp : closedSet) {
+				for (final ImagePlus imp : LegacyOutputTracker.getClosed()) {
 					final ImageDisplay disp = map.lookupDisplay(imp);
 					if (disp != null) {
 						// only close displays that have not been changed
@@ -214,8 +219,8 @@ public class LegacyCommand implements Command {
 					}
 				}
 
-				// reflect any changes to globals in IJ2 options/prefs
-				legacyService.updateIJ2Settings();
+				// reflect any changes to globals in modern ImageJ options/prefs
+				legacyService.updateModernImageJSettings();
 
 				//reportStackIssues("After IJ1 plugin run");
 			}
@@ -231,9 +236,11 @@ public class LegacyCommand implements Command {
 			finally {
 				// clean up - basically avoid dangling refs to large objects
 				harmonizer.resetTypeTracking();
-				outputSet.clear();
-				closedSet.clear();
+				LegacyOutputTracker.clearOutputs();
+				LegacyOutputTracker.clearClosed();
 			}
+			
+			rtHarmonizer.setModernImageJResultsTable();
 		}
 
 		private void waitForPluginThreads() {
@@ -278,7 +285,8 @@ public class LegacyCommand implements Command {
 		}
 
 		/**
-		 * Identifies threads that IJ1 hatches that don't terminate in a timely way.
+		 * Identifies threads that legacy ImageJ hatches that don't terminate in a
+		 * timely way.
 		 */
 		private boolean whitelisted(final Thread thread) {
 
@@ -317,10 +325,10 @@ public class LegacyCommand implements Command {
 			return false;
 		}
 
-		// TODO - IJ2 could modify an image to go outside IJ1's legal bounds. If it
-		// has a existing ImagePlus mapping then we are likely assuming its legal
-		// when its not. Put in tests to address this situation rather than having
-		// harmonization or something else fail.
+		// TODO - modern ImageJ could modify an image to go outside legacy ImageJ's
+		// legal bounds. If it has a existing ImagePlus mapping then we are likely
+		// assuming its legal when its not. Put in tests to address this situation
+		// rather than having harmonization or something else fail.
 
 		private void updateImagePlusesFromDisplays() {
 			// TODO - track events and keep a dirty bit, then only harmonize those
@@ -339,8 +347,8 @@ public class LegacyCommand implements Command {
 					// NB - it is possible a runtime exception in an IJ1 plugin left the
 					// ImagePlus in a locked state. Make sure its unlocked going forward.
 					imp.unlock();
+					harmonizer.updateLegacyImage(display, imp);
 				}
-				harmonizer.updateLegacyImage(display, imp);
 				harmonizer.registerType(imp);
 			}
 		}
@@ -351,7 +359,7 @@ public class LegacyCommand implements Command {
 			// flag does not track everything (such as metadata changes?) and thus
 			// we might still have to do some minor harmonization. Investigate.
 
-			final Set<ImagePlus> imps = LegacyOutputTracker.getOutputImps();
+			final ImagePlus[] imps = LegacyOutputTracker.getOutputs();
 			final ImagePlus currImp = WindowManager.getCurrentImage();
 
 			// see method below
@@ -423,13 +431,13 @@ public class LegacyCommand implements Command {
 		*/
 
 		// Finishes any in progress paste() operations. Done before harmonization.
-		// In IJ1 the paste operations are usually handled by ImageCanvas::paint().
-		// In IJ2 that method is never called. It would be nice to hook something
-		// that calls paint() via the legacy injector but that may raise additional
-		// problems. This is a simple fix.
+		// In legacy ImageJ the paste operations are usually handled by
+		// ImageCanvas::paint(). In modern ImageJ that method is never called. It
+		// would be nice to hook something that calls paint() via the legacy
+		// injector but that may raise additional problems. This is a simple fix.
 
 		private void finishInProgressPastes(final ImagePlus currImp,
-			final Set<ImagePlus> outputList)
+			final ImagePlus[] outputList)
 		{
 			endPaste(currImp);
 			for (final ImagePlus imp : outputList) { // potentially empty list

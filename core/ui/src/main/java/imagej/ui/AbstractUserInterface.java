@@ -35,12 +35,20 @@
 
 package imagej.ui;
 
+import imagej.InstantiableException;
+import imagej.display.Display;
 import imagej.event.EventService;
 import imagej.event.StatusService;
+import imagej.log.LogService;
+import imagej.plugin.PluginInfo;
 import imagej.plugin.SortablePlugin;
+import imagej.ui.viewer.DisplayViewer;
+import imagej.ui.viewer.DisplayWindow;
 import imagej.updater.core.UpToDate;
 import imagej.updater.ui.UpdatesAvailable;
 import imagej.util.Prefs;
+
+import java.util.List;
 
 /**
  * Abstract superclass for {@link UserInterface} implementations.
@@ -75,6 +83,68 @@ public abstract class AbstractUserInterface extends SortablePlugin
 	@Override
 	public boolean isVisible() {
 		return visible;
+	}
+
+	@Override
+	public void show(final Object o) {
+		show(null, o);
+	}
+
+	@Override
+	public void show(final String name, final Object o) {
+		final Display<?> display;
+		if (o instanceof Display) {
+			display = (Display<?>) o;
+		}
+		else {
+			display = getUIService().getDisplayService().createDisplay(name, o);
+		}
+		if (!isVisible()) {
+			// NB: If this UI is invisible, the display will not be automatically
+			// shown. So in that case, we show it explicitly here.
+			show(display);
+		}
+	}
+
+	@Override
+	public void show(final Display<?> display) {
+		final List<PluginInfo<DisplayViewer<?>>> viewers =
+			getUIService().getViewerPlugins();
+		final LogService log = getUIService().getLog();
+
+		DisplayViewer<?> displayViewer = null;
+		for (final PluginInfo<DisplayViewer<?>> info : viewers) {
+			// check that viewer can actually handle the given display
+			try {
+				final DisplayViewer<?> viewer = info.createInstance();
+				viewer.setContext(getContext());
+				viewer.setPriority(info.getPriority());
+				if (!viewer.canView(display)) continue;
+				if (!viewer.isCompatible(this)) continue;
+				displayViewer = viewer;
+				break; // found a suitable viewer; we are done
+			}
+			catch (final InstantiableException exc) {
+				log.warn("Failed to create instance of " + info, exc);
+			}
+		}
+		if (displayViewer == null) {
+			log.warn("For UI '" + getClass().getName() +
+				"': no suitable viewer for display: " + display);
+			return;
+		}
+
+		final DisplayViewer<?> finalViewer = displayViewer;
+		getUIService().getThreadService().queue(new Runnable() {
+			@Override
+			public void run() {
+				final DisplayWindow displayWindow = createDisplayWindow(display);
+				finalViewer.view(displayWindow, display);
+				displayWindow.setTitle(display.getName());
+				getUIService().addDisplayViewer(finalViewer);
+				displayWindow.showDisplay(true);
+			}
+		});
 	}
 
 	@Override

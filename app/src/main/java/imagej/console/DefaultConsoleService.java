@@ -123,7 +123,7 @@ public class DefaultConsoleService extends AbstractService implements
 		}
 		if (info == null) return false;
 		// TODO: parse the optionString a la ImageJ1
-		return commandService.run(info.getClassName()) != null;
+		return commandService.run(info) != null;
 	}
 
 }

@@ -70,7 +70,7 @@ import net.imglib2.meta.AxisType;
 // Displays ColorTable16 LUTs as only 256 colors.
 
 /**
- * This class adapted from IJ1's LutViewer class.
+ * This class adapted from legacy ImageJ's LutViewer class.
  * 
  * @author Barry DeZonia
  * @author Wayne Rasband

@@ -53,6 +53,8 @@
 		</plugins>
 	</build>
 
+	<!-- NB: Enable dependency on tools.jar. See:
+	     http://maven.apache.org/general.html#tools-jar-dependency -->
 	<profiles>
 		<profile>
 			<id>tools-jar</id> <!-- required for MiniMaven -->

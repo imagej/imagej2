@@ -38,9 +38,9 @@ package imagej.legacy;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
+import ij.gui.ImageWindow;
 import imagej.command.CommandService;
 import imagej.core.options.OptionsMisc;
-import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -63,8 +63,13 @@ import imagej.plugin.PluginInfo;
 import imagej.plugin.PluginService;
 import imagej.service.AbstractService;
 import imagej.service.Service;
+import imagej.ui.ApplicationFrame;
+import imagej.ui.UIService;
+import imagej.ui.viewer.DisplayWindow;
+import imagej.ui.viewer.image.ImageDisplayViewer;
 import imagej.util.ColorRGB;
 
+import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -72,16 +77,17 @@ import java.util.Map;
 /**
  * Default service for working with legacy ImageJ 1.x.
  * <p>
- * The legacy service overrides the behavior of various IJ1 methods, inserting
- * seams so that (e.g.) the modern UI is aware of IJ1 events as they occur.
+ * The legacy service overrides the behavior of various legacy ImageJ methods,
+ * inserting seams so that (e.g.) the modern UI is aware of legacy ImageJ events
+ * as they occur.
  * </p>
  * <p>
- * It also maintains an image map between IJ1 {@link ImagePlus} objects and IJ2
- * {@link Dataset}s.
+ * It also maintains an image map between legacy ImageJ {@link ImagePlus}
+ * objects and modern ImageJ {@link ImageDisplay}s.
  * </p>
  * <p>
- * In this fashion, when a legacy command is executed on a {@link Dataset}, the
- * service transparently translates it into an {@link ImagePlus}, and vice
+ * In this fashion, when a legacy command is executed on a {@link ImageDisplay},
+ * the service transparently translates it into an {@link ImagePlus}, and vice
  * versa, enabling backward compatibility with legacy commands.
  * </p>
  * 
@@ -94,7 +100,9 @@ public final class DefaultLegacyService extends AbstractService implements
 {
 
 	static {
-		new LegacyInjector().injectHooks();
+		final ClassLoader contextClassLoader =
+			Thread.currentThread().getContextClassLoader();
+		new LegacyInjector().injectHooks(contextClassLoader);
 	}
 
 	@Parameter
@@ -119,13 +127,23 @@ public final class DefaultLegacyService extends AbstractService implements
 	private MenuService menuService;
 
 	private boolean lastDebugMode;
-	private boolean initialized;
+	private static DefaultLegacyService instance;
 
 	/** Mapping between modern and legacy image data structures. */
 	private LegacyImageMap imageMap;
 
-	/** Method of synchronizing IJ2 & IJ1 options. */
+	/** Method of synchronizing modern & legacy options. */
 	private OptionsSynchronizer optionsSynchronizer;
+
+	public DefaultLegacyService() {
+		if (GraphicsEnvironment.isHeadless()) {
+			throw new IllegalStateException(
+				"Legacy support not available in headless mode.");
+		}
+	}
+
+	/** Legacy ImageJ 1.x mode: stop synchronizing */
+	private boolean legacyIJ1Mode;
 
 	// -- LegacyService methods --
 
@@ -150,12 +168,18 @@ public final class DefaultLegacyService extends AbstractService implements
 	}
 
 	@Override
+	public LogService getLogService() {
+		return log;
+	}
+
+	@Override
 	public LegacyImageMap getImageMap() {
 		return imageMap;
 	}
 
 	@Override
-	public void runLegacyCommand(final String ij1ClassName, final String argument)
+	public void
+		runLegacyCommand(final String ij1ClassName, final String argument)
 	{
 		final String arg = argument == null ? "" : argument;
 		final Map<String, Object> inputMap = new HashMap<String, Object>();
@@ -175,7 +199,7 @@ public final class DefaultLegacyService extends AbstractService implements
 		imageMap.registerLegacyImage(imp);
 
 		// record resultant ImagePlus as a legacy command output
-		LegacyOutputTracker.getOutputImps().add(imp);
+		LegacyOutputTracker.addOutput(imp);
 	}
 
 	@Override
@@ -184,49 +208,114 @@ public final class DefaultLegacyService extends AbstractService implements
 			imageDisplayService.getActiveImageDisplay();
 		final ImagePlus activeImagePlus = imageMap.lookupImagePlus(activeDisplay);
 		// NB - old way - caused probs with 3d Project
-		//WindowManager.setTempCurrentImage(activeImagePlus);
+		// WindowManager.setTempCurrentImage(activeImagePlus);
 		// NB - new way - test thoroughly
-		if (activeImagePlus == null)
-			WindowManager.setCurrentWindow(null);
-		else
-			WindowManager.setCurrentWindow(activeImagePlus.getWindow());
+		if (activeImagePlus == null) WindowManager.setCurrentWindow(null);
+		else WindowManager.setCurrentWindow(activeImagePlus.getWindow());
 	}
 
 	@Override
 	public boolean isInitialized() {
-		return initialized;
+		return instance != null;
 	}
 
 	// TODO - make private only???
 
 	@Override
-	public void updateIJ1Settings() {
-		optionsSynchronizer.updateIJ1SettingsFromIJ2();
+	public void updateLegacyImageJSettings() {
+		optionsSynchronizer.updateLegacyImageJSettingsFromModernImageJ();
 	}
 
 	// TODO - make private only???
 
 	@Override
-	public void updateIJ2Settings() {
-		optionsSynchronizer.updateIJ2SettingsFromIJ1();
+	public void updateModernImageJSettings() {
+		optionsSynchronizer.updateModernImageJSettingsFromLegacyImageJ();
 	}
 
 	@Override
 	public void syncColors() {
-		DatasetView view = imageDisplayService.getActiveDatasetView();
+		final DatasetView view = imageDisplayService.getActiveDatasetView();
 		if (view == null) return;
-		OptionsChannels channels = getChannels();
-		ColorRGB fgColor = view.getColor(channels.getFgValues());
-		ColorRGB bgColor = view.getColor(channels.getBgValues());
+		final OptionsChannels channels = getChannels();
+		final ColorRGB fgColor = view.getColor(channels.getFgValues());
+		final ColorRGB bgColor = view.getColor(channels.getBgValues());
 		optionsSynchronizer.colorOptions(fgColor, bgColor);
 	}
-	
+
+	/**
+	 * States whether we're running in legacy ImageJ 1.x mode.
+	 * <p>
+	 * To support work flows which are incompatible with ImageJ2, we want to allow
+	 * users to run in legacy ImageJ 1.x mode, where the ImageJ2 GUI is hidden and
+	 * the ImageJ 1.x GUI is shown. During this time, no synchronization should
+	 * take place.
+	 * </p>
+	 */
+	@Override
+	public boolean isLegacyMode() {
+		return legacyIJ1Mode;
+	}
+
+	/**
+	 * Switch to/from running legacy ImageJ 1.x mode.
+	 */
+	@Override
+	public synchronized void toggleLegacyMode(final boolean toggle) {
+		if (toggle) legacyIJ1Mode = toggle;
+
+		final ij.ImageJ ij = IJ.getInstance();
+
+		SwitchToModernMode.registerMenuItem(this);
+
+		// TODO: hide/show Brightness/Contrast, Color Picker, Command Launcher, etc
+		// TODO: prevent IJ1 from quitting without IJ2 quitting, too
+
+		final UIService uiService = getContext().getService(UIService.class);
+		if (uiService != null) {
+			// hide/show the IJ2 main window
+			final ApplicationFrame appFrame =
+				uiService.getDefaultUI().getApplicationFrame();
+			appFrame.setVisible(!toggle);
+
+			// TODO: move this into the LegacyImageMap's toggleLegacyMode, passing the uiService
+			// hide/show the IJ2 datasets corresponding to legacy ImagePlus instances
+			for (final ImageDisplay display : imageMap.getImageDisplays()) {
+				final ImageDisplayViewer viewer =
+					(ImageDisplayViewer) uiService.getDisplayViewer(display);
+				if (viewer == null) continue;
+				final DisplayWindow window = viewer.getWindow();
+				if (window != null) window.showDisplay(!toggle);
+			}
+		}
+
+		// hide/show IJ1 main window
+		if (toggle) ij.pack();
+		ij.setVisible(toggle);
+
+		// hide/show the legacy ImagePlus instances
+		for (final ImagePlus imp : imageMap.getImagePlusInstances()) {
+			final ImageWindow window = imp.getWindow();
+			if (window != null) window.setVisible(toggle);
+		}
+
+		if (!toggle) legacyIJ1Mode = toggle;
+		imageMap.toggleLegacyMode(toggle);
+	}
+
 	// -- Service methods --
 
 	@Override
 	public void initialize() {
-		imageMap = new LegacyImageMap(getContext());
+		checkInstance();
+
+		imageMap = new LegacyImageMap(this);
 		optionsSynchronizer = new OptionsSynchronizer(optionsService);
+
+		synchronized (DefaultLegacyService.class) {
+			checkInstance();
+			instance = this;
+		}
 
 		// initialize legacy ImageJ application
 		try {
@@ -242,11 +331,7 @@ public final class DefaultLegacyService extends AbstractService implements
 		final boolean enableBlacklist = !optsMisc.isDebugMode();
 		addLegacyCommands(enableBlacklist);
 
-		updateIJ1Settings();
-
-		subscribeToEvents(eventService);
-
-		initialized = true;
+		updateLegacyImageJSettings();
 	}
 
 	// -- Event handlers --
@@ -268,7 +353,7 @@ public final class DefaultLegacyService extends AbstractService implements
 			final OptionsMisc opts = (OptionsMisc) event.getOptions();
 			if (opts.isDebugMode() != lastDebugMode) updateMenus(opts);
 		}
-		updateIJ1Settings();
+		updateLegacyImageJSettings();
 	}
 
 	@EventHandler
@@ -297,6 +382,28 @@ public final class DefaultLegacyService extends AbstractService implements
 
 	// -- helpers --
 
+	/**
+	 * Returns the legacy service associated with the ImageJ 1.x instance in the
+	 * current class loader. This method is intended to be used by the
+	 * {@link CodeHacker}; it is invoked by the javassisted methods.
+	 * 
+	 * @return the legacy service
+	 */
+	public static DefaultLegacyService getInstance() {
+		return instance;
+	}
+
+	/**
+	 * @throws UnsupportedOperationException if the singleton
+	 *           {@code DefaultLegacyService} already exists.
+	 */
+	private void checkInstance() {
+		if (instance != null) {
+			throw new UnsupportedOperationException(
+				"Cannot instantiate more than one DefaultLegacyService");
+		}
+	}
+
 	private OptionsChannels getChannels() {
 		final OptionsService service =
 			getContext().getService(OptionsService.class);
@@ -321,7 +428,7 @@ public final class DefaultLegacyService extends AbstractService implements
 
 	/* 3-1-12
 
-	 We are no longer going to synchronize colors from IJ1 to IJ2
+	 We are no longer going to synchronize colors from IJ1 to modern ImageJ
 
 	protected class IJ1EventListener implements IJEventListener {
 

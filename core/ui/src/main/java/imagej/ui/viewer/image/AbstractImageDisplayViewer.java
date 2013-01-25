@@ -273,7 +273,7 @@ public abstract class AbstractImageDisplayViewer extends
 	private boolean isMyDataset(final Dataset ds) {
 		if (ds == null) return false;
 		final ImageDisplayService service =
-			getEventService().getContext().getService(ImageDisplayService.class);
+			getContext().getService(ImageDisplayService.class);
 		final ImageDisplay disp = getDisplay();
 		return service.getActiveDataset(disp) == ds;
 	}
@@ -283,14 +283,14 @@ public abstract class AbstractImageDisplayViewer extends
 	@EventHandler
 	protected void onEvent(final WinActivatedEvent event) {
 		if (event.getDisplay() != getDisplay()) return;
-		final ToolService toolService =
-			event.getContext().getService(ToolService.class);
+		final ToolService toolService = getContext().getService(ToolService.class);
 		getDisplay().getCanvas().setCursor(
 			toolService.getActiveTool().getCursor());
 	}
 
 	@EventHandler
 	protected void onEvent(final PanZoomEvent event) {
+		if (getDisplay() == null) return;
 		if (event.getCanvas() == getDisplay().getCanvas()) updateLabel();
 	}
 

@@ -122,4 +122,5 @@ public interface PrimitiveArray<ArrayType, BaseType> extends List<BaseType>,
 	 */
 	void delete(int index, int count);
 
+	BaseType defaultValue();
 }

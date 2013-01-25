@@ -59,7 +59,7 @@ public class PluginIndexTest {
 	@Test
 	public void testGetPluginsOfClass() {
 		// create a minimal ImageJ context
-		final ImageJ context = ImageJ.createContext(PluginService.class);
+		final ImageJ context = new ImageJ(PluginService.class);
 		final PluginIndex pluginIndex = context.getPluginIndex();
 
 		// add a plugin to the index
@@ -88,7 +88,7 @@ public class PluginIndexTest {
 	@Test
 	public void testGetPluginsOfClassString() {
 		// create a minimal ImageJ context
-		final ImageJ context = ImageJ.createContext(PluginService.class);
+		final ImageJ context = new ImageJ(PluginService.class);
 		final PluginIndex pluginIndex = context.getPluginIndex();
 
 		// add a fake plugin to the index

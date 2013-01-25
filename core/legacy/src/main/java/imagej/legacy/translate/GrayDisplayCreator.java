@@ -80,7 +80,7 @@ public class GrayDisplayCreator implements DisplayCreator {
 		colorTableHarmonizer = new ColorTableHarmonizer(context);
 		metadataHarmonizer = new MetadataHarmonizer();
 		compositeHarmonizer = new CompositeHarmonizer();
-		planeHarmonizer = new PlaneHarmonizer();
+		planeHarmonizer = new PlaneHarmonizer(context);
 		overlayHarmonizer = new OverlayHarmonizer(context);
 		positionHarmonizer = new PositionHarmonizer();
 		nameHarmonizer = new NameHarmonizer();

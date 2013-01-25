@@ -48,7 +48,7 @@ import imagej.plugin.Plugin;
 import imagej.util.RealRect;
 
 /**
- * Implements IJ1's Smooth plugin functionality
+ * Implements legacy ImageJ's Smooth plugin functionality
  * 
  * @author Barry DeZonia
  */

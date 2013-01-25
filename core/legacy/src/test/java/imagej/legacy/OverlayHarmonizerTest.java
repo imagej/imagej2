@@ -48,6 +48,7 @@ import imagej.data.overlay.Overlay;
 import imagej.data.overlay.PolygonOverlay;
 import imagej.legacy.translate.OverlayHarmonizer;
 
+import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -58,6 +59,8 @@ import net.imglib2.roi.PolygonRegionOfInterest;
 import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.logic.BitType;
 
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -66,6 +69,12 @@ import org.junit.Test;
  * @author Lee Kamentsky
  */
 public class OverlayHarmonizerTest {
+
+	@Before
+	public void beforeMethod() {
+		// NB: Skip these tests when in headless mode!
+		Assume.assumeTrue(!GraphicsEnvironment.isHeadless());
+	}
 
 	/**
 	 * Test method for
@@ -104,7 +113,7 @@ public class OverlayHarmonizerTest {
 	 */
 	@Test
 	public void testGetOverlays() {
-		final ImageJ context = ImageJ.createContext(LegacyService.class);
+		final ImageJ context = new ImageJ(LegacyService.class);
 
 		// Just test that we get a single overlay of the correct type. Other tests
 		// for particulars of the decoding.
@@ -124,7 +133,7 @@ public class OverlayHarmonizerTest {
 	 */
 	@Test
 	public void testSetOverlays() {
-		final ImageJ context = ImageJ.createContext(LegacyService.class);
+		final ImageJ context = new ImageJ(LegacyService.class);
 
 		final Random r = new Random(1234);
 		final OverlayHarmonizer ot = new OverlayHarmonizer(context);
@@ -133,7 +142,7 @@ public class OverlayHarmonizerTest {
 		final ArrayList<Overlay> l = new ArrayList<Overlay>();
 		l.add(Helper.makePolygonOverlay(context, new double[] { 0, 5, 5, 0, 0 },
 			new double[] { 0, 0, 5, 5, 0 }));
-		ot.setOverlays(l, imagePlus);
+		ot.setOverlays(l, l.get(0), imagePlus);
 		final Roi roi = imagePlus.getRoi();
 		assertEquals(roi.getType(), Roi.POLYGON);
 		assertTrue(roi instanceof PolygonRoi);
@@ -143,7 +152,7 @@ public class OverlayHarmonizerTest {
 	// translators that they wrote
 	@Test
 	public void testPolygonOverlay() {
-		final ImageJ context = ImageJ.createContext(LegacyService.class);
+		final ImageJ context = new ImageJ(LegacyService.class);
 
 		final Random r = new Random(1234);
 		final int[][][] vertices =
@@ -182,7 +191,7 @@ public class OverlayHarmonizerTest {
 
 	@Test
 	public void testPolygonROI() {
-		final ImageJ context = ImageJ.createContext(LegacyService.class);
+		final ImageJ context = new ImageJ(LegacyService.class);
 
 		final Random r = new Random(1234);
 		final double[][][] vertices =
@@ -198,7 +207,7 @@ public class OverlayHarmonizerTest {
 				Helper.makeImagePlus("Bar", Helper.makeRandomByteArray(r, 11, 15));
 			final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 			overlays.add(overlay);
-			ot.setOverlays(overlays, imagePlus);
+			ot.setOverlays(overlays, overlay, imagePlus);
 			assertTrue(imagePlus.getRoi() instanceof PolygonRoi);
 			final PolygonRoi roi = (PolygonRoi) (imagePlus.getRoi());
 			final int[] x = roi.getXCoordinates();
@@ -224,7 +233,7 @@ public class OverlayHarmonizerTest {
 
 	@Test
 	public void testCompositeRoi() {
-		final ImageJ context = ImageJ.createContext(LegacyService.class);
+		final ImageJ context = new ImageJ(LegacyService.class);
 
 		/*
 		 * The composite Roi has an offset and its contained Rois are relative to that offset
@@ -280,7 +289,7 @@ public class OverlayHarmonizerTest {
 
 	@Test
 	public void testDonut() {
-		final ImageJ context = ImageJ.createContext(LegacyService.class);
+		final ImageJ context = new ImageJ(LegacyService.class);
 
 		final OverlayHarmonizer ot = new OverlayHarmonizer(context);
 		final Random r = new Random(1234);
@@ -311,7 +320,7 @@ public class OverlayHarmonizerTest {
 
 	@Test
 	public void testCreateBinaryMaskOverlay() {
-		final ImageJ context = ImageJ.createContext(LegacyService.class);
+		final ImageJ context = new ImageJ(LegacyService.class);
 
 		final OverlayHarmonizer ot = new OverlayHarmonizer(context);
 		final Random r = new Random(1234);
@@ -342,7 +351,7 @@ public class OverlayHarmonizerTest {
 
 	@Test
 	public void testCreateBinaryMaskROI() {
-		final ImageJ context = ImageJ.createContext(LegacyService.class);
+		final ImageJ context = new ImageJ(LegacyService.class);
 
 		final Random r = new Random(54321);
 		final boolean[][] data = Helper.makeRandomBooleanArray(r, 7, 8);
@@ -355,7 +364,7 @@ public class OverlayHarmonizerTest {
 			Helper.makeImagePlus("Bar", Helper.makeRandomByteArray(r, 15, 20));
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 		overlays.add(overlay);
-		ot.setOverlays(overlays, imagePlus);
+		ot.setOverlays(overlays, overlay, imagePlus);
 		final Roi roi = imagePlus.getRoi();
 		for (int i = 0; i < 15; i++) {
 			ra.setPosition(i, 0);

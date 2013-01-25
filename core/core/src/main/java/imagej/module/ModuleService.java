@@ -173,7 +173,7 @@ public interface ModuleService extends Service {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module> run(Module module, Object... inputs);
+	<M extends Module> Future<M> run(M module, Object... inputs);
 
 	/**
 	 * Executes the given module.

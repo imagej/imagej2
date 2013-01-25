@@ -55,4 +55,7 @@ public interface ApplicationFrame {
 	/** Activate the application frame, bringing it to the front. */
 	void activate();
 
+	/** Show or hide the application frame */
+	void setVisible(boolean visible);
+
 }

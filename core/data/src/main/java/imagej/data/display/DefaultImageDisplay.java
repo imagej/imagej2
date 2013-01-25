@@ -35,10 +35,10 @@
 
 package imagej.data.display;
 
-import imagej.ImageJ;
 import imagej.data.CombinedInterval;
 import imagej.data.Data;
 import imagej.data.Extents;
+import imagej.data.display.event.AxisActivatedEvent;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.event.DataRestructuredEvent;
 import imagej.data.event.DataUpdatedEvent;
@@ -47,11 +47,9 @@ import imagej.display.DisplayService;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.plugin.Plugin;
 import imagej.util.RealRect;
 
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.imglib2.Localizable;
@@ -70,7 +68,6 @@ import net.imglib2.meta.AxisType;
 public class DefaultImageDisplay extends AbstractDisplay<DataView>
 	implements ImageDisplay
 {
-	private List<EventSubscriber<?>> subscribers;
 
 	/** Data structure that aggregates dimensional axes from constituent views. */
 	private final CombinedInterval combinedInterval = new CombinedInterval();
@@ -156,6 +153,13 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 			throw new IllegalArgumentException("Unknown axis: " + axis);
 		}
 		activeAxis = axis;
+
+		// notify interested parties of the change
+		final EventService eventService =
+			getContext().getService(EventService.class);
+		if (eventService != null) {
+			eventService.publish(new AxisActivatedEvent(this, activeAxis));
+		}
 	}
 
 	@Override
@@ -453,8 +457,10 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		if (value < min) value = min;
 		if (value > max) value = max;
 
-		// update position and notify interested parties of the change
+		// update position
 		pos.put(axis, value);
+
+		// notify interested parties of the change
 		// NB: DataView.setPosition is called only in update method.
 		final EventService eventService =
 			getContext().getService(EventService.class);
@@ -581,19 +587,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		setPosition(position, axis(d));
 	}
 
-	// -- Contextual methods --
-
-	@Override
-	public void setContext(final ImageJ context) {
-		super.setContext(context);
-		assert subscribers == null;
-		final EventService eventService =
-			getContext().getService(EventService.class);
-		if (eventService != null) {
-			subscribers = eventService.subscribe(this);
-		}
-	}
-
 	// -- Event handlers --
 
 	// TODO - displays should not listen for Data events. Views should listen for
@@ -686,11 +679,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		}
 		clear();
 		combinedInterval.clear();
-		// NB - this is necessary to make sure resources get returned via GC.
-		// Else there is a memory leak.
-		final EventService eventService =
-			getContext().getService(EventService.class);
-		if (eventService != null) eventService.unsubscribe(subscribers);
 	}
 
 }

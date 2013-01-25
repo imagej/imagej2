@@ -159,9 +159,6 @@ public final class DefaultPlatformService extends AbstractService implements
 			platform.configure(this);
 		}
 		if (platforms.size() == 0) log.info("No platforms to configure.");
-		// ENABLE NEXT LINE and all plugins run twice
-		// DISABLE NEXT LINE and default menu disappears
-		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --
@@ -185,7 +182,7 @@ public final class DefaultPlatformService extends AbstractService implements
 				platforms.add(platform);
 			}
 			catch (final InstantiableException e) {
-				log.warn("Invalid platform: " + info.getClassName(), e);
+				log.warn("Invalid platform: " + info, e);
 			}
 		}
 		return platforms;

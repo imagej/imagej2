@@ -1,4 +1,3 @@
-package imagej.build.minimaven;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -34,6 +33,8 @@ package imagej.build.minimaven;
  * #L%
  */
 
+package imagej.build.minimaven;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,6 +50,11 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+/**
+ * TODO
+ * 
+ * @author Johannes Schindelin
+ */
 public class JarClassLoader extends ClassLoader {
 	Map<String, JarFile> jarFilesMap;
 	List<String> jarFilesNames;

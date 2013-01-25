@@ -40,11 +40,18 @@ package imagej.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -116,6 +123,49 @@ public final class FileUtils {
 	 */
 	public static String getExtension(final String path) {
 		return getExtension(new File(path));
+	}
+
+	/**
+	 * A regular expression to match filenames containing version information.
+	 * 
+	 * Keep this synchronized with imagej.updater.core.FileObject.
+	 */
+	private final static Pattern versionPattern =
+		Pattern.compile("(.+?)(-\\d+(\\.\\d+|\\d{7})+[a-z]?\\d?(-[A-Za-z0-9.]+|\\.GA)*)?(\\.jar(-[a-z]*)?)");
+
+	/**
+	 * Returns the {@link Matcher} object dissecting a versioned file name.
+	 * 
+	 * @param filename the file name
+	 * @return the {@link Matcher} object
+	 */
+	public static Matcher matchVersionedFilename(String filename) {
+		return versionPattern.matcher(filename);
+	}
+
+	/**
+	 * Lists all versions of a given (possibly versioned) file name.
+	 * 
+	 * @param directory the directory to scan
+	 * @param filename the file name to use
+	 * @return the list of matches
+	 */
+	public static File[] getAllVersions(final File directory, final String filename) {
+		final Matcher matcher = matchVersionedFilename(filename);
+		if (!matcher.matches()) {
+			final File file = new File(directory, filename);
+			return file.exists() ? new File[] { file } : null;
+		}
+		final String baseName = matcher.group(1);
+		return directory.listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(final File dir, final String name) {
+				if (!name.startsWith(baseName))
+					return false;
+				final Matcher matcher2 = matchVersionedFilename(name);
+				return matcher2.matches() && baseName.equals(matcher2.group(1));
+			}
+		});
 	}
 
 	/**
@@ -387,6 +437,75 @@ public final class FileUtils {
 			}
 		}
 		return directory.delete();
+	}
+
+	/**
+	 * Lists all contents of the referenced directory.
+	 * 
+	 * @author Johannes Schindelin
+	 */
+	public static Collection<URL> listContents(final URL directory) {
+		final Collection<URL> result = new ArrayList<URL>();
+		return appendContents(result, directory);
+	}
+
+	/**
+	 * Add contents from the referenced directory to an existing collection.
+	 * 
+	 * @author Johannes Schindelin
+	 */
+	public static Collection<URL> appendContents(final Collection<URL> result,
+		final URL directory)
+	{
+		if (directory == null) return result; // nothing to append
+		final String protocol = directory.getProtocol();
+		if (protocol.equals("file")) {
+			// begin: stolen by BDZ
+			// http://weblogs.java.net/blog/kohsuke/archive/2007/04/how_to_convert.html
+			// This improves similar discussions on StackOverflow
+			File dir;
+			try {
+				dir = new File(directory.toURI());
+			}
+			catch (Exception e) {
+				dir = new File(directory.getPath());
+			}
+			// end : stolen
+			for (final File file : dir.listFiles()) {
+				try {
+					if (file.isFile()) {
+						result.add(file.toURI().toURL());
+					}
+					else if (file.isDirectory()) {
+						appendContents(result, file.toURI().toURL());
+					}
+				}
+				catch (MalformedURLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		else if (protocol.equals("jar")) {
+			try {
+				final String url = directory.toString();
+				final int bang = url.indexOf("!/");
+				if (bang < 0) return result;
+				final String prefix = url.substring(bang + 1);
+
+				final JarURLConnection connection =
+					(JarURLConnection) directory.openConnection();
+				final JarFile jar = connection.getJarFile();
+				for (final JarEntry entry : new IteratorPlus<JarEntry>(jar.entries())) {
+					if (entry.getName().startsWith(prefix)) {
+						result.add(new URL(url.substring(0, bang + 2) + entry.getName()));
+					}
+				}
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
 	}
 
 	// -- Deprecated methods --

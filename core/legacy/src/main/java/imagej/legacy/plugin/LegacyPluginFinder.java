@@ -68,16 +68,14 @@ import java.util.Set;
  * Discovers legacy ImageJ 1.x plugins.
  * <p>
  * To accomplish this, we must crawl the (invisible) ImageJ 1.x AWT menu,
- * because IJ1 does not store the list of commands in any other data structure.
+ * because legacy ImageJ does not store the list of commands in any other data
+ * structure.
  * </p>
  * 
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
 public class LegacyPluginFinder {
-
-	private static final String LEGACY_PLUGIN_CLASS = LegacyCommand.class
-		.getName();
 
 	private static final String PLUGIN_BLACKLIST = "plugin-blacklist.txt";
 	private static final String LEGACY_PLUGIN_ICON = "/icons/legacy.png";
@@ -151,7 +149,7 @@ public class LegacyPluginFinder {
 		// NB: Check whether legacy command is on the blacklist.
 		final boolean blacklisted = blacklist.contains(ij1PluginString);
 
-		// NB: Check whether menu path is already taken by an ImageJ2 command.
+		// NB: Check whether menu path is already taken by a modern ImageJ command.
 		// This allows transparent override of legacy commands.
 		final MenuPath menuPath = menuTable.get(key);
 		final boolean overridden = appMenu.getMenu(menuPath) != null;
@@ -179,7 +177,7 @@ public class LegacyPluginFinder {
 		final Map<String, Object> presets = new HashMap<String, Object>();
 		presets.put("className", className);
 		presets.put("arg", arg);
-		final CommandInfo ci = new CommandInfo(LEGACY_PLUGIN_CLASS);
+		final CommandInfo ci = new CommandInfo(LegacyCommand.class);
 		ci.setMenuPath(menuPath);
 		ci.setPresets(presets);
 
@@ -189,7 +187,7 @@ public class LegacyPluginFinder {
 		return ci;
 	}
 
-	/** Creates a table mapping IJ1 command labels to menu paths. */
+	/** Creates a table mapping legacy ImageJ command labels to menu paths. */
 	private Map<String, MenuPath> parseMenus(final ij.ImageJ ij) {
 		final Map<String, MenuPath> menuTable = new HashMap<String, MenuPath>();
 		final MenuBar menubar = ij.getMenuBar();

@@ -42,7 +42,9 @@ import ij.gui.PointRoi;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
+import ij.gui.TextRoi;
 import ij.plugin.filter.ThresholdToSelection;
+import ij.plugin.frame.RoiManager;
 import ij.process.ByteProcessor;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
@@ -59,6 +61,8 @@ import imagej.data.overlay.Overlay;
 import imagej.data.overlay.PointOverlay;
 import imagej.data.overlay.PolygonOverlay;
 import imagej.data.overlay.RectangleOverlay;
+import imagej.data.overlay.TextOverlay;
+import imagej.data.overlay.TextOverlay.Justification;
 import imagej.log.LogService;
 import imagej.util.awt.AWTColors;
 
@@ -86,7 +90,7 @@ import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.logic.BitType;
 
 /**
- * OverlayTranslator moves regions of interest back and forth between
+ * OverlayTranslator translates regions of interest back and forth between
  * {@link Overlay}s and {@link ImagePlus} {@link Roi}s.
  * 
  * @author Lee Kamentsky
@@ -97,42 +101,21 @@ public class OverlayHarmonizer extends AbstractContextual implements
 	DisplayHarmonizer
 {
 	private final LogService log;
+	private final OverlayService overlayService;
 
 	public OverlayHarmonizer(final ImageJ context) {
 		setContext(context);
 		log = context.getService(LogService.class);
+		overlayService = context.getService(OverlayService.class);
 	}
 
 	/**
 	 * Updates the given {@link ImageDisplay} to contain {@link Overlay}s
-	 * corresponding to the given {@link ImagePlus}'s Roi.
+	 * corresponding to all the given {@link ImagePlus}'s Rois (both the active
+	 * Roi and the Rois stored in ImageJ 1.x's current Overlay).
 	 */
 	@Override
 	public void updateDisplay(final ImageDisplay display, final ImagePlus imp) {
-		final OverlayService overlayService =
-			getContext().getService(OverlayService.class);
-		final Roi oldRoi = createRoi(overlayService.getOverlays(display));
-		if (oldRoi instanceof ShapeRoi) {
-			final float[] oldPath = ((ShapeRoi) oldRoi).getShapeAsArray();
-			final Roi newRoi = imp.getRoi();
-			if (newRoi instanceof ShapeRoi) {
-				final float[] newPath = ((ShapeRoi) newRoi).getShapeAsArray();
-				if (oldPath.length == newPath.length) {
-					boolean same = true;
-					for (int i = 0; i < oldPath.length; i++) {
-						if (oldPath[i] != newPath[i]) {
-							same = false;
-							break;
-						}
-					}
-					if (same)
-						if (oldRoi.getStrokeWidth() == newRoi.getStrokeWidth())
-							if (sameColor(oldRoi.getFillColor(), newRoi.getFillColor()))
-								if (sameColor(oldRoi.getStrokeColor(), newRoi.getStrokeColor()))
-									return;
-				}
-			}
-		}
 		final List<Overlay> overlaysToRemove = overlayService.getOverlays(display);
 		for (final Overlay overlay : overlaysToRemove) {
 			overlayService.removeOverlay(display, overlay);
@@ -150,75 +133,118 @@ public class OverlayHarmonizer extends AbstractContextual implements
 	}
 
 	/**
-	 * Updates the given {@link ImagePlus}'s Roi to match the {@link Overlay}s
-	 * being visualized in the given {@link ImageDisplay}.
+	 * Updates the given {@link ImagePlus}'s Roi and Overlay to match the modern
+	 * ImageJ {@link Overlay}s being visualized in the given {@link ImageDisplay}.
 	 */
 	@Override
 	public void
 		updateLegacyImage(final ImageDisplay display, final ImagePlus imp)
 	{
-		final OverlayService overlayService =
-			getContext().getService(OverlayService.class);
 		final List<Overlay> overlays = overlayService.getOverlays(display);
-		setOverlays(overlays, imp);
+		setOverlays(overlays, overlayService.getActiveOverlay(display), imp);
 	}
 
-	/** Extracts a list of {@link Overlay}s from the given {@link ImagePlus}. */
+	/**
+	 * Extracts a list of {@link Overlay}s from the given {@link ImagePlus}. The
+	 * Overlays are created from the {@link ImagePlus}' Roi and ImageJ 1.x
+	 * Overlay.
+	 */
 	public List<Overlay> getOverlays(final ImagePlus imp) {
-		final Roi roi = imp.getRoi();
+		Roi roi = imp.getRoi();
 		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
-		createOverlays(roi, overlays, 0, 0);
+		createOverlays(roi, overlays);
+		final ij.gui.Overlay overlay = imp.getOverlay();
+		if (overlay != null) {
+			final ArrayList<Overlay> list = new ArrayList<Overlay>();
+			for (int i = 0; i < overlay.size(); i++) {
+				list.clear();
+				roi = overlay.get(i);
+				createOverlays(roi, list);
+				overlays.addAll(list);
+			}
+		}
 		return overlays;
 	}
 
-	/** Assigns a list of {@link Overlay}s to the given {@link ImagePlus}. */
-	public void setOverlays(final List<Overlay> overlays, final ImagePlus imp) {
-		final Roi roi = createRoi(overlays);
+	/**
+	 * Assigns a list of {@link Overlay}s to the given {@link ImagePlus}. The
+	 * active overlay becomes the {@link Roi} of the ImagePlus. The other overlays
+	 * become Roi's in the Overlay of the ImagePlus. Also populates legacy
+	 * ImageJ's RoiManager.
+	 */
+	public void setOverlays(List<Overlay> overlays, Overlay activeOverlay,
+		final ImagePlus imp)
+	{
+		final Roi roi = createRoi(activeOverlay);
+		final ij.gui.Overlay o = createIJ1Overlay(overlays, activeOverlay);
 		imp.setRoi(roi);
-	}
+		imp.setOverlay(o);
 
-	private Roi createRoi(final List<Overlay> overlays) {
-		if (overlays.size() == 0) return null;
-		if (overlays.size() == 1) return createRoi(overlays.get(0));
-		ShapeRoi roi = new ShapeRoi(createRoi(overlays.get(0)));
-		for (int i = 1; i < overlays.size(); i++) {
-			final Roi overlayRoi = createRoi(overlays.get(i));
-			if (overlayRoi != null) roi = roi.or(new ShapeRoi(overlayRoi));
-		}
-		return roi;
+		// now make sure the correct rois end up in the RoiManager
+		RoiManager mgr = RoiManager.getInstance();
+		if (mgr == null) mgr = new RoiManager();
+		mgr.removeAll();
+		if (roi != null) mgr.addRoi(roi);
+		// TODO: do the rois in the IJ1 Overlay belong in the manager? In IJ1 if you
+		// load a file that has a saved overlay it does not auto fill into Roi Mgr.
+		// However when you select ROIs in Mgr and run Overlay > From ROI Manager
+		// the rois go into the overlay and stay in the Roi Mgr. Decide later.
 	}
 
 	// -- Helper methods - legacy Roi creation --
 
+	private ij.gui.Overlay createIJ1Overlay(final List<Overlay> overlays,
+		Overlay activeOverlay)
+	{
+		List<Roi> rois = new ArrayList<Roi>();
+		for (Overlay o : overlays) {
+			if (o != activeOverlay) {
+				rois.add(createRoi(o));
+			}
+		}
+		if (rois.size() == 0) return null;
+		ij.gui.Overlay overlay = new ij.gui.Overlay();
+		for (Roi roi : rois) {
+			overlay.add(roi);
+		}
+		return overlay;
+	}
+
 	private Roi createRoi(final Overlay overlay) {
+		Roi roi = null;
+
 		if (overlay instanceof RectangleOverlay) {
-			return createRectangleRoi((RectangleOverlay) overlay);
+			roi = createRectangleRoi((RectangleOverlay) overlay);
 		}
 		if (overlay instanceof EllipseOverlay) {
-			return createEllipseRoi((EllipseOverlay) overlay);
+			roi = createEllipseRoi((EllipseOverlay) overlay);
 		}
 		if (overlay instanceof PolygonOverlay) {
-			return createPolygonRoi((PolygonOverlay) overlay);
+			roi = createPolygonRoi((PolygonOverlay) overlay);
 		}
 		if (overlay instanceof GeneralPathOverlay) {
-			return createGeneralPathRoi((GeneralPathOverlay) overlay);
+			roi = createGeneralPathRoi((GeneralPathOverlay) overlay);
 		}
 		if (overlay instanceof BinaryMaskOverlay) {
-			return createBinaryMaskRoi((BinaryMaskOverlay<?, ?>) overlay);
+			roi = createBinaryMaskRoi((BinaryMaskOverlay<?, ?>) overlay);
 		}
 		if (overlay instanceof LineOverlay) {
-			return createLineRoi((LineOverlay) overlay);
+			roi = createLineRoi((LineOverlay) overlay);
 		}
 		if (overlay instanceof PointOverlay) {
-			return createPointRoi((PointOverlay) overlay);
+			roi = createPointRoi((PointOverlay) overlay);
 		}
 		if (overlay instanceof AngleOverlay) {
-			return createAngleRoi((AngleOverlay) overlay);
+			roi = createAngleRoi((AngleOverlay) overlay);
+		}
+		if (overlay instanceof TextOverlay) {
+			roi = createTextRoi((TextOverlay) overlay);
 		}
 		// TODO: arrows, freehand, text
 //		throw new UnsupportedOperationException("Translation of " +
 //			overlay.getClass().getName() + " is unimplemented");
-		return null;
+
+		return roi;
 	}
 
 	// NB - there is some overloading here with createLineRoi.
@@ -303,34 +329,44 @@ public class OverlayHarmonizer extends AbstractContextual implements
 
 	private Roi createGeneralPathRoi(final GeneralPathOverlay overlay) {
 		final GeneralPathRegionOfInterest region = overlay.getRegionOfInterest();
-		return new ShapeRoi(region.getGeneralPath());
+		Roi roi = new ShapeRoi(region.getGeneralPath());
+		assignPropertiesToRoi(roi, overlay);
+		return roi;
 	}
 
 	// NB - there is some overloading here with createPointRoi.
 	
-	// From a PolygonOverlay that has one point
+	// From a PolygonOverlay
 	private Roi createPointRoi(final PolygonOverlay overlay) {
-		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
-		final RealLocalizable point = region.getVertex(0);
-		double ptX = point.getDoublePosition(0);
-		double ptY = point.getDoublePosition(1);
-		return createPointRoi(overlay, ptX, ptY);
+		PolygonRegionOfInterest region = overlay.getRegionOfInterest();
+		int nPoints = region.getVertexCount();
+		float[] xPts = new float[nPoints];
+		float[] yPts = new float[nPoints];
+		for (int i = 0; i < nPoints; i++) {
+			RealLocalizable vertex = region.getVertex(i);
+			xPts[i] = vertex.getFloatPosition(0);
+			yPts[i] = vertex.getFloatPosition(1);
+		}
+		PointRoi roi = new PointRoi(xPts, yPts, nPoints);
+		assignPropertiesToRoi(roi, overlay);
+		return roi;
 	}
 
 	// From a PointOverlay
 	private Roi createPointRoi(final PointOverlay overlay) {
-		return createPointRoi(overlay, overlay.getPoint(0), overlay.getPoint(1));
+		List<double[]> points = overlay.getPoints();
+		float[] xPts = new float[points.size()];
+		float[] yPts = new float[points.size()];
+		for (int i = 0; i < points.size(); i++) {
+			double[] pt = points.get(i);
+			xPts[i] = (float) pt[0];
+			yPts[i] = (float) pt[1];
+		}
+		PointRoi roi = new PointRoi(xPts, yPts, points.size());
+		assignPropertiesToRoi(roi, overlay);
+		return roi;
 	}
 
-	// helper to support other createPointRoi() methods
-	private Roi createPointRoi(final Overlay overlay, double ptX, double ptY) {
-		final double x = ptX;
-		final double y = ptY;
-		final PointRoi point = new PointRoi(x,y);
-		assignPropertiesToRoi(point, overlay);
-		return point;
-	}
-	
 	// TODO - subpixel resolution
 	private Roi createAngleRoi(final AngleOverlay overlay) {
 		double[] pt = new double[overlay.numDimensions()];
@@ -345,15 +381,39 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		float ye = (float) pt[1];
 		float[] xpoints = new float[]{xb,xc,xe};
 		float[] ypoints = new float[]{yb,yc,ye};
-		return new PolygonRoi(xpoints, ypoints, 3, Roi.ANGLE);
+		Roi roi = new PolygonRoi(xpoints, ypoints, 3, Roi.ANGLE);
+		assignPropertiesToRoi(roi, overlay);
+		return roi;
 	}
 	
+	private Roi createTextRoi(TextOverlay overlay) {
+		RectangleRegionOfInterest region = overlay.getRegionOfInterest();
+		double x = region.getOrigin(0);
+		double y = region.getOrigin(1);
+		TextRoi roi = new TextRoi(x, y, overlay.getText());
+		switch (overlay.getJustification()) {
+			case LEFT:
+				roi.setJustification(TextRoi.LEFT);
+				break;
+			case CENTER:
+				roi.setJustification(TextRoi.CENTER);
+				break;
+			case RIGHT:
+				roi.setJustification(TextRoi.RIGHT);
+				break;
+			default:
+				break;
+		}
+		assignPropertiesToRoi(roi, overlay);
+		return roi;
+	}
+
 	private ShapeRoi createBinaryMaskRoi(final BinaryMaskOverlay<?, ?> overlay) {
-		final RegionOfInterest roi = overlay.getRegionOfInterest();
-		final double[] min = new double[roi.numDimensions()];
-		roi.realMin(min);
-		final double[] max = new double[roi.numDimensions()];
-		roi.realMax(max);
+		final RegionOfInterest region = overlay.getRegionOfInterest();
+		final double[] min = new double[region.numDimensions()];
+		region.realMin(min);
+		final double[] max = new double[region.numDimensions()];
+		region.realMax(max);
 		// TODO - is there some way to have subpixel resolution with mask rois?
 		final int x = (int) Math.ceil(min[0]);
 		final int y = (int) Math.ceil(min[1]);
@@ -372,7 +432,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 
 		// set things so that true is between 1 and 3 and false is below 1
 		ip.setThreshold(1, 3, ImageProcessor.NO_LUT_UPDATE);
-		final RealRandomAccess<BitType> ra = roi.realRandomAccess();
+		final RealRandomAccess<BitType> ra = region.realRandomAccess();
 
 		// this picks a plane at the minimum Z, T, etc within the Roi
 		ra.setPosition(min);
@@ -387,7 +447,9 @@ public class OverlayHarmonizer extends AbstractContextual implements
 
 		final Roi imagejroi = plugin.convert(ip);
 		imagejroi.setLocation(x, y);
-		return new ShapeRoi(imagejroi);
+		ShapeRoi roi = new ShapeRoi(imagejroi);
+		assignPropertiesToRoi(roi, overlay);
+		return roi;
 	}
 
 	private void assignPropertiesToRoi(final Roi roi, final Overlay overlay) {
@@ -401,7 +463,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		roi.setFillColor(colorWithAlpha);
 	}
 
-	// -- Helper methods - IJ2 overlay creation --
+	// -- Helper methods - modern ImageJ overlay creation --
 
 	/*
 	private boolean fullySelected(ImageDisplay display, ImagePlus imp) {
@@ -424,57 +486,63 @@ public class OverlayHarmonizer extends AbstractContextual implements
 	}
 	*/
 
-	private void createOverlays(final Roi roi,
-		final ArrayList<Overlay> overlays, final double xOff, final double yOff)
+	private void createOverlays(final Roi roi, final ArrayList<Overlay> overlays)
 	{
 		if (roi == null) return;
 
 		log.warn("====> Roi class = " + roi.getClass().getName());
+		if (roi instanceof TextRoi) {
+			log.warn("====> TEXT: " + roi);
+			overlays.add(createTextOverlay(roi));
+			return;
+		}
 		switch (roi.getType()) {
 			case Roi.RECTANGLE:
 				log.warn("====> RECTANGLE: " + roi);
-				overlays.add(createRectangleOverlay(roi, xOff, yOff));
+				overlays.add(createRectangleOverlay(roi));
 				break;
 			case Roi.OVAL:
 				log.warn("====> OVAL: " + roi);
-				overlays.add(createEllipseOverlay(roi, xOff, yOff));
+				overlays.add(createEllipseOverlay(roi));
 				break;
 			case Roi.POLYGON:
 				log.warn("====> POLYGON: " + roi);
-				overlays.add(createPolygonOverlay(roi, xOff, yOff));
+				overlays.add(createPolygonOverlay(roi));
 				break;
 			case Roi.FREEROI:
 				log.warn("====> FREEROI: " + roi);
-				overlays.add(createPolygonOverlay(roi, xOff, yOff));
+				overlays.add(createPolygonOverlay(roi));
 				break;
 			case Roi.TRACED_ROI:
 				log.warn("====> TRACED_ROI: " + roi);
-				overlays.add(createPolygonOverlay(roi, xOff, yOff));
+				overlays.add(createPolygonOverlay(roi));
 				break;
 			case Roi.LINE:
 				log.warn("====> LINE: " + roi);
-				overlays.add(createLineOverlay(roi, xOff, yOff));
+				overlays.add(createLineOverlay(roi));
 				break;
 			case Roi.POLYLINE:
 				log.warn("====> POLYLINE: " + roi);
+				// TODO - implement this
 				// throw new UnsupportedOperationException("POLYLINE unimplemented");
 				break;
 			case Roi.FREELINE:
 				log.warn("====> FREELINE: " + roi);
+				// TODO - implement this
 				// throw new UnsupportedOperationException("FREELINE unimplemented");
 				break;
 			case Roi.ANGLE:
 				log.warn("====> ANGLE: " + roi);
-				overlays.add(createAngleOverlay(roi, xOff, yOff));
+				overlays.add(createAngleOverlay(roi));
 				break;
 			case Roi.POINT:
 				log.warn("====> POINT: " + roi);
-				overlays.addAll(createPointOverlays(roi, xOff, yOff));
+				overlays.add(createPointOverlay(roi));
 				break;
 			case Roi.COMPOSITE:
 				log.warn("====> COMPOSITE: " + roi);
 				final ShapeRoi shapeRoi = (ShapeRoi) roi;
-				overlays.add(createGeneralPathOverlay(shapeRoi, xOff, yOff));
+				overlays.add(createGeneralPathOverlay(shapeRoi));
 				break;
 			default:
 				log.warn("====> OTHER (" + roi.getType() + ", " + "): " + roi);
@@ -482,60 +550,56 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		}
 	}
 
-	@SuppressWarnings("unused")
-	private Overlay createAngleOverlay(final Roi roi, final double xOff,
-		final double yOff)
+	private Overlay createAngleOverlay(final Roi roi)
 	{
 		assert roi instanceof PolygonRoi;
 		PolygonRoi pRoi = (PolygonRoi) roi;
 		FloatPolygon poly = pRoi.getFloatPolygon();
 		double[] pt;
 		AngleOverlay angleOverlay = new AngleOverlay(getContext());
-		pt = new double[]{poly.xpoints[0], poly.ypoints[0]};
+		pt = new double[] { poly.xpoints[0], poly.ypoints[0] };
 		angleOverlay.setPoint1(pt);
-		pt = new double[]{poly.xpoints[1], poly.ypoints[1]};
+		pt = new double[] { poly.xpoints[1], poly.ypoints[1] };
 		angleOverlay.setCenter(pt);
-		pt = new double[]{poly.xpoints[2], poly.ypoints[2]};
+		pt = new double[] { poly.xpoints[2], poly.ypoints[2] };
 		angleOverlay.setPoint2(pt);
+		assignPropertiesToOverlay(angleOverlay, roi);
 		return angleOverlay;
 	}
 	
-	private Overlay createLineOverlay(final Roi roi, final double xOff,
-		final double yOff)
+	private Overlay createLineOverlay(final Roi roi)
 	{
 		assert roi instanceof Line;
 		final Line line = (Line) roi;
 		final LineOverlay lineOverlay =
-			new LineOverlay(getContext(), new double[] { line.x1d + xOff,
-				line.y1d + yOff }, new double[] { line.x2d + xOff, line.y2d + yOff });
+			new LineOverlay(getContext(), new double[] { line.x1d, line.y1d },
+				new double[] { line.x2d, line.y2d });
 		assignPropertiesToOverlay(lineOverlay, roi);
 		return lineOverlay;
 	}
 
-	private RectangleOverlay createRectangleOverlay(final Roi roi,
-		final double xOff, final double yOff)
+	private RectangleOverlay createRectangleOverlay(final Roi roi)
 	{
 		final RectangleOverlay overlay = new RectangleOverlay(getContext());
 		final RectangleRegionOfInterest region = overlay.getRegionOfInterest();
 		final Rectangle bounds = roi.getBounds();
-		region.setOrigin(bounds.x + xOff, 0);
-		region.setOrigin(bounds.y + yOff, 1);
+		region.setOrigin(bounds.x, 0);
+		region.setOrigin(bounds.y, 1);
 		region.setExtent(bounds.width, 0);
 		region.setExtent(bounds.height, 1);
 		assignPropertiesToOverlay(overlay, roi);
 		return overlay;
 	}
 
-	private EllipseOverlay createEllipseOverlay(final Roi roi, final double xOff,
-		final double yOff)
+	private EllipseOverlay createEllipseOverlay(final Roi roi)
 	{
 		final EllipseOverlay overlay = new EllipseOverlay(getContext());
 		final EllipseRegionOfInterest region = overlay.getRegionOfInterest();
 		final Rectangle bounds = roi.getBounds();
 		final double radiusX = bounds.width / 2.0;
 		final double radiusY = bounds.height / 2.0;
-		region.setOrigin(bounds.x + radiusX + xOff, 0);
-		region.setOrigin(bounds.y + radiusY + yOff, 1);
+		region.setOrigin(bounds.x + radiusX, 0);
+		region.setOrigin(bounds.y + radiusY, 1);
 		region.setRadius(radiusX, 0);
 		region.setRadius(radiusY, 1);
 		assignPropertiesToOverlay(overlay, roi);
@@ -544,9 +608,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 
 	// TODO - subpixel resolution
 	
-	@SuppressWarnings("unused")
-	private PolygonOverlay createPolygonOverlay(final Roi roi, final double xOff,
-		final double yOff)
+	private PolygonOverlay createPolygonOverlay(final Roi roi)
 	{
 		assert roi instanceof PolygonRoi;
 		final PolygonRoi polygonRoi = (PolygonRoi) roi;
@@ -554,8 +616,8 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
 		final int[] xCoords = polygonRoi.getXCoordinates();
 		final int[] yCoords = polygonRoi.getYCoordinates();
-		final int x0 = polygonRoi.getBounds().x;
-		final int y0 = polygonRoi.getBounds().y;
+		final double x0 = polygonRoi.getBounds().x;
+		final double y0 = polygonRoi.getBounds().y;
 		for (int i = 0; i < xCoords.length; i++) {
 			final double x = xCoords[i] + x0, y = yCoords[i] + y0;
 			region.addVertex(i, new RealPoint(x, y));
@@ -564,9 +626,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		return overlay;
 	}
 
-	@SuppressWarnings("unused")
-	private GeneralPathOverlay createGeneralPathOverlay(final Roi roi, final double xOff,
-		final double yOff)
+	private GeneralPathOverlay createGeneralPathOverlay(final Roi roi)
 	{
 		assert roi instanceof ShapeRoi;
 		final ShapeRoi polygonRoi = (ShapeRoi) roi;
@@ -585,10 +645,13 @@ public class OverlayHarmonizer extends AbstractContextual implements
 					region.lineTo(coords[0] + bounds.x, coords[1] + bounds.y);
 					break;
 				case PathIterator.SEG_QUADTO:
-					region.quadTo(coords[0] + bounds.x, coords[1] + bounds.y, coords[2] + bounds.x, coords[3] + bounds.y);
+					region.quadTo(coords[0] + bounds.x, coords[1] + bounds.y, coords[2] +
+						bounds.x, coords[3] + bounds.y);
 					break;
 				case PathIterator.SEG_CUBICTO:
-					region.cubicTo(coords[0] + bounds.x, coords[1] + bounds.y, coords[2] + bounds.x, coords[3] + bounds.y, coords[4] + bounds.x, coords[5] + bounds.y);
+					region.cubicTo(coords[0] + bounds.x, coords[1] + bounds.y, coords[2] +
+						bounds.x, coords[3] + bounds.y, coords[4] + bounds.x, coords[5] +
+						bounds.y);
 					break;
 				case PathIterator.SEG_CLOSE:
 					region.close();
@@ -601,27 +664,24 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		return overlay;
 	}
 
-	@SuppressWarnings("unused")
-	private List<PointOverlay> createPointOverlays(
-			final Roi roi, final double xOff, final double yOff)
+	private PointOverlay createPointOverlay(final Roi roi)
 	{
 		assert roi instanceof PointRoi;
 		final PointRoi ptRoi = (PointRoi) roi;
-		final List<PointOverlay> overlays = new ArrayList<PointOverlay>();
+		List<double[]> points = new ArrayList<double[]>();
 		for (int i = 0; i < ptRoi.getNCoordinates(); i++) {
 			final double x = ptRoi.getXCoordinates()[i] + roi.getBounds().x;
 			final double y = ptRoi.getYCoordinates()[i] + roi.getBounds().y;
 			final double[] pt = new double[]{x,y};
-			final PointOverlay pointOverlay = new PointOverlay(getContext(), pt);
-			assignPropertiesToOverlay(pointOverlay, roi);
-			overlays.add(pointOverlay);
+			points.add(pt);
 		}
-		return overlays;
+		final PointOverlay overlay = new PointOverlay(getContext(), points);
+		assignPropertiesToOverlay(overlay, roi);
+		return overlay;
 	}
 
 	@SuppressWarnings("unused")
-	private Overlay createDefaultOverlay(final Roi roi, final double xO,
-		final double yO)
+	private Overlay createDefaultOverlay(final Roi roi)
 	{
 		final Rectangle bounds = roi.getBounds();
 		final ArrayImg<BitType, BitArray> arrayImg =
@@ -645,7 +705,35 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		}
 		final BinaryMaskRegionOfInterest<BitType, Img<BitType>> broi =
 			new BinaryMaskRegionOfInterest<BitType, Img<BitType>>(img);
-		return new BinaryMaskOverlay<BitType, Img<BitType>>(getContext(), broi);
+		Overlay overlay =
+			new BinaryMaskOverlay<BitType, Img<BitType>>(getContext(), broi);
+		assignPropertiesToOverlay(overlay, roi);
+		return overlay;
+	}
+
+	private Overlay createTextOverlay(final Roi roi)
+	{
+		assert roi instanceof TextRoi;
+		TextRoi tRoi = (TextRoi) roi;
+		Rectangle bounds = tRoi.getBounds();
+		double x = bounds.x;
+		double y = bounds.y;
+		TextOverlay overlay = new TextOverlay(getContext(), x, y, tRoi.getText());
+		switch (tRoi.getJustification()) {
+			case TextRoi.LEFT:
+				overlay.setJustification(Justification.LEFT);
+				break;
+			case TextRoi.CENTER:
+				overlay.setJustification(Justification.CENTER);
+				break;
+			case TextRoi.RIGHT:
+				overlay.setJustification(Justification.RIGHT);
+				break;
+			default:
+				break;
+		}
+		assignPropertiesToOverlay(overlay, roi);
+		return overlay;
 	}
 
 	private void assignPropertiesToOverlay(final Overlay overlay, final Roi roi)
@@ -663,10 +751,4 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		}
 	}
 
-	private boolean sameColor(Color c1, Color c2) {
-		if (c1 == null) {
-			return c2 == null;
-		}
-		return c1.equals(c2);
-	}
 }

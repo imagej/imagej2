@@ -40,7 +40,7 @@ import imagej.plugin.Menu;
 import imagej.plugin.Plugin;
 
 /**
- * Implements IJ1's Shadows West plugin functionality.
+ * Implements legacy ImageJ's Shadows West plugin functionality.
  * 
  * @author Barry DeZonia
  */

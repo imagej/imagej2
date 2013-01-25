@@ -45,7 +45,7 @@ import imagej.plugin.Plugin;
 
 // TODO - replace the kind of functionality that IJ1's Benchmark command has.
 // It needs to display changes as they happen (something the legacy plugin can't
-// do inside IJ2).
+// do inside modern ImageJ).
 
 /**
  * @author Barry DeZonia

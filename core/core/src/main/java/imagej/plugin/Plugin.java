@@ -37,9 +37,6 @@ package imagej.plugin;
 
 import imagej.Priority;
 import imagej.command.Command;
-import imagej.display.Display;
-import imagej.module.ModuleItem;
-import imagej.service.Service;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -65,8 +62,9 @@ public @interface Plugin {
 	String CONTEXT_MENU_ROOT = "context";
 
 	/**
-	 * The type of plugin; e.g., {@link Service}, {@link PreprocessorPlugin},
-	 * {@link PostprocessorPlugin} or {@link Display}.
+	 * The type of plugin; e.g., {@link imagej.service.Service},
+	 * {@link PreprocessorPlugin}, {@link PostprocessorPlugin} or
+	 * {@link imagej.display.Display} .
 	 */
 	Class<?> type() default Command.class;
 
@@ -85,6 +83,10 @@ public @interface Plugin {
 	 * "Image > Overlay > Properties..." defines a "Properties..." menu item
 	 * within the "Overlay" submenu of the "Image" menu. Use either
 	 * {@link #menuPath} or {@link #menu} but not both.
+	 * <p>
+	 * <dd>Plugin types:</dd>
+	 * 
+	 * @see Command
 	 */
 	String menuPath() default "";
 
@@ -93,6 +95,8 @@ public @interface Plugin {
 	 * This construction allows menus to be fully specified including mnemonics,
 	 * accelerators and icons. Use either {@link #menuPath} or {@link #menu} but
 	 * not both.
+	 * 
+	 * @see Command
 	 */
 	Menu[] menu() default {};
 
@@ -101,10 +105,17 @@ public @interface Plugin {
 	 * case of a tool, the context menu that should be displayed while the tool is
 	 * active. The default value of {@link #APPLICATION_MENU_ROOT} references the
 	 * menu structure of the primary application window.
+	 * 
+	 * @see Command
 	 */
 	String menuRoot() default APPLICATION_MENU_ROOT;
 
-	/** Path to the plugin's icon (e.g., shown in the menu structure). */
+	/**
+	 * Path to the plugin's icon (e.g., shown in the menu structure).
+	 * 
+	 * @see Command
+	 * @see imagej.tool.Tool
+	 */
 	String iconPath() default "";
 
 	/**
@@ -127,6 +138,12 @@ public @interface Plugin {
 	 * <li>{@link Priority#VERY_LOW_PRIORITY}</li>
 	 * <li>{@link Priority#LAST_PRIORITY}</li>
 	 * </ul>
+	 * 
+	 * @see Command
+	 * @see PostprocessorPlugin
+	 * @see PreprocessorPlugin
+	 * @see imagej.service.Service
+	 * @see imagej.tool.Tool
 	 */
 	double priority() default Priority.NORMAL_PRIORITY;
 
@@ -134,6 +151,8 @@ public @interface Plugin {
 	 * Whether the plugin can be selected in the user interface. A plugin's
 	 * selection state (if any) is typically rendered in the menu structure using
 	 * a checkbox or radio button menu item (see {@link #selectionGroup}).
+	 * 
+	 * @see Command
 	 */
 	boolean selectable() default false;
 
@@ -142,22 +161,42 @@ public @interface Plugin {
 	 * plugins, only one of which is selected at any given time. Typically this is
 	 * rendered in the menu structure as a group of radio button menu items. If no
 	 * group is given, the plugin is assumed to be a standalone toggle, and
-	 * typically rendered as as checkbox menu item.
+	 * typically rendered as a checkbox menu item.
+	 * 
+	 * @see Command
 	 */
 	String selectionGroup() default "";
 
-	/** When false, grays out the plugin in the user interface. */
+	/**
+	 * When false, the plugin is grayed out in the user interface, if applicable.
+	 * 
+	 * @see Command
+	 * @see imagej.tool.Tool
+	 */
 	boolean enabled() default true;
 
-	/** When false, the user interface will not provide a cancel button. */
+	/**
+	 * When false, the plugin is not displayed in the user interface.
+	 * 
+	 * @see Command
+	 * @see imagej.tool.Tool
+	 */
+	boolean visible() default true;
+
+	/**
+	 * When false, the user interface will not provide a cancel button.
+	 * 
+	 * @see Command
+	 */
 	boolean cancelable() default true;
 
 	/**
 	 * Provides a "hint" as to whether the plugin would execute correctly in a
 	 * headless context.
 	 * <p>
-	 * Plugin developers should not specify "headless = true" unless the plugin
-	 * refrains from using any UI-specific features (e.g., AWT or Swing calls).
+	 * Plugin developers should not specify {@code headless = true} unless the
+	 * plugin refrains from using any UI-specific features (e.g., AWT or Swing
+	 * calls).
 	 * </p>
 	 * <p>
 	 * Of course, merely setting this flag does not guarantee that the plugin will
@@ -172,7 +211,7 @@ public @interface Plugin {
 	 * Defines a function that is called during preprocessing to assign the
 	 * plugin's initial input values. This initializer is called before the
 	 * individual @{@link Parameter#initializer()} (i.e.,
-	 * {@link ModuleItem#getInitializer()}) methods.
+	 * {@link imagej.module.ModuleItem#getInitializer()}) methods.
 	 * 
 	 * @see InitPreprocessor
 	 */

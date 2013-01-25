@@ -1,4 +1,3 @@
-package imagej.build;
 /*
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
@@ -34,6 +33,8 @@ package imagej.build;
  * #L%
  */
 
+package imagej.build;
+
 import imagej.build.minimaven.BuildEnvironment;
 import imagej.build.minimaven.MavenProject;
 
@@ -46,45 +47,67 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
-
+/**
+ * The main-class for a simple and small drop-in replacement of Maven.
+ * 
+ * Naturally, MiniMaven does not pretend to be as powerful as Maven. But it does the job
+ * as far as ImageJ2 and Fiji are concerned, and it does not download half the internet
+ * upon initial operation.
+ * 
+ * @author Johannes Schindelin
+ */
 public class MiniMaven {
-	public static void ensureIJDirIsSet() {
-		String ijDir = System.getProperty("ij.dir");
-		if (ijDir != null && new File(ijDir).isDirectory())
-			return;
-		ijDir = MiniMaven.class.getResource("MiniMaven.class").toString();
-		for (String prefix : new String[] { "jar:", "file:" })
-			if (ijDir.startsWith(prefix))
-				ijDir = ijDir.substring(prefix.length());
-		int bang = ijDir.indexOf("!/");
-		if (bang >= 0)
-			ijDir = ijDir.substring(0, bang);
-		else {
-			String suffix = "/" + MiniMaven.class.getName().replace('.', '/') + ".class";
-			if (ijDir.endsWith(suffix))
-				ijDir = ijDir.substring(0, ijDir.length() - suffix.length());
-			else
-				throw new RuntimeException("Funny ?-) " + ijDir);
-		}
-		for (String suffix : new String[] { "src-plugins/fake/target/classes", "fake.jar", "fake", "/", "jars", "/", "build", "/" })
-			if (ijDir.endsWith(suffix))
-				ijDir = ijDir.substring(0, ijDir.length() - suffix.length());
-		System.setProperty("ij.dir", ijDir);
+	private final static void usage() {
+		System.err.println("Usage: MiniMaven [options...] [command]\n\n"
+				+ "Supported commands:\n"
+				+ "compile\n"
+				+ "\tcompile the project\n"
+				+ "jar\n"
+				+ "\tcompile the project into a .jar file\n"
+				+ "install\n"
+				+ "\tcompile & install the project and its dependencies\n"
+				+ "run\n"
+				+ "\trun the project\n"
+				+ "compile-and-run\n"
+				+ "\tcompile and run the project\n"
+				+ "clean\n"
+				+ "\tclean the project\n"
+				+ "get-dependencies\n"
+				+ "\tdownload the dependencies of the project\n\n"
+				+ "Options:\n"
+				+ "-D<key>=<value>\n"
+				+ "\tset a system property");
+		System.exit(1);
 	}
 
-	private final static String usage = "Usage: MiniMaven [command]\n"
-		+ "\tSupported commands: compile, run, compile-and-run, clean, get-dependencies";
-
 	public static void main(String[] args) throws Exception {
-		ensureIJDirIsSet();
-		PrintStream err = System.err;
-		BuildEnvironment env = new BuildEnvironment(err,
+		int offset;
+		for (offset = 0; offset < args.length && args[offset].charAt(0) == '-'; offset++) {
+			final String option = args[offset];
+			if (option.startsWith("-D")) {
+				int equals = option.indexOf('=', 2);
+				if (equals < 0)
+					System.getProperties().remove(option.substring(2));
+				else
+					System.setProperty(option.substring(2, equals), option.substring(equals + 1));
+			}
+			else {
+				usage();
+			}
+		}
+		String command = "compile-and-run";
+		if (args.length == offset + 1)
+			command = args[offset];
+		else if (args.length > offset + 1)
+			usage();
+
+		final PrintStream err = System.err;
+		final BuildEnvironment env = new BuildEnvironment(err,
 			"true".equals(getSystemProperty("minimaven.download.automatically", "true")),
 			"true".equals(getSystemProperty("minimaven.verbose", "false")),
-			false);
-		MavenProject root = env.parse(new File("pom.xml"), null);
-		String command = args.length == 0 ? "compile-and-run" : args[0];
-		String artifactId = getSystemProperty("artifactId", root.getArtifactId().equals("pom-ij-base") ? "ij-app" : root.getArtifactId());
+			"true".equals(getSystemProperty("minimaven.debug", "false")));
+		final MavenProject root = env.parse(new File("pom.xml"), null);
+		final String artifactId = getSystemProperty("artifactId", root.getArtifactId().equals("pom-ij-base") ? "ij-app" : root.getArtifactId());
 
 		MavenProject pom = findPOM(root, artifactId);
 		if (pom == null)
@@ -106,32 +129,36 @@ public class MiniMaven {
 				pom.copyDependencies(pom.getTarget(), true);
 			return;
 		}
+		else if (command.equals("install")) {
+			pom.buildAndInstall();
+			return;
+		}
 		if (command.equals("clean"))
 			pom.clean();
 		else if (command.equals("get") || command.equals("get-dependencies"))
 			pom.downloadDependencies();
 		else if (command.equals("run")) {
-			String mainClass = getSystemProperty("mainClass", pom.getMainClass());
+			final String mainClass = getSystemProperty("mainClass", pom.getMainClass());
 			if (mainClass == null) {
 				err.println("No main class specified in pom " + pom.getCoordinate());
 				System.exit(1);
 			}
-			String[] paths = pom.getClassPath(false).split(File.pathSeparator);
-			URL[] urls = new URL[paths.length];
+			final String[] paths = pom.getClassPath(false).split(File.pathSeparator);
+			final URL[] urls = new URL[paths.length];
 			for (int i = 0; i < urls.length; i++)
 				urls[i] = new URL("file:" + paths[i] + (paths[i].endsWith(".jar") ? "" : "/"));
-			URLClassLoader classLoader = new URLClassLoader(urls);
+			final URLClassLoader classLoader = new URLClassLoader(urls);
 			// needed for sezpoz
 			Thread.currentThread().setContextClassLoader(classLoader);
-			Class<?> clazz = classLoader.loadClass(mainClass);
-			Method main = clazz.getMethod("main", new Class[] { String[].class });
+			final Class<?> clazz = classLoader.loadClass(mainClass);
+			final Method main = clazz.getMethod("main", new Class[] { String[].class });
 			main.invoke(null, new Object[] { new String[0] });
 		}
 		else if (command.equals("classpath"))
 			err.println(pom.getClassPath(false));
 		else if (command.equals("list")) {
-			Set<MavenProject> result = new TreeSet<MavenProject>();
-			Stack<MavenProject> stack = new Stack<MavenProject>();
+			final Set<MavenProject> result = new TreeSet<MavenProject>();
+			final Stack<MavenProject> stack = new Stack<MavenProject>();
 			stack.push(pom.getRoot());
 			while (!stack.empty()) {
 				pom = stack.pop();
@@ -141,11 +168,13 @@ public class MiniMaven {
 				for (MavenProject child : pom.getChildren())
 					stack.push(child);
 			}
-			for (MavenProject pom2 : result)
+			for (final MavenProject pom2 : result)
 				System.err.println(pom2);
 		}
-		else
-			err.println("Unhandled command: " + command + "\n" + usage);
+		else {
+			err.println("Unhandled command: " + command);
+			usage();
+		}
 	}
 
 	protected static MavenProject findPOM(MavenProject root, String artifactId) {

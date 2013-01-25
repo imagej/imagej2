@@ -38,10 +38,9 @@ package imagej.legacy.patches;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.ImageWindow;
-import imagej.ImageJ;
 import imagej.legacy.LegacyOutputTracker;
 import imagej.legacy.LegacyService;
-import imagej.util.Log;
+import imagej.legacy.Utils;
 
 /**
  * Overrides {@link ImageWindow} methods.
@@ -49,6 +48,7 @@ import imagej.util.Log;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
+@SuppressWarnings("javadoc")
 public final class ImageWindowMethods {
 
 	private ImageWindowMethods() {
@@ -56,11 +56,14 @@ public final class ImageWindowMethods {
 	}
 
 	/** Replaces {@link ImageWindow#setVisible(boolean)}. */
-	public static void setVisible(final ImageWindow obj, final boolean visible) {
-		Log.debug("ImageWindow.setVisible(" + visible + "): " + obj);
+	public static void setVisible(final LegacyService legacyService, final ImageWindow obj, final boolean visible) {
+		if (!Utils.isLegacyMode(legacyService)) {
+			legacyService.getLogService().debug("ImageWindow.setVisible(" + visible + "): " + obj);
+		}
 		if (!visible) return;
-		final LegacyService legacyService = ImageJ.get(LegacyService.class);
-		legacyService.legacyImageChanged(obj.getImagePlus());
+		if (Utils.isLegacyMode(legacyService) || Utils.isLegacyThread(Thread.currentThread())) {
+			legacyService.legacyImageChanged(obj.getImagePlus());
+		}
 		// TODO - not sure this is correct. Does setVisible(true) imply that it
 		// becomes the current window? This arose in fixing a bug with 3d Project
 		// support.
@@ -68,15 +71,16 @@ public final class ImageWindowMethods {
 	}
 
 	/** Replaces {@link ImageWindow#show()}. */
-	public static void show(final ImageWindow obj) {
-		setVisible(obj, true);
+	public static void show(final LegacyService legacyService, final ImageWindow obj) {
+		if (Utils.isLegacyMode(legacyService)) return;
+		setVisible(legacyService, obj, true);
 	}
 
-	/** Appends {@link ImageWindow#close()}. */
-	public static void close(final ImageWindow obj) {
+	/** Prepends {@link ImageWindow#close()}. */
+	public static void close(final LegacyService legacyService, final ImageWindow obj) {
+		if (!Utils.isLegacyMode(legacyService) && !Utils.isLegacyThread(Thread.currentThread())) return;
 		final ImagePlus imp = obj.getImagePlus();
-		if ((imp != null) && (!LegacyOutputTracker.isBeingClosedbyIJ2(imp))) {
-			LegacyOutputTracker.getClosedImps().add(imp);
-		}
+		if (imp == null) return;
+		LegacyOutputTracker.addClosed(imp);
 	}
 }

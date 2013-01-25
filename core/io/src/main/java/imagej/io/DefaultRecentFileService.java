@@ -59,6 +59,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// TODO - DefaultRecentFileService, DefaultWindowService, and DefaultLutService
+// all build menus dynamically (see createInfo()). We may be able to abstract a
+// helper class out of these that can be used by them and future services.
+
 /**
  * Default service for managing the Recently Used Files menu.
  * <p>
@@ -175,8 +179,6 @@ public final class DefaultRecentFileService extends AbstractService implements
 
 		// register the modules with the module service
 		moduleService.addModules(recentModules.values());
-
-		subscribeToEvents(eventService);
 	}
 
 	// -- Event handlers --

@@ -36,7 +36,6 @@
 package imagej.data.display.event;
 
 import imagej.data.display.ImageDisplay;
-import imagej.display.event.DisplayEvent;
 import net.imglib2.meta.AxisType;
 
 /**
@@ -46,7 +45,7 @@ import net.imglib2.meta.AxisType;
  * 
  * @author Barry DeZonia
  */
-public class DelayedPositionEvent extends DisplayEvent {
+public class DelayedPositionEvent extends ImageDisplayEvent {
 
 	private final AxisType axis;
 
@@ -61,6 +60,8 @@ public class DelayedPositionEvent extends DisplayEvent {
 		}
 		this.axis = axis;
 	}
+
+	// -- DelayedPositionEvent methods --
 
 	public AxisType getAxis() {
 		return axis;

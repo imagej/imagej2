@@ -35,10 +35,6 @@
 
 package imagej.core.commands.display;
 
-import java.util.List;
-
-import net.imglib2.display.ColorTable;
-
 import imagej.command.ContextCommand;
 import imagej.data.Position;
 import imagej.data.display.DatasetView;
@@ -52,58 +48,61 @@ import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
+import java.util.List;
+
+import net.imglib2.display.ColorTable;
 
 /**
+ * TODO
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Color"),
+		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Color"),
 	@Menu(label = "Show LUT As Table", weight = 13) })
 public class ShowLUTAsTable extends ContextCommand {
 
 	// -- Parameters --
-	
+
 	@Parameter
 	private ImageDisplayService imgDispService;
-	
+
 	@Parameter
 	private ImageDisplay display;
-	
+
 	@Parameter(type = ItemIO.OUTPUT, label = "Look-Up Table")
 	private ResultsTable table;
-	
+
 	// -- Command methods --
-	
+
 	@Override
 	public void run() {
-		DatasetView view = imgDispService.getActiveDatasetView(display);
-		List<ColorTable> colorTables = view.getColorTables();
-		Position planePos = view.getPlanePosition();
+		final DatasetView view = imgDispService.getActiveDatasetView(display);
+		final List<ColorTable> colorTables = view.getColorTables();
+		final Position planePos = view.getPlanePosition();
 		long pos = planePos.getIndex();
 		if (pos < 0 || pos >= colorTables.size()) pos = 0;
-		ColorTable colorTable = colorTables.get((int)pos);
-		int rowCount = colorTable.getLength();
-		int componentCount = colorTable.getComponentCount();
-		int colCount = componentCount + 1;
+		final ColorTable colorTable = colorTables.get((int) pos);
+		final int rowCount = colorTable.getLength();
+		final int componentCount = colorTable.getComponentCount();
+		final int colCount = componentCount + 1;
 		table = new DefaultResultsTable(colCount, rowCount);
-		table.setColumnHeader("Index", 0);
+		table.setColumnHeader(0, "Index");
 		// TODO - For now provide default channel name column headers
 		// At some point we hope to have dimensional position labels which we could
 		// use here.
 		for (int x = 0; x < componentCount; x++) {
-			table.setColumnHeader("CH"+x, x+1);
+			table.setColumnHeader(x + 1, "CH" + x);
 		}
 		// fill in values
 		for (int y = 0; y < rowCount; y++) {
 			table.setValue(0, y, y);
 			for (int x = 0; x < componentCount; x++) {
-				double value = colorTable.get(x, y);
-				table.setValue(x+1, y, value);
+				final double value = colorTable.get(x, y);
+				table.setValue(x + 1, y, value);
 			}
 		}
 	}
+
 }
