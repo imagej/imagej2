@@ -51,7 +51,7 @@ import imagej.plugin.Plugin;
 	@Menu(label = MenuConstants.PLUGINS_LABEL,
 		weight = MenuConstants.PLUGINS_WEIGHT,
 		mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Shortcuts"),
-	@Menu(label = "Create Shortcut...") })
+	@Menu(label = "Create Shortcut...", weight = 2) })
 public class CreateShortcut extends UnimplementedCommand {
 	// TODO
 }

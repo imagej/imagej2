@@ -52,7 +52,7 @@ import imagej.plugin.Plugin;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Zoom", mnemonic = 'z'),
-	@Menu(label = "View 100%", accelerator = "control 5", weight = 4) },
+	@Menu(label = "View 100%", accelerator = "control NUM5", weight = 4) },
 	headless = true)
 public class Zoom100Percent extends ContextCommand {
 
