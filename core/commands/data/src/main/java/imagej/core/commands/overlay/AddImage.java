@@ -35,7 +35,7 @@
 
 package imagej.core.commands.overlay;
 
-import imagej.command.ContextCommand;
+import imagej.command.UnimplementedCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
 import imagej.plugin.Menu;
@@ -53,7 +53,7 @@ import imagej.plugin.Plugin;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Overlay"),
 	@Menu(label = "Add Image", weight = 7) })
-public class AddImage extends ContextCommand {
+public class AddImage extends UnimplementedCommand {
 
 	// -- Parameters --
 
@@ -62,20 +62,12 @@ public class AddImage extends ContextCommand {
 
 	// -- accessors --
 
-	public void setImageDisplay(ImageDisplay disp) {
+	public void setImageDisplay(final ImageDisplay disp) {
 		display = disp;
 	}
 
 	public ImageDisplay getImageDisplay() {
 		return display;
-	}
-
-	// -- run() method --
-
-	@Override
-	public void run() {
-		// TODO
-		cancel("This command is not yet implemented.");
 	}
 
 }

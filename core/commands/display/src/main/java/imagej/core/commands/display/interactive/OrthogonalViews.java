@@ -35,7 +35,7 @@
 
 package imagej.core.commands.display.interactive;
 
-import imagej.command.ContextCommand;
+import imagej.command.UnimplementedCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
 import imagej.plugin.Menu;
@@ -47,34 +47,29 @@ import imagej.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(iconPath = "/icons/bricks.png", menu = {
-	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Stacks"),
-	@Menu(label = "Orthogonal Views", weight=5, accelerator="control shift H")})
-public class OrthogonalViews extends ContextCommand {
+@Plugin(iconPath = "/icons/bricks.png",
+	menu = {
+		@Menu(label = MenuConstants.IMAGE_LABEL,
+			weight = MenuConstants.IMAGE_WEIGHT,
+			mnemonic = MenuConstants.IMAGE_MNEMONIC),
+		@Menu(label = "Stacks"),
+		@Menu(label = "Orthogonal Views", weight = 5,
+			accelerator = "control shift H") })
+public class OrthogonalViews extends UnimplementedCommand {
 
 	// -- Parameters --
-	
-	@Parameter(required=true)
+
+	@Parameter
 	private ImageDisplay display;
-	
+
 	// -- accessors --
-	
-	public void setImageDisplay(ImageDisplay disp) {
+
+	public void setImageDisplay(final ImageDisplay disp) {
 		display = disp;
 	}
 
 	public ImageDisplay getImageDisplay() {
 		return display;
-	}
-	
-	// -- run() method --
-	
-	@Override
-	public void run() {
-		// TODO
-		cancel("This command is not yet implemented.");
 	}
 
 }

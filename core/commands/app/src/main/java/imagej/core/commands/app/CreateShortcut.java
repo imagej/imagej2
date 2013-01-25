@@ -35,7 +35,7 @@
 
 package imagej.core.commands.app;
 
-import imagej.command.ContextCommand;
+import imagej.command.UnimplementedCommand;
 import imagej.menu.MenuConstants;
 import imagej.plugin.Menu;
 import imagej.plugin.Plugin;
@@ -48,18 +48,10 @@ import imagej.plugin.Plugin;
  * @author Barry DeZonia
  */
 @Plugin(iconPath = "/icons/bricks.png", menu = {
-	@Menu(label = MenuConstants.PLUGINS_LABEL, weight = MenuConstants.PLUGINS_WEIGHT,
-		mnemonic = MenuConstants.PLUGINS_MNEMONIC),
-	@Menu(label = "Shortcuts"),
+	@Menu(label = MenuConstants.PLUGINS_LABEL,
+		weight = MenuConstants.PLUGINS_WEIGHT,
+		mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Shortcuts"),
 	@Menu(label = "Create Shortcut...") })
-public class CreateShortcut extends ContextCommand {
-
-	// -- run() method --
-	
-	@Override
-	public void run() {
-		// TODO
-		cancel("This command is not yet implemented.");
-	}
-
+public class CreateShortcut extends UnimplementedCommand {
+	// TODO
 }

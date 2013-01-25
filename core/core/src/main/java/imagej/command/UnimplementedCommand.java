@@ -33,40 +33,19 @@
  * #L%
  */
 
-package imagej.core.commands.display.interactive;
-
-import imagej.command.UnimplementedCommand;
-import imagej.data.display.ImageDisplay;
-import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+package imagej.command;
 
 /**
- * TODO
+ * A command that is not yet implemented. It exists so that stub commands can
+ * override it trivially, and act as markers of future functionality.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-@Plugin(iconPath = "/icons/bricks.png", menu = {
-	@Menu(label = MenuConstants.ANALYZE_LABEL,
-		weight = MenuConstants.ANALYZE_WEIGHT,
-		mnemonic = MenuConstants.ANALYZE_MNEMONIC), @Menu(label = "Tools"),
-	@Menu(label = "Synchronize Windows") })
-public class SynchronizeWindows extends UnimplementedCommand {
+public abstract class UnimplementedCommand extends ContextCommand {
 
-	// -- Parameters --
-
-	@Parameter
-	private ImageDisplay display;
-
-	// -- accessors --
-
-	public void setImageDisplay(final ImageDisplay disp) {
-		display = disp;
-	}
-
-	public ImageDisplay getImageDisplay() {
-		return display;
+	@Override
+	public void run() {
+		cancel("This command is not yet implemented.");
 	}
 
 }

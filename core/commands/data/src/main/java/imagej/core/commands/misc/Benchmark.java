@@ -35,7 +35,7 @@
 
 package imagej.core.commands.misc;
 
-import imagej.command.ContextCommand;
+import imagej.command.UnimplementedCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
 import imagej.plugin.Menu;
@@ -50,33 +50,25 @@ import imagej.plugin.Plugin;
  * @author Barry DeZonia
  */
 @Plugin(iconPath = "/icons/bricks.png", menu = {
-	@Menu(label = MenuConstants.PLUGINS_LABEL, weight = MenuConstants.PLUGINS_WEIGHT,
-		mnemonic = MenuConstants.PLUGINS_MNEMONIC),
-	@Menu(label = "Utilities"),
+	@Menu(label = MenuConstants.PLUGINS_LABEL,
+		weight = MenuConstants.PLUGINS_WEIGHT,
+		mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Utilities"),
 	@Menu(label = "Benchmark") })
-public class Benchmark extends ContextCommand {
+public class Benchmark extends UnimplementedCommand {
 
 	// -- Parameters --
-	
+
 	@Parameter
 	private ImageDisplay display;
-	
+
 	// -- accessors --
-	
-	public void setImageDisplay(ImageDisplay disp) {
+
+	public void setImageDisplay(final ImageDisplay disp) {
 		display = disp;
 	}
 
 	public ImageDisplay getImageDisplay() {
 		return display;
-	}
-	
-	// -- run() method --
-	
-	@Override
-	public void run() {
-		// TODO
-		cancel("This command is not yet implemented.");
 	}
 
 }
