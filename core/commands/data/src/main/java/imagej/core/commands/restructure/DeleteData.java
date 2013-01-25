@@ -35,7 +35,6 @@
 
 package imagej.core.commands.restructure;
 
-import imagej.Cancelable;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.menu.MenuConstants;
@@ -63,7 +62,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Data", mnemonic = 'd'), @Menu(label = "Delete Data...") },
 	headless = true, initializer = "initAll")
-public class DeleteData extends DynamicCommand implements Cancelable {
+public class DeleteData extends DynamicCommand {
 
 	// -- Constants --
 
@@ -88,21 +87,6 @@ public class DeleteData extends DynamicCommand implements Cancelable {
 		callback = "parameterChanged")
 	private long quantity = 1;
 
-	// -- instance variables that are not Parameters --
-	private String err;
-	
-	// -- Cancelable methods --
-
-	@Override
-	public boolean isCanceled() {
-		return err != null;
-	}
-
-	@Override
-	public String getCancelReason() {
-		return err;
-	}
-	
 	// -- DeleteData methods --
 
 	public Dataset getDataset() {
@@ -192,7 +176,7 @@ public class DeleteData extends DynamicCommand implements Cancelable {
 	private boolean inputBad(final AxisType axis) {
 		// axis not determined by dialog
 		if (axis == null) {
-			err = "Axis must not be null.";
+			cancel("Axis must not be null.");
 			return true;
 		}
 
@@ -202,25 +186,25 @@ public class DeleteData extends DynamicCommand implements Cancelable {
 
 		// axis not present in Dataset
 		if (axisIndex < 0) {
-			err = "Axis "+axis.getLabel()+" is not present in input dataset.";
+			cancel("Axis "+axis.getLabel()+" is not present in input dataset.");
 			return true;
 		}
 
 		// bad value for startPosition
 		if (position < 1 || position > axisSize) {
-			err = "Start position is out of bounds.";
+			cancel("Start position is out of bounds.");
 			return true;
 		}
 
 		// bad value for numDeleting
 		if (quantity <= 0) {
-			err = "Quantity to delete must be a positive number.";
+			cancel("Quantity to delete must be a positive number.");
 			return true;
 		}
 
 		// trying to delete all hyperplanes along axis
 		if (quantity >= axisSize) {
-			err = "Cannot delete all entries along axis "+axis.getLabel();
+			cancel("Cannot delete all entries along axis "+axis.getLabel());
 			return true;
 		}
 

@@ -35,6 +35,7 @@
 
 package imagej.command;
 
+import imagej.Cancelable;
 import imagej.Contextual;
 import imagej.ImageJ;
 import imagej.module.DefaultModule;
@@ -51,12 +52,15 @@ import java.lang.reflect.Field;
  * 
  * @author Curtis Rueden
  */
-public abstract class DynamicCommand extends DefaultModule implements Command,
-	Contextual
+public abstract class DynamicCommand extends DefaultModule implements
+	Cancelable, Command, Contextual
 {
 
 	private ImageJ context;
 	private DynamicCommandInfo info;
+
+	/** Reason for cancelation, or null if not canceled. */
+	private String cancelReason;
 
 	// -- Module methods --
 
@@ -116,6 +120,25 @@ public abstract class DynamicCommand extends DefaultModule implements Command,
 		final CommandInfo commandInfo = commandService.populateServices(this);
 
 		info = new DynamicCommandInfo(commandInfo, getClass());
+	}
+
+	// -- Cancelable methods --
+
+	@Override
+	public boolean isCanceled() {
+		return cancelReason != null;
+	}
+
+	@Override
+	public String getCancelReason() {
+		return cancelReason;
+	}
+
+	// -- Internal methods --
+
+	/** Cancels the command execution, with the given reason for doing so. */
+	protected void cancel(final String reason) {
+		cancelReason = reason;
 	}
 
 }

@@ -35,7 +35,6 @@
 
 package imagej.core.commands.app;
 
-import imagej.Cancelable;
 import imagej.command.ContextCommand;
 import imagej.menu.MenuConstants;
 import imagej.plugin.Menu;
@@ -53,26 +52,14 @@ import imagej.plugin.Plugin;
 		mnemonic = MenuConstants.PLUGINS_MNEMONIC),
 	@Menu(label = "Shortcuts"),
 	@Menu(label = "Create Shortcut...") })
-public class CreateShortcut extends ContextCommand implements Cancelable {
+public class CreateShortcut extends ContextCommand {
 
-	private String err;
-	
 	// -- run() method --
 	
 	@Override
 	public void run() {
 		// TODO
-		err = "This command is not yet implemented.";
-	}
-
-	@Override
-	public boolean isCanceled() {
-		return err != null;
-	}
-
-	@Override
-	public String getCancelReason() {
-		return err;
+		cancel("This command is not yet implemented.");
 	}
 
 }

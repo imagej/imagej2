@@ -35,7 +35,6 @@
 
 package imagej.ui.swing.commands;
 
-import imagej.Cancelable;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
@@ -93,7 +92,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 	@Menu(label = "Analyze"),
 	@Menu(label = "Histogram Plot", accelerator = "control shift alt H",
 		weight = 0) })
-public class HistogramPlot extends ContextCommand implements Cancelable {
+public class HistogramPlot extends ContextCommand {
 
 	// -- instance variables that are Parameters --
 
@@ -124,20 +123,8 @@ public class HistogramPlot extends ContextCommand implements Cancelable {
 	private final int BINS = 256;
 	private final boolean showBins = true;
 
-	private String err;
-	
 	// -- public interface --
 
-	@Override
-	public boolean isCanceled() {
-		return err != null;
-	}
-
-	@Override
-	public String getCancelReason() {
-		return err;
-	}
-	
 	public void setDisplay(ImageDisplay disp) {
 		display = disp;
 	}
@@ -236,19 +223,19 @@ public class HistogramPlot extends ContextCommand implements Cancelable {
 	private boolean inputOkay() {
 		input = displayService.getActiveDataset(display);
 		if (input == null) {
-			err = "Input dataset must not be null.";
+			cancel("Input dataset must not be null.");
 			return false;
 		}
 		if (input.getImgPlus() == null) {
-			err = "Input Imgplus must not be null.";
+			cancel("Input Imgplus must not be null.");
 			return false;
 		}
 		if (!input.isInteger()) {
-			err = "Input dataset must be an integral type.";
+			cancel("Input dataset must be an integral type.");
 			return false;
 		}
 		if (input.isRGBMerged()) {
-			err = "Input dataset cannot be color.";
+			cancel("Input dataset cannot be color.");
 			return false;
 		}
 		return true;

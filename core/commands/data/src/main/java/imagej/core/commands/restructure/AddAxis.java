@@ -35,7 +35,6 @@
 
 package imagej.core.commands.restructure;
 
-import imagej.Cancelable;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.menu.MenuConstants;
@@ -62,7 +61,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Axes", mnemonic = 'a'), @Menu(label = "Add Axis...") },
 	headless = true, initializer = "initAll")
-public class AddAxis extends DynamicCommand implements Cancelable {
+public class AddAxis extends DynamicCommand {
 
 	// -- Constants --
 
@@ -79,22 +78,6 @@ public class AddAxis extends DynamicCommand implements Cancelable {
 
 	@Parameter(label = "Axis size", persist = false)
 	private long axisSize = 2;
-
-	// -- instance variables --
-	
-	private String err;
-
-	// -- Cancelable methods --
-	
-	@Override
-	public boolean isCanceled() {
-		return err != null;
-	}
-
-	@Override
-	public String getCancelReason() {
-		return err;
-	}
 
 	// -- AddAxis methods --
 
@@ -162,20 +145,20 @@ public class AddAxis extends DynamicCommand implements Cancelable {
 	private boolean inputBad(final AxisType axis) {
 		// axis not determined by dialog
 		if (axis == null) {
-			err = "Axis must not be null.";
+			cancel("Axis must not be null.");
 			return true;
 		}
 
 		// axis already present in Dataset
 		final int axisIndex = dataset.getAxisIndex(axis);
 		if (axisIndex >= 0) {
-			err = "Axis "+axis.getLabel()+" already present in dataset.";
+			cancel("Axis "+axis.getLabel()+" already present in dataset.");
 			return true;
 		}
 
 		// axis size invalid
 		if (axisSize <= 0) {
-			err = "Axis size invalid: "+axisSize;
+			cancel("Axis size invalid: "+axisSize);
 			return true;
 		}
 

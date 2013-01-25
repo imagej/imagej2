@@ -35,7 +35,6 @@
 
 package imagej.core.commands.convolve;
 
-import imagej.Cancelable;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
@@ -67,7 +66,7 @@ import net.imglib2.meta.AxisType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Shadows", mnemonic = 's'),
 	@Menu(label = "Shadows Demo", weight = 200) }, headless = true)
-public class ShadowsDemo extends ContextCommand implements Cancelable {
+public class ShadowsDemo extends ContextCommand {
 
 	private static final double[][] KERNELS = new double[][] {
 		ShadowsNorth.KERNEL, ShadowsNortheast.KERNEL, ShadowsEast.KERNEL,
@@ -95,8 +94,6 @@ public class ShadowsDemo extends ContextCommand implements Cancelable {
 
 	private boolean userHasQuit = false;
 
-	private String err;
-
 	// -- public interface --
 
 	/**
@@ -106,7 +103,7 @@ public class ShadowsDemo extends ContextCommand implements Cancelable {
 	@Override
 	public void run() {
 		if (unsupportedImage(display)) {
-			err = "This command only works with a single plane of data";
+			cancel("This command only works with a single plane of data");
 			return;
 		}
 		statusService.showStatus("Press ESC to terminate");
@@ -131,16 +128,6 @@ public class ShadowsDemo extends ContextCommand implements Cancelable {
 			}
 		}
 		statusService.showStatus("Shadows demo terminated");
-	}
-
-	@Override
-	public boolean isCanceled() {
-		return err != null;
-	}
-
-	@Override
-	public String getCancelReason() {
-		return err;
 	}
 
 	public void setDisplay(ImageDisplay disp) {

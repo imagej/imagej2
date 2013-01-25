@@ -35,7 +35,6 @@
 
 package imagej.core.commands.imglib;
 
-import imagej.Cancelable;
 import imagej.command.DynamicCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.data.sampler.AxisSubrange;
@@ -65,7 +64,7 @@ import net.imglib2.meta.AxisType;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Duplicate", accelerator = "shift control D") },
 	headless = true, initializer = "initializer")
-public class DuplicateImage extends DynamicCommand implements Cancelable {
+public class DuplicateImage extends DynamicCommand {
 
 	// -- Parameters --
 
@@ -85,7 +84,6 @@ public class DuplicateImage extends DynamicCommand implements Cancelable {
 
 	private Map<AxisType, AxisSubrange> definitions;
 	private AxisType[] theAxes;
-	private String cancelReason;
 
 	// -- DuplicateImage methods --
 
@@ -170,7 +168,6 @@ public class DuplicateImage extends DynamicCommand implements Cancelable {
 
 	@Override
 	public void run() {
-		cancelReason = null;
 		try {
 			if (specialBehavior) {
 				final SamplingDefinition samples = determineSamples();
@@ -181,22 +178,10 @@ public class DuplicateImage extends DynamicCommand implements Cancelable {
 					samplerService.duplicateSelectedCompositePlane(inputDisplay);
 			}
 		} catch (Exception e) {
-			cancelReason = e.getMessage();
+			cancel(e.getMessage());
 		}
 	}
 
-
-	@Override
-	public boolean isCanceled() {
-		return cancelReason != null;
-	}
-
-	@Override
-	public String getCancelReason() {
-		return cancelReason;
-	}
-
-	
 	// -- plugin parameter initializer --
 
 	protected void initializer() {

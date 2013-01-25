@@ -35,9 +35,6 @@
 
 package imagej.core.commands.assign;
 
-import java.net.URL;
-
-import imagej.Cancelable;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.Position;
@@ -54,6 +51,9 @@ import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.widget.Button;
+
+import java.net.URL;
+
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.ops.condition.UVInsideRoiCondition;
@@ -79,10 +79,8 @@ import net.imglib2.type.numeric.real.DoubleType;
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "Equation...", weight = 20) },
 	headless = true)
-public class EquationDataValues<T extends RealType<T>>
-	extends ContextCommand
-	implements Cancelable
-{
+public class EquationDataValues<T extends RealType<T>> extends ContextCommand {
+
 	// -- instance variables that are Parameters --
 
 	@Parameter
@@ -120,29 +118,21 @@ public class EquationDataValues<T extends RealType<T>>
 	private long[] origin;
 	private long[] span;
 	private UVInsideRoiCondition condition;
-	private String err;
 
 	// -- public interface --
 
 	@Override
-	public boolean isCanceled() {
-		return err != null;
-	}
-
-	@Override
-	public String getCancelReason() {
-		return err;
-	}
-	
-	@Override
 	public void run() {
-		err = setRegion(display, allPlanes);
-		if (err != null) return;
+		final String err = setRegion(display, allPlanes);
+		if (err != null) {
+			cancel(err);
+			return;
+		}
 		RealEquationFunctionParser parser = new RealEquationFunctionParser();
 		Tuple2<Function<long[],DoubleType>, String> result =
 				parser.parse(equationString, dataset.getImgPlus());
 		if (result.get2() != null) {
-			err = "Equation parsing error: "+result.get2();
+			cancel("Equation parsing error: "+result.get2());
 			return;
 		}
 		InputIteratorFactory<long[]> factory = new PointInputIteratorFactory();

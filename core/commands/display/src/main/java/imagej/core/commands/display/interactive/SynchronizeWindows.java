@@ -35,7 +35,6 @@
 
 package imagej.core.commands.display.interactive;
 
-import imagej.Cancelable;
 import imagej.command.ContextCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
@@ -53,9 +52,7 @@ import imagej.plugin.Plugin;
 		mnemonic = MenuConstants.ANALYZE_MNEMONIC),
 	@Menu(label = "Tools"),
 	@Menu(label = "Synchronize Windows") })
-public class SynchronizeWindows extends ContextCommand implements Cancelable {
-
-	private String err;
+public class SynchronizeWindows extends ContextCommand {
 
 	// -- Parameters --
 	
@@ -77,17 +74,7 @@ public class SynchronizeWindows extends ContextCommand implements Cancelable {
 	@Override
 	public void run() {
 		// TODO
-		err = "This command is not yet implemented.";
-	}
-
-	@Override
-	public boolean isCanceled() {
-		return err != null;
-	}
-
-	@Override
-	public String getCancelReason() {
-		return err;
+		cancel("This command is not yet implemented.");
 	}
 
 }

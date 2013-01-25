@@ -35,7 +35,6 @@
 
 package imagej.core.commands.assign;
 
-import imagej.Cancelable;
 import imagej.command.ContextCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayService;
@@ -61,7 +60,6 @@ import net.imglib2.type.numeric.RealType;
 	headless = true)
 public class FillDataValues<T extends RealType<T>>
 	extends ContextCommand
-	implements Cancelable
 {
 	// -- Parameters --
 
@@ -74,32 +72,18 @@ public class FillDataValues<T extends RealType<T>>
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
-	// -- instance variables that are not Parameters --
-
-	private String err;
-
 	// -- public interface --
 
-	@Override
-	public boolean isCanceled() {
-		return err != null;
-	}
-	
-	@Override
-	public String getCancelReason() {
-		return err;
-	}
-	
 	@Override
 	public void run() {
 		final OptionsChannels opts =
 			optionsService.getOptions(OptionsChannels.class);
 		final Overlay overlay = overlayService.getActiveOverlay(display);
 		if (overlay == null) {
-			err = "This command requires a selection";
+			cancel("This command requires a selection");
+			return;
 		}
-		else
-			overlayService.fillOverlay(overlay, display, opts.getFgValues());
+		overlayService.fillOverlay(overlay, display, opts.getFgValues());
 	}
 
 	public ImageDisplay getDisplay() {

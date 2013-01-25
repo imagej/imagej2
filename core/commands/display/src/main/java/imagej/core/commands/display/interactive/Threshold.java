@@ -35,7 +35,6 @@
 
 package imagej.core.commands.display.interactive;
 
-import imagej.Cancelable;
 import imagej.command.ContextCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
@@ -53,10 +52,8 @@ import imagej.plugin.Plugin;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Adjust"),
 	@Menu(label = "Threshold...", accelerator = "control shift T") })
-public class Threshold extends ContextCommand implements Cancelable {
+public class Threshold extends ContextCommand {
 
-	private String err;
-	
 	// -- Parameters --
 	
 	@Parameter(required=true)
@@ -77,17 +74,7 @@ public class Threshold extends ContextCommand implements Cancelable {
 	@Override
 	public void run() {
 		// TODO
-		err = "This command is not yet implemented.";
-	}
-
-	@Override
-	public boolean isCanceled() {
-		return err != null;
-	}
-
-	@Override
-	public String getCancelReason() {
-		return err;
+		cancel("This command is not yet implemented.");
 	}
 
 }

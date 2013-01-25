@@ -35,7 +35,6 @@
 
 package imagej.core.commands.assign;
 
-import imagej.Cancelable;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
@@ -84,7 +83,6 @@ import net.imglib2.type.numeric.real.DoubleType;
 	@Menu(label = "Image Calculator...", weight = 22) }, headless = true)
 public class ImageCalculator<U extends RealType<U>,V extends RealType<V>>
 	extends ContextCommand
-	implements Cancelable
 {
 	// -- instance variables that are Parameters --
 
@@ -116,8 +114,6 @@ public class ImageCalculator<U extends RealType<U>,V extends RealType<V>>
 	private final HashMap<String, RealBinaryOperation<U, V, DoubleType>> operators;
 	
 	private BinaryOperation<U,V,DoubleType> operator = null;
-
-	private String err;
 
 	// -- constructor --
 
@@ -170,7 +166,7 @@ public class ImageCalculator<U extends RealType<U>,V extends RealType<V>>
 				ImageCombiner.applyOp(operator, img1, img2, 
 													new ArrayImgFactory<DoubleType>(), new DoubleType());
 		} catch (IllegalArgumentException e) {
-			err = e.toString();
+			cancel(e.toString());
 			return;
 		}
 		long[] span = new long[img.numDimensions()];
@@ -198,16 +194,6 @@ public class ImageCalculator<U extends RealType<U>,V extends RealType<V>>
 			copyDataInto(output.getImgPlus(), img, span);
 			output.update(); // TODO - probably unecessary
 		}
-	}
-
-	@Override
-	public boolean isCanceled() {
-		return err != null;
-	}
-
-	@Override
-	public String getCancelReason() {
-		return err;
 	}
 
 	public Dataset getInput1() {

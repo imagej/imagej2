@@ -35,7 +35,6 @@
 
 package imagej.core.commands.imglib;
 
-import imagej.Cancelable;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.menu.MenuConstants;
@@ -60,7 +59,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Math", mnemonic = 'm'),
 	@Menu(label = "NaN Background", weight = 18) }, headless = true)
-public class NanBackground extends ContextCommand implements Cancelable {
+public class NanBackground extends ContextCommand {
 
 	// -- instance variables --
 
@@ -76,20 +75,9 @@ public class NanBackground extends ContextCommand implements Cancelable {
 	private double hiThreshold;
 
 	private Img<? extends RealType<?>> inputImage;
-	private String err;
 
 	// -- public interface --
 
-	@Override
-	public boolean isCanceled() {
-		return err != null;
-	}
-	
-	@Override
-	public String getCancelReason() {
-		return err;
-	}
-	
 	@Override
 	public void run() {
 		if (inputBad()) return;
@@ -110,21 +98,21 @@ public class NanBackground extends ContextCommand implements Cancelable {
 
 	private boolean inputBad() {
 		if (input.isInteger()) {
-			err = "This plugin requires a floating point dataset";
+			cancel("This plugin requires a floating point dataset");
 			return true;
 		}
 		if (input == null) {
-			err = "Input dataset is null";
+			cancel("Input dataset is null");
 			return true;
 		}
 		
 		if (input.getImgPlus() == null) {
-			err = "Input ImgPlus is null";
+			cancel("Input ImgPlus is null");
 			return true;
 		}
 
 		if (loThreshold > hiThreshold) {
-			err = "Threshold values incorrectly specified (min > max)";
+			cancel("Threshold values incorrectly specified (min > max)");
 			return true;
 		}
 		return false;

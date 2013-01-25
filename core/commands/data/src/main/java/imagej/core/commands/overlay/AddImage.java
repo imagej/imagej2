@@ -35,7 +35,6 @@
 
 package imagej.core.commands.overlay;
 
-import imagej.Cancelable;
 import imagej.command.ContextCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
@@ -54,9 +53,7 @@ import imagej.plugin.Plugin;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Overlay"),
 	@Menu(label = "Add Image", weight = 7) })
-public class AddImage extends ContextCommand implements Cancelable {
-
-	private String err;
+public class AddImage extends ContextCommand {
 
 	// -- Parameters --
 
@@ -78,17 +75,7 @@ public class AddImage extends ContextCommand implements Cancelable {
 	@Override
 	public void run() {
 		// TODO
-		err = "This command is not yet implemented.";
-	}
-
-	@Override
-	public boolean isCanceled() {
-		return err != null;
-	}
-
-	@Override
-	public String getCancelReason() {
-		return err;
+		cancel("This command is not yet implemented.");
 	}
 
 }

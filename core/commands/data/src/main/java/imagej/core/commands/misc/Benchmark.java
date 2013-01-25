@@ -35,7 +35,6 @@
 
 package imagej.core.commands.misc;
 
-import imagej.Cancelable;
 import imagej.command.ContextCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
@@ -55,10 +54,8 @@ import imagej.plugin.Plugin;
 		mnemonic = MenuConstants.PLUGINS_MNEMONIC),
 	@Menu(label = "Utilities"),
 	@Menu(label = "Benchmark") })
-public class Benchmark extends ContextCommand implements Cancelable {
+public class Benchmark extends ContextCommand {
 
-	private String err;
-	
 	// -- Parameters --
 	
 	@Parameter
@@ -79,17 +76,7 @@ public class Benchmark extends ContextCommand implements Cancelable {
 	@Override
 	public void run() {
 		// TODO
-		err = "This command is not yet implemented.";
-	}
-
-	@Override
-	public boolean isCanceled() {
-		return err != null;
-	}
-
-	@Override
-	public String getCancelReason() {
-		return err;
+		cancel("This command is not yet implemented.");
 	}
 
 }

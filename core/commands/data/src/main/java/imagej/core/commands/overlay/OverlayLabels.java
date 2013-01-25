@@ -35,7 +35,6 @@
 
 package imagej.core.commands.overlay;
 
-import imagej.Cancelable;
 import imagej.command.ContextCommand;
 import imagej.menu.MenuConstants;
 import imagej.plugin.Menu;
@@ -51,24 +50,12 @@ import imagej.plugin.Plugin;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay", mnemonic = 'o'),
 	@Menu(label = "Labels...", mnemonic = 'l', weight = 6) })
-public class OverlayLabels extends ContextCommand implements Cancelable {
+public class OverlayLabels extends ContextCommand {
 
-	private String err;
-	
 	@Override
 	public void run() {
 		// TODO - implement some interactive plugin
-		err = "This feature has not been implemented yet";
-	}
-
-	@Override
-	public boolean isCanceled() {
-		return err != null;
-	}
-
-	@Override
-	public String getCancelReason() {
-		return err;
+		cancel("This feature has not been implemented yet");
 	}
 
 }

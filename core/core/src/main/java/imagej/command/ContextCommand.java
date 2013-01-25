@@ -36,6 +36,7 @@
 package imagej.command;
 
 import imagej.AbstractContextual;
+import imagej.Cancelable;
 import imagej.ImageJ;
 import imagej.plugin.ServicePreprocessor;
 
@@ -84,8 +85,11 @@ import imagej.plugin.ServicePreprocessor;
  * @author Curtis Rueden
  */
 public abstract class ContextCommand extends AbstractContextual implements
-	Command
+	Cancelable, Command
 {
+
+	/** Reason for cancelation, or null if not canceled. */
+	private String cancelReason;
 
 	// -- Contextual methods --
 
@@ -100,6 +104,25 @@ public abstract class ContextCommand extends AbstractContextual implements
 			throw new IllegalArgumentException("Context has no command service");
 		}
 		commandService.populateServices(this);
+	}
+
+	// -- Cancelable methods --
+
+	@Override
+	public boolean isCanceled() {
+		return cancelReason != null;
+	}
+
+	@Override
+	public String getCancelReason() {
+		return cancelReason;
+	}
+
+	// -- Internal methods --
+
+	/** Cancels the command execution, with the given reason for doing so. */
+	protected void cancel(final String reason) {
+		cancelReason = reason;
 	}
 
 }

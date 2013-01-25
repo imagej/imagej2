@@ -35,7 +35,6 @@
 
 package imagej.core.commands.imglib;
 
-import imagej.Cancelable;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.Extents;
@@ -70,7 +69,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Noise", mnemonic = 'n'),
 	@Menu(label = "Salt and Pepper", weight = 3) }, headless = true)
-public class SaltAndPepper extends ContextCommand implements Cancelable {
+public class SaltAndPepper extends ContextCommand {
 
 	// -- instance variables that are Parameters --
 
@@ -99,7 +98,6 @@ public class SaltAndPepper extends ContextCommand implements Cancelable {
 	private Img<? extends RealType<?>> inputImage;
 	private RandomAccess<? extends RealType<?>> accessor;
 	private long[] position;
-	private String err;
 
 	// -- public interface --
 
@@ -110,16 +108,6 @@ public class SaltAndPepper extends ContextCommand implements Cancelable {
 		assignPixels();
 		cleanup();
 		input.update();
-	}
-
-	@Override
-	public boolean isCanceled() {
-		return err != null;
-	}
-
-	@Override
-	public String getCancelReason() {
-		return err;
 	}
 
 	public void setDisplay(ImageDisplay disp) {
@@ -151,19 +139,19 @@ public class SaltAndPepper extends ContextCommand implements Cancelable {
 	private boolean inputOkay() {
 		input = imageDisplayService.getActiveDataset(display);
 		if (input == null) {
-			err = "Input dataset must not be null.";
+			cancel("Input dataset must not be null.");
 			return false;
 		}
 		if (input.getImgPlus() == null) {
-			err = "Input Imgplus must not be null.";
+			cancel("Input Imgplus must not be null.");
 			return false;
 		}
 		if (!input.isInteger()) {
-			err = "Input dataset must be an integral type.";
+			cancel("Input dataset must be an integral type.");
 			return false;
 		}
 		if (input.isRGBMerged()) {
-			err = "Input dataset cannot be color.";
+			cancel("Input dataset cannot be color.");
 			return false;
 		}
 		return true;

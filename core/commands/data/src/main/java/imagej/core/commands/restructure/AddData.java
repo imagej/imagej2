@@ -35,7 +35,6 @@
 
 package imagej.core.commands.restructure;
 
-import imagej.Cancelable;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.menu.MenuConstants;
@@ -62,7 +61,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Data", mnemonic = 'd'), @Menu(label = "Add Data...") },
 	headless = true, initializer = "initAll")
-public class AddData extends DynamicCommand implements Cancelable {
+public class AddData extends DynamicCommand {
 
 	// -- Constants --
 
@@ -87,21 +86,6 @@ public class AddData extends DynamicCommand implements Cancelable {
 		callback = "parameterChanged")
 	private long quantity = 1;
 
-	// -- instance variables that are not Parameters --
-	private String err;
-
-	// -- Cancelable methods --
-
-	@Override
-	public boolean isCanceled() {
-		return err != null;
-	}
-
-	@Override
-	public String getCancelReason() {
-		return err;
-	}
-	
 	// -- AddData methods --
 
 	public Dataset getDataset() {
@@ -193,7 +177,7 @@ public class AddData extends DynamicCommand implements Cancelable {
 	private boolean inputBad(final AxisType axis) {
 		// axis not determined by dialog
 		if (axis == null) {
-			err = "Axis must not be null.";
+			cancel("Axis must not be null.");
 			return true;
 		}
 
@@ -203,19 +187,19 @@ public class AddData extends DynamicCommand implements Cancelable {
 
 		// axis not present in Dataset
 		if (axisIndex < 0) {
-			err = "Axis "+axis.getLabel()+" is not present in input dataset.";
+			cancel("Axis " + axis.getLabel() + " is not present in input dataset.");
 			return true;
 		}
 
 		// bad value for startPosition
 		if (position < 1 || position > axisSize + 1) {
-			err = "Insertion position is out of bounds.";
+			cancel("Insertion position is out of bounds.");
 			return true;
 		}
 
 		// bad value for numAdding
 		if (quantity <= 0 || (quantity > Long.MAX_VALUE - axisSize)) {
-			err = "Insertion quantity is out of bounds.";
+			cancel("Insertion quantity is out of bounds.");
 			return true;
 		}
 

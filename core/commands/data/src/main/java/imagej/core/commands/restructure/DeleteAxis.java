@@ -35,7 +35,6 @@
 
 package imagej.core.commands.restructure;
 
-import imagej.Cancelable;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
@@ -63,7 +62,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Axes", mnemonic = 'a'), @Menu(label = "Delete Axis...") },
 	headless = true, initializer = "initAll")
-public class DeleteAxis extends DynamicCommand implements Cancelable {
+public class DeleteAxis extends DynamicCommand {
 
 	// -- Constants --
 
@@ -89,19 +88,6 @@ public class DeleteAxis extends DynamicCommand implements Cancelable {
 	// -- private members --
 
 	private int axisIndex;
-	private String err;
-	
-	// -- Cancelable methods --
-
-	@Override
-	public boolean isCanceled() {
-		return err != null;
-	}
-
-	@Override
-	public String getCancelReason() {
-		return err;
-	}
 	
 	// -- DeleteAxis methods --
 
@@ -199,21 +185,21 @@ public class DeleteAxis extends DynamicCommand implements Cancelable {
 	private boolean inputBad(final AxisType axis) {
 		// axis not determined by dialog
 		if (axis == null) {
-			err = "Axis must not be null.";
+			cancel("Axis must not be null.");
 			return true;
 		}
 
 		// axis not already present in Dataset
 		axisIndex = dataset.getAxisIndex(axis);
 		if (axisIndex < 0) {
-			err = "Axis " + axis.getLabel()+" is not present in input dataset.";
+			cancel("Axis " + axis.getLabel()+" is not present in input dataset.");
 			return true;
 		}
 
 		// hyperplane index out of range
 		final long axisSize = dataset.getImgPlus().dimension(axisIndex);
 		if ((position < 1) || (position > axisSize)) {
-			err = "Position of plane to keep is out of bounds.";
+			cancel("Position of plane to keep is out of bounds.");
 			return true;
 		}
 
