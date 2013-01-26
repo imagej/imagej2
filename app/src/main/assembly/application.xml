@@ -32,15 +32,7 @@
   policies, either expressed or implied, of any organization.
   #L%
   -->
-<assembly
-	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.1"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.1 http://maven.apache.org/xsd/assembly-1.1.1.xsd">
-	<id>application</id>
-	<formats>
-		<format>zip</format>
-	</formats>
-	<baseDirectory>ImageJ.app</baseDirectory>
+<component>
 	<fileSets>
 
 		<!-- Include main application skeleton. -->
@@ -135,4 +127,4 @@
 
 	</files>
 
-</assembly>
+</component>

@@ -159,7 +159,7 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
 					<descriptors>
-						<descriptor>src/main/assembly/application.xml</descriptor>
+						<descriptor>src/main/assembly/zip.xml</descriptor>
 					</descriptors>
 					<finalName>imagej-${project.version}</finalName>
 				</configuration>
@@ -416,6 +416,34 @@
 									<mainClass>imagej.Main</mainClass>
 								</manifest>
 							</archive>
+						</configuration>
+						<executions>
+							<execution>
+								<id>make-assembly</id>
+								<phase>package</phase>
+								<goals>
+									<goal>single</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>populate-app</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<configuration>
+							<descriptors>
+								<descriptor>src/main/assembly/dir.xml</descriptor>
+							</descriptors>
+							<finalName>ImageJ.app</finalName>
+							<outputDirectory>${basedir}</outputDirectory>
+							<appendAssemblyId>false</appendAssemblyId>
+							<attach>false</attach>
 						</configuration>
 						<executions>
 							<execution>
