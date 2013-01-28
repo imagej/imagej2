@@ -36,14 +36,24 @@
 package imagej.core.commands.calculator;
 
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.Plugin;
 import net.imglib2.ops.operation.real.binary.RealBinaryOperation;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
 /**
- * An operation for use with the {@link ImageCalculator} command.
+ * {@code CalculatorOp} is a plugin that extends the Image Calculator command.
+ * <p>
+ * Image Calculator operations discoverable at runtime must implement this
+ * interface and be annotated with @{@link Plugin} with attribute
+ * {@link Plugin#type()} = {@link CalculatorOp}.class. While it possible to
+ * create an operation merely by implementing this interface, it is encouraged
+ * to instead extend {@link AbstractCalculatorOp}, for convenience.
+ * </p>
  * 
  * @author Curtis Rueden
+ * @see Plugin
+ * @see ImageCalculator
  */
 public interface CalculatorOp<I1 extends RealType<I1>, I2 extends RealType<I2>>
 	extends RealBinaryOperation<I1, I2, DoubleType>, ImageJPlugin
