@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.commands.assign;
+package imagej.core.commands.calculator;
 
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
