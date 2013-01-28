@@ -41,7 +41,6 @@ import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.core.Installer;
-import imagej.updater.core.UploaderService;
 import imagej.updater.util.UpdaterUserInterface;
 
 import java.awt.Color;
@@ -117,6 +116,7 @@ public class FileTable extends JTable {
 		setModel(fileTableModel);
 		getModel().addTableModelListener(this);
 		setColumnWidths(250, 100);
+		setAutoCreateRowSorter(true);
 
 		setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
 
@@ -288,9 +288,8 @@ public class FileTable extends JTable {
 	}
 
 	public FileObject getFile(final int row) {
-		final FileObject.LabeledFile file =
-			(FileObject.LabeledFile) getValueAt(row, 0);
-		return file == null ? null : file.getFile();
+		final int realRow = convertRowIndexToModel(row);
+		return fileTableModel.rowToFile.get(realRow);
 	}
 
 	public Iterable<FileObject> getSelectedFiles() {
@@ -399,6 +398,7 @@ public class FileTable extends JTable {
 			this.files = files;
 			fileToRow = null;
 			rowToFile = null;
+			updateMappings();
 			fireTableChanged(new TableModelEvent(fileTableModel));
 		}
 
@@ -444,7 +444,8 @@ public class FileTable extends JTable {
 		public Object getValueAt(final int row, final int column) {
 			updateMappings();
 			if (row < 0 || row >= files.size()) return null;
-			return rowToFile.get(row).getLabeledFile(column);
+			final FileObject file = rowToFile.get(row);
+			return column == 1 ? file.getAction().toString() : file.getFilename();
 		}
 
 		@Override
