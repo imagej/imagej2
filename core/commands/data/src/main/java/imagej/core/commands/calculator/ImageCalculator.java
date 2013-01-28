@@ -81,9 +81,10 @@ import net.imglib2.type.numeric.real.DoubleType;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Image Calculator...", weight = 22) }, headless = true)
-public class ImageCalculator<U extends RealType<U>,V extends RealType<V>>
+public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 	extends ContextCommand
 {
+
 	// -- instance variables that are Parameters --
 
 	@Parameter
@@ -112,8 +113,8 @@ public class ImageCalculator<U extends RealType<U>,V extends RealType<V>>
 	// -- other instance variables --
 
 	private final HashMap<String, RealBinaryOperation<U, V, DoubleType>> operators;
-	
-	private BinaryOperation<U,V,DoubleType> operator = null;
+
+	private BinaryOperation<U, V, DoubleType> operator = null;
 
 	// -- constructor --
 
@@ -122,28 +123,22 @@ public class ImageCalculator<U extends RealType<U>,V extends RealType<V>>
 	 * operations are available.
 	 */
 	public ImageCalculator() {
-		operators =
-			new HashMap<String, RealBinaryOperation<U,V,DoubleType>>();
+		operators = new HashMap<String, RealBinaryOperation<U, V, DoubleType>>();
 
-		operators.put("Add", new RealAdd<U,V,DoubleType>());
-		operators.put("Subtract",
-			new RealSubtract<U,V,DoubleType>());
-		operators.put("Multiply",
-			new RealMultiply<U,V,DoubleType>());
-		operators.put("Divide",
-			new RealDivide<U,V,DoubleType>());
-		operators.put("AND", new RealAnd<U,V,DoubleType>());
-		operators.put("OR", new RealOr<U,V,DoubleType>());
-		operators.put("XOR", new RealXor<U,V,DoubleType>());
-		operators.put("Min", new RealMin<U,V,DoubleType>());
-		operators.put("Max", new RealMax<U,V,DoubleType>());
-		operators.put("Average", new RealAvg<U,V,DoubleType>());
-		operators.put("Difference",
-			new RealDifference<U,V,DoubleType>());
-		operators.put("Copy",
-			new RealCopyRight<U,V,DoubleType>());
+		operators.put("Add", new RealAdd<U, V, DoubleType>());
+		operators.put("Subtract", new RealSubtract<U, V, DoubleType>());
+		operators.put("Multiply", new RealMultiply<U, V, DoubleType>());
+		operators.put("Divide", new RealDivide<U, V, DoubleType>());
+		operators.put("AND", new RealAnd<U, V, DoubleType>());
+		operators.put("OR", new RealOr<U, V, DoubleType>());
+		operators.put("XOR", new RealXor<U, V, DoubleType>());
+		operators.put("Min", new RealMin<U, V, DoubleType>());
+		operators.put("Max", new RealMax<U, V, DoubleType>());
+		operators.put("Average", new RealAvg<U, V, DoubleType>());
+		operators.put("Difference", new RealDifference<U, V, DoubleType>());
+		operators.put("Copy", new RealCopyRight<U, V, DoubleType>());
 		operators.put("Transparent-zero",
-			new RealCopyZeroTransparent<U,V,DoubleType>());
+			new RealCopyZeroTransparent<U, V, DoubleType>());
 	}
 
 	// -- public interface --
@@ -158,18 +153,19 @@ public class ImageCalculator<U extends RealType<U>,V extends RealType<V>>
 		Img<DoubleType> img = null;
 		try {
 			@SuppressWarnings("unchecked")
-			Img<U> img1 = (Img<U>) input1.getImgPlus();
+			final Img<U> img1 = (Img<U>) input1.getImgPlus();
 			@SuppressWarnings("unchecked")
-			Img<V> img2 = (Img<V>) input2.getImgPlus();
+			final Img<V> img2 = (Img<V>) input2.getImgPlus();
 			// TODO - limited by ArrayImg size constraints
 			img =
-				ImageCombiner.applyOp(operator, img1, img2, 
-													new ArrayImgFactory<DoubleType>(), new DoubleType());
-		} catch (IllegalArgumentException e) {
+				ImageCombiner.applyOp(operator, img1, img2,
+					new ArrayImgFactory<DoubleType>(), new DoubleType());
+		}
+		catch (final IllegalArgumentException e) {
 			cancel(e.toString());
 			return;
 		}
-		long[] span = new long[img.numDimensions()];
+		final long[] span = new long[img.numDimensions()];
 		img.dimensions(span);
 
 		// replace original data if desired by user
@@ -216,14 +212,13 @@ public class ImageCalculator<U extends RealType<U>,V extends RealType<V>>
 		return output;
 	}
 
-	public BinaryOperation<U,V,DoubleType> getOperation() {
+	public BinaryOperation<U, V, DoubleType> getOperation() {
 		return operator;
 	}
 
 	// TODO - due to generics is this too difficult to specify for real world use?
-	
-	public void setOperation(BinaryOperation<U,V,DoubleType> operation)
-	{
+
+	public void setOperation(final BinaryOperation<U, V, DoubleType> operation) {
 		this.operator = operation;
 	}
 
@@ -245,19 +240,19 @@ public class ImageCalculator<U extends RealType<U>,V extends RealType<V>>
 
 	// -- private helpers --
 
-	private void copyDataInto(
-		Img<? extends RealType<?>> out, Img<? extends RealType<?>> in, long[] span)
+	private void copyDataInto(final Img<? extends RealType<?>> out,
+		final Img<? extends RealType<?>> in, final long[] span)
 	{
-		RandomAccess<? extends RealType<?>> src = in.randomAccess();
-		RandomAccess<? extends RealType<?>> dst = out.randomAccess();
-		HyperVolumePointSet ps = new HyperVolumePointSet(span);
-		PointSetIterator iter = ps.iterator();
+		final RandomAccess<? extends RealType<?>> src = in.randomAccess();
+		final RandomAccess<? extends RealType<?>> dst = out.randomAccess();
+		final HyperVolumePointSet ps = new HyperVolumePointSet(span);
+		final PointSetIterator iter = ps.iterator();
 		long[] pos = null;
 		while (iter.hasNext()) {
 			pos = iter.next();
 			src.setPosition(pos);
 			dst.setPosition(pos);
-			double value = src.get().getRealDouble();
+			final double value = src.get().getRealDouble();
 			dst.get().setReal(value);
 		}
 	}
