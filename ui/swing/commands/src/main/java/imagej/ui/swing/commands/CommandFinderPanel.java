@@ -79,6 +79,7 @@ import net.miginfocom.swing.MigLayout;
  * original Command Finder plugin by Mark Longair and Johannes Schindelin.
  * 
  * @author Curtis Rueden
+ * @author Johannes Schindelin
  */
 @SuppressWarnings("serial")
 public class CommandFinderPanel extends JPanel implements ActionListener,

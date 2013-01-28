@@ -50,6 +50,7 @@ import javax.swing.JOptionPane;
  * A plugin to display the {@link CommandFinderPanel} in a dialog.
  * 
  * @author Curtis Rueden
+ * @author Johannes Schindelin
  */
 @Plugin(menu = {
 	@Menu(label = MenuConstants.PLUGINS_LABEL,
