@@ -35,36 +35,27 @@
 
 package imagej.core.commands.calculator;
 
-import imagej.command.ContextCommand;
+import imagej.InstantiableException;
+import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
+import imagej.log.LogService;
 import imagej.menu.MenuConstants;
+import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.plugin.PluginInfo;
+import imagej.plugin.PluginService;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.ops.img.ImageCombiner;
-import net.imglib2.ops.operation.BinaryOperation;
-import net.imglib2.ops.operation.real.binary.RealAdd;
-import net.imglib2.ops.operation.real.binary.RealAnd;
-import net.imglib2.ops.operation.real.binary.RealAvg;
-import net.imglib2.ops.operation.real.binary.RealBinaryOperation;
-import net.imglib2.ops.operation.real.binary.RealCopyRight;
-import net.imglib2.ops.operation.real.binary.RealCopyZeroTransparent;
-import net.imglib2.ops.operation.real.binary.RealDifference;
-import net.imglib2.ops.operation.real.binary.RealDivide;
-import net.imglib2.ops.operation.real.binary.RealMax;
-import net.imglib2.ops.operation.real.binary.RealMin;
-import net.imglib2.ops.operation.real.binary.RealMultiply;
-import net.imglib2.ops.operation.real.binary.RealOr;
-import net.imglib2.ops.operation.real.binary.RealSubtract;
-import net.imglib2.ops.operation.real.binary.RealXor;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
@@ -75,17 +66,25 @@ import net.imglib2.type.numeric.real.DoubleType;
  * combination is specified by the user (such as Add, Min, Average, etc.).
  * 
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
 @Plugin(iconPath = "/icons/plugins/calculator.png", menu = {
 	@Menu(label = MenuConstants.PROCESS_LABEL,
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
-	@Menu(label = "Image Calculator...", weight = 22) }, headless = true)
+	@Menu(label = "Image Calculator...", weight = 22) }, headless = true,
+	initializer = "initCalculator")
 public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
-	extends ContextCommand
+	extends DynamicCommand
 {
 
 	// -- instance variables that are Parameters --
+
+	@Parameter
+	private PluginService pluginService;
+
+	@Parameter
+	private LogService log;
 
 	@Parameter
 	private DatasetService datasetService;
@@ -99,10 +98,8 @@ public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 	@Parameter(type = ItemIO.OUTPUT)
 	private Dataset output;
 
-	@Parameter(label = "Operation to do between the two input images",
-		choices = { "Add", "Subtract", "Multiply", "Divide", "AND", "OR", "XOR",
-			"Min", "Max", "Average", "Difference", "Copy", "Transparent-zero" })
-	private String opName = "Add";
+	@Parameter(label = "Operation to do between the two input images")
+	private String opName;
 
 	@Parameter(label = "Create new window")
 	private boolean newWindow = true;
@@ -112,34 +109,9 @@ public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 
 	// -- other instance variables --
 
-	private final HashMap<String, RealBinaryOperation<U, V, DoubleType>> operators;
+	private HashMap<String, CalculatorOp<U, V>> operators;
 
-	private BinaryOperation<U, V, DoubleType> operator = null;
-
-	// -- constructor --
-
-	/**
-	 * Constructs the RealImageCalculator object by initializing which binary
-	 * operations are available.
-	 */
-	public ImageCalculator() {
-		operators = new HashMap<String, RealBinaryOperation<U, V, DoubleType>>();
-
-		operators.put("Add", new RealAdd<U, V, DoubleType>());
-		operators.put("Subtract", new RealSubtract<U, V, DoubleType>());
-		operators.put("Multiply", new RealMultiply<U, V, DoubleType>());
-		operators.put("Divide", new RealDivide<U, V, DoubleType>());
-		operators.put("AND", new RealAnd<U, V, DoubleType>());
-		operators.put("OR", new RealOr<U, V, DoubleType>());
-		operators.put("XOR", new RealXor<U, V, DoubleType>());
-		operators.put("Min", new RealMin<U, V, DoubleType>());
-		operators.put("Max", new RealMax<U, V, DoubleType>());
-		operators.put("Average", new RealAvg<U, V, DoubleType>());
-		operators.put("Difference", new RealDifference<U, V, DoubleType>());
-		operators.put("Copy", new RealCopyRight<U, V, DoubleType>());
-		operators.put("Transparent-zero",
-			new RealCopyZeroTransparent<U, V, DoubleType>());
-	}
+	private CalculatorOp<U, V> operator;
 
 	// -- public interface --
 
@@ -212,13 +184,13 @@ public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 		return output;
 	}
 
-	public BinaryOperation<U, V, DoubleType> getOperation() {
+	public CalculatorOp<U, V> getOperation() {
 		return operator;
 	}
 
 	// TODO - due to generics is this too difficult to specify for real world use?
 
-	public void setOperation(final BinaryOperation<U, V, DoubleType> operation) {
+	public void setOperation(final CalculatorOp<U, V> operation) {
 		this.operator = operation;
 	}
 
@@ -236,6 +208,34 @@ public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 
 	public void setDoubleOutput(final boolean wantDoubles) {
 		this.wantDoubles = wantDoubles;
+	}
+
+	// -- initializer --
+
+	public void initCalculator() {
+		operators = new HashMap<String, CalculatorOp<U, V>>();
+		final ArrayList<String> opNames = new ArrayList<String>();
+
+		for (@SuppressWarnings("rawtypes")
+		final PluginInfo<CalculatorOp> info : pluginService
+			.getPluginsOfType(CalculatorOp.class))
+		{
+			try {
+				final String name = info.getName();
+				@SuppressWarnings("unchecked")
+				final CalculatorOp<U, V> op = info.createInstance();
+				operators.put(name, op);
+				opNames.add(name);
+			}
+			catch (final InstantiableException exc) {
+				log.warn("Invalid calculator op: " + info.getClassName(), exc);
+			}
+		}
+
+		@SuppressWarnings("unchecked")
+		final DefaultModuleItem<String> opNameInput =
+			(DefaultModuleItem<String>) getInfo().getInput("opName");
+		opNameInput.setChoices(opNames);
 	}
 
 	// -- private helpers --
