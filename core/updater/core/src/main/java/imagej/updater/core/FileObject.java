@@ -777,36 +777,4 @@ public class FileObject {
 	public String toString() {
 		return filename;
 	}
-
-	/**
-	 * For displaying purposes, it is nice to have a file object whose toString()
-	 * method shows either the filename or the action.
-	 */
-	public class LabeledFile {
-
-		String label;
-
-		LabeledFile(final String label) {
-			this.label = label;
-		}
-
-		public FileObject getFile() {
-			return FileObject.this;
-		}
-
-		@Override
-		public String toString() {
-			return label;
-		}
-	}
-
-	public LabeledFile getLabeledFile(final int column) {
-		switch (column) {
-			case 0:
-				return new LabeledFile(getFilename());
-			case 1:
-				return new LabeledFile(getAction().toString());
-		}
-		return null;
-	}
 }

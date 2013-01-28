@@ -443,7 +443,8 @@ public class FileTable extends JTable {
 		public Object getValueAt(final int row, final int column) {
 			updateMappings();
 			if (row < 0 || row >= files.size()) return null;
-			return rowToFile.get(row).getLabeledFile(column);
+			final FileObject file = rowToFile.get(row);
+			return column == 1 ? file.getAction().toString() : file.getFilename();
 		}
 
 		@Override
