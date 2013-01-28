@@ -41,7 +41,6 @@ import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.core.Installer;
-import imagej.updater.core.UploaderService;
 import imagej.updater.util.UpdaterUserInterface;
 
 import java.awt.Color;
