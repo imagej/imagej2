@@ -116,6 +116,7 @@ public class FileTable extends JTable {
 		setModel(fileTableModel);
 		getModel().addTableModelListener(this);
 		setColumnWidths(250, 100);
+		setAutoCreateRowSorter(true);
 
 		setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
 
