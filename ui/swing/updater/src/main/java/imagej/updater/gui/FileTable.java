@@ -287,9 +287,8 @@ public class FileTable extends JTable {
 	}
 
 	public FileObject getFile(final int row) {
-		final FileObject.LabeledFile file =
-			(FileObject.LabeledFile) getValueAt(row, 0);
-		return file == null ? null : file.getFile();
+		final int realRow = convertRowIndexToModel(row);
+		return fileTableModel.rowToFile.get(realRow);
 	}
 
 	public Iterable<FileObject> getSelectedFiles() {
@@ -398,6 +397,7 @@ public class FileTable extends JTable {
 			this.files = files;
 			fileToRow = null;
 			rowToFile = null;
+			updateMappings();
 			fireTableChanged(new TableModelEvent(fileTableModel));
 		}
 
