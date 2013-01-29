@@ -1305,6 +1305,31 @@ public class UpdaterTest {
 		assertStatus(Status.OBSOLETE_UNINSTALLED, files.get("jars/something-cool.jar"));
 	}
 
+	@Test
+	public void uploadObsolete() throws Exception {
+		initializeUpdateSite("macros/macro.ijm");
+
+		FilesCollection files = readDb(true, true);
+		FileObject macro = files.get("macros/macro.ijm");
+		assertTrue(files.prefix(macro).delete());
+
+		files = readDb(true, true);
+		macro = files.get("macros/macro.ijm");
+		macro.setAction(files, Action.REMOVE);
+		upload(files);
+
+		writeFile(files.prefix(macro), "changed");
+		files = readDb(true, true);
+		macro = files.get("macros/macro.ijm");
+		assertStatus(Status.OBSOLETE_MODIFIED, macro);
+		macro.setAction(files, Action.UPLOAD);
+		upload(files);
+
+		files = readDb(true, true);
+		macro = files.get("macros/macro.ijm");
+		assertStatus(Status.INSTALLED, macro);
+	}
+
 	//
 	// Debug functions
 	//

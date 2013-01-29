@@ -426,6 +426,9 @@ public class FileObject {
 			"Invalid action requested for file " + filename + "(" + action + ", " +
 				status + ")");
 		if (action == Action.UPLOAD) {
+			if (current == null) {
+				current = new Version(localChecksum, localTimestamp);
+			}
 			if (localFilename != null) {
 				current.filename = filename;
 				filename = localFilename;
