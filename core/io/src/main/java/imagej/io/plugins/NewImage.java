@@ -352,8 +352,17 @@ public class NewImage extends DynamicCommand {
 	private void setDimensions() {
 		for (int i = 0; i < defaultAxes.length; i++) {
 			AxisType axisType = defaultAxes[i];
-			long size = (Long) getInput(axisType.getLabel());
-			dimensions[i] = size;
+			Object input = getInput(axisType.getLabel());
+			// NB - when this plugin is called directly from Java the Inputs may not
+			// have been initialized because pre/post processors not called. It is end
+			// users job to have specified the dimensions correctly beforehand. So we
+			// only gather dims when the input is not null. Its not clear that this
+			// code is correct. However without it the InvokeCommandTest plugin barfs
+			// with an NPE.
+			if (input != null) {
+				long size = (Long) input;
+				dimensions[i] = size;
+			}
 		}
 	}
 
