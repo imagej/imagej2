@@ -1651,6 +1651,7 @@ public class UpdaterTest {
 	protected static File writeJar(final File dir, final String name,
 		final String... args) throws FileNotFoundException, IOException
 	{
+		assertTrue((args.length % 2) == 0);
 		final File file = new File(dir, name);
 		file.getParentFile().mkdirs();
 		final JarOutputStream jar = new JarOutputStream(new FileOutputStream(file));
