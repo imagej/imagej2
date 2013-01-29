@@ -224,7 +224,8 @@ public class NewImage extends DynamicCommand {
 		for (AxisType axisType : defaultAxes) {
 			final DefaultModuleItem<Long> axisItem =
 				new DefaultModuleItem<Long>(this, axisType.getLabel(), Long.class);
-			if (!axisType.isXY()) axisItem.setPersisted(false);
+			// NB - persist all values for now
+			//if (!axisType.isXY()) axisItem.setPersisted(false);
 			axisItem.setValue(this, 0L);
 			axisItem.setMinimumValue(0L);
 			addInput(axisItem);
@@ -342,7 +343,7 @@ public class NewImage extends DynamicCommand {
 			}
 		}
 		if (!hasX || !hasY) {
-			cancel("New image: both X and Y dimensions must be specified >= 1");
+			cancel("New image: images require both X and Y axes to be present.");
 			return true;
 		}
 		return false;
