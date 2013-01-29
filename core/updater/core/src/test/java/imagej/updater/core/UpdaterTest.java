@@ -1303,6 +1303,8 @@ public class UpdaterTest {
 		files.markForUpdate(false);
 
 		assertStatus(Status.OBSOLETE_UNINSTALLED, files.get("jars/something-cool.jar"));
+		FileUtils.deleteRecursively(ijRoot2);
+		FileUtils.deleteRecursively(webRoot2);
 	}
 
 	@Test
