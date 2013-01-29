@@ -35,10 +35,11 @@
 
 package imagej.io.plugins;
 
-import imagej.command.ContextCommand;
+import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.menu.MenuConstants;
+import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -55,13 +56,25 @@ import net.imglib2.type.numeric.RealType;
  * @author Barry DeZonia
  */
 @Plugin(label = "New Image...", iconPath = "/icons/plugins/picture.png",
+	initializer = "init",
 	menu = {
 		@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 			mnemonic = MenuConstants.FILE_MNEMONIC),
 		@Menu(label = "New", mnemonic = 'n'),
 		@Menu(label = "Image...", weight = 0, mnemonic = 'i',
 			accelerator = "control N") })
-public class NewImage extends ContextCommand {
+public class NewImage extends DynamicCommand {
+
+	// -- private constants --
+
+	// TODO - this enables all axes
+	// private static final AxisType[] defaultAxes = Axes.values();
+
+	// TODO - this just enables axes we choose
+	private static final AxisType[] defaultAxes = new AxisType[] { Axes.X,
+		Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME };
+
+	// -- public constants --
 
 	public static final String DEPTH1 = "1-bit";
 	public static final String DEPTH8 = "8-bit";
@@ -77,6 +90,8 @@ public class NewImage extends ContextCommand {
 
 	private static final String DEFAULT_NAME = "Untitled";
 	
+	// -- Parameters --
+
 	@Parameter
 	private DatasetService datasetService;
 
@@ -96,16 +111,12 @@ public class NewImage extends ContextCommand {
 	@Parameter(label = "Fill With", choices = { WHITE, BLACK, RAMP, ZERO })
 	private String fillType = WHITE;
 
-	@Parameter(min = "1")
-	private long width = 512;
-
-	@Parameter(min = "1")
-	private long height = 512;
-
-	// TODO: allow creation of multidimensional datasets
-
 	@Parameter(type = ItemIO.OUTPUT)
 	private Dataset dataset;
+
+	// -- instance variables --
+
+	private long[] dimensions = new long[defaultAxes.length];
 
 	// -- NewImage methods --
 
@@ -150,20 +161,18 @@ public class NewImage extends ContextCommand {
 		this.fillType = fillType;
 	}
 
-	public long getWidth() {
-		return width;
+	public long getDimension(final AxisType axisType) {
+		for (int i = 0; i < defaultAxes.length; i++) {
+			if (defaultAxes[i].equals(axisType)) return dimensions[i];
+		}
+		return 0; // could be 1 instead but 0 is more informative
 	}
 
-	public void setWidth(final long width) {
-		this.width = width;
-	}
-
-	public long getHeight() {
-		return height;
-	}
-
-	public void setHeight(final long height) {
-		this.height = height;
+	public void setDimension(final AxisType axisType, final long size) {
+		for (int i = 0; i < defaultAxes.length; i++) {
+			if (defaultAxes[i].equals(axisType)) dimensions[i] = size;
+		}
+		// NB - ignore axes we don't support in this plugin
 	}
 
 	public Dataset getDataset() {
@@ -174,11 +183,16 @@ public class NewImage extends ContextCommand {
 
 	@Override
 	public void run() {
+		setDimensions();
 		if ((name == null) || (name.trim().length() == 0)) name = DEFAULT_NAME;
 		// create the dataset
 		final int bitsPerPixel = getBitsPerPixel();
-		final long[] dims = { width, height };
-		final AxisType[] axes = { Axes.X, Axes.Y };
+		final long[] dims = getDims();
+		final AxisType[] axes = getAxes();
+		if (badSpecification(dims, axes)) {
+			dataset = null;
+			return;
+		}
 		dataset =
 			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
 
@@ -201,6 +215,19 @@ public class NewImage extends ContextCommand {
 			else if (isZero) value = 0;
 			else value = rampedValue(pos, dims, type); // fillWith == RAMP
 			type.setReal(value);
+		}
+	}
+
+	// -- initializer --
+
+	protected void init() {
+		for (AxisType axisType : defaultAxes) {
+			final DefaultModuleItem<Long> axisItem =
+				new DefaultModuleItem<Long>(this, axisType.getLabel(), Long.class);
+			if (!axisType.isXY()) axisItem.setPersisted(false);
+			axisItem.setValue(this, 0L);
+			axisItem.setMinimumValue(0L);
+			addInput(axisItem);
 		}
 	}
 
@@ -264,4 +291,70 @@ public class NewImage extends ContextCommand {
 
 		return origin + percent * range;
 	}
+
+	private long[] getDims() {
+		int numSpecified = 0;
+		for (int i = 0; i < dimensions.length; i++) {
+			long dim = dimensions[i];
+			if (dim > 1 || ((dim == 1) && defaultAxes[i].isXY())) numSpecified++;
+		}
+		long[] dims = new long[numSpecified];
+		int d = 0;
+		for (int i = 0; i < dimensions.length; i++) {
+			long dim = dimensions[i];
+			if (dim > 1 || ((dim == 1) && defaultAxes[i].isXY())) dims[d++] = dim;
+		}
+		return dims;
+	}
+
+	private AxisType[] getAxes() {
+		int numSpecified = 0;
+		for (int i = 0; i < dimensions.length; i++) {
+			long dim = dimensions[i];
+			if (dim > 1 || ((dim == 1) && defaultAxes[i].isXY())) numSpecified++;
+		}
+		AxisType[] axes = new AxisType[numSpecified];
+		int d = 0;
+		for (int i = 0; i < dimensions.length; i++) {
+			long dim = dimensions[i];
+			if (dim > 1 || ((dim == 1) && defaultAxes[i].isXY())) {
+				axes[d++] = defaultAxes[i];
+			}
+		}
+		return axes;
+	}
+
+	// error conditions:
+	// no X dim, no Y dim, any dim size <= 1 (unless X or Y)
+	
+	private boolean badSpecification(long[] dims, AxisType[] axes) {
+		boolean hasX = false;
+		boolean hasY = false;
+		for (int i = 0; i < dims.length; i++) {
+			AxisType axisType = axes[i];
+			hasX |= axisType.equals(Axes.X);
+			hasY |= axisType.equals(Axes.Y);
+			int smallestAllowed = axisType.isXY() ? 1 : 2;
+			if (dims[i] < smallestAllowed) {
+				cancel("New image: dimension size must be >= " + smallestAllowed +
+					" for axis " + axisType);
+				return true;
+			}
+		}
+		if (!hasX || !hasY) {
+			cancel("New image: both X and Y dimensions must be specified >= 1");
+			return true;
+		}
+		return false;
+	}
+
+	private void setDimensions() {
+		for (int i = 0; i < defaultAxes.length; i++) {
+			AxisType axisType = defaultAxes[i];
+			long size = (Long) getInput(axisType.getLabel());
+			dimensions[i] = size;
+		}
+	}
+
+
 }
