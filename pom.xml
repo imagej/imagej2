@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>1.24</version>
+		<version>1.28</version>
 	</parent>
 
 	<groupId>net.imagej</groupId>
@@ -54,7 +54,7 @@
 				<artifactId>license-maven-plugin</artifactId>
 				<configuration>
 					<licenseName>imagej</licenseName>
-					<licenseResolver>http://code.imagej.net/licenses</licenseResolver>
+					<licenseResolver>file://${project.rootdir}/license</licenseResolver>
 					<inceptionYear>2009</inceptionYear>
 					<organizationName>Board of Regents of the University of
 Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
@@ -77,7 +77,6 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 	<licenses>
 		<license>
 			<name>Simplified BSD License</name>
-			<url>http://code.imagej.net/licenses/imagej/license.txt</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
