@@ -50,6 +50,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
 
+import net.imglib2.meta.Axes;
+
 /**
  * A test of {@link CommandService#run}. The source code demonstrates three
  * different ways of invoking a command programmatically:
@@ -145,8 +147,8 @@ public class InvokeCommandTest implements Command {
 		newImage.setSigned(false);
 		newImage.setFloating(false);
 		newImage.setFillType(NewImage.RAMP);
-		newImage.setWidth(512);
-		newImage.setHeight(512);
+		newImage.setDimension(Axes.X, 512);
+		newImage.setDimension(Axes.Y, 512);
 		newImage.run();
 		return newImage.getDataset();
 	}
