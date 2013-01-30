@@ -63,9 +63,6 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 					<addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
 					<canUpdateDescription>true</canUpdateDescription>
 					<canUpdateCopyright>true</canUpdateCopyright>
-					<includes>
-						<include>*.java</include>
-					</includes>
 				</configuration>
 			</plugin>
 			<plugin>
