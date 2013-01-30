@@ -63,6 +63,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -288,7 +289,8 @@ public class AboutImageJ extends ContextCommand {
 			stringList.add("Date: " + mft.getImplementationDate());
 		}
 		stringList.add("Open source image processing software");
-		stringList.add("Copyright 2010, 2011, 2012");
+		final int year = Calendar.getInstance().get(Calendar.YEAR);
+		stringList.add("Copyright 2010 - " + year);
 		stringList.add("http://developer.imagej.net/");
 		stringList.add(javaInfo());
 		stringList.add(memoryInfo());
