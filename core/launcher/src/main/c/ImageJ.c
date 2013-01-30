@@ -2,7 +2,7 @@
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
  * %%
- * Copyright (C) 2009 - 2012 Board of Regents of the University of
+ * Copyright (C) 2009 - 2013 Board of Regents of the University of
  * Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
  * Institute of Molecular Cell Biology and Genetics.
  * %%
@@ -41,7 +41,7 @@
  * (http://fiji.sc/), but has been adapted and improved for use with ImageJ
  * core.
  *
- * The ImageJ launcher is copyright 2007 - 2012 Johannes Schindelin, Mark
+ * The ImageJ launcher is copyright 2007 - 2013 Johannes Schindelin, Mark
  * Longair, Albert Cardona, Benjamin Schmid, Erwin Frise, Gregory Jefferis
  * and Curtis Rueden.
  *
