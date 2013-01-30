@@ -84,6 +84,7 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 	public void setRange(double min, double max) {
 		condition.setMin(min);
 		condition.setMax(max);
+		points.setCondition(condition); // this lets PointSet know it is changed
 	}
 	
 	public void resetThreshold() {
@@ -96,14 +97,14 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 	
 	@Override
 	public void update() {
-		// TODO Auto-generated method stub
-		
+		// TODO
+		// force the redraw of the associated jhotdraw figure
 	}
 
 	@Override
 	public void rebuild() {
 		// TODO Auto-generated method stub
-		
+		// update(); // would this be okay?
 	}
 
 	@Override

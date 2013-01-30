@@ -108,10 +108,12 @@ public class SwingThresholdFigure extends AbstractAttributedFigure {
 	@Override
 	public void draw(Graphics2D arg0) {
 		final Color origC = arg0.getColor();
+		// TODO - use color of associated Overlay
 		arg0.setColor(Color.green);
 		Cursor<long[]> cursor = points.cursor();
 		while (cursor.hasNext()) {
 			long[] pos = cursor.next();
+			// TODO - only draw points that lay in the currently viewed plane
 			arg0.drawLine((int)pos[0], (int)pos[1], (int)pos[0], (int)pos[1]);
 		}
 		arg0.setColor(origC);
