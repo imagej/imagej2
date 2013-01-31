@@ -35,16 +35,26 @@
 
 package imagej.ui.swing.overlay;
 
+import imagej.data.display.ImageDisplay;
+import imagej.data.overlay.ThresholdOverlay;
+import imagej.util.awt.AWTColors;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D.Double;
+import java.awt.geom.Rectangle2D;
 
 import net.imglib2.Cursor;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.ops.pointset.PointSet;
 
 import org.jhotdraw.draw.AbstractAttributedFigure;
+import org.jhotdraw.draw.AttributeKeys;
+
+// TODO - bounds and draw code work in 1:1 scale. See if they need to be updated
+// for the support of different zoom levels. Note that SwingPointFigure shows
+// how to reason about scale.
 
 /**
  * 
@@ -55,12 +65,23 @@ public class SwingThresholdFigure extends AbstractAttributedFigure {
 
 	private static final long serialVersionUID = 1L;
 
+	private final ImageDisplay display;
 	private final ImgPlus<?> imgPlus;
+	private final ThresholdOverlay overlay;
 	private final PointSet points;
+	private final Rectangle2D.Double rect;
 	
-	public SwingThresholdFigure(ImgPlus<?> imgPlus, PointSet points) {
+	public SwingThresholdFigure(ImageDisplay display, ImgPlus<?> imgPlus,
+		ThresholdOverlay overlay)
+	{
+		this.display = display;
 		this.imgPlus = imgPlus;
-		this.points = points;
+		this.overlay = overlay;
+		this.points = overlay.getPoints();
+		this.rect = new Rectangle2D.Double();
+		setAttributeEnabled(AttributeKeys.FILL_COLOR, true);
+		setAttributeEnabled(AttributeKeys.STROKE_COLOR, false);
+		setAttributeEnabled(AttributeKeys.TEXT_COLOR, false);
 	}
 	
 	@Override
@@ -70,55 +91,37 @@ public class SwingThresholdFigure extends AbstractAttributedFigure {
 	}
 
 	@Override
-	public java.awt.geom.Rectangle2D.Double getBounds() {
-		// TODO Auto-generated method stub
-		return null;
+	public Rectangle2D.Double getBounds() {
+		return new Rectangle2D.Double(0, 0, imgPlus.max(0), imgPlus.max(1));
 	}
 
 	@Override
 	public Object getTransformRestoreData() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Object();
 	}
 
 	@Override
 	public void restoreTransformTo(Object arg0) {
-		// TODO Auto-generated method stub
-		
+		// do nothing
 	}
 
 	@Override
 	public void transform(AffineTransform arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void drawFill(Graphics2D arg0) {
-		// TODO Auto-generated method stub
-		
+		// do nothing
 	}
 
 	@Override
 	protected void drawStroke(Graphics2D arg0) {
-		// TODO Auto-generated method stub
-		
+		// do nothing
 	}
-	
+
+	/*
 	@Override
 	public void draw(Graphics2D arg0) {
-		final Color origC = arg0.getColor();
-		// TODO - use color of associated Overlay
-		arg0.setColor(Color.green);
-		Cursor<long[]> cursor = points.cursor();
-		while (cursor.hasNext()) {
-			long[] pos = cursor.next();
-			// TODO - only draw points that lay in the currently viewed plane
-			arg0.drawLine((int)pos[0], (int)pos[1], (int)pos[0], (int)pos[1]);
-		}
-		arg0.setColor(origC);
+		// unknown at the moment
 		super.draw(arg0);
 	}
+	*/
 
 	@Override
 	public Double getStartPoint() {
@@ -131,12 +134,47 @@ public class SwingThresholdFigure extends AbstractAttributedFigure {
 	}
 	
 	@Override
-	public java.awt.geom.Rectangle2D.Double getDrawingArea() {
-		return new java.awt.geom.Rectangle2D.Double(0, 0, imgPlus.max(0), imgPlus.max(1));
+	public Rectangle2D.Double getDrawingArea() {
+		return new Rectangle2D.Double(0, 0, imgPlus.max(0), imgPlus.max(1));
 	}
 	
 	@Override
 	public void setBounds(Double anchor, Double lead) {
 		// do nothing
 	}
+
+	/* TODO - add an interface hook that allows Overlay to draw Figure
+	 * public interface OverlayDraw { void redrawFigure(); }
+	public void redrawFigure() {
+		fireFigureChanged();
+	}
+	*/
+
+	@Override
+	protected void drawFill(final Graphics2D g) {
+		final Color origC = g.getColor();
+		Color color = AWTColors.getColor(overlay.getFillColor());
+		g.setColor(color);
+		rect.width = 1;
+		rect.height = 1;
+		Cursor<long[]> cursor = points.cursor();
+		while (cursor.hasNext()) {
+			long[] pos = cursor.next();
+			// NB - only draw points that lay in the currently viewed plane
+			boolean posInViewedPlane = true;
+			for (int i = 2; i < pos.length; i++) {
+				if (display.getLongPosition(i) != pos[i]) {
+					posInViewedPlane = false;
+					break;
+				}
+			}
+			if (posInViewedPlane) {
+				rect.x = pos[0];
+				rect.y = pos[1];
+				g.fill(rect);
+			}
+		}
+		g.setColor(origC);
+	}
+
 }

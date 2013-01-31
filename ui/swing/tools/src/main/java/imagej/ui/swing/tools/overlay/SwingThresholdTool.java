@@ -35,10 +35,6 @@
 
 package imagej.ui.swing.tools.overlay;
 
-import java.awt.Shape;
-import java.util.LinkedList;
-import java.util.List;
-
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.display.ImageDisplay;
@@ -51,6 +47,10 @@ import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.SwingThresholdFigure;
+
+import java.awt.Shape;
+import java.util.LinkedList;
+import java.util.List;
 
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
@@ -90,21 +90,23 @@ public class SwingThresholdTool extends
 
 	@Override
 	public Overlay createNewOverlay() {
-		ImgPlus<? extends RealType<?>> imgPlus = getImgPlus();
+		ImageDisplay display = getDisplay();
+		ImgPlus<? extends RealType<?>> imgPlus = getImgPlus(display);
 		for (Mapping m : mappings) {
 			if (m.imgPlus == imgPlus) return m.overlay;
 		}
-		Mapping m = map(imgPlus);
+		Mapping m = map(display, imgPlus);
 		return m.overlay;
 	}
 
 	@Override
 	public Figure createDefaultFigure() {
-		ImgPlus<? extends RealType<?>> imgPlus = getImgPlus();
+		ImageDisplay display = getDisplay();
+		ImgPlus<? extends RealType<?>> imgPlus = getImgPlus(display);
 		for (Mapping m : mappings) {
 			if (m.imgPlus == imgPlus) return m.figure;
 		}
-		Mapping m = map(imgPlus);
+		Mapping m = map(display, imgPlus);
 		return m.figure;
 	}
 
@@ -118,9 +120,15 @@ public class SwingThresholdTool extends
 		throw new UnsupportedOperationException("Unimplemented");
 	}
 
-	private ImgPlus<? extends RealType<?>> getImgPlus() {
+	private ImageDisplay getDisplay() {
+		ImageDisplayService service =
+			getContext().getService(ImageDisplayService.class);
+		return service.getActiveImageDisplay();
+	}
+
+	private ImgPlus<? extends RealType<?>> getImgPlus(ImageDisplay display) {
 		ImageDisplayService service = getContext().getService(ImageDisplayService.class);
-		Dataset ds = service.getActiveDataset();
+		Dataset ds = service.getActiveDataset(display);
 		if (ds != null) return ds.getImgPlus();
 		// make a phantom dataset so we can always have an imgplus for this tool
 		DatasetService dss = getContext().getService(DatasetService.class);
@@ -128,11 +136,13 @@ public class SwingThresholdTool extends
 		return ds.getImgPlus();
 	}
 	
-	private Mapping map(ImgPlus<? extends RealType<?>> imgPlus) {
+	private Mapping map(ImageDisplay display,
+		ImgPlus<? extends RealType<?>> imgPlus)
+	{
 		Mapping m = new Mapping();
 		m.imgPlus = imgPlus;
 		m.overlay = new ThresholdOverlay(getContext(), imgPlus);
-		m.figure = new SwingThresholdFigure(imgPlus, m.overlay.getPoints());
+		m.figure = new SwingThresholdFigure(display, imgPlus, m.overlay);
 		initDefaultSettings(m.figure);
 		mappings.add(m);
 		return m;

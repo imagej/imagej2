@@ -35,6 +35,9 @@
 
 package imagej.data.overlay;
 
+import imagej.ImageJ;
+import imagej.data.AbstractData;
+import imagej.util.ColorRGB;
 import net.imglib2.Positionable;
 import net.imglib2.RealPositionable;
 import net.imglib2.img.ImgPlus;
@@ -48,9 +51,6 @@ import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.ops.pointset.PointSetRegionOfInterest;
 import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.numeric.RealType;
-import imagej.ImageJ;
-import imagej.data.AbstractData;
-import imagej.util.ColorRGB;
 
 /**
  * 
@@ -68,7 +68,11 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 		setContext(context);
 		this.imgPlus = imgPlus;
 		Function<long[],? extends RealType<?>> function = new RealImageFunction(imgPlus, imgPlus.firstElement());
-		condition = new WithinRangeCondition(function, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+		condition =
+			new WithinRangeCondition(function, Double.NEGATIVE_INFINITY,
+				Double.POSITIVE_INFINITY);
+		// temp hack test
+		// condition = new WithinRangeCondition(function, 100, 200);
 		long[] dims = new long[imgPlus.numDimensions()];
 		imgPlus.dimensions(dims);
 		HyperVolumePointSet volume = new HyperVolumePointSet(dims);
@@ -103,8 +107,7 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 
 	@Override
 	public void rebuild() {
-		// TODO Auto-generated method stub
-		// update(); // would this be okay?
+		update(); // TODO - would this be al we need to do?
 	}
 
 	@Override
