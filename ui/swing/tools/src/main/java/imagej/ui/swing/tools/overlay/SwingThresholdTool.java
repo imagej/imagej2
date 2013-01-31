@@ -144,6 +144,7 @@ public class SwingThresholdTool extends
 		m.overlay = new ThresholdOverlay(getContext(), imgPlus);
 		m.figure = new SwingThresholdFigure(display, imgPlus, m.overlay);
 		initDefaultSettings(m.figure);
+		m.overlay.setFigure(m.figure);
 		mappings.add(m);
 		return m;
 	}

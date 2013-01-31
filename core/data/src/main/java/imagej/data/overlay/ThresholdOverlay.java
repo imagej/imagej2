@@ -37,6 +37,7 @@ package imagej.data.overlay;
 
 import imagej.ImageJ;
 import imagej.data.AbstractData;
+import imagej.display.Displayable;
 import imagej.util.ColorRGB;
 import net.imglib2.Positionable;
 import net.imglib2.RealPositionable;
@@ -59,6 +60,7 @@ import net.imglib2.type.numeric.RealType;
  */
 public class ThresholdOverlay extends AbstractData implements Overlay {
 
+	private Displayable figure;
 	private final ImgPlus<? extends RealType<?>> imgPlus;
 	private final ConditionalPointSet points;
 	private final WithinRangeCondition<? extends RealType<?>> condition;
@@ -78,11 +80,16 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 		HyperVolumePointSet volume = new HyperVolumePointSet(dims);
 		points = new ConditionalPointSet(volume, condition);
 		regionAdapter = new PointSetRegionOfInterest(points);
+		figure = null;
 	}
 	
 	public ThresholdOverlay(ImageJ context, ImgPlus<? extends RealType<?>> imgPlus, double min, double max) {
 		this(context, imgPlus);
 		setRange(min,max);
+	}
+
+	public void setFigure(Displayable figure) {
+		this.figure = figure;
 	}
 	
 	public void setRange(double min, double max) {
@@ -101,8 +108,7 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 	
 	@Override
 	public void update() {
-		// TODO
-		// force the redraw of the associated jhotdraw figure
+		if (figure != null) figure.draw();
 	}
 
 	@Override

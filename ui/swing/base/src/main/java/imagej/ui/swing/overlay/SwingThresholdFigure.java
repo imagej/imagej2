@@ -37,6 +37,7 @@ package imagej.ui.swing.overlay;
 
 import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.ThresholdOverlay;
+import imagej.display.Displayable;
 import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
@@ -61,7 +62,9 @@ import org.jhotdraw.draw.AttributeKeys;
  * @author Barry DeZonia
  *
  */
-public class SwingThresholdFigure extends AbstractAttributedFigure {
+public class SwingThresholdFigure extends AbstractAttributedFigure implements
+	Displayable
+{
 
 	private static final long serialVersionUID = 1L;
 
@@ -115,14 +118,6 @@ public class SwingThresholdFigure extends AbstractAttributedFigure {
 		// do nothing
 	}
 
-	/*
-	@Override
-	public void draw(Graphics2D arg0) {
-		// unknown at the moment
-		super.draw(arg0);
-	}
-	*/
-
 	@Override
 	public Double getStartPoint() {
 		return new Double(imgPlus.min(0), imgPlus.min(1));
@@ -143,13 +138,6 @@ public class SwingThresholdFigure extends AbstractAttributedFigure {
 		// do nothing
 	}
 
-	/* TODO - add an interface hook that allows Overlay to draw Figure
-	 * public interface OverlayDraw { void redrawFigure(); }
-	public void redrawFigure() {
-		fireFigureChanged();
-	}
-	*/
-
 	@Override
 	protected void drawFill(final Graphics2D g) {
 		final Color origC = g.getColor();
@@ -163,6 +151,8 @@ public class SwingThresholdFigure extends AbstractAttributedFigure {
 			// NB - only draw points that lay in the currently viewed plane
 			boolean posInViewedPlane = true;
 			for (int i = 2; i < pos.length; i++) {
+				// TODO - this is not correct when we have multiple datatsets with
+				// different axes in a single display
 				if (display.getLongPosition(i) != pos[i]) {
 					posInViewedPlane = false;
 					break;
@@ -177,4 +167,10 @@ public class SwingThresholdFigure extends AbstractAttributedFigure {
 		g.setColor(origC);
 	}
 
+	// -- Displayable --
+
+	@Override
+	public void draw() {
+		fireFigureChanged();
+	}
 }
