@@ -57,6 +57,9 @@ import org.jhotdraw.draw.AttributeKeys;
 // for the support of different zoom levels. Note that SwingPointFigure shows
 // how to reason about scale.
 
+// TODO: determine why threshold figure draws twice when created (in default
+// color first and then in user specified color).
+
 /**
  * 
  * @author Barry DeZonia
