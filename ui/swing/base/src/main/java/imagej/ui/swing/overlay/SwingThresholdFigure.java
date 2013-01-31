@@ -48,6 +48,7 @@ import java.awt.geom.Rectangle2D;
 
 import net.imglib2.Cursor;
 import net.imglib2.img.ImgPlus;
+import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
 
 import org.jhotdraw.draw.AbstractAttributedFigure;
@@ -74,7 +75,6 @@ public class SwingThresholdFigure extends AbstractAttributedFigure implements
 	private final ImageDisplay display;
 	private final ImgPlus<?> imgPlus;
 	private final ThresholdOverlay overlay;
-	private final PointSet points;
 	private final Rectangle2D.Double rect;
 	
 	public SwingThresholdFigure(ImageDisplay display, ImgPlus<?> imgPlus,
@@ -83,7 +83,6 @@ public class SwingThresholdFigure extends AbstractAttributedFigure implements
 		this.display = display;
 		this.imgPlus = imgPlus;
 		this.overlay = overlay;
-		this.points = overlay.getPoints();
 		this.rect = new Rectangle2D.Double();
 		setAttributeEnabled(AttributeKeys.FILL_COLOR, true);
 		setAttributeEnabled(AttributeKeys.STROKE_COLOR, false);
@@ -141,6 +140,13 @@ public class SwingThresholdFigure extends AbstractAttributedFigure implements
 		// do nothing
 	}
 
+	// NB - not using a ConditionalPointSet directly. ConditionalPointSet may
+	// encompass a huge hypervolume and we are only interested in the points in
+	// the displayed plane. So we define a smaller hypervolume of just the viewed
+	// plane, iterate it and then test the Condition<long[]> directly. This is
+	// much faster for display purposes. The ThresholdOverlay returns the
+	// Condition when asked.
+
 	@Override
 	protected void drawFill(final Graphics2D g) {
 		final Color origC = g.getColor();
@@ -148,20 +154,12 @@ public class SwingThresholdFigure extends AbstractAttributedFigure implements
 		g.setColor(color);
 		rect.width = 1;
 		rect.height = 1;
-		Cursor<long[]> cursor = points.cursor();
+		// only iterate currently viewed plane
+		Cursor<long[]> cursor = getViewedPlane().cursor();
 		while (cursor.hasNext()) {
 			long[] pos = cursor.next();
-			// NB - only draw points that lay in the currently viewed plane
-			boolean posInViewedPlane = true;
-			for (int i = 2; i < pos.length; i++) {
-				// TODO - this is not correct when we have multiple datatsets with
-				// different axes in a single display
-				if (display.getLongPosition(i) != pos[i]) {
-					posInViewedPlane = false;
-					break;
-				}
-			}
-			if (posInViewedPlane) {
+			// only draw points that satisfy the threshold condition
+			if (overlay.getCondition().isTrue(pos)) {
 				rect.x = pos[0];
 				rect.y = pos[1];
 				g.fill(rect);
@@ -175,5 +173,22 @@ public class SwingThresholdFigure extends AbstractAttributedFigure implements
 	@Override
 	public void draw() {
 		fireFigureChanged();
+	}
+
+	// -- helpers --
+
+	// TODO - there is an assumption here that display and data coords map 1:1.
+	// If we have a display with multiple datasets in it this code isn't quite
+	// correct.
+
+	private PointSet getViewedPlane() {
+		long[] pt1 = new long[display.numDimensions()];
+		long[] pt2 = new long[display.numDimensions()];
+		for (int i = 2; i < pt1.length; i++) {
+			pt1[i] = pt2[i] = display.getLongPosition(i);
+		}
+		pt2[0] = display.dimension(0) - 1;
+		pt2[1] = display.dimension(1) - 1;
+		return new HyperVolumePointSet(pt1, pt2);
 	}
 }

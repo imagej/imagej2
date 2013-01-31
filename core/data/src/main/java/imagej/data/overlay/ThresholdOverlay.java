@@ -43,6 +43,7 @@ import net.imglib2.Positionable;
 import net.imglib2.RealPositionable;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.AxisType;
+import net.imglib2.ops.condition.Condition;
 import net.imglib2.ops.condition.WithinRangeCondition;
 import net.imglib2.ops.function.Function;
 import net.imglib2.ops.function.real.RealImageFunction;
@@ -113,6 +114,20 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 		return points;
 	}
 	
+	/**
+	 * Returns the {@link Condition} of the {@link ThresholdOverlay}. This is used
+	 * by others (like the rendering code) to quickly iterate the portion of the
+	 * data points they are interested in.
+	 * <p>
+	 * By design the return value is not a {@link WithinRangeCondition}. Users
+	 * cannot poke the threshold values via this Condition. This would bypass
+	 * internal communication. API users should call setRange(min, max) on this
+	 * {@link ThresholdOverlay} if they want to manipulate the display range.
+	 */
+	public Condition<long[]> getCondition() {
+		return condition;
+	}
+
 	@Override
 	public void update() {
 		if (figure != null) figure.draw();
