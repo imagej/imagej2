@@ -54,10 +54,6 @@ import net.imglib2.ops.pointset.PointSet;
 import org.jhotdraw.draw.AbstractAttributedFigure;
 import org.jhotdraw.draw.AttributeKeys;
 
-// TODO - bounds and draw code work in 1:1 scale. See if they need to be updated
-// for the support of different zoom levels. Note that SwingPointFigure shows
-// how to reason about scale.
-
 // TODO: determine why threshold figure draws twice when created (in default
 // color first and then in user specified color).
 
