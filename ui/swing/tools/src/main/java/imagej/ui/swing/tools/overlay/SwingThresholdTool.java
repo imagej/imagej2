@@ -75,6 +75,7 @@ public class SwingThresholdTool extends
 	AbstractJHotDrawAdapter<ThresholdOverlay, SwingThresholdFigure>
 {
 	private static List<Mapping> mappings = new LinkedList<Mapping>();
+	private static ImgPlus<? extends RealType<?>> defaultImgPlus = null;
 	
 	private class Mapping {
 		ImgPlus<? extends RealType<?>> imgPlus;
@@ -130,12 +131,21 @@ public class SwingThresholdTool extends
 		ImageDisplayService service = getContext().getService(ImageDisplayService.class);
 		Dataset ds = service.getActiveDataset(display);
 		if (ds != null) return ds.getImgPlus();
-		// make a phantom dataset so we can always have an imgplus for this tool
-		DatasetService dss = getContext().getService(DatasetService.class);
-		ds = dss.create(new UnsignedByteType(), new long[]{1,1}, "Fred", new AxisType[]{Axes.X, Axes.Y});
-		return ds.getImgPlus();
+		return getDefaultImgPlus();
 	}
 	
+	private ImgPlus<? extends RealType<?>> getDefaultImgPlus() {
+		if (defaultImgPlus == null) {
+			// make a phantom dataset so we can always have an imgplus for this tool
+			DatasetService dss = getContext().getService(DatasetService.class);
+			Dataset dataset =
+				dss.create(new UnsignedByteType(), new long[] { 1, 1 },
+					"DefaultImgPlus", new AxisType[] { Axes.X, Axes.Y });
+			defaultImgPlus = dataset.getImgPlus();
+		}
+		return defaultImgPlus;
+	}
+
 	private Mapping map(ImageDisplay display,
 		ImgPlus<? extends RealType<?>> imgPlus)
 	{
@@ -148,4 +158,5 @@ public class SwingThresholdTool extends
 		mappings.add(m);
 		return m;
 	}
+
 }
