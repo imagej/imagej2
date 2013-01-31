@@ -35,9 +35,6 @@
 
 package imagej.core.commands.debug;
 
-import java.util.List;
-
-import net.imglib2.type.numeric.RealType;
 import imagej.command.ContextCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayService;
@@ -46,14 +43,17 @@ import imagej.data.overlay.ThresholdOverlay;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
+import java.util.List;
+
+import net.imglib2.ops.pointset.PointSet;
+
 /**
- * A thresholding example using {@link PointSets} from Imglib2 OPS
+ * A thresholding example using {@link PointSet}s from Imglib2 OPS
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin(menuPath = "Plugins>Sandbox>Threshold Toy")
-public class ThresholdCommand<T extends RealType<T>> extends ContextCommand {
+public class ThresholdCommand extends ContextCommand {
 
 	// -- Parameters --
 
@@ -71,16 +71,16 @@ public class ThresholdCommand<T extends RealType<T>> extends ContextCommand {
 
 	// -- Command methods --
 	
-	// TODO - this should really set the default threshold values to be used by any creation
-	// of a new threshold overlay. And of course modify the existing thresholds of the curr
-	// threshold overlay if there is one. So we need an OptionsThreshold class perhaps.
-	// Also this plugin should be interactive - updating the display as the threshold values
-	// are altered in the dialog.
+	// TODO - this should really set the default threshold values to be used by
+	// any creation of a new threshold overlay. And of course modify the existing
+	// thresholds of the curr threshold overlay if there is one. So we need an
+	// OptionsThreshold class perhaps. Also this plugin should be interactive
+	// updating the display as the threshold values/ are altered in the dialog.
 	
 	@Override
 	public void run() {
 		if (minThresh > maxThresh) {
-			cancel("Cannot specify minimum threshold value larger than maximum threshold value.");
+			cancel("Threshold: minimum value cannot be larger than maximum value.");
 			return;
 		}
 		ThresholdOverlay thresholdOverlay = null;
