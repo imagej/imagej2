@@ -54,10 +54,10 @@ import net.imglib2.ops.pointset.PointSetRegionOfInterest;
 import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.numeric.RealType;
 
-// TODO - deleting one of these overlays from Overlay Manager is ineffective.
-//   Determine why and fix
-// Also deleting one of these overlays by pressing the Delet key in the window
-// (i.e. the JHotDraw end of selection?) also fails.
+// TODO - deleting one of these overlays from within Overlay Manager is
+// ineffective. Determine why and fix.  Also deleting one of these overlays by
+// pressing the Delete key in the Image window (i.e. the JHotDraw end of
+// selection?) also fails.
 
 /**
  * 
@@ -72,10 +72,13 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 	private final WithinRangeCondition<? extends RealType<?>> condition;
 	private final RegionOfInterest regionAdapter;
 
-	public ThresholdOverlay(ImageJ context, ImgPlus<? extends RealType<?>> imgPlus) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public ThresholdOverlay(ImageJ context, ImgPlus<? extends RealType<?>> imgPlus)
+	{
 		setContext(context);
 		this.imgPlus = imgPlus;
-		Function<long[],? extends RealType<?>> function = new RealImageFunction(imgPlus, imgPlus.firstElement());
+		Function<long[], ? extends RealType<?>> function =
+			new RealImageFunction(imgPlus, imgPlus.firstElement());
 		condition =
 			new WithinRangeCondition(function, Double.NEGATIVE_INFINITY,
 				Double.POSITIVE_INFINITY);
@@ -90,7 +93,9 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 		label();
 	}
 	
-	public ThresholdOverlay(ImageJ context, ImgPlus<? extends RealType<?>> imgPlus, double min, double max) {
+	public ThresholdOverlay(ImageJ context,
+		ImgPlus<? extends RealType<?>> imgPlus, double min, double max)
+	{
 		this(context, imgPlus);
 		setRange(min,max);
 	}
@@ -135,7 +140,7 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 
 	@Override
 	public void rebuild() {
-		update(); // TODO - would this be al we need to do?
+		update(); // TODO - is this all we need to do? I think so.
 	}
 
 	@Override
@@ -170,28 +175,37 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 
 	@Override
 	public void calibration(double[] cal) {
-		for (int i = 0; i < cal.length; i++) cal[i] = calibration(i);
+		for (int i = 0; i < cal.length; i++) {
+			cal[i] = calibration(i);
+		}
 	}
 
 	@Override
 	public void calibration(float[] cal) {
-		for (int i = 0; i < cal.length; i++) cal[i] = (float) calibration(i);
+		for (int i = 0; i < cal.length; i++) {
+			cal[i] = (float) calibration(i);
+		}
 	}
 
 	@Override
 	public void setCalibration(double cal, int d) {
 		if (cal == 1 && (d == 0 || d == 1)) return;
-		throw new IllegalArgumentException("Cannot set calibration of a ThresholdOverlay");
+		throw new IllegalArgumentException(
+			"Cannot set calibration of a ThresholdOverlay");
 	}
 
 	@Override
 	public void setCalibration(double[] cal) {
-		for (int i = 0; i < cal.length; i++) setCalibration(cal[i], i);
+		for (int i = 0; i < cal.length; i++) {
+			setCalibration(cal[i], i);
+		}
 	}
 
 	@Override
 	public void setCalibration(float[] cal) {
-		for (int i = 0; i < cal.length; i++) setCalibration(cal[i], i);
+		for (int i = 0; i < cal.length; i++) {
+			setCalibration(cal[i], i);
+		}
 	}
 
 	@Override
@@ -206,12 +220,16 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 
 	@Override
 	public void min(long[] min) {
-		for (int i = 0; i < min.length; i++) min[i] = min(i);
+		for (int i = 0; i < min.length; i++) {
+			min[i] = min(i);
+		}
 	}
 
 	@Override
 	public void min(Positionable min) {
-		for (int i = 0; i < min.numDimensions(); i++) min.setPosition(min(i), i);
+		for (int i = 0; i < min.numDimensions(); i++) {
+			min.setPosition(min(i), i);
+		}
 	}
 
 	@Override
@@ -221,12 +239,16 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 
 	@Override
 	public void max(long[] max) {
-		for (int i = 0; i < max.length; i++) max[i] = max(i);
+		for (int i = 0; i < max.length; i++) {
+			max[i] = max(i);
+		}
 	}
 
 	@Override
 	public void max(Positionable max) {
-		for (int i = 0; i < max.numDimensions(); i++) max.setPosition(max(i), i);
+		for (int i = 0; i < max.numDimensions(); i++) {
+			max.setPosition(max(i), i);
+		}
 	}
 
 	@Override
@@ -236,12 +258,16 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 
 	@Override
 	public void realMin(double[] min) {
-		for (int i = 0; i < min.length; i++) min[i] = realMin(i);
+		for (int i = 0; i < min.length; i++) {
+			min[i] = realMin(i);
+		}
 	}
 
 	@Override
 	public void realMin(RealPositionable min) {
-		for (int i = 0; i < min.numDimensions(); i++) min.setPosition(realMin(i),i);
+		for (int i = 0; i < min.numDimensions(); i++) {
+			min.setPosition(realMin(i), i);
+		}
 	}
 
 	@Override
@@ -251,12 +277,16 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 
 	@Override
 	public void realMax(double[] max) {
-		for (int i = 0; i < max.length; i++) max[i] = realMax(i);
+		for (int i = 0; i < max.length; i++) {
+			max[i] = realMax(i);
+		}
 	}
 
 	@Override
 	public void realMax(RealPositionable max) {
-		for (int i = 0; i < max.numDimensions(); i++) max.setPosition(realMax(i),i);
+		for (int i = 0; i < max.numDimensions(); i++) {
+			max.setPosition(realMax(i), i);
+		}
 	}
 
 	@Override
@@ -358,7 +388,8 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 
 	@Override
 	public ThresholdOverlay duplicate() {
-		return new ThresholdOverlay(getContext(), imgPlus, condition.getMin(), condition.getMax());
+		return new ThresholdOverlay(getContext(), imgPlus, condition.getMin(),
+			condition.getMax());
 	}
 
 	@Override
