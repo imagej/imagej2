@@ -53,6 +53,11 @@ import net.imglib2.ops.pointset.PointSetRegionOfInterest;
 import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.numeric.RealType;
 
+// TODO - deleting one of these overlays from Overlay Manager is ineffective.
+//   Determine why and fix
+// Also deleting one of these overlays by pressing the Delet key in the window
+// (i.e. the JHotDraw end of selection?) also fails.
+
 /**
  * 
  * @author Barry DeZonia
