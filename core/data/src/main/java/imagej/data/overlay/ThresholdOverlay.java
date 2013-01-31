@@ -81,6 +81,7 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 		points = new ConditionalPointSet(volume, condition);
 		regionAdapter = new PointSetRegionOfInterest(points);
 		figure = null;
+		label();
 	}
 	
 	public ThresholdOverlay(ImageJ context, ImgPlus<? extends RealType<?>> imgPlus, double min, double max) {
@@ -96,6 +97,7 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 		condition.setMin(min);
 		condition.setMax(max);
 		points.setCondition(condition); // this lets PointSet know it is changed
+		label();
 	}
 	
 	public void resetThreshold() {
@@ -342,5 +344,9 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 	@Override
 	public void move(double[] deltas) {
 		// do nothing - thresholds don't move though space
+	}
+
+	private void label() {
+		setName("Threshold: " + condition.getMin() + " to " + condition.getMax());
 	}
 }
