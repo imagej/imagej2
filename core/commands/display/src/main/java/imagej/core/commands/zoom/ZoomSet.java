@@ -40,8 +40,8 @@ import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.menu.MenuConstants;
-import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
+import imagej.module.MutableModuleItem;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -148,8 +148,8 @@ public class ZoomSet extends DynamicCommand {
 		final ImageCanvas canvas = display.getCanvas();
 
 		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<Double> zoomItem =
-			(DefaultModuleItem<Double>) getInfo().getInput(ZOOM);
+		final MutableModuleItem<Double> zoomItem =
+			(MutableModuleItem<Double>) getInfo().getInput(ZOOM);
 		zoomItem.setMinimumValue(0.1);
 		zoomItem.setMaximumValue(500000.0);
 		setZoomPercent(100 * canvas.getZoomFactor());
@@ -161,15 +161,15 @@ public class ZoomSet extends DynamicCommand {
 		final RealCoords panCenter = canvas.getPanCenter();
 
 		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<Double> centerUItem =
-			(DefaultModuleItem<Double>) getInfo().getInput(CTR_U);
+		final MutableModuleItem<Double> centerUItem =
+			(MutableModuleItem<Double>) getInfo().getInput(CTR_U);
 		centerUItem.setMinimumValue(planeExtents.x);
 		centerUItem.setMaximumValue(planeExtents.x + planeExtents.width);
 		setCenterU(panCenter.x);
 
 		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<Double> centerVItem =
-			(DefaultModuleItem<Double>) getInfo().getInput(CTR_V);
+		final MutableModuleItem<Double> centerVItem =
+			(MutableModuleItem<Double>) getInfo().getInput(CTR_V);
 		centerVItem.setMinimumValue(planeExtents.y);
 		centerVItem.setMaximumValue(planeExtents.y + planeExtents.height);
 		setCenterV(panCenter.y);

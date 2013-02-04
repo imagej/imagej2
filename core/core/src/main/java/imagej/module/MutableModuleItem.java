@@ -2,7 +2,7 @@
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
  * %%
- * Copyright (C) 2009 - 2012 Board of Regents of the University of
+ * Copyright (C) 2009 - 2013 Board of Regents of the University of
  * Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
  * Institute of Molecular Cell Biology and Genetics.
  * %%
@@ -33,51 +33,42 @@
  * #L%
  */
 
-package imagej.script.editor.command;
+package imagej.module;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import imagej.command.DynamicCommand;
-import imagej.module.MutableModuleItem;
-import imagej.plugin.Parameter;
-import imagej.script.editor.TextEditor;
-import imagej.script.editor.TextEditor.Executer;
-
 /**
- * Kills a running script started in the given script editor.
+ * {@link ModuleItem} extension allowing manipulation of its metadata.
  * 
- * @author Johannes Schindelin
+ * @author Curtis Rueden
+ * @see imagej.command.DynamicCommand
  */
-public class KillScript extends DynamicCommand {
+public interface MutableModuleItem<T> extends ModuleItem<T> {
 
-	@Parameter
-	private TextEditor editor;
+	void setIOType(ItemIO ioType);
 
-	@Parameter(initializer = "initializeChoice")
-	private Executer script;
-	private final static String SCRIPT_NAME = "script";
+	void setVisibility(ItemVisibility visibility);
 
-	@Parameter
-	private boolean killAll;
+	void setRequired(boolean required);
 
-	@Override
-	public void run() {
-		if (killAll) {
-			final List<Executer> scripts = new ArrayList<Executer>();
-			scripts.addAll(editor.getExecutingTasks());
-			for (Executer job : scripts) {
-				editor.kill(job);
-			}
-		} else {
-			editor.kill(script);
-		}
-	}
+	void setPersisted(boolean persisted);
 
-	protected void initializeChoice() {
-		@SuppressWarnings("unchecked")
-		MutableModuleItem<Executer> item =
-				(MutableModuleItem<Executer>) getInfo().getInput(SCRIPT_NAME);
-		item.setChoices(editor.getExecutingTasks());
-	}
+	void setPersistKey(String persistKey);
+
+	void setInitializer(String initializer);
+
+	void setCallback(String callback);
+
+	void setWidgetStyle(String widgetStyle);
+
+	void setMinimumValue(T minimumValue);
+
+	void setMaximumValue(T maximumValue);
+
+	void setStepSize(Number stepSize);
+
+	void setColumnCount(int columnCount);
+
+	void setChoices(List<? extends T> choices);
+
 }

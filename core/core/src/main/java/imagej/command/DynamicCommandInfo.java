@@ -43,8 +43,6 @@ import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.plugin.PluginInfo;
-import imagej.plugin.PluginService;
 
 import java.lang.reflect.Field;
 

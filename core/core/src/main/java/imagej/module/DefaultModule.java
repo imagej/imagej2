@@ -40,7 +40,7 @@ package imagej.module;
  * 
  * @author Curtis Rueden
  */
-public class DefaultModule extends AbstractModule {
+public class DefaultModule extends AbstractModule implements MutableModule {
 
 	private final DefaultModuleInfo info;
 
@@ -54,10 +54,10 @@ public class DefaultModule extends AbstractModule {
 		info.setModuleClass(getClass());
 	}
 
-	// -- DefaultModule methods --
+	// -- MutableModule methods --
 
-	/** Adds an input to the list. */
-	public <T> DefaultModuleItem<T> addInput(final String name,
+	@Override
+	public <T> MutableModuleItem<T> addInput(final String name,
 		final Class<T> type)
 	{
 		final DefaultModuleItem<T> item =
@@ -66,13 +66,13 @@ public class DefaultModule extends AbstractModule {
 		return item;
 	}
 
-	/** Adds an input to the list. */
+	@Override
 	public void addInput(final ModuleItem<?> input) {
 		getInfo().addInput(input);
 	}
 
-	/** Adds an output to the list. */
-	public <T> DefaultModuleItem<T> addOutput(final String name,
+	@Override
+	public <T> MutableModuleItem<T> addOutput(final String name,
 		final Class<T> type)
 	{
 		final DefaultModuleItem<T> item =
@@ -81,17 +81,17 @@ public class DefaultModule extends AbstractModule {
 		return item;
 	}
 
-	/** Adds an output to the list. */
+	@Override
 	public void addOutput(final ModuleItem<?> output) {
 		getInfo().addOutput(output);
 	}
 
-	/** Removes an input from the list. */
+	@Override
 	public void removeInput(final ModuleItem<?> input) {
 		getInfo().removeInput(input);
 	}
 
-	/** Removes an output from the list. */
+	@Override
 	public void removeOutput(final ModuleItem<?> output) {
 		getInfo().removeOutput(output);
 	}

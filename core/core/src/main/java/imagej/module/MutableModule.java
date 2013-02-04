@@ -2,7 +2,7 @@
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
  * %%
- * Copyright (C) 2009 - 2012 Board of Regents of the University of
+ * Copyright (C) 2009 - 2013 Board of Regents of the University of
  * Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
  * Institute of Molecular Cell Biology and Genetics.
  * %%
@@ -33,51 +33,35 @@
  * #L%
  */
 
-package imagej.script.editor.command;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import imagej.command.DynamicCommand;
-import imagej.module.MutableModuleItem;
-import imagej.plugin.Parameter;
-import imagej.script.editor.TextEditor;
-import imagej.script.editor.TextEditor.Executer;
+package imagej.module;
 
 /**
- * Kills a running script started in the given script editor.
+ * {@link Module} extension allowing manipulation of its metadata.
+ * <p>
+ * In particular, module inputs and outputs can be added, edited and removed.
+ * </p>
  * 
- * @author Johannes Schindelin
+ * @author Curtis Rueden
+ * @see imagej.command.DynamicCommand
  */
-public class KillScript extends DynamicCommand {
+public interface MutableModule extends Module {
 
-	@Parameter
-	private TextEditor editor;
+	/** Adds an input to the list. */
+	<T> MutableModuleItem<T> addInput(String name, Class<T> type);
 
-	@Parameter(initializer = "initializeChoice")
-	private Executer script;
-	private final static String SCRIPT_NAME = "script";
+	/** Adds an input to the list. */
+	void addInput(ModuleItem<?> input);
 
-	@Parameter
-	private boolean killAll;
+	/** Adds an output to the list. */
+	<T> MutableModuleItem<T> addOutput(String name, Class<T> type);
 
-	@Override
-	public void run() {
-		if (killAll) {
-			final List<Executer> scripts = new ArrayList<Executer>();
-			scripts.addAll(editor.getExecutingTasks());
-			for (Executer job : scripts) {
-				editor.kill(job);
-			}
-		} else {
-			editor.kill(script);
-		}
-	}
+	/** Adds an output to the list. */
+	void addOutput(ModuleItem<?> output);
 
-	protected void initializeChoice() {
-		@SuppressWarnings("unchecked")
-		MutableModuleItem<Executer> item =
-				(MutableModuleItem<Executer>) getInfo().getInput(SCRIPT_NAME);
-		item.setChoices(editor.getExecutingTasks());
-	}
+	/** Removes an input from the list. */
+	void removeInput(ModuleItem<?> input);
+
+	/** Removes an output from the list. */
+	void removeOutput(ModuleItem<?> output);
+
 }

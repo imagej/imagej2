@@ -38,8 +38,8 @@ package imagej.core.commands.axispos;
 import imagej.command.DynamicCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
-import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
+import imagej.module.MutableModuleItem;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -120,8 +120,8 @@ public class SetActiveAxis extends DynamicCommand {
 
 	protected void initAxisName() {
 		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<String> axisNameItem =
-			(DefaultModuleItem<String>) getInfo().getInput(AXIS_NAME);
+		final MutableModuleItem<String> axisNameItem =
+			(MutableModuleItem<String>) getInfo().getInput(AXIS_NAME);
 		final AxisType[] axes = display.getAxes();
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (final AxisType a : axes) {
