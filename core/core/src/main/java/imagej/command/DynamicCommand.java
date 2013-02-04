@@ -126,12 +126,8 @@ public abstract class DynamicCommand extends DefaultModule implements Command,
 		this.context = context;
 
 		// populate service parameters
-		final CommandService commandService =
-			context.getService(CommandService.class);
-		if (commandService == null) {
-			throw new IllegalArgumentException("Context has no command service");
-		}
-		final CommandInfo commandInfo = commandService.populateServices(this);
+		final CommandInfo commandInfo =
+			CommandUtils.populateServices(context, this);
 
 		info = new DynamicCommandInfo(commandInfo, getClass());
 

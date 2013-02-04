@@ -94,12 +94,7 @@ public abstract class ContextCommand extends AbstractContextual implements
 		super.setContext(context);
 
 		// populate service parameters
-		final CommandService commandService =
-			context.getService(CommandService.class);
-		if (commandService == null) {
-			throw new IllegalArgumentException("Context has no command service");
-		}
-		commandService.populateServices(this);
+		CommandUtils.populateServices(context, this);
 	}
 
 }
