@@ -37,11 +37,14 @@ package imagej.command;
 
 import imagej.Contextual;
 import imagej.ImageJ;
+import imagej.event.EventSubscriber;
+import imagej.event.EventUtils;
 import imagej.module.DefaultModule;
 import imagej.plugin.Parameter;
 import imagej.util.ClassUtils;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 /**
  * A class which can be extended to provide an ImageJ command with a variable
@@ -57,6 +60,21 @@ public abstract class DynamicCommand extends DefaultModule implements Command,
 
 	private ImageJ context;
 	private DynamicCommandInfo info;
+
+	/**
+	 * The list of event subscribers, maintained to avoid garbage collection.
+	 * 
+	 * @see imagej.event.EventService#subscribe(Object)
+	 */
+	private List<EventSubscriber<?>> subscribers;
+
+	// -- Object methods --
+
+	@Override
+	public void finalize() {
+		// unregister any event handling methods
+		EventUtils.unsubscribe(getContext(), subscribers);
+	}
 
 	// -- Module methods --
 
@@ -116,6 +134,10 @@ public abstract class DynamicCommand extends DefaultModule implements Command,
 		final CommandInfo commandInfo = commandService.populateServices(this);
 
 		info = new DynamicCommandInfo(commandInfo, getClass());
+
+		// NB: Subscribe to all events handled by this object.
+		// This greatly simplifies event handling for subclasses.
+		subscribers = EventUtils.subscribe(context, this);
 	}
 
 }

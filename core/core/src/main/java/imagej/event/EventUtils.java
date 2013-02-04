@@ -33,64 +33,62 @@
  * #L%
  */
 
-package imagej;
+package imagej.event;
 
-import imagej.event.EventService;
-import imagej.event.EventSubscriber;
-import imagej.event.EventUtils;
+import imagej.ImageJ;
+import imagej.command.Command;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
- * Abstract base class for {@link Contextual} objects.
- * <p>
- * This class enforces a single call to {@link #setContext}, throwing an
- * {@link IllegalStateException} if the context is already set. It also
- * registers the object's {@link imagej.event.EventHandler} methods with the
- * {@link EventService}, if any, at the time the context is assigned. This frees
- * subclasses from the burden of maintaining {@link EventSubscriber} references
- * manually.
- * </p>
+ * Utility methods for working with {@link Command}s.
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractContextual implements Contextual {
+public final class EventUtils {
 
-	/** This application context associated with the object. */
-	private ImageJ context;
+	private EventUtils() {
+		// prevent instantiation of utility class
+	}
 
 	/**
-	 * The list of event subscribers, maintained to avoid garbage collection.
+	 * Registers any event handling methods (defined in subclasses).
+	 * <p>
+	 * Does nothing if the context is null, or if the context has no associated
+	 * {@link EventService}.
+	 * </p>
 	 * 
+	 * @return The list of event subscribers that were created. It is necessary to
+	 *         keep a reference to this list, to avoid them being garbage
+	 *         collected (which would cause events to stop being delivered).
 	 * @see EventService#subscribe(Object)
 	 */
-	private List<EventSubscriber<?>> subscribers;
-
-	// -- Object methods --
-
-	@Override
-	public void finalize() {
-		// unregister any event handling methods
-		EventUtils.unsubscribe(getContext(), subscribers);
+	public static List<EventSubscriber<?>> subscribe(final ImageJ context,
+		final Object o)
+	{
+		if (context == null) return null;
+		final EventService eventService = context.getService(EventService.class);
+		if (eventService == null) return null;
+		return eventService.subscribe(o);
 	}
 
-	// -- Contextual methods --
-
-	@Override
-	public ImageJ getContext() {
-		return context;
-	}
-
-	@Override
-	public void setContext(final ImageJ context) {
-		if (this.context != null) {
-			throw new IllegalStateException("Context already set");
-		}
-		this.context = context;
-
-		// NB: Subscribe to all events handled by this object.
-		// This greatly simplifies event handling for subclasses.
-		subscribers = EventUtils.subscribe(context, this);
+	/**
+	 * Unregisters the given event handling methods.
+	 * <p>
+	 * Does nothing if the context is null, or if the context has no associated
+	 * {@link EventService}.
+	 * </p>
+	 * 
+	 * @see EventService#unsubscribe(Collection)
+	 */
+	public static void unsubscribe(final ImageJ context,
+		final Collection<EventSubscriber<?>> subscribers)
+	{
+		if (context == null) return;
+		final EventService eventService = context.getService(EventService.class);
+		if (eventService == null) return;
+		eventService.unsubscribe(subscribers);
 	}
 
 }
