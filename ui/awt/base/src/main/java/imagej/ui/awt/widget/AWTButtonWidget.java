@@ -35,39 +35,42 @@
 
 package imagej.ui.awt.widget;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import imagej.module.Module;
 import imagej.plugin.Plugin;
 import imagej.widget.Button;
+import imagej.widget.ButtonWidget;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
 
+import java.awt.Panel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 /**
- * A AWT widget that displays a button and invokes the callback of a parameter
+ * An AWT widget that displays a button and invokes the callback of a parameter
  * when the button is clicked.
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin(type = InputWidget.class)
-public class AWTButtonWidget extends AWTInputWidget<Button>
+public class AWTButtonWidget extends AWTInputWidget<Button> implements
+	ButtonWidget<Panel>
 {
+
 	private java.awt.Button button;
-	
+
 	@Override
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
 
-		String label = model.getItem().getLabel();
-		if ((label == null) || label.isEmpty()) label = "A button";
-		button = new java.awt.Button(label);
+		final String name = model.getItem().getName();
+		final String label = model.getItem().getLabel();
+		button = new java.awt.Button(label == null ? name : label);
 		button.addActionListener(new ActionListener() {
-			
+
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				Module module = model.getModule();
+			public void actionPerformed(final ActionEvent e) {
+				final Module module = model.getModule();
 				model.getItem().callback(module);
 			}
 		});
@@ -75,10 +78,10 @@ public class AWTButtonWidget extends AWTInputWidget<Button>
 	}
 
 	@Override
-	public boolean isCompatible(WidgetModel model) {
+	public boolean isCompatible(final WidgetModel model) {
 		return model.isType(Button.class);
 	}
-	
+
 	@Override
 	public Button getValue() {
 		return null;

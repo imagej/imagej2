@@ -2,7 +2,7 @@
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
  * %%
- * Copyright (C) 2009 - 2013 Board of Regents of the University of
+ * Copyright (C) 2009 - 2012 Board of Regents of the University of
  * Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
  * Institute of Molecular Cell Biology and Genetics.
  * %%
@@ -33,71 +33,13 @@
  * #L%
  */
 
-package imagej.ui.swing.widget;
-
-import imagej.module.Module;
-import imagej.plugin.Plugin;
-import imagej.widget.Button;
-import imagej.widget.ButtonWidget;
-import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JPanel;
+package imagej.widget;
 
 /**
- * A Swing widget that displays a button and invokes the callback of a parameter
- * when the button is clicked.
+ * Widget interface for buttons.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class)
-public class SwingButtonWidget extends SwingInputWidget<Button> implements
-	ButtonWidget<JPanel>
-{
-
-	private JButton button;
-
-	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
-
-		final String name = model.getItem().getName();
-		final String label = model.getItem().getLabel();
-		button = new JButton(label == null ? name : label);
-		button.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				final Module module = model.getModule();
-				model.getItem().callback(module);
-			}
-		});
-		setToolTip(button);
-		getComponent().add(button);
-	}
-
-	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return model.isType(Button.class);
-	}
-
-	@Override
-	public Button getValue() {
-		return null;
-	}
-
-	@Override
-	public void refreshWidget() {
-		// nothing to do
-	}
-
-	@Override
-	public boolean isLabeled() {
-		return false;
-	}
-
+public interface ButtonWidget<U> extends InputWidget<Button, U> {
+	// NB: No changes to interface.
 }

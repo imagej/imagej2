@@ -40,7 +40,6 @@ package imagej.widget;
  * button fields.
  * 
  * @author Barry DeZonia
- *
  */
 public interface Button {
 	// marker : nothing to implement

@@ -37,18 +37,21 @@ package imagej.ui.swt.widget;
 
 import imagej.plugin.Plugin;
 import imagej.widget.Button;
+import imagej.widget.ButtonWidget;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
+
+import org.eclipse.swt.widgets.Composite;
 
 /**
  * A SWT widget that displays a button and invokes the callback of a parameter
  * when the button is clicked.
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin(type = InputWidget.class)
-public class SWTButtonWidget extends SWTInputWidget<Button>
+public class SWTButtonWidget extends SWTInputWidget<Button> implements
+	ButtonWidget<Composite>
 {
 	// private Button button;
 	

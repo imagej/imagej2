@@ -37,18 +37,21 @@ package imagej.ui.pivot.widget;
 
 import imagej.plugin.Plugin;
 import imagej.widget.Button;
+import imagej.widget.ButtonWidget;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
+
+import org.apache.pivot.wtk.BoxPane;
 
 /**
  * A Pivot widget that displays a button and invokes the callback of a parameter
  * when the button is clicked.
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin(type = InputWidget.class)
-public class PivotButtonWidget extends PivotInputWidget<Button>
+public class PivotButtonWidget extends PivotInputWidget<Button> implements
+	ButtonWidget<BoxPane>
 {
 	// private Button button;
 	
