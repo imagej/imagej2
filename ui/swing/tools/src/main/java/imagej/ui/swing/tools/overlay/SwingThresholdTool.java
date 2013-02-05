@@ -60,6 +60,8 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 import org.jhotdraw.draw.Figure;
 
+// TODO KILL ME ENTIRELY. THIS WAS A SANDBOX IMPLEMENTATION
+
 // TODO - add event handlers so that mappings can go away when things closed.
 // Otherwise this is a source of resource leaks.
 
