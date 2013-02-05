@@ -43,6 +43,7 @@ import java.awt.Component;
  * @author Curtis Rueden
  * @deprecated Use {@link SwingDialog} instead.
  */
+@Deprecated
 public final class SwingUtils {
 
 	private SwingUtils() {
@@ -54,7 +55,8 @@ public final class SwingUtils {
 		final int messageType, final boolean doScrollPane,
 		final Component focusComponent)
 	{
-		final SwingDialog dialog = new SwingDialog(c, messageType, optionType, doScrollPane);
+		final SwingDialog dialog =
+			new SwingDialog(c, messageType, optionType, doScrollPane);
 		dialog.setParent(parentComponent);
 		dialog.setTitle(title);
 		dialog.setFocus(focusComponent);
