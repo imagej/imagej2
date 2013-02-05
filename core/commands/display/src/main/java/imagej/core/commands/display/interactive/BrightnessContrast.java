@@ -76,7 +76,7 @@ public class BrightnessContrast extends InteractiveCommand {
 	 */
 	private static final int MAX_POWER = 4;
 
-	@Parameter(type = ItemIO.BOTH, callback = "initValues")
+	@Parameter(type = ItemIO.BOTH, callback = "viewChanged")
 	private DatasetView view;
 
 	@Parameter(label = "Minimum", persist = false, callback = "minMaxChanged")
@@ -154,8 +154,15 @@ public class BrightnessContrast extends InteractiveCommand {
 
 	// -- Initializers --
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void initValues() {
+		viewChanged();
+	}
+
+	// -- Callback methods --
+
+	/** Called when view changes. Updates everything to match. */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	protected void viewChanged() {
 		final Dataset dataset = view.getData();
 		final Img img = dataset.getImgPlus();
 		computeDataMinMax(img);
@@ -164,8 +171,6 @@ public class BrightnessContrast extends InteractiveCommand {
 		if (Double.isNaN(max)) max = initialMax;
 		computeBrightnessContrast();
 	}
-
-	// -- Callback methods --
 
 	/** Called when min or max changes. Updates brightness and contrast. */
 	protected void minMaxChanged() {
