@@ -87,7 +87,8 @@ public class SwingInputHarvester extends
 		}
 		else messageType = JOptionPane.PLAIN_MESSAGE;
 		final boolean doScrollBars = messageType == JOptionPane.PLAIN_MESSAGE;
-		final SwingDialog dialog = new SwingDialog(pane, optionType, messageType, doScrollBars);
+		final SwingDialog dialog =
+			new SwingDialog(pane, optionType, messageType, doScrollBars);
 		dialog.setTitle(title);
 		dialog.setModal(modal);
 		final int rval = dialog.show();
