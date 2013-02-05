@@ -44,9 +44,12 @@ import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
 import imagej.ui.UIService;
+import imagej.ui.swing.viewer.image.JHotDrawImageCanvas;
 import imagej.ui.swing.viewer.image.SwingImageDisplayViewer;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
+
+import org.jhotdraw.draw.Drawing;
 
 
 /**
@@ -82,10 +85,15 @@ public class JHotDrawFigureService extends AbstractService implements
 
 	@Override
 	public void deleteFigure(ImageDisplay display, ThresholdOverlay overlay) {
-		SwingThresholdFigure figure = (SwingThresholdFigure) overlay.getFigure();
-		SwingImageDisplayViewer viewer =
-			(SwingImageDisplayViewer) uiService.getDisplayViewer(display);
-		viewer.getCanvas().getDrawing().remove(figure);
 		overlay.setFigure(null);
+		SwingThresholdFigure figure = (SwingThresholdFigure) overlay.getFigure();
+		if (figure == null) return;
+		SwingImageDisplayViewer viewer =
+				(SwingImageDisplayViewer) uiService.getDisplayViewer(display);
+		JHotDrawImageCanvas canvas = viewer.getCanvas();
+		if (canvas == null) return;
+		Drawing drawing = canvas.getDrawing();
+		if (drawing == null) return;
+		drawing.remove(figure);
 	}
 }
