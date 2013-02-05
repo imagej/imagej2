@@ -38,7 +38,6 @@ package imagej.io.plugins;
 import imagej.command.Command;
 import imagej.io.RecentFileService;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -56,7 +55,7 @@ import imagej.plugin.Plugin;
 		mnemonic = 'c') })
 public class ClearRecent implements Command {
 
-	@Parameter(type = ItemIO.BOTH)
+	@Parameter
 	private RecentFileService recentFileService;
 
 	// -- Command methods --
