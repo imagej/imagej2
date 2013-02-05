@@ -48,6 +48,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.WindowConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
@@ -60,7 +61,8 @@ import javax.swing.border.EmptyBorder;
  * </p>
  * <ul>
  * <li>It can limit the size of the dialog based on the actual screen size.</li>
- * <li>It can be create either a modal or non-modal dialog.</li>
+ * <li>It can be create either a modal or non-modal dialog. In the case of a
+ * non-modal dialog, the usual buttons (OK, Cancel, etc.) are suppressed.</li>
  * <li>It can optionally add a scroll bar around the provided {@link Component}
  * in case it is too large.</li>
  * <li>It can start with a particular {@link Component} having the keyboard
@@ -70,6 +72,9 @@ import javax.swing.border.EmptyBorder;
  * @author Curtis Rueden
  */
 public class SwingDialog {
+
+	/** Catch-all return value of {@link #show} if return value is non-integer. */
+	public static final int UNKNOWN_OPTION = -0xdefea7;
 
 	private final JOptionPane optionPane;
 
@@ -84,6 +89,32 @@ public class SwingDialog {
 	private boolean resizable = true;
 
 	private boolean sizeLimited = true;
+
+	/**
+	 * Creates a dialog box containing the given component.
+	 * <p>
+	 * By default, the dialog is <em>modal</em>, <em>resizable</em>, and
+	 * <em>size limited</em>, with no parent component and no explicit focus
+	 * component. If shown as a modal dialog, there will be a single OK button;
+	 * otherwise, no buttons will be displayed.
+	 * </p>
+	 * 
+	 * @param c the {@link Component} to display
+	 * @param messageType the type of message to be displayed:
+	 *          {@link JOptionPane#ERROR_MESSAGE},
+	 *          {@link JOptionPane#INFORMATION_MESSAGE},
+	 *          {@link JOptionPane#WARNING_MESSAGE},
+	 *          {@link JOptionPane#QUESTION_MESSAGE}, or
+	 *          {@link JOptionPane#PLAIN_MESSAGE}
+	 * @param doScrollPane whether to wrap the parent component in a
+	 *          {@link JScrollPane} if the content is too large to fit in the
+	 *          window.
+	 */
+	public SwingDialog(final Component c, final int messageType,
+		final boolean doScrollPane)
+	{
+		this(c, JOptionPane.DEFAULT_OPTION, messageType, doScrollPane);
+	}
 
 	/**
 	 * Creates a dialog box containing the given component.
@@ -157,6 +188,11 @@ public class SwingDialog {
 
 	/**
 	 * Specifies whether this dialog should be modal.
+	 * <p>
+	 * Note that non-modal dialogs do not show any buttons (e.g., OK or Cancel),
+	 * regardless of the specified {@code optionType}, since the {@link #show}
+	 * method does not block in that case.
+	 * </p>
 	 * 
 	 * @param modal specifies whether dialog blocks input to other windows when
 	 *          shown
@@ -194,19 +230,23 @@ public class SwingDialog {
 	/**
 	 * Shows the dialog.
 	 * 
-	 * @return an integer indicating the option selected by the user. Depending on
-	 *         the dialog's <code>optionType</code>, will be one of:
+	 * @return the option selected by the user. Depending on the dialog's
+	 *         <code>optionType</code>, will be one of:
 	 *         <ul>
 	 *         <li>{@link JOptionPane#YES_OPTION}</li>
 	 *         <li>{@link JOptionPane#NO_OPTION}</li>
 	 *         <li>{@link JOptionPane#CANCEL_OPTION}</li>
 	 *         <li>{@link JOptionPane#OK_OPTION}</li>
 	 *         <li>{@link JOptionPane#CLOSED_OPTION}</li>
+	 *         <li>{@link SwingDialog#UNKNOWN_OPTION}</li>
 	 *         </ul>
+	 *         If the dialog is non-modal, {@link JOptionPane#OK_OPTION} is always
+	 *         returned, regardless of the specified {@code optionType}.
 	 */
 	public int show() {
 		// create dialog, set properties, pack and show
 		final JDialog dialog = optionPane.createDialog(parentComponent, title);
+		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		dialog.setResizable(resizable);
 		dialog.setModal(modal);
 		dialog.pack();
@@ -223,14 +263,19 @@ public class SwingDialog {
 		}
 		dialog.setVisible(true);
 
-		// get result
-		final Integer rval = (Integer) optionPane.getValue();
+		if (!modal) return JOptionPane.OK_OPTION; // it's all good!
 
-		// free resources
-		dialog.dispose();
+		// get result
+		final Object result = optionPane.getValue();
 
 		// return result
-		return rval == null ? JOptionPane.CANCEL_OPTION : rval;
+		if (result == null || (!(result instanceof Integer))) return UNKNOWN_OPTION;
+		return (Integer) result;
+	}
+
+	/** Whether the dialog is currently being shown onscreen. */
+	public boolean isVisible() {
+		return optionPane.isVisible();
 	}
 
 	// -- Helper methods --
