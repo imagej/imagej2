@@ -78,6 +78,9 @@ public class SwingDialog {
 
 	private final JOptionPane optionPane;
 
+	/** Component housing confirmation buttons, hidden for non-modal dialogs. */
+	private Component buttons;
+
 	private Component parentComponent;
 
 	private Component focusComponent;
@@ -95,8 +98,11 @@ public class SwingDialog {
 	 * <p>
 	 * By default, the dialog is <em>modal</em>, <em>resizable</em>, and
 	 * <em>size limited</em>, with no parent component and no explicit focus
-	 * component. If shown as a modal dialog, there will be a single OK button;
-	 * otherwise, no buttons will be displayed.
+	 * component.
+	 * </p>
+	 * <p>
+	 * If shown as a modal dialog, there will be a single OK button; otherwise, no
+	 * buttons will be displayed.
 	 * </p>
 	 * 
 	 * @param c the {@link Component} to display
@@ -106,14 +112,13 @@ public class SwingDialog {
 	 *          {@link JOptionPane#WARNING_MESSAGE},
 	 *          {@link JOptionPane#QUESTION_MESSAGE}, or
 	 *          {@link JOptionPane#PLAIN_MESSAGE}
-	 * @param doScrollPane whether to wrap the parent component in a
-	 *          {@link JScrollPane} if the content is too large to fit in the
-	 *          window.
+	 * @param scrollBars whether to show scroll bars if the content is too large
+	 *          to fit in the window.
 	 */
 	public SwingDialog(final Component c, final int messageType,
-		final boolean doScrollPane)
+		final boolean scrollBars)
 	{
-		this(c, JOptionPane.DEFAULT_OPTION, messageType, doScrollPane);
+		this(c, JOptionPane.DEFAULT_OPTION, messageType, scrollBars);
 	}
 
 	/**
@@ -122,6 +127,10 @@ public class SwingDialog {
 	 * By default, the dialog is <em>modal</em>, <em>resizable</em>, and
 	 * <em>size limited</em>, with no parent component and no explicit focus
 	 * component.
+	 * </p>
+	 * <p>
+	 * If shown as a modal dialog, there will be buttons corresponding to the
+	 * specified {@code optionType}; otherwise, no buttons will be displayed.
 	 * </p>
 	 * 
 	 * @param c the {@link Component} to display
@@ -136,15 +145,14 @@ public class SwingDialog {
 	 *          {@link JOptionPane#WARNING_MESSAGE},
 	 *          {@link JOptionPane#QUESTION_MESSAGE}, or
 	 *          {@link JOptionPane#PLAIN_MESSAGE}
-	 * @param doScrollPane whether to wrap the parent component in a
-	 *          {@link JScrollPane} if the content is too large to fit in the
-	 *          window.
+	 * @param scrollBars whether to show scroll bars if the content is too large
+	 *          to fit in the window.
 	 */
 	public SwingDialog(final Component c, final int optionType,
-		final int messageType, final boolean doScrollPane)
+		final int messageType, final boolean scrollBars)
 	{
 		optionPane = new JOptionPane(c, messageType, optionType);
-		if (doScrollPane) addScrollBars();
+		rebuildPane(scrollBars);
 	}
 
 	/** Gets the frame in which the dialog is displayed. */
@@ -199,6 +207,7 @@ public class SwingDialog {
 	 */
 	public void setModal(final boolean modal) {
 		this.modal = modal;
+		buttons.setVisible(modal);
 	}
 
 	/** Gets whether the dialog is resizable by the user. */
@@ -280,7 +289,7 @@ public class SwingDialog {
 
 	// -- Helper methods --
 
-	private void addScrollBars() {
+	private void rebuildPane(final boolean scrollBars) {
 		final Component[] optionComponents = optionPane.getComponents();
 		int messageIndex = 0, buttonIndex = optionComponents.length - 1;
 		for (int i = 0; i < optionComponents.length; i++) {
@@ -291,30 +300,37 @@ public class SwingDialog {
 		final Component mainPane = optionComponents[messageIndex];
 		final Component buttonPane = optionComponents[buttonIndex];
 
-		// wrap main pane in a scroll pane
-		final JScrollPane wrappedMainPane = new JScrollPane(mainPane);
+		if (scrollBars) {
+			// wrap main pane in a scroll pane
+			final JScrollPane wrappedMainPane = new JScrollPane(mainPane);
 
-		// HACK: On Mac OS X (and maybe other platforms), setting the button
-		// pane's border directly results in the right inset of the EmptyBorder
-		// not being respected. Nesting the button panel in another panel avoids
-		// the problem.
-		final JPanel wrappedButtonPane = new JPanel();
-		wrappedButtonPane.setLayout(new BorderLayout());
-		wrappedButtonPane.add(buttonPane);
+			// HACK: On Mac OS X (and maybe other platforms), setting the button
+			// pane's border directly results in the right inset of the EmptyBorder
+			// not being respected. Nesting the button panel in another panel avoids
+			// the problem.
+			final JPanel wrappedButtonPane = new JPanel();
+			wrappedButtonPane.setLayout(new BorderLayout());
+			wrappedButtonPane.add(buttonPane);
 
-		// fix component borders, so that scroll pane is flush with dialog edge
-		final Border border = optionPane.getBorder();
-		final Insets insets = border.getBorderInsets(optionPane);
-		wrappedButtonPane.setBorder(new EmptyBorder(0, insets.left, insets.bottom,
-			insets.right));
-		optionPane.setBorder(null);
+			// fix component borders, so that scroll pane is flush with dialog edge
+			final Border border = optionPane.getBorder();
+			final Insets insets = border.getBorderInsets(optionPane);
+			wrappedButtonPane.setBorder(new EmptyBorder(0, insets.left, insets.bottom,
+				insets.right));
+			optionPane.setBorder(null);
 
-		// rebuild option pane with wrapped components
-		optionPane.removeAll();
-		for (int i = 0; i < optionComponents.length; i++) {
-			if (i == messageIndex) optionPane.add(wrappedMainPane);
-			else if (i == buttonIndex) optionPane.add(wrappedButtonPane);
-			else optionPane.add(optionComponents[i]);
+			// rebuild option pane with wrapped components
+			optionPane.removeAll();
+			for (int i = 0; i < optionComponents.length; i++) {
+				if (i == messageIndex) optionPane.add(wrappedMainPane);
+				else if (i == buttonIndex) optionPane.add(wrappedButtonPane);
+				else optionPane.add(optionComponents[i]);
+			}
+
+			buttons = wrappedButtonPane;
+		}
+		else {
+			buttons = buttonPane;
 		}
 	}
 
