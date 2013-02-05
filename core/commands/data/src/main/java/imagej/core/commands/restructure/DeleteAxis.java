@@ -39,8 +39,8 @@ import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
-import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
+import imagej.module.MutableModuleItem;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -302,8 +302,8 @@ public class DeleteAxis extends DynamicCommand {
 
 	private void initAxisName() {
 		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<String> axisNameItem =
-			(DefaultModuleItem<String>) getInfo().getInput(AXIS_NAME);
+		final MutableModuleItem<String> axisNameItem =
+			(MutableModuleItem<String>) getInfo().getInput(AXIS_NAME);
 		final AxisType[] axes = getDataset().getAxes();
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (final AxisType a : axes) {
@@ -324,8 +324,8 @@ public class DeleteAxis extends DynamicCommand {
 	@SuppressWarnings("unused")
 	private void initPositionRange(final long min, final long max) {
 		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<Long> positionItem =
-			(DefaultModuleItem<Long>) getInfo().getInput(POSITION);
+		final MutableModuleItem<Long> positionItem =
+			(MutableModuleItem<Long>) getInfo().getInput(POSITION);
 		positionItem.setMinimumValue(min); // works the first time
 		// TODO - temporarily disabled since parameter mins and maxes cannot be
 		// changed on the fly. Should be enabled when ticket #886 addressed.

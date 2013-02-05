@@ -41,6 +41,9 @@ import net.imglib2.img.ImgPlus;
 /**
  * An event indicating a {@link Dataset}'s dimensional extents may have changed.
  * This occurs, for example, if the dataset's linked {@link ImgPlus} changes.
+ * <p>
+ * This event is typically fired as part of a call to {@link Dataset#rebuild()}.
+ * </p>
  * 
  * @author Curtis Rueden
  */

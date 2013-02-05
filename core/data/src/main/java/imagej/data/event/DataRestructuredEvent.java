@@ -39,6 +39,9 @@ import imagej.data.Data;
 
 /**
  * An event indicating a {@link Data}'s dimensional extents may have changed.
+ * <p>
+ * This event is typically fired as part of a call to {@link Data#rebuild()}.
+ * </p>
  * 
  * @author Curtis Rueden
  */

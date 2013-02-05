@@ -38,8 +38,8 @@ package imagej.core.commands.restructure;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.menu.MenuConstants;
-import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
+import imagej.module.MutableModuleItem;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -233,8 +233,8 @@ public class AddAxis extends DynamicCommand {
 
 	private void initAxisName() {
 		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<String> axisNameItem =
-			(DefaultModuleItem<String>) getInfo().getInput(AXIS_NAME);
+		final MutableModuleItem<String> axisNameItem =
+			(MutableModuleItem<String>) getInfo().getInput(AXIS_NAME);
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (final AxisType axis : Axes.values()) {
 			if (Axes.isXY(axis)) continue;
@@ -245,8 +245,8 @@ public class AddAxis extends DynamicCommand {
 
 	private void initAxisSize() {
 		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<Long> axisSizeModuleItem =
-			(DefaultModuleItem<Long>) getInfo().getInput(AXIS_SIZE);
+		final MutableModuleItem<Long> axisSizeModuleItem =
+			(MutableModuleItem<Long>) getInfo().getInput(AXIS_SIZE);
 		axisSizeModuleItem.setMinimumValue(2L);
 	}
 

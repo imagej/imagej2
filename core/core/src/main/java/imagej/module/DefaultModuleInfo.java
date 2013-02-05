@@ -67,7 +67,8 @@ import java.util.Map;
  * 
  * @author Curtis Rueden
  */
-public class DefaultModuleInfo extends AbstractUIDetails implements ModuleInfo
+public class DefaultModuleInfo extends AbstractUIDetails implements
+	MutableModuleInfo
 {
 
 	/** Table of inputs, keyed on name. */
@@ -87,37 +88,37 @@ public class DefaultModuleInfo extends AbstractUIDetails implements ModuleInfo
 
 	private Class<? extends Module> moduleClass;
 
-	// -- DefaultModuleInfo methods --
+	// -- MutableModuleInfo methods --
 
-	/** Sets the module class described by this {@link ModuleInfo}. */
+	@Override
 	public void setModuleClass(final Class<? extends Module> moduleClass) {
 		this.moduleClass = moduleClass;
 	}
 
-	/** Gets the module class described by this {@link ModuleInfo}. */
+	@Override
 	public Class<? extends Module> getModuleClass() {
 		return moduleClass;
 	}
 
-	/** Adds an input to the list. */
+	@Override
 	public void addInput(final ModuleItem<?> input) {
 		inputMap.put(input.getName(), input);
 		inputList.add(input);
 	}
 
-	/** Adds an output to the list. */
+	@Override
 	public void addOutput(final ModuleItem<?> output) {
 		outputMap.put(output.getName(), output);
 		outputList.add(output);
 	}
 
-	/** Removes an input from the list. */
+	@Override
 	public void removeInput(final ModuleItem<?> input) {
 		inputMap.remove(input.getName());
 		inputList.remove(input);
 	}
 
-	/** Removes an output from the list. */
+	@Override
 	public void removeOutput(final ModuleItem<?> output) {
 		outputMap.remove(output.getName());
 		outputList.remove(output);

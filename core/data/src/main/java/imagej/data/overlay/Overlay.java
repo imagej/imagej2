@@ -149,6 +149,25 @@ public interface Overlay extends Data {
 	void setLineEndArrowStyle(ArrowStyle style);
 
 	Overlay duplicate();
-	
+
 	void move(double[] deltas);
+
+	// -- Data methods --
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see imagej.data.event.OverlayUpdatedEvent
+	 */
+	@Override
+	void update();
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see imagej.data.event.OverlayRestructuredEvent
+	 */
+	@Override
+	void rebuild();
+
 }

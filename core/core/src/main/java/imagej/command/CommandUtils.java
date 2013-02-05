@@ -2,7 +2,7 @@
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
  * %%
- * Copyright (C) 2009 - 2013 Board of Regents of the University of
+ * Copyright (C) 2009 - 2012 Board of Regents of the University of
  * Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
  * Institute of Molecular Cell Biology and Genetics.
  * %%
@@ -33,39 +33,38 @@
  * #L%
  */
 
-package imagej.data.event;
+package imagej.command;
 
-import imagej.data.Dataset;
+import imagej.ImageJ;
 
 /**
- * An event indicating a {@link Dataset}'s data has been updated. This means
- * that sample values may have changed, but the dimensional structure is the
- * same as before.
- * <p>
- * This event is typically fired as part of a call to {@link Dataset#update()}.
- * </p>
+ * Utility methods for working with {@link Command}s.
  * 
  * @author Curtis Rueden
  */
-public class DatasetUpdatedEvent extends DataUpdatedEvent {
+public final class CommandUtils {
 
-	private final Dataset dataset;
-	private final boolean metadataOnly;
-
-	public DatasetUpdatedEvent(final Dataset dataset, boolean metadataOnly) {
-		super(dataset);
-		this.dataset = dataset;
-		this.metadataOnly = metadataOnly;
+	private CommandUtils() {
+		// prevent instantiation of utility class
 	}
 
-	// -- ObjectEvent methods --
-
-	@Override
-	public Dataset getObject() {
-		return dataset;
+	/**
+	 * Populates the given {@link Command} instance's service parameters, obtained
+	 * from the given application context.
+	 * 
+	 * @return The {@link CommandInfo} associated with the given command.
+	 * @throws IllegalArgumentException if the context has no
+	 *           {@link CommandService}.
+	 */
+	public static CommandInfo populateServices(final ImageJ context,
+		final Command command)
+	{
+		final CommandService commandService =
+			context.getService(CommandService.class);
+		if (commandService == null) {
+			throw new IllegalArgumentException("Context has no command service");
+		}
+		return commandService.populateServices(command);
 	}
 
-	public boolean isMetaDataOnly() {
-		return metadataOnly;
-	}
 }

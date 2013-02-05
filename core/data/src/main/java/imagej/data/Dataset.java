@@ -157,4 +157,23 @@ public interface Dataset extends Data, Metadata {
 
 	// TODO - move into Imglib
 	void setAxes(AxisType[] axes);
+
+	// -- Data methods --
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see imagej.data.event.DatasetUpdatedEvent
+	 */
+	@Override
+	void update();
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see imagej.data.event.DatasetRestructuredEvent
+	 */
+	@Override
+	void rebuild();
+
 }

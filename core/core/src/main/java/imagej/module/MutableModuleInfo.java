@@ -33,39 +33,35 @@
  * #L%
  */
 
-package imagej.data.event;
-
-import imagej.data.Dataset;
+package imagej.module;
 
 /**
- * An event indicating a {@link Dataset}'s data has been updated. This means
- * that sample values may have changed, but the dimensional structure is the
- * same as before.
+ * {@link ModuleInfo} extension allowing manipulation of its metadata.
  * <p>
- * This event is typically fired as part of a call to {@link Dataset#update()}.
+ * In particular, module inputs and outputs can be added, edited and removed.
  * </p>
  * 
  * @author Curtis Rueden
+ * @see imagej.command.DynamicCommand
  */
-public class DatasetUpdatedEvent extends DataUpdatedEvent {
+public interface MutableModuleInfo extends ModuleInfo {
 
-	private final Dataset dataset;
-	private final boolean metadataOnly;
+	/** Sets the module class described by this {@link ModuleInfo}. */
+	void setModuleClass(Class<? extends Module> moduleClass);
 
-	public DatasetUpdatedEvent(final Dataset dataset, boolean metadataOnly) {
-		super(dataset);
-		this.dataset = dataset;
-		this.metadataOnly = metadataOnly;
-	}
+	/** Gets the module class described by this {@link ModuleInfo}. */
+	Class<? extends Module> getModuleClass();
 
-	// -- ObjectEvent methods --
+	/** Adds an input to the list. */
+	void addInput(ModuleItem<?> input);
 
-	@Override
-	public Dataset getObject() {
-		return dataset;
-	}
+	/** Adds an output to the list. */
+	void addOutput(ModuleItem<?> output);
 
-	public boolean isMetaDataOnly() {
-		return metadataOnly;
-	}
+	/** Removes an input from the list. */
+	void removeInput(ModuleItem<?> input);
+
+	/** Removes an output from the list. */
+	void removeOutput(ModuleItem<?> output);
+
 }

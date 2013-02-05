@@ -290,8 +290,8 @@ public abstract class AbstractImageDisplayViewer extends
 
 	@EventHandler
 	protected void onEvent(final PanZoomEvent event) {
-		if (getDisplay() == null) return;
-		if (event.getCanvas() == getDisplay().getCanvas()) updateLabel();
+		if (event.getDisplay() != getDisplay()) return;
+		updateLabel();
 	}
 
 	@EventHandler

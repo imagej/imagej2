@@ -35,11 +35,8 @@
 
 package imagej.core.commands.display.interactive;
 
-import imagej.Previewable;
-import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
-import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.plugin.Menu;
@@ -64,7 +61,7 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Brightness/Contrast...", accelerator = "control shift C",
 		weight = 0) }, iconPath = "/icons/plugins/contrast.png", headless = true,
 	initializer = "initValues")
-public class BrightnessContrast extends ContextCommand implements Previewable {
+public class BrightnessContrast extends InteractiveCommand {
 
 	private static final int SLIDER_MIN = 0;
 	private static final int SLIDER_MAX = 100;
@@ -79,10 +76,7 @@ public class BrightnessContrast extends ContextCommand implements Previewable {
 	 */
 	private static final int MAX_POWER = 4;
 
-	@Parameter
-	private LogService log;
-
-	@Parameter(type = ItemIO.BOTH)
+	@Parameter(type = ItemIO.BOTH, callback = "viewChanged")
 	private DatasetView view;
 
 	@Parameter(label = "Minimum", persist = false, callback = "minMaxChanged")
@@ -105,24 +99,14 @@ public class BrightnessContrast extends ContextCommand implements Previewable {
 	/** The initial minimum and maximum values of the data view. */
 	private double initialMin, initialMax;
 
+	public BrightnessContrast() {
+		super("view");
+	}
+
 	// -- Runnable methods --
 
 	@Override
 	public void run() {
-		updateDisplay();
-	}
-
-	// -- Previewable methods --
-
-	@Override
-	public void preview() {
-		run();
-	}
-
-	@Override
-	public void cancel() {
-		min = initialMin;
-		max = initialMax;
 		updateDisplay();
 	}
 
@@ -170,8 +154,15 @@ public class BrightnessContrast extends ContextCommand implements Previewable {
 
 	// -- Initializers --
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void initValues() {
+		viewChanged();
+	}
+
+	// -- Callback methods --
+
+	/** Called when view changes. Updates everything to match. */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	protected void viewChanged() {
 		final Dataset dataset = view.getData();
 		final Img img = dataset.getImgPlus();
 		computeDataMinMax(img);
@@ -180,8 +171,6 @@ public class BrightnessContrast extends ContextCommand implements Previewable {
 		if (Double.isNaN(max)) max = initialMax;
 		computeBrightnessContrast();
 	}
-
-	// -- Callback methods --
 
 	/** Called when min or max changes. Updates brightness and contrast. */
 	protected void minMaxChanged() {

@@ -37,7 +37,7 @@ package imagej.ui.swing.commands;
 
 import imagej.log.LogService;
 import imagej.menu.MenuConstants;
-import imagej.module.DefaultModuleItem;
+import imagej.module.MutableModuleItem;
 import imagej.options.OptionsPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -156,8 +156,8 @@ public class OptionsLookAndFeel extends OptionsPlugin {
 		}
 
 		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<String> lookAndFeelItem =
-			(DefaultModuleItem<String>) getInfo().getInput(LOOK_AND_FEEL);
+		final MutableModuleItem<String> lookAndFeelItem =
+			(MutableModuleItem<String>) getInfo().getInput(LOOK_AND_FEEL);
 		lookAndFeelItem.setChoices(lookAndFeelChoices);
 	}
 

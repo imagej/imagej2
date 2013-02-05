@@ -2,7 +2,7 @@
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
  * %%
- * Copyright (C) 2009 - 2013 Board of Regents of the University of
+ * Copyright (C) 2009 - 2012 Board of Regents of the University of
  * Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
  * Institute of Molecular Cell Biology and Genetics.
  * %%
@@ -33,39 +33,62 @@
  * #L%
  */
 
-package imagej.data.event;
+package imagej.event;
 
-import imagej.data.Dataset;
+import imagej.ImageJ;
+import imagej.command.Command;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
- * An event indicating a {@link Dataset}'s data has been updated. This means
- * that sample values may have changed, but the dimensional structure is the
- * same as before.
- * <p>
- * This event is typically fired as part of a call to {@link Dataset#update()}.
- * </p>
+ * Utility methods for working with {@link Command}s.
  * 
  * @author Curtis Rueden
  */
-public class DatasetUpdatedEvent extends DataUpdatedEvent {
+public final class EventUtils {
 
-	private final Dataset dataset;
-	private final boolean metadataOnly;
-
-	public DatasetUpdatedEvent(final Dataset dataset, boolean metadataOnly) {
-		super(dataset);
-		this.dataset = dataset;
-		this.metadataOnly = metadataOnly;
+	private EventUtils() {
+		// prevent instantiation of utility class
 	}
 
-	// -- ObjectEvent methods --
-
-	@Override
-	public Dataset getObject() {
-		return dataset;
+	/**
+	 * Registers any event handling methods (defined in subclasses).
+	 * <p>
+	 * Does nothing if the context is null, or if the context has no associated
+	 * {@link EventService}.
+	 * </p>
+	 * 
+	 * @return The list of event subscribers that were created. It is necessary to
+	 *         keep a reference to this list, to avoid them being garbage
+	 *         collected (which would cause events to stop being delivered).
+	 * @see EventService#subscribe(Object)
+	 */
+	public static List<EventSubscriber<?>> subscribe(final ImageJ context,
+		final Object o)
+	{
+		if (context == null) return null;
+		final EventService eventService = context.getService(EventService.class);
+		if (eventService == null) return null;
+		return eventService.subscribe(o);
 	}
 
-	public boolean isMetaDataOnly() {
-		return metadataOnly;
+	/**
+	 * Unregisters the given event handling methods.
+	 * <p>
+	 * Does nothing if the context is null, or if the context has no associated
+	 * {@link EventService}.
+	 * </p>
+	 * 
+	 * @see EventService#unsubscribe(Collection)
+	 */
+	public static void unsubscribe(final ImageJ context,
+		final Collection<EventSubscriber<?>> subscribers)
+	{
+		if (context == null) return;
+		final EventService eventService = context.getService(EventService.class);
+		if (eventService == null) return;
+		eventService.unsubscribe(subscribers);
 	}
+
 }

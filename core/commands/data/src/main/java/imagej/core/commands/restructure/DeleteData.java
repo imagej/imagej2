@@ -38,8 +38,8 @@ package imagej.core.commands.restructure;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.menu.MenuConstants;
-import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
+import imagej.module.MutableModuleItem;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -284,8 +284,8 @@ public class DeleteData extends DynamicCommand {
 
 	private void initAxisName() {
 		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<String> axisNameItem =
-			(DefaultModuleItem<String>) getInfo().getInput(AXIS_NAME);
+		final MutableModuleItem<String> axisNameItem =
+			(MutableModuleItem<String>) getInfo().getInput(AXIS_NAME);
 		final AxisType[] axes = getDataset().getAxes();
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (final AxisType a : axes) {
@@ -341,8 +341,8 @@ public class DeleteData extends DynamicCommand {
 		final long max)
 	{
 		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<Long> item =
-			(DefaultModuleItem<Long>) getInfo().getInput(fieldName);
+		final MutableModuleItem<Long> item =
+			(MutableModuleItem<Long>) getInfo().getInput(fieldName);
 		item.setMinimumValue(min);
 		// TODO - disable until we fix ticket #886
 		// item.setMaximumValue(max);

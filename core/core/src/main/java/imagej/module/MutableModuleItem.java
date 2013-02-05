@@ -33,39 +33,42 @@
  * #L%
  */
 
-package imagej.data.event;
+package imagej.module;
 
-import imagej.data.Dataset;
+import java.util.List;
 
 /**
- * An event indicating a {@link Dataset}'s data has been updated. This means
- * that sample values may have changed, but the dimensional structure is the
- * same as before.
- * <p>
- * This event is typically fired as part of a call to {@link Dataset#update()}.
- * </p>
+ * {@link ModuleItem} extension allowing manipulation of its metadata.
  * 
  * @author Curtis Rueden
+ * @see imagej.command.DynamicCommand
  */
-public class DatasetUpdatedEvent extends DataUpdatedEvent {
+public interface MutableModuleItem<T> extends ModuleItem<T> {
 
-	private final Dataset dataset;
-	private final boolean metadataOnly;
+	void setIOType(ItemIO ioType);
 
-	public DatasetUpdatedEvent(final Dataset dataset, boolean metadataOnly) {
-		super(dataset);
-		this.dataset = dataset;
-		this.metadataOnly = metadataOnly;
-	}
+	void setVisibility(ItemVisibility visibility);
 
-	// -- ObjectEvent methods --
+	void setRequired(boolean required);
 
-	@Override
-	public Dataset getObject() {
-		return dataset;
-	}
+	void setPersisted(boolean persisted);
 
-	public boolean isMetaDataOnly() {
-		return metadataOnly;
-	}
+	void setPersistKey(String persistKey);
+
+	void setInitializer(String initializer);
+
+	void setCallback(String callback);
+
+	void setWidgetStyle(String widgetStyle);
+
+	void setMinimumValue(T minimumValue);
+
+	void setMaximumValue(T maximumValue);
+
+	void setStepSize(Number stepSize);
+
+	void setColumnCount(int columnCount);
+
+	void setChoices(List<? extends T> choices);
+
 }

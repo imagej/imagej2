@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import imagej.command.DynamicCommand;
-import imagej.module.DefaultModuleItem;
+import imagej.module.MutableModuleItem;
 import imagej.plugin.Parameter;
 import imagej.script.editor.TextEditor;
 import imagej.script.editor.TextEditor.Executer;
@@ -76,8 +76,8 @@ public class KillScript extends DynamicCommand {
 
 	protected void initializeChoice() {
 		@SuppressWarnings("unchecked")
-		DefaultModuleItem<Executer> item =
-				(DefaultModuleItem<Executer>) getInfo().getInput(SCRIPT_NAME);
+		MutableModuleItem<Executer> item =
+				(MutableModuleItem<Executer>) getInfo().getInput(SCRIPT_NAME);
 		item.setChoices(editor.getExecutingTasks());
 	}
 }

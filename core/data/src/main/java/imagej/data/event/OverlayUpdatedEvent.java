@@ -41,6 +41,9 @@ import imagej.data.overlay.Overlay;
  * An event indicating an {@link Overlay}'s data has been updated. This means
  * that coordinates may have changed, but the dimensional structure is the same
  * as before.
+ * <p>
+ * This event is typically fired as part of a call to {@link Overlay#update()}.
+ * </p>
  * 
  * @author Curtis Rueden
  */

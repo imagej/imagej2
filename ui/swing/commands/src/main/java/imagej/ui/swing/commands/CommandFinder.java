@@ -42,7 +42,7 @@ import imagej.module.ModuleInfo;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.util.swing.SwingUtils;
+import imagej.util.swing.SwingDialog;
 
 import javax.swing.JOptionPane;
 
@@ -66,10 +66,12 @@ public class CommandFinder extends ContextCommand {
 	public void run() {
 		final CommandFinderPanel commandFinderPanel =
 			new CommandFinderPanel(commandService.getModuleService());
-		final int rval =
-			SwingUtils.showDialog(null, commandFinderPanel, "Find Commands",
-				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, false,
-				commandFinderPanel.getSearchField());
+		final SwingDialog dialog =
+			new SwingDialog(commandFinderPanel, JOptionPane.OK_CANCEL_OPTION,
+				JOptionPane.PLAIN_MESSAGE, false);
+		dialog.setFocus(commandFinderPanel.getSearchField());
+		dialog.setTitle("Find Commands");
+		final int rval = dialog.show();
 		if (rval != JOptionPane.OK_OPTION) return; // dialog canceled
 
 		final ModuleInfo info = commandFinderPanel.getCommand();

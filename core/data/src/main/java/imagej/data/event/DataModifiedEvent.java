@@ -40,6 +40,11 @@ import imagej.object.event.ObjectModifiedEvent;
 
 /**
  * An event indicating a {@link Data} has been modified somehow.
+ * <p>
+ * The modification typically falls into one of two categories: an update (i.e.,
+ * {@link DataUpdatedEvent}) or a restructuring (i.e.,
+ * {@link DataRestructuredEvent}).
+ * </p>
  * 
  * @author Curtis Rueden
  */

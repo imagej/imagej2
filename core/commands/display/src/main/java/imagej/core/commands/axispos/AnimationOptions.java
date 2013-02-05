@@ -38,7 +38,7 @@ package imagej.core.commands.axispos;
 import imagej.command.DynamicCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
-import imagej.module.DefaultModuleItem;
+import imagej.module.MutableModuleItem;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -175,8 +175,8 @@ public class AnimationOptions extends DynamicCommand {
 	/** Initializes axisName value. */
 	protected void initAxisName() {
 		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<String> axisNameItem =
-			(DefaultModuleItem<String>) getInfo().getInput("axisName");
+		final MutableModuleItem<String> axisNameItem =
+			(MutableModuleItem<String>) getInfo().getInput("axisName");
 		final AxisType[] axes = getDisplay().getAxes();
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (final AxisType axis : axes) {

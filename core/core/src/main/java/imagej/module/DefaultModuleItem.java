@@ -45,7 +45,9 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-public class DefaultModuleItem<T> extends AbstractModuleItem<T> {
+public class DefaultModuleItem<T> extends AbstractModuleItem<T> implements
+	MutableModuleItem<T>
+{
 
 	private final Class<T> type;
 	private ItemIO ioType;
@@ -118,56 +120,69 @@ public class DefaultModuleItem<T> extends AbstractModuleItem<T> {
 		description = item.getDescription();
 	}
 
-	// -- DefaultModuleItem methods --
+	// -- MutableModuleItem methods --
 
+	@Override
 	public void setIOType(final ItemIO ioType) {
 		this.ioType = ioType;
 	}
 
+	@Override
 	public void setVisibility(final ItemVisibility visibility) {
 		this.visibility = visibility;
 	}
 
+	@Override
 	public void setRequired(final boolean required) {
 		this.required = required;
 	}
 
+	@Override
 	public void setPersisted(final boolean persisted) {
 		this.persisted = persisted;
 	}
 
+	@Override
 	public void setPersistKey(final String persistKey) {
 		this.persistKey = persistKey;
 	}
 
+	@Override
 	public void setInitializer(final String initializer) {
 		this.initializer = initializer;
 	}
 
+	@Override
 	public void setCallback(final String callback) {
 		this.callback = callback;
 	}
 
+	@Override
 	public void setWidgetStyle(final String widgetStyle) {
 		this.widgetStyle = widgetStyle;
 	}
 
+	@Override
 	public void setMinimumValue(final T minimumValue) {
 		this.minimumValue = minimumValue;
 	}
 
+	@Override
 	public void setMaximumValue(final T maximumValue) {
 		this.maximumValue = maximumValue;
 	}
 
+	@Override
 	public void setStepSize(final Number stepSize) {
 		this.stepSize = stepSize;
 	}
 
+	@Override
 	public void setColumnCount(final int columnCount) {
 		this.columnCount = columnCount;
 	}
 
+	@Override
 	public void setChoices(final List<? extends T> choices) {
 		this.choices.clear();
 		this.choices.addAll(choices);

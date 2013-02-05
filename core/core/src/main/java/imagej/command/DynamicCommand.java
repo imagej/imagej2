@@ -38,11 +38,14 @@ package imagej.command;
 import imagej.Cancelable;
 import imagej.Contextual;
 import imagej.ImageJ;
+import imagej.event.EventSubscriber;
+import imagej.event.EventUtils;
 import imagej.module.DefaultModule;
 import imagej.plugin.Parameter;
 import imagej.util.ClassUtils;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 /**
  * A class which can be extended to provide an ImageJ command with a variable
@@ -61,6 +64,21 @@ public abstract class DynamicCommand extends DefaultModule implements
 
 	/** Reason for cancelation, or null if not canceled. */
 	private String cancelReason;
+
+	/**
+	 * The list of event subscribers, maintained to avoid garbage collection.
+	 * 
+	 * @see imagej.event.EventService#subscribe(Object)
+	 */
+	private List<EventSubscriber<?>> subscribers;
+
+	// -- Object methods --
+
+	@Override
+	public void finalize() {
+		// unregister any event handling methods
+		EventUtils.unsubscribe(getContext(), subscribers);
+	}
 
 	// -- Module methods --
 
@@ -112,14 +130,14 @@ public abstract class DynamicCommand extends DefaultModule implements
 		this.context = context;
 
 		// populate service parameters
-		final CommandService commandService =
-			context.getService(CommandService.class);
-		if (commandService == null) {
-			throw new IllegalArgumentException("Context has no command service");
-		}
-		final CommandInfo commandInfo = commandService.populateServices(this);
+		final CommandInfo commandInfo =
+			CommandUtils.populateServices(context, this);
 
 		info = new DynamicCommandInfo(commandInfo, getClass());
+
+		// NB: Subscribe to all events handled by this object.
+		// This greatly simplifies event handling for subclasses.
+		subscribers = EventUtils.subscribe(context, this);
 	}
 
 	// -- Cancelable methods --

@@ -41,6 +41,9 @@ import imagej.data.Data;
  * An event indicating a {@link Data}'s data has been updated. This means that
  * sample values may have changed, but the dimensional structure is the same as
  * before.
+ * <p>
+ * This event is typically fired as part of a call to {@link Data#update()}.
+ * </p>
  * 
  * @author Curtis Rueden
  */

@@ -35,8 +35,7 @@
 
 package imagej.widget;
 
-import imagej.Contextual;
-import imagej.ImageJ;
+import imagej.AbstractContextual;
 import imagej.module.Module;
 import imagej.module.ModuleCanceledException;
 import imagej.module.ModuleException;
@@ -57,26 +56,9 @@ import java.util.List;
  * @param <P> The type of UI component housing the input panel itself.
  * @param <W> The type of UI component housing each input widget.
  */
-public abstract class AbstractInputHarvester<P, W> implements Contextual,
-	InputHarvester<P, W>
+public abstract class AbstractInputHarvester<P, W> extends AbstractContextual
+	implements InputHarvester<P, W>
 {
-
-	private ImageJ context;
-
-	// -- Contextual methods --
-
-	@Override
-	public ImageJ getContext() {
-		return context;
-	}
-
-	@Override
-	public void setContext(final ImageJ context) {
-		if (this.context != null) {
-			throw new IllegalStateException("Context already set");
-		}
-		this.context = context;
-	}
 
 	// -- InputHarvester methods --
 
