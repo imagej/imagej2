@@ -2,7 +2,7 @@
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
  * %%
- * Copyright (C) 2009 - 2012 Board of Regents of the University of
+ * Copyright (C) 2009 - 2013 Board of Regents of the University of
  * Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
  * Institute of Molecular Cell Biology and Genetics.
  * %%
@@ -40,46 +40,24 @@ import imagej.data.display.ImageDisplay;
 import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.type.numeric.RealType;
+
 
 /**
- * Default implementation of a no-op dummy ThresholdService.
+ * A default no-op implementation of a FigureService.
  * 
  * @author Barry DeZonia
- *
  */
 @Plugin(type = Service.class, priority = Priority.VERY_LOW_PRIORITY)
-public class DefaultThresholdService extends AbstractService implements
-	ThresholdService
+public class DefaultFigureService extends AbstractService implements
+	FigureService
 {
 
 	@Override
-	public boolean hasThreshold(ImageDisplay display) {
-		return false;
-	}
-
-	@Override
-	public ThresholdOverlay getThreshold(ImageDisplay display) {
-		return null;
-	}
-
-	@Override
-	public void removeThreshold(ImageDisplay display) {
+	public void createFigure(ImageDisplay display,
+		ImgPlus<? extends RealType<?>> imgPlus, ThresholdOverlay overlay)
+	{
 		// do nothing
 	}
-
-	@Override
-	public void setDefaultThreshold(double min, double max) {
-		// do nothing
-	}
-
-	@Override
-	public double getDefaultMinThreshold() {
-		return Double.NEGATIVE_INFINITY;
-	}
-
-	@Override
-	public double getDefaultMaxThreshold() {
-		return Double.POSITIVE_INFINITY;
-	}
-
 }

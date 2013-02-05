@@ -57,6 +57,12 @@ public interface ThresholdService extends Service {
 	ThresholdOverlay getThreshold(ImageDisplay display);
 	
 	/**
+	 * If the given ImageDisplay has a ThresholdOverlay it is deleted. Otherwise
+	 * this command has no effect.
+	 */
+	void removeThreshold(ImageDisplay display);
+
+	/**
 	 * Sets the default threshold values that are used when creating new
 	 * ThresholdOverlays.
 	 * 
@@ -64,4 +70,9 @@ public interface ThresholdService extends Service {
 	 * @param max
 	 */
 	void setDefaultThreshold(double min, double max);
+
+	double getDefaultMinThreshold();
+
+	double getDefaultMaxThreshold();
+
 }
