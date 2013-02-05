@@ -37,6 +37,8 @@ package imagej.data.overlay;
 
 import imagej.ImageJ;
 import imagej.data.AbstractData;
+import imagej.data.event.OverlayCreatedEvent;
+import imagej.data.event.OverlayDeletedEvent;
 import imagej.display.Displayable;
 import imagej.util.ColorRGB;
 import net.imglib2.Positionable;
@@ -54,11 +56,6 @@ import net.imglib2.ops.pointset.PointSetRegionOfInterest;
 import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.numeric.RealType;
 
-// TODO - deleting one of these overlays from within Overlay Manager is
-// ineffective. Determine why and fix.  Also deleting one of these overlays by
-// pressing the Delete key in the Image window (i.e. the JHotDraw end of
-// selection?) also fails.
-
 /**
  * 
  * @author Barry DeZonia
@@ -71,6 +68,10 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 	private final ConditionalPointSet points;
 	private final WithinRangeCondition<? extends RealType<?>> condition;
 	private final RegionOfInterest regionAdapter;
+	private int alpha = 0;
+	private ColorRGB fillColor = new ColorRGB(255, 0, 0);
+	private ColorRGB lineColor = new ColorRGB(255, 0, 0);
+	private LineStyle lineStyle = LineStyle.NONE;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ThresholdOverlay(ImageJ context, ImgPlus<? extends RealType<?>> imgPlus)
@@ -82,15 +83,13 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 		condition =
 			new WithinRangeCondition(function, Double.NEGATIVE_INFINITY,
 				Double.POSITIVE_INFINITY);
-		// temp hack test
-		// condition = new WithinRangeCondition(function, 100, 200);
 		long[] dims = new long[imgPlus.numDimensions()];
 		imgPlus.dimensions(dims);
 		HyperVolumePointSet volume = new HyperVolumePointSet(dims);
 		points = new ConditionalPointSet(volume, condition);
 		regionAdapter = new PointSetRegionOfInterest(points);
 		figure = null;
-		label();
+		setName();
 	}
 	
 	public ThresholdOverlay(ImageJ context,
@@ -104,11 +103,15 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 		this.figure = figure;
 	}
 	
+	public Displayable getFigure() {
+		return figure;
+	}
+
 	public void setRange(double min, double max) {
 		condition.setMin(min);
 		condition.setMax(max);
 		points.setCondition(condition); // this lets PointSet know it is changed
-		label();
+		setName();
 	}
 	
 	public void resetThreshold() {
@@ -141,6 +144,16 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 	@Override
 	public void rebuild() {
 		update(); // TODO - is this all we need to do? I think so.
+	}
+
+	@Override
+	protected void register() {
+		publish(new OverlayCreatedEvent(this));
+	}
+
+	@Override
+	public void delete() {
+		publish(new OverlayDeletedEvent(this));
 	}
 
 	@Override
@@ -304,8 +317,6 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 		return regionAdapter;
 	}
 
-	private int alpha = 0;
-	
 	@Override
 	public int getAlpha() {
 		return alpha;
@@ -316,8 +327,6 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 		this.alpha = alpha;
 	}
 
-	private ColorRGB fillColor = new ColorRGB(255, 0, 0);
-
 	@Override
 	public ColorRGB getFillColor() {
 		return fillColor;
@@ -327,8 +336,6 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 	public void setFillColor(ColorRGB fillColor) {
 		this.fillColor = fillColor;
 	}
-
-	private ColorRGB lineColor = new ColorRGB(255, 0, 0);
 
 	@Override
 	public ColorRGB getLineColor() {
@@ -349,8 +356,6 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 	public void setLineWidth(double lineWidth) {
 		// ignore
 	}
-
-	private LineStyle lineStyle = LineStyle.NONE;
 	
 	@Override
 	public LineStyle getLineStyle() {
@@ -397,7 +402,7 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 		// do nothing - thresholds don't move though space
 	}
 
-	private void label() {
+	private void setName() {
 		setName("Threshold: " + condition.getMin() + " to " + condition.getMax());
 	}
 }
