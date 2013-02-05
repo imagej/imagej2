@@ -38,19 +38,10 @@ net.imglib2:imglib2-io:2.0.0-SNAPSHOT
 net.imglib2:imglib2-ops:2.0.0-SNAPSHOT
 
 Dependencies:
-com.jgoodies:forms:1.2.1
-loci:jai_imageio:4.5-SNAPSHOT
 loci:loci-legacy:4.5-SNAPSHOT
-loci:lwf-stubs:4.5-SNAPSHOT
 loci:ome-xml:4.5-SNAPSHOT
 loci:scifio-devel:4.5-SNAPSHOT
 loci:scifio:4.5-SNAPSHOT
-log4j:log4j:1.2.14
-org.slf4j:slf4j-api:1.5.10
-org.slf4j:slf4j-log4j12:1.5.10
-xalan:serializer:2.7.1
-xalan:xalan:2.7.1
-xml-apis:xml-apis:1.3.04
 
 ===============================================================================
 Javassist - http://www.javassist.org/
@@ -112,9 +103,15 @@ SCIFIO - http://loci.wisc.edu/software/scifio
 
 License: 2-clause BSD
 
-Artifact: loci:scifio-devel:4.4-SNAPSHOT
+Artifacts:
+loci:loci-legacy:4.5-SNAPSHOT
+loci:ome-xml:4.5-SNAPSHOT
+loci:scifio-devel:4.5-SNAPSHOT
+loci:scifio:4.5-SNAPSHOT
 
 Dependencies:
+loci:jai_imageio:4.5-SNAPSHOT
+loci:lwf-stubs:4.5-SNAPSHOT
 log4j:log4j:1.2.14
 org.slf4j:slf4j-api:1.5.10
 org.slf4j:slf4j-log4j12:1.5.10
