@@ -49,9 +49,9 @@ import imagej.plugin.ServicePreprocessor;
  * Here is an example command execution using {@link CommandService#run}:
  * </p>
  * {@code
- * Future<CommandModule<FindEdges>> future =
- *   commandService.run(findEdges.class, "display", myDisplay);
- * CommandModule<FindEdges> module = future.get(); // block till complete
+ * Future<CommandModule<FindEdges>> future =<br/>
+ *   commandService.run(findEdges.class, "display", myDisplay);<br/>
+ * CommandModule<FindEdges> module = future.get(); // block till complete<br/>
  * ImageDisplay outDisplay = (ImageDisplay) module.getOutput("display");
  * }
  * <p>
@@ -63,10 +63,10 @@ import imagej.plugin.ServicePreprocessor;
  * Here is the same command execution via direct Java calls:
  * </p>
  * {@code
- * FindEdges findEdges = new FindEdges();
- * findEdges.setContext(context); // populates service parameters
- * findEdges.setDisplay(myDisplay);
- * findEdges.run(); // execute on the same thread
+ * FindEdges findEdges = new FindEdges();<br/>
+ * findEdges.setContext(context); // populates service parameters<br/>
+ * findEdges.setDisplay(myDisplay);<br/>
+ * findEdges.run(); // execute on the same thread<br/>
  * ImageDisplay outDisplay = findEdges.getDisplay();
  * }
  * <p>
