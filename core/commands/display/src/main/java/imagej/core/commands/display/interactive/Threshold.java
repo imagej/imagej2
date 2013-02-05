@@ -40,6 +40,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.overlay.ThresholdService;
 import imagej.menu.MenuConstants;
+import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -60,7 +61,7 @@ public class Threshold extends ContextCommand {
 	@Parameter
 	private ThresholdService service;
 
-	@Parameter
+	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	@Parameter
@@ -83,11 +84,22 @@ public class Threshold extends ContextCommand {
 
 	@Override
 	public void run() {
+		if (min > max) {
+			cancel("Invalid threshold setting: min > max");
+			return;
+		}
 		ThresholdOverlay overlay = service.getThreshold(display);
 		overlay.setRange(min, max);
-		overlay.update();
-		// or display.update()?
-		// or display be an ItemIO.BOTH?
+		// TODO - determine correct strategy
+		//
+		// overlay.update(); // works but eventually overwritten with all red
+		// OR
+		// display.update(); // kills ability to see anything but red
+		// OR
+		// display be an ItemIO.BOTH? has same limitation as disp.update().
+		// Actually it draws thresh fig correct, then draws all red thresh & fig
+		// over it. Delete in ovr mgr and return to correct fig. No go away tho
+		// nothing in ovr mgr. Also editing fill has no effect.
 	}
 
 }
