@@ -60,4 +60,9 @@ public class DefaultFigureService extends AbstractService implements
 	{
 		// do nothing
 	}
+
+	@Override
+	public void deleteFigure(ImageDisplay display, ThresholdOverlay overlay) {
+		// do nothing
+	}
 }

@@ -39,6 +39,7 @@ import imagej.Priority;
 import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.FigureService;
 import imagej.data.overlay.ThresholdOverlay;
+import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
@@ -58,6 +59,14 @@ import net.imglib2.type.numeric.RealType;
 public class JHotDrawFigureService extends AbstractService implements
 	FigureService
 {
+	// TODO - I think this can all go into ThresholdService and FigureService can
+	// be eliminated entirely. But first make code complete (i.e. overlay
+	// selectable in view, overlay showing up in overlay manager, interacting with
+	// other overlays correctly, etc.) before we try to eliminate classes. These
+	// capabilities might require the relocation of this method to another project
+
+	@Parameter
+	private UIService uiService;
 
 	@Override
 	public void createFigure(ImageDisplay display,
@@ -65,10 +74,18 @@ public class JHotDrawFigureService extends AbstractService implements
 	{
 		SwingThresholdFigure figure =
 			new SwingThresholdFigure(display, imgPlus, overlay);
-		overlay.setFigure(figure);
 		SwingImageDisplayViewer viewer =
-			(SwingImageDisplayViewer) getContext().getService(UIService.class)
-				.getDisplayViewer(display);
+			(SwingImageDisplayViewer) uiService.getDisplayViewer(display);
 		viewer.getCanvas().getDrawing().add(figure);
+		overlay.setFigure(figure);
+	}
+
+	@Override
+	public void deleteFigure(ImageDisplay display, ThresholdOverlay overlay) {
+		SwingThresholdFigure figure = (SwingThresholdFigure) overlay.getFigure();
+		SwingImageDisplayViewer viewer =
+			(SwingImageDisplayViewer) uiService.getDisplayViewer(display);
+		viewer.getCanvas().getDrawing().remove(figure);
+		overlay.setFigure(null);
 	}
 }

@@ -51,4 +51,6 @@ public interface FigureService extends Service {
 
 	void createFigure(ImageDisplay display,
 		ImgPlus<? extends RealType<?>> imgPlus, ThresholdOverlay overlay);
+
+	void deleteFigure(ImageDisplay display, ThresholdOverlay overlay);
 }

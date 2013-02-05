@@ -40,6 +40,7 @@ import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.data.display.OverlayService;
 import imagej.data.event.DataDeletedEvent;
 import imagej.data.overlay.FigureService;
 import imagej.data.overlay.ThresholdOverlay;
@@ -86,7 +87,14 @@ public class JHotDrawThresholdService extends AbstractService implements
 	@Parameter
 	private FigureService figureService;
 
+	@Parameter
+	private OverlayService overlayService;
+
 	// -- instance variables --
+
+	// TODO - if these doubles are @Parameters the service cannot initialize. This
+	// may be a bug in the service init code (i.e. it tries to invoke a Double
+	// service maybe). So use Prefs directly as a workaround.
 
 	private double defaultMinThresh = Prefs.getDouble(MIN,
 		Double.NEGATIVE_INFINITY);
@@ -126,7 +134,7 @@ public class JHotDrawThresholdService extends AbstractService implements
 			overlay.setRange(defaultMinThresh, defaultMaxThresh);
 			figureService.createFigure(display, imgPlus, overlay);
 			map.put(display, overlay);
-			// display.display(overlay); // TODO - is this wrong?
+			display.display(overlay);
 		}
 		return overlay;
 	}
@@ -135,14 +143,18 @@ public class JHotDrawThresholdService extends AbstractService implements
 	public void removeThreshold(ImageDisplay display) {
 		ThresholdOverlay overlay = map.get(display);
 		if (overlay != null) {
+			overlayService.removeOverlay(display, overlay);
 			map.remove(display);
-			display.remove(overlay); // TODO - is this wrong?
-			// display.update(); // TODO - needed?
+			figureService.deleteFigure(display, overlay);
 		}
 	}
 
 	@Override
 	public void setDefaultThreshold(double min, double max) {
+		if (min > max) {
+			throw new IllegalArgumentException(
+				"threshold definition error: min > max");
+		}
 		defaultMinThresh = min;
 		defaultMaxThresh = max;
 		Prefs.put(MIN, defaultMinThresh);
