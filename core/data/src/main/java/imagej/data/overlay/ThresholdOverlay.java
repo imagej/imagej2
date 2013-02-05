@@ -36,13 +36,8 @@
 package imagej.data.overlay;
 
 import imagej.ImageJ;
-import imagej.data.AbstractData;
-import imagej.data.event.OverlayCreatedEvent;
-import imagej.data.event.OverlayDeletedEvent;
 import imagej.display.Displayable;
-import imagej.util.ColorRGB;
-import net.imglib2.Positionable;
-import net.imglib2.RealPositionable;
+import imagej.util.Colors;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.AxisType;
 import net.imglib2.ops.condition.Condition;
@@ -61,17 +56,13 @@ import net.imglib2.type.numeric.RealType;
  * @author Barry DeZonia
  *
  */
-public class ThresholdOverlay extends AbstractData implements Overlay {
+public class ThresholdOverlay extends AbstractOverlay {
 
 	private Displayable figure;
 	private final ImgPlus<? extends RealType<?>> imgPlus;
 	private final ConditionalPointSet points;
 	private final WithinRangeCondition<? extends RealType<?>> condition;
 	private final RegionOfInterest regionAdapter;
-	private int alpha = 0;
-	private ColorRGB fillColor = new ColorRGB(255, 0, 0);
-	private ColorRGB lineColor = new ColorRGB(255, 0, 0);
-	private LineStyle lineStyle = LineStyle.NONE;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ThresholdOverlay(ImageJ context, ImgPlus<? extends RealType<?>> imgPlus)
@@ -90,6 +81,13 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 		regionAdapter = new PointSetRegionOfInterest(points);
 		figure = null;
 		setName();
+		setAlpha(255);
+		setFillColor(Colors.RED);
+		setLineColor(Colors.RED);
+		setLineEndArrowStyle(ArrowStyle.NONE);
+		setLineStartArrowStyle(ArrowStyle.NONE);
+		setLineStyle(LineStyle.NONE);
+		setLineWidth(1);
 	}
 	
 	public ThresholdOverlay(ImageJ context,
@@ -147,16 +145,6 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 	}
 
 	@Override
-	protected void register() {
-		publish(new OverlayCreatedEvent(this));
-	}
-
-	@Override
-	public void delete() {
-		publish(new OverlayDeletedEvent(this));
-	}
-
-	@Override
 	public boolean isDiscrete() {
 		return true;
 	}
@@ -187,38 +175,10 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 	}
 
 	@Override
-	public void calibration(double[] cal) {
-		for (int i = 0; i < cal.length; i++) {
-			cal[i] = calibration(i);
-		}
-	}
-
-	@Override
-	public void calibration(float[] cal) {
-		for (int i = 0; i < cal.length; i++) {
-			cal[i] = (float) calibration(i);
-		}
-	}
-
-	@Override
 	public void setCalibration(double cal, int d) {
 		if (cal == 1 && (d == 0 || d == 1)) return;
 		throw new IllegalArgumentException(
 			"Cannot set calibration of a ThresholdOverlay");
-	}
-
-	@Override
-	public void setCalibration(double[] cal) {
-		for (int i = 0; i < cal.length; i++) {
-			setCalibration(cal[i], i);
-		}
-	}
-
-	@Override
-	public void setCalibration(float[] cal) {
-		for (int i = 0; i < cal.length; i++) {
-			setCalibration(cal[i], i);
-		}
 	}
 
 	@Override
@@ -232,36 +192,8 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 	}
 
 	@Override
-	public void min(long[] min) {
-		for (int i = 0; i < min.length; i++) {
-			min[i] = min(i);
-		}
-	}
-
-	@Override
-	public void min(Positionable min) {
-		for (int i = 0; i < min.numDimensions(); i++) {
-			min.setPosition(min(i), i);
-		}
-	}
-
-	@Override
 	public long max(int d) {
 		return points.max(d);
-	}
-
-	@Override
-	public void max(long[] max) {
-		for (int i = 0; i < max.length; i++) {
-			max[i] = max(i);
-		}
-	}
-
-	@Override
-	public void max(Positionable max) {
-		for (int i = 0; i < max.numDimensions(); i++) {
-			max.setPosition(max(i), i);
-		}
 	}
 
 	@Override
@@ -270,36 +202,8 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 	}
 
 	@Override
-	public void realMin(double[] min) {
-		for (int i = 0; i < min.length; i++) {
-			min[i] = realMin(i);
-		}
-	}
-
-	@Override
-	public void realMin(RealPositionable min) {
-		for (int i = 0; i < min.numDimensions(); i++) {
-			min.setPosition(realMin(i), i);
-		}
-	}
-
-	@Override
 	public double realMax(int d) {
 		return max(d);
-	}
-
-	@Override
-	public void realMax(double[] max) {
-		for (int i = 0; i < max.length; i++) {
-			max[i] = realMax(i);
-		}
-	}
-
-	@Override
-	public void realMax(RealPositionable max) {
-		for (int i = 0; i < max.numDimensions(); i++) {
-			max.setPosition(realMax(i), i);
-		}
 	}
 
 	@Override
@@ -315,80 +219,6 @@ public class ThresholdOverlay extends AbstractData implements Overlay {
 	@Override
 	public RegionOfInterest getRegionOfInterest() {
 		return regionAdapter;
-	}
-
-	@Override
-	public int getAlpha() {
-		return alpha;
-	}
-
-	@Override
-	public void setAlpha(int alpha) {
-		this.alpha = alpha;
-	}
-
-	@Override
-	public ColorRGB getFillColor() {
-		return fillColor;
-	}
-
-	@Override
-	public void setFillColor(ColorRGB fillColor) {
-		this.fillColor = fillColor;
-	}
-
-	@Override
-	public ColorRGB getLineColor() {
-		return lineColor;
-	}
-
-	@Override
-	public void setLineColor(ColorRGB lineColor) {
-		this.lineColor = lineColor;
-	}
-
-	@Override
-	public double getLineWidth() {
-		return 1; // or zero?
-	}
-
-	@Override
-	public void setLineWidth(double lineWidth) {
-		// ignore
-	}
-	
-	@Override
-	public LineStyle getLineStyle() {
-		return lineStyle;
-	}
-
-	@Override
-	public void setLineStyle(LineStyle style) {
-		this.lineStyle = style;
-	}
-
-	private ArrowStyle lineStartArrowStyle = ArrowStyle.NONE;
-	
-	@Override
-	public ArrowStyle getLineStartArrowStyle() {
-		return lineStartArrowStyle;
-	}
-
-	@Override
-	public void setLineStartArrowStyle(ArrowStyle style) {
-		this.lineStartArrowStyle = style;
-	}
-
-	private ArrowStyle lineEndArrowStyle = ArrowStyle.NONE;
-	
-	@Override
-	public ArrowStyle getLineEndArrowStyle() {
-		return lineEndArrowStyle;
-	}
-
-	@Override
-	public void setLineEndArrowStyle(ArrowStyle style) {
-		lineEndArrowStyle = style;
 	}
 
 	@Override
