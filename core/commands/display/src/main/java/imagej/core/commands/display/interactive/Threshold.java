@@ -35,8 +35,10 @@
 
 package imagej.core.commands.display.interactive;
 
-import imagej.command.UnimplementedCommand;
+import imagej.command.ContextCommand;
 import imagej.data.display.ImageDisplay;
+import imagej.data.overlay.ThresholdOverlay;
+import imagej.data.overlay.ThresholdService;
 import imagej.menu.MenuConstants;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -51,12 +53,21 @@ import imagej.plugin.Plugin;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Adjust"),
 	@Menu(label = "Threshold...", accelerator = "control shift T") })
-public class Threshold extends UnimplementedCommand {
+public class Threshold extends ContextCommand {
 
 	// -- Parameters --
 
 	@Parameter
+	private ThresholdService service;
+
+	@Parameter
 	private ImageDisplay display;
+
+	@Parameter
+	private double min;
+
+	@Parameter
+	private double max;
 
 	// -- accessors --
 
@@ -66,6 +77,17 @@ public class Threshold extends UnimplementedCommand {
 
 	public ImageDisplay getImageDisplay() {
 		return display;
+	}
+
+	// -- Command methods --
+
+	@Override
+	public void run() {
+		ThresholdOverlay overlay = service.getThreshold(display);
+		overlay.setRange(min, max);
+		overlay.update();
+		// or display.update()?
+		// or display be an ItemIO.BOTH?
 	}
 
 }
