@@ -61,26 +61,16 @@ public class PivotButtonWidget extends PivotInputWidget<Button> implements
 
 		throw new UnsupportedOperationException("unimplemented feature");
 		
-		/* TODO - adapt the following code
-		 * 
-		 * Taken from AWTButtonWidget as an example
-		 *
-		// add widgets, if specified
-		final WidgetStyle style = model.getItem().getWidgetStyle();
-		if (style.equals(WidgetStyle.BUTTON)) {
-			String label = model.getItem().getLabel();
-			if ((label == null) || label.isEmpty()) label = "A button";
-			button = new Button(label);
-			button.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					Module module = model.getModule();
-					model.getItem().callback(module);
-				}
-			});
-			getComponent().add(button);
-		}
+		/* TODO - adapt the following code:
+		button = new Button(model.getWidgetLabel());
+		button.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				model.getItem().callback(model.getModule());
+			}
+		});
+		getComponent().add(button);
 		*/
 	}
 

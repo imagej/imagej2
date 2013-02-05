@@ -35,7 +35,6 @@
 
 package imagej.ui.awt.widget;
 
-import imagej.module.Module;
 import imagej.plugin.Plugin;
 import imagej.widget.Button;
 import imagej.widget.ButtonWidget;
@@ -63,15 +62,12 @@ public class AWTButtonWidget extends AWTInputWidget<Button> implements
 	public void initialize(final WidgetModel model) {
 		super.initialize(model);
 
-		final String name = model.getItem().getName();
-		final String label = model.getItem().getLabel();
-		button = new java.awt.Button(label == null ? name : label);
+		button = new java.awt.Button(model.getWidgetLabel());
 		button.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				final Module module = model.getModule();
-				model.getItem().callback(module);
+				model.getItem().callback(model.getModule());
 			}
 		});
 		getComponent().add(button);
