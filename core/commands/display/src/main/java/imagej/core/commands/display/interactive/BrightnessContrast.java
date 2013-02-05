@@ -110,20 +110,6 @@ public class BrightnessContrast extends InteractiveCommand {
 		updateDisplay();
 	}
 
-	// -- Previewable methods --
-
-	@Override
-	public void preview() {
-		run();
-	}
-
-	@Override
-	public void cancel() {
-		min = initialMin;
-		max = initialMax;
-		updateDisplay();
-	}
-
 	// -- BrightnessContrast methods --
 
 	public DatasetView getView() {

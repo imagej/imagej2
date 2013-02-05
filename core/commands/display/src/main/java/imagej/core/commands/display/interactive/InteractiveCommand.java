@@ -98,6 +98,20 @@ public abstract class InteractiveCommand extends DynamicCommand implements
 		this.inputs = inputs;
 	}
 
+	// -- Previewable methods --
+
+	@Override
+	public void preview() {
+		// NB: Interactive commands call run upon any parameter change.
+		run();
+	}
+
+	@Override
+	public void cancel() {
+		// NB: Interactive commands cannot be canceled.
+		// That is, closing the non-modal dialog does nothing.
+	}
+
 	// -- Event handlers --
 
 	/** Updates the displayed min/max range to match min and max values. */
