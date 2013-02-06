@@ -40,6 +40,8 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayInfoList;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
+import imagej.data.overlay.ThresholdOverlay;
+import imagej.data.overlay.ThresholdService;
 import imagej.menu.MenuConstants;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -69,6 +71,9 @@ public class FromOverlayManager extends ContextCommand {
 	@Parameter
 	private OverlayService ovrSrv;
 	
+	@Parameter
+	private ThresholdService threshSrv;
+
 	// -- Command methods --
 	
 	@Override
@@ -79,8 +84,19 @@ public class FromOverlayManager extends ContextCommand {
 		boolean changes = false;
 		for (Overlay overlay : selectedRoiMgrOverlays) {
 			if (currOverlays.contains(overlay)) continue;
+			Overlay ov = overlay;
+			boolean hadThresh = false;
+			// do not display one ThresholdOverlay in two displays.
+			if (overlay instanceof ThresholdOverlay) {
+				// instead get thresh overlay for display and set its range
+				hadThresh = threshSrv.hasThreshold(display);
+				ThresholdOverlay mgrThresh = (ThresholdOverlay) overlay;
+				ThresholdOverlay dispThresh = threshSrv.getThreshold(display);
+				dispThresh.setRange(mgrThresh.getRangeMin(), mgrThresh.getRangeMax());
+				ov = dispThresh;
+			}
 			changes = true;
-			display.display(overlay);
+			if (!hadThresh) display.display(ov);
 		}
 		if (changes) display.update();
 	}
