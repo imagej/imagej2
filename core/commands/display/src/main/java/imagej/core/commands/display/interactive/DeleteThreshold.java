@@ -33,82 +33,37 @@
  * #L%
  */
 
-package imagej.core.commands.overlay;
+package imagej.core.commands.display.interactive;
 
 import imagej.command.ContextCommand;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayInfoList;
-import imagej.data.display.OverlayService;
-import imagej.data.overlay.Overlay;
-import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.overlay.ThresholdService;
 import imagej.menu.MenuConstants;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
-import java.util.List;
-
 /**
- * After running this plugin the current display will now reference (and
- * show) the overlays that are currently selected in the Overlay Manager.
- * 
  * @author Barry DeZonia
  */
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Overlay", mnemonic = 'o'),
-	@Menu(label = "From Overlay Manager", weight = 1, mnemonic = 'f') },
-	headless = true)
-public class FromOverlayManager extends ContextCommand {
+		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Adjust"),
+	@Menu(label = "Delete Threshold") })
+public class DeleteThreshold extends ContextCommand {
 
-	// -- Parameters --
-	
-	@Parameter(required = true)
-	private ImageDisplay display;
-	
+	// -- parameters --
+
 	@Parameter
-	private OverlayService ovrSrv;
-	
+	private ImageDisplay display;
+
 	@Parameter
 	private ThresholdService threshSrv;
 
 	// -- Command methods --
-	
+
 	@Override
 	public void run() {
-		OverlayInfoList overlayList = ovrSrv.getOverlayInfo();
-		List<Overlay> selectedRoiMgrOverlays = overlayList.selectedOverlays();
-		List<Overlay> currOverlays = ovrSrv.getOverlays(display);
-		boolean changes = false;
-		for (Overlay overlay : selectedRoiMgrOverlays) {
-			if (currOverlays.contains(overlay)) continue;
-			Overlay ov = overlay;
-			boolean hadThresh = false;
-			// do not display one ThresholdOverlay in two displays.
-			if (overlay instanceof ThresholdOverlay) {
-				// instead get thresh overlay for display and set its range
-				hadThresh = threshSrv.hasThreshold(display);
-				ThresholdOverlay mgrThresh = (ThresholdOverlay) overlay;
-				ThresholdOverlay dispThresh = threshSrv.getThreshold(display);
-				dispThresh.setRange(mgrThresh.getRangeMin(), mgrThresh.getRangeMax());
-				ov = dispThresh;
-			}
-			changes = true;
-			if (!hadThresh) display.display(ov);
-		}
-		if (changes) display.update();
+		threshSrv.removeThreshold(display);
 	}
-	
-	// -- accessors --
-	
-	public ImageDisplay getImageDisplay() {
-		return display;
-	}
-	
-	public void setImageDisplay(ImageDisplay disp) {
-		display = disp;
-	}
-
 }

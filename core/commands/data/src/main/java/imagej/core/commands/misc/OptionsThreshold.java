@@ -33,82 +33,80 @@
  * #L%
  */
 
-package imagej.core.commands.overlay;
+package imagej.core.commands.misc;
 
-import imagej.command.ContextCommand;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayInfoList;
-import imagej.data.display.OverlayService;
-import imagej.data.overlay.Overlay;
-import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.overlay.ThresholdService;
 import imagej.menu.MenuConstants;
+import imagej.options.OptionsPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
-import java.util.List;
+// TODO - some hackery in place. Rather than being a nice clean OptionsDialog
+// that can be reused by ThresholdService we instead maintain state there and
+// synchronize here. That is because ThresholdService wants to live in ij-data
+// while ij-options is not accessible from there. So some ugly delegation is in
+// place. Also this plugin is in core.commands.misc because of those same
+// subproject issues.
 
 /**
- * After running this plugin the current display will now reference (and
- * show) the overlays that are currently selected in the Overlay Manager.
+ * Runs the Image::Adjust::Threshold Options dialog.
  * 
  * @author Barry DeZonia
  */
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Overlay", mnemonic = 'o'),
-	@Menu(label = "From Overlay Manager", weight = 1, mnemonic = 'f') },
-	headless = true)
-public class FromOverlayManager extends ContextCommand {
+		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Adjust"),
+	@Menu(label = "Threshold options") }, initializer = "initValues")
+public class OptionsThreshold extends OptionsPlugin {
 
 	// -- Parameters --
-	
-	@Parameter(required = true)
-	private ImageDisplay display;
-	
-	@Parameter
-	private OverlayService ovrSrv;
-	
-	@Parameter
-	private ThresholdService threshSrv;
 
-	// -- Command methods --
-	
+	@Parameter(label = "Default minimum", persist = false)
+	private double minimum;
+
+	@Parameter(label = "Default maximum", persist = false)
+	private double maximum;
+
+	// TODO - a default color? Or just use Overlay defaults?
+
 	@Override
 	public void run() {
-		OverlayInfoList overlayList = ovrSrv.getOverlayInfo();
-		List<Overlay> selectedRoiMgrOverlays = overlayList.selectedOverlays();
-		List<Overlay> currOverlays = ovrSrv.getOverlays(display);
-		boolean changes = false;
-		for (Overlay overlay : selectedRoiMgrOverlays) {
-			if (currOverlays.contains(overlay)) continue;
-			Overlay ov = overlay;
-			boolean hadThresh = false;
-			// do not display one ThresholdOverlay in two displays.
-			if (overlay instanceof ThresholdOverlay) {
-				// instead get thresh overlay for display and set its range
-				hadThresh = threshSrv.hasThreshold(display);
-				ThresholdOverlay mgrThresh = (ThresholdOverlay) overlay;
-				ThresholdOverlay dispThresh = threshSrv.getThreshold(display);
-				dispThresh.setRange(mgrThresh.getRangeMin(), mgrThresh.getRangeMax());
-				ov = dispThresh;
-			}
-			changes = true;
-			if (!hadThresh) display.display(ov);
-		}
-		if (changes) display.update();
-	}
-	
-	// -- accessors --
-	
-	public ImageDisplay getImageDisplay() {
-		return display;
-	}
-	
-	public void setImageDisplay(ImageDisplay disp) {
-		display = disp;
+		super.run();
+		threshSrv().setDefaultRange(minimum, maximum);
 	}
 
+	// -- accessors --
+
+	public void setDefaultRange(double min, double max) {
+		if (min > max) {
+			throw new IllegalArgumentException(
+				"threshold definition error: min > max");
+		}
+		threshSrv().setDefaultRange(min, max);
+		minimum = min;
+		maximum = max;
+	}
+
+	public double getDefaultRangeMin() {
+		return threshSrv().getDefaultRangeMin();
+	}
+
+	public double getDefaultRangeMax() {
+		return threshSrv().getDefaultRangeMax();
+	}
+
+	// -- initializers --
+
+	protected void initValues() {
+		ThresholdService threshSrv = threshSrv();
+		minimum = threshSrv.getDefaultRangeMin();
+		maximum = threshSrv.getDefaultRangeMax();
+	}
+
+	// -- helpers --
+
+	private ThresholdService threshSrv() {
+		return getContext().getService(ThresholdService.class);
+	}
 }
