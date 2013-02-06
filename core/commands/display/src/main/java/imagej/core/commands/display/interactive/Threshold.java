@@ -36,11 +36,13 @@
 package imagej.core.commands.display.interactive;
 
 import imagej.command.ContextCommand;
+import imagej.core.options.OptionsThreshold;
 import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.overlay.ThresholdService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
+import imagej.options.OptionsService;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
@@ -48,7 +50,7 @@ import imagej.plugin.Plugin;
 /**
  * @author Barry DeZonia
  */
-@Plugin(iconPath = "/icons/bricks.png", menu = {
+@Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Adjust"),
 	@Menu(label = "Threshold...", accelerator = "control shift T") },
@@ -56,9 +58,6 @@ import imagej.plugin.Plugin;
 public class Threshold extends ContextCommand {
 
 	// -- Parameters --
-
-	@Parameter
-	private ThresholdService service;
 
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
@@ -68,6 +67,12 @@ public class Threshold extends ContextCommand {
 
 	@Parameter(persist = false)
 	private double max;
+
+	@Parameter
+	private ThresholdService threshSrv;
+
+	@Parameter
+	private OptionsService optionsSrv;
 
 	// -- accessors --
 
@@ -87,15 +92,26 @@ public class Threshold extends ContextCommand {
 			cancel("Invalid threshold setting: min > max");
 			return;
 		}
-		service.getThreshold(display).setRange(min, max);
+		threshSrv.getThreshold(display).setRange(min, max);
 	}
 
 	// -- initializers --
 
 	protected void initRange() {
-		ThresholdOverlay overlay = service.getThreshold(display);
-		min = overlay.getRangeMin();
-		max = overlay.getRangeMax();
+
+		// TODO : cannot call service.getThreshold() all the time. Otherwise one can
+		// create a thresh that doesn't get thrown away if you cancel this dialog
+
+		if (threshSrv.hasThreshold(display)) {
+			ThresholdOverlay overlay = threshSrv.getThreshold(display);
+			min = overlay.getRangeMin();
+			max = overlay.getRangeMax();
+		}
+		else { // no thresh exists: get defaults
+			OptionsThreshold opts = optionsSrv.getOptions(OptionsThreshold.class);
+			min = opts.getDefaultMinimum();
+			max = opts.getDefaultMaximum();
+		}
 	}
 
 }
