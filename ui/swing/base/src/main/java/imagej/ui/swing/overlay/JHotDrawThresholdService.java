@@ -36,12 +36,12 @@
 package imagej.ui.swing.overlay;
 
 import imagej.Priority;
-import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
-import imagej.data.event.DataDeletedEvent;
+import imagej.data.event.OverlayDeletedEvent;
+import imagej.data.overlay.Overlay;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.overlay.ThresholdService;
 import imagej.display.Display;
@@ -177,11 +177,11 @@ public class JHotDrawThresholdService extends AbstractService implements
 	}
 
 	@EventHandler
-	protected void onEvent(DataDeletedEvent evt) {
-		Data object = evt.getObject();
-		if (object instanceof ThresholdOverlay) {
+	protected void onEvent(OverlayDeletedEvent evt) {
+		Overlay overlay = evt.getObject();
+		if (overlay instanceof ThresholdOverlay) {
 			for (Entry<ImageDisplay, ThresholdOverlay> entry : map.entrySet()) {
-				if (entry.getValue() == object) removeThreshold(entry.getKey());
+				if (entry.getValue() == overlay) removeThreshold(entry.getKey());
 			}
 		}
 	}
