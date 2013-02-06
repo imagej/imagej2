@@ -42,7 +42,6 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.event.DataDeletedEvent;
-import imagej.data.overlay.FigureService;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.overlay.ThresholdService;
 import imagej.display.Display;
@@ -83,9 +82,6 @@ public class JHotDrawThresholdService extends AbstractService implements
 
 	@Parameter
 	private ImageDisplayService displayService;
-
-	@Parameter
-	private FigureService figureService;
 
 	@Parameter
 	private OverlayService overlayService;
@@ -132,7 +128,6 @@ public class JHotDrawThresholdService extends AbstractService implements
 			ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
 			overlay = new ThresholdOverlay(getContext(), imgPlus);
 			overlay.setRange(defaultMinThresh, defaultMaxThresh);
-			figureService.createFigure(display, imgPlus, overlay);
 			map.put(display, overlay);
 			display.display(overlay);
 		}
@@ -145,7 +140,6 @@ public class JHotDrawThresholdService extends AbstractService implements
 		if (overlay != null) {
 			overlayService.removeOverlay(display, overlay);
 			map.remove(display);
-			figureService.deleteFigure(display, overlay);
 		}
 	}
 
