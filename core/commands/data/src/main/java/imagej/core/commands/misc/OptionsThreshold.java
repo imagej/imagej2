@@ -41,6 +41,7 @@ import imagej.options.OptionsPlugin;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.util.ColorRGB;
 
 // TODO - some hackery in place. Rather than being a nice clean OptionsDialog
 // that can be reused by ThresholdService we instead maintain state there and
@@ -57,7 +58,7 @@ import imagej.plugin.Plugin;
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Adjust"),
-	@Menu(label = "Threshold options") }, initializer = "initValues")
+	@Menu(label = "Threshold Options") }, initializer = "initValues")
 public class OptionsThreshold extends OptionsPlugin {
 
 	// -- Parameters --
@@ -68,12 +69,14 @@ public class OptionsThreshold extends OptionsPlugin {
 	@Parameter(label = "Default maximum", persist = false)
 	private double maximum;
 
-	// TODO - a default color? Or just use Overlay defaults?
+	@Parameter(label = "Default color", persist = false)
+	private ColorRGB color;
 
 	@Override
 	public void run() {
 		super.run();
 		threshSrv().setDefaultRange(minimum, maximum);
+		threshSrv().setDefaultColor(color);
 	}
 
 	// -- accessors --
@@ -96,12 +99,22 @@ public class OptionsThreshold extends OptionsPlugin {
 		return threshSrv().getDefaultRangeMax();
 	}
 
+	public void setDefaultColor(ColorRGB c) {
+		threshSrv().setDefaultColor(c);
+		color = c;
+	}
+
+	public ColorRGB getDefaultColor() {
+		return threshSrv().getDefaultColor();
+	}
+
 	// -- initializers --
 
 	protected void initValues() {
 		ThresholdService threshSrv = threshSrv();
 		minimum = threshSrv.getDefaultRangeMin();
 		maximum = threshSrv.getDefaultRangeMax();
+		color = threshSrv.getDefaultColor();
 	}
 
 	// -- helpers --

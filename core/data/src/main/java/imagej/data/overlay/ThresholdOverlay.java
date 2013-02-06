@@ -90,6 +90,7 @@ public class ThresholdOverlay extends AbstractOverlay {
 		setLineStartArrowStyle(ArrowStyle.NONE);
 		setLineStyle(LineStyle.NONE);
 		setLineWidth(1);
+		initColor();
 		resetThreshold();
 	}
 	
@@ -251,5 +252,11 @@ public class ThresholdOverlay extends AbstractOverlay {
 
 	private void setName() {
 		setName("Threshold: " + condition.getMin() + " to " + condition.getMax());
+	}
+
+	private void initColor() {
+		ThresholdService threshSrv =
+			getContext().getService(ThresholdService.class);
+		setFillColor(threshSrv.getDefaultColor());
 	}
 }

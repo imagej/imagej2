@@ -50,6 +50,8 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
+import imagej.util.ColorRGB;
+import imagej.util.Colors;
 import imagej.util.Prefs;
 
 import java.util.HashMap;
@@ -72,6 +74,9 @@ public class ThresholdService extends AbstractService
 
 	private static final String MIN = "imagej.service.threshold.min";
 	private static final String MAX = "imagej.service.threshold.max";
+	private static final String COLOR_R = "imagej.service.threshold.color.r";
+	private static final String COLOR_G = "imagej.service.threshold.color.g";
+	private static final String COLOR_B = "imagej.service.threshold.color.b";
 
 	// -- parameters --
 
@@ -91,6 +96,7 @@ public class ThresholdService extends AbstractService
 
 	private double defaultMin = Double.NaN;
 	private double defaultMax = Double.NaN;
+	private ColorRGB defaultColor = Colors.RED;
 
 	private final HashMap<ImageDisplay, ThresholdOverlay> map =
 		new HashMap<ImageDisplay, ThresholdOverlay>();
@@ -103,6 +109,10 @@ public class ThresholdService extends AbstractService
 		eventService.subscribe(this);
 		defaultMin = Prefs.getDouble(MIN, Double.NEGATIVE_INFINITY);
 		defaultMax = Prefs.getDouble(MAX, Double.POSITIVE_INFINITY);
+		int r = Prefs.getInt(COLOR_R, 255);
+		int g = Prefs.getInt(COLOR_G, 0);
+		int b = Prefs.getInt(COLOR_B, 0);
+		defaultColor = new ColorRGB(r, g, b);
 	}
 
 	/**
@@ -171,6 +181,22 @@ public class ThresholdService extends AbstractService
 		return defaultMax;
 	}
 
+	/**
+	 * Gets the default color of created {@link ThresholdOverlay}s.
+	 */
+	public ColorRGB getDefaultColor() {
+		return defaultColor;
+	}
+
+	/**
+	 * Sets the default color of created {@link ThresholdOverlay}s.
+	 */
+	public void setDefaultColor(ColorRGB color) {
+		defaultColor = color;
+		Prefs.put(COLOR_R, color.getRed());
+		Prefs.put(COLOR_G, color.getGreen());
+		Prefs.put(COLOR_B, color.getBlue());
+	}
 
 	// -- event handlers --
 
