@@ -71,8 +71,8 @@ public interface ThresholdService extends Service {
 	 */
 	void setDefaultThreshold(double min, double max);
 
-	double getDefaultMinThreshold();
+	double getDefaultRangeMin();
 
-	double getDefaultMaxThreshold();
+	double getDefaultRangeMax();
 
 }

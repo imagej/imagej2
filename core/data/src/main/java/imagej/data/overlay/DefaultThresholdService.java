@@ -73,12 +73,12 @@ public class DefaultThresholdService extends AbstractService implements
 	}
 
 	@Override
-	public double getDefaultMinThreshold() {
+	public double getDefaultRangeMin() {
 		return Double.NEGATIVE_INFINITY;
 	}
 
 	@Override
-	public double getDefaultMaxThreshold() {
+	public double getDefaultRangeMax() {
 		return Double.POSITIVE_INFINITY;
 	}
 
