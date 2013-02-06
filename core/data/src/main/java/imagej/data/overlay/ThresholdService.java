@@ -35,44 +35,140 @@
 
 package imagej.data.overlay;
 
+import imagej.Priority;
+import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
+import imagej.data.display.OverlayService;
+import imagej.data.event.OverlayDeletedEvent;
+import imagej.display.Display;
+import imagej.display.event.DisplayDeletedEvent;
+import imagej.event.EventHandler;
+import imagej.event.EventService;
+import imagej.options.OptionsService;
+import imagej.plugin.Parameter;
+import imagej.plugin.Plugin;
+import imagej.service.AbstractService;
 import imagej.service.Service;
+import imagej.util.Prefs;
+
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 /**
+ * Provides functionality related to ThresholdOverlays
  * 
  * @author Barry DeZonia
- *
  */
-public interface ThresholdService extends Service {
-	
-	/**
-	 * Returns true if given ImageDisplay has an associated ThresholdOverlay
-	 */
-	boolean hasThreshold(ImageDisplay display);
-	
-	/**
-	 * Returns the ThresholdOverlay for the given ImageDisplay. If one does not
-	 * exist it is created.
-	 */
-	ThresholdOverlay getThreshold(ImageDisplay display);
-	
-	/**
-	 * If the given ImageDisplay has a ThresholdOverlay it is deleted. Otherwise
-	 * this command has no effect.
-	 */
-	void removeThreshold(ImageDisplay display);
+@Plugin(type = Service.class, priority = Priority.NORMAL_PRIORITY)
+public class ThresholdService extends AbstractService
+{
 
-	/**
-	 * Sets the default threshold values that are used when creating new
-	 * ThresholdOverlays.
-	 * 
-	 * @param min
-	 * @param max
-	 */
-	void setDefaultThreshold(double min, double max);
+	// TODO - eliminate direct Prefs hacking by utilizing OptionsThreshold.
+	// Unfortunately I could not because ij-options is not part of core or data
+	// subprojects.
 
-	double getDefaultRangeMin();
+	// -- constants --
 
-	double getDefaultRangeMax();
+	private static final String MIN = "imagej.service.threshold.min";
+	private static final String MAX = "imagej.service.threshold.max";
 
+	// -- parameters --
+
+	@Parameter
+	private EventService eventService;
+
+	@Parameter
+	private ImageDisplayService displayService;
+
+	@Parameter
+	private OverlayService overlayService;
+
+	@Parameter
+	private OptionsService optionsService;
+
+	// -- instance variables --
+
+	private double defaultMin = Double.NaN;
+	private double defaultMax = Double.NaN;
+
+	private final HashMap<ImageDisplay, ThresholdOverlay> map =
+		new HashMap<ImageDisplay, ThresholdOverlay>();
+
+	// -- ThresholdService methods --
+
+	@Override
+	public void initialize() {
+		super.initialize();
+		eventService.subscribe(this);
+		defaultMin = Prefs.getDouble(MIN, Double.NEGATIVE_INFINITY);
+		defaultMax = Prefs.getDouble(MAX, Double.POSITIVE_INFINITY);
+	}
+
+	public boolean hasThreshold(ImageDisplay display) {
+		return map.get(display) != null;
+	}
+
+	public ThresholdOverlay getThreshold(ImageDisplay display) {
+		ThresholdOverlay overlay = map.get(display);
+		if (overlay == null) {
+			Dataset dataset = displayService.getActiveDataset(display);
+			if (dataset == null) {
+				throw new IllegalArgumentException(
+					"expected ImageDisplay to have active dataset");
+			}
+			overlay = new ThresholdOverlay(getContext(), dataset);
+			map.put(display, overlay);
+			display.display(overlay);
+		}
+		return overlay;
+	}
+
+	public void removeThreshold(ImageDisplay display) {
+		ThresholdOverlay overlay = map.get(display);
+		if (overlay != null) {
+			overlayService.removeOverlay(display, overlay);
+			map.remove(display);
+		}
+	}
+
+	public void setDefaultThreshold(double min, double max) {
+		if (min > max) {
+			throw new IllegalArgumentException(
+				"threshold definition error: min > max");
+		}
+		defaultMin = min;
+		defaultMax = max;
+		Prefs.put(MIN, min);
+		Prefs.put(MAX, max);
+	}
+
+	public double getDefaultRangeMin() {
+		return defaultMin;
+	}
+
+	public double getDefaultRangeMax() {
+		return defaultMax;
+	}
+
+
+	// -- event handlers --
+
+	@EventHandler
+	protected void onEvent(DisplayDeletedEvent evt) {
+		Display<?> display = evt.getObject();
+		if (display instanceof ImageDisplay) {
+			removeThreshold((ImageDisplay) display);
+		}
+	}
+
+	@EventHandler
+	protected void onEvent(OverlayDeletedEvent evt) {
+		Overlay overlay = evt.getObject();
+		if (overlay instanceof ThresholdOverlay) {
+			for (Entry<ImageDisplay, ThresholdOverlay> entry : map.entrySet()) {
+				if (entry.getValue() == overlay) removeThreshold(entry.getKey());
+			}
+		}
+	}
 }

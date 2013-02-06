@@ -2,7 +2,7 @@
  * #%L
  * ImageJ software for multidimensional image processing and analysis.
  * %%
- * Copyright (C) 2009 - 2012 Board of Regents of the University of
+ * Copyright (C) 2009 - 2013 Board of Regents of the University of
  * Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
  * Institute of Molecular Cell Biology and Genetics.
  * %%
@@ -33,53 +33,75 @@
  * #L%
  */
 
-package imagej.data.overlay;
+package imagej.core.commands.misc;
 
-import imagej.Priority;
-import imagej.data.display.ImageDisplay;
+import imagej.data.overlay.ThresholdService;
+import imagej.menu.MenuConstants;
+import imagej.options.OptionsPlugin;
+import imagej.plugin.Menu;
+import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
-import imagej.service.Service;
+
+// TODO - some hackery in place. Rather than being a nice clean OptionsDialog
+// that can be reused by ThresholdService we instead maintain state there and
+// synchronize here. That is because ThresholdService wants to live in ij-data
+// while ij-options is not accessible from there. So some ugly delegation is in
+// place.
 
 /**
- * Default implementation of a no-op dummy ThresholdService.
+ * Runs the Image::Adjust::Threshold Options dialog.
  * 
  * @author Barry DeZonia
- *
  */
-@Plugin(type = Service.class, priority = Priority.VERY_LOW_PRIORITY)
-public class DefaultThresholdService extends AbstractService implements
-	ThresholdService
-{
+@Plugin(menu = {
+	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
+		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Adjust"),
+	@Menu(label = "Threshold options") }, initializer = "initValues")
+public class OptionsThreshold extends OptionsPlugin {
+
+	// -- Parameters --
+
+	@Parameter(label = "Default minimum", persist = false)
+	private double minimum;
+
+	@Parameter(label = "Default maximum", persist = false)
+	private double maximum;
+
+	// TODO - a default color? Or just use Overlay defaults?
 
 	@Override
-	public boolean hasThreshold(ImageDisplay display) {
-		return false;
+	public void run() {
+		super.run();
+		threshSrv().setDefaultThreshold(minimum, maximum);
 	}
 
-	@Override
-	public ThresholdOverlay getThreshold(ImageDisplay display) {
-		return null;
+	// -- accessors --
+
+	public void setDefaultRange(double min, double max) {
+		threshSrv().setDefaultThreshold(min, max);
+		minimum = min;
+		maximum = max;
 	}
 
-	@Override
-	public void removeThreshold(ImageDisplay display) {
-		// do nothing
-	}
-
-	@Override
-	public void setDefaultThreshold(double min, double max) {
-		// do nothing
-	}
-
-	@Override
 	public double getDefaultRangeMin() {
-		return Double.NEGATIVE_INFINITY;
+		return threshSrv().getDefaultRangeMin();
 	}
 
-	@Override
 	public double getDefaultRangeMax() {
-		return Double.POSITIVE_INFINITY;
+		return threshSrv().getDefaultRangeMax();
 	}
 
+	// -- initializers --
+
+	protected void initValues() {
+		ThresholdService threshSrv = threshSrv();
+		minimum = threshSrv.getDefaultRangeMin();
+		maximum = threshSrv.getDefaultRangeMax();
+	}
+
+	// -- helpers --
+
+	private ThresholdService threshSrv() {
+		return getContext().getService(ThresholdService.class);
+	}
 }

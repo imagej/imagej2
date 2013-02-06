@@ -36,7 +36,6 @@
 package imagej.core.commands.display.interactive;
 
 import imagej.command.ContextCommand;
-import imagej.core.options.OptionsThreshold;
 import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.overlay.ThresholdService;
@@ -108,9 +107,8 @@ public class Threshold extends ContextCommand {
 			max = overlay.getRangeMax();
 		}
 		else { // no thresh exists: get defaults
-			OptionsThreshold opts = optionsSrv.getOptions(OptionsThreshold.class);
-			min = opts.getDefaultMinimum();
-			max = opts.getDefaultMaximum();
+			min = threshSrv.getDefaultRangeMin();
+			max = threshSrv.getDefaultRangeMax();
 		}
 	}
 
