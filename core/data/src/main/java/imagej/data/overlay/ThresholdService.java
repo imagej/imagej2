@@ -56,7 +56,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 /**
- * Provides functionality related to ThresholdOverlays
+ * Provides functionality related to {@link ThresholdOverlay}s.
  * 
  * @author Barry DeZonia
  */
@@ -105,10 +105,17 @@ public class ThresholdService extends AbstractService
 		defaultMax = Prefs.getDouble(MAX, Double.POSITIVE_INFINITY);
 	}
 
+	/**
+	 * Returns true if a {@link ThresholdOverlay} is defined for a given display.
+	 */
 	public boolean hasThreshold(ImageDisplay display) {
 		return map.get(display) != null;
 	}
 
+	/**
+	 * Gets the {@link ThresholdOverlay} associated with a display. If one does
+	 * not yet exist it is created.
+	 */
 	public ThresholdOverlay getThreshold(ImageDisplay display) {
 		ThresholdOverlay overlay = map.get(display);
 		if (overlay == null) {
@@ -124,6 +131,9 @@ public class ThresholdService extends AbstractService
 		return overlay;
 	}
 
+	/**
+	 * Removes the {@link ThresholdOverlay} associated with a display.
+	 */
 	public void removeThreshold(ImageDisplay display) {
 		ThresholdOverlay overlay = map.get(display);
 		if (overlay != null) {
@@ -132,6 +142,10 @@ public class ThresholdService extends AbstractService
 		}
 	}
 
+	/**
+	 * Sets the default threshold range. {@link ThresholdOverlay}s created after
+	 * this will be initialized with this new range.
+	 */
 	public void setDefaultRange(double min, double max) {
 		if (min > max) {
 			throw new IllegalArgumentException(
@@ -143,10 +157,16 @@ public class ThresholdService extends AbstractService
 		Prefs.put(MAX, max);
 	}
 
+	/**
+	 * Gets the current value of the minimum of the default threshold range.
+	 */
 	public double getDefaultRangeMin() {
 		return defaultMin;
 	}
 
+	/**
+	 * Gets the current value of the maximum of the default threshold range.
+	 */
 	public double getDefaultRangeMax() {
 		return defaultMax;
 	}
