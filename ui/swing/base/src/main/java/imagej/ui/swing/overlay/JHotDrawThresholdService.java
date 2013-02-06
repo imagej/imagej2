@@ -57,9 +57,6 @@ import imagej.util.Prefs;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import net.imglib2.img.ImgPlus;
-import net.imglib2.type.numeric.RealType;
-
 /**
  * JHotDraw implementation of a ThresholdService.
  * 
@@ -125,8 +122,7 @@ public class JHotDrawThresholdService extends AbstractService implements
 				throw new IllegalArgumentException(
 					"expected ImageDisplay to have active dataset");
 			}
-			ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
-			overlay = new ThresholdOverlay(getContext(), imgPlus);
+			overlay = new ThresholdOverlay(getContext(), dataset);
 			overlay.setRange(defaultMinThresh, defaultMaxThresh);
 			map.put(display, overlay);
 			display.display(overlay);
