@@ -90,6 +90,7 @@ public class ThresholdOverlay extends AbstractOverlay {
 		setLineStartArrowStyle(ArrowStyle.NONE);
 		setLineStyle(LineStyle.NONE);
 		setLineWidth(1);
+		resetThreshold();
 	}
 	
 	public ThresholdOverlay(ImageJ context, Dataset ds, double min, double max)
@@ -122,7 +123,11 @@ public class ThresholdOverlay extends AbstractOverlay {
 	}
 	
 	public void resetThreshold() {
-		setRange(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+		ThresholdService threshSrv =
+			getContext().getService(ThresholdService.class);
+		double min = threshSrv.getDefaultRangeMin();
+		double max = threshSrv.getDefaultRangeMax();
+		setRange(min, max);
 	}
 
 	public PointSet getPoints() {
@@ -232,8 +237,11 @@ public class ThresholdOverlay extends AbstractOverlay {
 
 	@Override
 	public ThresholdOverlay duplicate() {
-		return new ThresholdOverlay(getContext(), dataset, condition.getMin(),
-			condition.getMax());
+		ThresholdOverlay overlay =
+			new ThresholdOverlay(getContext(), dataset, condition.getMin(), condition
+				.getMax());
+		overlay.setFillColor(getFillColor());
+		return overlay;
 	}
 
 	@Override
