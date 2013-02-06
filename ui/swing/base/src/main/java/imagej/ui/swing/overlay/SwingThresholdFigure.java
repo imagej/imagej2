@@ -165,7 +165,10 @@ public class SwingThresholdFigure extends AbstractAttributedFigure implements
 
 	@Override
 	public void draw() {
-		fireFigureChanged();
+		// OLD WAY : likely wrong
+		// fireFigureChanged();
+		// NEW WAY
+		fireAreaInvalidated();
 	}
 
 	// -- helpers --
