@@ -227,6 +227,8 @@ public class ThresholdOverlay extends AbstractOverlay {
 		dataset.setAxis(axis, d);
 	}
 
+	// TODO these two calibration methods are inconsistent. Decide what is best.
+
 	@Override
 	public double calibration(int d) {
 		return dataset.calibration(d);
@@ -281,9 +283,10 @@ public class ThresholdOverlay extends AbstractOverlay {
 
 	@Override
 	public ThresholdOverlay duplicate() {
+		double min = getRangeMin();
+		double max = getRangeMax();
 		ThresholdOverlay overlay =
-			new ThresholdOverlay(getContext(), dataset, condition.getMin(), condition
-				.getMax());
+			new ThresholdOverlay(getContext(), dataset, min, max);
 		overlay.setFillColor(getFillColor());
 		return overlay;
 	}
