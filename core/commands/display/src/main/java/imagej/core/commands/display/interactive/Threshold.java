@@ -37,6 +37,7 @@ package imagej.core.commands.display.interactive;
 
 import imagej.command.ContextCommand;
 import imagej.data.display.ImageDisplay;
+import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.overlay.ThresholdService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
@@ -50,7 +51,8 @@ import imagej.plugin.Plugin;
 @Plugin(iconPath = "/icons/bricks.png", menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Adjust"),
-	@Menu(label = "Threshold...", accelerator = "control shift T") })
+	@Menu(label = "Threshold...", accelerator = "control shift T") },
+	initializer = "initRange")
 public class Threshold extends ContextCommand {
 
 	// -- Parameters --
@@ -61,10 +63,10 @@ public class Threshold extends ContextCommand {
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
-	@Parameter
+	@Parameter(persist = false)
 	private double min;
 
-	@Parameter
+	@Parameter(persist = false)
 	private double max;
 
 	// -- accessors --
@@ -86,6 +88,14 @@ public class Threshold extends ContextCommand {
 			return;
 		}
 		service.getThreshold(display).setRange(min, max);
+	}
+
+	// -- initializers --
+
+	protected void initRange() {
+		ThresholdOverlay overlay = service.getThreshold(display);
+		min = overlay.getRangeMin();
+		max = overlay.getRangeMax();
 	}
 
 }
