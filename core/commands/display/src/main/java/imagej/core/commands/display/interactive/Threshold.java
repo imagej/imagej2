@@ -45,6 +45,7 @@ import imagej.options.OptionsService;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.util.ColorRGB;
 
 /**
  * @author Barry DeZonia
@@ -53,7 +54,7 @@ import imagej.plugin.Plugin;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Adjust"),
 	@Menu(label = "Threshold...", accelerator = "control shift T") },
-	initializer = "initRange")
+	initializer = "initValues")
 public class Threshold extends ContextCommand {
 
 	// -- Parameters --
@@ -61,11 +62,14 @@ public class Threshold extends ContextCommand {
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
-	@Parameter(persist = false)
+	@Parameter(label = "Minimum", persist = false, callback = "rangeChanged")
 	private double min;
 
-	@Parameter(persist = false)
+	@Parameter(label = "Maximum", persist = false, callback = "rangeChanged")
 	private double max;
+
+	@Parameter(label = "Color", persist = false, callback = "colorChanged")
+	private ColorRGB color;
 
 	@Parameter
 	private ThresholdService threshSrv;
@@ -87,16 +91,15 @@ public class Threshold extends ContextCommand {
 
 	@Override
 	public void run() {
-		if (min > max) {
-			cancel("Invalid threshold setting: min > max");
-			return;
-		}
+		// TODO - we used to cancel() if min > max. What now? Callbacks keep them
+		// legal?
 		threshSrv.getThreshold(display).setRange(min, max);
 	}
 
-	// -- initializers --
 
-	protected void initRange() {
+	// -- callbacks --
+
+	protected void initValues() {
 
 		// TODO : cannot call service.getThreshold() all the time. Otherwise one can
 		// create a thresh that doesn't get thrown away if you cancel this dialog
@@ -105,11 +108,25 @@ public class Threshold extends ContextCommand {
 			ThresholdOverlay overlay = threshSrv.getThreshold(display);
 			min = overlay.getRangeMin();
 			max = overlay.getRangeMax();
+			color = overlay.getFillColor();
 		}
 		else { // no thresh exists: get defaults
 			min = threshSrv.getDefaultRangeMin();
 			max = threshSrv.getDefaultRangeMax();
+			color = threshSrv.getDefaultColor();
 		}
+	}
+
+	protected void rangeChanged() {
+		ThresholdOverlay overlay = threshSrv.getThreshold(display);
+		overlay.setRange(min, max);
+		overlay.update();
+	}
+
+	protected void colorChanged() {
+		ThresholdOverlay overlay = threshSrv.getThreshold(display);
+		overlay.setFillColor(color);
+		overlay.update();
 	}
 
 }
