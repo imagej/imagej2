@@ -53,11 +53,14 @@ import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * TODO
+ * A {@link ThresholdOverlay} is an {@link Overlay} that represents the set of
+ * points whose data values are in a range prescribed by API user.
  * 
  * @author Barry DeZonia
  */
 public class ThresholdOverlay extends AbstractOverlay {
+
+	// -- instance variables --
 
 	private Displayable figure;
 	private final Dataset dataset;
@@ -65,6 +68,12 @@ public class ThresholdOverlay extends AbstractOverlay {
 	private final WithinRangeCondition<? extends RealType<?>> condition;
 	private final RegionOfInterest regionAdapter;
 
+	// -- ThresholdOverlay methods --
+
+	/**
+	 * Construct a {@link ThresholdOverlay} on a {@link Dataset} given an
+	 * {@link ImageJ} context.
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ThresholdOverlay(ImageJ context, Dataset dataset)
 	{
@@ -94,20 +103,38 @@ public class ThresholdOverlay extends AbstractOverlay {
 		resetThreshold();
 	}
 	
+	/**
+	 * Construct a {@link ThresholdOverlay} on a {@link Dataset} given an
+	 * {@link ImageJ} context, and a numeric range within which the data values of
+	 * interest exist.
+	 */
 	public ThresholdOverlay(ImageJ context, Dataset ds, double min, double max)
 	{
 		this(context, ds);
 		setRange(min,max);
 	}
 
+	/**
+	 * Helper method used by services to tie this overlay to its graphic
+	 * representation. Sometimes this overlay needs to redraw its graphics in
+	 * response to changes in the threshold values. Various services may use this
+	 * method but this method is not for general consumption.
+	 */
 	public void setFigure(Displayable figure) {
 		this.figure = figure;
 	}
-	
+
+	/**
+	 * Returns the {@link Displayable} figure associated with this overlay.
+	 */
 	public Displayable getFigure() {
 		return figure;
 	}
 
+	/**
+	 * Sets the range of interest for this overlay. As a side effect the name of
+	 * the overlay is updated.
+	 */
 	public void setRange(double min, double max) {
 		condition.setMin(min);
 		condition.setMax(max);
@@ -115,14 +142,24 @@ public class ThresholdOverlay extends AbstractOverlay {
 		setName();
 	}
 
+	/**
+	 * Gets the lower end of the range of interest for this overlay.
+	 */
 	public double getRangeMin() {
 		return condition.getMin();
 	}
 
+	/**
+	 * Gets the upper end of the range of interest for this overlay.
+	 */
 	public double getRangeMax() {
 		return condition.getMax();
 	}
-	
+
+	/**
+	 * Resets the range of interest of this overlay to default values as provided
+	 * by the {@link ThresholdService}.
+	 */
 	public void resetThreshold() {
 		ThresholdService threshSrv =
 			getContext().getService(ThresholdService.class);
@@ -131,6 +168,10 @@ public class ThresholdOverlay extends AbstractOverlay {
 		setRange(min, max);
 	}
 
+	/**
+	 * Returns the set of points whose data values are within the range of
+	 * interest.
+	 */
 	public PointSet getPoints() {
 		return points;
 	}
@@ -148,6 +189,8 @@ public class ThresholdOverlay extends AbstractOverlay {
 	public Condition<long[]> getCondition() {
 		return condition;
 	}
+
+	// -- Overlay methods --
 
 	@Override
 	public void update() {
@@ -249,6 +292,8 @@ public class ThresholdOverlay extends AbstractOverlay {
 	public void move(double[] deltas) {
 		// do nothing - thresholds don't move though space
 	}
+
+	// -- helpers --
 
 	private void setName() {
 		setName("Threshold: " + condition.getMin() + " to " + condition.getMax());

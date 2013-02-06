@@ -72,6 +72,8 @@ public class OptionsThreshold extends OptionsPlugin {
 	@Parameter(label = "Default color", persist = false)
 	private ColorRGB color;
 
+	// -- Command methods --
+
 	@Override
 	public void run() {
 		super.run();
