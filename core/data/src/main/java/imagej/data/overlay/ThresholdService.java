@@ -132,7 +132,7 @@ public class ThresholdService extends AbstractService
 		}
 	}
 
-	public void setDefaultThreshold(double min, double max) {
+	public void setDefaultRange(double min, double max) {
 		if (min > max) {
 			throw new IllegalArgumentException(
 				"threshold definition error: min > max");

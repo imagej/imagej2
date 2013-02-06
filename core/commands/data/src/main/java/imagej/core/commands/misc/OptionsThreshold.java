@@ -46,7 +46,8 @@ import imagej.plugin.Plugin;
 // that can be reused by ThresholdService we instead maintain state there and
 // synchronize here. That is because ThresholdService wants to live in ij-data
 // while ij-options is not accessible from there. So some ugly delegation is in
-// place.
+// place. Also this plugin is in core.commands.misc because of those same
+// subproject issues.
 
 /**
  * Runs the Image::Adjust::Threshold Options dialog.
@@ -72,13 +73,17 @@ public class OptionsThreshold extends OptionsPlugin {
 	@Override
 	public void run() {
 		super.run();
-		threshSrv().setDefaultThreshold(minimum, maximum);
+		threshSrv().setDefaultRange(minimum, maximum);
 	}
 
 	// -- accessors --
 
 	public void setDefaultRange(double min, double max) {
-		threshSrv().setDefaultThreshold(min, max);
+		if (min > max) {
+			throw new IllegalArgumentException(
+				"threshold definition error: min > max");
+		}
+		threshSrv().setDefaultRange(min, max);
 		minimum = min;
 		maximum = max;
 	}
