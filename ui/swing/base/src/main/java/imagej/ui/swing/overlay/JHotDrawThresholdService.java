@@ -36,6 +36,7 @@
 package imagej.ui.swing.overlay;
 
 import imagej.Priority;
+import imagej.core.options.OptionsThreshold;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -48,11 +49,11 @@ import imagej.display.Display;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
+import imagej.options.OptionsService;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.service.AbstractService;
 import imagej.service.Service;
-import imagej.util.Prefs;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -67,11 +68,6 @@ public class JHotDrawThresholdService extends AbstractService implements
 	ThresholdService
 {
 
-	// -- constants --
-
-	private static final String MIN = "imagej.service.threshold.min";
-	private static final String MAX = "imagej.service.threshold.max";
-
 	// -- parameters --
 
 	@Parameter
@@ -83,17 +79,8 @@ public class JHotDrawThresholdService extends AbstractService implements
 	@Parameter
 	private OverlayService overlayService;
 
-	// -- instance variables --
-
-	// TODO - if these doubles are @Parameters the service cannot initialize. This
-	// may be a bug in the service init code (i.e. it tries to invoke a Double
-	// service maybe). So use Prefs directly as a workaround.
-
-	private double defaultMinThresh = Prefs.getDouble(MIN,
-		Double.NEGATIVE_INFINITY);
-
-	private double defaultMaxThresh = Prefs.getDouble(MAX,
-		Double.POSITIVE_INFINITY);
+	@Parameter
+	private OptionsService optionsService;
 
 	// -- instance variables --
 
@@ -123,7 +110,6 @@ public class JHotDrawThresholdService extends AbstractService implements
 					"expected ImageDisplay to have active dataset");
 			}
 			overlay = new ThresholdOverlay(getContext(), dataset);
-			overlay.setRange(defaultMinThresh, defaultMaxThresh);
 			map.put(display, overlay);
 			display.display(overlay);
 		}
@@ -145,20 +131,22 @@ public class JHotDrawThresholdService extends AbstractService implements
 			throw new IllegalArgumentException(
 				"threshold definition error: min > max");
 		}
-		defaultMinThresh = min;
-		defaultMaxThresh = max;
-		Prefs.put(MIN, defaultMinThresh);
-		Prefs.put(MAX, defaultMaxThresh);
+		OptionsThreshold opts = optionsService.getOptions(OptionsThreshold.class);
+		opts.setDefaultMinimum(min);
+		opts.setDefaultMaximum(max);
+		opts.save();
 	}
 
 	@Override
-	public double getDefaultMinThreshold() {
-		return defaultMinThresh;
+	public double getDefaultRangeMin() {
+		OptionsThreshold opts = optionsService.getOptions(OptionsThreshold.class);
+		return opts.getDefaultMinimum();
 	}
 
 	@Override
-	public double getDefaultMaxThreshold() {
-		return defaultMaxThresh;
+	public double getDefaultRangeMax() {
+		OptionsThreshold opts = optionsService.getOptions(OptionsThreshold.class);
+		return opts.getDefaultMaximum();
 	}
 
 
