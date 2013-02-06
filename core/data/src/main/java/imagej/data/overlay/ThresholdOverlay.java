@@ -36,6 +36,7 @@
 package imagej.data.overlay;
 
 import imagej.ImageJ;
+import imagej.data.Dataset;
 import imagej.display.Displayable;
 import imagej.util.Colors;
 import net.imglib2.img.ImgPlus;
@@ -59,16 +60,17 @@ import net.imglib2.type.numeric.RealType;
 public class ThresholdOverlay extends AbstractOverlay {
 
 	private Displayable figure;
-	private final ImgPlus<? extends RealType<?>> imgPlus;
+	private final Dataset dataset;
 	private final ConditionalPointSet points;
 	private final WithinRangeCondition<? extends RealType<?>> condition;
 	private final RegionOfInterest regionAdapter;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public ThresholdOverlay(ImageJ context, ImgPlus<? extends RealType<?>> imgPlus)
+	public ThresholdOverlay(ImageJ context, Dataset dataset)
 	{
 		setContext(context);
-		this.imgPlus = imgPlus;
+		this.dataset = dataset;
+		ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
 		Function<long[], ? extends RealType<?>> function =
 			new RealImageFunction(imgPlus, imgPlus.firstElement());
 		condition =
@@ -90,10 +92,9 @@ public class ThresholdOverlay extends AbstractOverlay {
 		setLineWidth(1);
 	}
 	
-	public ThresholdOverlay(ImageJ context,
-		ImgPlus<? extends RealType<?>> imgPlus, double min, double max)
+	public ThresholdOverlay(ImageJ context, Dataset ds, double min, double max)
 	{
-		this(context, imgPlus);
+		this(context, ds);
 		setRange(min,max);
 	}
 
@@ -110,6 +111,14 @@ public class ThresholdOverlay extends AbstractOverlay {
 		condition.setMax(max);
 		points.setCondition(condition); // this lets PointSet know it is changed
 		setName();
+	}
+
+	public double getRangeMin() {
+		return condition.getMin();
+	}
+
+	public double getRangeMax() {
+		return condition.getMax();
 	}
 	
 	public void resetThreshold() {
@@ -151,27 +160,27 @@ public class ThresholdOverlay extends AbstractOverlay {
 
 	@Override
 	public int getAxisIndex(AxisType axis) {
-		return imgPlus.getAxisIndex(axis);
+		return dataset.getAxisIndex(axis);
 	}
 
 	@Override
 	public AxisType axis(int d) {
-		return imgPlus.axis(d);
+		return dataset.axis(d);
 	}
 
 	@Override
 	public void axes(AxisType[] axes) {
-		imgPlus.axes(axes);
+		dataset.axes(axes);
 	}
 
 	@Override
 	public void setAxis(AxisType axis, int d) {
-		imgPlus.setAxis(axis, d);
+		dataset.setAxis(axis, d);
 	}
 
 	@Override
 	public double calibration(int d) {
-		return imgPlus.calibration(d);
+		return dataset.calibration(d);
 	}
 
 	@Override
@@ -223,7 +232,7 @@ public class ThresholdOverlay extends AbstractOverlay {
 
 	@Override
 	public ThresholdOverlay duplicate() {
-		return new ThresholdOverlay(getContext(), imgPlus, condition.getMin(),
+		return new ThresholdOverlay(getContext(), dataset, condition.getMin(),
 			condition.getMax());
 	}
 
