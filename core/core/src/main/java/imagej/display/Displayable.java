@@ -35,7 +35,6 @@
 
 package imagej.display;
 
-
 /**
  * @author Barry DeZonia
  */
