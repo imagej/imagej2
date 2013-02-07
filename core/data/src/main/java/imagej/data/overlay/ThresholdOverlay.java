@@ -304,7 +304,7 @@ public class ThresholdOverlay extends AbstractOverlay {
 	 * the threshold range. The data is evaluated at the given point. Data points
 	 * whose value is less than the threshold range are classified as -1. Data
 	 * points whose value is within the threshold range are classified as 0. And
-	 * data points whose value is greate than the threshold range are classified
+	 * data points whose value is greater than the threshold range are classified
 	 * as 1.
 	 * 
 	 * @param point The coordinate point at which to test the underlying data
@@ -415,7 +415,9 @@ public class ThresholdOverlay extends AbstractOverlay {
 		double max = getRangeMax();
 		ThresholdOverlay overlay =
 			new ThresholdOverlay(getContext(), dataset, min, max);
-		overlay.setFillColor(getFillColor());
+		overlay.setColorWithin(getColorWithin());
+		overlay.setColorLess(getColorLess());
+		overlay.setColorGreater(getColorGreater());
 		return overlay;
 	}
 
@@ -434,7 +436,9 @@ public class ThresholdOverlay extends AbstractOverlay {
 	private void initColors() {
 		ThresholdService threshSrv =
 			getContext().getService(ThresholdService.class);
-		setFillColor(threshSrv.getDefaultColor());
+		setColorWithin(threshSrv.getDefaultColor());
+		setColorLess(null);
+		setColorGreater(null);
 	}
 
 	private abstract class FunctionCondition<T extends RealType<T>> implements

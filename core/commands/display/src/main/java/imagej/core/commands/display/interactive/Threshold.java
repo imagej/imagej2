@@ -59,8 +59,6 @@ import net.imglib2.type.numeric.RealType;
 // 2) some methods here are unimplemented: autothresh, changePixels, stack hist
 // 3) stack histogram: don't yet know what this is to do
 // 4) we will have to display a histogram and thresh lines like IJ1 does
-// 5) we need thresh overlay to have three colors and three conditions. Then
-//    the display code decides how to draw given conditions it has
 // 6) overlay manager threshold name does not update immediately
 // 7) overlay not selectable in view but only via ovr mgr
 // 8) do thresh overlays kill graphics of other overlays? It seems it may. Might
@@ -70,17 +68,6 @@ import net.imglib2.type.numeric.RealType;
 //     method call the one selected by user.
 // 11) some legacy plugins only work with thresholded images. we need to support
 //     them via legacy variable setting or pure ij2 plugin implmentations 
-
-// make thresh return -1,0,1 for a point in regards to conditions? we have two
-// conditions: (< min) and (> max). within is true if both conds fail. then
-// classify point and depending upon return value draw correct color.
-
-// threshOver has 3 pointsets: lessThanThresh, greaterThanThresh, withinThresh
-// and 3 colors. If a color is null it is not displayed. Do we set colors to
-// null in overlay? if so then how do we default them? Maybe they have default
-// non null from options dialog but thresh dialog sets them to null if the
-// display method calls for it. Note that this is somewhat problematic as others
-// who create overlays programmatically will get colors they may not want.
 
 /**
  * @author Barry DeZonia
@@ -94,7 +81,7 @@ public class Threshold extends InteractiveCommand {
 
 	// -- constants --
 	
-	private static final String RED = "Red";
+	private static final String SINGLE = "Single";
 	private static final String BLACK_WHITE = "B&W";
 	private static final String OVER_UNDER = "Over/Under";
 	
@@ -114,7 +101,8 @@ public class Threshold extends InteractiveCommand {
 	private String method;
 
 	@Parameter(label = "Display type",
-		choices = { RED, BLACK_WHITE, OVER_UNDER },
+ choices = { SINGLE, BLACK_WHITE,
+		OVER_UNDER },
 		callback = "displayTypeChanged", persist = false)
 	private String displayType;
 
@@ -250,8 +238,8 @@ public class Threshold extends InteractiveCommand {
 			overlay.setColorLess(Colors.BLUE);
 			overlay.setColorGreater(Colors.GREEN);
 		}
-		else {
-			overlay.setColorWithin(Colors.RED);
+		else { // SINGLE color
+			overlay.setColorWithin(threshSrv.getDefaultColor());
 			overlay.setColorLess(null);
 			overlay.setColorGreater(null);
 		}
