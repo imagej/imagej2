@@ -52,6 +52,36 @@ import net.imglib2.algorithm.stats.ComputeMinMax;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
 
+// TODO All the problems with thresh overlay code at the moment:
+//
+// 1) reset button takes away thresh but cannot get it back without exiting
+//    dialog and reentering
+// 2) some methods here are unimplemented: autothresh, changePixels, stack hist
+// 3) stack histogram: don't yet know what this is to do
+// 4) we will have to display a histogram and thresh lines like IJ1 does
+// 5) we need thresh overlay to have three colors and three conditions. Then
+//    the display code decides how to draw given conditions it has
+// 6) overlay manager threshold name does not update immediately
+// 7) overlay not selectable in view but only via ovr mgr
+// 8) do thresh overlays kill graphics of other overlays? It seems it may. Might
+//    need to draw in a certain order
+// 9) dark background: does not update the thresh values within the dialog
+// 10) need to discover autothresh methods, populate list, and make autothresh
+//     method call the one selected by user.
+// 11) some legacy plugins only work with thresholded images. we need to support
+//     them via legacy variable setting or pure ij2 plugin implmentations 
+
+// make thresh return -1,0,1 for a point in regards to conditions? we have two
+// conditions: (< min) and (> max). within is true if both conds fail. then
+// classify point and depending upon return value draw correct color.
+
+// threshOver has 3 pointsets: lessThanThresh, greaterThanThresh, withinThresh
+// and 3 colors. If a color is null it is not displayed. Do we set colors to
+// null in overlay? if so then how do we default them? Maybe they have default
+// non null from options dialog but thresh dialog sets them to null if the
+// display method calls for it. Note that this is somewhat problematic as others
+// who create overlays programmatically will get colors they may not want.
+
 /**
  * @author Barry DeZonia
  */
@@ -62,6 +92,12 @@ import net.imglib2.type.numeric.RealType;
 	initializer = "initValues")
 public class Threshold extends InteractiveCommand {
 
+	// -- constants --
+	
+	private static final String RED = "Red";
+	private static final String BLACK_WHITE = "B&W";
+	private static final String OVER_UNDER = "Over/Under";
+	
 	// -- Parameters --
 
 	@Parameter
@@ -73,14 +109,12 @@ public class Threshold extends InteractiveCommand {
 	@Parameter
 	private ImageDisplayService imgDispSrv;
 
-	@Parameter(type = ItemIO.BOTH)
-	private ImageDisplay display;
-
 	@Parameter(label = "Method",
 		choices = { "Method 1", "Method 2", "Method 3" }, persist = false)
 	private String method;
 
-	@Parameter(label = "Display type", choices = { "Red", "B&W", "Over/Under" },
+	@Parameter(label = "Display type",
+		choices = { RED, BLACK_WHITE, OVER_UNDER },
 		callback = "displayTypeChanged", persist = false)
 	private String displayType;
 
@@ -100,6 +134,9 @@ public class Threshold extends InteractiveCommand {
 	@Parameter(label = "Stack Histogram", callback = "stackHistogram",
 		persist = false)
 	private boolean stackHistogram;
+
+	@Parameter(type = ItemIO.BOTH)
+	private ImageDisplay display;
 
 	// -- instance variables --
 
@@ -131,8 +168,6 @@ public class Threshold extends InteractiveCommand {
 
 		ThresholdOverlay overlay = threshSrv.getThreshold(display);
 
-		// color = overlay.getFillColor();
-
 		DefaultModuleItem<Double> minItem =
 			new DefaultModuleItem<Double>(getInfo(), "Minimum", Double.class);
 		minItem.setCallback("rangeChanged");
@@ -150,23 +185,25 @@ public class Threshold extends InteractiveCommand {
 		maxItem.setValue(this, overlay.getRangeMax());
 		maxItem.setPersisted(false);
 		getInfo().addInput(maxItem);
+
+		colorize(overlay);
 	}
 
-	protected void rangeChanged() {
-		double min = (Double) getInput("Minimum");
-		double max = (Double) getInput("Maximum");
-		ThresholdOverlay overlay = threshSrv.getThreshold(display);
+	protected void autoThreshold() {
+		// TODO
+		System.out.println("UNIMPLEMENTED");
+	}
+
+	protected void backgroundChange() {
+		ThresholdOverlay overlay = getThreshold();
+		// TODO - do these calx match IJ1?
+		double min = dataMin + dataMax - overlay.getRangeMax();
+		double max = dataMin + dataMax - overlay.getRangeMin();
 		overlay.setRange(min, max);
 		overlay.update();
 	}
 
-	protected void displayTypeChanged() {
-		ThresholdOverlay overlay = threshSrv.getThreshold(display);
-		overlay.setFillColor(Colors.RED); // TODO - temp hack
-		overlay.update();
-	}
-
-	protected void autoThreshold() {
+	protected void changePixels() {
 		// TODO
 		System.out.println("UNIMPLEMENTED");
 	}
@@ -175,25 +212,19 @@ public class Threshold extends InteractiveCommand {
 		threshSrv.removeThreshold(display);
 	}
 
-	protected void changePixels() {
-		// TODO
-		System.out.println("UNIMPLEMENTED");
+	protected void displayTypeChanged() {
+		ThresholdOverlay overlay = getThreshold();
+		overlay.update();
 	}
 
-	protected void backgroundChange() {
-		ThresholdOverlay overlay = threshSrv.getThreshold(display);
-		double min, max;
-		// if (darkBackground) {
-		min = dataMax - overlay.getRangeMax() + dataMin;
-		max = dataMax - overlay.getRangeMin() + dataMin;
-		// }
-		// else { // light background
-		// min = ;
-		// max = ;
-		// }
+	protected void rangeChanged() {
+		double min = (Double) getInput("Minimum");
+		double max = (Double) getInput("Maximum");
+		ThresholdOverlay overlay = getThreshold();
 		overlay.setRange(min, max);
 		overlay.update();
 	}
+
 
 	protected void stackHistogram() {
 		// TODO
@@ -202,6 +233,30 @@ public class Threshold extends InteractiveCommand {
 
 	// -- helpers --
 
+	private ThresholdOverlay getThreshold() {
+		ThresholdOverlay overlay = threshSrv.getThreshold(display);
+		colorize(overlay);
+		return overlay;
+	}
+
+	private void colorize(ThresholdOverlay overlay) {
+		if (displayType.equals(BLACK_WHITE)) {
+			overlay.setColorWithin(Colors.WHITE);
+			overlay.setColorLess(Colors.BLACK);
+			overlay.setColorGreater(Colors.BLACK);
+		}
+		else if (displayType.equals(OVER_UNDER)) {
+			overlay.setColorWithin(null);
+			overlay.setColorLess(Colors.BLUE);
+			overlay.setColorGreater(Colors.GREEN);
+		}
+		else {
+			overlay.setColorWithin(Colors.RED);
+			overlay.setColorLess(null);
+			overlay.setColorGreater(null);
+		}
+	}
+	
 	private <T extends RealType<T>> void computeDataMinMax(final Img<T> img) {
 		final ComputeMinMax<T> computeMinMax = new ComputeMinMax<T>(img);
 		computeMinMax.process();
