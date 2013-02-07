@@ -38,6 +38,7 @@ package imagej.data.overlay;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.display.Displayable;
+import imagej.util.ColorRGB;
 import imagej.util.Colors;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.AxisType;
@@ -64,9 +65,15 @@ public class ThresholdOverlay extends AbstractOverlay {
 
 	private Displayable figure;
 	private final Dataset dataset;
-	private final ConditionalPointSet points;
-	private final WithinRangeCondition<? extends RealType<?>> condition;
+	private final ConditionalPointSet pointsLess;
+	private final ConditionalPointSet pointsGreater;
+	private final ConditionalPointSet pointsWithin;
+	private final FunctionLessCondition<? extends RealType<?>> conditionLess;
+	private final FunctionGreaterCondition<? extends RealType<?>> conditionGreater;
+	private final WithinRangeCondition<? extends RealType<?>> conditionWithin;
 	private final RegionOfInterest regionAdapter;
+	private ColorRGB colorLess;
+	private ColorRGB colorGreater;
 
 	// -- ThresholdOverlay methods --
 
@@ -82,16 +89,22 @@ public class ThresholdOverlay extends AbstractOverlay {
 		ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
 		Function<long[], ? extends RealType<?>> function =
 			new RealImageFunction(imgPlus, imgPlus.firstElement());
-		condition =
+		conditionWithin =
 			new WithinRangeCondition(function, Double.NEGATIVE_INFINITY,
 				Double.POSITIVE_INFINITY);
+		conditionLess =
+			new FunctionLessCondition(function, Double.POSITIVE_INFINITY);
+		conditionGreater =
+			new FunctionGreaterCondition(function, Double.NEGATIVE_INFINITY);
 		long[] dims = new long[imgPlus.numDimensions()];
 		imgPlus.dimensions(dims);
 		HyperVolumePointSet volume = new HyperVolumePointSet(dims);
-		points = new ConditionalPointSet(volume, condition);
-		regionAdapter = new PointSetRegionOfInterest(points);
+		pointsLess = new ConditionalPointSet(volume, conditionLess);
+		pointsGreater = new ConditionalPointSet(volume, conditionGreater);
+		pointsWithin = new ConditionalPointSet(volume, conditionWithin);
+		regionAdapter = new PointSetRegionOfInterest(pointsWithin);
 		figure = null;
-		setName();
+		updateName();
 		setAlpha(255);
 		setFillColor(Colors.RED);
 		setLineColor(Colors.RED);
@@ -99,7 +112,7 @@ public class ThresholdOverlay extends AbstractOverlay {
 		setLineStartArrowStyle(ArrowStyle.NONE);
 		setLineStyle(LineStyle.NONE);
 		setLineWidth(1);
-		initColor();
+		initColors();
 		resetThreshold();
 	}
 	
@@ -136,24 +149,29 @@ public class ThresholdOverlay extends AbstractOverlay {
 	 * the overlay is updated.
 	 */
 	public void setRange(double min, double max) {
-		condition.setMin(min);
-		condition.setMax(max);
-		points.setCondition(condition); // this lets PointSet know it is changed
-		setName();
+		conditionWithin.setMin(min);
+		conditionWithin.setMax(max);
+		conditionLess.setValue(min);
+		conditionGreater.setValue(max);
+		// make sure all pointsets know they've changed
+		pointsGreater.setCondition(conditionGreater);
+		pointsLess.setCondition(conditionLess);
+		pointsWithin.setCondition(conditionWithin);
+		updateName();
 	}
 
 	/**
 	 * Gets the lower end of the range of interest for this overlay.
 	 */
 	public double getRangeMin() {
-		return condition.getMin();
+		return conditionWithin.getMin();
 	}
 
 	/**
 	 * Gets the upper end of the range of interest for this overlay.
 	 */
 	public double getRangeMax() {
-		return condition.getMax();
+		return conditionWithin.getMax();
 	}
 
 	/**
@@ -172,22 +190,93 @@ public class ThresholdOverlay extends AbstractOverlay {
 	 * Returns the set of points whose data values are within the range of
 	 * interest.
 	 */
-	public PointSet getPoints() {
-		return points;
+	public PointSet getPointsWithin() {
+		return pointsWithin;
+	}
+
+	/**
+	 * Returns the set of points whose data values are less than the range of
+	 * interest.
+	 */
+	public PointSet getPointsLess() {
+		return pointsLess;
+	}
+
+	/**
+	 * Returns the set of points whose data values are greater than the range of
+	 * interest.
+	 */
+	public PointSet getPointsGreater() {
+		return pointsGreater;
 	}
 	
 	/**
-	 * Returns the {@link Condition} of the {@link ThresholdOverlay}. This is used
-	 * by others (like the rendering code) to quickly iterate the portion of the
-	 * data points they are interested in.
+	 * Returns the {@link ThresholdOverlay}'s {@link Condition} for including
+	 * points that are within the threshold. This is used by others (like the
+	 * rendering code) to quickly iterate the portion of the data points they are
+	 * interested in.
 	 * <p>
-	 * By design the return value is not a {@link WithinRangeCondition}. Users
-	 * cannot poke the threshold values via this Condition. This would bypass
-	 * internal communication. API users should call setRange(min, max) on this
-	 * {@link ThresholdOverlay} if they want to manipulate the display range.
+	 * By design the return value is not a speciailized version of a Condition.
+	 * Users must not poke the threshold values via this Condition. This would
+	 * bypass internal communication. API users should call setRange(min, max) on
+	 * this {@link ThresholdOverlay} if they want to manipulate the display range.
 	 */
-	public Condition<long[]> getCondition() {
-		return condition;
+	public Condition<long[]> getConditionWithin() {
+		return conditionWithin;
+	}
+
+	/**
+	 * Returns the {@link ThresholdOverlay}'s {@link Condition} for including
+	 * points that are less than the threshold. This is used by others (like the
+	 * rendering code) to quickly iterate the portion of the data points they are
+	 * interested in.
+	 * <p>
+	 * By design the return value is not a speciailized version of a Condition.
+	 * Users must not poke the threshold values via this Condition. This would
+	 * bypass internal communication. API users should call setRange(min, max) on
+	 * this {@link ThresholdOverlay} if they want to manipulate the display range.
+	 */
+	public Condition<long[]> getConditionLess() {
+		return conditionLess;
+	}
+
+	/**
+	 * Returns the {@link ThresholdOverlay}'s {@link Condition} for including
+	 * points that are greater than the threshold. This is used by others (like
+	 * the rendering code) to quickly iterate the portion of the data points they
+	 * are interested in.
+	 * <p>
+	 * By design the return value is not a speciailized version of a Condition.
+	 * Users must not poke the threshold values via this Condition. This would
+	 * bypass internal communication. API users should call setRange(min, max) on
+	 * this {@link ThresholdOverlay} if they want to manipulate the display range.
+	 */
+	public Condition<long[]> getConditionGreater() {
+		return conditionGreater;
+	}
+
+	public ColorRGB getColorLess() {
+		return colorLess;
+	}
+
+	public ColorRGB getColorGreater() {
+		return colorGreater;
+	}
+
+	public ColorRGB getColorWithin() {
+		return getFillColor();
+	}
+
+	public void setColorLess(ColorRGB c) {
+		colorLess = c;
+	}
+
+	public void setColorGreater(ColorRGB c) {
+		colorGreater = c;
+	}
+
+	public void setColorWithin(ColorRGB c) {
+		setFillColor(c);
 	}
 
 	// -- Overlay methods --
@@ -243,17 +332,17 @@ public class ThresholdOverlay extends AbstractOverlay {
 
 	@Override
 	public int numDimensions() {
-		return points.numDimensions();
+		return pointsWithin.numDimensions();
 	}
 
 	@Override
 	public long min(int d) {
-		return points.min(d);
+		return pointsWithin.min(d);
 	}
 
 	@Override
 	public long max(int d) {
-		return points.max(d);
+		return pointsWithin.max(d);
 	}
 
 	@Override
@@ -268,12 +357,12 @@ public class ThresholdOverlay extends AbstractOverlay {
 
 	@Override
 	public void dimensions(long[] dimensions) {
-		points.dimensions(dimensions);
+		pointsWithin.dimensions(dimensions);
 	}
 
 	@Override
 	public long dimension(int d) {
-		return points.dimension(d);
+		return pointsWithin.dimension(d);
 	}
 
 	@Override
@@ -298,13 +387,162 @@ public class ThresholdOverlay extends AbstractOverlay {
 
 	// -- helpers --
 
-	private void setName() {
-		setName("Threshold: " + condition.getMin() + " to " + condition.getMax());
+	private void updateName() {
+		setName("Threshold: " + conditionWithin.getMin() + " to " +
+			conditionWithin.getMax());
 	}
 
-	private void initColor() {
+	private void initColors() {
 		ThresholdService threshSrv =
 			getContext().getService(ThresholdService.class);
 		setFillColor(threshSrv.getDefaultColor());
+	}
+
+	private abstract class FunctionCondition<T extends RealType<T>> implements
+		Condition<long[]>
+	{
+
+		protected final Function<long[], T> func;
+		protected double value;
+		private final T var;
+
+		abstract boolean relationTrue(double fVal);
+
+		public FunctionCondition(Function<long[], T> func, double value) {
+			this.func = func;
+			this.value = value;
+			var = func.createOutput();
+		}
+
+		@Override
+		public boolean isTrue(long[] val) {
+			func.compute(val, var);
+			return relationTrue(var.getRealDouble());
+		}
+
+		public double getValue() {
+			return value;
+		}
+
+		public void setValue(double value) {
+			this.value = value;
+		}
+
+	}
+
+	private class FunctionLessCondition<T extends RealType<T>> extends
+		FunctionCondition<T>
+	{
+
+		public FunctionLessCondition(Function<long[], T> func, double value) {
+			super(func, value);
+		}
+
+		@Override
+		public FunctionLessCondition<T> copy() {
+			return new FunctionLessCondition<T>(func.copy(), value);
+		}
+
+		@Override
+		boolean relationTrue(double fVal) {
+			return fVal < value;
+		}
+	}
+
+	private class FunctionLessEqualCondition<T extends RealType<T>> extends
+		FunctionCondition<T>
+	{
+
+		public FunctionLessEqualCondition(Function<long[], T> func, double value)
+		{
+			super(func, value);
+		}
+
+		@Override
+		public FunctionLessEqualCondition<T> copy() {
+			return new FunctionLessEqualCondition<T>(func.copy(), value);
+		}
+
+		@Override
+		boolean relationTrue(double fVal) {
+			return fVal <= value;
+		}
+	}
+
+	private class FunctionGreaterCondition<T extends RealType<T>> extends
+		FunctionCondition<T>
+	{
+
+		public FunctionGreaterCondition(Function<long[], T> func, double value) {
+			super(func, value);
+		}
+
+		@Override
+		public FunctionGreaterCondition<T> copy() {
+			return new FunctionGreaterCondition<T>(func.copy(), value);
+		}
+
+		@Override
+		boolean relationTrue(double fVal) {
+			return fVal > value;
+		}
+	}
+
+	private class FunctionGreaterEqualCondition<T extends RealType<T>> extends
+		FunctionCondition<T>
+	{
+
+		public FunctionGreaterEqualCondition(Function<long[], T> func, double value)
+		{
+			super(func, value);
+		}
+
+		@Override
+		public FunctionGreaterEqualCondition<T> copy() {
+			return new FunctionGreaterEqualCondition<T>(func.copy(), value);
+		}
+
+		@Override
+		boolean relationTrue(double fVal) {
+			return fVal >= value;
+		}
+	}
+
+	private class FunctionEqualCondition<T extends RealType<T>> extends
+		FunctionCondition<T>
+	{
+
+		public FunctionEqualCondition(Function<long[], T> func, double value) {
+			super(func, value);
+		}
+
+		@Override
+		public FunctionEqualCondition<T> copy() {
+			return new FunctionEqualCondition<T>(func.copy(), value);
+		}
+
+		@Override
+		boolean relationTrue(double fVal) {
+			return fVal == value;
+		}
+	}
+
+	private class FunctionNotEqualCondition<T extends RealType<T>> extends
+		FunctionCondition<T>
+	{
+
+		public FunctionNotEqualCondition(Function<long[], T> func, double value) {
+			super(func, value);
+		}
+
+		@Override
+		public FunctionNotEqualCondition<T> copy() {
+			return new FunctionNotEqualCondition<T>(func.copy(), value);
+		}
+
+		@Override
+		boolean relationTrue(double fVal) {
+			return fVal != value;
+		}
 	}
 }
