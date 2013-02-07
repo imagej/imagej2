@@ -114,7 +114,6 @@ public abstract class InteractiveCommand extends DynamicCommand implements
 
 	// -- Event handlers --
 
-	/** Updates the displayed min/max range to match min and max values. */
 	@EventHandler
 	protected void updateInputs(
 		@SuppressWarnings("unused") final DisplayActivatedEvent evt)
