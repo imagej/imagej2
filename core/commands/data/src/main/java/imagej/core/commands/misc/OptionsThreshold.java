@@ -58,7 +58,7 @@ import imagej.util.ColorRGB;
 @Plugin(menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Adjust"),
-	@Menu(label = "Threshold Options") }, initializer = "initValues")
+	@Menu(label = "Threshold Options...") }, initializer = "initValues")
 public class OptionsThreshold extends OptionsPlugin {
 
 	// -- Parameters --
