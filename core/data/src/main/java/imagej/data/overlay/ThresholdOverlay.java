@@ -63,6 +63,8 @@ public class ThresholdOverlay extends AbstractOverlay {
 
 	// -- instance variables --
 
+	private Function<long[], RealType<?>> function;
+	private RealType<?> variable;
 	private Displayable figure;
 	private final Dataset dataset;
 	private final ConditionalPointSet pointsLess;
@@ -87,8 +89,8 @@ public class ThresholdOverlay extends AbstractOverlay {
 		setContext(context);
 		this.dataset = dataset;
 		ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
-		Function<long[], ? extends RealType<?>> function =
-			new RealImageFunction(imgPlus, imgPlus.firstElement());
+		function = new RealImageFunction(imgPlus, imgPlus.firstElement());
+		variable = function.createOutput();
 		conditionWithin =
 			new WithinRangeCondition(function, Double.NEGATIVE_INFINITY,
 				Double.POSITIVE_INFINITY);
@@ -216,7 +218,7 @@ public class ThresholdOverlay extends AbstractOverlay {
 	 * rendering code) to quickly iterate the portion of the data points they are
 	 * interested in.
 	 * <p>
-	 * By design the return value is not a speciailized version of a Condition.
+	 * By design the return value is not a specialized version of a Condition.
 	 * Users must not poke the threshold values via this Condition. This would
 	 * bypass internal communication. API users should call setRange(min, max) on
 	 * this {@link ThresholdOverlay} if they want to manipulate the display range.
@@ -231,7 +233,7 @@ public class ThresholdOverlay extends AbstractOverlay {
 	 * rendering code) to quickly iterate the portion of the data points they are
 	 * interested in.
 	 * <p>
-	 * By design the return value is not a speciailized version of a Condition.
+	 * By design the return value is not a specialized version of a Condition.
 	 * Users must not poke the threshold values via this Condition. This would
 	 * bypass internal communication. API users should call setRange(min, max) on
 	 * this {@link ThresholdOverlay} if they want to manipulate the display range.
@@ -246,7 +248,7 @@ public class ThresholdOverlay extends AbstractOverlay {
 	 * the rendering code) to quickly iterate the portion of the data points they
 	 * are interested in.
 	 * <p>
-	 * By design the return value is not a speciailized version of a Condition.
+	 * By design the return value is not a specialized version of a Condition.
 	 * Users must not poke the threshold values via this Condition. This would
 	 * bypass internal communication. API users should call setRange(min, max) on
 	 * this {@link ThresholdOverlay} if they want to manipulate the display range.
@@ -255,28 +257,65 @@ public class ThresholdOverlay extends AbstractOverlay {
 		return conditionGreater;
 	}
 
+	/**
+	 * Gets the color used when rendering points less than the threshold range.
+	 */
 	public ColorRGB getColorLess() {
 		return colorLess;
 	}
 
+	/**
+	 * Gets the color used when rendering points greater than the threshold range.
+	 */
 	public ColorRGB getColorGreater() {
 		return colorGreater;
 	}
 
+	/**
+	 * Gets the color used when rendering points within the threshold range.
+	 */
 	public ColorRGB getColorWithin() {
 		return getFillColor();
 	}
 
+	/**
+	 * Sets the color used when rendering points less than the threshold range.
+	 */
 	public void setColorLess(ColorRGB c) {
 		colorLess = c;
 	}
 
+	/**
+	 * Sets the color used when rendering points greater than the threshold range.
+	 */
 	public void setColorGreater(ColorRGB c) {
 		colorGreater = c;
 	}
 
+	/**
+	 * Sets the color used when rendering points within the threshold range.
+	 */
 	public void setColorWithin(ColorRGB c) {
 		setFillColor(c);
+	}
+
+	/**
+	 * Determines the relationship between the value of the underlying data and
+	 * the threshold range. The data is evaluated at the given point. Data points
+	 * whose value is less than the threshold range are classified as -1. Data
+	 * points whose value is within the threshold range are classified as 0. And
+	 * data points whose value is greate than the threshold range are classified
+	 * as 1.
+	 * 
+	 * @param point The coordinate point at which to test the underlying data
+	 * @return -1, 0, or 1
+	 */
+	public int classify(long[] point) {
+		function.compute(point, variable);
+		double val = variable.getRealDouble();
+		if (val < conditionWithin.getMin()) return -1;
+		if (val > conditionWithin.getMax()) return 1;
+		return 0;
 	}
 
 	// -- Overlay methods --

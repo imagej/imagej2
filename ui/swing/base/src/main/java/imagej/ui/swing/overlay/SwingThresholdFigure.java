@@ -136,9 +136,8 @@ public class SwingThresholdFigure extends AbstractAttributedFigure implements
 	// NB - not using a ConditionalPointSet directly. ConditionalPointSet may
 	// encompass a huge hypervolume and we are only interested in the points in
 	// the displayed plane. So we define a smaller hypervolume of just the viewed
-	// plane, iterate it and then test the Condition<long[]> directly. This is
-	// much faster for display purposes. The ThresholdOverlay returns the
-	// Condition when asked.
+	// plane, iterate it and then classify the point directly. This is
+	// much faster for display purposes.
 
 	@Override
 	protected void drawFill(final Graphics2D g) {
@@ -156,10 +155,11 @@ public class SwingThresholdFigure extends AbstractAttributedFigure implements
 			long[] pos = cursor.next();
 			// only draw points that satisfy the threshold conditions
 			color = null;
-			if (overlay.getConditionLess().isTrue(pos)) {
+			int classification = overlay.classify(pos);
+			if (classification < 0) {
 				color = lessColor;
 			}
-			else if (overlay.getConditionGreater().isTrue(pos)) {
+			else if (classification > 0) {
 				color = greaterColor;
 			}
 			else color = withinColor;
