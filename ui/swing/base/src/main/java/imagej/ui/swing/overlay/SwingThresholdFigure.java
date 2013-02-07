@@ -143,16 +143,31 @@ public class SwingThresholdFigure extends AbstractAttributedFigure implements
 	@Override
 	protected void drawFill(final Graphics2D g) {
 		final Color origC = g.getColor();
-		Color color = AWTColors.getColor(overlay.getFillColor());
-		g.setColor(color);
+		Color withinColor = AWTColors.getColor(overlay.getColorWithin());
+		Color lessColor = AWTColors.getColor(overlay.getColorLess());
+		Color greaterColor = AWTColors.getColor(overlay.getColorGreater());
+		Color color = null;
+		Color lastColor = null;
 		rect.width = 1;
 		rect.height = 1;
 		// only iterate currently viewed plane
 		Cursor<long[]> cursor = getViewedPlane().cursor();
 		while (cursor.hasNext()) {
 			long[] pos = cursor.next();
-			// only draw points that satisfy the threshold condition
-			if (overlay.getCondition().isTrue(pos)) {
+			// only draw points that satisfy the threshold conditions
+			color = null;
+			if (overlay.getConditionLess().isTrue(pos)) {
+				color = lessColor;
+			}
+			else if (overlay.getConditionGreater().isTrue(pos)) {
+				color = greaterColor;
+			}
+			else color = withinColor;
+			if (color != null) {
+				if (color != lastColor) {
+					g.setColor(color);
+					lastColor = color;
+				}
 				rect.x = pos[0];
 				rect.y = pos[1];
 				g.fill(rect);
