@@ -63,6 +63,8 @@ import imagej.data.overlay.PolygonOverlay;
 import imagej.data.overlay.RectangleOverlay;
 import imagej.data.overlay.TextOverlay;
 import imagej.data.overlay.TextOverlay.Justification;
+import imagej.data.overlay.ThresholdOverlay;
+import imagej.data.overlay.ThresholdService;
 import imagej.log.LogService;
 import imagej.util.awt.AWTColors;
 
@@ -102,11 +104,13 @@ public class OverlayHarmonizer extends AbstractContextual implements
 {
 	private final LogService log;
 	private final OverlayService overlayService;
+	private final ThresholdService threshService;
 
 	public OverlayHarmonizer(final ImageJ context) {
 		setContext(context);
 		log = context.getService(LogService.class);
 		overlayService = context.getService(OverlayService.class);
+		threshService = context.getService(ThresholdService.class);
 	}
 
 	/**
@@ -130,6 +134,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		final List<Overlay> overlays = getOverlays(imp);
 		overlayService.addOverlays(display, overlays);
 		// }
+		setModernThreshold(display, imp);
 	}
 
 	/**
@@ -142,6 +147,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 	{
 		final List<Overlay> overlays = overlayService.getOverlays(display);
 		setOverlays(overlays, overlayService.getActiveOverlay(display), imp);
+		setLegacyThreshold(display, imp);
 	}
 
 	/**
@@ -192,6 +198,34 @@ public class OverlayHarmonizer extends AbstractContextual implements
 	}
 
 	// -- Helper methods - legacy Roi creation --
+
+	private void setModernThreshold(ImageDisplay display, ImagePlus imp) {
+		ImageProcessor proc = imp.getProcessor();
+		double threshMin = proc.getMinThreshold();
+		double threshMax = proc.getMaxThreshold();
+		if (threshMin == ImageProcessor.NO_THRESHOLD) {
+			if (threshService.hasThreshold(display)) {
+				threshService.removeThreshold(display);
+			}
+		}
+		else { // an IJ1 thresh exists
+			ThresholdOverlay thresh = threshService.getThreshold(display);
+			thresh.setRange(threshMin, threshMax);
+		}
+	}
+
+	private void setLegacyThreshold(ImageDisplay display, ImagePlus imp) {
+		ImageProcessor proc = imp.getProcessor();
+		if (threshService.hasThreshold(display)) {
+			ThresholdOverlay thresh = threshService.getThreshold(display);
+			double min = thresh.getRangeMin();
+			double max = thresh.getRangeMax();
+			proc.setThreshold(min, max, ImageProcessor.NO_LUT_UPDATE);
+		}
+		else {
+			proc.resetThreshold();
+		}
+	}
 
 	private ij.gui.Overlay createIJ1Overlay(final List<Overlay> overlays,
 		Overlay activeOverlay)

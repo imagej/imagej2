@@ -119,6 +119,8 @@ public class GrayDisplayCreator implements DisplayCreator {
 			(ImageDisplay) displayService.createDisplay(ds.getName(), ds);
 
 		colorTableHarmonizer.updateDisplay(display, imp);
+		// NB - correct thresholding behavior requires overlay harmonization after
+		// color table harmonization
 		overlayHarmonizer.updateDisplay(display, imp);
 		positionHarmonizer.updateDisplay(display, imp);
 		nameHarmonizer.updateDisplay(display, imp);
@@ -152,6 +154,8 @@ public class GrayDisplayCreator implements DisplayCreator {
 			(ImageDisplay) displayService.createDisplay(ds.getName(), ds);
 
 		colorTableHarmonizer.updateDisplay(display, imp);
+		// NB - correct thresholding behavior requires overlay harmonization after
+		// color table harmonization
 		overlayHarmonizer.updateDisplay(display, imp);
 		positionHarmonizer.updateDisplay(display, imp);
 		nameHarmonizer.updateDisplay(display, imp);

@@ -135,8 +135,10 @@ public class Harmonizer {
 			else grayPixelHarmonizer.updateLegacyImage(ds, imp);
 		}
 		metadataHarmonizer.updateLegacyImage(ds, imp);
-		overlayHarmonizer.updateLegacyImage(display, imp);
 		colorTableHarmonizer.updateLegacyImage(display, imp);
+		// NB - correct thresholding behavior requires overlay harmonization after
+		// color table harmonization
+		overlayHarmonizer.updateLegacyImage(display, imp);
 		positionHarmonizer.updateLegacyImage(display, imp);
 		nameHarmonizer.updateLegacyImage(display, imp);
 	}
@@ -192,8 +194,10 @@ public class Harmonizer {
 		}
 		metadataHarmonizer.updateDataset(ds, imp);
 		compositeHarmonizer.updateDataset(ds, imp);
-		overlayHarmonizer.updateDisplay(display, imp);
 		colorTableHarmonizer.updateDisplay(display, imp);
+		// NB - correct thresholding behavior requires overlay harmonization after
+		// color table harmonization
+		overlayHarmonizer.updateDisplay(display, imp);
 		positionHarmonizer.updateDisplay(display, imp);
 		nameHarmonizer.updateDisplay(display, imp);
 
