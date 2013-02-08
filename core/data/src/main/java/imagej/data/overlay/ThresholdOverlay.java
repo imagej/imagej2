@@ -63,10 +63,10 @@ public class ThresholdOverlay extends AbstractOverlay {
 
 	// -- instance variables --
 
-	private Function<long[], RealType<?>> function;
-	private RealType<?> variable;
-	private Displayable figure;
 	private final Dataset dataset;
+	private final Function<long[], RealType<?>> function;
+	private final RealType<?> variable;
+	private Displayable figure;
 	private final ConditionalPointSet pointsLess;
 	private final ConditionalPointSet pointsGreater;
 	private final ConditionalPointSet pointsWithin;
@@ -185,7 +185,7 @@ public class ThresholdOverlay extends AbstractOverlay {
 		RealType<?> type = dataset.getType();
 		double min = type.getMinValue();
 		double max = type.getMaxValue();
-		if (min < 20000) min = 20000;
+		if (min < -20000) min = -20000;
 		if (max > 20000) max = 20000;
 		setRange(min, max / 2);
 	}
@@ -440,6 +440,8 @@ public class ThresholdOverlay extends AbstractOverlay {
 		setColorLess(null);
 		setColorGreater(null);
 	}
+
+	// TODO - move this to OPS. Or use UnaryFunctionalRelations instead.
 
 	private abstract class FunctionCondition<T extends RealType<T>> implements
 		Condition<long[]>
