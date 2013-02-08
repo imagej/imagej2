@@ -107,8 +107,8 @@ public class Threshold extends InteractiveCommand {
 	private String method;
 
 	@Parameter(label = "Display type",
-		choices = { RED, BLACK_WHITE,
-		OVER_UNDER }, callback = "displayTypeChanged", persist = false)
+		choices = { RED, BLACK_WHITE, OVER_UNDER },
+		callback = "displayTypeChanged", persist = false)
 	private String displayType;
 
 	@Parameter(label = "Auto", callback = "autoThreshold")
@@ -165,24 +165,36 @@ public class Threshold extends InteractiveCommand {
 		// For now we'll set them to half the range
 		if (!alreadyHadOne) overlay.setRange(dataMin, dataMax / 2);
 
+		// TODO note
+		// The threshold ranges would be best as a slider with range ends noted.
+		// However the current number widget code cannot handle sliders/scrolls on
+		// doubles but just ints. Make that widget allow doubles and then change the
+		// the widget style for min and max here below.
+
 		// set min range widget
 		DefaultModuleItem<Double> minItem =
 			new DefaultModuleItem<Double>(getInfo(), "Minimum", Double.class);
-		minItem.setCallback("rangeChanged");
 		minItem.setMinimumValue(dataMin);
 		minItem.setMaximumValue(dataMax);
 		minItem.setValue(this, overlay.getRangeMin());
 		minItem.setPersisted(false);
+		// TODO - enable type as a SLIDER - see TODO note
+		// minItem.setWidgetStyle(NumberWidget.SLIDER_STYLE);
+		// minItem.setStepSize((dataMax - dataMin) / 12.0);
+		minItem.setCallback("rangeChanged");
 		getInfo().addInput(minItem);
 
 		// set max range widget
 		DefaultModuleItem<Double> maxItem =
 			new DefaultModuleItem<Double>(getInfo(), "Maximum", Double.class);
-		maxItem.setCallback("rangeChanged");
 		maxItem.setMinimumValue(dataMin);
 		maxItem.setMaximumValue(dataMax);
 		maxItem.setValue(this, overlay.getRangeMax());
 		maxItem.setPersisted(false);
+		// TODO - enable type as a SLIDER - see TODO note
+		// maxItem.setWidgetStyle(NumberWidget.SLIDER_STYLE);
+		// maxItem.setStepSize((dataMax - dataMin) / 12.0);
+		maxItem.setCallback("rangeChanged");
 		getInfo().addInput(maxItem);
 
 		// initialize the colors of the overlay
@@ -198,7 +210,9 @@ public class Threshold extends InteractiveCommand {
 
 	protected void backgroundChange() {
 		ThresholdOverlay overlay = getThreshold();
-		// TODO - do these calx match IJ1?
+		// TODO - do these calx match IJ1? No. IJ1 calcs a threshold. Then either
+		// goes from (0,thresh) or (thresh+1,255) depending on setting. Maybe we
+		// do this too. Or we remove functionality altogether.
 		double min = dataMin + dataMax - overlay.getRangeMax();
 		double max = dataMin + dataMax - overlay.getRangeMin();
 		overlay.setRange(min, max);
