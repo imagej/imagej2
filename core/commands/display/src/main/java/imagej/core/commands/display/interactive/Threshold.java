@@ -54,7 +54,7 @@ import net.imglib2.type.numeric.RealType;
 
 // TODO All the problems with thresh overlay code at the moment:
 //
-// 1) reset button takes away thresh but cannot get it back without exiting
+// 1) delete button takes away thresh but cannot get it back without exiting
 //    dialog and reentering
 // 2) some methods here are unimplemented: autothresh, changePixels, stack hist
 // 3) stack histogram: don't yet know what this is to do
@@ -66,8 +66,14 @@ import net.imglib2.type.numeric.RealType;
 // 9) dark background: does not update the thresh values within the dialog
 // 10) need to discover autothresh methods, populate list, and make autothresh
 //     method call the one selected by user.
-// 11) some legacy plugins only work with thresholded images. we need to support
-//     them via legacy variable setting or pure ij2 plugin implmentations 
+// 11) update commands that need a threshold to use them now: Convert To Mask?
+// 12) dark background - make code exactly like IJ1
+// 13) default thresh range might not be a setting. rather default to min and
+//     half max. This would slow down the creation of threshold overlays in
+//     general. Might not want to do this.
+// 14) this plugin written to work with one display. So if you leave it up and
+//     switch images this plugin won't immediately work with it. see what IJ1
+//     does.
 
 /**
  * @author Barry DeZonia
@@ -81,8 +87,8 @@ public class Threshold extends InteractiveCommand {
 
 	// -- constants --
 	
-	private static final String SINGLE = "Single";
-	private static final String BLACK_WHITE = "B&W";
+	private static final String RED = "Red";
+	private static final String BLACK_WHITE = "Black/White";
 	private static final String OVER_UNDER = "Over/Under";
 	
 	// -- Parameters --
@@ -101,9 +107,8 @@ public class Threshold extends InteractiveCommand {
 	private String method;
 
 	@Parameter(label = "Display type",
- choices = { SINGLE, BLACK_WHITE,
-		OVER_UNDER },
-		callback = "displayTypeChanged", persist = false)
+		choices = { RED, BLACK_WHITE,
+		OVER_UNDER }, callback = "displayTypeChanged", persist = false)
 	private String displayType;
 
 	@Parameter(label = "Auto", callback = "autoThreshold")
@@ -112,8 +117,8 @@ public class Threshold extends InteractiveCommand {
 	@Parameter(label = "Apply", callback = "changePixels")
 	private Button apply;
 
-	@Parameter(label = "Reset", callback = "deleteThreshold")
-	private Button reset;
+	@Parameter(label = "Delete", callback = "deleteThreshold")
+	private Button delete;
 
 	@Parameter(label = "Dark Background", callback = "backgroundChange",
 		persist = false)
@@ -153,9 +158,14 @@ public class Threshold extends InteractiveCommand {
 	protected void initValues() {
 
 		computeDataMinMax(getImg());
-
+		boolean alreadyHadOne = threshSrv.hasThreshold(display);
 		ThresholdOverlay overlay = threshSrv.getThreshold(display);
 
+		// set default values: TODO - calc stats/histogram and do something nice.
+		// For now we'll set them to half the range
+		if (!alreadyHadOne) overlay.setRange(dataMin, dataMax / 2);
+
+		// set min range widget
 		DefaultModuleItem<Double> minItem =
 			new DefaultModuleItem<Double>(getInfo(), "Minimum", Double.class);
 		minItem.setCallback("rangeChanged");
@@ -165,6 +175,7 @@ public class Threshold extends InteractiveCommand {
 		minItem.setPersisted(false);
 		getInfo().addInput(minItem);
 
+		// set max range widget
 		DefaultModuleItem<Double> maxItem =
 			new DefaultModuleItem<Double>(getInfo(), "Maximum", Double.class);
 		maxItem.setCallback("rangeChanged");
@@ -174,8 +185,11 @@ public class Threshold extends InteractiveCommand {
 		maxItem.setPersisted(false);
 		getInfo().addInput(maxItem);
 
+		// initialize the colors of the overlay
 		colorize(overlay);
 	}
+
+	// -- callbacks --
 
 	protected void autoThreshold() {
 		// TODO
@@ -238,8 +252,8 @@ public class Threshold extends InteractiveCommand {
 			overlay.setColorLess(Colors.BLUE);
 			overlay.setColorGreater(Colors.GREEN);
 		}
-		else { // SINGLE color
-			overlay.setColorWithin(threshSrv.getDefaultColor());
+		else { // ONE_COLOR
+			overlay.setColorWithin(Colors.RED);
 			overlay.setColorLess(null);
 			overlay.setColorGreater(null);
 		}

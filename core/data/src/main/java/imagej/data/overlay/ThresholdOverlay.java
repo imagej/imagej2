@@ -177,15 +177,17 @@ public class ThresholdOverlay extends AbstractOverlay {
 	}
 
 	/**
-	 * Resets the range of interest of this overlay to default values as provided
-	 * by the {@link ThresholdService}.
+	 * Resets the range of interest of this overlay to default values.
 	 */
 	public void resetThreshold() {
-		ThresholdService threshSrv =
-			getContext().getService(ThresholdService.class);
-		double min = threshSrv.getDefaultRangeMin();
-		double max = threshSrv.getDefaultRangeMax();
-		setRange(min, max);
+		// TODO - this is hacky. Maybe we need actual data values but scanning is
+		// slow. Or maybe we delete threshold? No, we use it in constructor.
+		RealType<?> type = dataset.getType();
+		double min = type.getMinValue();
+		double max = type.getMaxValue();
+		if (min < 20000) min = 20000;
+		if (max > 20000) max = 20000;
+		setRange(min, max / 2);
 	}
 
 	/**
@@ -434,9 +436,7 @@ public class ThresholdOverlay extends AbstractOverlay {
 	}
 
 	private void initColors() {
-		ThresholdService threshSrv =
-			getContext().getService(ThresholdService.class);
-		setColorWithin(threshSrv.getDefaultColor());
+		setColorWithin(Colors.RED);
 		setColorLess(null);
 		setColorGreater(null);
 	}
