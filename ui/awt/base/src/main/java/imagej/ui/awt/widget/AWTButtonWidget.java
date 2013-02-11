@@ -67,7 +67,7 @@ public class AWTButtonWidget extends AWTInputWidget<Button> implements
 
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				model.getItem().callback(model.getModule());
+				model.callback();
 			}
 		});
 		getComponent().add(button);

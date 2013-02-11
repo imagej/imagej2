@@ -85,7 +85,7 @@ public interface Module extends Runnable {
 	 * @see ModuleInfo#getInitializer()
 	 * @see ModuleItem#initialize(Module)
 	 */
-	void initialize();
+	void initialize() throws MethodCallException;
 
 	/** Gets metadata about this module. */
 	ModuleInfo getInfo();

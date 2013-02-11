@@ -33,67 +33,29 @@
  * #L%
  */
 
-package imagej.ui.swing.widget;
-
-import imagej.plugin.Plugin;
-import imagej.widget.Button;
-import imagej.widget.ButtonWidget;
-import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JPanel;
+package imagej.module;
 
 /**
- * A Swing widget that displays a button and invokes the callback of a parameter
- * when the button is clicked.
+ * An exception thrown when a reflective method execution fails.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class)
-public class SwingButtonWidget extends SwingInputWidget<Button> implements
-	ButtonWidget<JPanel>
-{
+public class MethodCallException extends ModuleException {
 
-	private JButton button;
-
-	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
-
-		button = new JButton(model.getWidgetLabel());
-		button.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				model.callback();
-			}
-		});
-		setToolTip(button);
-		getComponent().add(button);
+	public MethodCallException() {
+		super();
 	}
 
-	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return model.isType(Button.class);
+	public MethodCallException(final String s) {
+		super(s);
 	}
 
-	@Override
-	public Button getValue() {
-		return null;
+	public MethodCallException(final String s, final Throwable cause) {
+		super(s, cause);
 	}
 
-	@Override
-	public void refreshWidget() {
-		// nothing to do
-	}
-
-	@Override
-	public boolean isLabeled() {
-		return false;
+	public MethodCallException(final Throwable cause) {
+		super(cause);
 	}
 
 }

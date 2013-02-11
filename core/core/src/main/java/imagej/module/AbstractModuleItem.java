@@ -172,7 +172,7 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 	}
 
 	@Override
-	public void initialize(final Module module) {
+	public void initialize(final Module module) throws MethodCallException {
 		final Object delegateObject = module.getDelegateObject();
 		if (initializerRef == null) {
 			initializerRef =
@@ -187,7 +187,7 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 	}
 
 	@Override
-	public void callback(final Module module) {
+	public void callback(final Module module) throws MethodCallException {
 		final Object delegateObject = module.getDelegateObject();
 		if (callbackRef == null) {
 			callbackRef = new MethodRef(delegateObject.getClass(), getCallback());

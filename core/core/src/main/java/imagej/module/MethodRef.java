@@ -65,15 +65,16 @@ public class MethodRef implements Validated {
 		else label = clazz.getName() + "#" + method.getName();
 	}
 
-	public void execute(final Object obj, final Object... args) {
+	public void execute(final Object obj, final Object... args)
+		throws MethodCallException
+	{
 		if (method == null) return;
 		try {
 			method.invoke(obj, args);
 		}
-		catch (final Exception e) {
+		catch (final Exception exc) {
 			// NB: Several types of exceptions; simpler to handle them all the same.
-			final String problem = "Error executing method: " + label;
-			problems.add(new ValidityProblem(problem, e));
+			throw new MethodCallException("Error executing method: " + label, exc);
 		}
 	}
 

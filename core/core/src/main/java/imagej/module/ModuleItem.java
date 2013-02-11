@@ -98,7 +98,7 @@ public interface ModuleItem<T> extends BasicDetails {
 	 * 
 	 * @see #getInitializer()
 	 */
-	void initialize(Module module);
+	void initialize(Module module) throws MethodCallException;
 
 	/**
 	 * Gets the function that is called whenever this item changes.
@@ -115,7 +115,7 @@ public interface ModuleItem<T> extends BasicDetails {
 	 * 
 	 * @see #getCallback()
 	 */
-	void callback(Module module);
+	void callback(Module module) throws MethodCallException;
 
 	/**
 	 * Gets the preferred widget style to use when rendering the item in a user

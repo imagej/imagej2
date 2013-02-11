@@ -36,6 +36,8 @@
 package imagej.plugin;
 
 import imagej.Priority;
+import imagej.log.LogService;
+import imagej.module.MethodCallException;
 import imagej.module.Module;
 
 /**
@@ -53,7 +55,16 @@ public class InitPreprocessor extends AbstractPreprocessorPlugin {
 
 	@Override
 	public void process(final Module module) {
-		module.initialize();
+		try {
+			module.initialize();
+		}
+		catch (final MethodCallException exc) {
+			canceled = true;
+			final String moduleClass = module.getInfo().getDelegateClassName();
+			cancelReason = "The module \"" + moduleClass + "\" failed to initialize.";
+			final LogService log = getContext().getService(LogService.class);
+			if (log != null) log.error(exc);
+		}
 	}
 
 }

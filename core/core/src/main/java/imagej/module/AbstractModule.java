@@ -76,7 +76,7 @@ public abstract class AbstractModule implements Module {
 	}
 
 	@Override
-	public void initialize() {
+	public void initialize() throws MethodCallException {
 		// execute global module initializer
 		final Object delegateObject = getDelegateObject();
 		if (initializerRef == null) {

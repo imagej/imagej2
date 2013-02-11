@@ -36,6 +36,7 @@
 package imagej.widget;
 
 import imagej.module.ItemVisibility;
+import imagej.module.MethodCallException;
 import imagej.module.Module;
 import imagej.module.ModuleItem;
 import imagej.util.ClassUtils;
@@ -120,9 +121,20 @@ public class WidgetModel {
 		if (objectsEqual(getValue(), value)) return; // no change
 		module.setInput(name, value);
 		if (initialized) {
-			item.callback(module);
+			callback();
 			inputPanel.refresh();
 			module.preview();
+		}
+	}
+
+	/** Executes the callback associated with this widget's associated input. */
+	public void callback() {
+		try {
+			item.callback(module);
+		}
+		catch (final MethodCallException exc) {
+			// CTR FIXME: Get a context somehow.
+			//log.error(exc);
 		}
 	}
 

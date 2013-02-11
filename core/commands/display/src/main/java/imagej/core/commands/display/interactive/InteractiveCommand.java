@@ -46,6 +46,7 @@ import imagej.display.event.DisplayActivatedEvent;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
 import imagej.log.LogService;
+import imagej.module.MethodCallException;
 import imagej.module.ModuleItem;
 import imagej.plugin.Parameter;
 
@@ -178,7 +179,12 @@ public abstract class InteractiveCommand extends DynamicCommand implements
 		final T oldValue = item.getValue(this);
 		if (oldValue != newValue) {
 			item.setValue(this, newValue);
-			item.callback(this);
+			try {
+				item.callback(this);
+			}
+			catch (final MethodCallException exc) {
+				log.error(exc);
+			}
 		}
 	}
 
