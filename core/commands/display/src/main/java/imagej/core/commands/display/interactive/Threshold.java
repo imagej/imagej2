@@ -130,6 +130,12 @@ public class Threshold extends InteractiveCommand {
 		persist = false)
 	private boolean stackHistogram;
 
+	@Parameter(label = "Minimum", callback = "rangeChanged", persist = false)
+	private double minimum;
+
+	@Parameter(label = "Maximum", callback = "rangeChanged", persist = false)
+	private double maximum;
+
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
@@ -174,34 +180,18 @@ public class Threshold extends InteractiveCommand {
 		// the widget style for min and max here below.
 
 		// set min range widget
-		// TODO declare as an @Parameter and just set ranges here. Tried to use CTRs
-		// code that did this but spinner wouldn't call rangeChanged when clicked.
-		DefaultModuleItem<Double> minItem =
-			new DefaultModuleItem<Double>(getInfo(), "Minimum", Double.class);
+		final DefaultModuleItem<Double> minItem =
+			(DefaultModuleItem<Double>) getInfo().getInput("minimum");
 		minItem.setMinimumValue(dataMin);
 		minItem.setMaximumValue(dataMax);
 		minItem.setValue(this, overlay.getRangeMin());
-		minItem.setPersisted(false);
-		// TODO - enable type as a SLIDER - see TODO note
-		// minItem.setWidgetStyle(NumberWidget.SLIDER_STYLE);
-		// minItem.setStepSize((dataMax - dataMin) / 12.0);
-		minItem.setCallback("rangeChanged");
-		getInfo().addInput(minItem);
 
 		// set max range widget
-		// TODO declare as an @Parameter and just set ranges here. Tried to use CTRs
-		// code that did this but spinner wouldn't call rangeChanged when clicked.
-		DefaultModuleItem<Double> maxItem =
-			new DefaultModuleItem<Double>(getInfo(), "Maximum", Double.class);
+		final DefaultModuleItem<Double> maxItem =
+			(DefaultModuleItem<Double>) getInfo().getInput("maximum");
 		maxItem.setMinimumValue(dataMin);
 		maxItem.setMaximumValue(dataMax);
 		maxItem.setValue(this, overlay.getRangeMax());
-		maxItem.setPersisted(false);
-		// TODO - enable type as a SLIDER - see TODO note
-		// maxItem.setWidgetStyle(NumberWidget.SLIDER_STYLE);
-		// maxItem.setStepSize((dataMax - dataMin) / 12.0);
-		maxItem.setCallback("rangeChanged");
-		getInfo().addInput(maxItem);
 
 		// initialize the colors of the overlay
 		colorize(overlay);
@@ -240,8 +230,8 @@ public class Threshold extends InteractiveCommand {
 	}
 
 	protected void rangeChanged() {
-		double min = (Double) getInput("Minimum");
-		double max = (Double) getInput("Maximum");
+		double min = (Double) getInput("minimum");
+		double max = (Double) getInput("maximum");
 		ThresholdOverlay overlay = getThreshold();
 		overlay.setRange(min, max);
 		overlay.update();
