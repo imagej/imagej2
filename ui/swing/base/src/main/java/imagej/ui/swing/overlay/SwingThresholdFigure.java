@@ -35,6 +35,7 @@
 
 package imagej.ui.swing.overlay;
 
+import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.display.Displayable;
@@ -47,7 +48,6 @@ import java.awt.geom.Point2D.Double;
 import java.awt.geom.Rectangle2D;
 
 import net.imglib2.Cursor;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
 
@@ -66,15 +66,15 @@ public class SwingThresholdFigure extends AbstractAttributedFigure implements
 	private static final long serialVersionUID = 1L;
 
 	private final ImageDisplay display;
-	private final ImgPlus<?> imgPlus;
+	private final Dataset dataset;
 	private final ThresholdOverlay overlay;
 	private final Rectangle2D.Double rect;
 	
-	public SwingThresholdFigure(ImageDisplay display, ImgPlus<?> imgPlus,
+	public SwingThresholdFigure(ImageDisplay display, Dataset dataset,
 		ThresholdOverlay overlay)
 	{
 		this.display = display;
-		this.imgPlus = imgPlus;
+		this.dataset = dataset;
 		this.overlay = overlay;
 		this.rect = new Rectangle2D.Double();
 		setAttributeEnabled(AttributeKeys.FILL_COLOR, true);
@@ -90,7 +90,7 @@ public class SwingThresholdFigure extends AbstractAttributedFigure implements
 
 	@Override
 	public Rectangle2D.Double getBounds() {
-		return new Rectangle2D.Double(0, 0, imgPlus.max(0), imgPlus.max(1));
+		return new Rectangle2D.Double(0, 0, dataset.max(0), dataset.max(1));
 	}
 
 	@Override
@@ -115,17 +115,17 @@ public class SwingThresholdFigure extends AbstractAttributedFigure implements
 
 	@Override
 	public Double getStartPoint() {
-		return new Double(imgPlus.min(0), imgPlus.min(1));
+		return new Double(dataset.min(0), dataset.min(1));
 	}
 
 	@Override
 	public Double getEndPoint() {
-		return new Double(imgPlus.max(0), imgPlus.max(1));
+		return new Double(dataset.max(0), dataset.max(1));
 	}
 	
 	@Override
 	public Rectangle2D.Double getDrawingArea() {
-		return new Rectangle2D.Double(0, 0, imgPlus.max(0), imgPlus.max(1));
+		return new Rectangle2D.Double(0, 0, dataset.max(0), dataset.max(1));
 	}
 	
 	@Override

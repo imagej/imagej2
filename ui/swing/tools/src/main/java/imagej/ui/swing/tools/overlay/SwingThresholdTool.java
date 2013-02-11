@@ -89,7 +89,7 @@ public class SwingThresholdTool extends
 		Dataset ds = dispServ.getActiveDataset(display);
 		if (ds == null) return null;
 		SwingThresholdFigure figure =
-			new SwingThresholdFigure(display, ds.getImgPlus(), overlay);
+			new SwingThresholdFigure(display, ds, overlay);
 		overlay.setFigure(figure);
 		return figure;
 	}

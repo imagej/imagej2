@@ -37,7 +37,9 @@ package imagej.data.overlay;
 
 import imagej.ImageJ;
 import imagej.data.Dataset;
+import imagej.data.event.DatasetRestructuredEvent;
 import imagej.display.Displayable;
+import imagej.event.EventHandler;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 import net.imglib2.img.ImgPlus;
@@ -59,21 +61,22 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Barry DeZonia
  */
-public class ThresholdOverlay extends AbstractOverlay {
+public class ThresholdOverlay extends AbstractOverlay
+{
 
 	// -- instance variables --
 
 	private final Dataset dataset;
-	private final Function<long[], RealType<?>> function;
-	private final RealType<?> variable;
+	private Function<long[], RealType<?>> function;
+	private RealType<?> variable;
 	private Displayable figure;
-	private final ConditionalPointSet pointsLess;
-	private final ConditionalPointSet pointsGreater;
-	private final ConditionalPointSet pointsWithin;
-	private final FunctionLessCondition<? extends RealType<?>> conditionLess;
-	private final FunctionGreaterCondition<? extends RealType<?>> conditionGreater;
-	private final WithinRangeCondition<? extends RealType<?>> conditionWithin;
-	private final RegionOfInterest regionAdapter;
+	private ConditionalPointSet pointsLess;
+	private ConditionalPointSet pointsGreater;
+	private ConditionalPointSet pointsWithin;
+	private FunctionLessCondition<? extends RealType<?>> conditionLess;
+	private FunctionGreaterCondition<? extends RealType<?>> conditionGreater;
+	private WithinRangeCondition<? extends RealType<?>> conditionWithin;
+	private RegionOfInterest regionAdapter;
 	private ColorRGB colorLess;
 	private ColorRGB colorGreater;
 
@@ -83,38 +86,13 @@ public class ThresholdOverlay extends AbstractOverlay {
 	 * Construct a {@link ThresholdOverlay} on a {@link Dataset} given an
 	 * {@link ImageJ} context.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ThresholdOverlay(ImageJ context, Dataset dataset)
 	{
 		setContext(context);
 		this.dataset = dataset;
-		ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
-		function = new RealImageFunction(imgPlus, imgPlus.firstElement());
-		variable = function.createOutput();
-		conditionWithin =
-			new WithinRangeCondition(function, Double.NEGATIVE_INFINITY,
-				Double.POSITIVE_INFINITY);
-		conditionLess =
-			new FunctionLessCondition(function, Double.POSITIVE_INFINITY);
-		conditionGreater =
-			new FunctionGreaterCondition(function, Double.NEGATIVE_INFINITY);
-		long[] dims = new long[imgPlus.numDimensions()];
-		imgPlus.dimensions(dims);
-		HyperVolumePointSet volume = new HyperVolumePointSet(dims);
-		pointsLess = new ConditionalPointSet(volume, conditionLess);
-		pointsGreater = new ConditionalPointSet(volume, conditionGreater);
-		pointsWithin = new ConditionalPointSet(volume, conditionWithin);
-		regionAdapter = new PointSetRegionOfInterest(pointsWithin);
-		figure = null;
-		updateName();
-		setAlpha(255);
-		setFillColor(Colors.RED);
-		setLineColor(Colors.RED);
-		setLineEndArrowStyle(ArrowStyle.NONE);
-		setLineStartArrowStyle(ArrowStyle.NONE);
-		setLineStyle(LineStyle.NONE);
-		setLineWidth(1);
-		initColors();
+		this.figure = null;
+		init(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+		initAttributes();
 		resetThreshold();
 	}
 	
@@ -428,17 +406,52 @@ public class ThresholdOverlay extends AbstractOverlay {
 		// do nothing - thresholds don't move though space
 	}
 
+	// -- Event handlers --
+
+	@EventHandler
+	public void onEvent(DatasetRestructuredEvent evt) {
+		if (evt.getObject() == dataset) {
+			init(getRangeMin(), getRangeMax());
+			rebuild();
+		}
+	}
+
 	// -- helpers --
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void init(double min, double max) {
+		ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
+		function = new RealImageFunction(imgPlus, imgPlus.firstElement());
+		variable = function.createOutput();
+		conditionWithin = new WithinRangeCondition(function, min, max);
+		conditionLess = new FunctionLessCondition(function, min);
+		conditionGreater = new FunctionGreaterCondition(function, max);
+		long[] dims = new long[imgPlus.numDimensions()];
+		imgPlus.dimensions(dims);
+		HyperVolumePointSet volume = new HyperVolumePointSet(dims);
+		pointsLess = new ConditionalPointSet(volume, conditionLess);
+		pointsGreater = new ConditionalPointSet(volume, conditionGreater);
+		pointsWithin = new ConditionalPointSet(volume, conditionWithin);
+		regionAdapter = new PointSetRegionOfInterest(pointsWithin);
+		updateName();
+	}
+
+	private void initAttributes() {
+		setAlpha(255);
+		setFillColor(Colors.RED);
+		setLineColor(Colors.RED);
+		setLineEndArrowStyle(ArrowStyle.NONE);
+		setLineStartArrowStyle(ArrowStyle.NONE);
+		setLineStyle(LineStyle.NONE);
+		setLineWidth(1);
+		setColorWithin(Colors.RED);
+		setColorLess(null);
+		setColorGreater(null);
+	}
 
 	private void updateName() {
 		setName("Threshold: " + conditionWithin.getMin() + " to " +
 			conditionWithin.getMax());
-	}
-
-	private void initColors() {
-		setColorWithin(Colors.RED);
-		setColorLess(null);
-		setColorGreater(null);
 	}
 
 	// TODO - move this to OPS. Or use UnaryFunctionalRelations instead.

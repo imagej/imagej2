@@ -54,16 +54,16 @@ import net.imglib2.type.numeric.RealType;
 
 // TODO All the problems with thresh overlay code at the moment:
 //
-// 1) delete button takes away thresh but cannot get it back without exiting
-//    dialog and reentering
-// 2) some methods here are unimplemented: autothresh, changePixels, stack hist
-// 3) stack histogram: don't yet know what this is to do
-// 4) we will have to display a histogram and thresh lines like IJ1 does
-// 6) overlay manager threshold name does not update immediately
-// 7) overlay not selectable in view but only via ovr mgr
-// 8) do thresh overlays kill graphics of other overlays? It seems it may. Might
-//    need to draw in a certain order
-// 9) dark background: does not update the thresh values within the dialog
+//  1) delete button takes away thresh but cannot get it back without exiting
+//     dialog and reentering
+//  2) some methods here are unimplemented: autothresh, changePixels, stack hist
+//  3) stack histogram: don't yet know what this is to do
+//  4) we will have to display a histogram and thresh lines like IJ1 does
+//  6) overlay manager threshold name does not update immediately
+//  7) overlay not selectable in view but only via ovr mgr
+//  8) do thresh overlays kill graphics of other overlays? It seems it may.
+//     Might need to draw in a certain order
+//  9) dark background: does not update the thresh values within the dialog
 // 10) need to discover autothresh methods, populate list, and make autothresh
 //     method call the one selected by user.
 // 11) update commands that need a threshold to use them now: Convert To Mask?
@@ -74,6 +74,16 @@ import net.imglib2.type.numeric.RealType;
 // 14) this plugin written to work with one display. So if you leave it up and
 //     switch images this plugin won't immediately work with it. see what IJ1
 //     does.
+// 15) Note that IJ1 colorizes the threshold by changing the LUT. We could do
+//     this and simplify the ThresholdOverlay api a bit. We would remove the
+//     drawing code from SwingThresholdFigure. However in IJ1 changing the LUT
+//     kills the display of the threshold and in ours it doesn't. Switching the
+//     LUT is super fast.
+// 16) Note we need to capture the case in IJ2 where someone calls
+//     dataset.setImgPlus() such that any existing ThresholdOverlay
+//     automatically updates. I have some code in place in but it does not seem
+//     to work. To test threshold an image and then crop and threshold does not
+//     draw. Maybe the SwingThresholdFigure is getting out of sync. Fix this. 
 
 /**
  * @author Barry DeZonia
