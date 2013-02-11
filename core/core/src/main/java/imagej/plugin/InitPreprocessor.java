@@ -37,14 +37,11 @@ package imagej.plugin;
 
 import imagej.Priority;
 import imagej.module.Module;
-import imagej.module.ModuleItem;
 
 /**
  * A preprocessor plugin that populates initial parameter values.
  * <p>
- * First, the {@link Module}'s global initializer method is called (i.e.,
- * {@link Module#initialize()}), followed by the individual {@link ModuleItem}
- * initializer methods (i.e., {@link ModuleItem#initialize(Module)}).
+ * This is done via a single call to {@link Module#initialize()}.
  * </p>
  * 
  * @author Curtis Rueden
@@ -57,9 +54,6 @@ public class InitPreprocessor extends AbstractPreprocessorPlugin {
 	@Override
 	public void process(final Module module) {
 		module.initialize();
-		for (final ModuleItem<?> item : module.getInfo().inputs()) {
-			item.initialize(module);
-		}
 	}
 
 }

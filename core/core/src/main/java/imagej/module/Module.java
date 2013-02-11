@@ -75,9 +75,15 @@ public interface Module extends Runnable {
 	void cancel();
 
 	/**
-	 * Invokes this module's initializer function, if any.
+	 * Initializes the module.
+	 * <p>
+	 * First, the module's global initializer method (if any) is called, followed
+	 * by each individual {@link ModuleItem} initializer method (i.e.,
+	 * {@link ModuleItem#initialize(Module)}).
+	 * </p>
 	 * 
 	 * @see ModuleInfo#getInitializer()
+	 * @see ModuleItem#initialize(Module)
 	 */
 	void initialize();
 

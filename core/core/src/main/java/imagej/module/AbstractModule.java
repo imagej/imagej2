@@ -77,12 +77,18 @@ public abstract class AbstractModule implements Module {
 
 	@Override
 	public void initialize() {
+		// execute global module initializer
 		final Object delegateObject = getDelegateObject();
 		if (initializerRef == null) {
 			final String initializer = getInfo().getInitializer();
 			initializerRef = new MethodRef(delegateObject.getClass(), initializer);
 		}
 		initializerRef.execute(delegateObject);
+
+		// execute individual module item initializers
+		for (final ModuleItem<?> item : getInfo().inputs()) {
+			item.initialize(this);
+		}
 	}
 
 	@Override
