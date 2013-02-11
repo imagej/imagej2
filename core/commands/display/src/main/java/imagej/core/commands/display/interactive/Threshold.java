@@ -54,8 +54,6 @@ import net.imglib2.type.numeric.RealType;
 
 // TODO All the problems with thresh overlay code at the moment:
 //
-//  1) delete button takes away thresh but cannot get it back without exiting
-//     dialog and reentering
 //  2) some methods here are unimplemented: autothresh, changePixels, stack hist
 //  3) stack histogram: don't yet know what this is to do
 //  4) we will have to display a histogram and thresh lines like IJ1 does
@@ -160,7 +158,7 @@ public class Threshold extends InteractiveCommand {
 		// nothing to do
 	}
 
-	// -- callbacks --
+	// -- initializers --
 
 	@SuppressWarnings("unchecked")
 	protected void initValues() {
@@ -262,7 +260,7 @@ public class Threshold extends InteractiveCommand {
 			overlay.setColorLess(Colors.BLUE);
 			overlay.setColorGreater(Colors.GREEN);
 		}
-		else { // ONE_COLOR
+		else { // equals RED
 			overlay.setColorWithin(Colors.RED);
 			overlay.setColorLess(null);
 			overlay.setColorGreater(null);
