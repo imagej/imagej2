@@ -553,14 +553,17 @@ static const char *absolute_java_home;
 static const char *relative_java_home;
 static const char *default_library_path;
 static const char *library_path;
+static const char *legacy_ij1_class = "ij.ImageJ";
 static const char *default_fiji1_class = "fiji.Main";
 static const char *default_main_class = "imagej.Main";
 static int legacy_mode;
 static int retrotranslator;
+static int verbose;
 
 static int is_default_ij1_class(const char *name)
 {
-	return name && (!strcmp(name, default_fiji1_class) || !strcmp(name, "ij.ImageJ"));
+	return name && (!strcmp(name, default_fiji1_class) ||
+			!strcmp(name, legacy_ij1_class));
 }
 
 /* Dynamic library loading stuff */
@@ -935,8 +938,15 @@ static const char *get_jre_home(void)
 	if (jre)
 		return jre->buffer;
 
-	if (!result)
-		return NULL;
+	if (!result) {
+		/* ImageJ 1.x ships the JRE in <ij.dir>/jre/ */
+		const char *ij1_jre = ij_path("jre");
+		if (!dir_exists(ij1_jre))
+			return NULL;
+		jre = string_initf("%s", ij1_jre);
+		return jre->buffer;
+	}
+
 	len = strlen(result);
 	if (len > 4 && !strcmp(result + len - 4, "/jre"))
 		return result;
@@ -1305,7 +1315,8 @@ static void maybe_reexec_with_correct_lib_path(struct string *java_library_path)
 		return;
 
 	setenv_or_exit("LD_LIBRARY_PATH", java_library_path->buffer, 1);
-	error("Re-executing with correct library lookup path (%s)", java_library_path->buffer);
+	if (verbose)
+		error("Re-executing with correct library lookup path (%s)", java_library_path->buffer);
 	hide_splash();
 	execvp(main_argv_backup[0], main_argv_backup);
 	die("Could not re-exec with correct library lookup (%d: %s)!", errno, strerror(errno));
@@ -1610,7 +1621,7 @@ static int mkdir_p(const char *path)
 static char *find_jar(const char *jars_directory, const char *prefix)
 {
 	int prefix_length = strlen(prefix);
-	struct string *buffer = string_initf("%s", jars_directory);
+	struct string *buffer;
 	int length;
 	time_t mtime = 0;
 	DIR *directory = opendir(jars_directory);
@@ -1618,6 +1629,10 @@ static char *find_jar(const char *jars_directory, const char *prefix)
 	struct stat st;
 	char *result = NULL;
 
+	if (directory == NULL)
+		return NULL;
+
+	buffer = string_initf("%s", jars_directory);
 	length = buffer->length;
 	if (length == 0 || buffer->buffer[length - 1] != '/') {
 		string_add_char(buffer, '/');
@@ -1642,6 +1657,16 @@ static char *find_jar(const char *jars_directory, const char *prefix)
 	closedir(directory);
 	string_release(buffer);
 	return result;
+}
+
+static int has_jar(const char *jars_directory, const char *prefix)
+{
+	char *result = find_jar(jars_directory, prefix);
+
+	if (!result)
+		return 0;
+	free(result);
+	return 1;
 }
 
 static void initialize_ij_launcher_jar_path(void)
@@ -1964,10 +1989,10 @@ static int find_closing_quote(const char *s, char quote, int index, int len)
 
 static void add_options(struct options *options, const char *cmd_line, int for_ij)
 {
-	int len = strlen(cmd_line), i;
+	int len = strlen(cmd_line), i, cp_option = 0;
 	struct string *current = string_init(32);
 
-	for (i = 0; i < len; i++) {
+	for (i = 0; i <= len; i++) {
 		char c = cmd_line[i];
 		if (is_quote(c)) {
 			int i2 = find_closing_quote(cmd_line, c, i + 1, len);
@@ -1975,16 +2000,22 @@ static void add_options(struct options *options, const char *cmd_line, int for_i
 			i = i2;
 			continue;
 		}
-		if (c == ' ' || c == '\t' || c == '\n') {
+		if (!c || c == ' ' || c == '\t' || c == '\n') {
 			if (!current->length)
 				continue;
-			add_option_string(options, current, for_ij);
+			if (!strcmp(current->buffer, "-cp"))
+				cp_option = 1;
+			else if (cp_option) {
+				if (strcmp(current->buffer, "ij.jar"))
+					add_launcher_option(options,
+						"--ijcp", current->buffer);
+				cp_option = 0;
+			} else
+				add_option_string(options, current, for_ij);
 			string_set_length(current, 0);
 		} else
 			string_add_char(current, c);
 	}
-	if (current->length)
-		add_option_string(options, current, for_ij);
 
 	string_release(current);
 }
@@ -2685,6 +2716,8 @@ static void __attribute__((__noreturn__)) usage(void)
 		"\tshow this help\n",
 		"--dry-run\n"
 		"\tshow the command line, but do not run anything\n"
+		"--verbose, -v\n"
+		"\tverbose output\n"
 		"--system\n"
 		"\tdo not try to run bundled Java\n"
 		"--java-home <path>\n"
@@ -2867,7 +2900,8 @@ static void try_with_less_memory(long megabytes)
 	}
 	new_argv[j] = NULL;
 
-	error("Trying with a smaller heap: %s", buffer->buffer);
+	if (verbose)
+		error("Trying with a smaller heap: %s", buffer->buffer);
 
 	hide_splash();
 
@@ -2976,6 +3010,8 @@ static int handle_one_option2(int *i, int argc, const char **argv)
 {
 	if (!strcmp(argv[*i], "--dry-run"))
 		options.debug++;
+	else if (!strcmp(argv[*i], "--verbose") || !strcmp(argv[*i], "-n"))
+		verbose++;
 	else if (handle_one_option(i, argv, "--java-home", &arg)) {
 		absolute_java_home = xstrdup(arg.buffer);
 		setenv_or_exit("JAVA_HOME", xstrdup(arg.buffer), 1);
@@ -3405,8 +3441,14 @@ static void parse_command_line(void)
 		add_launcher_option(&options, "-ijjarpath", "jars");
 		add_launcher_option(&options, "-ijjarpath", "plugins");
 	}
-	else if (is_default_ij1_class(main_class))
-		add_launcher_option(&options, "-ijclasspath", "jars/ij.jar");
+	else if (is_default_ij1_class(main_class)) {
+		char *ij1_jar = find_jar(ij_path("jars/"), "ij");
+		if (!ij1_jar)
+			ij1_jar = find_jar(ij_dir, "ij");
+		if (!ij1_jar)
+			die("Could not find ij.jar");
+		add_launcher_option(&options, "-classpath", ij1_jar);
+	}
 
 	if (default_arguments->length)
 		add_options(&options, default_arguments->buffer, 1);
@@ -3491,6 +3533,9 @@ static void parse_command_line(void)
 		die ("Too many properties: %d", i);
 
 	keep_only_one_memory_option(&options.java_options);
+
+	if (ij_launcher_jar == NULL)
+		skip_class_launcher = 1;
 
 	if (!skip_class_launcher && strcmp(main_class, "org.apache.tools.ant.Main")) {
 		struct string *string = string_initf("-Djava.class.path=%s", ij_launcher_jar);
@@ -4393,12 +4438,12 @@ int main(int argc, char **argv, char **e)
 	main_argc_backup = argc;
 
 	/* For now, launch Fiji1 when fiji-compat.jar was found */
-	{
-		char *fiji_compat_jar = find_jar(ij_path("jars/"), "fiji-compat");
-		if (fiji_compat_jar) {
-			free(fiji_compat_jar);
-			legacy_mode = 1;
-		}
+	if (has_jar(ij_path("jars/"), "fiji-compat"))
+		legacy_mode = 1;
+	/* If no ImageJ2 was found, try to fall back to ImageJ 1.x */
+	else if (!has_jar(ij_path("jars/"), "ij-app")) {
+		legacy_mode = 1;
+		main_class = legacy_ij1_class;
 	}
 
 	initialize_ij_launcher_jar_path();
