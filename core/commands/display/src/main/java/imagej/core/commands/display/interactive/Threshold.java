@@ -68,18 +68,10 @@ import net.imglib2.type.numeric.RealType;
 //     method call the one selected by user.
 // 11) update commands that need a threshold to use them now: Convert To Mask?
 // 12) dark background - make code exactly like IJ1
-// 13) default thresh range might not be a setting. rather default to min and
-//     half max. This would slow down the creation of threshold overlays in
-//     general. Might not want to do this.
 // 14) this plugin written to work with one display. So if you leave it up and
 //     switch images this plugin won't immediately work with it. see what IJ1
 //     does.
-// 15) Note that IJ1 colorizes the threshold by changing the LUT. We could do
-//     this and simplify the ThresholdOverlay api a bit. We would remove the
-//     drawing code from SwingThresholdFigure. However in IJ1 changing the LUT
-//     kills the display of the threshold and in ours it doesn't. Switching the
-//     LUT is super fast.
-// 16) Note we need to capture the case in IJ2 where someone calls
+// 15) Note we need to capture the case in IJ2 where someone calls
 //     dataset.setImgPlus() such that any existing ThresholdOverlay
 //     automatically updates. I have some code in place in but it does not seem
 //     to work. To test threshold an image and then crop and threshold does not
@@ -182,6 +174,8 @@ public class Threshold extends InteractiveCommand {
 		// the widget style for min and max here below.
 
 		// set min range widget
+		// TODO declare as an @Parameter and just set ranges here. Tried to use CTRs
+		// code that did this but spinner wouldn't call rangeChanged when clicked.
 		DefaultModuleItem<Double> minItem =
 			new DefaultModuleItem<Double>(getInfo(), "Minimum", Double.class);
 		minItem.setMinimumValue(dataMin);
@@ -195,6 +189,8 @@ public class Threshold extends InteractiveCommand {
 		getInfo().addInput(minItem);
 
 		// set max range widget
+		// TODO declare as an @Parameter and just set ranges here. Tried to use CTRs
+		// code that did this but spinner wouldn't call rangeChanged when clicked.
 		DefaultModuleItem<Double> maxItem =
 			new DefaultModuleItem<Double>(getInfo(), "Maximum", Double.class);
 		maxItem.setMinimumValue(dataMin);
