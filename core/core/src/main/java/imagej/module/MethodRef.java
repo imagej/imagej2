@@ -96,7 +96,8 @@ public class MethodRef implements Validated {
 				break;
 			}
 		}
-		final String problem = "Method not found: " + clazz.getName() + "#" + methodName;
+		final String problem =
+			"Method not found: " + clazz.getName() + "#" + methodName;
 		problems.add(new ValidityProblem(problem));
 		return null;
 	}
