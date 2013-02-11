@@ -116,6 +116,15 @@ public class ThresholdService extends AbstractService
 			overlay = new ThresholdOverlay(getContext(), dataset);
 			map.put(display, overlay);
 			display.display(overlay);
+			// NOTE - the call on prev line did a rebuild() but not necessarily an
+			// update(). So graphics might not be up to date! This may be a bug in
+			// display code. Anyhow this next line makes sure that the display is
+			// updated. This fixes the problem where you adjust threshold and in
+			// dialog you delete the thresh and then go into min or max field and make
+			// a change. Correct behavior is for new thresh to immediately appear.
+			// Without this update() call the thresh overlay exists but doesn't get
+			// displayed.
+			display.update(); // TEMP HACK
 		}
 		return overlay;
 	}
