@@ -45,6 +45,8 @@ import imagej.util.Colors;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.AxisType;
 import net.imglib2.ops.condition.Condition;
+import net.imglib2.ops.condition.FunctionGreaterCondition;
+import net.imglib2.ops.condition.FunctionLessCondition;
 import net.imglib2.ops.condition.WithinRangeCondition;
 import net.imglib2.ops.function.Function;
 import net.imglib2.ops.function.real.RealImageFunction;
@@ -411,7 +413,7 @@ public class ThresholdOverlay extends AbstractOverlay
 	@EventHandler
 	public void onEvent(DatasetRestructuredEvent evt) {
 		if (evt.getObject() == dataset) {
-			init(getRangeMin(), getRangeMax());
+			reinit();
 			rebuild();
 		}
 	}
@@ -436,6 +438,30 @@ public class ThresholdOverlay extends AbstractOverlay
 		updateName();
 	}
 
+	// Updates the guts of the various members of this class to reflect a changed
+	// Dataset. It makes sure that anyone using references from before should be
+	// fine (as long as not concurrently accessing while changes made).
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void reinit() {
+		ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
+		function = new RealImageFunction(imgPlus, imgPlus.firstElement());
+		conditionWithin.setFunction( (Function) function);
+		conditionLess.setFunction( (Function) function);
+		conditionGreater.setFunction( (Function) function);
+		long[] dims = new long[imgPlus.numDimensions()];
+		imgPlus.dimensions(dims);
+		HyperVolumePointSet volume = new HyperVolumePointSet(dims);
+		pointsWithin.setPointSet(volume);
+		pointsLess.setPointSet(volume);
+		pointsGreater.setPointSet(volume);
+		pointsWithin.setCondition(conditionWithin);
+		pointsLess.setCondition(conditionLess);
+		pointsGreater.setCondition(conditionGreater);
+		// regionAdapter does not need any changes
+		updateName();
+	}
+
 	private void initAttributes() {
 		setAlpha(255);
 		setFillColor(Colors.RED);
@@ -454,153 +480,4 @@ public class ThresholdOverlay extends AbstractOverlay
 			conditionWithin.getMax());
 	}
 
-	// TODO - move this to OPS. Or use UnaryFunctionalRelations instead.
-
-	private abstract class FunctionCondition<T extends RealType<T>> implements
-		Condition<long[]>
-	{
-
-		protected final Function<long[], T> func;
-		protected double value;
-		private final T var;
-
-		abstract boolean relationTrue(double fVal);
-
-		public FunctionCondition(Function<long[], T> func, double value) {
-			this.func = func;
-			this.value = value;
-			var = func.createOutput();
-		}
-
-		@Override
-		public boolean isTrue(long[] val) {
-			func.compute(val, var);
-			return relationTrue(var.getRealDouble());
-		}
-
-		public double getValue() {
-			return value;
-		}
-
-		public void setValue(double value) {
-			this.value = value;
-		}
-
-	}
-
-	private class FunctionLessCondition<T extends RealType<T>> extends
-		FunctionCondition<T>
-	{
-
-		public FunctionLessCondition(Function<long[], T> func, double value) {
-			super(func, value);
-		}
-
-		@Override
-		public FunctionLessCondition<T> copy() {
-			return new FunctionLessCondition<T>(func.copy(), value);
-		}
-
-		@Override
-		boolean relationTrue(double fVal) {
-			return fVal < value;
-		}
-	}
-
-	private class FunctionLessEqualCondition<T extends RealType<T>> extends
-		FunctionCondition<T>
-	{
-
-		public FunctionLessEqualCondition(Function<long[], T> func, double value)
-		{
-			super(func, value);
-		}
-
-		@Override
-		public FunctionLessEqualCondition<T> copy() {
-			return new FunctionLessEqualCondition<T>(func.copy(), value);
-		}
-
-		@Override
-		boolean relationTrue(double fVal) {
-			return fVal <= value;
-		}
-	}
-
-	private class FunctionGreaterCondition<T extends RealType<T>> extends
-		FunctionCondition<T>
-	{
-
-		public FunctionGreaterCondition(Function<long[], T> func, double value) {
-			super(func, value);
-		}
-
-		@Override
-		public FunctionGreaterCondition<T> copy() {
-			return new FunctionGreaterCondition<T>(func.copy(), value);
-		}
-
-		@Override
-		boolean relationTrue(double fVal) {
-			return fVal > value;
-		}
-	}
-
-	private class FunctionGreaterEqualCondition<T extends RealType<T>> extends
-		FunctionCondition<T>
-	{
-
-		public FunctionGreaterEqualCondition(Function<long[], T> func, double value)
-		{
-			super(func, value);
-		}
-
-		@Override
-		public FunctionGreaterEqualCondition<T> copy() {
-			return new FunctionGreaterEqualCondition<T>(func.copy(), value);
-		}
-
-		@Override
-		boolean relationTrue(double fVal) {
-			return fVal >= value;
-		}
-	}
-
-	private class FunctionEqualCondition<T extends RealType<T>> extends
-		FunctionCondition<T>
-	{
-
-		public FunctionEqualCondition(Function<long[], T> func, double value) {
-			super(func, value);
-		}
-
-		@Override
-		public FunctionEqualCondition<T> copy() {
-			return new FunctionEqualCondition<T>(func.copy(), value);
-		}
-
-		@Override
-		boolean relationTrue(double fVal) {
-			return fVal == value;
-		}
-	}
-
-	private class FunctionNotEqualCondition<T extends RealType<T>> extends
-		FunctionCondition<T>
-	{
-
-		public FunctionNotEqualCondition(Function<long[], T> func, double value) {
-			super(func, value);
-		}
-
-		@Override
-		public FunctionNotEqualCondition<T> copy() {
-			return new FunctionNotEqualCondition<T>(func.copy(), value);
-		}
-
-		@Override
-		boolean relationTrue(double fVal) {
-			return fVal != value;
-		}
-	}
 }
