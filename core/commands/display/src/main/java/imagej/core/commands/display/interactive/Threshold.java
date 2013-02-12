@@ -109,7 +109,7 @@ public class Threshold extends InteractiveCommand {
 	@Parameter(label = "Display type",
 		choices = { RED, BLACK_WHITE, OVER_UNDER },
 		callback = "displayTypeChanged", persist = false)
-	private String displayType;
+	private String displayType = RED;
 
 	@Parameter(label = "Auto", callback = "autoThreshold")
 	private Button auto;
