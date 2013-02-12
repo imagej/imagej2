@@ -38,8 +38,10 @@ package imagej.data.overlay;
 import imagej.ImageJ;
 import imagej.data.Dataset;
 import imagej.data.event.DatasetRestructuredEvent;
+import imagej.data.event.OverlayUpdatedEvent;
 import imagej.display.Displayable;
 import imagej.event.EventHandler;
+import imagej.event.EventService;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 import net.imglib2.img.ImgPlus;
@@ -97,7 +99,7 @@ public class ThresholdOverlay extends AbstractOverlay
 		init(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 		initAttributes();
 		resetThreshold();
-		setDefaultName();
+		setDefaultName(false);
 	}
 	
 	/**
@@ -133,6 +135,8 @@ public class ThresholdOverlay extends AbstractOverlay
 	 * the overlay is updated.
 	 */
 	public void setRange(double min, double max) {
+		boolean changed =
+			(min != conditionWithin.getMin() || max != conditionWithin.getMax());
 		conditionWithin.setMin(min);
 		conditionWithin.setMax(max);
 		conditionLess.setValue(min);
@@ -141,7 +145,7 @@ public class ThresholdOverlay extends AbstractOverlay
 		pointsGreater.setCondition(conditionGreater);
 		pointsLess.setCondition(conditionLess);
 		pointsWithin.setCondition(conditionWithin);
-		setDefaultName();
+		setDefaultName(changed);
 	}
 
 	/**
@@ -444,7 +448,7 @@ public class ThresholdOverlay extends AbstractOverlay
 		pointsGreater = new ConditionalPointSet(volume, conditionGreater);
 		pointsWithin = new ConditionalPointSet(volume, conditionWithin);
 		regionAdapter = new PointSetRegionOfInterest(pointsWithin);
-		setDefaultName();
+		setDefaultName(false);
 	}
 
 	// Updates the guts of the various members of this class to reflect a changed
@@ -468,7 +472,7 @@ public class ThresholdOverlay extends AbstractOverlay
 		pointsLess.setCondition(conditionLess);
 		pointsGreater.setCondition(conditionGreater);
 		// regionAdapter does not need any changes
-		setDefaultName();
+		setDefaultName(false);
 	}
 
 	private void initAttributes() {
@@ -484,10 +488,14 @@ public class ThresholdOverlay extends AbstractOverlay
 		setColorGreater(null);
 	}
 
-	private void setDefaultName() {
+	private void setDefaultName(boolean emitEvent) {
 		defaultName =
 			"Threshold: " + conditionWithin.getMin() + " to " +
 				conditionWithin.getMax();
+		if (emitEvent) {
+			OverlayUpdatedEvent event = new OverlayUpdatedEvent(this);
+			getContext().getService(EventService.class).publish(event);
+		}
 	}
 
 }
