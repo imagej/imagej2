@@ -39,6 +39,7 @@ import imagej.AbstractContextual;
 import imagej.event.EventService;
 import imagej.menu.MenuService;
 import imagej.platform.event.AppMenusCreatedEvent;
+import imagej.ui.UIService;
 import imagej.ui.pivot.menu.PivotMenuCreator;
 
 import org.apache.pivot.collections.Map;
@@ -59,6 +60,7 @@ public class PivotApplication extends AbstractContextual implements Application
 
 	private EventService eventService;
 	private MenuService menuService;
+	private UIService uiService;
 
 	private PivotApplicationFrame frame;
 	private PivotToolBar toolBar;
@@ -71,9 +73,10 @@ public class PivotApplication extends AbstractContextual implements Application
 	public void initialize() {
 		eventService = getContext().getService(EventService.class);
 		menuService = getContext().getService(MenuService.class);
+		uiService = getContext().getService(UIService.class);
 
 		frame = new PivotApplicationFrame();
-		toolBar = new PivotToolBar();
+		toolBar = new PivotToolBar(uiService);
 		statusBar = new PivotStatusBar(eventService);
 
 		contentPane = new BoxPane();

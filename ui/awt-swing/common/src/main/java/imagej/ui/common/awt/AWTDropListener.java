@@ -277,7 +277,7 @@ public class AWTDropListener implements DropTargetListener {
 
 		private void importLut(final String filename) {
 			final List<ImageDisplay> imageDisplays =
-				ImageJ.get(ImageDisplayService.class).getImageDisplays();
+				uiService.getImageDisplayService().getImageDisplays();
 			if (imageDisplays.size() == 0) {
 				createSmallRampedImage(filename);
 				// TODO TEMP HACK pause long enough so active image is set
@@ -291,7 +291,7 @@ public class AWTDropListener implements DropTargetListener {
 
 		private void applyLutToActiveImage(final String filename) {
 			final ImageDisplay display =
-				ImageJ.get(ImageDisplayService.class).getActiveImageDisplay();
+				uiService.getImageDisplayService().getActiveImageDisplay();
 			final ColorTable8 colorTable = loadColorTable(filename);
 			final DatasetView view = (DatasetView) display.getActiveView();
 			// TODO - broken - THESE NEXT TWO LINES SEEM TO HAVE NO EFFECT

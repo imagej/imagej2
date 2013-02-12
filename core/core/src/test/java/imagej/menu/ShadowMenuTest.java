@@ -138,7 +138,7 @@ public class ShadowMenuTest {
 	// -- Helper methods --
 
 	private ShadowMenu createShadowMenu() {
-		final ImageJ context = ImageJ.createEmptyContext();
+		final ImageJ context = new ImageJ(true);
 
 		final ArrayList<ModuleInfo> modules = new ArrayList<ModuleInfo>();
 		modules.add(createModuleInfo("Edit>Copy"));

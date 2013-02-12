@@ -35,9 +35,7 @@
 
 package imagej.ui.swing.mdi;
 
-import imagej.ImageJ;
 import imagej.ui.DialogPrompt;
-import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 import imagej.ui.swing.SwingApplicationFrame;
 
@@ -57,10 +55,10 @@ public class SwingMdiDialogPrompt implements DialogPrompt {
 	JInternalFrame dialog;
 	JOptionPane pane;
 
-	public SwingMdiDialogPrompt(final String message, final String title,
-		final MessageType messageType, final OptionType optionType)
+	public SwingMdiDialogPrompt(final UserInterface ui, final String message,
+		final String title, final MessageType messageType,
+		final OptionType optionType)
 	{
-		final UserInterface ui = ImageJ.get(UIService.class).getDefaultUI();
 		final SwingApplicationFrame appFrame =
 			(SwingApplicationFrame) ui.getApplicationFrame();
 		final JMDIDesktopPane desk = (JMDIDesktopPane) ui.getDesktop();

@@ -35,7 +35,6 @@
 
 package imagej;
 
-import imagej.event.ImageJEvent;
 import imagej.plugin.PluginIndex;
 import imagej.service.Service;
 import imagej.service.ServiceHelper;
@@ -63,81 +62,7 @@ public class ImageJ {
 	public static final String VERSION =
 		POM.getPOM(ImageJ.class, "net.imagej", "ij-core").getVersion();
 
-	/** @deprecated Use {@link #ImageJ()} instead. */
-	@Deprecated
-	public static ImageJ createContext() {
-		return new ImageJ();
-	}
-
-	/** @deprecated Use {@code new ImageJ(true)} instead. */
-	@Deprecated
-	public static ImageJ createEmptyContext() {
-		return new ImageJ(true);
-	}
-
-	/** @deprecated Use {@link #ImageJ(Class...)} instead. */
-	@Deprecated
-	public static ImageJ createContext(
-		final Class<? extends Service> serviceClass)
-	{
-		return new ImageJ(serviceClass);
-	}
-
-	/** @deprecated Use {@link #ImageJ(Class...)} instead. */
-	@Deprecated
-	public static ImageJ createContext(
-		final Class<? extends Service>... serviceClasses)
-	{
-		return new ImageJ(serviceClasses);
-	}
-
-	// TODO - remove this!
-	private static ImageJ staticContext;
-
-	/** @deprecated Use {@link #ImageJ(Collection)} instead. */
-	@Deprecated
-	public static ImageJ createContext(
-		final Collection<Class<? extends Service>> serviceClasses)
-	{
-		return new ImageJ(serviceClasses);
-	}
-
-	/**
-	 * Gets the static ImageJ application context.
-	 * 
-	 * @deprecated Avoid using this method. If you are writing a command, you can
-	 *             declare the {@link ImageJ} or {@link Service} you want as a
-	 *             parameter. If you are writing a tool, you can obtain the
-	 *             {@link ImageJ} context by calling
-	 *             {@link ImageJEvent#getContext()}, and then asking that context
-	 *             for needed {@link Service} instances by calling
-	 *             {@link ImageJ#getService(Class)}. See the classes in
-	 *             {@code core/commands} and {@code core/tools} for many examples.
-	 */
-	@Deprecated
-	public static ImageJ getContext() {
-		return staticContext;
-	}
-
-	/**
-	 * Gets the service of the given class for the current ImageJ application
-	 * context.
-	 * 
-	 * @deprecated Avoid using this method. If you are writing a command, you can
-	 *             annotate the {@link ImageJ} or {@link Service} you want as a
-	 *             parameter. If you are writing a tool, you can obtain the
-	 *             {@link ImageJ} context by calling
-	 *             {@link ImageJEvent#getContext()}, and then asking that context
-	 *             for needed {@link Service} instances by calling
-	 *             {@link ImageJ#getService(Class)}. See the classes in
-	 *             {@code core/commands} and {@code core/tools} for many examples.
-	 */
-	@Deprecated
-	public static <S extends Service> S get(final Class<S> serviceClass) {
-		final ImageJ context = getContext();
-		if (context == null) return null; // no context
-		return context.getService(serviceClass);
-	}
+	private static boolean sezpozNeedsToRun = true;
 
 	// -- Fields --
 
@@ -207,7 +132,7 @@ public class ImageJ {
 	 *          {@link Service} interface (e.g., {@code DisplayService.class}).
 	 */
 	public ImageJ(final Collection<Class<? extends Service>> serviceClasses) {
-		if (staticContext == null) {
+		if (sezpozNeedsToRun) {
 			// First context! Check that annotations were generated properly.
 			try {
 				if (!CheckSezpoz.check(false)) {
@@ -219,8 +144,8 @@ public class ImageJ {
 			catch (final IOException e) {
 				e.printStackTrace();
 			}
+			sezpozNeedsToRun = false;
 		}
-		staticContext = this; // TEMP
 
 		serviceIndex = new ServiceIndex();
 
