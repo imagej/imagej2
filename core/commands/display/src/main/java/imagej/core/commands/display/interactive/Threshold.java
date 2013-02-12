@@ -69,11 +69,6 @@ import net.imglib2.type.numeric.RealType;
 // 14) this plugin written to work with one display. So if you leave it up and
 //     switch images this plugin won't immediately work with it. see what IJ1
 //     does.
-// 15) Note we need to capture the case in IJ2 where someone calls
-//     dataset.setImgPlus() such that any existing ThresholdOverlay
-//     automatically updates. I have some code in place in but it does not seem
-//     to work. To test threshold an image and then crop and threshold does not
-//     draw. Maybe the SwingThresholdFigure is getting out of sync. Fix this. 
 
 /**
  * @author Barry DeZonia
