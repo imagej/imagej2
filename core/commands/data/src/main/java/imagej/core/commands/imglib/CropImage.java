@@ -41,6 +41,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
+import imagej.data.overlay.ThresholdOverlay;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.plugin.Menu;
@@ -118,7 +119,9 @@ public class CropImage extends ContextCommand {
 		List<Overlay> newOverlays = new ArrayList<Overlay>();
 		for (final Overlay overlay : overlayService.getOverlays(display)) {
 			Overlay newOverlay = null;
-			if (overlayContained(overlay, bounds)) {
+			if (!(overlay instanceof ThresholdOverlay) &&
+				overlayContained(overlay, bounds))
+			{
 				// can't just move() the overlay. JHotDraw gets confused. So delete all
 				// overlays at current position and add back copies translated to new
 				// origin
@@ -126,7 +129,9 @@ public class CropImage extends ContextCommand {
 				newOverlay.move(toNewOrigin);
 				newOverlays.add(newOverlay);
 			}
-			overlayService.removeOverlay(display, overlay);
+			if (!(overlay instanceof ThresholdOverlay)) {
+				overlayService.removeOverlay(display, overlay);
+			}
 		}
 
 		// BDZ - HACK - FIXME
