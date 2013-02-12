@@ -35,7 +35,7 @@
 
 package imagej.updater.core;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.log.LogService;
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Progress;
@@ -78,7 +78,7 @@ public class FilesUploader {
 	private boolean loggedIn;
 
 	private static UploaderService createUploaderService() {
-		final ImageJ context = new ImageJ(UploaderService.class);
+		final Context context = new Context(UploaderService.class);
 		return context.getService(UploaderService.class);
 	}
 

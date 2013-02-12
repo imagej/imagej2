@@ -36,7 +36,7 @@
 package imagej.data;
 
 import imagej.AbstractContextual;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.event.DataCreatedEvent;
 import imagej.data.event.DataDeletedEvent;
 import imagej.data.overlay.Overlay;
@@ -71,7 +71,7 @@ public abstract class AbstractData extends AbstractContextual implements Data,
 	public AbstractData() {
 	}
 	
-	public AbstractData(final ImageJ context) {
+	public AbstractData(final Context context) {
 		setContext(context);
 	}
 
@@ -212,7 +212,7 @@ public abstract class AbstractData extends AbstractContextual implements Data,
 	// -- Internal methods --
 
 	protected void publish(final ImageJEvent event) {
-		final ImageJ context = getContext();
+		final Context context = getContext();
 		if (context == null) return;
 		final EventService eventService = context.getService(EventService.class);
 		if (eventService == null) return;

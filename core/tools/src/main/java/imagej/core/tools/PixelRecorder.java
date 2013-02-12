@@ -35,7 +35,7 @@
 
 package imagej.core.tools;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.Position;
@@ -96,7 +96,7 @@ public class PixelRecorder {
 	 * methods to get info about the event.
 	 */
 	public boolean record(final MsEvent evt) {
-		final ImageJ context = evt.getContext();
+		final Context context = evt.getContext();
 		final ImageDisplayService imageDisplayService =
 			context.getService(ImageDisplayService.class);
 

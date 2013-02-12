@@ -35,7 +35,7 @@
 
 package imagej.data.display;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.ChannelCollection;
 import imagej.data.Data;
 import imagej.data.Dataset;
@@ -460,7 +460,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			converters.get(c).setLUT(lut);
 		}
 
-		final ImageJ context = getContext();
+		final Context context = getContext();
 		if (context == null) return;
 		final EventService evtSrv = context.getService(EventService.class);
 		if (evtSrv == null) return;

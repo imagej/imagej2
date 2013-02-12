@@ -36,7 +36,7 @@
 package imagej.data;
 
 import static org.junit.Assert.assertTrue;
-import imagej.ImageJ;
+import imagej.Context;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
@@ -60,7 +60,7 @@ public class TestCursorSpeeds {
 
 	@Test
 	public void testCursorSpeeds() {
-		final ImageJ context = new ImageJ(DatasetService.class);
+		final Context context = new Context(DatasetService.class);
 		final DatasetService datasetService =
 			context.getService(DatasetService.class);
 

@@ -37,7 +37,7 @@ package imagej.legacy.translate;
 
 import ij.ImagePlus;
 import ij.ImageStack;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -63,7 +63,7 @@ public class Harmonizer {
 
 	// -- instance variables --
 
-	private final ImageJ context;
+	private final Context context;
 
 	private final ImageTranslator imageTranslator;
 	private final Map<ImagePlus, Integer> bitDepthMap;
@@ -80,7 +80,7 @@ public class Harmonizer {
 
 	// -- constructor --
 
-	public Harmonizer(final ImageJ context, final ImageTranslator trans) {
+	public Harmonizer(final Context context, final ImageTranslator trans) {
 		this.context = context;
 		imageTranslator = trans;
 		bitDepthMap = new HashMap<ImagePlus, Integer>();

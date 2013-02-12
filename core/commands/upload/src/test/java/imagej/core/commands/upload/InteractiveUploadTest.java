@@ -35,7 +35,7 @@
 
 package imagej.core.commands.upload;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.command.CommandService;
 import imagej.event.EventHandler;
 import imagej.event.EventService;
@@ -57,7 +57,7 @@ public class InteractiveUploadTest {
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 		try {
-			final ImageJ context = new ImageJ(CommandService.class, StatusService.class, EventService.class);
+			final Context context = new Context(CommandService.class, StatusService.class, EventService.class);
 			context.getService(EventService.class).subscribe(new Object() {
 				@SuppressWarnings("unused")
 				@EventHandler

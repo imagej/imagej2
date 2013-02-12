@@ -35,7 +35,7 @@
 
 package imagej.data.overlay;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.OverlayUpdatedEvent;
@@ -89,9 +89,9 @@ public class ThresholdOverlay extends AbstractOverlay
 
 	/**
 	 * Construct a {@link ThresholdOverlay} on a {@link Dataset} given an
-	 * {@link ImageJ} context.
+	 * {@link Context} context.
 	 */
-	public ThresholdOverlay(ImageJ context, Dataset dataset)
+	public ThresholdOverlay(Context context, Dataset dataset)
 	{
 		setContext(context);
 		this.dataset = dataset;
@@ -104,10 +104,10 @@ public class ThresholdOverlay extends AbstractOverlay
 	
 	/**
 	 * Construct a {@link ThresholdOverlay} on a {@link Dataset} given an
-	 * {@link ImageJ} context, and a numeric range within which the data values of
+	 * {@link Context} context, and a numeric range within which the data values of
 	 * interest exist.
 	 */
-	public ThresholdOverlay(ImageJ context, Dataset ds, double min, double max)
+	public ThresholdOverlay(Context context, Dataset ds, double min, double max)
 	{
 		this(context, ds);
 		setRange(min,max);

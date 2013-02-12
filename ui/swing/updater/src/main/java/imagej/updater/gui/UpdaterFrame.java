@@ -35,7 +35,7 @@
 
 package imagej.updater.gui;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.log.LogService;
 import imagej.updater.core.Checksummer;
 import imagej.updater.core.Diff.Mode;
@@ -505,7 +505,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	/** Gets the uploader service associated with this updater frame. */
 	public UploaderService getUploaderService() {
 		if (uploaderService == null) {
-			final ImageJ context = new ImageJ(UploaderService.class);
+			final Context context = new Context(UploaderService.class);
 			uploaderService = context.getService(UploaderService.class);
 		}
 

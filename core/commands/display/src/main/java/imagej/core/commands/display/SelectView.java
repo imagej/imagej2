@@ -39,7 +39,7 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.roi.RegionOfInterest;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.command.ContextCommand;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
@@ -68,7 +68,7 @@ import imagej.plugin.Plugin;
 public class SelectView extends ContextCommand {
 
 	@Parameter
-	private ImageJ context;
+	private Context context;
 	
 	@Parameter
 	private ImageDisplayService imgDispService;

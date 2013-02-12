@@ -35,7 +35,7 @@
 
 package imagej.data.overlay;
 
-import imagej.ImageJ;
+import imagej.Context;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -59,7 +59,7 @@ public class GeneralPathOverlay extends
 	AbstractROIOverlay<GeneralPathRegionOfInterest>
 {
 
-	public GeneralPathOverlay(final ImageJ context) {
+	public GeneralPathOverlay(final Context context) {
 		super(context, new GeneralPathRegionOfInterest());
 		setAxis(Axes.X, Axes.X.ordinal());
 		setAxis(Axes.Y, Axes.Y.ordinal());

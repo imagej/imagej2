@@ -36,7 +36,7 @@
 package imagej.data.display;
 
 import static org.junit.Assert.assertEquals;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.event.EventService;
 import imagej.util.IntCoords;
 import imagej.util.IntRect;
@@ -221,7 +221,7 @@ public class ImageCanvasTest {
 	// -- Helper methods --
 
 	private ImageCanvas createImageCanvas() {
-		final ImageJ context = new ImageJ(EventService.class);
+		final Context context = new Context(EventService.class);
 		final ImageDisplay display = new DefaultImageDisplay() {
 
 			@Override

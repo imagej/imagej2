@@ -36,7 +36,7 @@
 package imagej.data.display;
 
 import imagej.AbstractContextual;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.Data;
 import imagej.data.Extents;
 import imagej.data.Position;
@@ -288,7 +288,7 @@ public abstract class AbstractDataView extends AbstractContextual implements
 	// -- Helper methods --
 
 	protected EventService getEventService() {
-		final ImageJ context = data.getContext();
+		final Context context = data.getContext();
 		if (context == null) return null;
 		return context.getService(EventService.class);
 	}

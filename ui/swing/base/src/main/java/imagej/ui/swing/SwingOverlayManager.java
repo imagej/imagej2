@@ -35,7 +35,7 @@
 
 package imagej.ui.swing;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.command.CommandService;
 import imagej.core.commands.display.Flatten;
 import imagej.core.commands.overlay.SelectedManagerOverlayProperties;
@@ -162,7 +162,7 @@ public class SwingOverlayManager
 	/** Maintains the list of event subscribers, to avoid garbage collection. */
 	@SuppressWarnings("unused")
 	private final List<EventSubscriber<?>> subscribers;
-	private final ImageJ context;
+	private final Context context;
 	private final JList jlist;
 	private boolean selecting = false; // flag to prevent event feedback loops
 	private JPopupMenu popupMenu = null;
@@ -177,7 +177,7 @@ public class SwingOverlayManager
 	/**
 	 * Creates a JList to list the overlays. 
 	 */
-	public SwingOverlayManager(final ImageJ context) {
+	public SwingOverlayManager(final Context context) {
 		this.context = context;
 		this.ovrSrv = context.getService(OverlayService.class);
 		jlist = new JList(new OverlayListModel(ovrSrv.getOverlayInfo()));

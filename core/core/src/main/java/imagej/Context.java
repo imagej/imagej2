@@ -55,12 +55,12 @@ import java.util.Collections;
  * @author Curtis Rueden
  * @see Service
  */
-public class ImageJ {
+public class Context {
 
-	/** @deprecated Use {@link ImageJ#getVersion()} instead. */
+	/** @deprecated Use {@link Context#getVersion()} instead. */
 	@Deprecated
 	public static final String VERSION =
-		POM.getPOM(ImageJ.class, "net.imagej", "ij-core").getVersion();
+		POM.getPOM(Context.class, "net.imagej", "ij-core").getVersion();
 
 	private static boolean sezpozNeedsToRun = true;
 
@@ -82,7 +82,7 @@ public class ImageJ {
 	private final Manifest manifest;
 
 	/** Creates a new ImageJ application context with all available services. */
-	public ImageJ() {
+	public Context() {
 		this(false);
 	}
 
@@ -92,7 +92,7 @@ public class ImageJ {
 	 * @param empty If true, the context will be empty; otherwise, it will be
 	 *          initialized with all available services.
 	 */
-	public ImageJ(final boolean empty) {
+	public Context(final boolean empty) {
 		this(empty ? Collections.<Class<? extends Service>> emptyList() : null);
 	}
 
@@ -119,7 +119,7 @@ public class ImageJ {
 	 *           the {@link Service} interface.
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public ImageJ(final Class... serviceClasses) {
+	public Context(final Class... serviceClasses) {
 		this(serviceClasses != null ? (Collection) Arrays.asList(serviceClasses)
 			: null);
 	}
@@ -131,7 +131,7 @@ public class ImageJ {
 	 * @param serviceClasses A collection of types that implement the
 	 *          {@link Service} interface (e.g., {@code DisplayService.class}).
 	 */
-	public ImageJ(final Collection<Class<? extends Service>> serviceClasses) {
+	public Context(final Collection<Class<? extends Service>> serviceClasses) {
 		if (sezpozNeedsToRun) {
 			// First context! Check that annotations were generated properly.
 			try {
@@ -152,8 +152,8 @@ public class ImageJ {
 		pluginIndex = new PluginIndex();
 		pluginIndex.discover();
 
-		pom = POM.getPOM(ImageJ.class, "net.imagej", "ij-core");
-		manifest = Manifest.getManifest(ImageJ.class);
+		pom = POM.getPOM(Context.class, "net.imagej", "ij-core");
+		manifest = Manifest.getManifest(Context.class);
 
 		final ServiceHelper serviceHelper =
 			new ServiceHelper(this, serviceClasses);

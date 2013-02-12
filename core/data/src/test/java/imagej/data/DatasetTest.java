@@ -38,7 +38,7 @@ package imagej.data;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
-import imagej.ImageJ;
+import imagej.Context;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
@@ -65,7 +65,7 @@ public class DatasetTest {
 	private static final long[] DIMENSIONS = { 4, 4, CPLANES, ZPLANES, TPLANES };
 
 	private Dataset createDataset(final ImgFactory<IntType> factory) {
-		final ImageJ context = new ImageJ(DatasetService.class);
+		final Context context = new Context(DatasetService.class);
 		final DatasetService datasetService =
 			context.getService(DatasetService.class);
 

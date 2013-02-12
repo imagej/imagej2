@@ -35,7 +35,7 @@
 
 package imagej.core.commands.assign.noisereduce;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.DefaultDataset;
 import imagej.event.StatusService;
@@ -57,7 +57,7 @@ import net.imglib2.type.numeric.RealType;
  */
 public class Reducer<U extends RealType<U>,V extends RealType<V>>
 {
-	private final ImageJ context;
+	private final Context context;
 	
 	private final Function<PointSet,V> inputFunction;
 	
@@ -70,7 +70,7 @@ public class Reducer<U extends RealType<U>,V extends RealType<V>>
 	// -- public interface --
 
 	
-	public Reducer(ImageJ context, ImgPlus<U> input, Function<PointSet,V> func,
+	public Reducer(Context context, ImgPlus<U> input, Function<PointSet,V> func,
 		PointSet neighborhood)
 	{
 		this.context = context;

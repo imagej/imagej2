@@ -35,7 +35,7 @@
 
 package imagej.data.overlay;
 
-import imagej.ImageJ;
+import imagej.Context;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -88,12 +88,12 @@ public class BinaryMaskOverlay<U extends BitType, V extends Img<U>> extends Abst
 		super(null, null);
 	}
 
-	public BinaryMaskOverlay(final ImageJ context) {
+	public BinaryMaskOverlay(final Context context) {
 		super(context, null);
 	}
 
 	public BinaryMaskOverlay(
-		final ImageJ context,
+		final Context context,
 		final BinaryMaskRegionOfInterest<U, V> roi)
 	{
 		super(context, roi);

@@ -35,7 +35,7 @@
 
 package imagej.core.commands.assign.noisereduce;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.menu.MenuConstants;
@@ -78,7 +78,7 @@ public class NoiseReductionAdaptiveMedian<U extends RealType<U>> extends
 	// -- Parameters --
 
 	@Parameter
-	private ImageJ context;
+	private Context context;
 
 	@Parameter
 	private Dataset input;

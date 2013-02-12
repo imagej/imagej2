@@ -55,8 +55,8 @@ public final class Main {
 	 * @param args The arguments to pass to the new ImageJ instance.
 	 * @return The context of the newly launched ImageJ instance.
 	 */
-	public static ImageJ launch(final String... args) {
-		final ImageJ context = new ImageJ();
+	public static Context launch(final String... args) {
+		final Context context = new Context();
 
 		// parse command line arguments
 		final ConsoleService consoleService =

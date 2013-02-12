@@ -97,7 +97,7 @@ public class CheckSezpozTest {
 
 		final File source = new File(sources, "Annotated.java");
 		final FileWriter writer = new FileWriter(source);
-		writer.append("import imagej.ImageJ;\n"
+		writer.append("import imagej.Context;\n"
 			+ "import imagej.Prioritized;\n"
 			+ "import imagej.plugin.Plugin;\n"
 			+ "import imagej.service.Service;\n"
@@ -108,16 +108,16 @@ public class CheckSezpozTest {
 			+ "\tpublic double getPriority() { return 0; }\n"
 			+ "\tpublic void setPriority(final double priority) { }\n"
 			+ "\tpublic int compareTo(final Prioritized other) { return 0; }\n"
-			+ "\tpublic ImageJ getContext() { return null; }\n"
-			+ "\tpublic void setContext(final ImageJ context) { }\n"
+			+ "\tpublic Context getContext() { return null; }\n"
+			+ "\tpublic void setContext(final Context context) { }\n"
 			+ "}\n");
 		writer.close();
 
 		ProcessUtils.exec(sources, System.err, System.out, "javac", "-classpath",
 			System.getProperty("java.class.path"), "Annotated.java");
 
-		// to make sure the annotation processor "has not run", we need to copy the
-		// .class file
+		// to make sure the annotation processor "has not run",
+		// we need to copy the .class file
 		copy(new FileInputStream(new File(sources, "Annotated.class")),
 			new FileOutputStream(new File(classes, "Annotated.class")));
 

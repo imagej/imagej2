@@ -35,7 +35,7 @@
 
 package imagej.core.tools;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.DrawingTool;
@@ -128,7 +128,7 @@ public abstract class AbstractLineTool extends AbstractTool {
 	private void initDrawingTool(final MsPressedEvent evt) {
 
 		// lookup display info where mouse down event happened
-		final ImageJ context = getContext();
+		final Context context = getContext();
 		final ImageDisplayService imageDisplayService =
 			context.getService(ImageDisplayService.class);
 		final ImageDisplay imageDisplay = (ImageDisplay) evt.getDisplay();

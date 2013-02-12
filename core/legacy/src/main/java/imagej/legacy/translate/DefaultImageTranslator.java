@@ -36,7 +36,7 @@
 package imagej.legacy.translate;
 
 import ij.ImagePlus;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -52,14 +52,14 @@ import net.imglib2.meta.AxisType;
  */
 public class DefaultImageTranslator implements ImageTranslator {
 
-	private final ImageJ context;
+	private final Context context;
 
 	private final DisplayCreator colorDisplayCreator;
 	private final DisplayCreator grayDisplayCreator;
 	private final ImagePlusCreator colorImagePlusCreator;
 	private final ImagePlusCreator grayImagePlusCreator;
 
-	public DefaultImageTranslator(final ImageJ context) {
+	public DefaultImageTranslator(final Context context) {
 		this.context = context;
 		colorDisplayCreator = new ColorDisplayCreator(context);
 		grayDisplayCreator = new GrayDisplayCreator(context);

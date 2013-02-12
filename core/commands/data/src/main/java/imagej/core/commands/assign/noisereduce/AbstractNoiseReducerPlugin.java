@@ -50,7 +50,7 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
 import imagej.Cancelable;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.command.Command;
 import imagej.command.CommandModule;
 import imagej.command.CommandService;
@@ -77,7 +77,7 @@ public abstract class AbstractNoiseReducerPlugin<U extends RealType<U>>
 	// -- Parameters --
 
 	@Parameter
-	protected ImageJ context;
+	protected Context context;
 	
 	@Parameter
 	protected CommandService commandService;

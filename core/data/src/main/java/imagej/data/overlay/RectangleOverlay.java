@@ -35,7 +35,7 @@
 
 package imagej.data.overlay;
 
-import imagej.ImageJ;
+import imagej.Context;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -62,7 +62,7 @@ public class RectangleOverlay extends
 			new double[] { 0, 0 }));
 	}
 	
-	public RectangleOverlay(final ImageJ context) {
+	public RectangleOverlay(final Context context) {
 		super(context, new RectangleRegionOfInterest(new double[] { 0, 0 },
 			new double[] { 0, 0 }));
 		setAxis(Axes.X, Axes.X.ordinal());

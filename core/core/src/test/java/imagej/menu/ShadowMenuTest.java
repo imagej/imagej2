@@ -40,7 +40,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.MenuPath;
 import imagej.module.DefaultModuleInfo;
 import imagej.module.ModuleInfo;
@@ -138,7 +138,7 @@ public class ShadowMenuTest {
 	// -- Helper methods --
 
 	private ShadowMenu createShadowMenu() {
-		final ImageJ context = new ImageJ(true);
+		final Context context = new Context(true);
 
 		final ArrayList<ModuleInfo> modules = new ArrayList<ModuleInfo>();
 		modules.add(createModuleInfo("Edit>Copy"));

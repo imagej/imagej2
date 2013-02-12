@@ -37,7 +37,7 @@ package imagej.data.overlay;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.log.LogService;
 import imagej.util.ColorRGB;
 
@@ -90,13 +90,13 @@ public class TestBinaryMaskOverlay {
 			makeImg(imgArray));
 	}
 
-	private BinaryMaskOverlay makeOverlay(final ImageJ context, final boolean[][] imgArray) {
+	private BinaryMaskOverlay makeOverlay(final Context context, final boolean[][] imgArray) {
 		return new BinaryMaskOverlay(context, makeRoi(imgArray));
 	}
 
 	@Test
 	public void testWriteExternal() {
-		final ImageJ context = new ImageJ();
+		final Context context = new Context();
 		final LogService log = context.getService(LogService.class);
 		final BinaryMaskOverlay overlay =
 			makeOverlay(context, new boolean[][] { { true } });
@@ -114,7 +114,7 @@ public class TestBinaryMaskOverlay {
 
 	@Test
 	public void testReadExternal() {
-		final ImageJ context = new ImageJ();
+		final Context context = new Context();
 		final LogService log = context.getService(LogService.class);
 		final Random r = new Random(54321);
 		for (int iter = 0; iter < 100; iter++) {
@@ -166,7 +166,7 @@ public class TestBinaryMaskOverlay {
 
 	@Test
 	public void testBinaryMaskOverlay() {
-		final ImageJ context = new ImageJ();
+		final Context context = new Context();
 		makeOverlay(context, new boolean[][] { { true } });
 	}
 

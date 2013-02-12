@@ -57,7 +57,7 @@ import java.util.List;
 public abstract class AbstractContextual implements Contextual {
 
 	/** This application context associated with the object. */
-	private ImageJ context;
+	private Context context;
 
 	/**
 	 * The list of event subscribers, maintained to avoid garbage collection.
@@ -77,12 +77,12 @@ public abstract class AbstractContextual implements Contextual {
 	// -- Contextual methods --
 
 	@Override
-	public ImageJ getContext() {
+	public Context getContext() {
 		return context;
 	}
 
 	@Override
-	public void setContext(final ImageJ context) {
+	public void setContext(final Context context) {
 		if (this.context != null) {
 			throw new IllegalStateException("Context already set");
 		}

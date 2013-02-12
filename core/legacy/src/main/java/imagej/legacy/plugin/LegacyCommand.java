@@ -39,7 +39,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.Roi;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
@@ -83,7 +83,7 @@ public class LegacyCommand implements Command {
 	private List<ImageDisplay> outputs;
 
 	@Parameter
-	private ImageJ context;
+	private Context context;
 
 	@Parameter
 	private LogService log;

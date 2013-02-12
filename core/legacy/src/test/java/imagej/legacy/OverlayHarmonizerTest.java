@@ -41,7 +41,7 @@ import ij.ImagePlus;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.BinaryMaskOverlay;
 import imagej.data.overlay.Overlay;
@@ -113,7 +113,7 @@ public class OverlayHarmonizerTest {
 	 */
 	@Test
 	public void testGetOverlays() {
-		final ImageJ context = new ImageJ(LegacyService.class);
+		final Context context = new Context(LegacyService.class);
 
 		// Just test that we get a single overlay of the correct type. Other tests
 		// for particulars of the decoding.
@@ -133,7 +133,7 @@ public class OverlayHarmonizerTest {
 	 */
 	@Test
 	public void testSetOverlays() {
-		final ImageJ context = new ImageJ(LegacyService.class);
+		final Context context = new Context(LegacyService.class);
 
 		final Random r = new Random(1234);
 		final OverlayHarmonizer ot = new OverlayHarmonizer(context);
@@ -152,7 +152,7 @@ public class OverlayHarmonizerTest {
 	// translators that they wrote
 	@Test
 	public void testPolygonOverlay() {
-		final ImageJ context = new ImageJ(LegacyService.class);
+		final Context context = new Context(LegacyService.class);
 
 		final Random r = new Random(1234);
 		final int[][][] vertices =
@@ -191,7 +191,7 @@ public class OverlayHarmonizerTest {
 
 	@Test
 	public void testPolygonROI() {
-		final ImageJ context = new ImageJ(LegacyService.class);
+		final Context context = new Context(LegacyService.class);
 
 		final Random r = new Random(1234);
 		final double[][][] vertices =
@@ -233,7 +233,7 @@ public class OverlayHarmonizerTest {
 
 	@Test
 	public void testCompositeRoi() {
-		final ImageJ context = new ImageJ(LegacyService.class);
+		final Context context = new Context(LegacyService.class);
 
 		/*
 		 * The composite Roi has an offset and its contained Rois are relative to that offset
@@ -289,7 +289,7 @@ public class OverlayHarmonizerTest {
 
 	@Test
 	public void testDonut() {
-		final ImageJ context = new ImageJ(LegacyService.class);
+		final Context context = new Context(LegacyService.class);
 
 		final OverlayHarmonizer ot = new OverlayHarmonizer(context);
 		final Random r = new Random(1234);
@@ -320,7 +320,7 @@ public class OverlayHarmonizerTest {
 
 	@Test
 	public void testCreateBinaryMaskOverlay() {
-		final ImageJ context = new ImageJ(LegacyService.class);
+		final Context context = new Context(LegacyService.class);
 
 		final OverlayHarmonizer ot = new OverlayHarmonizer(context);
 		final Random r = new Random(1234);
@@ -351,7 +351,7 @@ public class OverlayHarmonizerTest {
 
 	@Test
 	public void testCreateBinaryMaskROI() {
-		final ImageJ context = new ImageJ(LegacyService.class);
+		final Context context = new Context(LegacyService.class);
 
 		final Random r = new Random(54321);
 		final boolean[][] data = Helper.makeRandomBooleanArray(r, 7, 8);

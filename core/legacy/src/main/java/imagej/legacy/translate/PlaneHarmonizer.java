@@ -37,7 +37,7 @@ package imagej.legacy.translate;
 
 import ij.ImagePlus;
 import ij.ImageStack;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
@@ -55,7 +55,7 @@ public class PlaneHarmonizer implements DataHarmonizer {
 
 	private final LogService log;
 
-	public PlaneHarmonizer(ImageJ context) {
+	public PlaneHarmonizer(Context context) {
 		log = context.getService(LogService.class);
 	}
 

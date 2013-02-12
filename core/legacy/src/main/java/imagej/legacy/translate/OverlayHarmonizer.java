@@ -49,7 +49,7 @@ import ij.process.ByteProcessor;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
 import imagej.AbstractContextual;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.AngleOverlay;
@@ -106,7 +106,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 	private final OverlayService overlayService;
 	private final ThresholdService threshService;
 
-	public OverlayHarmonizer(final ImageJ context) {
+	public OverlayHarmonizer(final Context context) {
 		setContext(context);
 		log = context.getService(LogService.class);
 		overlayService = context.getService(OverlayService.class);

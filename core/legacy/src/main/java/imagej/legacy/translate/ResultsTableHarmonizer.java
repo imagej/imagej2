@@ -38,7 +38,7 @@ package imagej.legacy.translate;
 import ij.IJ;
 import ij.plugin.filter.Analyzer;
 import ij.text.TextWindow;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.table.DefaultResultsTable;
 import imagej.data.table.ResultsTable;
 import imagej.data.table.Table;
@@ -58,7 +58,7 @@ public class ResultsTableHarmonizer {
 
 	// -- constructor --
 
-	public ResultsTableHarmonizer(ImageJ context) {
+	public ResultsTableHarmonizer(Context context) {
 		displayService = context.getService(DisplayService.class);
 	}
 

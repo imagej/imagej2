@@ -38,7 +38,7 @@
 
 package imagej.ui.common.awt;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;

@@ -39,7 +39,7 @@ import ij.ImagePlus;
 import ij.gui.ImageWindow;
 import ij.gui.Roi;
 import imagej.AbstractContextual;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -118,7 +118,7 @@ public class LegacyImageMap extends AbstractContextual {
 	public LegacyImageMap(final DefaultLegacyService legacyService) {
 		setContext(legacyService.getContext());
 		this.legacyService = legacyService;
-		final ImageJ context = legacyService.getContext();
+		final Context context = legacyService.getContext();
 		imagePlusTable = new ConcurrentHashMap<ImageDisplay, ImagePlus>();
 		displayTable = new ConcurrentHashMap<ImagePlus, ImageDisplay>();
 		imageTranslator = new DefaultImageTranslator(context);
