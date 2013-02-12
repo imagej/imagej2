@@ -54,19 +54,18 @@ import net.imglib2.type.numeric.RealType;
 
 // TODO All the problems with thresh overlay code at the moment:
 //
-//  2) some methods here are unimplemented: autothresh, changePixels, stack hist
-//  3) stack histogram: don't yet know what this is to do
-//  4) we will have to display a histogram and thresh lines like IJ1 does
-//  6) overlay manager threshold name does not update immediately
-//  7) overlay not selectable in view but only via ovr mgr
-//  8) do thresh overlays kill graphics of other overlays? It seems it may.
+//  - when thresh drawn at 3/2 scale on boats it looks gridded. JHot prob?
+//  - some methods here are unimplemented: autothresh, changePixels, stack hist
+//  - stack histogram: don't yet know what this is to do
+//  - we will have to display a histogram and thresh lines like IJ1 does
+//  - overlay not selectable in view but only via ovr mgr
+//  - do thresh overlays kill graphics of other overlays? It seems it may.
 //     Might need to draw in a certain order
-//  9) dark background: does not update the thresh values within the dialog
-// 10) need to discover autothresh methods, populate list, and make autothresh
+//  - need to discover autothresh methods, populate list, and make autothresh
 //     method call the one selected by user.
-// 11) update commands that need a threshold to use them now: Convert To Mask?
-// 12) dark background - make code exactly like IJ1
-// 14) this plugin written to work with one display. So if you leave it up and
+//  - update commands that need a threshold to use them now: Convert To Mask?
+//  - dark background - make code exactly like IJ1: need to autothresh 1st
+//  - this plugin written to work with one display. So if you leave it up and
 //     switch images this plugin won't immediately work with it. see what IJ1
 //     does.
 
@@ -202,9 +201,9 @@ public class Threshold extends InteractiveCommand {
 		// TODO - do these calx match IJ1? No. IJ1 calcs a threshold. Then either
 		// goes from (0,thresh) or (thresh+1,255) depending on setting. Maybe we
 		// do this too. Or we remove functionality altogether.
-		double min = dataMin + dataMax - overlay.getRangeMax();
-		double max = dataMin + dataMax - overlay.getRangeMin();
-		overlay.setRange(min, max);
+		minimum = dataMin + dataMax - overlay.getRangeMax();
+		maximum = dataMin + dataMax - overlay.getRangeMin();
+		overlay.setRange(minimum, maximum);
 		overlay.update();
 	}
 
