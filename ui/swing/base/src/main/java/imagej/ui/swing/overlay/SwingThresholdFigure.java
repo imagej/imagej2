@@ -44,10 +44,12 @@ import imagej.util.awt.AWTColors;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 import java.awt.geom.Rectangle2D;
 
 import net.imglib2.Cursor;
+import net.imglib2.meta.AxisType;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
 
@@ -69,6 +71,7 @@ public class SwingThresholdFigure extends AbstractAttributedFigure implements
 	private final Dataset dataset;
 	private final ThresholdOverlay overlay;
 	private final Rectangle2D.Double rect;
+	private double[] tmpPos;
 	
 	public SwingThresholdFigure(ImageDisplay display, Dataset dataset,
 		ThresholdOverlay overlay)
@@ -83,9 +86,16 @@ public class SwingThresholdFigure extends AbstractAttributedFigure implements
 	}
 	
 	@Override
-	public boolean contains(Double arg0) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean contains(Point2D.Double pt) {
+		int d = dataset.numDimensions();
+		if ((tmpPos == null) || (tmpPos.length != d)) tmpPos = new double[d];
+		tmpPos[0] = pt.x;
+		tmpPos[1] = pt.y;
+		for (int i = 2; i < tmpPos.length; i++) {
+			AxisType axisType = dataset.axis(i);
+			tmpPos[i] = display.getLongPosition(axisType);
+		}
+		return overlay.getRegionOfInterest().contains(tmpPos);
 	}
 
 	@Override
@@ -142,9 +152,9 @@ public class SwingThresholdFigure extends AbstractAttributedFigure implements
 	@Override
 	protected void drawFill(final Graphics2D g) {
 		final Color origC = g.getColor();
-		Color withinColor = AWTColors.getColor(overlay.getColorWithin());
-		Color lessColor = AWTColors.getColor(overlay.getColorLess());
-		Color greaterColor = AWTColors.getColor(overlay.getColorGreater());
+		final Color withinColor = AWTColors.getColor(overlay.getColorWithin());
+		final Color lessColor = AWTColors.getColor(overlay.getColorLess());
+		final Color greaterColor = AWTColors.getColor(overlay.getColorGreater());
 		Color color = null;
 		Color lastColor = null;
 		rect.width = 1;
@@ -188,18 +198,15 @@ public class SwingThresholdFigure extends AbstractAttributedFigure implements
 
 	// -- helpers --
 
-	// TODO - there is an assumption here that display and data coords map 1:1.
-	// If we have a display with multiple datasets in it this code isn't quite
-	// correct.
-
 	private PointSet getViewedPlane() {
-		long[] pt1 = new long[display.numDimensions()];
-		long[] pt2 = new long[display.numDimensions()];
+		long[] pt1 = new long[dataset.numDimensions()];
+		long[] pt2 = new long[dataset.numDimensions()];
 		for (int i = 2; i < pt1.length; i++) {
-			pt1[i] = pt2[i] = display.getLongPosition(i);
+			AxisType axisType = dataset.axis(i);
+			pt1[i] = pt2[i] = display.getLongPosition(axisType);
 		}
-		pt2[0] = display.dimension(0) - 1;
-		pt2[1] = display.dimension(1) - 1;
+		pt2[0] = dataset.dimension(0) - 1;
+		pt2[1] = dataset.dimension(1) - 1;
 		return new HyperVolumePointSet(pt1, pt2);
 	}
 }
