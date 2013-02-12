@@ -82,6 +82,7 @@ public class ThresholdOverlay extends AbstractOverlay
 	private WithinRangeCondition<? extends RealType<?>> conditionWithin;
 	private RegionOfInterest regionAdapter;
 	private ColorRGB colorLess;
+	private ColorRGB colorWithin;
 	private ColorRGB colorGreater;
 	private String defaultName;
 
@@ -263,7 +264,7 @@ public class ThresholdOverlay extends AbstractOverlay
 	 * Gets the color used when rendering points within the threshold range.
 	 */
 	public ColorRGB getColorWithin() {
-		return getFillColor();
+		return colorWithin;
 	}
 
 	/**
@@ -284,7 +285,7 @@ public class ThresholdOverlay extends AbstractOverlay
 	 * Sets the color used when rendering points within the threshold range.
 	 */
 	public void setColorWithin(ColorRGB c) {
-		setFillColor(c);
+		colorWithin = c;
 	}
 
 	/**
@@ -424,7 +425,7 @@ public class ThresholdOverlay extends AbstractOverlay
 	// -- Event handlers --
 
 	@EventHandler
-	public void onEvent(DatasetRestructuredEvent evt) {
+	protected void onEvent(DatasetRestructuredEvent evt) {
 		if (evt.getObject() == dataset) {
 			reinit();
 			rebuild();

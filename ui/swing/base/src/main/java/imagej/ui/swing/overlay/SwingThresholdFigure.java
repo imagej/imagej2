@@ -83,6 +83,7 @@ public class SwingThresholdFigure extends AbstractAttributedFigure implements
 		setAttributeEnabled(AttributeKeys.FILL_COLOR, true);
 		setAttributeEnabled(AttributeKeys.STROKE_COLOR, false);
 		setAttributeEnabled(AttributeKeys.TEXT_COLOR, false);
+		set(AttributeKeys.FILL_COLOR, Color.DARK_GRAY); // always have a color set
 	}
 	
 	@Override
