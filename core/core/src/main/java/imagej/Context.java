@@ -237,12 +237,15 @@ public class Context {
 	}
 
 	/** Gets the service of the given class name (useful for scripts). */
-	@SuppressWarnings("unchecked")
-	public <S extends Service> S getService(final String className) {
+	public Service getService(final String className) {
 		try {
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
-			return  getService((Class<S>)loader.loadClass(className));
-		} catch (ClassNotFoundException exc) {
+			@SuppressWarnings("unchecked")
+			final Class<Service> serviceClass =
+				(Class<Service>) loader.loadClass(className);
+			return getService(serviceClass);
+		}
+		catch (ClassNotFoundException exc) {
 			return null;
 		}
 	}
