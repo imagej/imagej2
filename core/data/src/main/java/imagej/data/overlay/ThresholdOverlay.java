@@ -81,6 +81,7 @@ public class ThresholdOverlay extends AbstractOverlay
 	private RegionOfInterest regionAdapter;
 	private ColorRGB colorLess;
 	private ColorRGB colorGreater;
+	private String defaultName;
 
 	// -- ThresholdOverlay methods --
 
@@ -96,6 +97,7 @@ public class ThresholdOverlay extends AbstractOverlay
 		init(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 		initAttributes();
 		resetThreshold();
+		setDefaultName();
 	}
 	
 	/**
@@ -139,7 +141,7 @@ public class ThresholdOverlay extends AbstractOverlay
 		pointsGreater.setCondition(conditionGreater);
 		pointsLess.setCondition(conditionLess);
 		pointsWithin.setCondition(conditionWithin);
-		updateName();
+		setDefaultName();
 	}
 
 	/**
@@ -408,6 +410,13 @@ public class ThresholdOverlay extends AbstractOverlay
 		// do nothing - thresholds don't move though space
 	}
 
+	@Override
+	public String getName() {
+		String name = super.getName();
+		if (name != null) return name;
+		return defaultName;
+	}
+
 	// -- Event handlers --
 
 	@EventHandler
@@ -435,7 +444,7 @@ public class ThresholdOverlay extends AbstractOverlay
 		pointsGreater = new ConditionalPointSet(volume, conditionGreater);
 		pointsWithin = new ConditionalPointSet(volume, conditionWithin);
 		regionAdapter = new PointSetRegionOfInterest(pointsWithin);
-		updateName();
+		setDefaultName();
 	}
 
 	// Updates the guts of the various members of this class to reflect a changed
@@ -459,7 +468,7 @@ public class ThresholdOverlay extends AbstractOverlay
 		pointsLess.setCondition(conditionLess);
 		pointsGreater.setCondition(conditionGreater);
 		// regionAdapter does not need any changes
-		updateName();
+		setDefaultName();
 	}
 
 	private void initAttributes() {
@@ -475,9 +484,10 @@ public class ThresholdOverlay extends AbstractOverlay
 		setColorGreater(null);
 	}
 
-	private void updateName() {
-		setName("Threshold: " + conditionWithin.getMin() + " to " +
-			conditionWithin.getMax());
+	private void setDefaultName() {
+		defaultName =
+			"Threshold: " + conditionWithin.getMin() + " to " +
+				conditionWithin.getMax();
 	}
 
 }
