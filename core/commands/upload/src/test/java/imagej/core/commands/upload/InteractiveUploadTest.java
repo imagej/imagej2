@@ -46,20 +46,22 @@ import java.io.File;
 
 /**
  * Tests the upload functionality.
- *
+ * <p>
  * This test is not automated since it requires interaction with the upload
  * server, possibly overwriting existing files.
- *
+ * </p>
+ * 
  * @author Johannes Schindelin
  */
 public class InteractiveUploadTest {
 
-	@SuppressWarnings("unchecked")
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		try {
-			final Context context = new Context(CommandService.class, StatusService.class, EventService.class);
+			final Context context =
+				new Context(CommandService.class, StatusService.class,
+					EventService.class);
 			context.getService(EventService.class).subscribe(new Object() {
-				@SuppressWarnings("unused")
+
 				@EventHandler
 				protected void onEvent(final StatusEvent e) {
 					final int value = e.getProgressValue();
@@ -70,8 +72,10 @@ public class InteractiveUploadTest {
 					System.err.println();
 				}
 			});
-			context.getService(CommandService.class).run(SampleImageUploader.class, "sampleImage", new File("/tmp/test.tif"));
-		} catch (Throwable t) {
+			context.getService(CommandService.class).run(SampleImageUploader.class,
+				"sampleImage", new File("/tmp/test.tif"));
+		}
+		catch (final Throwable t) {
 			t.printStackTrace();
 		}
 	}
