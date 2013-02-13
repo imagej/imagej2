@@ -39,7 +39,7 @@
  *
  * This program was originally developed as the Fiji launcher
  * (http://fiji.sc/), but has been adapted and improved for use with ImageJ
- * core.
+ * core. It also serves as the default launcher of ImageJ 1.x.
  *
  * The ImageJ launcher is copyright 2007 - 2013 Johannes Schindelin, Mark
  * Longair, Albert Cardona, Benjamin Schmid, Erwin Frise, Gregory Jefferis
