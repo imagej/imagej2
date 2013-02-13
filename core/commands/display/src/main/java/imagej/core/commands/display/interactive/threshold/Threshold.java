@@ -218,8 +218,6 @@ public class Threshold extends InteractiveCommand {
 		minimum = dataMin + (0 / (double) histogram.length) * (dataMax - dataMin);
 		maximum =
 			dataMin + (cutoff / (double) histogram.length) * (dataMax - dataMin);
-		setInput("minimum", minimum);
-		setInput("maximum", maximum);
 		rangeChanged();
 
 	}
@@ -238,8 +236,6 @@ public class Threshold extends InteractiveCommand {
 			maximum =
 				dataMin + (cutoff / (double) histogram.length) * (dataMax - dataMin);
 		}
-		setInput("minimum", minimum);
-		setInput("maximum", maximum);
 		rangeChanged();
 	}
 
