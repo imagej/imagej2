@@ -38,33 +38,33 @@ package imagej.core.commands.overlay;
 import imagej.ImageJ;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.data.overlay.BinaryMaskOverlay;
 import imagej.data.overlay.Overlay;
+import imagej.data.overlay.ThresholdOverlay;
+import imagej.data.overlay.ThresholdService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.util.ColorRGB;
-
-import java.util.Arrays;
-
-import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.basictypeaccess.array.BitArray;
 import net.imglib2.img.transform.ImgTranslationAdapter;
+import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.roi.BinaryMaskRegionOfInterest;
 import net.imglib2.type.logic.BitType;
-import net.imglib2.type.numeric.RealType;
 
 /**
  * TODO
  * 
  * @author Lee Kamentsky
+ * @author Barry DeZonia
  */
 @Plugin(menu = {
 	@Menu(label = MenuConstants.PROCESS_LABEL,
@@ -74,13 +74,14 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "Convert to Mask", weight = 1) }, headless = true)
 public class ConvertToMask extends ContextCommand {
 
-	@Parameter(label = "Threshold", description = "The threshold that "
-		+ "separates background (mask) from foreground (region of interest).")
-	private double threshold;
+	// TODO - this points out an issue with threshold service. Does it map
+	// thresh overlays to image displays or datasets. In the support code both
+	// are used.
 
-	@Parameter(label = "Input image",
-		description = "The image to be converted to a binary mask.")
-	private Dataset input;
+	@Parameter(
+		label = "Input display",
+		description = "The display containing the image to be converted to a binary mask.")
+	private ImageDisplay input;
 
 	@Parameter(label = "Output mask",
 		description = "The overlay that is the result of the operation",
@@ -99,35 +100,34 @@ public class ConvertToMask extends ContextCommand {
 	@Parameter
 	private ImageJ context;
 
+	@Parameter
+	private ImageDisplayService dispSrv;
+
+	@Parameter
+	private ThresholdService threshSrv;
+
 	@Override
 	public void run() {
-		final ImgPlus<? extends RealType<?>> imgplus = input.getImgPlus();
-		final long[] dimensions = new long[imgplus.numDimensions()];
-		final long[] position = new long[imgplus.numDimensions()];
-		final long[] min = new long[imgplus.numDimensions()];
-		final long[] max = new long[imgplus.numDimensions()];
-		Arrays.fill(min, Long.MAX_VALUE);
-		Arrays.fill(max, Long.MIN_VALUE);
+		if (!threshSrv.hasThreshold(input)) {
+			cancel("This command requires a thresholded image.");
+			return;
+		}
+		ThresholdOverlay thresh = threshSrv.getThreshold(input);
+		PointSetIterator iter = thresh.getPointsWithin().iterator();
+		if (!iter.hasNext()) {
+			cancel("No pixels are within the threshold");
+			return;
+		}
+		Dataset ds = dispSrv.getActiveDataset(input);
+		final int numDims = ds.numDimensions();
+		final long[] dimensions = new long[numDims];
+		final long[] min = new long[numDims];
 		/*
 		 * First pass - find minima and maxima so we can use a shrunken image in some cases.
 		 */
-		final Cursor<? extends RealType<?>> c = imgplus.localizingCursor();
-		while (c.hasNext()) {
-			c.next();
-			if (c.get().getRealDouble() >= threshold) {
-				for (int i = 0; i < imgplus.numDimensions(); i++) {
-					final long p = c.getLongPosition(i);
-					if (p < min[i]) min[i] = p;
-					if (p > max[i]) max[i] = p;
-				}
-			}
-		}
-		if (min[0] == Long.MAX_VALUE) {
-			throw new IllegalStateException(
-				"The threshold value is lower than that of any pixel");
-		}
-		for (int i = 0; i < imgplus.numDimensions(); i++) {
-			dimensions[i] = max[i] - min[i] + 1;
+		for (int i = 0; i < numDims; i++) {
+			min[i] = thresh.min(i);
+			dimensions[i] = thresh.dimension(i);
 		}
 		final ArrayImg<BitType, BitArray> arrayMask =
 			new ArrayImgFactory<BitType>().createBitInstance(dimensions, 1);
@@ -137,29 +137,27 @@ public class ConvertToMask extends ContextCommand {
 			new ImgTranslationAdapter<BitType, ArrayImg<BitType, BitArray>>(
 				arrayMask, min);
 		final RandomAccess<BitType> raMask = mask.randomAccess();
-		c.reset();
-		while (c.hasNext()) {
-			if (c.next().getRealDouble() >= threshold) {
-				c.localize(position);
-				raMask.setPosition(position);
-				raMask.get().set(true);
-			}
+		iter.reset();
+		while (iter.hasNext()) {
+			long[] pos = iter.next();
+			raMask.setPosition(pos);
+			raMask.get().set(true);
 		}
 		output =
 			new BinaryMaskOverlay(context,
 				new BinaryMaskRegionOfInterest<BitType, Img<BitType>>(mask));
 		output.setAlpha(alpha);
 		output.setFillColor(color);
-		for (int i = 0; i < imgplus.numDimensions(); i++) {
-			output.setAxis(imgplus.axis(i), i);
+		for (int i = 0; i < numDims; i++) {
+			output.setAxis(ds.axis(i), i);
 		}
 	}
 
-	public void setInput(Dataset ds) {
-		input = ds;
+	public void setInput(ImageDisplay disp) {
+		input = disp;
 	}
 	
-	public Dataset getInput() {
+	public ImageDisplay getInput() {
 		return input;
 	}
 
