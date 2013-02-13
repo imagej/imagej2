@@ -39,7 +39,7 @@ import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.measure.Calibration;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -55,7 +55,7 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 
 	// -- instance variables --
 
-	private final ImageJ context;
+	private final Context context;
 	
 	private final GrayPixelHarmonizer pixelHarmonizer;
 	private final ColorTableHarmonizer colorTableHarmonizer;
@@ -66,7 +66,7 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 
 	// -- public interface --
 
-	public GrayImagePlusCreator(ImageJ context) {
+	public GrayImagePlusCreator(Context context) {
 		this.context = context;
 		pixelHarmonizer = new GrayPixelHarmonizer();
 		colorTableHarmonizer = new ColorTableHarmonizer(context);

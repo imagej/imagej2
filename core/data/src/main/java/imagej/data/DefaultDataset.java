@@ -35,7 +35,7 @@
 
 package imagej.data;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.event.DatasetCreatedEvent;
 import imagej.data.event.DatasetDeletedEvent;
 import imagej.data.event.DatasetRGBChangedEvent;
@@ -83,7 +83,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	private boolean rgbMerged;
 	private boolean isDirty;
 
-	public DefaultDataset(final ImageJ context,
+	public DefaultDataset(final Context context,
 		final ImgPlus<? extends RealType<?>> imgPlus)
 	{
 		super(context);

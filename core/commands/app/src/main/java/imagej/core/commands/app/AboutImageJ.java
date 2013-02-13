@@ -35,7 +35,7 @@
 
 package imagej.core.commands.app;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.command.ContextCommand;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
@@ -105,7 +105,7 @@ public class AboutImageJ extends ContextCommand {
 	// -- parameters --
 
 	@Parameter
-	private ImageJ context;
+	private Context context;
 
 	@Parameter
 	private LogService log;

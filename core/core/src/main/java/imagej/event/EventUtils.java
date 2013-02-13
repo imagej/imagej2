@@ -35,7 +35,7 @@
 
 package imagej.event;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.command.Command;
 
 import java.util.Collection;
@@ -64,7 +64,7 @@ public final class EventUtils {
 	 *         collected (which would cause events to stop being delivered).
 	 * @see EventService#subscribe(Object)
 	 */
-	public static List<EventSubscriber<?>> subscribe(final ImageJ context,
+	public static List<EventSubscriber<?>> subscribe(final Context context,
 		final Object o)
 	{
 		if (context == null) return null;
@@ -82,7 +82,7 @@ public final class EventUtils {
 	 * 
 	 * @see EventService#unsubscribe(Collection)
 	 */
-	public static void unsubscribe(final ImageJ context,
+	public static void unsubscribe(final Context context,
 		final Collection<EventSubscriber<?>> subscribers)
 	{
 		if (context == null) return;

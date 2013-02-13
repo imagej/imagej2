@@ -37,7 +37,7 @@ package imagej.command;
 
 import imagej.Cancelable;
 import imagej.Contextual;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.event.EventSubscriber;
 import imagej.event.EventUtils;
 import imagej.module.DefaultModule;
@@ -59,7 +59,7 @@ public abstract class DynamicCommand extends DefaultModule implements
 	Cancelable, Command, Contextual
 {
 
-	private ImageJ context;
+	private Context context;
 	private DynamicCommandInfo info;
 
 	/** Reason for cancelation, or null if not canceled. */
@@ -118,12 +118,12 @@ public abstract class DynamicCommand extends DefaultModule implements
 	// -- Contextual methods --
 
 	@Override
-	public ImageJ getContext() {
+	public Context getContext() {
 		return context;
 	}
 
 	@Override
-	public void setContext(final ImageJ context) {
+	public void setContext(final Context context) {
 		if (this.context != null) {
 			throw new IllegalStateException("Context already set");
 		}

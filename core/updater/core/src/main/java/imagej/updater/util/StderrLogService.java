@@ -35,7 +35,7 @@
 
 package imagej.updater.util;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.Prioritized;
 import imagej.log.LogService;
 
@@ -52,8 +52,8 @@ import imagej.log.LogService;
 @Deprecated
 public class StderrLogService implements LogService {
 	@Override public void initialize() { }
-	@Override public ImageJ getContext() { return null; }
-	@Override public void setContext(ImageJ context) { }
+	@Override public Context getContext() { return null; }
+	@Override public void setContext(Context context) { }
 	@Override public double getPriority() { return 0; }
 	@Override public void setPriority(double priority) { }
 	@Override public int compareTo(Prioritized o) { return 0; }

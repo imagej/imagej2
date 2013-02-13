@@ -35,7 +35,7 @@
 
 package imagej.data.overlay;
 
-import imagej.ImageJ;
+import imagej.Context;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -59,13 +59,13 @@ public class AngleOverlay extends AbstractROIOverlay<AngleRegionOfInterest> {
 		super(new AngleRegionOfInterest(new double[2], new double[2], new double[2]));
 	}
 	
-	public AngleOverlay(final ImageJ context) {
+	public AngleOverlay(final Context context) {
 		super(context, new AngleRegionOfInterest(new double[2], new double[2], new double[2]));
 		this.setAxis(Axes.X, 0);
 		this.setAxis(Axes.Y, 1);
 	}
 
-	public AngleOverlay(final ImageJ context, double[] ctr,
+	public AngleOverlay(final Context context, double[] ctr,
 		final double[] end1, final double[] end2)
 	{
 		super(context,

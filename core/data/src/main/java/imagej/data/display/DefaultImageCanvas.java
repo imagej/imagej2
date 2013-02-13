@@ -35,7 +35,7 @@
 
 package imagej.data.display;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.display.event.MouseCursorEvent;
 import imagej.data.display.event.PanZoomEvent;
 import imagej.data.display.event.ViewportResizeEvent;
@@ -411,7 +411,7 @@ public class DefaultImageCanvas implements ImageCanvas {
 	// -- Helper methods --
 
 	private void publishPanZoomEvent() {
-		final ImageJ context = getDisplay().getContext();
+		final Context context = getDisplay().getContext();
 		if (context == null) return;
 		final EventService eventService = getEventService();
 		if (eventService != null) eventService.publish(new PanZoomEvent(this));
@@ -421,14 +421,14 @@ public class DefaultImageCanvas implements ImageCanvas {
 
 	/** Gets the log to which messages should be sent. */
 	private LogService getLog() {
-		final ImageJ context = display.getContext();
+		final Context context = display.getContext();
 		if (context == null) return null;
 		return context.getService(LogService.class);
 	}
 
 	/** Gets the service to which events should be published. */
 	private EventService getEventService() {
-		final ImageJ context = display.getContext();
+		final Context context = display.getContext();
 		if (context == null) return null;
 		return context.getService(EventService.class);
 	}

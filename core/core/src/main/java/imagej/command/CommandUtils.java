@@ -35,7 +35,7 @@
 
 package imagej.command;
 
-import imagej.ImageJ;
+import imagej.Context;
 
 /**
  * Utility methods for working with {@link Command}s.
@@ -56,7 +56,7 @@ public final class CommandUtils {
 	 * @throws IllegalArgumentException if the context has no
 	 *           {@link CommandService}.
 	 */
-	public static CommandInfo populateServices(final ImageJ context,
+	public static CommandInfo populateServices(final Context context,
 		final Command command)
 	{
 		final CommandService commandService =

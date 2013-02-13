@@ -44,7 +44,7 @@ package imagej;
 public interface Contextual {
 
 	/** Gets the application context to which the object belongs. */
-	ImageJ getContext();
+	Context getContext();
 
 	/**
 	 * Sets the application context to which the object belongs.
@@ -56,6 +56,6 @@ public interface Contextual {
 	 * 
 	 * @throws IllegalStateException if the context has already been set.
 	 */
-	void setContext(ImageJ context);
+	void setContext(Context context);
 
 }

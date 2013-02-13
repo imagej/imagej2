@@ -36,6 +36,7 @@
 package imagej.ui;
 
 import imagej.command.CommandService;
+import imagej.data.display.ImageDisplayService;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.event.EventService;
@@ -89,6 +90,8 @@ public interface UIService extends Service {
 	OptionsService getOptionsService();
 
 	AppService getAppService();
+
+	ImageDisplayService getImageDisplayService();
 
 	/**
 	 * Adds the given UI to those managed by the service.

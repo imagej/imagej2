@@ -38,7 +38,7 @@ package imagej.legacy;
 import static org.junit.Assert.assertTrue;
 import ij.ImagePlus;
 import ij.gui.NewImage;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import net.imglib2.Cursor;
@@ -79,7 +79,7 @@ public class LegacyImageMapTest {
 
 	@Test
 	public void testRegisterDataset() {
-		final ImageJ context = new ImageJ(DatasetService.class);
+		final Context context = new Context(DatasetService.class);
 		final DatasetService datasetService =
 			context.getService(DatasetService.class);
 

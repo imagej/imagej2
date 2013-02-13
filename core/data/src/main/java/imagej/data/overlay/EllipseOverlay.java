@@ -35,7 +35,7 @@
 
 package imagej.data.overlay;
 
-import imagej.ImageJ;
+import imagej.Context;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -62,7 +62,7 @@ public class EllipseOverlay extends
 		super(new EllipseRegionOfInterest(2));
 	}
 	
-	public EllipseOverlay(final ImageJ context) {
+	public EllipseOverlay(final Context context) {
 		super(context, new EllipseRegionOfInterest(2));
 		setAxis(Axes.X, Axes.X.ordinal());
 		setAxis(Axes.Y, Axes.Y.ordinal());

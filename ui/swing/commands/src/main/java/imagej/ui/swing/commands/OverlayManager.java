@@ -35,7 +35,7 @@
 
 package imagej.ui.swing.commands;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.command.ContextCommand;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
@@ -52,7 +52,7 @@ import imagej.ui.swing.SwingOverlayManager;
 public class OverlayManager extends ContextCommand {
 
 	@Parameter
-	private ImageJ context;
+	private Context context;
 
 	@Override
 	public void run() {

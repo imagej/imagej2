@@ -35,7 +35,7 @@
 
 package imagej.data.overlay;
 
-import imagej.ImageJ;
+import imagej.Context;
 import net.imglib2.roi.RectangleRegionOfInterest;
 
 // TODO - this code is a place holder for when we really support text overlays.
@@ -54,7 +54,7 @@ public class TextOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> {
 	private String text;
 	private Justification just;
 
-	public TextOverlay(ImageJ context, double x, double y, String text,
+	public TextOverlay(Context context, double x, double y, String text,
 		Justification j)
 	{
 		super(context, new RectangleRegionOfInterest(new double[] { x, y },
@@ -63,15 +63,15 @@ public class TextOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> {
 		this.just = j;
 	}
 
-	public TextOverlay(ImageJ context, double x, double y, String text) {
+	public TextOverlay(Context context, double x, double y, String text) {
 		this(context, x, y, text, Justification.LEFT);
 	}
 
-	public TextOverlay(ImageJ context, double x, double y) {
+	public TextOverlay(Context context, double x, double y) {
 		this(context, x, y, "Default Text");
 	}
 
-	public TextOverlay(ImageJ context) {
+	public TextOverlay(Context context) {
 		this(context, 0, 0);
 	}
 

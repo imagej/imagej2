@@ -35,9 +35,9 @@
 
 package imagej.ui.pivot;
 
-import imagej.ImageJ;
 import imagej.tool.ToolService;
 import imagej.ui.ToolBar;
+import imagej.ui.UIService;
 
 import org.apache.pivot.wtk.BoxPane;
 
@@ -50,8 +50,8 @@ public class PivotToolBar extends BoxPane implements ToolBar {
 
 	private final ToolService toolService;
 
-	public PivotToolBar() {
-		toolService = ImageJ.get(ToolService.class);
+	public PivotToolBar(final UIService uiService) {
+		toolService = uiService.getToolService();
 		populateToolBar();
 	}
 

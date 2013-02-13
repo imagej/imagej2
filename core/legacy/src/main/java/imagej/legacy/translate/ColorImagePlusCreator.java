@@ -37,7 +37,7 @@ package imagej.legacy.translate;
 
 import ij.ImagePlus;
 import ij.ImageStack;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -52,7 +52,7 @@ public class ColorImagePlusCreator implements ImagePlusCreator {
 
 	// -- instance variables --
 
-	private final ImageJ context;
+	private final Context context;
 	
 	private final ColorPixelHarmonizer pixelHarmonizer;
 	private final MetadataHarmonizer metadataHarmonizer;
@@ -61,7 +61,7 @@ public class ColorImagePlusCreator implements ImagePlusCreator {
 
 	// -- public interface --
 
-	public ColorImagePlusCreator(ImageJ context) {
+	public ColorImagePlusCreator(Context context) {
 		this.context = context;
 		pixelHarmonizer = new ColorPixelHarmonizer();
 		metadataHarmonizer = new MetadataHarmonizer();

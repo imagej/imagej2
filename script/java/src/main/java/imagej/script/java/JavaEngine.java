@@ -35,7 +35,7 @@
 
 package imagej.script.java;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.build.minimaven.BuildEnvironment;
 import imagej.build.minimaven.Coordinate;
 import imagej.build.minimaven.MavenProject;
@@ -166,7 +166,7 @@ public class JavaEngine extends AbstractScriptEngine {
 			// launch main class
 			final Class<?> clazz = classLoader.loadClass(mainClass);
 			if (Command.class.isAssignableFrom(clazz)) {
-				final ImageJ context = (ImageJ)get(ScriptService.CONTEXT);
+				final Context context = (Context)get(ScriptService.CONTEXT);
 				final Plugin annotation = clazz.getAnnotation(Plugin.class);
 				final CommandInfo info = new CommandInfo(mainClass, annotation) {
 

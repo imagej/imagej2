@@ -37,6 +37,7 @@ package imagej.ui;
 
 import imagej.InstantiableException;
 import imagej.command.CommandService;
+import imagej.data.display.ImageDisplayService;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.display.event.DisplayActivatedEvent;
@@ -118,6 +119,9 @@ public final class DefaultUIService extends AbstractService implements
 	@Parameter
 	private AppService appService;
 
+	@Parameter
+	private ImageDisplayService imageDisplayService;
+
 	/**
 	 * A list of extant display viewers. It's needed in order to find the viewer
 	 * associated with a display.
@@ -195,6 +199,11 @@ public final class DefaultUIService extends AbstractService implements
 	@Override
 	public AppService getAppService() {
 		return appService;
+	}
+
+	@Override
+	public ImageDisplayService getImageDisplayService() {
+		return imageDisplayService;
 	}
 
 	@Override

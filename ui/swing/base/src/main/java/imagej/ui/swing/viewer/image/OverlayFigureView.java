@@ -35,7 +35,7 @@
 
 package imagej.ui.swing.viewer.image;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
@@ -94,7 +94,7 @@ public class OverlayFigureView implements FigureView {
 	{
 		this.displayViewer = display;
 		this.overlayView = overlayView;
-		final ImageJ context = display.getDisplay().getContext();
+		final Context context = display.getDisplay().getContext();
 		final JHotDrawService jHotDrawService =
 			context.getService(JHotDrawService.class);
 		adapter = jHotDrawService.getAdapter(overlayView.getData(), figure);

@@ -40,7 +40,7 @@ import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import ij.process.LUT;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.display.ColorTables;
 import imagej.data.display.DataView;
@@ -64,9 +64,9 @@ import net.imglib2.type.numeric.RealType;
  */
 public class ColorTableHarmonizer implements DisplayHarmonizer {
 
-	private final ImageJ context;
+	private final Context context;
 
-	public ColorTableHarmonizer(ImageJ context) {
+	public ColorTableHarmonizer(Context context) {
 		this.context = context;
 	}
 	

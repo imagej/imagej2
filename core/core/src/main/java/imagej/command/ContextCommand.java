@@ -37,7 +37,7 @@ package imagej.command;
 
 import imagej.AbstractContextual;
 import imagej.Cancelable;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.plugin.ServicePreprocessor;
 
 /**
@@ -94,7 +94,7 @@ public abstract class ContextCommand extends AbstractContextual implements
 	// -- Contextual methods --
 
 	@Override
-	public void setContext(final ImageJ context) {
+	public void setContext(final Context context) {
 		super.setContext(context);
 
 		// populate service parameters

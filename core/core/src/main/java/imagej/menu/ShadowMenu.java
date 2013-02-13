@@ -36,7 +36,7 @@
 package imagej.menu;
 
 import imagej.AbstractContextual;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.MenuEntry;
 import imagej.MenuPath;
 import imagej.command.CommandService;
@@ -103,14 +103,14 @@ public class ShadowMenu extends AbstractContextual implements
 	private final Map<String, ShadowMenu> children;
 
 	/** Constructs a root menu node populated with the given modules. */
-	public ShadowMenu(final ImageJ context,
+	public ShadowMenu(final Context context,
 		final Collection<? extends ModuleInfo> modules)
 	{
 		this(context, null, -1, null);
 		addAll(modules);
 	}
 
-	private ShadowMenu(final ImageJ context, final ModuleInfo moduleInfo,
+	private ShadowMenu(final Context context, final ModuleInfo moduleInfo,
 		final int menuDepth, final ShadowMenu parent)
 	{
 		setContext(context);

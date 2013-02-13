@@ -37,7 +37,7 @@ package imagej.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.command.DefaultCommandService;
 import imagej.event.DefaultEventService;
 import imagej.log.StderrLogService;
@@ -61,7 +61,7 @@ public class ServiceIndexTest {
 
 	@Test
 	public void testGetAll() {
-		final ImageJ context = new ImageJ(PlatformService.class);
+		final Context context = new Context(PlatformService.class);
 		final ServiceIndex serviceIndex = context.getServiceIndex();
 		final List<Service> all = serviceIndex.getAll();
 		assertEquals(8, all.size());

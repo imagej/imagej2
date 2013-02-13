@@ -40,7 +40,7 @@ import ij.ImagePlus;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.process.ByteProcessor;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.overlay.BinaryMaskOverlay;
@@ -80,7 +80,7 @@ import net.imglib2.type.numeric.integer.ByteType;
  */
 public class Helper {
 
-	public static PolygonOverlay makePolygonOverlay(final ImageJ context,
+	public static PolygonOverlay makePolygonOverlay(final Context context,
 		final double[] x, final double[] y)
 	{
 		assertEquals(x.length, y.length);
@@ -92,7 +92,7 @@ public class Helper {
 		return overlay;
 	}
 
-	public static RectangleOverlay makeRectangleOverlay(final ImageJ context,
+	public static RectangleOverlay makeRectangleOverlay(final Context context,
 		final double x, final double y, final double w, final double h)
 	{
 		final RectangleOverlay overlay = new RectangleOverlay(context);
@@ -101,7 +101,7 @@ public class Helper {
 		return overlay;
 	}
 
-	public static EllipseOverlay makeEllipseOverlay(final ImageJ context,
+	public static EllipseOverlay makeEllipseOverlay(final Context context,
 		final double x, final double y, final double w, final double h)
 	{
 		final EllipseOverlay overlay = new EllipseOverlay(context);
@@ -119,7 +119,7 @@ public class Helper {
 	 * @param y - y coordinates of the pixels
 	 * @return a binary mask overlay with the ROI inside
 	 */
-	public static BinaryMaskOverlay makeBinaryMaskOverlay(final ImageJ context,
+	public static BinaryMaskOverlay makeBinaryMaskOverlay(final Context context,
 		final int x, final int y, final boolean[][] mask)
 	{
 		final long w = mask.length;
@@ -170,7 +170,7 @@ public class Helper {
 		return imp;
 	}
 
-	public static Dataset makeDataset(final ImageJ context, final byte[][] data,
+	public static Dataset makeDataset(final Context context, final byte[][] data,
 		final String name)
 	{
 		final int w = data.length;

@@ -35,7 +35,7 @@
 
 package imagej.core.commands.overlay;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.command.ContextCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.EllipseOverlay;
@@ -68,7 +68,7 @@ public class SelectionSpecify extends ContextCommand {
 	// -- Parameters --
 
 	@Parameter
-	private ImageJ context;
+	private Context context;
 
 	@Parameter
 	private ImageDisplay display;

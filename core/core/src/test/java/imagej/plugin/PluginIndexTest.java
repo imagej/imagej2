@@ -37,7 +37,7 @@ package imagej.plugin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.command.Command;
 
 import java.util.List;
@@ -59,7 +59,7 @@ public class PluginIndexTest {
 	@Test
 	public void testGetPluginsOfClass() {
 		// create a minimal ImageJ context
-		final ImageJ context = new ImageJ(PluginService.class);
+		final Context context = new Context(PluginService.class);
 		final PluginIndex pluginIndex = context.getPluginIndex();
 
 		// add a plugin to the index
@@ -88,7 +88,7 @@ public class PluginIndexTest {
 	@Test
 	public void testGetPluginsOfClassString() {
 		// create a minimal ImageJ context
-		final ImageJ context = new ImageJ(PluginService.class);
+		final Context context = new Context(PluginService.class);
 		final PluginIndex pluginIndex = context.getPluginIndex();
 
 		// add a fake plugin to the index

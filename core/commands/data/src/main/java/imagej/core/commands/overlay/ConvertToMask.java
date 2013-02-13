@@ -35,7 +35,7 @@
 
 package imagej.core.commands.overlay;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
@@ -98,7 +98,7 @@ public class ConvertToMask extends ContextCommand {
 	private int alpha = 128;
 
 	@Parameter
-	private ImageJ context;
+	private Context context;
 
 	@Parameter
 	private ImageDisplayService dispSrv;

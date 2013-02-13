@@ -39,7 +39,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import imagej.ImageJ;
+import imagej.Context;
 
 import org.junit.Test;
 
@@ -52,7 +52,7 @@ public class DisplayTest {
 
 	@Test
 	public void testCreate() {
-		final ImageJ context = new ImageJ(DisplayService.class);
+		final Context context = new Context(DisplayService.class);
 		final DisplayService displayService =
 			context.getService(DisplayService.class);
 		final String name = "Create";
@@ -78,7 +78,7 @@ public class DisplayTest {
 
 	@Test
 	public void testAddRemove() {
-		final ImageJ context = new ImageJ(DisplayService.class);
+		final Context context = new Context(DisplayService.class);
 		final DisplayService displayService =
 			context.getService(DisplayService.class);
 		final String name = "AddRemove";
@@ -117,7 +117,7 @@ public class DisplayTest {
 
 	@Test
 	public void testText() {
-		final ImageJ context = new ImageJ(DisplayService.class);
+		final Context context = new Context(DisplayService.class);
 		final DisplayService displayService =
 			context.getService(DisplayService.class);
 		final String name = "Text";

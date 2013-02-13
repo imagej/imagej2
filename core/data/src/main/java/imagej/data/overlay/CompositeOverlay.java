@@ -35,7 +35,7 @@
 
 package imagej.data.overlay;
 
-import imagej.ImageJ;
+import imagej.Context;
 
 import java.io.IOException;
 import java.io.ObjectOutput;
@@ -81,11 +81,11 @@ public class CompositeOverlay extends
 		super(new CompositeRegionOfInterest(2));
 	}
 	
-	public CompositeOverlay(final ImageJ context) {
+	public CompositeOverlay(final Context context) {
 		this(context, 2);
 	}
 
-	public CompositeOverlay(final ImageJ context, final int numDimensions) {
+	public CompositeOverlay(final Context context, final int numDimensions) {
 		super(context, new CompositeRegionOfInterest(numDimensions));
 	}
 

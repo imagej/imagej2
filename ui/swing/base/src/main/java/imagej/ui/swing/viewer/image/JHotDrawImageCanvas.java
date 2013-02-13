@@ -35,7 +35,7 @@
 
 package imagej.ui.swing.viewer.image;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.display.DataView;
@@ -169,7 +169,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 		scrollPane.getHorizontalScrollBar().addAdjustmentListener(this);
 		scrollPane.getVerticalScrollBar().addAdjustmentListener(this);
 
-		final ImageJ context = getDisplay().getContext();
+		final Context context = getDisplay().getContext();
 		final ToolService toolService = context.getService(ToolService.class);
 		final Tool activeTool = toolService.getActiveTool();
 		activateTool(activeTool);

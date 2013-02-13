@@ -35,7 +35,7 @@
 
 package imagej.plugin;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.Priority;
 import imagej.module.Module;
 import imagej.module.ModuleItem;
@@ -79,7 +79,7 @@ public class ServicePreprocessor extends AbstractPreprocessorPlugin {
 
 	// -- Helper methods --
 
-	private <S extends Service> void setServiceValue(final ImageJ context,
+	private <S extends Service> void setServiceValue(final Context context,
 		final Module module, final ModuleItem<S> input)
 	{
 		final S service = context.getService(input.getType());

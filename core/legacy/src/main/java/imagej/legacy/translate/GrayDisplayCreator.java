@@ -37,7 +37,7 @@ package imagej.legacy.translate;
 
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.display.ImageDisplay;
@@ -57,7 +57,7 @@ public class GrayDisplayCreator implements DisplayCreator {
 
 	// -- instance variables --
 
-	private final ImageJ context;
+	private final Context context;
 
 	private final GrayPixelHarmonizer pixelHarmonizer;
 	private final ColorTableHarmonizer colorTableHarmonizer;
@@ -74,7 +74,7 @@ public class GrayDisplayCreator implements DisplayCreator {
 
 	// -- constructor --
 
-	public GrayDisplayCreator(final ImageJ context) {
+	public GrayDisplayCreator(final Context context) {
 		this.context = context;
 		pixelHarmonizer = new GrayPixelHarmonizer();
 		colorTableHarmonizer = new ColorTableHarmonizer(context);

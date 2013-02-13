@@ -35,7 +35,6 @@
 
 package imagej;
 
-import imagej.event.ImageJEvent;
 import imagej.plugin.PluginIndex;
 import imagej.service.Service;
 import imagej.service.ServiceHelper;
@@ -56,88 +55,14 @@ import java.util.Collections;
  * @author Curtis Rueden
  * @see Service
  */
-public class ImageJ {
+public class Context {
 
-	/** @deprecated Use {@link ImageJ#getVersion()} instead. */
+	/** @deprecated Use {@link Context#getVersion()} instead. */
 	@Deprecated
 	public static final String VERSION =
-		POM.getPOM(ImageJ.class, "net.imagej", "ij-core").getVersion();
+		POM.getPOM(Context.class, "net.imagej", "ij-core").getVersion();
 
-	/** @deprecated Use {@link #ImageJ()} instead. */
-	@Deprecated
-	public static ImageJ createContext() {
-		return new ImageJ();
-	}
-
-	/** @deprecated Use {@code new ImageJ(true)} instead. */
-	@Deprecated
-	public static ImageJ createEmptyContext() {
-		return new ImageJ(true);
-	}
-
-	/** @deprecated Use {@link #ImageJ(Class...)} instead. */
-	@Deprecated
-	public static ImageJ createContext(
-		final Class<? extends Service> serviceClass)
-	{
-		return new ImageJ(serviceClass);
-	}
-
-	/** @deprecated Use {@link #ImageJ(Class...)} instead. */
-	@Deprecated
-	public static ImageJ createContext(
-		final Class<? extends Service>... serviceClasses)
-	{
-		return new ImageJ(serviceClasses);
-	}
-
-	// TODO - remove this!
-	private static ImageJ staticContext;
-
-	/** @deprecated Use {@link #ImageJ(Collection)} instead. */
-	@Deprecated
-	public static ImageJ createContext(
-		final Collection<Class<? extends Service>> serviceClasses)
-	{
-		return new ImageJ(serviceClasses);
-	}
-
-	/**
-	 * Gets the static ImageJ application context.
-	 * 
-	 * @deprecated Avoid using this method. If you are writing a command, you can
-	 *             declare the {@link ImageJ} or {@link Service} you want as a
-	 *             parameter. If you are writing a tool, you can obtain the
-	 *             {@link ImageJ} context by calling
-	 *             {@link ImageJEvent#getContext()}, and then asking that context
-	 *             for needed {@link Service} instances by calling
-	 *             {@link ImageJ#getService(Class)}. See the classes in
-	 *             {@code core/commands} and {@code core/tools} for many examples.
-	 */
-	@Deprecated
-	public static ImageJ getContext() {
-		return staticContext;
-	}
-
-	/**
-	 * Gets the service of the given class for the current ImageJ application
-	 * context.
-	 * 
-	 * @deprecated Avoid using this method. If you are writing a command, you can
-	 *             annotate the {@link ImageJ} or {@link Service} you want as a
-	 *             parameter. If you are writing a tool, you can obtain the
-	 *             {@link ImageJ} context by calling
-	 *             {@link ImageJEvent#getContext()}, and then asking that context
-	 *             for needed {@link Service} instances by calling
-	 *             {@link ImageJ#getService(Class)}. See the classes in
-	 *             {@code core/commands} and {@code core/tools} for many examples.
-	 */
-	@Deprecated
-	public static <S extends Service> S get(final Class<S> serviceClass) {
-		final ImageJ context = getContext();
-		if (context == null) return null; // no context
-		return context.getService(serviceClass);
-	}
+	private static boolean sezpozNeedsToRun = true;
 
 	// -- Fields --
 
@@ -157,7 +82,7 @@ public class ImageJ {
 	private final Manifest manifest;
 
 	/** Creates a new ImageJ application context with all available services. */
-	public ImageJ() {
+	public Context() {
 		this(false);
 	}
 
@@ -167,7 +92,7 @@ public class ImageJ {
 	 * @param empty If true, the context will be empty; otherwise, it will be
 	 *          initialized with all available services.
 	 */
-	public ImageJ(final boolean empty) {
+	public Context(final boolean empty) {
 		this(empty ? Collections.<Class<? extends Service>> emptyList() : null);
 	}
 
@@ -194,7 +119,7 @@ public class ImageJ {
 	 *           the {@link Service} interface.
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public ImageJ(final Class... serviceClasses) {
+	public Context(final Class... serviceClasses) {
 		this(serviceClasses != null ? (Collection) Arrays.asList(serviceClasses)
 			: null);
 	}
@@ -206,8 +131,8 @@ public class ImageJ {
 	 * @param serviceClasses A collection of types that implement the
 	 *          {@link Service} interface (e.g., {@code DisplayService.class}).
 	 */
-	public ImageJ(final Collection<Class<? extends Service>> serviceClasses) {
-		if (staticContext == null) {
+	public Context(final Collection<Class<? extends Service>> serviceClasses) {
+		if (sezpozNeedsToRun) {
 			// First context! Check that annotations were generated properly.
 			try {
 				if (!CheckSezpoz.check(false)) {
@@ -219,16 +144,16 @@ public class ImageJ {
 			catch (final IOException e) {
 				e.printStackTrace();
 			}
+			sezpozNeedsToRun = false;
 		}
-		staticContext = this; // TEMP
 
 		serviceIndex = new ServiceIndex();
 
 		pluginIndex = new PluginIndex();
 		pluginIndex.discover();
 
-		pom = POM.getPOM(ImageJ.class, "net.imagej", "ij-core");
-		manifest = Manifest.getManifest(ImageJ.class);
+		pom = POM.getPOM(Context.class, "net.imagej", "ij-core");
+		manifest = Manifest.getManifest(Context.class);
 
 		final ServiceHelper serviceHelper =
 			new ServiceHelper(this, serviceClasses);
@@ -312,12 +237,15 @@ public class ImageJ {
 	}
 
 	/** Gets the service of the given class name (useful for scripts). */
-	@SuppressWarnings("unchecked")
-	public <S extends Service> S getService(final String className) {
+	public Service getService(final String className) {
 		try {
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
-			return  getService((Class<S>)loader.loadClass(className));
-		} catch (ClassNotFoundException exc) {
+			@SuppressWarnings("unchecked")
+			final Class<Service> serviceClass =
+				(Class<Service>) loader.loadClass(className);
+			return getService(serviceClass);
+		}
+		catch (ClassNotFoundException exc) {
 			return null;
 		}
 	}

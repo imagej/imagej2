@@ -36,7 +36,7 @@
 package imagej.script;
 
 import static org.junit.Assert.assertEquals;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.service.ServiceHelper;
 
 import java.io.StringReader;
@@ -52,7 +52,7 @@ public class JavascriptTest {
 
 	@Test
 	public void testBasic() throws Exception {
-		final ImageJ context = new ImageJ();
+		final Context context = new Context();
 		new ServiceHelper(context).createExactService(DefaultScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
 		new ServiceHelper(context).createExactService(DummyService.class);

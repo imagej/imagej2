@@ -35,7 +35,7 @@
 
 package imagej.data.overlay;
 
-import imagej.ImageJ;
+import imagej.Context;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -59,13 +59,13 @@ public class LineOverlay extends AbstractROIOverlay<LineRegionOfInterest> {
 		super(new LineRegionOfInterest(new double[2], new double[2]));
 	}
 	
-	public LineOverlay(final ImageJ context) {
+	public LineOverlay(final Context context) {
 		super(context, new LineRegionOfInterest(new double[2], new double[2]));
 		this.setAxis(Axes.X, 0);
 		this.setAxis(Axes.Y, 1);
 	}
 
-	public LineOverlay(final ImageJ context, final double[] ptStart,
+	public LineOverlay(final Context context, final double[] ptStart,
 		final double[] ptEnd)
 	{
 		super(context, new LineRegionOfInterest(ptStart,ptEnd));

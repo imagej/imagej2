@@ -41,6 +41,7 @@ import imagej.plugin.Plugin;
 import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
+import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 import imagej.ui.swing.AbstractSwingUI;
 import imagej.ui.swing.SwingApplicationFrame;
@@ -87,7 +88,9 @@ public class SwingMdiUI extends AbstractSwingUI {
 	public SwingMdiDialogPrompt dialogPrompt(final String message,
 		final String title, final MessageType msg, final OptionType option)
 	{
-		return new SwingMdiDialogPrompt(message, title, msg, option);
+		final UserInterface ui =
+			getContext().getService(UIService.class).getDefaultUI();
+		return new SwingMdiDialogPrompt(ui, message, title, msg, option);
 	}
 
 	// -- Internal methods --

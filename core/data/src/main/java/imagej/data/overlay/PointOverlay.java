@@ -35,7 +35,7 @@
 
 package imagej.data.overlay;
 
-import imagej.ImageJ;
+import imagej.Context;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -64,18 +64,18 @@ public class PointOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> 
 		super(new RectangleRegionOfInterest(new double[2], new double[2]));
 	}
 	
-	public PointOverlay(final ImageJ context) {
+	public PointOverlay(final Context context) {
 		super(context, new RectangleRegionOfInterest(new double[2], new double[2]));
 		this.setAxis(Axes.X, 0);
 		this.setAxis(Axes.Y, 1);
 	}
 
-	public PointOverlay(final ImageJ context, final List<double[]> pts) {
+	public PointOverlay(final Context context, final List<double[]> pts) {
 		this(context);
 		setPoints(pts);
 	}
 
-	public PointOverlay(final ImageJ context, final double[] pt) {
+	public PointOverlay(final Context context, final double[] pt) {
 		this(context, Arrays.asList(pt));
 	}
 

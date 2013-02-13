@@ -35,7 +35,7 @@
 
 package imagej.core.commands.debug;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.command.Command;
 import imagej.module.ItemIO;
 import imagej.plugin.Parameter;
@@ -66,7 +66,7 @@ public class SystemInformation implements Command {
 	// -- Parameters --
 
 	@Parameter
-	private ImageJ context;
+	private Context context;
 
 	@Parameter(label = "System Information", type = ItemIO.OUTPUT)
 	private String info;

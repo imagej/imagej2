@@ -36,7 +36,7 @@
 package imagej.service;
 
 import imagej.AbstractContextual;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.event.EventService;
 import imagej.log.LogService;
 import imagej.plugin.Parameter;
@@ -76,7 +76,7 @@ public class ServiceHelper extends AbstractContextual {
 	 * @param context The application context for which services should be
 	 *          instantiated.
 	 */
-	public ServiceHelper(final ImageJ context) {
+	public ServiceHelper(final Context context) {
 		this(context, null);
 	}
 
@@ -86,7 +86,7 @@ public class ServiceHelper extends AbstractContextual {
 	 * @param context The application context to which services should be added.
 	 * @param serviceClasses The service classes to instantiate.
 	 */
-	public ServiceHelper(final ImageJ context,
+	public ServiceHelper(final Context context,
 		final Collection<Class<? extends Service>> serviceClasses)
 	{
 		setContext(context);

@@ -37,7 +37,7 @@ package imagej.module;
 
 import imagej.AbstractContextual;
 import imagej.Cancelable;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.event.EventService;
 import imagej.event.StatusService;
 import imagej.log.LogService;
@@ -71,7 +71,7 @@ public class ModuleRunner extends AbstractContextual implements
 	private final List<? extends ModulePreprocessor> pre;
 	private final List<? extends ModulePostprocessor> post;
 
-	public ModuleRunner(final ImageJ context, final Module module,
+	public ModuleRunner(final Context context, final Module module,
 		final List<? extends ModulePreprocessor> pre,
 		final List<? extends ModulePostprocessor> post)
 	{

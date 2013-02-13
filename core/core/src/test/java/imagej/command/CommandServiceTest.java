@@ -36,7 +36,7 @@
 package imagej.command;
 
 import static org.junit.Assert.assertEquals;
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
@@ -51,7 +51,7 @@ public class CommandServiceTest {
 
 	@Test
 	public void runClass() throws Exception {
-		final ImageJ context = new ImageJ(CommandService.class);
+		final Context context = new Context(CommandService.class);
 		final CommandService commandService =
 			context.getService(CommandService.class);
 		final StringBuffer string = new StringBuffer();

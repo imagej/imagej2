@@ -35,7 +35,7 @@
 
 package imagej.core.commands.debug;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.command.Command;
 import imagej.command.CommandService;
 import imagej.data.Dataset;
@@ -73,7 +73,7 @@ import net.imglib2.meta.Axes;
 public class InvokeCommandTest implements Command {
 
 	@Parameter
-	private ImageJ context;
+	private Context context;
 
 	@Parameter
 	private LogService log;

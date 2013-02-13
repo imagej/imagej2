@@ -35,7 +35,7 @@
 
 package imagej.config;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.util.AppUtils;
 import imagej.util.Log;
 
@@ -280,7 +280,7 @@ public class ConfigFileParameters {
 			final FileOutputStream fos = new FileOutputStream(file);
 			final OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF8");
 			final BufferedWriter out = new BufferedWriter(osw);
-			out.write("#" + SENTINEL + " (" + ImageJ.VERSION + ")");
+			out.write("#" + SENTINEL + " (" + Context.VERSION + ")");
 			out.newLine();
 			for (final String key : map.keySet()) {
 				String value = map.get(key);

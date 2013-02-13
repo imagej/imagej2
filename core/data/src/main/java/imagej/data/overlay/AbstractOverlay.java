@@ -35,7 +35,7 @@
 
 package imagej.data.overlay;
 
-import imagej.ImageJ;
+import imagej.Context;
 import imagej.data.AbstractData;
 import imagej.data.display.OverlayService;
 import imagej.data.event.OverlayCreatedEvent;
@@ -87,7 +87,7 @@ public abstract class AbstractOverlay extends AbstractData implements Overlay {
 		super();
 	}
 	
-	public AbstractOverlay(final ImageJ context) {
+	public AbstractOverlay(final Context context) {
 		super(context);
 		final OverlayService overlayService =
 			context == null ? null : context.getService(OverlayService.class);
