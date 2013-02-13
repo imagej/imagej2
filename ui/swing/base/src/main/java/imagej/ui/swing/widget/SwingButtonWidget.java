@@ -69,7 +69,13 @@ public class SwingButtonWidget extends SwingInputWidget<Button> implements
 
 			@Override
 			public void actionPerformed(final ActionEvent e) {
+
+				// call the code attached to this button
 				model.callback();
+
+				// make sure panel owning button is refreshed in case button changed
+				// some panel fields
+				getModel().getPanel().refresh();
 			}
 		});
 		setToolTip(button);
