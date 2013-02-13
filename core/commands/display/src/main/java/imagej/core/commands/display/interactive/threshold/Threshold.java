@@ -33,8 +33,11 @@
  * #L%
  */
 
-package imagej.core.commands.display.interactive;
+package imagej.core.commands.display.interactive.threshold;
 
+import imagej.InstantiableException;
+import imagej.core.commands.display.interactive.InteractiveCommand;
+import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.overlay.ThresholdOverlay;
@@ -46,10 +49,16 @@ import imagej.options.OptionsService;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.plugin.PluginInfo;
+import imagej.plugin.PluginService;
 import imagej.util.Colors;
 import imagej.widget.Button;
-import net.imglib2.algorithm.stats.ComputeMinMax;
-import net.imglib2.img.Img;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import net.imglib2.Cursor;
+import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 // TODO All the problems with thresh overlay code at the moment:
@@ -88,6 +97,9 @@ public class Threshold extends InteractiveCommand {
 	// -- Parameters --
 
 	@Parameter
+	private PluginService pluginSrv;
+
+	@Parameter
 	private ThresholdService threshSrv;
 
 	@Parameter
@@ -96,14 +108,13 @@ public class Threshold extends InteractiveCommand {
 	@Parameter
 	private ImageDisplayService imgDispSrv;
 
-	@Parameter(label = "Method",
-		choices = { "Method 1", "Method 2", "Method 3" }, persist = false)
-	private String method;
-
-	@Parameter(label = "Display type",
+	@Parameter(label = "Display Type",
 		choices = { RED, BLACK_WHITE, OVER_UNDER },
 		callback = "displayTypeChanged", persist = false)
 	private String displayType = RED;
+
+	@Parameter(label = "Auto Method", persist = false)
+	private String methodName;
 
 	@Parameter(label = "Auto", callback = "autoThreshold")
 	private Button auto;
@@ -133,7 +144,11 @@ public class Threshold extends InteractiveCommand {
 
 	// -- instance variables --
 
+	private long[] histogram;
+
 	private double dataMin, dataMax;
+
+	private HashMap<String, AutoThresholdMethod> methods;
 
 	// -- accessors --
 
@@ -157,13 +172,18 @@ public class Threshold extends InteractiveCommand {
 	@SuppressWarnings("unchecked")
 	protected void initValues() {
 
-		computeDataMinMax(getImg());
+		populateThreshMethods();
+
 		boolean alreadyHadOne = threshSrv.hasThreshold(display);
 		ThresholdOverlay overlay = threshSrv.getThreshold(display);
 
-		// set default values: TODO - calc stats/histogram and do something nice.
-		// For now we'll set them to half the range
-		if (!alreadyHadOne) overlay.setRange(dataMin, dataMax / 2);
+		gatherStats();
+		if (!alreadyHadOne) {
+			// default the thresh to something sensible: 85/170 is IJ1's default
+			double min = 85 * (dataMax - dataMin) / 255;
+			double max = 170 * (dataMax - dataMin) / 255;
+			overlay.setRange(min, max);
+		}
 
 		// TODO note
 		// The threshold ranges would be best as a slider with range ends noted.
@@ -192,19 +212,35 @@ public class Threshold extends InteractiveCommand {
 	// -- callbacks --
 
 	protected void autoThreshold() {
-		// TODO
-		System.out.println("UNIMPLEMENTED");
+		AutoThresholdMethod method = methods.get(methodName);
+		int cutoff = method.getThreshold(histogram);
+		// TODO always 0 thru cutoff. darkb would be cutoff to 255.
+		minimum = dataMin + (0 / (double) histogram.length) * (dataMax - dataMin);
+		maximum =
+			dataMin + (cutoff / (double) histogram.length) * (dataMax - dataMin);
+		setInput("minimum", minimum);
+		setInput("maximum", maximum);
+		rangeChanged();
+
 	}
 
 	protected void backgroundChange() {
-		ThresholdOverlay overlay = getThreshold();
-		// TODO - do these calx match IJ1? No. IJ1 calcs a threshold. Then either
-		// goes from (0,thresh) or (thresh+1,255) depending on setting. Maybe we
-		// do this too. Or we remove functionality altogether.
-		minimum = dataMin + dataMax - overlay.getRangeMax();
-		maximum = dataMin + dataMax - overlay.getRangeMin();
-		overlay.setRange(minimum, maximum);
-		overlay.update();
+		AutoThresholdMethod method = methods.get(methodName);
+		int cutoff = method.getThreshold(histogram);
+		if (darkBackground) {
+			maximum = dataMax;
+			minimum =
+				dataMin + ((cutoff + 1) / (double) histogram.length) *
+					(dataMax - dataMin);
+		}
+		else {
+			minimum = dataMin;
+			maximum =
+				dataMin + (cutoff / (double) histogram.length) * (dataMax - dataMin);
+		}
+		setInput("minimum", minimum);
+		setInput("maximum", maximum);
+		rangeChanged();
 	}
 
 	protected void changePixels() {
@@ -261,16 +297,54 @@ public class Threshold extends InteractiveCommand {
 		}
 	}
 	
-	private <T extends RealType<T>> void computeDataMinMax(final Img<T> img) {
-		final ComputeMinMax<T> computeMinMax = new ComputeMinMax<T>(img);
-		computeMinMax.process();
-		dataMin = computeMinMax.getMin().getRealDouble();
-		dataMax = computeMinMax.getMax().getRealDouble();
-		log.debug("computeDataMinMax: dataMin=" + dataMin + ", dataMax=" + dataMax);
+	private void populateThreshMethods() {
+		methods = new HashMap<String, AutoThresholdMethod>();
+		final ArrayList<String> methodNames = new ArrayList<String>();
+
+		for (final PluginInfo<AutoThresholdMethod> info : pluginSrv
+			.getPluginsOfType(AutoThresholdMethod.class))
+		{
+			try {
+				final String name = info.getName();
+				final AutoThresholdMethod method = info.createInstance();
+				methods.put(name, method);
+				methodNames.add(name);
+			}
+			catch (final InstantiableException exc) {
+				log.warn("Invalid autothreshold method: " + info.getClassName(), exc);
+			}
+		}
+
+		@SuppressWarnings("unchecked")
+		final DefaultModuleItem<String> methodNameInput =
+			(DefaultModuleItem<String>) getInfo().getInput("methodName");
+		methodNameInput.setChoices(methodNames);
 	}
 
-	@SuppressWarnings("rawtypes")
-	private Img getImg() {
-		return imgDispSrv.getActiveDataset(display).getImgPlus();
+	private void gatherStats() {
+		Dataset ds = imgDispSrv.getActiveDataset(display);
+		dataMin = Double.POSITIVE_INFINITY;
+		dataMax = Double.NEGATIVE_INFINITY;
+		ImgPlus<? extends RealType<?>> imgPlus = ds.getImgPlus();
+		Cursor<? extends RealType<?>> cursor = imgPlus.cursor();
+		while (cursor.hasNext()) {
+			cursor.fwd();
+			double value = cursor.get().getRealDouble();
+			dataMin = Math.min(dataMin, value);
+			dataMax = Math.max(dataMax, value);
+		}
+		cursor.reset();
+		int histSize = 256;
+		if (ds.isInteger() && (ds.getType().getBitsPerPixel() == 16)) {
+			histSize = 16384;
+		}
+		histogram = new long[histSize];
+		while (cursor.hasNext()) {
+			cursor.fwd();
+			double value = cursor.get().getRealDouble();
+			double relPos = (value - dataMin) / (dataMax - dataMin);
+			int binNumber = (int) Math.round((histogram.length - 1) * relPos);
+			histogram[binNumber]++;
+		}
 	}
 }
