@@ -35,9 +35,6 @@
 
 package imagej;
 
-import imagej.console.ConsoleService;
-import imagej.ui.UIService;
-
 /**
  * Launches ImageJ.
  * 
@@ -55,19 +52,16 @@ public final class Main {
 	 * @param args The arguments to pass to the new ImageJ instance.
 	 * @return The context of the newly launched ImageJ instance.
 	 */
-	public static Context launch(final String... args) {
-		final Context context = new Context();
+	public static ImageJ launch(final String... args) {
+		final ImageJ ij = new ImageJ();
 
 		// parse command line arguments
-		final ConsoleService consoleService =
-			context.getService(ConsoleService.class);
-		if (consoleService != null) consoleService.processArgs(args);
+		ij.console().processArgs(args);
 
 		// display the user interface
-		final UIService uiService = context.getService(UIService.class);
-		if (uiService != null) uiService.showUI();
+		ij.ui().showUI();
 
-		return context;
+		return ij;
 	}
 
 	public static void main(final String... args) {
