@@ -7,28 +7,26 @@
 
 	<parent>
 		<groupId>net.imagej</groupId>
-		<artifactId>pom-ij-base</artifactId>
+		<artifactId>pom-ij-plugins</artifactId>
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>pom-ij-core</artifactId>
+	<artifactId>pom-ij-commands</artifactId>
 	<packaging>pom</packaging>
 
-	<name>ImageJ POM: Core</name>
-	<description>Core ImageJ projects.</description>
+	<name>ImageJ POM: Commands</name>
+	<description>A collection of built-in commands for ImageJ.</description>
 
 	<modules>
-		<module>core</module>
+		<module>app</module>
 		<module>data</module>
-		<module>io</module>
-		<module>legacy</module>
-		<module>options</module>
-		<module>ui</module>
-		<module>updater</module>
+		<module>debug</module>
+		<module>display</module>
+		<module>upload</module>
 	</modules>
 
 	<properties>
-		<project.rootdir>${basedir}/..</project.rootdir>
+		<project.rootdir>${basedir}/../..</project.rootdir>
 	</properties>
 
 	<!-- NB: for project parent, in case of partial checkout -->

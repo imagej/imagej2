@@ -7,14 +7,14 @@
 
 	<parent>
 		<groupId>net.imagej</groupId>
-		<artifactId>pom-ij-core</artifactId>
+		<artifactId>pom-ij-uploaders</artifactId>
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-updater-core</artifactId>
+	<artifactId>ij-updater-ssh</artifactId>
 
-	<name>ImageJ Updater</name>
-	<description>The ImageJ Updater (TAFKA Fiji Updater).</description>
+	<name>ImageJ Updater support for uploading via SSH/SFTP</name>
+	<description>The SSH/SFTP-specific part of the ImageJ Updater (TAFKA Fiji Updater).</description>
 
 	<dependencies>
 		<dependency>
@@ -22,23 +22,20 @@
 			<artifactId>ij-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
 		<dependency>
-			<groupId>net.java.sezpoz</groupId>
-			<artifactId>sezpoz</artifactId>
-			<version>${sezpoz.version}</version>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-updater-core</artifactId>
+			<version>${project.version}</version>
 		</dependency>
-
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
+			<groupId>com.jcraft</groupId>
+			<artifactId>jsch</artifactId>
+			<version>0.1.49</version>
 		</dependency>
 	</dependencies>
 
 	<properties>
-		<project.rootdir>${basedir}/../..</project.rootdir>
+		<project.rootdir>${basedir}/../../..</project.rootdir>
 	</properties>
 
 	<build>
@@ -48,7 +45,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.updater</packageName>
+							<packageName>imagej.updater.ssh</packageName>
 						</manifest>
 					</archive>
 				</configuration>

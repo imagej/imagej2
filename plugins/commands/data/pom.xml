@@ -7,14 +7,14 @@
 
 	<parent>
 		<groupId>net.imagej</groupId>
-		<artifactId>pom-ij-core</artifactId>
+		<artifactId>pom-ij-commands</artifactId>
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-updater-core</artifactId>
+	<artifactId>ij-commands-data</artifactId>
 
-	<name>ImageJ Updater</name>
-	<description>The ImageJ Updater (TAFKA Fiji Updater).</description>
+	<name>ImageJ Core Commands: Data</name>
+	<description>Core image processing routines for ImageJ.</description>
 
 	<dependencies>
 		<dependency>
@@ -22,23 +22,36 @@
 			<artifactId>ij-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
 		<dependency>
-			<groupId>net.java.sezpoz</groupId>
-			<artifactId>sezpoz</artifactId>
-			<version>${sezpoz.version}</version>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-data</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-options</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-ui</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
+			<groupId>${imglib2.groupId}</groupId>
+			<artifactId>imglib2</artifactId>
+			<version>${imglib2.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${imglib2.groupId}</groupId>
+			<artifactId>imglib2-ops</artifactId>
+			<version>${imglib2.version}</version>
 		</dependency>
 	</dependencies>
 
 	<properties>
-		<project.rootdir>${basedir}/../..</project.rootdir>
+		<project.rootdir>${basedir}/../../..</project.rootdir>
 	</properties>
 
 	<build>
@@ -48,7 +61,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.updater</packageName>
+							<packageName>imagej.core.commands</packageName>
 						</manifest>
 					</archive>
 				</configuration>

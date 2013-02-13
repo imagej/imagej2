@@ -15,7 +15,12 @@
 	<packaging>pom</packaging>
 
 	<name>ImageJ POM: User Interface</name>
-	<description>ImageJ user interface projects.</description>
+	<description>UI-specific projects.</description>
+
+	<modules>
+		<module>awt-swing</module>
+		<module>swing</module>
+	</modules>
 
 	<properties>
 		<project.rootdir>${basedir}/..</project.rootdir>
@@ -33,67 +38,5 @@
 			<url>http://maven.imagej.net/content/repositories/snapshots</url>
 		</repository>
 	</repositories>
-
-	<profiles>
-		<profile>
-			<id>all</id>
-			<modules>
-				<module>awt-swing</module>
-				<module>awt</module>
-				<module>pivot</module>
-				<module>swing</module>
-				<module>swt</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>awt</id>
-			<activation>
-				<property>
-					<name>ij.ui</name>
-					<value>awt</value>
-				</property>
-			</activation>
-			<modules>
-				<module>awt-swing</module>
-				<module>awt</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>pivot</id>
-			<activation>
-				<property>
-					<name>ij.ui</name>
-					<value>pivot</value>
-				</property>
-			</activation>
-			<modules>
-				<module>pivot</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>swing</id>
-			<activation>
-				<property>
-					<name>!ij.ui</name>
-				</property>
-			</activation>
-			<modules>
-				<module>awt-swing</module>
-				<module>swing</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>swt</id>
-			<activation>
-				<property>
-					<name>ij.ui</name>
-					<value>swt</value>
-				</property>
-			</activation>
-			<modules>
-				<module>swt</module>
-			</modules>
-		</profile>
-	</profiles>
 
 </project>
