@@ -85,18 +85,18 @@ public abstract class InteractiveCommand extends DynamicCommand implements
 	@Parameter
 	protected LogService log;
 
-	/** List of inputs to keep in sync when the active display changes. */
-	private final String[] inputs;
+	/** List of names of inputs to keep in sync when the active display changes. */
+	private final String[] listenerNames;
 
 	/**
 	 * Creates a new interactive command.
 	 * 
-	 * @param inputs The list of inputs to keep in sync when the active display
-	 *          changes. Each input must be a {@link Display}, {@link DatasetView}
-	 *          or {@link Dataset}.
+	 * @param listenerNames The list of names of inputs to keep in sync when the
+	 *          active display changes. Each input must be a {@link Display},
+	 *          {@link DatasetView} or {@link Dataset}.
 	 */
-	public InteractiveCommand(final String... inputs) {
-		this.inputs = inputs;
+	public InteractiveCommand(final String... listenerNames) {
+		this.listenerNames = listenerNames;
 	}
 
 	// -- Previewable methods --
@@ -116,11 +116,11 @@ public abstract class InteractiveCommand extends DynamicCommand implements
 	// -- Event handlers --
 
 	@EventHandler
-	protected void updateInputs(
+	protected void updateListeners(
 		@SuppressWarnings("unused") final DisplayActivatedEvent evt)
 	{
-		for (final String input : inputs) {
-			final ModuleItem<?> item = getInfo().getInput(input);
+		for (final String listenerName : listenerNames) {
+			final ModuleItem<?> item = getInfo().getInput(listenerName);
 
 			final ModuleItem<Display<?>> displayItem = asDisplay(item);
 			final ModuleItem<DatasetView> viewItem = asView(item);
@@ -130,7 +130,7 @@ public abstract class InteractiveCommand extends DynamicCommand implements
 			else if (viewItem != null) updateView(viewItem);
 			else if (datasetItem != null) updateDataset(datasetItem);
 			else {
-				log.warn("Input '" + input + "' (" + item.getClass().getName() +
+				log.warn("Input '" + listenerName + "' (" + item.getClass().getName() +
 					") is not supported");
 			}
 		}
