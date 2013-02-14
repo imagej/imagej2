@@ -19,12 +19,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-commands-data</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-commands-display</artifactId>
+			<artifactId>ij-commands</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
