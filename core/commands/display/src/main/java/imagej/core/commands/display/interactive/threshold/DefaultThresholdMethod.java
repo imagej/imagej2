@@ -33,73 +33,61 @@
  * #L%
  */
 
-package imagej.ui.swing.widget;
+package imagej.core.commands.display.interactive.threshold;
 
 import imagej.plugin.Plugin;
-import imagej.widget.Button;
-import imagej.widget.ButtonWidget;
-import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JPanel;
+// NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
+// plugin found in Fiji. The method was ported from IJ1 by Gabriel and somewhat
+// enhanced ("re-implemented so we can ignore black/white and set the bright or
+// dark objects")
 
 /**
- * A Swing widget that displays a button and invokes the callback of a parameter
- * when the button is clicked.
+ * Implements the default threshold method for ImageJ.
  * 
  * @author Barry DeZonia
+ * @author Gabriel Landini
  */
-@Plugin(type = InputWidget.class)
-public class SwingButtonWidget extends SwingInputWidget<Button> implements
-	ButtonWidget<JPanel>
-{
-
-	private JButton button;
+@Plugin(type = AutoThresholdMethod.class, name = "Default")
+public class DefaultThresholdMethod implements AutoThresholdMethod {
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public int getThreshold(long[] histogram) {
+		// Original IJ implementation for compatibility.
+		int level;
+		int maxValue = histogram.length - 1;
+		double result, sum1, sum2, sum3, sum4;
 
-		button = new JButton(model.getWidgetLabel());
-		button.addActionListener(new ActionListener() {
+		int min = 0;
+		while ((histogram[min] == 0) && (min < maxValue))
+			min++;
+		int max = maxValue;
+		while ((histogram[max] == 0) && (max > 0))
+			max--;
+		if (min >= max) {
+			level = histogram.length / 2;
+			return level;
+		}
 
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-
-				// call the code attached to this button
-				model.callback();
-
-				// make sure panel owning button is refreshed in case button changed
-				// some panel fields
-				getModel().getPanel().refresh();
+		int movingIndex = min;
+		do {
+			sum1 = sum2 = sum3 = sum4 = 0.0;
+			for (int i = min; i <= movingIndex; i++) {
+				sum1 += i * histogram[i];
+				sum2 += histogram[i];
 			}
-		});
-		setToolTip(button);
-		getComponent().add(button);
+			for (int i = (movingIndex + 1); i <= max; i++) {
+				sum3 += i * histogram[i];
+				sum4 += histogram[i];
+			}
+			result = (sum1 / sum2 + sum3 / sum4) / 2.0;
+			movingIndex++;
+		}
+		while ((movingIndex + 1) <= result && movingIndex < max - 1);
+
+		level = (int) Math.round(result);
+		return level;
 	}
 
-	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return model.isType(Button.class);
-	}
-
-	@Override
-	public Button getValue() {
-		return null;
-	}
-
-	@Override
-	public void refreshWidget() {
-		// nothing to do
-	}
-
-	@Override
-	public boolean isLabeled() {
-		return false;
-	}
 
 }

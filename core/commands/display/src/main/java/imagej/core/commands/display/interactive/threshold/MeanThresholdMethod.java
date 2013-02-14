@@ -33,73 +33,36 @@
  * #L%
  */
 
-package imagej.ui.swing.widget;
+package imagej.core.commands.display.interactive.threshold;
 
 import imagej.plugin.Plugin;
-import imagej.widget.Button;
-import imagej.widget.ButtonWidget;
-import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JPanel;
+// NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
+// plugin found in Fiji.
 
 /**
- * A Swing widget that displays a button and invokes the callback of a parameter
- * when the button is clicked.
+ * Implements a mean threshold method for ImageJ.
  * 
  * @author Barry DeZonia
+ * @author Gabriel Landini
  */
-@Plugin(type = InputWidget.class)
-public class SwingButtonWidget extends SwingInputWidget<Button> implements
-	ButtonWidget<JPanel>
-{
-
-	private JButton button;
+@Plugin(type = AutoThresholdMethod.class, name = "Mean")
+public class MeanThresholdMethod implements AutoThresholdMethod {
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
-
-		button = new JButton(model.getWidgetLabel());
-		button.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-
-				// call the code attached to this button
-				model.callback();
-
-				// make sure panel owning button is refreshed in case button changed
-				// some panel fields
-				getModel().getPanel().refresh();
-			}
-		});
-		setToolTip(button);
-		getComponent().add(button);
-	}
-
-	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return model.isType(Button.class);
-	}
-
-	@Override
-	public Button getValue() {
-		return null;
-	}
-
-	@Override
-	public void refreshWidget() {
-		// nothing to do
-	}
-
-	@Override
-	public boolean isLabeled() {
-		return false;
+	public int getThreshold(long[] histogram) {
+		// C. A. Glasbey, "An analysis of histogram-based thresholding algorithms,"
+		// CVGIP: Graphical Models and Image Processing, vol. 55, pp. 532-537, 1993.
+		//
+		// The threshold is the mean of the greyscale data
+		int threshold = -1;
+		double tot = 0, sum = 0;
+		for (int i = 0; i < histogram.length; i++) {
+			tot += histogram[i];
+			sum += (i * histogram[i]);
+		}
+		threshold = (int) Math.floor(sum / tot);
+		return threshold;
 	}
 
 }

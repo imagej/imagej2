@@ -33,73 +33,15 @@
  * #L%
  */
 
-package imagej.ui.swing.widget;
+package imagej.core.commands.display.interactive.threshold;
 
-import imagej.plugin.Plugin;
-import imagej.widget.Button;
-import imagej.widget.ButtonWidget;
-import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
+import imagej.plugin.ImageJPlugin;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JPanel;
 
 /**
- * A Swing widget that displays a button and invokes the callback of a parameter
- * when the button is clicked.
- * 
  * @author Barry DeZonia
  */
-@Plugin(type = InputWidget.class)
-public class SwingButtonWidget extends SwingInputWidget<Button> implements
-	ButtonWidget<JPanel>
-{
+public interface AutoThresholdMethod extends ImageJPlugin {
 
-	private JButton button;
-
-	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
-
-		button = new JButton(model.getWidgetLabel());
-		button.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-
-				// call the code attached to this button
-				model.callback();
-
-				// make sure panel owning button is refreshed in case button changed
-				// some panel fields
-				getModel().getPanel().refresh();
-			}
-		});
-		setToolTip(button);
-		getComponent().add(button);
-	}
-
-	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return model.isType(Button.class);
-	}
-
-	@Override
-	public Button getValue() {
-		return null;
-	}
-
-	@Override
-	public void refreshWidget() {
-		// nothing to do
-	}
-
-	@Override
-	public boolean isLabeled() {
-		return false;
-	}
-
+	int getThreshold(long[] histogram);
 }

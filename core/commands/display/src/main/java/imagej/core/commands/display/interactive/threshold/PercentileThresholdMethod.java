@@ -33,73 +33,58 @@
  * #L%
  */
 
-package imagej.ui.swing.widget;
+package imagej.core.commands.display.interactive.threshold;
 
 import imagej.plugin.Plugin;
-import imagej.widget.Button;
-import imagej.widget.ButtonWidget;
-import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JPanel;
+// NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
+// plugin found in Fiji.
 
 /**
- * A Swing widget that displays a button and invokes the callback of a parameter
- * when the button is clicked.
+ * Implements a percentile threshold method for ImageJ.
  * 
  * @author Barry DeZonia
+ * @author Gabriel Landini
  */
-@Plugin(type = InputWidget.class)
-public class SwingButtonWidget extends SwingInputWidget<Button> implements
-	ButtonWidget<JPanel>
-{
-
-	private JButton button;
+@Plugin(type = AutoThresholdMethod.class, name = "Percentile")
+public class PercentileThresholdMethod implements AutoThresholdMethod {
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public int getThreshold(long[] histogram) {
+		// W. Doyle,"Operation useful for similarity-invariant pattern recognition,"
+		// Journal of the Association for Computing Machinery, vol. 9,pp. 259-267,
+		// 1962.
+		// ported to ImageJ plugin by G.Landini from Antti Niemisto's Matlab code
+		// (relicensed BSD 2-12-13)
+		// Original Matlab code Copyright (C) 2004 Antti Niemisto
+		// See http://www.cs.tut.fi/~ant/histthresh/ for an excellent slide
+		// presentation and the original Matlab code.
 
-		button = new JButton(model.getWidgetLabel());
-		button.addActionListener(new ActionListener() {
+		int threshold = -1;
+		double ptile = 0.5; // default fraction of foreground pixels
+		double[] avec = new double[histogram.length];
 
-			@Override
-			public void actionPerformed(final ActionEvent e) {
+		for (int i = 0; i < histogram.length; i++)
+			avec[i] = 0.0;
 
-				// call the code attached to this button
-				model.callback();
-
-				// make sure panel owning button is refreshed in case button changed
-				// some panel fields
-				getModel().getPanel().refresh();
+		double total = partialSum(histogram, histogram.length - 1);
+		double temp = 1.0;
+		for (int i = 0; i < histogram.length; i++) {
+			avec[i] = Math.abs((partialSum(histogram, i) / total) - ptile);
+			// IJ.log("Ptile["+i+"]:"+ avec[i]);
+			if (avec[i] < temp) {
+				temp = avec[i];
+				threshold = i;
 			}
-		});
-		setToolTip(button);
-		getComponent().add(button);
+		}
+		return threshold;
 	}
 
-	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return model.isType(Button.class);
-	}
-
-	@Override
-	public Button getValue() {
-		return null;
-	}
-
-	@Override
-	public void refreshWidget() {
-		// nothing to do
-	}
-
-	@Override
-	public boolean isLabeled() {
-		return false;
+	private double partialSum(long[] y, int j) {
+		double x = 0;
+		for (int i = 0; i <= j; i++)
+			x += y[i];
+		return x;
 	}
 
 }
