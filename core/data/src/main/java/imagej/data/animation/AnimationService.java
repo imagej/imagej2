@@ -35,133 +35,32 @@
 
 package imagej.data.animation;
 
-import imagej.data.Data;
 import imagej.data.display.ImageDisplay;
-import imagej.data.event.DataRestructuredEvent;
-import imagej.display.Display;
-import imagej.display.event.DisplayDeletedEvent;
-import imagej.display.event.input.KyPressedEvent;
-import imagej.event.EventHandler;
 import imagej.event.EventService;
-import imagej.event.StatusService;
-import imagej.input.KeyCode;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
 import imagej.service.Service;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
- * Service for working with {@link Animation}s.
+ * Interface for service that works with {@link Animation}s.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Service.class)
-public class AnimationService extends AbstractService {
+public interface AnimationService extends Service {
 
-	private static final String STARTED_STATUS =
-		"Animation started. Press '\\' or ESC to stop.";
-	private static final String STOPPED_STATUS =
-		"Animation stopped. Press '\\' to resume.";
-	private static final String ALL_STOPPED_STATUS = "All animations stopped.";
-
-	@Parameter
-	private EventService eventService;
-
-	@Parameter
-	private StatusService statusService;
-
-	private Map<ImageDisplay, Animation> animations;
-
-	// -- AnimationService methods --
-
-	public EventService getEventService() {
-		return eventService;
-	}
+	EventService getEventService();
 
 	/** Toggles animation for the given {@link ImageDisplay}. */
-	public void toggle(final ImageDisplay display) {
-		if (getAnimation(display).isActive()) stop(display);
-		else start(display);
-	}
+	void toggle(ImageDisplay display);
 
 	/** Starts animation for the given {@link ImageDisplay}. */
-	public void start(final ImageDisplay display) {
-		getAnimation(display).start();
-		statusService.showStatus(STARTED_STATUS);
-	}
+	void start(ImageDisplay display);
 
 	/** Stops animation for the given {@link ImageDisplay}. */
-	public void stop(final ImageDisplay display) {
-		final Animation animation = animations.get(display);
-		if (animation != null) {
-			animation.stop();
-			statusService.showStatus(STOPPED_STATUS);
-		}
-	}
+	void stop(ImageDisplay display);
 
 	/** Stops all animations. */
-	public void stopAll() {
-		for (final Animation animation : animations.values()) {
-			animation.stop();
-		}
-		statusService.showStatus(ALL_STOPPED_STATUS);
-	}
+	void stopAll();
 
 	/** Gets the given {@link ImageDisplay}'s corresponding {@link Animation}. */
-	public Animation getAnimation(final ImageDisplay display) {
-		Animation animation = animations.get(display);
-		if (animation == null) {
-			// animation did not already exist; create it
-			animation = new Animation(display);
-			animations.put(display, animation);
-		}
-		return animation;
-	}
-
-	// -- Service methods --
-
-	@Override
-	public void initialize() {
-		animations = new ConcurrentHashMap<ImageDisplay, Animation>();
-	}
-
-	// -- Event handlers --
-
-	/** Stops animation if ESC key is pressed. */
-	@EventHandler
-	protected void onEvent(final KyPressedEvent event) {
-		final ImageDisplay imageDisplay = toImageDisplay(event.getDisplay());
-		if (imageDisplay == null) return;
-		if (event.getCode() == KeyCode.ESCAPE) stop(imageDisplay);
-	}
-
-	/** Stops animation if display has been deleted. */
-	@EventHandler
-	protected void onEvent(final DisplayDeletedEvent event) {
-		final ImageDisplay imageDisplay = toImageDisplay(event.getObject());
-		if (imageDisplay == null) return;
-		stop(imageDisplay);
-		animations.remove(imageDisplay);
-	}
-
-	/** Stops animation of displays whose {@link Data} have been restructured. */
-	@EventHandler
-	protected void onEvent(final DataRestructuredEvent event) {
-		final Data data = event.getObject();
-		for (final Animation animation : animations.values()) {
-			final ImageDisplay display = animation.getDisplay();
-			if (display.isDisplaying(data)) stop(display);
-		}
-	}
-
-	// -- Helper methods --
-
-	private ImageDisplay toImageDisplay(final Display<?> display) {
-		if (!(display instanceof ImageDisplay)) return null;
-		return (ImageDisplay) display;
-	}
+	Animation getAnimation(ImageDisplay display);
 
 }
