@@ -37,8 +37,8 @@ package imagej;
 
 import imagej.command.CommandService;
 import imagej.console.ConsoleService;
-import imagej.core.commands.axispos.AnimationService;
 import imagej.data.DatasetService;
+import imagej.data.animation.AnimationService;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.KeyboardService;
 import imagej.data.display.MouseService;

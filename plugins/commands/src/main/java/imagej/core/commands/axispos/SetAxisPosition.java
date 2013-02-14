@@ -36,6 +36,7 @@
 package imagej.core.commands.axispos;
 
 import imagej.command.DynamicCommand;
+import imagej.data.animation.AnimationService;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;

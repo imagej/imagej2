@@ -33,9 +33,10 @@
  * #L%
  */
 
-package imagej.core.commands.axispos;
+package imagej.core.commands.animation;
 
 import imagej.command.ContextCommand;
+import imagej.data.animation.AnimationService;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
 import imagej.plugin.Menu;
@@ -43,7 +44,10 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 
 /**
- * Plugin for terminating running animations of all {@link ImageDisplay}s.
+ * Plugin for toggling an {@link ImageDisplay}'s running animation. Animation
+ * can be toggled via the backslash key, or stopped with ESC. The animation's
+ * behavior can be modified during execution by running the
+ * {@link AnimationOptions} plugin.
  * 
  * @author Barry DeZonia
  * @author Curtis Rueden
@@ -52,15 +56,29 @@ import imagej.plugin.Plugin;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Animation", mnemonic = 'a'),
-	@Menu(label = "Stop All Animations", weight = 3) }, headless = true)
-public class StopAllAnimations extends ContextCommand {
+	@Menu(label = "Start Animation", accelerator = "BACK_SLASH", weight = 1) })
+public class StartAnimation extends ContextCommand {
+
+	// -- Parameters --
 
 	@Parameter
 	private AnimationService animationService;
 
+	@Parameter
+	private ImageDisplay display;
+
+	// -- Runnable methods --
+
 	@Override
 	public void run() {
-		animationService.stopAll();
+		animationService.toggle(display);
 	}
 
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+	
+	public ImageDisplay getDisplay() {
+		return display;
+	}
 }

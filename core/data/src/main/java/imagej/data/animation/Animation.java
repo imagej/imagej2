@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.commands.axispos;
+package imagej.data.animation;
 
 import imagej.data.display.ImageDisplay;
 import imagej.log.LogService;
@@ -43,9 +43,7 @@ import net.imglib2.meta.AxisType;
 /**
  * The Animation class takes care of running an animation along an axis.
  * Multiple animations can be running concurrently. Each animation runs in its
- * own thread. Animations can be started or stopped using the {@link StartAnimation}
- * plugin. Animation behavior can be modified through the
- * {@link AnimationOptions} plugin.
+ * own thread.
  * 
  * @author Barry DeZonia
  * @author Curtis Rueden

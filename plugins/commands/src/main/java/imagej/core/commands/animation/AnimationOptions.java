@@ -33,9 +33,11 @@
  * #L%
  */
 
-package imagej.core.commands.axispos;
+package imagej.core.commands.animation;
 
 import imagej.command.DynamicCommand;
+import imagej.data.animation.Animation;
+import imagej.data.animation.AnimationService;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
 import imagej.module.MutableModuleItem;

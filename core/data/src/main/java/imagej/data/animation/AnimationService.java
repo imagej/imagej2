@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.commands.axispos;
+package imagej.data.animation;
 
 import imagej.data.Data;
 import imagej.data.display.ImageDisplay;
