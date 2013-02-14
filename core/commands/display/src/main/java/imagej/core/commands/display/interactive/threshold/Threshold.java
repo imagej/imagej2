@@ -64,19 +64,22 @@ import net.imglib2.type.numeric.RealType;
 // TODO All the problems with thresh overlay code at the moment:
 //
 //  - when thresh drawn at 3/2 scale on boats it looks gridded. JHot prob?
-//  - some methods here are unimplemented: autothresh, changePixels, stack hist
 //  - stack histogram: don't yet know what this is to do
 //  - we will have to display a histogram and thresh lines like IJ1 does
 //  - overlay not selectable in view but only via ovr mgr
 //  - do thresh overlays kill graphics of other overlays? It seems it may.
 //     Might need to draw in a certain order
-//  - need to discover autothresh methods, populate list, and make autothresh
-//     method call the one selected by user.
-//  - update commands that need a threshold to use them now: Convert To Mask?
-//  - dark background - make code exactly like IJ1: need to autothresh 1st
+//  - update commands that need a threshold to use them now
 //  - this plugin written to work with one display. So if you leave it up and
 //     switch images this plugin won't immediately work with it. see what IJ1
 //     does.
+//  - the min and max are not rounded to integers. And dark/light bounce has
+//     precision errors
+//  - make autothresh methods have an error string that is set if method can't
+//     find thresh. Others can query warning.
+//     Fix autothresh comments with bad chars
+//     Use gabriel's code for displaying 16-bit hist
+//     See what gabriel's actual hist application code does (planes, image, ...)
 
 /**
  * @author Barry DeZonia
@@ -240,8 +243,26 @@ public class Threshold extends InteractiveCommand {
 	}
 
 	protected void changePixels() {
-		// TODO
-		System.out.println("UNIMPLEMENTED");
+		ThresholdOverlay thresh = getThreshold();
+		Dataset ds = imgDispSrv.getActiveDataset(display);
+		ImgPlus<? extends RealType<?>> imgPlus = ds.getImgPlus();
+		Cursor<? extends RealType<?>> cursor = imgPlus.localizingCursor();
+		double typeMax = cursor.get().getMaxValue();
+		double typeMin = cursor.get().getMinValue();
+		final double OFF = (typeMin > 0) ? typeMin : 0;
+		final double ON = (typeMax < 255) ? typeMax : 255;
+		long[] pos = new long[ds.numDimensions()];
+		double min = thresh.getRangeMin();
+		double max = thresh.getRangeMax();
+		while (cursor.hasNext()) {
+			cursor.fwd();
+			cursor.localize(pos);
+			double value = cursor.get().getRealDouble();
+			if (value < min || value > max) value = OFF;
+			else value = ON;
+			cursor.get().setReal(value);
+		}
+		ds.update();
 	}
 
 	protected void deleteThreshold() {
