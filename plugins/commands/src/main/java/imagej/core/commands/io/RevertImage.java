@@ -33,36 +33,76 @@
  * #L%
  */
 
-package imagej.io.plugins;
+package imagej.core.commands.io;
 
-import imagej.command.Command;
-import imagej.io.RecentFileService;
+import imagej.command.ContextCommand;
+import imagej.data.Dataset;
+import imagej.io.IOService;
+import imagej.log.LogService;
 import imagej.menu.MenuConstants;
+import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.ui.DialogPrompt;
+import imagej.ui.UIService;
+import net.imglib2.exception.IncompatibleTypeException;
+import net.imglib2.io.ImgIOException;
 
 /**
- * Clears the list of recently opened files.
+ * Resets the current {@link Dataset} to its original state.
  * 
+ * @author Barry DeZonia
  * @author Curtis Rueden
  */
-@Plugin(label = "Clear Recent", menu = {
+@Plugin(menu = {
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
-	@Menu(label = "Open Recent", weight = 4, mnemonic = 'r'),
-	@Menu(label = "Clear List", weight = RecentFileService.MAX_FILES_SHOWN + 10,
-		mnemonic = 'c') })
-public class ClearRecent implements Command {
+	@Menu(label = "Revert", weight = 20, mnemonic = 'v',
+		accelerator = "control R") })
+public class RevertImage extends ContextCommand {
 
 	@Parameter
-	private RecentFileService recentFileService;
+	private LogService log;
 
-	// -- Command methods --
+	@Parameter
+	private IOService ioService;
+
+	@Parameter
+	private UIService uiService;
+
+	@Parameter(type = ItemIO.BOTH)
+	private Dataset dataset;
 
 	@Override
 	public void run() {
-		recentFileService.clear();
+		final String source = dataset.getSource();
+		if (source == null) {
+			uiService.showDialog("Cannot revert an image with no source");
+			return;
+		}
+
+		try {
+			ioService.revertDataset(dataset);
+		}
+		catch (final ImgIOException e) {
+			log.error(e);
+			uiService.showDialog(e.getMessage(),
+				DialogPrompt.MessageType.ERROR_MESSAGE);
+		}
+		catch (final IncompatibleTypeException e) {
+			log.error(e);
+			uiService.showDialog(e.getMessage(),
+				DialogPrompt.MessageType.ERROR_MESSAGE);
+		}
+	}
+
+	public Dataset getDataset() {
+		return dataset;
+	}
+
+	public void setDataset(final Dataset dataset) {
+		this.dataset = dataset;
 	}
 
 }

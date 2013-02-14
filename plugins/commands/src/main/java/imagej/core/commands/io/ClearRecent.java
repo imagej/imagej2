@@ -33,85 +33,36 @@
  * #L%
  */
 
-package imagej.io.plugins;
+package imagej.core.commands.io;
 
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-import imagej.io.IOService;
-import imagej.log.LogService;
+import imagej.command.Command;
+import imagej.io.RecentFileService;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.ui.DialogPrompt;
-import imagej.ui.UIService;
-
-import java.io.File;
-
-import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.io.ImgIOException;
 
 /**
- * Opens the selected file as a {@link Dataset}.
+ * Clears the list of recently opened files.
  * 
  * @author Curtis Rueden
- * @author Mark Hiner
  */
-@Plugin(iconPath = "/icons/plugins/folder_picture.png", menu = {
+@Plugin(label = "Clear Recent", menu = {
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
-	@Menu(label = "Open...", weight = 1, mnemonic = 'o',
-		accelerator = "control O") })
-public class OpenImage extends ContextCommand {
+	@Menu(label = "Open Recent", weight = 4, mnemonic = 'r'),
+	@Menu(label = "Clear List", weight = RecentFileService.MAX_FILES_SHOWN + 10,
+		mnemonic = 'c') })
+public class ClearRecent implements Command {
 
 	@Parameter
-	private LogService log;
+	private RecentFileService recentFileService;
 
-	@Parameter
-	private IOService ioService;
-
-	@Parameter
-	private UIService uiService;
-
-	@Parameter(label = "File to open")
-	private File inputFile;
-
-	@Parameter(type = ItemIO.OUTPUT)
-	private Dataset dataset;
+	// -- Command methods --
 
 	@Override
 	public void run() {
-		final String source = inputFile.getAbsolutePath();
-		try {
-			dataset = ioService.loadDataset(source);
-		}
-		catch (final ImgIOException e) {
-			log.error(e);
-			uiService.showDialog(e.getMessage(),
-				DialogPrompt.MessageType.ERROR_MESSAGE);
-		}
-		catch (final IncompatibleTypeException e) {
-			log.error(e);
-			uiService.showDialog(e.getMessage(),
-				DialogPrompt.MessageType.ERROR_MESSAGE);
-		}
-	}
-
-	public File getInputFile() {
-		return inputFile;
-	}
-
-	public void setInputFile(final File inputFile) {
-		this.inputFile = inputFile;
-	}
-
-	public Dataset getDataset() {
-		return dataset;
-	}
-
-	public void setDataset(final Dataset dataset) {
-		this.dataset = dataset;
+		recentFileService.clear();
 	}
 
 }

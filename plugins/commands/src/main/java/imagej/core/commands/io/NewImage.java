@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.io.plugins;
+package imagej.core.commands.io;
 
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
@@ -183,6 +183,7 @@ public class NewImage extends DynamicCommand {
 
 	@Override
 	public void run() {
+		// FIXME: Migrate this logic into a service.
 		setDimensions();
 		if ((name == null) || (name.trim().length() == 0)) name = DEFAULT_NAME;
 		// create the dataset

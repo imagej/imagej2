@@ -33,61 +33,85 @@
  * #L%
  */
 
-package imagej.io.plugins;
+package imagej.core.commands.io;
 
-import imagej.command.CommandService;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
+import imagej.io.IOService;
+import imagej.log.LogService;
 import imagej.menu.MenuConstants;
+import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
+import imagej.ui.DialogPrompt;
+import imagej.ui.UIService;
 
 import java.io.File;
-import java.util.HashMap;
 
-import net.imglib2.img.ImgPlus;
+import net.imglib2.exception.IncompatibleTypeException;
+import net.imglib2.io.ImgIOException;
 
 /**
- * Saves the current {@link Dataset} to disk.
+ * Opens the selected file as a {@link Dataset}.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  * @author Mark Hiner
  */
-@Plugin(menu = {
+@Plugin(iconPath = "/icons/plugins/folder_picture.png", menu = {
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
-	@Menu(label = "Save", weight = 20, mnemonic = 's') })
-public class SaveImage extends ContextCommand {
+	@Menu(label = "Open...", weight = 1, mnemonic = 'o',
+		accelerator = "control O") })
+public class OpenImage extends ContextCommand {
 
 	@Parameter
-	private CommandService commandService;
+	private LogService log;
 
 	@Parameter
+	private IOService ioService;
+
+	@Parameter
+	private UIService uiService;
+
+	@Parameter(label = "File to open")
+	private File inputFile;
+
+	@Parameter(type = ItemIO.OUTPUT)
 	private Dataset dataset;
 
 	@Override
 	public void run() {
-		final HashMap<String, Object> inputMap = new HashMap<String, Object>();
-		inputMap.put("dataset", dataset);
-
-		final ImgPlus<?> img = dataset.getImgPlus();
-		final String source = img.getSource();
-
-		final File sourceFile = source.isEmpty() ? null : new File(source);
-
-		if (sourceFile != null && sourceFile.isFile()) {
-			inputMap.put("outputFile", new File(source));
+		final String source = inputFile.getAbsolutePath();
+		try {
+			dataset = ioService.loadDataset(source);
 		}
-		commandService.run(SaveAsImage.class, inputMap);
+		catch (final ImgIOException e) {
+			log.error(e);
+			uiService.showDialog(e.getMessage(),
+				DialogPrompt.MessageType.ERROR_MESSAGE);
+		}
+		catch (final IncompatibleTypeException e) {
+			log.error(e);
+			uiService.showDialog(e.getMessage(),
+				DialogPrompt.MessageType.ERROR_MESSAGE);
+		}
 	}
-	
-	public void setDataset(Dataset d) {
-		dataset = d;
+
+	public File getInputFile() {
+		return inputFile;
 	}
-	
+
+	public void setInputFile(final File inputFile) {
+		this.inputFile = inputFile;
+	}
+
 	public Dataset getDataset() {
 		return dataset;
+	}
+
+	public void setDataset(final Dataset dataset) {
+		this.dataset = dataset;
 	}
 
 }

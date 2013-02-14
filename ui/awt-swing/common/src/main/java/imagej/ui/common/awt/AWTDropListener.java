@@ -39,11 +39,11 @@
 package imagej.ui.common.awt;
 
 import imagej.Context;
+import imagej.core.commands.io.NewImage;
+import imagej.core.commands.io.OpenImage;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.io.plugins.NewImage;
-import imagej.io.plugins.OpenImage;
 import imagej.ui.UIService;
 
 import java.awt.datatransfer.DataFlavor;

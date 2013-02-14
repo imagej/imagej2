@@ -33,76 +33,61 @@
  * #L%
  */
 
-package imagej.io.plugins;
+package imagej.core.commands.io;
 
+import imagej.command.CommandService;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
-import imagej.io.IOService;
-import imagej.log.LogService;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import imagej.ui.DialogPrompt;
-import imagej.ui.UIService;
-import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.io.ImgIOException;
+
+import java.io.File;
+import java.util.HashMap;
+
+import net.imglib2.img.ImgPlus;
 
 /**
- * Resets the current {@link Dataset} to its original state.
+ * Saves the current {@link Dataset} to disk.
  * 
  * @author Barry DeZonia
- * @author Curtis Rueden
+ * @author Mark Hiner
  */
 @Plugin(menu = {
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
-	@Menu(label = "Revert", weight = 20, mnemonic = 'v',
-		accelerator = "control R") })
-public class RevertImage extends ContextCommand {
+	@Menu(label = "Save", weight = 20, mnemonic = 's') })
+public class SaveImage extends ContextCommand {
 
 	@Parameter
-	private LogService log;
+	private CommandService commandService;
 
 	@Parameter
-	private IOService ioService;
-
-	@Parameter
-	private UIService uiService;
-
-	@Parameter(type = ItemIO.BOTH)
 	private Dataset dataset;
 
 	@Override
 	public void run() {
-		final String source = dataset.getSource();
-		if (source == null) {
-			uiService.showDialog("Cannot revert an image with no source");
-			return;
-		}
+		final HashMap<String, Object> inputMap = new HashMap<String, Object>();
+		inputMap.put("dataset", dataset);
 
-		try {
-			ioService.revertDataset(dataset);
+		final ImgPlus<?> img = dataset.getImgPlus();
+		final String source = img.getSource();
+
+		final File sourceFile = source.isEmpty() ? null : new File(source);
+
+		if (sourceFile != null && sourceFile.isFile()) {
+			inputMap.put("outputFile", new File(source));
 		}
-		catch (final ImgIOException e) {
-			log.error(e);
-			uiService.showDialog(e.getMessage(),
-				DialogPrompt.MessageType.ERROR_MESSAGE);
-		}
-		catch (final IncompatibleTypeException e) {
-			log.error(e);
-			uiService.showDialog(e.getMessage(),
-				DialogPrompt.MessageType.ERROR_MESSAGE);
-		}
+		commandService.run(SaveAsImage.class, inputMap);
 	}
-
+	
+	public void setDataset(Dataset d) {
+		dataset = d;
+	}
+	
 	public Dataset getDataset() {
 		return dataset;
-	}
-
-	public void setDataset(final Dataset dataset) {
-		this.dataset = dataset;
 	}
 
 }

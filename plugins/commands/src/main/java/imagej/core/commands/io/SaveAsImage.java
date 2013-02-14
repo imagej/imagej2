@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.io.plugins;
+package imagej.core.commands.io;
 
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
