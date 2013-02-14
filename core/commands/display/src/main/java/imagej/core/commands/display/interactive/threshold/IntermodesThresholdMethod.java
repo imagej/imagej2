@@ -68,7 +68,7 @@ public class IntermodesThresholdMethod implements AutoThresholdMethod {
 		// j and k
 		// Threshold t is (j+k)/2.
 		// Images with histograms having extremely unequal peaks or a broad and
-		// flat valley are unsuitable for this method.
+		// ??at valley are unsuitable for this method.
 		double[] iHisto = new double[histogram.length];
 		int iter = 0;
 		int threshold = -1;

@@ -68,7 +68,7 @@ public class MinimumThresholdMethod implements AutoThresholdMethod {
 		// maxima.
 		// Threshold t is such that ytâˆ’1 > yt â‰¤ yt+1.
 		// Images with histograms having extremely unequal peaks or a broad and
-		// flat valley are unsuitable for this method.
+		// ??at valley are unsuitable for this method.
 		int iter = 0;
 		int threshold = -1;
 		int max = -1;
