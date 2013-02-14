@@ -37,19 +37,25 @@ package imagej.core.commands.imglib;
 
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
+import imagej.data.overlay.ThresholdOverlay;
+import imagej.data.overlay.ThresholdService;
 import imagej.menu.MenuConstants;
 import imagej.module.ItemIO;
 import imagej.plugin.Menu;
 import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
-import net.imglib2.Cursor;
-import net.imglib2.img.Img;
+import net.imglib2.RandomAccess;
+import net.imglib2.ops.pointset.PointSet;
+import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
 
 /**
- * Fills an output Dataset with the values of an input Dataset. All the values
- * in the input Dataset that are outside user defined thresholds are assigned
- * NaN.
+ * Fills the background pixels of an image with NaN. The image is defined as the
+ * active Dataset of a given ImageDisplay. The input image must be a thresholded
+ * floating type dataset. The definition of what is background is determined by
+ * the threshold settings of the image.
  * 
  * @author Barry DeZonia
  */
@@ -61,77 +67,72 @@ import net.imglib2.type.numeric.RealType;
 	@Menu(label = "NaN Background", weight = 18) }, headless = true)
 public class NanBackground extends ContextCommand {
 
-	// -- instance variables --
+	// -- Parameters --
+
+	@Parameter
+	private ThresholdService threshSrv;
+
+	@Parameter
+	private ImageDisplayService dispSrv;
 
 	@Parameter(type = ItemIO.BOTH)
+	private ImageDisplay display;
+
+	// -- instance variables --
+
 	private Dataset input;
-
-	@Parameter(
-		label = "TODO - should use current threshold - for now ask - Low threshold")
-	private double loThreshold;
-
-	@Parameter(
-		label = "TODO - should use current threshold - for now ask - High threshold")
-	private double hiThreshold;
-
-	private Img<? extends RealType<?>> inputImage;
 
 	// -- public interface --
 
 	@Override
 	public void run() {
 		if (inputBad()) return;
-		setupWorkingData();
 		assignPixels();
-		input.update();
+		// TODO no longer necessary?
+		// input.update();
 	}
 
-	public void setDataset(Dataset data) {
-		this.input = data;
+	public void setDisplay(ImageDisplay display) {
+		this.display = display;
 	}
 	
-	public Dataset getDataset() {
-		return input;
+	public ImageDisplay getDisplay() {
+		return display;
 	}
 
 	// -- private interface --
 
 	private boolean inputBad() {
+		input = dispSrv.getActiveDataset(display);
+		if (input == null) {
+			cancel("Image display does not have an active dataset");
+			return true;
+		}
 		if (input.isInteger()) {
 			cancel("This plugin requires a floating point dataset");
 			return true;
 		}
-		if (input == null) {
-			cancel("Input dataset is null");
-			return true;
-		}
-		
 		if (input.getImgPlus() == null) {
 			cancel("Input ImgPlus is null");
 			return true;
 		}
-
-		if (loThreshold > hiThreshold) {
-			cancel("Threshold values incorrectly specified (min > max)");
+		if (!threshSrv.hasThreshold(display)) {
+			cancel("Input image is not thresholded");
 			return true;
 		}
 		return false;
 	}
 
-	private void setupWorkingData() {
-		inputImage = input.getImgPlus();
-	}
-
 	private void assignPixels() {
-		final Cursor<? extends RealType<?>> cursor = inputImage.cursor();
-
-		while (cursor.hasNext()) {
-			cursor.fwd();
-
-			final double inputValue = cursor.get().getRealDouble();
-
-			if ((inputValue < loThreshold) || (inputValue > hiThreshold))
-				cursor.get().setReal(Double.NaN);
+		ThresholdOverlay thresh = threshSrv.getThreshold(display);
+		PointSet ps = thresh.getPointsOutside();
+		PointSetIterator iter = ps.iterator();
+		RandomAccess<? extends RealType<?>> accessor =
+			input.getImgPlus().randomAccess();
+		while (iter.hasNext()) {
+			long[] pos = iter.next();
+			accessor.setPosition(pos);
+			accessor.get().setReal(Double.NaN);
 		}
 	}
 
