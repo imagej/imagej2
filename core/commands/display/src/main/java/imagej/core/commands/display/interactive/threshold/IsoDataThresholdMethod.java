@@ -49,6 +49,8 @@ import imagej.plugin.Plugin;
 @Plugin(type = AutoThresholdMethod.class, name = "IsoData")
 public class IsoDataThresholdMethod implements AutoThresholdMethod {
 
+	private String errMsg = null;
+
 	@Override
 	public int getThreshold(long[] histogram) {
 		// Also called intermeans
@@ -107,11 +109,16 @@ public class IsoDataThresholdMethod implements AutoThresholdMethod {
 			}
 			g++;
 			if (g > histogram.length - 2) {
-				// IJ.log("IsoData Threshold not found.");
+				errMsg = "IsoData Threshold not found.";
 				return -1;
 			}
 		}
 		return g;
+	}
+
+	@Override
+	public String getErrorMessage() {
+		return errMsg;
 	}
 
 }

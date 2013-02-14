@@ -106,4 +106,9 @@ public class OtsuThresholdMethod implements AutoThresholdMethod {
 		return kStar;
 	}
 
+	@Override
+	public String getErrorMessage() {
+		return null;
+	}
+
 }

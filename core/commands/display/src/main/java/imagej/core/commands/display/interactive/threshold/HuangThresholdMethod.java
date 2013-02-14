@@ -109,4 +109,9 @@ public class HuangThresholdMethod implements AutoThresholdMethod {
 		return bestThreshold;
 	}
 
+	@Override
+	public String getErrorMessage() {
+		return null;
+	}
+
 }

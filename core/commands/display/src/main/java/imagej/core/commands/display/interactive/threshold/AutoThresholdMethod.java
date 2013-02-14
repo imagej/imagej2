@@ -44,6 +44,16 @@ import imagej.plugin.ImageJPlugin;
  */
 public interface AutoThresholdMethod extends ImageJPlugin {
 
+	/**
+	 * Calculates the threshold index from an unnormalized histogram of data.
+	 * Returns -1 if the threshold index cannot be found.
+	 */
 	int getThreshold(long[] histogram);
 
+	/**
+	 * Returns the error message associated with the last call to getThreshold().
+	 * If getThreshold() returned -1 the error message will be non null. Otherwise
+	 * the error message is null.
+	 */
+	String getErrorMessage();
 }

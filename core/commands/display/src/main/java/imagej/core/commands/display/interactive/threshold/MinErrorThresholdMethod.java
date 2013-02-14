@@ -49,6 +49,8 @@ import imagej.plugin.Plugin;
 @Plugin(type = AutoThresholdMethod.class, name = "MinError(I)")
 public class MinErrorThresholdMethod implements AutoThresholdMethod {
 
+	private String errMsg = null;
+
 	@Override
 	public int getThreshold(long[] histogram) {
 		// Kittler and J. Illingworth, "Minimum error thresholding," Pattern
@@ -92,7 +94,8 @@ public class MinErrorThresholdMethod implements AutoThresholdMethod {
 			// If the next threshold would be imaginary, return with the current one.
 			sqterm = (w1 * w1) - w0 * w2;
 			if (sqterm < 0) {
-				// IJ.log("MinError(I): not converging. Try \'Ignore black/white\' options");
+				errMsg =
+					"MinError(I): not converging. Try \'Ignore black/white\' options";
 				return threshold;
 			}
 
@@ -102,13 +105,19 @@ public class MinErrorThresholdMethod implements AutoThresholdMethod {
 			temp = (w1 + Math.sqrt(sqterm)) / w0;
 
 			if (Double.isNaN(temp)) {
-				// IJ.log("MinError(I): NaN, not converging. Try \'Ignore black/white\' options");
+				errMsg =
+					"MinError(I): NaN, not converging. Try \'Ignore black/white\' options";
 				threshold = Tprev;
 			}
 			else threshold = (int) Math.floor(temp);
 			// IJ.log("Iter: "+ counter+++"  t:"+threshold);
 		}
 		return threshold;
+	}
+
+	@Override
+	public String getErrorMessage() {
+		return errMsg;
 	}
 
 	private static double A(long[] y, int j) {

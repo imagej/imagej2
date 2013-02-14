@@ -49,6 +49,8 @@ import imagej.plugin.Plugin;
 @Plugin(type = AutoThresholdMethod.class, name = "Minimum")
 public class MinimumThresholdMethod implements AutoThresholdMethod {
 
+	private String errMsg;
+
 	@Override
 	public int getThreshold(long[] histogram) {
 		if (histogram.length < 2) return 0;
@@ -90,9 +92,8 @@ public class MinimumThresholdMethod implements AutoThresholdMethod {
 			iHisto = tHisto;
 			iter++;
 			if (iter > 10000) {
-				threshold = -1;
-				// IJ.log("Minimum Threshold not found after 10000 iterations.");
-				return threshold;
+				errMsg = "Minimum Threshold not found after 10000 iterations.";
+				return -1;
 			}
 		}
 		// The threshold is the minimum between the two peaks. modified for 16 bits
@@ -103,6 +104,11 @@ public class MinimumThresholdMethod implements AutoThresholdMethod {
 			}
 		}
 		return threshold;
+	}
+
+	@Override
+	public String getErrorMessage() {
+		return errMsg;
 	}
 
 }

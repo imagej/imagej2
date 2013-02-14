@@ -261,4 +261,9 @@ public class RenyiEntropyThresholdMethod implements AutoThresholdMethod {
 		return opt_threshold;
 	}
 
+	@Override
+	public String getErrorMessage() {
+		return null;
+	}
+
 }

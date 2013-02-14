@@ -102,4 +102,9 @@ public class MomentsThresholdMethod implements AutoThresholdMethod {
 		return threshold;
 	}
 
+	@Override
+	public String getErrorMessage() {
+		return null;
+	}
+
 }

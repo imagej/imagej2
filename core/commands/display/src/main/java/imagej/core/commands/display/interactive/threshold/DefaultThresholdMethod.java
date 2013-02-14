@@ -89,5 +89,9 @@ public class DefaultThresholdMethod implements AutoThresholdMethod {
 		return level;
 	}
 
+	@Override
+	public String getErrorMessage() {
+		return null;
+	}
 
 }

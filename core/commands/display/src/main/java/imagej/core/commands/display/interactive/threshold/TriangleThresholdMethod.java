@@ -155,4 +155,9 @@ public class TriangleThresholdMethod implements AutoThresholdMethod {
 		return split;
 	}
 
+	@Override
+	public String getErrorMessage() {
+		return null;
+	}
+
 }

@@ -51,6 +51,8 @@ import imagej.plugin.Parameter;
 import imagej.plugin.Plugin;
 import imagej.plugin.PluginInfo;
 import imagej.plugin.PluginService;
+import imagej.ui.DialogPrompt;
+import imagej.ui.UIService;
 import imagej.util.Colors;
 import imagej.widget.Button;
 
@@ -115,6 +117,9 @@ public class Threshold extends InteractiveCommand {
 
 	@Parameter
 	private ImageDisplayService imgDispSrv;
+
+	@Parameter
+	private UIService uiSrv;
 
 	@Parameter(label = "Display Type",
 		choices = { RED, BLACK_WHITE, OVER_UNDER },
@@ -225,7 +230,14 @@ public class Threshold extends InteractiveCommand {
 	protected void autoThreshold() {
 		AutoThresholdMethod method = methods.get(methodName);
 		int cutoff = method.getThreshold(histogram);
-		// TODO always 0 thru cutoff. darkb would be cutoff to 255.
+		if (cutoff < 0) {
+			uiSrv.getDefaultUI().dialogPrompt(method.getErrorMessage(),
+				"Thresholding failure", DialogPrompt.MessageType.INFORMATION_MESSAGE,
+				DialogPrompt.OptionType.DEFAULT_OPTION);
+			return;
+		}
+		// TODO its always (0,cutoff). Does it need to be (cutoff+1,255) for dark
+		// background? Or is the dark background code elsewhere handling this fine?
 		minimum = dataMin + (0 / (double) histogram.length) * (dataMax - dataMin);
 		maximum =
 			dataMin + (cutoff / (double) histogram.length) * (dataMax - dataMin);
@@ -236,6 +248,12 @@ public class Threshold extends InteractiveCommand {
 	protected void backgroundChange() {
 		AutoThresholdMethod method = methods.get(methodName);
 		int cutoff = method.getThreshold(histogram);
+		if (cutoff < 0) {
+			uiSrv.getDefaultUI().dialogPrompt(method.getErrorMessage(),
+				"Thresholding failure", DialogPrompt.MessageType.INFORMATION_MESSAGE,
+				DialogPrompt.OptionType.DEFAULT_OPTION);
+			return;
+		}
 		if (darkBackground) {
 			maximum = dataMax;
 			minimum =

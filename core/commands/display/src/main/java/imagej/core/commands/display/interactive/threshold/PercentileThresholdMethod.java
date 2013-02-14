@@ -80,6 +80,11 @@ public class PercentileThresholdMethod implements AutoThresholdMethod {
 		return threshold;
 	}
 
+	@Override
+	public String getErrorMessage() {
+		return null;
+	}
+
 	private double partialSum(long[] y, int j) {
 		double x = 0;
 		for (int i = 0; i <= j; i++)

@@ -49,6 +49,8 @@ import imagej.plugin.Plugin;
 @Plugin(type = AutoThresholdMethod.class, name = "Intermodes")
 public class IntermodesThresholdMethod implements AutoThresholdMethod {
 
+	private String errMsg = null;
+
 	@Override
 	public int getThreshold(long[] histogram) {
 		// J. M. S. Prewitt and M. L. Mendelsohn, "The analysis of cell images," in
@@ -85,9 +87,8 @@ public class IntermodesThresholdMethod implements AutoThresholdMethod {
 			iHisto[histogram.length - 1] = (current + next) / 3;
 			iter++;
 			if (iter > 10000) {
-				threshold = -1;
-				// IJ.log("Intermodes Threshold not found after 10000 iterations.");
-				return threshold;
+				errMsg = "Intermodes Threshold not found after 10000 iterations.";
+				return -1;
 			}
 		}
 
@@ -103,4 +104,8 @@ public class IntermodesThresholdMethod implements AutoThresholdMethod {
 		return threshold;
 	}
 
+	@Override
+	public String getErrorMessage() {
+		return errMsg;
+	}
 }
