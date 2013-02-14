@@ -75,18 +75,16 @@ import net.imglib2.type.numeric.RealType;
 //  - this plugin written to work with one display. So if you leave it up and
 //     switch images this plugin won't immediately work with it. see what IJ1
 //     does.
-//  - the min and max are not rounded to integers. And dark/light bounce has
-//     precision errors
-//  - make autothresh methods have an error string that is set if method can't
-//     find thresh. Others can query warning.
-//     Fix autothresh comments with bad chars
-//     Use gabriel's code for displaying 16-bit hist
-//     See what gabriel's actual hist application code does (planes, image, ...)
-//  - change pixels: in IJ1 integral images go to 255/0. Float images go to
-//     255/0 if not nan background. else outside is nan and inside pixels
-//     unchanged
+//  - the min and max are not rounded to integers. And dark/light bounce reuses
+//     the cutoff instead of cutoff + 1. Think how best to calc and show range.
+//  - Use gabriel's code for displaying 16-bit hist
+//  - See what gabriel's actual hist application code does (planes, image, ...)
 //  - in IJ1 can you thresh/apply just 1 plane of an image? or is it just that
 //    you might autothresh each plane separately before munging pixels.
+//  - should we make binary images rather than 0/255? Or just call convert to
+//     mask? or is it fine?
+//  - when running Apply the threshold is overdrawn but still exists. Should we
+//     delete the threshold? or redisplay?
 
 /**
  * @author Barry DeZonia
@@ -188,6 +186,8 @@ public class Threshold extends InteractiveCommand {
 	@SuppressWarnings("unchecked")
 	protected void initValues() {
 
+		if (display == null) return;
+
 		populateThreshMethods();
 
 		boolean alreadyHadOne = threshSrv.hasThreshold(display);
@@ -236,36 +236,21 @@ public class Threshold extends InteractiveCommand {
 				DialogPrompt.OptionType.DEFAULT_OPTION);
 			return;
 		}
-		// TODO its always (0,cutoff). Does it need to be (cutoff+1,255) for dark
-		// background? Or is the dark background code elsewhere handling this fine?
-		minimum = dataMin + (0 / (double) histogram.length) * (dataMax - dataMin);
-		maximum =
-			dataMin + (cutoff / (double) histogram.length) * (dataMax - dataMin);
+		double maxRange = histogram.length - 1;
+		// TODO : what is best increment? To avoid roundoff errs using teeny inc.
+		// This does not match IJ1. Dark bounces from (0,cutoff) to (cutoff,255)
+		// which is not like IJ1 : (0,cutoff) to (cutoff+1,255). Maybe I need a
+		// better way to determine non-integral ranges.
+		double bot = (darkBackground) ? cutoff + 0.00001 : 0;
+		double top = (darkBackground) ? maxRange : cutoff;
+		minimum = dataMin + (bot / maxRange) * (dataMax - dataMin);
+		maximum = dataMin + (top / maxRange) * (dataMax - dataMin);
 		rangeChanged();
 
 	}
 
 	protected void backgroundChange() {
-		AutoThresholdMethod method = methods.get(methodName);
-		int cutoff = method.getThreshold(histogram);
-		if (cutoff < 0) {
-			uiSrv.getDefaultUI().dialogPrompt(method.getErrorMessage(),
-				"Thresholding failure", DialogPrompt.MessageType.INFORMATION_MESSAGE,
-				DialogPrompt.OptionType.DEFAULT_OPTION);
-			return;
-		}
-		if (darkBackground) {
-			maximum = dataMax;
-			minimum =
-				dataMin + ((cutoff + 1) / (double) histogram.length) *
-					(dataMax - dataMin);
-		}
-		else {
-			minimum = dataMin;
-			maximum =
-				dataMin + (cutoff / (double) histogram.length) * (dataMax - dataMin);
-		}
-		rangeChanged();
+		autoThreshold();
 	}
 
 	protected void changePixels() {
@@ -276,7 +261,7 @@ public class Threshold extends InteractiveCommand {
 		double typeMax = cursor.get().getMaxValue();
 		boolean setOffOnly = nanBackground && !ds.isInteger();
 		double OFF = (setOffOnly) ? Double.NaN : 0;
-		final double ON = (typeMax < 255) ? typeMax : 255;
+		double ON = (typeMax < 255) ? typeMax : 255;
 		long[] pos = new long[ds.numDimensions()];
 		double min = thresh.getRangeMin();
 		double max = thresh.getRangeMax();
