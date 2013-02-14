@@ -35,8 +35,9 @@
 
 package imagej.core.commands.display.interactive.threshold;
 
-
 /**
+ * TODO
+ *
  * @author Barry DeZonia
  * @author Gabriel Landini
  */
@@ -56,6 +57,5 @@ public class ThresholdUtils {
 		if (modes == 2) b = true;
 		return b;
 	}
-
 
 }

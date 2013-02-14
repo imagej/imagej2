@@ -37,11 +37,13 @@ package imagej.core.commands.display.interactive.threshold;
 
 import imagej.plugin.ImageJPlugin;
 
-
 /**
+ * TODO
+ *
  * @author Barry DeZonia
  */
 public interface AutoThresholdMethod extends ImageJPlugin {
 
 	int getThreshold(long[] histogram);
+
 }
