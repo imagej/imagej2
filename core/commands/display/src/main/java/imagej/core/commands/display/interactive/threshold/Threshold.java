@@ -80,6 +80,11 @@ import net.imglib2.type.numeric.RealType;
 //     Fix autothresh comments with bad chars
 //     Use gabriel's code for displaying 16-bit hist
 //     See what gabriel's actual hist application code does (planes, image, ...)
+//  - change pixels: in IJ1 integral images go to 255/0. Float images go to
+//     255/0 if not nan background. else outside is nan and inside pixels
+//     unchanged
+//  - in IJ1 can you thresh/apply just 1 plane of an image? or is it just that
+//    you might autothresh each plane separately before munging pixels.
 
 /**
  * @author Barry DeZonia
@@ -135,6 +140,9 @@ public class Threshold extends InteractiveCommand {
 	@Parameter(label = "Stack Histogram", callback = "stackHistogram",
 		persist = false)
 	private boolean stackHistogram;
+
+	@Parameter(label = "Nan Background", persist = false)
+	private boolean nanBackground;
 
 	@Parameter(label = "Minimum", callback = "rangeChanged", persist = false)
 	private double minimum;
@@ -248,8 +256,8 @@ public class Threshold extends InteractiveCommand {
 		ImgPlus<? extends RealType<?>> imgPlus = ds.getImgPlus();
 		Cursor<? extends RealType<?>> cursor = imgPlus.localizingCursor();
 		double typeMax = cursor.get().getMaxValue();
-		double typeMin = cursor.get().getMinValue();
-		final double OFF = (typeMin > 0) ? typeMin : 0;
+		boolean setOffOnly = nanBackground && !ds.isInteger();
+		double OFF = (setOffOnly) ? Double.NaN : 0;
 		final double ON = (typeMax < 255) ? typeMax : 255;
 		long[] pos = new long[ds.numDimensions()];
 		double min = thresh.getRangeMin();
@@ -258,9 +266,16 @@ public class Threshold extends InteractiveCommand {
 			cursor.fwd();
 			cursor.localize(pos);
 			double value = cursor.get().getRealDouble();
-			if (value < min || value > max) value = OFF;
-			else value = ON;
-			cursor.get().setReal(value);
+			boolean set;
+			if (value < min || value > max) {
+				value = OFF;
+				set = true;
+			}
+			else {
+				value = ON;
+				set = !setOffOnly;
+			}
+			if (set) cursor.get().setReal(value);
 		}
 		ds.update();
 	}
