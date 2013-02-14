@@ -49,6 +49,7 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.ops.condition.Condition;
 import net.imglib2.ops.condition.FunctionGreaterCondition;
 import net.imglib2.ops.condition.FunctionLessCondition;
+import net.imglib2.ops.condition.OrCondition;
 import net.imglib2.ops.condition.WithinRangeCondition;
 import net.imglib2.ops.function.Function;
 import net.imglib2.ops.function.real.RealImageFunction;
@@ -77,9 +78,11 @@ public class ThresholdOverlay extends AbstractOverlay
 	private ConditionalPointSet pointsLess;
 	private ConditionalPointSet pointsGreater;
 	private ConditionalPointSet pointsWithin;
+	private ConditionalPointSet pointsOutside;
 	private FunctionLessCondition<? extends RealType<?>> conditionLess;
 	private FunctionGreaterCondition<? extends RealType<?>> conditionGreater;
 	private WithinRangeCondition<? extends RealType<?>> conditionWithin;
+	private OrCondition<long[]> conditionOutside;
 	private RegionOfInterest regionAdapter;
 	private ColorRGB colorLess;
 	private ColorRGB colorWithin;
@@ -146,6 +149,7 @@ public class ThresholdOverlay extends AbstractOverlay
 		pointsGreater.setCondition(conditionGreater);
 		pointsLess.setCondition(conditionLess);
 		pointsWithin.setCondition(conditionWithin);
+		pointsOutside.setCondition(conditionOutside);
 		setDefaultName(changed);
 	}
 
@@ -202,10 +206,16 @@ public class ThresholdOverlay extends AbstractOverlay
 	}
 	
 	/**
-	 * Returns the {@link ThresholdOverlay}'s {@link Condition} for including
-	 * points that are within the threshold. This is used by others (like the
-	 * rendering code) to quickly iterate the portion of the data points they are
-	 * interested in.
+	 * Returns the set of points whose data values are outside the range of
+	 * interest.
+	 */
+	public PointSet getPointsOutside() {
+		return pointsOutside;
+	}
+
+	/**
+	 * Returns the {@link ThresholdOverlay}'s {@link Condition} used to determine
+	 * which points are within than the threshold.
 	 * <p>
 	 * By design the return value is not a specialized version of a Condition.
 	 * Users must not poke the threshold values via this Condition. This would
@@ -217,10 +227,8 @@ public class ThresholdOverlay extends AbstractOverlay
 	}
 
 	/**
-	 * Returns the {@link ThresholdOverlay}'s {@link Condition} for including
-	 * points that are less than the threshold. This is used by others (like the
-	 * rendering code) to quickly iterate the portion of the data points they are
-	 * interested in.
+	 * Returns the {@link ThresholdOverlay}'s {@link Condition} used to determine
+	 * which points are less than the threshold.
 	 * <p>
 	 * By design the return value is not a specialized version of a Condition.
 	 * Users must not poke the threshold values via this Condition. This would
@@ -232,10 +240,8 @@ public class ThresholdOverlay extends AbstractOverlay
 	}
 
 	/**
-	 * Returns the {@link ThresholdOverlay}'s {@link Condition} for including
-	 * points that are greater than the threshold. This is used by others (like
-	 * the rendering code) to quickly iterate the portion of the data points they
-	 * are interested in.
+	 * Returns the {@link ThresholdOverlay}'s {@link Condition} used to determine
+	 * which points are greater than the threshold.
 	 * <p>
 	 * By design the return value is not a specialized version of a Condition.
 	 * Users must not poke the threshold values via this Condition. This would
@@ -244,6 +250,19 @@ public class ThresholdOverlay extends AbstractOverlay
 	 */
 	public Condition<long[]> getConditionGreater() {
 		return conditionGreater;
+	}
+
+	/**
+	 * Returns the {@link ThresholdOverlay}'s {@link Condition} used to determine
+	 * which points are outside than the threshold.
+	 * <p>
+	 * By design the return value is not a specialized version of a Condition.
+	 * Users must not poke the threshold values via this Condition. This would
+	 * bypass internal communication. API users should call setRange(min, max) on
+	 * this {@link ThresholdOverlay} if they want to manipulate the display range.
+	 */
+	public Condition<long[]> getConditionOutside() {
+		return conditionOutside;
 	}
 
 	/**
@@ -295,6 +314,9 @@ public class ThresholdOverlay extends AbstractOverlay
 	 * points whose value is within the threshold range are classified as 0. And
 	 * data points whose value is greater than the threshold range are classified
 	 * as 1.
+	 * <p>
+	 * This method is used by the renderers to quickly determine a point's status
+	 * and can be used generally by interested parties.
 	 * 
 	 * @param point The coordinate point at which to test the underlying data
 	 * @return -1, 0, or 1
@@ -442,12 +464,14 @@ public class ThresholdOverlay extends AbstractOverlay
 		conditionWithin = new WithinRangeCondition(function, min, max);
 		conditionLess = new FunctionLessCondition(function, min);
 		conditionGreater = new FunctionGreaterCondition(function, max);
+		conditionOutside = new OrCondition<long[]>(conditionLess, conditionGreater);
 		long[] dims = new long[imgPlus.numDimensions()];
 		imgPlus.dimensions(dims);
 		HyperVolumePointSet volume = new HyperVolumePointSet(dims);
 		pointsLess = new ConditionalPointSet(volume, conditionLess);
 		pointsGreater = new ConditionalPointSet(volume, conditionGreater);
 		pointsWithin = new ConditionalPointSet(volume, conditionWithin);
+		pointsOutside = new ConditionalPointSet(volume, conditionOutside);
 		regionAdapter = new PointSetRegionOfInterest(pointsWithin);
 		setDefaultName(false);
 	}
@@ -463,15 +487,18 @@ public class ThresholdOverlay extends AbstractOverlay
 		conditionWithin.setFunction( (Function) function);
 		conditionLess.setFunction( (Function) function);
 		conditionGreater.setFunction( (Function) function);
+		// no change needed for conditionOutside
 		long[] dims = new long[imgPlus.numDimensions()];
 		imgPlus.dimensions(dims);
 		HyperVolumePointSet volume = new HyperVolumePointSet(dims);
 		pointsWithin.setPointSet(volume);
 		pointsLess.setPointSet(volume);
 		pointsGreater.setPointSet(volume);
+		// let ConditionalPointSets know they need bounds recalc via setCondition()
 		pointsWithin.setCondition(conditionWithin);
 		pointsLess.setCondition(conditionLess);
 		pointsGreater.setCondition(conditionGreater);
+		pointsOutside.setCondition(conditionOutside);
 		// regionAdapter does not need any changes
 		setDefaultName(false);
 	}
