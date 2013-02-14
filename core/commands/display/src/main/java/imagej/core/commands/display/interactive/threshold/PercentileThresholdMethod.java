@@ -38,56 +38,53 @@ package imagej.core.commands.display.interactive.threshold;
 import imagej.plugin.Plugin;
 
 // NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
-// plugin found in Fiji. The method was ported from IJ1 by Gabriel and somewhat
-// enhanced ("re-implemented so we can ignore black/white and set the bright or
-// dark objects")
+// plugin found in Fiji.
 
 /**
- * Implements the default threshold method for ImageJ.
+ * Implements a percentile threshold method for ImageJ.
  * 
  * @author Barry DeZonia
  * @author Gabriel Landini
  */
-@Plugin(type = AutoThresholdMethod.class, name = "Default")
-public class DefaultThresholdMethod implements AutoThresholdMethod {
+@Plugin(type = AutoThresholdMethod.class, name = "Percentile")
+public class PercentileThresholdMethod implements AutoThresholdMethod {
 
 	@Override
 	public int getThreshold(long[] histogram) {
-		// Original IJ implementation for compatibility.
-		int level;
-		int maxValue = histogram.length - 1;
-		double result, sum1, sum2, sum3, sum4;
+		// W. Doyle,"Operation useful for similarity-invariant pattern recognition,"
+		// Journal of the Association for Computing Machinery, vol. 9,pp. 259-267,
+		// 1962.
+		// ported to ImageJ plugin by G.Landini from Antti Niemisto's Matlab code
+		// (relicensed BSD 2-12-13)
+		// Original Matlab code Copyright (C) 2004 Antti Niemisto
+		// See http://www.cs.tut.fi/~ant/histthresh/ for an excellent slide
+		// presentation and the original Matlab code.
 
-		int min = 0;
-		while ((histogram[min] == 0) && (min < maxValue))
-			min++;
-		int max = maxValue;
-		while ((histogram[max] == 0) && (max > 0))
-			max--;
-		if (min >= max) {
-			level = histogram.length / 2;
-			return level;
-		}
+		int threshold = -1;
+		double ptile = 0.5; // default fraction of foreground pixels
+		double[] avec = new double[histogram.length];
 
-		int movingIndex = min;
-		do {
-			sum1 = sum2 = sum3 = sum4 = 0.0;
-			for (int i = min; i <= movingIndex; i++) {
-				sum1 += i * histogram[i];
-				sum2 += histogram[i];
+		for (int i = 0; i < histogram.length; i++)
+			avec[i] = 0.0;
+
+		double total = partialSum(histogram, histogram.length - 1);
+		double temp = 1.0;
+		for (int i = 0; i < histogram.length; i++) {
+			avec[i] = Math.abs((partialSum(histogram, i) / total) - ptile);
+			// IJ.log("Ptile["+i+"]:"+ avec[i]);
+			if (avec[i] < temp) {
+				temp = avec[i];
+				threshold = i;
 			}
-			for (int i = (movingIndex + 1); i <= max; i++) {
-				sum3 += i * histogram[i];
-				sum4 += histogram[i];
-			}
-			result = (sum1 / sum2 + sum3 / sum4) / 2.0;
-			movingIndex++;
 		}
-		while ((movingIndex + 1) <= result && movingIndex < max - 1);
-
-		level = (int) Math.round(result);
-		return level;
+		return threshold;
 	}
 
+	private double partialSum(long[] y, int j) {
+		double x = 0;
+		for (int i = 0; i <= j; i++)
+			x += y[i];
+		return x;
+	}
 
 }

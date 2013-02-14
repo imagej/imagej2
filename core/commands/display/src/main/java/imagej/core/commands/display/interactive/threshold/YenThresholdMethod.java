@@ -38,56 +38,76 @@ package imagej.core.commands.display.interactive.threshold;
 import imagej.plugin.Plugin;
 
 // NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
-// plugin found in Fiji. The method was ported from IJ1 by Gabriel and somewhat
-// enhanced ("re-implemented so we can ignore black/white and set the bright or
-// dark objects")
+// plugin found in Fiji.
 
 /**
- * Implements the default threshold method for ImageJ.
+ * Implements Yen's threshold method for ImageJ.
  * 
  * @author Barry DeZonia
  * @author Gabriel Landini
  */
-@Plugin(type = AutoThresholdMethod.class, name = "Default")
-public class DefaultThresholdMethod implements AutoThresholdMethod {
+@Plugin(type = AutoThresholdMethod.class, name = "Yen")
+public class YenThresholdMethod implements AutoThresholdMethod {
 
 	@Override
 	public int getThreshold(long[] histogram) {
-		// Original IJ implementation for compatibility.
-		int level;
-		int maxValue = histogram.length - 1;
-		double result, sum1, sum2, sum3, sum4;
+		// Implements Yen thresholding method
+		// 1) Yen J.C., Chang F.J., and Chang S. (1995) "A New Criterion
+		// for Automatic Multilevel Thresholding" IEEE Trans. on Image
+		// Processing, 4(3): 370-378
+		// 2) Sezgin M. and Sankur B. (2004) "Survey over Image Thresholding
+		// Techniques and Quantitative Performance Evaluation" Journal of
+		// Electronic Imaging, 13(1): 146-165
+		// http://citeseer.ist.psu.edu/sezgin04survey.html
+		//
+		// M. Emre Celebi
+		// 06.15.2007
+		// Ported to ImageJ plugin by G.Landini from E Celebi's fourier_0.8 routines
+		int threshold;
+		int ih, it;
+		double crit;
+		double max_crit;
+		double[] norm_histo = new double[histogram.length]; /* normalized histogram */
+		double[] P1 = new double[histogram.length]; /* cumulative normalized histogram */
+		double[] P1_sq = new double[histogram.length];
+		double[] P2_sq = new double[histogram.length];
 
-		int min = 0;
-		while ((histogram[min] == 0) && (min < maxValue))
-			min++;
-		int max = maxValue;
-		while ((histogram[max] == 0) && (max > 0))
-			max--;
-		if (min >= max) {
-			level = histogram.length / 2;
-			return level;
-		}
+		long total = 0;
+		for (ih = 0; ih < histogram.length; ih++)
+			total += histogram[ih];
 
-		int movingIndex = min;
-		do {
-			sum1 = sum2 = sum3 = sum4 = 0.0;
-			for (int i = min; i <= movingIndex; i++) {
-				sum1 += i * histogram[i];
-				sum2 += histogram[i];
+		for (ih = 0; ih < histogram.length; ih++)
+			norm_histo[ih] = (double) histogram[ih] / total;
+
+		P1[0] = norm_histo[0];
+		for (ih = 1; ih < histogram.length; ih++)
+			P1[ih] = P1[ih - 1] + norm_histo[ih];
+
+		P1_sq[0] = norm_histo[0] * norm_histo[0];
+		for (ih = 1; ih < histogram.length; ih++)
+			P1_sq[ih] = P1_sq[ih - 1] + norm_histo[ih] * norm_histo[ih];
+
+		P2_sq[histogram.length - 1] = 0.0;
+		for (ih = histogram.length - 2; ih >= 0; ih--)
+			P2_sq[ih] = P2_sq[ih + 1] + norm_histo[ih + 1] * norm_histo[ih + 1];
+
+		/* Find the threshold that maximizes the criterion */
+		threshold = -1;
+		max_crit = Double.MIN_VALUE;
+		for (it = 0; it < histogram.length; it++) {
+			crit =
+				-1.0 *
+					((P1_sq[it] * P2_sq[it]) > 0.0 ? Math.log(P1_sq[it] * P2_sq[it])
+						: 0.0) +
+					2 *
+					((P1[it] * (1.0 - P1[it])) > 0.0 ? Math.log(P1[it] * (1.0 - P1[it]))
+						: 0.0);
+			if (crit > max_crit) {
+				max_crit = crit;
+				threshold = it;
 			}
-			for (int i = (movingIndex + 1); i <= max; i++) {
-				sum3 += i * histogram[i];
-				sum4 += histogram[i];
-			}
-			result = (sum1 / sum2 + sum3 / sum4) / 2.0;
-			movingIndex++;
 		}
-		while ((movingIndex + 1) <= result && movingIndex < max - 1);
-
-		level = (int) Math.round(result);
-		return level;
+		return threshold;
 	}
-
 
 }

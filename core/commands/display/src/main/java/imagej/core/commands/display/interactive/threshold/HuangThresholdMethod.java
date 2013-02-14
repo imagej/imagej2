@@ -38,56 +38,75 @@ package imagej.core.commands.display.interactive.threshold;
 import imagej.plugin.Plugin;
 
 // NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
-// plugin found in Fiji. The method was ported from IJ1 by Gabriel and somewhat
-// enhanced ("re-implemented so we can ignore black/white and set the bright or
-// dark objects")
+// plugin found in Fiji.
 
 /**
- * Implements the default threshold method for ImageJ.
+ * Implements the Huang's threshold method for ImageJ.
  * 
  * @author Barry DeZonia
  * @author Gabriel Landini
  */
-@Plugin(type = AutoThresholdMethod.class, name = "Default")
-public class DefaultThresholdMethod implements AutoThresholdMethod {
+@Plugin(type = AutoThresholdMethod.class, name = "Huang")
+public class HuangThresholdMethod implements AutoThresholdMethod {
 
 	@Override
 	public int getThreshold(long[] histogram) {
-		// Original IJ implementation for compatibility.
-		int level;
-		int maxValue = histogram.length - 1;
-		double result, sum1, sum2, sum3, sum4;
+		// Implements Huang's fuzzy thresholding method
+		// Uses Shannon's entropy function (one can also use Yager's entropy
+		// function) Huang L.-K. and Wang M.-J.J. (1995) "Image Thresholding by
+		// Minimizing the Measures of Fuzziness" Pattern Recognition, 28(1): 41-51
+		// Reimplemented (to handle 16-bit efficiently) by Johannes Schindelin
+		// Jan 31, 2011
 
-		int min = 0;
-		while ((histogram[min] == 0) && (min < maxValue))
-			min++;
-		int max = maxValue;
-		while ((histogram[max] == 0) && (max > 0))
-			max--;
-		if (min >= max) {
-			level = histogram.length / 2;
-			return level;
+		// find first and last non-empty bin
+		int first, last;
+		for (first = 0; first < histogram.length && histogram[first] == 0; first++)
+		{
+			// do nothing
+		}
+		for (last = histogram.length - 1; last > first && histogram[last] == 0; last--)
+		{
+			// do nothing
+		}
+		if (first == last) return 0;
+
+		// calculate the cumulative density and the weighted cumulative density
+		double[] S = new double[last + 1], W = new double[last + 1];
+		S[0] = histogram[0];
+		for (int i = Math.max(1, first); i <= last; i++) {
+			S[i] = S[i - 1] + histogram[i];
+			W[i] = W[i - 1] + i * histogram[i];
 		}
 
-		int movingIndex = min;
-		do {
-			sum1 = sum2 = sum3 = sum4 = 0.0;
-			for (int i = min; i <= movingIndex; i++) {
-				sum1 += i * histogram[i];
-				sum2 += histogram[i];
-			}
-			for (int i = (movingIndex + 1); i <= max; i++) {
-				sum3 += i * histogram[i];
-				sum4 += histogram[i];
-			}
-			result = (sum1 / sum2 + sum3 / sum4) / 2.0;
-			movingIndex++;
+		// precalculate the summands of the entropy given the absolute difference x
+		// - mu (integral)
+		double C = last - first;
+		double[] Smu = new double[last + 1 - first];
+		for (int i = 1; i < Smu.length; i++) {
+			double mu = 1 / (1 + Math.abs(i) / C);
+			Smu[i] = -mu * Math.log(mu) - (1 - mu) * Math.log(1 - mu);
 		}
-		while ((movingIndex + 1) <= result && movingIndex < max - 1);
 
-		level = (int) Math.round(result);
-		return level;
+		// calculate the threshold
+		int bestThreshold = 0;
+		double bestEntropy = Double.MAX_VALUE;
+		for (int threshold = first; threshold <= last; threshold++) {
+			double entropy = 0;
+			int mu = (int) Math.round(W[threshold] / S[threshold]);
+			for (int i = first; i <= threshold; i++)
+				entropy += Smu[Math.abs(i - mu)] * histogram[i];
+			mu =
+				(int) Math.round((W[last] - W[threshold]) / (S[last] - S[threshold]));
+			for (int i = threshold + 1; i <= last; i++)
+				entropy += Smu[Math.abs(i - mu)] * histogram[i];
+
+			if (bestEntropy > entropy) {
+				bestEntropy = entropy;
+				bestThreshold = threshold;
+			}
+		}
+
+		return bestThreshold;
 	}
-
 
 }

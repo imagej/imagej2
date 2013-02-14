@@ -38,56 +38,69 @@ package imagej.core.commands.display.interactive.threshold;
 import imagej.plugin.Plugin;
 
 // NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
-// plugin found in Fiji. The method was ported from IJ1 by Gabriel and somewhat
-// enhanced ("re-implemented so we can ignore black/white and set the bright or
-// dark objects")
+// plugin found in Fiji.
 
 /**
- * Implements the default threshold method for ImageJ.
+ * Implements an intermodes threshold method for ImageJ.
  * 
  * @author Barry DeZonia
  * @author Gabriel Landini
  */
-@Plugin(type = AutoThresholdMethod.class, name = "Default")
-public class DefaultThresholdMethod implements AutoThresholdMethod {
+@Plugin(type = AutoThresholdMethod.class, name = "Intermodes")
+public class IntermodesThresholdMethod implements AutoThresholdMethod {
 
 	@Override
 	public int getThreshold(long[] histogram) {
-		// Original IJ implementation for compatibility.
-		int level;
-		int maxValue = histogram.length - 1;
-		double result, sum1, sum2, sum3, sum4;
+		// J. M. S. Prewitt and M. L. Mendelsohn, "The analysis of cell images," in
+		// Annals of the New York Academy of Sciences, vol. 128, pp. 1035-1053,
+		// 1966.
+		// ported to ImageJ plugin by G.Landini from Antti Niemisto's Matlab code
+		// (relicensed BSD 2-12-13)
+		// Original Matlab code Copyright (C) 2004 Antti Niemisto
+		// See http://www.cs.tut.fi/~ant/histthresh/ for an excellent slide
+		// presentation and the original Matlab code.
+		//
+		// Assumes a bimodal histogram. The histogram needs is smoothed (using a
+		// running average of size 3, iteratively) until there are only two local
+		// maxima.
+		// j and k
+		// Threshold t is (j+k)/2.
+		// Images with histograms having extremely unequal peaks or a broad and
+		// flat valley are unsuitable for this method.
+		double[] iHisto = new double[histogram.length];
+		int iter = 0;
+		int threshold = -1;
+		for (int i = 0; i < histogram.length; i++)
+			iHisto[i] = histogram[i];
 
-		int min = 0;
-		while ((histogram[min] == 0) && (min < maxValue))
-			min++;
-		int max = maxValue;
-		while ((histogram[max] == 0) && (max > 0))
-			max--;
-		if (min >= max) {
-			level = histogram.length / 2;
-			return level;
+		while (!ThresholdUtils.bimodalTest(iHisto)) {
+			// smooth with a 3 point running mean filter
+			double previous = 0, current = 0, next = iHisto[0];
+			for (int i = 0; i < histogram.length - 1; i++) {
+				previous = current;
+				current = next;
+				next = iHisto[i + 1];
+				iHisto[i] = (previous + current + next) / 3;
+			}
+			iHisto[histogram.length - 1] = (current + next) / 3;
+			iter++;
+			if (iter > 10000) {
+				threshold = -1;
+				// IJ.log("Intermodes Threshold not found after 10000 iterations.");
+				return threshold;
+			}
 		}
 
-		int movingIndex = min;
-		do {
-			sum1 = sum2 = sum3 = sum4 = 0.0;
-			for (int i = min; i <= movingIndex; i++) {
-				sum1 += i * histogram[i];
-				sum2 += histogram[i];
+		// The threshold is the mean between the two peaks.
+		int tt = 0;
+		for (int i = 1; i < histogram.length - 1; i++) {
+			if (iHisto[i - 1] < iHisto[i] && iHisto[i + 1] < iHisto[i]) {
+				tt += i;
+				// IJ.log("mode:" +i);
 			}
-			for (int i = (movingIndex + 1); i <= max; i++) {
-				sum3 += i * histogram[i];
-				sum4 += histogram[i];
-			}
-			result = (sum1 / sum2 + sum3 / sum4) / 2.0;
-			movingIndex++;
 		}
-		while ((movingIndex + 1) <= result && movingIndex < max - 1);
-
-		level = (int) Math.round(result);
-		return level;
+		threshold = (int) Math.floor(tt / 2.0);
+		return threshold;
 	}
-
 
 }

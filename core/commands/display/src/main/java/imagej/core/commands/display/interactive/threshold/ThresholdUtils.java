@@ -35,58 +35,26 @@
 
 package imagej.core.commands.display.interactive.threshold;
 
-import imagej.plugin.Plugin;
-
-// NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
-// plugin found in Fiji. The method was ported from IJ1 by Gabriel and somewhat
-// enhanced ("re-implemented so we can ignore black/white and set the bright or
-// dark objects")
 
 /**
- * Implements the default threshold method for ImageJ.
- * 
  * @author Barry DeZonia
  * @author Gabriel Landini
  */
-@Plugin(type = AutoThresholdMethod.class, name = "Default")
-public class DefaultThresholdMethod implements AutoThresholdMethod {
+public class ThresholdUtils {
 
-	@Override
-	public int getThreshold(long[] histogram) {
-		// Original IJ implementation for compatibility.
-		int level;
-		int maxValue = histogram.length - 1;
-		double result, sum1, sum2, sum3, sum4;
+	public static boolean bimodalTest(double[] y) {
+		int len = y.length;
+		boolean b = false;
+		int modes = 0;
 
-		int min = 0;
-		while ((histogram[min] == 0) && (min < maxValue))
-			min++;
-		int max = maxValue;
-		while ((histogram[max] == 0) && (max > 0))
-			max--;
-		if (min >= max) {
-			level = histogram.length / 2;
-			return level;
-		}
-
-		int movingIndex = min;
-		do {
-			sum1 = sum2 = sum3 = sum4 = 0.0;
-			for (int i = min; i <= movingIndex; i++) {
-				sum1 += i * histogram[i];
-				sum2 += histogram[i];
+		for (int k = 1; k < len - 1; k++) {
+			if (y[k - 1] < y[k] && y[k + 1] < y[k]) {
+				modes++;
+				if (modes > 2) return false;
 			}
-			for (int i = (movingIndex + 1); i <= max; i++) {
-				sum3 += i * histogram[i];
-				sum4 += histogram[i];
-			}
-			result = (sum1 / sum2 + sum3 / sum4) / 2.0;
-			movingIndex++;
 		}
-		while ((movingIndex + 1) <= result && movingIndex < max - 1);
-
-		level = (int) Math.round(result);
-		return level;
+		if (modes == 2) b = true;
+		return b;
 	}
 
 

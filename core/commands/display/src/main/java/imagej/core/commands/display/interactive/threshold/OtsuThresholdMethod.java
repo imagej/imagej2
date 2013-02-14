@@ -38,56 +38,72 @@ package imagej.core.commands.display.interactive.threshold;
 import imagej.plugin.Plugin;
 
 // NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
-// plugin found in Fiji. The method was ported from IJ1 by Gabriel and somewhat
-// enhanced ("re-implemented so we can ignore black/white and set the bright or
-// dark objects")
+// plugin found in Fiji.
 
 /**
- * Implements the default threshold method for ImageJ.
+ * Implements Otsu's threshold method for ImageJ.
  * 
  * @author Barry DeZonia
  * @author Gabriel Landini
  */
-@Plugin(type = AutoThresholdMethod.class, name = "Default")
-public class DefaultThresholdMethod implements AutoThresholdMethod {
+@Plugin(type = AutoThresholdMethod.class, name = "Otsu")
+public class OtsuThresholdMethod implements AutoThresholdMethod {
 
 	@Override
 	public int getThreshold(long[] histogram) {
-		// Original IJ implementation for compatibility.
-		int level;
-		int maxValue = histogram.length - 1;
-		double result, sum1, sum2, sum3, sum4;
+		// Otsu's threshold algorithm
+		// C++ code by Jordan Bevik <Jordan.Bevic@qtiworld.com>
+		// ported to ImageJ plugin by G.Landini
+		int k, kStar; // k = the current threshold; kStar = optimal threshold
+		int L = histogram.length; // The total intensity of the image
+		long N1, N; // N1 = # points with intensity <=k; N = total number of points
+		long Sk; // The total intensity for all histogram points <=k
+		long S;
+		double BCV, BCVmax; // The current Between Class Variance and maximum BCV
+		double num, denom; // temporary bookkeeping
 
-		int min = 0;
-		while ((histogram[min] == 0) && (min < maxValue))
-			min++;
-		int max = maxValue;
-		while ((histogram[max] == 0) && (max > 0))
-			max--;
-		if (min >= max) {
-			level = histogram.length / 2;
-			return level;
+		// Initialize values:
+		S = 0;
+		N = 0;
+		for (k = 0; k < L; k++) {
+			S += k * histogram[k]; // Total histogram intensity
+			N += histogram[k]; // Total number of data points
 		}
 
-		int movingIndex = min;
-		do {
-			sum1 = sum2 = sum3 = sum4 = 0.0;
-			for (int i = min; i <= movingIndex; i++) {
-				sum1 += i * histogram[i];
-				sum2 += histogram[i];
-			}
-			for (int i = (movingIndex + 1); i <= max; i++) {
-				sum3 += i * histogram[i];
-				sum4 += histogram[i];
-			}
-			result = (sum1 / sum2 + sum3 / sum4) / 2.0;
-			movingIndex++;
-		}
-		while ((movingIndex + 1) <= result && movingIndex < max - 1);
+		Sk = 0;
+		N1 = histogram[0]; // The entry for zero intensity
+		BCV = 0;
+		BCVmax = 0;
+		kStar = 0;
 
-		level = (int) Math.round(result);
-		return level;
+		// Look at each possible threshold value,
+		// calculate the between-class variance, and decide if it's a max
+		for (k = 1; k < L - 1; k++) { // No need to check endpoints k = 0 or k = L-1
+			Sk += k * histogram[k];
+			N1 += histogram[k];
+
+			// The float casting here is to avoid compiler warning about loss of
+			// precision and
+			// will prevent overflow in the case of large saturated images
+			denom = (double) (N1) * (N - N1); // Maximum value of denom is (N^2)/4 =
+																				// approx. 3E10
+
+			if (denom != 0) {
+				// Float here is to avoid loss of precision when dividing
+				num = ((double) N1 / N) * S - Sk; // Maximum value of num = 255*N =
+																					// approx 8E7
+				BCV = (num * num) / denom;
+			}
+			else BCV = 0;
+
+			if (BCV >= BCVmax) { // Assign the best threshold found so far
+				BCVmax = BCV;
+				kStar = k;
+			}
+		}
+		// kStar += 1; // Use QTI convention that intensity -> 1 if intensity >= k
+		// (the algorithm was developed for I-> 1 if I <= k.)
+		return kStar;
 	}
-
 
 }
