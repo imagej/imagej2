@@ -3154,7 +3154,11 @@ static void try_with_less_memory(long megabytes)
 	new_argv[0] = dos_path(new_argv[0]);
 	for (i = 0; i < j; i++)
 		new_argv[i] = quote_win32(new_argv[i]);
+#ifdef WIN64
 	execve(new_argv[0], (char * const *)new_argv, NULL);
+#else
+	execve(new_argv[0], (const char * const *)new_argv, NULL);
+#endif
 #else
 	execv(new_argv[0], new_argv);
 #endif
