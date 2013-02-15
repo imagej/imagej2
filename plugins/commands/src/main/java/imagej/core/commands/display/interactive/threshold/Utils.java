@@ -35,17 +35,19 @@
 
 package imagej.core.commands.display.interactive.threshold;
 
+// Ported from Antti Niemesto's HistThresh Matlab toolbox
+//   Relicensed BSD 2-12-13
+
 /**
  * TODO
  *
  * @author Barry DeZonia
  * @author Gabriel Landini
  */
-public class ThresholdUtils {
+public class Utils {
 
 	public static boolean bimodalTest(double[] y) {
 		int len = y.length;
-		boolean b = false;
 		int modes = 0;
 
 		for (int k = 1; k < len - 1; k++) {
@@ -54,8 +56,54 @@ public class ThresholdUtils {
 				if (modes > 2) return false;
 			}
 		}
-		if (modes == 2) b = true;
-		return b;
+		return (modes == 2);
 	}
 
+	/**
+	 * The partial sum A from C. A. Glasbey, "An analysis of histogram-based
+	 * thresholding algorithms," CVGIP: Graphical Models and Image Processing,
+	 * vol. 55, pp. 532-537, 1993.
+	 */
+	public static double A(long[] y, int j) {
+		double x = 0;
+		for (int i = 0; i <= j; i++)
+			x += y[i];
+		return x;
+	}
+
+	/**
+	 * The partial sum B from C. A. Glasbey, "An analysis of histogram-based
+	 * thresholding algorithms," CVGIP: Graphical Models and Image Processing,
+	 * vol. 55, pp. 532-537, 1993.
+	 */
+	public static double B(long[] y, int j) {
+		double x = 0;
+		for (int i = 0; i <= j; i++)
+			x += y[i] * i;
+		return x;
+	}
+
+	/**
+	 * The partial sum C from C. A. Glasbey, "An analysis of histogram-based
+	 * thresholding algorithms," CVGIP: Graphical Models and Image Processing,
+	 * vol. 55, pp. 532-537, 1993.
+	 */
+	public static double C(long[] y, int j) {
+		double x = 0;
+		for (int i = 0; i <= j; i++)
+			x += y[i] * i * i;
+		return x;
+	}
+
+	/**
+	 * The partial sum D from C. A. Glasbey, "An analysis of histogram-based
+	 * thresholding algorithms," CVGIP: Graphical Models and Image Processing,
+	 * vol. 55, pp. 532-537, 1993.
+	 */
+	public static double D(long[] y, int j) {
+		double x = 0;
+		for (int i = 0; i <= j; i++)
+			x += y[i] * i * i * i;
+		return x;
+	}
 }

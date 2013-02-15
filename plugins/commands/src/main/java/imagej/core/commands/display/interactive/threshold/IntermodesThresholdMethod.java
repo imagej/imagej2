@@ -75,7 +75,7 @@ public class IntermodesThresholdMethod implements AutoThresholdMethod {
 		for (int i = 0; i < histogram.length; i++)
 			iHisto[i] = histogram[i];
 
-		while (!ThresholdUtils.bimodalTest(iHisto)) {
+		while (!Utils.bimodalTest(iHisto)) {
 			// smooth with a 3 point running mean filter
 			double previous = 0, current = 0, next = iHisto[0];
 			for (int i = 0; i < histogram.length - 1; i++) {

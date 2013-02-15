@@ -103,7 +103,17 @@ import net.imglib2.view.Views;
 //     display.
 //  - fix code that determines histogram table size. There is a related TODO below.
 //  - make min and max fields into sliders. There is a related TODO below.
-//
+//  - note that as designed the stacked histogram is always generated at start.
+//     We could try different approach to speed dialog appearence. But if we do
+//     we need to calc at some point. BTW the design as is will be invalid if
+//     someone opens thresh command, then uses other plugin to change data
+//     values because the stacked (and other) histograms will not be updated.
+//     Maybe handle dataset updated events to recalc hist as needed.
+//  - incorporate Antti's changes to the minimum method from 1.0.2 to 1.0.3 of
+//     the HistThresh Matlab toolbox into our appropriate autothresh method. Our
+//     method does not match because Johannes made some 16-bit changes.
+//     Currently getting the two versions of the original source to see what
+//     Antti changed.
 
 /**
  * @author Barry DeZonia
@@ -463,6 +473,7 @@ public class Threshold extends InteractiveCommand {
 		return histogram;
 	}
 
+	@SuppressWarnings("unused")
 	private long[] buildHistogramFromPointSets(boolean allData,
 		long[] existingHist)
 	{

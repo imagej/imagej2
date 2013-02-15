@@ -71,19 +71,27 @@ public class MinErrorThresholdMethod implements AutoThresholdMethod {
 		// int counter=1;
 		while (threshold != Tprev) {
 			// Calculate some statistics.
-			mu = B(histogram, threshold) / A(histogram, threshold);
+			mu = Utils.B(histogram, threshold) / Utils.A(histogram, threshold);
 			nu =
-				(B(histogram, histogram.length - 1) - B(histogram, threshold)) /
-					(A(histogram, histogram.length - 1) - A(histogram, threshold));
-			p = A(histogram, threshold) / A(histogram, histogram.length - 1);
+				(Utils.B(histogram, histogram.length - 1) - Utils.B(histogram,
+					threshold)) /
+					(Utils.A(histogram, histogram.length - 1) - Utils.A(histogram,
+						threshold));
+			p =
+				Utils.A(histogram, threshold) /
+					Utils.A(histogram, histogram.length - 1);
 			q =
-				(A(histogram, histogram.length - 1) - A(histogram, threshold)) /
-					A(histogram, histogram.length - 1);
-			sigma2 = C(histogram, threshold) / A(histogram, threshold) - (mu * mu);
+				(Utils.A(histogram, histogram.length - 1) - Utils.A(histogram,
+					threshold)) /
+					Utils.A(histogram, histogram.length - 1);
+			sigma2 =
+				Utils.C(histogram, threshold) / Utils.A(histogram, threshold) -
+					(mu * mu);
 			tau2 =
-				(C(histogram, histogram.length - 1) - C(histogram, threshold)) /
-					(A(histogram, histogram.length - 1) - A(histogram, threshold)) -
-					(nu * nu);
+				(Utils.C(histogram, histogram.length - 1) - Utils.C(histogram,
+					threshold)) /
+					(Utils.A(histogram, histogram.length - 1) - Utils.A(histogram,
+						threshold)) - (nu * nu);
 
 			// The terms of the quadratic equation to be solved.
 			w0 = 1.0 / sigma2 - 1.0 / tau2;
@@ -119,27 +127,6 @@ public class MinErrorThresholdMethod implements AutoThresholdMethod {
 	@Override
 	public String getMessage() {
 		return errMsg;
-	}
-
-	private static double A(long[] y, int j) {
-		double x = 0;
-		for (int i = 0; i <= j; i++)
-			x += y[i];
-		return x;
-	}
-
-	private static double B(long[] y, int j) {
-		double x = 0;
-		for (int i = 0; i <= j; i++)
-			x += i * y[i];
-		return x;
-	}
-
-	private static double C(long[] y, int j) {
-		double x = 0;
-		for (int i = 0; i <= j; i++)
-			x += i * i * y[i];
-		return x;
 	}
 
 }

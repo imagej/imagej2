@@ -80,7 +80,7 @@ public class MinimumThresholdMethod implements AutoThresholdMethod {
 		}
 		double[] tHisto = iHisto;
 
-		while (!ThresholdUtils.bimodalTest(iHisto)) {
+		while (!Utils.bimodalTest(iHisto)) {
 			// smooth with a 3 point running mean filter
 			for (int i = 1; i < histogram.length - 1; i++)
 				tHisto[i] = (iHisto[i - 1] + iHisto[i] + iHisto[i + 1]) / 3;
