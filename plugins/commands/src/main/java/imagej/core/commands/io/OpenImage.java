@@ -58,7 +58,7 @@ import net.imglib2.io.ImgIOException;
  * @author Curtis Rueden
  * @author Mark Hiner
  */
-@Plugin(iconPath = "/icons/plugins/folder_picture.png", menu = {
+@Plugin(iconPath = "/icons/commands/folder_picture.png", menu = {
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Open...", weight = 1, mnemonic = 'o',

@@ -59,7 +59,7 @@ import net.imglib2.type.numeric.RealType;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Adjust"),
 	@Menu(label = "Brightness/Contrast...", accelerator = "control shift C",
-		weight = 0) }, iconPath = "/icons/plugins/contrast.png", headless = true,
+		weight = 0) }, iconPath = "/icons/commands/contrast.png", headless = true,
 	initializer = "initValues")
 public class BrightnessContrast extends InteractiveCommand {
 

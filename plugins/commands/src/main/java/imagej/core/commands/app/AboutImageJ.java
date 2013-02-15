@@ -90,7 +90,7 @@ import net.imglib2.meta.AxisType;
  * @author Barry DeZonia
  */
 @Plugin(label = "About ImageJ...",
-	iconPath = "/icons/plugins/information.png", menu = {
+	iconPath = "/icons/commands/information.png", menu = {
 		@Menu(label = MenuConstants.HELP_LABEL,
 			weight = MenuConstants.HELP_WEIGHT,
 			mnemonic = MenuConstants.HELP_MNEMONIC),

@@ -1,3 +1,7 @@
+ImageJ icons for built-in commands.
+
+Many of these icons are from famfamfam's Silk icon set:
+
 Silk icon set 1.3
 
 _________________________________________

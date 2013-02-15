@@ -54,7 +54,7 @@ import imagej.plugin.Plugin;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Color"),
 	@Menu(label = "Channels Tool...", weight = -5) },
-	iconPath = "/icons/plugins/color_wheel.png", headless = true)
+	iconPath = "/icons/commands/color_wheel.png", headless = true)
 public class ChannelsTool extends ContextCommand implements Previewable {
 
 	public static final String GRAYSCALE = "Grayscale";

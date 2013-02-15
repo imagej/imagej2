@@ -45,7 +45,7 @@ import imagej.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(iconPath = "/icons/bricks.png", menu = {
+@Plugin(iconPath = "/icons/commands/bricks.png", menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay", mnemonic = 'o'),

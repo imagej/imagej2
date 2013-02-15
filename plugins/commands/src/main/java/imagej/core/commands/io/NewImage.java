@@ -55,7 +55,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Plugin(label = "New Image...", iconPath = "/icons/plugins/picture.png",
+@Plugin(label = "New Image...", iconPath = "/icons/commands/picture.png",
 	initializer = "init",
 	menu = {
 		@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,

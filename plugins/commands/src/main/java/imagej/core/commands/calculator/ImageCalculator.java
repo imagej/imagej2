@@ -68,7 +68,7 @@ import net.imglib2.type.numeric.real.DoubleType;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-@Plugin(iconPath = "/icons/plugins/calculator.png", menu = {
+@Plugin(iconPath = "/icons/commands/calculator.png", menu = {
 	@Menu(label = MenuConstants.PROCESS_LABEL,
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),

@@ -47,7 +47,7 @@ import imagej.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(iconPath = "/icons/bricks.png", menu = {
+@Plugin(iconPath = "/icons/commands/bricks.png", menu = {
 	@Menu(label = MenuConstants.ANALYZE_LABEL,
 		weight = MenuConstants.ANALYZE_WEIGHT,
 		mnemonic = MenuConstants.ANALYZE_MNEMONIC), @Menu(label = "Tools"),

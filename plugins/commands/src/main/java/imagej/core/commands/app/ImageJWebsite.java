@@ -51,7 +51,7 @@ import java.net.URL;
  * 
  * @author Johannes Schindelin
  */
-@Plugin(iconPath = "/icons/plugins/world_link.png", menu = {
+@Plugin(iconPath = "/icons/commands/world_link.png", menu = {
 	@Menu(label = MenuConstants.HELP_LABEL, weight = MenuConstants.HELP_WEIGHT,
 		mnemonic = MenuConstants.HELP_MNEMONIC),
 	@Menu(label = "ImageJ Website...", weight = 42) }, headless = true)

@@ -49,7 +49,7 @@ import net.imglib2.type.numeric.real.DoubleType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(iconPath = "/icons/plugins/sum.png", menu = {
+@Plugin(iconPath = "/icons/commands/sum.png", menu = {
 	@Menu(label = MenuConstants.PROCESS_LABEL,
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
