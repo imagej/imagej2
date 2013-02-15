@@ -7,7 +7,7 @@
 
 	<parent>
 		<groupId>net.imagej</groupId>
-		<artifactId>pom-ij-ui-swt</artifactId>
+		<artifactId>pom-ij-uis</artifactId>
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
@@ -43,6 +43,7 @@
 
 	<properties>
 		<project.rootdir>${basedir}/../../..</project.rootdir>
+		<swt.version>3.0m7</swt.version>
 	</properties>
 
 	<build>

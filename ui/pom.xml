@@ -24,7 +24,6 @@
 
 	<properties>
 		<project.rootdir>${basedir}/..</project.rootdir>
-		<miglayout.version>3.7.3.1</miglayout.version>
 	</properties>
 
 	<!-- NB: for project parent, in case of partial checkout -->
