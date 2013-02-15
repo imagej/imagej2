@@ -3998,9 +3998,17 @@ static int start_ij(void)
 		prepend_string(&options.java_options, strdup(get_java_command()));
 
 		string_set(buffer, get_java_command());
+#ifdef WIN32
+		string_append(buffer, ".exe");
+#endif
 		java_home_env = getenv("JAVA_HOME");
-		if (java_home_env && strlen(java_home_env) > 0)
-			string_setf(buffer, "%s/bin/%s", java_home_env, get_java_command());
+		if (java_home_env && strlen(java_home_env) > 0) {
+			string_replace_range(buffer, 0, 0, "/bin/");
+			string_replace_range(buffer, 0, 0, java_home_env);
+#ifdef WIN32
+			string_set(buffer, dos_path(buffer->buffer));
+#endif
+		}
 		options.java_options.list[0] = buffer->buffer;
 		hide_splash();
 #ifndef WIN32
@@ -4010,16 +4018,18 @@ static int start_ij(void)
 		if (console_opened && !console_attached)
 			sleep(5); /* Sleep 5 seconds */
 
-		for (i = 0; i < options.java_options.nr - 1; i++)
-			options.java_options.list[i] =
-				quote_win32(options.java_options.list[i]);
 		STARTUPINFO startup_info;
 		PROCESS_INFORMATION process_info;
-		const char *java = find_in_path(console_opened || console_attached ? "java" : "javaw");
+		const char *java = file_exists(buffer->buffer) ? buffer->buffer :
+			find_in_path(get_java_command());
 		struct string *cmdline = string_initf("java");
 
 		if (!java)
 			die("Could not find java.exe in PATH!");
+
+		for (i = 0; i < options.java_options.nr - 1; i++)
+			options.java_options.list[i] =
+				quote_win32(options.java_options.list[i]);
 
 		memset(&startup_info, 0, sizeof(startup_info));
 		startup_info.cb = sizeof(startup_info);
