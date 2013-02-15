@@ -1005,8 +1005,9 @@ static const char *get_jre_home(void)
 			error("JAVA_HOME contains a JRE: '%s'", jre->buffer);
 		return jre->buffer;
 	}
-	string_setf(jre, "%s", result);
-	error("JAVA_HOME appears to be a JRE: '%s'", jre->buffer);
+	string_set(jre, result);
+	if (verbose)
+		error("JAVA_HOME appears to be a JRE: '%s'", jre->buffer);
 	return jre->buffer;
 }
 
