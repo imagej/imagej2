@@ -62,13 +62,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.imglib2.Cursor;
+import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;
+import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.AxisType;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.view.IntervalView;
+import net.imglib2.view.Views;
 
 // TODO All the problems with thresh overlay code at the moment:
 //
@@ -98,7 +102,6 @@ import net.imglib2.type.numeric.RealType;
 //     only registers a single thresh overlay per display. Need to discuss this
 //     further. I'm sure CTR had ideas about overlays across datasets in a
 //     display.
-//   - replace PointSet code with Views code to improve speed
 
 /**
  * @author Barry DeZonia
@@ -344,6 +347,15 @@ public class Threshold extends InteractiveCommand {
 		return overlay;
 	}
 
+	private long[] histogram() {
+		if (stackHistogram) return fullHistogram;
+		if (invalidPlaneHist) {
+			planeHistogram = buildHistogram(false, planeHistogram);
+			invalidPlaneHist = false;
+		}
+		return planeHistogram;
+	}
+
 	private void colorize(ThresholdOverlay overlay) {
 		if (displayType.equals(BLACK_WHITE)) {
 			overlay.setColorWithin(Colors.WHITE);
@@ -412,11 +424,59 @@ public class Threshold extends InteractiveCommand {
 	// viewed plane
 
 	private long[] buildHistogram(boolean allData, long[] existingHist) {
-		// TODO - use Views class rather than PointSets to improve performance
+		// return buildHistogramFromPointSets(allData, existingHist);
+		return buildHistogramFromViews(allData, existingHist);
+	}
+
+	private long[] buildHistogramFromViews(boolean allData, long[] existingHist) {
 		Dataset ds = imgDispSrv.getActiveDataset(display);
-		PointSet points;
-		if (allData) points = getAllPlanes(ds);
-		else points = getViewedPlane(ds);
+		long[] min = new long[ds.numDimensions()];
+		long[] max = min.clone();
+		max[0] = ds.dimension(0) - 1;
+		max[1] = ds.dimension(1) - 1;
+		for (int d = 2; d < ds.numDimensions(); d++) {
+			if (allData) {
+				min[d] = 0;
+				max[d] = ds.dimension(d) - 1;
+			}
+			else { // viewed data only
+				AxisType axisType = ds.axis(d);
+				long pos = display.getLongPosition(axisType);
+				min[d] = pos;
+				max[d] = pos;
+			}
+		}
+		Img<? extends RealType<?>> img = ds.getImgPlus();
+		IntervalView<? extends RealType<?>> view = Views.interval(img, min, max);
+		IterableInterval<? extends RealType<?>> data = Views.iterable(view);
+		Cursor<? extends RealType<?>> cursor = data.cursor();
+		long[] histogram = existingHist;
+		if (histogram == null) {
+			double range = cursor.get().getMaxValue() - cursor.get().getMinValue();
+			// TMP HACK TO TEST SPEED
+			if (range > 1024) range = 1024;
+			// WAY WE WANT GOING FORWARD?
+			// if (range > 65536) range = 65536;
+			int histSize = (int) Math.round(range);
+			histogram = new long[histSize];
+		}
+		else {
+			for (int i = 0; i < histogram.length; i++)
+				histogram[i] = 0;
+		}
+		while (cursor.hasNext()) {
+			double value = cursor.next().getRealDouble();
+			double relPos = (value - dataMin) / (dataMax - dataMin);
+			int binNumber = (int) Math.round((histogram.length - 1) * relPos);
+			histogram[binNumber]++;
+		}
+		return histogram;
+	}
+
+	private long[] buildHistogramFromPointSets(boolean allData,
+		long[] existingHist)
+	{
+		Dataset ds = imgDispSrv.getActiveDataset(display);
 		RandomAccess<? extends RealType<?>> accessor =
 			ds.getImgPlus().randomAccess();
 		long[] histogram = existingHist;
@@ -434,6 +494,7 @@ public class Threshold extends InteractiveCommand {
 			for (int i = 0; i < histogram.length; i++)
 				histogram[i] = 0;
 		}
+		PointSet points = allData ? allPlanes(ds) : viewedPlane(ds);
 		PointSetIterator iter = points.iterator();
 		while (iter.hasNext()) {
 			long[] pos = iter.next();
@@ -446,11 +507,11 @@ public class Threshold extends InteractiveCommand {
 		return histogram;
 	}
 
-	private PointSet getAllPlanes(Dataset dataset) {
+	private PointSet allPlanes(Dataset dataset) {
 		return new HyperVolumePointSet(dataset.getDims());
 	}
 
-	private PointSet getViewedPlane(Dataset dataset) {
+	private PointSet viewedPlane(Dataset dataset) {
 		long[] pt1 = new long[dataset.numDimensions()];
 		long[] pt2 = new long[dataset.numDimensions()];
 		for (int i = 2; i < pt1.length; i++) {
@@ -460,15 +521,6 @@ public class Threshold extends InteractiveCommand {
 		pt2[0] = dataset.dimension(0) - 1;
 		pt2[1] = dataset.dimension(1) - 1;
 		return new HyperVolumePointSet(pt1, pt2);
-	}
-
-	private long[] histogram() {
-		if (stackHistogram) return fullHistogram;
-		if (invalidPlaneHist) {
-			planeHistogram = buildHistogram(false, planeHistogram);
-			invalidPlaneHist = false;
-		}
-		return planeHistogram;
 	}
 
 }
