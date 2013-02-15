@@ -38,12 +38,10 @@
 
 package imagej.ui.common.awt;
 
-import imagej.Context;
 import imagej.core.commands.io.NewImage;
 import imagej.core.commands.io.OpenImage;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
 import imagej.ui.UIService;
 
 import java.awt.datatransfer.DataFlavor;
@@ -307,6 +305,7 @@ public class AWTDropListener implements DropTargetListener {
 				while (reader.ready()) {
 					contents.add(reader.readLine());
 				}
+				reader.close();
 			}
 			catch (final Exception e) {
 				// do nothing
@@ -315,8 +314,7 @@ public class AWTDropListener implements DropTargetListener {
 		}
 
 		private ColorTable8 loadColorTable(final String filename) {
-			// TODO do something sensible by loading ColorTable from
-			// .lut file
+			// TODO do something sensible by loading ColorTable from .lut file
 			final byte[] reds = new byte[256];
 			final byte[] greens = new byte[256];
 			final byte[] blues = new byte[256];
