@@ -156,6 +156,16 @@ __attribute__((format (printf, 1, 2)))
 static void die(const char *fmt, ...)
 {
 	va_list ap;
+#ifdef WIN32
+	const char *debug = getenv("WINDEBUG");
+	if (debug && *debug) {
+		va_start(ap, fmt);
+		win_verror(fmt, ap);
+		va_end(ap);
+		exit(1);
+	}
+	open_win_console();
+#endif
 
 	va_start(ap, fmt);
 	vfprintf(stderr, fmt, ap);
