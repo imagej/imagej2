@@ -2242,7 +2242,7 @@ static void keep_only_one_memory_option(struct string_array *options)
 static const char* has_memory_option(struct string_array *options)
 {
 	int i;
-	for (i = 0; i < options->nr; i++)
+	for (i = options->nr - 1; i >= 0; i--)
 		if (!prefixcmp(options->list[i], "-Xm"))
 			return options->list[i];
 	return NULL;
@@ -3622,13 +3622,34 @@ static void parse_command_line(void)
 		string_setf(&plugin_path, "-Dplugins.dir=%s", ij_dir);
 	add_option(&options, plugin_path.buffer, 0);
 
+	if (legacy_ij1_options && is_default_ij1_class(main_class)) {
+		struct options dummy;
+
+		memset(&dummy, 0, sizeof(dummy));
+		add_options(&dummy, legacy_ij1_options->buffer, 1);
+		prepend_string_array(&options.ij_options, &dummy.ij_options);
+		free(dummy.ij_options.list);
+	}
+
 	/* If arguments don't set the memory size, set it after available memory. */
 	if (megabytes == 0 && !has_memory_option(&options.java_options)) {
+		struct string *message = !verbose ? NULL : string_init(32);
 		megabytes = (long)(get_memory_size(0) >> 20);
+		if (message)
+			string_addf(message,"Available RAM: %dMB", (int)megabytes);
 		/* 0.75x, but avoid multiplication to avoid overflow */
 		megabytes -= megabytes >> 2;
-		if (sizeof(void *) == 4 && megabytes > MAX_32BIT_HEAP)
+		if (sizeof(void *) == 4 && megabytes > MAX_32BIT_HEAP) {
+			if (message)
+				string_addf(message,", using %dMB (maximum for 32-bit)", (int)MAX_32BIT_HEAP);
 			megabytes = MAX_32BIT_HEAP;
+		}
+		else if (message)
+			string_addf(message, ", using 3/4 of that: %dMB", (int)megabytes);
+		if (message) {
+			error("%s", message->buffer);
+			string_release(message);
+		}
 	}
 	if (sizeof(void *) < 8) {
 		if (!megabytes)
@@ -3732,15 +3753,6 @@ static void parse_command_line(void)
 			}
 			i += count - 1;
 		}
-	}
-
-	if (legacy_ij1_options && is_default_ij1_class(main_class)) {
-		struct options dummy;
-
-		memset(&dummy, 0, sizeof(dummy));
-		add_options(&dummy, legacy_ij1_options->buffer, 1);
-		prepend_string_array(&options.ij_options, &dummy.ij_options);
-		free(dummy.ij_options.list);
 	}
 
 	if (dashdash) {
