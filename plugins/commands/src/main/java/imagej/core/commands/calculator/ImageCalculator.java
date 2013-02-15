@@ -35,19 +35,11 @@
 
 package imagej.core.commands.calculator;
 
-import imagej.InstantiableException;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
-import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.plugin.PluginInfo;
-import imagej.plugin.PluginService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,6 +52,15 @@ import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
+
+import org.scijava.InstantiableException;
+import org.scijava.ItemIO;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
 
 /**
  * Fills an output Dataset with a combination of two input Datasets. The

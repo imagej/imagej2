@@ -37,18 +37,19 @@ package imagej.core.commands.restructure;
 
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
-import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import java.util.ArrayList;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+
+import org.scijava.ItemIO;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 // TODO
 // - code elsewhere assumes X and Y always present. this plugin can break that

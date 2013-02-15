@@ -39,9 +39,10 @@ import ij.ImagePlus;
 import ij.process.ByteProcessor;
 import imagej.command.Command;
 import imagej.legacy.LegacyOutputTracker;
-import imagej.log.LogService;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * A command that mixes legacy and modern code without dealing with the legacy

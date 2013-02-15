@@ -35,12 +35,9 @@
 
 package imagej.ui.swing.viewer.image;
 
-import imagej.AbstractContextual;
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
 import imagej.data.display.event.DataViewUpdatedEvent;
-import imagej.event.EventHandler;
-import imagej.log.LogService;
 import imagej.util.awt.AWTImageTools;
 
 import java.awt.Image;
@@ -50,6 +47,9 @@ import java.awt.image.BufferedImage;
 
 import org.jhotdraw.draw.Drawing;
 import org.jhotdraw.draw.ImageFigure;
+import org.scijava.AbstractContextual;
+import org.scijava.event.EventHandler;
+import org.scijava.log.LogService;
 
 /**
  * A figure view that links an ImageJ {@link DatasetView} to a JHotDraw

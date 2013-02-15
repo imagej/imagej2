@@ -36,7 +36,6 @@
 package imagej.updater.core;
 
 import imagej.updater.util.Util;
-import imagej.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,6 +50,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Matcher;
+
+import org.scijava.util.FileUtils;
 
 /**
  * This class represents a file handled by the updater.

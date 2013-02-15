@@ -35,15 +35,16 @@
 
 package imagej.core.commands.overlay;
 
-import imagej.Context;
 import imagej.command.ContextCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.EllipseOverlay;
 import imagej.data.overlay.RectangleOverlay;
 import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.Context;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 // TODO - this needs to be an interactive plugin. Currently making it a regular
 // plugin as a placeholder. Crated because we need our own version callable from

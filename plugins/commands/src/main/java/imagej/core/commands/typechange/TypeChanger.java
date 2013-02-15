@@ -38,8 +38,6 @@ package imagej.core.commands.typechange;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.module.DefaultModuleItem;
-import imagej.module.ItemIO;
-import imagej.plugin.Parameter;
 import imagej.util.Prefs;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
@@ -57,6 +55,9 @@ import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Parameter;
 
 /**
  * Transforms a {@link Dataset} (and linked {@link ImgPlus}) between types.

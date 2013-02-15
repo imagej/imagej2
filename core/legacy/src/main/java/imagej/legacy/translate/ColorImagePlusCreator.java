@@ -37,10 +37,11 @@ package imagej.legacy.translate;
 
 import ij.ImagePlus;
 import ij.ImageStack;
-import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+
+import org.scijava.Context;
 
 /**
  * Creates {@link ImagePlus}es from {@link ImageDisplay}s containing color

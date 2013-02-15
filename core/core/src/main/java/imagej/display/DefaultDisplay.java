@@ -35,8 +35,7 @@
 
 package imagej.display;
 
-import imagej.Priority;
-import imagej.plugin.Plugin;
+
 
 // TODO - For the moment, we have disabled discovery and automatic usage of the
 // default display. In order to be useful for anything other than headless

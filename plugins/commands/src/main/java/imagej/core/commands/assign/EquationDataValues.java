@@ -44,12 +44,7 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.module.ItemVisibility;
 import imagej.platform.PlatformService;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.widget.Button;
 
 import java.net.URL;
@@ -65,6 +60,12 @@ import net.imglib2.ops.parse.RealEquationFunctionParser;
 import net.imglib2.ops.util.Tuple2;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
+
+import org.scijava.ItemIO;
+import org.scijava.ItemVisibility;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Fills a region of a Dataset with the point by point calculation of a user

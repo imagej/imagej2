@@ -35,9 +35,9 @@
 
 package imagej.updater.util;
 
-import imagej.Context;
-import imagej.Prioritized;
-import imagej.log.LogService;
+import org.scijava.Context;
+import org.scijava.Prioritized;
+import org.scijava.log.LogService;
 
 /**
  * Deprecated; do not use.
@@ -47,7 +47,7 @@ import imagej.log.LogService;
  * </p>
  * 
  * @author Johannes Schindelin
- * @deprecated Use {@link imagej.log.StderrLogService} instead.
+ * @deprecated Use {@link org.scijava.log.StderrLogService} instead.
  */
 @Deprecated
 public class StderrLogService implements LogService {

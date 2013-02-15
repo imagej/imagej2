@@ -35,7 +35,8 @@
 
 package imagej.tool.event;
 
-import imagej.event.ImageJEvent;
+import org.scijava.event.SciJavaEvent;
+
 import imagej.tool.Tool;
 
 /**
@@ -43,7 +44,7 @@ import imagej.tool.Tool;
  * 
  * @author Curtis Rueden
  */
-public abstract class ToolEvent extends ImageJEvent {
+public abstract class ToolEvent extends SciJavaEvent {
 
 	private final Tool tool;
 

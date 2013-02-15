@@ -35,9 +35,6 @@
 
 package imagej.ui.swing;
 
-import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
-import imagej.service.Service;
 import imagej.tool.IconDrawer;
 import imagej.tool.IconService;
 import imagej.tool.Tool;
@@ -48,6 +45,10 @@ import java.awt.Graphics;
 import java.util.HashMap;
 
 import javax.swing.AbstractButton;
+
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * TODO

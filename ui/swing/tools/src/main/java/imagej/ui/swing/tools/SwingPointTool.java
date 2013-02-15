@@ -39,8 +39,6 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.PointOverlay;
-import imagej.input.MouseCursor;
-import imagej.plugin.Plugin;
 import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
@@ -52,6 +50,8 @@ import imagej.util.ColorRGB;
 import java.awt.Shape;
 
 import org.jhotdraw.draw.Figure;
+import org.scijava.input.MouseCursor;
+import org.scijava.plugin.Plugin;
 
 /**
  * Swing/JHotDraw implementation of point tool.

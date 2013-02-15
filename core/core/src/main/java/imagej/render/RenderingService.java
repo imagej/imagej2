@@ -35,7 +35,7 @@
 
 package imagej.render;
 
-import imagej.service.Service;
+import org.scijava.service.Service;
 
 /**
  * Interface for service that performs text rendering.

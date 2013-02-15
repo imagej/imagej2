@@ -35,10 +35,6 @@
 
 package imagej.ui.swing;
 
-import imagej.InstantiableException;
-import imagej.event.EventHandler;
-import imagej.event.EventSubscriber;
-import imagej.plugin.PluginInfo;
 import imagej.tool.Tool;
 import imagej.tool.ToolService;
 import imagej.tool.event.ToolActivatedEvent;
@@ -62,6 +58,11 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import org.scijava.InstantiableException;
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventSubscriber;
+import org.scijava.plugin.PluginInfo;
 
 /**
  * Button bar with selectable tools, similar to ImageJ 1.x.

@@ -50,24 +50,16 @@ import imagej.data.measure.MeasurementService;
 import imagej.data.measure.StatisticsService;
 import imagej.data.sampler.SamplerService;
 import imagej.display.DisplayService;
-import imagej.event.EventHistory;
-import imagej.event.EventService;
-import imagej.event.StatusService;
 import imagej.io.IOService;
 import imagej.io.RecentFileService;
 import imagej.legacy.LegacyService;
-import imagej.log.LogService;
 import imagej.menu.MenuService;
 import imagej.module.ModuleService;
-import imagej.object.ObjectService;
 import imagej.options.OptionsService;
 import imagej.platform.AppService;
 import imagej.platform.PlatformService;
-import imagej.plugin.PluginService;
 import imagej.render.RenderingService;
 import imagej.script.ScriptService;
-import imagej.service.Service;
-import imagej.thread.ThreadService;
 import imagej.tool.IconService;
 import imagej.tool.ToolService;
 import imagej.ui.UIService;
@@ -75,6 +67,17 @@ import imagej.updater.core.UploaderService;
 import imagej.widget.WidgetService;
 
 import java.util.Collection;
+
+import org.scijava.AbstractContextual;
+import org.scijava.Context;
+import org.scijava.event.EventHistory;
+import org.scijava.event.EventService;
+import org.scijava.event.StatusService;
+import org.scijava.log.LogService;
+import org.scijava.object.ObjectService;
+import org.scijava.plugin.PluginService;
+import org.scijava.service.Service;
+import org.scijava.thread.ThreadService;
 
 /**
  * Main entry point into ImageJ. This class enables working with ImageJ services
@@ -142,6 +145,7 @@ public class ImageJ extends AbstractContextual {
 
 	public ImageJ(final Context context) {
 		setContext(context);
+		context.setTitle("ImageJ");
 	}
 
 	// -- ImageJ methods --

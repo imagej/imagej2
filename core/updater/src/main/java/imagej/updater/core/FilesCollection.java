@@ -35,13 +35,12 @@
 
 package imagej.updater.core;
 
-import imagej.log.LogService;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
-import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.DependencyAnalyzer;
 import imagej.updater.util.Progress;
+import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.Util;
 
 import java.io.File;
@@ -66,6 +65,7 @@ import java.util.zip.GZIPOutputStream;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 
+import org.scijava.log.LogService;
 import org.xml.sax.SAXException;
 
 /**

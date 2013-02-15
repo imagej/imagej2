@@ -40,10 +40,11 @@ import imagej.command.ContextCommand;
 import imagej.data.display.ColorMode;
 import imagej.data.display.DatasetView;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Plugin that allows toggling between different color modes.

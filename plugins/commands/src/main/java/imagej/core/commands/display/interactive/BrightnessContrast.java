@@ -38,14 +38,15 @@ package imagej.core.commands.display.interactive;
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.widget.NumberWidget;
 import net.imglib2.algorithm.stats.ComputeMinMax;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Plugin that sets the minimum and maximum for scaling of display values. Sets

@@ -37,10 +37,11 @@ package imagej.core.tools;
 
 import imagej.data.ChannelCollection;
 import imagej.data.options.OptionsChannels;
-import imagej.plugin.Plugin;
 import imagej.tool.Tool;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * TODO

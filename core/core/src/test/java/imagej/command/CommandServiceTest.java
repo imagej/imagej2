@@ -36,11 +36,11 @@
 package imagej.command;
 
 import static org.junit.Assert.assertEquals;
-import imagej.Context;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import org.junit.Test;
+import org.scijava.Context;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Tests {@link CommandService}.

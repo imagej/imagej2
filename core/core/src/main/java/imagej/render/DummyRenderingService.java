@@ -35,10 +35,11 @@
 
 package imagej.render;
 
-import imagej.Priority;
-import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
-import imagej.service.Service;
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
+
 
 /**
  * No-op implementation of text rendering service. This default implementation

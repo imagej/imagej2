@@ -43,14 +43,15 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.table.DefaultResultsTable;
 import imagej.data.table.ResultsTable;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import java.util.List;
 
 import net.imglib2.display.ColorTable;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * TODO

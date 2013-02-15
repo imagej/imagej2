@@ -36,15 +36,16 @@
 package imagej.ui.swing.commands.debug;
 
 import imagej.command.Command;
-import imagej.event.EventDetails;
-import imagej.event.EventHistory;
-import imagej.event.EventHistoryListener;
-import imagej.log.LogService;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
+import org.scijava.event.EventDetails;
+import org.scijava.event.EventHistory;
+import org.scijava.event.EventHistoryListener;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Listens for events, displaying results in a text window.

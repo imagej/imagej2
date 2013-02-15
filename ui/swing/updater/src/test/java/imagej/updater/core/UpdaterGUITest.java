@@ -35,6 +35,14 @@
 
 package imagej.updater.core;
 
+import imagej.updater.gui.ImageJUpdater;
+import imagej.updater.gui.ProgressDialog;
+import imagej.updater.gui.SwingUserInterface;
+import imagej.updater.util.Progress;
+import imagej.updater.util.StderrProgress;
+import imagej.updater.util.Util;
+import imagej.util.MersenneTwisterFast;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -49,14 +57,6 @@ import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.GZIPOutputStream;
-
-import imagej.updater.gui.ImageJUpdater;
-import imagej.updater.gui.ProgressDialog;
-import imagej.updater.gui.SwingUserInterface;
-import imagej.updater.util.Progress;
-import imagej.updater.util.StderrProgress;
-import imagej.updater.util.Util;
-import imagej.util.MersenneTwisterFast;
 
 /**
  * This class is meant for interactive debugging of GUI issues in the Updater.

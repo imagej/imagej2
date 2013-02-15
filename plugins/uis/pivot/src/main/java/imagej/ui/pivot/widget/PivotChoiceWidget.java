@@ -35,7 +35,6 @@
 
 package imagej.ui.pivot.widget;
 
-import imagej.plugin.Plugin;
 import imagej.widget.ChoiceWidget;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
@@ -43,6 +42,7 @@ import imagej.widget.WidgetModel;
 import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.ListButton;
+import org.scijava.plugin.Plugin;
 
 /**
  * Pivot implementation of multiple choice selector widget.

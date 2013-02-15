@@ -36,16 +36,17 @@
 package imagej.ui;
 
 import imagej.command.Command;
-import imagej.module.ItemIO;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.util.AppUtils;
 
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.util.AppUtils;
 
 /**
  * Displays the ImageJ readme file.

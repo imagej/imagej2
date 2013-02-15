@@ -35,7 +35,8 @@
 
 package imagej.module.event;
 
-import imagej.event.ImageJEvent;
+import org.scijava.event.SciJavaEvent;
+
 import imagej.module.Module;
 
 /**
@@ -43,7 +44,7 @@ import imagej.module.Module;
  * 
  * @author Curtis Rueden
  */
-public abstract class ModuleEvent extends ImageJEvent {
+public abstract class ModuleEvent extends SciJavaEvent {
 
 	private final Module module;
 

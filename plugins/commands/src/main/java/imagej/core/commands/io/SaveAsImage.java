@@ -38,16 +38,9 @@ package imagej.core.commands.io;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.display.Display;
-import imagej.event.EventService;
-import imagej.event.StatusService;
 import imagej.io.StatusDispatcher;
 import imagej.io.event.FileSavedEvent;
-import imagej.log.LogService;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.Result;
 import imagej.ui.UIService;
@@ -59,6 +52,14 @@ import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.io.ImgIOException;
 import net.imglib2.io.ImgSaver;
+
+import org.scijava.ItemIO;
+import org.scijava.event.EventService;
+import org.scijava.event.StatusService;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Saves the current {@link Dataset} to disk using a user-specified file name.

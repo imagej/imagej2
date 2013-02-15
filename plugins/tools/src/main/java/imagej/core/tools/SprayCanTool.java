@@ -35,7 +35,6 @@
 
 package imagej.core.tools;
 
-import imagej.Context;
 import imagej.command.CommandService;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
@@ -50,7 +49,6 @@ import imagej.display.event.input.MsEvent;
 import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
 import imagej.options.OptionsService;
-import imagej.plugin.Plugin;
 import imagej.render.RenderingService;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
@@ -60,6 +58,9 @@ import imagej.util.RealCoords;
 import java.util.Random;
 
 import net.imglib2.meta.Axes;
+
+import org.scijava.Context;
+import org.scijava.plugin.Plugin;
 
 /**
  * Implements a spray can drawing tool

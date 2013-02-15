@@ -41,14 +41,15 @@ import imagej.data.animation.AnimationService;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
 import imagej.module.MutableModuleItem;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import java.util.ArrayList;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Plugin for adjusting options that affect the behavior of animations.

@@ -40,9 +40,10 @@ import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
-import imagej.module.ItemIO;
-import imagej.plugin.Parameter;
 import imagej.util.RealRect;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Parameter;
 
 /**
  * Abstract superclass for Shadows plugins.

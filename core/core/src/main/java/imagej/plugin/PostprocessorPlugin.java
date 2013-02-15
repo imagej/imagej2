@@ -35,8 +35,10 @@
 
 package imagej.plugin;
 
-import imagej.Contextual;
 import imagej.module.ModulePostprocessor;
+
+import org.scijava.Contextual;
+import org.scijava.plugin.Plugin;
 
 /**
  * A postprocessor plugin defines a step that occurs immediately following the

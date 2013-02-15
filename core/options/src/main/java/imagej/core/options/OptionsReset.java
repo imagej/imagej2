@@ -39,12 +39,13 @@ import imagej.command.Command;
 import imagej.menu.MenuConstants;
 import imagej.options.OptionsPlugin;
 import imagej.options.OptionsService;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.util.Prefs;
 
 import java.util.List;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Runs the Edit::Options::Reset dialog.

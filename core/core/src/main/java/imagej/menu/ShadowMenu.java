@@ -35,18 +35,11 @@
 
 package imagej.menu;
 
-import imagej.AbstractContextual;
-import imagej.Context;
-import imagej.MenuEntry;
-import imagej.MenuPath;
 import imagej.command.CommandService;
-import imagej.event.EventService;
-import imagej.log.LogService;
 import imagej.menu.event.MenusAddedEvent;
 import imagej.menu.event.MenusRemovedEvent;
 import imagej.menu.event.MenusUpdatedEvent;
 import imagej.module.ModuleInfo;
-import imagej.util.ClassUtils;
 
 import java.lang.reflect.Array;
 import java.net.URL;
@@ -57,6 +50,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+
+import org.scijava.AbstractContextual;
+import org.scijava.Context;
+import org.scijava.MenuEntry;
+import org.scijava.MenuPath;
+import org.scijava.event.EventService;
+import org.scijava.log.LogService;
+import org.scijava.util.ClassUtils;
 
 /**
  * A tree representing a menu structure independent of any particular user
@@ -218,7 +219,7 @@ public class ShadowMenu extends AbstractContextual implements
 	/**
 	 * Gets the URL of the icon associated with this node's {@link MenuEntry}.
 	 * 
-	 * @see imagej.plugin.PluginInfo#getIconURL()
+	 * @see org.scijava.plugin.PluginInfo#getIconURL()
 	 */
 	public URL getIconURL() {
 		if (menuEntry == null) return null;

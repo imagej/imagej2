@@ -35,19 +35,8 @@
 
 package imagej.module;
 
-import imagej.MenuPath;
-import imagej.Priority;
-import imagej.event.EventService;
-import imagej.input.Accelerator;
-import imagej.log.LogService;
 import imagej.module.event.ModulesAddedEvent;
 import imagej.module.event.ModulesRemovedEvent;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
-import imagej.service.Service;
-import imagej.thread.ThreadService;
-import imagej.util.ClassUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -56,6 +45,18 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import org.scijava.MenuPath;
+import org.scijava.Priority;
+import org.scijava.event.EventService;
+import org.scijava.input.Accelerator;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
+import org.scijava.thread.ThreadService;
+import org.scijava.util.ClassUtils;
 
 /**
  * Default service for keeping track of and executing available modules.

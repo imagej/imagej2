@@ -36,7 +36,8 @@
 package imagej.data.event;
 
 import imagej.data.Data;
-import imagej.object.event.ObjectDeletedEvent;
+
+import org.scijava.object.event.ObjectDeletedEvent;
 
 /**
  * An event indicating a {@link Data} has been deleted.

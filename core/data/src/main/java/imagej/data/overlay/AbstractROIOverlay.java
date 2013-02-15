@@ -35,8 +35,9 @@
 
 package imagej.data.overlay;
 
-import imagej.Context;
 import net.imglib2.roi.RegionOfInterest;
+
+import org.scijava.Context;
 
 /**
  * An overlay that has an associated region of interest

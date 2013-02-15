@@ -35,10 +35,6 @@
 
 package imagej.ui.pivot;
 
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.event.EventSubscriber;
-import imagej.event.StatusEvent;
 import imagej.ui.StatusBar;
 
 import java.util.List;
@@ -46,6 +42,10 @@ import java.util.List;
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.Meter;
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.event.EventSubscriber;
+import org.scijava.event.StatusEvent;
 
 /**
  * Status bar with text area and progress bar, similar to ImageJ 1.x.

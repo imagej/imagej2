@@ -36,8 +36,6 @@
 package imagej.data;
 
 import imagej.data.display.ImageDisplay;
-import imagej.object.ObjectService;
-import imagej.service.Service;
 
 import java.util.List;
 
@@ -46,6 +44,9 @@ import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.object.ObjectService;
+import org.scijava.service.Service;
 
 /**
  * Interface for service that works with {@link Dataset}s.

@@ -35,7 +35,6 @@
 
 package imagej.data.overlay;
 
-import imagej.Context;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -43,6 +42,8 @@ import java.io.ObjectOutput;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.roi.LineRegionOfInterest;
+
+import org.scijava.Context;
 
 /**
  * Represents a line going from here to there, possibly with arrows on one end,

@@ -35,7 +35,6 @@
 
 package imagej.ui.swing.viewer.image;
 
-import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.display.DataView;
@@ -49,12 +48,6 @@ import imagej.data.display.event.DataViewSelectedEvent;
 import imagej.data.display.event.MouseCursorEvent;
 import imagej.data.display.event.PanZoomEvent;
 import imagej.display.event.DisplayDeletedEvent;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.event.EventSubscriber;
-import imagej.input.MouseCursor;
-import imagej.log.LogService;
-import imagej.thread.ThreadService;
 import imagej.tool.Tool;
 import imagej.tool.ToolService;
 import imagej.tool.event.ToolActivatedEvent;
@@ -102,6 +95,13 @@ import org.jhotdraw.draw.DrawingEditor;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.event.FigureSelectionEvent;
 import org.jhotdraw.draw.event.FigureSelectionListener;
+import org.scijava.Context;
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.event.EventSubscriber;
+import org.scijava.input.MouseCursor;
+import org.scijava.log.LogService;
+import org.scijava.thread.ThreadService;
 
 /**
  * A renderer of an {@link ImageCanvas}, which uses JHotDraw's

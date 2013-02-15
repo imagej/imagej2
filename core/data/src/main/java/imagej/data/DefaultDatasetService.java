@@ -37,11 +37,6 @@ package imagej.data;
 
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
-import imagej.object.ObjectService;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
-import imagej.service.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +59,12 @@ import net.imglib2.type.numeric.integer.UnsignedIntType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
+
+import org.scijava.object.ObjectService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * Default service for working with {@link Dataset}s.

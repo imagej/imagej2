@@ -38,7 +38,6 @@ package imagej.build.minimaven;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import imagej.util.FileUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -50,6 +49,7 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
 import org.junit.Test;
+import org.scijava.util.FileUtils;
 
 /**
  * A simple test for MiniMaven.

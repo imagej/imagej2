@@ -39,14 +39,15 @@ import imagej.command.CommandService;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import java.io.File;
 import java.util.HashMap;
 
 import net.imglib2.img.ImgPlus;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Saves the current {@link Dataset} to disk.

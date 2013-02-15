@@ -48,21 +48,11 @@ import imagej.data.options.OptionsChannels;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.input.KyPressedEvent;
 import imagej.display.event.input.KyReleasedEvent;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.input.KeyCode;
 import imagej.legacy.plugin.LegacyCommand;
 import imagej.legacy.plugin.LegacyPluginFinder;
-import imagej.log.LogService;
 import imagej.menu.MenuService;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.plugin.PluginInfo;
-import imagej.plugin.PluginService;
-import imagej.service.AbstractService;
-import imagej.service.Service;
 import imagej.ui.ApplicationFrame;
 import imagej.ui.UIService;
 import imagej.ui.viewer.DisplayWindow;
@@ -73,6 +63,17 @@ import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.input.KeyCode;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * Default service for working with legacy ImageJ 1.x.

@@ -38,7 +38,6 @@ package imagej.legacy;
 import static org.junit.Assert.assertTrue;
 import ij.ImagePlus;
 import ij.gui.NewImage;
-import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import net.imglib2.Cursor;
@@ -48,6 +47,7 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 
 import org.junit.Test;
+import org.scijava.Context;
 
 /**
  * Unit tests for {@link LegacyImageMap}.

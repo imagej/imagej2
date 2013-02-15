@@ -36,12 +36,12 @@
 package imagej.script;
 
 import static org.junit.Assert.assertEquals;
-import imagej.Context;
-import imagej.service.ServiceHelper;
 
 import java.io.StringReader;
 
 import org.junit.Test;
+import org.scijava.Context;
+import org.scijava.service.ServiceHelper;
 
 /**
  * TODO

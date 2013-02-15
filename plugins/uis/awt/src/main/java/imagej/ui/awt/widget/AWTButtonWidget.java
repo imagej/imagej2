@@ -35,7 +35,6 @@
 
 package imagej.ui.awt.widget;
 
-import imagej.plugin.Plugin;
 import imagej.widget.Button;
 import imagej.widget.ButtonWidget;
 import imagej.widget.InputWidget;
@@ -44,6 +43,8 @@ import imagej.widget.WidgetModel;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * An AWT widget that displays a button and invokes the callback of a parameter

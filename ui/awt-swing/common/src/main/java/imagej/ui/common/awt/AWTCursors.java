@@ -35,9 +35,9 @@
 
 package imagej.ui.common.awt;
 
-import imagej.input.MouseCursor;
-
 import java.awt.Cursor;
+
+import org.scijava.input.MouseCursor;
 
 /**
  * Translates ImageJ {@link MouseCursor}s into AWT {@link Cursor}s.

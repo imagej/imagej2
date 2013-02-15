@@ -35,15 +35,16 @@
 
 package imagej.display.event;
 
+import org.scijava.event.SciJavaEvent;
+
 import imagej.display.Display;
-import imagej.event.ImageJEvent;
 
 /**
  * An event indicating something has happened to a {@link Display}.
  * 
  * @author Curtis Rueden
  */
-public abstract class DisplayEvent extends ImageJEvent {
+public abstract class DisplayEvent extends SciJavaEvent {
 
 	private final Display<?> display;
 

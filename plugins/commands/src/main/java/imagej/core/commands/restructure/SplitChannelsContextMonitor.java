@@ -41,13 +41,14 @@ import imagej.data.Dataset;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.event.DataRestructuredEvent;
 import imagej.display.event.DisplayActivatedEvent;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
-import imagej.service.Service;
 import net.imglib2.meta.Axes;
+
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * Service that monitors context for the {@link SplitChannelsContext} plugin.

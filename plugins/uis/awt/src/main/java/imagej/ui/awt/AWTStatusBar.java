@@ -35,15 +35,16 @@
 
 package imagej.ui.awt;
 
-import imagej.event.EventHandler;
-import imagej.event.EventSubscriber;
-import imagej.event.StatusEvent;
 import imagej.ui.StatusBar;
 import imagej.ui.UIService;
 
 import java.awt.Graphics;
 import java.awt.Label;
 import java.util.List;
+
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventSubscriber;
+import org.scijava.event.StatusEvent;
 
 /**
  * AWT implementation of {@link StatusBar}.

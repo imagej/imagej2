@@ -37,8 +37,9 @@ package imagej.core.commands.app;
 
 import imagej.command.UnimplementedCommand;
 import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Plugin;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Plugin;
 
 // TODO - replace the kind of functionality that IJ1's Create Shortcut command
 // has. Since we have our own menu handling code we need this functionality in

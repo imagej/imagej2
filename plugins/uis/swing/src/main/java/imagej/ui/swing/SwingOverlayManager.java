@@ -35,7 +35,6 @@
 
 package imagej.ui.swing;
 
-import imagej.Context;
 import imagej.command.CommandService;
 import imagej.core.commands.display.Flatten;
 import imagej.core.commands.overlay.SelectedManagerOverlayProperties;
@@ -56,9 +55,6 @@ import imagej.data.event.OverlayUpdatedEvent;
 import imagej.data.options.OptionsChannels;
 import imagej.data.overlay.CompositeOverlay;
 import imagej.data.overlay.Overlay;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.options.OptionsService;
 import imagej.platform.PlatformService;
 import imagej.ui.UIService;
@@ -101,6 +97,11 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import org.scijava.Context;
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.event.EventSubscriber;
 
 // TODO
 //

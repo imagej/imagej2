@@ -35,10 +35,11 @@
 
 package imagej.module;
 
-import imagej.UIDetails;
 import imagej.Validated;
-import imagej.event.EventService;
 import imagej.module.event.ModulesUpdatedEvent;
+
+import org.scijava.UIDetails;
+import org.scijava.event.EventService;
 
 /**
  * A ModuleInfo object encapsulates metadata about a particular {@link Module}

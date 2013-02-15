@@ -35,7 +35,6 @@
 
 package imagej.script.editor;
 
-import imagej.log.LogService;
 
 import java.io.Writer;
 import java.util.ArrayList;
@@ -47,6 +46,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
+
+import org.scijava.log.LogService;
 
 /**
  * TODO

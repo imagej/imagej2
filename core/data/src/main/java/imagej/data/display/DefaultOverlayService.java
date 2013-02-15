@@ -47,13 +47,8 @@ import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
 import imagej.display.Display;
 import imagej.display.DisplayService;
-import imagej.object.ObjectService;
 import imagej.options.OptionsService;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.render.RenderingService;
-import imagej.service.AbstractService;
-import imagej.service.Service;
 import imagej.util.RealRect;
 
 import java.util.ArrayList;
@@ -65,6 +60,12 @@ import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.ops.pointset.RoiPointSet;
 import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.logic.BitType;
+
+import org.scijava.object.ObjectService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * Default service for working with {@link Overlay}s.

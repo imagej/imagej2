@@ -35,10 +35,12 @@
 
 package imagej.plugin;
 
-import imagej.Priority;
 import imagej.module.Module;
 import imagej.module.ModuleItem;
-import imagej.util.ClassUtils;
+
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
+import org.scijava.util.ClassUtils;
 
 /**
  * A preprocessor for loading populated input values from persistent storage.

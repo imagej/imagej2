@@ -35,6 +35,12 @@
 
 package imagej.core.commands.assign.noisereduce;
 
+import imagej.Cancelable;
+import imagej.command.Command;
+import imagej.command.CommandModule;
+import imagej.command.CommandService;
+import imagej.data.Dataset;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -49,14 +55,9 @@ import net.imglib2.outofbounds.OutOfBoundsMirrorFactory.Boundary;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
-import imagej.Cancelable;
-import imagej.Context;
-import imagej.command.Command;
-import imagej.command.CommandModule;
-import imagej.command.CommandService;
-import imagej.data.Dataset;
-import imagej.module.ItemIO;
-import imagej.plugin.Parameter;
+import org.scijava.Context;
+import org.scijava.ItemIO;
+import org.scijava.plugin.Parameter;
 
 /**
  * TODO

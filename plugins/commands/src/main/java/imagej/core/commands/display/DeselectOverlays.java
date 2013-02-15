@@ -40,10 +40,11 @@ import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Deselects all the overlays linked to the given display.

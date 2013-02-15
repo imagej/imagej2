@@ -37,9 +37,10 @@ package imagej.core.commands.imglib;
 
 import imagej.command.Command;
 import imagej.command.CommandService;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Context menu plugin for Duplicate command.

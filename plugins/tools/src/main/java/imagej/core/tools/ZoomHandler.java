@@ -39,10 +39,11 @@ import imagej.command.CommandService;
 import imagej.data.display.ImageDisplay;
 import imagej.display.Display;
 import imagej.display.event.input.KyPressedEvent;
-import imagej.input.KeyCode;
-import imagej.plugin.Plugin;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
+
+import org.scijava.input.KeyCode;
+import org.scijava.plugin.Plugin;
 
 /**
  * Handles the second key mapping for zoom in (not just + but instead here =).

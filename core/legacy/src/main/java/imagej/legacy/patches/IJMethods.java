@@ -36,9 +36,10 @@
 package imagej.legacy.patches;
 
 import ij.IJ;
-import imagej.event.StatusService;
 import imagej.legacy.LegacyService;
 import imagej.legacy.Utils;
+
+import org.scijava.event.StatusService;
 
 /**
  * Overrides {@link IJ} methods.

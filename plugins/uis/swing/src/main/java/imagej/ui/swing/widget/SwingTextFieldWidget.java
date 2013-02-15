@@ -35,8 +35,6 @@
 
 package imagej.ui.swing.widget;
 
-import imagej.plugin.Plugin;
-import imagej.util.Log;
 import imagej.widget.InputWidget;
 import imagej.widget.TextFieldWidget;
 import imagej.widget.WidgetModel;
@@ -48,6 +46,9 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
+
+import org.scijava.plugin.Plugin;
+import org.scijava.util.Log;
 
 /**
  * Swing implementation of text field widget.

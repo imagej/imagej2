@@ -35,14 +35,15 @@
 
 package imagej.script.java;
 
+import imagej.script.AbstractScriptEngineFactory;
+import imagej.script.ScriptLanguage;
+
 import java.util.Arrays;
 import java.util.List;
 
 import javax.script.ScriptEngine;
 
-import imagej.plugin.Plugin;
-import imagej.script.AbstractScriptEngineFactory;
-import imagej.script.ScriptLanguage;
+import org.scijava.plugin.Plugin;
 
 /**
  * TODO

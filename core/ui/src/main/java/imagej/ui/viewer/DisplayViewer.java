@@ -35,15 +35,16 @@
 
 package imagej.ui.viewer;
 
-import imagej.Contextual;
-import imagej.Prioritized;
 import imagej.display.Display;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.DisplayUpdatedEvent;
 import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Plugin;
 import imagej.ui.UserInterface;
+
+import org.scijava.Contextual;
+import org.scijava.Prioritized;
+import org.scijava.plugin.Plugin;
 
 /**
  * A display viewer is a UI widget that shows a display to a user.

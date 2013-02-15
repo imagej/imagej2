@@ -35,7 +35,6 @@
 
 package imagej.data.overlay;
 
-import imagej.Context;
 
 import java.io.IOException;
 import java.io.ObjectOutput;
@@ -44,6 +43,8 @@ import java.util.Collections;
 import java.util.List;
 
 import net.imglib2.roi.CompositeRegionOfInterest;
+
+import org.scijava.Context;
 
 //TODO
 //  The various query methods might need to be defined such that it gets

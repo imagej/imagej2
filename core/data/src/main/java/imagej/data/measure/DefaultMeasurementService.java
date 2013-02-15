@@ -36,9 +36,6 @@
 package imagej.data.measure;
 
 import imagej.data.Dataset;
-import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
-import imagej.service.Service;
 
 import java.util.List;
 
@@ -47,6 +44,10 @@ import net.imglib2.ops.function.Function;
 import net.imglib2.ops.function.real.RealImageFunction;
 import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 // TODO - this service and all related classes do not have to be in the
 // imagej.data package (ij-data subproject). There is only the one reliance on

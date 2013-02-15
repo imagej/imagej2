@@ -35,9 +35,10 @@
 
 package imagej.data.display;
 
-import imagej.input.MouseCursor;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
+
+import org.scijava.input.MouseCursor;
 
 /**
  * A canvas upon which an {@link ImageDisplay} draws its output.

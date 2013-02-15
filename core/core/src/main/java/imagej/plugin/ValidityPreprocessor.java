@@ -35,10 +35,12 @@
 
 package imagej.plugin;
 
-import imagej.Priority;
 import imagej.ValidityProblem;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
+
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
 
 /**
  * A preprocessor plugin that verifies module validity. If the module is not

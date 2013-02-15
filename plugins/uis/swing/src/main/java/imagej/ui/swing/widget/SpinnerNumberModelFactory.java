@@ -35,12 +35,13 @@
 
 package imagej.ui.swing.widget;
 
-import imagej.util.NumberUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import javax.swing.SpinnerNumberModel;
+
+import org.scijava.util.NumberUtils;
 
 /**
  * Factory for producing the correct {@link SpinnerNumberModel} subclass based

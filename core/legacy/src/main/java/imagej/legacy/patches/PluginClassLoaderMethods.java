@@ -37,8 +37,6 @@ package imagej.legacy.patches;
 
 import ij.io.PluginClassLoader;
 import imagej.legacy.LegacyService;
-import imagej.log.LogService;
-import imagej.log.StderrLogService;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -46,6 +44,9 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+
+import org.scijava.log.LogService;
+import org.scijava.log.StderrLogService;
 
 /**
  * Augments {@link PluginClassLoader} methods.

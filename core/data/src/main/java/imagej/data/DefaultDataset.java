@@ -35,14 +35,12 @@
 
 package imagej.data;
 
-import imagej.Context;
 import imagej.data.event.DatasetCreatedEvent;
 import imagej.data.event.DatasetDeletedEvent;
 import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
-import imagej.log.LogService;
 import net.imglib2.Cursor;
 import net.imglib2.Positionable;
 import net.imglib2.RandomAccess;
@@ -68,6 +66,9 @@ import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.IntegerType;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.Context;
+import org.scijava.log.LogService;
 
 /**
  * Default implementation of {@link Dataset}.

@@ -41,17 +41,18 @@ import imagej.data.event.DataRestructuredEvent;
 import imagej.display.Display;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.input.KyPressedEvent;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.event.StatusService;
-import imagej.input.KeyCode;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
-import imagej.service.Service;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.event.StatusService;
+import org.scijava.input.KeyCode;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * Default service for working with {@link Animation}s.

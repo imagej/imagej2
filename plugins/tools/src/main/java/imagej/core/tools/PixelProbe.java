@@ -39,11 +39,12 @@ import imagej.data.ChannelCollection;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.display.event.input.MsMovedEvent;
-import imagej.event.StatusService;
-import imagej.plugin.Plugin;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 import net.imglib2.meta.Axes;
+
+import org.scijava.event.StatusService;
+import org.scijava.plugin.Plugin;
 
 /**
  * Displays pixel values under the cursor.

@@ -35,9 +35,9 @@
 
 package imagej.core.commands.debug;
 
-import imagej.module.ItemIO;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+import org.scijava.ItemIO;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Test plugin for verifying that invalid module parameters are dealt with using

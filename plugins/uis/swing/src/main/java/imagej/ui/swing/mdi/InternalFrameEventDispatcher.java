@@ -43,14 +43,15 @@ import imagej.display.event.window.WinDeactivatedEvent;
 import imagej.display.event.window.WinDeiconifiedEvent;
 import imagej.display.event.window.WinIconifiedEvent;
 import imagej.display.event.window.WinOpenedEvent;
-import imagej.event.EventService;
-import imagej.event.ImageJEvent;
 
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
+import org.scijava.event.EventService;
+
 /**
- * Rebroadcasts AWT internal frame events as {@link ImageJEvent}s.
+ * Rebroadcasts AWT internal frame events as
+ * {@link org.scijava.event.SciJavaEvent}s.
  * 
  * @author Curtis Rueden
  * @author Grant Harris

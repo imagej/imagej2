@@ -36,9 +36,10 @@
 package imagej.display.event.input;
 
 import imagej.display.Display;
-import imagej.input.Accelerator;
-import imagej.input.InputModifiers;
-import imagej.input.KeyCode;
+
+import org.scijava.input.Accelerator;
+import org.scijava.input.InputModifiers;
+import org.scijava.input.KeyCode;
 
 /**
  * An event indicating keyboard activity in a display.

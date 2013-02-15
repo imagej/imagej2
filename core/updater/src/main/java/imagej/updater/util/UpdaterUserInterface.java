@@ -35,11 +35,12 @@
 
 package imagej.updater.util;
 
-import imagej.log.LogService;
 
 import java.awt.Frame;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import org.scijava.log.LogService;
 
 /**
  * TODO

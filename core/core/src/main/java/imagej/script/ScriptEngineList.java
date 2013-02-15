@@ -36,12 +36,13 @@
 package imagej.script;
 
 import imagej.command.Command;
-import imagej.plugin.Plugin;
 
 import java.util.List;
 
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * Displays all the script engines available with JDK Platform.

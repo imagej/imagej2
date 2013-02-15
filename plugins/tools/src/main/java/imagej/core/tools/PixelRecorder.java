@@ -35,7 +35,6 @@
 
 package imagej.core.tools;
 
-import imagej.Context;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.Position;
@@ -59,6 +58,8 @@ import net.imglib2.display.ARGBScreenImage;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.Context;
 
 /**
  * Gathers pixel information (location, channel values) of pixel associated

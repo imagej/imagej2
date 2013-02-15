@@ -38,9 +38,10 @@ package imagej.core.commands.misc;
 import imagej.command.UnimplementedCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 // TODO - replace the kind of functionality that IJ1's Benchmark command has.
 // It needs to display changes as they happen (something the legacy plugin can't

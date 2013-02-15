@@ -35,10 +35,6 @@
 
 package imagej.ui.swt;
 
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.event.EventSubscriber;
-import imagej.event.StatusEvent;
 import imagej.ui.StatusBar;
 
 import java.util.List;
@@ -48,6 +44,10 @@ import net.miginfocom.swt.MigLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.event.EventSubscriber;
+import org.scijava.event.StatusEvent;
 
 /**
  * SWT implementation of {@link StatusBar}.

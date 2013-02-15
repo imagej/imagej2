@@ -38,22 +38,23 @@ package imagej.options;
 import imagej.command.Command;
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
-import imagej.event.EventService;
-import imagej.log.LogService;
 import imagej.plugin.InitPreprocessor;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.plugin.PluginInfo;
-import imagej.plugin.PluginService;
 import imagej.plugin.PreprocessorPlugin;
 import imagej.plugin.ValidityPreprocessor;
-import imagej.service.AbstractService;
-import imagej.service.Service;
-import imagej.util.ClassUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.scijava.event.EventService;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
+import org.scijava.util.ClassUtils;
 
 /**
  * Default service for keeping track of the available options and their

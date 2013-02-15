@@ -36,9 +36,6 @@
 package imagej.data.measure;
 
 import imagej.data.Dataset;
-import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
-import imagej.service.Service;
 import net.imglib2.img.Img;
 import net.imglib2.ops.function.Function;
 import net.imglib2.ops.function.real.RealAlphaTrimmedMeanFunction;
@@ -71,6 +68,10 @@ import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
+
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 // TODO - make MeasurementService smarter. Compute values without always
 // revisiting the pixels. This current impl goes over pixels once for each

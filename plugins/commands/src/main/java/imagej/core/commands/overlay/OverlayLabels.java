@@ -37,8 +37,9 @@ package imagej.core.commands.overlay;
 
 import imagej.command.ContextCommand;
 import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Plugin;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Plugin;
 
 /**
  * TODO

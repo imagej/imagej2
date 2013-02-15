@@ -35,7 +35,8 @@
 
 package imagej.platform.event;
 
-import imagej.event.ImageJEvent;
+import org.scijava.event.SciJavaEvent;
+
 
 /**
  * An event indicating an application-level occurrence. Exists mainly to
@@ -43,6 +44,6 @@ import imagej.event.ImageJEvent;
  * 
  * @author Curtis Rueden
  */
-public abstract class ApplicationEvent extends ImageJEvent {
+public abstract class ApplicationEvent extends SciJavaEvent {
 	// placeholder event class
 }

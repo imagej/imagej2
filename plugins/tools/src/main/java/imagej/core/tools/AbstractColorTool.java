@@ -47,8 +47,6 @@ import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.input.MsButtonEvent;
 import imagej.display.event.input.MsClickedEvent;
-import imagej.event.EventHandler;
-import imagej.event.StatusService;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
 import imagej.tool.AbstractTool;
@@ -56,6 +54,9 @@ import imagej.tool.CustomDrawnTool;
 import imagej.tool.IconDrawer;
 import imagej.tool.IconService;
 import imagej.util.ColorRGB;
+
+import org.scijava.event.EventHandler;
+import org.scijava.event.StatusService;
 
 /**
  * TODO

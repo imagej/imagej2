@@ -37,8 +37,9 @@ package imagej.command;
 
 import imagej.module.Module;
 import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Plugin;
-import imagej.plugin.PluginService;
+
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginService;
 
 /**
  * {@code Command} is a plugin that is executable. A {@code Command} can be

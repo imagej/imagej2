@@ -37,20 +37,21 @@ package imagej.io;
 
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
-import imagej.event.EventService;
-import imagej.event.StatusService;
 import imagej.io.event.FileOpenedEvent;
 import imagej.module.ModuleService;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
-import imagej.service.Service;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.io.ImgIOException;
 import net.imglib2.io.ImgOpener;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.event.EventService;
+import org.scijava.event.StatusService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * Default service that provides I/O convenience methods.

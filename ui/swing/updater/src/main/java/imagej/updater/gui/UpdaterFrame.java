@@ -35,8 +35,6 @@
 
 package imagej.updater.gui;
 
-import imagej.Context;
-import imagej.log.LogService;
 import imagej.updater.core.Checksummer;
 import imagej.updater.core.Diff.Mode;
 import imagej.updater.core.FileObject;
@@ -47,10 +45,9 @@ import imagej.updater.core.FilesCollection.DependencyMap;
 import imagej.updater.core.FilesUploader;
 import imagej.updater.core.Installer;
 import imagej.updater.core.UploaderService;
-import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.Progress;
+import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.UpdaterUserInterface;
-import imagej.util.ProcessUtils;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -91,6 +88,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+
+import org.scijava.Context;
+import org.scijava.log.LogService;
+import org.scijava.util.ProcessUtils;
 
 /**
  * TODO

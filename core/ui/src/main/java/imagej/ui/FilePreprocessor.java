@@ -35,14 +35,15 @@
 
 package imagej.ui;
 
-import imagej.Priority;
 import imagej.module.Module;
 import imagej.module.ModuleItem;
 import imagej.plugin.AbstractPreprocessorPlugin;
-import imagej.plugin.Plugin;
 import imagej.plugin.PreprocessorPlugin;
 
 import java.io.File;
+
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
 
 /**
  * A preprocessor plugin that handles single unresolved parameters of type

@@ -35,20 +35,18 @@
 
 package imagej.core.commands.assign.noisereduce;
 
-import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.DefaultDataset;
-import imagej.event.StatusService;
-
 import net.imglib2.img.ImgPlus;
 import net.imglib2.ops.function.Function;
-import net.imglib2.ops.img.ImageAssignment;
 import net.imglib2.ops.img.SerialImageAssignment;
 import net.imglib2.ops.input.PointSetInputIterator;
-import net.imglib2.ops.input.PointSetInputIteratorFactory;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.Context;
+import org.scijava.event.StatusService;
 
 /**
  * TODO

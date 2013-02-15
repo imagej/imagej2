@@ -35,7 +35,6 @@
 
 package imagej.data.overlay;
 
-import imagej.Context;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -44,6 +43,8 @@ import java.io.ObjectOutput;
 import net.imglib2.meta.Axes;
 import net.imglib2.roi.GeneralPathRegionOfInterest;
 import net.imglib2.roi.GeneralPathSegmentHandler;
+
+import org.scijava.Context;
 
 /**
  * An overlay for the {@link GeneralPathRegionOfInterest}.

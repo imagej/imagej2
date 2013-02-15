@@ -35,10 +35,8 @@
 
 package imagej.ui.swt;
 
-import imagej.event.EventService;
 import imagej.menu.MenuService;
 import imagej.platform.event.AppMenusCreatedEvent;
-import imagej.plugin.Plugin;
 import imagej.ui.AbstractUserInterface;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
@@ -55,6 +53,8 @@ import net.miginfocom.swt.MigLayout;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
+import org.scijava.event.EventService;
+import org.scijava.plugin.Plugin;
 
 /**
  * An SWT-based user interface for ImageJ.

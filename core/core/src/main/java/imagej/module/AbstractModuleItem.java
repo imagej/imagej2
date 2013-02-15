@@ -35,12 +35,15 @@
 
 package imagej.module;
 
-import imagej.util.ClassUtils;
-import imagej.util.NumberUtils;
 import imagej.util.Prefs;
-import imagej.util.StringMaker;
 
 import java.util.List;
+
+import org.scijava.ItemIO;
+import org.scijava.ItemVisibility;
+import org.scijava.util.ClassUtils;
+import org.scijava.util.NumberUtils;
+import org.scijava.util.StringMaker;
 
 /**
  * Abstract superclass of {@link ModuleItem} implementations.

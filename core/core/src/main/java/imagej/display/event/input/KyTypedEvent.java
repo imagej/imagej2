@@ -36,8 +36,9 @@
 package imagej.display.event.input;
 
 import imagej.display.Display;
-import imagej.input.InputModifiers;
-import imagej.input.KeyCode;
+
+import org.scijava.input.InputModifiers;
+import org.scijava.input.KeyCode;
 
 /**
  * An event indicating a keyboard key was typed (i.e., pressed and released) in

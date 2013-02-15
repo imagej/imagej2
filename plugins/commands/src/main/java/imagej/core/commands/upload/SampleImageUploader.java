@@ -36,10 +36,6 @@
 package imagej.core.commands.upload;
 
 import imagej.command.Command;
-import imagej.event.StatusService;
-import imagej.log.LogService;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -54,6 +50,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import net.iharder.Base64;
+
+import org.scijava.event.StatusService;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Uploads a sample image to the ImageJDev server for further inspection

@@ -37,8 +37,6 @@ package imagej.data.overlay;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import imagej.Context;
-import imagej.log.LogService;
 import imagej.util.ColorRGB;
 
 import java.io.ByteArrayInputStream;
@@ -58,6 +56,8 @@ import net.imglib2.roi.BinaryMaskRegionOfInterest;
 import net.imglib2.type.logic.BitType;
 
 import org.junit.Test;
+import org.scijava.Context;
+import org.scijava.log.LogService;
 
 /**
  * Unit tests for {@link BinaryMaskOverlay}.

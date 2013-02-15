@@ -47,10 +47,6 @@ import imagej.data.display.ImageDisplayService;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.render.RenderingService;
 import imagej.render.TextRenderer.TextJustification;
 import imagej.util.ColorRGB;
@@ -61,6 +57,11 @@ import java.util.List;
 import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 // TODO
 // this implementation does not support a "List" button which shows

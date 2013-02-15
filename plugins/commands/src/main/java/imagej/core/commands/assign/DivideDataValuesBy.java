@@ -38,12 +38,13 @@ package imagej.core.commands.assign;
 import imagej.core.options.OptionsMisc;
 import imagej.menu.MenuConstants;
 import imagej.options.OptionsService;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import net.imglib2.ops.operation.real.unary.RealDivideConstant;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Fills an output Dataset by dividing an input Dataset by a user defined

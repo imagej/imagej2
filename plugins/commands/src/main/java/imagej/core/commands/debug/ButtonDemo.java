@@ -38,13 +38,14 @@ package imagej.core.commands.debug;
 import imagej.command.Command;
 import imagej.core.tools.TunePlayer;
 import imagej.data.Dataset;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.widget.Button;
 import net.imglib2.img.Img;
 import net.imglib2.ops.img.ImageCombiner;
 import net.imglib2.ops.operation.real.unary.RealAddConstant;
 import net.imglib2.ops.operation.real.unary.RealSubtractConstant;
+
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * This command is example code that shows how one can make @Parameters that are

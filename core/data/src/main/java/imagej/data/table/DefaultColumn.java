@@ -35,7 +35,7 @@
 
 package imagej.data.table;
 
-import imagej.util.SizableArrayList;
+import org.scijava.util.SizableArrayList;
 
 /**
  * Default implementation of {@link Column}.

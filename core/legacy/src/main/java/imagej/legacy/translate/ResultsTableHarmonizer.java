@@ -38,12 +38,13 @@ package imagej.legacy.translate;
 import ij.IJ;
 import ij.plugin.filter.Analyzer;
 import ij.text.TextWindow;
-import imagej.Context;
 import imagej.data.table.DefaultResultsTable;
 import imagej.data.table.ResultsTable;
 import imagej.data.table.Table;
 import imagej.data.table.TableDisplay;
 import imagej.display.DisplayService;
+
+import org.scijava.Context;
 
 /**
  * Harmonizes data between legacy ImageJ and modern ImageJ ResultsTables

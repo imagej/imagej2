@@ -35,7 +35,6 @@
 
 package imagej.updater.gui;
 
-import imagej.util.ProcessUtils;
 import imagej.util.LineOutputStream;
 
 import java.awt.Color;
@@ -63,6 +62,8 @@ import javax.swing.text.Element;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+
+import org.scijava.util.ProcessUtils;
 
 /**
  * A scroll pane that colorizes diff output.

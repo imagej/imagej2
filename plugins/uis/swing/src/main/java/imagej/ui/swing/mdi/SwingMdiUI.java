@@ -35,9 +35,7 @@
 
 package imagej.ui.swing.mdi;
 
-import imagej.Priority;
 import imagej.display.Display;
-import imagej.plugin.Plugin;
 import imagej.ui.Desktop;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
@@ -52,6 +50,9 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 
 import javax.swing.JScrollPane;
+
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
 
 /**
  * Swing-based MDI user interface for ImageJ.

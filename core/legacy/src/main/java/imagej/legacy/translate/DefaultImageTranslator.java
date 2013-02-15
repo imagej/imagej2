@@ -36,11 +36,12 @@
 package imagej.legacy.translate;
 
 import ij.ImagePlus;
-import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import net.imglib2.meta.AxisType;
+
+import org.scijava.Context;
 
 /**
  * The default {@link ImageTranslator} between legacy and modern ImageJ image

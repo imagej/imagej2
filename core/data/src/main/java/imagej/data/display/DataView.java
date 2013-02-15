@@ -35,15 +35,16 @@
 
 package imagej.data.display;
 
-import imagej.Contextual;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.PositionableByAxis;
 import imagej.data.overlay.Overlay;
 import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Plugin;
 import net.imglib2.meta.AxisType;
+
+import org.scijava.Contextual;
+import org.scijava.plugin.Plugin;
 
 /**
  * Interface for data views. A view provides visualization settings for an

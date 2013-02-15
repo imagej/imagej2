@@ -35,12 +35,13 @@
 
 package imagej.display;
 
-import imagej.Contextual;
-import imagej.Prioritized;
 import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Plugin;
 
 import java.util.List;
+
+import org.scijava.Contextual;
+import org.scijava.Prioritized;
+import org.scijava.plugin.Plugin;
 
 /**
  * A display is a particular type of {@link ImageJPlugin} intended to collect

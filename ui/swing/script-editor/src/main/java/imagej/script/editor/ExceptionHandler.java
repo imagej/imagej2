@@ -35,7 +35,6 @@
 
 package imagej.script.editor;
 
-import imagej.log.LogService;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -43,6 +42,8 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import javax.swing.JTextArea;
+
+import org.scijava.log.LogService;
 
 /**
  * TODO

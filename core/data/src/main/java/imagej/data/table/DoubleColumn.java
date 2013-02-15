@@ -35,7 +35,7 @@
 
 package imagej.data.table;
 
-import imagej.util.DoubleArray;
+import org.scijava.util.DoubleArray;
 
 /**
  * Efficient implementation of {@link Column} for {@code double} primitives.

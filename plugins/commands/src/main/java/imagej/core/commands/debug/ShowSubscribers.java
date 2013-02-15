@@ -38,17 +38,18 @@ package imagej.core.commands.debug;
 import imagej.command.Command;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.DisplayUpdatedEvent;
-import imagej.event.EventService;
-import imagej.event.EventSubscriber;
-import imagej.event.ImageJEvent;
-import imagej.module.ItemIO;
-import imagej.object.event.ObjectCreatedEvent;
-import imagej.object.event.ObjectDeletedEvent;
-import imagej.object.event.ObjectsListEvent;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import java.util.List;
+
+import org.scijava.ItemIO;
+import org.scijava.event.EventService;
+import org.scijava.event.EventSubscriber;
+import org.scijava.event.SciJavaEvent;
+import org.scijava.object.event.ObjectCreatedEvent;
+import org.scijava.object.event.ObjectDeletedEvent;
+import org.scijava.object.event.ObjectsListEvent;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * For EventBus diagnostics: shows what is subscribed to various event types.
@@ -86,7 +87,7 @@ public class ShowSubscribers implements Command {
 
 	// -- Helper methods --
 
-	private <E extends ImageJEvent> void listSubs(final StringBuilder sb,
+	private <E extends SciJavaEvent> void listSubs(final StringBuilder sb,
 		final Class<E> c)
 	{
 		final List<EventSubscriber<E>> subscribers = eventService.getSubscribers(c);

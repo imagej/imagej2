@@ -39,12 +39,13 @@ import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.ui.UIService;
 import imagej.ui.viewer.image.ImageDisplayViewer;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Captures the current view of an {@link ImageDisplay} to a color merged

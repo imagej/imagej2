@@ -35,14 +35,15 @@
 
 package imagej.widget;
 
-import imagej.module.ItemVisibility;
 import imagej.module.MethodCallException;
 import imagej.module.Module;
 import imagej.module.ModuleItem;
-import imagej.util.ClassUtils;
-import imagej.util.NumberUtils;
 
 import java.util.List;
+
+import org.scijava.ItemVisibility;
+import org.scijava.util.ClassUtils;
+import org.scijava.util.NumberUtils;
 
 /**
  * The backing data model for a particular {@link InputWidget}.

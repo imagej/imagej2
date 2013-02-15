@@ -35,8 +35,6 @@
 
 package imagej.updater.gui;
 
-import imagej.event.StatusService;
-import imagej.log.LogService;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.util.Prefs;
 
@@ -51,6 +49,9 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import net.miginfocom.swing.MigLayout;
+
+import org.scijava.event.StatusService;
+import org.scijava.log.LogService;
 
 /**
  * TODO

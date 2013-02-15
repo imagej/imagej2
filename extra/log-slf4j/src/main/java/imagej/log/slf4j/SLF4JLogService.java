@@ -35,12 +35,12 @@
 
 package imagej.log.slf4j;
 
-import imagej.log.DefaultUncaughtExceptionHandler;
-import imagej.log.LogService;
-import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
-import imagej.service.Service;
 
+import org.scijava.log.DefaultUncaughtExceptionHandler;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -35,22 +35,23 @@
 
 package imagej.core.commands.debug;
 
-import imagej.Context;
 import imagej.command.Command;
 import imagej.command.CommandService;
 import imagej.core.commands.io.NewImage;
 import imagej.data.Dataset;
-import imagej.log.LogService;
 import imagej.module.Module;
 import imagej.module.ModuleService;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
 
 import net.imglib2.meta.Axes;
+
+import org.scijava.Context;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * A test of {@link CommandService#run}. The source code demonstrates three

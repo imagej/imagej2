@@ -37,7 +37,6 @@ package imagej.legacy.translate;
 
 import ij.ImagePlus;
 import ij.ImageStack;
-import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -52,6 +51,8 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.ShortType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
+
+import org.scijava.Context;
 
 /**
  * Provides methods for synchronizing data between an {@link ImageDisplay} and

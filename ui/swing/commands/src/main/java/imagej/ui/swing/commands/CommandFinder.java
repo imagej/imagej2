@@ -39,12 +39,13 @@ import imagej.command.CommandService;
 import imagej.command.ContextCommand;
 import imagej.menu.MenuConstants;
 import imagej.module.ModuleInfo;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.util.swing.SwingDialog;
 
 import javax.swing.JOptionPane;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * A plugin to display the {@link CommandFinderPanel} in a dialog.

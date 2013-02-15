@@ -41,11 +41,12 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayService;
 import imagej.data.display.OverlayView;
 import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import java.util.ArrayList;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Removes the currently selected overlay from all displays

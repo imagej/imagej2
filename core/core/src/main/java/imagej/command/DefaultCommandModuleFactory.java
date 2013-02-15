@@ -35,9 +35,10 @@
 
 package imagej.command;
 
-import imagej.InstantiableException;
 import imagej.module.Module;
 import imagej.module.ModuleException;
+
+import org.scijava.InstantiableException;
 
 /**
  * The default implementation of {@link CommandModuleFactory}, using a

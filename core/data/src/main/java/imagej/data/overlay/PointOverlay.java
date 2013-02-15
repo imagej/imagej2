@@ -35,7 +35,6 @@
 
 package imagej.data.overlay;
 
-import imagej.Context;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -46,6 +45,8 @@ import java.util.List;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.roi.RectangleRegionOfInterest;
+
+import org.scijava.Context;
 
 /**
  * Represents a user specified collection of points

@@ -35,12 +35,13 @@
 
 package imagej.data.lut;
 
-import imagej.service.Service;
 
 import java.io.File;
 import java.net.URL;
 
 import net.imglib2.display.ColorTable;
+
+import org.scijava.service.Service;
 
 /**
  * The LutService loads {@link ColorTable}s from files (hosted locally or

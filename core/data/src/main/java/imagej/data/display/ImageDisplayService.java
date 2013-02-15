@@ -38,11 +38,12 @@ package imagej.data.display;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.display.DisplayService;
-import imagej.event.EventService;
-import imagej.plugin.PluginService;
-import imagej.service.Service;
 
 import java.util.List;
+
+import org.scijava.event.EventService;
+import org.scijava.plugin.PluginService;
+import org.scijava.service.Service;
 
 /**
  * Interface for services that work with {@link ImageDisplay}s.

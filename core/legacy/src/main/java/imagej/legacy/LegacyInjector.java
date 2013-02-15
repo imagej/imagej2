@@ -35,7 +35,7 @@
 
 package imagej.legacy;
 
-import imagej.util.ClassUtils;
+import org.scijava.util.ClassUtils;
 
 /**
  * Overrides class behavior of ImageJ1 classes using bytecode manipulation. This

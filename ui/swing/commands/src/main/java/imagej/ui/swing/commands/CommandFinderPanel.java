@@ -35,12 +35,8 @@
 
 package imagej.ui.swing.commands;
 
-import imagej.MenuPath;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
-import imagej.util.AppUtils;
-import imagej.util.ClassUtils;
-import imagej.util.FileUtils;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -73,6 +69,11 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import net.miginfocom.swing.MigLayout;
+
+import org.scijava.MenuPath;
+import org.scijava.util.AppUtils;
+import org.scijava.util.ClassUtils;
+import org.scijava.util.FileUtils;
 
 /**
  * A panel that allows the user to search for ImageJ commands. Based on the

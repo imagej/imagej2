@@ -37,7 +37,6 @@ package imagej.ui.swing.viewer.table;
 
 import imagej.data.table.Table;
 import imagej.display.Display;
-import imagej.plugin.Plugin;
 import imagej.ui.UserInterface;
 import imagej.ui.swing.AbstractSwingUI;
 import imagej.ui.viewer.DisplayWindow;
@@ -45,6 +44,8 @@ import imagej.ui.viewer.table.AbstractTableDisplayViewer;
 import imagej.ui.viewer.table.TableDisplayViewer;
 
 import javax.swing.JTable;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * A Swing {@link Table} display viewer, which displays tables in a

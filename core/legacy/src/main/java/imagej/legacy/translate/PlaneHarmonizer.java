@@ -37,12 +37,13 @@ package imagej.legacy.translate;
 
 import ij.ImagePlus;
 import ij.ImageStack;
-import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
-import imagej.log.LogService;
 import net.imglib2.meta.Axes;
+
+import org.scijava.Context;
+import org.scijava.log.LogService;
 
 /**
  * Synchronizes internal plane reference values between a {@link Dataset} and an

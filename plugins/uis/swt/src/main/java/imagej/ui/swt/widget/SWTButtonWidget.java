@@ -35,13 +35,13 @@
 
 package imagej.ui.swt.widget;
 
-import imagej.plugin.Plugin;
 import imagej.widget.Button;
 import imagej.widget.ButtonWidget;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
 
 import org.eclipse.swt.widgets.Composite;
+import org.scijava.plugin.Plugin;
 
 /**
  * A SWT widget that displays a button and invokes the callback of a parameter

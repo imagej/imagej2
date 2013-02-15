@@ -37,16 +37,9 @@ package imagej.legacy.plugin;
 
 import ij.IJ;
 import ij.Menus;
-import imagej.MenuEntry;
-import imagej.MenuPath;
 import imagej.command.Command;
 import imagej.command.CommandInfo;
-import imagej.input.Accelerator;
-import imagej.input.InputModifiers;
-import imagej.input.KeyCode;
-import imagej.log.LogService;
 import imagej.menu.ShadowMenu;
-import imagej.plugin.PluginInfo;
 
 import java.awt.Menu;
 import java.awt.MenuBar;
@@ -63,6 +56,14 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.scijava.MenuEntry;
+import org.scijava.MenuPath;
+import org.scijava.input.Accelerator;
+import org.scijava.input.InputModifiers;
+import org.scijava.input.KeyCode;
+import org.scijava.log.LogService;
+import org.scijava.plugin.PluginInfo;
 
 /**
  * Discovers legacy ImageJ 1.x plugins.

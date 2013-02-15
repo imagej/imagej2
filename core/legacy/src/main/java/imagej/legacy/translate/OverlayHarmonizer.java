@@ -48,8 +48,6 @@ import ij.plugin.frame.RoiManager;
 import ij.process.ByteProcessor;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
-import imagej.AbstractContextual;
-import imagej.Context;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.AngleOverlay;
@@ -65,7 +63,6 @@ import imagej.data.overlay.TextOverlay;
 import imagej.data.overlay.TextOverlay.Justification;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.overlay.ThresholdService;
-import imagej.log.LogService;
 import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
@@ -90,6 +87,10 @@ import net.imglib2.roi.PolygonRegionOfInterest;
 import net.imglib2.roi.RectangleRegionOfInterest;
 import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.logic.BitType;
+
+import org.scijava.AbstractContextual;
+import org.scijava.Context;
+import org.scijava.log.LogService;
 
 /**
  * OverlayTranslator translates regions of interest back and forth between

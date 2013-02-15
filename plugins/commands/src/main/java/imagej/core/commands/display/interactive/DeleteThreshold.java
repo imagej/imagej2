@@ -39,9 +39,10 @@ import imagej.command.ContextCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.ThresholdService;
 import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * @author Barry DeZonia

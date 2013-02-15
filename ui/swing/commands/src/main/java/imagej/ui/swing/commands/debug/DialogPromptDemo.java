@@ -36,10 +36,11 @@
 package imagej.ui.swing.commands.debug;
 
 import imagej.command.Command;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
+
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * A demonstration of ImageJ's UI-agnostic dialog prompt capabilities.

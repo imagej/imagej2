@@ -37,8 +37,9 @@ package imagej.data.display;
 
 import imagej.display.Display;
 import imagej.display.event.input.MsButtonEvent;
-import imagej.event.EventService;
-import imagej.service.Service;
+
+import org.scijava.event.EventService;
+import org.scijava.service.Service;
 
 /**
  * Interface for service that tracks the current mouse status.

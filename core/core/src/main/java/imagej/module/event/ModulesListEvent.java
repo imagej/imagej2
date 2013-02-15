@@ -37,9 +37,10 @@ package imagej.module.event;
 
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
-import imagej.object.event.ListEvent;
 
 import java.util.Collection;
+
+import org.scijava.object.event.ListEvent;
 
 /**
  * An event indicating something has happened to the list of plugins registered

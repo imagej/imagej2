@@ -35,7 +35,7 @@
 
 package imagej.widget;
 
-import imagej.service.Service;
+import org.scijava.service.Service;
 
 /**
  * Interface for services that manage available {@link InputWidget}s.

@@ -40,11 +40,12 @@ import imagej.data.animation.AnimationService;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.KeyboardService;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import net.imglib2.meta.AxisType;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 // NB: The accelerator of "GREATER" does not actually trigger this plugin.
 // However, the AxisPositionHandler does listen for '<' key events and updates

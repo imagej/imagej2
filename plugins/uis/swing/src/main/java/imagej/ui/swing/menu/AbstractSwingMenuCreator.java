@@ -35,8 +35,6 @@
 
 package imagej.ui.swing.menu;
 
-import imagej.input.Accelerator;
-import imagej.input.KeyCode;
 import imagej.menu.AbstractMenuCreator;
 import imagej.menu.ShadowMenu;
 import imagej.module.ModuleInfo;
@@ -52,6 +50,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
+
+import org.scijava.input.Accelerator;
+import org.scijava.input.KeyCode;
 
 /**
  * Populates a Swing menu structure with menu items from a {@link ShadowMenu}.

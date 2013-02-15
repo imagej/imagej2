@@ -44,8 +44,6 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
-import imagej.module.ItemIO;
-import imagej.plugin.Parameter;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
@@ -57,6 +55,9 @@ import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.ComplexType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Parameter;
 
 /**
  * Base class for previewable math commands.

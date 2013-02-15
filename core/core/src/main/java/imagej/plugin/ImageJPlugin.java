@@ -41,10 +41,14 @@ import imagej.module.Module;
 import imagej.module.ModulePostprocessor;
 import imagej.module.ModulePreprocessor;
 import imagej.platform.Platform;
-import imagej.service.Service;
 import imagej.tool.Tool;
 import imagej.widget.InputHarvester;
 import imagej.widget.InputWidget;
+
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginService;
+import org.scijava.plugin.SciJavaPlugin;
+import org.scijava.service.Service;
 
 /**
  * Top-level interface for plugins. Plugins discoverable at runtime must
@@ -81,6 +85,6 @@ import imagej.widget.InputWidget;
  * @see Plugin
  * @see PluginService
  */
-public interface ImageJPlugin {
+public interface ImageJPlugin extends SciJavaPlugin {
 	// top-level marker interface for discovery via SezPoz
 }

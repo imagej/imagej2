@@ -36,13 +36,14 @@
 package imagej.core.tools;
 
 import imagej.display.event.input.KyPressedEvent;
-import imagej.input.KeyCode;
-import imagej.plugin.Plugin;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 import imagej.ui.ApplicationFrame;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
+
+import org.scijava.input.KeyCode;
+import org.scijava.plugin.Plugin;
 
 /**
  * Brings the main application window into focus when ENTER is pressed.

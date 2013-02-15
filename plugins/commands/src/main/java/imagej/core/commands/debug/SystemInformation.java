@@ -35,13 +35,7 @@
 
 package imagej.core.commands.debug;
 
-import imagej.Context;
 import imagej.command.Command;
-import imagej.module.ItemIO;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.service.Service;
-import imagej.util.Manifest;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -50,6 +44,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import org.scijava.Context;
+import org.scijava.ItemIO;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.Service;
+import org.scijava.util.Manifest;
 
 /**
  * Dumps Java system properties.

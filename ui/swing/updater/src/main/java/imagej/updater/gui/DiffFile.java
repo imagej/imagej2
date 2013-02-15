@@ -35,14 +35,12 @@
 
 package imagej.updater.gui;
 
-import imagej.log.LogService;
 import imagej.updater.core.Diff;
 import imagej.updater.core.Diff.Mode;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.util.ByteCodeAnalyzer;
 import imagej.updater.util.Util;
-import imagej.util.ProcessUtils;
 
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
@@ -63,6 +61,9 @@ import java.util.jar.Manifest;
 import javax.swing.JFrame;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+
+import org.scijava.log.LogService;
+import org.scijava.util.ProcessUtils;
 
 /**
  * A {@link JFrame} to show the differences between the remote and local

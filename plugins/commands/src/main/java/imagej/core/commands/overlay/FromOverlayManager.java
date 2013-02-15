@@ -43,11 +43,12 @@ import imagej.data.overlay.Overlay;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.overlay.ThresholdService;
 import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import java.util.List;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * After running this plugin the current display will now reference (and

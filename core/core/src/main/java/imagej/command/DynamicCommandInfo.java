@@ -35,16 +35,17 @@
 
 package imagej.command;
 
-import imagej.MenuPath;
-import imagej.UIDetails;
 import imagej.module.DefaultModuleInfo;
 import imagej.module.DefaultModuleItem;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import java.lang.reflect.Field;
+
+import org.scijava.MenuPath;
+import org.scijava.UIDetails;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Helper class for maintaining a {@link DynamicCommand}'s associated

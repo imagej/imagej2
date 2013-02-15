@@ -36,9 +36,10 @@
 package imagej.platform;
 
 import imagej.command.Command;
-import imagej.service.Service;
 
 import java.util.List;
+
+import org.scijava.service.Service;
 
 /**
  * Interface for service that provides application-level functionality.

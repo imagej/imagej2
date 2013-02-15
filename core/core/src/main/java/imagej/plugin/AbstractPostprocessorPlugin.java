@@ -35,7 +35,7 @@
 
 package imagej.plugin;
 
-import imagej.AbstractContextual;
+import org.scijava.AbstractContextual;
 
 /**
  * Abstract base class for plugin postprocessors.

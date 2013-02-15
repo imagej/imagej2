@@ -38,7 +38,6 @@ package imagej.ui.awt;
 import imagej.display.Display;
 import imagej.menu.MenuService;
 import imagej.platform.event.AppMenusCreatedEvent;
-import imagej.plugin.Plugin;
 import imagej.ui.AbstractUserInterface;
 import imagej.ui.ApplicationFrame;
 import imagej.ui.DialogPrompt;
@@ -55,6 +54,8 @@ import java.awt.MenuBar;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * AWT-based user interface for ImageJ.

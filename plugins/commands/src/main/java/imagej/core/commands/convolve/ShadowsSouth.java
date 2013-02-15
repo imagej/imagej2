@@ -36,8 +36,9 @@
 package imagej.core.commands.convolve;
 
 import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Plugin;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Plugin;
 
 /**
  * Implements legacy ImageJ's Shadows South plugin functionality.

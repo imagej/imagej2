@@ -35,8 +35,8 @@
 
 package imagej.updater.gui;
 
-import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.Progress;
+import imagej.updater.util.UpdateCanceledException;
 
 import java.awt.Adjustable;
 import java.awt.Container;

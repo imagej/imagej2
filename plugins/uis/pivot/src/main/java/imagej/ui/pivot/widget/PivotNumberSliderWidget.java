@@ -35,8 +35,6 @@
 
 package imagej.ui.pivot.widget;
 
-import imagej.plugin.Plugin;
-import imagej.util.NumberUtils;
 import imagej.widget.InputWidget;
 import imagej.widget.NumberWidget;
 import imagej.widget.WidgetModel;
@@ -44,6 +42,8 @@ import imagej.widget.WidgetModel;
 import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.Slider;
 import org.apache.pivot.wtk.SliderValueListener;
+import org.scijava.plugin.Plugin;
+import org.scijava.util.NumberUtils;
 
 /**
  * Pivot implementation of number chooser widget, using a slider.

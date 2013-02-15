@@ -35,7 +35,6 @@
 
 package imagej.data.display;
 
-import imagej.Context;
 import imagej.data.ChannelCollection;
 import imagej.data.Data;
 import imagej.data.Dataset;
@@ -45,9 +44,6 @@ import imagej.data.display.event.LutsChangedEvent;
 import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.plugin.Plugin;
 import imagej.util.ColorRGB;
 
 import java.util.ArrayList;
@@ -66,6 +62,11 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
+
+import org.scijava.Context;
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.plugin.Plugin;
 
 /**
  * A view into a {@link Dataset}, for use with a {@link ImageDisplay}.

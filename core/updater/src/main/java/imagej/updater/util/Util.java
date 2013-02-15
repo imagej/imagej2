@@ -35,8 +35,6 @@
 
 package imagej.updater.util;
 
-import imagej.log.LogService;
-import imagej.util.AppUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -68,6 +66,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.scijava.log.LogService;
 
 /**
  * Utility methods for use with the {@link imagej.updater} package and

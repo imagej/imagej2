@@ -35,9 +35,11 @@
 
 package imagej.plugin;
 
-import imagej.Priority;
 import imagej.module.Module;
 import imagej.module.ModuleItem;
+
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
 
 /**
  * A preprocessor for saving populated input values to persistent storage.

@@ -43,12 +43,13 @@ import imagej.data.display.ImageDisplayService;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.display.event.DisplayActivatedEvent;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.log.LogService;
 import imagej.module.MethodCallException;
 import imagej.module.ModuleItem;
-import imagej.plugin.Parameter;
+
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 
 /**
  * A command intended to be used interactively.

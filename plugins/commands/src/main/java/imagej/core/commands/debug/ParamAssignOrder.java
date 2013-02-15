@@ -37,9 +37,10 @@ package imagej.core.commands.debug;
 
 import imagej.Previewable;
 import imagej.command.ContextCommand;
-import imagej.log.LogService;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * An illustration of the order in which command parameter assignment occurs.

@@ -37,15 +37,12 @@ package imagej.script.editor;
 
 import imagej.command.CommandService;
 import imagej.io.IOService;
-import imagej.log.LogService;
 import imagej.platform.PlatformService;
 import imagej.script.ScriptService;
 import imagej.script.editor.command.ChooseFontSize;
 import imagej.script.editor.command.ChooseTabSize;
 import imagej.script.editor.command.GitGrep;
 import imagej.script.editor.command.KillScript;
-import imagej.util.AppUtils;
-import imagej.util.FileUtils;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -119,6 +116,9 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.modes.JavaScriptTokenMaker;
 import org.fife.ui.rsyntaxtextarea.modes.JavaTokenMaker;
+import org.scijava.log.LogService;
+import org.scijava.util.AppUtils;
+import org.scijava.util.FileUtils;
 
 /**
  * TODO

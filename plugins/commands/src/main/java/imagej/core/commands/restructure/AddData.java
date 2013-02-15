@@ -38,11 +38,7 @@ package imagej.core.commands.restructure;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
 import imagej.module.MutableModuleItem;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import java.util.ArrayList;
 
@@ -50,6 +46,11 @@ import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Adds hyperplanes of data to an input Dataset along a user specified axis.

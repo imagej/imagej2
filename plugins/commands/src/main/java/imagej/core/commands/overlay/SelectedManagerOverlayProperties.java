@@ -36,10 +36,11 @@
 package imagej.core.commands.overlay;
 
 import imagej.data.overlay.Overlay;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import java.util.List;
+
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * A plugin to change the properties (e.g., line color, line width) of a set of

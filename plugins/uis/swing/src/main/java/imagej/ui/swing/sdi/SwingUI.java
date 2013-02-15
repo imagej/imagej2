@@ -36,7 +36,6 @@
 package imagej.ui.swing.sdi;
 
 import imagej.display.Display;
-import imagej.plugin.Plugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
@@ -50,6 +49,8 @@ import imagej.ui.swing.sdi.viewer.SwingDisplayWindow;
 import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * Swing-based SDI user interface for ImageJ.

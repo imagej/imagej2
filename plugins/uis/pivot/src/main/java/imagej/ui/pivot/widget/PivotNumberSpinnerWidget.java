@@ -35,13 +35,13 @@
 
 package imagej.ui.pivot.widget;
 
-import imagej.plugin.Plugin;
-import imagej.util.NumberUtils;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
 
 import org.apache.pivot.wtk.Spinner;
 import org.apache.pivot.wtk.content.NumericSpinnerData;
+import org.scijava.plugin.Plugin;
+import org.scijava.util.NumberUtils;
 
 /**
  * Pivot implementation of number chooser widget, using a spinner.

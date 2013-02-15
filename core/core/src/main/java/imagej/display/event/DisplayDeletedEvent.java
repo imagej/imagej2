@@ -36,7 +36,8 @@
 package imagej.display.event;
 
 import imagej.display.Display;
-import imagej.object.event.ObjectDeletedEvent;
+
+import org.scijava.object.event.ObjectDeletedEvent;
 
 /**
  * An event indicating a display has been deleted.

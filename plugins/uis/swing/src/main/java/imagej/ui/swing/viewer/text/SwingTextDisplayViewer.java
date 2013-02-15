@@ -36,12 +36,13 @@
 package imagej.ui.swing.viewer.text;
 
 import imagej.display.Display;
-import imagej.plugin.Plugin;
 import imagej.ui.UserInterface;
 import imagej.ui.swing.AbstractSwingUI;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.text.AbstractTextDisplayViewer;
 import imagej.ui.viewer.text.TextDisplayViewer;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * A Swing text display viewer, which displays strings in a simple text panel.

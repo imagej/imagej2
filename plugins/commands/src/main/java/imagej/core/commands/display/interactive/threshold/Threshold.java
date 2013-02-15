@@ -35,7 +35,6 @@
 
 package imagej.core.commands.display.interactive.threshold;
 
-import imagej.InstantiableException;
 import imagej.core.commands.display.interactive.InteractiveCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
@@ -43,16 +42,9 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.overlay.ThresholdService;
-import imagej.event.EventHandler;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
-import imagej.module.ItemIO;
 import imagej.options.OptionsService;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.plugin.PluginInfo;
-import imagej.plugin.PluginService;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 import imagej.util.Colors;
@@ -73,6 +65,15 @@ import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+
+import org.scijava.InstantiableException;
+import org.scijava.ItemIO;
+import org.scijava.event.EventHandler;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
 
 // TODO All the problems with thresh overlay code at the moment:
 //

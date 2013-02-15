@@ -43,10 +43,6 @@ import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.util.RealRect;
 
 import java.util.ArrayList;
@@ -58,6 +54,11 @@ import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 // TODO - the IJ1 crop plugin can do a lot more than this can.
 // Investigate its abilities and replicate them as needed.

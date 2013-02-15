@@ -38,14 +38,15 @@ package imagej.updater.ui;
 import imagej.command.Command;
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
-import imagej.log.LogService;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.updater.core.UpToDate;
 import imagej.updater.core.UpdaterUI;
 import imagej.updater.util.Util;
 
 import java.util.List;
+
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * This plugin checks whether updates are available, and prompts the user to

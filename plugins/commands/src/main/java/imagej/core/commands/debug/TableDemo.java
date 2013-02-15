@@ -40,11 +40,12 @@ import imagej.data.table.DefaultGenericTable;
 import imagej.data.table.DefaultResultsTable;
 import imagej.data.table.GenericTable;
 import imagej.data.table.ResultsTable;
-import imagej.event.StatusService;
-import imagej.module.ItemIO;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.util.MersenneTwisterFast;
+
+import org.scijava.ItemIO;
+import org.scijava.event.StatusService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * A demonstration of the {@link imagej.data.table} package.

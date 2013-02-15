@@ -35,7 +35,6 @@
 
 package imagej.ui.pivot.widget;
 
-import imagej.plugin.Plugin;
 import imagej.widget.FileWidget;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
@@ -49,6 +48,7 @@ import org.apache.pivot.wtk.FileBrowserSheet;
 import org.apache.pivot.wtk.FileBrowserSheet.Mode;
 import org.apache.pivot.wtk.PushButton;
 import org.apache.pivot.wtk.TextInput;
+import org.scijava.plugin.Plugin;
 
 /**
  * Pivot implementation of file selector widget.

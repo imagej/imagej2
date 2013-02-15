@@ -35,8 +35,9 @@
 
 package imagej.data;
 
-import imagej.Contextual;
 import imagej.data.overlay.Overlay;
+
+import org.scijava.Contextual;
 
 /**
  * A data object is the superinterface for all types of N-dimensional data

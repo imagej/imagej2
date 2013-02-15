@@ -37,13 +37,14 @@ package imagej.core.commands.app;
 
 import imagej.command.Command;
 import imagej.data.display.WindowService;
-import imagej.event.StatusService;
 import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
+
+import org.scijava.event.StatusService;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Quits ImageJ.

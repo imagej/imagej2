@@ -35,14 +35,14 @@
 
 package imagej.ui.pivot.widget;
 
-import imagej.Priority;
-import imagej.plugin.Plugin;
 import imagej.widget.InputWidget;
 import imagej.widget.MessageWidget;
 import imagej.widget.WidgetModel;
 
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Label;
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
 
 /**
  * Pivot implementation of message widget.

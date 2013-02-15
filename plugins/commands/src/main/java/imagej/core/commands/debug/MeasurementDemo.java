@@ -35,6 +35,17 @@
 
 package imagej.core.commands.debug;
 
+import imagej.command.Command;
+import imagej.data.Dataset;
+import imagej.data.DatasetService;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.OverlayService;
+import imagej.data.measure.BasicStats;
+import imagej.data.measure.BasicStatsFunction;
+import imagej.data.measure.MeasurementService;
+import imagej.data.overlay.Overlay;
+import imagej.widget.Button;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,19 +73,10 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.DoubleType;
-import imagej.command.Command;
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayService;
-import imagej.data.measure.BasicStats;
-import imagej.data.measure.BasicStatsFunction;
-import imagej.data.measure.MeasurementService;
-import imagej.data.overlay.Overlay;
-import imagej.event.StatusService;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.widget.Button;
+
+import org.scijava.event.StatusService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Shows how to use the MeasurementService.

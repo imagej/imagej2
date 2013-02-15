@@ -37,6 +37,9 @@ package imagej.module;
 
 import java.util.List;
 
+import org.scijava.ItemIO;
+import org.scijava.ItemVisibility;
+
 /**
  * {@link ModuleItem} extension allowing manipulation of its metadata.
  * 

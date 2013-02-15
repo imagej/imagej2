@@ -41,12 +41,13 @@ import imagej.data.display.OverlayService;
 import imagej.data.options.OptionsChannels;
 import imagej.data.overlay.Overlay;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
 import imagej.options.OptionsService;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Fills the selected region of an input Dataset with the foreground values.

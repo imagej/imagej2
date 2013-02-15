@@ -38,18 +38,19 @@ package imagej.core.commands.debug;
 import imagej.Previewable;
 import imagej.command.Command;
 import imagej.data.Dataset;
-import imagej.event.StatusService;
-import imagej.log.LogService;
-import imagej.module.ItemIO;
-import imagej.module.ItemVisibility;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.util.ColorRGB;
 import imagej.widget.NumberWidget;
 
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+
+import org.scijava.ItemIO;
+import org.scijava.ItemVisibility;
+import org.scijava.event.StatusService;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Test plugin for verifying that various plugin features work properly.

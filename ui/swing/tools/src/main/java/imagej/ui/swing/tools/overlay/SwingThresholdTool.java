@@ -41,7 +41,6 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.overlay.ThresholdService;
-import imagej.plugin.Plugin;
 import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
@@ -51,6 +50,7 @@ import imagej.ui.swing.overlay.SwingThresholdFigure;
 import java.awt.Shape;
 
 import org.jhotdraw.draw.Figure;
+import org.scijava.plugin.Plugin;
 
 // TODO - I had code in here that created a default ImgPlus for figure creation
 // rather than ever returning nulls. This was cuz with no image open a tool

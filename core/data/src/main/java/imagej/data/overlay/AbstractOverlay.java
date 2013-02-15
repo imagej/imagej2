@@ -35,7 +35,6 @@
 
 package imagej.data.overlay;
 
-import imagej.Context;
 import imagej.data.AbstractData;
 import imagej.data.display.OverlayService;
 import imagej.data.event.OverlayCreatedEvent;
@@ -59,6 +58,8 @@ import net.imglib2.RealPositionable;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.roi.RegionOfInterest;
+
+import org.scijava.Context;
 
 /**
  * Abstract superclass of {@link Overlay} implementations.

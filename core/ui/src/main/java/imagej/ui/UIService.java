@@ -39,23 +39,24 @@ import imagej.command.CommandService;
 import imagej.data.display.ImageDisplayService;
 import imagej.display.Display;
 import imagej.display.DisplayService;
-import imagej.event.EventService;
-import imagej.event.StatusService;
-import imagej.log.LogService;
 import imagej.menu.MenuService;
 import imagej.options.OptionsService;
 import imagej.platform.AppService;
 import imagej.platform.PlatformService;
-import imagej.plugin.PluginInfo;
-import imagej.plugin.PluginService;
-import imagej.service.Service;
-import imagej.thread.ThreadService;
 import imagej.tool.ToolService;
 import imagej.ui.viewer.DisplayViewer;
 import imagej.widget.FileWidget;
 
 import java.io.File;
 import java.util.List;
+
+import org.scijava.event.EventService;
+import org.scijava.event.StatusService;
+import org.scijava.log.LogService;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
+import org.scijava.service.Service;
+import org.scijava.thread.ThreadService;
 
 /**
  * Interface for service that handles ImageJ user interfaces.

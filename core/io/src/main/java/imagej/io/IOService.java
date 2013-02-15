@@ -37,12 +37,13 @@ package imagej.io;
 
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
-import imagej.event.EventService;
-import imagej.event.StatusService;
 import imagej.module.ModuleService;
-import imagej.service.Service;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.io.ImgIOException;
+
+import org.scijava.event.EventService;
+import org.scijava.event.StatusService;
+import org.scijava.service.Service;
 
 /**
  * Interface for providing I/O convenience methods.

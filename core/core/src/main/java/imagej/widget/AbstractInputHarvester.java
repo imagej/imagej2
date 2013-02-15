@@ -35,15 +35,16 @@
 
 package imagej.widget;
 
-import imagej.AbstractContextual;
 import imagej.module.Module;
 import imagej.module.ModuleCanceledException;
 import imagej.module.ModuleException;
 import imagej.module.ModuleItem;
-import imagej.object.ObjectService;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.scijava.AbstractContextual;
+import org.scijava.object.ObjectService;
 
 /**
  * Abstract superclass for {@link InputHarvester}s.

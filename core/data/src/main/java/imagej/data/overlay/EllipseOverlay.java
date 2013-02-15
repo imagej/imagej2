@@ -35,7 +35,6 @@
 
 package imagej.data.overlay;
 
-import imagej.Context;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -43,6 +42,8 @@ import java.io.ObjectOutput;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.roi.EllipseRegionOfInterest;
+
+import org.scijava.Context;
 
 /**
  * An ellipse bounded by an axis-aligned rectangle, backed by an

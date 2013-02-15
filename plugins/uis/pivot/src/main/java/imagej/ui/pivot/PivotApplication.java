@@ -35,8 +35,6 @@
 
 package imagej.ui.pivot;
 
-import imagej.AbstractContextual;
-import imagej.event.EventService;
 import imagej.menu.MenuService;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.ui.UIService;
@@ -47,6 +45,8 @@ import org.apache.pivot.wtk.Application;
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Display;
 import org.apache.pivot.wtk.Orientation;
+import org.scijava.AbstractContextual;
+import org.scijava.event.EventService;
 
 /**
  * Pivot {@link Application} implementation for ImageJ.

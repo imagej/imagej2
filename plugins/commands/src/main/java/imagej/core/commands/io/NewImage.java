@@ -40,14 +40,15 @@ import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import net.imglib2.Cursor;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Creates a new {@link Dataset}.

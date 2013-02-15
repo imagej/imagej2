@@ -35,8 +35,6 @@
 
 package imagej.ui.swt;
 
-import imagej.InstantiableException;
-import imagej.plugin.PluginInfo;
 import imagej.tool.Tool;
 import imagej.tool.ToolService;
 import imagej.ui.ToolBar;
@@ -57,6 +55,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.scijava.InstantiableException;
+import org.scijava.plugin.PluginInfo;
 
 /**
  * SWT implementation of {@link ToolBar}.

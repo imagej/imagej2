@@ -36,7 +36,8 @@
 package imagej.data.event;
 
 import imagej.data.Data;
-import imagej.object.event.ObjectCreatedEvent;
+
+import org.scijava.object.event.ObjectCreatedEvent;
 
 /**
  * An event indicating a new {@link Data} has been created.

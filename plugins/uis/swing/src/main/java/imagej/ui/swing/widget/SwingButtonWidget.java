@@ -35,7 +35,6 @@
 
 package imagej.ui.swing.widget;
 
-import imagej.plugin.Plugin;
 import imagej.widget.Button;
 import imagej.widget.ButtonWidget;
 import imagej.widget.InputWidget;
@@ -46,6 +45,8 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * A Swing widget that displays a button and invokes the callback of a parameter

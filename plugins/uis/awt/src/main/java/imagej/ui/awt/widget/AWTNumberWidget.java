@@ -35,7 +35,6 @@
 
 package imagej.ui.awt.widget;
 
-import imagej.plugin.Plugin;
 import imagej.widget.InputWidget;
 import imagej.widget.NumberWidget;
 import imagej.widget.WidgetModel;
@@ -49,6 +48,8 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * AWT implementation of number chooser widget.

@@ -45,9 +45,6 @@ import imagej.data.event.DataUpdatedEvent;
 import imagej.display.AbstractDisplay;
 import imagej.display.DisplayService;
 import imagej.display.event.DisplayDeletedEvent;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.plugin.Plugin;
 import imagej.util.RealRect;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -57,6 +54,10 @@ import net.imglib2.Positionable;
 import net.imglib2.RealPositionable;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.plugin.Plugin;
 
 /**
  * Default implementation of {@link ImageDisplay}.
