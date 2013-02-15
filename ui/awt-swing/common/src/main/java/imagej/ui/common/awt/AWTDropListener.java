@@ -269,8 +269,7 @@ public class AWTDropListener implements DropTargetListener {
 			final StringBuilder sb = new StringBuilder();
 			for (final String line : fileContents)
 				sb.append(line + '\n');
-			// FIXME: Show the String using the UIService.
-//			uiService.show(sb.toString());
+			uiService.show(title, sb.toString());
 		}
 
 		private void importLut(final String filename) {
