@@ -107,7 +107,7 @@ public class MinimumThresholdMethod implements AutoThresholdMethod {
 	}
 
 	@Override
-	public String getErrorMessage() {
+	public String getMessage() {
 		return errMsg;
 	}
 

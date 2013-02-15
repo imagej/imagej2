@@ -110,7 +110,7 @@ public class HuangThresholdMethod implements AutoThresholdMethod {
 	}
 
 	@Override
-	public String getErrorMessage() {
+	public String getMessage() {
 		return null;
 	}
 

@@ -156,7 +156,7 @@ public class TriangleThresholdMethod implements AutoThresholdMethod {
 	}
 
 	@Override
-	public String getErrorMessage() {
+	public String getMessage() {
 		return null;
 	}
 

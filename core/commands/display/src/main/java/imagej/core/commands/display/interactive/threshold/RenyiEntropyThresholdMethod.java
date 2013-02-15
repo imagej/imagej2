@@ -262,7 +262,7 @@ public class RenyiEntropyThresholdMethod implements AutoThresholdMethod {
 	}
 
 	@Override
-	public String getErrorMessage() {
+	public String getMessage() {
 		return null;
 	}
 

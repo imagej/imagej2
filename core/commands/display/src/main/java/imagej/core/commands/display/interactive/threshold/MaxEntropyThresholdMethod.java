@@ -138,7 +138,7 @@ public class MaxEntropyThresholdMethod implements AutoThresholdMethod {
 	}
 
 	@Override
-	public String getErrorMessage() {
+	public String getMessage() {
 		return null;
 	}
 

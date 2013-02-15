@@ -51,9 +51,10 @@ public interface AutoThresholdMethod extends ImageJPlugin {
 	int getThreshold(long[] histogram);
 
 	/**
-	 * Returns the error message associated with the last call to getThreshold().
-	 * If getThreshold() returned -1 the error message will be non null. Otherwise
-	 * the error message is null.
+	 * Returns any message associated with the last call to getThreshold(). If
+	 * getThreshold() last returned -1 the internal message may shed light on the
+	 * issue. If getThreshold() is successful this message still may contain
+	 * warning info.
 	 */
-	String getErrorMessage();
+	String getMessage();
 }

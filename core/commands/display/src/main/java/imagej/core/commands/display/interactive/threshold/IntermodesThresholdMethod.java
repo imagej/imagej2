@@ -105,7 +105,7 @@ public class IntermodesThresholdMethod implements AutoThresholdMethod {
 	}
 
 	@Override
-	public String getErrorMessage() {
+	public String getMessage() {
 		return errMsg;
 	}
 }

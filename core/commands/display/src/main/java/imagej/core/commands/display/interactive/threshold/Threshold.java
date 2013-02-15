@@ -40,8 +40,10 @@ import imagej.core.commands.display.interactive.InteractiveCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.overlay.ThresholdService;
+import imagej.event.EventHandler;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
 import imagej.module.ItemIO;
@@ -60,13 +62,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.imglib2.Cursor;
+import net.imglib2.RandomAccess;
 import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.AxisType;
+import net.imglib2.ops.pointset.HyperVolumePointSet;
+import net.imglib2.ops.pointset.PointSet;
+import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
 
 // TODO All the problems with thresh overlay code at the moment:
 //
 //  - when thresh drawn at 3/2 scale on boats it looks gridded. JHot prob?
-//  - stack histogram: don't yet know what this is to do
 //  - we will have to display a histogram and thresh lines like IJ1 does
 //  - overlay not selectable in view but only via ovr mgr
 //  - do thresh overlays kill graphics of other overlays? It seems it may.
@@ -78,15 +84,21 @@ import net.imglib2.type.numeric.RealType;
 //  - the min and max are not rounded to integers. And dark/light bounce reuses
 //     the cutoff instead of cutoff + 1. Think how best to calc and show range.
 //  - Use gabriel's code for displaying 16-bit hist
-//  - See what gabriel's actual hist application code does (planes, image, ...)
-//  - in IJ1 can you thresh/apply just 1 plane of an image? or is it just that
-//    you might autothresh each plane separately before munging pixels.
 //  - should we make binary images rather than 0/255? Or just call convert to
 //     mask? or is it fine?
 //  - when running Apply the threshold is overdrawn but still exists. Should we
 //     delete the threshold? or redisplay?
 //  - if run NaN Background the existing threshold draws badly since data now
 //     contains NaNs.
+//  - there is a disconnect with thresh overlays and other overlays. thresh
+//     overlays are concerned with a single dataset. overlays in general apply
+//     to displays. We now have plugins that take as an input a display and
+//     finds the active dataset. These plugins should work on datasets directly.
+//     And we might have a display with 3 datasets in it. The thresh service
+//     only registers a single thresh overlay per display. Need to discuss this
+//     further. I'm sure CTR had ideas about overlays across datasets in a
+//     display.
+//   - replace PointSet code with Views code to improve speed
 
 /**
  * @author Barry DeZonia
@@ -144,7 +156,7 @@ public class Threshold extends InteractiveCommand {
 
 	@Parameter(label = "Stack Histogram", callback = "stackHistogram",
 		persist = false)
-	private boolean stackHistogram;
+	private boolean stackHistogram = true;
 
 	@Parameter(label = "Nan Background", persist = false)
 	private boolean nanBackground;
@@ -160,7 +172,11 @@ public class Threshold extends InteractiveCommand {
 
 	// -- instance variables --
 
-	private long[] histogram;
+	private long[] fullHistogram;
+
+	private long[] planeHistogram;
+
+	private boolean invalidPlaneHist = true;
 
 	private double dataMin, dataMax;
 
@@ -196,6 +212,7 @@ public class Threshold extends InteractiveCommand {
 		ThresholdOverlay overlay = threshSrv.getThreshold(display);
 
 		gatherStats();
+
 		if (!alreadyHadOne) {
 			// default the thresh to something sensible: 85/170 is IJ1's default
 			double min = 85 * (dataMax - dataMin) / 255;
@@ -231,14 +248,17 @@ public class Threshold extends InteractiveCommand {
 
 	protected void autoThreshold() {
 		AutoThresholdMethod method = methods.get(methodName);
-		int cutoff = method.getThreshold(histogram);
+		int cutoff = method.getThreshold(histogram());
 		if (cutoff < 0) {
-			uiSrv.getDefaultUI().dialogPrompt(method.getErrorMessage(),
+			uiSrv.getDefaultUI().dialogPrompt(method.getMessage(),
 				"Thresholding failure", DialogPrompt.MessageType.INFORMATION_MESSAGE,
 				DialogPrompt.OptionType.DEFAULT_OPTION);
 			return;
 		}
-		double maxRange = histogram.length - 1;
+		else if (method.getMessage() != null) {
+			log.warn(method.getMessage());
+		}
+		double maxRange = histogram().length - 1;
 		// TODO : what is best increment? To avoid roundoff errs use a teeny inc
 		// (like 0.0001 instead of 1). But then result does not match IJ1. With
 		// teeny inc dark bckgrnd bounces from (0,cutoff) to (cutoff,255) rather
@@ -250,7 +270,6 @@ public class Threshold extends InteractiveCommand {
 		minimum = dataMin + (bot / maxRange) * (dataMax - dataMin);
 		maximum = dataMin + (top / maxRange) * (dataMax - dataMin);
 		rangeChanged();
-
 	}
 
 	protected void backgroundChange() {
@@ -306,8 +325,15 @@ public class Threshold extends InteractiveCommand {
 
 
 	protected void stackHistogram() {
-		// TODO
-		System.out.println("UNIMPLEMENTED");
+		autoThreshold();
+	}
+
+	// -- EventHandlers --
+
+	@EventHandler
+	protected void onEvent(AxisPositionEvent evt) {
+		if (evt.getDisplay() != display) return;
+		invalidPlaneHist = true;
 	}
 
 	// -- helpers --
@@ -361,6 +387,14 @@ public class Threshold extends InteractiveCommand {
 	}
 
 	private void gatherStats() {
+		calcDataRange();
+		fullHistogram = buildHistogram(true, null);
+		planeHistogram = null;
+	}
+
+	// calcs the data range of the whole dataset
+
+	private void calcDataRange() {
 		Dataset ds = imgDispSrv.getActiveDataset(display);
 		dataMin = Double.POSITIVE_INFINITY;
 		dataMax = Double.NEGATIVE_INFINITY;
@@ -372,18 +406,69 @@ public class Threshold extends InteractiveCommand {
 			dataMin = Math.min(dataMin, value);
 			dataMax = Math.max(dataMax, value);
 		}
-		cursor.reset();
-		int histSize = 256;
-		if (ds.isInteger() && (ds.getType().getBitsPerPixel() == 16)) {
-			histSize = 16384;
+	}
+
+	// builds the histogram from either the whole data range or the currently
+	// viewed plane
+
+	private long[] buildHistogram(boolean allData, long[] existingHist) {
+		// TODO - use Views class rather than PointSets to improve performance
+		Dataset ds = imgDispSrv.getActiveDataset(display);
+		PointSet points;
+		if (allData) points = getAllPlanes(ds);
+		else points = getViewedPlane(ds);
+		RandomAccess<? extends RealType<?>> accessor =
+			ds.getImgPlus().randomAccess();
+		long[] histogram = existingHist;
+		if (histogram == null) {
+			double range =
+				accessor.get().getMaxValue() - accessor.get().getMinValue();
+			// TMP HACK TO TEST SPEED
+			if (range > 1024) range = 1024;
+			// WAY WE WANT GOING FORWARD?
+			// if (range > 65536) range = 65536;
+			int histSize = (int) Math.round(range);
+			histogram = new long[histSize];
 		}
-		histogram = new long[histSize];
-		while (cursor.hasNext()) {
-			cursor.fwd();
-			double value = cursor.get().getRealDouble();
+		else {
+			for (int i = 0; i < histogram.length; i++)
+				histogram[i] = 0;
+		}
+		PointSetIterator iter = points.iterator();
+		while (iter.hasNext()) {
+			long[] pos = iter.next();
+			accessor.setPosition(pos);
+			double value = accessor.get().getRealDouble();
 			double relPos = (value - dataMin) / (dataMax - dataMin);
 			int binNumber = (int) Math.round((histogram.length - 1) * relPos);
 			histogram[binNumber]++;
 		}
+		return histogram;
 	}
+
+	private PointSet getAllPlanes(Dataset dataset) {
+		return new HyperVolumePointSet(dataset.getDims());
+	}
+
+	private PointSet getViewedPlane(Dataset dataset) {
+		long[] pt1 = new long[dataset.numDimensions()];
+		long[] pt2 = new long[dataset.numDimensions()];
+		for (int i = 2; i < pt1.length; i++) {
+			AxisType axisType = dataset.axis(i);
+			pt1[i] = pt2[i] = display.getLongPosition(axisType);
+		}
+		pt2[0] = dataset.dimension(0) - 1;
+		pt2[1] = dataset.dimension(1) - 1;
+		return new HyperVolumePointSet(pt1, pt2);
+	}
+
+	private long[] histogram() {
+		if (stackHistogram) return fullHistogram;
+		if (invalidPlaneHist) {
+			planeHistogram = buildHistogram(false, planeHistogram);
+			invalidPlaneHist = false;
+		}
+		return planeHistogram;
+	}
+
 }
