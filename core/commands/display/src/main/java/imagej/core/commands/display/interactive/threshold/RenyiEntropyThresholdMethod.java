@@ -38,10 +38,10 @@ package imagej.core.commands.display.interactive.threshold;
 import imagej.plugin.Plugin;
 
 // NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
-// plugin found in Fiji.
+// plugin found in Fiji (version 1.14).
 
 /**
- * Implements a Renyi entropy based threshold method for ImageJ.
+ * Implements a Renyi entropy based threshold method by Kapur, Sahoo, & Wong.
  * 
  * @author Barry DeZonia
  * @author Gabriel Landini

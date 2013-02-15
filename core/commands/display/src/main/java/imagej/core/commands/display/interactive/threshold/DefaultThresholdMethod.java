@@ -38,12 +38,12 @@ package imagej.core.commands.display.interactive.threshold;
 import imagej.plugin.Plugin;
 
 // NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
-// plugin found in Fiji. The method was ported from IJ1 by Gabriel and somewhat
-// enhanced ("re-implemented so we can ignore black/white and set the bright or
-// dark objects")
+// plugin found in Fiji (version 1.14). The method was ported from IJ1 by
+// Gabriel and somewhat enhanced ("re-implemented so we can ignore black/white
+// and set the bright or dark objects")
 
 /**
- * Implements the default threshold method for ImageJ.
+ * Implements the default threshold method from ImageJ 1.x.
  * 
  * @author Barry DeZonia
  * @author Gabriel Landini

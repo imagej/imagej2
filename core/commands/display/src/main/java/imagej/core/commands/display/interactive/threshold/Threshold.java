@@ -85,6 +85,8 @@ import net.imglib2.type.numeric.RealType;
 //     mask? or is it fine?
 //  - when running Apply the threshold is overdrawn but still exists. Should we
 //     delete the threshold? or redisplay?
+//  - if run NaN Background the existing threshold draws badly since data now
+//     contains NaNs.
 
 /**
  * @author Barry DeZonia
@@ -237,11 +239,13 @@ public class Threshold extends InteractiveCommand {
 			return;
 		}
 		double maxRange = histogram.length - 1;
-		// TODO : what is best increment? To avoid roundoff errs using teeny inc.
-		// This does not match IJ1. Dark bounces from (0,cutoff) to (cutoff,255)
-		// which is not like IJ1 : (0,cutoff) to (cutoff+1,255). Maybe I need a
-		// better way to determine non-integral ranges.
-		double bot = (darkBackground) ? cutoff + 0.00001 : 0;
+		// TODO : what is best increment? To avoid roundoff errs use a teeny inc
+		// (like 0.0001 instead of 1). But then result does not match IJ1. With
+		// teeny inc dark bckgrnd bounces from (0,cutoff) to (cutoff,255) rather
+		// than (0,cutoff) to (cutoff+1,255). Think how to best display range values
+		// so that they don't have gaps when displayed in dialog bouncing between
+		// light and dark background.
+		double bot = (darkBackground) ? cutoff + 1 : 0;
 		double top = (darkBackground) ? maxRange : cutoff;
 		minimum = dataMin + (bot / maxRange) * (dataMax - dataMin);
 		maximum = dataMin + (top / maxRange) * (dataMax - dataMin);

@@ -37,11 +37,11 @@ package imagej.core.commands.display.interactive.threshold;
 
 import imagej.plugin.Plugin;
 
-// NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
-// plugin found in Fiji.
+//NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
+//plugin found in Fiji (version 1.14).
 
 /**
- * Implements the Huang's threshold method for ImageJ.
+ * Implements Huang's threshold method by Huang & Wang.
  * 
  * @author Barry DeZonia
  * @author Gabriel Landini
