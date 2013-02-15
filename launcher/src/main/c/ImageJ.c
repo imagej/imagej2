@@ -2791,7 +2791,7 @@ static void parse_legacy_config(struct string *jvm_options)
 			eol = p + strlen(p);
 
 		if (verbose > 1)
-			error("ImageJ.cfg:%d: %.*s", line, eol - p, p);
+			error("ImageJ.cfg:%d: %.*s", line, (int)(eol - p), p);
 
 		if (line == 2) {
 			int jre_len = -1;
@@ -2831,7 +2831,7 @@ static void parse_legacy_config(struct string *jvm_options)
 				if (rest < eol) {
 					if (!legacy_ij1_options)
 						legacy_ij1_options = string_init(32);
-					string_setf(legacy_ij1_options, "%.*s", eol - rest, rest);
+					string_setf(legacy_ij1_options, "%.*s", (int)(eol - rest), rest);
 					if (verbose)
 						error("Found ImageJ options in ImageJ.cfg: '%s'", legacy_ij1_options->buffer);
 				}
