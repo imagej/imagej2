@@ -2791,7 +2791,7 @@ static void parse_legacy_config(struct string *jvm_options)
 			eol = p + strlen(p);
 
 		if (verbose > 1)
-			error("ImageJ.cfg:%d: %.*s", line, eol - p, p);
+			error("ImageJ.cfg:%d: %.*s", line, (int)(eol - p), p);
 
 		if (line == 2) {
 			int jre_len = -1;
@@ -2831,7 +2831,7 @@ static void parse_legacy_config(struct string *jvm_options)
 				if (rest < eol) {
 					if (!legacy_ij1_options)
 						legacy_ij1_options = string_init(32);
-					string_setf(legacy_ij1_options, "%.*s", eol - rest, rest);
+					string_setf(legacy_ij1_options, "%.*s", (int)(eol - rest), rest);
 					if (verbose)
 						error("Found ImageJ options in ImageJ.cfg: '%s'", legacy_ij1_options->buffer);
 				}
@@ -3557,12 +3557,12 @@ static void parse_command_line(void)
 
 #ifdef __APPLE__
 	/* When double-clicked Finder adds a psn argument. */
-	if (main_argc > 1 && ! strncmp(main_argv[1], "-psn_", 5)) {
+	if (main_argc > 1 && !prefixcmp(main_argv[main_argc - 1], "-psn_")) {
 		/*
 		 * Reset main_argc so that ImageJ won't try to open
 		 * that empty argument as a file (the root directory).
 		 */
-		main_argc = 1;
+		main_argc--;
 		/*
 		 * Additionally, change directory to the ij dir to emulate
 		 * the behavior of the regular ImageJ application which does
@@ -3964,7 +3964,7 @@ static int start_ij(void)
 		}
 		if (result) {
 			if (result != 2) {
-				fprintf(stderr, "Warning: falling back to System JVM");
+				fprintf(stderr, "Warning: falling back to System JVM\n");
 				unsetenv("JAVA_HOME");
 			}
 			env = NULL;
