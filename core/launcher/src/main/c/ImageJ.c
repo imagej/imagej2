@@ -3857,6 +3857,38 @@ static void parse_command_line(void)
 
 }
 
+static void write_legacy_config(const char *path)
+{
+	FILE *f = fopen(path, "w");
+	if (!f)
+		error("Could not open '%s' for writing", path);
+	else {
+		const char *memory_option = has_memory_option(&options.java_options);
+		fprintf(f, ".\n");
+#ifdef WIN32
+		fprintf(f, "jre\\bin\\javaw.exe\n");
+#else
+		fprintf(f, "jre/bin/java\n");
+#endif
+		fprintf(f, "%s -cp ij.jar ij.ImageJ\n", memory_option ? memory_option : "-Xmx640m");
+		fclose(f);
+	}
+}
+
+static void maybe_write_legacy_config(void)
+{
+#ifndef __APPLE__
+	const char *path;
+
+	if (!main_class || strcmp(main_class, legacy_ij1_class))
+		return;
+
+	path = ij_path("ImageJ.cfg");
+	if (!file_exists(path))
+		write_legacy_config(path);
+#endif
+}
+
 static int start_ij(void)
 {
 	JavaVM *vm;
@@ -4716,6 +4748,8 @@ int main(int argc, char **argv, char **e)
 
 	initialize_ij_launcher_jar_path();
 	parse_command_line();
+
+	maybe_write_legacy_config();
 
 	return start_ij();
 }
