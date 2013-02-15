@@ -18,7 +18,6 @@
 	<description>ImageJ user interface projects for Swing.</description>
 
 	<modules>
-		<module>base</module>
 		<module>commands</module>
 		<module>script-editor</module>
 		<module>tools</module>

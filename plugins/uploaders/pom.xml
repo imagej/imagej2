@@ -7,28 +7,22 @@
 
 	<parent>
 		<groupId>net.imagej</groupId>
-		<artifactId>pom-ij-base</artifactId>
+		<artifactId>pom-ij-plugins</artifactId>
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>pom-ij-core</artifactId>
+	<artifactId>pom-ij-uploaders</artifactId>
 	<packaging>pom</packaging>
 
-	<name>ImageJ POM: Core</name>
-	<description>Core ImageJ projects.</description>
+	<name>ImageJ POM: Uploaders</name>
+	<description>A collection of built-in uploaders for ImageJ.</description>
 
 	<modules>
-		<module>core</module>
-		<module>data</module>
-		<module>io</module>
-		<module>legacy</module>
-		<module>options</module>
-		<module>ui</module>
-		<module>updater</module>
+		<module>ssh</module>
 	</modules>
 
 	<properties>
-		<project.rootdir>${basedir}/..</project.rootdir>
+		<project.rootdir>${basedir}/../..</project.rootdir>
 	</properties>
 
 	<!-- NB: for project parent, in case of partial checkout -->

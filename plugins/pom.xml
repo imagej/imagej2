@@ -11,20 +11,19 @@
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>pom-ij-core</artifactId>
+	<artifactId>pom-ij-plugins</artifactId>
 	<packaging>pom</packaging>
 
-	<name>ImageJ POM: Core</name>
-	<description>Core ImageJ projects.</description>
+	<name>ImageJ POM: Plugins</name>
+	<description>Built-in ImageJ plugins.</description>
 
 	<modules>
-		<module>core</module>
-		<module>data</module>
-		<module>io</module>
-		<module>legacy</module>
-		<module>options</module>
-		<module>ui</module>
-		<module>updater</module>
+		<module>commands</module>
+		<module>platforms</module>
+		<module>scripting</module>
+		<module>tools</module>
+		<module>uis</module>
+		<module>uploaders</module>
 	</modules>
 
 	<properties>

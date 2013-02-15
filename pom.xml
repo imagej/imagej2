@@ -24,7 +24,9 @@
 	<modules>
 		<module>app</module>
 		<module>core</module>
-		<module>script</module>
+		<module>extra</module>
+		<module>minimaven</module>
+		<module>plugins</module>
 		<module>ui</module>
 	</modules>
 
@@ -286,5 +288,20 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 			<url>http://maven.imagej.net/content/repositories/snapshots</url>
 		</repository>
 	</repositories>
+
+	<profiles>
+		<profile>
+			<id>all</id>
+			<modules>
+				<module>extra</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>launcher</id>
+			<modules>
+				<module>launcher</module>
+			</modules>
+		</profile>
+	</profiles>
 
 </project>

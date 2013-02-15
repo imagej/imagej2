@@ -11,20 +11,14 @@
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>pom-ij-core</artifactId>
+	<artifactId>pom-ij-extra</artifactId>
 	<packaging>pom</packaging>
 
-	<name>ImageJ POM: Core</name>
-	<description>Core ImageJ projects.</description>
+	<name>ImageJ POM: Extra</name>
+	<description>Optional and alternative ImageJ projects.</description>
 
 	<modules>
-		<module>core</module>
-		<module>data</module>
-		<module>io</module>
-		<module>legacy</module>
-		<module>options</module>
-		<module>ui</module>
-		<module>updater</module>
+		<module>log-slf4j</module>
 	</modules>
 
 	<properties>

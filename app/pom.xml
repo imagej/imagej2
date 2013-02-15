@@ -19,7 +19,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-commands-display</artifactId>
+			<artifactId>ij-commands</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -57,43 +57,19 @@
 
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-commands-app</artifactId>
-			<version>${project.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-commands-data</artifactId>
-			<version>${project.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-commands-debug</artifactId>
-			<version>${project.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-commands-upload</artifactId>
-			<version>${project.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-options</artifactId>
 			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-script-beanshell</artifactId>
+			<artifactId>ij-scripting-beanshell</artifactId>
 			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-script-java</artifactId>
+			<artifactId>ij-scripting-java</artifactId>
 			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>

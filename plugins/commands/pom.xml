@@ -7,14 +7,14 @@
 
 	<parent>
 		<groupId>net.imagej</groupId>
-		<artifactId>pom-ij-ui-awt-swing</artifactId>
+		<artifactId>pom-ij-plugins</artifactId>
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-ui-common-awt</artifactId>
+	<artifactId>ij-commands</artifactId>
 
-	<name>ImageJ UI: Common AWT Classes</name>
-	<description>Common AWT classes for use with AWT and Swing user interfaces. These classes depend on several ImageJ components, and are intended only to share code between AWT- and Swing-based user interfaces of ImageJ.</description>
+	<name>ImageJ Plugins: Commands</name>
+	<description>Built-in ImageJ commands. These commands take the form of menu entries accessible through the user interface.</description>
 
 	<dependencies>
 		<dependency>
@@ -34,21 +34,39 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-options</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-tools</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
-		<!-- NB: TEMP: until AWTDropListener is refactored. -->
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-commands</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
 		<dependency>
 			<groupId>${imglib2.groupId}</groupId>
 			<artifactId>imglib2</artifactId>
 			<version>${imglib2.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${imglib2.groupId}</groupId>
+			<artifactId>imglib2-ops</artifactId>
+			<version>${imglib2.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.sbridges.object-inspector</groupId>
+			<artifactId>object-inspector</artifactId>
+			<version>0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>net.iharder</groupId>
+			<artifactId>base64</artifactId>
+			<version>2.3.8</version>
 		</dependency>
 	</dependencies>
 
@@ -63,7 +81,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.ui.common.awt</packageName>
+							<packageName>imagej.core.commands</packageName>
 						</manifest>
 					</archive>
 				</configuration>

@@ -7,16 +7,21 @@
 
 	<parent>
 		<groupId>net.imagej</groupId>
-		<artifactId>pom-ij-ui-awt-swing</artifactId>
+		<artifactId>pom-ij-ui-swing</artifactId>
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-ui-common-awt</artifactId>
+	<artifactId>ij-ui-swing</artifactId>
 
-	<name>ImageJ UI: Common AWT Classes</name>
-	<description>Common AWT classes for use with AWT and Swing user interfaces. These classes depend on several ImageJ components, and are intended only to share code between AWT- and Swing-based user interfaces of ImageJ.</description>
+	<name>ImageJ UI: Swing</name>
+	<description>A Swing-based ImageJ user interface. Both SDI and MDI implementations are provided.</description>
 
 	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-commands</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-core</artifactId>
@@ -29,7 +34,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-io</artifactId>
+			<artifactId>ij-options</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -37,11 +42,19 @@
 			<artifactId>ij-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
-		<!-- NB: TEMP: until AWTDropListener is refactored. -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-commands</artifactId>
+			<artifactId>ij-ui-common-awt</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-util-awt</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-util-swing</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
@@ -49,6 +62,22 @@
 			<groupId>${imglib2.groupId}</groupId>
 			<artifactId>imglib2</artifactId>
 			<version>${imglib2.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.miglayout</groupId>
+			<artifactId>miglayout</artifactId>
+			<version>${miglayout.version}</version>
+			<classifier>swing</classifier>
+		</dependency>
+		<dependency>
+			<groupId>net.java.sezpoz</groupId>
+			<artifactId>sezpoz</artifactId>
+			<version>${sezpoz.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jhotdraw</groupId>
+			<artifactId>jhotdraw</artifactId>
+			<version>7.6.0</version>
 		</dependency>
 	</dependencies>
 
@@ -63,7 +92,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.ui.common.awt</packageName>
+							<packageName>imagej.ui.swing</packageName>
 						</manifest>
 					</archive>
 				</configuration>
