@@ -156,6 +156,16 @@ __attribute__((format (printf, 1, 2)))
 static void die(const char *fmt, ...)
 {
 	va_list ap;
+#ifdef WIN32
+	const char *debug = getenv("WINDEBUG");
+	if (debug && *debug) {
+		va_start(ap, fmt);
+		win_verror(fmt, ap);
+		va_end(ap);
+		exit(1);
+	}
+	open_win_console();
+#endif
 
 	va_start(ap, fmt);
 	vfprintf(stderr, fmt, ap);
@@ -553,12 +563,15 @@ static const char *absolute_java_home;
 static const char *relative_java_home;
 static const char *default_library_path;
 static const char *library_path;
-static const char *legacy_ij1_class = "ij.ImageJ";
 static const char *default_fiji1_class = "fiji.Main";
 static const char *default_main_class = "imagej.Main";
 static int legacy_mode;
 static int retrotranslator;
 static int verbose;
+
+static const char *legacy_ij1_class = "ij.ImageJ";
+static struct string *legacy_jre_path;
+static struct string *legacy_ij1_options;
 
 static int is_default_ij1_class(const char *name)
 {
@@ -890,31 +903,39 @@ static int dir_exists(const char *directory);
 static int is_native_library(const char *path);
 static int file_exists(const char *path);
 
-static MAYBE_UNUSED const char *get_java_home_env(void)
+static int is_jre_home(const char *directory)
 {
-	const char *env = getenv("JAVA_HOME");
-	if (env) {
-		if (dir_exists(env)) {
-			struct string* libjvm =
-				string_initf("%s/%s", env, library_path);
-			if (!file_exists(libjvm->buffer)) {
-				string_set_length(libjvm, 0);
-				string_addf(libjvm, "%s/jre/%s", env, library_path);
-			}
-			if (file_exists(libjvm->buffer) &&
-					!is_native_library(libjvm->buffer)) {
-				error("Ignoring JAVA_HOME (wrong arch): %s",
-					env);
-				env = NULL;
-			}
-			string_release(libjvm);
-			if (env)
-				return env;
+	int result = 0;
+	if (dir_exists(directory)) {
+		struct string* libjvm = string_initf("%s/%s", directory, library_path);
+		if (!file_exists(libjvm->buffer)) {
+			if (verbose)
+				error("Ignoring JAVA_HOME (does not exist): %s", libjvm->buffer);
+		}
+		else if (!is_native_library(libjvm->buffer)) {
+			if (verbose)
+				error("Ignoring JAVA_HOME (wrong arch): %s", libjvm->buffer);
 		}
 		else
-			error("Ignoring invalid JAVA_HOME: %s", env);
-		unsetenv("JAVA_HOME");
+			result = 1;
+		string_release(libjvm);
 	}
+	return result;
+}
+
+static int is_java_home(const char *directory)
+{
+	struct string *jre = string_initf("%s/jre", directory);
+	int result = is_jre_home(jre->buffer);
+	string_release(jre);
+	return result;
+}
+
+static const char *get_java_home_env(void)
+{
+	const char *env = getenv("JAVA_HOME");
+	if (env && is_java_home(env))
+		return env;
 	return NULL;
 }
 
@@ -922,11 +943,16 @@ static char *discover_system_java_home(void);
 
 static const char *get_java_home(void)
 {
+	const char *result;
 	if (absolute_java_home)
 		return absolute_java_home;
-	if (!relative_java_home)
-		return discover_system_java_home();
-	return ij_path(relative_java_home);
+	result = !relative_java_home ? NULL : ij_path(relative_java_home);
+	if (result && is_java_home(result))
+		return result;
+	result = get_java_home_env();
+	if (result)
+		return result;
+	return discover_system_java_home();
 }
 
 static const char *get_jre_home(void)
@@ -944,7 +970,7 @@ static const char *get_jre_home(void)
 	initialized = 1;
 
 	/* ImageJ 1.x ships the JRE in <ij.dir>/jre/ */
-	result = ij_path("jre");
+	result = legacy_jre_path ? legacy_jre_path->buffer : ij_path("jre");
 	if (dir_exists(result)) {
 		struct string *libjvm = string_initf("%s/%s", result, default_library_path);
 		if (!file_exists(libjvm->buffer)) {
@@ -973,6 +999,20 @@ static const char *get_jre_home(void)
 
 	result = get_java_home();
 	if (!result) {
+		const char *jre_home = getenv("JRE_HOME");
+		if (jre_home && *jre_home && is_jre_home(jre_home)) {
+			jre = string_copy(jre_home);
+			if (verbose)
+				error("Found a JRE in JRE_HOME: %s", jre->buffer);
+			return jre->buffer;
+		}
+		jre_home = getenv("JAVA_HOME");
+		if (jre_home && *jre_home && is_jre_home(jre_home)) {
+			jre = string_copy(jre_home);
+			if (verbose)
+				error("Found a JRE in JAVA_HOME: %s", jre->buffer);
+			return jre->buffer;
+		}
 		if (verbose)
 			error("No JRE was found in default locations");
 		return NULL;
@@ -992,7 +1032,7 @@ static const char *get_jre_home(void)
 			error("JAVA_HOME contains a JRE: '%s'", jre->buffer);
 		return jre->buffer;
 	}
-	string_setf(jre, "%s", result);
+	string_set(jre, result);
 	if (verbose)
 		error("JAVA_HOME appears to be a JRE: '%s'", jre->buffer);
 	return jre->buffer;
@@ -2229,7 +2269,7 @@ static void keep_only_one_memory_option(struct string_array *options)
 static const char* has_memory_option(struct string_array *options)
 {
 	int i;
-	for (i = 0; i < options->nr; i++)
+	for (i = options->nr - 1; i >= 0; i--)
 		if (!prefixcmp(options->list[i], "-Xm"))
 			return options->list[i];
 	return NULL;
@@ -2740,23 +2780,78 @@ static int check_subcommand_classpath(struct subcommand *subcommand)
 
 static void parse_legacy_config(struct string *jvm_options)
 {
-	const char *p;
-	p = strchr(jvm_options->buffer, '\n');
-	if (p) {
-		p = strchr(p + 1, '\n');
-		if (p) {
-			int new_length;
-			p++;
-			new_length = jvm_options->length - (p - jvm_options->buffer);
-			memmove(jvm_options->buffer, p, new_length);
-			p = strchr(jvm_options->buffer, '\n');
-			if (p)
-				new_length = p - jvm_options->buffer;
-			if (new_length > 10 && !strncmp(jvm_options->buffer + new_length - 10, " ij.ImageJ", 10))
-				new_length -= 10;
-			string_set_length(jvm_options, new_length);
+	char *p = jvm_options->buffer;
+	int line = 1;
+
+	for (;;) {
+		char *eol = strchr(p, '\n');
+
+		/* strchrnul() is not portable */
+		if (!eol)
+			eol = p + strlen(p);
+
+		if (verbose > 1)
+			error("ImageJ.cfg:%d: %.*s", line, eol - p, p);
+
+		if (line == 2) {
+			int jre_len = -1;
+#ifdef WIN32
+			if (!suffixcmp(p, eol - p, "\\bin\\javaw.exe"))
+				jre_len = eol - p - 14;
+			else if (!suffixcmp(p, eol - p, "\\bin\\java.exe")) {
+				jre_len = eol - p - 13;
+				verbose++;
+				open_win_console();
+				error("Enabling verbose mode due to ImageJ.cfg mentioning java.exe");
+			}
+#else
+			if (!suffixcmp(p, eol - p, "/bin/java"))
+				jre_len = eol - p - 9;
+#endif
+			if (jre_len > 0) {
+				p[jre_len] = '\0';
+				if (!legacy_jre_path)
+					legacy_jre_path = string_init(32);
+				string_set(legacy_jre_path, is_absolute_path(p) ? p : ij_path(p));
+				if (verbose)
+					error("Using JRE from ImageJ.cfg: %s",
+						legacy_jre_path->buffer);
+			}
+		}
+		else if (line == 3) {
+			char *main_class;
+
+			*eol = '\0';
+			main_class = strstr(p, " ij.ImageJ");
+			if (main_class) {
+				const char *rest = main_class + 10;
+
+				while (*rest == ' ')
+					rest++;
+				if (rest < eol) {
+					if (!legacy_ij1_options)
+						legacy_ij1_options = string_init(32);
+					string_setf(legacy_ij1_options, "%.*s", eol - rest, rest);
+					if (verbose)
+						error("Found ImageJ options in ImageJ.cfg: '%s'", legacy_ij1_options->buffer);
+				}
+				eol = main_class;
+			}
+
+			string_replace_range(jvm_options, 0, p - jvm_options->buffer, "");
+			string_set_length(jvm_options, eol - p);
+			if (verbose)
+				error("Found Java options in ImageJ.cfg: '%s'", jvm_options->buffer);
 			return;
 		}
+
+		if (*eol == '\0')
+			break;
+
+		p = eol + 1;
+		line++;
+		if (line > 3)
+			break;
 	}
 	string_set_length(jvm_options, 0);
 }
@@ -3086,7 +3181,11 @@ static void try_with_less_memory(long megabytes)
 	new_argv[0] = dos_path(new_argv[0]);
 	for (i = 0; i < j; i++)
 		new_argv[i] = quote_win32(new_argv[i]);
+#ifdef WIN64
 	execve(new_argv[0], (char * const *)new_argv, NULL);
+#else
+	execve(new_argv[0], (const char * const *)new_argv, NULL);
+#endif
 #else
 	execv(new_argv[0], new_argv);
 #endif
@@ -3554,13 +3653,34 @@ static void parse_command_line(void)
 		string_setf(&plugin_path, "-Dplugins.dir=%s", ij_dir);
 	add_option(&options, plugin_path.buffer, 0);
 
+	if (legacy_ij1_options && is_default_ij1_class(main_class)) {
+		struct options dummy;
+
+		memset(&dummy, 0, sizeof(dummy));
+		add_options(&dummy, legacy_ij1_options->buffer, 1);
+		prepend_string_array(&options.ij_options, &dummy.ij_options);
+		free(dummy.ij_options.list);
+	}
+
 	/* If arguments don't set the memory size, set it after available memory. */
 	if (megabytes == 0 && !has_memory_option(&options.java_options)) {
+		struct string *message = !verbose ? NULL : string_init(32);
 		megabytes = (long)(get_memory_size(0) >> 20);
+		if (message)
+			string_addf(message,"Available RAM: %dMB", (int)megabytes);
 		/* 0.75x, but avoid multiplication to avoid overflow */
 		megabytes -= megabytes >> 2;
-		if (sizeof(void *) == 4 && megabytes > MAX_32BIT_HEAP)
+		if (sizeof(void *) == 4 && megabytes > MAX_32BIT_HEAP) {
+			if (message)
+				string_addf(message,", using %dMB (maximum for 32-bit)", (int)MAX_32BIT_HEAP);
 			megabytes = MAX_32BIT_HEAP;
+		}
+		else if (message)
+			string_addf(message, ", using 3/4 of that: %dMB", (int)megabytes);
+		if (message) {
+			error("%s", message->buffer);
+			string_release(message);
+		}
 	}
 	if (sizeof(void *) < 8) {
 		if (!megabytes)
@@ -3765,7 +3885,7 @@ static void parse_command_line(void)
 		main_class = "net.sf.retrotranslator.transformer.JITRetrotranslator";
 	}
 
-	if (options.debug) {
+	if (options.debug || verbose) {
 		for (i = 0; properties[i]; i += 2) {
 			if (!properties[i] || !properties[i + 1])
 				continue;
@@ -3774,9 +3894,42 @@ static void parse_command_line(void)
 		}
 
 		show_commandline(&options);
-		exit(0);
+		if (options.debug)
+			exit(0);
 	}
 
+}
+
+static void write_legacy_config(const char *path)
+{
+	FILE *f = fopen(path, "w");
+	if (!f)
+		error("Could not open '%s' for writing", path);
+	else {
+		const char *memory_option = has_memory_option(&options.java_options);
+		fprintf(f, ".\n");
+#ifdef WIN32
+		fprintf(f, "jre\\bin\\javaw.exe\n");
+#else
+		fprintf(f, "jre/bin/java\n");
+#endif
+		fprintf(f, "%s -cp ij.jar ij.ImageJ\n", memory_option ? memory_option : "-Xmx640m");
+		fclose(f);
+	}
+}
+
+static void maybe_write_legacy_config(void)
+{
+#ifndef __APPLE__
+	const char *path;
+
+	if (!main_class || strcmp(main_class, legacy_ij1_class))
+		return;
+
+	path = ij_path("ImageJ.cfg");
+	if (!file_exists(path))
+		write_legacy_config(path);
+#endif
 }
 
 static int start_ij(void)
@@ -3888,9 +4041,17 @@ static int start_ij(void)
 		prepend_string(&options.java_options, strdup(get_java_command()));
 
 		string_set(buffer, get_java_command());
+#ifdef WIN32
+		string_append(buffer, ".exe");
+#endif
 		java_home_env = getenv("JAVA_HOME");
-		if (java_home_env && strlen(java_home_env) > 0)
-			string_setf(buffer, "%s/bin/%s", java_home_env, get_java_command());
+		if (java_home_env && strlen(java_home_env) > 0) {
+			string_replace_range(buffer, 0, 0, "/bin/");
+			string_replace_range(buffer, 0, 0, java_home_env);
+#ifdef WIN32
+			string_set(buffer, dos_path(buffer->buffer));
+#endif
+		}
 		options.java_options.list[0] = buffer->buffer;
 		hide_splash();
 #ifndef WIN32
@@ -3900,16 +4061,18 @@ static int start_ij(void)
 		if (console_opened && !console_attached)
 			sleep(5); /* Sleep 5 seconds */
 
-		for (i = 0; i < options.java_options.nr - 1; i++)
-			options.java_options.list[i] =
-				quote_win32(options.java_options.list[i]);
 		STARTUPINFO startup_info;
 		PROCESS_INFORMATION process_info;
-		const char *java = find_in_path(console_opened || console_attached ? "java" : "javaw");
+		const char *java = file_exists(buffer->buffer) ? buffer->buffer :
+			find_in_path(get_java_command());
 		struct string *cmdline = string_initf("java");
 
 		if (!java)
 			die("Could not find java.exe in PATH!");
+
+		for (i = 0; i < options.java_options.nr - 1; i++)
+			options.java_options.list[i] =
+				quote_win32(options.java_options.list[i]);
 
 		memset(&startup_info, 0, sizeof(startup_info));
 		startup_info.cb = sizeof(startup_info);
@@ -4638,6 +4801,8 @@ int main(int argc, char **argv, char **e)
 
 	initialize_ij_launcher_jar_path();
 	parse_command_line();
+
+	maybe_write_legacy_config();
 
 	return start_ij();
 }
