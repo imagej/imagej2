@@ -3964,7 +3964,7 @@ static int start_ij(void)
 		}
 		if (result) {
 			if (result != 2) {
-				fprintf(stderr, "Warning: falling back to System JVM");
+				fprintf(stderr, "Warning: falling back to System JVM\n");
 				unsetenv("JAVA_HOME");
 			}
 			env = NULL;
