@@ -87,13 +87,12 @@ import net.imglib2.view.Views;
 //     does.
 //  - the min and max are not rounded to integers. And dark/light bounce reuses
 //     the cutoff instead of cutoff + 1. Think how best to calc and show range.
-//  - Use gabriel's code for displaying 16-bit hist
+//     There is a related TODO below.
+//  - Gabriel's code may be better than IJ1 for displaying 16-bit histograms
 //  - should we make binary images rather than 0/255? Or just call convert to
 //     mask? or is it fine?
-//  - when running Apply the threshold is overdrawn but still exists. Should we
-//     delete the threshold? or redisplay?
-//  - if run NaN Background the existing threshold draws badly since data now
-//     contains NaNs.
+//  - when selecting Apply button the threshold is overdrawn but still exists.
+//     Should we delete the threshold? or redisplay?
 //  - there is a disconnect with thresh overlays and other overlays. thresh
 //     overlays are concerned with a single dataset. overlays in general apply
 //     to displays. We now have plugins that take as an input a display and
@@ -102,6 +101,9 @@ import net.imglib2.view.Views;
 //     only registers a single thresh overlay per display. Need to discuss this
 //     further. I'm sure CTR had ideas about overlays across datasets in a
 //     display.
+//  - fix code that determines histogram table size. There is a related TODO below.
+//  - make min and max fields into sliders. There is a related TODO below.
+//
 
 /**
  * @author Barry DeZonia
@@ -214,7 +216,11 @@ public class Threshold extends InteractiveCommand {
 		boolean alreadyHadOne = threshSrv.hasThreshold(display);
 		ThresholdOverlay overlay = threshSrv.getThreshold(display);
 
-		gatherStats();
+		calcDataRange();
+
+		fullHistogram = buildHistogram(true, null);
+		planeHistogram = null;
+		invalidPlaneHist = true;
 
 		if (!alreadyHadOne) {
 			// default the thresh to something sensible: 85/170 is IJ1's default
@@ -398,12 +404,6 @@ public class Threshold extends InteractiveCommand {
 		methodNameInput.setChoices(methodNames);
 	}
 
-	private void gatherStats() {
-		calcDataRange();
-		fullHistogram = buildHistogram(true, null);
-		planeHistogram = null;
-	}
-
 	// calcs the data range of the whole dataset
 
 	private void calcDataRange() {
@@ -415,8 +415,10 @@ public class Threshold extends InteractiveCommand {
 		while (cursor.hasNext()) {
 			cursor.fwd();
 			double value = cursor.get().getRealDouble();
-			dataMin = Math.min(dataMin, value);
-			dataMax = Math.max(dataMax, value);
+			if (!Double.isNaN(value)) {
+				dataMin = Math.min(dataMin, value);
+				dataMax = Math.max(dataMax, value);
+			}
 		}
 	}
 
@@ -450,20 +452,8 @@ public class Threshold extends InteractiveCommand {
 		IntervalView<? extends RealType<?>> view = Views.interval(img, min, max);
 		IterableInterval<? extends RealType<?>> data = Views.iterable(view);
 		Cursor<? extends RealType<?>> cursor = data.cursor();
-		long[] histogram = existingHist;
-		if (histogram == null) {
-			double range = cursor.get().getMaxValue() - cursor.get().getMinValue();
-			// TMP HACK TO TEST SPEED
-			if (range > 1024) range = 1024;
-			// WAY WE WANT GOING FORWARD?
-			// if (range > 65536) range = 65536;
-			int histSize = (int) Math.round(range);
-			histogram = new long[histSize];
-		}
-		else {
-			for (int i = 0; i < histogram.length; i++)
-				histogram[i] = 0;
-		}
+		double range = cursor.get().getMaxValue() - cursor.get().getMinValue();
+		long[] histogram = initHistogram(range, existingHist);
 		while (cursor.hasNext()) {
 			double value = cursor.next().getRealDouble();
 			double relPos = (value - dataMin) / (dataMax - dataMin);
@@ -479,21 +469,8 @@ public class Threshold extends InteractiveCommand {
 		Dataset ds = imgDispSrv.getActiveDataset(display);
 		RandomAccess<? extends RealType<?>> accessor =
 			ds.getImgPlus().randomAccess();
-		long[] histogram = existingHist;
-		if (histogram == null) {
-			double range =
-				accessor.get().getMaxValue() - accessor.get().getMinValue();
-			// TMP HACK TO TEST SPEED
-			if (range > 1024) range = 1024;
-			// WAY WE WANT GOING FORWARD?
-			// if (range > 65536) range = 65536;
-			int histSize = (int) Math.round(range);
-			histogram = new long[histSize];
-		}
-		else {
-			for (int i = 0; i < histogram.length; i++)
-				histogram[i] = 0;
-		}
+		double range = accessor.get().getMaxValue() - accessor.get().getMinValue();
+		long[] histogram = initHistogram(range, existingHist);
 		PointSet points = allData ? allPlanes(ds) : viewedPlane(ds);
 		PointSetIterator iter = points.iterator();
 		while (iter.hasNext()) {
@@ -521,6 +498,22 @@ public class Threshold extends InteractiveCommand {
 		pt2[0] = dataset.dimension(0) - 1;
 		pt2[1] = dataset.dimension(1) - 1;
 		return new HyperVolumePointSet(pt1, pt2);
+	}
+
+	private long[] initHistogram(double dataRangeSize, long[] existingHist) {
+		if (existingHist != null) {
+			for (int i = 0; i < existingHist.length; i++)
+				existingHist[i] = 0;
+			return existingHist;
+		}
+		double range = dataRangeSize;
+		// TODO decide how we want this to work
+		// TMP HACK TO TEST SPEED
+		if (range > 1024) range = 1024;
+		// WAY WE WANT GOING FORWARD?
+		// if (range > 65536) range = 65536;
+		int histSize = (int) Math.round(range);
+		return new long[histSize];
 	}
 
 }
