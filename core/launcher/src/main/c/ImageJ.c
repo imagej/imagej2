@@ -903,31 +903,39 @@ static int dir_exists(const char *directory);
 static int is_native_library(const char *path);
 static int file_exists(const char *path);
 
-static MAYBE_UNUSED const char *get_java_home_env(void)
+static int is_jre_home(const char *directory)
 {
-	const char *env = getenv("JAVA_HOME");
-	if (env) {
-		if (dir_exists(env)) {
-			struct string* libjvm =
-				string_initf("%s/%s", env, library_path);
-			if (!file_exists(libjvm->buffer)) {
-				string_set_length(libjvm, 0);
-				string_addf(libjvm, "%s/jre/%s", env, library_path);
-			}
-			if (file_exists(libjvm->buffer) &&
-					!is_native_library(libjvm->buffer)) {
-				error("Ignoring JAVA_HOME (wrong arch): %s",
-					env);
-				env = NULL;
-			}
-			string_release(libjvm);
-			if (env)
-				return env;
+	int result = 0;
+	if (dir_exists(directory)) {
+		struct string* libjvm = string_initf("%s/%s", directory, library_path);
+		if (!file_exists(libjvm->buffer)) {
+			if (verbose)
+				error("Ignoring JAVA_HOME (does not exist): %s", libjvm->buffer);
+		}
+		else if (!is_native_library(libjvm->buffer)) {
+			if (verbose)
+				error("Ignoring JAVA_HOME (wrong arch): %s", libjvm->buffer);
 		}
 		else
-			error("Ignoring invalid JAVA_HOME: %s", env);
-		unsetenv("JAVA_HOME");
+			result = 1;
+		string_release(libjvm);
 	}
+	return result;
+}
+
+static int is_java_home(const char *directory)
+{
+	struct string *jre = string_initf("%s/jre", directory);
+	int result = is_jre_home(jre->buffer);
+	string_release(jre);
+	return result;
+}
+
+static const char *get_java_home_env(void)
+{
+	const char *env = getenv("JAVA_HOME");
+	if (env && is_java_home(env))
+		return env;
 	return NULL;
 }
 
@@ -935,11 +943,16 @@ static char *discover_system_java_home(void);
 
 static const char *get_java_home(void)
 {
+	const char *result;
 	if (absolute_java_home)
 		return absolute_java_home;
-	if (!relative_java_home)
-		return discover_system_java_home();
-	return ij_path(relative_java_home);
+	result = !relative_java_home ? NULL : ij_path(relative_java_home);
+	if (result && is_java_home(result))
+		return result;
+	result = get_java_home_env();
+	if (result)
+		return result;
+	return discover_system_java_home();
 }
 
 static const char *get_jre_home(void)
@@ -986,6 +999,20 @@ static const char *get_jre_home(void)
 
 	result = get_java_home();
 	if (!result) {
+		const char *jre_home = getenv("JRE_HOME");
+		if (jre_home && *jre_home && is_jre_home(jre_home)) {
+			jre = string_copy(jre_home);
+			if (verbose)
+				error("Found a JRE in JRE_HOME: %s", jre->buffer);
+			return jre->buffer;
+		}
+		jre_home = getenv("JAVA_HOME");
+		if (jre_home && *jre_home && is_jre_home(jre_home)) {
+			jre = string_copy(jre_home);
+			if (verbose)
+				error("Found a JRE in JAVA_HOME: %s", jre->buffer);
+			return jre->buffer;
+		}
 		if (verbose)
 			error("No JRE was found in default locations");
 		return NULL;
