@@ -3557,12 +3557,12 @@ static void parse_command_line(void)
 
 #ifdef __APPLE__
 	/* When double-clicked Finder adds a psn argument. */
-	if (main_argc > 1 && ! strncmp(main_argv[1], "-psn_", 5)) {
+	if (main_argc > 1 && !prefixcmp(main_argv[main_argc - 1], "-psn_")) {
 		/*
 		 * Reset main_argc so that ImageJ won't try to open
 		 * that empty argument as a file (the root directory).
 		 */
-		main_argc = 1;
+		main_argc--;
 		/*
 		 * Additionally, change directory to the ij dir to emulate
 		 * the behavior of the regular ImageJ application which does
