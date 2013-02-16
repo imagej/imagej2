@@ -902,6 +902,7 @@ int run_precompiled = 0;
 static int dir_exists(const char *directory);
 static int is_native_library(const char *path);
 static int file_exists(const char *path);
+static inline int suffixcmp(const char *string, int len, const char *suffix);
 
 static int is_jre_home(const char *directory)
 {
@@ -1019,8 +1020,8 @@ static const char *get_jre_home(void)
 	}
 
 	len = strlen(result);
-	if (len > 4 && !strcmp(result + len - 4, "/jre")) {
-		string_setf(jre, "%s", result);
+	if (len > 4 && !suffixcmp(result, len, "/jre")) {
+		jre = string_copy(result);
 		if (verbose)
 			error("JAVA_HOME points to a JRE: '%s'", result);
 		return jre->buffer;
