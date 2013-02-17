@@ -52,12 +52,11 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(
-	menu = {
-		@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
-			mnemonic = MenuConstants.EDIT_MNEMONIC),
-		@Menu(label = "Options", mnemonic = 'o'),
-		@Menu(label = "Reset", weight = 20) })
+@Plugin(type = Command.class, menu = {
+	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
+		mnemonic = MenuConstants.EDIT_MNEMONIC),
+	@Menu(label = "Options", mnemonic = 'o'),
+	@Menu(label = "Reset", weight = 20) })
 public class OptionsReset implements Command {
 
 	@Parameter

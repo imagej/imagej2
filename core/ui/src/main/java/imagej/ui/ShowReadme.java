@@ -53,7 +53,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin
+@Plugin(type = Command.class)
 public class ShowReadme implements Command {
 
 	private static final String README_FILE = "README.txt";

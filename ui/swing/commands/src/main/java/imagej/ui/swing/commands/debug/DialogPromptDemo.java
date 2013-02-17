@@ -48,7 +48,7 @@ import org.scijava.plugin.Plugin;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins>Sandbox>Dialog Prompt Demo")
+@Plugin(type = Command.class, menuPath = "Plugins>Sandbox>Dialog Prompt Demo")
 public class DialogPromptDemo implements Command {
 
 	@Parameter

@@ -35,6 +35,7 @@
 
 package imagej.core.commands.convolve;
 
+import imagej.command.Command;
 import imagej.menu.MenuConstants;
 
 import org.scijava.plugin.Menu;
@@ -45,13 +46,13 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(
+@Plugin(type = Command.class,
 	menu = {
 		@Menu(label = MenuConstants.PROCESS_LABEL,
 			weight = MenuConstants.PROCESS_WEIGHT,
 			mnemonic = MenuConstants.PROCESS_MNEMONIC),
-		@Menu(label = "Shadows", mnemonic = 's'), @Menu(label = "East", weight = 3) },
-	headless = true)
+		@Menu(label = "Shadows", mnemonic = 's'),
+		@Menu(label = "East", weight = 3) }, headless = true)
 public class ShadowsEast extends AbstractShadows {
 
 	static final double[] KERNEL = { -1, 0, 1, -2, 1, 2, -1, 0, 1 };

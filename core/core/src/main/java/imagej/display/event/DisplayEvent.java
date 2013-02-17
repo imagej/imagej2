@@ -35,9 +35,9 @@
 
 package imagej.display.event;
 
-import org.scijava.event.SciJavaEvent;
-
 import imagej.display.Display;
+
+import org.scijava.event.SciJavaEvent;
 
 /**
  * An event indicating something has happened to a {@link Display}.

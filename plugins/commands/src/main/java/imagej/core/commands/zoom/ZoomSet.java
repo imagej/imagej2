@@ -35,6 +35,7 @@
 
 package imagej.core.commands.zoom;
 
+import imagej.command.Command;
 import imagej.command.DynamicCommand;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
@@ -55,7 +56,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(label = "Set Zoom...", menu = {
+@Plugin(type = Command.class, label = "Set Zoom...", menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Zoom", mnemonic = 'z'), @Menu(label = "Set...", weight = 6) },

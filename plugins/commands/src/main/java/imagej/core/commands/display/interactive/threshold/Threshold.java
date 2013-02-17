@@ -35,6 +35,7 @@
 
 package imagej.core.commands.display.interactive.threshold;
 
+import imagej.command.Command;
 import imagej.core.commands.display.interactive.InteractiveCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
@@ -109,7 +110,7 @@ import org.scijava.plugin.PluginService;
 /**
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Adjust"),
 	@Menu(label = "Threshold...", accelerator = "control shift T") },

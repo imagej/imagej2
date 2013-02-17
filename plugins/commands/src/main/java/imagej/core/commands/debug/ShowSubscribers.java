@@ -57,7 +57,7 @@ import org.scijava.plugin.Plugin;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins>Debug>Subscribers", headless = true)
+@Plugin(type = Command.class, menuPath = "Plugins>Debug>Subscribers", headless = true)
 public class ShowSubscribers implements Command {
 
 	@Parameter

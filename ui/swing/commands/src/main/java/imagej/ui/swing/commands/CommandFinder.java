@@ -35,6 +35,7 @@
 
 package imagej.ui.swing.commands;
 
+import imagej.command.Command;
 import imagej.command.CommandService;
 import imagej.command.ContextCommand;
 import imagej.menu.MenuConstants;
@@ -53,7 +54,7 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  * @author Johannes Schindelin
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.PLUGINS_LABEL,
 		weight = MenuConstants.PLUGINS_WEIGHT,
 		mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Utilities"),

@@ -35,7 +35,6 @@
 
 package imagej.data.overlay;
 
-
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -98,7 +97,6 @@ public class PolygonOverlay extends
 			roi.addVertex(i, vertex);
 		}
 	}
-
 
 	/*
 	@Override

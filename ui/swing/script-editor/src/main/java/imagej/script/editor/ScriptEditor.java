@@ -50,7 +50,8 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Johannes Schindelin
  */
-@Plugin(menu = { @Menu(label = "File"), @Menu(label = "New"),
+@Plugin(type = Command.class, menu = { @Menu(label = "File"),
+	@Menu(label = "New"),
 	@Menu(label = "Script...", accelerator = "open_bracket") })
 public class ScriptEditor implements Command {
 

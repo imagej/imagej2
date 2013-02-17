@@ -35,6 +35,7 @@
 
 package imagej.core.commands.restructure;
 
+import imagej.command.Command;
 import imagej.command.CommandService;
 import imagej.command.ContextCommand;
 
@@ -49,7 +50,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(menu = { @Menu(label = "Split Channels", mnemonic = 's') },
+@Plugin(type = Command.class, menu = { @Menu(label = "Split Channels", mnemonic = 's') },
 	menuRoot = Plugin.CONTEXT_MENU_ROOT, headless = true)
 public class SplitChannelsContext extends ContextCommand {
 

@@ -35,6 +35,7 @@
 
 package imagej.legacy.plugin;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.legacy.LegacyService;
 
@@ -47,7 +48,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Johannes Schindelin
  */
-@Plugin(menu = { @Menu(label = "Help"),
+@Plugin(type = Command.class, menu = { @Menu(label = "Help"),
 	@Menu(label = "Switch to Legacy Mode") })
 public class SwitchToLegacyMode extends ContextCommand {
 

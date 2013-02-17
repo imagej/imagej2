@@ -35,6 +35,7 @@
 
 package imagej.core.commands.overlay;
 
+import imagej.command.Command;
 import imagej.data.overlay.Overlay;
 
 import java.util.List;
@@ -50,7 +51,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(headless = true, initializer = "initialize")
+@Plugin(type = Command.class, headless = true, initializer = "initialize")
 public class SelectedManagerOverlayProperties extends AbstractOverlayProperties {
 
 	// -- Parameters --

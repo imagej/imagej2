@@ -35,6 +35,7 @@
 
 package imagej.core.commands.assign;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
@@ -58,13 +59,12 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(
-	menu = {
-		@Menu(label = MenuConstants.PROCESS_LABEL,
-			weight = MenuConstants.PROCESS_WEIGHT,
-			mnemonic = MenuConstants.PROCESS_MNEMONIC),
-		@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Square...", weight = 15) },
-	headless = true)
+@Plugin(type = Command.class, menu = {
+	@Menu(label = MenuConstants.PROCESS_LABEL,
+		weight = MenuConstants.PROCESS_WEIGHT,
+		mnemonic = MenuConstants.PROCESS_MNEMONIC),
+	@Menu(label = "Math", mnemonic = 'm'),
+	@Menu(label = "Square...", weight = 15) }, headless = true)
 public class SquareDataValues<T extends RealType<T>> extends ContextCommand {
 
 	// -- instance variables that are Parameters --

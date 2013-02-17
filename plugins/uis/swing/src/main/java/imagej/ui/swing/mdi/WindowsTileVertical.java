@@ -48,7 +48,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Grant Harris
  */
-@Plugin(menuPath = "Window>Tile Vertical")
+@Plugin(type = Command.class, menuPath = "Window>Tile Vertical")
 public class WindowsTileVertical implements Command {
 
 	@Parameter

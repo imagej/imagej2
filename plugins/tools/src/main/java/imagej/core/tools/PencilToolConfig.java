@@ -46,7 +46,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(label = "Pencil Tool")
+@Plugin(type = Command.class, label = "Pencil Tool")
 public class PencilToolConfig implements Command {
 
 	@Parameter(type = ItemIO.BOTH)

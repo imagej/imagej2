@@ -35,7 +35,6 @@
 
 package imagej.io;
 
-
 import java.util.List;
 
 import org.scijava.service.Service;

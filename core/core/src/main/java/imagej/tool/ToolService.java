@@ -35,7 +35,6 @@
 
 package imagej.tool;
 
-
 import java.util.List;
 
 import org.scijava.event.EventService;

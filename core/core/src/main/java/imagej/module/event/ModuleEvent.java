@@ -35,9 +35,9 @@
 
 package imagej.module.event;
 
-import org.scijava.event.SciJavaEvent;
-
 import imagej.module.Module;
+
+import org.scijava.event.SciJavaEvent;
 
 /**
  * An event indicating something has happened to a module.

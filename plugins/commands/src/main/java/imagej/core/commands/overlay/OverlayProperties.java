@@ -35,6 +35,7 @@
 
 package imagej.core.commands.overlay;
 
+import imagej.command.Command;
 import imagej.data.Data;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
@@ -54,7 +55,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(label = "Overlay Properties...", menu = {
+@Plugin(type = Command.class, label = "Overlay Properties...", menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay", mnemonic = 'o'),

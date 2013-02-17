@@ -35,6 +35,7 @@
 
 package imagej.core.commands.calculator;
 
+import imagej.command.Command;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
@@ -69,11 +70,12 @@ import org.scijava.plugin.PluginService;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-@Plugin(iconPath = "/icons/commands/calculator.png", menu = {
-	@Menu(label = MenuConstants.PROCESS_LABEL,
-		weight = MenuConstants.PROCESS_WEIGHT,
-		mnemonic = MenuConstants.PROCESS_MNEMONIC),
-	@Menu(label = "Image Calculator...", weight = 22) }, headless = true,
+@Plugin(type = Command.class, iconPath = "/icons/commands/calculator.png",
+	menu = {
+		@Menu(label = MenuConstants.PROCESS_LABEL,
+			weight = MenuConstants.PROCESS_WEIGHT,
+			mnemonic = MenuConstants.PROCESS_MNEMONIC),
+		@Menu(label = "Image Calculator...", weight = 22) }, headless = true,
 	initializer = "initCalculator")
 public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 	extends DynamicCommand

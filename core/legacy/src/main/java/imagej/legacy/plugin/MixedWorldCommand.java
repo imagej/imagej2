@@ -50,7 +50,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Plugins>Sandbox>Mixed World Command")
+@Plugin(type = Command.class, menuPath = "Plugins>Sandbox>Mixed World Command")
 public class MixedWorldCommand implements Command {
 
 	@Parameter

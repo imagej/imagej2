@@ -35,6 +35,7 @@
 
 package imagej.core.commands.axispos;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.animation.AnimationService;
 import imagej.data.display.ImageDisplay;
@@ -57,7 +58,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Axes", mnemonic = 'a'),

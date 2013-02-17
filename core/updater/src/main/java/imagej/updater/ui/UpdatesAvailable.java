@@ -54,7 +54,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Johannes Schindelin
  */
-@Plugin(label = "There are updates available")
+@Plugin(type = Command.class, label = "There are updates available")
 public class UpdatesAvailable implements Command {
 
 	private final static String YES = "Yes, please", NEVER = "Never",

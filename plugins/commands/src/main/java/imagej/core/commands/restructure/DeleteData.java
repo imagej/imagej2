@@ -35,6 +35,7 @@
 
 package imagej.core.commands.restructure;
 
+import imagej.command.Command;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.menu.MenuConstants;
@@ -58,8 +59,9 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
-	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
+@Plugin(type = Command.class, menu = {
+	@Menu(label = MenuConstants.IMAGE_LABEL,
+		weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Data", mnemonic = 'd'), @Menu(label = "Delete Data...") },
 	headless = true, initializer = "initAll")
@@ -187,7 +189,7 @@ public class DeleteData extends DynamicCommand {
 
 		// axis not present in Dataset
 		if (axisIndex < 0) {
-			cancel("Axis "+axis.getLabel()+" is not present in input dataset.");
+			cancel("Axis " + axis.getLabel() + " is not present in input dataset.");
 			return true;
 		}
 
@@ -205,7 +207,7 @@ public class DeleteData extends DynamicCommand {
 
 		// trying to delete all hyperplanes along axis
 		if (quantity >= axisSize) {
-			cancel("Cannot delete all entries along axis "+axis.getLabel());
+			cancel("Cannot delete all entries along axis " + axis.getLabel());
 			return true;
 		}
 
@@ -217,10 +219,9 @@ public class DeleteData extends DynamicCommand {
 	 * Fills the newly created ImgPlus with data values from a larger source
 	 * image. Copies data from those hyperplanes not being cut.
 	 */
-	private void
-		fillNewImgPlus(final ImgPlus<? extends RealType<?>> srcImgPlus,
-			final ImgPlus<? extends RealType<?>> dstImgPlus,
-			final AxisType modifiedAxis)
+	private void fillNewImgPlus(final ImgPlus<? extends RealType<?>> srcImgPlus,
+		final ImgPlus<? extends RealType<?>> dstImgPlus,
+		final AxisType modifiedAxis)
 	{
 		final long[] dimensions = dataset.getDims();
 		final int axisIndex = dataset.getAxisIndex(modifiedAxis);

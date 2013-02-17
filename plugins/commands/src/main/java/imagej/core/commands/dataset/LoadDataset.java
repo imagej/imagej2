@@ -49,7 +49,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(headless = true)
+@Plugin(type = Command.class, headless = true)
 public class LoadDataset implements Command {
 
 	@Parameter(type=ItemIO.BOTH)

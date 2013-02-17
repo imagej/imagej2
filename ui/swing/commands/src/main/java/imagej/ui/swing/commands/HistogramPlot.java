@@ -35,6 +35,7 @@
 
 package imagej.ui.swing.commands;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
@@ -88,7 +89,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Grant Harris
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 	@Menu(label = "Analyze"),
 	@Menu(label = "Histogram Plot", accelerator = "control shift alt H",
 		weight = 0) })

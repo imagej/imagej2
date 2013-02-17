@@ -35,6 +35,7 @@
 
 package imagej.core.commands.io;
 
+import imagej.command.Command;
 import imagej.command.CommandService;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
@@ -55,7 +56,7 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  * @author Mark Hiner
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Save", weight = 20, mnemonic = 's') })

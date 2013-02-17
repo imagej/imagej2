@@ -48,7 +48,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(label = "Clear Recent", menu = {
+@Plugin(type = Command.class, label = "Clear Recent", menu = {
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Open Recent", weight = 4, mnemonic = 'r'),

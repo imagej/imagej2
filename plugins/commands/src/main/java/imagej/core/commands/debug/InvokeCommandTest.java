@@ -70,7 +70,7 @@ import org.scijava.plugin.Plugin;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins>Sandbox>Invoke Command Test", headless = true)
+@Plugin(type = Command.class, menuPath = "Plugins>Sandbox>Invoke Command Test", headless = true)
 public class InvokeCommandTest implements Command {
 
 	@Parameter

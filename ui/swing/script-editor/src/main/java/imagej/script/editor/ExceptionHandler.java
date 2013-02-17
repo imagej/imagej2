@@ -35,7 +35,6 @@
 
 package imagej.script.editor;
 
-
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;

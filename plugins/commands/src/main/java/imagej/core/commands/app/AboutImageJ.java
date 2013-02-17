@@ -35,6 +35,7 @@
 
 package imagej.core.commands.app;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
@@ -90,7 +91,7 @@ import org.scijava.util.Manifest;
  * 
  * @author Barry DeZonia
  */
-@Plugin(label = "About ImageJ...",
+@Plugin(type = Command.class, label = "About ImageJ...",
 	iconPath = "/icons/commands/information.png", menu = {
 		@Menu(label = MenuConstants.HELP_LABEL,
 			weight = MenuConstants.HELP_WEIGHT,

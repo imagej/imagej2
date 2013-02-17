@@ -48,7 +48,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Grant Harris
  */
-@Plugin(menuPath = "Plugins>Debug>Inspect Objects")
+@Plugin(type = Command.class, menuPath = "Plugins>Debug>Inspect Objects")
 public class InspectObjects implements Command {
 
 	@Parameter

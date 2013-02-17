@@ -35,6 +35,7 @@
 
 package imagej.ui.swing.commands;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.ui.swing.SwingOverlayManager;
 
@@ -48,7 +49,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Adam Fraser
  */
-@Plugin(menu = { @Menu(label = "Image"), @Menu(label = "Overlay"),
+@Plugin(type = Command.class, menu = { @Menu(label = "Image"), @Menu(label = "Overlay"),
 	@Menu(label = "Overlay Manager") })
 public class OverlayManager extends ContextCommand {
 

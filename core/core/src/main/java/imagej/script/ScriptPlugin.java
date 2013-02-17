@@ -53,7 +53,7 @@ import org.scijava.util.FileUtils;
  * @author Johannes Schindelin
  * @author Grant Harris
  */
-@Plugin(menuPath = "Plugins>Script>Run Script")
+@Plugin(type = Command.class, menuPath = "Plugins>Script>Run Script")
 public class ScriptPlugin implements Command {
 
 	@Parameter

@@ -62,7 +62,7 @@ import org.scijava.plugin.Plugin;
  *
  * @author Johannes Schindelin
  */
-@Plugin(menuPath = "Help>Upload Sample Image")
+@Plugin(type = Command.class, menuPath = "Help>Upload Sample Image")
 public class SampleImageUploader implements Command {
 	@Parameter
 	private File sampleImage;

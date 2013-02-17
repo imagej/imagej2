@@ -35,6 +35,7 @@
 
 package imagej.core.commands.app;
 
+import imagej.command.Command;
 import imagej.command.UnimplementedCommand;
 import imagej.menu.MenuConstants;
 
@@ -48,11 +49,12 @@ import org.scijava.plugin.Plugin;
 /**
  * @author Barry DeZonia
  */
-@Plugin(iconPath = "/icons/commands/bricks.png", menu = {
-	@Menu(label = MenuConstants.PLUGINS_LABEL,
-		weight = MenuConstants.PLUGINS_WEIGHT,
-		mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Shortcuts"),
-	@Menu(label = "Create Shortcut...", weight = 2) })
+@Plugin(type = Command.class, iconPath = "/icons/commands/bricks.png",
+	menu = {
+		@Menu(label = MenuConstants.PLUGINS_LABEL,
+			weight = MenuConstants.PLUGINS_WEIGHT,
+			mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Shortcuts"),
+		@Menu(label = "Create Shortcut...", weight = 2) })
 public class CreateShortcut extends UnimplementedCommand {
 	// TODO
 }

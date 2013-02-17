@@ -35,6 +35,7 @@
 
 package imagej.core.commands.axispos;
 
+import imagej.command.Command;
 import imagej.command.DynamicCommand;
 import imagej.data.animation.Animation;
 import imagej.data.animation.AnimationService;
@@ -59,12 +60,13 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  */
 @Plugin(
+	type = Command.class,
 	menu = {
 		@Menu(label = MenuConstants.IMAGE_LABEL,
 			weight = MenuConstants.IMAGE_WEIGHT,
 			mnemonic = MenuConstants.IMAGE_MNEMONIC),
-		@Menu(label = "Axes", mnemonic = 'a'),
-		@Menu(label = "Set Active Axis...") }, headless = true)
+		@Menu(label = "Axes", mnemonic = 'a'), @Menu(label = "Set Active Axis...") },
+	headless = true)
 public class SetActiveAxis extends DynamicCommand {
 
 	// -- Constants --

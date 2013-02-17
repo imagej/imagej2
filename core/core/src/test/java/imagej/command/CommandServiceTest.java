@@ -59,7 +59,7 @@ public class CommandServiceTest {
 		assertEquals("Hello, World!", string.toString());
 	}
 
-	@Plugin
+	@Plugin(type = Command.class)
 	public static class TestCommand implements Command {
 
 		@Parameter

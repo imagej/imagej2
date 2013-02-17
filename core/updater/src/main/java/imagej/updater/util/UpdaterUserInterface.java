@@ -35,7 +35,6 @@
 
 package imagej.updater.util;
 
-
 import java.awt.Frame;
 import java.io.IOException;
 import java.io.OutputStream;

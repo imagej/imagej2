@@ -50,7 +50,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(label = "| It's a secret to everyone |", headless = true)
+@Plugin(type = Command.class, label = "| It's a secret to everyone |", headless = true)
 public class EasterEgg implements Command {
 
 	private static final String CHARS = "#O*o+-,. ";

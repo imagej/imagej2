@@ -35,6 +35,7 @@
 
 package imagej.core.commands.assign;
 
+import imagej.command.Command;
 import imagej.menu.MenuConstants;
 import net.imglib2.ops.operation.real.unary.RealConstant;
 import net.imglib2.type.numeric.RealType;
@@ -50,13 +51,13 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(
+@Plugin(type = Command.class,
 	menu = {
 		@Menu(label = MenuConstants.PROCESS_LABEL,
 			weight = MenuConstants.PROCESS_WEIGHT,
 			mnemonic = MenuConstants.PROCESS_MNEMONIC),
-		@Menu(label = "Math", mnemonic = 'm'), @Menu(label = "Set...", weight = 12) },
-	headless = true)
+		@Menu(label = "Math", mnemonic = 'm'),
+		@Menu(label = "Set...", weight = 12) }, headless = true)
 public class SetDataValues<T extends RealType<T>>
 	extends MathCommand<T, DoubleType>
 {

@@ -35,6 +35,7 @@
 
 package imagej.core.commands.io;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.io.IOService;
@@ -59,11 +60,13 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  * @author Mark Hiner
  */
-@Plugin(iconPath = "/icons/commands/folder_picture.png", menu = {
-	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
-		mnemonic = MenuConstants.FILE_MNEMONIC),
-	@Menu(label = "Open...", weight = 1, mnemonic = 'o',
-		accelerator = "control O") })
+@Plugin(type = Command.class, iconPath = "/icons/commands/folder_picture.png",
+	menu = {
+		@Menu(label = MenuConstants.FILE_LABEL,
+			weight = MenuConstants.FILE_WEIGHT,
+			mnemonic = MenuConstants.FILE_MNEMONIC),
+		@Menu(label = "Open...", weight = 1, mnemonic = 'o',
+			accelerator = "control O") })
 public class OpenImage extends ContextCommand {
 
 	@Parameter

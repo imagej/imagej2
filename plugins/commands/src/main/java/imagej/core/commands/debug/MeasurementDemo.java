@@ -84,7 +84,7 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  *
  */
-@Plugin(menuPath = "Plugins>Sandbox>Measurement Demo")
+@Plugin(type = Command.class, menuPath = "Plugins>Sandbox>Measurement Demo")
 public class MeasurementDemo implements Command {
 
 	// -- Parameters --

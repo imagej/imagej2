@@ -46,7 +46,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(label = "Paintbrush Tool")
+@Plugin(type = Command.class, label = "Paintbrush Tool")
 public class PaintBrushToolConfig implements Command {
 
 	@Parameter(type = ItemIO.BOTH)

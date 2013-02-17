@@ -68,7 +68,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin
+@Plugin(type = Command.class)
 public class ApplyLookupTable implements Command {
 
 	// -- Parameters --

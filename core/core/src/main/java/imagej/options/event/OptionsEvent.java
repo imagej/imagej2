@@ -35,9 +35,9 @@
 
 package imagej.options.event;
 
-import org.scijava.event.SciJavaEvent;
-
 import imagej.options.OptionsPlugin;
+
+import org.scijava.event.SciJavaEvent;
 
 /**
  * Fired when an modern ImageJ plugin has changed an option. Used by the legacy

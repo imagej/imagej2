@@ -48,7 +48,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Grant Harris
  */
-@Plugin(menuPath = "Plugins>Debug>Inspect Image", headless = true)
+@Plugin(type = Command.class, menuPath = "Plugins>Debug>Inspect Image", headless = true)
 public class InspectImg implements Command {
 
 	@Parameter

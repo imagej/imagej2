@@ -35,7 +35,6 @@
 
 package imagej.updater.core;
 
-
 import java.util.HashMap;
 import java.util.List;
 

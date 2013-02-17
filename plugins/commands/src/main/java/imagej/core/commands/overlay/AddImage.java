@@ -35,6 +35,7 @@
 
 package imagej.core.commands.overlay;
 
+import imagej.command.Command;
 import imagej.command.UnimplementedCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
@@ -50,10 +51,12 @@ import org.scijava.plugin.Plugin;
 /**
  * @author Barry DeZonia
  */
-@Plugin(iconPath = "/icons/commands/bricks.png", menu = {
-	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Overlay"),
-	@Menu(label = "Add Image", weight = 7) })
+@Plugin(type = Command.class, iconPath = "/icons/commands/bricks.png",
+	menu = {
+		@Menu(label = MenuConstants.IMAGE_LABEL,
+			weight = MenuConstants.IMAGE_WEIGHT,
+			mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Overlay"),
+		@Menu(label = "Add Image", weight = 7) })
 public class AddImage extends UnimplementedCommand {
 
 	// -- Parameters --

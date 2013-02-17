@@ -35,6 +35,7 @@
 
 package imagej.core.commands.imglib;
 
+import imagej.command.Command;
 import imagej.command.DynamicCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.data.sampler.AxisSubrange;
@@ -60,7 +61,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Duplicate", accelerator = "shift control D") },

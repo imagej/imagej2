@@ -35,7 +35,6 @@
 
 package imagej.data.overlay;
 
-
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.util.ArrayList;

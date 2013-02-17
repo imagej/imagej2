@@ -57,7 +57,8 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins>Debug>Parameter Tester", headless = true)
+@Plugin(type = Command.class, menuPath = "Plugins>Debug>Parameter Tester",
+	headless = true)
 public class ParameterTester implements Command, Previewable {
 
 	@Parameter

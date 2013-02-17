@@ -46,7 +46,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins>Sandbox>TextDisplayTest", headless = true)
+@Plugin(type = Command.class, menuPath = "Plugins>Sandbox>TextDisplayTest", headless = true)
 public class TextDisplayTest implements Command {
 
 	@Parameter(type = ItemIO.OUTPUT)

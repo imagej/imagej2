@@ -46,7 +46,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(label = "Flood Fill Tool")
+@Plugin(type = Command.class, label = "Flood Fill Tool")
 public class FloodFillToolConfig implements Command {
 
 	// -- constants --

@@ -36,6 +36,7 @@
 package imagej.core.commands.debug;
 
 import imagej.Previewable;
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 
 import org.scijava.log.LogService;
@@ -51,7 +52,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins>Sandbox>Parameter Assignment Order",
+@Plugin(type = Command.class, menuPath = "Plugins>Sandbox>Parameter Assignment Order",
 	headless = true, initializer = "initParams")
 public class ParamAssignOrder extends ContextCommand implements Previewable {
 

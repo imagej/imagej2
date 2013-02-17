@@ -35,7 +35,6 @@
 
 package imagej.widget;
 
-
 import java.util.List;
 
 import org.scijava.InstantiableException;

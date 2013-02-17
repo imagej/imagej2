@@ -46,7 +46,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(label = "Spray Can Tool", initializer = "initAll")
+@Plugin(type = Command.class, label = "Spray Can Tool", initializer = "initAll")
 public class SprayCanToolConfig implements Command {
 
 	@Parameter(type = ItemIO.BOTH)

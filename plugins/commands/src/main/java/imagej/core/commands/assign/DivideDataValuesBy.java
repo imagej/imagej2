@@ -35,6 +35,7 @@
 
 package imagej.core.commands.assign;
 
+import imagej.command.Command;
 import imagej.core.options.OptionsMisc;
 import imagej.menu.MenuConstants;
 import imagej.options.OptionsService;
@@ -52,13 +53,12 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(
-	menu = {
-		@Menu(label = MenuConstants.PROCESS_LABEL,
-			weight = MenuConstants.PROCESS_WEIGHT,
-			mnemonic = MenuConstants.PROCESS_MNEMONIC),
-		@Menu(label = "Math", mnemonic = 'm'),
-		@Menu(label = "Divide...", weight = 4) }, headless = true)
+@Plugin(type = Command.class, menu = {
+	@Menu(label = MenuConstants.PROCESS_LABEL,
+		weight = MenuConstants.PROCESS_WEIGHT,
+		mnemonic = MenuConstants.PROCESS_MNEMONIC),
+	@Menu(label = "Math", mnemonic = 'm'),
+	@Menu(label = "Divide...", weight = 4) }, headless = true)
 public class DivideDataValuesBy<T extends RealType<T>>
 	extends MathCommand<T,DoubleType>
 {

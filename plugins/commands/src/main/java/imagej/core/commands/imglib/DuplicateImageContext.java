@@ -47,9 +47,9 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(menu = { @Menu(label = "Duplicate...", mnemonic = 'd',
-	accelerator = "shift control D") }, menuRoot = Plugin.CONTEXT_MENU_ROOT,
-	headless = true)
+@Plugin(type = Command.class, menu = { @Menu(label = "Duplicate...",
+	mnemonic = 'd', accelerator = "shift control D") },
+	menuRoot = Plugin.CONTEXT_MENU_ROOT, headless = true)
 public class DuplicateImageContext implements Command {
 
 	// -- Parameters --

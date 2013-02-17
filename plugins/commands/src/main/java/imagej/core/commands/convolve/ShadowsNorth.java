@@ -35,6 +35,7 @@
 
 package imagej.core.commands.convolve;
 
+import imagej.command.Command;
 import imagej.menu.MenuConstants;
 
 import org.scijava.plugin.Menu;
@@ -45,7 +46,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(
+@Plugin(type = Command.class,
 	menu = {
 		@Menu(label = MenuConstants.PROCESS_LABEL,
 			weight = MenuConstants.PROCESS_WEIGHT,

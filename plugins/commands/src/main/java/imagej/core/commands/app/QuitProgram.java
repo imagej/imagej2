@@ -53,7 +53,7 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-@Plugin(label = "Quit", iconPath = "/icons/commands/door_in.png", menu = {
+@Plugin(type = Command.class, label = "Quit", iconPath = "/icons/commands/door_in.png", menu = {
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Quit", weight = Double.MAX_VALUE, mnemonic = 'q',

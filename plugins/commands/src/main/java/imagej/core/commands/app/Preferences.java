@@ -48,7 +48,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(label = "Preferences", menu = {
+@Plugin(type = Command.class, label = "Preferences", menu = {
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Preferences", weight = 30) }, headless = true)

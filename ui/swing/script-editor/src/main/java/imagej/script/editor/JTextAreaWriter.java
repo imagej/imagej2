@@ -35,7 +35,6 @@
 
 package imagej.script.editor;
 
-
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;

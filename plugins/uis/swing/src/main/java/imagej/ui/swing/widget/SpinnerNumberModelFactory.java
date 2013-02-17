@@ -35,7 +35,6 @@
 
 package imagej.ui.swing.widget;
 
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 

@@ -52,10 +52,12 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Johannes Schindelin
  */
-@Plugin(iconPath = "/icons/commands/world_link.png", menu = {
-	@Menu(label = MenuConstants.HELP_LABEL, weight = MenuConstants.HELP_WEIGHT,
-		mnemonic = MenuConstants.HELP_MNEMONIC),
-	@Menu(label = "ImageJ Website...", weight = 42) }, headless = true)
+@Plugin(type = Command.class, iconPath = "/icons/commands/world_link.png",
+	menu = {
+		@Menu(label = MenuConstants.HELP_LABEL,
+			weight = MenuConstants.HELP_WEIGHT,
+			mnemonic = MenuConstants.HELP_MNEMONIC),
+		@Menu(label = "ImageJ Website...", weight = 42) }, headless = true)
 public class ImageJWebsite implements Command {
 
 	@Parameter

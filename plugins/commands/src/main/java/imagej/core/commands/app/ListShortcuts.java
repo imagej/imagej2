@@ -35,6 +35,7 @@
 
 package imagej.core.commands.app;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.table.DefaultGenericTable;
 import imagej.data.table.GenericTable;
@@ -60,7 +61,7 @@ import org.scijava.plugin.Plugin;
  *
  * @author Curtis Rueden
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.PLUGINS_LABEL,
 		weight = MenuConstants.PLUGINS_WEIGHT,
 		mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Shortcuts"),

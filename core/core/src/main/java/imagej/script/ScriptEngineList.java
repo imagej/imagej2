@@ -49,7 +49,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Grant Harris
  */
-@Plugin(menuPath = "Plugins>Script>List Engines")
+@Plugin(type = Command.class, menuPath = "Plugins>Script>List Engines")
 public class ScriptEngineList implements Command {
 
 	@Override

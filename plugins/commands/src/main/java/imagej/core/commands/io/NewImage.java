@@ -35,6 +35,7 @@
 
 package imagej.core.commands.io;
 
+import imagej.command.Command;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
@@ -56,7 +57,7 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Plugin(label = "New Image...", iconPath = "/icons/commands/picture.png",
+@Plugin(type = Command.class, label = "New Image...", iconPath = "/icons/commands/picture.png",
 	initializer = "init",
 	menu = {
 		@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,

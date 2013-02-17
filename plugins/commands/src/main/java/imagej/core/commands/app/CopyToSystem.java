@@ -35,6 +35,7 @@
 
 package imagej.core.commands.app;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
@@ -57,7 +58,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 		@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 			mnemonic = MenuConstants.EDIT_MNEMONIC),
 		@Menu(label = "Copy To System", weight = 12) })

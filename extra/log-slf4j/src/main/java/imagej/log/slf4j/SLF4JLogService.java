@@ -35,7 +35,6 @@
 
 package imagej.log.slf4j;
 
-
 import org.scijava.log.DefaultUncaughtExceptionHandler;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Plugin;

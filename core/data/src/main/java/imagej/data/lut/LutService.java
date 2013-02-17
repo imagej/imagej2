@@ -35,7 +35,6 @@
 
 package imagej.data.lut;
 
-
 import java.io.File;
 import java.net.URL;
 

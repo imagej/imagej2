@@ -35,6 +35,7 @@
 
 package imagej.core.commands.zoom;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.MouseService;
@@ -53,7 +54,7 @@ import org.scijava.thread.ThreadService;
  * 
  * @author Barry DeZonia
  */
-@Plugin(label = "Zoom Out", menu = {
+@Plugin(type = Command.class, label = "Zoom Out", menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Zoom", mnemonic = 'z'),

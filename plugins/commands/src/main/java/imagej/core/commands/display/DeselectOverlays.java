@@ -35,6 +35,7 @@
 
 package imagej.core.commands.display;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
@@ -51,7 +52,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Lee Kamentsky
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Selection", mnemonic = 's'),

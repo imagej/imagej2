@@ -37,7 +37,6 @@ package imagej.platform.event;
 
 import org.scijava.event.SciJavaEvent;
 
-
 /**
  * An event indicating an application-level occurrence. Exists mainly to
  * facility handling of Mac-specific menu items.

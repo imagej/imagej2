@@ -56,7 +56,7 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  *
  */
-@Plugin(menuPath = "Plugins>Sandbox>Statistics Demo")
+@Plugin(type = Command.class, menuPath = "Plugins>Sandbox>Statistics Demo")
 public class StatisticsDemo implements Command {
 
 	// -- Parameters --

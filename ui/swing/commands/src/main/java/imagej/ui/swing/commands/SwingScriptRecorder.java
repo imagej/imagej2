@@ -35,6 +35,7 @@
 
 package imagej.ui.swing.commands;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
@@ -80,8 +81,8 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Grant Harris
  */
-@Plugin(menu = { @Menu(label = "Plugins"), @Menu(label = "Macros"),
-	@Menu(label = "Record...", weight = 4) })
+@Plugin(type = Command.class, menu = { @Menu(label = "Plugins"),
+	@Menu(label = "Macros"), @Menu(label = "Record...", weight = 4) })
 public class SwingScriptRecorder extends ContextCommand {
 
 	@Parameter

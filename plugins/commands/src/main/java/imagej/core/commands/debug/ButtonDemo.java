@@ -53,7 +53,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Plugins>Sandbox>Button Demo")
+@Plugin(type = Command.class, menuPath = "Plugins>Sandbox>Button Demo")
 public class ButtonDemo implements Command {
 
 	@Parameter

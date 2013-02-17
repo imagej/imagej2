@@ -59,7 +59,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Plugins>Sandbox>Multidimensional Test Image")
+@Plugin(type = Command.class, menuPath = "Plugins>Sandbox>Multidimensional Test Image")
 public class MultidimImage implements Command {
 
 	@Parameter

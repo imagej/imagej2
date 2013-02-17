@@ -36,6 +36,7 @@
 package imagej.core.commands.display;
 
 import imagej.Previewable;
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.display.ColorMode;
 import imagej.data.display.DatasetView;
@@ -51,7 +52,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Color"),
 	@Menu(label = "Channels Tool...", weight = -5) },

@@ -59,7 +59,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Plugins>Sandbox>PointSet Demo")
+@Plugin(type = Command.class, menuPath = "Plugins>Sandbox>PointSet Demo")
 public class PointSetDemo implements Command, Cancelable {
 
 	@Parameter

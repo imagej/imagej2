@@ -35,6 +35,7 @@
 
 package imagej.core.commands.display.interactive;
 
+import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
 import imagej.menu.MenuConstants;
@@ -55,7 +56,7 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Adjust"),

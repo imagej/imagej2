@@ -35,9 +35,9 @@
 
 package imagej.data.display.event;
 
-import org.scijava.event.SciJavaEvent;
-
 import imagej.data.display.DataView;
+
+import org.scijava.event.SciJavaEvent;
 
 /**
  * An event indicating something has happened to a {@link DataView}.

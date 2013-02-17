@@ -52,7 +52,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins>Debug>Watch Events")
+@Plugin(type = Command.class, menuPath = "Plugins>Debug>Watch Events")
 public class WatchEvents implements Command, EventHistoryListener {
 
 	// -- Parameters --

@@ -38,7 +38,6 @@ package imagej.display;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
-
 /**
  * Default display for text.
  * 

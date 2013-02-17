@@ -35,7 +35,6 @@
 
 package imagej.data.overlay;
 
-
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -48,10 +47,11 @@ import org.scijava.Context;
 
 /**
  * An overlay for the {@link GeneralPathRegionOfInterest}.
- * 
- * The {@link GeneralPathRegionOfInterest} class implements composite regions
- * of interest, consisting of areas defined by closed Beziér curves combined
- * via the even/odd winding rule.
+ * <p>
+ * The {@link GeneralPathRegionOfInterest} class implements composite regions of
+ * interest, consisting of areas defined by closed Beziér curves combined via
+ * the even/odd winding rule.
+ * </p>
  * 
  * @author Johannes Schindelin
  * @author Lee Kamentsky

@@ -48,7 +48,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Grant Harris
  */
-@Plugin(label = "Select Window...")
+@Plugin(type = Command.class, label = "Select Window...")
 public class SelectWindow implements Command {
 
 	@Parameter(autoFill = false)

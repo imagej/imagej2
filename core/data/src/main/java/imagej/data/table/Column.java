@@ -35,7 +35,6 @@
 
 package imagej.data.table;
 
-
 import java.util.List;
 
 import org.scijava.util.Sizable;

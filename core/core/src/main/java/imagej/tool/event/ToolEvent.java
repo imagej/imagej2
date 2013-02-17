@@ -35,9 +35,9 @@
 
 package imagej.tool.event;
 
-import org.scijava.event.SciJavaEvent;
-
 import imagej.tool.Tool;
+
+import org.scijava.event.SciJavaEvent;
 
 /**
  * An event indicating something has happened to a tool.
