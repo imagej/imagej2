@@ -137,6 +137,12 @@ sub process($) {
     return 4;
   }
 
+  # check blank line following package statement
+  if ($data[$i++] !~ /^$/) {
+    print "$file: no post-package blank line\n";
+    return 12;
+  }
+
   # check import statements
   $blank = 0;
   while (1) {
