@@ -33,69 +33,32 @@
  * #L%
  */
 
-package imagej.ui;
+package imagej.util;
 
-import imagej.command.Command;
-import imagej.util.AppUtils;
-
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import org.scijava.ItemIO;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
 
 /**
- * Displays the ImageJ readme file.
+ * Useful methods for obtaining details of the ImageJ application environment.
  * 
+ * @author Johannes Schindelin
  * @author Curtis Rueden
  */
-@Plugin
-public class ShowReadme implements Command {
+public final class AppUtils {
 
-	private static final String README_FILE = "README.txt";
-
-	@Parameter(label = "Readme", type = ItemIO.OUTPUT)
-	private String readmeText;
-
-	// -- ShowReadme methods --
-
-	public String getReadmeText() {
-		return readmeText;
+	private AppUtils() {
+		// prevent instantiation of utility class
 	}
 
-	// -- Runnable methods --
-
-	@Override
-	public void run() {
-		readmeText = loadReadmeFile();
-	}
-
-	// -- Helper methods --
-
-	private String loadReadmeFile() {
-		final File baseDir = AppUtils.getBaseDirectory();
-		final File readmeFile = new File(baseDir, README_FILE);
-
-		try {
-			final DataInputStream in =
-				new DataInputStream(new FileInputStream(readmeFile));
-			final int len = (int) readmeFile.length();
-			final byte[] bytes = new byte[len];
-			in.readFully(bytes);
-			in.close();
-			return new String(bytes);
-		}
-		catch (final FileNotFoundException e) {
-			throw new IllegalArgumentException(README_FILE + " not found at " +
-				baseDir.getAbsolutePath());
-		}
-		catch (final IOException e) {
-			throw new IllegalStateException(e.getMessage());
-		}
+	/**
+	 * Gets the ImageJ root directory. If the {@code ij.dir} property is set, it
+	 * is used. Otherwise, we scan up the tree from this class for a suitable
+	 * directory.
+	 * 
+	 * @see org.scijava.util.AppUtils#getBaseDirectory(String, Class, String)
+	 */
+	public static File getBaseDirectory() {
+		return org.scijava.util.AppUtils.getBaseDirectory("ij.dir",
+			AppUtils.class, "core/core");
 	}
 
 }

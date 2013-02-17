@@ -36,6 +36,8 @@
 package imagej.data.lut;
 
 
+import imagej.util.AppUtils;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -45,7 +47,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.scijava.util.AppUtils;
 import org.scijava.util.ClassUtils;
 import org.scijava.util.FileUtils;
 

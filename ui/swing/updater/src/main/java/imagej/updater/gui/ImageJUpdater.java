@@ -47,6 +47,7 @@ import imagej.updater.util.Progress;
 import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
+import imagej.util.AppUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,7 +64,6 @@ import org.scijava.log.LogService;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.util.AppUtils;
 
 /**
  * The Updater. As a command.

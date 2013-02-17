@@ -43,6 +43,7 @@ import imagej.script.editor.command.ChooseFontSize;
 import imagej.script.editor.command.ChooseTabSize;
 import imagej.script.editor.command.GitGrep;
 import imagej.script.editor.command.KillScript;
+import imagej.util.AppUtils;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -117,7 +118,6 @@ import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.modes.JavaScriptTokenMaker;
 import org.fife.ui.rsyntaxtextarea.modes.JavaTokenMaker;
 import org.scijava.log.LogService;
-import org.scijava.util.AppUtils;
 import org.scijava.util.FileUtils;
 
 /**

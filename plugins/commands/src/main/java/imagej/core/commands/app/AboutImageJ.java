@@ -46,6 +46,7 @@ import imagej.io.IOService;
 import imagej.menu.MenuConstants;
 import imagej.render.RenderingService;
 import imagej.render.TextRenderer.TextJustification;
+import imagej.util.AppUtils;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 import imagej.util.MersenneTwisterFast;
@@ -72,7 +73,6 @@ import org.scijava.log.LogService;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.util.AppUtils;
 import org.scijava.util.Manifest;
 
 // TODO

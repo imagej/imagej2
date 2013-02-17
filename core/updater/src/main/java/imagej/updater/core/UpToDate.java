@@ -37,6 +37,7 @@ package imagej.updater.core;
 
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Util;
+import imagej.util.AppUtils;
 import imagej.util.Prefs;
 
 import java.io.File;
@@ -53,7 +54,6 @@ import java.util.Enumeration;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.scijava.util.AppUtils;
 import org.xml.sax.SAXException;
 
 /**

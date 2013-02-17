@@ -52,6 +52,7 @@ import imagej.updater.util.Progress;
 import imagej.updater.util.StderrProgress;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
+import imagej.util.AppUtils;
 
 import java.awt.Frame;
 import java.io.Console;
@@ -69,7 +70,6 @@ import java.util.Set;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.scijava.log.LogService;
-import org.scijava.util.AppUtils;
 import org.xml.sax.SAXException;
 
 /**

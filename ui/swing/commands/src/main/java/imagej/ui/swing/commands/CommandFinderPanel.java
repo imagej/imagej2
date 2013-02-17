@@ -37,6 +37,7 @@ package imagej.ui.swing.commands;
 
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
+import imagej.util.AppUtils;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -71,7 +72,6 @@ import javax.swing.table.TableColumnModel;
 import net.miginfocom.swing.MigLayout;
 
 import org.scijava.MenuPath;
-import org.scijava.util.AppUtils;
 import org.scijava.util.ClassUtils;
 import org.scijava.util.FileUtils;
 
