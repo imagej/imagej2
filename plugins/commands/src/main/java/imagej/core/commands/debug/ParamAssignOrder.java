@@ -35,9 +35,9 @@
 
 package imagej.core.commands.debug;
 
-import imagej.Previewable;
 import imagej.command.Command;
 import imagej.command.ContextCommand;
+import imagej.command.Previewable;
 
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;

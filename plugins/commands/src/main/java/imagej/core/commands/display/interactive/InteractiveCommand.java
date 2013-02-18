@@ -35,8 +35,8 @@
 
 package imagej.core.commands.display.interactive;
 
-import imagej.Previewable;
 import imagej.command.DynamicCommand;
+import imagej.command.Previewable;
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplayService;

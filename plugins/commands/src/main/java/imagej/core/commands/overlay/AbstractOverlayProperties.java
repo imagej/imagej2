@@ -35,8 +35,8 @@
 
 package imagej.core.commands.overlay;
 
-import imagej.Previewable;
 import imagej.command.ContextCommand;
+import imagej.command.Previewable;
 import imagej.data.options.OptionsOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.Overlay.ArrowStyle;

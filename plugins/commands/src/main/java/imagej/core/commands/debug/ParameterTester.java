@@ -35,8 +35,8 @@
 
 package imagej.core.commands.debug;
 
-import imagej.Previewable;
 import imagej.command.Command;
+import imagej.command.Previewable;
 import imagej.data.Dataset;
 import imagej.util.ColorRGB;
 import imagej.widget.NumberWidget;

@@ -35,8 +35,8 @@
 
 package imagej.core.commands.assign;
 
-import imagej.Previewable;
 import imagej.command.ContextCommand;
+import imagej.command.Previewable;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.display.DatasetView;

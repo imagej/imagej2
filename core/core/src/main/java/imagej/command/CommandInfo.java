@@ -36,7 +36,6 @@
 package imagej.command;
 
 import imagej.Cancelable;
-import imagej.Previewable;
 import imagej.ValidityProblem;
 import imagej.module.Module;
 import imagej.module.ModuleException;

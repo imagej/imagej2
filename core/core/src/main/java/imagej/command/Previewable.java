@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej;
+package imagej.command;
 
 /**
  * A operation whose results can be previewed.
