@@ -950,6 +950,13 @@ static const char *get_java_home(void)
 	result = !relative_java_home ? NULL : ij_path(relative_java_home);
 	if (result && is_java_home(result))
 		return result;
+	if (result && (!suffixcmp(result, -1, "/jre") ||
+			 !suffixcmp(result, -1, "/jre/")) &&
+			is_jre_home(result)) {
+		char *new_eol = (char *)(result + strlen(result) - 4);
+		*new_eol = '\0';
+		return result;
+	}
 	result = get_java_home_env();
 	if (result)
 		return result;
