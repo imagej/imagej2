@@ -1469,6 +1469,8 @@ static void show_splash(void)
 
 	splashscreen = dlopen(lib_path->buffer, RTLD_LAZY);
 	if (!splashscreen) {
+		if (verbose)
+			error("Splashscreen library not found: '%s'", lib_path->buffer);
 		string_release(lib_path);
 		return;
 	}
@@ -1477,6 +1479,8 @@ static void show_splash(void)
 	SplashSetFileJarName = dlsym(splashscreen, "SplashSetFileJarName");
 	SplashClose = dlsym(splashscreen, "SplashClose");
 	if (!SplashInit || !SplashLoadFile || !SplashSetFileJarName || !SplashClose) {
+		if (verbose)
+			error("Ignoring splashscreen:\ninit: %p\nload: %p\nsetFileJar: %p\nclose: %p", SplashInit, SplashLoadFile, SplashSetFileJarName, SplashClose);
 		string_release(lib_path);
 		SplashClose = NULL;
 		return;
@@ -1638,15 +1642,22 @@ static int create_java_vm(JavaVM **vm, void **env, JavaVMInitArgs *args)
 	handle = dlopen(buffer->buffer, RTLD_LAZY);
 	if (!handle) {
 		const char *err;
+		if (verbose)
+			error("Could not open '%s'", buffer->buffer);
 		setenv_or_exit("JAVA_HOME", original_java_home_env, 1);
-		if (!file_exists(java_home))
+		if (!file_exists(java_home)) {
+			if (verbose)
+				error("'%s' does not exist", java_home);
+			string_release(buffer);
 			return 2;
+		}
 
 		err = dlerror();
 		if (!err)
 			err = "(unknown error)";
 		error("Could not load Java library '%s': %s",
 			buffer->buffer, err);
+		string_release(buffer);
 		return 1;
 	}
 	dlerror(); /* Clear any existing error */
@@ -1654,8 +1665,9 @@ static int create_java_vm(JavaVM **vm, void **env, JavaVMInitArgs *args)
 	JNI_CreateJavaVM = dlsym(handle, JNI_CREATEVM);
 	err = dlerror();
 	if (err) {
-		error("Error loading libjvm: %s", err);
+		error("Error loading libjvm: %s: %s", buffer->buffer, err);
 		setenv_or_exit("JAVA_HOME", original_java_home_env, 1);
+		string_release(buffer);
 		return 1;
 	}
 #endif
