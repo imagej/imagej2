@@ -35,6 +35,7 @@
 
 package imagej.command;
 
+import imagej.Cancelable;
 import imagej.Previewable;
 import imagej.ValidityProblem;
 import imagej.module.Module;
@@ -310,7 +311,9 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo {
 
 	@Override
 	public boolean canCancel() {
-		return getAnnotation() == null ? false : getAnnotation().cancelable();
+		final Class<?> commandClass = loadCommandClass();
+		if (commandClass == null) return false;
+		return Cancelable.class.isAssignableFrom(commandClass);
 	}
 
 	@Override
