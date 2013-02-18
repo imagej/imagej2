@@ -1186,7 +1186,7 @@ static inline int suffixcmp(const char *string, int len, const char *suffix)
 	return strncmp(string + len - suffix_len, suffix, suffix_len);
 }
 
-static const char *find_in_path(const char *path)
+static const char *find_in_path(const char *path, int die_if_not_found)
 {
 	const char *p = getenv("PATH");
 	struct string *buffer;
@@ -1207,8 +1207,13 @@ static const char *find_in_path(const char *path)
 	}
 #endif
 
-	if (!p)
-		die("Could not get PATH");
+	if (!p) {
+		if (die_if_not_found)
+			die("Could not get PATH");
+		if (verbose)
+			error("Could not get PATH");
+		return NULL;
+	}
 
 	buffer = string_init(32);
 	for (;;) {
@@ -1216,8 +1221,13 @@ static const char *find_in_path(const char *path)
 		int len = colon ? colon - p : strlen(p);
 		struct stat st;
 
-		if (!len)
-			die("Could not find %s in PATH", path);
+		if (!len) {
+			if (die_if_not_found)
+				die("Could not find %s in PATH", path);
+			if (verbose)
+				error("Could not find '%s' in the PATH", path);
+			return NULL;
+		}
 
 		p += len + !!colon;
 		if (!is_absolute_path(orig_p))
@@ -1248,7 +1258,7 @@ static char *dos_path(const char *path)
 	char *buffer;
 
 	if (!size)
-		path = find_in_path(path);
+		path = find_in_path(path, 1);
 	size = GetShortPathName(path, NULL, 0);
 	if (!size)
 		die ("Could not determine DOS name of %s", orig);
@@ -1556,7 +1566,7 @@ static const char *get_ij_dir(const char *argv0)
 		return buffer;
 
 	if (!last_slash(argv0))
-		buffer = find_in_path(argv0);
+		buffer = find_in_path(argv0, 1);
 	else
 		buffer = make_absolute_path(argv0);
 	argv0 = buffer;
@@ -2388,7 +2398,7 @@ static char *discover_system_java_home(void)
 		return NULL;
 	return strdup(buffer);
 #else
-	const char *java_executable = find_in_path(get_java_command());
+	const char *java_executable = find_in_path(get_java_command(), 0);
 
 	if (java_executable) {
 		char *path = strdup(java_executable);
@@ -4072,11 +4082,8 @@ static int start_ij(void)
 		STARTUPINFO startup_info;
 		PROCESS_INFORMATION process_info;
 		const char *java = file_exists(buffer->buffer) ? buffer->buffer :
-			find_in_path(get_java_command());
+			find_in_path(get_java_command(), 1);
 		struct string *cmdline = string_initf("java");
-
-		if (!java)
-			die("Could not find java.exe in PATH!");
 
 		for (i = 0; i < options.java_options.nr - 1; i++)
 			options.java_options.list[i] =
