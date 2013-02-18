@@ -35,56 +35,54 @@
 
 package imagej.plugin;
 
-import imagej.command.Command;
-import imagej.display.Display;
-import imagej.module.Module;
-import imagej.module.ModulePostprocessor;
-import imagej.module.ModulePreprocessor;
-import imagej.platform.Platform;
-import imagej.tool.Tool;
-import imagej.widget.InputHarvester;
-import imagej.widget.InputWidget;
-
-import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginService;
 import org.scijava.plugin.SciJavaPlugin;
-import org.scijava.service.Service;
 
 /**
- * Top-level interface for plugins. Plugins discoverable at runtime must
- * implement this interface and be annotated with @{@link Plugin}.
+ * Top-level interface for ImageJ plugins.
  * <p>
- * The core types of plugins are as follows:
+ * Plugins discoverable at runtime must implement this interface (usually a
+ * subinterface) and be annotated with @{@link org.scijava.plugin.Plugin}.
+ * </p>
+ * <p>
+ * The core types of ImageJ plugins are as follows:
  * </p>
  * <ul>
- * <li>{@link Command} - plugins that are executable as {@link Module}s. These
+ * <li>{@link imagej.command.Command} - plugins that are executable. These
  * plugins typically perform a discrete operation, and are accessible via the
  * ImageJ menus.</li>
- * <li>{@link Service} - plugins that define new API in a particular area.</li>
- * <li>{@link Tool} - plugins that map user input (e.g., keyboard and mouse
- * actions) to behavior. They are usually rendered as icons in the ImageJ
- * toolbar.</li>
- * <li>{@link Display} - plugins that visualize objects, often used to display
- * module outputs.</li>
- * <li>{@link InputWidget} - plugins that render UI widgets for the
- * {@link InputHarvester} preprocessor.</li>
- * <li>{@link PreprocessorPlugin} - plugins that perform preprocessing on
- * modules. A {@link PreprocessorPlugin} is a discoverable
- * {@link ModulePreprocessor}.</li>
- * <li>{@link PostprocessorPlugin} - plugins that perform postprocessing on
- * modules. A {@link PostprocessorPlugin} is a discoverable
- * {@link ModulePostprocessor}.</li>
- * <li>{@link Platform} - plugins for defining platform-specific behavior.</li>
+ * <li>{@link imagej.tool.Tool} - plugins that map user input (e.g., keyboard
+ * and mouse actions) to behavior. They are usually rendered as icons in the
+ * ImageJ toolbar.</li>
+ * <li>{@link imagej.display.Display} - plugins that visualize objects, often
+ * used to display module outputs.</li>
+ * <li>{@link imagej.widget.InputWidget} - plugins that render UI widgets for
+ * the {@link imagej.widget.InputHarvester} preprocessor.</li>
+ * <li>{@link imagej.plugin.PreprocessorPlugin} - plugins that perform
+ * preprocessing on modules. A preprocessor plugin is a discoverable
+ * {@link imagej.module.ModulePreprocessor}.</li>
+ * <li>{@link imagej.plugin.PostprocessorPlugin} - plugins that perform
+ * postprocessing on modules. A {@link imagej.plugin.PostprocessorPlugin} is a
+ * discoverable {@link imagej.module.ModulePostprocessor}.</li>
+ * <li>{@link imagej.platform.Platform} - plugins for defining platform-specific
+ * behavior.</li>
+ * </ul>
+ * <p>
+ * There are also one very important non-ImageJ-specific plugin type:
+ * </p>
+ * <ul>
+ * <li>{@link org.scijava.service.Service} - plugins that define new API in a
+ * particular area.</li>
  * </ul>
  * <p>
  * What all plugins have in common is that they are declared using an annotation
- * (@{@link Plugin}), and discovered if present on the classpath at runtime.
+ * (@{@link org.scijava.plugin.Plugin}), and discovered if present on the
+ * classpath at runtime.
  * </p>
  * 
  * @author Curtis Rueden
- * @see Plugin
- * @see PluginService
+ * @see org.scijava.plugin.Plugin
+ * @see org.scijava.plugin.PluginService
  */
 public interface ImageJPlugin extends SciJavaPlugin {
-	// top-level marker interface for discovery via SezPoz
+	// NB: Marker interface.
 }
