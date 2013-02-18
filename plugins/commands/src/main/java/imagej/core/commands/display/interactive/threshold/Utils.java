@@ -35,7 +35,7 @@
 
 package imagej.core.commands.display.interactive.threshold;
 
-// Ported from Antti Niemesto's HistThresh Matlab toolbox
+// Ported from Antti Niemisto's HistThresh Matlab toolbox
 //   Relicensed BSD 2-12-13
 
 /**

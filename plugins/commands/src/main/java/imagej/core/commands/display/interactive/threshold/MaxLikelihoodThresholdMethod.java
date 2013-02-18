@@ -38,7 +38,7 @@ package imagej.core.commands.display.interactive.threshold;
 import imagej.plugin.Plugin;
 
 // This plugin code ported from the original MatLab code of the max likelihood
-// threshold method (th_maxlik) as written in Antti Niemesto's 1.03 version of
+// threshold method (th_maxlik) as written in Antti Niemisto's 1.03 version of
 // the HistThresh Toolbox (relicensed BSD 2-12-13)
 
 /**
