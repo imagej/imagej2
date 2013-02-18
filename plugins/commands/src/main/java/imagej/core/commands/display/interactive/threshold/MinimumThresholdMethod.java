@@ -96,13 +96,12 @@ public class MinimumThresholdMethod implements AutoThresholdMethod {
 			}
 		}
 		// The threshold is the minimum between the two peaks.
-		// NB - BDZ updated code to match HistThresh 1.0.3 implementation
+		// NB - BDZ updated code after ij-devel mailing list communication with
+		// Antti Niemisto on 2-18-13 post 1.03 release of toolbox
 		double[] y = iHisto;
-		boolean peakFound = false;
 		for (int k = 1; k < max; k++) {
 			// IJ.log(" "+i+"  "+iHisto[i]);
-			if (y[k - 1] < y[k] && y[k + 1] < y[k]) peakFound = true;
-			if (peakFound && y[k - 1] >= y[k] && y[k + 1] >= y[k]) return k;
+			if (y[k - 1] > y[k] & y[k + 1] >= y[k]) return k;
 		}
 		return -1;
 	}
