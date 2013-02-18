@@ -293,7 +293,7 @@ public class DefaultToolService extends AbstractService implements ToolService
 				log.error("Invalid tool: " + info.getName(), e);
 				continue;
 			}
-			if (info.isAlwaysActive()) {
+			if (info.is(Tool.ALWAYS_ACTIVE)) {
 				alwaysActiveTools.put(info.getName(), tool);
 				alwaysActiveToolList.add(tool);
 			}
@@ -310,7 +310,7 @@ public class DefaultToolService extends AbstractService implements ToolService
 		// NB: An event with a null display came from the main app frame.
 		// We only pass these events on to tools flagged with activeInAppFrame.
 		final PluginInfo<?> toolInfo = tool == null ? null : tool.getInfo();
-		return toolInfo != null && toolInfo.isActiveInAppFrame();
+		return toolInfo != null && toolInfo.is(Tool.ACTIVE_IN_APP_FRAME);
 	}
 
 }

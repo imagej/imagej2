@@ -44,6 +44,7 @@ import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 import imagej.ui.UIService;
 
+import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -52,7 +53,8 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  */
 @Plugin(type = Tool.class, name = "Context Menus",
-	menuRoot = Plugin.CONTEXT_MENU_ROOT, alwaysActive = true)
+	menuRoot = Plugin.CONTEXT_MENU_ROOT, attrs = { @Attr(
+		name = Tool.ALWAYS_ACTIVE) })
 public class ContextMenuHandler extends AbstractTool {
 
 	@Override

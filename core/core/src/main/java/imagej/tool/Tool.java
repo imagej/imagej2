@@ -75,6 +75,22 @@ import org.scijava.plugin.PluginInfo;
  */
 public interface Tool extends ImageJPlugin, Contextual, Prioritized {
 
+	/**
+	 * When true, tool has no button but rather is active all the time.
+	 * 
+	 * @see Plugin#values()
+	 */
+	String ALWAYS_ACTIVE = "alwaysActive";
+
+	/**
+	 * When true, tool receives events when the main ImageJ application frame is
+	 * active. When false, tool only receives events when a display window is
+	 * active.
+	 * 
+	 * @see Plugin#values()
+	 */
+	String ACTIVE_IN_APP_FRAME = "activeInAppFrame";
+
 	/** Gets the info describing the tool. */
 	PluginInfo<? extends Tool> getInfo();
 

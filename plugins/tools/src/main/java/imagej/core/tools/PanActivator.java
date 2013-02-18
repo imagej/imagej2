@@ -41,6 +41,7 @@ import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 import imagej.tool.ToolService;
 
+import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -48,7 +49,8 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Tool.class, name = "Pan Activator", alwaysActive = true)
+@Plugin(type = Tool.class, name = "Pan Activator", attrs = { @Attr(
+	name = Tool.ALWAYS_ACTIVE) })
 public class PanActivator extends AbstractTool {
 
 	/** Key used to activate pan tool. */

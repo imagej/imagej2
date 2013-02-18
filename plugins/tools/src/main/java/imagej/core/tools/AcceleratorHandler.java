@@ -46,6 +46,7 @@ import org.scijava.Priority;
 import org.scijava.input.Accelerator;
 import org.scijava.input.InputModifiers;
 import org.scijava.input.KeyCode;
+import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -68,8 +69,9 @@ import org.scijava.plugin.Plugin;
  * @author Johannes Schindelin
  * @author Curtis Rueden
  */
-@Plugin(type = Tool.class, name = "Keyboard Shortcuts", alwaysActive = true,
-	activeInAppFrame = true, priority = Priority.VERY_LOW_PRIORITY)
+@Plugin(type = Tool.class, name = "Keyboard Shortcuts",
+	priority = Priority.VERY_LOW_PRIORITY, attrs = {
+		@Attr(name = Tool.ALWAYS_ACTIVE), @Attr(name = Tool.ACTIVE_IN_APP_FRAME) })
 public class AcceleratorHandler extends AbstractTool {
 
 	@Override
