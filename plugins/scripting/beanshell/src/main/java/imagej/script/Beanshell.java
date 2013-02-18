@@ -35,12 +35,12 @@
 
 package imagej.script;
 
-import imagej.plugin.Plugin;
-
 import java.util.Arrays;
 import java.util.List;
 
 import javax.script.ScriptEngine;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * An adapter of the Beanshell interpreter to ImageJ's scripting interfaces

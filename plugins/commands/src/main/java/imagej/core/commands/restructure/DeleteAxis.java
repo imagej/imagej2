@@ -35,15 +35,12 @@
 
 package imagej.core.commands.restructure;
 
+import imagej.command.Command;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
 import imagej.module.MutableModuleItem;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import java.util.ArrayList;
 
@@ -52,12 +49,17 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+
 /**
  * Deletes an axis from an input Dataset.
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Axes", mnemonic = 'a'), @Menu(label = "Delete Axis...") },

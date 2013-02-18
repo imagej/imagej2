@@ -35,7 +35,7 @@
 
 package imagej.command;
 
-import imagej.Context;
+import org.scijava.Context;
 
 /**
  * Utility methods for working with {@link Command}s.

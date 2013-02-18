@@ -35,23 +35,25 @@
 
 package imagej.core.commands.axispos;
 
+import imagej.command.Command;
 import imagej.command.DynamicCommand;
 import imagej.data.animation.AnimationService;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import net.imglib2.meta.AxisType;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Sets the position of the current axis to a user-specified value.
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Axes", mnemonic = 'a'),

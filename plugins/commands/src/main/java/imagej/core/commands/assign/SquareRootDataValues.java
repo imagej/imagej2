@@ -35,6 +35,7 @@
 
 package imagej.core.commands.assign;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
@@ -43,13 +44,14 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import net.imglib2.ops.operation.real.unary.RealSqrt;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Fills an output Dataset by taking the square root of the data values of an
@@ -57,7 +59,7 @@ import net.imglib2.type.numeric.real.DoubleType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.PROCESS_LABEL,
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),

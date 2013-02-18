@@ -35,15 +35,17 @@
 
 package imagej.core.commands.assign;
 
+import imagej.command.Command;
 import imagej.core.options.OptionsMisc;
 import imagej.menu.MenuConstants;
 import imagej.options.OptionsService;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import net.imglib2.ops.operation.real.unary.RealDivideConstant;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Fills an output Dataset by dividing an input Dataset by a user defined
@@ -51,13 +53,12 @@ import net.imglib2.type.numeric.real.DoubleType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(
-	menu = {
-		@Menu(label = MenuConstants.PROCESS_LABEL,
-			weight = MenuConstants.PROCESS_WEIGHT,
-			mnemonic = MenuConstants.PROCESS_MNEMONIC),
-		@Menu(label = "Math", mnemonic = 'm'),
-		@Menu(label = "Divide...", weight = 4) }, headless = true)
+@Plugin(type = Command.class, menu = {
+	@Menu(label = MenuConstants.PROCESS_LABEL,
+		weight = MenuConstants.PROCESS_WEIGHT,
+		mnemonic = MenuConstants.PROCESS_MNEMONIC),
+	@Menu(label = "Math", mnemonic = 'm'),
+	@Menu(label = "Divide...", weight = 4) }, headless = true)
 public class DivideDataValuesBy<T extends RealType<T>>
 	extends MathCommand<T,DoubleType>
 {

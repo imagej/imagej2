@@ -44,11 +44,12 @@ import imagej.display.event.window.WinDeiconifiedEvent;
 import imagej.display.event.window.WinEvent;
 import imagej.display.event.window.WinIconifiedEvent;
 import imagej.display.event.window.WinOpenedEvent;
-import imagej.event.EventService;
 
 import java.awt.Window;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+
+import org.scijava.event.EventService;
 
 /**
  * Rebroadcasts AWT {@link WindowEvent}s as ImageJ {@link WinEvent}s.

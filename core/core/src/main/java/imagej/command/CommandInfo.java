@@ -35,21 +35,13 @@
 
 package imagej.command;
 
-import imagej.InstantiableException;
-import imagej.Previewable;
+import imagej.Cancelable;
 import imagej.ValidityProblem;
-import imagej.event.EventService;
-import imagej.module.ItemVisibility;
 import imagej.module.Module;
 import imagej.module.ModuleException;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
 import imagej.module.event.ModulesUpdatedEvent;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.plugin.PluginInfo;
-import imagej.util.ClassUtils;
-import imagej.util.StringMaker;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -59,6 +51,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.scijava.InstantiableException;
+import org.scijava.ItemVisibility;
+import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.util.ClassUtils;
+import org.scijava.util.StringMaker;
 
 /**
  * A collection of metadata about a particular {@link Command}.
@@ -309,7 +310,9 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo {
 
 	@Override
 	public boolean canCancel() {
-		return getAnnotation() == null ? false : getAnnotation().cancelable();
+		final Class<?> commandClass = loadCommandClass();
+		if (commandClass == null) return false;
+		return Cancelable.class.isAssignableFrom(commandClass);
 	}
 
 	@Override

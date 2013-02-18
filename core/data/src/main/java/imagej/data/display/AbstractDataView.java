@@ -35,22 +35,23 @@
 
 package imagej.data.display;
 
-import imagej.AbstractContextual;
-import imagej.Context;
 import imagej.data.Data;
 import imagej.data.Extents;
 import imagej.data.Position;
 import imagej.data.display.event.DataViewDeselectedEvent;
 import imagej.data.display.event.DataViewSelectedEvent;
 import imagej.data.display.event.DataViewSelectionEvent;
-import imagej.event.EventService;
-import imagej.event.ImageJEvent;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import net.imglib2.Localizable;
 import net.imglib2.meta.AxisType;
+
+import org.scijava.AbstractContextual;
+import org.scijava.Context;
+import org.scijava.event.EventService;
+import org.scijava.event.SciJavaEvent;
 
 /**
  * Abstract superclass for {@link DataView}s.
@@ -293,7 +294,7 @@ public abstract class AbstractDataView extends AbstractContextual implements
 		return context.getService(EventService.class);
 	}
 
-	protected void publish(final ImageJEvent event) {
+	protected void publish(final SciJavaEvent event) {
 		final EventService eventService = getEventService();
 		if (eventService == null) return;
 		eventService.publish(event);

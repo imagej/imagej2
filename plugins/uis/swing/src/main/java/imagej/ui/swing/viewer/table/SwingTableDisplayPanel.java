@@ -37,8 +37,6 @@ package imagej.ui.swing.viewer.table;
 
 import imagej.data.table.Table;
 import imagej.data.table.TableDisplay;
-import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.table.TableDisplayPanel;
 
@@ -47,6 +45,9 @@ import java.util.List;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
+
+import org.scijava.event.EventService;
+import org.scijava.event.EventSubscriber;
 
 /**
  * This is the display panel for {@link Table}s.

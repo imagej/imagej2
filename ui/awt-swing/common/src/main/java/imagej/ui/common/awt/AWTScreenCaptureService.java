@@ -38,10 +38,6 @@ package imagej.ui.common.awt;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.display.ScreenCaptureService;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
-import imagej.service.Service;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -54,6 +50,11 @@ import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * An AWT implementation of the ScreenCaptureService interface. Allows one to

@@ -35,12 +35,13 @@
 
 package imagej.core.commands.app;
 
-import imagej.Priority;
 import imagej.platform.AppService;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
-import imagej.service.Service;
+
+import org.scijava.Priority;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * Service that registers application plugins with the {@link AppService}.

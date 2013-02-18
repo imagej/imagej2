@@ -36,17 +36,18 @@
 package imagej.command;
 
 import imagej.module.AbstractModuleItem;
-import imagej.module.ItemIO;
-import imagej.module.ItemVisibility;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
-import imagej.plugin.Parameter;
-import imagej.util.ClassUtils;
-import imagej.util.NumberUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.scijava.ItemIO;
+import org.scijava.ItemVisibility;
+import org.scijava.plugin.Parameter;
+import org.scijava.util.ClassUtils;
+import org.scijava.util.NumberUtils;
 
 /**
  * {@link ModuleItem} implementation describing an input or output of a command.

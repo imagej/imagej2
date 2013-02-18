@@ -35,9 +35,9 @@
 
 package imagej.data.table;
 
-import imagej.util.SizableArrayList;
-
 import java.util.ArrayList;
+
+import org.scijava.util.SizableArrayList;
 
 /**
  * Abstract superclass for {@link Table} implementations.

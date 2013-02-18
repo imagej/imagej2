@@ -39,15 +39,16 @@ import com.github.sbridges.objectinspector.Inspector;
 
 import imagej.command.Command;
 import imagej.data.display.DataView;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * TODO
  * 
  * @author Grant Harris
  */
-@Plugin(menuPath = "Plugins>Debug>Inspect Image", headless = true)
+@Plugin(type = Command.class, menuPath = "Plugins>Debug>Inspect Image", headless = true)
 public class InspectImg implements Command {
 
 	@Parameter

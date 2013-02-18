@@ -36,8 +36,6 @@
 package imagej.data.lut;
 
 import imagej.util.AppUtils;
-import imagej.util.ClassUtils;
-import imagej.util.FileUtils;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -47,6 +45,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import org.scijava.util.ClassUtils;
+import org.scijava.util.FileUtils;
 
 /**
  * The LutFinder determines the locations of all .lut files known to ImageJ.

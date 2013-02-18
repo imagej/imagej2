@@ -43,10 +43,6 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.lut.LutService;
 import imagej.display.DisplayService;
-import imagej.log.LogService;
-import imagej.module.ItemIO;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import java.net.URL;
 
@@ -55,6 +51,11 @@ import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.ItemIO;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * <p>
@@ -67,7 +68,7 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Barry DeZonia
  */
-@Plugin
+@Plugin(type = Command.class)
 public class ApplyLookupTable implements Command {
 
 	// -- Parameters --

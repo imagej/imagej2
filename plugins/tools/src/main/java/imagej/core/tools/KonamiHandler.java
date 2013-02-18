@@ -35,22 +35,25 @@
 
 package imagej.core.tools;
 
-import imagej.Priority;
 import imagej.command.CommandService;
 import imagej.display.event.input.KyPressedEvent;
-import imagej.input.KeyCode;
-import imagej.plugin.Plugin;
-import imagej.thread.ThreadService;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
+
+import org.scijava.Priority;
+import org.scijava.input.KeyCode;
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
+import org.scijava.thread.ThreadService;
 
 /**
  * Oh, the nostalgia!
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Tool.class, name = "Konami", alwaysActive = true,
-	priority = Priority.FIRST_PRIORITY)
+@Plugin(type = Tool.class, name = "Konami",
+	priority = Priority.FIRST_PRIORITY,
+	attrs = { @Attr(name = Tool.ALWAYS_ACTIVE) })
 public class KonamiHandler extends AbstractTool implements Runnable {
 
 	private static final KeyCode[] CODE = { KeyCode.UP, KeyCode.UP, KeyCode.DOWN,

@@ -35,7 +35,6 @@
 
 package imagej.ui.swing.widget;
 
-import imagej.plugin.Plugin;
 import imagej.widget.ChoiceWidget;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
@@ -45,6 +44,8 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * Swing implementation of multiple choice selector widget.

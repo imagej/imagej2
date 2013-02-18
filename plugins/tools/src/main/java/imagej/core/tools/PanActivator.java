@@ -37,17 +37,20 @@ package imagej.core.tools;
 
 import imagej.display.event.input.KyPressedEvent;
 import imagej.display.event.input.KyReleasedEvent;
-import imagej.plugin.Plugin;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 import imagej.tool.ToolService;
+
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
 
 /**
  * Tool for activating the pan tool in response to the space bar.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Tool.class, name = "Pan Activator", alwaysActive = true)
+@Plugin(type = Tool.class, name = "Pan Activator", attrs = { @Attr(
+	name = Tool.ALWAYS_ACTIVE) })
 public class PanActivator extends AbstractTool {
 
 	/** Key used to activate pan tool. */

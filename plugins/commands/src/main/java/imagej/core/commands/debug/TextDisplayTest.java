@@ -36,16 +36,17 @@
 package imagej.core.commands.debug;
 
 import imagej.command.Command;
-import imagej.module.ItemIO;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * A test of text displays.
  * 
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins>Sandbox>TextDisplayTest", headless = true)
+@Plugin(type = Command.class, menuPath = "Plugins>Sandbox>TextDisplayTest", headless = true)
 public class TextDisplayTest implements Command {
 
 	@Parameter(type = ItemIO.OUTPUT)

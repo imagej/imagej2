@@ -36,16 +36,17 @@
 package imagej.core.tools;
 
 import imagej.command.Command;
-import imagej.module.ItemIO;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Implements the configuration code for {@link FloodFillTool}.
  * 
  * @author Barry DeZonia
  */
-@Plugin(label = "Flood Fill Tool")
+@Plugin(type = Command.class, label = "Flood Fill Tool")
 public class FloodFillToolConfig implements Command {
 
 	// -- constants --

@@ -36,9 +36,6 @@
 package imagej.script;
 
 import imagej.command.Command;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.util.FileUtils;
 
 import java.io.File;
 import java.io.FileReader;
@@ -46,13 +43,17 @@ import java.io.FileReader;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.util.FileUtils;
+
 /**
  * Executes a script, using the file extension to choose the appropriate engine.
  * 
  * @author Johannes Schindelin
  * @author Grant Harris
  */
-@Plugin(menuPath = "Plugins>Script>Run Script")
+@Plugin(type = Command.class, menuPath = "Plugins>Script>Run Script")
 public class ScriptPlugin implements Command {
 
 	@Parameter

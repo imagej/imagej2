@@ -39,7 +39,6 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.GeneralPathOverlay;
 import imagej.data.overlay.Overlay;
-import imagej.plugin.Plugin;
 import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
@@ -52,6 +51,7 @@ import net.imglib2.roi.GeneralPathRegionOfInterest;
 
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
+import org.scijava.plugin.Plugin;
 
 /**
  * Swing/JHotDraw implementation of composite area selection tool.

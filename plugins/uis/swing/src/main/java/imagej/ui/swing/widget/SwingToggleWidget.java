@@ -35,7 +35,6 @@
 
 package imagej.ui.swing.widget;
 
-import imagej.plugin.Plugin;
 import imagej.widget.InputWidget;
 import imagej.widget.ToggleWidget;
 import imagej.widget.WidgetModel;
@@ -44,6 +43,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * Swing implementation of boolean toggle widget.

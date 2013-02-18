@@ -35,13 +35,13 @@
 
 package imagej.ui.pivot.widget;
 
-import imagej.plugin.Plugin;
 import imagej.widget.InputWidget;
 import imagej.widget.TextFieldWidget;
 import imagej.widget.WidgetModel;
 
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.TextInput;
+import org.scijava.plugin.Plugin;
 
 /**
  * Pivot implementation of text field widget.

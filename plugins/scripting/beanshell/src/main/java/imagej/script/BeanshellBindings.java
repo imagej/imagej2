@@ -35,6 +35,10 @@
 
 package imagej.script;
 
+import bsh.Interpreter;
+import bsh.NameSpace;
+import bsh.UtilEvalError;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -43,10 +47,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.script.Bindings;
-
-import bsh.Interpreter;
-import bsh.NameSpace;
-import bsh.UtilEvalError;
 
 /**
  * TODO

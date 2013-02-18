@@ -43,12 +43,13 @@ import imagej.display.event.input.MsMovedEvent;
 import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
-import imagej.event.StatusService;
-import imagej.input.MouseCursor;
-import imagej.plugin.PluginInfo;
-import imagej.plugin.SortablePlugin;
 
 import java.text.DecimalFormat;
+
+import org.scijava.event.StatusService;
+import org.scijava.input.MouseCursor;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.SortablePlugin;
 
 /**
  * Abstract base class for ImageJ tools.

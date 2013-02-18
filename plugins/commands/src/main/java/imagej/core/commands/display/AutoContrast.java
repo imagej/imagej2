@@ -35,17 +35,19 @@
 
 package imagej.core.commands.display;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import net.imglib2.Cursor;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Plugin that auto-thresholds each channel.
@@ -63,7 +65,7 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Adam Fraser
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Adjust"),

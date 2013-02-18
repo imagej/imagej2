@@ -35,12 +35,13 @@
 
 package imagej.data.display;
 
-import imagej.event.EventService;
 import imagej.menu.MenuService;
 import imagej.module.ModuleService;
-import imagej.service.Service;
 
 import java.util.List;
+
+import org.scijava.event.EventService;
+import org.scijava.service.Service;
 
 /**
  * Interface for service that keeps track of open windows, including management

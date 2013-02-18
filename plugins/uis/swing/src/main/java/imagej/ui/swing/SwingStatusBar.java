@@ -36,9 +36,6 @@
 package imagej.ui.swing;
 
 import imagej.core.options.OptionsMemoryAndThreads;
-import imagej.event.EventHandler;
-import imagej.event.EventSubscriber;
-import imagej.event.StatusEvent;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.StatusBar;
 import imagej.ui.UIService;
@@ -52,6 +49,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.border.BevelBorder;
+
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventSubscriber;
+import org.scijava.event.StatusEvent;
 
 /**
  * Swing implementation of {@link StatusBar}.

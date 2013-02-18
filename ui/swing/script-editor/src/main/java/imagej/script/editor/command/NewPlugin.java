@@ -36,9 +36,10 @@
 package imagej.script.editor.command;
 
 import imagej.command.Command;
-import imagej.plugin.Parameter;
 import imagej.script.editor.FileFunctions;
 import imagej.script.editor.TextEditor;
+
+import org.scijava.plugin.Parameter;
 
 /**
  * Starts a new plugin in the given script editor.

@@ -37,9 +37,10 @@ package imagej.core.commands.dataset;
 
 import imagej.command.Command;
 import imagej.data.Dataset;
-import imagej.module.ItemIO;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Dummy helper plugin that turns a Dataset into a Display by passing it through
@@ -48,7 +49,7 @@ import imagej.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(headless = true)
+@Plugin(type = Command.class, headless = true)
 public class LoadDataset implements Command {
 
 	@Parameter(type=ItemIO.BOTH)

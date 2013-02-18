@@ -35,10 +35,11 @@
 
 package imagej.core.commands.calculator;
 
-import imagej.plugin.Plugin;
 import net.imglib2.ops.operation.real.binary.RealCopyZeroTransparent;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * Image Calculator plugin for {@link RealCopyZeroTransparent} operation.

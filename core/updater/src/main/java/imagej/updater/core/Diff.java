@@ -37,9 +37,6 @@ package imagej.updater.core;
 
 import imagej.updater.util.ByteCodeAnalyzer;
 import imagej.updater.util.Util;
-import imagej.util.FileUtils;
-import imagej.util.ProcessUtils;
-import imagej.util.IteratorPlus;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -61,6 +58,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import org.scijava.util.FileUtils;
+import org.scijava.util.IteratorPlus;
+import org.scijava.util.ProcessUtils;
 
 /**
  * Show differences between remote and local versions of files.

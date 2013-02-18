@@ -35,7 +35,6 @@
 
 package imagej.ui.swing.widget;
 
-import imagej.plugin.Plugin;
 import imagej.widget.FileWidget;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
@@ -51,6 +50,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * Swing implementation of file selector widget.

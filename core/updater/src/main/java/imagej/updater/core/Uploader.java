@@ -36,11 +36,12 @@
 package imagej.updater.core;
 
 import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Plugin;
 import imagej.updater.util.Progressable;
 
 import java.io.IOException;
 import java.util.List;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * Interface for ImageJ upload mechanisms.

@@ -39,17 +39,19 @@ import imagej.command.Command;
 import imagej.command.CommandService;
 import imagej.io.IOService;
 import imagej.platform.PlatformService;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.script.ScriptService;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * The Script Editor. As plugin.
  * 
  * @author Johannes Schindelin
  */
-@Plugin(menu = { @Menu(label = "File"), @Menu(label = "New"),
+@Plugin(type = Command.class, menu = { @Menu(label = "File"),
+	@Menu(label = "New"),
 	@Menu(label = "Script...", accelerator = "open_bracket") })
 public class ScriptEditor implements Command {
 

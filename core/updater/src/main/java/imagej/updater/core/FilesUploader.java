@@ -35,8 +35,6 @@
 
 package imagej.updater.core;
 
-import imagej.Context;
-import imagej.log.LogService;
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Progress;
 import imagej.updater.util.UpdaterUserInterface;
@@ -50,6 +48,9 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import org.scijava.Context;
+import org.scijava.log.LogService;
 
 /**
  * This class is responsible for writing updates to server, upon given the

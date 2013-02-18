@@ -35,9 +35,11 @@
 
 package imagej.module;
 
-import imagej.BasicDetails;
-
 import java.util.List;
+
+import org.scijava.BasicDetails;
+import org.scijava.ItemIO;
+import org.scijava.ItemVisibility;
 
 /**
  * A ModuleItem represents metadata about one input or output of a module.

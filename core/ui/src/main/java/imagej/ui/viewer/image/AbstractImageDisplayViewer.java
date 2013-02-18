@@ -48,13 +48,14 @@ import imagej.data.event.DatasetUpdatedEvent;
 import imagej.display.Display;
 import imagej.display.event.DisplayUpdatedEvent;
 import imagej.display.event.window.WinActivatedEvent;
-import imagej.event.EventHandler;
 import imagej.tool.ToolService;
 import imagej.ui.viewer.AbstractDisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.util.UnitUtils;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+
+import org.scijava.event.EventHandler;
 
 /**
  * The AbstractImageDisplayViewer implements the UI-independent elements of an

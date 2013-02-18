@@ -35,8 +35,6 @@
 
 package imagej.ui.swing.widget;
 
-import imagej.plugin.Plugin;
-import imagej.util.NumberUtils;
 import imagej.widget.InputWidget;
 import imagej.widget.NumberWidget;
 import imagej.widget.WidgetModel;
@@ -58,6 +56,9 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import org.scijava.plugin.Plugin;
+import org.scijava.util.NumberUtils;
 
 /**
  * Swing implementation of number chooser widget.

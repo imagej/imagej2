@@ -36,7 +36,8 @@
 package imagej.display.event;
 
 import imagej.display.Display;
-import imagej.object.event.ObjectCreatedEvent;
+
+import org.scijava.object.event.ObjectCreatedEvent;
 
 /**
  * An event indicating a new display has been created.

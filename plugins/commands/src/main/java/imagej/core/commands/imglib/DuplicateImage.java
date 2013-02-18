@@ -35,6 +35,7 @@
 
 package imagej.core.commands.imglib;
 
+import imagej.command.Command;
 import imagej.command.DynamicCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.data.sampler.AxisSubrange;
@@ -42,15 +43,16 @@ import imagej.data.sampler.SamplerService;
 import imagej.data.sampler.SamplingDefinition;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import net.imglib2.meta.AxisType;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Duplicates data from one input display to an output display. The planes to be
@@ -59,7 +61,7 @@ import net.imglib2.meta.AxisType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Duplicate", accelerator = "shift control D") },

@@ -35,9 +35,9 @@
 
 package imagej.data.display;
 
-import imagej.event.EventService;
-import imagej.input.KeyCode;
-import imagej.service.Service;
+import org.scijava.event.EventService;
+import org.scijava.input.KeyCode;
+import org.scijava.service.Service;
 
 /**
  * Interface for service that tracks the current keyboard status.

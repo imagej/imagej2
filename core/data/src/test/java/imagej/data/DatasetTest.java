@@ -38,7 +38,6 @@ package imagej.data;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
-import imagej.Context;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
@@ -49,6 +48,7 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.IntType;
 
 import org.junit.Test;
+import org.scijava.Context;
 
 /**
  * Unit tests for {@link Dataset}.

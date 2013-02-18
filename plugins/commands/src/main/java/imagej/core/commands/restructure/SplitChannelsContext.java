@@ -35,20 +35,22 @@
 
 package imagej.core.commands.restructure;
 
+import imagej.command.Command;
 import imagej.command.CommandService;
 import imagej.command.ContextCommand;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import java.util.HashMap;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Context menu command for Split Channels legacy command.
  * 
  * @author Curtis Rueden
  */
-@Plugin(menu = { @Menu(label = "Split Channels", mnemonic = 's') },
+@Plugin(type = Command.class, menu = { @Menu(label = "Split Channels", mnemonic = 's') },
 	menuRoot = Plugin.CONTEXT_MENU_ROOT, headless = true)
 public class SplitChannelsContext extends ContextCommand {
 

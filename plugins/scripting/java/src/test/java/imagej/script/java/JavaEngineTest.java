@@ -37,8 +37,6 @@ package imagej.script.java;
 
 import static org.junit.Assert.assertTrue;
 
-import imagej.util.FileUtils;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -50,6 +48,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 import org.junit.Test;
+import org.scijava.util.FileUtils;
 
 /**
  * TODO

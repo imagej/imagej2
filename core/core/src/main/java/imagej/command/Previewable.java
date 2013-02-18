@@ -33,46 +33,22 @@
  * #L%
  */
 
-package imagej.service;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import imagej.Context;
-import imagej.command.DefaultCommandService;
-import imagej.event.DefaultEventService;
-import imagej.log.StderrLogService;
-import imagej.module.DefaultModuleService;
-import imagej.platform.DefaultAppService;
-import imagej.platform.DefaultPlatformService;
-import imagej.platform.PlatformService;
-import imagej.plugin.DefaultPluginService;
-import imagej.thread.DefaultThreadService;
-
-import java.util.List;
-
-import org.junit.Test;
+package imagej.command;
 
 /**
- * Tests {@link ServiceIndex}.
+ * A operation whose results can be previewed.
  * 
  * @author Curtis Rueden
  */
-public class ServiceIndexTest {
+public interface Previewable {
 
-	@Test
-	public void testGetAll() {
-		final Context context = new Context(PlatformService.class);
-		final ServiceIndex serviceIndex = context.getServiceIndex();
-		final List<Service> all = serviceIndex.getAll();
-		assertEquals(8, all.size());
-		assertSame(DefaultEventService.class, all.get(0).getClass());
-		assertSame(DefaultCommandService.class, all.get(1).getClass());
-		assertSame(DefaultModuleService.class, all.get(2).getClass());
-		assertSame(DefaultAppService.class, all.get(3).getClass());
-		assertSame(DefaultPlatformService.class, all.get(4).getClass());
-		assertSame(DefaultPluginService.class, all.get(5).getClass());
-		assertSame(DefaultThreadService.class, all.get(6).getClass());
-		assertSame(StderrLogService.class, all.get(7).getClass());
-	}
+	/** Computes a preview of the operation's results. */
+	void preview();
+
+	/**
+	 * Does whatever is necessary upon cancelation to reset things back to before
+	 * the operation was executed.
+	 */
+	void cancel();
 
 }

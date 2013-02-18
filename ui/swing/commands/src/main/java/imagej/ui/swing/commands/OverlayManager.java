@@ -35,19 +35,21 @@
 
 package imagej.ui.swing.commands;
 
-import imagej.Context;
+import imagej.command.Command;
 import imagej.command.ContextCommand;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.ui.swing.SwingOverlayManager;
+
+import org.scijava.Context;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Plugin to pop up the {@link SwingOverlayManager}.
  * 
  * @author Adam Fraser
  */
-@Plugin(menu = { @Menu(label = "Image"), @Menu(label = "Overlay"),
+@Plugin(type = Command.class, menu = { @Menu(label = "Image"), @Menu(label = "Overlay"),
 	@Menu(label = "Overlay Manager") })
 public class OverlayManager extends ContextCommand {
 

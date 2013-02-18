@@ -40,14 +40,12 @@ import com.apple.eawt.Application;
 import imagej.command.Command;
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
-import imagej.event.EventService;
 import imagej.module.ModuleInfo;
 import imagej.module.event.ModulesUpdatedEvent;
 import imagej.platform.AbstractPlatform;
 import imagej.platform.AppService;
 import imagej.platform.Platform;
 import imagej.platform.PlatformService;
-import imagej.plugin.Plugin;
 
 import java.io.IOException;
 import java.net.URL;
@@ -55,6 +53,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JMenuBar;
+
+import org.scijava.event.EventService;
+import org.scijava.plugin.Plugin;
 
 /**
  * A platform implementation for handling Mac OS X platform issues:

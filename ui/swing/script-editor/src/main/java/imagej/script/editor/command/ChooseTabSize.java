@@ -37,8 +37,9 @@ package imagej.script.editor.command;
 
 import imagej.command.DynamicCommand;
 import imagej.module.DefaultModuleItem;
-import imagej.plugin.Parameter;
 import imagej.script.editor.TextEditor;
+
+import org.scijava.plugin.Parameter;
 
 /**
  * Sets the tab size in the current editor tab.

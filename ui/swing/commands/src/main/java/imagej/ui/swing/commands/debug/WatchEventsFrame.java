@@ -35,11 +35,6 @@
 
 package imagej.ui.swing.commands.debug;
 
-import imagej.event.EventDetails;
-import imagej.event.EventHistory;
-import imagej.event.ImageJEvent;
-import imagej.log.LogService;
-import imagej.util.IteratorPlus;
 import imagej.util.swing.tree.CheckBoxNodeData;
 import imagej.util.swing.tree.CheckBoxNodeEditor;
 import imagej.util.swing.tree.CheckBoxNodeRenderer;
@@ -72,6 +67,12 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import org.scijava.event.EventDetails;
+import org.scijava.event.EventHistory;
+import org.scijava.event.SciJavaEvent;
+import org.scijava.log.LogService;
+import org.scijava.util.IteratorPlus;
+
 /**
  * Swing-specific window for event watcher plugin.
  * 
@@ -85,12 +86,12 @@ public class WatchEventsFrame extends JFrame implements ActionListener,
 	private final LogService log;
 
 	/** Data structure storing event types that should be filtered out. */
-	private final HashSet<Class<? extends ImageJEvent>> filtered =
-		new HashSet<Class<? extends ImageJEvent>>();
+	private final HashSet<Class<? extends SciJavaEvent>> filtered =
+		new HashSet<Class<? extends SciJavaEvent>>();
 
 	/** Data structure storing event types that should be highlighted in bold. */
-	private final HashSet<Class<? extends ImageJEvent>> selected =
-		new HashSet<Class<? extends ImageJEvent>>();
+	private final HashSet<Class<? extends SciJavaEvent>> selected =
+		new HashSet<Class<? extends SciJavaEvent>>();
 
 	private final DefaultTreeModel treeModel;
 	private final DefaultMutableTreeNode root;
@@ -109,7 +110,7 @@ public class WatchEventsFrame extends JFrame implements ActionListener,
 		this.log = log;
 
 		// create tree
-		root = create(ImageJEvent.class);
+		root = create(SciJavaEvent.class);
 		treeModel = new DefaultTreeModel(root);
 		tree = new JTree(treeModel);
 		tree.setCellRenderer(new CheckBoxNodeRenderer());
@@ -157,7 +158,7 @@ public class WatchEventsFrame extends JFrame implements ActionListener,
 
 	/** Appends the given event details to the text pane. Efficient. */
 	public void append(final EventDetails details) {
-		final Class<? extends ImageJEvent> eventType = details.getEventType();
+		final Class<? extends SciJavaEvent> eventType = details.getEventType();
 		final DefaultMutableTreeNode node = findOrCreate(eventType);
 		if (!isChecked(node)) return; // skip disabled event types
 		append(details.toHTML(selected.contains(eventType)));
@@ -293,15 +294,15 @@ public class WatchEventsFrame extends JFrame implements ActionListener,
 
 	/** Gets a tree node for the given type of event, creating it if necessary. */
 	private DefaultMutableTreeNode findOrCreate(
-		final Class<? extends ImageJEvent> eventType)
+		final Class<? extends SciJavaEvent> eventType)
 	{
 		if (eventType == null) return null;
-		if (eventType == ImageJEvent.class) {
+		if (eventType == SciJavaEvent.class) {
 			return root;
 		}
 		@SuppressWarnings("unchecked")
-		final Class<? extends ImageJEvent> superclass =
-			(Class<? extends ImageJEvent>) eventType.getSuperclass();
+		final Class<? extends SciJavaEvent> superclass =
+			(Class<? extends SciJavaEvent>) eventType.getSuperclass();
 		final DefaultMutableTreeNode parentNode = findOrCreate(superclass);
 
 		for (final DefaultMutableTreeNode child : children(parentNode)) {
@@ -324,7 +325,7 @@ public class WatchEventsFrame extends JFrame implements ActionListener,
 
 	/** Creates a tree node for the given type of event. */
 	private DefaultMutableTreeNode create(
-		final Class<? extends ImageJEvent> eventType)
+		final Class<? extends SciJavaEvent> eventType)
 	{
 		final String label = eventType.getName();
 		final CheckBoxNodeData data = new CheckBoxNodeData(label, true);
@@ -346,7 +347,7 @@ public class WatchEventsFrame extends JFrame implements ActionListener,
 	}
 
 	/** Extracts the event type associated with a given tree node. */
-	private Class<? extends ImageJEvent> getEventType(
+	private Class<? extends SciJavaEvent> getEventType(
 		final DefaultMutableTreeNode node)
 	{
 		final CheckBoxNodeData data = getData(node);
@@ -354,7 +355,7 @@ public class WatchEventsFrame extends JFrame implements ActionListener,
 		final String className = data.getText();
 		try {
 			@SuppressWarnings({ "rawtypes", "unchecked" })
-			final Class<? extends ImageJEvent> eventType =
+			final Class<? extends SciJavaEvent> eventType =
 				(Class) Class.forName(className);
 			return eventType;
 		}

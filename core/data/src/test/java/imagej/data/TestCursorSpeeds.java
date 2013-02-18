@@ -36,7 +36,6 @@
 package imagej.data;
 
 import static org.junit.Assert.assertTrue;
-import imagej.Context;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
@@ -46,6 +45,7 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 import org.junit.Test;
+import org.scijava.Context;
 
 /**
  * Unit tests for ImgLib2 cursor performance.

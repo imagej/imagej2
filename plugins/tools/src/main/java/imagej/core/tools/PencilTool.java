@@ -36,8 +36,9 @@
 package imagej.core.tools;
 
 import imagej.command.CommandService;
-import imagej.plugin.Plugin;
 import imagej.tool.Tool;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * Tool implementation for pencil.

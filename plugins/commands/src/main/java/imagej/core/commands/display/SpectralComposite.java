@@ -35,15 +35,17 @@
 
 package imagej.core.commands.display;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.display.DatasetView;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.util.ColorRGB;
 import net.imglib2.display.ColorTable8;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Creates a series of lookup tables according to the given range of
@@ -51,7 +53,7 @@ import net.imglib2.display.ColorTable8;
  * 
  * @author Curtis Rueden
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Color"),
 	@Menu(label = "Spectral Composite...") })

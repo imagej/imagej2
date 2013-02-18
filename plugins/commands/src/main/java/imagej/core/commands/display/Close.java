@@ -35,20 +35,22 @@
 
 package imagej.core.commands.display;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.display.Display;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Closes the active display.
  * 
  * @author Curtis Rueden
  */
-@Plugin(
+@Plugin(type = Command.class,
 	menu = {
 		@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 			mnemonic = MenuConstants.FILE_MNEMONIC),

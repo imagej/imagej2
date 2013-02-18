@@ -45,10 +45,11 @@ import imagej.data.options.OptionsChannels;
 import imagej.display.event.input.MsButtonEvent;
 import imagej.display.event.input.MsClickedEvent;
 import imagej.options.OptionsService;
-import imagej.plugin.Plugin;
 import imagej.render.RenderingService;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * Tool implementation for flood fill.

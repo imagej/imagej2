@@ -35,13 +35,10 @@
 
 package imagej.data.overlay;
 
-import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.OverlayUpdatedEvent;
 import imagej.display.Displayable;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 import net.imglib2.img.ImgPlus;
@@ -59,6 +56,10 @@ import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.ops.pointset.PointSetRegionOfInterest;
 import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.Context;
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
 
 /**
  * A {@link ThresholdOverlay} is an {@link Overlay} that represents the set of

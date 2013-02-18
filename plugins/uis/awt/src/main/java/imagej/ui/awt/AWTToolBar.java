@@ -35,8 +35,6 @@
 
 package imagej.ui.awt;
 
-import imagej.InstantiableException;
-import imagej.plugin.PluginInfo;
 import imagej.tool.Tool;
 import imagej.tool.ToolService;
 import imagej.ui.ToolBar;
@@ -56,6 +54,9 @@ import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.scijava.InstantiableException;
+import org.scijava.plugin.PluginInfo;
 
 /**
  * Button bar with selectable tools, similar to ImageJ 1.x.

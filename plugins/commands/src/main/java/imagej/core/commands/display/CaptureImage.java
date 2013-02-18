@@ -35,19 +35,21 @@
 
 package imagej.core.commands.display;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ScreenCaptureService;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.ui.UIService;
 import imagej.ui.viewer.DisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 // NOTE: the following TODO may be invalid
 // TODO - write code that captures part of the screen as a merged color Dataset.
@@ -80,7 +82,7 @@ import imagej.ui.viewer.DisplayWindow;
  * 
  * @author Barry DeZonia
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.PLUGINS_LABEL,
 			weight = MenuConstants.PLUGINS_WEIGHT,
 			mnemonic = MenuConstants.PLUGINS_MNEMONIC),

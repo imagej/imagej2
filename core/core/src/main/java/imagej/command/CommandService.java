@@ -35,20 +35,21 @@
 
 package imagej.command;
 
-import imagej.event.EventService;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
 import imagej.plugin.ImageJPlugin;
-import imagej.plugin.PluginInfo;
-import imagej.plugin.PluginService;
 import imagej.plugin.PostprocessorPlugin;
 import imagej.plugin.PreprocessorPlugin;
-import imagej.service.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
+
+import org.scijava.event.EventService;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
+import org.scijava.service.Service;
 
 /**
  * Interface for service that keeps track of available commands.

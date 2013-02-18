@@ -36,7 +36,8 @@
 package imagej.display.event.input;
 
 import imagej.display.Display;
-import imagej.input.InputModifiers;
+
+import org.scijava.input.InputModifiers;
 
 /**
  * An event indicating a mouse wheel was moved in a display.

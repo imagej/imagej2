@@ -35,8 +35,6 @@
 
 package imagej.data.overlay;
 
-import imagej.Context;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -60,6 +58,8 @@ import net.imglib2.meta.Axes;
 import net.imglib2.roi.BinaryMaskRegionOfInterest;
 import net.imglib2.sampler.special.ConstantRandomAccessible;
 import net.imglib2.type.logic.BitType;
+
+import org.scijava.Context;
 
 /**
  * TODO

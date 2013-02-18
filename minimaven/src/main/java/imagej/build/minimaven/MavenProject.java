@@ -36,7 +36,6 @@
 package imagej.build.minimaven;
 
 import imagej.build.minimaven.JavaCompiler.CompileError;
-import imagej.util.FileUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -61,6 +60,7 @@ import java.util.zip.ZipEntry;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.scijava.util.FileUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;

@@ -35,10 +35,11 @@
 
 package imagej.command;
 
-import imagej.AbstractContextual;
 import imagej.Cancelable;
-import imagej.Context;
 import imagej.plugin.ServicePreprocessor;
+
+import org.scijava.AbstractContextual;
+import org.scijava.Context;
 
 /**
  * A command that knows its context. Its service parameters are automatically

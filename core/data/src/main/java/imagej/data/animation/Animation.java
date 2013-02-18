@@ -36,9 +36,10 @@
 package imagej.data.animation;
 
 import imagej.data.display.ImageDisplay;
-import imagej.log.LogService;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+
+import org.scijava.log.LogService;
 
 /**
  * The Animation class takes care of running an animation along an axis.

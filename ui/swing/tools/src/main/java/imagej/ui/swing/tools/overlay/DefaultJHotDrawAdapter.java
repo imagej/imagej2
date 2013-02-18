@@ -35,11 +35,10 @@
 
 package imagej.ui.swing.tools.overlay;
 
-import imagej.Priority;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
-import imagej.plugin.Plugin;
+import imagej.tool.Tool;
 import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
@@ -64,6 +63,9 @@ import net.imglib2.type.logic.BitType;
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.ImageFigure;
+import org.scijava.Priority;
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
 
 /**
  * The default adapter handles any kind of overlay. It uses the fill color and
@@ -73,8 +75,11 @@ import org.jhotdraw.draw.ImageFigure;
  * @author Lee Kamentsky
  */
 @Plugin(type = JHotDrawAdapter.class,
-	priority = DefaultJHotDrawAdapter.PRIORITY, alwaysActive = true)
-public class DefaultJHotDrawAdapter extends AbstractJHotDrawAdapter<Overlay, ImageFigure> {
+	priority = DefaultJHotDrawAdapter.PRIORITY, attrs = { @Attr(
+		name = Tool.ALWAYS_ACTIVE) })
+public class DefaultJHotDrawAdapter extends
+	AbstractJHotDrawAdapter<Overlay, ImageFigure>
+{
 
 	public static final double PRIORITY = Priority.VERY_LOW_PRIORITY;
 

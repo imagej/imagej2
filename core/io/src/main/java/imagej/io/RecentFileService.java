@@ -35,9 +35,9 @@
 
 package imagej.io;
 
-import imagej.service.Service;
-
 import java.util.List;
+
+import org.scijava.service.Service;
 
 /**
  * Interface for service that manags the Recently Used Files menu.

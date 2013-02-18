@@ -39,11 +39,11 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.display.Display;
-import imagej.plugin.Plugin;
 import imagej.tool.Tool;
 import imagej.util.RealCoords;
 
 import org.jhotdraw.draw.Figure;
+import org.scijava.plugin.Plugin;
 
 /**
  * Interface for JHotDraw-based tools. These adapters maintain a bidirectional

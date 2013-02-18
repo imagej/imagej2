@@ -35,10 +35,12 @@
 
 package imagej.core.commands.app;
 
+import imagej.command.Command;
 import imagej.command.UnimplementedCommand;
 import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Plugin;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Plugin;
 
 // TODO - replace the kind of functionality that IJ1's Create Shortcut command
 // has. Since we have our own menu handling code we need this functionality in
@@ -47,11 +49,12 @@ import imagej.plugin.Plugin;
 /**
  * @author Barry DeZonia
  */
-@Plugin(iconPath = "/icons/commands/bricks.png", menu = {
-	@Menu(label = MenuConstants.PLUGINS_LABEL,
-		weight = MenuConstants.PLUGINS_WEIGHT,
-		mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Shortcuts"),
-	@Menu(label = "Create Shortcut...", weight = 2) })
+@Plugin(type = Command.class, iconPath = "/icons/commands/bricks.png",
+	menu = {
+		@Menu(label = MenuConstants.PLUGINS_LABEL,
+			weight = MenuConstants.PLUGINS_WEIGHT,
+			mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Shortcuts"),
+		@Menu(label = "Create Shortcut...", weight = 2) })
 public class CreateShortcut extends UnimplementedCommand {
 	// TODO
 }

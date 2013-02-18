@@ -35,21 +35,25 @@
 
 package imagej.core.commands.overlay;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Plugin;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Plugin;
 
 /**
  * TODO
  * 
  * @author Barry DeZonia
  */
-@Plugin(iconPath = "/icons/commands/bricks.png", menu = {
-	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Overlay", mnemonic = 'o'),
-	@Menu(label = "Labels...", mnemonic = 'l', weight = 6) })
+@Plugin(type = Command.class, iconPath = "/icons/commands/bricks.png",
+	menu = {
+		@Menu(label = MenuConstants.IMAGE_LABEL,
+			weight = MenuConstants.IMAGE_WEIGHT,
+			mnemonic = MenuConstants.IMAGE_MNEMONIC),
+		@Menu(label = "Overlay", mnemonic = 'o'),
+		@Menu(label = "Labels...", mnemonic = 'l', weight = 6) })
 public class OverlayLabels extends ContextCommand {
 
 	@Override

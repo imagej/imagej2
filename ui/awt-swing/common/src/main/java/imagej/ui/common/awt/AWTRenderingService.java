@@ -35,11 +35,12 @@
 
 package imagej.ui.common.awt;
 
-import imagej.plugin.Plugin;
 import imagej.render.RenderingService;
 import imagej.render.TextRenderer;
-import imagej.service.AbstractService;
-import imagej.service.Service;
+
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * AWT-based implementation of text rendering service.

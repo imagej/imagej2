@@ -35,11 +35,11 @@
 
 package imagej.tool;
 
-import imagej.event.EventService;
-import imagej.plugin.PluginService;
-import imagej.service.Service;
-
 import java.util.List;
+
+import org.scijava.event.EventService;
+import org.scijava.plugin.PluginService;
+import org.scijava.service.Service;
 
 /**
  * Interface for service that tracks available tools.

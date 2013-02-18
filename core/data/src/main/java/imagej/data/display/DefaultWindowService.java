@@ -35,29 +35,30 @@
 
 package imagej.data.display;
 
-import imagej.MenuEntry;
-import imagej.MenuPath;
 import imagej.command.CommandInfo;
 import imagej.display.Display;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
 import imagej.menu.MenuConstants;
 import imagej.menu.MenuService;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
-import imagej.service.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.scijava.MenuEntry;
+import org.scijava.MenuPath;
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 //TODO - DefaultRecentFileService, DefaultWindowService, and DefaultLutService
 //all build menus dynamically (see createInfo()). We may be able to abstract a

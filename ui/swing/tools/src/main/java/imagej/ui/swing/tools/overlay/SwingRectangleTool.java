@@ -39,7 +39,6 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.RectangleOverlay;
-import imagej.plugin.Plugin;
 import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
@@ -52,6 +51,7 @@ import java.awt.geom.Rectangle2D;
 
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.RectangleFigure;
+import org.scijava.plugin.Plugin;
 
 /**
  * Swing/JHotDraw implementation of rectangle tool.

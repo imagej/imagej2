@@ -41,9 +41,10 @@ import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.DisplayUpdatedEvent;
 import imagej.display.event.DisplayUpdatedEvent.DisplayUpdateLevel;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.plugin.SortablePlugin;
+
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.plugin.SortablePlugin;
 
 /**
  * The AbstractDisplayViewer provides some basic generic implementations for a

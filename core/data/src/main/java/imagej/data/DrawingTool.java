@@ -40,7 +40,6 @@ import imagej.render.TextRenderer;
 import imagej.render.TextRenderer.FontFamily;
 import imagej.render.TextRenderer.FontStyle;
 import imagej.render.TextRenderer.TextJustification;
-
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;

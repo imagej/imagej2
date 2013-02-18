@@ -39,6 +39,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.scijava.ItemIO;
+import org.scijava.ItemVisibility;
+
 /**
  * Default {@link ModuleItem} implementation, for use with custom {@link Module}
  * implementations.

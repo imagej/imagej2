@@ -35,9 +35,10 @@
 
 package imagej.core.tools;
 
-import imagej.plugin.Plugin;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * TODO

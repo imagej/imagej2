@@ -37,7 +37,8 @@ package imagej.data.display;
 
 import imagej.data.Data;
 import imagej.data.overlay.Overlay;
-import imagej.plugin.Plugin;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * A view into an {@link Overlay}, for use with a {@link ImageDisplay}.

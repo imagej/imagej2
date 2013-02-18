@@ -35,24 +35,25 @@
 
 package imagej.platform;
 
-import imagej.InstantiableException;
 import imagej.command.CommandService;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.log.LogService;
 import imagej.platform.event.AppMenusCreatedEvent;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.plugin.PluginInfo;
-import imagej.plugin.PluginService;
-import imagej.service.AbstractService;
-import imagej.service.Service;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.scijava.InstantiableException;
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * Default service for handling platform-specific deployment issues.

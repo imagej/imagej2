@@ -41,7 +41,6 @@ import ij.ImagePlus;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
-import imagej.Context;
 import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.BinaryMaskOverlay;
 import imagej.data.overlay.Overlay;
@@ -62,6 +61,7 @@ import net.imglib2.type.logic.BitType;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+import org.scijava.Context;
 
 /**
  * Unit tests for {@link OverlayHarmonizer}.

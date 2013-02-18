@@ -35,13 +35,13 @@
 
 package imagej.module;
 
-import imagej.input.Accelerator;
-import imagej.service.Service;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
+
+import org.scijava.input.Accelerator;
+import org.scijava.service.Service;
 
 /**
  * Interface for service that tracks and executes available modules.
@@ -66,7 +66,7 @@ import java.util.concurrent.Future;
  * 
  * @author Curtis Rueden
  * @see Module
- * @see imagej.plugin.PluginService
+ * @see org.scijava.plugin.PluginService
  */
 public interface ModuleService extends Service {
 
@@ -99,9 +99,9 @@ public interface ModuleService extends Service {
 	/**
 	 * Creates an instance of the given module.
 	 * <p>
-	 * If the module implements the {@link imagej.Contextual} interface, the
+	 * If the module implements the {@link org.scijava.Contextual} interface, the
 	 * appropriate context is injected. Similarly, if the module implements the
-	 * {@link imagej.Prioritized} interface, the appropriate priority is injected.
+	 * {@link org.scijava.Prioritized} interface, the appropriate priority is injected.
 	 * </p>
 	 * <p>
 	 * Note that in the case of commands, this method does <em>not</em> do any

@@ -35,7 +35,7 @@
 
 package imagej.core.commands.app;
 
-import imagej.Context;
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
@@ -44,18 +44,12 @@ import imagej.data.DrawingTool;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.io.IOService;
-import imagej.log.LogService;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.render.RenderingService;
 import imagej.render.TextRenderer.TextJustification;
 import imagej.util.AppUtils;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
-import imagej.util.Manifest;
 import imagej.util.MersenneTwisterFast;
 
 import java.io.BufferedReader;
@@ -74,6 +68,14 @@ import net.imglib2.io.ImgIOException;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
+import org.scijava.Context;
+import org.scijava.ItemIO;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.util.Manifest;
+
 // TODO
 //   Have imageX.ext image file and imageX.ext.txt metadata files
 //     Metadata file lists some useful info
@@ -89,7 +91,7 @@ import net.imglib2.meta.AxisType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(label = "About ImageJ...",
+@Plugin(type = Command.class, label = "About ImageJ...",
 	iconPath = "/icons/commands/information.png", menu = {
 		@Menu(label = MenuConstants.HELP_LABEL,
 			weight = MenuConstants.HELP_WEIGHT,

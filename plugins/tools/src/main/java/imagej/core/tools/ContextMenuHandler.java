@@ -40,10 +40,12 @@ import imagej.display.event.input.MsButtonEvent;
 import imagej.display.event.input.MsClickedEvent;
 import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
-import imagej.plugin.Plugin;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 import imagej.ui.UIService;
+
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
 
 /**
  * Handles display of general-purpose context menu (e.g., on right mouse click).
@@ -51,7 +53,8 @@ import imagej.ui.UIService;
  * @author Curtis Rueden
  */
 @Plugin(type = Tool.class, name = "Context Menus",
-	menuRoot = Plugin.CONTEXT_MENU_ROOT, alwaysActive = true)
+	menuRoot = Plugin.CONTEXT_MENU_ROOT, attrs = { @Attr(
+		name = Tool.ALWAYS_ACTIVE) })
 public class ContextMenuHandler extends AbstractTool {
 
 	@Override

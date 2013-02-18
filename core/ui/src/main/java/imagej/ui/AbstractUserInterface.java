@@ -35,13 +35,7 @@
 
 package imagej.ui;
 
-import imagej.InstantiableException;
 import imagej.display.Display;
-import imagej.event.EventService;
-import imagej.event.StatusService;
-import imagej.log.LogService;
-import imagej.plugin.PluginInfo;
-import imagej.plugin.SortablePlugin;
 import imagej.ui.viewer.DisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.updater.core.UpToDate;
@@ -49,6 +43,13 @@ import imagej.updater.ui.UpdatesAvailable;
 import imagej.util.Prefs;
 
 import java.util.List;
+
+import org.scijava.InstantiableException;
+import org.scijava.event.EventService;
+import org.scijava.event.StatusService;
+import org.scijava.log.LogService;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.SortablePlugin;
 
 /**
  * Abstract superclass for {@link UserInterface} implementations.

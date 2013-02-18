@@ -40,8 +40,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import imagej.Context;
-import imagej.MenuPath;
 import imagej.module.DefaultModuleInfo;
 import imagej.module.ModuleInfo;
 
@@ -49,6 +47,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.scijava.Context;
+import org.scijava.MenuPath;
 
 /**
  * Tests {@link ShadowMenu}.

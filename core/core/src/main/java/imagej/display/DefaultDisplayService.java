@@ -35,26 +35,27 @@
 
 package imagej.display;
 
-import imagej.InstantiableException;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.window.WinActivatedEvent;
 import imagej.display.event.window.WinClosedEvent;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.log.LogService;
-import imagej.object.ObjectService;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.plugin.PluginInfo;
-import imagej.plugin.PluginService;
-import imagej.service.AbstractService;
-import imagej.service.Service;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.scijava.InstantiableException;
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.log.LogService;
+import org.scijava.object.ObjectService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * Default service for working with {@link Display}s.

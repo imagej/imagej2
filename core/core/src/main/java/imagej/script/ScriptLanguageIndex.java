@@ -35,8 +35,6 @@
 
 package imagej.script;
 
-import imagej.util.FileUtils;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,6 +42,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.script.ScriptEngineFactory;
+
+import org.scijava.util.FileUtils;
 
 /**
  * Data structure for managing registered script languages.

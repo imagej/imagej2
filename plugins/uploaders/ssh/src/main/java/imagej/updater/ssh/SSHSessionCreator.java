@@ -41,7 +41,6 @@ import com.jcraft.jsch.ProxyHTTP;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 
-import imagej.log.LogService;
 import imagej.updater.core.FilesUploader;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
@@ -49,6 +48,8 @@ import imagej.updater.util.Util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+
+import org.scijava.log.LogService;
 
 /**
  * Start an SSH connection.

@@ -35,11 +35,12 @@
 
 package imagej.ui.swing.widget;
 
-import imagej.Priority;
-import imagej.plugin.Plugin;
 import imagej.plugin.PreprocessorPlugin;
 import imagej.ui.swing.mdi.SwingMdiUI;
 import imagej.widget.InputHarvester;
+
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
 
 /**
  * SwingInputHarvester is an {@link InputHarvester} that collects input

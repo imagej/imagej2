@@ -40,9 +40,6 @@ import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.DrawingTool;
-import imagej.module.ItemIO;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.render.RenderingService;
 import imagej.render.TextRenderer.TextJustification;
 
@@ -52,13 +49,17 @@ import java.util.List;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
+import org.scijava.ItemIO;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+
 /**
  * A plugin that creates a simple multidimensional image with axes beyond those
  * legacy ImageJ provides.
  * 
  * @author Barry DeZonia
  */
-@Plugin(menuPath = "Plugins>Sandbox>Multidimensional Test Image")
+@Plugin(type = Command.class, menuPath = "Plugins>Sandbox>Multidimensional Test Image")
 public class MultidimImage implements Command {
 
 	@Parameter

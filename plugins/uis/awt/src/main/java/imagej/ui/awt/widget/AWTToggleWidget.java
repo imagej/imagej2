@@ -35,7 +35,6 @@
 
 package imagej.ui.awt.widget;
 
-import imagej.plugin.Plugin;
 import imagej.widget.InputWidget;
 import imagej.widget.ToggleWidget;
 import imagej.widget.WidgetModel;
@@ -43,6 +42,8 @@ import imagej.widget.WidgetModel;
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
 import java.awt.Panel;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * AWT implementation of boolean toggle widget.

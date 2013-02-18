@@ -35,7 +35,6 @@
 
 package imagej.ui.swt.widget;
 
-import imagej.plugin.Plugin;
 import imagej.widget.InputWidget;
 import imagej.widget.NumberWidget;
 import imagej.widget.WidgetModel;
@@ -43,6 +42,7 @@ import imagej.widget.WidgetModel;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Slider;
+import org.scijava.plugin.Plugin;
 
 /**
  * SWT implementation of number chooser widget.

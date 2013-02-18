@@ -35,21 +35,23 @@
 
 package imagej.core.commands.axispos;
 
+import imagej.command.Command;
 import imagej.command.DynamicCommand;
 import imagej.data.animation.Animation;
 import imagej.data.animation.AnimationService;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
 import imagej.module.MutableModuleItem;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import java.util.ArrayList;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Changes the axis to move along to user specified value. This axis of movement
@@ -58,12 +60,13 @@ import net.imglib2.meta.AxisType;
  * @author Barry DeZonia
  */
 @Plugin(
+	type = Command.class,
 	menu = {
 		@Menu(label = MenuConstants.IMAGE_LABEL,
 			weight = MenuConstants.IMAGE_WEIGHT,
 			mnemonic = MenuConstants.IMAGE_MNEMONIC),
-		@Menu(label = "Axes", mnemonic = 'a'),
-		@Menu(label = "Set Active Axis...") }, headless = true)
+		@Menu(label = "Axes", mnemonic = 'a'), @Menu(label = "Set Active Axis...") },
+	headless = true)
 public class SetActiveAxis extends DynamicCommand {
 
 	// -- Constants --

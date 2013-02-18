@@ -35,10 +35,8 @@
 
 package imagej.ui.swing.widget;
 
-import imagej.Priority;
 import imagej.core.commands.display.interactive.InteractiveCommand;
 import imagej.module.Module;
-import imagej.plugin.Plugin;
 import imagej.plugin.PreprocessorPlugin;
 import imagej.ui.AbstractInputHarvesterPlugin;
 import imagej.ui.swing.sdi.SwingUI;
@@ -48,6 +46,9 @@ import imagej.widget.InputPanel;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
 
 /**
  * SwingInputHarvester is an {@link InputHarvester} that collects input

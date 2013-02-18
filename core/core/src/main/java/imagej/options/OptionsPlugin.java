@@ -35,12 +35,13 @@
 
 package imagej.options;
 
-import imagej.Context;
 import imagej.command.DynamicCommand;
-import imagej.event.EventService;
 import imagej.module.ModuleItem;
 import imagej.options.event.OptionsEvent;
-import imagej.plugin.Parameter;
+
+import org.scijava.Context;
+import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
 
 // TODO - outline for how to address issues with options (initializing, aggregating into 1 dialog)
 

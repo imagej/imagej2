@@ -37,9 +37,10 @@ package imagej.menu.event;
 
 import imagej.menu.MenuService;
 import imagej.menu.ShadowMenu;
-import imagej.object.event.ListEvent;
 
 import java.util.Collection;
+
+import org.scijava.object.event.ListEvent;
 
 /**
  * An event indicating something has happened to the {@link MenuService}'s

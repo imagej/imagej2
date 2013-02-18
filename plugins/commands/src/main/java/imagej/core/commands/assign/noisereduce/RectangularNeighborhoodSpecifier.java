@@ -35,17 +35,19 @@
 
 package imagej.core.commands.assign.noisereduce;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
-import imagej.module.ItemIO;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * TODO
  * 
  * @author Barry DeZonia
  */
-@Plugin(label="Rectangular Neighborhood Specification")
+@Plugin(type = Command.class, label="Rectangular Neighborhood Specification")
 public class RectangularNeighborhoodSpecifier extends ContextCommand {
 	
 	@Parameter(label = "Dimensionality")

@@ -35,9 +35,7 @@
 
 package imagej.config;
 
-import imagej.Context;
 import imagej.util.AppUtils;
-import imagej.util.Log;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -52,6 +50,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.scijava.Context;
+import org.scijava.util.Log;
 
 /**
  * This class reads launcher configuration parameters from a file and allows

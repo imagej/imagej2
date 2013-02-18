@@ -35,8 +35,6 @@
 
 package imagej.data.overlay;
 
-import imagej.Context;
-
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -45,6 +43,8 @@ import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.meta.Axes;
 import net.imglib2.roi.PolygonRegionOfInterest;
+
+import org.scijava.Context;
 
 /**
  * TODO
@@ -97,7 +97,6 @@ public class PolygonOverlay extends
 			roi.addVertex(i, vertex);
 		}
 	}
-
 
 	/*
 	@Override

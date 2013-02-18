@@ -37,22 +37,23 @@ package imagej.menu;
 
 import imagej.command.Command;
 import imagej.command.CommandService;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
 import imagej.module.event.ModulesAddedEvent;
 import imagej.module.event.ModulesRemovedEvent;
 import imagej.module.event.ModulesUpdatedEvent;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
-import imagej.service.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * Default service for keeping track of the application's menu structure.

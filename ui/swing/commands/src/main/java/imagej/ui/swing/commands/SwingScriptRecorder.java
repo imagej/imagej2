@@ -35,19 +35,13 @@
 
 package imagej.ui.swing.commands;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.event.EventSubscriber;
-import imagej.event.ImageJEvent;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
 import imagej.module.event.ModuleEvent;
 import imagej.module.event.ModuleExecutedEvent;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.script.CodeGenerator;
 import imagej.script.CodeGeneratorJava;
 import imagej.script.InvocationObject;
@@ -74,13 +68,21 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.event.EventSubscriber;
+import org.scijava.event.SciJavaEvent;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+
 /**
  * Script Recorder.
  * 
  * @author Grant Harris
  */
-@Plugin(menu = { @Menu(label = "Plugins"), @Menu(label = "Macros"),
-	@Menu(label = "Record...", weight = 4) })
+@Plugin(type = Command.class, menu = { @Menu(label = "Plugins"),
+	@Menu(label = "Macros"), @Menu(label = "Record...", weight = 4) })
 public class SwingScriptRecorder extends ContextCommand {
 
 	@Parameter
@@ -167,7 +169,7 @@ public class SwingScriptRecorder extends ContextCommand {
 	}
 
 	@EventHandler
-	protected void onEvent(final ImageJEvent evt) {
+	protected void onEvent(final SciJavaEvent evt) {
 //		if (evt instanceof ImageJEvent) {
 //			emitMessage("Event: " + evt.getClass());
 //			showFields(evt);
@@ -299,7 +301,7 @@ public class SwingScriptRecorder extends ContextCommand {
 		return dateStr;
 	}
 
-	void showClass(final ImageJEvent evt) {
+	void showClass(final SciJavaEvent evt) {
 		emitMessage("[" + timeStamp() + "] " + evt.getClass().getSimpleName());
 	}
 

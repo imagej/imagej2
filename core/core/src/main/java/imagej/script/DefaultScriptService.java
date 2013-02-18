@@ -35,16 +35,7 @@
 
 package imagej.script;
 
-import imagej.InstantiableException;
 import imagej.command.CommandInfo;
-import imagej.log.LogService;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.plugin.PluginInfo;
-import imagej.plugin.PluginService;
-import imagej.service.AbstractService;
-import imagej.service.Service;
-import imagej.util.FileUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -60,6 +51,16 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+
+import org.scijava.InstantiableException;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
+import org.scijava.util.FileUtils;
 
 /**
  * A service discovering all available script languages and convenience methods

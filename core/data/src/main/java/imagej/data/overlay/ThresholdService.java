@@ -35,7 +35,6 @@
 
 package imagej.data.overlay;
 
-import imagej.Priority;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -43,16 +42,18 @@ import imagej.data.display.OverlayService;
 import imagej.data.event.OverlayDeletedEvent;
 import imagej.display.Display;
 import imagej.display.event.DisplayDeletedEvent;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
 import imagej.options.OptionsService;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
-import imagej.service.Service;
 
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.scijava.Priority;
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * Provides functionality related to {@link ThresholdOverlay}s.

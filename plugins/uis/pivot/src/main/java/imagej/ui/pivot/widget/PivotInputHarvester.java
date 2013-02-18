@@ -35,9 +35,7 @@
 
 package imagej.ui.pivot.widget;
 
-import imagej.Priority;
 import imagej.module.Module;
-import imagej.plugin.Plugin;
 import imagej.plugin.PreprocessorPlugin;
 import imagej.ui.AbstractInputHarvesterPlugin;
 import imagej.ui.UIService;
@@ -49,6 +47,8 @@ import imagej.widget.InputPanel;
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Dialog;
 import org.apache.pivot.wtk.TablePane;
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
 
 /**
  * PivotInputHarvester is an {@link InputHarvester} that collects input

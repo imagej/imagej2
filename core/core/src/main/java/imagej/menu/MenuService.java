@@ -37,10 +37,11 @@ package imagej.menu;
 
 import imagej.command.Command;
 import imagej.command.CommandService;
-import imagej.event.EventService;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
-import imagej.service.Service;
+
+import org.scijava.event.EventService;
+import org.scijava.service.Service;
 
 /**
  * Interface for service that tracks the application's menu structure.

@@ -35,8 +35,6 @@
 
 package imagej.tool;
 
-import imagej.Contextual;
-import imagej.Prioritized;
 import imagej.display.event.input.KyPressedEvent;
 import imagej.display.event.input.KyReleasedEvent;
 import imagej.display.event.input.MsClickedEvent;
@@ -45,10 +43,13 @@ import imagej.display.event.input.MsMovedEvent;
 import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
-import imagej.input.MouseCursor;
 import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Plugin;
-import imagej.plugin.PluginInfo;
+
+import org.scijava.Contextual;
+import org.scijava.Prioritized;
+import org.scijava.input.MouseCursor;
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
 
 /**
  * Interface for ImageJ tools. A tool is a collection of rules binding user
@@ -73,6 +74,22 @@ import imagej.plugin.PluginInfo;
  * @see ToolService
  */
 public interface Tool extends ImageJPlugin, Contextual, Prioritized {
+
+	/**
+	 * When true, tool has no button but rather is active all the time.
+	 * 
+	 * @see Plugin#values()
+	 */
+	String ALWAYS_ACTIVE = "alwaysActive";
+
+	/**
+	 * When true, tool receives events when the main ImageJ application frame is
+	 * active. When false, tool only receives events when a display window is
+	 * active.
+	 * 
+	 * @see Plugin#values()
+	 */
+	String ACTIVE_IN_APP_FRAME = "activeInAppFrame";
 
 	/** Gets the info describing the tool. */
 	PluginInfo<? extends Tool> getInfo();

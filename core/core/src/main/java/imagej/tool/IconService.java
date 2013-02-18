@@ -35,7 +35,7 @@
 
 package imagej.tool;
 
-import imagej.service.Service;
+import org.scijava.service.Service;
 
 /**
  * TODO

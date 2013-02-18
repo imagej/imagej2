@@ -35,13 +35,14 @@
 
 package imagej.display;
 
-import imagej.Priority;
 import imagej.module.Module;
 import imagej.module.ModuleItem;
 import imagej.module.ModuleService;
 import imagej.plugin.AbstractPreprocessorPlugin;
-import imagej.plugin.Plugin;
 import imagej.plugin.PreprocessorPlugin;
+
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
 
 /**
  * Assigns the active {@link Display} when there is one single unresolved

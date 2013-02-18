@@ -35,7 +35,6 @@
 
 package imagej.ui;
 
-import imagej.InstantiableException;
 import imagej.command.CommandService;
 import imagej.data.display.ImageDisplayService;
 import imagej.display.Display;
@@ -44,22 +43,11 @@ import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.DisplayUpdatedEvent;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.event.StatusService;
-import imagej.log.LogService;
 import imagej.menu.MenuService;
 import imagej.options.OptionsService;
 import imagej.platform.AppService;
 import imagej.platform.PlatformService;
 import imagej.platform.event.AppQuitEvent;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.plugin.PluginInfo;
-import imagej.plugin.PluginService;
-import imagej.service.AbstractService;
-import imagej.service.Service;
-import imagej.thread.ThreadService;
 import imagej.tool.ToolService;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
@@ -72,6 +60,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.scijava.InstantiableException;
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.event.StatusService;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
+import org.scijava.thread.ThreadService;
 
 /**
  * Default service for handling ImageJ user interfaces.

@@ -36,7 +36,8 @@
 package imagej.data.table;
 
 import imagej.display.AbstractDisplay;
-import imagej.plugin.Plugin;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * Default display for {@link Table}s, including {@link ResultsTable}s.

@@ -36,15 +36,15 @@
 package imagej.command;
 
 import imagej.Cancelable;
-import imagej.InstantiableException;
-import imagej.Previewable;
 import imagej.module.AbstractModule;
 import imagej.module.ModuleException;
-import imagej.plugin.PluginInfo;
-import imagej.util.ClassUtils;
-import imagej.util.Log;
 
 import java.util.Map;
+
+import org.scijava.InstantiableException;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.util.ClassUtils;
+import org.scijava.util.Log;
 
 /**
  * Module class for working with a {@link Command} instance.

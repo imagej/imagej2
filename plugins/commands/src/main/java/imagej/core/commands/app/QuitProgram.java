@@ -37,13 +37,14 @@ package imagej.core.commands.app;
 
 import imagej.command.Command;
 import imagej.data.display.WindowService;
-import imagej.event.StatusService;
 import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
+
+import org.scijava.event.StatusService;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Quits ImageJ.
@@ -52,7 +53,7 @@ import imagej.ui.UIService;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-@Plugin(label = "Quit", iconPath = "/icons/commands/door_in.png", menu = {
+@Plugin(type = Command.class, label = "Quit", iconPath = "/icons/commands/door_in.png", menu = {
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Quit", weight = Double.MAX_VALUE, mnemonic = 'q',

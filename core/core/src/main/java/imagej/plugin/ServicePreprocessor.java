@@ -35,17 +35,19 @@
 
 package imagej.plugin;
 
-import imagej.Context;
-import imagej.Priority;
 import imagej.module.Module;
 import imagej.module.ModuleItem;
-import imagej.service.Service;
+
+import org.scijava.Context;
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.Service;
 
 /**
  * The service preprocessor automatically populates module inputs that implement
  * {@link Service}.
  * <p>
- * Services are obtained from this preprocessor instance's ImageJ context.
+ * Services are obtained from this preprocessor instance's application context.
  * </p>
  * 
  * @author Curtis Rueden

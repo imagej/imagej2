@@ -40,7 +40,6 @@ import ij.ImagePlus;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.process.ByteProcessor;
-import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.overlay.BinaryMaskOverlay;
@@ -70,6 +69,8 @@ import net.imglib2.roi.BinaryMaskRegionOfInterest;
 import net.imglib2.roi.PolygonRegionOfInterest;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.ByteType;
+
+import org.scijava.Context;
 
 /**
  * This class exists purely so that the ij.ImagePlus class is not defined before

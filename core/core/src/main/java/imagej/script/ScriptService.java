@@ -35,10 +35,6 @@
 
 package imagej.script;
 
-import imagej.log.LogService;
-import imagej.plugin.PluginService;
-import imagej.service.Service;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -49,6 +45,10 @@ import java.util.List;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
+
+import org.scijava.log.LogService;
+import org.scijava.plugin.PluginService;
+import org.scijava.service.Service;
 
 /**
  * A service discovering all available script languages and convenience methods

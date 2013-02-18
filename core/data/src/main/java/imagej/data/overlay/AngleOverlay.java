@@ -35,14 +35,14 @@
 
 package imagej.data.overlay;
 
-import imagej.Context;
-
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.roi.AngleRegionOfInterest;
+
+import org.scijava.Context;
 
 /**
  * Represents an angle having a center point and two end points.

@@ -35,7 +35,6 @@
 
 package imagej.ui.awt.widget;
 
-import imagej.plugin.Plugin;
 import imagej.widget.ChoiceWidget;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
@@ -45,6 +44,8 @@ import java.awt.Choice;
 import java.awt.Panel;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * AWT implementation of multiple choice selector widget.

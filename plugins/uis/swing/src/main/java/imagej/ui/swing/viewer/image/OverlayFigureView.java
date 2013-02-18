@@ -35,7 +35,6 @@
 
 package imagej.ui.swing.viewer.image;
 
-import imagej.Context;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
@@ -48,6 +47,7 @@ import org.jhotdraw.draw.Drawing;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.event.FigureAdapter;
 import org.jhotdraw.draw.event.FigureEvent;
+import org.scijava.Context;
 
 /**
  * TODO

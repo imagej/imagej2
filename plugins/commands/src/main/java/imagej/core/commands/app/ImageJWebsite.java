@@ -36,25 +36,28 @@
 package imagej.core.commands.app;
 
 import imagej.command.Command;
-import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.platform.PlatformService;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import java.io.IOException;
 import java.net.URL;
+
+import org.scijava.log.LogService;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Open the ImageJ web site in a browser.
  * 
  * @author Johannes Schindelin
  */
-@Plugin(iconPath = "/icons/commands/world_link.png", menu = {
-	@Menu(label = MenuConstants.HELP_LABEL, weight = MenuConstants.HELP_WEIGHT,
-		mnemonic = MenuConstants.HELP_MNEMONIC),
-	@Menu(label = "ImageJ Website...", weight = 42) }, headless = true)
+@Plugin(type = Command.class, iconPath = "/icons/commands/world_link.png",
+	menu = {
+		@Menu(label = MenuConstants.HELP_LABEL,
+			weight = MenuConstants.HELP_WEIGHT,
+			mnemonic = MenuConstants.HELP_MNEMONIC),
+		@Menu(label = "ImageJ Website...", weight = 42) }, headless = true)
 public class ImageJWebsite implements Command {
 
 	@Parameter

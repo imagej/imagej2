@@ -20,14 +20,9 @@ The core component also includes ImageJ's framework for extensibility, which all
 
 	<dependencies>
 		<dependency>
-			<groupId>net.java.sezpoz</groupId>
-			<artifactId>sezpoz</artifactId>
-			<version>${sezpoz.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.bushe</groupId>
-			<artifactId>eventbus</artifactId>
-			<version>1.4</version>
+			<groupId>org.scijava</groupId>
+			<artifactId>scijava-common</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>

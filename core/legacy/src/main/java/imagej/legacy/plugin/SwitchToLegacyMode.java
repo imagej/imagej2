@@ -35,18 +35,20 @@
 
 package imagej.legacy.plugin;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.legacy.LegacyService;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Command for switching to the legacy ImageJ 1.x compatibility mode.
  * 
  * @author Johannes Schindelin
  */
-@Plugin(menu = { @Menu(label = "Help"),
+@Plugin(type = Command.class, menu = { @Menu(label = "Help"),
 	@Menu(label = "Switch to Legacy Mode") })
 public class SwitchToLegacyMode extends ContextCommand {
 

@@ -35,31 +35,32 @@
 
 package imagej.command;
 
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.log.LogService;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
-import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.plugin.PluginInfo;
-import imagej.plugin.PluginService;
 import imagej.plugin.PostprocessorPlugin;
 import imagej.plugin.PreprocessorPlugin;
 import imagej.plugin.ServicePreprocessor;
-import imagej.plugin.event.PluginsAddedEvent;
-import imagej.plugin.event.PluginsRemovedEvent;
-import imagej.service.AbstractService;
-import imagej.service.Service;
-import imagej.util.ListUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
+
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
+import org.scijava.plugin.SciJavaPlugin;
+import org.scijava.plugin.event.PluginsAddedEvent;
+import org.scijava.plugin.event.PluginsRemovedEvent;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
+import org.scijava.util.ListUtils;
 
 /**
  * Default service for working with {@link Command}s. Available commands are
@@ -151,7 +152,7 @@ public class DefaultCommandService extends AbstractService implements
 	@Override
 	public List<CommandInfo> getCommandsOfClass(final String className)
 	{
-		final List<PluginInfo<ImageJPlugin>> plugins =
+		final List<PluginInfo<SciJavaPlugin>> plugins =
 			pluginService.getPluginsOfClass(className);
 		final List<CommandInfo> commands = getCommandsUnknown(downcast(plugins));
 		return commands;
@@ -367,7 +368,7 @@ public class DefaultCommandService extends AbstractService implements
 	}
 
 	/** A HACK for downcasting a list of plugins. */
-	private <PT extends ImageJPlugin> List<PluginInfo<?>> downcast(
+	private <PT extends SciJavaPlugin> List<PluginInfo<?>> downcast(
 		final List<PluginInfo<PT>> plugins)
 	{
 		// HACK: It seems that neither List<PluginInfo<PT>> nor

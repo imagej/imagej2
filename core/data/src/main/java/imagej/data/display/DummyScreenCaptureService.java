@@ -35,11 +35,12 @@
 
 package imagej.data.display;
 
-import imagej.Priority;
 import imagej.data.Dataset;
-import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
-import imagej.service.Service;
+
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * A No-op implementation of the ScreenCaptureService interface. Ensures one

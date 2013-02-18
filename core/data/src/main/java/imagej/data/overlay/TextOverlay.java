@@ -35,8 +35,9 @@
 
 package imagej.data.overlay;
 
-import imagej.Context;
 import net.imglib2.roi.RectangleRegionOfInterest;
+
+import org.scijava.Context;
 
 // TODO - this code is a place holder for when we really support text overlays.
 // This version allows IJ1 TextRois to survive translations back and forth

@@ -49,7 +49,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import imagej.log.LogService;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.Conflicts.Resolution;
 import imagej.updater.core.FileObject.Action;
@@ -58,7 +57,6 @@ import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Progress;
 import imagej.updater.util.StderrProgress;
 import imagej.updater.util.Util;
-import imagej.util.FileUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -84,6 +82,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.scijava.log.LogService;
+import org.scijava.util.FileUtils;
 import org.xml.sax.SAXException;
 
 /**

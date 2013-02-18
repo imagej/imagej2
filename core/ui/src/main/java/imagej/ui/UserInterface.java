@@ -35,15 +35,16 @@
 
 package imagej.ui;
 
-import imagej.Contextual;
-import imagej.Prioritized;
 import imagej.display.Display;
 import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Plugin;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.widget.FileWidget;
 
 import java.io.File;
+
+import org.scijava.Contextual;
+import org.scijava.Prioritized;
+import org.scijava.plugin.Plugin;
 
 /**
  * An end-user ImageJ application user interface.

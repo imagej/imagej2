@@ -35,14 +35,15 @@
 
 package imagej.ui.awt.widget;
 
-import imagej.Priority;
-import imagej.plugin.Plugin;
 import imagej.widget.InputWidget;
 import imagej.widget.MessageWidget;
 import imagej.widget.WidgetModel;
 
 import java.awt.Label;
 import java.awt.Panel;
+
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
 
 /**
  * AWT implementation of message widget.

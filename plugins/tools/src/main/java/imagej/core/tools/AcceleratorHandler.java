@@ -35,17 +35,19 @@
 
 package imagej.core.tools;
 
-import imagej.Priority;
 import imagej.command.CommandService;
 import imagej.display.event.input.KyPressedEvent;
-import imagej.input.Accelerator;
-import imagej.input.InputModifiers;
-import imagej.input.KeyCode;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
-import imagej.plugin.Plugin;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
+
+import org.scijava.Priority;
+import org.scijava.input.Accelerator;
+import org.scijava.input.InputModifiers;
+import org.scijava.input.KeyCode;
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
 
 /**
  * Handles keyboard accelerator combinations that launch modules.
@@ -67,8 +69,9 @@ import imagej.tool.Tool;
  * @author Johannes Schindelin
  * @author Curtis Rueden
  */
-@Plugin(type = Tool.class, name = "Keyboard Shortcuts", alwaysActive = true,
-	activeInAppFrame = true, priority = Priority.VERY_LOW_PRIORITY)
+@Plugin(type = Tool.class, name = "Keyboard Shortcuts",
+	priority = Priority.VERY_LOW_PRIORITY, attrs = {
+		@Attr(name = Tool.ALWAYS_ACTIVE), @Attr(name = Tool.ACTIVE_IN_APP_FRAME) })
 public class AcceleratorHandler extends AbstractTool {
 
 	@Override

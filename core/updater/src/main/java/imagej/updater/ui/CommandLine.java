@@ -35,7 +35,6 @@
 
 package imagej.updater.ui;
 
-import imagej.log.LogService;
 import imagej.updater.core.Conflicts;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.Dependency;
@@ -70,6 +69,7 @@ import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.scijava.log.LogService;
 import org.xml.sax.SAXException;
 
 /**

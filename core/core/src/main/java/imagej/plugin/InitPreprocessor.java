@@ -35,10 +35,12 @@
 
 package imagej.plugin;
 
-import imagej.Priority;
-import imagej.log.LogService;
 import imagej.module.MethodCallException;
 import imagej.module.Module;
+
+import org.scijava.Priority;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Plugin;
 
 /**
  * A preprocessor plugin that populates initial parameter values.

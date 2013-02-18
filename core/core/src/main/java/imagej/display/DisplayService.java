@@ -35,13 +35,13 @@
 
 package imagej.display;
 
-import imagej.event.EventService;
-import imagej.object.ObjectService;
-import imagej.plugin.PluginInfo;
-import imagej.plugin.PluginService;
-import imagej.service.Service;
-
 import java.util.List;
+
+import org.scijava.event.EventService;
+import org.scijava.object.ObjectService;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
+import org.scijava.service.Service;
 
 /**
  * Interface for service that tracks available {@link Display}s.

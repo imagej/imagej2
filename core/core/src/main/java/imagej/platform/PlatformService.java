@@ -36,13 +36,14 @@
 package imagej.platform;
 
 import imagej.command.CommandService;
-import imagej.event.EventService;
-import imagej.plugin.PluginService;
-import imagej.service.Service;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+
+import org.scijava.event.EventService;
+import org.scijava.plugin.PluginService;
+import org.scijava.service.Service;
 
 /**
  * Interface for service that handles platform-specific deployment issues. A

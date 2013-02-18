@@ -37,18 +37,19 @@ package imagej.core.commands.imglib;
 
 import imagej.command.Command;
 import imagej.command.CommandService;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Context menu plugin for Duplicate command.
  * 
  * @author Curtis Rueden
  */
-@Plugin(menu = { @Menu(label = "Duplicate...", mnemonic = 'd',
-	accelerator = "shift control D") }, menuRoot = Plugin.CONTEXT_MENU_ROOT,
-	headless = true)
+@Plugin(type = Command.class, menu = { @Menu(label = "Duplicate...",
+	mnemonic = 'd', accelerator = "shift control D") },
+	menuRoot = Plugin.CONTEXT_MENU_ROOT, headless = true)
 public class DuplicateImageContext implements Command {
 
 	// -- Parameters --

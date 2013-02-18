@@ -35,14 +35,15 @@
 
 package imagej.ui.swing.widget;
 
-import imagej.Priority;
-import imagej.plugin.Plugin;
 import imagej.widget.InputWidget;
 import imagej.widget.MessageWidget;
 import imagej.widget.WidgetModel;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
 
 /**
  * Swing implementation of message widget.

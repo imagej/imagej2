@@ -39,12 +39,13 @@ import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.measure.Calibration;
-import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.type.numeric.integer.ShortType;
+
+import org.scijava.Context;
 
 /**
  * Creates {@link ImagePlus}es from {@link ImageDisplay}s containing gray data.

@@ -38,8 +38,9 @@ package imagej.data.display;
 import imagej.command.Command;
 import imagej.display.Display;
 import imagej.display.DisplayService;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Activates the chosen display. This operation sets the display as the active
@@ -47,7 +48,7 @@ import imagej.plugin.Plugin;
  * 
  * @author Grant Harris
  */
-@Plugin(label = "Select Window...")
+@Plugin(type = Command.class, label = "Select Window...")
 public class SelectWindow implements Command {
 
 	@Parameter(autoFill = false)

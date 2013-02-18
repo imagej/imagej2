@@ -35,14 +35,12 @@
 
 package imagej.ui.swing.commands;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.util.RealRect;
 
 import java.awt.BasicStroke;
@@ -70,6 +68,9 @@ import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 // Only operates on IntegerTypes
 //
@@ -88,7 +89,7 @@ import org.jfree.data.xy.XYSeriesCollection;
  * 
  * @author Grant Harris
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 	@Menu(label = "Analyze"),
 	@Menu(label = "Histogram Plot", accelerator = "control shift alt H",
 		weight = 0) })

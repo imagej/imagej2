@@ -39,7 +39,6 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.Roi;
-import imagej.Context;
 import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
@@ -52,9 +51,6 @@ import imagej.legacy.translate.Harmonizer;
 import imagej.legacy.translate.ImageTranslator;
 import imagej.legacy.translate.LegacyUtils;
 import imagej.legacy.translate.ResultsTableHarmonizer;
-import imagej.log.LogService;
-import imagej.module.ItemIO;
-import imagej.plugin.Parameter;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 
@@ -62,6 +58,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.scijava.Context;
+import org.scijava.ItemIO;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 
 /**
  * Executes an ImageJ v1.x command.

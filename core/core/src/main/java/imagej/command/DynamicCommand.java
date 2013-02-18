@@ -36,16 +36,17 @@
 package imagej.command;
 
 import imagej.Cancelable;
-import imagej.Contextual;
-import imagej.Context;
-import imagej.event.EventSubscriber;
-import imagej.event.EventUtils;
 import imagej.module.DefaultModule;
-import imagej.plugin.Parameter;
-import imagej.util.ClassUtils;
 
 import java.lang.reflect.Field;
 import java.util.List;
+
+import org.scijava.Context;
+import org.scijava.Contextual;
+import org.scijava.event.EventSubscriber;
+import org.scijava.event.EventUtils;
+import org.scijava.plugin.Parameter;
+import org.scijava.util.ClassUtils;
 
 /**
  * A class which can be extended to provide an ImageJ command with a variable
@@ -68,7 +69,7 @@ public abstract class DynamicCommand extends DefaultModule implements
 	/**
 	 * The list of event subscribers, maintained to avoid garbage collection.
 	 * 
-	 * @see imagej.event.EventService#subscribe(Object)
+	 * @see org.scijava.event.EventService#subscribe(Object)
 	 */
 	private List<EventSubscriber<?>> subscribers;
 

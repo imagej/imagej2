@@ -35,9 +35,7 @@
 
 package imagej.module;
 
-import imagej.AbstractUIDetails;
 import imagej.ValidityProblem;
-import imagej.event.EventService;
 import imagej.module.event.ModulesUpdatedEvent;
 
 import java.util.ArrayList;
@@ -45,6 +43,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.scijava.AbstractUIDetails;
+import org.scijava.event.EventService;
 
 /**
  * Default {@link ModuleInfo} implementation.

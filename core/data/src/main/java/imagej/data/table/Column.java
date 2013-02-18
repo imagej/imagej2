@@ -35,9 +35,9 @@
 
 package imagej.data.table;
 
-import imagej.util.Sizable;
-
 import java.util.List;
+
+import org.scijava.util.Sizable;
 
 /**
  * A column of data of a {@link Table}.

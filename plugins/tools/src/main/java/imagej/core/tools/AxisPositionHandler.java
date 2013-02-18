@@ -35,18 +35,20 @@
 
 package imagej.core.tools;
 
-import imagej.Priority;
 import imagej.data.display.ImageDisplay;
 import imagej.display.Display;
 import imagej.display.event.input.KyPressedEvent;
 import imagej.display.event.input.MsWheelEvent;
-import imagej.input.InputModifiers;
-import imagej.input.KeyCode;
-import imagej.plugin.Plugin;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+
+import org.scijava.Priority;
+import org.scijava.input.InputModifiers;
+import org.scijava.input.KeyCode;
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Plugin;
 
 /**
  * Handles keyboard and mouse wheel operations that change the dimensional
@@ -55,8 +57,8 @@ import net.imglib2.meta.AxisType;
  * @author Grant Harris
  */
 @Plugin(type = Tool.class, name = "Axis Position Shortcuts",
-	alwaysActive = true, activeInAppFrame = true,
-	priority = Priority.NORMAL_PRIORITY)
+	priority = Priority.NORMAL_PRIORITY, attrs = {
+		@Attr(name = Tool.ALWAYS_ACTIVE), @Attr(name = Tool.ACTIVE_IN_APP_FRAME) })
 public class AxisPositionHandler extends AbstractTool {
 
 	@Override

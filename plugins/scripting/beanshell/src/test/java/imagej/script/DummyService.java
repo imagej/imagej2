@@ -35,8 +35,8 @@
 
 package imagej.script;
 
-import imagej.Context;
-import imagej.service.AbstractService;
+import org.scijava.Context;
+import org.scijava.service.AbstractService;
 
 /**
  * TODO

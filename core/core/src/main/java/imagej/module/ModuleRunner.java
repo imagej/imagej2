@@ -35,12 +35,7 @@
 
 package imagej.module;
 
-import imagej.AbstractContextual;
 import imagej.Cancelable;
-import imagej.Context;
-import imagej.event.EventService;
-import imagej.event.StatusService;
-import imagej.log.LogService;
 import imagej.module.event.ModuleCanceledEvent;
 import imagej.module.event.ModuleExecutedEvent;
 import imagej.module.event.ModuleExecutingEvent;
@@ -51,6 +46,12 @@ import imagej.module.event.ModuleStartedEvent;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+
+import org.scijava.AbstractContextual;
+import org.scijava.Context;
+import org.scijava.event.EventService;
+import org.scijava.event.StatusService;
+import org.scijava.log.LogService;
 
 /**
  * Helper class for executing a {@link Module}, including pre- and

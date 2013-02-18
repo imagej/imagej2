@@ -35,19 +35,21 @@
 
 package imagej.core.commands.display.interactive;
 
+import imagej.command.Command;
 import imagej.command.UnimplementedCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * TODO
  * 
  * @author Barry DeZonia
  */
-@Plugin(iconPath = "/icons/commands/bricks.png",
+@Plugin(type = Command.class, iconPath = "/icons/commands/bricks.png",
 	menu = {
 		@Menu(label = MenuConstants.IMAGE_LABEL,
 			weight = MenuConstants.IMAGE_WEIGHT,

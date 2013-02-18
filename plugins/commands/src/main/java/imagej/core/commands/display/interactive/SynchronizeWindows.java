@@ -35,23 +35,26 @@
 
 package imagej.core.commands.display.interactive;
 
+import imagej.command.Command;
 import imagej.command.UnimplementedCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * TODO
  * 
  * @author Barry DeZonia
  */
-@Plugin(iconPath = "/icons/commands/bricks.png", menu = {
-	@Menu(label = MenuConstants.ANALYZE_LABEL,
-		weight = MenuConstants.ANALYZE_WEIGHT,
-		mnemonic = MenuConstants.ANALYZE_MNEMONIC), @Menu(label = "Tools"),
-	@Menu(label = "Synchronize Windows") })
+@Plugin(type = Command.class, iconPath = "/icons/commands/bricks.png",
+	menu = {
+		@Menu(label = MenuConstants.ANALYZE_LABEL,
+			weight = MenuConstants.ANALYZE_WEIGHT,
+			mnemonic = MenuConstants.ANALYZE_MNEMONIC), @Menu(label = "Tools"),
+		@Menu(label = "Synchronize Windows") })
 public class SynchronizeWindows extends UnimplementedCommand {
 
 	// -- Parameters --

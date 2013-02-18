@@ -35,13 +35,13 @@
 
 package imagej.legacy;
 
-import java.awt.Menu;
-import java.awt.MenuItem;
-import java.util.Hashtable;
-
 import ij.IJ;
 import ij.Menus;
 import ij.plugin.PlugIn;
+
+import java.awt.Menu;
+import java.awt.MenuItem;
+import java.util.Hashtable;
 
 import javax.swing.SwingUtilities;
 

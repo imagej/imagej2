@@ -35,20 +35,21 @@
 
 package imagej.core.commands.overlay;
 
-import imagej.Previewable;
 import imagej.command.ContextCommand;
+import imagej.command.Previewable;
 import imagej.data.options.OptionsOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.Overlay.ArrowStyle;
 import imagej.data.overlay.Overlay.LineStyle;
 import imagej.options.OptionsService;
-import imagej.plugin.Parameter;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 import imagej.widget.NumberWidget;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.scijava.plugin.Parameter;
 
 /**
  * A plugin to change the properties (e.g., line color, line width) of a given

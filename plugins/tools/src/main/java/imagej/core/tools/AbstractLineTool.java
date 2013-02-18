@@ -35,7 +35,6 @@
 
 package imagej.core.tools;
 
-import imagej.Context;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.DrawingTool;
@@ -52,6 +51,8 @@ import imagej.render.RenderingService;
 import imagej.tool.AbstractTool;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
+
+import org.scijava.Context;
 
 /**
  * Abstract class that is used by PencilTool, PaintBrushTool, and their erase

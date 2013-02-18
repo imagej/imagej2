@@ -36,10 +36,11 @@
 package imagej.ui.swing.commands.debug;
 
 import imagej.command.Command;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
+
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * A demonstration of ImageJ's UI-agnostic dialog prompt capabilities.
@@ -47,7 +48,7 @@ import imagej.ui.UIService;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins>Sandbox>Dialog Prompt Demo")
+@Plugin(type = Command.class, menuPath = "Plugins>Sandbox>Dialog Prompt Demo")
 public class DialogPromptDemo implements Command {
 
 	@Parameter

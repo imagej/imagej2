@@ -35,13 +35,15 @@
 
 package imagej.core.commands.assign;
 
+import imagej.command.Command;
 import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import net.imglib2.ops.operation.real.unary.RealGammaConstant;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Fills an output Dataset with the result of applying the gamma function to an
@@ -50,15 +52,14 @@ import net.imglib2.type.numeric.real.DoubleType;
  * 
  * @author Barry DeZonia
  */
-@Plugin(
-	menu = {
-		@Menu(label = MenuConstants.PROCESS_LABEL,
-			weight = MenuConstants.PROCESS_WEIGHT,
-			mnemonic = MenuConstants.PROCESS_MNEMONIC),
-		@Menu(label = "Math", mnemonic = 'm'),
-		@Menu(label = "Gamma...", weight = 11) }, headless = true)
-public class GammaDataValues<T extends RealType<T>>
-	extends MathCommand<T,DoubleType>
+@Plugin(type = Command.class, menu = {
+	@Menu(label = MenuConstants.PROCESS_LABEL,
+		weight = MenuConstants.PROCESS_WEIGHT,
+		mnemonic = MenuConstants.PROCESS_MNEMONIC),
+	@Menu(label = "Math", mnemonic = 'm'),
+	@Menu(label = "Gamma...", weight = 11) }, headless = true)
+public class GammaDataValues<T extends RealType<T>> extends
+	MathCommand<T, DoubleType>
 {
 
 	// -- instance variables that are Parameters --

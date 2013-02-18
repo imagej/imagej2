@@ -36,11 +36,6 @@
 package imagej.updater.gui;
 
 import imagej.command.CommandService;
-import imagej.event.StatusService;
-import imagej.log.LogService;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FilesCollection;
@@ -63,6 +58,12 @@ import java.net.URLClassLoader;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.scijava.event.StatusService;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * The Updater. As a command.

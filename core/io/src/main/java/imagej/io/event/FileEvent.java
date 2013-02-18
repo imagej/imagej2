@@ -35,14 +35,14 @@
 
 package imagej.io.event;
 
-import imagej.event.ImageJEvent;
+import org.scijava.event.SciJavaEvent;
 
 /**
  * An event indicating something has happened to a file.
  * 
  * @author Curtis Rueden
  */
-public abstract class FileEvent extends ImageJEvent {
+public abstract class FileEvent extends SciJavaEvent {
 
 	/** The path of the file. */
 	private final String path;

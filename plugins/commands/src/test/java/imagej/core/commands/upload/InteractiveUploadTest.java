@@ -35,14 +35,15 @@
 
 package imagej.core.commands.upload;
 
-import imagej.Context;
 import imagej.command.CommandService;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.event.StatusEvent;
-import imagej.event.StatusService;
 
 import java.io.File;
+
+import org.scijava.Context;
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.event.StatusEvent;
+import org.scijava.event.StatusService;
 
 /**
  * Tests the upload functionality.

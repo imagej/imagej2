@@ -35,17 +35,18 @@
 
 package imagej.data.display;
 
-import java.util.HashSet;
-
 import imagej.display.event.input.KyPressedEvent;
 import imagej.display.event.input.KyReleasedEvent;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.input.KeyCode;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
-import imagej.service.Service;
+
+import java.util.HashSet;
+
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.input.KeyCode;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * Default implementation of {@link KeyboardService}.

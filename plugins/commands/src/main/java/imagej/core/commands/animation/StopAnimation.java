@@ -35,13 +35,15 @@
 
 package imagej.core.commands.animation;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.animation.AnimationService;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Plugin for terminating an {@link ImageDisplay}'s running animation.
@@ -49,7 +51,7 @@ import imagej.plugin.Plugin;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Animation", mnemonic = 'a'),

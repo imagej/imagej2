@@ -35,15 +35,16 @@
 
 package imagej.script;
 
-import imagej.MenuEntry;
-import imagej.MenuPath;
 import imagej.command.CommandInfo;
-import imagej.log.LogService;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.scijava.MenuEntry;
+import org.scijava.MenuPath;
+import org.scijava.log.LogService;
 
 /**
  * Discovers scripts.

@@ -36,10 +36,11 @@
 package imagej.platform;
 
 import imagej.plugin.ImageJPlugin;
-import imagej.plugin.Plugin;
 
 import java.io.IOException;
 import java.net.URL;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * An interface for configuring a specific deployment platform, defined by

@@ -38,9 +38,10 @@ package imagej.core.options;
 import imagej.config.ConfigFileParameters;
 import imagej.menu.MenuConstants;
 import imagej.options.OptionsPlugin;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Runs the Edit::Options::Memory &amp; Threads dialog.

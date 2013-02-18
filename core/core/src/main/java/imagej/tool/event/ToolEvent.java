@@ -35,15 +35,16 @@
 
 package imagej.tool.event;
 
-import imagej.event.ImageJEvent;
 import imagej.tool.Tool;
+
+import org.scijava.event.SciJavaEvent;
 
 /**
  * An event indicating something has happened to a tool.
  * 
  * @author Curtis Rueden
  */
-public abstract class ToolEvent extends ImageJEvent {
+public abstract class ToolEvent extends SciJavaEvent {
 
 	private final Tool tool;
 

@@ -35,9 +35,11 @@
 
 package imagej.core.commands.debug;
 
-import imagej.module.ItemIO;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+import imagej.command.Command;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Test plugin for verifying that invalid module parameters are dealt with using
@@ -45,7 +47,7 @@ import imagej.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(menuPath = "Plugins>Debug>Invalid Plugin", headless = true)
+@Plugin(type = Command.class, menuPath = "Plugins>Debug>Invalid Plugin", headless = true)
 public class InvalidCommand extends ParameterTester {
 
 	/**

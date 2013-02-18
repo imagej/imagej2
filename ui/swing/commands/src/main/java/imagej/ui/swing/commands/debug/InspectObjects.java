@@ -38,16 +38,17 @@ package imagej.ui.swing.commands.debug;
 import com.github.sbridges.objectinspector.Inspector;
 
 import imagej.command.Command;
-import imagej.object.ObjectService;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.object.ObjectService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Inspect the ObjectService
  * 
  * @author Grant Harris
  */
-@Plugin(menuPath = "Plugins>Debug>Inspect Objects")
+@Plugin(type = Command.class, menuPath = "Plugins>Debug>Inspect Objects")
 public class InspectObjects implements Command {
 
 	@Parameter

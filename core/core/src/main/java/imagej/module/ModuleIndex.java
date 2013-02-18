@@ -35,7 +35,7 @@
 
 package imagej.module;
 
-import imagej.object.SortedObjectIndex;
+import org.scijava.object.SortedObjectIndex;
 
 /**
  * Data structure for managing registered modules.

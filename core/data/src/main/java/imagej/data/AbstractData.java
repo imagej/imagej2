@@ -35,13 +35,9 @@
 
 package imagej.data;
 
-import imagej.AbstractContextual;
-import imagej.Context;
 import imagej.data.event.DataCreatedEvent;
 import imagej.data.event.DataDeletedEvent;
 import imagej.data.overlay.Overlay;
-import imagej.event.EventService;
-import imagej.event.ImageJEvent;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -49,6 +45,11 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import net.imglib2.meta.AxisType;
+
+import org.scijava.AbstractContextual;
+import org.scijava.Context;
+import org.scijava.event.EventService;
+import org.scijava.event.SciJavaEvent;
 
 /**
  * Base implementation of {@link Data}.
@@ -211,7 +212,7 @@ public abstract class AbstractData extends AbstractContextual implements Data,
 
 	// -- Internal methods --
 
-	protected void publish(final ImageJEvent event) {
+	protected void publish(final SciJavaEvent event) {
 		final Context context = getContext();
 		if (context == null) return;
 		final EventService eventService = context.getService(EventService.class);

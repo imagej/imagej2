@@ -35,13 +35,9 @@
 
 package imagej.ui.swing.commands;
 
-import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.module.MutableModuleItem;
 import imagej.options.OptionsPlugin;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 import imagej.ui.UserInterface;
 import imagej.ui.swing.SwingApplicationFrame;
 
@@ -52,6 +48,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
+
+import org.scijava.log.LogService;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Runs the Edit::Options::Look and Feel dialog.

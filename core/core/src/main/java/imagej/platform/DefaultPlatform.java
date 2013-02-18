@@ -35,11 +35,11 @@
 
 package imagej.platform;
 
-import imagej.Priority;
-import imagej.plugin.Plugin;
-
 import java.io.IOException;
 import java.net.URL;
+
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
 
 /**
  * A platform implementation for default handling of platform issues.

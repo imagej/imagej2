@@ -35,19 +35,12 @@
 
 package imagej.core.commands.calculator;
 
-import imagej.InstantiableException;
+import imagej.command.Command;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
-import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
-import imagej.module.ItemIO;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.plugin.PluginInfo;
-import imagej.plugin.PluginService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,6 +54,15 @@ import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
+import org.scijava.InstantiableException;
+import org.scijava.ItemIO;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
+
 /**
  * Fills an output Dataset with a combination of two input Datasets. The
  * combination is specified by the user (such as Add, Min, Average, etc.).
@@ -68,11 +70,12 @@ import net.imglib2.type.numeric.real.DoubleType;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-@Plugin(iconPath = "/icons/commands/calculator.png", menu = {
-	@Menu(label = MenuConstants.PROCESS_LABEL,
-		weight = MenuConstants.PROCESS_WEIGHT,
-		mnemonic = MenuConstants.PROCESS_MNEMONIC),
-	@Menu(label = "Image Calculator...", weight = 22) }, headless = true,
+@Plugin(type = Command.class, iconPath = "/icons/commands/calculator.png",
+	menu = {
+		@Menu(label = MenuConstants.PROCESS_LABEL,
+			weight = MenuConstants.PROCESS_WEIGHT,
+			mnemonic = MenuConstants.PROCESS_MNEMONIC),
+		@Menu(label = "Image Calculator...", weight = 22) }, headless = true,
 	initializer = "initCalculator")
 public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 	extends DynamicCommand

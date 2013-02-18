@@ -35,7 +35,6 @@
 
 package imagej.updater.core;
 
-import imagej.plugin.Plugin;
 import imagej.updater.util.Util;
 
 import java.io.File;
@@ -44,6 +43,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+
+import org.scijava.plugin.Plugin;
 
 /**
  * This FileUploader is highly specialized to upload files and XML information

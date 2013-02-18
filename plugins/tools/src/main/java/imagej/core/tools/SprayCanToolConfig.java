@@ -36,16 +36,17 @@
 package imagej.core.tools;
 
 import imagej.command.Command;
-import imagej.module.ItemIO;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Implements the configuration code for {@link SprayCanTool}.
  * 
  * @author Barry DeZonia
  */
-@Plugin(label = "Spray Can Tool", initializer = "initAll")
+@Plugin(type = Command.class, label = "Spray Can Tool", initializer = "initAll")
 public class SprayCanToolConfig implements Command {
 
 	@Parameter(type = ItemIO.BOTH)

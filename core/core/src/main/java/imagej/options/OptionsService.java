@@ -36,12 +36,13 @@
 package imagej.options;
 
 import imagej.command.CommandInfo;
-import imagej.event.EventService;
-import imagej.plugin.PluginService;
-import imagej.service.Service;
 
 import java.util.List;
 import java.util.Map;
+
+import org.scijava.event.EventService;
+import org.scijava.plugin.PluginService;
+import org.scijava.service.Service;
 
 /**
  * Interface for the options handling service.

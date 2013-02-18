@@ -35,15 +35,16 @@
 
 package imagej.module.event;
 
-import imagej.event.ImageJEvent;
 import imagej.module.Module;
+
+import org.scijava.event.SciJavaEvent;
 
 /**
  * An event indicating something has happened to a module.
  * 
  * @author Curtis Rueden
  */
-public abstract class ModuleEvent extends ImageJEvent {
+public abstract class ModuleEvent extends SciJavaEvent {
 
 	private final Module module;
 

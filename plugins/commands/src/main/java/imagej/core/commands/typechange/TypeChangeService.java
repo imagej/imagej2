@@ -42,15 +42,16 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.display.Display;
 import imagej.display.event.DisplayActivatedEvent;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
 import imagej.module.event.ModulesUpdatedEvent;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
-import imagej.service.Service;
 
 import java.util.List;
+
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * Service for keeping the Type submenu synced with the active display.

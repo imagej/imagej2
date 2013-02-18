@@ -36,9 +36,10 @@
 package imagej.core.commands.typechange;
 
 import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Plugin;
 import net.imglib2.type.logic.BitType;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Plugin;
 
 /**
  * Changes an input Dataset's underlying ImgLib data to be of 1-bit unsigned

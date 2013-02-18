@@ -35,18 +35,19 @@
 
 package imagej.display;
 
-import imagej.Priority;
-import imagej.log.LogService;
 import imagej.module.Module;
 import imagej.module.ModuleItem;
 import imagej.plugin.AbstractPostprocessorPlugin;
-import imagej.plugin.Plugin;
 import imagej.plugin.PostprocessorPlugin;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import org.scijava.Priority;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Plugin;
 
 /**
  * Displays outputs upon completion of a module execution.

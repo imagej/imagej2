@@ -35,7 +35,7 @@
 
 package imagej.updater.core;
 
-import imagej.service.Service;
+import org.scijava.service.Service;
 
 /**
  * Interface for service that manages available ImageJ upload mechanisms.

@@ -35,7 +35,6 @@
 
 package imagej.ui.swt.widget;
 
-import imagej.plugin.Plugin;
 import imagej.widget.FileWidget;
 import imagej.widget.InputWidget;
 import imagej.widget.WidgetModel;
@@ -47,6 +46,7 @@ import net.miginfocom.swt.MigLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.scijava.plugin.Plugin;
 
 /**
  * SWT implementation of file selector widget.

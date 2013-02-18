@@ -38,16 +38,17 @@ package imagej.core.commands.io;
 import imagej.command.Command;
 import imagej.io.RecentFileService;
 import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Clears the list of recently opened files.
  * 
  * @author Curtis Rueden
  */
-@Plugin(label = "Clear Recent", menu = {
+@Plugin(type = Command.class, label = "Clear Recent", menu = {
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Open Recent", weight = 4, mnemonic = 'r'),

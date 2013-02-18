@@ -40,7 +40,6 @@ import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import ij.process.LUT;
-import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.display.ColorTables;
 import imagej.data.display.DataView;
@@ -55,6 +54,8 @@ import java.util.List;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.Context;
 
 /**
  * This class synchronizes {@link ImageDisplay} {@link ColorTable}s with

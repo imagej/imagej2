@@ -35,12 +35,14 @@
 
 package imagej.core.commands.misc;
 
+import imagej.command.Command;
 import imagej.command.UnimplementedCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 // TODO - replace the kind of functionality that IJ1's Benchmark command has.
 // It needs to display changes as they happen (something the legacy plugin can't
@@ -49,11 +51,12 @@ import imagej.plugin.Plugin;
 /**
  * @author Barry DeZonia
  */
-@Plugin(iconPath = "/icons/commands/bricks.png", menu = {
-	@Menu(label = MenuConstants.PLUGINS_LABEL,
-		weight = MenuConstants.PLUGINS_WEIGHT,
-		mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Utilities"),
-	@Menu(label = "Benchmark") })
+@Plugin(type = Command.class, iconPath = "/icons/commands/bricks.png",
+	menu = {
+		@Menu(label = MenuConstants.PLUGINS_LABEL,
+			weight = MenuConstants.PLUGINS_WEIGHT,
+			mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Utilities"),
+		@Menu(label = "Benchmark") })
 public class Benchmark extends UnimplementedCommand {
 
 	// -- Parameters --

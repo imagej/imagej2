@@ -38,14 +38,15 @@ package imagej.display;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.DisplayUpdatedEvent;
 import imagej.display.event.DisplayUpdatedEvent.DisplayUpdateLevel;
-import imagej.event.EventService;
-import imagej.plugin.SortablePlugin;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+
+import org.scijava.event.EventService;
+import org.scijava.plugin.SortablePlugin;
 
 /**
  * Abstract superclass of {@link Display} implementations.

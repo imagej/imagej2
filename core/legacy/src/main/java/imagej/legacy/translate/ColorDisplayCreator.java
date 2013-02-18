@@ -36,12 +36,13 @@
 package imagej.legacy.translate;
 
 import ij.ImagePlus;
-import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.display.ImageDisplay;
 import imagej.display.DisplayService;
 import net.imglib2.meta.AxisType;
+
+import org.scijava.Context;
 
 /**
  * Creates {@link ImageDisplay}s from {@link ImagePlus}es containing color data.

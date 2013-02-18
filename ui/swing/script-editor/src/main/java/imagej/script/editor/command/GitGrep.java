@@ -35,12 +35,13 @@
 
 package imagej.script.editor.command;
 
-import java.io.File;
-
 import imagej.command.Command;
-import imagej.plugin.Parameter;
 import imagej.script.editor.FileFunctions;
 import imagej.script.editor.TextEditor;
+
+import java.io.File;
+
+import org.scijava.plugin.Parameter;
 
 /**
  * Calls <tt>git grep</tt> in a given directory.

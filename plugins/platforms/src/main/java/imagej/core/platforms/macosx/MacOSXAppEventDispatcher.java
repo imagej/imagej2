@@ -58,7 +58,6 @@ import com.apple.eawt.ScreenSleepListener;
 import com.apple.eawt.SystemSleepListener;
 import com.apple.eawt.UserSessionListener;
 
-import imagej.event.EventService;
 import imagej.platform.event.AppAboutEvent;
 import imagej.platform.event.AppFocusEvent;
 import imagej.platform.event.AppPreferencesEvent;
@@ -69,6 +68,8 @@ import imagej.platform.event.AppScreenSleepEvent;
 import imagej.platform.event.AppSystemSleepEvent;
 import imagej.platform.event.AppUserSessionEvent;
 import imagej.platform.event.AppVisibleEvent;
+
+import org.scijava.event.EventService;
 
 /**
  * Rebroadcasts Mac OS X application events as ImageJ events.

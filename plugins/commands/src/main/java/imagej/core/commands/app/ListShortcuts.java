@@ -35,21 +35,23 @@
 
 package imagej.core.commands.app;
 
-import java.util.List;
-
-import imagej.MenuEntry;
-import imagej.MenuPath;
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.table.DefaultGenericTable;
 import imagej.data.table.GenericTable;
-import imagej.input.Accelerator;
 import imagej.menu.MenuConstants;
-import imagej.module.ItemIO;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
+
+import java.util.List;
+
+import org.scijava.ItemIO;
+import org.scijava.MenuEntry;
+import org.scijava.MenuPath;
+import org.scijava.input.Accelerator;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Lists ImageJ commands with keyboard shortcuts in a table.
@@ -59,7 +61,7 @@ import imagej.plugin.Plugin;
  *
  * @author Curtis Rueden
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.PLUGINS_LABEL,
 		weight = MenuConstants.PLUGINS_WEIGHT,
 		mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Shortcuts"),

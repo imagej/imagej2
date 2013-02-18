@@ -35,20 +35,22 @@
 
 package imagej.core.commands.animation;
 
+import imagej.command.Command;
 import imagej.command.DynamicCommand;
 import imagej.data.animation.Animation;
 import imagej.data.animation.AnimationService;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
 import imagej.module.MutableModuleItem;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import java.util.ArrayList;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * Plugin for adjusting options that affect the behavior of animations.
@@ -56,7 +58,7 @@ import net.imglib2.meta.AxisType;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-@Plugin(menu = {
+@Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Animation", mnemonic = 'a'),

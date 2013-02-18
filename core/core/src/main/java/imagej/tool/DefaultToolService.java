@@ -35,7 +35,6 @@
 
 package imagej.tool;
 
-import imagej.InstantiableException;
 import imagej.display.event.DisplayEvent;
 import imagej.display.event.input.KyPressedEvent;
 import imagej.display.event.input.KyReleasedEvent;
@@ -45,15 +44,6 @@ import imagej.display.event.input.MsMovedEvent;
 import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.log.LogService;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.plugin.PluginInfo;
-import imagej.plugin.PluginService;
-import imagej.service.AbstractService;
-import imagej.service.Service;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.tool.event.ToolDeactivatedEvent;
 
@@ -61,6 +51,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.scijava.InstantiableException;
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 /**
  * Default service for keeping track of available tools, including which tool is
@@ -292,7 +293,7 @@ public class DefaultToolService extends AbstractService implements ToolService
 				log.error("Invalid tool: " + info.getName(), e);
 				continue;
 			}
-			if (info.isAlwaysActive()) {
+			if (info.is(Tool.ALWAYS_ACTIVE)) {
 				alwaysActiveTools.put(info.getName(), tool);
 				alwaysActiveToolList.add(tool);
 			}
@@ -309,7 +310,7 @@ public class DefaultToolService extends AbstractService implements ToolService
 		// NB: An event with a null display came from the main app frame.
 		// We only pass these events on to tools flagged with activeInAppFrame.
 		final PluginInfo<?> toolInfo = tool == null ? null : tool.getInfo();
-		return toolInfo != null && toolInfo.isActiveInAppFrame();
+		return toolInfo != null && toolInfo.is(Tool.ACTIVE_IN_APP_FRAME);
 	}
 
 }

@@ -36,8 +36,6 @@
 package imagej.ui.pivot;
 
 import imagej.display.Display;
-import imagej.log.LogService;
-import imagej.plugin.Plugin;
 import imagej.ui.AbstractUserInterface;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
@@ -51,6 +49,8 @@ import java.lang.reflect.Field;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.pivot.wtk.DesktopApplicationContext;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Plugin;
 
 /**
  * Apache Pivot-based user interface for ImageJ.

@@ -35,19 +35,12 @@
 
 package imagej.data.lut;
 
-import imagej.MenuEntry;
-import imagej.MenuPath;
 import imagej.command.CommandInfo;
 import imagej.data.table.ResultsTable;
 import imagej.data.table.TableLoader;
-import imagej.log.LogService;
 import imagej.menu.MenuConstants;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
-import imagej.service.AbstractService;
-import imagej.service.Service;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -63,6 +56,14 @@ import java.util.List;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.ops.util.Tuple2;
+
+import org.scijava.MenuEntry;
+import org.scijava.MenuPath;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
 
 // Attribution: Much of this code was adapted from ImageJ 1.x LutLoader class
 // courtesy of Wayne Rasband.

@@ -38,11 +38,12 @@ package imagej.legacy;
 import ij.ImagePlus;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.event.EventService;
-import imagej.log.LogService;
 import imagej.options.OptionsService;
-import imagej.plugin.PluginService;
-import imagej.service.Service;
+
+import org.scijava.event.EventService;
+import org.scijava.log.LogService;
+import org.scijava.plugin.PluginService;
+import org.scijava.service.Service;
 
 /**
  * Interface for services that work with legacy ImageJ 1.x.

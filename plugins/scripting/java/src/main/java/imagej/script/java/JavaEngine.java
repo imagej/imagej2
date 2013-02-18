@@ -35,18 +35,14 @@
 
 package imagej.script.java;
 
-import imagej.Context;
 import imagej.build.minimaven.BuildEnvironment;
 import imagej.build.minimaven.Coordinate;
 import imagej.build.minimaven.MavenProject;
 import imagej.command.Command;
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
-import imagej.plugin.Plugin;
-import imagej.plugin.PluginService;
 import imagej.script.AbstractScriptEngine;
 import imagej.script.ScriptService;
-import imagej.util.FileUtils;
 import imagej.util.LineOutputStream;
 
 import java.io.BufferedReader;
@@ -80,6 +76,10 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.scijava.Context;
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginService;
+import org.scijava.util.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;

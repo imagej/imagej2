@@ -35,8 +35,10 @@
 
 package imagej.plugin;
 
-import imagej.Contextual;
 import imagej.module.ModulePreprocessor;
+
+import org.scijava.Contextual;
+import org.scijava.plugin.Plugin;
 
 /**
  * A preprocessor plugin defines a step that occurs just prior to the actual

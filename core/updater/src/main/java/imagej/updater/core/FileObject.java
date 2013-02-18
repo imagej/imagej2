@@ -36,7 +36,6 @@
 package imagej.updater.core;
 
 import imagej.updater.util.Util;
-import imagej.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,12 +51,16 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Matcher;
 
+import org.scijava.util.FileUtils;
+
 /**
  * This class represents a file handled by the updater.
+ * <p>
+ * The ImageJ updater knows about certain files (see
+ * {@link Checksummer#directories} for details). These files can be local-only,
+ * up-to-date, updateable, etc.
+ * </p>
  * 
- * The ImageJ updater knows about certain files (see {@link Checksummer#directories} for details).
- * These files can be local-only, up-to-date, updateable, etc.
- *  
  * @author Johannes Schindelin
  */
 @SuppressWarnings("hiding")
@@ -70,7 +73,8 @@ public class FileObject {
 		// Instead, it is Long.parseLong(Util.timestamp(epoch))
 		public long timestamp;
 
-		public String filename; // optional (can be different from FileObject.filename if the version was different
+		// optional (can differ from FileObject.filename if the version differs)
+		public String filename;
 
 		Version(final String checksum, final long timestamp) {
 			this.checksum = checksum;

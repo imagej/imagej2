@@ -35,14 +35,14 @@
 
 package imagej.ui.swt.widget;
 
-import imagej.Priority;
-import imagej.plugin.Plugin;
 import imagej.widget.InputWidget;
 import imagej.widget.MessageWidget;
 import imagej.widget.WidgetModel;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
 
 /**
  * SWT implementation of message widget.

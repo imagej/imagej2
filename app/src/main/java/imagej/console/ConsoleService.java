@@ -35,7 +35,7 @@
 
 package imagej.console;
 
-import imagej.service.Service;
+import org.scijava.service.Service;
 
 /**
  * Interface for service that manages interaction with the console.

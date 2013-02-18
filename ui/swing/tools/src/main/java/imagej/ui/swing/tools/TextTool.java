@@ -35,10 +35,11 @@
 
 package imagej.ui.swing.tools;
 
-import imagej.input.MouseCursor;
-import imagej.plugin.Plugin;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
+
+import org.scijava.input.MouseCursor;
+import org.scijava.plugin.Plugin;
 
 /**
  * TODO

@@ -43,9 +43,6 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.display.event.DelayedPositionEvent;
 import imagej.data.display.event.LutsChangedEvent;
-import imagej.event.EventHandler;
-import imagej.event.EventService;
-import imagej.event.EventSubscriber;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.SwingColorBar;
@@ -76,6 +73,10 @@ import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.miginfocom.swing.MigLayout;
+
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.event.EventSubscriber;
 
 /**
  * Swing implementation of image display panel. Contains a label, a graphics

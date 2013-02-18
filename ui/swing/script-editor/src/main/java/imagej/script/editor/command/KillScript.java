@@ -35,14 +35,15 @@
 
 package imagej.script.editor.command;
 
+import imagej.command.DynamicCommand;
+import imagej.module.MutableModuleItem;
+import imagej.script.editor.TextEditor;
+import imagej.script.editor.TextEditor.Executer;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import imagej.command.DynamicCommand;
-import imagej.module.MutableModuleItem;
-import imagej.plugin.Parameter;
-import imagej.script.editor.TextEditor;
-import imagej.script.editor.TextEditor.Executer;
+import org.scijava.plugin.Parameter;
 
 /**
  * Kills a running script started in the given script editor.

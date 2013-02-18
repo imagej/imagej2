@@ -39,9 +39,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import imagej.Context;
 
 import org.junit.Test;
+import org.scijava.Context;
 
 /**
  * Unit tests for core {@link Display} classes.

@@ -35,17 +35,19 @@
 
 package imagej.core.commands.overlay;
 
+import imagej.command.Command;
 import imagej.data.Data;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.Overlay;
 import imagej.menu.MenuConstants;
-import imagej.plugin.Menu;
-import imagej.plugin.Parameter;
-import imagej.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * A plugin to change the properties (e.g., line color, line width) of a set of
@@ -53,7 +55,7 @@ import java.util.List;
  * 
  * @author Barry DeZonia
  */
-@Plugin(label = "Overlay Properties...", menu = {
+@Plugin(type = Command.class, label = "Overlay Properties...", menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Overlay", mnemonic = 'o'),

@@ -35,7 +35,7 @@
 
 package imagej.core.commands.display.interactive.threshold;
 
-import imagej.plugin.Plugin;
+import org.scijava.plugin.Plugin;
 
 //NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
 //plugin found in Fiji (version 1.14).

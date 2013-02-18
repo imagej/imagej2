@@ -37,7 +37,6 @@ package imagej.legacy.translate;
 
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import imagej.Context;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.display.ImageDisplay;
@@ -46,6 +45,8 @@ import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.Context;
 
 /**
  * Creates {@link ImageDisplay}s containing gray data values from
