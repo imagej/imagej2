@@ -52,29 +52,6 @@ The core component also includes ImageJ's framework for extensibility, which all
 		</plugins>
 	</build>
 
-	<!-- NB: Enable dependency on tools.jar. See:
-	     http://maven.apache.org/general.html#tools-jar-dependency -->
-	<profiles>
-		<profile>
-			<id>tools-jar</id> <!-- required for the sezpoz checker test -->
-			<activation>
-				<file>
-					<!-- NB: Custom properties do not work here, so we hardcode. -->
-					<exists>${java.home}/../lib/tools.jar</exists>
-				</file>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>com.sun</groupId>
-					<artifactId>tools</artifactId>
-					<version>1.4.2</version>
-					<scope>system</scope>
-					<systemPath>${java.home}/../lib/tools.jar</systemPath>
-				</dependency>
-			</dependencies>
-		</profile>
-	</profiles>
-
 	<!-- NB: for project parent, in case of partial checkout -->
 	<repositories>
 		<repository>
