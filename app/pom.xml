@@ -44,18 +44,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>net.java.sezpoz</groupId>
-			<artifactId>sezpoz</artifactId>
-			<version>${sezpoz.version}</version>
-			<!-- NB: Technically, the scope of SezPoz for ij-app is only test.
-				But transitively, it is needed at runtime, and setting it to test
-				here hoses things up. So we use compile scope instead; the
-				dependency:analyze checker does not seem to mind.
-			<scope>test</scope>
-			-->
-		</dependency>
-
-		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-options</artifactId>
 			<version>${project.version}</version>

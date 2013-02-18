@@ -12,7 +12,7 @@
 set -e
 
 ROOT=`cd "$(dirname $0)/.." ; pwd`
-EXTRA='src/main/assembly/all'
+ALL='src/main/assembly/all'
 
 cd "$ROOT/app"
 
@@ -20,30 +20,30 @@ cd "$ROOT/app"
 mvn package dependency:copy-dependencies
 
 # combine SezPoz annotations
-mkdir -p "$EXTRA/META-INF/annotations"
-java -cp 'target/test-classes:target/classes:target/dependency/*' \
-  imagej.util.CombineAnnotations
+mkdir -p "$ALL/META-INF/annotations"
+java -cp 'target/classes:target/dependency/*' \
+  org.scijava.util.CombineAnnotations
 
 # add source code
 echo "Copying source files..."
-# NB: This is a lame HACK because I am too stupid to figure out how to write a
-# proper Maven assembly descriptor that includes the source code of all IJ2
+# NB: This is a lame HACK because I am too stupid to figure out how to write
+# a proper Maven assembly descriptor that includes the source code of all
 # modules in the toplevel directory structure alongside the class files.
-files=`find ../app ../core ../platform ../ui -name '*.java' | grep 'src/main/java/'`
+files=`find .. -name '*.java' | grep 'src/main/java/'`
 for f in $files
 do
   dest=`echo $f | sed -e 's/.*\/src\/main\/java\///'`
   dir=`echo $dest | sed -e 's/\/[^\/]*\.java//'`
-  mkdir -p "$EXTRA/$dir"
-  cp "$f" "$EXTRA/$dest"
+  mkdir -p "$ALL/$dir"
+  cp "$f" "$ALL/$dest"
 done
 
 # generate combined JAR file
 mvn -P deps package
 
 # clean up
-rm $EXTRA/META-INF/annotations/imagej.*
-rm -rf "$EXTRA/imagej"
+rm $ALL/META-INF/annotations/org.scijava.*
+rm -rf "$ALL/imagej"
 
 # show results
 pwd
