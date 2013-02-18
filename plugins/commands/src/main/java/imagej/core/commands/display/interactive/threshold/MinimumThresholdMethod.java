@@ -70,7 +70,6 @@ public class MinimumThresholdMethod implements AutoThresholdMethod {
 		// Images with histograms having extremely unequal peaks or a broad and
 		// ??at valley are unsuitable for this method.
 		int iter = 0;
-		int threshold = -1;
 		int max = -1;
 		double[] iHisto = new double[histogram.length];
 
@@ -96,14 +95,16 @@ public class MinimumThresholdMethod implements AutoThresholdMethod {
 				return -1;
 			}
 		}
-		// The threshold is the minimum between the two peaks. modified for 16 bits
-		for (int i = 1; i < max; i++) {
+		// The threshold is the minimum between the two peaks.
+		// NB - BDZ updated code to match HistThresh 1.0.3 implementation
+		double[] y = iHisto;
+		boolean peakFound = false;
+		for (int k = 1; k < max; k++) {
 			// IJ.log(" "+i+"  "+iHisto[i]);
-			if (iHisto[i - 1] > iHisto[i] && iHisto[i + 1] >= iHisto[i]) {
-				threshold = i;
-			}
+			if (y[k - 1] < y[k] && y[k + 1] < y[k]) peakFound = true;
+			if (peakFound && y[k - 1] >= y[k] && y[k + 1] >= y[k]) return k;
 		}
-		return threshold;
+		return -1;
 	}
 
 	@Override
