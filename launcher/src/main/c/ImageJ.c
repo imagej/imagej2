@@ -1501,6 +1501,8 @@ static void hide_splash(void)
 	SplashClose = NULL;
 }
 
+static int is_lion(void);
+
 /*
  * On Linux, Java5 does not find the library path with libmlib_image.so,
  * so we have to add that explicitely to the LD_LIBRARY_PATH.
@@ -1557,6 +1559,22 @@ static void maybe_reexec_with_correct_lib_path(struct string *java_library_path)
 	hide_splash();
 	execvp(main_argv_backup[0], main_argv_backup);
 	die("Could not re-exec with correct library lookup (%d: %s)!", errno, strerror(errno));
+#elif defined(__APPLE__)
+	const char *original;
+
+	if (!is_lion())
+		return;
+
+	original = getenv("DYLD_LIBRARY_PATH");
+	if (original != NULL && strlen(original) == java_library_path->length)
+		return;
+
+	setenv_or_exit("DYLD_LIBRARY_PATH", java_library_path->buffer, 1);
+	if (verbose)
+		error("Re-executing with correct library lookup path (%s)", java_library_path->buffer);
+	hide_splash();
+	execvp(main_argv_backup[0], main_argv_backup);
+	die("Could not re-exec with correct library lookup: %d (%s)", errno, strerror(errno));
 #endif
 }
 
@@ -4523,11 +4541,37 @@ static int start_ij_macosx(void)
 static int is_osrelease(int min)
 {
 	int mib[2] = { CTL_KERN, KERN_OSRELEASE };
-	char os_release[128];
+	static char os_release[128];
 	size_t len = sizeof(os_release);;
+	static int initialized;
 
-	return sysctl(mib, 2, os_release, &len, NULL, 0) != -1 &&
-		atoi(os_release) >= min;
+	if (!initialized) {
+		if (sysctl(mib, 2, os_release, &len, NULL, 0) == -1) {
+			if (verbose)
+				error("sysctl to determine os_release failed: %d (%s)", errno, strerror(errno));
+			return 0;
+		}
+		if (verbose)
+			error("sysctl says os_release is %s", os_release);
+		initialized = 1;
+	}
+
+	return atoi(os_release) >= min;
+}
+
+static MAYBE_UNUSED int is_mountain_lion(void)
+{
+	return is_osrelease(12);
+}
+
+static int is_lion(void)
+{
+	return is_osrelease(11);
+}
+
+static MAYBE_UNUSED int is_snow_leopard(void)
+{
+	return is_osrelease(10);
 }
 
 static int is_leopard(void)
