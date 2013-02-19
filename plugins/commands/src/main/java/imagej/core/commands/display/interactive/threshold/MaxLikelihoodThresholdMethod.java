@@ -50,6 +50,10 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = AutoThresholdMethod.class, name = "MaxLikelihood")
 public class MaxLikelihoodThresholdMethod implements AutoThresholdMethod {
 
+	private static final int MAX_ATTEMPTS = 10000;
+
+	private String errMessage;
+
 	@Override
 	public int getThreshold(long[] histogram) {
 		/*
@@ -78,7 +82,7 @@ public class MaxLikelihoodThresholdMethod implements AutoThresholdMethod {
 			See README for more copyright information.
 		*/
 
-		int n = histogram.length - 1;
+		final int n = histogram.length - 1;
 
 		// I == the Image as double data
 
@@ -114,10 +118,24 @@ public class MaxLikelihoodThresholdMethod implements AutoThresholdMethod {
 		double tau2_prev = Double.NaN;
 
 		double[] ind = indices(n + 1);
-		double[] ind2 = sqr(ind);
+		double[] ind2 = new double[n + 1];
+		double[] phi = new double[n + 1];
+		double[] gamma = new double[n + 1];
+		double[] tmp1 = new double[n + 1];
+		double[] tmp2 = new double[n + 1];
+		double[] tmp3 = new double[n + 1];
+		double[] tmp4 = new double[n + 1];
 
+		sqr(ind, ind2);
+
+		int attempts = 0;
 		while (true) {
-			double[] phi = new double[n+1];
+			if (attempts++ > MAX_ATTEMPTS) {
+				errMessage =
+					"Max likelihood method not converging after " + MAX_ATTEMPTS +
+						" attempts.";
+				return -1;
+			}
 		  for (int i = 0; i <= n; i++) {
 		  	double dmu2 = (i-mu)*(i-mu);
 		  	double dnu2 = (i-nu)*(i-nu);
@@ -126,7 +144,7 @@ public class MaxLikelihoodThresholdMethod implements AutoThresholdMethod {
 		         (q/Math.sqrt(tau2)) * Math.exp(-dnu2 / (2*tau2)));
 		  }
 
-			double[] gamma = minus(1, phi);
+			minus(1, phi, gamma);
 		  double F = mul(phi,y);
 		  double G = mul(gamma,y);
 		  p_prev = p;
@@ -135,16 +153,17 @@ public class MaxLikelihoodThresholdMethod implements AutoThresholdMethod {
 		  nu_prev = nu;
 		  sigma2_prev = nu;
 		  tau2_prev = nu;
-		  p = F/Utils.A(y,n);
-		  q = G/Utils.A(y,n);
-			double[] tmp = scale(ind, phi);
-			mu = mul(tmp, y) / F;
-			tmp = scale(ind, gamma);
-			nu = mul(tmp, y) / G;
-			tmp = scale(ind2, phi);
-			sigma2 = mul(tmp, y) / F - (mu * mu);
-			tmp = scale(ind2, gamma);
-			tau2 = mul(tmp, y) / G - (nu * nu);
+			double Ayn = Utils.A(y, n);
+			p = F / Ayn;
+			q = G / Ayn;
+			scale(ind, phi, tmp1);
+			mu = mul(tmp1, y) / F;
+			scale(ind, gamma, tmp2);
+			nu = mul(tmp2, y) / G;
+			scale(ind2, phi, tmp3);
+			sigma2 = mul(tmp3, y) / F - (mu * mu);
+			scale(ind2, gamma, tmp4);
+			tau2 = mul(tmp4, y) / G - (nu * nu);
 
 		  if (Math.abs(mu-mu_prev) < eps) break;
 		  if (Math.abs(nu-nu_prev) < eps) break;
@@ -163,7 +182,10 @@ public class MaxLikelihoodThresholdMethod implements AutoThresholdMethod {
 		  
 		//% If the threshold would be imaginary, return with threshold set to zero.
 		double sqterm = w1*w1-w0*w2;
-		if (sqterm < 0) return -1;
+		if (sqterm < 0) {
+			errMessage = "Max likelihood threshold would be imaginary";
+			return -1;
+		}
 
 		//% The threshold is the integer part of the solution of the quadratic
 		//% equation.
@@ -172,8 +194,7 @@ public class MaxLikelihoodThresholdMethod implements AutoThresholdMethod {
 
 	@Override
 	public String getMessage() {
-		// TODO Auto-generated method stub
-		return null;
+		return errMessage;
 	}
 
 	// does a single row*col multiplcation of a matrix multiply
@@ -188,20 +209,20 @@ public class MaxLikelihoodThresholdMethod implements AutoThresholdMethod {
 		return sum;
 	}
 
-	double[] scale(double[] list1, double[] list2) {
-		if (list1.length != list2.length) throw new IllegalArgumentException(
-			"list lengths differ");
-		double[] out = new double[list1.length];
+	void scale(double[] list1, double[] list2, double[] output) {
+		if ((list1.length != list2.length) || (list1.length != output.length)) {
+			throw new IllegalArgumentException("list lengths differ");
+		}
 		for (int i = 0; i < list1.length; i++)
-			out[i] = list1[i] * list2[i];
-		return out;
+			output[i] = list1[i] * list2[i];
 	}
 
-	double[] sqr(double[] list) {
-		double[] out = new double[list.length];
-		for (int i = 0; i < list.length; i++)
-			out[i] = list[i] * list[i];
-		return out;
+	void sqr(double[] in, double[] out) {
+		if (in.length != out.length) {
+			throw new IllegalArgumentException("list lengths differ");
+		}
+		for (int i = 0; i < in.length; i++)
+			out[i] = in[i] * in[i];
 	}
 
 	double[] indices(int n) {
@@ -211,12 +232,13 @@ public class MaxLikelihoodThresholdMethod implements AutoThresholdMethod {
 		return indices;
 	}
 
-	double[] minus(long num, double[] vals) {
-		double[] out = new double[vals.length];
-		for (int i = 0; i < vals.length; i++) {
-			out[i] = num - vals[i];
+	void minus(long num, double[] phi, double[] gamma) {
+		if (phi.length != gamma.length) {
+			throw new IllegalArgumentException("list lengths differ");
 		}
-		return out;
+		for (int i = 0; i < phi.length; i++) {
+			gamma[i] = num - phi[i];
+		}
 	}
 
 }
