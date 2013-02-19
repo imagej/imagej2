@@ -53,6 +53,7 @@ import imagej.widget.Button;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
@@ -90,7 +91,6 @@ import org.scijava.plugin.PluginService;
 //  - the min and max are not rounded to integers. And dark/light bounce reuses
 //     the cutoff instead of cutoff + 1. Think how best to calc and show range.
 //     There is a related TODO below.
-//  - Gabriel's code may be better than IJ1 for displaying 16-bit histograms
 //  - should we make binary images rather than 0/255? Or just call convert to
 //     mask? or is it fine?
 //  - when selecting Apply button the threshold is overdrawn but still exists.
@@ -111,11 +111,6 @@ import org.scijava.plugin.PluginService;
 //     someone opens thresh command, then uses other plugin to change data
 //     values because the stacked (and other) histograms will not be updated.
 //     Maybe handle dataset updated events to recalc hist as needed.
-//  - incorporate Antti's changes to the minimum method from 1.0.2 to 1.0.3 of
-//     the HistThresh Matlab toolbox into our appropriate autothresh method. Our
-//     method does not match because Johannes made some 16-bit changes.
-//     Currently getting the two versions of the original source to see what
-//     Antti changed.
 
 /**
  * @author Barry DeZonia
@@ -271,9 +266,11 @@ public class Threshold extends InteractiveCommand {
 		AutoThresholdMethod method = methods.get(methodName);
 		int cutoff = method.getThreshold(histogram());
 		if (cutoff < 0) {
-			uiSrv.getDefaultUI().dialogPrompt(method.getMessage(),
+			DialogPrompt dialog =
+				uiSrv.getDefaultUI().dialogPrompt(method.getMessage(),
 				"Thresholding failure", DialogPrompt.MessageType.INFORMATION_MESSAGE,
 				DialogPrompt.OptionType.DEFAULT_OPTION);
+			dialog.prompt();
 			return;
 		}
 		else if (method.getMessage() != null) {
@@ -314,7 +311,7 @@ public class Threshold extends InteractiveCommand {
 			cursor.localize(pos);
 			double value = cursor.get().getRealDouble();
 			boolean set;
-			if (value < min || value > max) {
+			if (value < min || value > max || Double.isNaN(value)) {
 				value = OFF;
 				set = true;
 			}
@@ -395,10 +392,9 @@ public class Threshold extends InteractiveCommand {
 	private void populateThreshMethods() {
 		methods = new HashMap<String, AutoThresholdMethod>();
 		final ArrayList<String> methodNames = new ArrayList<String>();
-
-		for (final PluginInfo<AutoThresholdMethod> info : pluginSrv
-			.getPluginsOfType(AutoThresholdMethod.class))
-		{
+		List<PluginInfo<AutoThresholdMethod>> infos =
+			pluginSrv.getPluginsOfType(AutoThresholdMethod.class);
+		for (final PluginInfo<AutoThresholdMethod> info : infos) {
 			try {
 				final String name = info.getName();
 				final AutoThresholdMethod method = info.createInstance();
@@ -428,8 +424,8 @@ public class Threshold extends InteractiveCommand {
 			cursor.fwd();
 			double value = cursor.get().getRealDouble();
 			if (!Double.isNaN(value)) {
-				dataMin = Math.min(dataMin, value);
-				dataMax = Math.max(dataMax, value);
+				if (value < dataMin) dataMin = value;
+				if (value > dataMax) dataMax = value;
 			}
 		}
 	}
@@ -464,8 +460,15 @@ public class Threshold extends InteractiveCommand {
 		IntervalView<? extends RealType<?>> view = Views.interval(img, min, max);
 		IterableInterval<? extends RealType<?>> data = Views.iterable(view);
 		Cursor<? extends RealType<?>> cursor = data.cursor();
-		double range = cursor.get().getMaxValue() - cursor.get().getMinValue();
-		long[] histogram = initHistogram(range, existingHist);
+		final long[] histogram;
+		if (existingHist == null) {
+			double range = cursor.get().getMaxValue() - cursor.get().getMinValue();
+			histogram = allocateHistogram(range);
+		}
+		else {
+			zeroOut(existingHist);
+			histogram = existingHist;
+		}
 		while (cursor.hasNext()) {
 			double value = cursor.next().getRealDouble();
 			double relPos = (value - dataMin) / (dataMax - dataMin);
@@ -482,8 +485,16 @@ public class Threshold extends InteractiveCommand {
 		Dataset ds = imgDispSrv.getActiveDataset(display);
 		RandomAccess<? extends RealType<?>> accessor =
 			ds.getImgPlus().randomAccess();
-		double range = accessor.get().getMaxValue() - accessor.get().getMinValue();
-		long[] histogram = initHistogram(range, existingHist);
+		final long[] histogram;
+		if (existingHist == null) {
+			double range =
+				accessor.get().getMaxValue() - accessor.get().getMinValue();
+			histogram = allocateHistogram(range);
+		}
+		else {
+			zeroOut(existingHist);
+			histogram = existingHist;
+		}
 		PointSet points = allData ? allPlanes(ds) : viewedPlane(ds);
 		PointSetIterator iter = points.iterator();
 		while (iter.hasNext()) {
@@ -513,14 +524,9 @@ public class Threshold extends InteractiveCommand {
 		return new HyperVolumePointSet(pt1, pt2);
 	}
 
-	private long[] initHistogram(double dataRangeSize, long[] existingHist) {
-		if (existingHist != null) {
-			for (int i = 0; i < existingHist.length; i++)
-				existingHist[i] = 0;
-			return existingHist;
-		}
+	private long[] allocateHistogram(double dataRangeSize) {
 		double range = dataRangeSize;
-		// TODO decide how we want this to work
+		// TODO decide how we want this to work. The bigger the slower.
 		// TMP HACK TO TEST SPEED
 		if (range > 1024) range = 1024;
 		// WAY WE WANT GOING FORWARD?
@@ -529,4 +535,9 @@ public class Threshold extends InteractiveCommand {
 		return new long[histSize];
 	}
 
+	private void zeroOut(long[] histogram) {
+		for (int i = 0; i < histogram.length; i++) {
+			histogram[i] = 0;
+		}
+	}
 }
