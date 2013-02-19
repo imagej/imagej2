@@ -314,7 +314,7 @@ public class ThresholdOverlay extends AbstractOverlay
 	 * whose value is less than the threshold range are classified as -1. Data
 	 * points whose value is within the threshold range are classified as 0. And
 	 * data points whose value is greater than the threshold range are classified
-	 * as 1.
+	 * as 1. NaN data values are classified as Integer.MAX_VALUE.
 	 * <p>
 	 * This method is used by the renderers to quickly determine a point's status
 	 * and can be used generally by interested parties.
@@ -325,6 +325,7 @@ public class ThresholdOverlay extends AbstractOverlay
 	public int classify(long[] point) {
 		function.compute(point, variable);
 		double val = variable.getRealDouble();
+		if (Double.isNaN(val)) return Integer.MAX_VALUE;
 		if (val < conditionWithin.getMin()) return -1;
 		if (val > conditionWithin.getMax()) return 1;
 		return 0;

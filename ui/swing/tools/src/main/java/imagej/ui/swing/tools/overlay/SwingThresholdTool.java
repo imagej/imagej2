@@ -85,9 +85,9 @@ public class SwingThresholdTool extends
 		ImageDisplayService dispServ = getDisplayService();
 		ImageDisplay display = dispServ.getActiveImageDisplay();
 		if (display == null) return null;
-		ThresholdOverlay overlay = getThresholdService().getThreshold(display);
 		Dataset ds = dispServ.getActiveDataset(display);
 		if (ds == null) return null;
+		ThresholdOverlay overlay = getThresholdService().getThreshold(display);
 		SwingThresholdFigure figure =
 			new SwingThresholdFigure(display, ds, overlay);
 		overlay.setFigure(figure);
