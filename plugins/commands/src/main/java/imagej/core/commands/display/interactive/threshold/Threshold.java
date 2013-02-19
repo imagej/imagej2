@@ -93,8 +93,10 @@ import org.scijava.plugin.PluginService;
 //     There is a related TODO below.
 //  - should we make binary images rather than 0/255? Or just call convert to
 //     mask? or is it fine?
-//  - when selecting Apply button the threshold is overdrawn but still exists.
-//     Should we delete the threshold? or redisplay?
+//  - we delete threshold when someone Apply's the current thresh method to
+//     change the existing pixels. if we don't then the threshold is overdrawn
+//     but still exists. It is not immediately visible and making it so will
+//     maybe display poorly. Do we want to kill thresh or not? TODO below.
 //  - there is a disconnect with thresh overlays and other overlays. thresh
 //     overlays are concerned with a single dataset. overlays in general apply
 //     to displays. We now have plugins that take as an input a display and
@@ -321,6 +323,7 @@ public class Threshold extends InteractiveCommand {
 			}
 			if (set) cursor.get().setReal(value);
 		}
+		deleteThreshold(); // TODO - maybe not.
 		ds.update();
 	}
 
