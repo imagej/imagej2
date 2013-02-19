@@ -105,7 +105,8 @@ import org.scijava.plugin.PluginService;
 //     only registers a single thresh overlay per display. Need to discuss this
 //     further. I'm sure CTR had ideas about overlays across datasets in a
 //     display.
-//  - fix code that determines histogram table size. There is a related TODO below.
+//  - fix code that determines histogram table size. The existing code is just
+//     a simple approach
 //  - make min and max fields into sliders. There is a related TODO below.
 //  - note that as designed the stacked histogram is always generated at start.
 //     We could try different approach to speed dialog appearence. But if we do
@@ -462,16 +463,16 @@ public class Threshold extends InteractiveCommand {
 		Img<? extends RealType<?>> img = ds.getImgPlus();
 		IntervalView<? extends RealType<?>> view = Views.interval(img, min, max);
 		IterableInterval<? extends RealType<?>> data = Views.iterable(view);
-		Cursor<? extends RealType<?>> cursor = data.cursor();
 		final long[] histogram;
 		if (existingHist == null) {
-			double range = cursor.get().getMaxValue() - cursor.get().getMinValue();
-			histogram = allocateHistogram(range);
+			// +1 needed for int but maybe not float
+			histogram = allocateHistogram(dataMax - dataMin + 1);
 		}
 		else {
 			zeroOut(existingHist);
 			histogram = existingHist;
 		}
+		Cursor<? extends RealType<?>> cursor = data.cursor();
 		while (cursor.hasNext()) {
 			double value = cursor.next().getRealDouble();
 			double relPos = (value - dataMin) / (dataMax - dataMin);
@@ -486,18 +487,17 @@ public class Threshold extends InteractiveCommand {
 		long[] existingHist)
 	{
 		Dataset ds = imgDispSrv.getActiveDataset(display);
-		RandomAccess<? extends RealType<?>> accessor =
-			ds.getImgPlus().randomAccess();
 		final long[] histogram;
 		if (existingHist == null) {
-			double range =
-				accessor.get().getMaxValue() - accessor.get().getMinValue();
-			histogram = allocateHistogram(range);
+			// +1 needed for int but maybe not float
+			histogram = allocateHistogram(dataMax - dataMin + 1);
 		}
 		else {
 			zeroOut(existingHist);
 			histogram = existingHist;
 		}
+		RandomAccess<? extends RealType<?>> accessor =
+			ds.getImgPlus().randomAccess();
 		PointSet points = allData ? allPlanes(ds) : viewedPlane(ds);
 		PointSetIterator iter = points.iterator();
 		while (iter.hasNext()) {
@@ -527,14 +527,19 @@ public class Threshold extends InteractiveCommand {
 		return new HyperVolumePointSet(pt1, pt2);
 	}
 
-	private long[] allocateHistogram(double dataRangeSize) {
-		double range = dataRangeSize;
-		// TODO decide how we want this to work. The bigger the slower.
-		// TMP HACK TO TEST SPEED
-		if (range > 1024) range = 1024;
-		// WAY WE WANT GOING FORWARD?
-		// if (range > 65536) range = 65536;
-		int histSize = (int) Math.round(range);
+	private long[] allocateHistogram(double dataRange) {
+		// TODO - size of histogram affects speed of all autothresh methods
+		// What is the best way to determine size?
+		// Do we want some power of two as size? For now yes.
+		final int MAX = 4096;
+		int histSize = -1;
+		for (int i = 256; i <= MAX; i *= 2) {
+			if (dataRange <= i) {
+				histSize = i;
+				break;
+			}
+		}
+		if (histSize == -1) histSize = MAX;
 		return new long[histSize];
 	}
 
