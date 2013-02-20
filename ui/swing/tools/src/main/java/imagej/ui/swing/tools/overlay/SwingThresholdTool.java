@@ -64,7 +64,8 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  */
 @Plugin(type = JHotDrawAdapter.class, name = "Threshold",
-	description = "Create threshold overlay", visible = false)
+	description = "Create threshold overlay",
+	iconPath = "/icons/tools/blank.png", visible = false)
 public class SwingThresholdTool extends
 	AbstractJHotDrawAdapter<ThresholdOverlay, SwingThresholdFigure>
 {
