@@ -3981,6 +3981,122 @@ static void maybe_write_legacy_config(void)
 #endif
 }
 
+static int write_desktop_file(const char *path, const char *title, const char *executable_path, const char *icon_path, const char *wm_class) {
+	FILE *f = fopen(path, "w");
+
+	if (!f) {
+		if (verbose)
+			error("Could not write to '%s': %d (%s)", path, errno, strerror(errno));
+		return 1;
+	}
+
+	fprintf(f, "[Desktop Entry]\n");
+	fprintf(f, "Version=1.0\n");
+	fprintf(f, "Name=%s\n", title);
+	fprintf(f, "GenericName=%s\n", title);
+	fprintf(f, "X-GNOME-FullName=%s\n", title);
+	fprintf(f, "Comment=Scientific Image Analysis\n");
+	fprintf(f, "Type=Application\n");
+	fprintf(f, "Categories=Education;Science;ImageProcessing;\n");
+	fprintf(f, "Exec=%s\n", executable_path);
+	fprintf(f, "TryExec=%s\n", executable_path);
+	fprintf(f, "Terminal=false\n");
+	fprintf(f, "StartupNotify=true\n");
+	if (icon_path)
+		fprintf(f, "Icon=%s\n", icon_path);
+	if (wm_class)
+		fprintf(f, "StartupWMClass=%s\n", wm_class);
+	fclose(f);
+#ifndef WIN32
+	chmod(path, 0755);
+#endif
+}
+
+static void maybe_write_desktop_file(void)
+{
+#if !defined(WIN32) && !defined(__APPLE__)
+	const char *title, *name, *wm_class = NULL;
+	struct string *path, *executable_path, *icon_path = NULL;
+
+	if (!startup_class)
+		startup_class = main_class;
+	if (!startup_class)
+		return;
+	if (!strcmp("imagej.ClassLauncher", startup_class)) {
+		if (verbose)
+			error("Could not determine startup class!");
+		return;
+	}
+	if (!strcmp(startup_class, legacy_ij1_class)) {
+		name = "ImageJ";
+		title = "ImageJ";
+		icon_path = string_copy(ij_path("ImageJ.png"));
+		wm_class = "ij-ImageJ";
+	}
+	else if (!strcmp(startup_class, default_fiji1_class)) {
+		name = "Fiji";
+		title = "Fiji Is Just ImageJ";
+		wm_class = "fiji-Main";
+	}
+	else if (!strcmp(startup_class, default_main_class)) {
+		name = "ImageJ2";
+		title = "ImageJ";
+		wm_class = "imagej-ClassLauncher";
+	}
+	else
+		return;
+
+	path = string_initf("%s%s.desktop", ij_path(""), name);
+	if (file_exists(path->buffer)) {
+		if (verbose)
+			error("Keep existing '%s'", path->buffer);
+		string_release(path);
+		return;
+	}
+
+	if (last_slash(main_argv0))
+		executable_path = string_copy(make_absolute_path(main_argv0));
+	else {
+		const char *in_path = find_in_path(main_argv0, 0);
+		if (!in_path) {
+			if (verbose)
+				error("Did not find '%s' in PATH, skipping %s\n", main_argv0, path->buffer);
+			string_release(path);
+			return;
+		}
+		executable_path = string_copy(in_path);
+	}
+
+	if (!icon_path) {
+		const char *icon = ij_path("images/icon.png");
+		if (icon)
+			icon_path = string_copy(icon);
+	}
+
+	if (verbose)
+		error("Writing '%s'", path->buffer);
+	write_desktop_file(path->buffer, title, executable_path->buffer, icon_path->buffer, wm_class);
+	string_setf(path, "%s/.local/share/applications", getenv("HOME"));
+	if (dir_exists(path->buffer)) {
+		string_addf(path, "/%s.desktop", name);
+		if (!file_exists(path->buffer)) {
+			if (verbose)
+				error("Writing '%s'", path->buffer);
+			write_desktop_file(path->buffer, title, executable_path->buffer, icon_path->buffer, wm_class);
+		}
+		else if (verbose)
+			error("iKeep existing '%s'", path->buffer);
+	}
+	else if (verbose)
+		error("Skipping user-wide .desktop file: '%s' does not exist", path->buffer);
+
+	string_release(path);
+	string_release(executable_path);
+	string_release(icon_path);
+#endif
+}
+
+
 static int start_ij(void)
 {
 	JavaVM *vm;
@@ -4883,6 +4999,7 @@ int main(int argc, char **argv, char **e)
 	parse_command_line();
 
 	maybe_write_legacy_config();
+	maybe_write_desktop_file();
 
 	return start_ij();
 }
