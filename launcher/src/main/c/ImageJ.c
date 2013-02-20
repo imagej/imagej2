@@ -4954,6 +4954,14 @@ int main(int argc, char **argv, char **e)
 {
 	int size;
 
+	if (!suffixcmp(argv[0], -1, "debug.exe") ||
+			!suffixcmp(argv[0], -1, "debug")) {
+		verbose++;
+#ifdef WIN32
+		open_win_console();
+#endif
+	}
+
 	ij_dir = get_ij_dir(argv[0]);
 
 	/* Handle update/ */
@@ -4967,13 +4975,6 @@ int main(int argc, char **argv, char **e)
 	argv = __argv;
 	argv[0] = _pgmptr;
 #endif
-	if (!suffixcmp(argv[0], -1, "debug.exe") ||
-			!suffixcmp(argv[0], -1, "debug")) {
-		verbose++;
-#ifdef WIN32
-		open_win_console();
-#endif
-	}
 	adjust_java_home_if_necessary();
 	main_argv0 = argv[0];
 	main_argv = argv;
