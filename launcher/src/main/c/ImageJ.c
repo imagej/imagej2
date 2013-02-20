@@ -4017,10 +4017,18 @@ static int start_ij(void)
 			}
 			env = NULL;
 		} else {
-			const char *java_home = get_java_home();
-			if (java_home) {
-				string_setf(buffer, "-Djava.home=%s", java_home);
-				prepend_string_copy(&options.java_options, buffer->buffer);
+			const char *jre_home = get_jre_home();
+			if (jre_home) {
+				string_set(buffer, jre_home);
+				if (!suffixcmp(buffer->buffer, buffer->length, "/"))
+					string_set_length(buffer, buffer->length - 1);
+				if (!suffixcmp(buffer->buffer, buffer->length, "/jre")) {
+					string_set_length(buffer, buffer->length - 4);
+					string_replace_range(buffer, 0, 0, "-Djava.home=");
+					if (verbose)
+						error("Adding option: %s", buffer->buffer);
+					prepend_string_copy(&options.java_options, buffer->buffer);
+				}
 			}
 		}
 	}
