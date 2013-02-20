@@ -3817,7 +3817,7 @@ static void parse_command_line(void)
 	if (is_default_ij1_class(main_class)) {
 		if (allow_multiple)
 			add_option(&options, "-port0", 1);
-		else
+		else if (!strcmp(default_fiji1_class, main_class))
 			add_option(&options, "-port7", 1);
 		add_option(&options, "-Dsun.java.command=ImageJ", 0);
 	}
