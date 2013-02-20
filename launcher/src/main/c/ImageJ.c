@@ -896,7 +896,7 @@ static const char *ij_path(const char *relative_path)
 char *main_argv0;
 char **main_argv, **main_argv_backup;
 int main_argc, main_argc_backup;
-const char *main_class;
+const char *main_class, *startup_class;
 int run_precompiled = 0;
 
 static int dir_exists(const char *directory);
@@ -3902,6 +3902,7 @@ static void parse_command_line(void)
 		add_option_string(&options, string, 0);
 		add_launcher_option(&options, main_class, NULL);
 		prepend_string_array(&options.ij_options, &options.launcher_options);
+		startup_class = main_class;
 		main_class = "imagej.ClassLauncher";
 	}
 	else {
