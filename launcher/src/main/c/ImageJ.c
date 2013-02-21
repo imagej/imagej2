@@ -5005,7 +5005,8 @@ int main(int argc, char **argv, char **e)
 	parse_command_line();
 
 	maybe_write_legacy_config();
-	maybe_write_desktop_file();
+	if (!debug)
+		maybe_write_desktop_file();
 
 	return start_ij();
 }
