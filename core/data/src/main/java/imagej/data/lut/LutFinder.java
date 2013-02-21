@@ -43,6 +43,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -100,7 +101,8 @@ public class LutFinder {
 	}
 
 	private Collection<URL> filter(Collection<URL> urlCollection, String regex) {
-		ArrayList<URL> list = new ArrayList<URL>();
+		final List<URL> list = new ArrayList<URL>();
+		if (urlCollection == null) return list;
 		Pattern p = Pattern.compile(regex);
 		for (URL url : urlCollection) {
 			if (p.matcher(url.toString()).matches()) list.add(url);
