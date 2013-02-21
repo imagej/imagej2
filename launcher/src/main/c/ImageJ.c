@@ -3888,6 +3888,8 @@ static void parse_command_line(void)
 	if (debug) {
 		properties[i++] = "ij.debug";
 		properties[i++] = "true";
+		properties[i++] = "scijava.log.level";
+		properties[i++] = "debug";
 	}
 	properties[i++] = NULL;
 
