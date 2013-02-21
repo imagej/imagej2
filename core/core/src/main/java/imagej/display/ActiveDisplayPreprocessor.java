@@ -60,13 +60,13 @@ import org.scijava.plugin.Plugin;
 	priority = Priority.VERY_HIGH_PRIORITY)
 public class ActiveDisplayPreprocessor extends AbstractPreprocessorPlugin {
 
+	// TODO: Reconcile with ActiveImagePreprocessor. Share common superclass? 
+
 	// -- ModuleProcessor methods --
 
 	@Override
 	public void process(final Module module) {
-		final DisplayService displayService =
-			getContext().getService(DisplayService.class);
-		if (displayService == null) return;
+		// check for a single display input
 
 		final ModuleService moduleService =
 			getContext().getService(ModuleService.class);
@@ -79,6 +79,12 @@ public class ActiveDisplayPreprocessor extends AbstractPreprocessorPlugin {
 		@SuppressWarnings("unchecked")
 		final Class<? extends Display<?>> displayType =
 			(Class<? extends Display<?>>) displayInput.getType();
+
+		// populate the input with the active display
+
+		final DisplayService displayService =
+			getContext().getService(DisplayService.class);
+		if (displayService == null) return;
 
 		final Display<?> activeDisplay =
 			displayService.getActiveDisplay(displayType);

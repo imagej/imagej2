@@ -33,9 +33,13 @@
  * #L%
  */
 
-package imagej.data.display;
+package imagej.legacy.plugin;
 
-import imagej.data.Dataset;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.WindowManager;
+import ij.process.ImageProcessor;
+import imagej.legacy.LegacyService;
 import imagej.module.Module;
 import imagej.module.ModuleItem;
 import imagej.module.ModuleService;
@@ -46,74 +50,66 @@ import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
 /**
- * Assigns the active {@link ImageDisplay} when there is one single unresolved
- * {@link ImageDisplay} parameter. Hence, rather than a dialog prompting the
- * user to choose a {@link ImageDisplay}, the active {@link ImageDisplay} is
- * used automatically.
+ * Assigns the active {@link ImagePlus} when there is one single unresolved
+ * {@link ImagePlus} parameter. Hence, rather than a dialog prompting the user
+ * to choose an {@link ImagePlus}, the active {@link ImagePlus} is used
+ * automatically.
  * <p>
- * In the case of more than one {@link ImageDisplay} parameter, the active
- * {@link ImageDisplay} is not used and instead the user must select. This
- * behavior is consistent with ImageJ v1.x.
+ * In the case of more than one {@link ImagePlus} parameter, the active
+ * {@link ImagePlus} is not used and instead the user must select. This behavior
+ * is consistent with ImageJ v1.x.
  * </p>
  * <p>
- * The same process is applied for {@link DataView} and {@link Dataset}
- * parameters, using the active {@link ImageDisplay}'s active {@link DataView}
- * and {@link Dataset}, respectively.
+ * The same process is applied for {@link ImageStack} and {@link ImageProcessor}
+ * parameters, using the active {@link ImagePlus}'s associated
+ * {@link ImageStack} and active {@link ImageProcessor} slice, respectively.
  * </p>
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PreprocessorPlugin.class,
-	priority = Priority.VERY_HIGH_PRIORITY)
-public class ActiveImagePreprocessor extends AbstractPreprocessorPlugin {
+@Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_HIGH_PRIORITY)
+public class ActiveImagePlusPreprocessor extends AbstractPreprocessorPlugin {
 
-	// TODO: Reconcile with ActiveDisplayPreprocessor. Share common superclass? 
+	// TODO: Reconcile with ActiveDisplayPreprocessor and ActiveImageProcessor.
+	// Share common superclass?
 
 	// -- ModuleProcessor methods --
 
 	@Override
 	public void process(final Module module) {
-		final ModuleService moduleService =
-			getContext().getService(ModuleService.class);
-		if (moduleService == null) return;
+		final LegacyService legacyService =
+			getContext().getService(LegacyService.class);
+		if (legacyService == null) return;
 
-		final ImageDisplayService displayService =
-			getContext().getService(ImageDisplayService.class);
-		if (displayService == null) return;
+		// TODO: Change this to a LegacyService API call?
+		final ImagePlus imp = WindowManager.getCurrentImage();
+		if (imp == null) return;
 
-		final ImageDisplay activeDisplay = displayService.getActiveImageDisplay();
-		if (activeDisplay == null) return;
-
-		// assign active display to single ImageDisplay input
-		final String displayInput = getSingleInput(module, ImageDisplay.class);
-		if (displayInput != null) {
-			module.setInput(displayInput, activeDisplay);
-			module.setResolved(displayInput, true);
+		// assign active legacy image to single ImagePlus input
+		final String impInput = getSingleInput(module, ImagePlus.class);
+		if (impInput != null) {
+			module.setInput(impInput, imp);
+			module.setResolved(impInput, true);
 		}
 
-		// assign active dataset view to single DatasetView input
-		final String datasetViewInput = getSingleInput(module, DatasetView.class);
-		final DatasetView activeDatasetView =
-			displayService.getActiveDatasetView();
-		if (datasetViewInput != null && activeDatasetView != null) {
-			module.setInput(datasetViewInput, activeDatasetView);
-			module.setResolved(datasetViewInput, true);
+		// assign active ImageStack to single ImageStack input
+		final String stackInput = getSingleInput(module, ImageStack.class);
+		if (stackInput != null) {
+			final ImageStack imageStack = imp.getStack();
+			if (imageStack != null) {
+				module.setInput(stackInput, imageStack);
+				module.setResolved(stackInput, true);
+			}
 		}
 
-		// assign active display view to single DataView input
-		final String dataViewInput = getSingleInput(module, DataView.class);
-		final DataView activeDataView = activeDisplay.getActiveView();
-		if (dataViewInput != null && activeDataView != null) {
-			module.setInput(dataViewInput, activeDataView);
-			module.setResolved(dataViewInput, true);
-		}
-
-		// assign active dataset to single Dataset input
-		final String datasetInput = getSingleInput(module, Dataset.class);
-		final Dataset activeDataset = displayService.getActiveDataset();
-		if (datasetInput != null && activeDataset != null) {
-			module.setInput(datasetInput, activeDataset);
-			module.setResolved(datasetInput, true);
+		// assign active ImageProcessor to single ImageProcessor input
+		final String ipInput = getSingleInput(module, ImageProcessor.class);
+		final ImageProcessor ip = imp.getProcessor();
+		if (ipInput != null) {
+			if (ip != null) {
+				module.setInput(ipInput, ip);
+				module.setResolved(ipInput, true);
+			}
 		}
 	}
 
