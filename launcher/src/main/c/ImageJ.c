@@ -567,7 +567,7 @@ static const char *default_fiji1_class = "fiji.Main";
 static const char *default_main_class = "imagej.Main";
 static int legacy_mode;
 static int retrotranslator;
-static int verbose;
+static int debug;
 
 static const char *legacy_ij1_class = "ij.ImageJ";
 static struct string *legacy_jre_path;
@@ -910,11 +910,11 @@ static int is_jre_home(const char *directory)
 	if (dir_exists(directory)) {
 		struct string* libjvm = string_initf("%s/%s", directory, library_path);
 		if (!file_exists(libjvm->buffer)) {
-			if (verbose)
+			if (debug)
 				error("Ignoring JAVA_HOME (does not exist): %s", libjvm->buffer);
 		}
 		else if (!is_native_library(libjvm->buffer)) {
-			if (verbose)
+			if (debug)
 				error("Ignoring JAVA_HOME (wrong arch): %s", libjvm->buffer);
 		}
 		else
@@ -982,26 +982,26 @@ static const char *get_jre_home(void)
 	if (dir_exists(result)) {
 		struct string *libjvm = string_initf("%s/%s", result, default_library_path);
 		if (!file_exists(libjvm->buffer)) {
-			if (verbose)
+			if (debug)
 				error("Invalid jre/: '%s' does not exist!",
 						libjvm->buffer);
 		}
 		else if (!is_native_library(libjvm->buffer)) {
-			if (verbose)
+			if (debug)
 				error("Invalid jre/: '%s' is not a %s library!",
 						libjvm->buffer, get_platform());
 		}
 		else {
 			string_release(libjvm);
 			jre = string_initf("%s", result);
-			if (verbose)
+			if (debug)
 				error("JRE found in '%s'", jre->buffer);
 			return jre->buffer;
 		}
 		string_release(libjvm);
 	}
 	else {
-		if (verbose)
+		if (debug)
 			error("JRE not found in '%s'", result);
 	}
 
@@ -1010,18 +1010,18 @@ static const char *get_jre_home(void)
 		const char *jre_home = getenv("JRE_HOME");
 		if (jre_home && *jre_home && is_jre_home(jre_home)) {
 			jre = string_copy(jre_home);
-			if (verbose)
+			if (debug)
 				error("Found a JRE in JRE_HOME: %s", jre->buffer);
 			return jre->buffer;
 		}
 		jre_home = getenv("JAVA_HOME");
 		if (jre_home && *jre_home && is_jre_home(jre_home)) {
 			jre = string_copy(jre_home);
-			if (verbose)
+			if (debug)
 				error("Found a JRE in JAVA_HOME: %s", jre->buffer);
 			return jre->buffer;
 		}
-		if (verbose)
+		if (debug)
 			error("No JRE was found in default locations");
 		return NULL;
 	}
@@ -1029,19 +1029,19 @@ static const char *get_jre_home(void)
 	len = strlen(result);
 	if (len > 4 && !suffixcmp(result, len, "/jre")) {
 		jre = string_copy(result);
-		if (verbose)
+		if (debug)
 			error("JAVA_HOME points to a JRE: '%s'", result);
 		return jre->buffer;
 	}
 
 	jre = string_initf("%s/jre", result);
 	if (dir_exists(jre->buffer)) {
-		if (verbose)
+		if (debug)
 			error("JAVA_HOME contains a JRE: '%s'", jre->buffer);
 		return jre->buffer;
 	}
 	string_set(jre, result);
-	if (verbose)
+	if (debug)
 		error("JAVA_HOME appears to be a JRE: '%s'", jre->buffer);
 	return jre->buffer;
 }
@@ -1210,7 +1210,7 @@ static const char *find_in_path(const char *path, int die_if_not_found)
 	if (!p) {
 		if (die_if_not_found)
 			die("Could not get PATH");
-		if (verbose)
+		if (debug)
 			error("Could not get PATH");
 		return NULL;
 	}
@@ -1224,7 +1224,7 @@ static const char *find_in_path(const char *path, int die_if_not_found)
 		if (!len) {
 			if (die_if_not_found)
 				die("Could not find %s in PATH", path);
-			if (verbose)
+			if (debug)
 				error("Could not find '%s' in the PATH", path);
 			return NULL;
 		}
@@ -1469,7 +1469,7 @@ static void show_splash(void)
 
 	splashscreen = dlopen(lib_path->buffer, RTLD_LAZY);
 	if (!splashscreen) {
-		if (verbose)
+		if (debug)
 			error("Splashscreen library not found: '%s'", lib_path->buffer);
 		string_release(lib_path);
 		return;
@@ -1479,7 +1479,7 @@ static void show_splash(void)
 	SplashSetFileJarName = dlsym(splashscreen, "SplashSetFileJarName");
 	SplashClose = dlsym(splashscreen, "SplashClose");
 	if (!SplashInit || !SplashLoadFile || !SplashSetFileJarName || !SplashClose) {
-		if (verbose)
+		if (debug)
 			error("Ignoring splashscreen:\ninit: %p\nload: %p\nsetFileJar: %p\nclose: %p", SplashInit, SplashLoadFile, SplashSetFileJarName, SplashClose);
 		string_release(lib_path);
 		SplashClose = NULL;
@@ -1554,7 +1554,7 @@ static void maybe_reexec_with_correct_lib_path(struct string *java_library_path)
 		return;
 
 	setenv_or_exit("LD_LIBRARY_PATH", java_library_path->buffer, 1);
-	if (verbose)
+	if (debug)
 		error("Re-executing with correct library lookup path (%s)", java_library_path->buffer);
 	hide_splash();
 	execvp(main_argv_backup[0], main_argv_backup);
@@ -1570,7 +1570,7 @@ static void maybe_reexec_with_correct_lib_path(struct string *java_library_path)
 		return;
 
 	setenv_or_exit("DYLD_LIBRARY_PATH", java_library_path->buffer, 1);
-	if (verbose)
+	if (debug)
 		error("Re-executing with correct library lookup path (%s)", java_library_path->buffer);
 	hide_splash();
 	execvp(main_argv_backup[0], main_argv_backup);
@@ -1660,11 +1660,11 @@ static int create_java_vm(JavaVM **vm, void **env, JavaVMInitArgs *args)
 	handle = dlopen(buffer->buffer, RTLD_LAZY);
 	if (!handle) {
 		const char *err;
-		if (verbose)
+		if (debug)
 			error("Could not open '%s'", buffer->buffer);
 		setenv_or_exit("JAVA_HOME", original_java_home_env, 1);
 		if (!file_exists(java_home)) {
-			if (verbose)
+			if (debug)
 				error("'%s' does not exist", java_home);
 			string_release(buffer);
 			return 2;
@@ -2838,7 +2838,7 @@ static void parse_legacy_config(struct string *jvm_options)
 		if (!eol)
 			eol = p + strlen(p);
 
-		if (verbose > 1)
+		if (debug > 1)
 			error("ImageJ.cfg:%d: %.*s", line, (int)(eol - p), p);
 
 		if (line == 2) {
@@ -2848,9 +2848,9 @@ static void parse_legacy_config(struct string *jvm_options)
 				jre_len = eol - p - 14;
 			else if (!suffixcmp(p, eol - p, "\\bin\\java.exe")) {
 				jre_len = eol - p - 13;
-				verbose++;
+				debug++;
 				open_win_console();
-				error("Enabling verbose mode due to ImageJ.cfg mentioning java.exe");
+				error("Enabling debug mode due to ImageJ.cfg mentioning java.exe");
 			}
 #else
 			if (!suffixcmp(p, eol - p, "/bin/java"))
@@ -2861,7 +2861,7 @@ static void parse_legacy_config(struct string *jvm_options)
 				if (!legacy_jre_path)
 					legacy_jre_path = string_init(32);
 				string_set(legacy_jre_path, is_absolute_path(p) ? p : ij_path(p));
-				if (verbose)
+				if (debug)
 					error("Using JRE from ImageJ.cfg: %s",
 						legacy_jre_path->buffer);
 			}
@@ -2880,7 +2880,7 @@ static void parse_legacy_config(struct string *jvm_options)
 					if (!legacy_ij1_options)
 						legacy_ij1_options = string_init(32);
 					string_setf(legacy_ij1_options, "%.*s", (int)(eol - rest), rest);
-					if (verbose)
+					if (debug)
 						error("Found ImageJ options in ImageJ.cfg: '%s'", legacy_ij1_options->buffer);
 				}
 				eol = main_class;
@@ -2888,7 +2888,7 @@ static void parse_legacy_config(struct string *jvm_options)
 
 			string_replace_range(jvm_options, 0, p - jvm_options->buffer, "");
 			string_set_length(jvm_options, eol - p);
-			if (verbose)
+			if (debug)
 				error("Found Java options in ImageJ.cfg: '%s'", jvm_options->buffer);
 			return;
 		}
@@ -3034,7 +3034,7 @@ static void __attribute__((__noreturn__)) usage(void)
 		"\tshow this help\n",
 		"--dry-run\n"
 		"\tshow the command line, but do not run anything\n"
-		"--verbose, -v\n"
+		"--debug\n"
 		"\tverbose output\n"
 		"--system\n"
 		"\tdo not try to run bundled Java\n"
@@ -3220,7 +3220,7 @@ static void try_with_less_memory(long megabytes)
 	}
 	new_argv[j] = NULL;
 
-	if (verbose)
+	if (debug)
 		error("Trying with a smaller heap: %s", buffer->buffer);
 
 	hide_splash();
@@ -3334,8 +3334,8 @@ static int handle_one_option2(int *i, int argc, const char **argv)
 {
 	if (!strcmp(argv[*i], "--dry-run"))
 		options.dry_run++;
-	else if (!strcmp(argv[*i], "--verbose") || !strcmp(argv[*i], "-n"))
-		verbose++;
+	else if (!strcmp(argv[*i], "--debug"))
+		debug++;
 	else if (handle_one_option(i, argv, "--java-home", &arg)) {
 		absolute_java_home = xstrdup(arg.buffer);
 		setenv_or_exit("JAVA_HOME", xstrdup(arg.buffer), 1);
@@ -3712,7 +3712,7 @@ static void parse_command_line(void)
 
 	/* If arguments don't set the memory size, set it after available memory. */
 	if (megabytes == 0 && !has_memory_option(&options.java_options)) {
-		struct string *message = !verbose ? NULL : string_init(32);
+		struct string *message = !debug ? NULL : string_init(32);
 		megabytes = (long)(get_memory_size(0) >> 20);
 		if (message)
 			string_addf(message,"Available RAM: %dMB", (int)megabytes);
@@ -3934,7 +3934,7 @@ static void parse_command_line(void)
 		main_class = "net.sf.retrotranslator.transformer.JITRetrotranslator";
 	}
 
-	if (options.dry_run || verbose) {
+	if (options.dry_run || debug) {
 		for (i = 0; properties[i]; i += 2) {
 			if (!properties[i] || !properties[i + 1])
 				continue;
@@ -3985,7 +3985,7 @@ static int write_desktop_file(const char *path, const char *title, const char *e
 	FILE *f = fopen(path, "w");
 
 	if (!f) {
-		if (verbose)
+		if (debug)
 			error("Could not write to '%s': %d (%s)", path, errno, strerror(errno));
 		return 1;
 	}
@@ -4023,7 +4023,7 @@ static void maybe_write_desktop_file(void)
 	if (!startup_class)
 		return;
 	if (!strcmp("imagej.ClassLauncher", startup_class)) {
-		if (verbose)
+		if (debug)
 			error("Could not determine startup class!");
 		return;
 	}
@@ -4047,7 +4047,7 @@ static void maybe_write_desktop_file(void)
 
 	path = string_initf("%s%s.desktop", ij_path(""), name);
 	if (file_exists(path->buffer)) {
-		if (verbose)
+		if (debug)
 			error("Keep existing '%s'", path->buffer);
 		string_release(path);
 		return;
@@ -4058,7 +4058,7 @@ static void maybe_write_desktop_file(void)
 	else {
 		const char *in_path = find_in_path(main_argv0, 0);
 		if (!in_path) {
-			if (verbose)
+			if (debug)
 				error("Did not find '%s' in PATH, skipping %s\n", main_argv0, path->buffer);
 			string_release(path);
 			return;
@@ -4072,21 +4072,21 @@ static void maybe_write_desktop_file(void)
 			icon_path = string_copy(icon);
 	}
 
-	if (verbose)
+	if (debug)
 		error("Writing '%s'", path->buffer);
 	write_desktop_file(path->buffer, title, executable_path->buffer, icon_path->buffer, wm_class);
 	string_setf(path, "%s/.local/share/applications", getenv("HOME"));
 	if (dir_exists(path->buffer)) {
 		string_addf(path, "/%s.desktop", name);
 		if (!file_exists(path->buffer)) {
-			if (verbose)
+			if (debug)
 				error("Writing '%s'", path->buffer);
 			write_desktop_file(path->buffer, title, executable_path->buffer, icon_path->buffer, wm_class);
 		}
-		else if (verbose)
+		else if (debug)
 			error("iKeep existing '%s'", path->buffer);
 	}
-	else if (verbose)
+	else if (debug)
 		error("Skipping user-wide .desktop file: '%s' does not exist", path->buffer);
 
 	string_release(path);
@@ -4141,7 +4141,7 @@ static int start_ij(void)
 				if (!suffixcmp(buffer->buffer, buffer->length, "/jre")) {
 					string_set_length(buffer, buffer->length - 4);
 					string_replace_range(buffer, 0, 0, "-Djava.home=");
-					if (verbose)
+					if (debug)
 						error("Adding option: %s", buffer->buffer);
 					prepend_string_copy(&options.java_options, buffer->buffer);
 				}
@@ -4671,11 +4671,11 @@ static int is_osrelease(int min)
 
 	if (!initialized) {
 		if (sysctl(mib, 2, os_release, &len, NULL, 0) == -1) {
-			if (verbose)
+			if (debug)
 				error("sysctl to determine os_release failed: %d (%s)", errno, strerror(errno));
 			return 0;
 		}
-		if (verbose)
+		if (debug)
 			error("sysctl says os_release is %s", os_release);
 		initialized = 1;
 	}
@@ -4956,7 +4956,7 @@ int main(int argc, char **argv, char **e)
 
 	if (!suffixcmp(argv[0], -1, "debug.exe") ||
 			!suffixcmp(argv[0], -1, "debug")) {
-		verbose++;
+		debug++;
 #ifdef WIN32
 		open_win_console();
 #endif
