@@ -3885,6 +3885,10 @@ static void parse_command_line(void)
 	properties[i++] = "sun.java2d.noddraw";
 	properties[i++] = "true";
 #endif
+	if (debug) {
+		properties[i++] = "ij.debug";
+		properties[i++] = "true";
+	}
 	properties[i++] = NULL;
 
 	if (i > sizeof(properties) / sizeof(properties[0]))
