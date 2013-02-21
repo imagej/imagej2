@@ -2189,7 +2189,7 @@ fail:
 
 struct options {
 	struct string_array java_options, launcher_options, ij_options;
-	int debug, use_system_jvm;
+	int dry_run, use_system_jvm;
 };
 
 static void add_launcher_option(struct options *options, const char *option, const char *class_path)
@@ -3333,7 +3333,7 @@ static void parse_memory_from_java_options(int require)
 static int handle_one_option2(int *i, int argc, const char **argv)
 {
 	if (!strcmp(argv[*i], "--dry-run"))
-		options.debug++;
+		options.dry_run++;
 	else if (!strcmp(argv[*i], "--verbose") || !strcmp(argv[*i], "-n"))
 		verbose++;
 	else if (handle_one_option(i, argv, "--java-home", &arg)) {
@@ -3346,7 +3346,7 @@ static int handle_one_option2(int *i, int argc, const char **argv)
 		if (*i + 3 != argc)
 			die("--set-icon requires two arguments: <exe-file> and <ico-file>");
 #ifdef WIN32
-		if (options.debug) {
+		if (options.dry_run) {
 			printf("Would set the icon of %s to %s.\n", argv[*i + 1], argv[*i + 2]);
 			exit(0);
 		}
@@ -3791,7 +3791,7 @@ static void parse_command_line(void)
 
 	maybe_reexec_with_correct_lib_path(java_library_path);
 
-	if (!options.debug && !options.use_system_jvm && !headless && (is_default_ij1_class(main_class) || !strcmp(default_main_class, main_class)))
+	if (!options.dry_run && !options.use_system_jvm && !headless && (is_default_ij1_class(main_class) || !strcmp(default_main_class, main_class)))
 		show_splash();
 
 	/* set up class path */
@@ -3853,7 +3853,7 @@ static void parse_command_line(void)
 	if (headless && is_default_ij1_class(main_class)) {
 		if (main_argc + headless_argc < 2) {
 			error("--headless without a parameter?");
-			if (!options.debug)
+			if (!options.dry_run)
 				exit(1);
 		}
 		if (main_argc > 1 && *main_argv[1] != '-')
@@ -3934,7 +3934,7 @@ static void parse_command_line(void)
 		main_class = "net.sf.retrotranslator.transformer.JITRetrotranslator";
 	}
 
-	if (options.debug || verbose) {
+	if (options.dry_run || verbose) {
 		for (i = 0; properties[i]; i += 2) {
 			if (!properties[i] || !properties[i + 1])
 				continue;
@@ -3943,7 +3943,7 @@ static void parse_command_line(void)
 		}
 
 		show_commandline(&options);
-		if (options.debug)
+		if (options.dry_run)
 			exit(0);
 	}
 
