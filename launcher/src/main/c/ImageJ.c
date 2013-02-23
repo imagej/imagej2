@@ -4069,7 +4069,7 @@ static void maybe_write_desktop_file(void)
 
 	if (!icon_path) {
 		const char *icon = ij_path("images/icon.png");
-		if (icon)
+		if (icon && file_exists(icon))
 			icon_path = string_copy(icon);
 	}
 
