@@ -4030,7 +4030,6 @@ static void maybe_write_desktop_file(void)
 	if (!strcmp(startup_class, legacy_ij1_class)) {
 		name = "ImageJ";
 		title = "ImageJ";
-		icon_path = string_copy(ij_path("ImageJ.png"));
 		wm_class = "ij-ImageJ";
 	}
 	else if (!strcmp(startup_class, default_fiji1_class)) {
