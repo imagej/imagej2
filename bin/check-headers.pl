@@ -10,6 +10,20 @@
 
 use strict;
 
+use constant {
+  OK                       =>  0,
+  INVALID_HEADER           =>  1,
+  INVALID_COPYRIGHT        =>  2,
+  DUPLICATE_BLANK_LINE     =>  3,
+  INVALID_PACKAGE          =>  4,
+  MISSING_BLANK_LINE       =>  5,
+  UNEXPECTED_TEXT          =>  6,
+  MALFORMED_CLASS_COMMENT  =>  7,
+  UNKNOWN_AUTHOR           =>  9,
+  MISSING_AUTHOR_TAG       => 10,
+  INVALID_TYPE_DECLARATION => 11,
+};
+
 my $dir = `dirname "$0"`;
 chop $dir;
 require "$dir/subs.pl";
@@ -94,14 +108,14 @@ sub process($) {
   my @header = ('/*', ' * #%L');
   if (!match(\@header, \@data, $i)) {
     print "$file: invalid header\n";
-    return 1;
+    return INVALID_HEADER;
   }
   $i += @header;
 
   # check copyright statement
   if (!match(\@copyright, \@data, $i)) {
     print "$file: invalid copyright\n";
-    return 2;
+    return INVALID_COPYRIGHT;
   }
   $i += @copyright;
 
@@ -120,7 +134,7 @@ sub process($) {
     elsif ($data[$i] =~ /^\s*$/) {
       if ($blank) {
         print "$file: duplicate blank line at line #$i\n";
-        return 3;
+        return DUPLICATE_BLANK_LINE;
       }
       $blank = 1;
     }
@@ -134,13 +148,13 @@ sub process($) {
   # check package statement
   if ($data[$i++] !~ /^package .*;$/) {
     print "$file: invalid package\n";
-    return 4;
+    return INVALID_PACKAGE;
   }
 
   # check blank line following package statement
   if ($data[$i++] !~ /^$/) {
     print "$file: no post-package blank line\n";
-    return 12;
+    return MISSING_BLANK_LINE;
   }
 
   # check import statements
@@ -150,7 +164,7 @@ sub process($) {
     if ($line =~ /^$/) {
       if ($blank) {
         print "$file: duplicate blank line at line #$i\n";
-        return 5;
+        return DUPLICATE_BLANK_LINE;
       }
       $blank = 1;
     }
@@ -161,14 +175,14 @@ sub process($) {
       }
       elsif ($line !~ /\/\// && $line !~ /^import /) {
         print "$file: unexpected text at line #$i\n";
-        return 6;
+        return UNEXPECTED_TEXT;
       }
     }
   }
 
   if ($data[$i] !~ /^ \* [^\s]/) {
     print "$file: malformed class comment at line #$i\n";
-    return 7;
+    return MALFORMED_CLASS_COMMENT;
   }
 
   # check class comment
@@ -180,13 +194,13 @@ sub process($) {
     }
     if ($line !~ /^ \* ?/) {
       print "$file: malformed class comment at line #$i\n";
-      return 8;
+      return MALFORMED_CLASS_COMMENT;
     }
     if ($line =~ /^ \* \@author (.*)$/) {
       my $authorName = $1;
       if (!exists($knownAuthors{$authorName})) {
         print "$file: unknown author: $authorName\n";
-        return 9;
+        return UNKNOWN_AUTHOR;
       }
       $author = 1;
     }
@@ -194,7 +208,7 @@ sub process($) {
 
   if (!$author) {
     print "$file: missing author tag\n";
-    return 10;
+    return MISSING_AUTHOR_TAG;
   }
 
   # skip annotations
@@ -206,9 +220,9 @@ sub process($) {
   my $keywords = '(public )?(abstract )?(final )?(strictfp )?';
   if ($data[$i++] !~ /^$keywords(class)|(enum)|(interface) $class[ <]/) {
     print "$file: invalid type declaration at line #$i\n";
-    return 11;
+    return INVALID_TYPE_DECLARATION;
   }
 
   # all OK
-  return 0;
+  return OK;
 }
