@@ -33,31 +33,54 @@
  * #L%
  */
 
-package imagej.core.commands.convolve;
+package imagej.core.commands.correlate;
 
-import imagej.command.Command;
-import imagej.menu.MenuConstants;
+import imagej.command.ContextCommand;
+import imagej.data.Dataset;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
+import imagej.data.display.OverlayService;
+import imagej.util.RealRect;
 
-import org.scijava.plugin.Menu;
-import org.scijava.plugin.Plugin;
+import org.scijava.ItemIO;
+import org.scijava.plugin.Parameter;
 
 /**
- * Implements legacy ImageJ's Shadows Northeast plugin functionality.
+ * Abstract superclass for Shadows plugins.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-@Plugin(type = Command.class, menu = {
-	@Menu(label = MenuConstants.PROCESS_LABEL,
-		weight = MenuConstants.PROCESS_WEIGHT,
-		mnemonic = MenuConstants.PROCESS_MNEMONIC),
-	@Menu(label = "Shadows", mnemonic = 's'),
-	@Menu(label = "Northeast", weight = 2) }, headless = true)
-public class ShadowsNortheast extends AbstractShadows {
+public abstract class AbstractShadows extends ContextCommand {
 
-	static final double[] KERNEL = { 0, 1, 2, -1, 1, 1, -2, -1, 0 };
+	@Parameter
+	private ImageDisplayService imageDisplayService;
 
-	public ShadowsNortheast() {
-		super(KERNEL);
+	@Parameter
+	private OverlayService overlayService;
+
+	@Parameter(type = ItemIO.BOTH)
+	private ImageDisplay display;
+
+	private final double[] kernel;
+
+	AbstractShadows(final double[] kernel) {
+		this.kernel = kernel;
 	}
 
+	@Override
+	public void run() {
+		final Dataset input = imageDisplayService.getActiveDataset(display);
+		final RealRect selection = overlayService.getSelectionBounds(display);
+		final Correlation3x3Operation operation =
+			new Correlation3x3Operation(input, selection, kernel);
+		operation.run();
+	}
+
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+
+	public ImageDisplay getDisplay() {
+		return display;
+	}
 }

@@ -33,16 +33,24 @@
  * #L%
  */
 
-package imagej.core.commands.convolve;
+package imagej.core.commands.correlate;
 
 import imagej.command.Command;
+import imagej.command.ContextCommand;
+import imagej.data.Dataset;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
+import imagej.data.display.OverlayService;
 import imagej.menu.MenuConstants;
+import imagej.util.RealRect;
 
+import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * Implements legacy ImageJ's Shadows Northwest plugin functionality.
+ * Implements legacy ImageJ's Smooth plugin functionality
  * 
  * @author Barry DeZonia
  */
@@ -50,14 +58,38 @@ import org.scijava.plugin.Plugin;
 	@Menu(label = MenuConstants.PROCESS_LABEL,
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
-	@Menu(label = "Shadows", mnemonic = 's'),
-	@Menu(label = "Northwest", weight = 8) }, headless = true)
-public class ShadowsNorthwest extends AbstractShadows {
+	@Menu(label = "Smooth", weight = 1, accelerator = "shift control S") },
+	headless = true)
+public class SmoothDataValues extends ContextCommand {
 
-	static final double[] KERNEL = { 2, 1, 0, 1, 1, -1, 0, -1, -2 };
+	// -- instance variables that are Parameters --
 
-	public ShadowsNorthwest() {
-		super(KERNEL);
+	@Parameter
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter
+	private OverlayService overlayService;
+
+	@Parameter(type = ItemIO.BOTH)
+	private ImageDisplay display;
+
+	// -- public interface --
+
+	@Override
+	public void run() {
+		final Dataset input = imageDisplayService.getActiveDataset(display);
+		final RealRect selection = overlayService.getSelectionBounds(display);
+		final double[] kernel = { 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+		final Correlation3x3Operation operation =
+			new Correlation3x3Operation(input, selection, kernel);
+		operation.run();
 	}
 
+	public void setDisplay(ImageDisplay disp) {
+		display = disp;
+	}
+	
+	public ImageDisplay getDisplay() {
+		return display;
+	}
 }

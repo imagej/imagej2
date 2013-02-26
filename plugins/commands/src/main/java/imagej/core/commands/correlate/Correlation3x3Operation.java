@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.commands.convolve;
+package imagej.core.commands.correlate;
 
 import imagej.core.commands.neigh.Neighborhood3x3Operation;
 import imagej.core.commands.neigh.Neighborhood3x3Watcher;
@@ -41,7 +41,7 @@ import imagej.data.Dataset;
 import imagej.util.RealRect;
 
 /**
- * Convolve3x3Operation is used for general 3x3 convolution. It takes a 3x3
+ * Correlation3x3Operation is used for general 3x3 correlation. It takes a 3x3
  * kernel as input. Kernel is actually stored as a 1-D array such that
  * {0,1,2,3,4,5,6,7,8} implies this shape: {{0,1,2},{3,4,5},{6,7,8}}. This class
  * is used by the various Shadow implementations, SharpenDataValues,
@@ -49,12 +49,12 @@ import imagej.util.RealRect;
  * 
  * @author Barry DeZonia
  */
-public class Convolve3x3Operation {
+public class Correlation3x3Operation {
 
 	// -- instance variables --
 
 	/**
-	 * The kernel to convolve an input Dataset by
+	 * The kernel to correlate an input Dataset by
 	 */
 	private final double[] kernel;
 
@@ -70,13 +70,13 @@ public class Convolve3x3Operation {
 	 * Constructor. takes an input Dataset and a kernel that will be used to
 	 * calculate data values.
 	 */
-	public Convolve3x3Operation(final Dataset input, final RealRect selection,
+	public Correlation3x3Operation(final Dataset input, final RealRect selection,
 		final double[] kernel)
 	{
 		this.kernel = kernel;
 		this.neighOperation =
 			new Neighborhood3x3Operation(input, selection,
-				new ConvolveWatcher(input));
+				new CorrelateWatcher(input));
 
 		if (kernel.length != 9) throw new IllegalArgumentException(
 			"kernel must contain nine elements (shaped 3x3)");
@@ -85,7 +85,7 @@ public class Convolve3x3Operation {
 	// -- public interface --
 
 	/**
-	 * Runs the convolution and replaces pixels in place with convolved values
+	 * Runs the correlation and replaces pixels in place with correlated values
 	 */
 	public void run() {
 		neighOperation.run();
@@ -94,13 +94,13 @@ public class Convolve3x3Operation {
 	// -- private interface --
 
 	/**
-	 * ConvolveWatcher is where the actual convolution value of one output pixel
+	 * CorrelateWatcher is where the actual correlation value of one output pixel
 	 * is calculated. The watcher is called from Neighborhood3x3Operation visiting
 	 * each pixel in the input image (and all its immediate neighbors) once.
-	 * ConvolveWatcher tallies that information and returns appropriate values as
+	 * CorrelateWatcher tallies that information and returns appropriate values as
 	 * necessary.
 	 */
-	private class ConvolveWatcher implements Neighborhood3x3Watcher {
+	private class CorrelateWatcher implements Neighborhood3x3Watcher {
 
 		private double scale;
 		private double sum;
@@ -108,7 +108,7 @@ public class Convolve3x3Operation {
 		private final double typeMinValue;
 		private final double typeMaxValue;
 
-		public ConvolveWatcher(final Dataset ds) {
+		public CorrelateWatcher(final Dataset ds) {
 			integerDataset = ds.isInteger();
 			typeMinValue = ds.getType().getMinValue();
 			typeMaxValue = ds.getType().getMaxValue();

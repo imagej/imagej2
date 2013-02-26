@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.commands.convolve;
+package imagej.core.commands.correlate;
 
 import imagej.command.Command;
 import imagej.menu.MenuConstants;
@@ -42,21 +42,22 @@ import org.scijava.plugin.Menu;
 import org.scijava.plugin.Plugin;
 
 /**
- * Implements legacy ImageJ's Shadows Southeast plugin functionality.
+ * Implements legacy ImageJ's Shadows East plugin functionality.
  * 
  * @author Barry DeZonia
  */
-@Plugin(type = Command.class, menu = {
-	@Menu(label = MenuConstants.PROCESS_LABEL,
-		weight = MenuConstants.PROCESS_WEIGHT,
-		mnemonic = MenuConstants.PROCESS_MNEMONIC),
-	@Menu(label = "Shadows", mnemonic = 's'),
-	@Menu(label = "Southeast", weight = 4) }, headless = true)
-public class ShadowsSoutheast extends AbstractShadows {
+@Plugin(type = Command.class,
+	menu = {
+		@Menu(label = MenuConstants.PROCESS_LABEL,
+			weight = MenuConstants.PROCESS_WEIGHT,
+			mnemonic = MenuConstants.PROCESS_MNEMONIC),
+		@Menu(label = "Shadows", mnemonic = 's'),
+		@Menu(label = "East", weight = 3) }, headless = true)
+public class ShadowsEast extends AbstractShadows {
 
-	static final double[] KERNEL = { -2, -1, 0, -1, 1, 1, 0, 1, 2 };
+	static final double[] KERNEL = { -1, 0, 1, -2, 1, 2, -1, 0, 1 };
 
-	public ShadowsSoutheast() {
+	public ShadowsEast() {
 		super(KERNEL);
 	}
 

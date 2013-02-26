@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.commands.convolve;
+package imagej.core.commands.correlate;
 
 import imagej.command.Command;
 import imagej.command.ContextCommand;
@@ -116,8 +116,8 @@ public class ShadowsDemo extends ContextCommand {
 		userHasQuit = false;
 		while (!userHasQuit) {
 			for (int i = 0; i < KERNELS.length; i++) {
-				final Convolve3x3Operation operation =
-					new Convolve3x3Operation(input, selection, KERNELS[i]);
+				final Correlation3x3Operation operation =
+					new Correlation3x3Operation(input, selection, KERNELS[i]);
 				operation.run();
 				try {
 					Thread.sleep(100);

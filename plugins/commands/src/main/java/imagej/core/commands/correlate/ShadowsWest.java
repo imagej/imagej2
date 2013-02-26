@@ -33,54 +33,32 @@
  * #L%
  */
 
-package imagej.core.commands.convolve;
+package imagej.core.commands.correlate;
 
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayService;
-import imagej.util.RealRect;
+import imagej.command.Command;
+import imagej.menu.MenuConstants;
 
-import org.scijava.ItemIO;
-import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Plugin;
 
 /**
- * Abstract superclass for Shadows plugins.
+ * Implements legacy ImageJ's Shadows West plugin functionality.
  * 
- * @author Curtis Rueden
+ * @author Barry DeZonia
  */
-public abstract class AbstractShadows extends ContextCommand {
+@Plugin(type = Command.class,
+	menu = {
+		@Menu(label = MenuConstants.PROCESS_LABEL,
+			weight = MenuConstants.PROCESS_WEIGHT,
+			mnemonic = MenuConstants.PROCESS_MNEMONIC),
+		@Menu(label = "Shadows", mnemonic = 's'),
+		@Menu(label = "West", weight = 7) }, headless = true)
+public class ShadowsWest extends AbstractShadows {
 
-	@Parameter
-	private ImageDisplayService imageDisplayService;
+	static final double[] KERNEL = { 1, 0, -1, 2, 1, -2, 1, 0, -1 };
 
-	@Parameter
-	private OverlayService overlayService;
-
-	@Parameter(type = ItemIO.BOTH)
-	private ImageDisplay display;
-
-	private final double[] kernel;
-
-	AbstractShadows(final double[] kernel) {
-		this.kernel = kernel;
+	public ShadowsWest() {
+		super(KERNEL);
 	}
 
-	@Override
-	public void run() {
-		final Dataset input = imageDisplayService.getActiveDataset(display);
-		final RealRect selection = overlayService.getSelectionBounds(display);
-		final Convolve3x3Operation operation =
-			new Convolve3x3Operation(input, selection, kernel);
-		operation.run();
-	}
-
-	public void setDisplay(ImageDisplay disp) {
-		display = disp;
-	}
-
-	public ImageDisplay getDisplay() {
-		return display;
-	}
 }
