@@ -35,11 +35,27 @@
 
 package imagej.core.commands.display.interactive.threshold;
 
+
 /**
  * TODO
  * 
  * @author Barry DeZonia
  */
-public interface Histogram {
-  // NB: Marker interface.
+public class Histogram {
+	/*
+	 * Notes
+	 * - histogram has at its heart a discrete cdf. but different because it has
+	 *     area > 1.0
+	 * - bins might not be evenly spaced
+	 * - we want key value associated with a bin
+	 * - want left edge, center edge, right edge just beyond my bin
+	 * - map int to an edge
+	 * - map a double coord to an int
+	 * - calc cdf from data given ranges. w/o ranges make a pass through data
+	 *     and determine range. two buckets on ends when range given are wider
+	 *     than 1.0 units
+	 * - somehow we want 2d ones also
+	 * - if we could use BijectiveFunction<A,B> code it would be nice
+	 */
+
 }
