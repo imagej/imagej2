@@ -43,6 +43,7 @@ import imagej.plugin.ImageJPlugin;
 import imagej.ui.UserInterface;
 
 import org.scijava.Contextual;
+import org.scijava.Disposable;
 import org.scijava.Prioritized;
 import org.scijava.plugin.Plugin;
 
@@ -60,7 +61,9 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  * @see Plugin
  */
-public interface DisplayViewer<T> extends ImageJPlugin, Contextual, Prioritized {
+public interface DisplayViewer<T> extends ImageJPlugin, Contextual,
+	Prioritized, Disposable
+{
 
 	/** Returns true if this display viewer can be used with the given UI. */
 	boolean isCompatible(final UserInterface ui);

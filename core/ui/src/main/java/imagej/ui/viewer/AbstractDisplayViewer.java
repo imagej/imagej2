@@ -111,6 +111,14 @@ public abstract class AbstractDisplayViewer<T> extends SortablePlugin implements
 		getPanel().getWindow().requestFocus();
 	}
 
+	// -- Disposable methods --
+
+	@Override
+	public void dispose() {
+		final DisplayWindow w = getWindow();
+		if (w != null) w.close();
+	}
+
 	// -- Internal AbstractDisplayViewer methods --
 
 	/** Convenience method to obtain the appropriate {@link EventService}. */
