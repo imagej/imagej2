@@ -44,7 +44,6 @@ import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
-import imagej.ui.swing.overlay.SwingPointFigure;
 import imagej.ui.swing.tools.SwingPointTool;
 import imagej.util.ColorRGB;
 
@@ -61,7 +60,7 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = JHotDrawAdapter.class, priority = SwingPointTool.PRIORITY)
 public class PointJHotDrawOverlay extends
-	AbstractJHotDrawAdapter<PointOverlay, SwingPointFigure>
+	AbstractJHotDrawAdapter<PointOverlay, PointFigure>
 {
 
 	// -- JHotDrawAdapter methods --
@@ -74,7 +73,7 @@ public class PointJHotDrawOverlay extends
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
 		if (!(overlay instanceof PointOverlay)) return false;
-		return figure == null || figure instanceof SwingPointFigure;
+		return figure == null || figure instanceof PointFigure;
 	}
 
 	@Override
@@ -84,15 +83,15 @@ public class PointJHotDrawOverlay extends
 
 	@Override
 	public Figure createDefaultFigure() {
-		final SwingPointFigure figure = new SwingPointFigure();
+		final PointFigure figure = new PointFigure();
 		initDefaultSettings(figure);
 		return figure;
 	}
 
 	@Override
-	public void updateFigure(final OverlayView view, final SwingPointFigure figure) {
+	public void updateFigure(final OverlayView view, final PointFigure figure) {
 		super.updateFigure(view, figure);
-		final SwingPointFigure pointFigure = figure;
+		final PointFigure pointFigure = figure;
 		final Overlay overlay = view.getData();
 		assert overlay instanceof PointOverlay;
 		final PointOverlay pointOverlay = (PointOverlay) overlay;
@@ -102,7 +101,7 @@ public class PointJHotDrawOverlay extends
 	}
 
 	@Override
-	public void updateOverlay(final SwingPointFigure figure, final OverlayView view) {
+	public void updateOverlay(final PointFigure figure, final OverlayView view) {
 		final Overlay overlay = view.getData();
 		assert overlay instanceof PointOverlay;
 		final PointOverlay pointOverlay = (PointOverlay) overlay;
@@ -122,11 +121,11 @@ public class PointJHotDrawOverlay extends
 
 	@Override
 	public JHotDrawTool getCreationTool(final ImageDisplay display) {
-		return new IJCreationTool<SwingPointFigure>(display, this);
+		return new IJCreationTool<PointFigure>(display, this);
 	}
 
 	@Override
-	public Shape toShape(final SwingPointFigure figure) {
+	public Shape toShape(final PointFigure figure) {
 		throw new UnsupportedOperationException();
 	}
 

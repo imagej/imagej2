@@ -44,7 +44,6 @@ import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJBezierTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
-import imagej.ui.swing.overlay.SwingPolygonFigure;
 import imagej.ui.swing.tools.SwingPolygonTool;
 
 import java.awt.Shape;
@@ -99,7 +98,7 @@ public class PolygonJHotDrawAdapter extends
 
 	@Override
 	public Figure createDefaultFigure() {
-		final BezierFigure figure = new SwingPolygonFigure();
+		final BezierFigure figure = new PolygonFigure();
 		initDefaultSettings(figure);
 		figure.set(AttributeKeys.WINDING_RULE, AttributeKeys.WindingRule.EVEN_ODD);
 		return figure;

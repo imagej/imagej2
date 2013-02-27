@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ui.swing.overlay;
+package imagej.ui.swing.tools.overlay;
 
 import static org.jhotdraw.draw.AttributeKeys.FILL_COLOR;
 import static org.jhotdraw.draw.AttributeKeys.STROKE_COLOR;
@@ -68,16 +68,16 @@ import org.jhotdraw.geom.BezierPath;
  * @author Johannes Schindelin
  */
 @SuppressWarnings("hiding")
-public class SwingGeneralPathFigure extends AbstractAttributedFigure {
+public class GeneralPathFigure extends AbstractAttributedFigure {
 
 	private List<BezierFigure> figures;
 	private transient GeneralPath path;
 
-	public SwingGeneralPathFigure(final BezierFigure... list) {
+	public GeneralPathFigure(final BezierFigure... list) {
 		figures = new ArrayList<BezierFigure>() {
 			@Override
 			public boolean add(final BezierFigure figure) {
-				figure.restoreAttributesTo(SwingGeneralPathFigure.this.getAttributesRestoreData());
+				figure.restoreAttributesTo(GeneralPathFigure.this.getAttributesRestoreData());
 				figure.addFigureListener(new FigureListener() {
 					@Override
 					public void areaInvalidated(FigureEvent e) {

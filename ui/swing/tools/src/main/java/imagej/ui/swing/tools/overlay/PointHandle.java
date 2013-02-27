@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ui.swing.overlay;
+package imagej.ui.swing.tools.overlay;
 
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -50,11 +50,11 @@ import org.jhotdraw.draw.handle.AbstractHandle;
  * 
  * @author Johannes Schindelin
  */
-public class SwingPointHandle extends AbstractHandle {
+public class PointHandle extends AbstractHandle {
 
-	private final SwingPointFigure figure;
+	private final PointFigure figure;
 
-	public SwingPointHandle(final SwingPointFigure fig) {
+	public PointHandle(final PointFigure fig) {
 		super(fig);
 		figure = fig;
 	}

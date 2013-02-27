@@ -41,10 +41,8 @@ import imagej.data.overlay.GeneralPathOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.tool.Tool;
 import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
-import imagej.ui.swing.overlay.SwingGeneralPathFigure;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
-import imagej.ui.swing.overlay.SwingPolygonFigure;
 import imagej.ui.swing.tools.SwingPolygonTool;
 
 import java.awt.Shape;
@@ -62,7 +60,7 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = JHotDrawAdapter.class, priority = GeneralPathJHotDrawAdapter.PRIORITY)
 public class GeneralPathJHotDrawAdapter extends
-	AbstractJHotDrawAdapter<GeneralPathOverlay, SwingGeneralPathFigure>
+	AbstractJHotDrawAdapter<GeneralPathOverlay, GeneralPathFigure>
 {
 
 	public static final double PRIORITY = SwingPolygonTool.PRIORITY + 0.5;
@@ -82,7 +80,7 @@ public class GeneralPathJHotDrawAdapter extends
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
 		if (!(overlay instanceof GeneralPathOverlay)) return false;
-		return figure == null || figure instanceof SwingGeneralPathFigure;
+		return figure == null || figure instanceof GeneralPathFigure;
 	}
 
 	@Override
@@ -93,15 +91,15 @@ public class GeneralPathJHotDrawAdapter extends
 
 	@Override
 	public Figure createDefaultFigure() {
-		final SwingGeneralPathFigure figure =
-			new SwingGeneralPathFigure(new SwingPolygonFigure());
+		final GeneralPathFigure figure =
+			new GeneralPathFigure(new PolygonFigure());
 		initDefaultSettings(figure);
 		figure.set(AttributeKeys.WINDING_RULE, AttributeKeys.WindingRule.EVEN_ODD);
 		return figure;
 	}
 
 	@Override
-	public void updateOverlay(final SwingGeneralPathFigure figure,
+	public void updateOverlay(final GeneralPathFigure figure,
 		final OverlayView view)
 	{
 		super.updateOverlay(figure, view);
@@ -115,7 +113,7 @@ public class GeneralPathJHotDrawAdapter extends
 
 	@Override
 	public void updateFigure(final OverlayView view,
-		final SwingGeneralPathFigure figure)
+		final GeneralPathFigure figure)
 	{
 		super.updateFigure(view, figure);
 		final GeneralPathOverlay overlay = downcastOverlay(view.getData());
@@ -130,7 +128,7 @@ public class GeneralPathJHotDrawAdapter extends
 	}
 
 	@Override
-	public Shape toShape(final SwingGeneralPathFigure figure) {
+	public Shape toShape(final GeneralPathFigure figure) {
 		return figure.getGeneralPath();
 	}
 

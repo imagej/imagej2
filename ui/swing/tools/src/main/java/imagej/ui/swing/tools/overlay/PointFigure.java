@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ui.swing.overlay;
+package imagej.ui.swing.tools.overlay;
 
 import imagej.util.ColorRGB;
 import imagej.util.awt.AWTColors;
@@ -59,7 +59,7 @@ import org.jhotdraw.geom.Geom;
  * @author Johannes Schindelin
  * @author Barry DeZonia
  */
-public class SwingPointFigure extends AbstractAttributedFigure {
+public class PointFigure extends AbstractAttributedFigure {
 
 	protected Rectangle2D.Double bounds;
 	private final Rectangle2D.Double rect;
@@ -69,15 +69,15 @@ public class SwingPointFigure extends AbstractAttributedFigure {
 
 	/** Creates a new instance.
 	 * @param swingPointTool TODO*/
-	public SwingPointFigure() {
+	public PointFigure() {
 		this(new double[2]);
 	}
 
-	public SwingPointFigure(double[] pt) {
+	public PointFigure(double[] pt) {
 		this(Arrays.asList(pt));
 	}
 
-	public SwingPointFigure(List<double[]> pts) {
+	public PointFigure(List<double[]> pts) {
 		bounds = new Rectangle2D.Double();
 		rect = new Rectangle2D.Double();
 		points = new ArrayList<double[]>();
@@ -215,8 +215,8 @@ public class SwingPointFigure extends AbstractAttributedFigure {
 	}
 
 	@Override
-	public SwingPointFigure clone() {
-		final SwingPointFigure that = (SwingPointFigure) super.clone();
+	public PointFigure clone() {
+		final PointFigure that = (PointFigure) super.clone();
 		that.bounds = (Rectangle2D.Double) this.bounds.clone();
 		return that;
 	}
