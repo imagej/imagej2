@@ -118,6 +118,13 @@ public class AWTUI extends AbstractUserInterface {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	// -- Disposable methods --
+
+	@Override
+	public void dispose() {
+		if (frame != null) frame.dispose();
+	}
+
 	// -- Internal methods --
 
 	@Override

@@ -122,6 +122,13 @@ public class SWTUI extends AbstractUserInterface implements Runnable {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	// -- Disposable methods --
+
+	@Override
+	public void dispose() {
+		if (shell != null) shell.dispose();
+	}
+
 	// -- Runnable methods --
 
 	@Override
