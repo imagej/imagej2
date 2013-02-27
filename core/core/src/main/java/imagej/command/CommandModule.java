@@ -41,6 +41,8 @@ import imagej.module.ModuleException;
 
 import java.util.Map;
 
+import org.scijava.Context;
+import org.scijava.Contextual;
 import org.scijava.InstantiableException;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.util.ClassUtils;
@@ -53,7 +55,9 @@ import org.scijava.util.Log;
  * @author Johannes Schindelin
  * @author Grant Harris
  */
-public class CommandModule extends AbstractModule implements Cancelable {
+public class CommandModule extends AbstractModule implements Cancelable,
+	Contextual
+{
 
 	/** The metadata describing the command. */
 	private final CommandInfo info;
@@ -177,6 +181,20 @@ public class CommandModule extends AbstractModule implements Cancelable {
 	public String getCancelReason() {
 		if (!(command instanceof Cancelable)) return null;
 		return ((Cancelable) command).getCancelReason();
+	}
+
+	// -- Contextual methods --
+
+	@Override
+	public Context getContext() {
+		if (!(command instanceof Contextual)) return null;
+		return ((Contextual) command).getContext();
+	}
+
+	@Override
+	public void setContext(final Context context) {
+		if (!(command instanceof Contextual)) return; // ignore context injection
+		((Contextual) command).setContext(context);
 	}
 
 	// -- Helper methods --
