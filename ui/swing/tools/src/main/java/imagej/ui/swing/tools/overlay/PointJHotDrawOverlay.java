@@ -38,106 +38,96 @@ package imagej.ui.swing.tools.overlay;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
-import imagej.data.overlay.RectangleOverlay;
+import imagej.data.overlay.PointOverlay;
+import imagej.tool.Tool;
 import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
-import imagej.util.RealCoords;
+import imagej.ui.swing.overlay.SwingPointFigure;
+import imagej.ui.swing.tools.SwingPointTool;
+import imagej.util.ColorRGB;
 
 import java.awt.Shape;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 
 import org.jhotdraw.draw.Figure;
-import org.jhotdraw.draw.RectangleFigure;
 import org.scijava.plugin.Plugin;
 
 /**
- * Swing/JHotDraw implementation of rectangle tool.
+ * JHotDraw adapter for point tool.
  * 
- * @author Lee Kamentsky
- * @author Grant Harris
  * @author Barry DeZonia
+ * @see SwingPointTool
  */
-@Plugin(type = JHotDrawAdapter.class, name = "Rectangle",
-	description = "Rectangular overlays",
-	iconPath = "/icons/tools/rectangle.png",
-	priority = SwingRectangleTool.PRIORITY)
-public class SwingRectangleTool extends
-	AbstractJHotDrawAdapter<RectangleOverlay, RectangleFigure>
+@Plugin(type = JHotDrawAdapter.class, priority = SwingPointTool.PRIORITY)
+public class PointJHotDrawOverlay extends
+	AbstractJHotDrawAdapter<PointOverlay, SwingPointFigure>
 {
-
-	public static final double PRIORITY = 100;
-
-	protected static RectangleOverlay downcastOverlay(final Overlay roi) {
-		assert roi instanceof RectangleOverlay;
-		return (RectangleOverlay) roi;
-	}
 
 	// -- JHotDrawAdapter methods --
 
 	@Override
-	public boolean supports(final Overlay overlay, final Figure figure) {
-		if (!(overlay instanceof RectangleOverlay)) return false;
-		return figure == null || figure instanceof RectangleFigure;
+	public boolean supports(final Tool tool) {
+		return tool instanceof SwingPointTool;
 	}
 
 	@Override
-	public Overlay createNewOverlay() {
-		return new RectangleOverlay(getContext());
+	public boolean supports(final Overlay overlay, final Figure figure) {
+		if (!(overlay instanceof PointOverlay)) return false;
+		return figure == null || figure instanceof SwingPointFigure;
+	}
+
+	@Override
+	public PointOverlay createNewOverlay() {
+		return new PointOverlay(getContext());
 	}
 
 	@Override
 	public Figure createDefaultFigure() {
-		final RectangleFigure figure = new RectangleFigure();
+		final SwingPointFigure figure = new SwingPointFigure();
 		initDefaultSettings(figure);
 		return figure;
 	}
 
 	@Override
-	public void updateFigure(final OverlayView view, final RectangleFigure figure) {
+	public void updateFigure(final OverlayView view, final SwingPointFigure figure) {
 		super.updateFigure(view, figure);
-		final RectangleOverlay overlay = downcastOverlay(view.getData());
-		final double x0 = overlay.getOrigin(0);
-		final double y0 = overlay.getOrigin(1);
-		final double w = overlay.getExtent(0);
-		final double h = overlay.getExtent(1);
-		final Point2D.Double anch = new Point2D.Double(x0, y0);
-		final Point2D.Double lead = new Point2D.Double(x0 + w, y0 + h);
-		figure.setBounds(anch, lead);
+		final SwingPointFigure pointFigure = figure;
+		final Overlay overlay = view.getData();
+		assert overlay instanceof PointOverlay;
+		final PointOverlay pointOverlay = (PointOverlay) overlay;
+		pointFigure.setFillColor(pointOverlay.getFillColor());
+		pointFigure.setLineColor(pointOverlay.getLineColor());
+		pointFigure.setPoints(pointOverlay.getPoints());
 	}
 
 	@Override
-	public void updateOverlay(final RectangleFigure figure, final OverlayView view) {
+	public void updateOverlay(final SwingPointFigure figure, final OverlayView view) {
+		final Overlay overlay = view.getData();
+		assert overlay instanceof PointOverlay;
+		final PointOverlay pointOverlay = (PointOverlay) overlay;
+		// do not let call to super.updateOverlay() mess with drawing attributes
+		// so save colors
+		final ColorRGB fillColor = overlay.getFillColor();
+		final ColorRGB lineColor = overlay.getLineColor();
+		// call super in case it initializes anything of importance
 		super.updateOverlay(figure, view);
-		final RectangleOverlay overlay = downcastOverlay(view.getData());
-		final Rectangle2D.Double bounds = figure.getBounds();
-		final double x = bounds.getMinX();
-		final double y = bounds.getMinY();
-		final double w = bounds.getWidth();
-		final double h = bounds.getHeight();
-		overlay.setOrigin(x, 0);
-		overlay.setOrigin(y, 1);
-		overlay.setExtent(w, 0);
-		overlay.setExtent(h, 1);
-		overlay.update();
-		getToolService().reportRectangle(x, y, w, h);
+		// and restore colors to what we really want
+		pointOverlay.setFillColor(fillColor);
+		pointOverlay.setLineColor(lineColor);
+		// set points
+		pointOverlay.setPoints(figure.getPoints());
+		pointOverlay.update();
 	}
 
 	@Override
 	public JHotDrawTool getCreationTool(final ImageDisplay display) {
-		return new IJCreationTool<RectangleFigure>(display, this);
+		return new IJCreationTool<SwingPointFigure>(display, this);
 	}
 
 	@Override
-	public void report(final RealCoords p1, final RealCoords p2) {
-		getToolService().reportRectangle(p1, p2);
-	}
-
-	@Override
-	public Shape toShape(final RectangleFigure figure) {
-		return figure.getBounds();
+	public Shape toShape(final SwingPointFigure figure) {
+		throw new UnsupportedOperationException();
 	}
 
 }

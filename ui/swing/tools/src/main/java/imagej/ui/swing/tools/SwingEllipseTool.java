@@ -38,26 +38,19 @@ package imagej.ui.swing.tools;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 
-import org.scijava.input.MouseCursor;
 import org.scijava.plugin.Plugin;
 
 /**
- * TODO
+ * Swing/JHotDraw implementation of ellipse tool.
  * 
- * @author Curtis Rueden
+ * @author Lee Kamentsky
+ * @author Barry DeZonia
+ * @see imagej.ui.swing.tools.overlay.EllipseJHotDrawAdapter
  */
-@Plugin(type = Tool.class, name = "Text", description = "Text tool",
-	iconPath = "/icons/tools/text.png", priority = TextTool.PRIORITY,
-	enabled = false)
-public class TextTool extends AbstractTool {
+@Plugin(type = Tool.class, name = "Oval", description = "Oval selections",
+	iconPath = "/icons/tools/oval.png", priority = SwingEllipseTool.PRIORITY)
+public class SwingEllipseTool extends AbstractTool {
 
-	public static final double PRIORITY = -115;
-
-	@Override
-	public MouseCursor getCursor() {
-		return MouseCursor.TEXT;
-	}
-
-	// TODO
+	public static final double PRIORITY = SwingRectangleTool.PRIORITY - 1;
 
 }

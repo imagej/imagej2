@@ -40,6 +40,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
+import imagej.tool.Tool;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -80,6 +81,19 @@ public class JHotDrawService extends AbstractService {
 	private List<JHotDrawAdapter<?>> adapters;
 
 	// -- JHotDrawService methods --
+
+	/**
+	 * Gets the adapter associated with the given tool.
+	 * 
+	 * @param tool The tool for which a compatible adapter is needed.
+	 * @return the highest-priority adapter that supports the tool
+	 */
+	public JHotDrawAdapter<?> getAdapter(final Tool tool) {
+		for (final JHotDrawAdapter<?> adapter : adapters) {
+			if (adapter.supports(tool)) return adapter;
+		}
+		return null;
+	}
 
 	/**
 	 * Gets the first available adapter for the given overlay.

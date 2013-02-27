@@ -42,22 +42,22 @@ import org.scijava.input.MouseCursor;
 import org.scijava.plugin.Plugin;
 
 /**
- * Swing/JHotDraw implementation of point tool.
+ * Swing/JHotDraw implementation of text tool.
  * 
- * @author Barry DeZonia
- * @see imagej.ui.swing.tools.overlay.PointJHotDrawOverlay
+ * @author Curtis Rueden
  */
-@Plugin(type = Tool.class, name = "Point", description = "Point overlays",
-	iconPath = "/icons/tools/point.png", priority = SwingPointTool.PRIORITY)
-public class SwingPointTool extends AbstractTool {
+@Plugin(type = Tool.class, name = "Text", description = "Text tool",
+	iconPath = "/icons/tools/text.png", priority = SwingTextTool.PRIORITY,
+	enabled = false)
+public class SwingTextTool extends AbstractTool {
 
-	public static final double PRIORITY = SwingAngleTool.PRIORITY - 1;
-
-	// -- Tool methods --
+	public static final double PRIORITY = -115;
 
 	@Override
 	public MouseCursor getCursor() {
-		return MouseCursor.CROSSHAIR;
+		return MouseCursor.TEXT;
 	}
+
+	// TODO: Implement TextJHotDrawAdapter.
 
 }

@@ -38,26 +38,22 @@ package imagej.ui.swing.tools;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 
-import org.scijava.input.MouseCursor;
 import org.scijava.plugin.Plugin;
 
 /**
- * Swing/JHotDraw implementation of point tool.
+ * Swing/JHotDraw implementation of rectangle tool.
  * 
+ * @author Lee Kamentsky
+ * @author Grant Harris
  * @author Barry DeZonia
- * @see imagej.ui.swing.tools.overlay.PointJHotDrawOverlay
+ * @see imagej.ui.swing.tools.overlay.RectangleJHotDrawAdapter
  */
-@Plugin(type = Tool.class, name = "Point", description = "Point overlays",
-	iconPath = "/icons/tools/point.png", priority = SwingPointTool.PRIORITY)
-public class SwingPointTool extends AbstractTool {
+@Plugin(type = Tool.class, name = "Rectangle",
+	description = "Rectangular overlays",
+	iconPath = "/icons/tools/rectangle.png",
+	priority = SwingRectangleTool.PRIORITY)
+public class SwingRectangleTool extends AbstractTool {
 
-	public static final double PRIORITY = SwingAngleTool.PRIORITY - 1;
-
-	// -- Tool methods --
-
-	@Override
-	public MouseCursor getCursor() {
-		return MouseCursor.CROSSHAIR;
-	}
+	public static final double PRIORITY = 100;
 
 }

@@ -39,11 +39,13 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.PolygonOverlay;
+import imagej.tool.Tool;
 import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJBezierTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.SwingPolygonFigure;
+import imagej.ui.swing.tools.SwingPolygonTool;
 
 import java.awt.Shape;
 import java.util.Arrays;
@@ -60,17 +62,16 @@ import org.scijava.log.LogService;
 import org.scijava.plugin.Plugin;
 
 /**
- * Swing/JHotDraw implementation of polygon/freehand tool.
+ * JHotDraw adapter for polygon/freehand overlays.
  * 
  * @author Lee Kamentsky
  * @author Barry DeZonia
+ * @see SwingPolygonTool
  */
-@Plugin(type = JHotDrawAdapter.class, name = "Polygon",
-	description = "Polygon overlays", iconPath = "/icons/tools/polygon.png",
-	priority = SwingPolygonTool.PRIORITY)
-public class SwingPolygonTool extends AbstractJHotDrawAdapter<PolygonOverlay, BezierFigure> {
-
-	public static final double PRIORITY = SwingEllipseTool.PRIORITY - 1;
+@Plugin(type = JHotDrawAdapter.class, priority = SwingPolygonTool.PRIORITY)
+public class PolygonJHotDrawAdapter extends
+	AbstractJHotDrawAdapter<PolygonOverlay, BezierFigure>
+{
 
 	private static PolygonOverlay downcastOverlay(final Overlay overlay) {
 		assert overlay instanceof PolygonOverlay;
@@ -78,6 +79,11 @@ public class SwingPolygonTool extends AbstractJHotDrawAdapter<PolygonOverlay, Be
 	}
 
 	// -- JHotDrawAdapter methods --
+
+	@Override
+	public boolean supports(final Tool tool) {
+		return tool instanceof SwingPolygonTool;
+	}
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
@@ -100,7 +106,8 @@ public class SwingPolygonTool extends AbstractJHotDrawAdapter<PolygonOverlay, Be
 	}
 
 	@Override
-	public void updateOverlay(final BezierFigure figure, final OverlayView view) {
+	public void updateOverlay(final BezierFigure figure, final OverlayView view)
+	{
 		super.updateOverlay(figure, view);
 		final PolygonOverlay poverlay = downcastOverlay(view.getData());
 		final PolygonRegionOfInterest roi = poverlay.getRegionOfInterest();

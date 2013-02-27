@@ -64,7 +64,6 @@ import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.ImageFigure;
 import org.scijava.Priority;
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -75,13 +74,17 @@ import org.scijava.plugin.Plugin;
  * @author Lee Kamentsky
  */
 @Plugin(type = JHotDrawAdapter.class,
-	priority = DefaultJHotDrawAdapter.PRIORITY, attrs = { @Attr(
-		name = Tool.ALWAYS_ACTIVE) })
+	priority = DefaultJHotDrawAdapter.PRIORITY)
 public class DefaultJHotDrawAdapter extends
 	AbstractJHotDrawAdapter<Overlay, ImageFigure>
 {
 
 	public static final double PRIORITY = Priority.VERY_LOW_PRIORITY;
+
+	@Override
+	public boolean supports(final Tool tool) {
+		return false;
+	}
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
@@ -102,7 +105,9 @@ public class DefaultJHotDrawAdapter extends
 	}
 
 	@Override
-	public void updateFigure(final OverlayView overlay, final ImageFigure figure) {
+	public void
+		updateFigure(final OverlayView overlay, final ImageFigure figure)
+	{
 		super.updateFigure(overlay, figure);
 
 		// Override the base: set the fill color to transparent.
@@ -132,7 +137,8 @@ public class DefaultJHotDrawAdapter extends
 			final byte[] bankData = db.getData();
 			final RealRandomAccess<BitType> ra = roi.realRandomAccess();
 			for (int i = 2; i < ra.numDimensions(); i++) {
-				final long position = overlay.getPlanePosition().getLongPosition(i - 2);
+				final long position =
+					overlay.getPlanePosition().getLongPosition(i - 2);
 				ra.setPosition(position, i);
 			}
 			int index = 0;

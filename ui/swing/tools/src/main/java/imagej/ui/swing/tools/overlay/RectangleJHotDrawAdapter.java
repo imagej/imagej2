@@ -37,99 +37,104 @@ package imagej.ui.swing.tools.overlay;
 
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
-import imagej.data.overlay.EllipseOverlay;
 import imagej.data.overlay.Overlay;
+import imagej.data.overlay.RectangleOverlay;
+import imagej.tool.Tool;
 import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
+import imagej.ui.swing.tools.SwingRectangleTool;
 import imagej.util.RealCoords;
 
 import java.awt.Shape;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import org.jhotdraw.draw.EllipseFigure;
 import org.jhotdraw.draw.Figure;
+import org.jhotdraw.draw.RectangleFigure;
 import org.scijava.plugin.Plugin;
 
 /**
- * Swing/JHotDraw implementation of ellipse tool.
+ * JHotDraw adapter for rectangle overlays.
  * 
  * @author Lee Kamentsky
+ * @author Grant Harris
  * @author Barry DeZonia
+ * @see SwingRectangleTool
  */
-@Plugin(type = JHotDrawAdapter.class, name = "Oval",
-	description = "Oval selections", iconPath = "/icons/tools/oval.png",
-	priority = SwingEllipseTool.PRIORITY)
-public class SwingEllipseTool extends AbstractJHotDrawAdapter<EllipseOverlay, EllipseFigure> {
+@Plugin(type = JHotDrawAdapter.class, priority = SwingRectangleTool.PRIORITY)
+public class RectangleJHotDrawAdapter extends
+	AbstractJHotDrawAdapter<RectangleOverlay, RectangleFigure>
+{
 
-	public static final double PRIORITY = SwingRectangleTool.PRIORITY - 1;
-
-	protected static EllipseOverlay downcastOverlay(final Overlay roi) {
-		assert roi instanceof EllipseOverlay;
-		return (EllipseOverlay) roi;
-	}
-
-	protected static EllipseFigure downcastFigure(final Figure figure) {
-		assert figure instanceof EllipseFigure;
-		return (EllipseFigure) figure;
+	protected static RectangleOverlay downcastOverlay(final Overlay roi) {
+		assert roi instanceof RectangleOverlay;
+		return (RectangleOverlay) roi;
 	}
 
 	// -- JHotDrawAdapter methods --
 
 	@Override
+	public boolean supports(final Tool tool) {
+		return tool instanceof SwingRectangleTool;
+	}
+
+	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
-		if (!(overlay instanceof EllipseOverlay)) return false;
-		return figure == null || figure instanceof EllipseFigure;
+		if (!(overlay instanceof RectangleOverlay)) return false;
+		return figure == null || figure instanceof RectangleFigure;
 	}
 
 	@Override
 	public Overlay createNewOverlay() {
-		return new EllipseOverlay(getContext());
+		return new RectangleOverlay(getContext());
 	}
 
 	@Override
 	public Figure createDefaultFigure() {
-		final EllipseFigure figure = new EllipseFigure();
+		final RectangleFigure figure = new RectangleFigure();
 		initDefaultSettings(figure);
 		return figure;
 	}
 
 	@Override
-	public void updateFigure(final OverlayView view, final EllipseFigure figure) {
+	public void
+		updateFigure(final OverlayView view, final RectangleFigure figure)
+	{
 		super.updateFigure(view, figure);
-		final EllipseOverlay overlay = downcastOverlay(view.getData());
-		final double centerX = overlay.getOrigin(0);
-		final double centerY = overlay.getOrigin(1);
-		final double radiusX = overlay.getRadius(0);
-		final double radiusY = overlay.getRadius(1);
-
-		figure.setBounds(new Point2D.Double(centerX - radiusX, centerY - radiusY),
-			new Point2D.Double(centerX + radiusX, centerY + radiusY));
+		final RectangleOverlay overlay = downcastOverlay(view.getData());
+		final double x0 = overlay.getOrigin(0);
+		final double y0 = overlay.getOrigin(1);
+		final double w = overlay.getExtent(0);
+		final double h = overlay.getExtent(1);
+		final Point2D.Double anch = new Point2D.Double(x0, y0);
+		final Point2D.Double lead = new Point2D.Double(x0 + w, y0 + h);
+		figure.setBounds(anch, lead);
 	}
 
 	@Override
-	public void updateOverlay(final EllipseFigure figure, final OverlayView view) {
+	public void updateOverlay(final RectangleFigure figure,
+		final OverlayView view)
+	{
 		super.updateOverlay(figure, view);
-		final EllipseOverlay overlay = downcastOverlay(view.getData());
+		final RectangleOverlay overlay = downcastOverlay(view.getData());
 		final Rectangle2D.Double bounds = figure.getBounds();
 		final double x = bounds.getMinX();
 		final double y = bounds.getMinY();
 		final double w = bounds.getWidth();
 		final double h = bounds.getHeight();
-		overlay.setOrigin(x + w / 2, 0);
-		overlay.setOrigin(y + h / 2, 1);
-		overlay.setRadius(w / 2, 0);
-		overlay.setRadius(h / 2, 1);
+		overlay.setOrigin(x, 0);
+		overlay.setOrigin(y, 1);
+		overlay.setExtent(w, 0);
+		overlay.setExtent(h, 1);
 		overlay.update();
 		getToolService().reportRectangle(x, y, w, h);
 	}
 
 	@Override
 	public JHotDrawTool getCreationTool(final ImageDisplay display) {
-		return new IJCreationTool<EllipseFigure>(display, this);
+		return new IJCreationTool<RectangleFigure>(display, this);
 	}
 
 	@Override
@@ -138,9 +143,8 @@ public class SwingEllipseTool extends AbstractJHotDrawAdapter<EllipseOverlay, El
 	}
 
 	@Override
-	public Shape toShape(final EllipseFigure figure) {
-		Rectangle2D.Double bounds = figure.getBounds();
-		return new Ellipse2D.Double(bounds.x, bounds.y, bounds.width, bounds.height);
+	public Shape toShape(final RectangleFigure figure) {
+		return figure.getBounds();
 	}
 
 }

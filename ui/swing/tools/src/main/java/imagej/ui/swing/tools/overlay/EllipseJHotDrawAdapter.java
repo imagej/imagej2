@@ -37,106 +37,120 @@ package imagej.ui.swing.tools.overlay;
 
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
-import imagej.data.overlay.LineOverlay;
+import imagej.data.overlay.EllipseOverlay;
 import imagej.data.overlay.Overlay;
+import imagej.tool.Tool;
 import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
+import imagej.ui.swing.tools.SwingEllipseTool;
 import imagej.util.RealCoords;
 
 import java.awt.Shape;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
+import org.jhotdraw.draw.EllipseFigure;
 import org.jhotdraw.draw.Figure;
-import org.jhotdraw.draw.LineFigure;
-import org.jhotdraw.geom.BezierPath.Node;
 import org.scijava.plugin.Plugin;
 
 /**
- * Swing/JHotDraw implementation of line tool.
+ * JHotDraw adapter for ellipse overlays.
  * 
  * @author Lee Kamentsky
  * @author Barry DeZonia
+ * @see SwingEllipseTool
  */
-@Plugin(type = JHotDrawAdapter.class, name = "Line",
-	description = "Straight line overlays", iconPath = "/icons/tools/line.png",
-	priority = SwingLineTool.PRIORITY)
-public class SwingLineTool extends AbstractJHotDrawAdapter<LineOverlay, LineFigure> {
+@Plugin(type = JHotDrawAdapter.class, priority = SwingEllipseTool.PRIORITY)
+public class EllipseJHotDrawAdapter extends
+	AbstractJHotDrawAdapter<EllipseOverlay, EllipseFigure>
+{
 
-	public static final double PRIORITY = SwingPolygonTool.PRIORITY - 1;
+	protected static EllipseOverlay downcastOverlay(final Overlay roi) {
+		assert roi instanceof EllipseOverlay;
+		return (EllipseOverlay) roi;
+	}
+
+	protected static EllipseFigure downcastFigure(final Figure figure) {
+		assert figure instanceof EllipseFigure;
+		return (EllipseFigure) figure;
+	}
 
 	// -- JHotDrawAdapter methods --
 
 	@Override
-	public boolean supports(final Overlay overlay, final Figure figure) {
-		if (!(overlay instanceof LineOverlay)) return false;
-		return figure == null || figure instanceof LineFigure;
+	public boolean supports(final Tool tool) {
+		return tool instanceof SwingEllipseTool;
 	}
 
 	@Override
-	public LineOverlay createNewOverlay() {
-		return new LineOverlay(getContext());
+	public boolean supports(final Overlay overlay, final Figure figure) {
+		if (!(overlay instanceof EllipseOverlay)) return false;
+		return figure == null || figure instanceof EllipseFigure;
+	}
+
+	@Override
+	public Overlay createNewOverlay() {
+		return new EllipseOverlay(getContext());
 	}
 
 	@Override
 	public Figure createDefaultFigure() {
-		final LineFigure figure = new LineFigure();
+		final EllipseFigure figure = new EllipseFigure();
 		initDefaultSettings(figure);
 		return figure;
 	}
 
 	@Override
-	public void updateFigure(final OverlayView view, final LineFigure figure) {
+	public void updateFigure(final OverlayView view, final EllipseFigure figure)
+	{
 		super.updateFigure(view, figure);
-		assert figure instanceof LineFigure;
-		final LineFigure lineFigure = (LineFigure) figure;
-		final Overlay overlay = view.getData();
-		assert overlay instanceof LineOverlay;
-		final LineOverlay lineOverlay = (LineOverlay) overlay;
-		double pt1X = lineOverlay.getLineStart(0);
-		double pt1Y = lineOverlay.getLineStart(1);
-		double pt2X = lineOverlay.getLineEnd(0);
-		double pt2Y = lineOverlay.getLineEnd(1);
-		lineFigure.setStartPoint(new Point2D.Double(pt1X, pt1Y));
-		lineFigure.setEndPoint(new Point2D.Double(pt2X, pt2Y));
+		final EllipseOverlay overlay = downcastOverlay(view.getData());
+		final double centerX = overlay.getOrigin(0);
+		final double centerY = overlay.getOrigin(1);
+		final double radiusX = overlay.getRadius(0);
+		final double radiusY = overlay.getRadius(1);
+
+		figure.setBounds(new Point2D.Double(centerX - radiusX, centerY - radiusY),
+			new Point2D.Double(centerX + radiusX, centerY + radiusY));
 	}
 
 	@Override
-	public void updateOverlay(final LineFigure figure, final OverlayView view) {
+	public void
+		updateOverlay(final EllipseFigure figure, final OverlayView view)
+	{
 		super.updateOverlay(figure, view);
-		assert figure instanceof LineFigure;
-		final LineFigure line = (LineFigure) figure;
-		final Overlay overlay = view.getData();
-		assert overlay instanceof LineOverlay;
-		final LineOverlay lineOverlay = (LineOverlay) overlay;
-		final Node startNode = line.getNode(0);
-		final double x1 = startNode.getControlPoint(0).x;
-		final double y1 = startNode.getControlPoint(0).y;
-		lineOverlay.setLineStart(x1, 0);
-		lineOverlay.setLineStart(y1, 1);
-		final Node endNode = line.getNode(1);
-		final double x2 = endNode.getControlPoint(0).x;
-		final double y2 = endNode.getControlPoint(0).y;
-		lineOverlay.setLineEnd(x2, 0);
-		lineOverlay.setLineEnd(y2, 1);
-		lineOverlay.update();
-		getToolService().reportLine(x1, y1, x2, y2);
+		final EllipseOverlay overlay = downcastOverlay(view.getData());
+		final Rectangle2D.Double bounds = figure.getBounds();
+		final double x = bounds.getMinX();
+		final double y = bounds.getMinY();
+		final double w = bounds.getWidth();
+		final double h = bounds.getHeight();
+		overlay.setOrigin(x + w / 2, 0);
+		overlay.setOrigin(y + h / 2, 1);
+		overlay.setRadius(w / 2, 0);
+		overlay.setRadius(h / 2, 1);
+		overlay.update();
+		getToolService().reportRectangle(x, y, w, h);
 	}
 
 	@Override
 	public JHotDrawTool getCreationTool(final ImageDisplay display) {
-		return new IJCreationTool<LineFigure>(display, this);
+		return new IJCreationTool<EllipseFigure>(display, this);
 	}
 
 	@Override
 	public void report(final RealCoords p1, final RealCoords p2) {
-		getToolService().reportLine(p1, p2);
+		getToolService().reportRectangle(p1, p2);
 	}
 
-    @Override
-	public Shape toShape(final LineFigure figure) {
-		return figure.getBezierPath().toGeneralPath();
+	@Override
+	public Shape toShape(final EllipseFigure figure) {
+		final Rectangle2D.Double bounds = figure.getBounds();
+		return new Ellipse2D.Double(bounds.x, bounds.y, bounds.width,
+			bounds.height);
 	}
 
 }

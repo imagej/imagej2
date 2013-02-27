@@ -39,11 +39,13 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.GeneralPathOverlay;
 import imagej.data.overlay.Overlay;
+import imagej.tool.Tool;
 import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
+import imagej.ui.swing.overlay.SwingGeneralPathFigure;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
-import imagej.ui.swing.overlay.SwingGeneralPathFigure;
 import imagej.ui.swing.overlay.SwingPolygonFigure;
+import imagej.ui.swing.tools.SwingPolygonTool;
 
 import java.awt.Shape;
 
@@ -54,14 +56,14 @@ import org.jhotdraw.draw.Figure;
 import org.scijava.plugin.Plugin;
 
 /**
- * Swing/JHotDraw implementation of composite area selection tool.
+ * JHotDraw adapter for composite area selections.
  * 
  * @author Johannes Schindelin
  */
-@Plugin(type = JHotDrawAdapter.class, name = "GeneralPath",
-	description = "General path overlays", iconPath = "/icons/tools/polygon.png",
-	priority = SwingGeneralPathTool.PRIORITY, visible = false)
-public class SwingGeneralPathTool extends AbstractJHotDrawAdapter<GeneralPathOverlay, SwingGeneralPathFigure> {
+@Plugin(type = JHotDrawAdapter.class, priority = GeneralPathJHotDrawAdapter.PRIORITY)
+public class GeneralPathJHotDrawAdapter extends
+	AbstractJHotDrawAdapter<GeneralPathOverlay, SwingGeneralPathFigure>
+{
 
 	public static final double PRIORITY = SwingPolygonTool.PRIORITY + 0.5;
 
@@ -71,6 +73,11 @@ public class SwingGeneralPathTool extends AbstractJHotDrawAdapter<GeneralPathOve
 	}
 
 	// -- JHotDrawAdapter methods --
+
+	@Override
+	public boolean supports(final Tool tool) {
+		return false;
+	}
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
@@ -86,24 +93,30 @@ public class SwingGeneralPathTool extends AbstractJHotDrawAdapter<GeneralPathOve
 
 	@Override
 	public Figure createDefaultFigure() {
-		final SwingGeneralPathFigure figure = new SwingGeneralPathFigure(new SwingPolygonFigure());
+		final SwingGeneralPathFigure figure =
+			new SwingGeneralPathFigure(new SwingPolygonFigure());
 		initDefaultSettings(figure);
 		figure.set(AttributeKeys.WINDING_RULE, AttributeKeys.WindingRule.EVEN_ODD);
 		return figure;
 	}
 
 	@Override
-	public void updateOverlay(final SwingGeneralPathFigure figure, final OverlayView view) {
+	public void updateOverlay(final SwingGeneralPathFigure figure,
+		final OverlayView view)
+	{
 		super.updateOverlay(figure, view);
 		final GeneralPathOverlay overlay = downcastOverlay(view.getData());
 		final GeneralPathRegionOfInterest roi = overlay.getRegionOfInterest();
 		roi.reset();
-		BezierPathFunctions.addToRegionOfInterest(figure.getGeneralPath().getPathIterator(null), roi);
+		BezierPathFunctions.addToRegionOfInterest(figure.getGeneralPath()
+			.getPathIterator(null), roi);
 		overlay.update();
 	}
 
 	@Override
-	public void updateFigure(final OverlayView view, final SwingGeneralPathFigure figure) {
+	public void updateFigure(final OverlayView view,
+		final SwingGeneralPathFigure figure)
+	{
 		super.updateFigure(view, figure);
 		final GeneralPathOverlay overlay = downcastOverlay(view.getData());
 		final GeneralPathRegionOfInterest roi = overlay.getRegionOfInterest();
@@ -112,7 +125,8 @@ public class SwingGeneralPathTool extends AbstractJHotDrawAdapter<GeneralPathOve
 
 	@Override
 	public JHotDrawTool getCreationTool(final ImageDisplay display) {
-		throw new UnsupportedOperationException(); // new IJBezierTool(display, this);
+		throw new UnsupportedOperationException(); // new IJBezierTool(display,
+																								// this);
 	}
 
 	@Override
