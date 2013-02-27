@@ -132,6 +132,13 @@ public class DefaultAnimationService extends AbstractService implements
 		animations = new ConcurrentHashMap<ImageDisplay, Animation>();
 	}
 
+	// -- Disposable methods --
+
+	@Override
+	public void dispose() {
+		stopAll();
+	}
+
 	// -- Event handlers --
 
 	/** Stops animation if ESC key is pressed. */
