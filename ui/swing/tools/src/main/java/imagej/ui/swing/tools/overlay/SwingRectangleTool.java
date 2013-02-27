@@ -122,7 +122,7 @@ public class SwingRectangleTool extends
 		overlay.setExtent(w, 0);
 		overlay.setExtent(h, 1);
 		overlay.update();
-		reportRectangle(x, y, w, h);
+		getToolService().reportRectangle(x, y, w, h);
 	}
 
 	@Override
@@ -132,7 +132,7 @@ public class SwingRectangleTool extends
 
 	@Override
 	public void report(final RealCoords p1, final RealCoords p2) {
-		reportRectangle(p1, p2);
+		getToolService().reportRectangle(p1, p2);
 	}
 
 	@Override

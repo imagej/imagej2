@@ -121,7 +121,7 @@ public class SwingLineTool extends AbstractJHotDrawAdapter<LineOverlay, LineFigu
 		lineOverlay.setLineEnd(x2, 0);
 		lineOverlay.setLineEnd(y2, 1);
 		lineOverlay.update();
-		reportLine(x1, y1, x2, y2);
+		getToolService().reportLine(x1, y1, x2, y2);
 	}
 
 	@Override
@@ -131,7 +131,7 @@ public class SwingLineTool extends AbstractJHotDrawAdapter<LineOverlay, LineFigu
 
 	@Override
 	public void report(final RealCoords p1, final RealCoords p2) {
-		reportLine(p1, p2);
+		getToolService().reportLine(p1, p2);
 	}
 
     @Override

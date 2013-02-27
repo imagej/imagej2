@@ -43,6 +43,7 @@ import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
 import imagej.display.Display;
 import imagej.tool.AbstractTool;
+import imagej.tool.ToolService;
 import imagej.util.ColorRGB;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
@@ -61,8 +62,8 @@ import org.jhotdraw.draw.decoration.ArrowTip;
  * 
  * @author Lee Kamentsky
  */
-public abstract class AbstractJHotDrawAdapter<O extends Overlay, F extends Figure> extends
-	AbstractTool implements JHotDrawAdapter<F>
+public abstract class AbstractJHotDrawAdapter<O extends Overlay, F extends Figure>
+	extends AbstractTool implements JHotDrawAdapter<F>
 {
 
 	// NB: The line styles here are taken from
@@ -190,27 +191,6 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay, F extends Figur
 		figure.set(AttributeKeys.IS_STROKE_MITER_LIMIT_FACTOR, false);
 	}
 
-	// -- Internal methods --
-
-	/** Reports rectangle statistics to the status bar. */
-	protected void reportRectangle(final RealCoords p1, final RealCoords p2) {
-		final double x = Math.min(p1.x, p2.x);
-		final double y = Math.min(p1.y, p2.y);
-		final double w = Math.abs(p2.x - p1.x);
-		final double h = Math.abs(p2.y - p1.y);
-		reportRectangle(x, y, w, h);
-	}
-
-	/** Reports line statistics to the status bar. */
-	protected void reportLine(final RealCoords p1, final RealCoords p2) {
-		reportLine(p1.x, p1.y, p2.x, p2.y);
-	}
-
-	/** Reports point statistics to the status bar. */
-	protected void reportPoint(final RealCoords p) {
-		reportPoint(p.x, p.y);
-	}
-
 	// -- Helper methods --
 
 	private double getDefaultLineWidth(final OverlaySettings settings) {
@@ -251,5 +231,11 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay, F extends Figur
 	 * Convert a figure into an AWT Shape.
 	 */
 	public abstract Shape toShape(final F figure);
+
+	// -- Internal methods --
+
+	protected ToolService getToolService() {
+		return getContext().getService(ToolService.class);
+	}
 
 }
