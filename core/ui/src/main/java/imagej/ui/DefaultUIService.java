@@ -403,6 +403,22 @@ public final class DefaultUIService extends AbstractService implements
 		discoverUIs();
 	}
 
+	// -- Disposable methods --
+
+	@Override
+	public void dispose() {
+		// dispose active display viewers
+		for (final DisplayViewer<?> viewer : displayViewers) {
+			viewer.dispose();
+		}
+
+		// dispose UIs in reverse priority, "just in case" the order matters
+		final List<UserInterface> uis = getAvailableUIs();
+		for (int i = uis.size() - 1; i >= 0; i--) {
+			uis.get(i).dispose();
+		}
+	}
+
 	// -- Event handlers --
 
 	/**
