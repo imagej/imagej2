@@ -46,7 +46,6 @@ import org.scijava.Contextual;
 import org.scijava.InstantiableException;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.util.ClassUtils;
-import org.scijava.util.Log;
 
 /**
  * Module class for working with a {@link Command} instance.
@@ -161,12 +160,7 @@ public class CommandModule extends AbstractModule implements Cancelable,
 
 	@Override
 	public void run() {
-		try {
-			command.run();
-		}
-		catch (final Throwable t) {
-			Log.error(t);
-		}
+		command.run();
 	}
 
 	// -- Cancelable methods --
