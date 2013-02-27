@@ -52,6 +52,7 @@ import org.scijava.log.LogService;
 @Deprecated
 public class StderrLogService implements LogService {
 	@Override public void initialize() { }
+	@Override public void dispose() { }
 	@Override public Context getContext() { return null; }
 	@Override public void setContext(Context context) { }
 	@Override public double getPriority() { return 0; }
