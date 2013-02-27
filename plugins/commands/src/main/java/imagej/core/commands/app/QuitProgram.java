@@ -36,6 +36,7 @@
 package imagej.core.commands.app;
 
 import imagej.command.Command;
+import imagej.command.ContextCommand;
 import imagej.data.display.WindowService;
 import imagej.menu.MenuConstants;
 import imagej.ui.DialogPrompt;
@@ -58,7 +59,7 @@ import org.scijava.plugin.Plugin;
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Quit", weight = Double.MAX_VALUE, mnemonic = 'q',
 		accelerator = "^Q") }, headless = true)
-public class QuitProgram implements Command {
+public class QuitProgram extends ContextCommand {
 
 	public static final String MESSAGE = "Quit ImageJ?";
 
@@ -75,17 +76,21 @@ public class QuitProgram implements Command {
 	public void run() {
 		if (windowService != null && windowService.getOpenWindows().size() > 0) {
 			if (!promptForQuit()) {
+				cancel("Quit canceled");
 				return;
 			}
 
 			// TODO - save existing data
 			// TODO - close windows
 		}
-		// TODO - call ImageJ.getContext().shutdown() or some such, rather than
-		// using System.exit(0), which kills the entire JVM.
 		if (statusService != null) {
 			statusService.showStatus("Quitting...");
 		}
+		getContext().dispose();
+
+		// CTR: FIXME: Do not kill the entire JVM!
+		// We do this only temporarily, until bugs in context disposal
+		// (specifically in DefaultUIService and friends) are solved.
 		System.exit(0);
 	}
 
