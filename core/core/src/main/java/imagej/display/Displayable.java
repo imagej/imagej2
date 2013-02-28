@@ -36,9 +36,13 @@
 package imagej.display;
 
 /**
+ * TODO
+ * 
  * @author Barry DeZonia
  */
 public interface Displayable {
 
+	/** TODO */
 	void draw();
+
 }
