@@ -43,6 +43,7 @@ import imagej.widget.FileWidget;
 import java.io.File;
 
 import org.scijava.Contextual;
+import org.scijava.Disposable;
 import org.scijava.Prioritized;
 import org.scijava.plugin.Plugin;
 
@@ -60,7 +61,9 @@ import org.scijava.plugin.Plugin;
  * @see Plugin
  * @see UIService
  */
-public interface UserInterface extends ImageJPlugin, Contextual, Prioritized {
+public interface UserInterface extends ImageJPlugin, Contextual, Prioritized,
+	Disposable
+{
 
 	/** Gets the service responsible for managing this UI. */
 	UIService getUIService();

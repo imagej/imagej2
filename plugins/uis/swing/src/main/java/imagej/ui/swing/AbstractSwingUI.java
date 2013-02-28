@@ -133,6 +133,13 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		}
 	}
 
+	// -- Disposable methods --
+
+	@Override
+	public void dispose() {
+		if (appFrame != null) appFrame.dispose();
+	}
+
 	// -- Internal methods --
 
 	@Override

@@ -36,6 +36,7 @@
 package imagej.legacy;
 
 import ij.IJ;
+import ij.ImageJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.ImageWindow;
@@ -333,6 +334,30 @@ public final class DefaultLegacyService extends AbstractService implements
 		addLegacyCommands(enableBlacklist);
 
 		updateLegacyImageJSettings();
+	}
+
+	// -- Disposable methods --
+
+	@Override
+	public void dispose() {
+		final ImageJ ij = IJ.getInstance();
+		if (ij != null) {
+			// close out all image windows, without dialog prompts
+			while (true) {
+				final ImagePlus imp = WindowManager.getCurrentImage();
+				if (imp == null) break;
+				imp.changes = false;
+				imp.close();
+			}
+
+			// close any remaining (non-image) windows
+			WindowManager.closeAllWindows();
+
+			// quit legacy ImageJ on the same thread
+			ij.run();
+		}
+
+		instance = null;
 	}
 
 	// -- Event handlers --

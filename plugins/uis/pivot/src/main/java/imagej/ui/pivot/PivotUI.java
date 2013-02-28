@@ -111,6 +111,13 @@ public class PivotUI extends AbstractUserInterface implements Runnable {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	// -- Disposable methods --
+
+	@Override
+	public void dispose() {
+		// TODO: Dispose of the Pivot application context and UI elements.
+	}
+
 	// -- Runnable methods --
 
 	@Override
