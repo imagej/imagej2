@@ -992,4 +992,42 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	public List<Conflict> getConflicts() {
 		return conflicts;
 	}
+
+	/**
+	 * Utility method for Fiji's Bug Submitter
+	 *
+	 * @return the list of files known to the Updater, with versions, as a String
+	 */
+	public static String getInstalledVersions(final File ijDirectory, final Progress progress) {
+		final FilesCollection files = new FilesCollection(ijDirectory);
+		final Checksummer checksummer = new Checksummer(files, progress);
+		try {
+			checksummer.updateFromLocal();
+		} catch (UpdateCanceledException t) {
+			return null;
+		}
+
+		final Map<String, FileObject.Version> checksums = checksummer.getCachedChecksums();
+
+		final StringBuilder sb = new StringBuilder();
+		for (final Map.Entry<String, FileObject.Version> entry : checksums.entrySet()) {
+			String file = entry.getKey();
+			if (file.startsWith(":") && file.length() > 8) file = file.substring(0, 8);
+			final FileObject.Version version = entry.getValue();
+			String checksum = version.checksum;
+			if (version.checksum != null && version.checksum.length() > 8) {
+				final StringBuilder rebuild = new StringBuilder();
+				for (final String element : checksum.split(":")) {
+					if (rebuild.length() > 0) rebuild.append(":");
+					if (element == null || element.length() <= 8) rebuild.append(element);
+					else rebuild.append(element.substring(0, 8));
+				}
+				checksum = rebuild.toString();
+			}
+			sb.append("  ").append(checksum).append(" ");
+			sb.append(version.timestamp).append(" ");
+			sb.append(file).append("\n");
+		}
+		return sb.toString();
+	}
 }
