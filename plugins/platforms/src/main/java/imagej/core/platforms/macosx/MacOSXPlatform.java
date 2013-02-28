@@ -133,7 +133,7 @@ public class MacOSXPlatform extends AbstractPlatform {
 
 		// get the list of commands being handled at the application level
 		final List<Class<? extends Command>> commands =
-			appEventService.getHandlers();
+			appEventService.getCommands();
 
 		// remove said commands from the main menu bar
 		// (the Mac application menu will trigger them instead)

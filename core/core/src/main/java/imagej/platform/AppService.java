@@ -57,16 +57,7 @@ public interface AppService extends Service {
 	/** Quits ImageJ. */
 	void quit();
 
-	/** Sets the command invoked when {@link #about()} is called. */
-	void setAboutHandler(Class<? extends Command> aboutCommand);
-
-	/** Sets the command invoked when {@link #showPrefs()} is called. */
-	void setPrefsHandler(Class<? extends Command> prefsCommand);
-
-	/** Sets the command invoked when {@link #quit()} is called. */
-	void setQuitHandler(Class<? extends Command> quitCommand);
-
 	/** Gets the commands associated with this service. */
-	List<Class<? extends Command>> getHandlers();
+	List<Class<? extends Command>> getCommands();
 
 }

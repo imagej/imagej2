@@ -33,34 +33,48 @@
  * #L%
  */
 
-package imagej.core.commands.app;
+package imagej.platform;
 
-import imagej.platform.AppService;
+import imagej.command.Command;
+
+import java.util.Collections;
+import java.util.List;
 
 import org.scijava.Priority;
-import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
- * Service that registers application plugins with the {@link AppService}.
+ * Default service for providing application-level functionality.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Service.class, priority = Priority.HIGH_PRIORITY)
-public final class AppRegistrar extends AbstractService {
+@Plugin(type = Service.class, priority = Priority.VERY_LOW_PRIORITY)
+public final class DummyAppService extends AbstractService implements
+	AppService
+{
 
-	@Parameter
-	private AppService appService;
-
-	// -- Service methods --
+	// -- AppService methods --
 
 	@Override
-	public void initialize() {
-		appService.setAboutHandler(AboutImageJ.class);
-		appService.setPrefsHandler(Preferences.class);
-		appService.setQuitHandler(QuitProgram.class);
+	public void about() {
+		// NB: Do nothing.
+	}
+
+	@Override
+	public void showPrefs() {
+		// NB: Do nothing.
+	}
+
+	@Override
+	public void quit() {
+		// NB: Do nothing.
+	}
+
+	@Override
+	public List<Class<? extends Command>> getCommands() {
+		return Collections.emptyList();
 	}
 
 }

@@ -33,15 +33,16 @@
  * #L%
  */
 
-package imagej.platform;
+package imagej.core.commands.app;
 
 import imagej.command.Command;
 import imagej.command.CommandService;
+import imagej.platform.AppService;
 import imagej.platform.event.AppAboutEvent;
 import imagej.platform.event.AppPreferencesEvent;
 import imagej.platform.event.AppQuitEvent;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.scijava.event.EventHandler;
@@ -67,53 +68,28 @@ public final class DefaultAppService extends AbstractService implements
 	@Parameter
 	private CommandService commandService;
 
-	private Class<? extends Command> aboutCommand;
-	private Class<? extends Command> prefsCommand;
-	private Class<? extends Command> quitCommand;
-
 	// -- AppService methods --
 
 	@Override
 	public void about() {
-		if (aboutCommand == null) return;
-		commandService.run(aboutCommand);
+		commandService.run(AboutImageJ.class);
 	}
 
 	@Override
 	public void showPrefs() {
-		if (prefsCommand == null) return;
-		commandService.run(prefsCommand);
+		commandService.run(Preferences.class);
 	}
 
 	@Override
 	public void quit() {
-		if (quitCommand == null) return;
-		commandService.run(quitCommand);
+		commandService.run(QuitProgram.class);
 	}
 
 	@Override
-	public void setAboutHandler(final Class<? extends Command> aboutCommand) {
-		this.aboutCommand = aboutCommand;
-	}
-
-	@Override
-	public void setPrefsHandler(final Class<? extends Command> prefsCommand) {
-		this.prefsCommand = prefsCommand;
-	}
-
-	@Override
-	public void setQuitHandler(final Class<? extends Command> quitCommand) {
-		this.quitCommand = quitCommand;
-	}
-
-	@Override
-	public List<Class<? extends Command>> getHandlers() {
-		final ArrayList<Class<? extends Command>> handledCommands =
-			new ArrayList<Class<? extends Command>>();
-		if (aboutCommand != null) handledCommands.add(aboutCommand);
-		if (prefsCommand != null) handledCommands.add(prefsCommand);
-		if (quitCommand != null) handledCommands.add(quitCommand);
-		return handledCommands;
+	@SuppressWarnings("unchecked")
+	public List<Class<? extends Command>> getCommands() {
+		return Arrays.asList(AboutImageJ.class, Preferences.class,
+			QuitProgram.class);
 	}
 
 	// -- Event handlers --
