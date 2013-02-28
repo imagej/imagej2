@@ -46,7 +46,9 @@ import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.tool.event.ToolDeactivatedEvent;
+import imagej.util.RealCoords;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +57,7 @@ import java.util.Map;
 import org.scijava.InstantiableException;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
+import org.scijava.event.StatusService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -85,6 +88,9 @@ public class DefaultToolService extends AbstractService implements ToolService
 	private EventService eventService;
 
 	@Parameter
+	private StatusService statusService;
+
+	@Parameter
 	private PluginService pluginService;
 
 	private Map<String, Tool> alwaysActiveTools;
@@ -100,6 +106,11 @@ public class DefaultToolService extends AbstractService implements ToolService
 	@Override
 	public EventService getEventService() {
 		return eventService;
+	}
+
+	@Override
+	public StatusService getStatusService() {
+		return statusService;
 	}
 
 	@Override
@@ -164,6 +175,69 @@ public class DefaultToolService extends AbstractService implements ToolService
 		final double priority1 = tool1.getInfo().getPriority();
 		final double priority2 = tool2.getInfo().getPriority();
 		return Math.abs(priority1 - priority2) >= SEPARATOR_DISTANCE;
+	}
+
+	@Override
+	public void reportRectangle(final double x, final double y, final double w,
+		final double h)
+	{
+		final DecimalFormat f = new DecimalFormat("0.##");
+		final String fx = f.format(x);
+		final String fy = f.format(y);
+		final String fw = f.format(w);
+		final String fh = f.format(h);
+		getStatusService().showStatus(
+			"x=" + fx + ", y=" + fy + ", w=" + fw + ", h=" + fh);
+	}
+
+	@Override
+	public void reportRectangle(final RealCoords p1, final RealCoords p2) {
+		final double x = Math.min(p1.x, p2.x);
+		final double y = Math.min(p1.y, p2.y);
+		final double w = Math.abs(p2.x - p1.x);
+		final double h = Math.abs(p2.y - p1.y);
+		reportRectangle(x, y, w, h);
+	}
+
+	@Override
+	public void reportLine(final double x1, final double y1, final double x2,
+		final double y2)
+	{
+		// compute line angle
+		final double dx = x2 - x1;
+		final double dy = y1 - y2;
+		final double angle = 180.0 / Math.PI * Math.atan2(dy, dx);
+
+		// compute line length
+		final double w = Math.abs(x2 - x1);
+		final double h = Math.abs(y2 - y1);
+		final double length = Math.sqrt(w * w + h * h);
+
+		final DecimalFormat f = new DecimalFormat("0.##");
+		final String fx = f.format(x2);
+		final String fy = f.format(y2);
+		final String fa = f.format(angle);
+		final String fl = f.format(length);
+		getStatusService().showStatus(
+			"x=" + fx + ", y=" + fy + ", angle=" + fa + ", length=" + fl);
+	}
+
+	@Override
+	public void reportLine(final RealCoords p1, final RealCoords p2) {
+		reportLine(p1.x, p1.y, p2.x, p2.y);
+	}
+
+	@Override
+	public void reportPoint(final double x, final double y) {
+		final DecimalFormat f = new DecimalFormat("0.##");
+		final String fx = f.format(x);
+		final String fy = f.format(y);
+		getStatusService().showStatus("x=" + fx + ", y=" + fy);
+	}
+
+	@Override
+	public void reportPoint(final RealCoords p) {
+		reportPoint(p.x, p.y);
 	}
 
 	// -- Service methods --

@@ -78,7 +78,7 @@ public interface Tool extends ImageJPlugin, Contextual, Prioritized {
 	/**
 	 * When true, tool has no button but rather is active all the time.
 	 * 
-	 * @see Plugin#values()
+	 * @see Plugin#attrs()
 	 */
 	String ALWAYS_ACTIVE = "alwaysActive";
 
@@ -87,7 +87,7 @@ public interface Tool extends ImageJPlugin, Contextual, Prioritized {
 	 * active. When false, tool only receives events when a display window is
 	 * active.
 	 * 
-	 * @see Plugin#values()
+	 * @see Plugin#attrs()
 	 */
 	String ACTIVE_IN_APP_FRAME = "activeInAppFrame";
 
@@ -135,4 +135,5 @@ public interface Tool extends ImageJPlugin, Contextual, Prioritized {
 
 	/** Returns the text the tool provides when mouse hovers over tool */
 	String getDescription();
+
 }

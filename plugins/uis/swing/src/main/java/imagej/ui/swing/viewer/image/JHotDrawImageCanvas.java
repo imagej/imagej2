@@ -56,6 +56,7 @@ import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.overlay.FigureCreatedEvent;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
+import imagej.ui.swing.overlay.JHotDrawService;
 import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.overlay.ToolDelegator;
 import imagej.util.IntCoords;
@@ -550,9 +551,11 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 		displayViewer.getWindow().pack();
 	}
 
-	private void activateTool(final Tool iTool) {
-		if (iTool instanceof JHotDrawAdapter) {
-			final JHotDrawAdapter<?> adapter = (JHotDrawAdapter<?>) iTool;
+	private void activateTool(final Tool tool) {
+		final JHotDrawService jHotDrawService =
+			getDisplay().getContext().getService(JHotDrawService.class);
+		final JHotDrawAdapter<?> adapter = jHotDrawService.getAdapter(tool);
+		if (adapter != null) {
 			final JHotDrawTool creationTool = adapter.getCreationTool(getDisplay());
 			toolDelegator.setCreationTool(creationTool);
 		}

@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ui.swing.overlay;
+package imagej.ui.swing.tools.overlay;
 
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
@@ -61,7 +61,7 @@ import org.jhotdraw.draw.AttributeKeys;
  * 
  * @author Barry DeZonia
  */
-public class SwingThresholdFigure extends AbstractAttributedFigure implements
+public class ThresholdFigure extends AbstractAttributedFigure implements
 	Displayable
 {
 
@@ -73,7 +73,7 @@ public class SwingThresholdFigure extends AbstractAttributedFigure implements
 	private final Rectangle2D.Double rect;
 	private double[] tmpPos;
 	
-	public SwingThresholdFigure(ImageDisplay display, Dataset dataset,
+	public ThresholdFigure(ImageDisplay display, Dataset dataset,
 		ThresholdOverlay overlay)
 	{
 		this.display = display;

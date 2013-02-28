@@ -44,7 +44,8 @@ import javax.swing.event.UndoableEditListener;
 import org.jhotdraw.draw.tool.Tool;
 
 /**
- * TODO
+ * A JHotDraw {@link Tool} (<em>not</em> an ImageJ {@link imagej.tool.Tool})
+ * with some extra needed API methods.
  * 
  * @author Johannes Schindelin
  */
@@ -61,8 +62,8 @@ public interface JHotDrawTool extends Tool {
 	/** Gets the {@link ImageDisplay} associated with this JHotDraw tool. */
 	ImageDisplay getDisplay();
 
-	/** Gets the {@link JHotDrawAdapter} associated with this JhotDraw tool. */
-	JHotDrawAdapter getAdapter();
+	/** Gets the {@link JHotDrawAdapter} associated with this JHotDraw tool. */
+	JHotDrawAdapter<?> getAdapter();
 
 	boolean isConstructing();
 

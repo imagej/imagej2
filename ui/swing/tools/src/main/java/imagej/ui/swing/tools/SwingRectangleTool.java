@@ -38,26 +38,22 @@ package imagej.ui.swing.tools;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 
-import org.scijava.input.MouseCursor;
 import org.scijava.plugin.Plugin;
 
 /**
- * TODO
+ * Swing/JHotDraw implementation of rectangle tool.
  * 
- * @author Curtis Rueden
+ * @author Lee Kamentsky
+ * @author Grant Harris
+ * @author Barry DeZonia
+ * @see imagej.ui.swing.tools.overlay.RectangleJHotDrawAdapter
  */
-@Plugin(type = Tool.class, name = "Text", description = "Text tool",
-	iconPath = "/icons/tools/text.png", priority = TextTool.PRIORITY,
-	enabled = false)
-public class TextTool extends AbstractTool {
+@Plugin(type = Tool.class, name = "Rectangle",
+	description = "Rectangular overlays",
+	iconPath = "/icons/tools/rectangle.png",
+	priority = SwingRectangleTool.PRIORITY)
+public class SwingRectangleTool extends AbstractTool {
 
-	public static final double PRIORITY = -115;
-
-	@Override
-	public MouseCursor getCursor() {
-		return MouseCursor.TEXT;
-	}
-
-	// TODO
+	public static final double PRIORITY = 100;
 
 }

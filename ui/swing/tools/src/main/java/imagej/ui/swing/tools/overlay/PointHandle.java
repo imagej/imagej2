@@ -33,40 +33,66 @@
  * #L%
  */
 
-package imagej.ui.swing.overlay;
+package imagej.ui.swing.tools.overlay;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 
-import org.jhotdraw.draw.BezierFigure;
-import org.jhotdraw.draw.handle.BezierOutlineHandle;
-import org.jhotdraw.draw.handle.Handle;
+import org.jhotdraw.draw.handle.AbstractHandle;
+
+// FIXME : I think this class is no longer necessary. Currently it is avoided
+// in SwingPointFigure by using a DragHandle instead. BDZ 12-18-12
 
 /**
  * TODO
  * 
  * @author Johannes Schindelin
  */
-public class SwingPolygonFigure extends BezierFigure {
+public class PointHandle extends AbstractHandle {
 
-	public SwingPolygonFigure() {
-		// The constructor makes the BezierFigure a closed figure.
-		super(true);
+	private final PointFigure figure;
+
+	public PointHandle(final PointFigure fig) {
+		super(fig);
+		figure = fig;
 	}
 
 	@Override
-	public Collection<Handle> createHandles(final int detailLevel) {
-		final LinkedList<Handle> handles = new LinkedList<Handle>();
-		if (detailLevel != 0) {
-			return super.createHandles(detailLevel);
-		}
-		handles.add(new BezierOutlineHandle(this));
-		for (int i = 0, n = path.size(); i < n; i++) {
-			handles.add(new SwingPolygonNodeHandle(this, i));
-		}
-		return handles;
+	public void trackEnd(final Point anchor, final Point lead,
+		final int modifiers)
+	{
+		final double dx = lead.x - anchor.x;
+		final double dy = lead.y - anchor.y;
+		figure.move(dx, dy);
 	}
 
-	private static final long serialVersionUID = 1L;
+	@Override
+	public void trackStart(final Point anchor, final int modifiers) {
+		// do nothing
+	}
 
+	@Override
+	public void trackStep(final Point anchor, final Point lead,
+		final int modifiers)
+	{
+		// do nothing
+	}
+
+	@Override
+	protected Rectangle basicGetBounds() {
+		final Rectangle rect = new Rectangle();
+		final Rectangle2D.Double bounds = figure.getBounds();
+		rect.x = (int) bounds.x;
+		rect.y = (int) bounds.y;
+		rect.width = (int) bounds.width;
+		rect.height = (int) bounds.height;
+		return rect;
+	}
+
+	@Override
+	public void draw(Graphics2D g) {
+		// do nothing
+	}
 }

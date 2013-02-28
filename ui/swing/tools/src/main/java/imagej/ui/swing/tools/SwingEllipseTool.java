@@ -33,66 +33,24 @@
  * #L%
  */
 
-package imagej.ui.swing.overlay;
+package imagej.ui.swing.tools;
 
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.geom.Rectangle2D;
+import imagej.tool.AbstractTool;
+import imagej.tool.Tool;
 
-import org.jhotdraw.draw.handle.AbstractHandle;
-
-// FIXME : I think this class is no longer necessary. Currently it is avoided
-// in SwingPointFigure by using a DragHandle instead. BDZ 12-18-12
+import org.scijava.plugin.Plugin;
 
 /**
- * TODO
+ * Swing/JHotDraw implementation of ellipse tool.
  * 
- * @author Johannes Schindelin
+ * @author Lee Kamentsky
+ * @author Barry DeZonia
+ * @see imagej.ui.swing.tools.overlay.EllipseJHotDrawAdapter
  */
-public class SwingPointHandle extends AbstractHandle {
+@Plugin(type = Tool.class, name = "Oval", description = "Oval selections",
+	iconPath = "/icons/tools/oval.png", priority = SwingEllipseTool.PRIORITY)
+public class SwingEllipseTool extends AbstractTool {
 
-	private final SwingPointFigure figure;
+	public static final double PRIORITY = SwingRectangleTool.PRIORITY - 1;
 
-	public SwingPointHandle(final SwingPointFigure fig) {
-		super(fig);
-		figure = fig;
-	}
-
-	@Override
-	public void trackEnd(final Point anchor, final Point lead,
-		final int modifiers)
-	{
-		final double dx = lead.x - anchor.x;
-		final double dy = lead.y - anchor.y;
-		figure.move(dx, dy);
-	}
-
-	@Override
-	public void trackStart(final Point anchor, final int modifiers) {
-		// do nothing
-	}
-
-	@Override
-	public void trackStep(final Point anchor, final Point lead,
-		final int modifiers)
-	{
-		// do nothing
-	}
-
-	@Override
-	protected Rectangle basicGetBounds() {
-		final Rectangle rect = new Rectangle();
-		final Rectangle2D.Double bounds = figure.getBounds();
-		rect.x = (int) bounds.x;
-		rect.y = (int) bounds.y;
-		rect.width = (int) bounds.width;
-		rect.height = (int) bounds.height;
-		return rect;
-	}
-
-	@Override
-	public void draw(Graphics2D g) {
-		// do nothing
-	}
 }

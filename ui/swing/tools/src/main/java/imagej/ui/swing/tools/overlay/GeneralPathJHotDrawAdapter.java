@@ -37,107 +37,99 @@ package imagej.ui.swing.tools.overlay;
 
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
+import imagej.data.overlay.GeneralPathOverlay;
 import imagej.data.overlay.Overlay;
-import imagej.data.overlay.RectangleOverlay;
+import imagej.tool.Tool;
 import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
-import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
-import imagej.util.RealCoords;
+import imagej.ui.swing.tools.SwingPolygonTool;
 
 import java.awt.Shape;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 
+import net.imglib2.roi.GeneralPathRegionOfInterest;
+
+import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
-import org.jhotdraw.draw.RectangleFigure;
 import org.scijava.plugin.Plugin;
 
 /**
- * Swing/JHotDraw implementation of rectangle tool.
+ * JHotDraw adapter for composite area selections.
  * 
- * @author Lee Kamentsky
- * @author Grant Harris
- * @author Barry DeZonia
+ * @author Johannes Schindelin
  */
-@Plugin(type = JHotDrawAdapter.class, name = "Rectangle",
-	description = "Rectangular overlays",
-	iconPath = "/icons/tools/rectangle.png",
-	priority = SwingRectangleTool.PRIORITY)
-public class SwingRectangleTool extends
-	AbstractJHotDrawAdapter<RectangleOverlay, RectangleFigure>
+@Plugin(type = JHotDrawAdapter.class, priority = GeneralPathJHotDrawAdapter.PRIORITY)
+public class GeneralPathJHotDrawAdapter extends
+	AbstractJHotDrawAdapter<GeneralPathOverlay, GeneralPathFigure>
 {
 
-	public static final double PRIORITY = 100;
+	public static final double PRIORITY = SwingPolygonTool.PRIORITY + 0.5;
 
-	protected static RectangleOverlay downcastOverlay(final Overlay roi) {
-		assert roi instanceof RectangleOverlay;
-		return (RectangleOverlay) roi;
+	private static GeneralPathOverlay downcastOverlay(final Overlay overlay) {
+		assert overlay instanceof GeneralPathOverlay;
+		return (GeneralPathOverlay) overlay;
 	}
 
 	// -- JHotDrawAdapter methods --
 
 	@Override
+	public boolean supports(final Tool tool) {
+		return false;
+	}
+
+	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
-		if (!(overlay instanceof RectangleOverlay)) return false;
-		return figure == null || figure instanceof RectangleFigure;
+		if (!(overlay instanceof GeneralPathOverlay)) return false;
+		return figure == null || figure instanceof GeneralPathFigure;
 	}
 
 	@Override
 	public Overlay createNewOverlay() {
-		return new RectangleOverlay(getContext());
+		final GeneralPathOverlay o = new GeneralPathOverlay(getContext());
+		return o;
 	}
 
 	@Override
 	public Figure createDefaultFigure() {
-		final RectangleFigure figure = new RectangleFigure();
+		final GeneralPathFigure figure =
+			new GeneralPathFigure(new PolygonFigure());
 		initDefaultSettings(figure);
+		figure.set(AttributeKeys.WINDING_RULE, AttributeKeys.WindingRule.EVEN_ODD);
 		return figure;
 	}
 
 	@Override
-	public void updateFigure(final OverlayView view, final RectangleFigure figure) {
-		super.updateFigure(view, figure);
-		final RectangleOverlay overlay = downcastOverlay(view.getData());
-		final double x0 = overlay.getOrigin(0);
-		final double y0 = overlay.getOrigin(1);
-		final double w = overlay.getExtent(0);
-		final double h = overlay.getExtent(1);
-		final Point2D.Double anch = new Point2D.Double(x0, y0);
-		final Point2D.Double lead = new Point2D.Double(x0 + w, y0 + h);
-		figure.setBounds(anch, lead);
+	public void updateOverlay(final GeneralPathFigure figure,
+		final OverlayView view)
+	{
+		super.updateOverlay(figure, view);
+		final GeneralPathOverlay overlay = downcastOverlay(view.getData());
+		final GeneralPathRegionOfInterest roi = overlay.getRegionOfInterest();
+		roi.reset();
+		BezierPathFunctions.addToRegionOfInterest(figure.getGeneralPath()
+			.getPathIterator(null), roi);
+		overlay.update();
 	}
 
 	@Override
-	public void updateOverlay(final RectangleFigure figure, final OverlayView view) {
-		super.updateOverlay(figure, view);
-		final RectangleOverlay overlay = downcastOverlay(view.getData());
-		final Rectangle2D.Double bounds = figure.getBounds();
-		final double x = bounds.getMinX();
-		final double y = bounds.getMinY();
-		final double w = bounds.getWidth();
-		final double h = bounds.getHeight();
-		overlay.setOrigin(x, 0);
-		overlay.setOrigin(y, 1);
-		overlay.setExtent(w, 0);
-		overlay.setExtent(h, 1);
-		overlay.update();
-		reportRectangle(x, y, w, h);
+	public void updateFigure(final OverlayView view,
+		final GeneralPathFigure figure)
+	{
+		super.updateFigure(view, figure);
+		final GeneralPathOverlay overlay = downcastOverlay(view.getData());
+		final GeneralPathRegionOfInterest roi = overlay.getRegionOfInterest();
+		figure.setGeneralPath(roi.getGeneralPath());
 	}
 
 	@Override
 	public JHotDrawTool getCreationTool(final ImageDisplay display) {
-		return new IJCreationTool<RectangleFigure>(display, this);
+		throw new UnsupportedOperationException(); // new IJBezierTool(display,
+																								// this);
 	}
 
 	@Override
-	public void report(final RealCoords p1, final RealCoords p2) {
-		reportRectangle(p1, p2);
-	}
-
-	@Override
-	public Shape toShape(final RectangleFigure figure) {
-		return figure.getBounds();
+	public Shape toShape(final GeneralPathFigure figure) {
+		return figure.getGeneralPath();
 	}
 
 }

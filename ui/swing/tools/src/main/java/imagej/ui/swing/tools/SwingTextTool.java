@@ -33,42 +33,31 @@
  * #L%
  */
 
-package imagej.ui.swing.overlay;
+package imagej.ui.swing.tools;
 
-import java.awt.Point;
-import java.awt.event.InputEvent;
+import imagej.tool.AbstractTool;
+import imagej.tool.Tool;
 
-import org.jhotdraw.draw.BezierFigure;
-import org.jhotdraw.draw.Figure;
-import org.jhotdraw.draw.handle.BezierNodeHandle;
+import org.scijava.input.MouseCursor;
+import org.scijava.plugin.Plugin;
 
 /**
- * The BezierFigure uses a BezierNodeHandle which can change the curve
- * connecting vertices from a line to a Bezier curve. We subclass both
- * the figure and the node handle to defeat this.
+ * Swing/JHotDraw implementation of text tool.
  * 
- * @author Johannes Schindelin
+ * @author Curtis Rueden
  */
-public class SwingPolygonNodeHandle extends BezierNodeHandle {
+@Plugin(type = Tool.class, name = "Text", description = "Text tool",
+	iconPath = "/icons/tools/text.png", priority = SwingTextTool.PRIORITY,
+	enabled = false)
+public class SwingTextTool extends AbstractTool {
 
-	public SwingPolygonNodeHandle(final BezierFigure owner, final int index,
-		final Figure transformOwner)
-	{
-		super(owner, index, transformOwner);
-	}
-
-	public SwingPolygonNodeHandle(final BezierFigure owner, final int index) {
-		super(owner, index);
-	}
+	public static final double PRIORITY = -115;
 
 	@Override
-	public void trackEnd(final Point anchor, final Point lead,
-		final int modifiersEx)
-	{
-		// Remove the behavior associated with the shift keys
-		super.trackEnd(anchor, lead, modifiersEx &
-			~(InputEvent.META_DOWN_MASK | InputEvent.CTRL_DOWN_MASK |
-				InputEvent.ALT_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
+	public MouseCursor getCursor() {
+		return MouseCursor.TEXT;
 	}
+
+	// TODO: Implement TextJHotDrawAdapter.
 
 }

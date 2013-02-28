@@ -33,31 +33,42 @@
  * #L%
  */
 
-package imagej.ui.swing.tools;
+package imagej.ui.swing.tools.overlay;
 
-import imagej.tool.AbstractTool;
-import imagej.tool.Tool;
+import java.awt.Point;
+import java.awt.event.InputEvent;
 
-import org.scijava.input.MouseCursor;
-import org.scijava.plugin.Plugin;
+import org.jhotdraw.draw.BezierFigure;
+import org.jhotdraw.draw.Figure;
+import org.jhotdraw.draw.handle.BezierNodeHandle;
 
 /**
- * Swing/JHotDraw implementation of point tool.
+ * The BezierFigure uses a BezierNodeHandle which can change the curve
+ * connecting vertices from a line to a Bezier curve. We subclass both
+ * the figure and the node handle to defeat this.
  * 
- * @author Barry DeZonia
- * @see imagej.ui.swing.tools.overlay.PointJHotDrawOverlay
+ * @author Johannes Schindelin
  */
-@Plugin(type = Tool.class, name = "Point", description = "Point overlays",
-	iconPath = "/icons/tools/point.png", priority = SwingPointTool.PRIORITY)
-public class SwingPointTool extends AbstractTool {
+public class PolygonNodeHandle extends BezierNodeHandle {
 
-	public static final double PRIORITY = SwingAngleTool.PRIORITY - 1;
+	public PolygonNodeHandle(final BezierFigure owner, final int index,
+		final Figure transformOwner)
+	{
+		super(owner, index, transformOwner);
+	}
 
-	// -- Tool methods --
+	public PolygonNodeHandle(final BezierFigure owner, final int index) {
+		super(owner, index);
+	}
 
 	@Override
-	public MouseCursor getCursor() {
-		return MouseCursor.CROSSHAIR;
+	public void trackEnd(final Point anchor, final Point lead,
+		final int modifiersEx)
+	{
+		// Remove the behavior associated with the shift keys
+		super.trackEnd(anchor, lead, modifiersEx &
+			~(InputEvent.META_DOWN_MASK | InputEvent.CTRL_DOWN_MASK |
+				InputEvent.ALT_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
 	}
 
 }

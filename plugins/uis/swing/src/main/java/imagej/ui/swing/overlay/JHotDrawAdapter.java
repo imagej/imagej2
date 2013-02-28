@@ -39,15 +39,18 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.display.Display;
+import imagej.plugin.ImageJPlugin;
 import imagej.tool.Tool;
 import imagej.util.RealCoords;
 
 import org.jhotdraw.draw.Figure;
+import org.scijava.Contextual;
+import org.scijava.Prioritized;
 import org.scijava.plugin.Plugin;
 
 /**
- * Interface for JHotDraw-based tools. These adapters maintain a bidirectional
- * link between an ImageJ {@link Overlay} and a JHotDraw {@link Figure}.
+ * Interface for JHotDraw-based adapters, which maintain a bidirectional link
+ * between an ImageJ {@link Overlay} and a JHotDraw {@link Figure}.
  * <p>
  * JHotDraw adapters discoverable at runtime must implement this interface and
  * be annotated with @{@link Plugin} with attribute {@link Plugin#type()} =
@@ -59,7 +62,17 @@ import org.scijava.plugin.Plugin;
  * @author Lee Kamentsky
  * @author Curtis Rueden
  */
-public interface JHotDrawAdapter<F extends Figure> extends Tool {
+public interface JHotDrawAdapter<F extends Figure> extends ImageJPlugin,
+	Contextual, Prioritized
+{
+
+	/**
+	 * Determines whether the adapter is designed to work with the given tool.
+	 * 
+	 * @param tool The tool in question.
+	 * @return True iff the adapter is compatible with the given tool.
+	 */
+	boolean supports(Tool tool);
 
 	/**
 	 * Determines whether the adapter can handle a particular overlay, or overlay

@@ -39,10 +39,12 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.AngleOverlay;
 import imagej.data.overlay.Overlay;
+import imagej.tool.Tool;
 import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
+import imagej.ui.swing.tools.SwingAngleTool;
 
 import java.awt.Shape;
 import java.awt.geom.Point2D;
@@ -53,17 +55,23 @@ import org.jhotdraw.geom.BezierPath;
 import org.scijava.plugin.Plugin;
 
 /**
- * TODO
+ * JHotDraw adapter for angle overlays.
  * 
  * @author Lee Kamentsky
  * @author Barry DeZonia
+ * @see SwingAngleTool
  */
-@Plugin(type = JHotDrawAdapter.class, name = "Angle",
-	description = "Angle overlays", iconPath = "/icons/tools/angle.png",
-	priority = SwingAngleTool.PRIORITY)
-public class SwingAngleTool extends AbstractJHotDrawAdapter<AngleOverlay, SwingAngleTool.AngleFigure> {
+@Plugin(type = JHotDrawAdapter.class, priority = SwingAngleTool.PRIORITY)
+public class AngleJHotDrawAdapter extends
+	AbstractJHotDrawAdapter<AngleOverlay, AngleJHotDrawAdapter.AngleFigure>
+{
 
-	public static final double PRIORITY = SwingLineTool.PRIORITY - 1;
+	// -- JHotDrawAdapter methods --
+
+	@Override
+	public boolean supports(final Tool tool) {
+		return tool instanceof SwingAngleTool;
+	}
 
 	@Override
 	public boolean supports(final Overlay overlay, final Figure figure) {
@@ -73,7 +81,7 @@ public class SwingAngleTool extends AbstractJHotDrawAdapter<AngleOverlay, SwingA
 
 	@Override
 	public AngleOverlay createNewOverlay() {
-		AngleOverlay overlay = new AngleOverlay(getContext());
+		final AngleOverlay overlay = new AngleOverlay(getContext());
 		/* no effect
 		overlay.setEndPoint1(new RealPoint(new double[]{6,1}));
 		overlay.setCenterPoint(new RealPoint(new double[]{1,1}));
@@ -95,46 +103,48 @@ public class SwingAngleTool extends AbstractJHotDrawAdapter<AngleOverlay, SwingA
 	}
 
 	@Override
-	public void updateFigure(final OverlayView overlayView, final AngleFigure figure) {
+	public void updateFigure(final OverlayView overlayView,
+		final AngleFigure figure)
+	{
 		super.updateFigure(overlayView, figure);
-		assert figure instanceof AngleFigure;
-		final AngleFigure angleFig = (AngleFigure) figure;
 		final Overlay overlay = overlayView.getData();
 		assert overlay instanceof AngleOverlay;
 		final AngleOverlay angleOverlay = (AngleOverlay) overlay;
 		double ptX, ptY;
 		ptX = angleOverlay.getPoint1(0);
 		ptY = angleOverlay.getPoint1(1);
-		angleFig.setEndPoint1(ptX, ptY);
+		figure.setEndPoint1(ptX, ptY);
 		ptX = angleOverlay.getCenter(0);
 		ptY = angleOverlay.getCenter(1);
-		angleFig.setCenterPoint(ptX, ptY);
+		figure.setCenterPoint(ptX, ptY);
 		ptX = angleOverlay.getPoint2(0);
 		ptY = angleOverlay.getPoint2(1);
-		angleFig.setEndPoint2(ptX, ptY);
+		figure.setEndPoint2(ptX, ptY);
 	}
 
 	@Override
-	public void updateOverlay(final AngleFigure figure, final OverlayView overlayView)
+	public void updateOverlay(final AngleFigure figure,
+		final OverlayView overlayView)
 	{
 		super.updateOverlay(figure, overlayView);
-		assert figure instanceof AngleFigure;
-		final AngleFigure angleFig = (AngleFigure) figure;
 		final Overlay overlay = overlayView.getData();
 		assert overlay instanceof AngleOverlay;
 		final AngleOverlay angleOverlay = (AngleOverlay) overlay;
 		Point2D.Double figPt;
-		double[] ovPt = new double[angleOverlay.numDimensions()];
-		figPt = angleFig.getEndPoint1();
-		ovPt[0] = figPt.x; ovPt[1] = figPt.y;
+		final double[] ovPt = new double[angleOverlay.numDimensions()];
+		figPt = figure.getEndPoint1();
+		ovPt[0] = figPt.x;
+		ovPt[1] = figPt.y;
 		for (int i = 0; i < ovPt.length; i++)
 			angleOverlay.setPoint1(ovPt[i], i);
-		figPt = angleFig.getCenterPoint();
-		ovPt[0] = figPt.x; ovPt[1] = figPt.y;
+		figPt = figure.getCenterPoint();
+		ovPt[0] = figPt.x;
+		ovPt[1] = figPt.y;
 		for (int i = 0; i < ovPt.length; i++)
 			angleOverlay.setCenter(ovPt[i], i);
-		figPt = angleFig.getEndPoint2();
-		ovPt[0] = figPt.x; ovPt[1] = figPt.y;
+		figPt = figure.getEndPoint2();
+		ovPt[0] = figPt.x;
+		ovPt[1] = figPt.y;
 		for (int i = 0; i < ovPt.length; i++)
 			angleOverlay.setPoint2(ovPt[i], i);
 		angleOverlay.update();
@@ -146,12 +156,12 @@ public class SwingAngleTool extends AbstractJHotDrawAdapter<AngleOverlay, SwingA
 	}
 
 	protected class AngleFigure extends BezierFigure {
-		
+
 		public AngleFigure() {
 			// coords have no effect on initial placement in window
-			addNode(new BezierPath.Node(point(6,1)));
-			addNode(new BezierPath.Node(point(1,1)));
-			addNode(new BezierPath.Node(point(1,6)));
+			addNode(new BezierPath.Node(point(6, 1)));
+			addNode(new BezierPath.Node(point(1, 1)));
+			addNode(new BezierPath.Node(point(1, 6)));
 			/* no effect
 			getNode(0).setControlPoint(0, point(6,1));
 			getNode(1).setControlPoint(0, point(1,1));
@@ -159,23 +169,23 @@ public class SwingAngleTool extends AbstractJHotDrawAdapter<AngleOverlay, SwingA
 			*/
 			setConnectable(false);
 		}
-		
-		public void setEndPoint1(double x, double y) {
+
+		public void setEndPoint1(final double x, final double y) {
 			setPoint(0, x, y);
 		}
-		
-		public void setCenterPoint(double x, double y) {
+
+		public void setCenterPoint(final double x, final double y) {
 			setPoint(1, x, y);
 		}
 
-		public void setEndPoint2(double x, double y) {
+		public void setEndPoint2(final double x, final double y) {
 			setPoint(2, x, y);
 		}
-		
+
 		public Point2D.Double getEndPoint1() {
 			return getPoint(0);
 		}
-		
+
 		public Point2D.Double getCenterPoint() {
 			return getPoint(1);
 		}
@@ -183,12 +193,12 @@ public class SwingAngleTool extends AbstractJHotDrawAdapter<AngleOverlay, SwingA
 		public Point2D.Double getEndPoint2() {
 			return getPoint(2);
 		}
-		
-		private void setPoint(int nodeNum, double x, double y) {
+
+		private void setPoint(final int nodeNum, final double x, final double y) {
 			getNode(nodeNum).setTo(new BezierPath.Node(point(x, y)));
 		}
-		
-		private Point2D.Double point(double x, double y) {
+
+		private Point2D.Double point(final double x, final double y) {
 			return new Point2D.Double(x, y);
 		}
 

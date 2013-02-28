@@ -44,9 +44,6 @@ import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
 
-import java.text.DecimalFormat;
-
-import org.scijava.event.StatusService;
 import org.scijava.input.MouseCursor;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.SortablePlugin;
@@ -134,57 +131,6 @@ public abstract class AbstractTool extends SortablePlugin implements Tool {
 	@Override
 	public String getDescription() {
 		return info.getDescription();
-	}
-
-	// -- Internal methods --
-
-	/** Publishes rectangle dimensions in the status bar. */
-	protected void reportRectangle(final double x, final double y,
-		final double w, final double h)
-	{
-		final DecimalFormat f = new DecimalFormat("0.##");
-		final String fx = f.format(x);
-		final String fy = f.format(y);
-		final String fw = f.format(w);
-		final String fh = f.format(h);
-		report("x=" + fx + ", y=" + fy + ", w=" + fw + ", h=" + fh);
-	}
-
-	/** Publishes line length and angle in the status bar. */
-	protected void reportLine(final double x1, final double y1, final double x2,
-		final double y2)
-	{
-		// compute line angle
-		final double dx = x2 - x1;
-		final double dy = y1 - y2;
-		final double angle = 180.0 / Math.PI * Math.atan2(dy, dx);
-
-		// compute line length
-		final double w = Math.abs(x2 - x1);
-		final double h = Math.abs(y2 - y1);
-		final double length = Math.sqrt(w * w + h * h);
-
-		final DecimalFormat f = new DecimalFormat("0.##");
-		final String fx = f.format(x2);
-		final String fy = f.format(y2);
-		final String fa = f.format(angle);
-		final String fl = f.format(length);
-		report("x=" + fx + ", y=" + fy + ", angle=" + fa + ", length=" + fl);
-	}
-
-	/** Publishes point location in the status bar. */
-	protected void reportPoint(final double x, final double y) {
-		final DecimalFormat f = new DecimalFormat("0.##");
-		final String fx = f.format(x);
-		final String fy = f.format(y);
-		report("x=" + fx + ", y=" + fy);
-	}
-
-	/** Reports the given message using the associated status service, if any. */
-	protected void report(final String message) {
-		final StatusService statusService =
-			getContext().getService(StatusService.class);
-		if (statusService != null) statusService.showStatus(message);
 	}
 
 }

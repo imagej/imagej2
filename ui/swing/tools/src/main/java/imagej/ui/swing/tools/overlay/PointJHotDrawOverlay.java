@@ -35,83 +35,98 @@
 
 package imagej.ui.swing.tools.overlay;
 
-import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
+import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
-import imagej.data.overlay.ThresholdOverlay;
-import imagej.data.overlay.ThresholdService;
+import imagej.data.overlay.PointOverlay;
+import imagej.tool.Tool;
 import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
-import imagej.ui.swing.overlay.SwingThresholdFigure;
+import imagej.ui.swing.tools.SwingPointTool;
+import imagej.util.ColorRGB;
 
 import java.awt.Shape;
 
 import org.jhotdraw.draw.Figure;
 import org.scijava.plugin.Plugin;
 
-// TODO - I had code in here that created a default ImgPlus for figure creation
-// rather than ever returning nulls. This was cuz with no image open a tool
-// selection would cause NPEs. But we make tool INVISIBLE here for now so
-// shouldn't happen. And eventually this won't be a tool and we'll never call it
-// when no image is open. Be aware of this issue if NPEs crop up.
-
 /**
- * Swing/JHotDraw implementation of threshold tool.
+ * JHotDraw adapter for point tool.
  * 
  * @author Barry DeZonia
+ * @see SwingPointTool
  */
-@Plugin(type = JHotDrawAdapter.class, name = "Threshold",
-	description = "Create threshold overlay",
-	iconPath = "/icons/tools/blank.png", visible = false)
-public class SwingThresholdTool extends
-	AbstractJHotDrawAdapter<ThresholdOverlay, SwingThresholdFigure>
+@Plugin(type = JHotDrawAdapter.class, priority = SwingPointTool.PRIORITY)
+public class PointJHotDrawOverlay extends
+	AbstractJHotDrawAdapter<PointOverlay, PointFigure>
 {
+
+	// -- JHotDrawAdapter methods --
+
 	@Override
-	public boolean supports(Overlay overlay, Figure figure) {
-		if (!(overlay instanceof ThresholdOverlay)) return false;
-		return figure == null || figure instanceof SwingThresholdFigure;
+	public boolean supports(final Tool tool) {
+		return tool instanceof SwingPointTool;
 	}
 
 	@Override
-	public Overlay createNewOverlay() {
-		ImageDisplay display = getDisplayService().getActiveImageDisplay();
-		return getThresholdService().getThreshold(display);
+	public boolean supports(final Overlay overlay, final Figure figure) {
+		if (!(overlay instanceof PointOverlay)) return false;
+		return figure == null || figure instanceof PointFigure;
+	}
+
+	@Override
+	public PointOverlay createNewOverlay() {
+		return new PointOverlay(getContext());
 	}
 
 	@Override
 	public Figure createDefaultFigure() {
-		ImageDisplayService dispServ = getDisplayService();
-		ImageDisplay display = dispServ.getActiveImageDisplay();
-		if (display == null) return null;
-		Dataset ds = dispServ.getActiveDataset(display);
-		if (ds == null) return null;
-		ThresholdOverlay overlay = getThresholdService().getThreshold(display);
-		SwingThresholdFigure figure =
-			new SwingThresholdFigure(display, ds, overlay);
-		overlay.setFigure(figure);
+		final PointFigure figure = new PointFigure();
+		initDefaultSettings(figure);
 		return figure;
 	}
 
 	@Override
-	public JHotDrawTool getCreationTool(ImageDisplay display) {
-		return new IJCreationTool<SwingThresholdFigure>(display, this);
+	public void updateFigure(final OverlayView view, final PointFigure figure) {
+		super.updateFigure(view, figure);
+		final PointFigure pointFigure = figure;
+		final Overlay overlay = view.getData();
+		assert overlay instanceof PointOverlay;
+		final PointOverlay pointOverlay = (PointOverlay) overlay;
+		pointFigure.setFillColor(pointOverlay.getFillColor());
+		pointFigure.setLineColor(pointOverlay.getLineColor());
+		pointFigure.setPoints(pointOverlay.getPoints());
 	}
 
 	@Override
-	public Shape toShape(SwingThresholdFigure figure) {
-		// TODO : do something here? or return null?
-		throw new UnsupportedOperationException("Unimplemented");
+	public void updateOverlay(final PointFigure figure, final OverlayView view) {
+		final Overlay overlay = view.getData();
+		assert overlay instanceof PointOverlay;
+		final PointOverlay pointOverlay = (PointOverlay) overlay;
+		// do not let call to super.updateOverlay() mess with drawing attributes
+		// so save colors
+		final ColorRGB fillColor = overlay.getFillColor();
+		final ColorRGB lineColor = overlay.getLineColor();
+		// call super in case it initializes anything of importance
+		super.updateOverlay(figure, view);
+		// and restore colors to what we really want
+		pointOverlay.setFillColor(fillColor);
+		pointOverlay.setLineColor(lineColor);
+		// set points
+		pointOverlay.setPoints(figure.getPoints());
+		pointOverlay.update();
 	}
 
-	private ImageDisplayService getDisplayService() {
-		return getContext().getService(ImageDisplayService.class);
+	@Override
+	public JHotDrawTool getCreationTool(final ImageDisplay display) {
+		return new IJCreationTool<PointFigure>(display, this);
 	}
 
-	private ThresholdService getThresholdService() {
-		return getContext().getService(ThresholdService.class);
+	@Override
+	public Shape toShape(final PointFigure figure) {
+		throw new UnsupportedOperationException();
 	}
 
 }

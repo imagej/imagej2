@@ -33,31 +33,40 @@
  * #L%
  */
 
-package imagej.ui.swing.tools;
+package imagej.ui.swing.tools.overlay;
 
-import imagej.tool.AbstractTool;
-import imagej.tool.Tool;
+import java.util.Collection;
+import java.util.LinkedList;
 
-import org.scijava.input.MouseCursor;
-import org.scijava.plugin.Plugin;
+import org.jhotdraw.draw.BezierFigure;
+import org.jhotdraw.draw.handle.BezierOutlineHandle;
+import org.jhotdraw.draw.handle.Handle;
 
 /**
- * Swing/JHotDraw implementation of point tool.
+ * TODO
  * 
- * @author Barry DeZonia
- * @see imagej.ui.swing.tools.overlay.PointJHotDrawOverlay
+ * @author Johannes Schindelin
  */
-@Plugin(type = Tool.class, name = "Point", description = "Point overlays",
-	iconPath = "/icons/tools/point.png", priority = SwingPointTool.PRIORITY)
-public class SwingPointTool extends AbstractTool {
+public class PolygonFigure extends BezierFigure {
 
-	public static final double PRIORITY = SwingAngleTool.PRIORITY - 1;
-
-	// -- Tool methods --
+	public PolygonFigure() {
+		// The constructor makes the BezierFigure a closed figure.
+		super(true);
+	}
 
 	@Override
-	public MouseCursor getCursor() {
-		return MouseCursor.CROSSHAIR;
+	public Collection<Handle> createHandles(final int detailLevel) {
+		final LinkedList<Handle> handles = new LinkedList<Handle>();
+		if (detailLevel != 0) {
+			return super.createHandles(detailLevel);
+		}
+		handles.add(new BezierOutlineHandle(this));
+		for (int i = 0, n = path.size(); i < n; i++) {
+			handles.add(new PolygonNodeHandle(this, i));
+		}
+		return handles;
 	}
+
+	private static final long serialVersionUID = 1L;
 
 }

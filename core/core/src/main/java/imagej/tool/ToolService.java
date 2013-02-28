@@ -35,9 +35,12 @@
 
 package imagej.tool;
 
+import imagej.util.RealCoords;
+
 import java.util.List;
 
 import org.scijava.event.EventService;
+import org.scijava.event.StatusService;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.Service;
 
@@ -50,6 +53,8 @@ import org.scijava.service.Service;
 public interface ToolService extends Service {
 
 	EventService getEventService();
+
+	StatusService getStatusService();
 
 	PluginService getPluginService();
 
@@ -77,5 +82,25 @@ public interface ToolService extends Service {
 	 * them on the tool bar.
 	 */
 	boolean isSeparatorNeeded(Tool tool1, Tool tool2);
+
+	/** Publishes rectangle dimensions in the status bar. */
+	void reportRectangle(final double x, final double y, final double w,
+		final double h);
+
+	/** Publishes rectangle dimensions in the status bar. */
+	void reportRectangle(final RealCoords p1, final RealCoords p2);
+
+	/** Publishes line length and angle in the status bar. */
+	void reportLine(final double x1, final double y1, final double x2,
+		final double y2);
+
+	/** Publishes line length and angle in the status bar. */
+	void reportLine(final RealCoords p1, final RealCoords p2);
+
+	/** Publishes point coordinates to the status bar. */
+	void reportPoint(final double x, final double y);
+
+	/** Publishes point coordinates to the status bar. */
+	void reportPoint(final RealCoords p);
 
 }
