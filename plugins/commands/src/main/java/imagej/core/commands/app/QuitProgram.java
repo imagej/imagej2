@@ -76,7 +76,6 @@ public class QuitProgram extends ContextCommand {
 	public void run() {
 		if (windowService != null && windowService.getOpenWindows().size() > 0) {
 			if (!promptForQuit()) {
-				cancel("Quit canceled");
 				return;
 			}
 
