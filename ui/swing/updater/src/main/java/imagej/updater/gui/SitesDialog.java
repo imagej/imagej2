@@ -171,6 +171,7 @@ public class SitesDialog extends JDialog implements ActionListener,
 				case NOT_INSTALLED:
 				case OBSOLETE_UNINSTALLED:
 					count--;
+					break;
 				default:
 					count++;
 					list.add(file);
@@ -186,12 +187,7 @@ public class SitesDialog extends JDialog implements ActionListener,
 			file.updateSite = null;
 			file.setStatus(FileObject.Status.LOCAL_ONLY);
 		}
-		try {
-			files.removeUpdateSite(name);
-		} catch (IOException e) {
-			updaterFrame.log.error(e);
-			error("Could not re-read update sites (restart might be necessary):\n" + e);
-		}
+		files.removeUpdateSite(name);
 		names.remove(row);
 		tableModel.rowChanged(row);
 		updaterFrame.updateFilesTable();
@@ -269,6 +265,7 @@ public class SitesDialog extends JDialog implements ActionListener,
 			rowsChanged(0, names.size());
 		}
 
+		@SuppressWarnings("unused")
 		public void rowsChanged(final int firstRow, final int lastRow) {
 			// fireTableChanged(new TableModelEvent(this, firstRow, lastRow));
 			fireTableChanged(new TableModelEvent(this));

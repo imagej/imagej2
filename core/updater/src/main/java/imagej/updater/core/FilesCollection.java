@@ -211,7 +211,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		}
 	}
 
-	public void removeUpdateSite(final String name) throws IOException {
+	public void removeUpdateSite(final String name) {
 		Set<String> toReRead = new HashSet<String>();
 		for (final FileObject file : forUpdateSite(name)) {
 			toReRead.addAll(file.overriddenUpdateSites.keySet());
@@ -299,6 +299,9 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 				while (iter.hasNext())
 					if (!set.contains(iter.next())) iter.remove();
 			}
+		}
+		if (result == null) {
+			return new Action[0];
 		}
 		return result.toArray(new Action[result.size()]);
 	}
@@ -916,7 +919,8 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		return Util.join(", ", this);
 	}
 
-	public FileObject get(final int index) {
+	@Deprecated
+	public FileObject get(@SuppressWarnings("unused") final int index) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -957,7 +961,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		};
 	}
 
-	public String downloadIndexAndChecksum(final Progress progress) throws IOException, ParserConfigurationException, SAXException {
+	public String downloadIndexAndChecksum(final Progress progress) throws ParserConfigurationException, SAXException {
 		try {
 			read();
 		}
