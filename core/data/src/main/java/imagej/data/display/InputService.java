@@ -39,6 +39,7 @@ import imagej.display.Display;
 import imagej.display.event.input.MsButtonEvent;
 
 import org.scijava.event.EventService;
+import org.scijava.input.InputModifiers;
 import org.scijava.input.KeyCode;
 import org.scijava.service.Service;
 
@@ -52,6 +53,8 @@ import org.scijava.service.Service;
 public interface InputService extends Service {
 
 	EventService getEventService();
+
+	InputModifiers getModifiers();
 
 	boolean isAltDown();
 

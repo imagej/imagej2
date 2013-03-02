@@ -48,6 +48,7 @@ import java.util.HashSet;
 
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
+import org.scijava.input.InputModifiers;
 import org.scijava.input.KeyCode;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -67,6 +68,8 @@ public class DefaultInputService extends AbstractService implements
 	@Parameter
 	private EventService eventService;
 
+	private InputModifiers modifiers;
+
 	private boolean altDown = false;
 	private boolean altGrDown = false;
 	private boolean ctrlDown = false;
@@ -85,6 +88,11 @@ public class DefaultInputService extends AbstractService implements
 	@Override
 	public EventService getEventService() {
 		return eventService;
+	}
+
+	@Override
+	public InputModifiers getModifiers() {
+		return modifiers;
 	}
 
 	@Override
@@ -141,21 +149,23 @@ public class DefaultInputService extends AbstractService implements
 
 	@EventHandler
 	public void onEvent(final KyPressedEvent evt) {
-		altDown = evt.getModifiers().isAltDown();
-		altGrDown = evt.getModifiers().isAltGrDown();
-		ctrlDown = evt.getModifiers().isCtrlDown();
-		metaDown = evt.getModifiers().isMetaDown();
-		shiftDown = evt.getModifiers().isShiftDown();
+		modifiers = evt.getModifiers();
+		altDown = modifiers.isAltDown();
+		altGrDown = modifiers.isAltGrDown();
+		ctrlDown = modifiers.isCtrlDown();
+		metaDown = modifiers.isMetaDown();
+		shiftDown = modifiers.isShiftDown();
 		pressedKeys.add(evt.getCode());
 	}
 
 	@EventHandler
 	public void onEvent(final KyReleasedEvent evt) {
-		altDown = evt.getModifiers().isAltDown();
-		altGrDown = evt.getModifiers().isAltGrDown();
-		ctrlDown = evt.getModifiers().isCtrlDown();
-		metaDown = evt.getModifiers().isMetaDown();
-		shiftDown = evt.getModifiers().isShiftDown();
+		modifiers = evt.getModifiers();
+		altDown = modifiers.isAltDown();
+		altGrDown = modifiers.isAltGrDown();
+		ctrlDown = modifiers.isCtrlDown();
+		metaDown = modifiers.isMetaDown();
+		shiftDown = modifiers.isShiftDown();
 		pressedKeys.remove(evt.getCode());
 	}
 
@@ -171,11 +181,13 @@ public class DefaultInputService extends AbstractService implements
 
 	@EventHandler
 	protected void onEvent(final MsPressedEvent evt) {
+		modifiers = evt.getModifiers();
 		buttonsDown.add(evt.getButton());
 	}
 
 	@EventHandler
 	protected void onEvent(final MsReleasedEvent evt) {
+		modifiers = evt.getModifiers();
 		buttonsDown.remove(evt.getButton());
 	}
 
