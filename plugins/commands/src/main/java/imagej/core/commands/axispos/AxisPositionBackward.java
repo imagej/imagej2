@@ -39,7 +39,7 @@ import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.animation.AnimationService;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.KeyboardService;
+import imagej.data.display.InputService;
 import imagej.menu.MenuConstants;
 import net.imglib2.meta.AxisType;
 
@@ -70,7 +70,7 @@ public class AxisPositionBackward extends ContextCommand {
 	private AnimationService animationService;
 
 	@Parameter
-	private KeyboardService keyboardService;
+	private InputService inputService;
 
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
@@ -81,7 +81,7 @@ public class AxisPositionBackward extends ContextCommand {
 		AxisType axis = display.getActiveAxis();
 		if (axis == null) return;
 		long decrement = 1;
-		if (keyboardService.isAltDown()) decrement = 10;
+		if (inputService.isAltDown()) decrement = 10;
 		display.setPosition(display.getLongPosition(axis) - decrement, axis);
 	}
 

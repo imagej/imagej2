@@ -38,7 +38,7 @@ package imagej.core.commands.zoom;
 import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.MouseService;
+import imagej.data.display.InputService;
 import imagej.menu.MenuConstants;
 import imagej.util.IntCoords;
 
@@ -65,7 +65,7 @@ public class ZoomIn extends ContextCommand {
 	private ThreadService threadService;
 
 	@Parameter
-	private MouseService mouseService;
+	private InputService inputService;
 
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
@@ -77,10 +77,10 @@ public class ZoomIn extends ContextCommand {
 
 			@Override
 			public void run() {
-				if (mouseService.getDisplay() == getDisplay()) {
+				if (inputService.getDisplay() == getDisplay()) {
 					// zoom in centered around the mouse cursor
-					final int x = mouseService.getX();
-					final int y = mouseService.getY();
+					final int x = inputService.getX();
+					final int y = inputService.getY();
 
 					getDisplay().getCanvas().zoomIn(new IntCoords(x, y));
 				}

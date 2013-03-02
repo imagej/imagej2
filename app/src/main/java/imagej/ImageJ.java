@@ -40,8 +40,7 @@ import imagej.console.ConsoleService;
 import imagej.data.DatasetService;
 import imagej.data.animation.AnimationService;
 import imagej.data.display.ImageDisplayService;
-import imagej.data.display.KeyboardService;
-import imagej.data.display.MouseService;
+import imagej.data.display.InputService;
 import imagej.data.display.OverlayService;
 import imagej.data.display.ScreenCaptureService;
 import imagej.data.display.WindowService;
@@ -198,12 +197,12 @@ public class ImageJ extends AbstractContextual {
 		return get(ImageDisplayService.class);
 	}
 
-	public IOService io() {
-		return get(IOService.class);
+	public InputService input() {
+		return get(InputService.class);
 	}
 
-	public KeyboardService keyboard() {
-		return get(KeyboardService.class);
+	public IOService io() {
+		return get(IOService.class);
 	}
 
 	public LegacyService legacy() {
@@ -228,10 +227,6 @@ public class ImageJ extends AbstractContextual {
 
 	public ModuleService module() {
 		return get(ModuleService.class);
-	}
-
-	public MouseService mouse() {
-		return get(MouseService.class);
 	}
 
 	public ObjectService object() {

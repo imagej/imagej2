@@ -35,8 +35,14 @@
 
 package imagej.data.display;
 
+import imagej.display.Display;
+import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.input.KyPressedEvent;
 import imagej.display.event.input.KyReleasedEvent;
+import imagej.display.event.input.MsExitedEvent;
+import imagej.display.event.input.MsMovedEvent;
+import imagej.display.event.input.MsPressedEvent;
+import imagej.display.event.input.MsReleasedEvent;
 
 import java.util.HashSet;
 
@@ -49,13 +55,13 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
- * Default implementation of {@link KeyboardService}.
+ * Default implementation of {@link InputService}.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
 @Plugin(type = Service.class)
-public class DefaultKeyboardService extends AbstractService implements
-	KeyboardService
+public class DefaultInputService extends AbstractService implements
+	InputService
 {
 
 	@Parameter
@@ -69,7 +75,12 @@ public class DefaultKeyboardService extends AbstractService implements
 
 	private HashSet<KeyCode> pressedKeys = new HashSet<KeyCode>();
 
-	// -- KeyboardService methods --
+	private HashSet<Integer> buttonsDown = new HashSet<Integer>();
+
+	private Display<?> display;
+	private int lastX = -1, lastY = -1;
+
+	// -- InputService methods --
 
 	@Override
 	public EventService getEventService() {
@@ -106,10 +117,30 @@ public class DefaultKeyboardService extends AbstractService implements
 		return pressedKeys.contains(code);
 	}
 
+	@Override
+	public Display<?> getDisplay() {
+		return display;
+	}
+
+	@Override
+	public int getX() {
+		return lastX;
+	}
+
+	@Override
+	public int getY() {
+		return lastY;
+	}
+
+	@Override
+	public boolean isButtonDown(final int button) {
+		return buttonsDown.contains(button);
+	}
+
 	// -- Event handlers --
 
 	@EventHandler
-	void onEvent(final KyPressedEvent evt) {
+	public void onEvent(final KyPressedEvent evt) {
 		altDown = evt.getModifiers().isAltDown();
 		altGrDown = evt.getModifiers().isAltGrDown();
 		ctrlDown = evt.getModifiers().isCtrlDown();
@@ -119,13 +150,51 @@ public class DefaultKeyboardService extends AbstractService implements
 	}
 
 	@EventHandler
-	void onEvent(final KyReleasedEvent evt) {
+	public void onEvent(final KyReleasedEvent evt) {
 		altDown = evt.getModifiers().isAltDown();
 		altGrDown = evt.getModifiers().isAltGrDown();
 		ctrlDown = evt.getModifiers().isCtrlDown();
 		metaDown = evt.getModifiers().isMetaDown();
 		shiftDown = evt.getModifiers().isShiftDown();
 		pressedKeys.remove(evt.getCode());
+	}
+
+	@EventHandler
+	protected void onEvent(final MsMovedEvent evt) {
+		updateCoords(evt.getDisplay(), evt.getX(), evt.getY());
+	}
+
+	@EventHandler
+	protected void onEvent(@SuppressWarnings("unused") final MsExitedEvent evt) {
+		clearCoords();
+	}
+
+	@EventHandler
+	protected void onEvent(final MsPressedEvent evt) {
+		buttonsDown.add(evt.getButton());
+	}
+
+	@EventHandler
+	protected void onEvent(final MsReleasedEvent evt) {
+		buttonsDown.remove(evt.getButton());
+	}
+
+	@EventHandler
+	protected void onEvent(final DisplayDeletedEvent evt) {
+		if (display != evt.getObject()) return;
+		clearCoords();
+	}
+
+	// -- Helper methods --
+
+	private void updateCoords(final Display<?> d, final int x, final int y) {
+		display = d;
+		lastX = x;
+		lastY = y;
+	}
+
+	private void clearCoords() {
+		updateCoords(null, -1, -1);
 	}
 
 }

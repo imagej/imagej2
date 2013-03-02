@@ -35,16 +35,21 @@
 
 package imagej.data.display;
 
+import imagej.display.Display;
+import imagej.display.event.input.MsButtonEvent;
+
 import org.scijava.event.EventService;
 import org.scijava.input.KeyCode;
 import org.scijava.service.Service;
 
 /**
- * Interface for service that tracks the current keyboard status.
+ * Interface for service that tracks the current status of input devices
+ * (keyboard and mouse in particular).
  * 
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-public interface KeyboardService extends Service {
+public interface InputService extends Service {
 
 	EventService getEventService();
 
@@ -59,5 +64,42 @@ public interface KeyboardService extends Service {
 	boolean isShiftDown();
 
 	boolean isKeyDown(KeyCode code);
+
+	/**
+	 * Gets the display associated with the last observed mouse cursor.
+	 * 
+	 * @return The display in question, or null if the display has been deleted,
+	 *         or the mouse cursor is outside all known displays, or no mouse
+	 *         events have ever been observed.
+	 */
+	Display<?> getDisplay();
+
+	/**
+	 * Gets the last observed X coordinate of the mouse cursor, relative to a
+	 * specific display.
+	 * 
+	 * @see #getDisplay()
+	 */
+	int getX();
+
+	/**
+	 * Gets the last observed Y coordinate of the mouse cursor, relative to a
+	 * specific display.
+	 * 
+	 * @see #getDisplay()
+	 */
+	int getY();
+
+	/**
+	 * Gets whether the given mouse button is currently pressed.
+	 * 
+	 * @param button One of:
+	 *          <ul>
+	 *          <li>{@link MsButtonEvent#LEFT_BUTTON}</li>
+	 *          <li>{@link MsButtonEvent#MIDDLE_BUTTON}</li>
+	 *          <li>{@link MsButtonEvent#RIGHT_BUTTON}</li>
+	 *          </ul>
+	 */
+	boolean isButtonDown(int button);
 
 }
