@@ -281,7 +281,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 	 * @throws SAXException
 	 */
 	public void buildAndInstall() throws CompileError, IOException, ParserConfigurationException, SAXException {
-		final String ijDirProperty = getProperty(BuildEnvironment.IMAGEJ_APP_DIRECTORY);
+		final String ijDirProperty = expand(getProperty(BuildEnvironment.IMAGEJ_APP_DIRECTORY));
 		if (ijDirProperty == null) {
 			throw new IOException(BuildEnvironment.IMAGEJ_APP_DIRECTORY + " does not point to an ImageJ.app/ directory!");
 		}
@@ -787,6 +787,16 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 			return properties.get(key);
 		if (key.equals("project.basedir"))
 			return directory.getPath();
+		if (key.equals("rootdir")) {
+			File directory = this.directory;
+			for (;;) {
+				final File parent = directory.getParentFile();
+				if (parent == null || !new File(parent, "pom.xml").exists()) {
+					return directory.getPath();
+				}
+				directory = parent;
+			}
+		}
 		if (parent == null) {
 			// hard-code a few variables
 			if (key.equals("bio-formats.groupId"))
