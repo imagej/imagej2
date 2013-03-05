@@ -2636,8 +2636,8 @@ static void add_extension(struct subcommand *subcommand, const char *extension)
  *
  * Example:
  *
- * --build --ij-jar=jars/fake.jar --main-class=fiji.build.Fake
- *  Start the Fiji Build in the current directory
+ * --mini-maven --ij-jar=jars/ij-minimaven.jar --main-class=imagej.build.MiniMaven
+ *  Start MiniMaven in the current directory
  */
 static void add_subcommand(const char *line)
 {
@@ -3099,9 +3099,6 @@ static void __attribute__((__noreturn__)) usage(void)
 		"\n",
 		"Options to run programs other than ImageJ:\n",
 		subcommands.buffer,
-		"--build\n"
-		"\tstart a build instead of ImageJ\n"
-		"\n"
 		"--main-class <class name> (this is the\n"
 		"\tdefault when called with a file ending in .class)\n"
 		"\tstart the given class instead of ImageJ\n"
@@ -3459,6 +3456,8 @@ static int handle_one_option2(int *i, int argc, const char **argv)
 #ifdef WIN32
 		open_win_console();
 #endif
+		error("Fiji Build is deprecated! Please port your project to (Mini)Maven:\n"
+			"\n\thttp://fiji.sc/Maven");
 		skip_class_launcher = 1;
 		headless = 1;
 		fake_jar = ij_path("jars/fake.jar");
