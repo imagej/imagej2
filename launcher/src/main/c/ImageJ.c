@@ -3246,19 +3246,6 @@ static void try_with_less_memory(long megabytes)
 	die("%s", buffer->buffer);
 }
 
-static int is_building(const char *target)
-{
-	int i;
-	if (main_argc < 3 ||
-			(strcmp(main_argv[1], "--build") &&
-			 strcmp(main_argv[1], "--fake")))
-		return 0;
-	for (i = 2; i < main_argc; i++)
-		if (!strcmp(main_argv[i], target))
-			return 1;
-	return 0;
-}
-
 static const char *maybe_substitute_ij_jar(const char *relative_path)
 {
 	const char *replacement = NULL;
@@ -3465,9 +3452,6 @@ static int handle_one_option2(int *i, int argc, const char **argv)
 		if (run_precompiled || !file_exists(fake_jar) ||
 				file_is_newer(precompiled_fake_jar, fake_jar))
 			fake_jar = precompiled_fake_jar;
-		if (file_is_newer(ij_path("src-plugins/fake/fiji/build/Fake.java"), fake_jar) &&
-				!is_building("jars/fake.jar"))
-			error("Warning: jars/fake.jar is not up-to-date");
 		string_set_length(&arg, 0);
 		string_addf(&arg, "-Djava.class.path=%s", fake_jar);
 		add_option_string(&options, &arg, 0);
@@ -3566,13 +3550,6 @@ static void parse_command_line(void)
 #else
 #define EXE_EXTENSION
 #endif
-
-	string_setf(&buffer, "%s/ij" EXE_EXTENSION, ij_dir);
-	string_setf(&buffer2, "%s/ij.c", ij_dir);
-	if (file_exists(ij_path("ImageJ" EXE_EXTENSION)) &&
-			file_is_newer(ij_path("ImageJ.c"), ij_path("ImageJ" EXE_EXTENSION)) &&
-			!is_building("ImageJ"))
-		error("Warning: your ImageJ executable is not up-to-date");
 
 #ifdef __linux__
 	string_append_path_list(java_library_path, getenv("LD_LIBRARY_PATH"));
