@@ -485,6 +485,21 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 	@Override
 	public void setVisible(final boolean visible) {
+		if (!SwingUtilities.isEventDispatchThread()) {
+			try {
+				SwingUtilities.invokeAndWait(new Runnable() {
+					@Override
+					public void run() {
+						setVisible(visible);
+					}
+				});
+			} catch (InterruptedException e) {
+				// ignore
+			} catch (InvocationTargetException e) {
+				log.error(e);
+			}
+			return;
+		}
 		showOrHide();
 		super.setVisible(visible);
 		if (visible) {
