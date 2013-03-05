@@ -41,6 +41,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.lang.reflect.Method;
+import org.scijava.util.FileUtils;
 
 /**
  * TODO
@@ -183,13 +184,19 @@ public class JavaCompiler {
 	protected static JarClassLoader discoverJavac() throws IOException {
 		final String ijDir = System.getProperty("ij.dir");
 		if (ijDir == null) return null;
-		File ijHome = new File(ijDir);
-		File javac = new File(ijHome, "jars/javac.jar");
-		if (!javac.exists()) {
-			javac = new File(ijHome, "precompiled/javac.jar");
-			if (!javac.exists()) {
-				System.err.println("No javac.jar found (looked in " + ijHome + ")!");
-				return null;
+		File jars = new File(ijDir, "jars");
+		File[] javacVersions = FileUtils.getAllVersions(jars, "javac.jar");
+		if (javacVersions.length == 0) {
+			System.err.println("No javac.jar found (looked in " + jars + ")!");
+			return null;
+		}
+		long newest = Long.MIN_VALUE;
+		File javac = null;
+		for (File file : javacVersions) {
+			long mtime = file.lastModified();
+			if (newest < mtime) {
+				newest = mtime;
+				javac = file;
 			}
 		}
 		return new JarClassLoader(javac.getPath());
