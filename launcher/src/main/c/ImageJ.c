@@ -2718,7 +2718,7 @@ const char *default_subcommands[] = {
 	" file ending in .js)",
 	"--ant --tools-jar --ij-jar=jars/ant.jar --ij-jar=jars/ant-launcher.jar --ij-jar=jars/ant-nodeps.jar --ij-jar=jars/ant-junit.jar --dont-patch-ij1 --headless --main-class=org.apache.tools.ant.Main",
 	" run Apache Ant",
-	"--mini-maven --ij-jar=jars/fake.jar --dont-patch-ij1 --main-class=fiji.build.MiniMaven",
+	"--mini-maven --ij-jar=jars/ij-minimaven.jar --dont-patch-ij1 --main-class=imagej.build.MiniMaven",
 	" run Fiji's very simple Maven mockup",
 	"--javac --ij-jar=jars/javac.jar --freeze-classloader --headless --full-classpath --dont-patch-ij1 --pass-classpath --main-class=com.sun.tools.javac.Main",
 	" start JavaC, the Java Compiler, instead of ImageJ",
