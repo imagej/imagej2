@@ -585,11 +585,12 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		return builder.toString();
 	}
 
-	private final void deleteVersions(final File directory, final String filename) {
+	private final void deleteVersions(final File directory, final String filename, final File excluding) {
 		final File[] versioned = FileUtils.getAllVersions(directory, filename);
 		if (versioned == null)
 			return;
 		for (final File file : versioned) {
+			if (file.equals(excluding)) continue;
 			if (!file.getName().equals(filename))
 				env.err.println("Warning: deleting '" + file + "'");
 			if (!file.delete())
@@ -620,9 +621,10 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 				throw new IOException("Could not make directory " + targetDir);
 			}
 		} else if (target.exists() && target.lastModified() >= source.lastModified()) {
+			if (deleteOtherVersions) deleteVersions(targetDir, target.getName(), target);
 			return;
 		}
-		if (deleteOtherVersions) deleteVersions(targetDir, target.getName());
+		if (deleteOtherVersions) deleteVersions(targetDir, target.getName(), null);
 		BuildEnvironment.copyFile(source, target);
 	}
 
