@@ -287,19 +287,13 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 		// make sure that sezpoz finds the classes when triggered from the EDT
 		final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-		try {
-			SwingUtilities.invokeAndWait(new Runnable() {
-				@Override
-				public void run() {
-					if (contextClassLoader != null)
-						Thread.currentThread().setContextClassLoader(contextClassLoader);
-				}
-			});
-		} catch (InterruptedException e1) {
-			log.error(e1);
-		} catch (InvocationTargetException e1) {
-			log.error(e1);
-		}
+		SwingTools.invokeOnEDT(new Runnable() {
+			@Override
+			public void run() {
+				if (contextClassLoader != null)
+					Thread.currentThread().setContextClassLoader(contextClassLoader);
+			}
+		});
 
 		// Button to start actions
 		apply =
@@ -614,25 +608,35 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	}
 
 	public void setViewOption(final ViewOptions.Option option) {
-		viewOptions.setSelectedItem(option);
-		updateFilesTable();
+		SwingTools.invokeOnEDT(new Runnable() {
+			@Override
+			public void run() {
+				viewOptions.setSelectedItem(option);
+				updateFilesTable();
+			}
+		});
 	}
 
 	public void updateFilesTable() {
-		Iterable<FileObject> view = viewOptions.getView(table);
-		final Set<FileObject> selected = new HashSet<FileObject>();
-		for (final FileObject file : table.getSelectedFiles())
-			selected.add(file);
-		table.clearSelection();
+		SwingTools.invokeOnEDT(new Runnable() {
+			@Override
+			public void run() {
+				Iterable<FileObject> view = viewOptions.getView(table);
+				final Set<FileObject> selected = new HashSet<FileObject>();
+				for (final FileObject file : table.getSelectedFiles())
+					selected.add(file);
+				table.clearSelection();
 
-		final String search = searchTerm.getText().trim();
-		if (!search.equals("")) view = FilesCollection.filter(search, view);
+				final String search = searchTerm.getText().trim();
+				if (!search.equals("")) view = FilesCollection.filter(search, view);
 
-		// Directly update the table for display
-		table.setFiles(view);
-		for (int i = 0; i < table.getRowCount(); i++)
-			if (selected.contains(table.getFile(i))) table.addRowSelectionInterval(i,
-				i);
+				// Directly update the table for display
+				table.setFiles(view);
+				for (int i = 0; i < table.getRowCount(); i++)
+					if (selected.contains(table.getFile(i))) table.addRowSelectionInterval(i,
+						i);
+			}
+		});
 	}
 
 	public void applyChanges() {

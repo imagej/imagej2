@@ -85,6 +85,7 @@ public class ProgressDialog extends JDialog implements Progress {
 		final Container root = getContentPane();
 		root.setLayout(new BoxLayout(root, BoxLayout.Y_AXIS));
 		progress = new JProgressBar();
+		progress.setStringPainted(true);
 		progress.setMinimum(0);
 		root.add(progress);
 
@@ -170,16 +171,20 @@ public class ProgressDialog extends JDialog implements Progress {
 	@Override
 	public void setTitle(final String title) {
 		this.title = title;
-		progress.setStringPainted(true);
 		setTitle();
 		setVisible(true);
 	}
 
 	protected void setTitle() {
 		checkIfCanceled();
-		if (detailsScrollPane.isVisible() || latestDetail == null) progress
-			.setString(title);
-		else progress.setString(title + ": " + latestDetail.getString());
+		SwingTools.invokeOnEDT(new Runnable() {
+			@Override
+			public void run() {
+				if (detailsScrollPane.isVisible() || latestDetail == null) progress
+					.setString(title);
+				else progress.setString(title + ": " + latestDetail.getString());
+			}
+		});
 		repaint();
 	}
 
@@ -187,8 +192,13 @@ public class ProgressDialog extends JDialog implements Progress {
 	public void setCount(final int count, final int total) {
 		checkIfCanceled();
 		if (updatesTooFast()) return;
-		progress.setMaximum(total);
-		progress.setValue(count);
+		SwingTools.invokeOnEDT(new Runnable() {
+			@Override
+			public void run() {
+				progress.setMaximum(total);
+				progress.setValue(count);
+			}
+		});
 		repaint();
 	}
 
@@ -206,38 +216,58 @@ public class ProgressDialog extends JDialog implements Progress {
 	public void setItemCount(final int count, final int total) {
 		checkIfCanceled();
 		if (itemUpdatesTooFast()) return;
-		latestDetail.setMaximum(total);
-		latestDetail.setValue(count);
-		repaint();
+		SwingTools.invokeOnEDT(new Runnable() {
+			@Override
+			public void run() {
+				latestDetail.setMaximum(total);
+				latestDetail.setValue(count);
+				repaint();
+			}
+		});
 	}
 
 	@Override
 	public void itemDone(final Object item) {
 		checkIfCanceled();
-		latestDetail.setValue(latestDetail.getMaximum());
+		SwingTools.invokeOnEDT(new Runnable() {
+			@Override
+			public void run() {
+				latestDetail.setValue(latestDetail.getMaximum());
+			}
+		});
 	}
 
 	@Override
 	public void done() {
 		if (latestDetail != null) latestDetail.setValue(latestDetail.getMaximum());
-		progress.setValue(progress.getMaximum());
-		dispose();
+		SwingTools.invokeOnEDT(new Runnable() {
+			@Override
+			public void run() {
+				progress.setValue(progress.getMaximum());
+				dispose();
+			}
+		});
 	}
 
 	public void toggleDetails() {
-		final boolean show = !detailsScrollPane.isVisible();
-		detailsScrollPane.setVisible(show);
-		detailsScrollPane.invalidate();
-		detailsToggle.setText(show ? "Hide Details" : "Show Details");
-		setTitle();
+		SwingTools.invokeOnEDT(new Runnable() {
+			@Override
+			public void run() {
+				final boolean show = !detailsScrollPane.isVisible();
+				detailsScrollPane.setVisible(show);
+				detailsScrollPane.invalidate();
+				detailsToggle.setText(show ? "Hide Details" : "Show Details");
+				setTitle();
 
-		final Dimension dimension = getSize();
-		if (toggleHeight == -1) toggleHeight = dimension.height + 100;
-		setSize(new Dimension(dimension.width, toggleHeight));
-		toggleHeight = dimension.height;
+				final Dimension dimension = getSize();
+				if (toggleHeight == -1) toggleHeight = dimension.height + 100;
+				setSize(new Dimension(dimension.width, toggleHeight));
+				toggleHeight = dimension.height;
+			}
+		});
 	}
 
-	class Details extends JPanel {
+	private class Details extends JPanel {
 
 		Details() {
 			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -253,7 +283,7 @@ public class ProgressDialog extends JDialog implements Progress {
 		}
 	}
 
-	class Detail extends JProgressBar {
+	private class Detail extends JProgressBar {
 
 		Detail(final String text) {
 			setStringPainted(true);

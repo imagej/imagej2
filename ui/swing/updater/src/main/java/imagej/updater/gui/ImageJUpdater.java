@@ -76,6 +76,7 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = UpdaterUI.class, menu = { @Menu(label = "Help"),
 	@Menu(label = "Update...") })
 public class ImageJUpdater implements UpdaterUI {
+	private UpdaterFrame main;
 
 	@Parameter
 	private StatusService statusService;
@@ -92,17 +93,17 @@ public class ImageJUpdater implements UpdaterUI {
 	@Override
 	public void run() {
 
+		if (errorIfDebian()) return;
+
 		if (log == null) {
 			log = Util.getLogService();
 		}
 
-		UpdaterUserInterface.set(new SwingUserInterface(log, statusService));
-
-		if (errorIfDebian()) return;
-
 		final File imagejRoot = AppUtils.getBaseDirectory();
 		final FilesCollection files = new FilesCollection(imagejRoot);
-		final UpdaterFrame main = new UpdaterFrame(log, uploaderService, files);
+
+		UpdaterUserInterface.set(new SwingUserInterface(log, statusService));
+
 		if (new File(imagejRoot, "update").exists()) {
 			if (!UpdaterUserInterface.get().promptYesNo("It is suggested that you restart ImageJ, then continue the update.\n"
 					+ "Alternately, you can attempt to continue the upgrade without\n"
@@ -120,6 +121,13 @@ public class ImageJUpdater implements UpdaterUI {
 		}
 		Util.useSystemProxies();
 		Authenticator.setDefault(new SwingAuthenticator());
+
+		SwingTools.invokeOnEDT(new Runnable() {
+			@Override
+			public void run() {
+				main = new UpdaterFrame(log, uploaderService, files);
+			}
+		});
 
 		main.setEasyMode(true);
 		Progress progress = main.getProgress("Starting up...");
