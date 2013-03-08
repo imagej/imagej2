@@ -42,10 +42,6 @@ import imagej.io.IOService;
 import imagej.ui.dnd.AbstractDragAndDropHandler;
 import imagej.ui.dnd.DragAndDropData;
 import imagej.ui.dnd.DragAndDropHandler;
-
-import java.io.File;
-import java.util.List;
-
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.io.ImgIOException;
 
@@ -61,8 +57,8 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = DragAndDropHandler.class)
 public class ImageFileDragAndDropHandler extends AbstractDragAndDropHandler {
 
-	private static final String MIME_TYPE =
-		"application/x-java-file-list; class=java.util.List";
+	public static final String MIME_TYPE =
+		"application/imagej-image; class=java.util.String";
 
 	@Override
 	public boolean isCompatible(final Display<?> display,
@@ -71,7 +67,14 @@ public class ImageFileDragAndDropHandler extends AbstractDragAndDropHandler {
 		for (final String mimeType : data.getMimeTypes()) {
 			if (MIME_TYPE.equals(mimeType)) return true;
 		}
-		return true;
+		return false;
+		/*
+		System.out.println("start type check");
+		for (String type : data.getMimeTypes()) {
+			System.out.println(" -- " + type);
+		}
+		return false;
+		*/
 	}
 
 	@Override
@@ -83,25 +86,21 @@ public class ImageFileDragAndDropHandler extends AbstractDragAndDropHandler {
 
 		final LogService log = getContext().getService(LogService.class);
 
-		@SuppressWarnings("unchecked")
-		final List<File> files = (List<File>) data.getData(MIME_TYPE);
+		final String filename = (String) data.getData(MIME_TYPE);
 
-		// load each file
+		// load file
 		boolean success = true;
-		for (final File file : files) {
-			final String path = file.getAbsolutePath();
-			try {
-				final Dataset dataset = ioService.loadDataset(file.getAbsolutePath());
-				displayService.createDisplay(dataset);
-			}
-			catch (final ImgIOException exc) {
-				if (log != null) log.error("Error opening file: " + path, exc);
-				success = false;
-			}
-			catch (final IncompatibleTypeException exc) {
-				if (log != null) log.error("Error opening file: " + path, exc);
-				success = false;
-			}
+		try {
+			final Dataset dataset = ioService.loadDataset(filename);
+			displayService.createDisplay(dataset);
+		}
+		catch (final ImgIOException exc) {
+			if (log != null) log.error("Error opening file: " + filename, exc);
+			success = false;
+		}
+		catch (final IncompatibleTypeException exc) {
+			if (log != null) log.error("Error opening file: " + filename, exc);
+			success = false;
 		}
 		return success;
 	}

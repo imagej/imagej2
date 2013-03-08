@@ -44,6 +44,7 @@ import java.util.List;
  */
 public interface DragAndDropData {
 
+	// boolean isSupported(String mimeType, Object metadata);
 	boolean isSupported(String mimeType);
 
 	Object getData(String mimeType);
