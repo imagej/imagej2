@@ -35,42 +35,49 @@
 
 package imagej.ui.dnd;
 
-import imagej.display.Display;
-import imagej.display.DisplayService;
-import imagej.display.TextDisplay;
+import imagej.data.lut.LutService;
 
-import org.scijava.plugin.Plugin;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+
+import org.scijava.Context;
 
 /**
  * @author Barry DeZonia
  */
-@Plugin(type = DragAndDropHandler.class)
-public class TextDragAndDropHandler extends AbstractDragAndDropHandler {
+public class LutFileDragAndDropData implements DragAndDropData {
 
-	public static final String MIME_TYPE =
-		"text/plain; class=java.util.String; charset=Unicode";
+	private Context context;
+	private String filename;
 
-	@Override
-	public boolean isCompatible(Display<?> display, DragAndDropData data) {
-		if ((display != null) && !(display instanceof TextDisplay)) return false;
-		for (final String mimeType : data.getMimeTypes()) {
-			if (MIME_TYPE.equals(mimeType)) return true;
-		}
-		return false;
+	public LutFileDragAndDropData(Context context, String filename) {
+		this.context = context;
+		this.filename = filename;
 	}
 
 	@Override
-	public boolean drop(Display<?> display, DragAndDropData data) {
-		String str = (String) data.getData(MIME_TYPE);
-		if (display == null) {
-			DisplayService dispSrv = getContext().getService(DisplayService.class);
-			dispSrv.createDisplay(str);
-			return true;
+	public boolean isSupported(String mimeType) {
+		return LutDragAndDropHandler.MIME_TYPE.equals(mimeType);
+	}
+
+	@Override
+	public Object getData(String mimeType) {
+		try {
+			// TODO - I bet this url construction is wrong on Windows
+			URL url = new URL("file://" + filename);
+			LutService lutService = context.getService(LutService.class);
+			return lutService.loadLut(url);
 		}
-		if (!(display instanceof TextDisplay)) return false;
-		TextDisplay txtDisp = (TextDisplay) display;
-		txtDisp.append(str); // TODO - do a paste rather than an append
-		return true;
+		catch (Exception e) {
+			return null;
+		}
+	}
+
+	@Override
+	public List<String> getMimeTypes() {
+		return Arrays.asList(LutDragAndDropHandler.MIME_TYPE);
 	}
 
 }
+

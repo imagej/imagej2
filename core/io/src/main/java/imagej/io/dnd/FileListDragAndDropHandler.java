@@ -33,17 +33,18 @@
  * #L%
  */
 
-package imagej.ui.dnd;
+package imagej.io.dnd;
 
-import imagej.data.lut.LutService;
 import imagej.display.Display;
 import imagej.display.DisplayService;
+import imagej.ui.dnd.AbstractDragAndDropHandler;
+import imagej.ui.dnd.DragAndDropData;
+import imagej.ui.dnd.DragAndDropHandler;
+import imagej.ui.dnd.DragAndDropService;
+import imagej.ui.dnd.LutFileDragAndDropData;
+import imagej.ui.dnd.TextFileDragAndDropData;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 
 import org.scijava.Priority;
@@ -94,111 +95,37 @@ public class FileListDragAndDropHandler extends AbstractDragAndDropHandler {
 		return true;
 	}
 
+	// TODO - also support Excel drag and drop as our tables if possible. Note
+	// that the table flavor of such a drag/drop might be as text/html so we'd
+	// need a smart drop translator.
+
 	private DragAndDropData getNewDragAndDropData(File file) {
-		// System.out.println("Creating appropriate drop data for file " +
-		// file.getAbsolutePath());
+		// TEMP: implementation that shows code works. But although a text file
+		// could be named nearly anything we restrict to .txt here! Commented out
+		// below is a better implementation but requires changes to IOService and
+		// underlying code.
 		String path = file.getAbsolutePath();
 		if (path.endsWith(".lut")) {
-			return new LutFileDragAndDropData(path);
+			return new LutFileDragAndDropData(getContext(), path);
 		}
 		else if (path.endsWith(".txt")) {
 			return new TextFileDragAndDropData(path);
 		}
 		return new ImageFileDragAndDropData(path);
+
+		// TODO - this is how it should look in the end
+		/*
+		String path = file.getAbsolutePath();
+		IOService ioSrv = getContext().getService(IOService.class);
+		if (ioSrv.isImage(path)) { // BUT THIS IS NOT YET SUPPORTED
+			return new ImageFileDragAndDropData(path);
+		}
+		if (path.toLowerCase().endsWith(".lut")) {
+			return new LutFileDragAndDropData(getContext(), path);
+		}
+		return new TextFileDragAndDropData(path);
+		*/
 	}
 
-	private class LutFileDragAndDropData implements DragAndDropData {
 
-		private String filename;
-
-		public LutFileDragAndDropData(String filename) {
-			this.filename = filename;
-		}
-
-		@Override
-		public boolean isSupported(String mimeType) {
-			return LutDragAndDropHandler.MIME_TYPE.equals(mimeType);
-		}
-
-		@Override
-		public Object getData(String mimeType) {
-			try {
-				URL url = new URL("file://" + filename);
-				LutService lutService = getContext().getService(LutService.class);
-				return lutService.loadLut(url);
-			}
-			catch (Exception e) {
-				return null;
-			}
-		}
-
-		@Override
-		public List<String> getMimeTypes() {
-			return Arrays.asList(LutDragAndDropHandler.MIME_TYPE);
-		}
-
-	}
-
-	private class TextFileDragAndDropData implements DragAndDropData {
-
-		private String filename;
-
-		public TextFileDragAndDropData(String filename) {
-			this.filename = filename;
-		}
-
-		@Override
-		public boolean isSupported(String mimeType) {
-			return TextDragAndDropHandler.MIME_TYPE.equals(mimeType);
-		}
-
-		@Override
-		public Object getData(String mimeType) {
-			try {
-				StringBuilder builder = new StringBuilder();
-				BufferedReader in = new BufferedReader(new FileReader(filename));
-				String line;
-				while ((line = in.readLine()) != null) {
-					builder.append(line);
-					builder.append("\n");
-				}
-				in.close();
-				return builder.toString();
-			}
-			catch (Exception e) {
-				return null;
-			}
-		}
-
-		@Override
-		public List<String> getMimeTypes() {
-			return Arrays.asList(new String[] { TextDragAndDropHandler.MIME_TYPE });
-		}
-	}
-
-	private class ImageFileDragAndDropData implements DragAndDropData {
-
-		private String filename;
-
-		public ImageFileDragAndDropData(String filename) {
-			this.filename = filename;
-		}
-
-		@Override
-		public boolean isSupported(String mimeType) {
-			return true;
-		}
-
-		@Override
-		public Object getData(String mimeType) {
-			System.out.println("NOW OPENING IMAGE " + filename);
-			return null;
-		}
-
-		@Override
-		public List<String> getMimeTypes() {
-			return Arrays.asList(new String[0]); // ACK!!!! CHOKEMEISTER
-		}
-
-	}
 }

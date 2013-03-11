@@ -33,44 +33,37 @@
  * #L%
  */
 
-package imagej.ui.dnd;
+package imagej.io.dnd;
 
-import imagej.display.Display;
-import imagej.display.DisplayService;
-import imagej.display.TextDisplay;
+import imagej.ui.dnd.DragAndDropData;
 
-import org.scijava.plugin.Plugin;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Barry DeZonia
  */
-@Plugin(type = DragAndDropHandler.class)
-public class TextDragAndDropHandler extends AbstractDragAndDropHandler {
+public class ImageFileDragAndDropData implements DragAndDropData {
 
-	public static final String MIME_TYPE =
-		"text/plain; class=java.util.String; charset=Unicode";
+	private String filename;
 
-	@Override
-	public boolean isCompatible(Display<?> display, DragAndDropData data) {
-		if ((display != null) && !(display instanceof TextDisplay)) return false;
-		for (final String mimeType : data.getMimeTypes()) {
-			if (MIME_TYPE.equals(mimeType)) return true;
-		}
-		return false;
+	public ImageFileDragAndDropData(String filename) {
+		this.filename = filename;
 	}
 
 	@Override
-	public boolean drop(Display<?> display, DragAndDropData data) {
-		String str = (String) data.getData(MIME_TYPE);
-		if (display == null) {
-			DisplayService dispSrv = getContext().getService(DisplayService.class);
-			dispSrv.createDisplay(str);
-			return true;
-		}
-		if (!(display instanceof TextDisplay)) return false;
-		TextDisplay txtDisp = (TextDisplay) display;
-		txtDisp.append(str); // TODO - do a paste rather than an append
-		return true;
+	public boolean isSupported(String mimeType) {
+		return ImageFileDragAndDropHandler.MIME_TYPE.equals(mimeType);
+	}
+
+	@Override
+	public Object getData(String mimeType) {
+		return filename;
+	}
+
+	@Override
+	public List<String> getMimeTypes() {
+		return Arrays.asList(ImageFileDragAndDropHandler.MIME_TYPE);
 	}
 
 }
