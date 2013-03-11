@@ -38,9 +38,10 @@ package imagej.ui.dnd;
 import imagej.data.lut.LutService;
 import imagej.display.Display;
 import imagej.display.DisplayService;
-import imagej.ui.dnd.event.DragAndDropEvent;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -94,8 +95,8 @@ public class FileListDragAndDropHandler extends AbstractDragAndDropHandler {
 	}
 
 	private DragAndDropData getNewDragAndDropData(File file) {
-		System.out.println("Creating appropriate drop data for file " +
-			file.getAbsolutePath());
+		// System.out.println("Creating appropriate drop data for file " +
+		// file.getAbsolutePath());
 		String path = file.getAbsolutePath();
 		if (path.endsWith(".lut")) {
 			return new LutFileDragAndDropData(path);
@@ -104,14 +105,6 @@ public class FileListDragAndDropHandler extends AbstractDragAndDropHandler {
 			return new TextFileDragAndDropData(path);
 		}
 		return new ImageFileDragAndDropData(path);
-	}
-
-	private class LutDropEvent extends DragAndDropEvent {
-
-		public LutDropEvent(Display<?> display, String filename) {
-			super(display, new LutFileDragAndDropData(filename));
-		}
-
 	}
 
 	private class LutFileDragAndDropData implements DragAndDropData {
@@ -129,7 +122,6 @@ public class FileListDragAndDropHandler extends AbstractDragAndDropHandler {
 
 		@Override
 		public Object getData(String mimeType) {
-			System.out.println("NOW READING LUT " + filename);
 			try {
 				URL url = new URL("file://" + filename);
 				LutService lutService = getContext().getService(LutService.class);
@@ -143,14 +135,6 @@ public class FileListDragAndDropHandler extends AbstractDragAndDropHandler {
 		@Override
 		public List<String> getMimeTypes() {
 			return Arrays.asList(LutDragAndDropHandler.MIME_TYPE);
-		}
-
-	}
-
-	private class TextFileDropEvent extends DragAndDropEvent {
-
-		public TextFileDropEvent(Display<?> display, String filename) {
-			super(display, new TextFileDragAndDropData(filename));
 		}
 
 	}
@@ -170,22 +154,26 @@ public class FileListDragAndDropHandler extends AbstractDragAndDropHandler {
 
 		@Override
 		public Object getData(String mimeType) {
-			System.out.println("NOW READING TEXT FILE " + filename);
-			return null;
+			try {
+				StringBuilder builder = new StringBuilder();
+				BufferedReader in = new BufferedReader(new FileReader(filename));
+				String line;
+				while ((line = in.readLine()) != null) {
+					builder.append(line);
+					builder.append("\n");
+				}
+				in.close();
+				return builder.toString();
+			}
+			catch (Exception e) {
+				return null;
+			}
 		}
 
 		@Override
 		public List<String> getMimeTypes() {
 			return Arrays.asList(new String[] { TextDragAndDropHandler.MIME_TYPE });
 		}
-	}
-
-	private class ImageFileDropEvent extends DragAndDropEvent {
-
-		public ImageFileDropEvent(Display<?> display, String filename) {
-			super(display, new ImageFileDragAndDropData(filename));
-		}
-
 	}
 
 	private class ImageFileDragAndDropData implements DragAndDropData {
