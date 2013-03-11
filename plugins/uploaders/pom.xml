@@ -19,6 +19,7 @@
 
 	<modules>
 		<module>ssh</module>
+		<module>webdav</module>
 	</modules>
 
 	<properties>
