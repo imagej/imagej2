@@ -48,7 +48,7 @@ import org.scijava.plugin.Plugin;
 public class TextDragAndDropHandler extends AbstractDragAndDropHandler {
 
 	public static final String MIME_TYPE =
-		"text/plain; class=java.util.String; charset=Unicode";
+		"text/plain; class=java.lang.String; charset=Unicode";
 
 	@Override
 	public boolean isCompatible(Display<?> display, DragAndDropData data) {
@@ -64,7 +64,19 @@ public class TextDragAndDropHandler extends AbstractDragAndDropHandler {
 		String str = (String) data.getData(MIME_TYPE);
 		if (display == null) {
 			DisplayService dispSrv = getContext().getService(DisplayService.class);
-			dispSrv.createDisplay(str);
+			final Display<?> d = dispSrv.createDisplay(str);
+			// HACK: update display a bit later - else data is not drawn correctly
+			new Thread() {
+
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(300);
+					}
+					catch (Exception e) {}
+					d.update();
+				}
+			}.start();
 			return true;
 		}
 		if (!(display instanceof TextDisplay)) return false;

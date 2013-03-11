@@ -37,7 +37,7 @@ package imagej.ui.dnd;
 
 import imagej.data.lut.LutService;
 
-import java.net.URL;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -64,10 +64,8 @@ public class LutFileDragAndDropData implements DragAndDropData {
 	@Override
 	public Object getData(String mimeType) {
 		try {
-			// TODO - I bet this url construction is wrong on Windows
-			URL url = new URL("file://" + filename);
 			LutService lutService = context.getService(LutService.class);
-			return lutService.loadLut(url);
+			return lutService.loadLut(new File(filename));
 		}
 		catch (Exception e) {
 			return null;
@@ -79,5 +77,12 @@ public class LutFileDragAndDropData implements DragAndDropData {
 		return Arrays.asList(LutDragAndDropHandler.MIME_TYPE);
 	}
 
+	public String getShortName() {
+		int lastSlash = filename.lastIndexOf(File.separatorChar);
+		if (lastSlash != -1) {
+			return filename.substring(lastSlash + 1);
+		}
+		return filename;
+	}
 }
 

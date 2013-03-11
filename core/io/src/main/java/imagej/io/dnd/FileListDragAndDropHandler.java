@@ -47,7 +47,6 @@ import imagej.ui.dnd.TextFileDragAndDropData;
 import java.io.File;
 import java.util.List;
 
-import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -56,7 +55,7 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Plugin(type = DragAndDropHandler.class, priority = Priority.VERY_LOW_PRIORITY)
+@Plugin(type = DragAndDropHandler.class)
 public class FileListDragAndDropHandler extends AbstractDragAndDropHandler {
 
 	private static final String MIME_TYPE =
@@ -69,7 +68,7 @@ public class FileListDragAndDropHandler extends AbstractDragAndDropHandler {
 		for (final String mimeType : data.getMimeTypes()) {
 			if (MIME_TYPE.equals(mimeType)) return true;
 		}
-		return true;
+		return false;
 	}
 
 	@Override
@@ -105,10 +104,10 @@ public class FileListDragAndDropHandler extends AbstractDragAndDropHandler {
 		// below is a better implementation but requires changes to IOService and
 		// underlying code.
 		String path = file.getAbsolutePath();
-		if (path.endsWith(".lut")) {
+		if (path.toLowerCase().endsWith(".lut")) {
 			return new LutFileDragAndDropData(getContext(), path);
 		}
-		else if (path.endsWith(".txt")) {
+		else if (path.toLowerCase().endsWith(".txt")) {
 			return new TextFileDragAndDropData(path);
 		}
 		return new ImageFileDragAndDropData(path);

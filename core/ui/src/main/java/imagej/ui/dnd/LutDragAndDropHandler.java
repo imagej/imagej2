@@ -60,8 +60,7 @@ public class LutDragAndDropHandler extends AbstractDragAndDropHandler {
 	private static final int WIDTH = 256;
 	private static final int HEIGHT = 32;
 
-	public static final String MIME_TYPE =
-		"application/imagej-lut; class=java.util.String; charset=Unicode";
+	public static final String MIME_TYPE = "application/imagej-lut";
 
 	@Override
 	public boolean isCompatible(Display<?> display, DragAndDropData data) {
@@ -77,15 +76,31 @@ public class LutDragAndDropHandler extends AbstractDragAndDropHandler {
 		ColorTable colorTable = (ColorTable) data.getData(MIME_TYPE);
 		if (display == null) {
 			DatasetService dsSrv = getContext().getService(DatasetService.class);
+			String name = "Lookup table";
+			if (data instanceof LutFileDragAndDropData) {
+				name = ((LutFileDragAndDropData) data).getShortName();
+			}
 			Dataset dataset =
 				dsSrv.create(new UnsignedByteType(), new long[] { WIDTH, HEIGHT },
-					"Lookup table", new AxisType[] { Axes.X, Axes.Y });
+					name, new AxisType[] { Axes.X, Axes.Y });
 			rampFill(dataset);
 			// TODO - is this papering over a bug in the dataset/imgplus code?
 			if (dataset.getColorTableCount() == 0) dataset.initializeColorTables(1);
 			dataset.setColorTable(colorTable, 0);
 			DisplayService dispSrv = getContext().getService(DisplayService.class);
-			dispSrv.createDisplay(dataset);
+			final Display<?> d = dispSrv.createDisplay(dataset);
+			// HACK: update display a bit later - else data is not drawn correctly
+			new Thread() {
+
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(300);
+					}
+					catch (Exception e) {}
+					d.update();
+				}
+			}.start();
 			return true;
 		}
 		if (!(display instanceof ImageDisplay)) return false;

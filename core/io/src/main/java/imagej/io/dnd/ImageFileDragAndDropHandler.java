@@ -57,8 +57,7 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = DragAndDropHandler.class)
 public class ImageFileDragAndDropHandler extends AbstractDragAndDropHandler {
 
-	public static final String MIME_TYPE =
-		"application/imagej-image; class=java.util.String";
+	public static final String MIME_TYPE = "application/imagej-image";
 
 	@Override
 	public boolean isCompatible(final Display<?> display,
@@ -68,13 +67,6 @@ public class ImageFileDragAndDropHandler extends AbstractDragAndDropHandler {
 			if (MIME_TYPE.equals(mimeType)) return true;
 		}
 		return false;
-		/*
-		System.out.println("start type check");
-		for (String type : data.getMimeTypes()) {
-			System.out.println(" -- " + type);
-		}
-		return false;
-		*/
 	}
 
 	@Override
@@ -92,7 +84,19 @@ public class ImageFileDragAndDropHandler extends AbstractDragAndDropHandler {
 		boolean success = true;
 		try {
 			final Dataset dataset = ioService.loadDataset(filename);
-			displayService.createDisplay(dataset);
+			final Display<?> d = displayService.createDisplay(dataset);
+			// HACK: update display a bit later - else data is not drawn correctly
+			new Thread() {
+
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(300);
+					}
+					catch (Exception e) {}
+					d.update();
+				}
+			}.start();
 		}
 		catch (final ImgIOException exc) {
 			if (log != null) log.error("Error opening file: " + filename, exc);
