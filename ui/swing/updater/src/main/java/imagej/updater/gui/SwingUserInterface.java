@@ -38,7 +38,14 @@ package imagej.updater.gui;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.util.Prefs;
 
+import java.awt.Container;
 import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Window;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -47,6 +54,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -174,13 +184,26 @@ public class SwingUserInterface extends UpdaterUserInterface {
 		panel.setLayout(new MigLayout());
 
 		panel.add(new JLabel("User"));
-		final JTextField user = new JTextField();
+		final JTextField user = new JTextField() {
+			int counter = 5;
+
+			@Override
+			public void paint(Graphics g) {
+				super.paint(g);
+				if (counter > 0) {
+					requestFocusInWindow();
+					counter--;
+				}
+			}
+		};
 		user.setColumns(20);
 		panel.add(user);
 
 		if (JOptionPane.showConfirmDialog(null, panel, title,
-			JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) return null;
-		return user.getText();
+				JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+			return user.getText();
+		}
+		return null;
 
 	}
 
@@ -190,7 +213,18 @@ public class SwingUserInterface extends UpdaterUserInterface {
 		panel.setLayout(new MigLayout());
 
 		panel.add(new JLabel("Password:"));
-		final JPasswordField password = new JPasswordField();
+		final JPasswordField password = new JPasswordField() {
+			int counter = 15;
+
+			@Override
+			public void paint(Graphics g) {
+				super.paint(g);
+				if (counter > 0) {
+					requestFocusInWindow();
+					counter--;
+				}
+			}
+		};
 		password.setColumns(20);
 		panel.add(password);
 
