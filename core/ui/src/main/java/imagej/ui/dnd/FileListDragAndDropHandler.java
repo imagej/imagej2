@@ -38,6 +38,7 @@ package imagej.ui.dnd;
 import imagej.display.Display;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.scijava.plugin.Plugin;
@@ -107,7 +108,14 @@ public class FileListDragAndDropHandler extends AbstractDragAndDropHandler {
 			return (List<File>) dndData.getData(MIME_TYPE);
 		}
 		if (isListOfFiles(data)) {
-			return (List<File>) data;
+			List<?> list = (List<?>) data;
+			// NB - the list could be a List<Object> containing only Files so rather
+			// than a possibly unsafe cast we copy data
+			List<File> files = new ArrayList<File>();
+			for (Object o : list) {
+				files.add((File) o);
+			}
+			return files;
 		}
 		return null;
 	}
