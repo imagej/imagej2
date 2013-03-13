@@ -41,5 +41,26 @@ package imagej.widget;
  * @author Curtis Rueden
  */
 public interface ChoiceWidget<U> extends InputWidget<String, U> {
-	// NB: No changes to interface.
+
+	/**
+	 * Widget style for list boxes.
+	 * 
+	 * @see org.scijava.plugin.Parameter#style()
+	 */
+	String LIST_BOX_STYLE = "listBox";
+
+	/**
+	 * Widget style for radio buttons arranged on a single line.
+	 * 
+	 * @see org.scijava.plugin.Parameter#style()
+	 */
+	String RADIO_BUTTON_HORIZONTAL_STYLE = "radioButtonHorizontal";
+
+	/**
+	 * Widget style for radio buttons arranged one per line.
+	 * 
+	 * @see org.scijava.plugin.Parameter#style()
+	 */
+	String RADIO_BUTTON_VERTICAL_STYLE = "radioButtonVertical";
+
 }
