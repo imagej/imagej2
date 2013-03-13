@@ -125,10 +125,15 @@ public class ModuleRunner extends AbstractContextual implements
 		try {
 			run();
 		}
-		catch (final RuntimeException e) {
+		catch (final RuntimeException exc) {
 			final LogService log = getContext().getService(LogService.class);
-			if (log != null) log.error("Module threw exception", e);
-			throw e;
+			if (log != null) log.error("Module threw exception", exc);
+			throw exc;
+		}
+		catch (final Error err) {
+			final LogService log = getContext().getService(LogService.class);
+			if (log != null) log.error("Module threw error", err);
+			throw err;
 		}
 		return module;
 	}
