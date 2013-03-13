@@ -36,7 +36,6 @@
 package imagej.ui.dnd;
 
 import imagej.display.Display;
-import imagej.display.DisplayService;
 
 import java.io.File;
 import java.util.List;
@@ -73,11 +72,8 @@ public class FileListDragAndDropHandler extends AbstractDragAndDropHandler {
 
 	@Override
 	public boolean drop(final Display<?> display, final Object data) {
-		final DisplayService displayService =
-			getContext().getService(DisplayService.class);
 		final DragAndDropService dndService =
 			getContext().getService(DragAndDropService.class);
-		if (displayService == null) return false;
 		if (dndService == null) return false;
 
 		final List<File> files = getFileList(data);
