@@ -88,7 +88,7 @@ public class AWTChoiceWidget extends AWTInputWidget<String> implements
 
 	@Override
 	public void refreshWidget() {
-		final String value = getValidValue();
+		final String value = getModel().getValue().toString();
 		if (value.equals(choice.getSelectedItem())) return; // no change
 		choice.select(value);
 	}
@@ -98,25 +98,6 @@ public class AWTChoiceWidget extends AWTInputWidget<String> implements
 	@Override
 	public void itemStateChanged(final ItemEvent e) {
 		updateModel();
-	}
-
-	// -- Helper methods --
-
-	private String getValidValue() {
-		final int itemCount = choice.getItemCount();
-		if (itemCount == 0) return null; // no valid values exist
-
-		final String value = getModel().getValue().toString();
-		for (int i = 0; i < itemCount; i++) {
-			final String item = choice.getItem(i);
-			if (value == item) return value;
-		}
-
-		// value was invalid; reset to first choice on the list
-		final String validValue = choice.getItem(0);
-		// CTR FIXME should not update model in getter!
-		getModel().setValue(validValue);
-		return validValue;
 	}
 
 }
