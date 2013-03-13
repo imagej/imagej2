@@ -44,13 +44,25 @@ import java.io.File;
  */
 public interface FileWidget<U> extends InputWidget<File, U> {
 
-	/** Widget style for file opener dialogs. */
+	/**
+	 * Widget style for file opener dialogs.
+	 * 
+	 * @see org.scijava.plugin.Parameter#style()
+	 */
 	String OPEN_STYLE = "open";
 
-	/** Widget style for file saver dialogs. */
+	/**
+	 * Widget style for file saver dialogs.
+	 * 
+	 * @see org.scijava.plugin.Parameter#style()
+	 */
 	String SAVE_STYLE = "save";
 
-	/** Widget style for directory chooser dialogs. */
+	/**
+	 * Widget style for directory chooser dialogs.
+	 * 
+	 * @see org.scijava.plugin.Parameter#style()
+	 */
 	String DIRECTORY_STYLE = "directory";
 
 }

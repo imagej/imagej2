@@ -41,10 +41,26 @@ package imagej.widget;
  * @author Curtis Rueden
  */
 public interface NumberWidget<U> extends InputWidget<Number, U> {
-	// NB: No changes to interface.
 
+	/**
+	 * Widget style for slider with spinner.
+	 * 
+	 * @see org.scijava.plugin.Parameter#style()
+	 */
 	String SLIDER_STYLE = "slider";
+
+	/**
+	 * Widget style for spinner only.
+	 * 
+	 * @see org.scijava.plugin.Parameter#style()
+	 */
 	String SPINNER_STYLE = "spinner";
+
+	/**
+	 * Widget style for scroll bar with spinner.
+	 * 
+	 * @see org.scijava.plugin.Parameter#style()
+	 */
 	String SCROLL_BAR_STYLE = "scroll bar";
 
 }
