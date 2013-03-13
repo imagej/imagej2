@@ -39,6 +39,10 @@ import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.display.TextDisplay;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+
 import org.scijava.plugin.Plugin;
 
 /**
@@ -47,21 +51,39 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = DragAndDropHandler.class)
 public class TextDragAndDropHandler extends AbstractDragAndDropHandler {
 
+	// -- constants --
+
 	public static final String MIME_TYPE =
 		"text/plain; class=java.lang.String; charset=Unicode";
 
+	// -- DragAndDropHandler methods --
+
 	@Override
-	public boolean isCompatible(Display<?> display, DragAndDropData data) {
+	public boolean isCompatible(Display<?> display, Object data) {
 		if ((display != null) && !(display instanceof TextDisplay)) return false;
-		for (final String mimeType : data.getMimeTypes()) {
-			if (MIME_TYPE.equals(mimeType)) return true;
+		if (data instanceof String) {
+			return true;
+		}
+		if (data instanceof File) {
+			// TODO - accept anything and make handler very low priority. Then after
+			// trying every other handler first this handler will assume it's a text
+			// file and open it.
+			File file = (File) data;
+			return file.getAbsolutePath().toLowerCase().endsWith(".txt");
+		}
+		if (data instanceof DragAndDropData) {
+			DragAndDropData dndData = (DragAndDropData) data;
+			for (final String mimeType : dndData.getMimeTypes()) {
+				if (MIME_TYPE.equals(mimeType)) return true;
+			}
 		}
 		return false;
 	}
 
 	@Override
-	public boolean drop(Display<?> display, DragAndDropData data) {
-		String str = (String) data.getData(MIME_TYPE);
+	public boolean drop(Display<?> display, Object data) {
+		String str = getString(data);
+		if (str == null) return false;
 		if (display == null) {
 			DisplayService dispSrv = getContext().getService(DisplayService.class);
 			final Display<?> d = dispSrv.createDisplay(str);
@@ -71,9 +93,9 @@ public class TextDragAndDropHandler extends AbstractDragAndDropHandler {
 				@Override
 				public void run() {
 					try {
-						Thread.sleep(300);
+						Thread.sleep(50);
 					}
-					catch (Exception e) {}
+					catch (Exception e) {/**/}
 					d.update();
 				}
 			}.start();
@@ -83,6 +105,36 @@ public class TextDragAndDropHandler extends AbstractDragAndDropHandler {
 		TextDisplay txtDisp = (TextDisplay) display;
 		txtDisp.append(str); // TODO - do a paste rather than an append
 		return true;
+	}
+
+	// -- helpers --
+
+	private String getString(Object data) {
+		if (data instanceof String) {
+			return (String) data;
+		}
+		if (data instanceof File) {
+			File file = (File) data;
+			try {
+				StringBuilder builder = new StringBuilder();
+				BufferedReader in = new BufferedReader(new FileReader(file));
+				String line;
+				while ((line = in.readLine()) != null) {
+					builder.append(line);
+					builder.append("\n");
+				}
+				in.close();
+				return builder.toString();
+			}
+			catch (Exception e) {
+				return null;
+			}
+		}
+		if (data instanceof DragAndDropData) {
+			DragAndDropData dndData = (DragAndDropData) data;
+			return (String) dndData.getData(MIME_TYPE);
+		}
+		return null;
 	}
 
 }

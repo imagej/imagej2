@@ -63,18 +63,17 @@ public interface DragAndDropHandler extends ImageJPlugin, Contextual,
 {
 
 	/**
-	 * Gets whether this handler supports the given display and drag-and-drop
-	 * data.
+	 * Gets whether this handler supports the given display and data Object.
 	 */
-	boolean isCompatible(final Display<?> display, final DragAndDropData data);
+	boolean isCompatible(final Display<?> display, final Object data);
 
 	/**
-	 * Performs a drop operation with the given drag-and-drop data in the
-	 * specified display.
+	 * Performs a drop operation with the given data Object in the specified
+	 * display.
 	 * 
 	 * @throws IllegalArgumentException if the handler is not compatible with the
 	 *           given display or drag-and-drop data.
 	 */
-	boolean drop(final Display<?> display, final DragAndDropData data);
+	boolean drop(final Display<?> display, final Object data);
 
 }

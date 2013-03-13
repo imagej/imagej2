@@ -78,7 +78,7 @@ public class DefaultDragAndDropService extends AbstractService implements
 
 	@Override
 	public boolean isCompatible(final Display<?> display,
-		final DragAndDropData data)
+ final Object data)
 	{
 		for (final DragAndDropHandler handler : getHandlers()) {
 			if (handler.isCompatible(display, data)) return true;
@@ -87,7 +87,7 @@ public class DefaultDragAndDropService extends AbstractService implements
 	}
 
 	@Override
-	public boolean drop(final Display<?> display, final DragAndDropData data) {
+	public boolean drop(final Display<?> display, final Object data) {
 		for (final DragAndDropHandler handler : getHandlers()) {
 			if (handler.isCompatible(display, data)) {
 				return handler.drop(display, data);

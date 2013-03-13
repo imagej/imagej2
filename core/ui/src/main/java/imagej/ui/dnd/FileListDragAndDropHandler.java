@@ -35,54 +35,63 @@
 
 package imagej.ui.dnd;
 
-import imagej.data.lut.LutService;
+import imagej.display.Display;
+import imagej.display.DisplayService;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 
-import org.scijava.Context;
+import org.scijava.plugin.Plugin;
 
 /**
+ * Drag-and-drop handler for lists of files.
+ * 
+ * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public class LutFileDragAndDropData implements DragAndDropData {
+@Plugin(type = DragAndDropHandler.class)
+public class FileListDragAndDropHandler extends AbstractDragAndDropHandler {
 
-	private Context context;
-	private String filename;
+	// -- constants --
 
-	public LutFileDragAndDropData(Context context, String filename) {
-		this.context = context;
-		this.filename = filename;
+	public static final String MIME_TYPE =
+		"application/x-java-file-list; class=java.util.List";
+
+	// -- DragAndDropHandler methods --
+
+	@Override
+	public boolean isCompatible(final Display<?> display, final Object data)
+	{
+		if (!(data instanceof DragAndDropData)) return false;
+		DragAndDropData dndData = (DragAndDropData) data;
+		for (final String mimeType : dndData.getMimeTypes()) {
+			if (MIME_TYPE.equals(mimeType)) return true;
+		}
+		return false;
 	}
 
 	@Override
-	public boolean isSupported(String mimeType) {
-		return LutDragAndDropHandler.MIME_TYPE.equals(mimeType);
+	public boolean drop(final Display<?> display, final Object data) {
+		if (!(data instanceof DragAndDropData)) return false;
+		DragAndDropData dndData = (DragAndDropData) data;
+		final DisplayService displayService =
+			getContext().getService(DisplayService.class);
+		final DragAndDropService dndService =
+			getContext().getService(DragAndDropService.class);
+		if (displayService == null) return false;
+		if (dndService == null) return false;
+
+		@SuppressWarnings("unchecked")
+		final List<File> files = (List<File>) dndData.getData(MIME_TYPE);
+		if (files == null) return false;
+
+		// drop each file
+		for (final File file : files) {
+			if (dndService.isCompatible(display, file)) {
+				dndService.drop(display, file);
+			}
+		}
+		return true;
 	}
 
-	@Override
-	public Object getData(String mimeType) {
-		try {
-			LutService lutService = context.getService(LutService.class);
-			return lutService.loadLut(new File(filename));
-		}
-		catch (Exception e) {
-			return null;
-		}
-	}
-
-	@Override
-	public List<String> getMimeTypes() {
-		return Arrays.asList(LutDragAndDropHandler.MIME_TYPE);
-	}
-
-	public String getShortName() {
-		int lastSlash = filename.lastIndexOf(File.separatorChar);
-		if (lastSlash != -1) {
-			return filename.substring(lastSlash + 1);
-		}
-		return filename;
-	}
 }
-

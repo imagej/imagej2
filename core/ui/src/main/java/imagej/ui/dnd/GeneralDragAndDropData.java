@@ -33,37 +33,47 @@
  * #L%
  */
 
-package imagej.io.dnd;
-
-import imagej.ui.dnd.DragAndDropData;
+package imagej.ui.dnd;
 
 import java.util.Arrays;
 import java.util.List;
 
 /**
+ * Provides a programmatic way to bundle an object and a mime type together as
+ * DragAndDropData.
+ * 
  * @author Barry DeZonia
  */
-public class ImageFileDragAndDropData implements DragAndDropData {
+public class GeneralDragAndDropData implements DragAndDropData {
 
-	private String filename;
+	// -- instance variables --
 
-	public ImageFileDragAndDropData(String filename) {
-		this.filename = filename;
+	private final String mime;
+	private final Object data;
+
+	// -- constructor --
+
+	public GeneralDragAndDropData(String mimeType, Object data) {
+		this.mime = mimeType;
+		this.data = data;
 	}
+
+	// -- DragAndDropData methods --
 
 	@Override
 	public boolean isSupported(String mimeType) {
-		return ImageFileDragAndDropHandler.MIME_TYPE.equals(mimeType);
+		return mime.equals(mimeType);
 	}
 
 	@Override
 	public Object getData(String mimeType) {
-		return filename;
+		if (isSupported(mimeType)) return data;
+		return null;
 	}
 
 	@Override
 	public List<String> getMimeTypes() {
-		return Arrays.asList(ImageFileDragAndDropHandler.MIME_TYPE);
+		return Arrays.asList(mime);
 	}
 
 }

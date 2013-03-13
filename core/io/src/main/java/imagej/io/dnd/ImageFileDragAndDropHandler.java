@@ -42,9 +42,13 @@ import imagej.io.IOService;
 import imagej.ui.dnd.AbstractDragAndDropHandler;
 import imagej.ui.dnd.DragAndDropData;
 import imagej.ui.dnd.DragAndDropHandler;
+
+import java.io.File;
+
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.io.ImgIOException;
 
+import org.scijava.Priority;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Plugin;
 
@@ -54,23 +58,39 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Plugin(type = DragAndDropHandler.class)
+@Plugin(type = DragAndDropHandler.class, priority = Priority.VERY_LOW_PRIORITY)
 public class ImageFileDragAndDropHandler extends AbstractDragAndDropHandler {
+
+	// -- constants --
 
 	public static final String MIME_TYPE = "application/imagej-image";
 
+	// -- DragAndDropHandler methods --
+
 	@Override
-	public boolean isCompatible(final Display<?> display,
-		final DragAndDropData data)
+	public boolean isCompatible(final Display<?> display, final Object data)
 	{
-		for (final String mimeType : data.getMimeTypes()) {
-			if (MIME_TYPE.equals(mimeType)) return true;
+		if (data instanceof File) {
+			// TODO
+			// Right now we've made this plugin a very low priority handler. So all
+			// other handlers get first crack. If they can't handle we assume its an
+			// image file and open it here.
+			// I think we want to make the TextDragAndDropHandler act like this
+			// instead. What we really need to do here is ask the IOService if the
+			// File is an image.
+			return true;
+		}
+		if (data instanceof DragAndDropData) {
+			DragAndDropData dndData = (DragAndDropData) data;
+			for (final String mimeType : dndData.getMimeTypes()) {
+				if (MIME_TYPE.equals(mimeType)) return true;
+			}
 		}
 		return false;
 	}
 
 	@Override
-	public boolean drop(final Display<?> display, final DragAndDropData data) {
+	public boolean drop(final Display<?> display, final Object data) {
 		final IOService ioService = getContext().getService(IOService.class);
 		final DisplayService displayService =
 			getContext().getService(DisplayService.class);
@@ -78,7 +98,18 @@ public class ImageFileDragAndDropHandler extends AbstractDragAndDropHandler {
 
 		final LogService log = getContext().getService(LogService.class);
 
-		final String filename = (String) data.getData(MIME_TYPE);
+		String filename = null;
+
+		if (data instanceof File) {
+			filename = ((File) data).getAbsolutePath();
+		}
+
+		if (data instanceof DragAndDropData) {
+			DragAndDropData dndData = (DragAndDropData) data;
+			filename = (String) dndData.getData(MIME_TYPE);
+		}
+
+		if (filename == null) return false;
 
 		// load file
 		boolean success = true;
@@ -91,9 +122,9 @@ public class ImageFileDragAndDropHandler extends AbstractDragAndDropHandler {
 				@Override
 				public void run() {
 					try {
-						Thread.sleep(300);
+						Thread.sleep(50);
 					}
-					catch (Exception e) {}
+					catch (Exception e) {/**/}
 					d.update();
 				}
 			}.start();

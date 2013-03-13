@@ -40,8 +40,12 @@ import imagej.data.DatasetService;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.data.lut.LutService;
 import imagej.display.Display;
 import imagej.display.DisplayService;
+
+import java.io.File;
+
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
@@ -57,29 +61,41 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = DragAndDropHandler.class)
 public class LutDragAndDropHandler extends AbstractDragAndDropHandler {
 
+	// -- constants --
+
 	private static final int WIDTH = 256;
 	private static final int HEIGHT = 32;
 
 	public static final String MIME_TYPE = "application/imagej-lut";
 
+	// -- DragAndDropHandler methods --
+
 	@Override
-	public boolean isCompatible(Display<?> display, DragAndDropData data) {
+	public boolean isCompatible(Display<?> display, Object data) {
 		if ((display != null) && !(display instanceof ImageDisplay)) return false;
-		for (final String mimeType : data.getMimeTypes()) {
-			if (MIME_TYPE.equals(mimeType)) return true;
+		if (data instanceof ColorTable) {
+			return true;
+		}
+		if (data instanceof File) {
+			File f = (File) data;
+			return f.getAbsolutePath().toLowerCase().endsWith(".lut");
+		}
+		if (data instanceof DragAndDropData) {
+			DragAndDropData dndData = (DragAndDropData) data;
+			for (final String mimeType : dndData.getMimeTypes()) {
+				if (MIME_TYPE.equals(mimeType)) return true;
+			}
 		}
 		return false;
 	}
 
 	@Override
-	public boolean drop(Display<?> display, DragAndDropData data) {
-		ColorTable colorTable = (ColorTable) data.getData(MIME_TYPE);
+	public boolean drop(Display<?> display, Object data) {
+		ColorTable colorTable = getColorTable(data);
+		if (colorTable == null) return false;
 		if (display == null) {
 			DatasetService dsSrv = getContext().getService(DatasetService.class);
-			String name = "Lookup table";
-			if (data instanceof LutFileDragAndDropData) {
-				name = ((LutFileDragAndDropData) data).getShortName();
-			}
+			String name = getName(data);
 			Dataset dataset =
 				dsSrv.create(new UnsignedByteType(), new long[] { WIDTH, HEIGHT },
 					name, new AxisType[] { Axes.X, Axes.Y });
@@ -95,9 +111,9 @@ public class LutDragAndDropHandler extends AbstractDragAndDropHandler {
 				@Override
 				public void run() {
 					try {
-						Thread.sleep(300);
+						Thread.sleep(50);
 					}
-					catch (Exception e) {}
+					catch (Exception e) {/**/}
 					d.update();
 				}
 			}.start();
@@ -113,6 +129,33 @@ public class LutDragAndDropHandler extends AbstractDragAndDropHandler {
 		return true;
 	}
 
+	// -- helpers --
+
+	private ColorTable getColorTable(Object data) {
+		if (data instanceof ColorTable) {
+			return (ColorTable) data; // TODO: data.clone()?
+		}
+		if (data instanceof File) {
+			File file = (File) data;
+			LutService lutService = getContext().getService(LutService.class);
+			return lutService.loadLut(file);
+		}
+		if (data instanceof DragAndDropData) {
+			DragAndDropData dndData = (DragAndDropData) data;
+			return (ColorTable) dndData.getData(MIME_TYPE);
+		}
+		return null;
+	}
+
+	private String getName(Object data) {
+		if (data instanceof File) {
+			File file = (File) data;
+			String filename = file.getName();
+			if (filename != null && filename.length() > 0) return filename;
+		}
+		return "Lookup table";
+	}
+
 	private void rampFill(Dataset dataset) {
 		RandomAccess<? extends RealType<?>> accessor =
 			dataset.getImgPlus().randomAccess();
@@ -124,4 +167,5 @@ public class LutDragAndDropHandler extends AbstractDragAndDropHandler {
 			}
 		}
 	}
+
 }

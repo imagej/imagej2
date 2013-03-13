@@ -49,24 +49,24 @@ import org.scijava.service.Service;
 public interface DragAndDropService extends Service {
 
 	/**
-	 * Checks whether the given drag-and-drop data can be dropped onto the
-	 * specified display. A (display, data) pair is deemed compatible if a
-	 * compatible handler exists for them.
+	 * Checks whether the given Object can be dropped onto the specified display.
+	 * A (display, data) pair is deemed compatible if a compatible handler exists
+	 * for them.
 	 * 
 	 * @see DragAndDropHandler
 	 */
-	boolean isCompatible(Display<?> display, DragAndDropData data);
+	boolean isCompatible(Display<?> display, Object data);
 
 	/**
 	 * Performs a drag-and-drop operation in the given display with the specified
-	 * drag-and-drop data, using the first available compatible handler.
+	 * data Object, using the first available compatible handler.
 	 * 
 	 * @see DragAndDropHandler
 	 * @return true if the drop operation was successful
-	 * @throws IllegalArgumentException if the display and/or drag-and-drop data
-	 *           are unsupported, or are incompatible with one another.
+	 * @throws IllegalArgumentException if the display and/or data Object are
+	 *           unsupported, or are incompatible with one another.
 	 */
-	boolean drop(Display<?> display, DragAndDropData data);
+	boolean drop(Display<?> display, Object data);
 
 	/**
 	 * Gets the list of available drag-and-drop handlers, which are used to
