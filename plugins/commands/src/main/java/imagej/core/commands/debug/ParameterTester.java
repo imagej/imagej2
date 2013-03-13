@@ -39,6 +39,7 @@ import imagej.command.Command;
 import imagej.command.Previewable;
 import imagej.data.Dataset;
 import imagej.util.ColorRGB;
+import imagej.widget.ChoiceWidget;
 import imagej.widget.NumberWidget;
 
 import java.io.File;
@@ -69,7 +70,7 @@ public class ParameterTester implements Command, Previewable {
 
 	@Parameter(visibility = ItemVisibility.MESSAGE)
 	private final String label =
-		"The parameter tester demonstrates the various widgets in action!";
+		"The parameter tester demonstrates various widgets in action!";
 
 	@Parameter(label = "boolean")
 	private boolean pBoolean;
@@ -153,6 +154,16 @@ public class ParameterTester implements Command, Previewable {
 		min = "0", max = "1000")
 	private int scrollBarNumber;
 
+	@Parameter(label = "radio buttons",
+		style = ChoiceWidget.RADIO_BUTTON_HORIZONTAL_STYLE, choices = { "Yes",
+			"No", "Maybe" })
+	private String choiceRadioH;
+
+	@Parameter(label = "radio buttons",
+		style = ChoiceWidget.RADIO_BUTTON_VERTICAL_STYLE, choices = { "Loved",
+			"Really liked", "Liked", "Disliked", "Really disliked" })
+	private String choiceRadioV;
+
 	@Parameter(label = "x", callback = "xChanged")
 	private float x;
 
@@ -226,10 +237,15 @@ public class ParameterTester implements Command, Previewable {
 		append(sb, "\tcolor = " + color);
 
 		append(sb, "");
+		append(sb, "-- Widget styles --");
+		append(sb, "\tnumber (spinner) = " + spinnerNumber);
+		append(sb, "\tnumber (slider) = " + sliderNumber);
+		append(sb, "\tnumber (scroll bar) = " + scrollBarNumber);
+		append(sb, "\tradio buttons (horizontal) = " + choiceRadioH);
+		append(sb, "\tradio buttons (vertical) = " + choiceRadioV);
+
+		append(sb, "");
 		append(sb, "-- Miscellaneous --");
-		append(sb, "\tspinner = " + spinnerNumber);
-		append(sb, "\tslider = " + sliderNumber);
-		append(sb, "\tscroll bar = " + scrollBarNumber);
 		append(sb, "\tx = " + x);
 		append(sb, "\t2x = " + twoX);
 		append(sb, "\tmessage = " + message);
