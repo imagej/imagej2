@@ -45,6 +45,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
+import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -52,10 +53,12 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class)
+@Plugin(type = InputWidget.class, priority = SwingChoiceWidget.PRIORITY)
 public class SwingChoiceWidget extends SwingInputWidget<String> implements
 	ActionListener, ChoiceWidget<JPanel>
 {
+
+	public static final double PRIORITY = Priority.NORMAL_PRIORITY;
 
 	private JComboBox comboBox;
 
