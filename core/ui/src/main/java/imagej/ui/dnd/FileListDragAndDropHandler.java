@@ -62,6 +62,7 @@ public class FileListDragAndDropHandler extends AbstractDragAndDropHandler {
 	@Override
 	public boolean isCompatible(final Display<?> display, final Object data)
 	{
+		if (isListOfFiles(data)) return true;
 		if (!(data instanceof DragAndDropData)) return false;
 		DragAndDropData dndData = (DragAndDropData) data;
 		for (final String mimeType : dndData.getMimeTypes()) {
@@ -72,8 +73,6 @@ public class FileListDragAndDropHandler extends AbstractDragAndDropHandler {
 
 	@Override
 	public boolean drop(final Display<?> display, final Object data) {
-		if (!(data instanceof DragAndDropData)) return false;
-		DragAndDropData dndData = (DragAndDropData) data;
 		final DisplayService displayService =
 			getContext().getService(DisplayService.class);
 		final DragAndDropService dndService =
@@ -81,8 +80,7 @@ public class FileListDragAndDropHandler extends AbstractDragAndDropHandler {
 		if (displayService == null) return false;
 		if (dndService == null) return false;
 
-		@SuppressWarnings("unchecked")
-		final List<File> files = (List<File>) dndData.getData(MIME_TYPE);
+		final List<File> files = getFileList(data);
 		if (files == null) return false;
 
 		// drop each file
@@ -94,4 +92,27 @@ public class FileListDragAndDropHandler extends AbstractDragAndDropHandler {
 		return true;
 	}
 
+	// -- helpers --
+
+	private boolean isListOfFiles(Object data) {
+		if (!(data instanceof List)) return false;
+		List<?> list = (List<?>) data;
+		if (list.size() == 0) return false;
+		for (Object o : list) {
+			if (!(o instanceof File)) return false;
+		}
+		return true;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<File> getFileList(Object data) {
+		if (data instanceof DragAndDropData) {
+			DragAndDropData dndData = (DragAndDropData) data;
+			return (List<File>) dndData.getData(MIME_TYPE);
+		}
+		if (isListOfFiles(data)) {
+			return (List<File>) data;
+		}
+		return null;
+	}
 }
