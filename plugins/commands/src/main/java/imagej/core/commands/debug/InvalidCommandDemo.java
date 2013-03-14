@@ -42,56 +42,63 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * Test plugin for verifying that invalid module parameters are dealt with using
- * proper error handling.
+ * Test command for verifying that invalid module parameters are dealt with
+ * using proper error handling.
+ * <p>
+ * NB: the command itself is defined as an inner class, so that both the
+ * {@link InvalidCommand} and its {@link ValidCommand} superclass can exist in
+ * this source file, rather than separate files.
+ * </p>
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Command.class, menuPath = "Plugins>Debug>Invalid Command",
-	headless = true)
-public class InvalidCommand extends ParameterTester {
+public class InvalidCommandDemo {
 
-	/**
-	 * This parameter is invalid because it shadows a private parameter of a
-	 * superclass. Such parameters violate the principle of parameter names as
-	 * unique keys.
-	 */
-	@Parameter
-	private int x;
+	/** A perfectly valid command! */
+	public static class ValidCommand implements Command {
 
-	/**
-	 * This parameter is invalid because it is declared {@code final} without
-	 * being {@link org.scijava.ItemVisibility#MESSAGE} visibility. Java does not
-	 * allow such parameter values to be set by the framework.
-	 */
-	@Parameter
-	private final float y = 0;
+		@Parameter
+		private double x;
 
-	@Parameter(type = ItemIO.OUTPUT)
-	private String out;
+		@Parameter(type = ItemIO.OUTPUT)
+		private String validOutput;
 
-	@Override
-	public void run() {
-		final StringBuilder sb = new StringBuilder();
+		@Override
+		public void run() {
+			validOutput = "ValidCommand: success!";
+		}
 
-		append(sb, "InvalidCommand results:");
-
-		append(sb, "");
-		append(sb, "\tx = " + x);
-		append(sb, "\ty = " + y);
-		append(sb, "");
-		append(sb, "The fact that you are reading this means the test failed!");
-
-		out = sb.toString();
 	}
 
-	@Override
-	public void cancel() {
-		// NB: No action needed.
-	}
+	/** A very much invalid command, for multiple reasons, explained below. */
+	@Plugin(type = Command.class, menuPath = "Plugins>Debug>Invalid Command",
+		headless = true)
+	public static class InvalidCommand extends ValidCommand {
 
-	private void append(final StringBuilder sb, final String s) {
-		sb.append(s + "\n");
+		/**
+		 * This parameter is invalid because it shadows a private parameter of a
+		 * superclass. Such parameters violate the principle of parameter names as
+		 * unique keys.
+		 */
+		@Parameter
+		private int x;
+
+		/**
+		 * This parameter is invalid because it is declared {@code final} without
+		 * being {@link org.scijava.ItemVisibility#MESSAGE} visibility. Java does
+		 * not allow such parameter values to be set via reflection.
+		 */
+		@Parameter
+		private final float y = 0;
+
+		@Parameter(type = ItemIO.OUTPUT)
+		private String invalidOutput;
+
+		@Override
+		public void run() {
+			invalidOutput = "InvalidCommand: FAILURE";
+		}
+
 	}
 
 }
