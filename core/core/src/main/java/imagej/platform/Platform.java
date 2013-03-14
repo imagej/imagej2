@@ -59,6 +59,16 @@ import org.scijava.plugin.Plugin;
  */
 public interface Platform extends ImageJPlugin {
 
+	// TODO: change this and PlatformService to provide a single "isCompatible" or
+	// similar test method, and initialize method. This would allow a platform to
+	// trigger on *any* code rather than only based on the five canonical common
+	// things below.
+
+	// Further, such logic would be very similar to that of other plugin types,
+	// such as InputWidget and DataView (both of which have isCompatible and
+	// initialize methods), and maybe even DisplayViewer and InputPanel (both of
+	// which have isCompatible methods, too).
+
 	/** Java Runtime Environment vendor to match. */
 	String javaVendor();
 
