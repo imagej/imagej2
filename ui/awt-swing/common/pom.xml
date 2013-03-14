@@ -33,13 +33,6 @@
 			<version>${project.version}</version>
 		</dependency>
 
-		<!-- NB: TEMP: until AWTDropListener is refactored. -->
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-commands</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
 		<dependency>
 			<groupId>${imglib2.groupId}</groupId>
 			<artifactId>imglib2</artifactId>
