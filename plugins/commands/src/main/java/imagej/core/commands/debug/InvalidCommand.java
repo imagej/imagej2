@@ -47,7 +47,8 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Command.class, menuPath = "Plugins>Debug>Invalid Plugin", headless = true)
+@Plugin(type = Command.class, menuPath = "Plugins>Debug>Invalid Command",
+	headless = true)
 public class InvalidCommand extends ParameterTester {
 
 	/**
@@ -56,32 +57,37 @@ public class InvalidCommand extends ParameterTester {
 	 * unique keys.
 	 */
 	@Parameter
-	private int q;
+	private int x;
 
 	/**
 	 * This parameter is invalid because it is declared {@code final} without
-	 * being {@link imagej.module.ItemVisibility#MESSAGE} visibility. Java does
-	 * not allow such parameter values to be set by the framework.
+	 * being {@link org.scijava.ItemVisibility#MESSAGE} visibility. Java does not
+	 * allow such parameter values to be set by the framework.
 	 */
 	@Parameter
-	private final float x = 0;
-	
+	private final float y = 0;
+
 	@Parameter(type = ItemIO.OUTPUT)
-	protected String output;
+	private String out;
 
 	@Override
 	public void run() {
 		final StringBuilder sb = new StringBuilder();
 
-		append(sb, "InvalidPlugin results:");
+		append(sb, "InvalidCommand results:");
 
 		append(sb, "");
-		append(sb, "\tq = " + q);
 		append(sb, "\tx = " + x);
+		append(sb, "\ty = " + y);
 		append(sb, "");
 		append(sb, "The fact that you are reading this means the test failed!");
 
-		output = sb.toString();
+		out = sb.toString();
+	}
+
+	@Override
+	public void cancel() {
+		// NB: No action needed.
 	}
 
 	private void append(final StringBuilder sb, final String s) {
