@@ -45,8 +45,10 @@ import java.io.FileReader;
 
 import org.scijava.plugin.Plugin;
 
-// TODO - open code files in script windows and other text files in text
-// windows
+// TODO - open code files in editable script windows and other text files in
+// editable text windows. Also instead of populating window with String data
+// make sure it remembers the File it's associated with so that we can save
+// changes back to it if desired.
 
 /**
  * @author Barry DeZonia
@@ -59,8 +61,8 @@ public class TextDragAndDropHandler extends AbstractDragAndDropHandler {
 	public static final String MIME_TYPE =
 		"text/plain; class=java.lang.String; charset=Unicode";
 
-	private static String[] TEXT_FILE_EXTENSIONS = { "txt", "ijm", "java", "js",
-		"html", "htm", "bsh", "rb", "py", "" };
+	private static final String[] TEXT_FILE_EXTENSIONS = { "txt", "ijm", "java",
+		"js", "html", "htm", "bsh", "rb", "py", "" };
 
 	// -- DragAndDropHandler methods --
 
@@ -155,8 +157,10 @@ public class TextDragAndDropHandler extends AbstractDragAndDropHandler {
 	private String getExtension(File file) {
 		String name = file.getName();
 		int dot = name.lastIndexOf('.');
-		if (dot == -1) return "";
-		// NB : this copies IJ1 behavior (for allowing hidden files maybe?)
+		if (dot == -1) return ""; // no extension
+		if (dot == 0) return ""; // . is beginning of file name
+		// NB : this copies IJ1 behavior (for allowing files with dots in them)
+		// i.e. my.hero.is.gretzky
 		if (name.length() - dot > 6) return "";
 		return name.substring(dot + 1);
 	}
