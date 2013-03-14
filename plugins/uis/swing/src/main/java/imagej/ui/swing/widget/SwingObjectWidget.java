@@ -92,26 +92,9 @@ public class SwingObjectWidget extends SwingInputWidget<Object> implements
 
 	@Override
 	public void refreshWidget() {
-		comboBox.setSelectedItem(getValidValue());
-	}
-
-	// -- Helper methods --
-
-	private Object getValidValue() {
-		final int itemCount = comboBox.getItemCount();
-		if (itemCount == 0) return null; // no valid values exist
-
 		final Object value = getModel().getValue();
-		for (int i = 0; i < itemCount; i++) {
-			final Object item = comboBox.getItemAt(i);
-			if (value == item) return value;
-		}
-
-		// value was invalid; reset to first choice on the list
-		final Object validValue = comboBox.getItemAt(0);
-		// CTR FIXME should not update model in getter!
-		getModel().setValue(validValue);
-		return validValue;
+		if (value == comboBox.getSelectedItem()) return; // no change
+		comboBox.setSelectedItem(value);
 	}
 
 }

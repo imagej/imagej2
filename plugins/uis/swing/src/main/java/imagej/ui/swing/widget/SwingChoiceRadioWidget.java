@@ -41,27 +41,28 @@ import imagej.widget.WidgetModel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.JComboBox;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 
-import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
 /**
- * Swing implementation of multiple choice selector widget using a
- * {@link JComboBox}.
+ * Swing implementation of multiple choice selector widget using
+ * {@link JRadioButton}s.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class, priority = SwingChoiceWidget.PRIORITY)
-public class SwingChoiceWidget extends SwingInputWidget<String> implements
+@Plugin(type = InputWidget.class, priority = SwingChoiceWidget.PRIORITY + 1)
+public class SwingChoiceRadioWidget extends SwingInputWidget<String> implements
 	ActionListener, ChoiceWidget<JPanel>
 {
 
-	public static final double PRIORITY = Priority.NORMAL_PRIORITY;
-
-	private JComboBox comboBox;
+	private List<JRadioButton> radioButtons;
 
 	// -- ActionListener methods --
 
@@ -75,7 +76,7 @@ public class SwingChoiceWidget extends SwingInputWidget<String> implements
 	@Override
 	public boolean isCompatible(final WidgetModel model) {
 		return super.isCompatible(model) && model.isText() &&
-			model.isMultipleChoice();
+			model.isMultipleChoice() && isRadioButtonStyle(model);
 	}
 
 	@Override
@@ -84,24 +85,70 @@ public class SwingChoiceWidget extends SwingInputWidget<String> implements
 
 		final String[] items = model.getChoices();
 
-		comboBox = new JComboBox(items);
-		setToolTip(comboBox);
-		getComponent().add(comboBox);
-		comboBox.addActionListener(this);
+		final ButtonGroup buttonGroup = new ButtonGroup();
+		final JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new BoxLayout(buttonPanel, getBoxAxis(model)));
+		radioButtons = new ArrayList<JRadioButton>(items.length);
+
+		for (final String item : items) {
+			final JRadioButton radioButton = new JRadioButton(item);
+			setToolTip(radioButton);
+			radioButton.addActionListener(this);
+
+			buttonGroup.add(radioButton);
+			buttonPanel.add(radioButton);
+			radioButtons.add(radioButton);
+		}
+		getComponent().add(buttonPanel);
 
 		refreshWidget();
 	}
 
 	@Override
 	public String getValue() {
-		return comboBox.getSelectedItem().toString();
+		final JRadioButton selectedButton = getSelectedButton();
+		return selectedButton == null ? null : selectedButton.getText();
 	}
 
 	@Override
 	public void refreshWidget() {
 		final Object value = getModel().getValue();
-		if (value.equals(comboBox.getSelectedItem())) return; // no change
-		comboBox.setSelectedItem(value);
+		final JRadioButton radioButton = getButton(value);
+		if (radioButton.isSelected()) return; // no change
+		radioButton.setSelected(true);
+	}
+
+	// -- Helper methods --
+
+	private boolean isRadioButtonStyle(final WidgetModel model) {
+		final String style = model.getItem().getWidgetStyle();
+		return ChoiceWidget.RADIO_BUTTON_HORIZONTAL_STYLE.equals(style) ||
+			ChoiceWidget.RADIO_BUTTON_VERTICAL_STYLE.equals(style);
+	}
+
+	private int getBoxAxis(final WidgetModel model) {
+		final String style = model.getItem().getWidgetStyle();
+		if (ChoiceWidget.RADIO_BUTTON_HORIZONTAL_STYLE.equals(style)) {
+			return BoxLayout.X_AXIS;
+		}
+		if (ChoiceWidget.RADIO_BUTTON_VERTICAL_STYLE.equals(style)) {
+			return BoxLayout.Y_AXIS;
+		}
+		throw new IllegalStateException("Invalid widget style: " + style);
+	}
+
+	private JRadioButton getSelectedButton() {
+		for (final JRadioButton radioButton : radioButtons) {
+			if (radioButton.isSelected()) return radioButton;
+		}
+		return null;
+	}
+
+	private JRadioButton getButton(final Object value) {
+		for (final JRadioButton radioButton : radioButtons) {
+			if (radioButton.getText().equals(value)) return radioButton;
+		}
+		return null;
 	}
 
 }
