@@ -613,7 +613,8 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 	protected void onEvent(final DataUpdatedEvent event) {
 		for (final DataView view : this) {
 			if (event.getObject() == view.getData()) {
-				view.update();
+				// BDZ removed 2013-03-15: update() updates all views. Addresses #1220.
+				// view.update();
 				update();
 				return;
 			}
