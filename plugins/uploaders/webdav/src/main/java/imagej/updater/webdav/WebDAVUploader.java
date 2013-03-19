@@ -41,6 +41,7 @@ import imagej.updater.core.FilesUploader;
 import imagej.updater.core.Uploadable;
 import imagej.updater.core.Uploader;
 import imagej.updater.util.UpdaterUserInterface;
+import imagej.updater.util.Util;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -59,6 +60,7 @@ import java.util.Set;
 import net.iharder.Base64;
 
 import org.scijava.log.LogService;
+import org.scijava.log.StderrLogService;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.XML;
 import org.w3c.dom.NodeList;
@@ -388,7 +390,24 @@ public class WebDAVUploader extends AbstractUploader {
 		return new URL(url + "/");
 	}
 
-	private HttpURLConnection connect(final String method, final URL url, final String xml, final String... headers) throws IOException {
+	protected void setCredentials(final String username, final String password) {
+		this.username = username;
+		this.password = password;
+		if (log == null) {
+			log = new StderrLogService();
+			log.setLevel(LogService.DEBUG);
+			debug = true;
+		}
+
+		if (methodField == null) try {
+			 methodField = HttpURLConnection.class.getDeclaredField("method");
+			 methodField.setAccessible(true);
+		} catch (Throwable t) {
+			log.error(t);
+		}
+	}
+
+	protected HttpURLConnection connect(final String method, final URL url, final String xml, final String... headers) throws IOException {
 		if (headers != null && (headers.length % 2) != 0) {
 			throw new IOException("Invalid list of header pairs");
 		}
