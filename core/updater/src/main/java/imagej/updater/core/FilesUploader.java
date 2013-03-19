@@ -102,6 +102,14 @@ public class FilesUploader {
 		return uploader != null;
 	}
 
+	public FilesCollection getFilesCollection() {
+		return files;
+	}
+
+	public String getSiteName() {
+		return siteName;
+	}
+
 	public String getDefaultUsername() {
 		String host = site.sshHost;
 		if (host.startsWith("sftp:")) host = host.substring(5);
