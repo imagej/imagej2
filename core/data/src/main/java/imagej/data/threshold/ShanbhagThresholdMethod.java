@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.commands.display.interactive.threshold;
+package imagej.data.threshold;
 
 import org.scijava.plugin.Plugin;
 
@@ -41,29 +41,26 @@ import org.scijava.plugin.Plugin;
 // plugin found in Fiji (version 1.14).
 
 /**
- * Implements Kapur-Sahoo-Wong (Maximum Entropy) thresholding method.
+ * Implements Shanbhag's threshold method.
  * 
  * @author Barry DeZonia
  * @author Gabriel Landini
  */
-@Plugin(type = AutoThresholdMethod.class, name = "MaxEntropy")
-public class MaxEntropyThresholdMethod implements AutoThresholdMethod {
+@Plugin(type = AutoThresholdMethod.class, name = "Shanbhag")
+public class ShanbhagThresholdMethod implements AutoThresholdMethod {
 
 	@Override
 	public int getThreshold(long[] histogram) {
-		// Implements Kapur-Sahoo-Wong (Maximum Entropy) thresholding method
-		// Kapur J.N., Sahoo P.K., and Wong A.K.C. (1985) "A New Method for
-		// Gray-Level Picture Thresholding Using the Entropy of the Histogram"
-		// Graphical Models and Image Processing, 29(3): 273-285
-		// M. Emre Celebi
-		// 06.15.2007
+		// Shanhbag A.G. (1994) "Utilization of Information Measure as a Means of
+		// Image Thresholding" Graphical Models and Image Processing, 56(5): 414-419
 		// Ported to ImageJ plugin by G.Landini from E Celebi's fourier_0.8 routines
-		int threshold = -1;
+		int threshold;
 		int ih, it;
 		int first_bin;
 		int last_bin;
+		double term;
 		double tot_ent; /* total entropy */
-		double max_ent; /* max entropy */
+		double min_ent; /* max entropy */
 		double ent_back; /* entropy of the background pixels at a given threshold */
 		double ent_obj; /* entropy of the object pixels at a given threshold */
 		double[] norm_histo = new double[histogram.length]; /* normalized histogram */
@@ -104,33 +101,31 @@ public class MaxEntropyThresholdMethod implements AutoThresholdMethod {
 
 		// Calculate the total entropy each gray-level
 		// and find the threshold that maximizes it
-		max_ent = Double.MIN_VALUE;
+		threshold = -1;
+		min_ent = Double.MAX_VALUE;
 
 		for (it = first_bin; it <= last_bin; it++) {
 			/* Entropy of the background pixels */
 			ent_back = 0.0;
-			for (ih = 0; ih <= it; ih++) {
-				if (histogram[ih] != 0) {
-					ent_back -=
-						(norm_histo[ih] / P1[it]) * Math.log(norm_histo[ih] / P1[it]);
-				}
+			term = 0.5 / P1[it];
+			for (ih = 1; ih <= it; ih++) { // 0+1?
+				ent_back -= norm_histo[ih] * Math.log(1.0 - term * P1[ih - 1]);
 			}
+			ent_back *= term;
 
 			/* Entropy of the object pixels */
 			ent_obj = 0.0;
+			term = 0.5 / P2[it];
 			for (ih = it + 1; ih < histogram.length; ih++) {
-				if (histogram[ih] != 0) {
-					ent_obj -=
-						(norm_histo[ih] / P2[it]) * Math.log(norm_histo[ih] / P2[it]);
-				}
+				ent_obj -= norm_histo[ih] * Math.log(1.0 - term * P2[ih]);
 			}
+			ent_obj *= term;
 
 			/* Total entropy */
-			tot_ent = ent_back + ent_obj;
+			tot_ent = Math.abs(ent_back - ent_obj);
 
-			// IJ.log(""+max_ent+"  "+tot_ent);
-			if (max_ent < tot_ent) {
-				max_ent = tot_ent;
+			if (tot_ent < min_ent) {
+				min_ent = tot_ent;
 				threshold = it;
 			}
 		}

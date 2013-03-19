@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.commands.display.interactive.threshold;
+package imagej.data.threshold;
 
 import org.scijava.plugin.Plugin;
 

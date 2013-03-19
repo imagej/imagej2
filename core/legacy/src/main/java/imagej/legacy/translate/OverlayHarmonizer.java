@@ -62,7 +62,7 @@ import imagej.data.overlay.RectangleOverlay;
 import imagej.data.overlay.TextOverlay;
 import imagej.data.overlay.TextOverlay.Justification;
 import imagej.data.overlay.ThresholdOverlay;
-import imagej.data.overlay.ThresholdService;
+import imagej.data.threshold.ThresholdService;
 import imagej.util.awt.AWTColors;
 
 import java.awt.Color;

@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.commands.display.interactive.threshold;
+package imagej.data.threshold;
 
 import org.scijava.plugin.Plugin;
 
@@ -41,55 +41,71 @@ import org.scijava.plugin.Plugin;
 // plugin found in Fiji (version 1.14).
 
 /**
- * Implements a percentile threshold method by Doyle.
+ * Implements an intermodes threshold method by Prewitt & Mendelsohn.
  * 
  * @author Barry DeZonia
  * @author Gabriel Landini
  */
-@Plugin(type = AutoThresholdMethod.class, name = "Percentile")
-public class PercentileThresholdMethod implements AutoThresholdMethod {
+@Plugin(type = AutoThresholdMethod.class, name = "Intermodes")
+public class IntermodesThresholdMethod implements AutoThresholdMethod {
+
+	private String errMsg = null;
 
 	@Override
 	public int getThreshold(long[] histogram) {
-		// W. Doyle,"Operation useful for similarity-invariant pattern recognition,"
-		// Journal of the Association for Computing Machinery, vol. 9,pp. 259-267,
-		// 1962.
+		// J. M. S. Prewitt and M. L. Mendelsohn, "The analysis of cell images," in
+		// Annals of the New York Academy of Sciences, vol. 128, pp. 1035-1053,
+		// 1966.
 		// ported to ImageJ plugin by G.Landini from Antti Niemisto's Matlab code
 		// (relicensed BSD 2-12-13)
 		// Original Matlab code Copyright (C) 2004 Antti Niemisto
 		// See http://www.cs.tut.fi/~ant/histthresh/ for an excellent slide
 		// presentation and the original Matlab code.
-
+		//
+		// Assumes a bimodal histogram. The histogram needs is smoothed (using a
+		// running average of size 3, iteratively) until there are only two local
+		// maxima.
+		// j and k
+		// Threshold t is (j+k)/2.
+		// Images with histograms having extremely unequal peaks or a broad and
+		// ??at valley are unsuitable for this method.
+		double[] iHisto = new double[histogram.length];
+		int iter = 0;
 		int threshold = -1;
-		double ptile = 0.5; // default fraction of foreground pixels
-		double[] avec = new double[histogram.length];
-
 		for (int i = 0; i < histogram.length; i++)
-			avec[i] = 0.0;
+			iHisto[i] = histogram[i];
 
-		double total = partialSum(histogram, histogram.length - 1);
-		double temp = 1.0;
-		for (int i = 0; i < histogram.length; i++) {
-			avec[i] = Math.abs((partialSum(histogram, i) / total) - ptile);
-			// IJ.log("Ptile["+i+"]:"+ avec[i]);
-			if (avec[i] < temp) {
-				temp = avec[i];
-				threshold = i;
+		while (!Utils.bimodalTest(iHisto)) {
+			// smooth with a 3 point running mean filter
+			double previous = 0, current = 0, next = iHisto[0];
+			for (int i = 0; i < histogram.length - 1; i++) {
+				previous = current;
+				current = next;
+				next = iHisto[i + 1];
+				iHisto[i] = (previous + current + next) / 3;
+			}
+			iHisto[histogram.length - 1] = (current + next) / 3;
+			iter++;
+			if (iter > 10000) {
+				errMsg = "Intermodes Threshold not found after 10000 iterations.";
+				return -1;
 			}
 		}
+
+		// The threshold is the mean between the two peaks.
+		int tt = 0;
+		for (int i = 1; i < histogram.length - 1; i++) {
+			if (iHisto[i - 1] < iHisto[i] && iHisto[i + 1] < iHisto[i]) {
+				tt += i;
+				// IJ.log("mode:" +i);
+			}
+		}
+		threshold = (int) Math.floor(tt / 2.0);
 		return threshold;
 	}
 
 	@Override
 	public String getMessage() {
-		return null;
+		return errMsg;
 	}
-
-	private double partialSum(long[] y, int j) {
-		double x = 0;
-		for (int i = 0; i <= j; i++)
-			x += y[i];
-		return x;
-	}
-
 }

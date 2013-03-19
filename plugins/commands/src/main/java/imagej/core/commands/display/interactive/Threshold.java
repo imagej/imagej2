@@ -33,28 +33,22 @@
  * #L%
  */
 
-package imagej.core.commands.display.interactive.threshold;
+package imagej.core.commands.display.interactive;
 
 import imagej.command.Command;
-import imagej.core.commands.display.interactive.InteractiveCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.overlay.ThresholdOverlay;
-import imagej.data.overlay.ThresholdService;
+import imagej.data.threshold.AutoThresholdMethod;
+import imagej.data.threshold.ThresholdService;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
-import imagej.options.OptionsService;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 import imagej.util.Colors;
 import imagej.widget.Button;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;
@@ -68,14 +62,11 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
-import org.scijava.InstantiableException;
 import org.scijava.ItemIO;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginInfo;
-import org.scijava.plugin.PluginService;
 
 // TODO All the problems with thresh overlay code at the moment:
 //
@@ -133,21 +124,6 @@ public class Threshold extends InteractiveCommand {
 	
 	// -- Parameters --
 
-	@Parameter
-	private PluginService pluginSrv;
-
-	@Parameter
-	private ThresholdService threshSrv;
-
-	@Parameter
-	private OptionsService optionsSrv;
-
-	@Parameter
-	private ImageDisplayService imgDispSrv;
-
-	@Parameter
-	private UIService uiSrv;
-
 	@Parameter(label = "Display Type",
 		choices = { RED, BLACK_WHITE, OVER_UNDER },
 		callback = "displayTypeChanged", persist = false)
@@ -185,6 +161,15 @@ public class Threshold extends InteractiveCommand {
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
+	@Parameter
+	private ThresholdService threshSrv;
+
+	@Parameter
+	private ImageDisplayService imgDispSrv;
+
+	@Parameter
+	private UIService uiSrv;
+
 	// -- instance variables --
 
 	private long[] fullHistogram;
@@ -194,8 +179,6 @@ public class Threshold extends InteractiveCommand {
 	private boolean invalidPlaneHist = true;
 
 	private double dataMin, dataMax;
-
-	private HashMap<String, AutoThresholdMethod> methods;
 
 	// -- accessors --
 
@@ -221,7 +204,7 @@ public class Threshold extends InteractiveCommand {
 
 		if (display == null) return;
 
-		populateThreshMethods();
+		getAutoThresholdMethodNames();
 
 		boolean alreadyHadOne = threshSrv.hasThreshold(display);
 		ThresholdOverlay overlay = threshSrv.getThreshold(display);
@@ -266,7 +249,7 @@ public class Threshold extends InteractiveCommand {
 	// -- callbacks --
 
 	protected void autoThreshold() {
-		AutoThresholdMethod method = methods.get(methodName);
+		AutoThresholdMethod method = threshSrv.getAutoThresholdMethod(methodName);
 		int cutoff = method.getThreshold(histogram());
 		if (cutoff < 0) {
 			DialogPrompt dialog =
@@ -301,17 +284,15 @@ public class Threshold extends InteractiveCommand {
 		ThresholdOverlay thresh = getThreshold();
 		Dataset ds = imgDispSrv.getActiveDataset(display);
 		ImgPlus<? extends RealType<?>> imgPlus = ds.getImgPlus();
-		Cursor<? extends RealType<?>> cursor = imgPlus.localizingCursor();
+		Cursor<? extends RealType<?>> cursor = imgPlus.cursor();
 		double typeMax = cursor.get().getMaxValue();
 		boolean setOffOnly = nanBackground && !ds.isInteger();
 		double OFF = (setOffOnly) ? Double.NaN : 0;
 		double ON = (typeMax < 255) ? typeMax : 255;
-		long[] pos = new long[ds.numDimensions()];
 		double min = thresh.getRangeMin();
 		double max = thresh.getRangeMax();
 		while (cursor.hasNext()) {
 			cursor.fwd();
-			cursor.localize(pos);
 			double value = cursor.get().getRealDouble();
 			boolean set;
 			if (value < min || value > max || Double.isNaN(value)) {
@@ -344,7 +325,6 @@ public class Threshold extends InteractiveCommand {
 		overlay.setRange(min, max);
 		overlay.update();
 	}
-
 
 	protected void stackHistogram() {
 		autoThreshold();
@@ -393,27 +373,11 @@ public class Threshold extends InteractiveCommand {
 		}
 	}
 	
-	private void populateThreshMethods() {
-		methods = new HashMap<String, AutoThresholdMethod>();
-		final ArrayList<String> methodNames = new ArrayList<String>();
-		List<PluginInfo<AutoThresholdMethod>> infos =
-			pluginSrv.getPluginsOfType(AutoThresholdMethod.class);
-		for (final PluginInfo<AutoThresholdMethod> info : infos) {
-			try {
-				final String name = info.getName();
-				final AutoThresholdMethod method = info.createInstance();
-				methods.put(name, method);
-				methodNames.add(name);
-			}
-			catch (final InstantiableException exc) {
-				log.warn("Invalid autothreshold method: " + info.getClassName(), exc);
-			}
-		}
-
+	private void getAutoThresholdMethodNames() {
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<String> methodNameInput =
 			(DefaultModuleItem<String>) getInfo().getInput("methodName");
-		methodNameInput.setChoices(methodNames);
+		methodNameInput.setChoices(threshSrv.getAutoThresholdMethodNames());
 	}
 
 	// calcs the data range of the whole dataset

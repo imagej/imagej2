@@ -49,6 +49,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 
 import org.scijava.InstantiableException;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
@@ -64,10 +65,16 @@ import org.scijava.service.Service;
 @Plugin(type = Service.class)
 public class CalculatorService extends AbstractService {
 	
+	// -- Parameters --
+
+	@Parameter
+	private LogService logSrv;
+
+	@Parameter
+	private PluginService pluginSrv;
+
 	// -- instance variables --
 
-	private LogService logSrv;
-	private PluginService pluginSrv;
 	private Map<String, CalculatorOp<?, ?>> operators;
 	private List<String> operatorNames;
 
@@ -77,8 +84,6 @@ public class CalculatorService extends AbstractService {
 	public void initialize() {
 		operators = new HashMap<String, CalculatorOp<?, ?>>();
 		operatorNames = new ArrayList<String>();
-		logSrv = getContext().getService(LogService.class);
-		pluginSrv = getContext().getService(PluginService.class);
 		findOperators();
 	}
 
@@ -98,6 +103,13 @@ public class CalculatorService extends AbstractService {
 	 */
 	public List<String> getOperatorNames() {
 		return Collections.unmodifiableList(operatorNames);
+	}
+
+	/**
+	 * Returns the {@link CalculatorOp} associated with the given name.
+	 */
+	public CalculatorOp<?, ?> getOperator(String operatorName) {
+		return operators.get(operatorName);
 	}
 
 	/**

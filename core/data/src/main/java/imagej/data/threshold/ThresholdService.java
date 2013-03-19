@@ -33,40 +33,46 @@
  * #L%
  */
 
-package imagej.data.overlay;
+package imagej.data.threshold;
 
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.event.OverlayDeletedEvent;
+import imagej.data.overlay.Overlay;
+import imagej.data.overlay.ThresholdOverlay;
 import imagej.display.Display;
 import imagej.display.event.DisplayDeletedEvent;
-import imagej.options.OptionsService;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.scijava.InstantiableException;
 import org.scijava.Priority;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
- * Provides functionality related to {@link ThresholdOverlay}s.
+ * Provides functionality related to {@link ThresholdOverlay}s and
+ * {@link AutoThresholdMethod}s.
  * 
  * @author Barry DeZonia
  */
 @Plugin(type = Service.class, priority = Priority.NORMAL_PRIORITY)
 public class ThresholdService extends AbstractService
 {
-
-	// TODO - eliminate direct Prefs hacking by utilizing OptionsThreshold.
-	// Unfortunately I could not because ij-options is not part of core or data
-	// subprojects.
 
 	// -- parameters --
 
@@ -80,12 +86,19 @@ public class ThresholdService extends AbstractService
 	private OverlayService overlayService;
 
 	@Parameter
-	private OptionsService optionsService;
+	private PluginService pluginService;
+
+	@Parameter
+	private LogService log;
 
 	// -- instance variables --
 
 	private final ConcurrentHashMap<ImageDisplay, ThresholdOverlay> map =
 		new ConcurrentHashMap<ImageDisplay, ThresholdOverlay>();
+
+	private ConcurrentHashMap<String, AutoThresholdMethod> methods;
+
+	private List<String> methodNames;
 
 	// -- ThresholdService methods --
 
@@ -93,6 +106,7 @@ public class ThresholdService extends AbstractService
 	public void initialize() {
 		super.initialize();
 		eventService.subscribe(this);
+		discoverThresholdMethods();
 	}
 
 	/**
@@ -141,6 +155,30 @@ public class ThresholdService extends AbstractService
 		}
 	}
 
+	/**
+	 * Returns the collection of {@link AutoThresholdMethod}s discovered by the
+	 * system. The collection is a String index {@link Map}.
+	 */
+	public Map<String, AutoThresholdMethod> getAutoThresholdMethods() {
+		return Collections.unmodifiableMap(methods);
+
+	}
+
+	/**
+	 * Returns the collection of {@link AutoThresholdMethod} names discovered by
+	 * the system. The collection is a {@link List} of Strings.
+	 */
+	public List<String> getAutoThresholdMethodNames() {
+		return Collections.unmodifiableList(methodNames);
+	}
+
+	/**
+	 * Returns the {@link AutoThresholdMethod} associated with the given name.
+	 */
+	public AutoThresholdMethod getAutoThresholdMethod(String name) {
+		return methods.get(name);
+	}
+
 	// -- event handlers --
 
 	@EventHandler
@@ -157,6 +195,26 @@ public class ThresholdService extends AbstractService
 		if (overlay instanceof ThresholdOverlay) {
 			for (Entry<ImageDisplay, ThresholdOverlay> entry : map.entrySet()) {
 				if (entry.getValue() == overlay) removeThreshold(entry.getKey());
+			}
+		}
+	}
+
+	// -- helpers --
+
+	private void discoverThresholdMethods() {
+		methods = new ConcurrentHashMap<String, AutoThresholdMethod>();
+		methodNames = new ArrayList<String>();
+		List<PluginInfo<AutoThresholdMethod>> infos =
+			pluginService.getPluginsOfType(AutoThresholdMethod.class);
+		for (final PluginInfo<AutoThresholdMethod> info : infos) {
+			try {
+				final String name = info.getName();
+				final AutoThresholdMethod method = info.createInstance();
+				methods.put(name, method);
+				methodNames.add(name);
+			}
+			catch (final InstantiableException exc) {
+				log.warn("Invalid autothreshold method: " + info.getClassName(), exc);
 			}
 		}
 	}

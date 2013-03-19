@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.commands.display.interactive.threshold;
+package imagej.data.threshold;
 
 // Ported from Antti Niemisto's HistThresh Matlab toolbox
 //   Relicensed BSD 2-12-13

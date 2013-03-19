@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.commands.display.interactive.threshold;
+package imagej.data.threshold;
 
 import org.scijava.plugin.Plugin;
 
@@ -41,70 +41,74 @@ import org.scijava.plugin.Plugin;
 // plugin found in Fiji (version 1.14).
 
 /**
- * Implements a moments based threshold method by Tsai.
+ * Implements a minimum threshold method by Prewitt & Mendelsohn.
  * 
  * @author Barry DeZonia
  * @author Gabriel Landini
  */
-@Plugin(type = AutoThresholdMethod.class, name = "Moments")
-public class MomentsThresholdMethod implements AutoThresholdMethod {
+@Plugin(type = AutoThresholdMethod.class, name = "Minimum")
+public class MinimumThresholdMethod implements AutoThresholdMethod {
+
+	private String errMsg;
 
 	@Override
 	public int getThreshold(long[] histogram) {
-		// W. Tsai, "Moment-preserving thresholding: a new approach," Computer
-		// Vision, Graphics, and Image Processing, vol. 29, pp. 377-393, 1985.
-		// Ported to ImageJ plugin by G.Landini from the the open source project
-		// FOURIER 0.8 by M. Emre Celebi , Department of Computer Science,
-		// Louisiana State University in Shreveport, Shreveport, LA 71115, USA
-		// http://sourceforge.net/projects/fourier-ipal
-		// http://www.lsus.edu/faculty/~ecelebi/fourier.htm
-		double total = 0;
-		double m0 = 1.0, m1 = 0.0, m2 = 0.0, m3 = 0.0, sum = 0.0, p0 = 0.0;
-		double cd, c0, c1, z0, z1; /* auxiliary variables */
-		int threshold = -1;
+		if (histogram.length < 2) return 0;
+		// J. M. S. Prewitt and M. L. Mendelsohn, "The analysis of cell images," in
+		// Annals of the New York Academy of Sciences, vol. 128, pp. 1035-1053,
+		// 1966.
+		// ported to ImageJ plugin by G.Landini from Antti Niemisto's Matlab code
+		// (relicensed BSD 2-12-13)
+		// Original Matlab code Copyright (C) 2004 Antti Niemisto
+		// See http://www.cs.tut.fi/~ant/histthresh/ for an excellent slide
+		// presentation and the original Matlab code.
+		//
+		// Assumes a bimodal histogram. The histogram needs is smoothed (using a
+		// running average of size 3, iteratively) until there are only two local
+		// maxima.
+		// Threshold t is such that ytâˆ’1 > yt â‰¤ yt+1.
+		// Images with histograms having extremely unequal peaks or a broad and
+		// ??at valley are unsuitable for this method.
+		int iter = 0;
+		int max = -1;
+		double[] iHisto = new double[histogram.length];
 
-		double[] histo = new double[histogram.length];
-
-		for (int i = 0; i < histogram.length; i++)
-			total += histogram[i];
-
-		for (int i = 0; i < histogram.length; i++)
-			histo[i] = histogram[i] / total; // normalised histogram
-
-		/* Calculate the first, second, and third order moments */
 		for (int i = 0; i < histogram.length; i++) {
-			m1 += i * histo[i];
-			m2 += i * i * histo[i];
-			m3 += i * i * i * histo[i];
+			iHisto[i] = histogram[i];
+			if (histogram[i] > 0) max = i;
 		}
-		/* 
-		First 4 moments of the gray-level image should match the first 4 moments
-		of the target binary image. This leads to 4 equalities whose solutions 
-		are given in the Appendix of Ref. 1 
-		*/
-		cd = m0 * m2 - m1 * m1;
-		c0 = (-m2 * m2 + m1 * m3) / cd;
-		c1 = (m0 * -m3 + m2 * m1) / cd;
-		z0 = 0.5 * (-c1 - Math.sqrt(c1 * c1 - 4.0 * c0));
-		z1 = 0.5 * (-c1 + Math.sqrt(c1 * c1 - 4.0 * c0));
-		p0 = (z1 - m1) / (z1 - z0); /* Fraction of the object pixels in the target binary image */
+		double[] tHisto = iHisto;
 
-		// The threshold is the gray-level closest
-		// to the p0-tile of the normalized histogram
-		sum = 0;
-		for (int i = 0; i < histogram.length; i++) {
-			sum += histo[i];
-			if (sum > p0) {
-				threshold = i;
-				break;
+		while (!Utils.bimodalTest(iHisto)) {
+			// smooth with a 3 point running mean filter
+			for (int i = 1; i < histogram.length - 1; i++)
+				tHisto[i] = (iHisto[i - 1] + iHisto[i] + iHisto[i + 1]) / 3;
+			// 0 outside
+			tHisto[0] = (iHisto[0] + iHisto[1]) / 3;
+			// 0 outside
+			tHisto[histogram.length - 1] =
+				(iHisto[histogram.length - 2] + iHisto[histogram.length - 1]) / 3;
+			iHisto = tHisto;
+			iter++;
+			if (iter > 10000) {
+				errMsg = "Minimum Threshold not found after 10000 iterations.";
+				return -1;
 			}
 		}
-		return threshold;
+		// The threshold is the minimum between the two peaks.
+		// NB - BDZ updated code after ij-devel mailing list communication with
+		// Antti Niemisto on 2-18-13 post 1.03 release of toolbox
+		double[] y = iHisto;
+		for (int k = 1; k < max; k++) {
+			// IJ.log(" "+i+"  "+iHisto[i]);
+			if (y[k - 1] > y[k] & y[k + 1] >= y[k]) return k;
+		}
+		return -1;
 	}
 
 	@Override
 	public String getMessage() {
-		return null;
+		return errMsg;
 	}
 
 }

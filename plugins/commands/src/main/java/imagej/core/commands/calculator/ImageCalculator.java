@@ -45,7 +45,6 @@ import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
 
 import java.util.List;
-import java.util.Map;
 
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
@@ -105,8 +104,6 @@ public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 
 	// -- other instance variables --
 
-	private Map<String, CalculatorOp<?, ?>> operators;
-
 	private CalculatorOp<U, V> operator;
 
 	// -- public interface --
@@ -118,7 +115,9 @@ public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 	@Override
 	@SuppressWarnings("unchecked")
 	public void run() {
-		if (operator == null) operator = (CalculatorOp<U, V>) operators.get(opName);
+		if (operator == null) {
+			operator = (CalculatorOp<U, V>) calculatorService.getOperator(opName);
+		}
 		Img<DoubleType> img = null;
 		try {
 			final Img<U> img1 = (Img<U>) input1.getImgPlus();
@@ -243,7 +242,6 @@ public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 	// -- initializer --
 
 	protected void initCalculator() {
-		operators = calculatorService.getOperators();
 		List<String> opNames = calculatorService.getOperatorNames();
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<String> opNameInput =

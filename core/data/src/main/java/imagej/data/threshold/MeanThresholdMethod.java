@@ -33,28 +33,41 @@
  * #L%
  */
 
-package imagej.core.commands.display.interactive.threshold;
+package imagej.data.threshold;
 
-import imagej.plugin.ImageJPlugin;
+import org.scijava.plugin.Plugin;
+
+// NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
+// plugin found in Fiji (version 1.14).
 
 /**
- * TODO
- *
+ * Implements a mean threshold method by Glasbey.
+ * 
  * @author Barry DeZonia
+ * @author Gabriel Landini
  */
-public interface AutoThresholdMethod extends ImageJPlugin {
+@Plugin(type = AutoThresholdMethod.class, name = "Mean")
+public class MeanThresholdMethod implements AutoThresholdMethod {
 
-	/**
-	 * Calculates the threshold index from an unnormalized histogram of data.
-	 * Returns -1 if the threshold index cannot be found.
-	 */
-	int getThreshold(long[] histogram);
+	@Override
+	public int getThreshold(long[] histogram) {
+		// C. A. Glasbey, "An analysis of histogram-based thresholding algorithms,"
+		// CVGIP: Graphical Models and Image Processing, vol. 55, pp. 532-537, 1993.
+		//
+		// The threshold is the mean of the greyscale data
+		int threshold = -1;
+		double tot = 0, sum = 0;
+		for (int i = 0; i < histogram.length; i++) {
+			tot += histogram[i];
+			sum += (i * histogram[i]);
+		}
+		threshold = (int) Math.floor(sum / tot);
+		return threshold;
+	}
 
-	/**
-	 * Returns any message associated with the last call to getThreshold(). If
-	 * getThreshold() last returned -1 the internal message may shed light on the
-	 * issue. If getThreshold() is successful this message still may contain
-	 * warning info.
-	 */
-	String getMessage();
+	@Override
+	public String getMessage() {
+		return null;
+	}
+
 }

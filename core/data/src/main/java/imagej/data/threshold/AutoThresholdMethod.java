@@ -33,29 +33,28 @@
  * #L%
  */
 
-package imagej.core.commands.display.interactive.threshold;
+package imagej.data.threshold;
 
+import imagej.plugin.ImageJPlugin;
 
 /**
  * TODO
- * 
+ *
  * @author Barry DeZonia
  */
-public class Histogram {
-	/*
-	 * Notes
-	 * - histogram has at its heart a discrete cdf. but different because it has
-	 *     area > 1.0
-	 * - bins might not be evenly spaced
-	 * - we want key value associated with a bin
-	 * - want left edge, center edge, right edge just beyond my bin
-	 * - map int to an edge
-	 * - map a double coord to an int
-	 * - calc cdf from data given ranges. w/o ranges make a pass through data
-	 *     and determine range. two buckets on ends when range given are wider
-	 *     than 1.0 units
-	 * - somehow we want 2d ones also
-	 * - if we could use BijectiveFunction<A,B> code it would be nice
-	 */
+public interface AutoThresholdMethod extends ImageJPlugin {
 
+	/**
+	 * Calculates the threshold index from an unnormalized histogram of data.
+	 * Returns -1 if the threshold index cannot be found.
+	 */
+	int getThreshold(long[] histogram);
+
+	/**
+	 * Returns any message associated with the last call to getThreshold(). If
+	 * getThreshold() last returned -1 the internal message may shed light on the
+	 * issue. If getThreshold() is successful this message still may contain
+	 * warning info.
+	 */
+	String getMessage();
 }
