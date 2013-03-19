@@ -408,7 +408,10 @@ public final class DefaultUIService extends AbstractService implements
 	@Override
 	public void dispose() {
 		// dispose active display viewers
-		for (final DisplayViewer<?> viewer : displayViewers) {
+		// NB - copy list to avoid ConcurrentModificationExceptions
+		List<DisplayViewer<?>> viewers = new ArrayList<DisplayViewer<?>>();
+		viewers.addAll(displayViewers);
+		for (final DisplayViewer<?> viewer : viewers) {
 			viewer.dispose();
 		}
 
