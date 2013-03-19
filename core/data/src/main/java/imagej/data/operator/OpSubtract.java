@@ -33,28 +33,29 @@
  * #L%
  */
 
-package imagej.core.commands.calculator;
+package imagej.data.operator;
 
-import net.imglib2.ops.operation.real.binary.RealMax;
+import net.imglib2.ops.operation.real.binary.RealSubtract;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
 import org.scijava.plugin.Plugin;
 
 /**
- * Image Calculator plugin for {@link RealMax} operation.
+ * Image Calculator plugin for {@link RealSubtract} operation.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = CalculatorOp.class, name = "Max", priority = OpMax.PRIORITY)
-public class OpMax<I1 extends RealType<I1>, I2 extends RealType<I2>> extends
-	AbstractCalculatorOp<I1, I2>
+@Plugin(type = CalculatorOp.class, name = "Subtract",
+	priority = OpSubtract.PRIORITY)
+public class OpSubtract<I1 extends RealType<I1>, I2 extends RealType<I2>>
+	extends AbstractCalculatorOp<I1, I2>
 {
 
-	public static final int PRIORITY = OpMin.PRIORITY - 1;
+	public static final int PRIORITY = OpAdd.PRIORITY - 1;
 
-	public OpMax() {
-		super(new RealMax<I1, I2, DoubleType>());
+	public OpSubtract() {
+		super(new RealSubtract<I1, I2, DoubleType>());
 	}
 
 }

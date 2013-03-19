@@ -33,28 +33,29 @@
  * #L%
  */
 
-package imagej.core.commands.calculator;
+package imagej.data.operator;
 
-import net.imglib2.ops.operation.real.binary.RealAnd;
+import net.imglib2.ops.operation.real.binary.RealDivide;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
 import org.scijava.plugin.Plugin;
 
 /**
- * Image Calculator plugin for {@link RealAnd} operation.
+ * Image Calculator plugin for {@link RealDivide} operation.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = CalculatorOp.class, name = "AND", priority = OpAnd.PRIORITY)
-public class OpAnd<I1 extends RealType<I1>, I2 extends RealType<I2>> extends
+@Plugin(type = CalculatorOp.class, name = "Divide",
+	priority = OpDivide.PRIORITY)
+public class OpDivide<I1 extends RealType<I1>, I2 extends RealType<I2>> extends
 	AbstractCalculatorOp<I1, I2>
 {
 
-	public static final int PRIORITY = OpDivide.PRIORITY - 1;
+	public static final int PRIORITY = OpMultiply.PRIORITY - 1;
 
-	public OpAnd() {
-		super(new RealAnd<I1, I2, DoubleType>());
+	public OpDivide() {
+		super(new RealDivide<I1, I2, DoubleType>());
 	}
 
 }

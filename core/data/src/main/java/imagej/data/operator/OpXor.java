@@ -33,29 +33,28 @@
  * #L%
  */
 
-package imagej.core.commands.calculator;
+package imagej.data.operator;
 
-import net.imglib2.ops.operation.real.binary.RealDivide;
+import net.imglib2.ops.operation.real.binary.RealXor;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
 import org.scijava.plugin.Plugin;
 
 /**
- * Image Calculator plugin for {@link RealDivide} operation.
+ * Image Calculator plugin for {@link RealXor} operation.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = CalculatorOp.class, name = "Divide",
-	priority = OpDivide.PRIORITY)
-public class OpDivide<I1 extends RealType<I1>, I2 extends RealType<I2>> extends
+@Plugin(type = CalculatorOp.class, name = "XOR", priority = OpXor.PRIORITY)
+public class OpXor<I1 extends RealType<I1>, I2 extends RealType<I2>> extends
 	AbstractCalculatorOp<I1, I2>
 {
 
-	public static final int PRIORITY = OpMultiply.PRIORITY - 1;
+	public static final int PRIORITY = OpOr.PRIORITY - 1;
 
-	public OpDivide() {
-		super(new RealDivide<I1, I2, DoubleType>());
+	public OpXor() {
+		super(new RealXor<I1, I2, DoubleType>());
 	}
 
 }

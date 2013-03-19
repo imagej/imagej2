@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.commands.calculator;
+package imagej.data.operator;
 
 import net.imglib2.ops.operation.real.binary.RealCopyRight;
 import net.imglib2.type.numeric.RealType;

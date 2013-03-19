@@ -33,29 +33,29 @@
  * #L%
  */
 
-package imagej.core.commands.calculator;
+package imagej.data.operator;
 
-import net.imglib2.ops.operation.real.binary.RealDifference;
+import net.imglib2.ops.operation.real.binary.RealCopyZeroTransparent;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
 import org.scijava.plugin.Plugin;
 
 /**
- * Image Calculator plugin for {@link RealDifference} operation.
+ * Image Calculator plugin for {@link RealCopyZeroTransparent} operation.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = CalculatorOp.class, name = "Difference",
-	priority = OpDifference.PRIORITY)
-public class OpDifference<I1 extends RealType<I1>, I2 extends RealType<I2>>
+@Plugin(type = CalculatorOp.class, name = "Transparent-zero",
+	priority = OpTransparentZero.PRIORITY)
+public class OpTransparentZero<I1 extends RealType<I1>, I2 extends RealType<I2>>
 	extends AbstractCalculatorOp<I1, I2>
 {
 
-	public static final int PRIORITY = OpAverage.PRIORITY - 1;
+	public static final int PRIORITY = OpCopy.PRIORITY - 1;
 
-	public OpDifference() {
-		super(new RealDifference<I1, I2, DoubleType>());
+	public OpTransparentZero() {
+		super(new RealCopyZeroTransparent<I1, I2, DoubleType>());
 	}
 
 }

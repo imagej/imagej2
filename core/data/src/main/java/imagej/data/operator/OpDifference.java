@@ -33,31 +33,29 @@
  * #L%
  */
 
-package imagej.core.commands.calculator;
+package imagej.data.operator;
 
-import imagej.plugin.ImageJPlugin;
-import net.imglib2.ops.operation.real.binary.RealBinaryOperation;
+import net.imglib2.ops.operation.real.binary.RealDifference;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
 import org.scijava.plugin.Plugin;
 
 /**
- * {@code CalculatorOp} is a plugin that extends the Image Calculator command.
- * <p>
- * Image Calculator operations discoverable at runtime must implement this
- * interface and be annotated with @{@link Plugin} with attribute
- * {@link Plugin#type()} = {@link CalculatorOp}.class. While it possible to
- * create an operation merely by implementing this interface, it is encouraged
- * to instead extend {@link AbstractCalculatorOp}, for convenience.
- * </p>
+ * Image Calculator plugin for {@link RealDifference} operation.
  * 
  * @author Curtis Rueden
- * @see Plugin
- * @see ImageCalculator
  */
-public interface CalculatorOp<I1 extends RealType<I1>, I2 extends RealType<I2>>
-	extends RealBinaryOperation<I1, I2, DoubleType>, ImageJPlugin
+@Plugin(type = CalculatorOp.class, name = "Difference",
+	priority = OpDifference.PRIORITY)
+public class OpDifference<I1 extends RealType<I1>, I2 extends RealType<I2>>
+	extends AbstractCalculatorOp<I1, I2>
 {
-	// NB: No implementation needed.
+
+	public static final int PRIORITY = OpAverage.PRIORITY - 1;
+
+	public OpDifference() {
+		super(new RealDifference<I1, I2, DoubleType>());
+	}
+
 }

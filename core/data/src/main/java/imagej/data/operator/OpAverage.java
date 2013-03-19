@@ -33,29 +33,29 @@
  * #L%
  */
 
-package imagej.core.commands.calculator;
+package imagej.data.operator;
 
-import net.imglib2.ops.operation.real.binary.RealMultiply;
+import net.imglib2.ops.operation.real.binary.RealAvg;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
 import org.scijava.plugin.Plugin;
 
 /**
- * Image Calculator plugin for {@link RealMultiply} operation.
+ * Image Calculator plugin for {@link RealAvg} operation.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = CalculatorOp.class, name = "Multiply",
-	priority = OpMultiply.PRIORITY)
-public class OpMultiply<I1 extends RealType<I1>, I2 extends RealType<I2>>
+@Plugin(type = CalculatorOp.class, name = "Average",
+	priority = OpAverage.PRIORITY)
+public class OpAverage<I1 extends RealType<I1>, I2 extends RealType<I2>>
 	extends AbstractCalculatorOp<I1, I2>
 {
 
-	public static final int PRIORITY = OpSubtract.PRIORITY - 1;
+	public static final int PRIORITY = OpMax.PRIORITY - 1;
 
-	public OpMultiply() {
-		super(new RealMultiply<I1, I2, DoubleType>());
+	public OpAverage() {
+		super(new RealAvg<I1, I2, DoubleType>());
 	}
 
 }

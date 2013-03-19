@@ -33,41 +33,28 @@
  * #L%
  */
 
-package imagej.core.commands.calculator;
+package imagej.data.operator;
 
-import net.imglib2.ops.operation.BinaryOperation;
-import net.imglib2.ops.operation.real.binary.RealBinaryOperation;
+import net.imglib2.ops.operation.real.binary.RealOr;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
+import org.scijava.plugin.Plugin;
+
 /**
- * Abstract base class for {@link CalculatorOp} implementations.
+ * Image Calculator plugin for {@link RealOr} operation.
  * 
  * @author Curtis Rueden
  */
-public class AbstractCalculatorOp<I1 extends RealType<I1>, I2 extends RealType<I2>>
-	implements CalculatorOp<I1, I2>
+@Plugin(type = CalculatorOp.class, name = "OR", priority = OpOr.PRIORITY)
+public class OpOr<I1 extends RealType<I1>, I2 extends RealType<I2>> extends
+	AbstractCalculatorOp<I1, I2>
 {
 
-	/** The wrapped operation. */
-	private final RealBinaryOperation<I1, I2, DoubleType> op;
+	public static final int PRIORITY = OpAnd.PRIORITY - 1;
 
-	/** Wraps the given operation as a {@link CalculatorOp}. */
-	public AbstractCalculatorOp(final RealBinaryOperation<I1, I2, DoubleType> op)
-	{
-		this.op = op;
-	}
-
-	@Override
-	public DoubleType compute(final I1 input1, final I2 input2,
-		final DoubleType output)
-	{
-		return op.compute(input1, input2, output);
-	}
-
-	@Override
-	public BinaryOperation<I1, I2, DoubleType> copy() {
-		return op.copy();
+	public OpOr() {
+		super(new RealOr<I1, I2, DoubleType>());
 	}
 
 }
