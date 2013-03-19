@@ -35,187 +35,54 @@
 
 package imagej.data.threshold;
 
-import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayService;
-import imagej.data.event.OverlayDeletedEvent;
-import imagej.data.overlay.Overlay;
 import imagej.data.overlay.ThresholdOverlay;
-import imagej.display.Display;
-import imagej.display.event.DisplayDeletedEvent;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
-import org.scijava.InstantiableException;
-import org.scijava.Priority;
-import org.scijava.event.EventHandler;
-import org.scijava.event.EventService;
-import org.scijava.log.LogService;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginInfo;
-import org.scijava.plugin.PluginService;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
- * Provides functionality related to {@link ThresholdOverlay}s and
- * {@link AutoThresholdMethod}s.
+ * Interface for service that works with thresholds.
  * 
  * @author Barry DeZonia
+ * @see ThresholdOverlay
+ * @see AutoThresholdMethod
  */
-@Plugin(type = Service.class, priority = Priority.NORMAL_PRIORITY)
-public class ThresholdService extends AbstractService
-{
-
-	// -- parameters --
-
-	@Parameter
-	private EventService eventService;
-
-	@Parameter
-	private ImageDisplayService displayService;
-
-	@Parameter
-	private OverlayService overlayService;
-
-	@Parameter
-	private PluginService pluginService;
-
-	@Parameter
-	private LogService log;
-
-	// -- instance variables --
-
-	private final ConcurrentHashMap<ImageDisplay, ThresholdOverlay> map =
-		new ConcurrentHashMap<ImageDisplay, ThresholdOverlay>();
-
-	private ConcurrentHashMap<String, AutoThresholdMethod> methods;
-
-	private List<String> methodNames;
-
-	// -- ThresholdService methods --
-
-	@Override
-	public void initialize() {
-		super.initialize();
-		eventService.subscribe(this);
-		discoverThresholdMethods();
-	}
+public interface ThresholdService extends Service {
 
 	/**
 	 * Returns true if a {@link ThresholdOverlay} is defined for a given display.
 	 */
-	public boolean hasThreshold(ImageDisplay display) {
-		return map.get(display) != null;
-	}
+	boolean hasThreshold(ImageDisplay display);
 
 	/**
 	 * Gets the {@link ThresholdOverlay} associated with a display. If one does
 	 * not yet exist it is created.
 	 */
-	public ThresholdOverlay getThreshold(ImageDisplay display) {
-		ThresholdOverlay overlay = map.get(display);
-		if (overlay == null) {
-			Dataset dataset = displayService.getActiveDataset(display);
-			if (dataset == null) {
-				throw new IllegalArgumentException(
-					"expected ImageDisplay to have active dataset");
-			}
-			overlay = new ThresholdOverlay(getContext(), dataset);
-			map.put(display, overlay);
-			display.display(overlay);
-			// NOTE - the call on prev line did a rebuild() but not necessarily an
-			// update(). So graphics might not be up to date! This may be a bug in
-			// display code. Anyhow this next line makes sure that the display is
-			// updated. This fixes the problem where you adjust threshold and in
-			// dialog you delete the thresh and then go into min or max field and make
-			// a change. Correct behavior is for new thresh to immediately appear.
-			// Without this update() call the thresh overlay exists but doesn't get
-			// displayed.
-			display.update(); // TEMP HACK
-		}
-		return overlay;
-	}
+	ThresholdOverlay getThreshold(ImageDisplay display);
 
 	/**
 	 * Removes the {@link ThresholdOverlay} associated with a display.
 	 */
-	public void removeThreshold(ImageDisplay display) {
-		ThresholdOverlay overlay = map.get(display);
-		if (overlay != null) {
-			overlayService.removeOverlay(display, overlay);
-			map.remove(display);
-		}
-	}
+	void removeThreshold(ImageDisplay display);
 
 	/**
 	 * Returns the collection of {@link AutoThresholdMethod}s discovered by the
 	 * system. The collection is a String index {@link Map}.
 	 */
-	public Map<String, AutoThresholdMethod> getAutoThresholdMethods() {
-		return Collections.unmodifiableMap(methods);
-
-	}
+	Map<String, AutoThresholdMethod> getAutoThresholdMethods();
 
 	/**
 	 * Returns the collection of {@link AutoThresholdMethod} names discovered by
 	 * the system. The collection is a {@link List} of Strings.
 	 */
-	public List<String> getAutoThresholdMethodNames() {
-		return Collections.unmodifiableList(methodNames);
-	}
+	List<String> getAutoThresholdMethodNames();
 
 	/**
 	 * Returns the {@link AutoThresholdMethod} associated with the given name.
 	 */
-	public AutoThresholdMethod getAutoThresholdMethod(String name) {
-		return methods.get(name);
-	}
+	AutoThresholdMethod getAutoThresholdMethod(String name);
 
-	// -- event handlers --
-
-	@EventHandler
-	protected void onEvent(DisplayDeletedEvent evt) {
-		Display<?> display = evt.getObject();
-		if (display instanceof ImageDisplay) {
-			removeThreshold((ImageDisplay) display);
-		}
-	}
-
-	@EventHandler
-	protected void onEvent(OverlayDeletedEvent evt) {
-		Overlay overlay = evt.getObject();
-		if (overlay instanceof ThresholdOverlay) {
-			for (Entry<ImageDisplay, ThresholdOverlay> entry : map.entrySet()) {
-				if (entry.getValue() == overlay) removeThreshold(entry.getKey());
-			}
-		}
-	}
-
-	// -- helpers --
-
-	private void discoverThresholdMethods() {
-		methods = new ConcurrentHashMap<String, AutoThresholdMethod>();
-		methodNames = new ArrayList<String>();
-		List<PluginInfo<AutoThresholdMethod>> infos =
-			pluginService.getPluginsOfType(AutoThresholdMethod.class);
-		for (final PluginInfo<AutoThresholdMethod> info : infos) {
-			try {
-				final String name = info.getName();
-				final AutoThresholdMethod method = info.createInstance();
-				methods.put(name, method);
-				methodNames.add(name);
-			}
-			catch (final InstantiableException exc) {
-				log.warn("Invalid autothreshold method: " + info.getClassName(), exc);
-			}
-		}
-	}
 }
