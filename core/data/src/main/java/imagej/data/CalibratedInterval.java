@@ -64,9 +64,14 @@ public interface CalibratedInterval extends CalibratedSpace, Interval, Named {
 	/**
 	 * Gets whether the coordinate space provides a discrete sampling of its
 	 * values. E.g.: {@link Dataset} and {@link ImageDisplay} do, but
-	 * {@link Overlay} does not. If this method returns false, the methods of
-	 * {@link Interval} will throw {@link UnsupportedOperationException}. Either
-	 * way, the methods of {@link RealInterval} will be usable.
+	 * {@link Overlay} does not. Either way, the methods of {@link RealInterval}
+	 * will always be usable.
+	 * <p>
+	 * If this method returns false, some methods of {@link Interval} may throw
+	 * {@link UnsupportedOperationException}: e.g., {@link #min(long[])} and
+	 * {@link #max(long[])} may return exterior integer bounds, while
+	 * {@link #dimensions(long[])} will likely fail.
+	 * </p>
 	 */
 	boolean isDiscrete();
 

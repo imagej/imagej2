@@ -134,8 +134,6 @@ public abstract class AbstractData extends AbstractContextual implements Data,
 
 	@Override
 	public Extents getExtents() {
-		// TODO - commenting this out fixes bug #1335
-		//if (!isDiscrete()) throw new UnsupportedOperationException();
 		final long[] min = new long[numDimensions()];
 		final long[] max = new long[numDimensions()];
 		min(min);
@@ -145,7 +143,6 @@ public abstract class AbstractData extends AbstractContextual implements Data,
 
 	@Override
 	public long[] getDims() {
-		if (!isDiscrete()) throw new UnsupportedOperationException();
 		final long[] dims = new long[numDimensions()];
 		dimensions(dims);
 		return dims;
