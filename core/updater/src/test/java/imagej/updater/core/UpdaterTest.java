@@ -33,14 +33,7 @@
  * #L%
  */
 
-// TODO: test updating the updater somehow (store timestamp of .jar/.class and launch the new one if changed? That might be _very_ fragile...)
-// TODO: check that multiple upload sites cannot be uploaded to in one go (stageForUpload() should throw an exception in that case)
-// TODO: test cross-site dependency
-// TODO: test native dependencies
-// TODO: what to do with files that Fiji provides already? Take newer?
 // TODO: make a nice button to add Fiji...
-// TODO: should we have a list of alternative update sites per FileObject so that we can re-parse the alternatives when an update site was removed? Or just tell the user that there was a problem and we need to reparse everything?
-// TODO: make a proper upgrade plan for the Fiji Updater
 
 package imagej.updater.core;
 
