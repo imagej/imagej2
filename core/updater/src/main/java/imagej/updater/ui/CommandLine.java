@@ -322,8 +322,16 @@ public class CommandLine {
 	}
 
 	public void upload(final List<String> list) {
-		if (list == null || list.size() == 0) throw die("Which files do you mean to upload?");
+		if (list == null) throw die("Which files do you mean to upload?");
+		boolean forceUpdateSite = false;
 		String updateSite = null;
+		if (list.size() > 1 && "--update-site".equals(list.get(0))) {
+			list.remove(0);
+			updateSite = list.remove(0);
+			forceUpdateSite = true;
+		}
+		if (list.size() == 0) throw die("Which files do you mean to upload?");
+
 		ensureChecksummed();
 		int count = 0;
 		for (final String name : list) {
@@ -355,9 +363,13 @@ public class CommandLine {
 				file.updateSite = updateSite;
 			}
 			else if (!file.updateSite.equals(updateSite)) {
-				throw die("Cannot upload to multiple update sites ("
-						+ list.get(0) + " to " + updateSite + " and "
-						+ name + " to " + file.updateSite + ")");
+				if (forceUpdateSite) {
+					file.updateSite = updateSite;
+				} else {
+					throw die("Cannot upload to multiple update sites ("
+							+ list.get(0) + " to " + updateSite + " and "
+							+ name + " to " + file.updateSite + ")");
+				}
 			}
 			file.setAction(files, Action.UPLOAD);
 			count++;
@@ -366,6 +378,11 @@ public class CommandLine {
 			System.err.println("Nothing to upload");
 			return;
 		}
+
+		if (updateSite != null && files.getUpdateSite(updateSite) == null) {
+			throw die("Unknown update site: '" + updateSite + "'");
+		}
+
 		System.err.println("Uploading to " + getLongUpdateSiteName(updateSite));
 
 		FilesUploader uploader = null;
@@ -461,6 +478,26 @@ public class CommandLine {
 		}
 	}
 
+	public void removeUploadSite(final List<String> names) {
+		if (names == null || names.size() < 1) {
+			throw die("Which update-site do you want to remove, exactly?");
+		}
+		removeUploadSite(names.toArray(new String[names.size()]));
+	}
+
+	public void removeUploadSite(final String... names) {
+		ensureChecksummed();
+		for (final String name : names) {
+			files.removeUpdateSite(name);
+		}
+		try {
+			files.write();
+		} catch (Exception e) {
+			UpdaterUserInterface.get().handleException(e);
+			throw die("Could not write local file database");
+		}
+	}
+
 	@Deprecated
 	public static CommandLine getInstance() {
 		try {
@@ -511,7 +548,7 @@ public class CommandLine {
 			+ "\tupdate [<files>]\n"
 			+ "\tupdate-force [<files>]\n"
 			+ "\tupdate-force-pristine [<files>]\n"
-			+ "\tupload [<files>]\n"
+			+ "\tupload [--update-site <name>] [<files>]\n"
 			+ "\tlist-update-sites [<nick>...]\n"
 			+ "\tadd-update-site <nick> <url> [<host> <upload-directory>]\n"
 			+ "\tedit-update-site <nick> <url> [<host> <upload-directory>]");
@@ -589,6 +626,8 @@ public class CommandLine {
 			instance.addOrEditUploadSite(makeList(args, 1), true);
 		else if (command.equals("edit-update-site"))
 			instance.addOrEditUploadSite(makeList(args, 1), false);
+		else if (command.equals("remove-update-site"))
+			instance.removeUploadSite(makeList(args, 1));
 		else instance.usage();
 	}
 
