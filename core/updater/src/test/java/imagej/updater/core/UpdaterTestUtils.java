@@ -43,6 +43,7 @@ import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Progress;
+import imagej.updater.util.StderrProgress;
 import imagej.updater.util.Util;
 
 import java.io.ByteArrayOutputStream;
@@ -53,6 +54,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -118,16 +120,31 @@ public class UpdaterTestUtils {
 
 	protected static File makeIJRoot(final File webRoot) throws IOException {
 		final File ijRoot = FileUtils.createTemporaryDirectory("testUpdaterIJRoot", "");
+		initDb(ijRoot, webRoot);
+		return ijRoot;
+	}
+
+	protected static void initDb(final FilesCollection files) throws IOException {
+		initDb(files.prefix(""), getWebRoot(files));
+	}
+
+	protected static void initDb(final File ijRoot, final File webRoot) throws IOException {
 		writeGZippedFile(ijRoot, "db.xml.gz", "<pluginRecords><update-site name=\""
 				+ FilesCollection.DEFAULT_UPDATE_SITE + "\" timestamp=\"0\" url=\""
 				+ webRoot.toURI().toURL().toString() + "\" ssh-host=\"file:localhost\" "
 				+ "upload-directory=\"" + webRoot.getAbsolutePath() + "\"/></pluginRecords>");
-		return ijRoot;
 	}
 
-	protected static void initializeUpdateSite(final File ijRoot, final File webRoot, final Progress progress, final String... fileNames)
+	public static FilesCollection initialize(final String... fileNames) throws Exception {
+		return initialize(null, null, null, fileNames);
+	}
+
+	public static FilesCollection initialize(File ijRoot, File webRoot, Progress progress, final String... fileNames)
 			throws Exception
 		{
+		if (ijRoot == null) ijRoot = FileUtils.createTemporaryDirectory("testUpdaterIJRoot", "");
+		if (webRoot == null) webRoot = FileUtils.createTemporaryDirectory("testUpdaterWebRoot", "");
+
 		final File localDb = new File(ijRoot, "db.xml.gz");
 		final File remoteDb = new File(webRoot, "db.xml.gz");
 
@@ -140,6 +157,7 @@ public class UpdaterTestUtils {
 		assertFalse(localDb.exists());
 		assertFalse(remoteDb.exists());
 
+		if (progress == null) progress = new StderrProgress();
 		FilesUploader uploader =
 			FilesUploader.initialUpload(url, sshHost, uploadDirectory);
 		assertTrue(uploader.login());
@@ -149,7 +167,15 @@ public class UpdaterTestUtils {
 		assertTrue(remoteDb.exists());
 		final long remoteDbSize = remoteDb.length();
 
-		if (fileNames.length > 0) {
+		// Write initial db.xml.gz
+
+		FilesCollection files = new FilesCollection(ijRoot);
+		useWebRoot(files, webRoot);
+
+		if (fileNames.length == 0) {
+			files.write();
+			assertTrue(localDb.exists());
+		} else {
 			// Write files
 
 			final List<String> list = new ArrayList<String>();
@@ -160,7 +186,11 @@ public class UpdaterTestUtils {
 
 			// Initialize db.xml.gz
 
-			final FilesCollection files = readDb(false, false, ijRoot, webRoot, progress);
+			if (localDb.exists()) {
+				files.read(localDb);
+			}
+			new XMLFileReader(files).read(FilesCollection.DEFAULT_UPDATE_SITE);
+
 			assertEquals(0, files.size());
 
 			files.write();
@@ -181,43 +211,40 @@ public class UpdaterTestUtils {
 			assertNotEqual(remoteDb.length(), remoteDbSize);
 		}
 
+		return files;
 	}
 
-	protected static FilesCollection readDb(final boolean readLocalDb,
-			final boolean runChecksummer, final File ijRoot, final File webRoot, final Progress progress) throws IOException,
-			ParserConfigurationException, SAXException {
-		final FilesCollection files = new FilesCollection(ijRoot);
+	public static boolean cleanup(final FilesCollection files) {
+		final File ijRoot = files.prefix("");
+		final File webRoot = getWebRoot(files);
+		return (!webRoot.isDirectory() || FileUtils.deleteRecursively(webRoot)) &&
+				(!ijRoot.isDirectory() || FileUtils.deleteRecursively(ijRoot));
+	}
 
-		// Initialize default update site
+	protected static FilesCollection readDb(FilesCollection files,
+			final Progress progress) throws ParserConfigurationException,
+			SAXException {
+		files = new FilesCollection(files.prefix(""));
 
-		final UpdateSite updateSite =
-			files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE);
+		// We're too fast, cannot trust the cached checksums
+		files.prefix(".checksums").delete();
+		files.downloadIndexAndChecksum(progress);
+		return files;
+	}
+
+	public static void useWebRoot(final FilesCollection files, final File webRoot) throws MalformedURLException {
+		final UpdateSite updateSite = files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE);
 		assertNotNull(updateSite);
 
 		updateSite.url = webRoot.toURI().toURL().toString() + "/";
 		updateSite.sshHost = "file:localhost";
 		updateSite.uploadDirectory = webRoot.getAbsolutePath() + "/";
+	}
 
-		final File localDb = new File(ijRoot, "db.xml.gz");
-		if (runChecksummer) {
-			// We're too fast, cannot trust the cached checksums
-			new File(ijRoot, ".checksums").delete();
-		}
-		if (readLocalDb && runChecksummer) {
-			files.downloadIndexAndChecksum(progress);
-			return files;
-		}
-		if (readLocalDb) files.read(localDb);
-		else {
-			assertFalse(localDb.exists());
-
-		}
-		new XMLFileReader(files).read(FilesCollection.DEFAULT_UPDATE_SITE);
-		if (runChecksummer) {
-			final Checksummer czechsummer = new Checksummer(files, progress);
-			czechsummer.updateFromLocal();
-		}
-		return files;
+	public static File getWebRoot(final FilesCollection files) {
+		final UpdateSite site = files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE);
+		assertTrue("file:localhost".equals(site.sshHost));
+		return new File(site.uploadDirectory);
 	}
 
 	protected static void update(final FilesCollection files, final Progress progress) throws IOException {
@@ -333,20 +360,18 @@ public class UpdaterTestUtils {
 	/**
 	 * Write a .jar file
 	 * 
-	 * @param dir which directory to write into
-	 * @param name the name of the .jar file
+	 * @param jarFile which directory to write into
 	 * @param args a list of entry name / contents pairs
 	 * @return the File object for the .jar file
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	protected static File writeJar(final File dir, final String name,
+	protected static File writeJar(final File jarFile,
 		final String... args) throws FileNotFoundException, IOException
 	{
 		assertTrue((args.length % 2) == 0);
-		final File file = new File(dir, name);
-		file.getParentFile().mkdirs();
-		final JarOutputStream jar = new JarOutputStream(new FileOutputStream(file));
+		jarFile.getParentFile().mkdirs();
+		final JarOutputStream jar = new JarOutputStream(new FileOutputStream(jarFile));
 		for (int i = 0; i + 1 < args.length; i += 2) {
 			final JarEntry entry = new JarEntry(args[i]);
 			jar.putNextEntry(entry);
@@ -354,7 +379,7 @@ public class UpdaterTestUtils {
 			jar.closeEntry();
 		}
 		jar.close();
-		return file;
+		return jarFile;
 	}
 
 	protected static File writeJar(final File file, Class<?>... classes) throws FileNotFoundException, IOException {
@@ -413,7 +438,7 @@ public class UpdaterTestUtils {
 		final File dir = file.getParentFile();
 		if (!dir.isDirectory()) dir.mkdirs();
 		final String name = file.getName();
-		if (name.endsWith(".jar")) return writeJar(dir, name, content, content);
+		if (name.endsWith(".jar")) return writeJar(file, content, content);
 
 		writeStream(new FileOutputStream(file), content, true);
 		return file;
@@ -440,7 +465,7 @@ public class UpdaterTestUtils {
 	 * Read a gzip'ed stream and return what we got as a String
 	 * 
 	 * @param in the input stream as compressed by gzip
-	 * @return the contents, as a String
+	 * @return the contents, as a Stringcl
 	 * @throws IOException
 	 */
 	protected static String readGzippedStream(final InputStream in) throws IOException {
