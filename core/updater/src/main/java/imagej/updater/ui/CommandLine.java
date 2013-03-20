@@ -67,10 +67,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.scijava.log.LogService;
-import org.xml.sax.SAXException;
 
 /**
  * This is the command-line interface into the ImageJ Updater.
@@ -82,14 +79,34 @@ public class CommandLine {
 	protected static LogService log = Util.getLogService();
 	protected FilesCollection files;
 	protected Progress progress;
+	private boolean checksummed = false;
 
-	public CommandLine() throws IOException, ParserConfigurationException,
-		SAXException
+	/**
+	 * Determines whether die() should exit or throw a RuntimeException.
+	 */
+	private boolean standalone;
+
+	@Deprecated
+	public CommandLine() {
+		this(AppUtils.getBaseDirectory(), 80);
+	}
+
+	public CommandLine(final File ijDir, final int columnCount)
 	{
-		progress = new StderrProgress(80);
-		files = new FilesCollection(log, AppUtils.getBaseDirectory());
-		String warnings = files.downloadIndexAndChecksum(progress);
+		progress = new StderrProgress(columnCount);
+		files = new FilesCollection(log, ijDir);
+	}
+
+	private void ensureChecksummed() {
+		if (checksummed) return;
+		String warnings;
+		try {
+			warnings = files.downloadIndexAndChecksum(progress);
+		} catch (Exception e) {
+			throw die("Received exception: " + e.getMessage());
+		}
 		if (!warnings.equals("")) System.err.println(warnings);
+		checksummed = true;
 	}
 
 	protected class FileFilter implements Filter {
@@ -113,11 +130,13 @@ public class CommandLine {
 	}
 
 	public void listCurrent(final List<String> list) {
+		ensureChecksummed();
 		for (final FileObject file : files.filter(new FileFilter(list)))
 			System.out.println(file.filename + "-" + file.getTimestamp());
 	}
 
 	public void list(final List<String> list, Filter filter) {
+		ensureChecksummed();
 		if (filter == null) filter = new FileFilter(list);
 		else filter = files.and(new FileFilter(list), filter);
 		files.sort();
@@ -154,6 +173,7 @@ public class CommandLine {
 	}
 
 	public void show(final String filename) {
+		ensureChecksummed();
 		final FileObject file = files.get(filename);
 		if (file == null) {
 			System.err.println("\nERROR: File not found: " + filename);
@@ -163,6 +183,7 @@ public class CommandLine {
 	}
 
 	public void show(final FileObject file) {
+		ensureChecksummed();
 		System.out.println();
 		System.out.println("File: " + file.getFilename(true));
 		if (!file.getFilename(true).equals(file.localFilename)) {
@@ -211,6 +232,7 @@ public class CommandLine {
 	}
 
 	public void download(final FileObject file) {
+		ensureChecksummed();
 		try {
 			new Downloader(progress).start(new OneFile(file));
 			if (file.executable && !files.util.platform.startsWith("win")) try {
@@ -241,6 +263,7 @@ public class CommandLine {
 	protected void addDependencies(final FileObject file,
 		final Set<FileObject> all)
 	{
+		ensureChecksummed();
 		if (all.contains(file)) return;
 		all.add(file);
 		for (final Dependency dependency : file.getDependencies()) {
@@ -260,6 +283,7 @@ public class CommandLine {
 	public void update(final List<String> list, final boolean force,
 		final boolean pristine)
 	{
+		ensureChecksummed();
 		try {
 			for (final FileObject file : files.filter(new FileFilter(list))) {
 				if (file.getStatus() == Status.LOCAL_ONLY) {
@@ -301,6 +325,7 @@ public class CommandLine {
 		if (list == null || list.size() == 0) die("Which files do you mean to upload?");
 
 		String updateSite = null;
+		ensureChecksummed();
 		int count = 0;
 		for (final String name : list) {
 			final FileObject file = files.get(name);
@@ -398,6 +423,7 @@ public class CommandLine {
 	}
 
 	public void listUpdateSites(Collection<String> args) {
+		ensureChecksummed();
 		if (args == null || args.size() == 0)
 			args = files.getUpdateSiteNames();
 		for (final String name : args) {
@@ -417,6 +443,7 @@ public class CommandLine {
 	}
 
 	public void addOrEditUploadSite(final String name, final String url, final String sshHost, final String uploadDirectory, boolean add) {
+		ensureChecksummed();
 		UpdateSite site = files.getUpdateSite(name);
 		if (add) {
 			if (site != null)
@@ -438,6 +465,7 @@ public class CommandLine {
 		}
 	}
 
+	@Deprecated
 	public static CommandLine getInstance() {
 		try {
 			return new CommandLine();
@@ -449,7 +477,7 @@ public class CommandLine {
 		}
 	}
 
-	public static List<String> makeList(final String[] list, int start) {
+	private static List<String> makeList(final String[] list, int start) {
 		final List<String> result = new ArrayList<String>();
 		while (start < list.length)
 			result.add(list[start++]);
@@ -479,12 +507,26 @@ public class CommandLine {
 			+ "\tedit-update-site <nick> <url> [<host> <upload-directory>]");
 	}
 
-	public static void main(final String[] args) {
-		if (args.length == 0) {
-			usage();
-			System.exit(0);
+	public static void main(final String... args) {
+		try {
+			main(AppUtils.getBaseDirectory(), 80, true, args);
 		}
+		catch (final RuntimeException e) {
+			System.err.println(e.getMessage());
+			System.exit(1);
+		}
+		catch (final Exception e) {
+			e.printStackTrace();
+			System.err.println("Could not parse db.xml.gz: " + e.getMessage());
+			System.exit(1);
+		}
+	}
 
+	public static void main(final File ijDir, final int columnCount, final String... args) {
+		main(ijDir, columnCount, false, args);
+	}
+
+	private static void main(final File ijDir, final int columnCount, final boolean standalone, final String[] args) {
 		String http_proxy = System.getenv("http_proxy");
 		if (http_proxy != null && http_proxy.startsWith("http://")) {
 			final int colon = http_proxy.indexOf(':', 7);
@@ -505,32 +547,39 @@ public class CommandLine {
 		Authenticator.setDefault(new ProxyAuthenticator());
 		setUserInterface();
 
+		final CommandLine instance = new CommandLine(ijDir, columnCount);
+		instance.standalone = standalone;
+
+		if (args.length == 0) {
+			instance.usage();
+		}
+
 		final String command = args[0];
-		if (command.equals("list")) getInstance().list(makeList(args, 1));
-		else if (command.equals("list-current")) getInstance().listCurrent(
+		if (command.equals("list")) instance.list(makeList(args, 1));
+		else if (command.equals("list-current")) instance.listCurrent(
 			makeList(args, 1));
-		else if (command.equals("list-uptodate")) getInstance().listUptodate(
+		else if (command.equals("list-uptodate")) instance.listUptodate(
 			makeList(args, 1));
-		else if (command.equals("list-not-uptodate")) getInstance()
+		else if (command.equals("list-not-uptodate")) instance
 			.listNotUptodate(makeList(args, 1));
-		else if (command.equals("list-updateable")) getInstance().listUpdateable(
+		else if (command.equals("list-updateable")) instance.listUpdateable(
 			makeList(args, 1));
-		else if (command.equals("list-modified")) getInstance().listModified(
+		else if (command.equals("list-modified")) instance.listModified(
 			makeList(args, 1));
-		else if (command.equals("show")) getInstance().show(makeList(args, 1));
-		else if (command.equals("update")) getInstance().update(makeList(args, 1));
-		else if (command.equals("update-force")) getInstance().update(
+		else if (command.equals("show")) instance.show(makeList(args, 1));
+		else if (command.equals("update")) instance.update(makeList(args, 1));
+		else if (command.equals("update-force")) instance.update(
 			makeList(args, 1), true);
-		else if (command.equals("update-force-pristine")) getInstance().update(
+		else if (command.equals("update-force-pristine")) instance.update(
 			makeList(args, 1), true, true);
-		else if (command.equals("upload")) getInstance().upload(makeList(args, 1));
+		else if (command.equals("upload")) instance.upload(makeList(args, 1));
 		else if (command.equals("list-update-sites"))
-			getInstance().listUpdateSites(makeList(args, 1));
+			instance.listUpdateSites(makeList(args, 1));
 		else if (command.equals("add-update-site"))
-			getInstance().addOrEditUploadSite(makeList(args, 1), true);
+			instance.addOrEditUploadSite(makeList(args, 1), true);
 		else if (command.equals("edit-update-site"))
-			getInstance().addOrEditUploadSite(makeList(args, 1), false);
-		else usage();
+			instance.addOrEditUploadSite(makeList(args, 1), false);
+		else instance.usage();
 	}
 
 	protected static class ProxyAuthenticator extends Authenticator {
