@@ -400,8 +400,10 @@ public class CommandLine {
 				for (Conflict conflict : new Conflicts(files).getConflicts(true))
 					log.error(conflict.getFilename() + ": " + conflict.getConflict());
 			}
-			else
-				log.error("Error during upload: ", e);
+			else {
+				e.printStackTrace();
+				throw die("Error during upload: " + e);
+			}
 			if (uploader != null)
 				uploader.logout();
 		}
