@@ -243,7 +243,7 @@ public class CommandLine {
 			}
 			catch (final Exception e) {
 				e.printStackTrace();
-				throw new RuntimeException("Could not mark " + file.filename +
+				throw die("Could not mark " + file.filename +
 					" as executable");
 			}
 			System.err.println("Installed " + file.filename);
@@ -322,14 +322,13 @@ public class CommandLine {
 	}
 
 	public void upload(final List<String> list) {
-		if (list == null || list.size() == 0) die("Which files do you mean to upload?");
-
+		if (list == null || list.size() == 0) throw die("Which files do you mean to upload?");
 		String updateSite = null;
 		ensureChecksummed();
 		int count = 0;
 		for (final String name : list) {
 			final FileObject file = files.get(name);
-			if (file == null) die("No file '" + name + "' found!");
+			if (file == null) throw die("No file '" + name + "' found!");
 			if (file.getStatus() == Status.INSTALLED) {
 				System.err.println("Skipping up-to-date " + name);
 				continue;
@@ -348,21 +347,18 @@ public class CommandLine {
 				updateSite = file.updateSite;
 				if (updateSite == null) updateSite =
 					file.updateSite = chooseUploadSite(name);
-				if (updateSite == null) die("Canceled");
+				if (updateSite == null) throw die("Canceled");
 			}
 			else if (file.updateSite == null) {
 				System.err.println("Uploading new file '" + name + "' to  site '" +
 					updateSite + "'");
 				file.updateSite = updateSite;
 			}
-			else if (!file.updateSite.equals(updateSite)) die("Cannot upload to multiple update sites (" +
-				files.get(0) +
-				" to " +
-				updateSite +
-				" and " +
-				name +
-				" to " +
-				file.updateSite + ")");
+			else if (!file.updateSite.equals(updateSite)) {
+				throw die("Cannot upload to multiple update sites ("
+						+ list.get(0) + " to " + updateSite + " and "
+						+ name + " to " + file.updateSite + ")");
+			}
 			file.setAction(files, Action.UPLOAD);
 			count++;
 		}
@@ -376,7 +372,7 @@ public class CommandLine {
 		try {
 			uploader = new FilesUploader(files, updateSite);
 			if (!uploader.login())
-				die("Login failed!");
+				throw die("Login failed!");
 			uploader.upload(progress);
 			files.write();
 		}
@@ -438,7 +434,7 @@ public class CommandLine {
 
 	public void addOrEditUploadSite(final List<String> args, boolean add) {
 		if (args.size() != 2 && args.size() != 4)
-			die("Usage: " + (add ? "add" : "edit") + "-update-site <name> <url> [<host> <upload-directory>]");
+			throw die("Usage: " + (add ? "add" : "edit") + "-update-site <name> <url> [<host> <upload-directory>]");
 		addOrEditUploadSite(args.get(0), args.get(1), args.size() > 2 ? args.get(2) : null, args.size() > 3 ? args.get(3) : null, add);
 	}
 
@@ -447,12 +443,12 @@ public class CommandLine {
 		UpdateSite site = files.getUpdateSite(name);
 		if (add) {
 			if (site != null)
-				die("Site '" + name + "' was already added!");
+				throw die("Site '" + name + "' was already added!");
 			files.addUpdateSite(name, url, sshHost, uploadDirectory, 0l);
 		}
 		else {
 			if (site == null)
-				die("Site '" + name + "' was not yet added!");
+				throw die("Site '" + name + "' was not yet added!");
 			site.url = url;
 			site.sshHost = sshHost;
 			site.uploadDirectory = uploadDirectory;
@@ -461,7 +457,7 @@ public class CommandLine {
 			files.write();
 		} catch (Exception e) {
 			UpdaterUserInterface.get().handleException(e);
-			die("Could not write local file database");
+			throw die("Could not write local file database");
 		}
 	}
 
@@ -484,13 +480,27 @@ public class CommandLine {
 		return result;
 	}
 
-	public static void die(final String message) {
-		System.err.println(message);
-		System.exit(1);
+	/**
+	 * Print an error message and exit the process with an error.
+	 * 
+	 * Note: Java has no "noreturn" annotation, but you can always write:
+	 * <code>throw die(<message>)</code> to make the Java compiler understand.
+	 * 
+	 * @param message
+	 *            the error message
+	 * @return a dummy return value to be able to use "throw die(...)" to shut
+	 *         up the compiler
+	 */
+	private RuntimeException die(final String message) {
+		if (standalone) {
+			System.err.println(message);
+			System.exit(1);
+		}
+		return new RuntimeException(message);
 	}
 
-	public static void usage() {
-		System.err.println("Usage: imagej.updater.ui.CommandLine <command>\n"
+	public void usage() {
+		throw die("Usage: imagej.updater.ui.CommandLine <command>\n"
 			+ "\n" + "Commands:\n" + "\tlist [<files>]\n"
 			+ "\tlist-uptodate [<files>]\n"
 			+ "\tlist-not-uptodate [<files>]\n"
