@@ -348,7 +348,6 @@ public class FilesUploader {
 
 	public static FilesUploader initialUpload(final String url,
 		final String sshHost, final String uploadDirectory)
-		throws InstantiationException
 	{
 		final String updateSiteName = "Dummy";
 		final FilesCollection files = new FilesCollection(null);
