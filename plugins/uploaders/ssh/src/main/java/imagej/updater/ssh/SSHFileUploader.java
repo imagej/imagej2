@@ -73,7 +73,7 @@ public class SSHFileUploader extends AbstractUploader {
 	private InputStream in;
 	private LogService log;
 
-	public SSHFileUploader() throws JSchException {
+	public SSHFileUploader() {
 		err = UpdaterUserInterface.get().getOutputStream();
 	}
 
