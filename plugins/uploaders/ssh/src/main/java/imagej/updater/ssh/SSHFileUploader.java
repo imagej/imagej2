@@ -54,6 +54,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.scijava.log.LogService;
+import org.scijava.log.StderrLogService;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -83,6 +84,21 @@ public class SSHFileUploader extends AbstractUploader {
 		log = uploader.getLog();
 		session = SSHSessionCreator.getSession(uploader);
 		return session != null;
+	}
+
+	protected boolean debugLogin(final String host) {
+		if (log == null) {
+			log = new StderrLogService();
+			log.setLevel(LogService.DEBUG);
+		}
+
+		try {
+			session = SSHSessionCreator.debugConnect(host, log);
+		} catch (final JSchException e) {
+			log.error(e);
+			return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -213,7 +229,7 @@ public class SSHFileUploader extends AbstractUploader {
 		}
 	}
 
-	private void setCommand(final String command) throws IOException {
+	protected void setCommand(final String command) throws IOException {
 		if (out != null) {
 			out.close();
 			channel.disconnect();
