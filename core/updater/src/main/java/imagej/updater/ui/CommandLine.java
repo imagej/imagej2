@@ -657,6 +657,9 @@ public class CommandLine {
 
 		@Override
 		public String getPassword(final String message) {
+			if (console == null) {
+				throw new RuntimeException("Password prompt requires interactive operation!");
+			}
 			System.out.print(message + ": ");
 			return new String(console.readPassword());
 		}
