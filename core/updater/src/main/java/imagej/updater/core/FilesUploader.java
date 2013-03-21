@@ -113,7 +113,14 @@ public class FilesUploader {
 	}
 
 	public String getUploadHost() {
-		return site.sshHost.substring(site.sshHost.indexOf('@') + 1);
+		String host = site.sshHost;
+		if (uploader != null) {
+			final String protocol = uploader.getProtocol();
+			if (protocol != null && host.startsWith(protocol + ":")) {
+				host = host.substring(protocol.length() + 1);
+			}
+		}
+		return host.substring(host.indexOf('@') + 1);
 	}
 
 	public String getUploadDirectory() {
