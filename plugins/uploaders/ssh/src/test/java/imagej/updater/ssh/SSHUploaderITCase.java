@@ -40,7 +40,7 @@ import imagej.updater.core.AbstractUploaderTest;
 import org.junit.Test;
 
 /**
- * A conditional JUnit test for uploading via SSH.
+ * A conditional JUnit test for uploading via SSH/SFTP.
  * 
  * This test is only activated iff the following system properties are set:
  * <dl>
@@ -71,5 +71,12 @@ public class SSHUploaderITCase extends AbstractUploaderTest {
 		final String uploadDirectory = getDirectoryProperty("upload-directory");
 
 		test(new SSHDeleter(host, uploadDirectory), "ssh:" + host, uploadDirectory);
+	}
+
+	@Test
+	public void testSFTPUpload() throws Exception {
+		final String host = getProperty("host");
+		final String uploadDirectory = getDirectoryProperty("upload-directory");
+		test(new SSHDeleter(host, uploadDirectory), "sftp:" + host, uploadDirectory);
 	}
 }
