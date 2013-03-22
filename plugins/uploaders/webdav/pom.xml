@@ -11,10 +11,10 @@
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ij-updater-ssh</artifactId>
+	<artifactId>ij-updater-webdav</artifactId>
 
-	<name>ImageJ Updater support for uploading via SSH/SFTP</name>
-	<description>The SSH/SFTP-specific part of the ImageJ Updater (TAFKA Fiji Updater).</description>
+	<name>ImageJ Updater support for uploading via WebDAV</name>
+	<description>A WebDAV backend to the ImageJ Updater (TAFKA Fiji Updater).</description>
 
 	<dependencies>
 		<dependency>
@@ -33,9 +33,9 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.jcraft</groupId>
-			<artifactId>jsch</artifactId>
-			<version>0.1.49</version>
+			<groupId>net.iharder</groupId>
+			<artifactId>base64</artifactId>
+			<version>2.3.8</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -63,7 +63,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.updater.ssh</packageName>
+							<packageName>imagej.updater.webdav</packageName>
 						</manifest>
 					</archive>
 				</configuration>

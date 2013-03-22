@@ -102,6 +102,14 @@ public class FilesUploader {
 		return uploader != null;
 	}
 
+	public FilesCollection getFilesCollection() {
+		return files;
+	}
+
+	public String getSiteName() {
+		return siteName;
+	}
+
 	public String getDefaultUsername() {
 		String host = site.sshHost;
 		if (host.startsWith("sftp:")) host = host.substring(5);
@@ -113,7 +121,14 @@ public class FilesUploader {
 	}
 
 	public String getUploadHost() {
-		return site.sshHost.substring(site.sshHost.indexOf('@') + 1);
+		String host = site.sshHost;
+		if (uploader != null) {
+			final String protocol = uploader.getProtocol();
+			if (protocol != null && host.startsWith(protocol + ":")) {
+				host = host.substring(protocol.length() + 1);
+			}
+		}
+		return host.substring(host.indexOf('@') + 1);
 	}
 
 	public String getUploadDirectory() {
@@ -348,7 +363,6 @@ public class FilesUploader {
 
 	public static FilesUploader initialUpload(final String url,
 		final String sshHost, final String uploadDirectory)
-		throws InstantiationException
 	{
 		final String updateSiteName = "Dummy";
 		final FilesCollection files = new FilesCollection(null);

@@ -33,17 +33,21 @@
  * #L%
  */
 
-// TODO: test updating the updater somehow (store timestamp of .jar/.class and launch the new one if changed? That might be _very_ fragile...)
-// TODO: check that multiple upload sites cannot be uploaded to in one go (stageForUpload() should throw an exception in that case)
-// TODO: test cross-site dependency
-// TODO: test native dependencies
-// TODO: what to do with files that Fiji provides already? Take newer?
 // TODO: make a nice button to add Fiji...
-// TODO: should we have a list of alternative update sites per FileObject so that we can re-parse the alternatives when an update site was removed? Or just tell the user that there was a problem and we need to reparse everything?
-// TODO: make a proper upgrade plan for the Fiji Updater
 
 package imagej.updater.core;
 
+import static imagej.updater.core.UpdaterTestUtils.assertAction;
+import static imagej.updater.core.UpdaterTestUtils.assertCount;
+import static imagej.updater.core.UpdaterTestUtils.assertNotEqual;
+import static imagej.updater.core.UpdaterTestUtils.assertStatus;
+import static imagej.updater.core.UpdaterTestUtils.getWebRoot;
+import static imagej.updater.core.UpdaterTestUtils.initDb;
+import static imagej.updater.core.UpdaterTestUtils.makeIJRoot;
+import static imagej.updater.core.UpdaterTestUtils.makeList;
+import static imagej.updater.core.UpdaterTestUtils.readGzippedStream;
+import static imagej.updater.core.UpdaterTestUtils.touch;
+import static imagej.updater.core.UpdaterTestUtils.writeGZippedFile;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -58,15 +62,11 @@ import imagej.updater.util.Progress;
 import imagej.updater.util.StderrProgress;
 import imagej.updater.util.Util;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
@@ -74,15 +74,12 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.regex.Pattern;
-import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.scijava.log.LogService;
 import org.scijava.util.FileUtils;
 import org.xml.sax.SAXException;
 
@@ -94,24 +91,15 @@ import org.xml.sax.SAXException;
 public class UpdaterTest {
 
 	final Progress progress = new StderrProgress();
-	protected File ijRoot, webRoot;
+	private FilesCollection files;
 
 	//
 	// Setup
 	//
 
-	@Before
-	public void setup() throws IOException {
-		ijRoot = FileUtils.createTemporaryDirectory("testUpdaterIJRoot", "");
-		webRoot = FileUtils.createTemporaryDirectory("testUpdaterWebRoot", "");
-
-		System.err.println("ij: " + ijRoot + ", web: " + webRoot);
-	}
-
 	@After
 	public void release() {
-		FileUtils.deleteRecursively(ijRoot);
-		FileUtils.deleteRecursively(webRoot);
+		if (files != null) UpdaterTestUtils.cleanup(files);
 	}
 
 	//
@@ -128,11 +116,9 @@ public class UpdaterTest {
 	@Test
 	public void testInitialUpload() throws Exception {
 
-		final File localDb = new File(ijRoot, "db.xml.gz");
-
 		// The progress indicator
 
-		initializeUpdateSite();
+		files = initialize();
 
 		// Write some files
 
@@ -141,20 +127,22 @@ public class UpdaterTest {
 		final String launcherName =
 			isWindows ? "ImageJ-win32.exe" : "ImageJ-linux32";
 
-		final File ijLauncher = writeFile(ijRoot, launcherName, "false");
+		final File ijLauncher = UpdaterTestUtils.writeFile(files.prefix(launcherName), "false");
 		ijLauncher.setExecutable(true);
 
-		writeJar(ijRoot, "jars/narf.jar", "README.txt", "Hello");
-		writeJar(ijRoot, "jars/egads.jar", "ClassLauncher", "oioioi");
+		UpdaterTestUtils.writeJar(files.prefix("jars/narf.jar"), "README.txt", "Hello");
+		UpdaterTestUtils.writeJar(files.prefix("jars/egads.jar"), "ClassLauncher", "oioioi");
 
 		// Initialize FilesCollection
 
-		FilesCollection files = readDb(false, false);
+		files.read(files.prefix(Util.XML_COMPRESSED));
+		new XMLFileReader(files).read(FilesCollection.DEFAULT_UPDATE_SITE);
 
 		// Write the (empty) files collection with the update site information
 
 		assertEquals(0, files.size());
 		files.write();
+		final File localDb = files.prefix(Util.XML_COMPRESSED);
 		assertTrue(localDb.exists());
 
 		// Update with the local files
@@ -192,16 +180,16 @@ public class UpdaterTest {
 
 		// Simulate update when everything is up-to-date
 
-		files = readDb(true, true);
+		files = readDb();
 
 		assertCount(3, files);
 		assertCount(3, files.upToDate());
 
-		// Simulate update when local db.xml.gz is missing
+		// Simulate missing db.xml.gz
 
-		localDb.delete();
-
-		files = readDb(false, true);
+		files.read();
+		files.clear();
+		files.downloadIndexAndChecksum(progress);
 
 		assertCount(3, files);
 		assertCount(3, files.upToDate());
@@ -209,20 +197,20 @@ public class UpdaterTest {
 
 	@Test
 	public void testFilters() throws Exception {
-		initializeUpdateSite("macros/Hello.txt", "macros/Comma.txt",
+		files = initialize("macros/Hello.txt", "macros/Comma.txt",
 			"macros/World.txt");
 
 		// Make sure that the local db.xml.gz is synchronized with the remote one
 
-		FilesCollection files = readDb(true, true);
+		files = readDb();
 		files.write();
 
 		// Modify/delete/add files
 
 		writeFile("macros/World.txt", "not enough");
 		writeFile("jars/hello.jar");
-		new File(ijRoot, "macros/Comma.txt").delete();
-		assertTrue(new File(ijRoot, ".checksums").delete());
+		files.prefix("macros/Comma.txt").delete();
+		assertTrue(files.prefix(".checksums").delete());
 
 		// Chronological order must be preserved
 
@@ -238,7 +226,7 @@ public class UpdaterTest {
 		assertEquals(3, counter);
 		names[counter++] = "jars/hello.jar";
 
-		files = readDb(true, true);
+		files = readDb();
 		counter = 0;
 		for (final FileObject file : files) {
 			assertEquals("FileObject " + counter, names[counter++], file
@@ -258,9 +246,8 @@ public class UpdaterTest {
 	@Test
 	public void testUpdater() throws Exception {
 		final String filename = "macros/hello.ijm";
-		final File file = new File(ijRoot, filename);
-		final File db = new File(ijRoot, "db.xml.gz");
-		initializeUpdateSite(filename);
+		files = initialize(filename);
+		final File file = files.prefix(filename);
 
 		// New files should be staged for install by default
 
@@ -268,13 +255,11 @@ public class UpdaterTest {
 		assertFalse(file.exists());
 
 		// Pretend that db.xml.gz is out-of-date
-		FilesCollection files = new FilesCollection(ijRoot);
-		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).url = webRoot.toURI().toURL().toString();
 		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).timestamp =
 			19991224134121l;
 		files.write();
 
-		files = readDb(true, true);
+		files = readDb();
 
 		assertCount(1, files);
 		assertCount(1, files.shownByDefault());
@@ -282,9 +267,10 @@ public class UpdaterTest {
 		assertAction(Action.INSTALL, files, filename);
 
 		// Start the update
-		update(files, progress);
+		UpdaterTestUtils.update(files, progress);
 		assertTrue(file.exists());
 
+		final File webRoot = getWebRoot(files);
 		assertTrue("Recorded remote timestamp", files.getUpdateSite(
 			FilesCollection.DEFAULT_UPDATE_SITE).isLastModified(
 			new File(webRoot, "db.xml.gz").lastModified()));
@@ -293,10 +279,10 @@ public class UpdaterTest {
 
 		// Modified files should be left alone in a fresh install
 
-		assertTrue(db.delete());
-		writeFile(file, "modified");
+		initDb(files);
+		UpdaterTestUtils.writeFile(file, "modified");
 
-		files = readDb(false, true);
+		files = readDb();
 		assertCount(1, files);
 		assertCount(0, files.shownByDefault());
 		assertStatus(Status.MODIFIED, files, filename);
@@ -306,9 +292,9 @@ public class UpdaterTest {
 
 	@Test
 	public void testUploadConflicts() throws Exception {
-		initializeUpdateSite("macros/obsolete.ijm", "macros/dependency.ijm");
+		files = initialize("macros/obsolete.ijm", "macros/dependency.ijm");
 
-		FilesCollection files = readDb(true, true);
+		files = readDb();
 		files.write();
 
 		final FileObject[] list = makeList(files);
@@ -321,11 +307,11 @@ public class UpdaterTest {
 		// Make sure files are checksummed again when their timestamp changed
 
 		final String name = "macros/dependencee.ijm";
-		final File dependencee = new File(ijRoot, name);
-		writeFile(dependencee, "not yet uploaded");
+		final File dependencee = files.prefix(name);
+		UpdaterTestUtils.writeFile(dependencee, "not yet uploaded");
 		touch(dependencee, 20030115203432l);
 
-		files = readDb(true, true);
+		files = readDb();
 		assertCount(3, files);
 
 		FileObject object = files.get(name);
@@ -335,7 +321,7 @@ public class UpdaterTest {
 		object.addDependency(list[0].getFilename(), obsolete);
 		object.addDependency(list[1].getFilename(), dependency);
 
-		writeFile(dependencee, "still not uploaded");
+		UpdaterTestUtils.writeFile(dependencee, "still not uploaded");
 
 		Conflicts conflicts = new Conflicts(files);
 		conflicts.conflicts = new ArrayList<Conflict>();
@@ -357,13 +343,13 @@ public class UpdaterTest {
 
 		// Make sure that obsolete dependencies are detected and repaired
 
-		files = readDb(true, true);
+		files = readDb();
 
 		assertTrue(obsolete.delete());
 		writeFile("macros/independent.ijm");
-		writeFile(dependencee, "a new version");
+		UpdaterTestUtils.writeFile(dependencee, "a new version");
 
-		files = readDb(true, true);
+		files = readDb();
 		object = files.get(name);
 		assertNotNull(object);
 		assertStatus(Status.MODIFIED, files, name);
@@ -403,12 +389,12 @@ public class UpdaterTest {
 
 	@Test
 	public void testUpdateConflicts() throws Exception {
-		initializeUpdateSite("macros/obsoleted.ijm", "macros/dependency.ijm",
+		files = initialize("macros/obsoleted.ijm", "macros/dependency.ijm",
 			"macros/locally-modified.ijm", "macros/dependencee.ijm");
 
 		// Add the dependency relations
 
-		FilesCollection files = readDb(true, true);
+		files = readDb();
 		FileObject[] list = makeList(files);
 		assertEquals(4, list.length);
 		FileObject obsoleted = list[0];
@@ -421,10 +407,11 @@ public class UpdaterTest {
 		dependencee.addDependency(files, locallyModified);
 
 		assertTrue(files.prefix(obsoleted).delete());
+		assertTrue(files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).url.startsWith("file:"));
 		new Checksummer(files, progress).updateFromLocal();
 		assertStatus(Status.NOT_INSTALLED, obsoleted);
 		obsoleted.setAction(files, Action.REMOVE);
-		writeFile(files.prefix(locallyModified), "modified");
+		UpdaterTestUtils.writeFile(files.prefix(locallyModified), "modified");
 		upload(files);
 
 		assertTrue(files.prefix(dependency).delete());
@@ -432,8 +419,8 @@ public class UpdaterTest {
 
 		// Now pretend a fresh install
 
-		assertTrue(new File(ijRoot, "db.xml.gz").delete());
-		files = readDb(false, true);
+		initDb(files);
+		files = readDb();
 		list = makeList(files);
 		assertEquals(4, list.length);
 		obsoleted = list[0];
@@ -482,15 +469,15 @@ public class UpdaterTest {
 		assertTrue(resolutions[0].getDescription().startsWith("Install"));
 		conflict.resolutions[0].resolve();
 
-		update(files, progress);
+		UpdaterTestUtils.update(files, progress);
 
 		assertFalse(files.prefix(obsoleted).exists());
 	}
 
 	@Test
 	public void testReChecksumming() throws Exception {
+		files = initialize();
 		writeFile("jars/new.jar");
-		FilesCollection files = new FilesCollection(ijRoot);
 		new Checksummer(files, progress).updateFromLocal();
 		assertStatus(Status.LOCAL_ONLY, files.get("jars/new.jar"));
 		writeFile("jars/new.jar", "modified");
@@ -511,12 +498,12 @@ public class UpdaterTest {
 
 	@Test
 	public void testUpdateVersionedJars() throws Exception {
-		initializeUpdateSite("jars/obsoleted-2.1.jar", "jars/without.jar",
+		files = initialize("jars/obsoleted-2.1.jar", "jars/without.jar",
 			"jars/with-2.0.jar", "jars/too-old-3.11.jar", "plugins/plugin.jar");
 
 		// Add the dependency relations
 
-		FilesCollection files = readDb(true, true);
+		files = readDb();
 		FileObject[] list = makeList(files);
 		assertEquals(5, list.length);
 		FileObject obsoleted = list[0];
@@ -552,7 +539,7 @@ public class UpdaterTest {
 
 		// Update one .jar file to a newer version
 
-		files = readDb(true, true);
+		files = readDb();
 		assertTrue(files.prefix("jars/too-old-3.11.jar").delete());
 		writeFile("jars/too-old-3.12.jar");
 		new Checksummer(files, progress).updateFromLocal();
@@ -563,6 +550,7 @@ public class UpdaterTest {
 		upload(files);
 
 		// check that webRoot's db.xml.gz's previous versions contain the old filename
+		final File webRoot = getWebRoot(files);
 		final String db = readGzippedStream(new FileInputStream(new File(webRoot, "db.xml.gz")));
 		Pattern regex = Pattern.compile(".*<previous-version [^>]*filename=\"jars/too-old-3.11.jar\".*", Pattern.DOTALL);
 		assertTrue(regex.matcher(db).matches());
@@ -571,7 +559,7 @@ public class UpdaterTest {
 
 		// The dependencies should be updated automatically
 
-		files = readDb(true, true);
+		files = readDb();
 		plugin = files.get("plugins/plugin.jar");
 		assertTrue(plugin.dependencies.containsKey("jars/too-old.jar"));
 		assertEquals("jars/too-old-3.12.jar", plugin.dependencies.get("jars/too-old.jar").filename);
@@ -579,6 +567,7 @@ public class UpdaterTest {
 
 	@Test
 	public void testMultipleVersionsSameSite() throws Exception {
+		files = initialize();
 		final String db = "<pluginRecords>"
 				+ " <plugin filename=\"jars/Jama-1.0.2.jar\">"
 				+ "  <previous-version timestamp=\"1\" checksum=\"a\" />"
@@ -589,9 +578,10 @@ public class UpdaterTest {
 				+ "  <previous-version timestamp=\"3\" checksum=\"c\" />"
 				+ " </plugin>"
 				+ "</pluginRecords>";
+		final File webRoot = getWebRoot(files);
 		writeGZippedFile(webRoot, "db.xml.gz", db);
-		final FilesCollection files = new FilesCollection(ijRoot);
-		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).url = webRoot.toURI().toURL().toString();
+		files = readDb();
+		files.clear();
 		new XMLFileReader(files).read(FilesCollection.DEFAULT_UPDATE_SITE);
 		final FileObject jama = files.get("jars/Jama.jar");
 		assertNotNull(jama);
@@ -610,11 +600,13 @@ public class UpdaterTest {
 
 	@Test
 	public void testOverriddenObsolete() throws Exception {
+		files = initialize();
 		final String db = "<pluginRecords>"
 				+ " <plugin filename=\"ImageJ-linux64\">"
 				+ "  <previous-version timestamp=\"1\" checksum=\"a\" />"
 				+ " </plugin>"
 				+ "</pluginRecords>";
+		final File webRoot = getWebRoot(files);
 		writeGZippedFile(webRoot, "db.xml.gz", db);
 		File webRoot2 = FileUtils.createTemporaryDirectory("testUpdaterWebRoot2", "");
 		final String db2 = "<pluginRecords>"
@@ -625,8 +617,8 @@ public class UpdaterTest {
 				+ "</pluginRecords>";
 		writeGZippedFile(webRoot2, "db.xml.gz", db2);
 
-		FilesCollection files = new FilesCollection(ijRoot);
-		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).url = webRoot.toURI().toURL().toString();
+		files = readDb();
+		files.clear();
 		files.addUpdateSite("Fiji", webRoot2.toURI().toURL().toString(), null, null, 0);
 		new XMLFileReader(files).read(FilesCollection.DEFAULT_UPDATE_SITE);
 		new XMLFileReader(files).read("Fiji");
@@ -638,7 +630,8 @@ public class UpdaterTest {
 		assertTrue(file.hasPreviousVersion("c"));
 		assertStatus(Status.NEW, files, "ImageJ-linux64");
 
-		files = new FilesCollection(ijRoot);
+		files = readDb();
+		files.clear();
 		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).url = webRoot2.toURI().toURL().toString();
 		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).timestamp = 0;
 		files.addUpdateSite("Fiji", webRoot.toURI().toURL().toString(), null, null, 0);
@@ -657,13 +650,13 @@ public class UpdaterTest {
 
 	@Test
 	public void testConflictingVersionsToUpload() throws Exception {
-		initializeUpdateSite("macros/macro.ijm");
+		files = initialize("macros/macro.ijm");
 
 		// There should be an upload conflict if .jar file names differ only in version number
 
 		writeFile("jars/file.jar");
 		writeFile("jars/file-3.0.jar");
-		final FilesCollection files = readDb(true, true);
+		files = readDb();
 		files.get("jars/file.jar").stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
 
 		final Conflicts conflicts = new Conflicts(files);
@@ -685,18 +678,16 @@ public class UpdaterTest {
 	@Test
 	public void testMultipleUpdateSites() throws Exception {
 		// initialize secondary update site
-		File webRoot2 = FileUtils.createTemporaryDirectory("testUpdaterWebRoot2", "");
-		initializeUpdateSite(ijRoot, webRoot2, progress, "jars/hello.jar");
-		assertFalse(new File(webRoot, "db.xml.gz").exists());
+		FilesCollection files2 = UpdaterTestUtils.initialize(null, null, progress, "jars/hello.jar");
 
 		// initialize main update site
-		assertTrue(new File(ijRoot, "db.xml.gz").delete());
-		initializeUpdateSite("macros/macro.ijm");
-
-		FilesCollection files = readDb(true, true);
+		files = initialize("macros/macro.ijm");
+		writeJar("jars/hello.jar");
+		files = readDb();
 		assertStatus(Status.LOCAL_ONLY, files.get("jars/hello.jar"));
 
 		// add second update site
+		final File webRoot2 = getWebRoot(files2);
 		files.addUpdateSite("second", webRoot2.toURI().toURL().toString(), "file:localhost", webRoot2.getAbsolutePath() + "/", 0l);
 
 		// re-read files from update site
@@ -705,8 +696,8 @@ public class UpdaterTest {
 		files.write();
 
 		// modify locally and re-read from update site
-		assertTrue(new File(ijRoot, ".checksums").delete());
-		assertTrue(new File(ijRoot, "jars/hello.jar").delete());
+		assertTrue(files.prefix(".checksums").delete());
+		assertTrue(files.prefix("jars/hello.jar").delete());
 		writeJar("jars/hello-2.0.jar", "new-file", "empty");
 		new Checksummer(files, progress).updateFromLocal();
 
@@ -718,18 +709,18 @@ public class UpdaterTest {
 
 	@Test
 	public void testUpdateable() throws Exception {
-		initializeUpdateSite("jars/hello.jar");
-		FilesCollection files = readDb(true, true);
+		files = initialize("jars/hello.jar");
+		files = readDb();
 		assertStatus(Status.INSTALLED, files.get("jars/hello.jar"));
 		String origChecksum = files.get("jars/hello.jar").getChecksum();
-		assertEquals(origChecksum, Util.getJarDigest(new File(ijRoot, "jars/hello.jar")));
+		assertEquals(origChecksum, Util.getJarDigest(files.prefix("jars/hello.jar")));
 
-		assertTrue(new File(ijRoot, ".checksums").delete());
-		assertTrue(new File(ijRoot, "jars/hello.jar").delete());
+		assertTrue(files.prefix(".checksums").delete());
+		assertTrue(files.prefix("jars/hello.jar").delete());
 		writeJar("jars/hello-2.0.jar", "new-file", "empty");
 		new Checksummer(files, progress).updateFromLocal();
 		String newChecksum = files.get("jars/hello.jar").localChecksum;
-		assertEquals(newChecksum, Util.getJarDigest(new File(ijRoot, "jars/hello-2.0.jar")));
+		assertEquals(newChecksum, Util.getJarDigest(files.prefix("jars/hello-2.0.jar")));
 
 		assertNotEqual(origChecksum, newChecksum);
 
@@ -738,7 +729,8 @@ public class UpdaterTest {
 		assertEquals(newChecksum, files.get("jars/hello.jar").localChecksum);
 		upload(files);
 
-		FilesCollection files2 = new FilesCollection(new File(ijRoot, "invalid"));
+		FilesCollection files2 = new FilesCollection(files.prefix("invalid"));
+		final File webRoot = getWebRoot(files);
 		files2.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).url = webRoot.toURI().toURL().toString();
 		XMLFileDownloader xmlLoader = new XMLFileDownloader(files2);
 		xmlLoader.start();
@@ -746,38 +738,40 @@ public class UpdaterTest {
 		assertEquals(newChecksum, newChecksum2);
 
 		// re-write the original version
-		assertTrue(new File(ijRoot, ".checksums").delete());
+		assertTrue(files.prefix(".checksums").delete());
 		writeFile("jars/hello.jar");
-		assertTrue(new File(ijRoot, "jars/hello-2.0.jar").delete());
-		files = readDb(true, true);
+		assertTrue(files.prefix("jars/hello-2.0.jar").delete());
+		files = readDb();
 		String origChecksum2 = files.get("jars/hello.jar").localChecksum;
 		assertEquals(origChecksum, origChecksum2);
-		assertEquals(origChecksum, Util.getJarDigest(new File(ijRoot, "jars/hello.jar")));
+		assertEquals(origChecksum, Util.getJarDigest(files.prefix("jars/hello.jar")));
 
-		assertTrue(new File(ijRoot, "db.xml.gz").delete());
-		files = readDb(false, true);
+		initDb(files);
+		files = readDb();
 		assertEquals(newChecksum, files.get("jars/hello.jar").current.checksum);
 
 		assertStatus(Status.UPDATEABLE, files.get("jars/hello.jar"));
 		files.get("jars/hello.jar").setAction(files, Action.UPDATE);
 		Installer installer = new Installer(files, progress);
 		installer.start();
-		assertEquals(newChecksum, Util.getJarDigest(new File(ijRoot, "update/jars/hello-2.0.jar")));
+		assertEquals(newChecksum, Util.getJarDigest(files.prefix("update/jars/hello-2.0.jar")));
 		installer.moveUpdatedIntoPlace();
 
 		assertStatus(Status.INSTALLED, files.get("jars/hello.jar"));
-		assertEquals(newChecksum, Util.getJarDigest(new File(ijRoot, "jars/hello-2.0.jar")));
+		assertEquals(newChecksum, Util.getJarDigest(files.prefix("jars/hello-2.0.jar")));
+
+		assertTrue(FileUtils.deleteRecursively(files2.prefix("")));
 	}
 
 	@Test
 	public void testReReadFiles() throws Exception {
-		initializeUpdateSite("macros/macro.ijm");
-		FilesCollection files = readDb(true, true);
+		files = initialize("macros/macro.ijm");
+		files = readDb();
 		files.get("macros/macro.ijm").description = "Narf";
 		files.write();
 		upload(files);
 
-		files = readDb(true, true);
+		files = readDb();
 		assertEquals("Narf", files.get("macros/macro.ijm").description);
 		new Checksummer(files, progress).updateFromLocal();
 		assertEquals("Narf", files.get("macros/macro.ijm").description);
@@ -789,12 +783,12 @@ public class UpdaterTest {
 		final String name2 = "jars/ij-updater-core-2.0.0.jar";
 
 		// initialize main update site
-		initializeUpdateSite(name1);
+		files = initialize(name1);
 
 		// "change" updater
-		assertTrue(new File(ijRoot, name1).delete());
+		assertTrue(files.prefix(name1).delete());
 		writeJar(name2, "files.txt", "modified");
-		FilesCollection files = readDb(true, true);
+		files = readDb();
 		assertTrue(files.get(name1) == files.get(name2));
 		assertStatus(Status.MODIFIED, files.get(name1));
 		final String modifiedChecksum = files.get(name2).localChecksum;
@@ -803,29 +797,30 @@ public class UpdaterTest {
 
 		// revert back to "old" updater
 		writeJar(name1);
-		assertTrue(new File(ijRoot, name2).delete());
+		assertTrue(files.prefix(name2).delete());
 
 		// now the updater should be updated first thing
-		files = readDb(true, true);
+		files = readDb();
 		FileObject file2 = files.get(name2);
 		assertNotEqual(file2.localFilename, name2);
 		assertTrue(file2.isUpdateable());
 		assertNotEqual(modifiedChecksum, files.get(name2).localChecksum);
 		assertTrue(Installer.isTheUpdaterUpdateable(files));
 		Installer.updateTheUpdater(files, progress);
-		assertTrue(new File(ijRoot, "update/" + name1).exists());
-		assertEquals(0l, new File(ijRoot, "update/" + name1).length());
-		assertTrue(new File(ijRoot, "update/" + name2).exists());
+		assertTrue(files.prefix("update/" + name1).exists());
+		assertEquals(0l, files.prefix("update/" + name1).length());
+		assertTrue(files.prefix("update/" + name2).exists());
 
-		assertTrue(new File(ijRoot, name1).delete());
-		assertFalse(new File(ijRoot, name2).exists());
-		assertTrue(new File(ijRoot, "update/" + name2).renameTo(new File(ijRoot, name2)));
+		assertTrue(files.prefix(name1).delete());
+		assertFalse(files.prefix(name2).exists());
+		assertTrue(files.prefix("update/" + name2).renameTo(files.prefix(name2)));
 		new Checksummer(files, progress).updateFromLocal();
 		assertEquals(modifiedChecksum, files.get(name2).current.checksum);
 	}
 
 	@Test
 	public void testFillMetadataFromPOM() throws Exception {
+		files = initialize();
 		writeJar("jars/hello.jar", "META-INF/maven/egads/hello/pom.xml", "<project>"
 				+ " <description>Take over the world!</description>"
 				+ " <developers>"
@@ -833,7 +828,6 @@ public class UpdaterTest {
 				+ "  <developer><name>Bugs Bunny</name></developer>"
 				+ " </developers>"
 				+ "</project>");
-		final FilesCollection files = new FilesCollection(ijRoot);
 		new Checksummer(files, progress).updateFromLocal();
 		final FileObject object = files.get("jars/hello.jar");
 		assertNotNull(object);
@@ -851,6 +845,7 @@ public class UpdaterTest {
 
 	@Test
 	public void testPomPropertiesHashing() throws Exception {
+		files = initialize();
 		final String oldContents = "blub = true\n"
 			+ "#Tue Jun 12 06:43:48 IST 2012\n"
 			+ "narf.egads = pinkie\n";
@@ -878,6 +873,7 @@ public class UpdaterTest {
 
 	@Test
 	public void testManifestHashing() throws Exception {
+		files = initialize();
 		final String oldContents =
 			"Manifest-Version: 1.0\n" + "Built-By: Bugs Bunny\n"
 				+ "Main-Class: Buxtehude\n";
@@ -905,9 +901,12 @@ public class UpdaterTest {
 
 	private File writeJarWithDatedFile(final String jarFileName, final int year,
 		final int month, final int day, final String fileName,
-		final String propertiesContents) throws IOException
+		final String propertiesContents) throws Exception
 	{
-		final File file = new File(ijRoot, jarFileName);
+		files = initialize();
+		final File file = files.prefix(jarFileName);
+		final File dir = file.getParentFile();
+		if (dir != null && !dir.isDirectory()) assertTrue(dir.mkdirs());
 		final JarOutputStream out = new JarOutputStream(new FileOutputStream(file));
 		final JarEntry entry = new JarEntry(fileName);
 		entry.setTime(new GregorianCalendar(year, month, day).getTimeInMillis());
@@ -920,12 +919,13 @@ public class UpdaterTest {
 
 	@Test
 	public void testHandlingOfObsoleteChecksums() throws Exception {
+		files = initialize();
 		final String newContents =
 			"blub = true\n" + "#Tue Jun 17 09:47:43 CST 2012\n"
 				+ "narf.egads = pinkie\n";
 		final String fileName =
 			"META-INF/maven/net.imagej/updater-test/pom.properties";
-		assertTrue(new File(ijRoot, "jars").mkdirs());
+		assertTrue(files.prefix("jars").mkdirs());
 		File jar =
 			writeJarWithDatedFile("jars/new.jar", 2012, 6, 17, fileName, newContents);
 
@@ -941,7 +941,6 @@ public class UpdaterTest {
 				{ checksumOld, "something else", checksumOld },
 				{ checksumNew, "something else", checksumNew } };
 		for (final String[] triplet : data) {
-			final FilesCollection files = new FilesCollection(ijRoot);
 			final FileObject file =
 				new FileObject(null, "jars/new.jar", jar.length(), triplet[1], Util
 					.getTimestamp(jar), Status.NOT_INSTALLED);
@@ -955,21 +954,21 @@ public class UpdaterTest {
 				: file.current.checksum);
 		}
 
-		FilesCollection files = new FilesCollection(ijRoot);
 		final FileObject file =
 			new FileObject(FilesCollection.DEFAULT_UPDATE_SITE, "jars/new.jar", jar.length(), checksumOld, Util
 				.getTimestamp(jar), Status.INSTALLED);
 		files.add(file);
 
+		final File webRoot = getWebRoot(files);
 		new File(webRoot, "jars").mkdirs();
 		assertTrue(jar.renameTo(new File(webRoot, "jars/new.jar-" +
 			file.current.timestamp)));
 		new XMLFileWriter(files).write(new GZIPOutputStream(new FileOutputStream(
 			new File(webRoot, "db.xml.gz"))), false);
 
-		files = readDb(false, true);
+		files = readDb();
 		new Installer(files, progress).start();
-		jar = new File(ijRoot, "update/jars/new.jar");
+		jar = files.prefix("update/jars/new.jar");
 		assertTrue(jar.exists());
 		assertEquals(checksumNew, Util.getJarDigest(jar));
 		assertEquals(checksumOld, files.get("jars/new.jar").getChecksum());
@@ -977,13 +976,13 @@ public class UpdaterTest {
 
 	@Test
 	public void testUpdateToDifferentVersion() throws Exception {
-		initializeUpdateSite("jars/egads-1.0.jar");
-		FilesCollection files = readDb(true, true);
+		files = initialize("jars/egads-1.0.jar");
+		files = readDb();
 
 		// upload a newer version
 		assertTrue(files.prefix("jars/egads-1.0.jar").delete());
 		writeJar("jars/egads-2.1.jar");
-		files = readDb(true, true);
+		files = readDb();
 		files.get("jars/egads.jar").stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
 		upload(files);
 
@@ -993,7 +992,7 @@ public class UpdaterTest {
 		// downgrade locally
 		assertTrue(files.prefix("jars/egads-2.1.jar").delete());
 		writeJar("jars/egads-1.0.jar");
-		files = readDb(true, true);
+		files = readDb();
 
 		// update again
 		assertTrue("egads.jar's status: " + files.get("jars/egads.jar").getStatus(), files.get("jars/egads.jar").stageForUpdate(files,  false));
@@ -1008,13 +1007,13 @@ public class UpdaterTest {
 
 		// remove the file from the update site
 		assertTrue(files.prefix("jars/egads-2.1.jar").delete());
-		files = readDb(true, true);
+		files = readDb();
 		files.get("jars/egads.jar").setAction(files, Action.REMOVE);
 		upload(files);
 
 		// re-instate an old version with a different name
 		writeJar("jars/egads-1.0.jar");
-		files = readDb(true, true);
+		files = readDb();
 		assertStatus(Status.OBSOLETE, files, "jars/egads.jar");
 
 		// uninstall it
@@ -1031,41 +1030,44 @@ public class UpdaterTest {
 
 	@Test
 	public void reconcileMultipleVersions() throws Exception {
-		initializeUpdateSite();
-		writeJar(ijRoot, "jars/egads-0.1.jar", "hello", "world");
-		FilesCollection files = readDb(false,  true);
+		files = initialize();
+		UpdaterTestUtils.writeJar(files.prefix("jars/egads-0.1.jar"), "hello", "world");
+		files = readDb();
 		files.get("jars/egads.jar").stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
 		upload(files);
 
-		assertTrue(new File(ijRoot, "jars/egads-0.1.jar").delete());
-		writeJar(ijRoot, "jars/egads-0.2.jar", "hello", "world2");
+		assertTrue(files.prefix("jars/egads-0.1.jar").delete());
+		UpdaterTestUtils.writeJar(files.prefix("jars/egads-0.2.jar"), "hello", "world2");
 		new Checksummer(files, progress).updateFromLocal();
 		files.get("jars/egads.jar").stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
 		upload(files);
 
-		writeJar(ijRoot, "jars/egads-0.1.jar", "hello", "world");
-		writeJar(ijRoot, "jars/egads.jar", "hello", "world");
-		touch(new File(ijRoot, "jars/egads-0.2.jar"), 19800101000001l);
-		files = readDb(true, true);
+		UpdaterTestUtils.writeJar(files.prefix("jars/egads-0.1.jar"), "hello", "world");
+		UpdaterTestUtils.writeJar(files.prefix("jars/egads.jar"), "hello", "world");
+		touch(files.prefix("jars/egads-0.2.jar"), 19800101000001l);
+		files = readDb();
 		List<Conflict> conflicts = files.getConflicts();
 		assertEquals(1, conflicts.size());
 		Conflict conflict = conflicts.get(0);
 		assertEquals(conflict.filename, "jars/egads-0.2.jar");
 		conflict.resolutions[1].resolve();
-		assertFalse(new File(ijRoot, "jars/egads.jar").exists());
-		assertFalse(new File(ijRoot, "jars/egads-0.1.jar").exists());
-		assertTrue(new File(ijRoot, "jars/egads-0.2.jar").exists());
+		assertFalse(files.prefix("jars/egads.jar").exists());
+		assertFalse(files.prefix("jars/egads-0.1.jar").exists());
+		assertTrue(files.prefix("jars/egads-0.2.jar").exists());
 	}
 
 	@Test
 	public void uninstallRemoved() throws Exception {
-		initializeUpdateSite("jars/to-be-removed.jar");
-		FilesCollection files = readDb(true,  true);
+		files = initialize("jars/to-be-removed.jar");
+		files = readDb();
 		files.write();
 
+		final File ijRoot = files.prefix("");
+		final File webRoot = getWebRoot(files);
 		File ijRoot2 = makeIJRoot(webRoot);
 
 		files = new FilesCollection(ijRoot2);
+		files.read();
 		files.downloadIndexAndChecksum(progress);
 		files.get("jars/to-be-removed.jar").setAction(files, Action.REMOVE);
 		upload(files);
@@ -1076,7 +1078,7 @@ public class UpdaterTest {
 		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).timestamp = 0;
 		files.write();
 
-		files = readDb(true, true);
+		files = readDb();
 		FileObject obsolete = files.get("jars/to-be-removed.jar");
 		assertStatus(Status.OBSOLETE, obsolete);
 		assertAction(Action.OBSOLETE, obsolete);
@@ -1086,9 +1088,9 @@ public class UpdaterTest {
 
 	@Test
 	public void removeDependencies() throws Exception {
-		initializeUpdateSite("jars/plugin.jar", "jars/dependency.jar");
+		files = initialize("jars/plugin.jar", "jars/dependency.jar");
 		writeJar("jars/not-uploaded-0.11.jar");
-		FilesCollection files = readDb(true, true);
+		files = readDb();
 		FileObject plugin = files.get("jars/plugin.jar");
 		plugin.addDependency(files, files.get("jars/dependency.jar"));
 		plugin.addDependency(files, files.get("jars/not-uploaded.jar"));
@@ -1105,9 +1107,9 @@ public class UpdaterTest {
 
 	@Test
 	public void byteCodeAnalyzer() throws Exception {
+		files = initialize();
 		writeJar("jars/dependencee.jar", imagej.updater.test.Dependencee.class);
 		writeJar("jars/dependency.jar", imagej.updater.test.Dependency.class);
-		FilesCollection files = new FilesCollection(ijRoot);
 		new Checksummer(files, progress).updateFromLocal();
 
 		FileObject dependencee = files.get("jars/dependencee.jar");
@@ -1117,7 +1119,8 @@ public class UpdaterTest {
 		assertEquals("jars/dependency.jar", dependencee.getDependencies().iterator().next().filename);
 
 		writeJar("jars/bogus.jar", imagej.updater.test.Dependency.class, imagej.updater.test.Dependencee.class);
-		files = new FilesCollection(ijRoot); // force a new dependency analyzer
+		files = new FilesCollection(files.prefix("")); // force a new dependency analyzer
+		files.read();
 		new Checksummer(files, progress).updateFromLocal();
 		dependencee = files.get("jars/dependencee.jar");
 		dependencee.addDependency(files, files.get("jars/dependency.jar"));
@@ -1128,26 +1131,27 @@ public class UpdaterTest {
 
 	@Test
 	public void keepObsoleteRecords() throws Exception {
-		initializeUpdateSite("jars/obsolete.jar");
-		assertTrue(new File(ijRoot, "jars/obsolete.jar").delete());
-		FilesCollection files = readDb(true, true);
+		files = initialize("jars/obsolete.jar");
+		assertTrue(files.prefix("jars/obsolete.jar").delete());
+		files = readDb();
 		files.get("jars/obsolete.jar").setAction(files, Action.REMOVE);
 		upload(files);
 		writeFile("jars/new.jar");
-		files = readDb(true, true);
+		files = readDb();
 		files.get("jars/new.jar").stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
 		upload(files);
+		final File webRoot = getWebRoot(files);
 		String db = readGzippedStream(new FileInputStream(new File(webRoot, "db.xml.gz")));
 		assertTrue(db.indexOf("<plugin filename=\"jars/obsolete.jar\"") > 0);
 	}
 
 	@Test
 	public void keepOverriddenObsoleteRecords() throws Exception {
-		initializeUpdateSite();
+		files = initialize();
 
 		// upload to secondary
 		writeFile("jars/overridden.jar");
-		FilesCollection files = readDb(false, true);
+		files = readDb();
 		File webRoot2 = FileUtils.createTemporaryDirectory("testUpdaterWebRoot2", "");
 		files.addUpdateSite("Second", webRoot2.toURI().toURL().toString(), "file:localhost", webRoot2.getAbsolutePath() + "/", 0l);
 		files.get("jars/overridden.jar").stageForUpload(files, "Second");
@@ -1156,27 +1160,27 @@ public class UpdaterTest {
 		String obsoleteChecksum = files.get("jars/overridden.jar").getChecksum();
 
 		// delete from secondary
-		assertTrue(new File(ijRoot, "jars/overridden.jar").delete());
-		files = readDb(true, true);
+		assertTrue(files.prefix("jars/overridden.jar").delete());
+		files = readDb();
 		files.get("jars/overridden.jar").setAction(files, Action.REMOVE);
 		upload(files, "Second");
 		files.write();
 
 		// upload to primary
-		assertTrue(new File(ijRoot, "db.xml.gz").delete());
+		initDb(files);
 		writeJar("jars/overridden.jar", "Jola", "Theo");
-		files = readDb(false, true);
+		files = readDb();
 		files.get("jars/overridden.jar").stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
 		upload(files);
 
 		// re-add secondary
-		files = readDb(true, true);
+		files = readDb();
 		files.addUpdateSite("Second", webRoot2.toURI().toURL().toString(), "file:localhost", webRoot2.getAbsolutePath() + "/", 0l);
 		files.write();
 
 		// upload sumpin' else to secondary
 		writeJar("jars/new.jar");
-		files = readDb(true, true);
+		files = readDb();
 		files.get("jars/new.jar").stageForUpload(files, "Second");
 		upload(files, "Second");
 
@@ -1189,15 +1193,17 @@ public class UpdaterTest {
 
 	@Test
 	public void testShownByDefault() throws Exception {
-		initializeUpdateSite("jars/will-have-dependency.jar");
-		FilesCollection files = readDb(true, true);
+		files = initialize("jars/will-have-dependency.jar");
+		files = readDb();
 		files.write();
 
+		final File webRoot = getWebRoot(files);
 		File ijRoot2 = makeIJRoot(webRoot);
 
 		FilesCollection files2 = new FilesCollection(ijRoot2);
+		files2.read();
 		files2.downloadIndexAndChecksum(progress);
-		update(files2, progress);
+		UpdaterTestUtils.update(files2, progress);
 
 		writeFile("jars/dependency.jar");
 		new Checksummer(files, progress).updateFromLocal();
@@ -1208,16 +1214,16 @@ public class UpdaterTest {
 		assertCount(1, files.toUpload());
 		upload(files);
 
-		files2 = readDb(true, true, ijRoot2, webRoot, progress);
+		files2 = UpdaterTestUtils.readDb(new FilesCollection(ijRoot2), progress);
 		files2.write();
 
 		files.get("jars/will-have-dependency.jar").addDependency(files, dependency);
 		upload(files);
 
-		files2 = readDb(true, true, ijRoot2, webRoot, progress);
+		files2 = UpdaterTestUtils.readDb(new FilesCollection(ijRoot2), progress);
 		assertAction(Action.INSTALL, files2, "jars/dependency.jar");
 
-		FileUtils.deleteRecursively(ijRoot2);
+		assertTrue(FileUtils.deleteRecursively(ijRoot2));
 	}
 
 	/**
@@ -1228,31 +1234,33 @@ public class UpdaterTest {
 	 */
 	@Test
 	public void testHandleObsoleteChecksum() throws Exception {
-		initializeUpdateSite();
+		files = initialize();
 
 		final String contents =
 				"blub = true\n" + "#Tue Jun 17 09:47:43 CST 2012\n"
 				+ "narf.egads = pinkie\n";
 		final String fileName =
 			"META-INF/maven/net.imagej/new/pom.properties";
-		assertTrue(new File(ijRoot, "jars").mkdirs());
+		assertTrue(files.prefix("jars").mkdirs());
 		File jar =
 			writeJarWithDatedFile("jars/new.jar", 2012, 6, 17, fileName, contents);
 
 		final String checksumOld = Util.getJarDigest(jar, false, false);
 		final String checksumNew = Util.getJarDigest(jar, true, true);
 
-		FilesCollection files = new FilesCollection(ijRoot);
+		files = new FilesCollection(files.prefix(""));
+		files.read();
 		final FileObject file =
 			new FileObject(FilesCollection.DEFAULT_UPDATE_SITE, "jars/new.jar", jar.length(), checksumOld, Util
 				.getTimestamp(jar), Status.INSTALLED);
 		file.addPreviousVersion(checksumNew, Util.getTimestamp(jar) - 1l, null);
 		files.add(file);
 
+		final File webRoot = getWebRoot(files);
 		new XMLFileWriter(files).write(new GZIPOutputStream(new FileOutputStream(
 				new File(webRoot, "db.xml.gz"))), false);
 
-		files = readDb(true, true);
+		files = readDb();
 		assertStatus(Status.INSTALLED, files.get("jars/new.jar"));
 	}
 
@@ -1265,11 +1273,11 @@ public class UpdaterTest {
 	 */
 	@Test
 	public void obsoletedDependencies() throws Exception {
-		initializeUpdateSite("jars/something-cool.jar");
+		files = initialize("jars/something-cool.jar");
 
 		// add another update site
 		final File webRoot2 = FileUtils.createTemporaryDirectory("testUpdaterWebRoot2", "");
-		FilesCollection files = readDb(true, true);
+		files = readDb();
 		files.addUpdateSite("Second", webRoot2.toURI().toURL().toString(), "file:localhost", webRoot2.getAbsolutePath(), -1);
 		files.write();
 
@@ -1280,7 +1288,7 @@ public class UpdaterTest {
 
 		// upload a new .jar file to the second update site which depends on one of the first update site's .jar files
 		writeFile("jars/blub.jar");
-		files = readDb(true, true);
+		files = readDb();
 		final FileObject blub = files.get("jars/blub.jar");
 		assertNotNull(blub);
 		blub.addDependency(files, files.get("jars/something-cool.jar"));
@@ -1289,15 +1297,16 @@ public class UpdaterTest {
 		upload(files, "Second");
 
 		// remove the dependency from the first update site
-		assertTrue(new File(ijRoot, "jars/something-cool.jar").delete());
-		files = readDb(true, true);
+		assertTrue(files.prefix("jars/something-cool.jar").delete());
+		files = readDb();
 		files.removeUpdateSite("Second");
 		files.get("jars/something-cool.jar").setAction(files, Action.REMOVE);
 		upload(files, FilesCollection.DEFAULT_UPDATE_SITE);
 
-		final File ijRoot2 = FileUtils.createTemporaryDirectory("testUpdaterIJRoot2", "");
+		final File webRoot = getWebRoot(files);
+		final File ijRoot2 = makeIJRoot(webRoot);
 		files = new FilesCollection(ijRoot2);
-		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).url = webRoot.toURI().toURL().toString();
+		files.read();
 		files.addUpdateSite("Second", webRoot2.toURI().toURL().toString(), "file:localhost", webRoot2.getAbsolutePath(), -1);
 		files.downloadIndexAndChecksum(progress);
 		files.markForUpdate(false);
@@ -1309,199 +1318,41 @@ public class UpdaterTest {
 
 	@Test
 	public void uploadObsolete() throws Exception {
-		initializeUpdateSite("macros/macro.ijm");
+		files = initialize("macros/macro.ijm");
 
-		FilesCollection files = readDb(true, true);
+		files = readDb();
 		FileObject macro = files.get("macros/macro.ijm");
 		assertTrue(files.prefix(macro).delete());
 
-		files = readDb(true, true);
+		files = readDb();
 		macro = files.get("macros/macro.ijm");
 		macro.setAction(files, Action.REMOVE);
 		upload(files);
 
-		writeFile(files.prefix(macro), "changed");
-		files = readDb(true, true);
+		UpdaterTestUtils.writeFile(files.prefix(macro), "changed");
+		files = readDb();
 		macro = files.get("macros/macro.ijm");
 		assertStatus(Status.OBSOLETE_MODIFIED, macro);
 		macro.setAction(files, Action.UPLOAD);
 		upload(files);
 
-		files = readDb(true, true);
+		files = readDb();
 		macro = files.get("macros/macro.ijm");
 		assertStatus(Status.INSTALLED, macro);
 	}
 
 	//
-	// Debug functions
+	// Convenience methods
 	//
 
-	/**
-	 * This is a hack, albeit not completely a dumb one. As long as you have
-	 * swing-updater compiled and up-to-date, you can use this method to inspect
-	 * the state at any given moment
-	 * 
-	 * @param files The collection of files, including the current update site and
-	 *          IJ root.
-	 */
-	protected void show(final FilesCollection files) {
-		try {
-			String url = getClass().getResource("UpdaterTest.class").toString();
-			final String suffix =
-				"/core/updater/core/target/test-classes/imagej/updater/core/UpdaterTest.class";
-			assertTrue(url.endsWith(suffix));
-			url =
-				url.substring(0, url.length() - suffix.length()) +
-					"/ui/swing/updater/target/classes/";
-			final ClassLoader loader =
-				new java.net.URLClassLoader(
-					new java.net.URL[] { new java.net.URL(url) });
-			final Class<?> clazz =
-				loader.loadClass("imagej.updater.gui.UpdaterFrame");
-			final java.lang.reflect.Constructor<?> ctor =
-				clazz.getConstructor(LogService.class, UploaderService.class, FilesCollection.class);
-			final Object updaterFrame = ctor.newInstance(Util.getLogService(), null, files);
-			final java.lang.reflect.Method setVisible =
-				clazz.getMethod("setVisible", boolean.class);
-			setVisible.invoke(updaterFrame, true);
-			final java.lang.reflect.Method isVisible = clazz.getMethod("isVisible");
-			for (;;) {
-				Thread.sleep(1000);
-				if (isVisible.invoke(updaterFrame).equals(Boolean.FALSE)) break;
-			}
-		}
-		catch (final Throwable t) {
-			t.printStackTrace();
-		}
-	}
-
-	//
-	// Utility functions
-	//
-
-	protected static File makeIJRoot(final File webRoot) throws IOException {
-		final File ijRoot = FileUtils.createTemporaryDirectory("testUpdaterIJRoot", "");
-		writeGZippedFile(ijRoot, "db.xml.gz", "<pluginRecords><update-site name=\""
-				+ FilesCollection.DEFAULT_UPDATE_SITE + "\" timestamp=\"0\" url=\""
-				+ webRoot.toURI().toURL().toString() + "\" ssh-host=\"file:localhost\" "
-				+ "upload-directory=\"" + webRoot.getAbsolutePath() + "\"/></pluginRecords>");
-		return ijRoot;
-	}
-
-	protected void initializeUpdateSite(final String... fileNames)
+	protected FilesCollection initialize(final String... fileNames)
 			throws Exception {
-		initializeUpdateSite(ijRoot, webRoot, progress, fileNames);
+		return UpdaterTestUtils.initialize(null, null, progress, fileNames);
 	}
 
-	protected static void initializeUpdateSite(final File ijRoot, final File webRoot, final Progress progress, final String... fileNames)
-			throws Exception
-		{
-		final File localDb = new File(ijRoot, "db.xml.gz");
-		final File remoteDb = new File(webRoot, "db.xml.gz");
-
-		// Initialize update site
-
-		final String url = webRoot.toURI().toURL().toString() + "/";
-		final String sshHost = "file:localhost";
-		final String uploadDirectory = webRoot.getAbsolutePath() + "/";
-
-		assertFalse(localDb.exists());
-		assertFalse(remoteDb.exists());
-
-		FilesUploader uploader =
-			FilesUploader.initialUpload(url, sshHost, uploadDirectory);
-		assertTrue(uploader.login());
-		uploader.upload(progress);
-
-		assertFalse(localDb.exists());
-		assertTrue(remoteDb.exists());
-		final long remoteDbSize = remoteDb.length();
-
-		if (fileNames.length > 0) {
-			// Write files
-
-			final List<String> list = new ArrayList<String>();
-			for (final String name : fileNames) {
-				writeFile(new File(ijRoot, name), name);
-				list.add(name);
-			}
-
-			// Initialize db.xml.gz
-
-			final FilesCollection files = readDb(false, false, ijRoot, webRoot, progress);
-			assertEquals(0, files.size());
-
-			files.write();
-			assertTrue(localDb.exists());
-
-			final Checksummer czechsummer = new Checksummer(files, progress);
-			czechsummer.updateFromLocal(list);
-
-			for (final String name : fileNames) {
-				final FileObject file = files.get(name);
-				assertNotNull(name, file);
-				file.stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
-			}
-			uploader = new FilesUploader(files, FilesCollection.DEFAULT_UPDATE_SITE);
-			assertTrue(uploader.login());
-			uploader.upload(progress);
-			assertTrue(remoteDb.exists());
-			assertNotEqual(remoteDb.length(), remoteDbSize);
-		}
-
-	}
-
-	protected FilesCollection readDb(final boolean readLocalDb,
-		final boolean runChecksummer) throws IOException,
-		ParserConfigurationException, SAXException
-	{
-		return readDb(readLocalDb, runChecksummer, ijRoot, webRoot, progress);
-	}
-
-	protected static FilesCollection readDb(final boolean readLocalDb,
-			final boolean runChecksummer, final File ijRoot, final File webRoot, final Progress progress) throws IOException,
-			ParserConfigurationException, SAXException {
-		final FilesCollection files = new FilesCollection(ijRoot);
-
-		// Initialize default update site
-
-		final UpdateSite updateSite =
-			files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE);
-		assertNotNull(updateSite);
-
-		updateSite.url = webRoot.toURI().toURL().toString() + "/";
-		updateSite.sshHost = "file:localhost";
-		updateSite.uploadDirectory = webRoot.getAbsolutePath() + "/";
-
-		final File localDb = new File(ijRoot, "db.xml.gz");
-		if (runChecksummer) {
-			// We're too fast, cannot trust the cached checksums
-			new File(ijRoot, ".checksums").delete();
-		}
-		if (readLocalDb && runChecksummer) {
-			files.downloadIndexAndChecksum(progress);
-			return files;
-		}
-		if (readLocalDb) files.read(localDb);
-		else {
-			assertFalse(localDb.exists());
-
-		}
-		new XMLFileReader(files).read(FilesCollection.DEFAULT_UPDATE_SITE);
-		if (runChecksummer) {
-			final Checksummer czechsummer = new Checksummer(files, progress);
-			czechsummer.updateFromLocal();
-		}
-		return files;
-	}
-
-	protected static void update(final FilesCollection files, final Progress progress) throws IOException {
-		final File ijRoot = files.prefix(".");
-		final Installer installer = new Installer(files, progress);
-		installer.start();
-		assertTrue(new File(ijRoot, "update").isDirectory());
-		installer.moveUpdatedIntoPlace();
-		assertFalse(new File(ijRoot, "update").exists());
+	protected FilesCollection readDb() throws ParserConfigurationException,
+			SAXException {
+		return UpdaterTestUtils.readDb(files, progress);
 	}
 
 	protected void upload(final FilesCollection files) throws Exception {
@@ -1509,104 +1360,7 @@ public class UpdaterTest {
 	}
 
 	protected void upload(final FilesCollection files, final String updateSite) throws Exception {
-		for (final FileObject file : files.toUpload())
-			assertEquals(updateSite, file.updateSite);
-		final FilesUploader uploader =
-			new FilesUploader(files, updateSite);
-		assertTrue(uploader.login());
-		uploader.upload(progress);
-		files.write();
-	}
-
-	protected FileObject[] makeList(final FilesCollection files) {
-		final List<FileObject> list = new ArrayList<FileObject>();
-		for (final FileObject object : files)
-			list.add(object);
-		return list.toArray(new FileObject[list.size()]);
-	}
-
-	protected static void assertStatus(final Status status,
-		final FilesCollection files, final String filename)
-	{
-		final FileObject file = files.get(filename);
-		assertStatus(status, file);
-	}
-
-	protected static void
-		assertStatus(final Status status, final FileObject file)
-	{
-		assertNotNull("Object " + file.getFilename(), file);
-		assertEquals("Status of " + file.getFilename(), status, file.getStatus());
-	}
-
-	protected static void assertAction(final Action action,
-		final FilesCollection files, final String filename)
-	{
-		assertAction(action, files.get(filename));
-	}
-
-	protected static void assertAction(final Action action,
-		final FileObject file)
-	{
-		assertNotNull("Object " + file, file);
-		assertEquals("Action of " + file.filename, action, file.getAction());
-	}
-
-	protected static void assertNotEqual(final Object object1,
-		final Object object2)
-	{
-		if (object1 == null) {
-			assertNotNull(object2);
-		}
-		else {
-			assertFalse(object1.equals(object2));
-		}
-	}
-
-	protected static void assertNotEqual(final long long1, final long long2) {
-		assertTrue(long1 != long2);
-	}
-
-	protected static void
-		assertCount(final int count, final Iterable<?> iterable)
-	{
-		assertEquals(count, count(iterable));
-	}
-
-	protected static int count(final Iterable<?> iterable) {
-		int count = 0;
-		for (@SuppressWarnings("unused")
-		final Object object : iterable)
-		{
-			count++;
-		}
-		return count;
-	}
-
-	protected static void print(final Iterable<?> iterable) {
-		System.err.println("{");
-		int count = 0;
-		for (final Object object : iterable) {
-			System.err.println("\t" +
-				++count +
-				": " +
-				object +
-				(object instanceof FileObject ? " = " +
-					((FileObject) object).getStatus() + "/" +
-					((FileObject) object).getAction() : ""));
-		}
-		System.err.println("}");
-	}
-
-	/**
-	 * Change the mtime of a file
-	 * 
-	 * @param file the file to touch
-	 * @param timestamp the mtime as pseudo-long (YYYYMMDDhhmmss)
-	 */
-	protected void touch(final File file, final long timestamp) {
-		final long millis = Util.timestamp2millis(timestamp);
-		file.setLastModified(millis);
+		UpdaterTestUtils.upload(files, updateSite, progress);
 	}
 
 	/**
@@ -1620,7 +1374,7 @@ public class UpdaterTest {
 	protected File writeJar(final String name) throws FileNotFoundException,
 		IOException
 	{
-		return writeJar(ijRoot, name, name, name);
+		return UpdaterTestUtils.writeJar(files.prefix(name), name, name);
 	}
 
 	/**
@@ -1635,79 +1389,11 @@ public class UpdaterTest {
 	protected File writeJar(final String name, final String... args)
 		throws FileNotFoundException, IOException
 	{
-		return writeJar(ijRoot, name, args);
-	}
-
-	/**
-	 * Write a .jar file
-	 * 
-	 * @param dir which directory to write into
-	 * @param name the name of the .jar file
-	 * @param args a list of entry name / contents pairs
-	 * @return the File object for the .jar file
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 */
-	protected static File writeJar(final File dir, final String name,
-		final String... args) throws FileNotFoundException, IOException
-	{
-		assertTrue((args.length % 2) == 0);
-		final File file = new File(dir, name);
-		file.getParentFile().mkdirs();
-		final JarOutputStream jar = new JarOutputStream(new FileOutputStream(file));
-		for (int i = 0; i + 1 < args.length; i += 2) {
-			final JarEntry entry = new JarEntry(args[i]);
-			jar.putNextEntry(entry);
-			jar.write(args[i + 1].getBytes());
-			jar.closeEntry();
-		}
-		jar.close();
-		return file;
+		return UpdaterTestUtils.writeJar(files.prefix(name), args);
 	}
 
 	protected File writeJar(final String path, Class<?>... classes) throws FileNotFoundException, IOException {
-		return writeJar(new File(ijRoot, path), classes);
-	}
-
-	protected File writeJar(final File file, Class<?>... classes) throws FileNotFoundException, IOException {
-		file.getParentFile().mkdirs();
-		final byte[] buffer = new byte[32768];
-		final JarOutputStream jar = new JarOutputStream(new FileOutputStream(file));
-		for (int i = 0; i < classes.length; i++) {
-			final String path = classes[i].getName().replace('.', '/') + ".class";
-			final JarEntry entry = new JarEntry(path);
-			jar.putNextEntry(entry);
-			final InputStream in = classes[i].getResourceAsStream("/" + path);
-			for (;;) {
-				int count = in.read(buffer);
-				if (count < 0)
-					break;
-				jar.write(buffer, 0, count);
-			}
-			in.close();
-			jar.closeEntry();
-		}
-		jar.close();
-		return file;
-	}
-
-	/**
-	 * Write a .gz file
-	 * 
-	 * @param dir The directory into which to write
-	 * @param name The file name
-	 * @param content The contents to write
-	 * @return the File object for the file that was written to
-	 * @throws IOException
-	 * @throws FileNotFoundException
-	 */
-	protected static File writeGZippedFile(final File dir, final String name,
-		final String content) throws FileNotFoundException, IOException
-	{
-		final File file = new File(dir, name);
-		file.getParentFile().mkdirs();
-		writeStream(new GZIPOutputStream(new FileOutputStream(file)), content, true);
-		return file;
+		return UpdaterTestUtils.writeJar(files.prefix(path), classes);
 	}
 
 	/**
@@ -1721,7 +1407,7 @@ public class UpdaterTest {
 	protected File writeFile(final String name) throws FileNotFoundException,
 		IOException
 	{
-		return writeFile(new File(ijRoot, name), name);
+		return UpdaterTestUtils.writeFile(files.prefix(name), name);
 	}
 
 	/**
@@ -1736,93 +1422,7 @@ public class UpdaterTest {
 	protected File writeFile(final String name, final String content)
 		throws FileNotFoundException, IOException
 	{
-		return writeFile(ijRoot, name, content);
+		return UpdaterTestUtils.writeFile(files.prefix(name), content);
 	}
 
-	/**
-	 * Write a text file
-	 * 
-	 * @param dir The directory into which to write
-	 * @param name The file name
-	 * @param content The contents to write
-	 * @return the File object for the file that was written to
-	 * @throws IOException
-	 * @throws FileNotFoundException
-	 */
-	protected static File writeFile(final File dir, final String name,
-		final String content) throws FileNotFoundException, IOException
-	{
-		final File file = new File(dir, name);
-		file.getParentFile().mkdirs();
-		return writeFile(file, content);
-	}
-
-	/**
-	 * Write a text file
-	 * 
-	 * @param file The file into which to write
-	 * @param content The contents to write
-	 * @return the File object for the file that was written to
-	 * @throws IOException
-	 * @throws FileNotFoundException
-	 */
-	protected static File writeFile(final File file, final String content)
-		throws FileNotFoundException, IOException
-	{
-		final File dir = file.getParentFile();
-		if (!dir.isDirectory()) dir.mkdirs();
-		final String name = file.getName();
-		if (name.endsWith(".jar")) return writeJar(dir, name, content, content);
-
-		writeStream(new FileOutputStream(file), content, true);
-		return file;
-	}
-
-	/**
-	 * Write a string
-	 * 
-	 * @param out where to write to
-	 * @param content what to write
-	 * @param close whether to close the stream
-	 */
-	protected static void writeStream(final OutputStream out, final String content,
-		final boolean close)
-	{
-		final PrintWriter writer = new PrintWriter(out);
-		writer.println(content);
-		if (close) {
-			writer.close();
-		}
-	}
-
-	/**
-	 * Read a gzip'ed stream and return what we got as a String
-	 * 
-	 * @param in the input stream as compressed by gzip
-	 * @return the contents, as a String
-	 * @throws IOException
-	 */
-	protected String readGzippedStream(final InputStream in) throws IOException {
-		return readStream(new GZIPInputStream(in));
-	}
-
-	/**
-	 * Read a stream and return what we got as a String
-	 * 
-	 * @param in the input stream
-	 * @return the contents, as a String
-	 * @throws IOException
-	 */
-	protected String readStream(final InputStream in) throws IOException {
-		final ByteArrayOutputStream out = new ByteArrayOutputStream();
-		final byte[] buffer = new byte[16384];
-		for (;;) {
-			int count = in.read(buffer);
-			if (count < 0) break;
-			out.write(buffer, 0, count);
-		}
-		in.close();
-		out.close();
-		return out.toString();
-	}
 }
