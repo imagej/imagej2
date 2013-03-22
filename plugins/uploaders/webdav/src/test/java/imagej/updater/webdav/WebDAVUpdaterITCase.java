@@ -35,20 +35,12 @@
 
 package imagej.updater.webdav;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
-import imagej.updater.core.FilesCollection;
-import imagej.updater.core.UpdaterTestUtils;
-import imagej.updater.ui.CommandLine;
-import imagej.updater.util.StderrProgress;
-import imagej.updater.util.Util;
+import imagej.updater.core.AbstractUploaderTest;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import org.junit.After;
 import org.junit.Test;
 
 /**
@@ -65,59 +57,31 @@ import org.junit.Test;
  * 
  * @author Johannes Schindelin
  */
-public class WebDAVUpdaterITCase {
-	private FilesCollection files;
-
-	@After
-	public void cleanup() {
-		if (files != null) UpdaterTestUtils.cleanup(files);
+public class WebDAVUpdaterITCase extends AbstractUploaderTest {
+	public WebDAVUpdaterITCase() {
+		super("webdav");
 	}
 
 	@Test
 	public void testWebDAVUpload() throws Exception {
-		String url = System.getProperty("webdav.test.url");
-		String username = System.getProperty("webdav.test.username");
-		String password = System.getProperty("webdav.test.password");
-		assumeTrue(url != null && username != null && password != null);
+		final String username = getProperty("username");
+		final String password = getProperty("password");
 
-		if (url == null) throw new RuntimeException("Eclipse, it cannot be null here, so shut up!");
-		if (!url.endsWith("/")) url += "/";
-
-		FilesCollection files = UpdaterTestUtils.initialize();
-		File tmpDir = files.prefix("");
-		CommandLine.main(tmpDir, Integer.MAX_VALUE, "add-update-site", "webdav-test", url, "webdav:" + username + ":" + password, "");
-
-		HttpURLConnection connection = (HttpURLConnection) new URL(url + Util.XML_COMPRESSED).openConnection();
-		if (404 != connection.getResponseCode()) {
-			final Deleter deleter = new Deleter(username, password);
-			deleter.delete(new URL(url + Util.XML_COMPRESSED));
-			deleter.delete(new URL(url + "plugins/"));
-		}
-
-		final File hello = new File(tmpDir, "plugins/Say_Hello.bsh");
-		UpdaterTestUtils.writeFile(hello, "print(\"Hello, world!\");");
-		CommandLine.main(tmpDir, Integer.MAX_VALUE, "upload", "--update-site", "webdav-test", "plugins/Say_Hello.bsh");
-
-		files.read();
-		files.clear();
-		files.downloadIndexAndChecksum(new StderrProgress());
-		assertTrue("" + files.get("plugins/Say_Hello.bsh").current.timestamp + " >= " + Util.getTimestamp(tmpDir), files.get("plugins/Say_Hello.bsh").current.timestamp >= Util.getTimestamp(tmpDir));
-
-		assertTrue(hello.delete());
-		CommandLine.main(tmpDir, Integer.MAX_VALUE, "update", "plugins/Say_Hello.bsh");
-		assertTrue(hello.exists());
+		test(new WebDAVDeleter(username, password), "webdav:" + username + ":" + password, "");
 	}
 
-	private static class Deleter extends WebDAVUploader {
-		public Deleter(final String username, final String password) {
+	private class WebDAVDeleter extends WebDAVUploader implements AbstractUploaderTest.Deleter {
+		public WebDAVDeleter(final String username, final String password) {
 			setCredentials(username, password);
 		}
 
-		public void delete(final URL url) throws IOException {
-			final boolean isDirectory = url.getPath().endsWith("/");
+		@Override
+		public void delete(final String path) throws IOException {
+			final URL target = new URL(url + path);
+			final boolean isDirectory = path.endsWith("/");
 			final HttpURLConnection connection = isDirectory ?
-					connect("DELETE", url, null) :
-					connect("DELETE", url, null, "Depth", "Infinity");
+					connect("DELETE", target, null) :
+					connect("DELETE", target, null, "Depth", "Infinity");
 			int code = connection.getResponseCode();
 			if (code > 299) {
 				throw new IOException("Could not delete " + url + ": " + code + " " + connection.getResponseMessage());
