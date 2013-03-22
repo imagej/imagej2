@@ -28,6 +28,15 @@
 		<debug.option/>
 	</properties>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>scijava-common</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -79,6 +88,27 @@
 							<subSystem>gui</subSystem>
 						</library>
 					</libraries>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>test</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>imagej.launcher.ChangeIcon</mainClass>
+					<arguments>
+						<argument>${project.build.directory}/nar/${project.artifactId}-${project.version}-${nar.aol}-executable/bin/${nar.aol}/${project.artifactId}.exe</argument>
+						<argument>${basedir}/../logo/ImageJ.ico</argument>
+					</arguments>
+					<classpathScope>test</classpathScope>
+					<includePluginDependencies>true</includePluginDependencies>
 				</configuration>
 			</plugin>
 		</plugins>
