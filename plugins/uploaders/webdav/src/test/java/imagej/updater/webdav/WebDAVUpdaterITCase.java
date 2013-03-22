@@ -80,6 +80,7 @@ public class WebDAVUpdaterITCase {
 		String password = System.getProperty("webdav.test.password");
 		assumeTrue(url != null && username != null && password != null);
 
+		if (url == null) throw new RuntimeException("Eclipse, it cannot be null here, so shut up!");
 		if (!url.endsWith("/")) url += "/";
 
 		FilesCollection files = UpdaterTestUtils.initialize();
