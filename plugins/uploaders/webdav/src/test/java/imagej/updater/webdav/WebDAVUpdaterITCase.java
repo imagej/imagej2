@@ -35,7 +35,7 @@
 
 package imagej.updater.webdav;
 
-import imagej.updater.core.AbstractUploaderTest;
+import imagej.updater.core.AbstractUploaderTestBase;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -57,7 +57,7 @@ import org.junit.Test;
  * 
  * @author Johannes Schindelin
  */
-public class WebDAVUpdaterITCase extends AbstractUploaderTest {
+public class WebDAVUpdaterITCase extends AbstractUploaderTestBase {
 	public WebDAVUpdaterITCase() {
 		super("webdav");
 	}
@@ -70,7 +70,7 @@ public class WebDAVUpdaterITCase extends AbstractUploaderTest {
 		test(new WebDAVDeleter(username, password), "webdav:" + username + ":" + password, "");
 	}
 
-	private class WebDAVDeleter extends WebDAVUploader implements AbstractUploaderTest.Deleter {
+	private class WebDAVDeleter extends WebDAVUploader implements AbstractUploaderTestBase.Deleter {
 		public WebDAVDeleter(final String username, final String password) {
 			setCredentials(username, password);
 		}

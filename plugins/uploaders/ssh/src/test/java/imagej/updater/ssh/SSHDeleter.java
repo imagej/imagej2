@@ -1,7 +1,7 @@
 package imagej.updater.ssh;
 
 import static org.junit.Assert.assertTrue;
-import imagej.updater.core.AbstractUploaderTest.Deleter;
+import imagej.updater.core.AbstractUploaderTestBase.Deleter;
 
 import java.io.IOException;
 

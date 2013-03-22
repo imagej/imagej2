@@ -55,12 +55,12 @@ import org.junit.After;
  * 
  * @author Johannes Schindelin
  */
-public abstract class AbstractUploaderTest {
+public abstract class AbstractUploaderTestBase {
 	protected final String propertyPrefix, updateSiteName;
 	protected String url;
 	protected FilesCollection files;
 
-	public AbstractUploaderTest(final String propertyPrefix) {
+	public AbstractUploaderTestBase(final String propertyPrefix) {
 		this.propertyPrefix = propertyPrefix;
 		updateSiteName = propertyPrefix + "-test";
 	}

@@ -35,7 +35,7 @@
 
 package imagej.updater.ssh;
 
-import imagej.updater.core.AbstractUploaderTest;
+import imagej.updater.core.AbstractUploaderTestBase;
 
 import org.junit.Test;
 
@@ -60,7 +60,7 @@ import org.junit.Test;
  * 
  * @author Johannes Schindelin
  */
-public class SSHUploaderITCase extends AbstractUploaderTest {
+public class SSHUploaderITCase extends AbstractUploaderTestBase {
 	public SSHUploaderITCase() {
 		super("ssh");
 	}
