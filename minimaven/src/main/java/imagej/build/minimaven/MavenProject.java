@@ -460,10 +460,11 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 				manifest.getMainAttributes().put(Name.MANIFEST_VERSION, "1.0");
 				file.getParentFile().mkdirs();
 			}
+			final java.util.jar.Attributes main = manifest.getMainAttributes();
 			if (mainClass != null)
-				manifest.getMainAttributes().put(Name.MAIN_CLASS, mainClass);
+				main.put(Name.MAIN_CLASS, mainClass);
 			if (includeImplementationBuild && !getArtifactId().equals("Fiji_Updater"))
-				manifest.getMainAttributes().put(new Name("Implementation-Build"), env.getImplementationBuild(directory));
+				main.put(new Name("Implementation-Build"), env.getImplementationBuild(directory));
 			manifest.write(new FileOutputStream(file));
 		}
 
