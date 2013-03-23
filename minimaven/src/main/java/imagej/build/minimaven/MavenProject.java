@@ -101,6 +101,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 	protected Coordinate latestDependency = new Coordinate();
 	protected boolean isCurrentProfile;
 	protected String currentPluginName;
+	private static Name CREATED_BY = new Name("Created-By");
 
 	protected MavenProject addModule(String name) throws IOException, ParserConfigurationException, SAXException {
 		return addChild(env.parse(new File(new File(directory, name), "pom.xml"), this));
@@ -450,23 +451,23 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 			BuildEnvironment.copyFile(pom, targetFile);
 		}
 
-		if (mainClass != null || includeImplementationBuild) {
-			File file = new File(target, "META-INF/MANIFEST.MF");
-			Manifest manifest = null;
-			if (file.exists())
-				manifest = new Manifest(new FileInputStream(file));
-			else {
-				manifest = new Manifest();
-				manifest.getMainAttributes().put(Name.MANIFEST_VERSION, "1.0");
-				file.getParentFile().mkdirs();
-			}
-			final java.util.jar.Attributes main = manifest.getMainAttributes();
-			if (mainClass != null)
-				main.put(Name.MAIN_CLASS, mainClass);
-			if (includeImplementationBuild && !getArtifactId().equals("Fiji_Updater"))
-				main.put(new Name("Implementation-Build"), env.getImplementationBuild(directory));
-			manifest.write(new FileOutputStream(file));
+		final String manifestClassPath = getManifestClassPath();
+		File file = new File(target, "META-INF/MANIFEST.MF");
+		Manifest manifest = null;
+		if (file.exists())
+			manifest = new Manifest(new FileInputStream(file));
+		else {
+			manifest = new Manifest();
+			manifest.getMainAttributes().put(Name.MANIFEST_VERSION, "1.0");
+			file.getParentFile().mkdirs();
 		}
+		final java.util.jar.Attributes main = manifest.getMainAttributes();
+		if (mainClass != null)
+			main.put(Name.MAIN_CLASS, mainClass);
+		main.put(CREATED_BY , "MiniMaven");
+		if (includeImplementationBuild && !getArtifactId().equals("Fiji_Updater"))
+			main.put(new Name("Implementation-Build"), env.getImplementationBuild(directory));
+		manifest.write(new FileOutputStream(file));
 
 		if (makeJar) {
 			JarOutputStream out = new JarOutputStream(new FileOutputStream(getTarget()));
