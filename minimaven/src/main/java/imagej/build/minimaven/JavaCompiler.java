@@ -48,7 +48,6 @@ import org.scijava.util.FileUtils;
  * 
  * @author Johannes Schindelin
  */
-@SuppressWarnings("hiding")
 public class JavaCompiler {
 	protected PrintStream err, out;
 	protected static Method javac;
@@ -199,6 +198,6 @@ public class JavaCompiler {
 				javac = file;
 			}
 		}
-		return new JarClassLoader(javac.getPath());
+		return new JarClassLoader(javac == null ? null : javac.getPath());
 	}
 }

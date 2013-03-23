@@ -54,7 +54,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * 
  * @author Johannes Schindelin
  */
-@SuppressWarnings("hiding")
 public class SnapshotPOMHandler extends DefaultHandler {
 	protected String qName;
 	protected String snapshotVersion, timestamp, buildNumber;

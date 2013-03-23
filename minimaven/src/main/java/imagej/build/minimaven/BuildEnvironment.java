@@ -73,7 +73,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * 
  * @author Johannes Schindelin
  */
-@SuppressWarnings("hiding")
 public class BuildEnvironment {
 	public final static String IMAGEJ_APP_DIRECTORY = "imagej.app.directory";
 

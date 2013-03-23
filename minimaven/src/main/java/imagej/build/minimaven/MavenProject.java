@@ -73,7 +73,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * 
  * @author Johannes Schindelin
  */
-@SuppressWarnings("hiding")
 public class MavenProject extends DefaultHandler implements Comparable<MavenProject> {
 	protected final BuildEnvironment env;
 	protected boolean buildFromSource, built;
@@ -180,13 +179,12 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 					BooleanState.YES : BooleanState.NO;
 			}
 			return jarUpToDate == BooleanState.YES;
-		} else {
-			if (upToDate == BooleanState.UNKNOWN) {
-				upToDate = checkUpToDate(false) ?
-					BooleanState.YES : BooleanState.NO;
-			}
-			return upToDate == BooleanState.YES;
 		}
+		if (upToDate == BooleanState.UNKNOWN) {
+			upToDate = checkUpToDate(false) ?
+				BooleanState.YES : BooleanState.NO;
+		}
+		return upToDate == BooleanState.YES;
 	}
 
 	public boolean checkUpToDate(boolean includingJar) throws IOException, ParserConfigurationException, SAXException {
