@@ -464,6 +464,8 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		final java.util.jar.Attributes main = manifest.getMainAttributes();
 		if (mainClass != null)
 			main.put(Name.MAIN_CLASS, mainClass);
+		if (manifestClassPath != null)
+			main.put(Name.CLASS_PATH, manifestClassPath);
 		main.put(CREATED_BY , "MiniMaven");
 		if (includeImplementationBuild && !getArtifactId().equals("Fiji_Updater"))
 			main.put(new Name("Implementation-Build"), env.getImplementationBuild(directory));
@@ -582,6 +584,17 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 				env.err.println("Adding dependency " + pom.coordinate + " to classpath");
 			builder.append(File.pathSeparator).append(pom.getTarget());
 		}
+		return builder.toString();
+	}
+
+	private String getManifestClassPath() throws IOException, ParserConfigurationException, SAXException {
+		StringBuilder builder = new StringBuilder();
+		for (MavenProject pom : getDependencies(true, env.downloadAutomatically, "test", "provided")) {
+			if (!"jar".equals(pom.getPackaging())) continue;
+			builder.append(" ").append(pom.getArtifactId() + "-" + pom.coordinate.version + ".jar");
+		}
+		if (builder.length() == 0) return null;
+		builder.delete(0, 1);
 		return builder.toString();
 	}
 
