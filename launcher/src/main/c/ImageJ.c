@@ -4971,13 +4971,20 @@ int main(int argc, char **argv, char **e)
 	main_argc_backup = argc;
 
 	/* For now, launch Fiji1 when fiji-compat.jar was found */
-	if (has_jar(ij_path("jars/"), "fiji-compat"))
+	if (has_jar(ij_path("jars/"), "fiji-compat")) {
+		if (debug)
+			error("Detected Fiji");
 		legacy_mode = 1;
+	}
 	/* If no ImageJ2 was found, try to fall back to ImageJ 1.x */
 	else if (!has_jar(ij_path("jars/"), "ij-app")) {
+		if (debug)
+			error("Detected ImageJ 1.x");
 		legacy_mode = 1;
 		main_class = legacy_ij1_class;
 	}
+	else if (debug)
+		error("Detected ImageJ2");
 
 	initialize_ij_launcher_jar_path();
 	parse_command_line();
