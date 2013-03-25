@@ -121,6 +121,9 @@ public class LegacyInjector {
 		hacker.insertMethod("ij.plugin.frame.RoiManager",
 			"public void setVisible(boolean b)", ";");
 		hacker.loadClass("ij.plugin.frame.RoiManager");
+
+		// make sure that there is a legacy service
+		setLegacyService(new DummyLegacyService());
 	}
 
 	void setLegacyService(final LegacyService legacyService) {
