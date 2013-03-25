@@ -67,7 +67,7 @@ public class CodeHacker {
 
 	public CodeHacker(ClassLoader classLoader) {
 		this.classLoader = classLoader;
-		pool = new ClassPool();
+		pool = ClassPool.getDefault();
 		pool.appendClassPath(new ClassClassPath(getClass()));
 	}
 
