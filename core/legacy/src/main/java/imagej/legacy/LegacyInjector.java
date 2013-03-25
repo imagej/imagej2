@@ -45,11 +45,12 @@ import org.scijava.util.ClassUtils;
  * @author Curtis Rueden
  */
 public class LegacyInjector {
+	private CodeHacker hacker;
 
 	/** Overrides class behavior of ImageJ1 classes by injecting method hooks. */
 	public void injectHooks(final ClassLoader classLoader) {
 		// NB: Override class behavior before class loading gets too far along.
-		final CodeHacker hacker = new CodeHacker(classLoader);
+		hacker = new CodeHacker(classLoader);
 
 		// override behavior of ij.ImageJ
 		hacker.insertMethod("ij.ImageJ",
@@ -122,4 +123,7 @@ public class LegacyInjector {
 		hacker.loadClass("ij.plugin.frame.RoiManager");
 	}
 
+	void setLegacyService(final LegacyService legacyService) {
+		hacker.setLegacyService(legacyService);
+	}
 }
