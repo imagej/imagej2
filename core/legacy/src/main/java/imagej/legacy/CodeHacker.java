@@ -321,7 +321,7 @@ public class CodeHacker {
 	/** Patches in the current legacy service for '$service' */
 	private String expand(final String code) {
 		return code
-			.replace("$isLegacyMode()", "imagej.legacy.Utils.isLegacyMode($service)")
+			.replace("$isLegacyMode()", "$service.isLegacyMode()")
 			.replace("$service", "ij.IJ.getLegacyService()");
 	}
 
