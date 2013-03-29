@@ -115,8 +115,8 @@ public class SelectionSpecify extends ContextCommand {
 			final RectangleOverlay overlay = new RectangleOverlay(context);
 			overlay.setOrigin(x, 0);
 			overlay.setOrigin(y, 1);
-			overlay.setExtent(w / 2, 0);
-			overlay.setExtent(h / 2, 1);
+			overlay.setExtent(w, 0);
+			overlay.setExtent(h, 1);
 			display.display(overlay);
 		}
 		display.update();
