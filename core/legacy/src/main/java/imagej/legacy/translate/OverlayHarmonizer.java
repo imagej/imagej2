@@ -234,7 +234,8 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		List<Roi> rois = new ArrayList<Roi>();
 		for (Overlay o : overlays) {
 			if (o != activeOverlay) {
-				rois.add(createRoi(o));
+				Roi roi = createRoi(o);
+				if (roi != null) rois.add(roi);
 			}
 		}
 		if (rois.size() == 0) return null;
