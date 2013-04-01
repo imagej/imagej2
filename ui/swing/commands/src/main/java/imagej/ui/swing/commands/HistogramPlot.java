@@ -193,7 +193,7 @@ public class HistogramPlot extends ContextCommand {
 
 		// ++ chart.getTitle().setFont(null);
 		setTheme(chart);
-		chart.getXYPlot().setForegroundAlpha(0.50f);
+		// chart.getXYPlot().setForegroundAlpha(0.50f);
 		final ChartPanel chartPanel = new ChartPanel(chart);
 		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
 		if (show) {
