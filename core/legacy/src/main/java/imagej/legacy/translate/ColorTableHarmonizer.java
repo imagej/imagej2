@@ -413,10 +413,19 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 		Dataset dataset = service.getActiveDataset(disp);
 		RealType<?> type = dataset.getType();
 		for (int c = 0; c < channelCount; c++) {
-			double mn = (min[c] > type.getMinValue()) ? min[c] : type.getMinValue(); 
-			double mx = (max[c] < type.getMaxValue()) ? max[c] : type.getMaxValue(); 
+			double mn = outOfBounds(min[c], type) ? type.getMinValue() : min[c];
+			double mx = outOfBounds(max[c], type) ? type.getMaxValue() : max[c];
+			if (mn > mx) {
+				throw new IllegalArgumentException("Bad display range setting");
+			}
 			view.setChannelRange(c, mn, mx);
 		}
+	}
+
+	private boolean outOfBounds(double val, RealType<?> type) {
+		if (val < type.getMinValue()) return true;
+		if (val > type.getMaxValue()) return true;
+		return false;
 	}
 
 	/** Creates a list of ColorTables from an ImagePlus. */
