@@ -329,7 +329,7 @@ public class HistogramPlot extends ContextCommand {
 		plot.getRangeAxis().setLabelPaint(Color.gray);
 		plot.getDomainAxis().setTickLabelPaint(Color.gray);
 		plot.getRangeAxis().setTickLabelPaint(Color.gray);
-		chart.getTitle().setPaint(Color.gray);
+		chart.getTitle().setPaint(Color.black);
 	}
 
 }
