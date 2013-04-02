@@ -1072,8 +1072,13 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		else if (!isCurrentProfile && prefix.equals(">project>profiles>profile>activation>os>name"))
 			isCurrentProfile = string.equalsIgnoreCase(System.getProperty("os.name"));
 		else if (!isCurrentProfile && prefix.equals(">project>profiles>profile>activation>os>family")) {
+			String osName = System.getProperty("os.name").toLowerCase();
 			if (string.equalsIgnoreCase("windows")) {
-				isCurrentProfile = System.getProperty("os.name").toLowerCase().startsWith("win");
+				isCurrentProfile = osName.startsWith("win");
+			} else if (string.toLowerCase().startsWith("mac")) {
+				isCurrentProfile = osName.startsWith("mac");
+			} else if (string.equalsIgnoreCase("unix")) {
+				isCurrentProfile = !osName.startsWith("win") && !osName.startsWith("mac");
 			} else {
 				env.err.println("Ignoring unknown OS family: " + string);
 				isCurrentProfile = false;
