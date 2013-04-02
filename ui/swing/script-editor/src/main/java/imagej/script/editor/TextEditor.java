@@ -2186,20 +2186,20 @@ public class TextEditor extends JFrame implements ActionListener,
 			extractSourceJar(file);
 	}
 
-	public void extractSourceJar(File file) {
+	public void extractSourceJar(File jarFile) {
 		try {
 			FileFunctions functions = new FileFunctions(this);
-			List<String> paths = functions.extractSourceJar(file.getAbsolutePath());
-			for (String path : paths)
-				if (!functions.isBinaryFile(path)) {
-					open(new File(path));
+			List<File> files = functions.extractSourceJar(jarFile);
+			for (File file : files)
+				if (!functions.isBinaryFile(file)) {
+					open(file);
 					EditorPane pane = getEditorPane();
 					new TokenFunctions(pane).removeTrailingWhitespace();
 					if (pane.fileChanged())
 						save();
 				}
 		} catch (IOException e) {
-			error("There was a problem opening " + file
+			error("There was a problem opening " + jarFile
 				+ ": " + e.getMessage());
 		}
 	}

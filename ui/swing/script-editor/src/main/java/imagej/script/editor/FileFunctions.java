@@ -41,10 +41,13 @@ import imagej.util.AppUtils;
 import imagej.util.LineOutputStream;
 
 import java.awt.Color;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -74,8 +77,25 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.scijava.util.ProcessUtils;
+import org.w3c.dom.Comment;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.UserDataHandler;
 
 /**
  * TODO
@@ -92,27 +112,113 @@ public class FileFunctions {
 		this.parent = parent;
 	}
 
-	public List<String> extractSourceJar(String path) throws IOException {
-		String baseName = new File(path).getName();
+	public List<File> extractSourceJar(final File jarFile) throws IOException {
+		String baseName = jarFile.getName();
 		if (baseName.endsWith(".jar") || baseName.endsWith(".zip")) baseName =
 			baseName.substring(0, baseName.length() - 4);
-		File baseDirectory = new File(imagejRoot, "src-plugins/" + baseName);
+		File baseDirectory = new File(imagejRoot, "src/" + baseName);
 
-		List<String> result = new ArrayList<String>();
-		JarFile jar = new JarFile(path);
+		List<File> result = new ArrayList<File>();
+		boolean foundPOM = false;
+		JarFile jar = new JarFile(jarFile);
 		for (JarEntry entry : Collections.list(jar.entries())) {
 			String name = entry.getName();
-			if (name.endsWith(".class") || name.endsWith("/")) continue;
-			String destination = baseDirectory + name;
+			if (name.endsWith(".class") || name.endsWith("/") || name.startsWith("META-INF/") || name.endsWith(".DS_Store")) continue;
+			File destination = new File(baseDirectory, "src/main/"
+				+ (name.endsWith(".java") ? "java/" : "resources/") + name);
+			if ("pom.xml".equals(name)) {
+				foundPOM = true;
+				destination = new File(baseDirectory, name);
+			}
 			copyTo(jar.getInputStream(entry), destination);
 			result.add(destination);
+		}
+		if (!foundPOM) {
+			final File pom = new File(baseDirectory, "pom.xml");
+			try {
+				copyTo(fakePOM(baseDirectory, null), pom);
+			} catch (Exception e) {
+				throw new IOException(e);
+			}
+			result.add(pom);
 		}
 		return result;
 	}
 
-	protected void copyTo(InputStream in, String destination)
+	private final static String XALAN_INDENT_AMOUNT = "{http://xml.apache.org/xslt}indent-amount";
+
+	private InputStream fakePOM(final File baseDirectory, final String mainClass) throws ParserConfigurationException, TransformerFactoryConfigurationError, TransformerException {
+		final String artifactId = baseDirectory.getName();
+
+		final org.w3c.dom.Document pom = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+		final Element project = pom.createElement("project");
+		pom.appendChild(project);
+		project.setAttribute("xmlns", "http://maven.apache.org/POM/4.0.0");
+		project.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+		project.setAttribute("xsi:schemaLocation", "http://maven.apache.org/POM/4.0.0 " +
+				"http://maven.apache.org/xsd/maven-4.0.0.xsd");
+
+		append(pom, project, "modelVersion", "4.0.0");
+
+		final Element parent = append(pom, project, "parent", null);
+		append(pom, parent, "groupId", "org.scijava");
+		append(pom, parent, "artifactId", "pom-scijava");
+		append(pom, parent, "version", "1.28");
+
+		append(pom, project, "groupId", "net.imagej");
+		append(pom, project, "artifactId", artifactId);
+		append(pom, project, "version", "1.0.0-SNAPSHOT");
+
+		final Element build = append(pom, project, "build", null);
+		append(pom, build, "sourceDirectory", baseDirectory.getPath() + "/src");
+
+		if (mainClass != null) {
+			final Element plugins = append(pom, build, "plugins", null);
+			final Element plugin = append(pom, plugins, "plugin", null);
+			append(pom, plugin, "artifactId", "maven-jar-plugin");
+			final Element configuration = append(pom, plugin, "configuration", null);
+			final Element archive = append(pom, configuration, "archive", null);
+			final Element manifest = append(pom, archive, "manifest", null);
+			append(pom, manifest, "mainClass", mainClass);
+		}
+
+		Element dependencies = append(pom, project, "dependencies", null);
+		/*
+		for (Coordinate dependency : getAllDependencies(env)) {
+			Element dep = append(pom, dependencies, "dependency", null);
+			append(pom, dep, "groupId", dependency.getGroupId());
+			append(pom, dep, "artifactId", dependency.getArtifactId());
+			append(pom, dep, "version", dependency.getVersion());
+		}
+		*/
+
+        project.appendChild(pom.createComment("NB: for project parent"));
+		final Element repositories = append(pom, project, "repositories", null);
+		final Element releases = append(pom, repositories, "repository", null);
+		append(pom, releases, "id", "imagej.releases");
+		append(pom, releases, "url", "http://maven.imagej.net/content/repositories/releases");
+		final Element snapshots = append(pom, repositories, "repository", null);
+		append(pom, snapshots, "id", "imagej.snapshots");
+		append(pom, snapshots, "url", "http://maven.imagej.net/content/repositories/snapshots");
+
+		final Transformer transformer = TransformerFactory.newInstance().newTransformer();
+		transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		transformer.setOutputProperty(XALAN_INDENT_AMOUNT, "4");
+		final ByteArrayOutputStream out = new ByteArrayOutputStream();
+		transformer.transform(new DOMSource(pom), new StreamResult(out));
+		return new ByteArrayInputStream(out.toByteArray());
+	}
+
+	private static Element append(final org.w3c.dom.Document document, final Element parent, final String tag, final String content) {
+		Element child = document.createElement(tag);
+		if (content != null) child.setTextContent(content); //child.appendChild(document.createCDATASection(content));
+		parent.appendChild(child);
+		return child;
+	}
+
+	protected void copyTo(final InputStream in, final File file)
 			throws IOException {
-		File file = new File(destination);
 		makeParentDirectories(file);
 		copyTo(in, new FileOutputStream(file));
 	}
@@ -142,9 +248,9 @@ public class FileFunctions {
 	 * This just checks for a NUL in the first 1024 bytes.
 	 * Not the best test, but a pragmatic one.
 	 */
-	public boolean isBinaryFile(String path) {
+	public boolean isBinaryFile(final File file) {
 		try {
-			InputStream in = new FileInputStream(path);
+			InputStream in = new FileInputStream(file);
 			byte[] buffer = new byte[1024];
 			int offset = 0;
 			while (offset < buffer.length) {
