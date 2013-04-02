@@ -152,8 +152,16 @@ public class BuildEnvironment {
 	}
 
 	public MavenProject parse(File file, MavenProject parent, String classifier) throws IOException, ParserConfigurationException, SAXException {
-		if (file2pom.containsKey(file))
-			return file2pom.get(file);
+		if (file2pom.containsKey(file)) {
+			final MavenProject result = file2pom.get(file);
+			if (classifier == null) {
+				if (result.coordinate.classifier == null) {
+					return result;
+				}
+			} else if (classifier.equals(result.coordinate.classifier)) {
+				return result;
+			}
+		}
 
 		if (!file.exists())
 			return null;
