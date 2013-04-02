@@ -46,12 +46,11 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -149,7 +148,7 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 	private JButton liveButton;
 	private JButton logButton;
 	private JButton chanButton;
-	private int chanSelected;
+	private int currHistNum;
 
 	// -- public interface --
 
@@ -188,6 +187,8 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 			binWidth = dataRange / binCount;
 		}
 		// initialize data structures
+		int chIndex = dataset.getAxisIndex(Axes.CHANNEL);
+		channels = (chIndex < 0) ? 1 : dataset.dimension(chIndex);
 		histograms = new long[(int) channels + 1][]; // add one for chan compos
 		for (int i = 0; i < histograms.length; i++)
 			histograms[i] = new long[binCount];
@@ -201,59 +202,54 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 			mins[i] = Double.POSITIVE_INFINITY;
 			maxes[i] = Double.NEGATIVE_INFINITY;
 		}
-		// calc per channel stats - 2nd pass through data
-		int chIndex = dataset.getAxisIndex(Axes.CHANNEL);
-		channels = (chIndex < 0) ? 1 : dataset.dimension(chIndex);
-		long[] pos = new long[dataset.numDimensions()];
-		sampleCount = 0;
-		cursor = dataset.getImgPlus().localizingCursor();
-		while (cursor.hasNext()) {
-			double val = cursor.next().getRealDouble();
-			cursor.localize(pos);
-			int index = (int) ((val - dataMin) / binWidth);
-			int chan = (chIndex < 0) ? 0 : (int) pos[chIndex];
-			histograms[chan][index]++;
-			sampleCount++;
-			sum1s[chan] += val;
-			sum2s[chan] += val * val;
-			mins[chan] = Math.min(mins[chan], val);
-			maxes[chan] = Math.max(maxes[chan], val);
-		}
-		// calc composite stats (ack - a 3rd pass! TODO meld with 2nd pass)
+		// calc stats - 2nd pass thru data
+		int composH = histograms.length - 1;
 		RandomAccess<? extends RealType<?>> accessor =
 			dataset.getImgPlus().randomAccess();
 		long[] span = dataset.getDims();
-		if (chIndex >= 0) span[chIndex] = 1;
+		if (chIndex >= 0) span[chIndex] = 1; // iterate channels elsewhere
 		HyperVolumePointSet pixelSpace = new HyperVolumePointSet(span);
 		PointSetIterator pixelSpaceIter = pixelSpace.iterator();
+		sampleCount = 0;
 		while (pixelSpaceIter.hasNext()) {
-			long[] p = pixelSpaceIter.next();
-			accessor.setPosition(p);
-			// determine composite pixel value by channel averaging
-			double val = 0;
-			for (long i = 0; i < channels; i++) {
-				if (chIndex >= 0) accessor.setPosition(i, chIndex);
-				val += accessor.get().getRealDouble();
+			long[] pos = pixelSpaceIter.next();
+			accessor.setPosition(pos);
+			// count values by channel. also determine composite pixel value (by
+			// channel averaging)
+			double composVal = 0;
+			for (long chan = 0; chan < channels; chan++) {
+				if (chIndex >= 0) accessor.setPosition(chan, chIndex);
+				double val = accessor.get().getRealDouble();
+				composVal += val;
+				int index = (int) ((val - dataMin) / binWidth);
+				int c = (int) chan;
+				histograms[c][index]++;
+				sum1s[c] += val;
+				sum2s[c] += val * val;
+				mins[c] = Math.min(mins[c], val);
+				maxes[c] = Math.max(maxes[c], val);
+				sampleCount++;
 			}
-			val /= channels;
-			int index = (int) ((val - dataMin) / binWidth);
-			histograms[histograms.length - 1][index]++;
-			sum1s[histograms.length - 1] += val;
-			sum2s[histograms.length - 1] += val * val;
-			mins[histograms.length - 1] = Math.min(mins[histograms.length - 1], val);
-			maxes[histograms.length - 1] =
-				Math.max(maxes[histograms.length - 1], val);
+			composVal /= channels;
+			int index = (int) ((composVal - dataMin) / binWidth);
+			histograms[composH][index]++;
+			sum1s[composH] += composVal;
+			sum2s[composH] += composVal * composVal;
+			mins[composH] = Math.min(mins[composH], composVal);
+			maxes[composH] = Math.max(maxes[composH], composVal);
 		}
 		// calc means etc.
+		long pixels = sampleCount / channels;
 		for (int i = 0; i < histograms.length; i++) {
-			long pixels = sampleCount / channels;
 			means[i] = sum1s[i] / pixels;
 			stdDevs[i] =
 				Math.sqrt((sum2s[i] - ((sum1s[i] * sum1s[i]) / pixels)) / (pixels - 1));
 		}
 		// create and display window
 		createChartUI();
-		display(histograms.length - 1);
+		currHistNum = composH;
+		display(composH);
+		frame.setVisible(true);
 	}
 
 	/*
@@ -280,7 +276,6 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		chanButton = new JButton("Composite");
 		chanButton.setActionCommand(ACTION_CHANNEL);
 		chanButton.addActionListener(this);
-		chanSelected = histograms.length - 1;
 	}
 
 	private void display(int histNumber) {
@@ -301,19 +296,8 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		final ChartPanel chartPanel = new ChartPanel(chart);
 		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
 		frame.getContentPane().add(chartPanel, BorderLayout.CENTER);
-		valuesPanel = makeValuePanel();
-		final Box horzBox = new Box(BoxLayout.X_AXIS);
-		horzBox.add(listButton);
-		horzBox.add(copyButton);
-		horzBox.add(logButton);
-		horzBox.add(liveButton);
-		horzBox.add(chanButton);
-		final Box vertBox = new Box(BoxLayout.Y_AXIS);
-		vertBox.add(valuesPanel);
-		vertBox.add(horzBox);
-		frame.add(vertBox, BorderLayout.SOUTH);
+		frame.getContentPane().add(makeEmbellishmentPanel(), BorderLayout.SOUTH);
 		frame.pack();
-		frame.setVisible(true);
 	}
 
 	public static <T extends RealType<T>> int[] computeHistogram(final Img<T> im,
@@ -409,6 +393,23 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		return true;
 	}
 
+	private JPanel makeEmbellishmentPanel() {
+		valuesPanel = makeValuePanel();
+		final JPanel horzPanel = new JPanel();
+		horzPanel.setLayout(new GridLayout(1, 5));
+		horzPanel.add(listButton);
+		horzPanel.add(copyButton);
+		horzPanel.add(logButton);
+		horzPanel.add(liveButton);
+		horzPanel.add(chanButton);
+		final JPanel vertPanel = new JPanel();
+		vertPanel.setLayout(new GridLayout(2, 1));
+		// Box vertBox = new Box(BoxLayout.Y_AXIS);
+		vertPanel.add(valuesPanel);
+		vertPanel.add(horzPanel);
+		return vertPanel;
+	}
+
 	private JPanel makeValuePanel() {
 		valuesPanel = new JPanel();
 		final JTextArea text = new JTextArea();
@@ -416,13 +417,13 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		final StringBuilder sb = new StringBuilder();
 		addStr(sb, "Pixels", sampleCount);
 		sb.append("\n");
-		addStr(sb, "Min", mins[chanSelected]);
+		addStr(sb, "Min", mins[currHistNum]);
 		sb.append("   ");
-		addStr(sb, "Max", maxes[chanSelected]);
+		addStr(sb, "Max", maxes[currHistNum]);
 		sb.append("\n");
-		addStr(sb, "Mean", means[chanSelected]);
+		addStr(sb, "Mean", means[currHistNum]);
 		sb.append("   ");
-		addStr(sb, "StdDev", stdDevs[chanSelected]);
+		addStr(sb, "StdDev", stdDevs[currHistNum]);
 		sb.append("\n");
 		addStr(sb, "Bins", binCount);
 		sb.append("   ");
@@ -506,15 +507,15 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 			Toolkit.getDefaultToolkit().beep();
 		}
 		if (ACTION_CHANNEL.equals(command)) {
-			chanSelected++;
-			if (chanSelected >= histograms.length) chanSelected = 0;
-			if (chanSelected == histograms.length - 1) {
+			currHistNum++;
+			if (currHistNum >= histograms.length) currHistNum = 0;
+			if (currHistNum == histograms.length - 1) {
 				chanButton.setText("Composite");
 			}
 			else {
-				chanButton.setText("Channel " + chanSelected);
+				chanButton.setText("Channel " + currHistNum);
 			}
-			display(chanSelected);
+			display(currHistNum);
 		}
 	}
 
