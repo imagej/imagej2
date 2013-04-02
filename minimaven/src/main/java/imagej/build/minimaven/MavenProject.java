@@ -1069,6 +1069,16 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 			if (env.debug)
 				env.err.println((isCurrentProfile ? "Activating" : "Ignoring") + " profile " + string);
 		}
+		else if (!isCurrentProfile && prefix.equals(">project>profiles>profile>activation>os>name"))
+			isCurrentProfile = string.equalsIgnoreCase(System.getProperty("os.name"));
+		else if (!isCurrentProfile && prefix.equals(">project>profiles>profile>activation>os>family")) {
+			if (string.equalsIgnoreCase("windows")) {
+				isCurrentProfile = System.getProperty("os.name").toLowerCase().startsWith("win");
+			} else {
+				env.err.println("Ignoring unknown OS family: " + string);
+				isCurrentProfile = false;
+			}
+		}
 		else if (!isCurrentProfile && prefix.equals(">project>profiles>profile>activation>file>exists"))
 			isCurrentProfile = new File(directory, string).exists();
 		else if (!isCurrentProfile && prefix.equals(">project>profiles>profile>activation>activeByDefault"))
