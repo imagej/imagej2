@@ -59,10 +59,6 @@ import javax.swing.JTextArea;
 
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
-import net.imglib2.algorithm.stats.Histogram;
-import net.imglib2.algorithm.stats.HistogramBinMapper;
-import net.imglib2.algorithm.stats.RealBinMapper;
-import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSetIterator;
@@ -253,8 +249,90 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		display(composH);
 	}
 
+	/* OLD - replace with new stuff when histogram branch code merged in imglib
+
+	public static <T extends RealType<T>> int[] computeHistogram(final Img<T> im,
+		final T min, final T max, final int bins)
+	{
+		final HistogramBinMapper<T> mapper = new RealBinMapper<T>(min, max, bins);
+		final Histogram<T> histogram = new Histogram<T>(mapper, im);
+		histogram.process();
+		final int[] d = new int[histogram.getNumBins()];
+		for (int j = 0; j < histogram.getNumBins(); j++) {
+			d[j] = histogram.getBin(j);
+		}
+		return d;
+	}
+
+	*/
+
+	/**
+	 * Returns a JFreeChart containing data from the provided histogram.
+	 */
+	public static JFreeChart getChart(String title, long[] histogram) {
+		final XYSeries series = new XYSeries("histo");
+		for (int i = 0; i < histogram.length; i++) {
+			series.add(i, histogram[i]);
+		}
+		final XYSeriesCollection data = new XYSeriesCollection(series);
+		final JFreeChart chart =
+			ChartFactory.createXYBarChart(title, null, false, null, data,
+				PlotOrientation.VERTICAL, false, true, false);
+		setTheme(chart);
+		// chart.getXYPlot().setForegroundAlpha(0.50f);
+		return chart;
+	}
+
+
+	@Override
+	public void actionPerformed(ActionEvent evt) {
+		String command = evt.getActionCommand();
+		if (ACTION_LIVE.equals(command)) {
+			// TODO
+			Toolkit.getDefaultToolkit().beep();
+		}
+		if (ACTION_LOG.equals(command)) {
+			// TODO
+			Toolkit.getDefaultToolkit().beep();
+		}
+		if (ACTION_COPY.equals(command)) {
+			// TODO
+			Toolkit.getDefaultToolkit().beep();
+		}
+		if (ACTION_LIST.equals(command)) {
+			// TODO
+			Toolkit.getDefaultToolkit().beep();
+		}
+		if (ACTION_CHANNEL.equals(command)) {
+			currHistNum++;
+			if (currHistNum >= histograms.length) currHistNum = 0;
+			if (currHistNum == histograms.length - 1) {
+				chanButton.setText("Composite");
+			}
+			else {
+				chanButton.setText("Channel " + currHistNum);
+			}
+			display(currHistNum);
+		}
+	}
+
+	// -- private helpers --
+
+	private boolean inputOkay() {
+		dataset = displayService.getActiveDataset(display);
+		if (dataset == null) {
+			cancel("Input dataset must not be null.");
+			return false;
+		}
+		if (dataset.getImgPlus() == null) {
+			cancel("Input Imgplus must not be null.");
+			return false;
+		}
+		return true;
+	}
+
 	private void createDialogResources() {
-		frame = new JFrame("Histogram of " + display.getName());
+		frame = new JFrame("");
 		listButton = new JButton("List");
 		listButton.setActionCommand(ACTION_LIST);
 		listButton.addActionListener(this);
@@ -273,6 +351,7 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 	}
 
 	private void display(int histNumber) {
+		setTitle(histNumber);
 		Container pane = frame.getContentPane();
 		if (chartPanel != null) pane.remove(chartPanel);
 		if (embellPanel != null) pane.remove(embellPanel);
@@ -284,114 +363,9 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		frame.setVisible(true);
 	}
 
-	public static <T extends RealType<T>> int[] computeHistogram(final Img<T> im,
-		final T min, final T max, final int bins)
-	{
-		final HistogramBinMapper<T> mapper = new RealBinMapper<T>(min, max, bins);
-		final Histogram<T> histogram = new Histogram<T>(mapper, im);
-		histogram.process();
-		final int[] d = new int[histogram.getNumBins()];
-		for (int j = 0; j < histogram.getNumBins(); j++) {
-			d[j] = histogram.getBin(j);
-		}
-		return d;
-	}
-
-	/**
-	 * Returns the JFreeChart with this histogram, and as a side effect, show it
-	 * in a JFrame that provides the means to edit the dimensions and also the
-	 * plot properties via a popup menu.
-	 */
-	public JFreeChart asChart(long[] d, boolean show) {
-		/*
-		final XYSeries series = new XYSeries("histo");
-		for (int i = 0; i < d.length; i++) {
-			series.add(i, d[i]);
-		}
-		final String title = "Histogram: " + display.getName();
-		final XYSeriesCollection data = new XYSeriesCollection(series);
-		// data.addSeries(series2);
-		final JFreeChart chart =
-			ChartFactory.createXYBarChart(title, null, false, null, data,
-				PlotOrientation.VERTICAL, false, true, false);
-
-		// ++ chart.getTitle().setFont(null);
-		setTheme(chart);
-		// chart.getXYPlot().setForegroundAlpha(0.50f);
-		final ChartPanel chartPanel = new ChartPanel(chart);
-		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
-		if (show) {
-			final JFrame frame = new JFrame(title);
-			frame.getContentPane().add(chartPanel, BorderLayout.CENTER);
-			final JPanel valuesPanel = makeValuePanel();
-			final Box horzBox = new Box(BoxLayout.X_AXIS);
-			JButton listButton = new JButton("List");
-			listButton.setActionCommand(LIST);
-			listButton.addActionListener(this);
-			JButton copyButton = new JButton("Copy");
-			copyButton.setActionCommand(COPY);
-			copyButton.addActionListener(this);
-			JButton logButton = new JButton("Log");
-			logButton.setActionCommand(LOG);
-			logButton.addActionListener(this);
-			JButton liveButton = new JButton("Live");
-			liveButton.setActionCommand(LIVE);
-			liveButton.addActionListener(this);
-			chanButton = new JButton("Composite");
-			chanButton.setActionCommand(CHANNEL);
-			chanButton.addActionListener(this);
-			chanSelected = histograms.length - 1;
-			horzBox.add(listButton);
-			horzBox.add(copyButton);
-			horzBox.add(logButton);
-			horzBox.add(liveButton);
-			horzBox.add(chanButton);
-			final Box vertBox = new Box(BoxLayout.Y_AXIS);
-			vertBox.add(valuesPanel);
-			vertBox.add(horzBox);
-			frame.add(vertBox, BorderLayout.SOUTH);
-			frame.pack();
-			frame.setVisible(true);
-		}
-		return chart;
-		*/
-		return null;
-	}
-
-	public JFreeChart asChart(final long[] d) {
-		return asChart(d, false);
-	}
-
-	// -- private interface --
-
-	private boolean inputOkay() {
-		dataset = displayService.getActiveDataset(display);
-		if (dataset == null) {
-			cancel("Input dataset must not be null.");
-			return false;
-		}
-		if (dataset.getImgPlus() == null) {
-			cancel("Input Imgplus must not be null.");
-			return false;
-		}
-		return true;
-	}
-
 	private JPanel makeChartPanel(int histNumber) {
-		final XYSeries series = new XYSeries("histo");
-		for (int i = 0; i < histograms[histNumber].length; i++) {
-			series.add(i, histograms[histNumber][i]);
-		}
-		final String title = "Histogram: " + display.getName();
-		final XYSeriesCollection data = new XYSeriesCollection(series);
-		// data.addSeries(series2);
-		final JFreeChart chart =
-			ChartFactory.createXYBarChart(title, null, false, null, data,
-				PlotOrientation.VERTICAL, false, true, false);
-
-		// ++ chart.getTitle().setFont(null);
-		setTheme(chart);
-		// chart.getXYPlot().setForegroundAlpha(0.50f);
+		String title = "";
+		JFreeChart chart = getChart(title, histograms[histNumber]);
 		chartPanel = new ChartPanel(chart);
 		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
 		return chartPanel;
@@ -451,6 +425,18 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		sb.append(String.format("%8.2f", num));
 	}
 
+	private void setTitle(int histNum) {
+		String title;
+		if (histNum == histograms.length - 1) {
+			title = "Composite histogram of ";
+		}
+		else {
+			title = "Channel " + histNum + " histogram of ";
+		}
+		title += display.getName();
+		frame.setTitle(title);
+	}
+
 	private static final void setTheme(final JFreeChart chart) {
 		final XYPlot plot = (XYPlot) chart.getPlot();
 		final XYBarRenderer r = (XYBarRenderer) plot.getRenderer();
@@ -488,38 +474,6 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		plot.getDomainAxis().setTickLabelPaint(Color.gray);
 		plot.getRangeAxis().setTickLabelPaint(Color.gray);
 		chart.getTitle().setPaint(Color.black);
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent evt) {
-		String command = evt.getActionCommand();
-		if (ACTION_LIVE.equals(command)) {
-			// TODO
-			Toolkit.getDefaultToolkit().beep();
-		}
-		if (ACTION_LOG.equals(command)) {
-			// TODO
-			Toolkit.getDefaultToolkit().beep();
-		}
-		if (ACTION_COPY.equals(command)) {
-			// TODO
-			Toolkit.getDefaultToolkit().beep();
-		}
-		if (ACTION_LIST.equals(command)) {
-			// TODO
-			Toolkit.getDefaultToolkit().beep();
-		}
-		if (ACTION_CHANNEL.equals(command)) {
-			currHistNum++;
-			if (currHistNum >= histograms.length) currHistNum = 0;
-			if (currHistNum == histograms.length - 1) {
-				chanButton.setText("Composite");
-			}
-			else {
-				chanButton.setText("Channel " + currHistNum);
-			}
-			display(currHistNum);
-		}
 	}
 
 }
