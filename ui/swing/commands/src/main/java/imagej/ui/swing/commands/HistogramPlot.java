@@ -45,12 +45,13 @@ import imagej.data.display.OverlayService;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -142,7 +143,8 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 	private double dataMax;
 	private int binCount;
 	private JFrame frame;
-	private JPanel valuesPanel;
+	private JPanel embellPanel;
+	private JPanel chartPanel;
 	private JButton listButton;
 	private JButton copyButton;
 	private JButton liveButton;
@@ -246,21 +248,13 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 				Math.sqrt((sum2s[i] - ((sum1s[i] * sum1s[i]) / pixels)) / (pixels - 1));
 		}
 		// create and display window
-		createChartUI();
+		createDialogResources();
 		currHistNum = composH;
 		display(composH);
-		frame.setVisible(true);
 	}
 
-	/*
-	buttons disappear but can still be selected
-	i've made a instance var for values panel but not really using it yet
-	*/
-	
-	private void createChartUI() {
+	private void createDialogResources() {
 		frame = new JFrame("Histogram of " + display.getName());
-		// frame.getContentPane().add(new JPanel(), BorderLayout.CENTER);
-		// frame.getContentPane().add(new JPanel(), BorderLayout.SOUTH);
 		listButton = new JButton("List");
 		listButton.setActionCommand(ACTION_LIST);
 		listButton.addActionListener(this);
@@ -279,25 +273,15 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 	}
 
 	private void display(int histNumber) {
-		final XYSeries series = new XYSeries("histo");
-		for (int i = 0; i < histograms[histNumber].length; i++) {
-			series.add(i, histograms[histNumber][i]);
-		}
-		final String title = "Histogram: " + display.getName();
-		final XYSeriesCollection data = new XYSeriesCollection(series);
-		// data.addSeries(series2);
-		final JFreeChart chart =
-			ChartFactory.createXYBarChart(title, null, false, null, data,
-				PlotOrientation.VERTICAL, false, true, false);
-
-		// ++ chart.getTitle().setFont(null);
-		setTheme(chart);
-		// chart.getXYPlot().setForegroundAlpha(0.50f);
-		final ChartPanel chartPanel = new ChartPanel(chart);
-		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
-		frame.getContentPane().add(chartPanel, BorderLayout.CENTER);
-		frame.getContentPane().add(makeEmbellishmentPanel(), BorderLayout.SOUTH);
+		Container pane = frame.getContentPane();
+		if (chartPanel != null) pane.remove(chartPanel);
+		if (embellPanel != null) pane.remove(embellPanel);
+		chartPanel = makeChartPanel(histNumber);
+		embellPanel = makeEmbellishmentPanel();
+		pane.add(chartPanel, BorderLayout.CENTER);
+		pane.add(embellPanel, BorderLayout.SOUTH);
 		frame.pack();
+		frame.setVisible(true);
 	}
 
 	public static <T extends RealType<T>> int[] computeHistogram(final Img<T> im,
@@ -393,25 +377,44 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		return true;
 	}
 
+	private JPanel makeChartPanel(int histNumber) {
+		final XYSeries series = new XYSeries("histo");
+		for (int i = 0; i < histograms[histNumber].length; i++) {
+			series.add(i, histograms[histNumber][i]);
+		}
+		final String title = "Histogram: " + display.getName();
+		final XYSeriesCollection data = new XYSeriesCollection(series);
+		// data.addSeries(series2);
+		final JFreeChart chart =
+			ChartFactory.createXYBarChart(title, null, false, null, data,
+				PlotOrientation.VERTICAL, false, true, false);
+
+		// ++ chart.getTitle().setFont(null);
+		setTheme(chart);
+		// chart.getXYPlot().setForegroundAlpha(0.50f);
+		chartPanel = new ChartPanel(chart);
+		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
+		return chartPanel;
+	}
+
 	private JPanel makeEmbellishmentPanel() {
-		valuesPanel = makeValuePanel();
+		JPanel valuesPanel = makeValuePanel();
 		final JPanel horzPanel = new JPanel();
-		horzPanel.setLayout(new GridLayout(1, 5));
+		horzPanel.setLayout(new BoxLayout(horzPanel, BoxLayout.X_AXIS));
 		horzPanel.add(listButton);
 		horzPanel.add(copyButton);
 		horzPanel.add(logButton);
 		horzPanel.add(liveButton);
 		horzPanel.add(chanButton);
 		final JPanel vertPanel = new JPanel();
-		vertPanel.setLayout(new GridLayout(2, 1));
-		// Box vertBox = new Box(BoxLayout.Y_AXIS);
+		vertPanel.setLayout(new BoxLayout(vertPanel, BoxLayout.Y_AXIS));
 		vertPanel.add(valuesPanel);
 		vertPanel.add(horzPanel);
 		return vertPanel;
 	}
 
 	private JPanel makeValuePanel() {
-		valuesPanel = new JPanel();
+		JPanel valuesPanel = new JPanel();
 		final JTextArea text = new JTextArea();
 		valuesPanel.add(text, BorderLayout.CENTER);
 		final StringBuilder sb = new StringBuilder();
