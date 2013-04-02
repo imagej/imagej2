@@ -259,7 +259,7 @@ public class BuildEnvironment {
 			pom.dependencies.add(new Coordinate("jfree", "jcommon", "1.0.17"));
 
 		String key = dependency.getKey();
-		if (localPOMCache.containsKey(key))
+		if (debug && localPOMCache.containsKey(key))
 			err.println("Warning: " + target + " overrides " + localPOMCache.get(key));
 		localPOMCache.put(key, pom);
 
