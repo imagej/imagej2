@@ -1141,6 +1141,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 	}
 
 	protected void checkParentTag(String tag, String string1, String string2) {
+		if (!env.debug) return;
 		String expanded1 = expand(string1);
 		String expanded2 = expand(string2);
 		if ((expanded1 == null && expanded2 != null) ||
