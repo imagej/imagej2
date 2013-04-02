@@ -623,7 +623,11 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 	private void copyToImageJAppDirectory(final File ijDir, boolean deleteOtherVersions) throws IOException {
 		if ("pom".equals(getPackaging())) return;
 		final File source = getTarget();
-		if (!source.exists()) throw new IOException("Artifact does not exist: " + source);
+		if (!source.exists()) {
+			if ("imglib-tests".equals(getArtifactId())) return; // ignore obsolete ImgLib
+			if ("imglib2-tests".equals(getArtifactId())) return; // ignore inherited kludge
+			throw new IOException("Artifact does not exist: " + source);
+		}
 
 		final File targetDir = new File(ijDir, isImageJ1Plugin(source) ? "plugins" : "jars");
 		final File target = new File(targetDir, getArtifactId()
