@@ -161,92 +161,13 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 	@Override
 	public void run() {
 		if (!inputOkay()) return;
-		// calc the data ranges - 1st pass thru data
-		dataMin = Double.POSITIVE_INFINITY;
-		dataMax = Double.NEGATIVE_INFINITY;
-		Cursor<? extends RealType<?>> cursor = dataset.getImgPlus().cursor();
-		while (cursor.hasNext()) {
-			double val = cursor.next().getRealDouble();
-			dataMin = Math.min(dataMin, val);
-			dataMax = Math.max(dataMax, val);
-		}
-		if (dataMin > dataMax) {
-			dataMin = 0;
-			dataMax = 0;
-		}
-		double dataRange = dataMax - dataMin;
-		if (dataset.isInteger()) dataRange += 1;
-		if (dataRange <= 256 && dataset.isInteger()) {
-			binCount = (int) dataRange;
-			binWidth = 1;
-		}
-		else {
-			binCount = 256;
-			binWidth = dataRange / binCount;
-		}
-		// initialize data structures
-		int chIndex = dataset.getAxisIndex(Axes.CHANNEL);
-		channels = (chIndex < 0) ? 1 : dataset.dimension(chIndex);
-		histograms = new long[(int) channels + 1][]; // add one for chan compos
-		for (int i = 0; i < histograms.length; i++)
-			histograms[i] = new long[binCount];
-		means = new double[histograms.length];
-		stdDevs = new double[histograms.length];
-		sum1s = new double[histograms.length];
-		sum2s = new double[histograms.length];
-		mins = new double[histograms.length];
-		maxes = new double[histograms.length];
-		for (int i = 0; i < histograms.length; i++) {
-			mins[i] = Double.POSITIVE_INFINITY;
-			maxes[i] = Double.NEGATIVE_INFINITY;
-		}
-		// calc stats - 2nd pass thru data
-		int composH = histograms.length - 1;
-		RandomAccess<? extends RealType<?>> accessor =
-			dataset.getImgPlus().randomAccess();
-		long[] span = dataset.getDims();
-		if (chIndex >= 0) span[chIndex] = 1; // iterate channels elsewhere
-		HyperVolumePointSet pixelSpace = new HyperVolumePointSet(span);
-		PointSetIterator pixelSpaceIter = pixelSpace.iterator();
-		sampleCount = 0;
-		while (pixelSpaceIter.hasNext()) {
-			long[] pos = pixelSpaceIter.next();
-			accessor.setPosition(pos);
-			// count values by channel. also determine composite pixel value (by
-			// channel averaging)
-			double composVal = 0;
-			for (long chan = 0; chan < channels; chan++) {
-				if (chIndex >= 0) accessor.setPosition(chan, chIndex);
-				double val = accessor.get().getRealDouble();
-				composVal += val;
-				int index = (int) ((val - dataMin) / binWidth);
-				int c = (int) chan;
-				histograms[c][index]++;
-				sum1s[c] += val;
-				sum2s[c] += val * val;
-				mins[c] = Math.min(mins[c], val);
-				maxes[c] = Math.max(maxes[c], val);
-				sampleCount++;
-			}
-			composVal /= channels;
-			int index = (int) ((composVal - dataMin) / binWidth);
-			histograms[composH][index]++;
-			sum1s[composH] += composVal;
-			sum2s[composH] += composVal * composVal;
-			mins[composH] = Math.min(mins[composH], composVal);
-			maxes[composH] = Math.max(maxes[composH], composVal);
-		}
-		// calc means etc.
-		long pixels = sampleCount / channels;
-		for (int i = 0; i < histograms.length; i++) {
-			means[i] = sum1s[i] / pixels;
-			stdDevs[i] =
-				Math.sqrt((sum2s[i] - ((sum1s[i] * sum1s[i]) / pixels)) / (pixels - 1));
-		}
+		calcBinInfo(); // 1st pass through data
+		allocateDataStructures();
+		computeStats(); // 2nd pass through data
+		currHistNum = histograms.length - 1;
 		// create and display window
 		createDialogResources();
-		currHistNum = composH;
-		display(composH);
+		display(currHistNum);
 	}
 
 	/* OLD - replace with new stuff when histogram branch code merged in imglib
@@ -474,6 +395,98 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		plot.getDomainAxis().setTickLabelPaint(Color.gray);
 		plot.getRangeAxis().setTickLabelPaint(Color.gray);
 		chart.getTitle().setPaint(Color.black);
+	}
+
+	private void calcBinInfo() {
+		// calc the data ranges - 1st pass thru data
+		dataMin = Double.POSITIVE_INFINITY;
+		dataMax = Double.NEGATIVE_INFINITY;
+		Cursor<? extends RealType<?>> cursor = dataset.getImgPlus().cursor();
+		while (cursor.hasNext()) {
+			double val = cursor.next().getRealDouble();
+			dataMin = Math.min(dataMin, val);
+			dataMax = Math.max(dataMax, val);
+		}
+		if (dataMin > dataMax) {
+			dataMin = 0;
+			dataMax = 0;
+		}
+		double dataRange = dataMax - dataMin;
+		if (dataset.isInteger()) dataRange += 1;
+		if (dataRange <= 256 && dataset.isInteger()) {
+			binCount = (int) dataRange;
+			binWidth = 1;
+		}
+		else {
+			binCount = 256;
+			binWidth = dataRange / binCount;
+		}
+	}
+
+	private void allocateDataStructures() {
+		// initialize data structures
+		int chIndex = dataset.getAxisIndex(Axes.CHANNEL);
+		channels = (chIndex < 0) ? 1 : dataset.dimension(chIndex);
+		histograms = new long[(int) channels + 1][]; // add one for chan compos
+		for (int i = 0; i < histograms.length; i++)
+			histograms[i] = new long[binCount];
+		means = new double[histograms.length];
+		stdDevs = new double[histograms.length];
+		sum1s = new double[histograms.length];
+		sum2s = new double[histograms.length];
+		mins = new double[histograms.length];
+		maxes = new double[histograms.length];
+		for (int i = 0; i < histograms.length; i++) {
+			mins[i] = Double.POSITIVE_INFINITY;
+			maxes[i] = Double.NEGATIVE_INFINITY;
+		}
+	}
+
+	private void computeStats() {
+		// calc stats - 2nd pass thru data
+		int chIndex = dataset.getAxisIndex(Axes.CHANNEL);
+		int composH = histograms.length - 1;
+		RandomAccess<? extends RealType<?>> accessor =
+			dataset.getImgPlus().randomAccess();
+		long[] span = dataset.getDims();
+		if (chIndex >= 0) span[chIndex] = 1; // iterate channels elsewhere
+		HyperVolumePointSet pixelSpace = new HyperVolumePointSet(span);
+		PointSetIterator pixelSpaceIter = pixelSpace.iterator();
+		sampleCount = 0;
+		while (pixelSpaceIter.hasNext()) {
+			long[] pos = pixelSpaceIter.next();
+			accessor.setPosition(pos);
+			// count values by channel. also determine composite pixel value (by
+			// channel averaging)
+			double composVal = 0;
+			for (long chan = 0; chan < channels; chan++) {
+				if (chIndex >= 0) accessor.setPosition(chan, chIndex);
+				double val = accessor.get().getRealDouble();
+				composVal += val;
+				int index = (int) ((val - dataMin) / binWidth);
+				int c = (int) chan;
+				histograms[c][index]++;
+				sum1s[c] += val;
+				sum2s[c] += val * val;
+				mins[c] = Math.min(mins[c], val);
+				maxes[c] = Math.max(maxes[c], val);
+				sampleCount++;
+			}
+			composVal /= channels;
+			int index = (int) ((composVal - dataMin) / binWidth);
+			histograms[composH][index]++;
+			sum1s[composH] += composVal;
+			sum2s[composH] += composVal * composVal;
+			mins[composH] = Math.min(mins[composH], composVal);
+			maxes[composH] = Math.max(maxes[composH], composVal);
+		}
+		// calc means etc.
+		long pixels = sampleCount / channels;
+		for (int i = 0; i < histograms.length; i++) {
+			means[i] = sum1s[i] / pixels;
+			stdDevs[i] =
+				Math.sqrt((sum2s[i] - ((sum1s[i] * sum1s[i]) / pixels)) / (pixels - 1));
+		}
 	}
 
 }
