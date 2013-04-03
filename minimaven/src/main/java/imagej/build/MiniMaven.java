@@ -36,6 +36,7 @@
 package imagej.build;
 
 import imagej.build.minimaven.BuildEnvironment;
+import imagej.build.minimaven.Coordinate;
 import imagej.build.minimaven.MavenProject;
 
 import java.io.File;
@@ -75,7 +76,9 @@ public class MiniMaven {
 				+ "get-dependencies\n"
 				+ "\tdownload the dependencies of the project\n"
 				+ "list\n"
-				+ "\tshow list of projects\n\n"
+				+ "\tshow list of projects\n"
+				+ "dependency-tree\n"
+				+ "\tshow the tree of depending projects\n\n"
 				+ "Options:\n"
 				+ "-D<key>=<value>\n"
 				+ "\tset a system property");
@@ -173,9 +176,44 @@ public class MiniMaven {
 			for (final MavenProject pom2 : result)
 				System.err.println(pom2);
 		}
+		else if (command.equals("dependency-tree")) {
+			final MavenProject parent = pom.getParent();
+			if (parent != null) {
+				err.println("(parent: " + parent.getGAV() + ")");
+			}
+			showDependencyTree(err, pom, "");
+		}
 		else {
 			err.println("Unhandled command: " + command);
 			usage();
+		}
+	}
+
+	protected static void showDependencyTree(final PrintStream err, final MavenProject pom, final String prefix) {
+		err.println(prefix + pom.getGAV());
+		if ("pom".equals(pom.getPackaging())) {
+			for (final MavenProject child : pom.getChildren()) {
+				showDependencyTree(err, child, prefix + "\t");
+			}
+		} else {
+			for (final Coordinate coordinate : pom.getDirectDependencies()) try {
+				final MavenProject dependency = pom.findPOM(coordinate, true, false);
+				if (dependency == null) {
+					err.println(coordinate.getGAV() + " (not found)");
+				} else {
+					showDependencyTree(err, dependency, prefix + "\t");
+				}
+			} catch (final Throwable t) {
+				err.println(coordinate.getGAV() + ": " + t);
+			}
+		}
+	}
+
+	protected static void showTree(final PrintStream err, final MavenProject pom, final String prefix) {
+		err.println(prefix + pom.getGAV());
+		final MavenProject[] children = pom.getChildren();
+		for (int i = 0; i < children.length; i++) {
+			showTree(err, children[i], prefix + "\t");
 		}
 	}
 

@@ -138,6 +138,10 @@ public class BuildEnvironment {
 		}
 	}
 
+	public PrintStream getErr() {
+		return err;
+	}
+
 	protected void print80(String string) {
 		int length = string.length();
 		err.print((verbose || length < 80 ? string : string.substring(0, 80)) + endLine);

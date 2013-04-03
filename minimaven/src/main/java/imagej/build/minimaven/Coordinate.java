@@ -99,6 +99,10 @@ public class Coordinate {
 		snapshotVersion = version;
 	}
 
+	public String getGAV() {
+		return getGroupId() + ":" + getArtifactId() + ":" + getVersion();
+	}
+
 	public String getGroupId() {
 		return groupId;
 	}

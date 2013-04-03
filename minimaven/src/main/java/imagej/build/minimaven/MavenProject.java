@@ -536,6 +536,10 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		return coordinate;
 	}
 
+	public String getGAV() {
+		return getGroupId() + ":" + getArtifactId() + ":" + getVersion() + ":" + getPackaging();
+	}
+
 	public String getGroupId() {
 		return coordinate.groupId;
 	}
@@ -748,6 +752,14 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		}
 	}
 
+	public List<Coordinate> getDirectDependencies() {
+		final List<Coordinate> result = new ArrayList<Coordinate>();
+		for (final Coordinate coordinate : dependencies) {
+			result.add(expand(coordinate));
+		}
+		return result;
+	}
+
 	protected boolean arrayContainsString(String[] array, String key) {
 		for (String string : array)
 			if (string.equals(key))
@@ -827,6 +839,10 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 			return null;
 		}
 		return parent.getProperty(key);
+	}
+
+	public MavenProject getParent() {
+		return parent;
 	}
 
 	public MavenProject[] getChildren() {
