@@ -464,6 +464,8 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 				double val = accessor.get().getRealDouble();
 				composVal += val;
 				int index = (int) ((val - dataMin) / binWidth);
+				// NB in float case the max data point overflows the index range
+				if (index >= binCount) index = binCount - 1;
 				int c = (int) chan;
 				histograms[c][index]++;
 				sum1s[c] += val;
@@ -474,6 +476,8 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 			}
 			composVal /= channels;
 			int index = (int) ((composVal - dataMin) / binWidth);
+			// NB in float case the max data point overflows the index range
+			if (index >= binCount) index = binCount - 1;
 			histograms[composH][index]++;
 			sum1s[composH] += composVal;
 			sum2s[composH] += composVal * composVal;
