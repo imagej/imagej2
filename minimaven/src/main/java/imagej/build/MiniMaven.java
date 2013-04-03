@@ -199,12 +199,12 @@ public class MiniMaven {
 			for (final Coordinate coordinate : pom.getDirectDependencies()) try {
 				final MavenProject dependency = pom.findPOM(coordinate, true, false);
 				if (dependency == null) {
-					err.println(coordinate.getGAV() + " (not found)");
+					err.println(prefix + coordinate.getGAV() + " (not found)");
 				} else {
 					showDependencyTree(err, dependency, prefix + "\t");
 				}
 			} catch (final Throwable t) {
-				err.println(coordinate.getGAV() + ": " + t);
+				err.println(prefix + coordinate.getGAV() + ": " + t);
 			}
 		}
 	}
