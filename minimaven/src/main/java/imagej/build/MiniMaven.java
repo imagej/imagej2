@@ -73,7 +73,9 @@ public class MiniMaven {
 				+ "clean\n"
 				+ "\tclean the project\n"
 				+ "get-dependencies\n"
-				+ "\tdownload the dependencies of the project\n\n"
+				+ "\tdownload the dependencies of the project\n"
+				+ "list\n"
+				+ "\tshow list of projects\n\n"
 				+ "Options:\n"
 				+ "-D<key>=<value>\n"
 				+ "\tset a system property");
