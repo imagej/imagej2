@@ -164,10 +164,9 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		calcBinInfo(); // 1st pass through data
 		allocateDataStructures();
 		computeStats(); // 2nd pass through data
-		currHistNum = histograms.length - 1;
 		// create and display window
 		createDialogResources();
-		display(currHistNum);
+		display(histograms.length - 1);
 	}
 
 	/* OLD - replace with new stuff when histogram branch code merged in imglib
@@ -225,15 +224,15 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 			Toolkit.getDefaultToolkit().beep();
 		}
 		if (ACTION_CHANNEL.equals(command)) {
-			currHistNum++;
-			if (currHistNum >= histograms.length) currHistNum = 0;
-			if (currHistNum == histograms.length - 1) {
+			int nextHistNum = currHistNum + 1;
+			if (nextHistNum >= histograms.length) nextHistNum = 0;
+			if (nextHistNum == histograms.length - 1) {
 				chanButton.setText("Composite");
 			}
 			else {
-				chanButton.setText("Channel " + currHistNum);
+				chanButton.setText("Channel " + nextHistNum);
 			}
-			display(currHistNum);
+			display(nextHistNum);
 		}
 	}
 
@@ -272,12 +271,13 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 	}
 
 	private void display(int histNumber) {
+		currHistNum = histNumber;
 		setTitle(histNumber);
 		Container pane = frame.getContentPane();
 		if (chartPanel != null) pane.remove(chartPanel);
 		if (embellPanel != null) pane.remove(embellPanel);
 		chartPanel = makeChartPanel(histNumber);
-		embellPanel = makeEmbellishmentPanel();
+		embellPanel = makeEmbellishmentPanel(histNumber);
 		pane.add(chartPanel, BorderLayout.CENTER);
 		pane.add(embellPanel, BorderLayout.SOUTH);
 		frame.pack();
@@ -292,8 +292,8 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		return chartPanel;
 	}
 
-	private JPanel makeEmbellishmentPanel() {
-		JPanel valuesPanel = makeValuePanel();
+	private JPanel makeEmbellishmentPanel(int histNumber) {
+		JPanel valuesPanel = makeValuePanel(histNumber);
 		final JPanel horzPanel = new JPanel();
 		horzPanel.setLayout(new BoxLayout(horzPanel, BoxLayout.X_AXIS));
 		horzPanel.add(listButton);
@@ -308,20 +308,20 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		return vertPanel;
 	}
 
-	private JPanel makeValuePanel() {
+	private JPanel makeValuePanel(int histNumber) {
 		JPanel valuesPanel = new JPanel();
 		final JTextArea text = new JTextArea();
 		valuesPanel.add(text, BorderLayout.CENTER);
 		final StringBuilder sb = new StringBuilder();
 		addStr(sb, "Pixels", sampleCount);
 		sb.append("\n");
-		addStr(sb, "Min", mins[currHistNum]);
+		addStr(sb, "Min", mins[histNumber]);
 		sb.append("   ");
-		addStr(sb, "Max", maxes[currHistNum]);
+		addStr(sb, "Max", maxes[histNumber]);
 		sb.append("\n");
-		addStr(sb, "Mean", means[currHistNum]);
+		addStr(sb, "Mean", means[histNumber]);
 		sb.append("   ");
-		addStr(sb, "StdDev", stdDevs[currHistNum]);
+		addStr(sb, "StdDev", stdDevs[histNumber]);
 		sb.append("\n");
 		addStr(sb, "Bins", binCount);
 		sb.append("   ");
