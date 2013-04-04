@@ -50,6 +50,7 @@ import imagej.widget.FileWidget;
 import java.io.File;
 import java.util.List;
 
+import org.scijava.app.AppService;
 import org.scijava.event.EventService;
 import org.scijava.event.StatusService;
 import org.scijava.log.LogService;
@@ -75,6 +76,8 @@ public interface UIService extends Service {
 	EventService getEventService();
 
 	StatusService getStatusService();
+
+	AppService getAppService();
 
 	PlatformService getPlatformService();
 

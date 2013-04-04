@@ -45,6 +45,7 @@ import imagej.util.Prefs;
 import java.util.List;
 
 import org.scijava.InstantiableException;
+import org.scijava.app.AppService;
 import org.scijava.event.EventService;
 import org.scijava.event.StatusService;
 import org.scijava.log.LogService;
@@ -208,9 +209,14 @@ public abstract class AbstractUserInterface extends SortablePlugin
 		return getUIService().getStatusService();
 	}
 
+	protected AppService getAppService() {
+		return getUIService().getAppService();
+	}
+
 	/** Shows the readme, if this is the first time ImageJ has run. */
 	private void displayReadme() {
-		final String prefFirstRun = "firstRun-" + getContext().getVersion();
+		final String version = getAppService().getVersion();
+		final String prefFirstRun = "firstRun-" + version;
 		final String firstRun = Prefs.get(getClass(), prefFirstRun);
 		if (firstRun != null) return;
 		Prefs.put(getClass(), prefFirstRun, false);

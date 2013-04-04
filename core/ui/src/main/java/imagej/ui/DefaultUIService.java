@@ -62,6 +62,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.scijava.InstantiableException;
+import org.scijava.app.AppService;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.event.StatusService;
@@ -95,6 +96,9 @@ public final class DefaultUIService extends AbstractService implements
 
 	@Parameter
 	private ThreadService threadService;
+
+	@Parameter
+	private AppService appService;
 
 	@Parameter
 	private PlatformService platformService;
@@ -160,6 +164,11 @@ public final class DefaultUIService extends AbstractService implements
 	@Override
 	public StatusService getStatusService() {
 		return statusService;
+	}
+
+	@Override
+	public AppService getAppService() {
+		return appService;
 	}
 
 	@Override
@@ -332,20 +341,21 @@ public final class DefaultUIService extends AbstractService implements
 
 	@Override
 	public DialogPrompt.Result showDialog(final String message) {
-		return showDialog(message, getContext().getTitle());
+		return showDialog(message, getAppService().getTitle());
 	}
 
 	@Override
 	public Result showDialog(final String message, final MessageType messageType)
 	{
-		return showDialog(message, getContext().getTitle(), messageType);
+		return showDialog(message, getAppService().getTitle(), messageType);
 	}
 
 	@Override
 	public Result showDialog(final String message, final MessageType messageType,
 		final OptionType optionType)
 	{
-		return showDialog(message, getContext().getTitle(), messageType, optionType);
+		return showDialog(message, getAppService().getTitle(), messageType,
+			optionType);
 	}
 
 	@Override

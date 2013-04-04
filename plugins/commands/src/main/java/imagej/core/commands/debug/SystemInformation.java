@@ -47,6 +47,7 @@ import java.util.regex.Pattern;
 
 import org.scijava.Context;
 import org.scijava.ItemIO;
+import org.scijava.app.AppService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;
@@ -69,6 +70,9 @@ public class SystemInformation implements Command {
 	@Parameter
 	private Context context;
 
+	@Parameter
+	private AppService appService;
+
 	@Parameter(label = "System Information", type = ItemIO.OUTPUT)
 	private String info;
 
@@ -78,7 +82,7 @@ public class SystemInformation implements Command {
 	public void run() {
 		final StringBuilder sb = new StringBuilder();
 
-		sb.append(context.getInfo(false) + NL);
+		sb.append(appService.getInfo(false) + NL);
 
 		sb.append(NL);
 		sb.append("-- Services --" + NL);
@@ -87,7 +91,7 @@ public class SystemInformation implements Command {
 			sb.append(service + NL);
 		}
 
-		final Manifest manifest = context.getManifest();
+		final Manifest manifest = appService.getManifest();
 		if (manifest != null) {
 			sb.append(NL);
 			sb.append("-- Manifest details --" + NL);
