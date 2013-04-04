@@ -341,16 +341,7 @@ public class CommandLine {
 				System.err.println("Skipping up-to-date " + name);
 				continue;
 			}
-			if (file.getStatus() == Status.LOCAL_ONLY &&
-				files.util.isLauncher(file.filename))
-			{
-				file.executable = true;
-				file.addPlatform(Util.platformForLauncher(file.filename));
-				for (final String fileName : new String[] { "jars/ij-launcher.jar" }) {
-					final FileObject dependency = files.get(fileName);
-					if (dependency != null) file.addDependency(files, dependency);
-				}
-			}
+			handleLauncherForUpload(file);
 			if (updateSite == null) {
 				updateSite = file.updateSite;
 				if (updateSite == null) updateSite =
@@ -384,7 +375,21 @@ public class CommandLine {
 		}
 
 		System.err.println("Uploading to " + getLongUpdateSiteName(updateSite));
+		upload(updateSite);
+	}
 
+	private void handleLauncherForUpload(final FileObject file) {
+		if (file.getStatus() == Status.LOCAL_ONLY && files.util.isLauncher(file.filename)) {
+			file.executable = true;
+			file.addPlatform(Util.platformForLauncher(file.filename));
+			for (final String fileName : new String[] { "jars/ij-launcher.jar" }) {
+				final FileObject dependency = files.get(fileName);
+				if (dependency != null) file.addDependency(files, dependency);
+			}
+		}
+	}
+
+	private void upload(final String updateSite) {
 		FilesUploader uploader = null;
 		try {
 			uploader = new FilesUploader(files, updateSite);
