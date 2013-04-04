@@ -36,12 +36,14 @@
 package imagej.updater.core;
 
 import static imagej.updater.core.FilesCollection.DEFAULT_UPDATE_SITE;
+import static imagej.updater.core.UpdaterTestUtils.addUpdateSite;
 import static imagej.updater.core.UpdaterTestUtils.assertStatus;
 import static imagej.updater.core.UpdaterTestUtils.cleanup;
 import static imagej.updater.core.UpdaterTestUtils.initialize;
 import static imagej.updater.core.UpdaterTestUtils.main;
 import static imagej.updater.core.UpdaterTestUtils.writeFile;
 import static org.junit.Assert.assertTrue;
+import static org.scijava.util.FileUtils.deleteRecursively;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.StderrProgress;
 
@@ -100,6 +102,30 @@ public class CommandLineUpdaterTest {
 		files = main(files, "upload", path);
 
 		assertStatus(Status.OBSOLETE_UNINSTALLED, files, path);
+	}
+
+	@Test
+	public void testUploadCompleteSiteWithShadow() throws Exception {
+		final String path = "macros/test.ijm";
+		final String obsolete = "macros/obsolete.ijm";
+		files = initialize(path, obsolete);
+
+		assertTrue(files.prefix(obsolete).delete());
+		files = main(files, "upload", obsolete);
+
+		final File tmp = addUpdateSite(files, "second");
+		writeFile(files.prefix(path), "// shadowing");
+		writeFile(files.prefix(obsolete), obsolete);
+		files = main(files, "upload-complete-site", "--force-shadow", "second");
+
+		assertStatus(Status.INSTALLED, files, path);
+		assertStatus(Status.INSTALLED, files, obsolete);
+		files = main(files, "remove-update-site", "second");
+
+		assertStatus(Status.MODIFIED, files, path);
+		assertStatus(Status.OBSOLETE, files, obsolete);
+
+		assertTrue(deleteRecursively(tmp));
 	}
 }
 
