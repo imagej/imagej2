@@ -80,7 +80,7 @@ public class CommandLineUpdaterTest {
 		files = main(files, "upload-complete-site", FilesCollection.DEFAULT_UPDATE_SITE);
 
 		assertStatus(Status.OBSOLETE_UNINSTALLED, files, to_remove);
-		assertStatus(Status.MODIFIED, files, modified);
+		assertStatus(Status.INSTALLED, files, modified);
 		assertStatus(Status.INSTALLED, files, installed);
 		assertStatus(Status.INSTALLED, files, new_file);
 	}
