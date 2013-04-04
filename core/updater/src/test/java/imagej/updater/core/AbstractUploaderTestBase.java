@@ -75,7 +75,7 @@ public abstract class AbstractUploaderTestBase {
 		files = UpdaterTestUtils.initialize();
 
 		File ijRoot = files.prefix("");
-		CommandLine.main(ijRoot, Integer.MAX_VALUE, "add-update-site",
+		CommandLine.main(ijRoot, -1, "add-update-site",
 				updateSiteName, url, host, uploadDirectory);
 
 		if (!isUpdateSiteEmpty()) {
@@ -87,7 +87,7 @@ public abstract class AbstractUploaderTestBase {
 		final String contents = "print(\"Hello, world!\");";
 		final File file = new File(ijRoot, path);
 		UpdaterTestUtils.writeFile(file, contents);
-		CommandLine.main(ijRoot, Integer.MAX_VALUE, "upload", "--update-site", updateSiteName, path);
+		CommandLine.main(ijRoot, -1, "upload", "--update-site", updateSiteName, path);
 
 		assertFalse(isUpdateSiteEmpty());
 
@@ -100,7 +100,7 @@ public abstract class AbstractUploaderTestBase {
 				timestamp >= minimalTimestamp);
 
 		assertTrue(file.delete());
-		CommandLine.main(ijRoot, Integer.MAX_VALUE, "update", path);
+		CommandLine.main(ijRoot, -1, "update", path);
 		assertTrue(file.exists());
 	}
 
