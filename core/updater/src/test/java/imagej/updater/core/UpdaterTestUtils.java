@@ -68,6 +68,7 @@ import java.util.zip.GZIPOutputStream;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.scijava.log.LogService;
+import org.scijava.util.ClassUtils;
 import org.scijava.util.FileUtils;
 import org.xml.sax.SAXException;
 
@@ -86,9 +87,9 @@ public class UpdaterTestUtils {
 	 * @param files The collection of files, including the current update site and
 	 *          IJ root.
 	 */
-	protected void show(final FilesCollection files) {
+	public static void show(final FilesCollection files) {
 		try {
-			String url = getClass().getResource("UpdaterTest.class").toString();
+			String url = ClassUtils.getLocation(UpdaterTestUtils.class).toString();
 			final String suffix =
 				"/core/updater/core/target/test-classes/imagej/updater/core/UpdaterTest.class";
 			assertTrue(url.endsWith(suffix));
