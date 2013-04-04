@@ -225,9 +225,12 @@ public class UpdaterTestUtils {
 
 	public static boolean cleanup(final FilesCollection files) {
 		final File ijRoot = files.prefix("");
-		final File webRoot = getWebRoot(files);
-		return (!webRoot.isDirectory() || FileUtils.deleteRecursively(webRoot)) &&
-				(!ijRoot.isDirectory() || FileUtils.deleteRecursively(ijRoot));
+		if (ijRoot.isDirectory() && !FileUtils.deleteRecursively(ijRoot)) return false;
+		for (String updateSite : files.getUpdateSiteNames()) {
+			final File webRoot = getWebRoot(files, updateSite);
+			if (webRoot != null && webRoot.isDirectory() && !FileUtils.deleteRecursively(webRoot)) return false;
+		}
+		return true;
 	}
 
 	protected static FilesCollection readDb(FilesCollection files) throws ParserConfigurationException,
@@ -254,7 +257,15 @@ public class UpdaterTestUtils {
 	}
 
 	public static File getWebRoot(final FilesCollection files) {
-		final UpdateSite site = files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE);
+		return getWebRoot(files, DEFAULT_UPDATE_SITE);
+	}
+
+	public static File getWebRoot(final FilesCollection files, final String updateSite) {
+		final UpdateSite site = files.getUpdateSite(updateSite);
+		if (!DEFAULT_UPDATE_SITE.equals(updateSite)
+				&& (site.sshHost == null || site.sshHost.startsWith("file:"))) {
+			return null;
+		}
 		assertTrue("file:localhost".equals(site.sshHost));
 		return new File(site.uploadDirectory);
 	}
