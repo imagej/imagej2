@@ -41,13 +41,13 @@ import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
+import imagej.ui.UIService;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -112,6 +112,9 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 	private static final String ACTION_CHANNEL = "CHANNEL";
 
 	// -- instance variables that are Parameters --
+
+	@Parameter
+	private UIService uiService;
 
 	@Parameter
 	private ImageDisplayService displayService;
@@ -209,23 +212,35 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		String command = evt.getActionCommand();
 		if (ACTION_LIVE.equals(command)) {
 			// TODO
-			Toolkit.getDefaultToolkit().beep();
+			// In IJ1 this command enables live mode. In live mode the chart is
+			// continuously update from the dataset. As the backing data changes the
+			// chart updates.
+			uiService.showDialog("To be implemented");
 		}
 		if (ACTION_LOG.equals(command)) {
 			// TODO
-			Toolkit.getDefaultToolkit().beep();
+			// In IJ1 this command displays additional data on the chart. The data
+			// series is displayed on a log scale in back and the linear scale in
+			// front.
+			uiService.showDialog("To be implemented");
 		}
 		if (ACTION_COPY.equals(command)) {
 			// TODO
-			Toolkit.getDefaultToolkit().beep();
+			// In IJ1 this command copies the histogram into a two column text table
+			// on the clipboard. The 1st column contains calibrated data values and
+			// the second column contains counts.
+			uiService.showDialog("To be implemented");
 		}
 		if (ACTION_LIST.equals(command)) {
 			// TODO
-			Toolkit.getDefaultToolkit().beep();
+			// In IJ1 this command copies the histogram into a two column text table
+			// as a results table. The 1st column contains calibrated data values and
+			// the second column contains counts.
+			uiService.showDialog("To be implemented");
 		}
 		if (ACTION_CHANNEL.equals(command)) {
-			int nextHistNum = currHistNum + 1;
-			if (nextHistNum >= histograms.length) nextHistNum = 0;
+			int nextHistNum =
+				(currHistNum == histograms.length - 1) ? 0 : currHistNum + 1;
 			if (nextHistNum == histograms.length - 1) {
 				chanButton.setText("Composite");
 			}
@@ -254,19 +269,19 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 	private void createDialogResources() {
 		frame = new JFrame("");
 		listButton = new JButton("List");
-		listButton.setActionCommand(ACTION_LIST);
-		listButton.addActionListener(this);
 		copyButton = new JButton("Copy");
-		copyButton.setActionCommand(ACTION_COPY);
-		copyButton.addActionListener(this);
 		logButton = new JButton("Log");
-		logButton.setActionCommand(ACTION_LOG);
-		logButton.addActionListener(this);
 		liveButton = new JButton("Live");
-		liveButton.setActionCommand(ACTION_LIVE);
-		liveButton.addActionListener(this);
 		chanButton = new JButton("Composite");
+		listButton.setActionCommand(ACTION_LIST);
+		copyButton.setActionCommand(ACTION_COPY);
+		logButton.setActionCommand(ACTION_LOG);
+		liveButton.setActionCommand(ACTION_LIVE);
 		chanButton.setActionCommand(ACTION_CHANNEL);
+		listButton.addActionListener(this);
+		copyButton.addActionListener(this);
+		logButton.addActionListener(this);
+		liveButton.addActionListener(this);
 		chanButton.addActionListener(this);
 	}
 
@@ -335,15 +350,15 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 	private void
 		addStr(final StringBuilder sb, final String label, final int num)
 	{
-		sb.append(String.format("%10s:", label));
-		sb.append(String.format("%8d", num));
+		sb.append(String.format("%12s:", label));
+		sb.append(String.format("%10d", num));
 	}
 
 	private void addStr(final StringBuilder sb, final String label,
 		final double num)
 	{
-		sb.append(String.format("%10s:", label));
-		sb.append(String.format("%8.2f", num));
+		sb.append(String.format("%12s:", label));
+		sb.append(String.format("%10.2f", num));
 	}
 
 	private void setTitle(int histNum) {
