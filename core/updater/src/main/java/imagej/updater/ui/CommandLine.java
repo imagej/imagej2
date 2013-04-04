@@ -93,7 +93,12 @@ public class CommandLine {
 
 	public CommandLine(final File ijDir, final int columnCount)
 	{
-		progress = new StderrProgress(columnCount);
+		this(ijDir, columnCount, null);
+	}
+
+	public CommandLine(final File ijDir, final int columnCount, final Progress progress)
+	{
+		this.progress = progress == null ? new StderrProgress(columnCount) : progress;
 		files = new FilesCollection(log, ijDir);
 	}
 
@@ -385,10 +390,16 @@ public class CommandLine {
 
 	public void uploadCompleteSite(final List<String> list) {
 		if (list == null) throw die("Which files do you mean to upload?");
-		boolean ignoreWarnings = false;
-		if (list.size() > 0 && "--force".equals(list.get(0))) {
-			list.remove(0);
-			ignoreWarnings = true;
+		boolean ignoreWarnings = false, forceShadow = false;
+		while (list.size() > 0 && list.get(0).startsWith("-")) {
+			final String option = list.remove(0);
+			if ("--force".equals(option)) {
+				ignoreWarnings = true;
+			} else if ("--force-shadow".equals(option)) {
+				forceShadow = true;
+			} else {
+				throw die("Unknown option: " + option);
+			}
 		}
 		if (list.size() != 1) throw die("Which files do you mean to upload?");
 		String updateSite = list.get(0);
@@ -405,12 +416,18 @@ public class CommandLine {
 			switch (file.getStatus()) {
 			case OBSOLETE:
 			case OBSOLETE_MODIFIED:
-				System.err.println("Warning: obsolete '" + name + "' still installed!");
-				warningCount++;
+				if (forceShadow || (ignoreWarnings && updateSite.equals(file.updateSite))) {
+					file.updateSite = updateSite;
+					file.setAction(files, Action.UPLOAD);
+					uploadCount++;
+				} else {
+					System.err.println("Warning: obsolete '" + name + "' still installed!");
+					warningCount++;
+				}
 				break;
 			case UPDATEABLE:
 			case MODIFIED:
-				if (!updateSite.equals(file.updateSite)) {
+				if (!forceShadow && !updateSite.equals(file.updateSite)) {
 					System.err.println("Warning: '" + name + "' of update site '"
 							+ file.updateSite + "' is not up-to-date!");
 					warningCount++;
@@ -626,7 +643,7 @@ public class CommandLine {
 			+ "\tupdate-force [<files>]\n"
 			+ "\tupdate-force-pristine [<files>]\n"
 			+ "\tupload [--update-site <name>] [<files>]\n"
-			+ "\tupload-complete-site [--force] <name>\n"
+			+ "\tupload-complete-site [--force] [--force-shadow] <name>\n"
 			+ "\tlist-update-sites [<nick>...]\n"
 			+ "\tadd-update-site <nick> <url> [<host> <upload-directory>]\n"
 			+ "\tedit-update-site <nick> <url> [<host> <upload-directory>]");
@@ -634,7 +651,7 @@ public class CommandLine {
 
 	public static void main(final String... args) {
 		try {
-			main(AppUtils.getBaseDirectory(), 80, true, args);
+			main(AppUtils.getBaseDirectory(), 80, null, true, args);
 		}
 		catch (final RuntimeException e) {
 			System.err.println(e.getMessage());
@@ -648,10 +665,16 @@ public class CommandLine {
 	}
 
 	public static void main(final File ijDir, final int columnCount, final String... args) {
-		main(ijDir, columnCount, false, args);
+		main(ijDir, columnCount, null, args);
 	}
 
-	private static void main(final File ijDir, final int columnCount, final boolean standalone, final String[] args) {
+	public static void main(final File ijDir, final int columnCount, final Progress progress, final String... args) {
+		main(ijDir, columnCount, progress, false, args);
+	}
+
+	private static void main(final File ijDir, final int columnCount,
+			final Progress progress, final boolean standalone,
+			final String[] args) {
 		String http_proxy = System.getenv("http_proxy");
 		if (http_proxy != null && http_proxy.startsWith("http://")) {
 			final int colon = http_proxy.indexOf(':', 7);
@@ -672,7 +695,7 @@ public class CommandLine {
 		Authenticator.setDefault(new ProxyAuthenticator());
 		setUserInterface();
 
-		final CommandLine instance = new CommandLine(ijDir, columnCount);
+		final CommandLine instance = new CommandLine(ijDir, columnCount, progress);
 		instance.standalone = standalone;
 
 		if (args.length == 0) {

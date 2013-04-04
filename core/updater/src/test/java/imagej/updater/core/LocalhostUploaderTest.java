@@ -35,11 +35,13 @@
 
 package imagej.updater.core;
 
-import static org.junit.Assert.assertTrue;
+import static org.scijava.util.FileUtils.deleteRecursively;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 
+import org.junit.After;
 import org.junit.Test;
 import org.scijava.util.FileUtils;
 
@@ -56,14 +58,27 @@ public class LocalhostUploaderTest extends AbstractUploaderTestBase {
 		super("localhost");
 	}
 
+	private File tmp;
+
+	@After
+	public void cleanup() {
+		if (tmp != null)
+			deleteRecursively(tmp);
+	}
+
 	@Test
 	public void testLocalhostUpload() throws Exception {
-		final File tmp = FileUtils.createTemporaryDirectory("localhost-upload", "");
-		url = tmp.toURI().toURL().toString();
-
+		tmp = FileUtils.createTemporaryDirectory("localhost-upload", "");
 		test(new FileDeleter(), "file:localhost", tmp.getAbsolutePath());
+	}
 
-		assertTrue(FileUtils.deleteRecursively(tmp));
+	@Override
+	public String getURL() {
+		try {
+			return url = tmp.toURI().toURL().toString();
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private class FileDeleter implements AbstractUploaderTestBase.Deleter {

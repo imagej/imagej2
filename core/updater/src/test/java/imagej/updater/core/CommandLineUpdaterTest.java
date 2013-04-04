@@ -36,14 +36,15 @@
 package imagej.updater.core;
 
 import static imagej.updater.core.FilesCollection.DEFAULT_UPDATE_SITE;
+import static imagej.updater.core.UpdaterTestUtils.addUpdateSite;
 import static imagej.updater.core.UpdaterTestUtils.assertStatus;
 import static imagej.updater.core.UpdaterTestUtils.cleanup;
 import static imagej.updater.core.UpdaterTestUtils.initialize;
-import static imagej.updater.core.UpdaterTestUtils.readDb;
+import static imagej.updater.core.UpdaterTestUtils.main;
 import static imagej.updater.core.UpdaterTestUtils.writeFile;
 import static org.junit.Assert.assertTrue;
+import static org.scijava.util.FileUtils.deleteRecursively;
 import imagej.updater.core.FileObject.Status;
-import imagej.updater.ui.CommandLine;
 import imagej.updater.util.StderrProgress;
 
 import java.io.File;
@@ -68,7 +69,7 @@ public class CommandLineUpdaterTest {
 	@Test
 	public void testUploadCompleteSite() throws Exception {
 		final String to_remove = "macros/to_remove.ijm";
-		final String modified = "macros/modfied.ijm";
+		final String modified = "macros/modified.ijm";
 		final String installed = "macros/installed.ijm";
 		final String new_file = "macros/new_file.ijm";
 		files = initialize(to_remove, modified, installed);
@@ -78,11 +79,10 @@ public class CommandLineUpdaterTest {
 		writeFile(new File(ijRoot, new_file), "Aitch!");
 		assertTrue(new File(ijRoot, to_remove).delete());
 
-		CommandLine.main(ijRoot, -1, "upload-complete-site", FilesCollection.DEFAULT_UPDATE_SITE);
+		files = main(files, "upload-complete-site", FilesCollection.DEFAULT_UPDATE_SITE);
 
-		files = readDb(files, progress);
 		assertStatus(Status.OBSOLETE_UNINSTALLED, files, to_remove);
-		assertStatus(Status.MODIFIED, files, modified);
+		assertStatus(Status.INSTALLED, files, modified);
 		assertStatus(Status.INSTALLED, files, installed);
 		assertStatus(Status.INSTALLED, files, new_file);
 	}
@@ -90,21 +90,42 @@ public class CommandLineUpdaterTest {
 	@Test
 	public void testUpload() throws Exception {
 		files = initialize();
-		File ijRoot = files.prefix("");
 
 		final String path = "macros/test.ijm";
 		final File file = files.prefix(path);
 		writeFile(file, "// test");
-		CommandLine.main(ijRoot, -1, "upload", "--update-site", DEFAULT_UPDATE_SITE, path);
+		files = main(files, "upload", "--update-site", DEFAULT_UPDATE_SITE, path);
 
-		files = readDb(files, progress);
 		assertStatus(Status.INSTALLED, files, path);
 
 		assertTrue(file.delete());
-		CommandLine.main(ijRoot, -1, "upload", path);
+		files = main(files, "upload", path);
 
-		files = readDb(files, progress);
 		assertStatus(Status.OBSOLETE_UNINSTALLED, files, path);
+	}
+
+	@Test
+	public void testUploadCompleteSiteWithShadow() throws Exception {
+		final String path = "macros/test.ijm";
+		final String obsolete = "macros/obsolete.ijm";
+		files = initialize(path, obsolete);
+
+		assertTrue(files.prefix(obsolete).delete());
+		files = main(files, "upload", obsolete);
+
+		final File tmp = addUpdateSite(files, "second");
+		writeFile(files.prefix(path), "// shadowing");
+		writeFile(files.prefix(obsolete), obsolete);
+		files = main(files, "upload-complete-site", "--force-shadow", "second");
+
+		assertStatus(Status.INSTALLED, files, path);
+		assertStatus(Status.INSTALLED, files, obsolete);
+		files = main(files, "remove-update-site", "second");
+
+		assertStatus(Status.MODIFIED, files, path);
+		assertStatus(Status.OBSOLETE, files, obsolete);
+
+		assertTrue(deleteRecursively(tmp));
 	}
 }
 

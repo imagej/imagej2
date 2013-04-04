@@ -35,6 +35,7 @@
 
 package imagej.updater.core;
 
+import static imagej.updater.core.FilesCollection.DEFAULT_UPDATE_SITE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -42,6 +43,7 @@ import static org.junit.Assert.assertTrue;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection.UpdateSite;
+import imagej.updater.ui.CommandLine;
 import imagej.updater.util.Progress;
 import imagej.updater.util.StderrProgress;
 import imagej.updater.util.Util;
@@ -53,6 +55,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -65,6 +68,7 @@ import java.util.zip.GZIPOutputStream;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.scijava.log.LogService;
+import org.scijava.util.ClassUtils;
 import org.scijava.util.FileUtils;
 import org.xml.sax.SAXException;
 
@@ -83,9 +87,9 @@ public class UpdaterTestUtils {
 	 * @param files The collection of files, including the current update site and
 	 *          IJ root.
 	 */
-	protected void show(final FilesCollection files) {
+	public static void show(final FilesCollection files) {
 		try {
-			String url = getClass().getResource("UpdaterTest.class").toString();
+			String url = ClassUtils.getLocation(UpdaterTestUtils.class).toString();
 			final String suffix =
 				"/core/updater/core/target/test-classes/imagej/updater/core/UpdaterTest.class";
 			assertTrue(url.endsWith(suffix));
@@ -118,6 +122,22 @@ public class UpdaterTestUtils {
 	// Utility functions
 	//
 
+	public static FilesCollection main(final FilesCollection files, final String... args) throws ParserConfigurationException, SAXException {
+		files.prefix(".checksums").delete();
+		CommandLine.main(files.prefix(""), -1, progress, args);
+		return readDb(files);
+	}
+
+	public static File addUpdateSite(final FilesCollection files, final String name) throws IOException {
+		final File directory = FileUtils.createTemporaryDirectory("update-site-" + name, "");
+		final String url = directory.toURI().toURL().toString();
+		final String sshHost = "file:localhost";
+		final String uploadDirectory = directory.getAbsolutePath();
+		FilesUploader.initialUpload(url, sshHost, uploadDirectory);
+		CommandLine.main(files.prefix(""), -1, "add-update-site", name, url, sshHost, uploadDirectory);
+		return directory;
+	}
+
 	protected static File makeIJRoot(final File webRoot) throws IOException {
 		final File ijRoot = FileUtils.createTemporaryDirectory("testUpdaterIJRoot", "");
 		initDb(ijRoot, webRoot);
@@ -136,10 +156,10 @@ public class UpdaterTestUtils {
 	}
 
 	public static FilesCollection initialize(final String... fileNames) throws Exception {
-		return initialize(null, null, null, fileNames);
+		return initialize(null, null, fileNames);
 	}
 
-	public static FilesCollection initialize(File ijRoot, File webRoot, Progress progress, final String... fileNames)
+	public static FilesCollection initialize(File ijRoot, File webRoot, final String... fileNames)
 			throws Exception
 		{
 		if (ijRoot == null) ijRoot = FileUtils.createTemporaryDirectory("testUpdaterIJRoot", "");
@@ -157,7 +177,6 @@ public class UpdaterTestUtils {
 		assertFalse(localDb.exists());
 		assertFalse(remoteDb.exists());
 
-		if (progress == null) progress = new StderrProgress();
 		FilesUploader uploader =
 			FilesUploader.initialUpload(url, sshHost, uploadDirectory);
 		assertTrue(uploader.login());
@@ -216,15 +235,21 @@ public class UpdaterTestUtils {
 
 	public static boolean cleanup(final FilesCollection files) {
 		final File ijRoot = files.prefix("");
-		final File webRoot = getWebRoot(files);
-		return (!webRoot.isDirectory() || FileUtils.deleteRecursively(webRoot)) &&
-				(!ijRoot.isDirectory() || FileUtils.deleteRecursively(ijRoot));
+		if (ijRoot.isDirectory() && !FileUtils.deleteRecursively(ijRoot)) return false;
+		for (String updateSite : files.getUpdateSiteNames()) {
+			final File webRoot = getWebRoot(files, updateSite);
+			if (webRoot != null && webRoot.isDirectory() && !FileUtils.deleteRecursively(webRoot)) return false;
+		}
+		return true;
 	}
 
-	protected static FilesCollection readDb(FilesCollection files,
-			final Progress progress) throws ParserConfigurationException,
+	protected static FilesCollection readDb(FilesCollection files) throws ParserConfigurationException,
 			SAXException {
-		files = new FilesCollection(files.prefix(""));
+		return readDb(files.prefix(""));
+	}
+
+	protected static FilesCollection readDb(final File ijRoot) throws ParserConfigurationException, SAXException {
+		final FilesCollection files = new FilesCollection(ijRoot);
 
 		// We're too fast, cannot trust the cached checksums
 		files.prefix(".checksums").delete();
@@ -242,12 +267,20 @@ public class UpdaterTestUtils {
 	}
 
 	public static File getWebRoot(final FilesCollection files) {
-		final UpdateSite site = files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE);
+		return getWebRoot(files, DEFAULT_UPDATE_SITE);
+	}
+
+	public static File getWebRoot(final FilesCollection files, final String updateSite) {
+		final UpdateSite site = files.getUpdateSite(updateSite);
+		if (!DEFAULT_UPDATE_SITE.equals(updateSite)
+				&& (site.sshHost == null || site.sshHost.startsWith("file:"))) {
+			return null;
+		}
 		assertTrue("file:localhost".equals(site.sshHost));
 		return new File(site.uploadDirectory);
 	}
 
-	protected static void update(final FilesCollection files, final Progress progress) throws IOException {
+	protected static void update(final FilesCollection files) throws IOException {
 		final File ijRoot = files.prefix(".");
 		final Installer installer = new Installer(files, progress);
 		installer.start();
@@ -256,7 +289,11 @@ public class UpdaterTestUtils {
 		assertFalse(new File(ijRoot, "update").exists());
 	}
 
-	protected static void upload(final FilesCollection files, final String updateSite, final Progress progress) throws Exception {
+	protected static void upload(final FilesCollection files) throws Exception {
+		upload(files, DEFAULT_UPDATE_SITE);
+	}
+
+	protected static void upload(final FilesCollection files, final String updateSite) throws Exception {
 		for (final FileObject file : files.toUpload())
 			assertEquals(updateSite, file.updateSite);
 		final FilesUploader uploader =
@@ -360,7 +397,37 @@ public class UpdaterTestUtils {
 	/**
 	 * Write a .jar file
 	 * 
-	 * @param jarFile which directory to write into
+	 * @param files the files collection
+	 * @param path the path of the .jar file
+	 * @return the File object for the .jar file
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	protected static File writeJar(final FilesCollection files, final String path) throws FileNotFoundException, IOException
+	{
+		return writeJar(files, path, path, path);
+	}
+
+	/**
+	 * Write a .jar file
+	 * 
+	 * @param files the files collection
+	 * @param path the path of the .jar file
+	 * @param args a list of entry name / contents pairs
+	 * @return the File object for the .jar file
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	protected static File writeJar(final FilesCollection files, final String path,
+		final String... args) throws FileNotFoundException, IOException
+	{
+		return writeJar(files.prefix(path), args);
+	}
+
+	/**
+	 * Write a .jar file
+	 * 
+	 * @param jarFile which .jar file to write into
 	 * @param args a list of entry name / contents pairs
 	 * @return the File object for the .jar file
 	 * @throws FileNotFoundException
@@ -382,6 +449,31 @@ public class UpdaterTestUtils {
 		return jarFile;
 	}
 
+	/**
+	 * Write a .jar file
+	 * 
+	 * @param files the files collection
+	 * @param path the path of the .jar file
+	 * @param classes a list of classes whose files to write
+	 * @return the File object for the .jar file
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	protected static File writeJar(final FilesCollection files,
+			final String path, final Class<?>... classes)
+			throws FileNotFoundException, IOException {
+		return writeJar(files.prefix(path), classes);
+	}
+
+	/**
+	 * Write a .jar file
+	 * 
+	 * @param file which directory to write into
+	 * @param classes a list of classes whose files to write
+	 * @return the File object for the .jar file
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	protected static File writeJar(final File file, Class<?>... classes) throws FileNotFoundException, IOException {
 		file.getParentFile().mkdirs();
 		final byte[] buffer = new byte[32768];
@@ -421,6 +513,37 @@ public class UpdaterTestUtils {
 		file.getParentFile().mkdirs();
 		writeStream(new GZIPOutputStream(new FileOutputStream(file)), content, true);
 		return file;
+	}
+
+	/**
+	 * Write a text file
+	 * 
+	 * @param files The files collection
+	 * @param path the path of the file into which to write
+	 * @param content The contents to write
+	 * @return the File object for the file that was written to
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 */
+	public static File writeFile(final FilesCollection files, final String path, final String content)
+		throws FileNotFoundException, IOException
+	{
+		return writeFile(files.prefix(path), content);
+	}
+
+	/**
+	 * Write a text file
+	 * 
+	 * @param files The files collection
+	 * @param path the path of the file into which to write
+	 * @return the File object for the file that was written to
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 */
+	public static File writeFile(final FilesCollection files, final String path)
+		throws FileNotFoundException, IOException
+	{
+		return writeFile(files.prefix(path), path);
 	}
 
 	/**
@@ -492,4 +615,44 @@ public class UpdaterTestUtils {
 		return out.toString();
 	}
 
+	/**
+	 * A quieter version of the progress than {@link StderrProgress}.
+	 */
+	public final static Progress progress = new Progress() {
+		final boolean verbose = false;
+		final PrintStream err = System.err;
+		private String prefix = "", item = "";
+
+		@Override
+		public void setTitle(String title) {
+			prefix = title;
+			item = "";
+		}
+
+		@Override
+		public void setCount(int count, int total) {
+			if (verbose) err.print(prefix + item + count + "/" + total + "\r");
+		}
+
+		@Override
+		public void addItem(Object item) {
+			this.item = "/" + item + ": ";
+		}
+
+		@Override
+		public void setItemCount(int count, int total) {
+			if (verbose) err.print(prefix + item + " [" + count + "/" + total + "]\r");
+		}
+
+		@Override
+		public void itemDone(Object item) {
+			if (verbose) err.print(prefix + item + "\n");
+		}
+
+		@Override
+		public void done() {
+			// this space intentionally left blank
+		}
+
+	};
 }
