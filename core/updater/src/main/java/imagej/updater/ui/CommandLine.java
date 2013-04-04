@@ -93,7 +93,12 @@ public class CommandLine {
 
 	public CommandLine(final File ijDir, final int columnCount)
 	{
-		progress = new StderrProgress(columnCount);
+		this(ijDir, columnCount, null);
+	}
+
+	public CommandLine(final File ijDir, final int columnCount, final Progress progress)
+	{
+		this.progress = progress == null ? new StderrProgress(columnCount) : progress;
 		files = new FilesCollection(log, ijDir);
 	}
 
@@ -634,7 +639,7 @@ public class CommandLine {
 
 	public static void main(final String... args) {
 		try {
-			main(AppUtils.getBaseDirectory(), 80, true, args);
+			main(AppUtils.getBaseDirectory(), 80, null, true, args);
 		}
 		catch (final RuntimeException e) {
 			System.err.println(e.getMessage());
@@ -648,10 +653,16 @@ public class CommandLine {
 	}
 
 	public static void main(final File ijDir, final int columnCount, final String... args) {
-		main(ijDir, columnCount, false, args);
+		main(ijDir, columnCount, null, args);
 	}
 
-	private static void main(final File ijDir, final int columnCount, final boolean standalone, final String[] args) {
+	public static void main(final File ijDir, final int columnCount, final Progress progress, final String... args) {
+		main(ijDir, columnCount, progress, false, args);
+	}
+
+	private static void main(final File ijDir, final int columnCount,
+			final Progress progress, final boolean standalone,
+			final String[] args) {
 		String http_proxy = System.getenv("http_proxy");
 		if (http_proxy != null && http_proxy.startsWith("http://")) {
 			final int colon = http_proxy.indexOf(':', 7);
@@ -672,7 +683,7 @@ public class CommandLine {
 		Authenticator.setDefault(new ProxyAuthenticator());
 		setUserInterface();
 
-		final CommandLine instance = new CommandLine(ijDir, columnCount);
+		final CommandLine instance = new CommandLine(ijDir, columnCount, progress);
 		instance.standalone = standalone;
 
 		if (args.length == 0) {
