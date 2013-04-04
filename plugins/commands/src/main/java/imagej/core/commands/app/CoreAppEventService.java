@@ -33,31 +33,57 @@
  * #L%
  */
 
-package imagej.platform;
+package imagej.core.commands.app;
 
 import imagej.command.Command;
+import imagej.command.CommandService;
+import imagej.platform.DefaultAppEventService;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;
 
 /**
- * Interface for service that provides application-level functionality.
+ * Core ImageJ service for handling application-level events.
+ * <p>
+ * It implements the {@link #about()}, {@link #prefs()} and {@link #quit()}
+ * methods via calls to the {@link AboutImageJ}, {@link Preferences} and
+ * {@link QuitProgram} commands, respectively.
+ * </p>
  * 
  * @author Curtis Rueden
  */
-public interface AppService extends Service {
+@Plugin(type = Service.class)
+public final class CoreAppEventService extends DefaultAppEventService {
 
-	/** Displays an About ImageJ dialog. */
-	void about();
+	@Parameter
+	private CommandService commandService;
 
-	/** Displays ImageJ preferences. */
-	void showPrefs();
+	// -- AppEventService methods --
 
-	/** Quits ImageJ. */
-	void quit();
+	@Override
+	public void about() {
+		commandService.run(AboutImageJ.class);
+	}
 
-	/** Gets the commands associated with this service. */
-	List<Class<? extends Command>> getCommands();
+	@Override
+	public void prefs() {
+		commandService.run(Preferences.class);
+	}
+
+	@Override
+	public void quit() {
+		commandService.run(QuitProgram.class);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<Class<? extends Command>> getCommands() {
+		return Arrays.asList(AboutImageJ.class, Preferences.class,
+			QuitProgram.class);
+	}
 
 }

@@ -140,7 +140,7 @@ public class AWTUI extends AbstractUserInterface {
 
 			@Override
 			public void windowClosing(final WindowEvent e) {
-				getUIService().getAppService().quit();
+				getUIService().getAppEventService().quit();
 			}
 		});
 

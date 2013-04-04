@@ -59,7 +59,7 @@ public interface PlatformService extends Service {
 
 	CommandService getCommandService();
 
-	AppService getAppService();
+	AppEventService getAppEventService();
 
 	/** Gets the platform handlers applicable to this platform. */
 	List<Platform> getTargetPlatforms();

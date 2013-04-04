@@ -55,7 +55,7 @@ import imagej.legacy.LegacyService;
 import imagej.menu.MenuService;
 import imagej.module.ModuleService;
 import imagej.options.OptionsService;
-import imagej.platform.AppService;
+import imagej.platform.AppEventService;
 import imagej.platform.PlatformService;
 import imagej.render.RenderingService;
 import imagej.script.ScriptService;
@@ -161,8 +161,8 @@ public class ImageJ extends AbstractContextual {
 		return get(AnimationService.class);
 	}
 
-	public AppService app() {
-		return get(AppService.class);
+	public AppEventService appEvent() {
+		return get(AppEventService.class);
 	}
 
 	public CommandService command() {

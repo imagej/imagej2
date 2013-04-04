@@ -33,85 +33,31 @@
  * #L%
  */
 
-package imagej.core.commands.app;
+package imagej.platform;
 
 import imagej.command.Command;
-import imagej.command.CommandService;
-import imagej.platform.AppService;
-import imagej.platform.event.AppAboutEvent;
-import imagej.platform.event.AppPreferencesEvent;
-import imagej.platform.event.AppQuitEvent;
 
-import java.util.Arrays;
 import java.util.List;
 
-import org.scijava.event.EventHandler;
-import org.scijava.event.EventService;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
- * Default service for providing application-level functionality.
+ * Interface for service that handles application-level events.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Service.class)
-public final class DefaultAppService extends AbstractService implements
-	AppService
-{
+public interface AppEventService extends Service {
 
-	@Parameter
-	private EventService eventService;
+	/** Displays an About ImageJ dialog. */
+	void about();
 
-	@Parameter
-	private CommandService commandService;
+	/** Displays the ImageJ preferences dialog. */
+	void prefs();
 
-	// -- AppService methods --
+	/** Quits ImageJ, prompting the user about any unsaved work first. */
+	void quit();
 
-	@Override
-	public void about() {
-		commandService.run(AboutImageJ.class);
-	}
-
-	@Override
-	public void showPrefs() {
-		commandService.run(Preferences.class);
-	}
-
-	@Override
-	public void quit() {
-		commandService.run(QuitProgram.class);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public List<Class<? extends Command>> getCommands() {
-		return Arrays.asList(AboutImageJ.class, Preferences.class,
-			QuitProgram.class);
-	}
-
-	// -- Event handlers --
-
-	@EventHandler
-	protected void
-		onEvent(@SuppressWarnings("unused") final AppAboutEvent event)
-	{
-		about();
-	}
-
-	@EventHandler
-	protected void onEvent(
-		@SuppressWarnings("unused") final AppPreferencesEvent event)
-	{
-		showPrefs();
-	}
-
-	@EventHandler
-	protected void onEvent(@SuppressWarnings("unused") final AppQuitEvent event)
-	{
-		quit();
-	}
+	/** Gets the commands associated with this service. */
+	List<Class<? extends Command>> getCommands();
 
 }

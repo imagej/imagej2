@@ -41,7 +41,7 @@ import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.menu.MenuService;
 import imagej.options.OptionsService;
-import imagej.platform.AppService;
+import imagej.platform.AppEventService;
 import imagej.platform.PlatformService;
 import imagej.tool.ToolService;
 import imagej.ui.viewer.DisplayViewer;
@@ -90,7 +90,7 @@ public interface UIService extends Service {
 
 	OptionsService getOptionsService();
 
-	AppService getAppService();
+	AppEventService getAppEventService();
 
 	ImageDisplayService getImageDisplayService();
 

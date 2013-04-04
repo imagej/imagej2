@@ -36,23 +36,34 @@
 package imagej.platform;
 
 import imagej.command.Command;
+import imagej.platform.event.AppAboutEvent;
+import imagej.platform.event.AppPreferencesEvent;
+import imagej.platform.event.AppQuitEvent;
 
 import java.util.Collections;
 import java.util.List;
 
 import org.scijava.Priority;
+import org.scijava.event.EventHandler;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
- * Default service for providing application-level functionality.
+ * Default service for handling application-level events.
+ * <p>
+ * An {@link AppAboutEvent} triggers a callback to {@link #about()}. An
+ * {@link AppPreferencesEvent} triggers a callback to {@link #prefs()}. Finally,
+ * an {@link AppQuitEvent} triggers a callback to {@link #quit()}. Note that
+ * this class's implementations of the former two methods do nothing, and the
+ * latter simply disposes the application context with no user checks.
+ * </p>
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Service.class, priority = Priority.VERY_LOW_PRIORITY)
-public final class DummyAppService extends AbstractService implements
-	AppService
+@Plugin(type = Service.class, priority = Priority.LOW_PRIORITY)
+public class DefaultAppEventService extends AbstractService implements
+	AppEventService
 {
 
 	// -- AppService methods --
@@ -63,18 +74,38 @@ public final class DummyAppService extends AbstractService implements
 	}
 
 	@Override
-	public void showPrefs() {
+	public void prefs() {
 		// NB: Do nothing.
 	}
 
 	@Override
 	public void quit() {
-		// NB: Do nothing.
+		getContext().dispose();
 	}
 
 	@Override
 	public List<Class<? extends Command>> getCommands() {
 		return Collections.emptyList();
+	}
+
+	// -- Event handlers --
+
+	@EventHandler
+	protected void onEvent(@SuppressWarnings("unused") final AppAboutEvent event)
+	{
+		about();
+	}
+
+	@EventHandler
+	protected void onEvent(
+		@SuppressWarnings("unused") final AppPreferencesEvent event)
+	{
+		prefs();
+	}
+
+	@EventHandler
+	protected void onEvent(@SuppressWarnings("unused") final AppQuitEvent event) {
+		quit();
 	}
 
 }

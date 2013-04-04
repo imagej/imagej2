@@ -43,7 +43,7 @@ import imagej.command.CommandService;
 import imagej.module.ModuleInfo;
 import imagej.module.event.ModulesUpdatedEvent;
 import imagej.platform.AbstractPlatform;
-import imagej.platform.AppService;
+import imagej.platform.AppEventService;
 import imagej.platform.Platform;
 import imagej.platform.PlatformService;
 
@@ -129,7 +129,8 @@ public class MacOSXPlatform extends AbstractPlatform {
 	private void removeAppCommandsFromMenu() {
 		final EventService eventService = platformService.getEventService();
 		final CommandService commandService = platformService.getCommandService();
-		final AppService appEventService = platformService.getAppService();
+		final AppEventService appEventService =
+			platformService.getAppEventService();
 
 		// get the list of commands being handled at the application level
 		final List<Class<? extends Command>> commands =

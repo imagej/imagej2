@@ -45,7 +45,7 @@ import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.DisplayUpdatedEvent;
 import imagej.menu.MenuService;
 import imagej.options.OptionsService;
-import imagej.platform.AppService;
+import imagej.platform.AppEventService;
 import imagej.platform.PlatformService;
 import imagej.platform.event.AppQuitEvent;
 import imagej.tool.ToolService;
@@ -118,7 +118,7 @@ public final class DefaultUIService extends AbstractService implements
 	private OptionsService optionsService;
 
 	@Parameter
-	private AppService appService;
+	private AppEventService appEventService;
 
 	@Parameter
 	private ImageDisplayService imageDisplayService;
@@ -198,8 +198,8 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
-	public AppService getAppService() {
-		return appService;
+	public AppEventService getAppEventService() {
+		return appEventService;
 	}
 
 	@Override
