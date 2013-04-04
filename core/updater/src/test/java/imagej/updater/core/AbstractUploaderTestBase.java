@@ -35,6 +35,9 @@
 
 package imagej.updater.core;
 
+import static imagej.updater.core.UpdaterTestUtils.cleanup;
+import static imagej.updater.core.UpdaterTestUtils.initialize;
+import static imagej.updater.core.UpdaterTestUtils.writeFile;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeNotNull;
@@ -66,13 +69,13 @@ public abstract class AbstractUploaderTestBase {
 	}
 
 	@After
-	public void cleanup() {
-		if (files != null) UpdaterTestUtils.cleanup(files);
+	public void after() {
+		if (files != null) cleanup(files);
 	}
 
 	public void test(final Deleter deleter, final String host, final String uploadDirectory) throws Exception {
 		getURL();
-		files = UpdaterTestUtils.initialize();
+		files = initialize();
 
 		File ijRoot = files.prefix("");
 		CommandLine.main(ijRoot, -1, "add-update-site",
@@ -86,7 +89,7 @@ public abstract class AbstractUploaderTestBase {
 		final String path = "plugins/Say_Hello.bsh";
 		final String contents = "print(\"Hello, world!\");";
 		final File file = new File(ijRoot, path);
-		UpdaterTestUtils.writeFile(file, contents);
+		writeFile(file, contents);
 		CommandLine.main(ijRoot, -1, "upload", "--update-site", updateSiteName, path);
 
 		assertFalse(isUpdateSiteEmpty());

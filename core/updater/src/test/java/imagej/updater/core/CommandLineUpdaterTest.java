@@ -35,7 +35,12 @@
 
 package imagej.updater.core;
 
+import static imagej.updater.core.FilesCollection.DEFAULT_UPDATE_SITE;
 import static imagej.updater.core.UpdaterTestUtils.assertStatus;
+import static imagej.updater.core.UpdaterTestUtils.cleanup;
+import static imagej.updater.core.UpdaterTestUtils.initialize;
+import static imagej.updater.core.UpdaterTestUtils.readDb;
+import static imagej.updater.core.UpdaterTestUtils.writeFile;
 import static org.junit.Assert.assertTrue;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.ui.CommandLine;
@@ -56,8 +61,8 @@ public class CommandLineUpdaterTest {
 	protected StderrProgress progress = new StderrProgress();
 
 	@After
-	public void cleanup() {
-		if (files != null) UpdaterTestUtils.cleanup(files);
+	public void after() {
+		if (files != null) cleanup(files);
 	}
 
 	@Test
@@ -66,16 +71,16 @@ public class CommandLineUpdaterTest {
 		final String modified = "macros/modfied.ijm";
 		final String installed = "macros/installed.ijm";
 		final String new_file = "macros/new_file.ijm";
-		files = UpdaterTestUtils.initialize(to_remove, modified, installed);
+		files = initialize(to_remove, modified, installed);
 
 		File ijRoot = files.prefix("");
-		UpdaterTestUtils.writeFile(new File(ijRoot, modified), "Zing! Zing a zong!");
-		UpdaterTestUtils.writeFile(new File(ijRoot, new_file), "Aitch!");
+		writeFile(new File(ijRoot, modified), "Zing! Zing a zong!");
+		writeFile(new File(ijRoot, new_file), "Aitch!");
 		assertTrue(new File(ijRoot, to_remove).delete());
 
-		CommandLine.main(ijRoot, Integer.MAX_VALUE, "upload-complete-site", FilesCollection.DEFAULT_UPDATE_SITE);
+		CommandLine.main(ijRoot, -1, "upload-complete-site", FilesCollection.DEFAULT_UPDATE_SITE);
 
-		files = UpdaterTestUtils.readDb(files, progress);
+		files = readDb(files, progress);
 		assertStatus(Status.OBSOLETE_UNINSTALLED, files, to_remove);
 		assertStatus(Status.MODIFIED, files, modified);
 		assertStatus(Status.INSTALLED, files, installed);
