@@ -54,6 +54,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -121,8 +122,8 @@ public class UpdaterTestUtils {
 
 	public static FilesCollection main(final FilesCollection files, final String... args) throws ParserConfigurationException, SAXException {
 		files.prefix(".checksums").delete();
-		CommandLine.main(files.prefix(""), -1, args);
-		return readDb(files);
+		CommandLine.main(files.prefix(""), -1, progress, args);
+		return readDb(files, progress);
 	}
 
 	protected static File makeIJRoot(final File webRoot) throws IOException {
@@ -499,4 +500,44 @@ public class UpdaterTestUtils {
 		return out.toString();
 	}
 
+	/**
+	 * A quieter version of the progress than {@link StderrProgress}.
+	 */
+	public final static Progress progress = new Progress() {
+		final boolean verbose = false;
+		final PrintStream err = System.err;
+		private String prefix = "", item = "";
+
+		@Override
+		public void setTitle(String title) {
+			prefix = title;
+			item = "";
+		}
+
+		@Override
+		public void setCount(int count, int total) {
+			if (verbose) err.print(prefix + item + count + "/" + total + "\r");
+		}
+
+		@Override
+		public void addItem(Object item) {
+			this.item = "/" + item + ": ";
+		}
+
+		@Override
+		public void setItemCount(int count, int total) {
+			if (verbose) err.print(prefix + item + " [" + count + "/" + total + "]\r");
+		}
+
+		@Override
+		public void itemDone(Object item) {
+			if (verbose) err.print(prefix + item + "\n");
+		}
+
+		@Override
+		public void done() {
+			// this space intentionally left blank
+		}
+
+	};
 }

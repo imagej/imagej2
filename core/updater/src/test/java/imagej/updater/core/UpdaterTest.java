@@ -45,6 +45,7 @@ import static imagej.updater.core.UpdaterTestUtils.getWebRoot;
 import static imagej.updater.core.UpdaterTestUtils.initDb;
 import static imagej.updater.core.UpdaterTestUtils.makeIJRoot;
 import static imagej.updater.core.UpdaterTestUtils.makeList;
+import static imagej.updater.core.UpdaterTestUtils.progress;
 import static imagej.updater.core.UpdaterTestUtils.readGzippedStream;
 import static imagej.updater.core.UpdaterTestUtils.touch;
 import static imagej.updater.core.UpdaterTestUtils.writeGZippedFile;
@@ -59,7 +60,6 @@ import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Progress;
-import imagej.updater.util.StderrProgress;
 import imagej.updater.util.Util;
 
 import java.io.File;
@@ -90,7 +90,6 @@ import org.xml.sax.SAXException;
  */
 public class UpdaterTest {
 
-	final Progress progress = new StderrProgress();
 	private FilesCollection files;
 
 	//
@@ -115,8 +114,6 @@ public class UpdaterTest {
 
 	@Test
 	public void testInitialUpload() throws Exception {
-
-		// The progress indicator
 
 		files = initialize();
 
