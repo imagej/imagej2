@@ -40,10 +40,10 @@ import imagej.command.CommandService;
 import java.io.File;
 
 import org.scijava.Context;
+import org.scijava.app.StatusService;
+import org.scijava.app.event.StatusEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
-import org.scijava.event.StatusEvent;
-import org.scijava.event.StatusService;
 
 /**
  * Tests the upload functionality.

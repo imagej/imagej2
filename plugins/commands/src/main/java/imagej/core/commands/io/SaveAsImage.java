@@ -55,8 +55,8 @@ import net.imglib2.io.ImgIOException;
 import net.imglib2.io.ImgSaver;
 
 import org.scijava.ItemIO;
+import org.scijava.app.StatusService;
 import org.scijava.event.EventService;
-import org.scijava.event.StatusService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;

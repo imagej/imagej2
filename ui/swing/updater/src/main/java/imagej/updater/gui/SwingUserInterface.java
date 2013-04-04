@@ -60,7 +60,7 @@ import javax.swing.event.AncestorListener;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.scijava.event.StatusService;
+import org.scijava.app.StatusService;
 import org.scijava.log.LogService;
 
 /**

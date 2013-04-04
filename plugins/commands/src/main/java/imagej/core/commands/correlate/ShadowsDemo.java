@@ -49,9 +49,9 @@ import imagej.util.RealRect;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
+import org.scijava.app.StatusService;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
-import org.scijava.event.StatusService;
 import org.scijava.input.KeyCode;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;

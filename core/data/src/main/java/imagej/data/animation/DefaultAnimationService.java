@@ -45,9 +45,9 @@ import imagej.display.event.input.KyPressedEvent;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.scijava.app.StatusService;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
-import org.scijava.event.StatusService;
 import org.scijava.input.KeyCode;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

@@ -39,7 +39,7 @@ import ij.IJ;
 import imagej.legacy.LegacyService;
 import imagej.legacy.Utils;
 
-import org.scijava.event.StatusService;
+import org.scijava.app.StatusService;
 
 /**
  * Overrides {@link IJ} methods.

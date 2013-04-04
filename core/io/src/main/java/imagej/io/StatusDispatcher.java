@@ -38,7 +38,7 @@ package imagej.io;
 import ome.scifio.common.StatusEvent;
 import ome.scifio.common.StatusListener;
 
-import org.scijava.event.StatusService;
+import org.scijava.app.StatusService;
 
 /**
  * Rebroadcasts {@link StatusEvent}s as ImageJ status notifications.

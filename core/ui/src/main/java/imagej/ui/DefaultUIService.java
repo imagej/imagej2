@@ -63,9 +63,9 @@ import java.util.Map;
 
 import org.scijava.InstantiableException;
 import org.scijava.app.AppService;
+import org.scijava.app.StatusService;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
-import org.scijava.event.StatusService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

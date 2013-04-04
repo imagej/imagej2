@@ -36,6 +36,7 @@
 package imagej.ui.swt;
 
 import imagej.ui.StatusBar;
+import imagej.ui.UIService;
 
 import java.util.List;
 
@@ -44,10 +45,9 @@ import net.miginfocom.swt.MigLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
+import org.scijava.app.event.StatusEvent;
 import org.scijava.event.EventHandler;
-import org.scijava.event.EventService;
 import org.scijava.event.EventSubscriber;
-import org.scijava.event.StatusEvent;
 
 /**
  * SWT implementation of {@link StatusBar}.
@@ -56,18 +56,21 @@ import org.scijava.event.StatusEvent;
  */
 public class SWTStatusBar extends Composite implements StatusBar {
 
+	private final UIService uiService;
+
 	private final Label label;
 	private final ProgressBar progressBar;
 
 	@SuppressWarnings("unused")
 	private final List<EventSubscriber<?>> subscribers;
 
-	public SWTStatusBar(final Composite parent, final EventService eventService) {
+	public SWTStatusBar(final Composite parent, final UIService uiService) {
 		super(parent, 0);
+		this.uiService = uiService;
 		setLayout(new MigLayout());
 		label = new Label(this, 0);
 		progressBar = new ProgressBar(this, 0);
-		subscribers = eventService.subscribe(this);
+		subscribers = uiService.getEventService().subscribe(this);
 	}
 
 	@Override
@@ -83,7 +86,7 @@ public class SWTStatusBar extends Composite implements StatusBar {
 
 	@EventHandler
 	protected void onEvent(final StatusEvent event) {
-		final String message = event.getStatusMessage();
+		final String message = uiService.getStatusService().getStatusMessage(event);
 		final int val = event.getProgressValue();
 		final int max = event.getProgressMaximum();
 		setStatus(message);

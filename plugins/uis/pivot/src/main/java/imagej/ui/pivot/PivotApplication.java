@@ -73,7 +73,7 @@ public class PivotApplication extends AbstractContextual implements Application
 
 		frame = new PivotApplicationFrame();
 		toolBar = new PivotToolBar(uiService);
-		statusBar = new PivotStatusBar(eventService);
+		statusBar = new PivotStatusBar(uiService);
 
 		contentPane = new BoxPane();
 		contentPane.setOrientation(Orientation.VERTICAL);

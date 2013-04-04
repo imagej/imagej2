@@ -41,8 +41,8 @@ import imagej.module.ModuleService;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.io.ImgIOException;
 
+import org.scijava.app.StatusService;
 import org.scijava.event.EventService;
-import org.scijava.event.StatusService;
 import org.scijava.service.Service;
 
 /**

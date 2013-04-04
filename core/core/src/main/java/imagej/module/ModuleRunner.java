@@ -49,8 +49,8 @@ import java.util.concurrent.Callable;
 
 import org.scijava.AbstractContextual;
 import org.scijava.Context;
+import org.scijava.app.StatusService;
 import org.scijava.event.EventService;
-import org.scijava.event.StatusService;
 import org.scijava.log.LogService;
 
 /**

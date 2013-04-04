@@ -42,7 +42,7 @@ import imagej.menu.MenuConstants;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 
-import org.scijava.event.StatusService;
+import org.scijava.app.StatusService;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

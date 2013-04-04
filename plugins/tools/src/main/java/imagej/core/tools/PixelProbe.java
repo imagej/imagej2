@@ -43,7 +43,7 @@ import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 import net.imglib2.meta.Axes;
 
-import org.scijava.event.StatusService;
+import org.scijava.app.StatusService;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 

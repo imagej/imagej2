@@ -51,7 +51,7 @@ import java.net.URL;
 
 import net.iharder.Base64;
 
-import org.scijava.event.StatusService;
+import org.scijava.app.StatusService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

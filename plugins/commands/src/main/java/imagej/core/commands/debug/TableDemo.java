@@ -43,7 +43,7 @@ import imagej.data.table.ResultsTable;
 import imagej.util.MersenneTwisterFast;
 
 import org.scijava.ItemIO;
-import org.scijava.event.StatusService;
+import org.scijava.app.StatusService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
