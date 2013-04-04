@@ -165,6 +165,11 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 			}
 
 			@Override
+			public void mouseExited(final MouseEvent evt) {
+				uiService.getStatusService().clearStatus();
+			}
+
+			@Override
 			public void mousePressed(final MouseEvent evt) {
 				if (evt.getButton() == MouseEvent.NOBUTTON) return;
 				if (evt.getButton() == MouseEvent.BUTTON1) return;
