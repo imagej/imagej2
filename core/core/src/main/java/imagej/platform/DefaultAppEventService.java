@@ -35,59 +35,77 @@
 
 package imagej.platform;
 
-import imagej.command.CommandService;
+import imagej.command.Command;
+import imagej.platform.event.AppAboutEvent;
+import imagej.platform.event.AppPreferencesEvent;
+import imagej.platform.event.AppQuitEvent;
 
-import java.io.IOException;
-import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 
-import org.scijava.event.EventService;
-import org.scijava.plugin.PluginService;
+import org.scijava.Priority;
+import org.scijava.event.EventHandler;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
- * Interface for service that handles platform-specific deployment issues. A
- * "platform" can be an operating system, CPU architecture, or version of Java.
+ * Default service for handling application-level events.
+ * <p>
+ * An {@link AppAboutEvent} triggers a callback to {@link #about()}. An
+ * {@link AppPreferencesEvent} triggers a callback to {@link #prefs()}. Finally,
+ * an {@link AppQuitEvent} triggers a callback to {@link #quit()}. Note that
+ * this class's implementations of the former two methods do nothing, and the
+ * latter simply disposes the application context with no user checks.
+ * </p>
  * 
  * @author Curtis Rueden
  */
-public interface PlatformService extends Service {
+@Plugin(type = Service.class, priority = Priority.LOW_PRIORITY)
+public class DefaultAppEventService extends AbstractService implements
+	AppEventService
+{
 
-	EventService getEventService();
+	// -- AppService methods --
 
-	PluginService getPluginService();
+	@Override
+	public void about() {
+		// NB: Do nothing.
+	}
 
-	CommandService getCommandService();
+	@Override
+	public void prefs() {
+		// NB: Do nothing.
+	}
 
-	AppEventService getAppEventService();
+	@Override
+	public void quit() {
+		getContext().dispose();
+	}
 
-	/** Gets the platform handlers applicable to this platform. */
-	List<Platform> getTargetPlatforms();
+	@Override
+	public List<Class<? extends Command>> getCommands() {
+		return Collections.emptyList();
+	}
 
-	/**
-	 * Opens a URL in a platform-dependent way. Typically the URL is opened in an
-	 * external web browser instance, but the behavior is ultimately defined by
-	 * the available platform handler implementations.
-	 */
-	void open(URL url) throws IOException;
+	// -- Event handlers --
 
-	/**
-	 * Executes a native program and waits for it to return.
-	 * 
-	 * @return the exit code of the execution.
-	 */
-	int exec(String... args) throws IOException;
+	@EventHandler
+	protected void onEvent(@SuppressWarnings("unused") final AppAboutEvent event)
+	{
+		about();
+	}
 
-	/**
-	 * Informs the active platform handlers of a UI's newly created application
-	 * menu structure. Each active platform handler may choose to do something
-	 * platform-specific with the menus.
-	 * 
-	 * @param menus The UI's newly created menu structure
-	 * @return true iff the menus should not be added to the UI as normal because
-	 *         a platform handler did something platform-specific with them
-	 *         instead.
-	 */
-	boolean registerAppMenus(Object menus);
+	@EventHandler
+	protected void onEvent(
+		@SuppressWarnings("unused") final AppPreferencesEvent event)
+	{
+		prefs();
+	}
+
+	@EventHandler
+	protected void onEvent(@SuppressWarnings("unused") final AppQuitEvent event) {
+		quit();
+	}
 
 }

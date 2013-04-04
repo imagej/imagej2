@@ -78,7 +78,7 @@ public final class DefaultPlatformService extends AbstractService implements
 	private CommandService commandService;
 
 	@Parameter
-	private AppService appService;
+	private AppEventService appEventService;
 
 	/** Platform handlers applicable to this platform. */
 	private List<Platform> targetPlatforms;
@@ -101,8 +101,8 @@ public final class DefaultPlatformService extends AbstractService implements
 	}
 
 	@Override
-	public AppService getAppService() {
-		return appService;
+	public AppEventService getAppEventService() {
+		return appEventService;
 	}
 
 	@Override

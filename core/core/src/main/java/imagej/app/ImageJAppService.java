@@ -33,48 +33,33 @@
  * #L%
  */
 
-package imagej.platform;
+package imagej.app;
 
-import imagej.command.Command;
-
-import java.util.Collections;
-import java.util.List;
-
-import org.scijava.Priority;
+import org.scijava.app.DefaultAppService;
 import org.scijava.plugin.Plugin;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import org.scijava.util.POM;
 
 /**
- * Default service for providing application-level functionality.
+ * ImageJ service for providing application-level functionality.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Service.class, priority = Priority.VERY_LOW_PRIORITY)
-public final class DummyAppService extends AbstractService implements
-	AppService
-{
+@Plugin(type = Service.class)
+public final class ImageJAppService extends DefaultAppService {
 
 	// -- AppService methods --
 
 	@Override
-	public void about() {
-		// NB: Do nothing.
+	public String getTitle() {
+		return "ImageJ";
 	}
 
-	@Override
-	public void showPrefs() {
-		// NB: Do nothing.
-	}
+	// -- Internal methods --
 
 	@Override
-	public void quit() {
-		// NB: Do nothing.
-	}
-
-	@Override
-	public List<Class<? extends Command>> getCommands() {
-		return Collections.emptyList();
+	protected POM loadPOM() {
+		return POM.getPOM(getClass(), "net.imagej", "ij-core");
 	}
 
 }

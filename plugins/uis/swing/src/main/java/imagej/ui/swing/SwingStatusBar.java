@@ -71,7 +71,7 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 
 	public SwingStatusBar(final UIService uiService) {
 		this.uiService = uiService;
-		statusText = new JLabel(uiService.getContext().getInfo(false));
+		statusText = new JLabel(uiService.getAppService().getInfo(false));
 		statusText.setBorder(new BevelBorder(BevelBorder.LOWERED));
 		progressBar = new JProgressBar();
 		progressBar.setVisible(false);
@@ -133,7 +133,7 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 			uiService.getOptionsService().getOptions(OptionsMemoryAndThreads.class);
 		if (options.isRunGcOnClick()) System.gc();
 		uiService.getStatusService().showStatus(
-			uiService.getContext().getInfo(true));
+			uiService.getAppService().getInfo(true));
 	}
 
 	@Override

@@ -146,7 +146,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	protected void createUI() {
 		final JMenuBar menuBar = createMenus();
 
-		appFrame = new SwingApplicationFrame(getContext().getTitle());
+		appFrame = new SwingApplicationFrame(getAppService().getTitle());
 		if (menuBar != null) appFrame.setJMenuBar(menuBar);
 
 		toolBar = new SwingToolBar(getUIService());
@@ -164,7 +164,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 
 			@Override
 			public void windowClosing(final WindowEvent evt) {
-				getUIService().getAppService().quit();
+				getUIService().getAppEventService().quit();
 			}
 
 		});

@@ -55,7 +55,7 @@ import imagej.legacy.LegacyService;
 import imagej.menu.MenuService;
 import imagej.module.ModuleService;
 import imagej.options.OptionsService;
-import imagej.platform.AppService;
+import imagej.platform.AppEventService;
 import imagej.platform.PlatformService;
 import imagej.render.RenderingService;
 import imagej.script.ScriptService;
@@ -69,6 +69,7 @@ import java.util.Collection;
 
 import org.scijava.AbstractContextual;
 import org.scijava.Context;
+import org.scijava.app.AppService;
 import org.scijava.event.EventHistory;
 import org.scijava.event.EventService;
 import org.scijava.event.StatusService;
@@ -144,7 +145,6 @@ public class ImageJ extends AbstractContextual {
 
 	public ImageJ(final Context context) {
 		setContext(context);
-		context.setTitle("ImageJ");
 	}
 
 	// -- ImageJ methods --
@@ -163,6 +163,10 @@ public class ImageJ extends AbstractContextual {
 
 	public AppService app() {
 		return get(AppService.class);
+	}
+
+	public AppEventService appEvent() {
+		return get(AppEventService.class);
 	}
 
 	public CommandService command() {

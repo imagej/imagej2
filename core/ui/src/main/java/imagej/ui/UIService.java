@@ -41,7 +41,7 @@ import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.menu.MenuService;
 import imagej.options.OptionsService;
-import imagej.platform.AppService;
+import imagej.platform.AppEventService;
 import imagej.platform.PlatformService;
 import imagej.tool.ToolService;
 import imagej.ui.viewer.DisplayViewer;
@@ -50,6 +50,7 @@ import imagej.widget.FileWidget;
 import java.io.File;
 import java.util.List;
 
+import org.scijava.app.AppService;
 import org.scijava.event.EventService;
 import org.scijava.event.StatusService;
 import org.scijava.log.LogService;
@@ -76,6 +77,8 @@ public interface UIService extends Service {
 
 	StatusService getStatusService();
 
+	AppService getAppService();
+
 	PlatformService getPlatformService();
 
 	PluginService getPluginService();
@@ -90,7 +93,7 @@ public interface UIService extends Service {
 
 	OptionsService getOptionsService();
 
-	AppService getAppService();
+	AppEventService getAppEventService();
 
 	ImageDisplayService getImageDisplayService();
 

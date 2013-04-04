@@ -45,7 +45,7 @@ import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.DisplayUpdatedEvent;
 import imagej.menu.MenuService;
 import imagej.options.OptionsService;
-import imagej.platform.AppService;
+import imagej.platform.AppEventService;
 import imagej.platform.PlatformService;
 import imagej.platform.event.AppQuitEvent;
 import imagej.tool.ToolService;
@@ -62,6 +62,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.scijava.InstantiableException;
+import org.scijava.app.AppService;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.event.StatusService;
@@ -97,6 +98,9 @@ public final class DefaultUIService extends AbstractService implements
 	private ThreadService threadService;
 
 	@Parameter
+	private AppService appService;
+
+	@Parameter
 	private PlatformService platformService;
 
 	@Parameter
@@ -118,7 +122,7 @@ public final class DefaultUIService extends AbstractService implements
 	private OptionsService optionsService;
 
 	@Parameter
-	private AppService appService;
+	private AppEventService appEventService;
 
 	@Parameter
 	private ImageDisplayService imageDisplayService;
@@ -163,6 +167,11 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
+	public AppService getAppService() {
+		return appService;
+	}
+
+	@Override
 	public PlatformService getPlatformService() {
 		return platformService;
 	}
@@ -198,8 +207,8 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
-	public AppService getAppService() {
-		return appService;
+	public AppEventService getAppEventService() {
+		return appEventService;
 	}
 
 	@Override
@@ -332,20 +341,21 @@ public final class DefaultUIService extends AbstractService implements
 
 	@Override
 	public DialogPrompt.Result showDialog(final String message) {
-		return showDialog(message, getContext().getTitle());
+		return showDialog(message, getAppService().getTitle());
 	}
 
 	@Override
 	public Result showDialog(final String message, final MessageType messageType)
 	{
-		return showDialog(message, getContext().getTitle(), messageType);
+		return showDialog(message, getAppService().getTitle(), messageType);
 	}
 
 	@Override
 	public Result showDialog(final String message, final MessageType messageType,
 		final OptionType optionType)
 	{
-		return showDialog(message, getContext().getTitle(), messageType, optionType);
+		return showDialog(message, getAppService().getTitle(), messageType,
+			optionType);
 	}
 
 	@Override
