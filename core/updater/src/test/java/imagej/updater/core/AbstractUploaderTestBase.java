@@ -56,6 +56,8 @@ import org.junit.After;
 /**
  * An abstract base class for testing uploader backends.
  * 
+ * See {@link LocalhostUploaderTest} for an example how to use it.
+ * 
  * @author Johannes Schindelin
  */
 public abstract class AbstractUploaderTestBase {
