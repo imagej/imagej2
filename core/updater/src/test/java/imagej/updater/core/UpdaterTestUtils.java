@@ -35,6 +35,7 @@
 
 package imagej.updater.core;
 
+import static imagej.updater.core.FilesCollection.DEFAULT_UPDATE_SITE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -123,7 +124,7 @@ public class UpdaterTestUtils {
 	public static FilesCollection main(final FilesCollection files, final String... args) throws ParserConfigurationException, SAXException {
 		files.prefix(".checksums").delete();
 		CommandLine.main(files.prefix(""), -1, progress, args);
-		return readDb(files, progress);
+		return readDb(files);
 	}
 
 	protected static File makeIJRoot(final File webRoot) throws IOException {
@@ -144,10 +145,10 @@ public class UpdaterTestUtils {
 	}
 
 	public static FilesCollection initialize(final String... fileNames) throws Exception {
-		return initialize(null, null, null, fileNames);
+		return initialize(null, null, fileNames);
 	}
 
-	public static FilesCollection initialize(File ijRoot, File webRoot, Progress progress, final String... fileNames)
+	public static FilesCollection initialize(File ijRoot, File webRoot, final String... fileNames)
 			throws Exception
 		{
 		if (ijRoot == null) ijRoot = FileUtils.createTemporaryDirectory("testUpdaterIJRoot", "");
@@ -165,7 +166,6 @@ public class UpdaterTestUtils {
 		assertFalse(localDb.exists());
 		assertFalse(remoteDb.exists());
 
-		if (progress == null) progress = new StderrProgress();
 		FilesUploader uploader =
 			FilesUploader.initialUpload(url, sshHost, uploadDirectory);
 		assertTrue(uploader.login());
@@ -229,10 +229,13 @@ public class UpdaterTestUtils {
 				(!ijRoot.isDirectory() || FileUtils.deleteRecursively(ijRoot));
 	}
 
-	protected static FilesCollection readDb(FilesCollection files,
-			final Progress progress) throws ParserConfigurationException,
+	protected static FilesCollection readDb(FilesCollection files) throws ParserConfigurationException,
 			SAXException {
-		files = new FilesCollection(files.prefix(""));
+		return readDb(files.prefix(""));
+	}
+
+	protected static FilesCollection readDb(final File ijRoot) throws ParserConfigurationException, SAXException {
+		final FilesCollection files = new FilesCollection(ijRoot);
 
 		// We're too fast, cannot trust the cached checksums
 		files.prefix(".checksums").delete();
@@ -255,7 +258,7 @@ public class UpdaterTestUtils {
 		return new File(site.uploadDirectory);
 	}
 
-	protected static void update(final FilesCollection files, final Progress progress) throws IOException {
+	protected static void update(final FilesCollection files) throws IOException {
 		final File ijRoot = files.prefix(".");
 		final Installer installer = new Installer(files, progress);
 		installer.start();
@@ -264,7 +267,11 @@ public class UpdaterTestUtils {
 		assertFalse(new File(ijRoot, "update").exists());
 	}
 
-	protected static void upload(final FilesCollection files, final String updateSite, final Progress progress) throws Exception {
+	protected static void upload(final FilesCollection files) throws Exception {
+		upload(files, DEFAULT_UPDATE_SITE);
+	}
+
+	protected static void upload(final FilesCollection files, final String updateSite) throws Exception {
 		for (final FileObject file : files.toUpload())
 			assertEquals(updateSite, file.updateSite);
 		final FilesUploader uploader =
@@ -368,7 +375,37 @@ public class UpdaterTestUtils {
 	/**
 	 * Write a .jar file
 	 * 
-	 * @param jarFile which directory to write into
+	 * @param files the files collection
+	 * @param path the path of the .jar file
+	 * @return the File object for the .jar file
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	protected static File writeJar(final FilesCollection files, final String path) throws FileNotFoundException, IOException
+	{
+		return writeJar(files, path, path, path);
+	}
+
+	/**
+	 * Write a .jar file
+	 * 
+	 * @param files the files collection
+	 * @param path the path of the .jar file
+	 * @param args a list of entry name / contents pairs
+	 * @return the File object for the .jar file
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	protected static File writeJar(final FilesCollection files, final String path,
+		final String... args) throws FileNotFoundException, IOException
+	{
+		return writeJar(files.prefix(path), args);
+	}
+
+	/**
+	 * Write a .jar file
+	 * 
+	 * @param jarFile which .jar file to write into
 	 * @param args a list of entry name / contents pairs
 	 * @return the File object for the .jar file
 	 * @throws FileNotFoundException
@@ -390,6 +427,31 @@ public class UpdaterTestUtils {
 		return jarFile;
 	}
 
+	/**
+	 * Write a .jar file
+	 * 
+	 * @param files the files collection
+	 * @param path the path of the .jar file
+	 * @param classes a list of classes whose files to write
+	 * @return the File object for the .jar file
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	protected static File writeJar(final FilesCollection files,
+			final String path, final Class<?>... classes)
+			throws FileNotFoundException, IOException {
+		return writeJar(files.prefix(path), classes);
+	}
+
+	/**
+	 * Write a .jar file
+	 * 
+	 * @param file which directory to write into
+	 * @param classes a list of classes whose files to write
+	 * @return the File object for the .jar file
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	protected static File writeJar(final File file, Class<?>... classes) throws FileNotFoundException, IOException {
 		file.getParentFile().mkdirs();
 		final byte[] buffer = new byte[32768];
@@ -429,6 +491,37 @@ public class UpdaterTestUtils {
 		file.getParentFile().mkdirs();
 		writeStream(new GZIPOutputStream(new FileOutputStream(file)), content, true);
 		return file;
+	}
+
+	/**
+	 * Write a text file
+	 * 
+	 * @param files The files collection
+	 * @param path the path of the file into which to write
+	 * @param content The contents to write
+	 * @return the File object for the file that was written to
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 */
+	public static File writeFile(final FilesCollection files, final String path, final String content)
+		throws FileNotFoundException, IOException
+	{
+		return writeFile(files.prefix(path), content);
+	}
+
+	/**
+	 * Write a text file
+	 * 
+	 * @param files The files collection
+	 * @param path the path of the file into which to write
+	 * @return the File object for the file that was written to
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 */
+	public static File writeFile(final FilesCollection files, final String path)
+		throws FileNotFoundException, IOException
+	{
+		return writeFile(files.prefix(path), path);
 	}
 
 	/**
