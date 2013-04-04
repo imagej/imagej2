@@ -325,7 +325,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	}
 
 	public void write() throws IOException, SAXException,
-		TransformerConfigurationException, ParserConfigurationException
+		TransformerConfigurationException
 	{
 		new XMLFileWriter(this).write(new GZIPOutputStream(new FileOutputStream(
 			prefix(Util.XML_COMPRESSED))), true);

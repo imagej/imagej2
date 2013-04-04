@@ -67,6 +67,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.scijava.log.LogService;
+import org.scijava.log.StderrLogService;
 
 /**
  * Utility methods for use with the {@link imagej.updater} package and
@@ -425,21 +426,25 @@ public class Util {
 
 	public static<T> Iterable<T> iterate(final Enumeration<T> en) {
         final Iterator<T> iterator = new Iterator<T>() {
-            public boolean hasNext() {
+            @Override
+			public boolean hasNext() {
                     return en.hasMoreElements();
             }
 
-            public T next() {
+            @Override
+			public T next() {
                     return en.nextElement();
             }
 
-            public void remove() {
+            @Override
+			public void remove() {
                     throw new UnsupportedOperationException();
             }
         };
 
 	    return new Iterable<T>() {
-            public Iterator<T> iterator() {
+            @Override
+			public Iterator<T> iterator() {
                     return iterator;
             }
 	    };

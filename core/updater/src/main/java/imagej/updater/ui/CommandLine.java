@@ -411,7 +411,7 @@ public class CommandLine {
 					warningCount++;
 					continue;
 				}
-				// fall through
+				//$FALL-THROUGH$
 			case LOCAL_ONLY:
 				file.updateSite = updateSite;
 				file.setAction(files, Action.UPLOAD);
