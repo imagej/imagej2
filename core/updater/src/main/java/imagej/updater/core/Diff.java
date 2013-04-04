@@ -314,8 +314,8 @@ public class Diff {
 	/**
 	 * Inspect the byte code of a class file.
 	 * 
-	 * @param inputFile
-	 *            the file to analyze
+	 * @param in
+	 *            the input stream to analyze
 	 * @param outputFile
 	 *            the output file (can be the same as the {@code inputFile}
 	 * @throws FileNotFoundException

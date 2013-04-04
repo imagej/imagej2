@@ -200,7 +200,7 @@ public class Checksummer extends AbstractProgressable {
 			for (StringAndFile p : pairs)
 				if (p != pair)
 					obsoletes.add(p.file);
-			addConflict(pair.path, "", false, obsoletes);
+			if (pair != null) addConflict(pair.path, "", false, obsoletes);
 		} else {
 			// let's find out whether there are obsoletes or locally-modified versions
 			final List<StringAndFile> upToDates = new ArrayList<StringAndFile>();

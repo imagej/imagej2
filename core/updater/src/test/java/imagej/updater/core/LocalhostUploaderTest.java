@@ -33,69 +33,44 @@
  * #L%
  */
 
-package imagej.updater.util;
+package imagej.updater.core;
 
-import java.io.BufferedInputStream;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+
+import org.junit.Test;
+import org.scijava.util.FileUtils;
 
 /**
- * A helper class for the Checksummer.
+ * A conditional JUnit test for uploading via file: protocol.
  * 
- * When checksumming .properties files for the Updater, we would like to ignore
- * comments, because java.util.Properties writes the current date into a comment
- * when writing pom.properties and nar.properties files. This date is a
- * non-functional change which we would like to ignore when checking whether a
- * .jar file is up-to-date.
- * 
- * This class takes an InputStream that is expected to represent a .properties
- * file and offers an InputStream which skips the lines starting with a '#'.
+ * This verifies that the file: protocol (required for Dropbox, or for scripts running
+ * on the same machine as the webserver) works alright.
  * 
  * @author Johannes Schindelin
  */
-public class SkipHashedLines extends BufferedInputStream {
-	protected boolean atLineStart;
-
-	public SkipHashedLines(final InputStream in) {
-		super(in, 1024);
-		atLineStart = true;
+public class LocalhostUploaderTest extends AbstractUploaderTestBase {
+	public LocalhostUploaderTest() {
+		super("localhost");
 	}
 
-	@Override
-	public synchronized int read() throws IOException {
-		int ch = super.read();
-		if (atLineStart) {
-			if (ch == '#')
-				while ((ch = read()) != '\n' && ch != -1)
-					; // do nothing
-			else
-				atLineStart = false;
+	@Test
+	public void testLocalhostUpload() throws Exception {
+		final File tmp = FileUtils.createTemporaryDirectory("localhost-upload", "");
+		url = tmp.toURI().toURL().toString();
+
+		test(new FileDeleter(), "file:localhost", tmp.getAbsolutePath());
+
+		assertTrue(FileUtils.deleteRecursively(tmp));
+	}
+
+	private class FileDeleter implements AbstractUploaderTestBase.Deleter {
+		@Override
+		public void delete(final String path) throws IOException {
+			final File file = files.prefix(path);
+			if (!file.delete()) throw new IOException("Could not delete " + file);
 		}
-		else if (ch == '\n')
-			atLineStart = true;
-		return ch;
-	}
-
-	@Override
-	public int read(final byte[] b) throws IOException {
-		return read(b, 0, b.length);
-	}
-
-	@Override
-	public synchronized int read(final byte[] b, final int off, final int len) throws IOException {
-		int count = 0;
-		while (count < len) {
-			int ch = read();
-			if (ch < 0)
-				return count == 0 ? -1 : count;
-			b[off + count] = (byte)ch;
-			count++;
-		}
-		return count;
-	}
-
-	@Override
-	public synchronized long skip(final long n) throws IOException {
-		throw new IOException("unsupported skip");
 	}
 }

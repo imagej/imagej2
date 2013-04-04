@@ -63,7 +63,6 @@ import org.scijava.util.FileUtils;
  * 
  * @author Johannes Schindelin
  */
-@SuppressWarnings("hiding")
 public class FileObject {
 
 	public static class Version implements Comparable<Version> {

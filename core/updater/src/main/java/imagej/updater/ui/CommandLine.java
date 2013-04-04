@@ -341,16 +341,7 @@ public class CommandLine {
 				System.err.println("Skipping up-to-date " + name);
 				continue;
 			}
-			if (file.getStatus() == Status.LOCAL_ONLY &&
-				files.util.isLauncher(file.filename))
-			{
-				file.executable = true;
-				file.addPlatform(Util.platformForLauncher(file.filename));
-				for (final String fileName : new String[] { "jars/ij-launcher.jar" }) {
-					final FileObject dependency = files.get(fileName);
-					if (dependency != null) file.addDependency(files, dependency);
-				}
-			}
+			handleLauncherForUpload(file);
 			if (updateSite == null) {
 				updateSite = file.updateSite;
 				if (updateSite == null) updateSite =
@@ -371,7 +362,12 @@ public class CommandLine {
 							+ name + " to " + file.updateSite + ")");
 				}
 			}
-			file.setAction(files, Action.UPLOAD);
+			if (file.getStatus() == Status.NOT_INSTALLED) {
+				System.err.println("Removing file '" + name + "'");
+				file.setAction(files, Action.REMOVE);
+			} else {
+				file.setAction(files, Action.UPLOAD);
+			}
 			count++;
 		}
 		if (count == 0) {
@@ -384,7 +380,86 @@ public class CommandLine {
 		}
 
 		System.err.println("Uploading to " + getLongUpdateSiteName(updateSite));
+		upload(updateSite);
+	}
 
+	public void uploadCompleteSite(final List<String> list) {
+		if (list == null) throw die("Which files do you mean to upload?");
+		boolean ignoreWarnings = false;
+		if (list.size() > 0 && "--force".equals(list.get(0))) {
+			list.remove(0);
+			ignoreWarnings = true;
+		}
+		if (list.size() != 1) throw die("Which files do you mean to upload?");
+		String updateSite = list.get(0);
+
+		ensureChecksummed();
+		if (files.getUpdateSite(updateSite) == null) {
+			throw die("Unknown update site '" + updateSite + "'");
+		}
+
+		int removeCount = 0, uploadCount = 0, warningCount = 0;
+		for (final FileObject file : files) {
+			final String name = file.filename;
+			handleLauncherForUpload(file);
+			switch (file.getStatus()) {
+			case OBSOLETE:
+			case OBSOLETE_MODIFIED:
+				System.err.println("Warning: obsolete '" + name + "' still installed!");
+				warningCount++;
+				break;
+			case UPDATEABLE:
+			case MODIFIED:
+				if (!updateSite.equals(file.updateSite)) {
+					System.err.println("Warning: '" + name + "' of update site '"
+							+ file.updateSite + "' is not up-to-date!");
+					warningCount++;
+					continue;
+				}
+				//$FALL-THROUGH$
+			case LOCAL_ONLY:
+				file.updateSite = updateSite;
+				file.setAction(files, Action.UPLOAD);
+				uploadCount++;
+				break;
+			case NEW:
+			case NOT_INSTALLED:
+				file.setAction(files, Action.REMOVE);
+				removeCount++;
+				break;
+			case INSTALLED:
+			case OBSOLETE_UNINSTALLED:
+				// leave these alone
+				break;
+			}
+		}
+
+		if (!ignoreWarnings && warningCount > 0) {
+			throw die("Use --force to ignore warnings and upload anyway");
+		}
+
+		if (removeCount == 0 && uploadCount == 0) {
+			System.err.println("Nothing to upload");
+			return;
+		}
+
+		System.err.println("Uploading " + uploadCount + " (removing " + removeCount
+				+ ") to " + getLongUpdateSiteName(updateSite));
+		upload(updateSite);
+	}
+
+	private void handleLauncherForUpload(final FileObject file) {
+		if (file.getStatus() == Status.LOCAL_ONLY && files.util.isLauncher(file.filename)) {
+			file.executable = true;
+			file.addPlatform(Util.platformForLauncher(file.filename));
+			for (final String fileName : new String[] { "jars/ij-launcher.jar" }) {
+				final FileObject dependency = files.get(fileName);
+				if (dependency != null) file.addDependency(files, dependency);
+			}
+		}
+	}
+
+	private void upload(final String updateSite) {
 		FilesUploader uploader = null;
 		try {
 			uploader = new FilesUploader(files, updateSite);
@@ -551,6 +626,7 @@ public class CommandLine {
 			+ "\tupdate-force [<files>]\n"
 			+ "\tupdate-force-pristine [<files>]\n"
 			+ "\tupload [--update-site <name>] [<files>]\n"
+			+ "\tupload-complete-site [--force] <name>\n"
 			+ "\tlist-update-sites [<nick>...]\n"
 			+ "\tadd-update-site <nick> <url> [<host> <upload-directory>]\n"
 			+ "\tedit-update-site <nick> <url> [<host> <upload-directory>]");
@@ -622,6 +698,8 @@ public class CommandLine {
 		else if (command.equals("update-force-pristine")) instance.update(
 			makeList(args, 1), true, true);
 		else if (command.equals("upload")) instance.upload(makeList(args, 1));
+		else if (command.equals("upload-complete-site"))
+			instance.uploadCompleteSite(makeList(args, 1));
 		else if (command.equals("list-update-sites"))
 			instance.listUpdateSites(makeList(args, 1));
 		else if (command.equals("add-update-site"))

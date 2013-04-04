@@ -205,7 +205,7 @@ public class ByteCodeAnalyzer implements Iterable<String> {
 
 	public String getSourceFile() {
 		for (final Attribute attribute : attributes)
-			if (getStringConstant(attribute.nameIndex).equals("SourceFile")) return getStringConstant(getU2(attribute.endOffset - 2));
+			if (getStringConstant(attribute.nameIndex).equals("SourceFile")) return getStringConstant(getU2(attribute.attributeEndOffset - 2));
 		return null;
 	}
 
@@ -298,40 +298,40 @@ public class ByteCodeAnalyzer implements Iterable<String> {
 		fields = new Field[getU2(fieldsOffset)];
 		for (int i = 0; i < fields.length; i++)
 			fields[i] =
-				new Field(i == 0 ? fieldsOffset + 2 : fields[i - 1].endOffset);
+				new Field(i == 0 ? fieldsOffset + 2 : fields[i - 1].fieldEndOffset);
 	}
 
 	protected class Field {
 
 		int accessFlags, nameIndex, descriptorIndex;
-		Attribute[] attributes;
-		int endOffset;
+		Attribute[] fieldAttributes;
+		int fieldEndOffset;
 
 		public Field(final int offset) {
 			accessFlags = getU2(offset);
 			nameIndex = getU2(offset + 2);
 			descriptorIndex = getU2(offset + 4);
-			attributes = getAttributes(offset + 6);
-			endOffset =
-				attributes.length == 0 ? offset + 8
-					: attributes[attributes.length - 1].endOffset;
+			fieldAttributes = getAttributes(offset + 6);
+			fieldEndOffset =
+				fieldAttributes.length == 0 ? offset + 8
+					: fieldAttributes[fieldAttributes.length - 1].attributeEndOffset;
 		}
 
 		@Override
 		public String toString() {
 			return getStringConstant(nameIndex) +
-				ByteCodeAnalyzer.this.toString(attributes);
+				ByteCodeAnalyzer.this.toString(fieldAttributes);
 		}
 	}
 
 	protected void getAllMethods() {
 		methodsOffset =
 			fields.length == 0 ? fieldsOffset + 2
-				: fields[fields.length - 1].endOffset;
+				: fields[fields.length - 1].fieldEndOffset;
 		methods = new Method[getU2(methodsOffset)];
 		for (int i = 0; i < methods.length; i++)
 			methods[i] =
-				new Method(i == 0 ? methodsOffset + 2 : methods[i - 1].endOffset);
+				new Method(i == 0 ? methodsOffset + 2 : methods[i - 1].fieldEndOffset);
 	}
 
 	protected class Method extends Field {
@@ -341,7 +341,7 @@ public class ByteCodeAnalyzer implements Iterable<String> {
 		}
 
 		public boolean containsDebugInfo() {
-			for (final Attribute attribute : attributes)
+			for (final Attribute attribute : fieldAttributes)
 				if (attribute.containsDebugInfo()) return true;
 			return false;
 		}
@@ -350,14 +350,14 @@ public class ByteCodeAnalyzer implements Iterable<String> {
 	protected void getAllAttributes() {
 		attributesOffset =
 			methods.length == 0 ? methodsOffset + 2
-				: methods[methods.length - 1].endOffset;
+				: methods[methods.length - 1].fieldEndOffset;
 		attributes = getAttributes(attributesOffset);
 	}
 
 	protected Attribute[] getAttributes(final int offset) {
 		final Attribute[] result = new Attribute[getU2(offset)];
 		for (int i = 0; i < result.length; i++)
-			result[i] = new Attribute(i == 0 ? offset + 2 : result[i - 1].endOffset);
+			result[i] = new Attribute(i == 0 ? offset + 2 : result[i - 1].attributeEndOffset);
 		return result;
 	}
 
@@ -365,13 +365,13 @@ public class ByteCodeAnalyzer implements Iterable<String> {
 
 		int nameIndex;
 		byte[] attribute;
-		int endOffset;
+		int attributeEndOffset;
 
 		public Attribute(final int offset) {
 			nameIndex = getU2(offset);
 			attribute = new byte[(int) getU4(offset + 2)];
 			System.arraycopy(buffer, offset + 6, attribute, 0, attribute.length);
-			endOffset = offset + 6 + attribute.length;
+			attributeEndOffset = offset + 6 + attribute.length;
 		}
 
 		public boolean containsDebugInfo() {
@@ -382,7 +382,7 @@ public class ByteCodeAnalyzer implements Iterable<String> {
 		}
 
 		protected Attribute[] getAttributes() {
-			final int offset = endOffset - 6 - attribute.length;
+			final int offset = attributeEndOffset - 6 - attribute.length;
 			final int codeLength = (int) getU4(offset + 10);
 			final int exceptionTableLength = getU2(offset + 14 + codeLength);
 			final int attributesOffset =
