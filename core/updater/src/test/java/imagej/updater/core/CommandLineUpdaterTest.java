@@ -39,11 +39,10 @@ import static imagej.updater.core.FilesCollection.DEFAULT_UPDATE_SITE;
 import static imagej.updater.core.UpdaterTestUtils.assertStatus;
 import static imagej.updater.core.UpdaterTestUtils.cleanup;
 import static imagej.updater.core.UpdaterTestUtils.initialize;
-import static imagej.updater.core.UpdaterTestUtils.readDb;
+import static imagej.updater.core.UpdaterTestUtils.main;
 import static imagej.updater.core.UpdaterTestUtils.writeFile;
 import static org.junit.Assert.assertTrue;
 import imagej.updater.core.FileObject.Status;
-import imagej.updater.ui.CommandLine;
 import imagej.updater.util.StderrProgress;
 
 import java.io.File;
@@ -78,9 +77,8 @@ public class CommandLineUpdaterTest {
 		writeFile(new File(ijRoot, new_file), "Aitch!");
 		assertTrue(new File(ijRoot, to_remove).delete());
 
-		CommandLine.main(ijRoot, -1, "upload-complete-site", FilesCollection.DEFAULT_UPDATE_SITE);
+		files = main(files, "upload-complete-site", FilesCollection.DEFAULT_UPDATE_SITE);
 
-		files = readDb(files, progress);
 		assertStatus(Status.OBSOLETE_UNINSTALLED, files, to_remove);
 		assertStatus(Status.MODIFIED, files, modified);
 		assertStatus(Status.INSTALLED, files, installed);
@@ -90,20 +88,17 @@ public class CommandLineUpdaterTest {
 	@Test
 	public void testUpload() throws Exception {
 		files = initialize();
-		File ijRoot = files.prefix("");
 
 		final String path = "macros/test.ijm";
 		final File file = files.prefix(path);
 		writeFile(file, "// test");
-		CommandLine.main(ijRoot, -1, "upload", "--update-site", DEFAULT_UPDATE_SITE, path);
+		files = main(files, "upload", "--update-site", DEFAULT_UPDATE_SITE, path);
 
-		files = readDb(files, progress);
 		assertStatus(Status.INSTALLED, files, path);
 
 		assertTrue(file.delete());
-		CommandLine.main(ijRoot, -1, "upload", path);
+		files = main(files, "upload", path);
 
-		files = readDb(files, progress);
 		assertStatus(Status.OBSOLETE_UNINSTALLED, files, path);
 	}
 }

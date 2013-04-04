@@ -42,6 +42,7 @@ import static org.junit.Assert.assertTrue;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection.UpdateSite;
+import imagej.updater.ui.CommandLine;
 import imagej.updater.util.Progress;
 import imagej.updater.util.StderrProgress;
 import imagej.updater.util.Util;
@@ -117,6 +118,12 @@ public class UpdaterTestUtils {
 	//
 	// Utility functions
 	//
+
+	public static FilesCollection main(final FilesCollection files, final String... args) throws ParserConfigurationException, SAXException {
+		files.prefix(".checksums").delete();
+		CommandLine.main(files.prefix(""), -1, args);
+		return readDb(files);
+	}
 
 	protected static File makeIJRoot(final File webRoot) throws IOException {
 		final File ijRoot = FileUtils.createTemporaryDirectory("testUpdaterIJRoot", "");
