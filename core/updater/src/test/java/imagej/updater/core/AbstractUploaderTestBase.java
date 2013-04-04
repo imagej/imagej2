@@ -125,6 +125,10 @@ public abstract class AbstractUploaderTestBase {
 	}
 
 	public boolean isUpdateSiteEmpty() throws MalformedURLException, IOException {
+		if (url.startsWith("file:")) {
+			final File[] list = new File(url.substring(5)).listFiles();
+			return list == null || list.length == 0;
+		}
 		HttpURLConnection connection = (HttpURLConnection) new URL(url + Util.XML_COMPRESSED).openConnection();
 		return 404 == connection.getResponseCode();
 	}
