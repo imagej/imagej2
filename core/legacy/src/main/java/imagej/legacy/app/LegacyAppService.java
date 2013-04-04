@@ -33,33 +33,34 @@
  * #L%
  */
 
-package imagej.app;
+package imagej.legacy.app;
 
-import org.scijava.app.DefaultAppService;
+import imagej.app.ImageJAppService;
+import imagej.legacy.LegacyService;
+
+import org.scijava.Priority;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;
-import org.scijava.util.POM;
 
 /**
- * ImageJ service for providing application-level functionality.
+ * An extension of {@link ImageJAppService} that provides the legacy ImageJ 1.x
+ * version (in paretheses) in addition to the regular ImageJ version, when
+ * {@link #getVersion()} is called.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Service.class)
-public class ImageJAppService extends DefaultAppService {
+@Plugin(type = Service.class, priority = Priority.HIGH_PRIORITY)
+public final class LegacyAppService extends ImageJAppService {
+
+	@Parameter
+	private LegacyService legacyService;
 
 	// -- AppService methods --
 
 	@Override
-	public String getTitle() {
-		return "ImageJ";
-	}
-
-	// -- Internal methods --
-
-	@Override
-	protected POM loadPOM() {
-		return POM.getPOM(getClass(), "net.imagej", "ij-core");
+	public String getVersion() {
+		return super.getVersion() + " (" + legacyService.getLegacyVersion() + ")";
 	}
 
 }
