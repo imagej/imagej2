@@ -86,5 +86,25 @@ public class CommandLineUpdaterTest {
 		assertStatus(Status.INSTALLED, files, installed);
 		assertStatus(Status.INSTALLED, files, new_file);
 	}
+
+	@Test
+	public void testUpload() throws Exception {
+		files = initialize();
+		File ijRoot = files.prefix("");
+
+		final String path = "macros/test.ijm";
+		final File file = files.prefix(path);
+		writeFile(file, "// test");
+		CommandLine.main(ijRoot, -1, "upload", "--update-site", DEFAULT_UPDATE_SITE, path);
+
+		files = readDb(files, progress);
+		assertStatus(Status.INSTALLED, files, path);
+
+		assertTrue(file.delete());
+		CommandLine.main(ijRoot, -1, "upload", path);
+
+		files = readDb(files, progress);
+		assertStatus(Status.OBSOLETE_UNINSTALLED, files, path);
+	}
 }
 

@@ -362,7 +362,12 @@ public class CommandLine {
 							+ name + " to " + file.updateSite + ")");
 				}
 			}
-			file.setAction(files, Action.UPLOAD);
+			if (file.getStatus() == Status.NOT_INSTALLED) {
+				System.err.println("Removing file '" + name + "'");
+				file.setAction(files, Action.REMOVE);
+			} else {
+				file.setAction(files, Action.UPLOAD);
+			}
 			count++;
 		}
 		if (count == 0) {
