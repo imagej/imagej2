@@ -323,7 +323,7 @@ public class Util {
 	{
 		final StringBuilder builder = new StringBuilder();
 		for (final T object : list)
-			builder.append((builder.length() > 0 ? ", " : "") + object.toString());
+			builder.append((builder.length() > 0 ? delimiter : "") + object.toString());
 		return builder.toString();
 	}
 
