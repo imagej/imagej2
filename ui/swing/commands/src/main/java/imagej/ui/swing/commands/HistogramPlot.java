@@ -412,13 +412,9 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 			dataMax = 0;
 		}
 		double dataRange = dataMax - dataMin;
-		if (dataset.isInteger()) dataRange += 1;
 		if (dataset.isInteger()) {
-			if (dataRange <= 256) {
-				binCount = (int) dataRange;
-				binWidth = 1;
-			}
-			else if (dataRange <= 65536) {
+			dataRange += 1;
+			if (dataRange <= 65536) {
 				binCount = (int) dataRange;
 				binWidth = 1;
 			}
