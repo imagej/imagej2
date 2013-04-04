@@ -404,8 +404,8 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		Cursor<? extends RealType<?>> cursor = dataset.getImgPlus().cursor();
 		while (cursor.hasNext()) {
 			double val = cursor.next().getRealDouble();
-			dataMin = Math.min(dataMin, val);
-			dataMax = Math.max(dataMax, val);
+			if (val < dataMin) dataMin = val;
+			if (val > dataMax) dataMax = val;
 		}
 		if (dataMin > dataMax) {
 			dataMin = 0;
@@ -413,12 +413,22 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		}
 		double dataRange = dataMax - dataMin;
 		if (dataset.isInteger()) dataRange += 1;
-		if (dataRange <= 256 && dataset.isInteger()) {
-			binCount = (int) dataRange;
-			binWidth = 1;
+		if (dataset.isInteger()) {
+			if (dataRange <= 256) {
+				binCount = (int) dataRange;
+				binWidth = 1;
+			}
+			else if (dataRange <= 65536) {
+				binCount = (int) dataRange;
+				binWidth = 1;
+			}
+			else {
+				binCount = 65536;
+				binWidth = dataRange / binCount;
+			}
 		}
-		else {
-			binCount = 256;
+		else { // float dataset
+			binCount = 1000;
 			binWidth = dataRange / binCount;
 		}
 	}
@@ -470,8 +480,8 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 				histograms[c][index]++;
 				sum1s[c] += val;
 				sum2s[c] += val * val;
-				mins[c] = Math.min(mins[c], val);
-				maxes[c] = Math.max(maxes[c], val);
+				if (val < mins[c]) mins[c] = val;
+				if (val > maxes[c]) maxes[c] = val;
 				sampleCount++;
 			}
 			composVal /= channels;
@@ -481,8 +491,8 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 			histograms[composH][index]++;
 			sum1s[composH] += composVal;
 			sum2s[composH] += composVal * composVal;
-			mins[composH] = Math.min(mins[composH], composVal);
-			maxes[composH] = Math.max(maxes[composH], composVal);
+			if (composVal < mins[composH]) mins[composH] = composVal;
+			if (composVal > maxes[composH]) maxes[composH] = composVal;
 		}
 		// calc means etc.
 		long pixels = sampleCount / channels;
@@ -492,5 +502,77 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 				Math.sqrt((sum2s[i] - ((sum1s[i] * sum1s[i]) / pixels)) / (pixels - 1));
 		}
 	}
+
+	/*
+
+	// TODO - avoid this structure. Use a measurement engine and whiteboard
+	public class Statistics {
+
+		public long[] histogram;
+		public double mean;
+		public double stdDev;
+		public double min;
+		public double max;
+	}
+
+	// TODO : maybe have a precomputed data range rather than iterate here?
+	// Also maybe compute from a List<PointSet>? Probably no. Maybe we pass in
+	// a channel index and make a hist for overall and each chan in pointset
+	// region? This would involve one axis of differentiation but irregular
+	// regions might not need that info. Anyhow this allows one pass to find all
+	// the various channel histograms at once.
+	// What about Functions rather than Displays? How would whiteboard record
+	// info about the function such that you could map from display or dataset to
+	// a function (for later lookup of stats associated with a display)?
+
+	private Statistics computeStats(ImageDisplay disp, PointSet region, int bins)
+	{
+		Dataset ds = displayService.getActiveDataset(disp);
+		RandomAccess<? extends RealType<?>> accessor =
+			ds.getImgPlus().randomAccess();
+		PointSetIterator pixelSpaceIter = region.iterator();
+		double dmin = Double.POSITIVE_INFINITY;
+		double dmax = Double.NEGATIVE_INFINITY;
+		long values = 0;
+		while (pixelSpaceIter.hasNext()) {
+			long[] pos = pixelSpaceIter.next();
+			accessor.setPosition(pos);
+			double val = accessor.get().getRealDouble();
+			if (val < dmin) dmin = val;
+			if (val > dmax) dmax = val;
+			values++;
+		}
+		long[] histogram = new long[bins];
+		double sum1 = 0;
+		double sum2 = 0;
+		double min = Double.POSITIVE_INFINITY;
+		double max = Double.NEGATIVE_INFINITY;
+		while (pixelSpaceIter.hasNext()) {
+			long[] pos = pixelSpaceIter.next();
+			accessor.setPosition(pos);
+			double val = accessor.get().getRealDouble();
+			int index = (int) Math.round(bins * (val - dmin) / (dmax - dmin));
+			// NB in float case the max data point overflows the index range
+			if (index >= bins) index = bins - 1;
+			histogram[index]++;
+			sum1 += val;
+			sum2 += val * val;
+			if (val < min) min = val;
+			if (val > max) max = val;
+		}
+		double mean = sum1 / values;
+		double stdDev =
+			(values < 2) ? 0 : Math.sqrt((sum2 - ((sum1 * sum1) / values)) /
+				(values - 1));
+		Statistics stats = new Statistics();
+		stats.histogram = histogram;
+		stats.mean = mean;
+		stats.stdDev = stdDev;
+		stats.min = min;
+		stats.max = max;
+		return stats;
+	}
+
+	*/
 
 }
