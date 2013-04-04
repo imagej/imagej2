@@ -43,8 +43,23 @@
 					<archive>
 						<manifest>
 							<packageName>imagej.updater</packageName>
+							<mainClass>imagej.updater.ui.CommandLine</mainClass>
 						</manifest>
 					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>java</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>imagej.updater.ui.CommandLine</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>
