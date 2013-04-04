@@ -63,6 +63,7 @@ import org.scijava.input.Accelerator;
 import org.scijava.input.InputModifiers;
 import org.scijava.input.KeyCode;
 import org.scijava.log.LogService;
+import org.scijava.plugin.PluginFinder;
 import org.scijava.plugin.PluginInfo;
 
 /**
@@ -76,7 +77,7 @@ import org.scijava.plugin.PluginInfo;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public class LegacyPluginFinder {
+public class LegacyPluginFinder implements PluginFinder {
 
 	private static final String PLUGIN_BLACKLIST = "plugin-blacklist.txt";
 	private static final String LEGACY_PLUGIN_ICON = "/icons/legacy.png";
@@ -105,11 +106,12 @@ public class LegacyPluginFinder {
 		}
 	}
 
-	// -- LegacyPluginFinder methods --
+	// -- PluginFinder methods --
 
-	public void findPlugins(final List<PluginInfo<?>> plugins) {
+	@Override
+	public Map<String, Throwable> findPlugins(final List<PluginInfo<?>> plugins) {
 		final ij.ImageJ ij = IJ.getInstance();
-		if (ij == null) return; // no IJ1, so no IJ1 plugins
+		if (ij == null) return null; // no IJ1, so no IJ1 plugins
 		final Map<String, MenuPath> menuTable = parseMenus(ij);
 		final Hashtable<?, ?> commands = Menus.getCommands();
 		final int startSize = plugins.size();
@@ -122,6 +124,8 @@ public class LegacyPluginFinder {
 		final int ignoredCount = commands.size() - pluginCount;
 		log.info("Found " + pluginCount + " legacy plugins (plus " + ignoredCount +
 			" ignored).");
+
+		return null;
 	}
 
 	// -- Helper methods --
