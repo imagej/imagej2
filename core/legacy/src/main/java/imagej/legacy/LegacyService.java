@@ -126,4 +126,7 @@ public interface LegacyService extends Service {
 	 */
 	void toggleLegacyMode(boolean toggle);
 
+	/** Gets the version of ImageJ 1.x being used. */
+	String getLegacyVersion();
+
 }

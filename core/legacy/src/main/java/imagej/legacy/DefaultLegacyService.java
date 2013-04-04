@@ -305,6 +305,11 @@ public final class DefaultLegacyService extends AbstractService implements
 		imageMap.toggleLegacyMode(toggle);
 	}
 
+	@Override
+	public String getLegacyVersion() {
+		return IJ.getVersion();
+	}
+
 	// -- Service methods --
 
 	@Override
