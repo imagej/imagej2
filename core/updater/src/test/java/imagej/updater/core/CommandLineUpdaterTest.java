@@ -68,7 +68,7 @@ public class CommandLineUpdaterTest {
 	@Test
 	public void testUploadCompleteSite() throws Exception {
 		final String to_remove = "macros/to_remove.ijm";
-		final String modified = "macros/modfied.ijm";
+		final String modified = "macros/modified.ijm";
 		final String installed = "macros/installed.ijm";
 		final String new_file = "macros/new_file.ijm";
 		files = initialize(to_remove, modified, installed);
