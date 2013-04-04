@@ -59,7 +59,9 @@ import imagej.updater.core.Conflicts.Resolution;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection.UpdateSite;
+import imagej.updater.test.Dependencee;
 import imagej.updater.util.Progress;
+import imagej.updater.test.Dependency;
 import imagej.updater.util.Util;
 
 import java.io.File;
@@ -1105,8 +1107,8 @@ public class UpdaterTest {
 	@Test
 	public void byteCodeAnalyzer() throws Exception {
 		files = initialize();
-		writeJar("jars/dependencee.jar", imagej.updater.test.Dependencee.class);
-		writeJar("jars/dependency.jar", imagej.updater.test.Dependency.class);
+		writeJar("jars/dependencee.jar", Dependencee.class);
+		writeJar("jars/dependency.jar", Dependency.class);
 		new Checksummer(files, progress).updateFromLocal();
 
 		FileObject dependencee = files.get("jars/dependencee.jar");
@@ -1115,7 +1117,7 @@ public class UpdaterTest {
 		assertCount(1, dependencee.getDependencies());
 		assertEquals("jars/dependency.jar", dependencee.getDependencies().iterator().next().filename);
 
-		writeJar("jars/bogus.jar", imagej.updater.test.Dependency.class, imagej.updater.test.Dependencee.class);
+		writeJar("jars/bogus.jar", Dependency.class, Dependencee.class);
 		files = new FilesCollection(files.prefix("")); // force a new dependency analyzer
 		files.read();
 		new Checksummer(files, progress).updateFromLocal();
