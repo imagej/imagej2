@@ -40,9 +40,8 @@ import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.display.ImageDisplay;
 import imagej.display.DisplayService;
+import imagej.legacy.LegacyService;
 import net.imglib2.meta.AxisType;
-
-import org.scijava.Context;
 
 /**
  * Creates {@link ImageDisplay}s from {@link ImagePlus}es containing color data.
@@ -53,7 +52,7 @@ public class ColorDisplayCreator implements DisplayCreator {
 
 	// -- instance variables --
 
-	private final Context context;
+	private final LegacyService legSrv;
 
 	private final ColorPixelHarmonizer pixelHarmonizer;
 	private final ColorTableHarmonizer colorTableHarmonizer;
@@ -69,13 +68,14 @@ public class ColorDisplayCreator implements DisplayCreator {
 
 	// -- constructor --
 
-	public ColorDisplayCreator(final Context context) {
-		this.context = context;
+	public ColorDisplayCreator(final LegacyService legSrv) {
+		this.legSrv = legSrv;
 		pixelHarmonizer = new ColorPixelHarmonizer();
-		colorTableHarmonizer = new ColorTableHarmonizer(context);
+		colorTableHarmonizer =
+			new ColorTableHarmonizer(legSrv.getImageDisplayService());
 		metadataHarmonizer = new MetadataHarmonizer();
 		compositeHarmonizer = new CompositeHarmonizer();
-		overlayHarmonizer = new OverlayHarmonizer(context);
+		overlayHarmonizer = new OverlayHarmonizer(legSrv);
 		positionHarmonizer = new PositionHarmonizer();
 		nameHarmonizer = new NameHarmonizer();
 	}
@@ -98,8 +98,8 @@ public class ColorDisplayCreator implements DisplayCreator {
 		metadataHarmonizer.updateDataset(ds, imp);
 		compositeHarmonizer.updateDataset(ds, imp);
 
-		final DisplayService displayService =
-			context.getService(DisplayService.class);
+		final DisplayService displayService = legSrv.getDisplayService();
+
 		// CTR FIXME - add imageDisplayService.createImageDisplay method?
 		// returns null if it cannot find an ImageDisplay-compatible display?
 		final ImageDisplay display =
@@ -150,8 +150,9 @@ public class ColorDisplayCreator implements DisplayCreator {
 		final int bitsPerPixel = 8;
 		final boolean signed = false;
 		final boolean floating = false;
-		final DatasetService datasetService =
-			context.getService(DatasetService.class);
+
+		final DatasetService datasetService = legSrv.getDatasetService();
+
 		final Dataset ds =
 			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
 

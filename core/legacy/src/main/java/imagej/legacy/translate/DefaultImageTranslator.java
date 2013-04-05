@@ -39,9 +39,8 @@ import ij.ImagePlus;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.legacy.LegacyService;
 import net.imglib2.meta.AxisType;
-
-import org.scijava.Context;
 
 /**
  * The default {@link ImageTranslator} between legacy and modern ImageJ image
@@ -53,19 +52,20 @@ import org.scijava.Context;
  */
 public class DefaultImageTranslator implements ImageTranslator {
 
-	private final Context context;
+	private final LegacyService legSrv;
 
 	private final DisplayCreator colorDisplayCreator;
 	private final DisplayCreator grayDisplayCreator;
 	private final ImagePlusCreator colorImagePlusCreator;
 	private final ImagePlusCreator grayImagePlusCreator;
 
-	public DefaultImageTranslator(final Context context) {
-		this.context = context;
-		colorDisplayCreator = new ColorDisplayCreator(context);
-		grayDisplayCreator = new GrayDisplayCreator(context);
-		colorImagePlusCreator = new ColorImagePlusCreator(context);
-		grayImagePlusCreator = new GrayImagePlusCreator(context);
+	public DefaultImageTranslator(LegacyService legSrv) {
+		this.legSrv = legSrv;
+		colorDisplayCreator = new ColorDisplayCreator(legSrv);
+		grayDisplayCreator = new GrayDisplayCreator(legSrv);
+		colorImagePlusCreator =
+			new ColorImagePlusCreator(legSrv.getImageDisplayService());
+		grayImagePlusCreator = new GrayImagePlusCreator(legSrv);
 	}
 
 	/**
@@ -75,7 +75,8 @@ public class DefaultImageTranslator implements ImageTranslator {
 	@Override
 	public ImageDisplay createDisplay(final ImagePlus imp) {
 		
-		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder(), LegacyUtils.isBinary(imp));
+		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder(), LegacyUtils
+			.isBinary(imp));
 	}
 
 	/**
@@ -106,7 +107,7 @@ public class DefaultImageTranslator implements ImageTranslator {
 	public ImagePlus createLegacyImage(final ImageDisplay display) {
 
 		final ImageDisplayService imageDisplayService =
-			context.getService(ImageDisplayService.class);
+			legSrv.getImageDisplayService();
 
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
 

@@ -55,8 +55,6 @@ import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.type.numeric.RealType;
 
-import org.scijava.Context;
-
 /**
  * This class synchronizes {@link ImageDisplay} {@link ColorTable}s with
  * {@link ImagePlus} {@link LUT}s.
@@ -65,10 +63,10 @@ import org.scijava.Context;
  */
 public class ColorTableHarmonizer implements DisplayHarmonizer {
 
-	private final Context context;
+	private final ImageDisplayService imgDispSrv;
 
-	public ColorTableHarmonizer(Context context) {
-		this.context = context;
+	public ColorTableHarmonizer(ImageDisplayService imgDispSrv) {
+		this.imgDispSrv = imgDispSrv;
 	}
 	
 	/**
@@ -120,9 +118,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			// NOTE to fix bug #849 the nonnull case was added below. This reflects
 			// a significant behavior change.
 			if (activeView == null) {
-				final ImageDisplayService imageDisplayService =
-					context.getService(ImageDisplayService.class);
-				final Dataset ds = imageDisplayService.getActiveDataset(disp);
+				final Dataset ds = imgDispSrv.getActiveDataset(disp);
 				setImagePlusLutToFirstInDataset(ds, imp);
 			}
 			else setImagePlusLutToFirstInView(activeView, imp);
@@ -409,8 +405,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			}
 		}
 
-		ImageDisplayService service = context.getService(ImageDisplayService.class);
-		Dataset dataset = service.getActiveDataset(disp);
+		Dataset dataset = imgDispSrv.getActiveDataset(disp);
 		RealType<?> type = dataset.getType();
 		for (int c = 0; c < channelCount; c++) {
 			double mn = outOfBounds(min[c], type) ? type.getMinValue() : min[c];

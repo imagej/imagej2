@@ -42,10 +42,14 @@ import ij.WindowManager;
 import ij.gui.ImageWindow;
 import imagej.command.CommandService;
 import imagej.core.options.OptionsMisc;
+import imagej.data.DatasetService;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.data.display.OverlayService;
 import imagej.data.options.OptionsChannels;
+import imagej.data.threshold.ThresholdService;
+import imagej.display.DisplayService;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.input.KyPressedEvent;
 import imagej.display.event.input.KyReleasedEvent;
@@ -108,6 +112,9 @@ public final class DefaultLegacyService extends AbstractService implements
 	}
 
 	@Parameter
+	private OverlayService overlayService;
+
+	@Parameter
 	private LogService log;
 
 	@Parameter
@@ -126,7 +133,21 @@ public final class DefaultLegacyService extends AbstractService implements
 	private ImageDisplayService imageDisplayService;
 
 	@Parameter
+	private DisplayService displayService;
+
+	@Parameter
+	private ThresholdService thresholdService;
+
+	@Parameter
+	private DatasetService datasetService;
+
+	@Parameter
 	private MenuService menuService;
+
+	// lurking bug?
+	// NB BDZ - don't enable this - infinite loop in service initialization code
+	// @Parameter
+	// private StatusService statusService;
 
 	private boolean lastDebugMode;
 	private static DefaultLegacyService instance;
@@ -178,6 +199,31 @@ public final class DefaultLegacyService extends AbstractService implements
 	public LegacyImageMap getImageMap() {
 		return imageMap;
 	}
+
+	@Override
+	public DisplayService getDisplayService() {
+		return displayService;
+	}
+
+	@Override
+	public DatasetService getDatasetService() {
+		return datasetService;
+	}
+
+	@Override
+	public OverlayService getOverlayService() {
+		return overlayService;
+	}
+
+	@Override
+	public ThresholdService getThresholdService() {
+		return thresholdService;
+	}
+
+	// @Override
+	// public StatusService getStatusService() {
+	// return statusService;
+	// }
 
 	@Override
 	public void
@@ -436,10 +482,7 @@ public final class DefaultLegacyService extends AbstractService implements
 	}
 
 	private OptionsChannels getChannels() {
-		final OptionsService service =
-			getContext().getService(OptionsService.class);
-
-		return service.getOptions(OptionsChannels.class);
+		return optionsService.getOptions(OptionsChannels.class);
 	}
 
 	private void updateMenus(final OptionsMisc optsMisc) {
