@@ -283,6 +283,11 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
+	public boolean isDefaultUI(final String name) {
+		return getDefaultUI() == getUI(name);
+	}
+
+	@Override
 	public UserInterface getUI(final String name) {
 		return uiMap.get(name);
 	}
@@ -532,11 +537,6 @@ public final class DefaultUIService extends AbstractService implements
 			// set the default UI to the one with the highest priority
 			setDefaultUI(uiList.get(0));
 		}
-	}
-
-	@Override
-	public boolean isDefaultUI(final String name) {
-		return getDefaultUI() == getUI(name);
 	}
 
 }
