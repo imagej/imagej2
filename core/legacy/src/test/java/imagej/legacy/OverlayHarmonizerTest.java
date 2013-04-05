@@ -75,13 +75,9 @@ public class OverlayHarmonizerTest {
 
 	@Before
 	public void beforeMethod() {
-		if (!GraphicsEnvironment.isHeadless()) {
-			context = new Context(LegacyService.class);
-		}
-		else {
-			// NB: Skip these tests when in headless mode!
-			Assume.assumeTrue(false);
-		}
+		// NB: Ignore results of all tests if in headless mode!
+		Assume.assumeTrue(!GraphicsEnvironment.isHeadless());
+		context = new Context(LegacyService.class);
 	}
 
 	@After
