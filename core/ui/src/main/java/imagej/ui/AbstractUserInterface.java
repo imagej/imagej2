@@ -44,12 +44,12 @@ import imagej.util.Prefs;
 
 import java.util.List;
 
-import org.scijava.InstantiableException;
 import org.scijava.app.AppService;
 import org.scijava.app.StatusService;
 import org.scijava.event.EventService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
 import org.scijava.plugin.SortablePlugin;
 
 /**
@@ -113,22 +113,17 @@ public abstract class AbstractUserInterface extends SortablePlugin
 		final List<PluginInfo<DisplayViewer<?>>> viewers =
 			getUIService().getViewerPlugins();
 		final LogService log = getUIService().getLog();
+		final PluginService pluginService = getUIService().getPluginService();
 
 		DisplayViewer<?> displayViewer = null;
 		for (final PluginInfo<DisplayViewer<?>> info : viewers) {
 			// check that viewer can actually handle the given display
-			try {
-				final DisplayViewer<?> viewer = info.createInstance();
-				viewer.setContext(getContext());
-				viewer.setPriority(info.getPriority());
-				if (!viewer.canView(display)) continue;
-				if (!viewer.isCompatible(this)) continue;
-				displayViewer = viewer;
-				break; // found a suitable viewer; we are done
-			}
-			catch (final InstantiableException exc) {
-				log.warn("Failed to create instance of " + info, exc);
-			}
+			final DisplayViewer<?> viewer = pluginService.createInstance(info);
+			if (viewer == null) continue;
+			if (!viewer.canView(display)) continue;
+			if (!viewer.isCompatible(this)) continue;
+			displayViewer = viewer;
+			break; // found a suitable viewer; we are done
 		}
 		if (displayViewer == null) {
 			log.warn("For UI '" + getClass().getName() +

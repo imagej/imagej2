@@ -52,7 +52,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.scijava.InstantiableException;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.log.LogService;
@@ -189,18 +188,14 @@ public class DefaultThresholdService extends AbstractService implements
 	private void discoverThresholdMethods() {
 		methods = new ConcurrentHashMap<String, AutoThresholdMethod>();
 		methodNames = new ArrayList<String>();
-		List<PluginInfo<AutoThresholdMethod>> infos =
+		final List<PluginInfo<AutoThresholdMethod>> infos =
 			pluginService.getPluginsOfType(AutoThresholdMethod.class);
 		for (final PluginInfo<AutoThresholdMethod> info : infos) {
-			try {
-				final String name = info.getName();
-				final AutoThresholdMethod method = info.createInstance();
-				methods.put(name, method);
-				methodNames.add(name);
-			}
-			catch (final InstantiableException exc) {
-				log.warn("Invalid autothreshold method: " + info.getClassName(), exc);
-			}
+			final String name = info.getName();
+			final AutoThresholdMethod method = pluginService.createInstance(info);
+			if (method == null) continue;
+			methods.put(name, method);
+			methodNames.add(name);
 		}
 	}
 }

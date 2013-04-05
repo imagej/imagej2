@@ -52,7 +52,6 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import org.scijava.InstantiableException;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -170,14 +169,12 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 
 	public void reloadScriptLanguages() {
 		scriptLanguageIndex.clear();
-		for (final PluginInfo<? extends ScriptLanguage> item : pluginService.getPluginsOfType(ScriptLanguage.class))
+		for (final PluginInfo<ScriptLanguage> item :
+			pluginService.getPluginsOfType(ScriptLanguage.class))
 		{
-			try {
-				final ScriptEngineFactory language = item.createInstance();
-				scriptLanguageIndex.add(language, false);
-			} catch (InstantiableException e) {
-				log.error("Invalid script language: " + item, e);
-			}
+			final ScriptEngineFactory language = pluginService.createInstance(item);
+			if (language == null) continue;
+			scriptLanguageIndex.add(language, false);
 		}
 
 		/*

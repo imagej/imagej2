@@ -37,7 +37,6 @@ package imagej.widget;
 
 import java.util.List;
 
-import org.scijava.InstantiableException;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -70,16 +69,9 @@ public class DefaultWidgetService extends AbstractService implements
 		final List<PluginInfo<InputWidget>> infos =
 			pluginService.getPluginsOfType(InputWidget.class);
 		for (@SuppressWarnings("rawtypes")
-		final PluginInfo<InputWidget> info : infos)
-		{
-			final InputWidget<?, ?> widget;
-			try {
-				widget = info.createInstance();
-			}
-			catch (final InstantiableException e) {
-				log.error("Invalid widget: " + info, e);
-				continue;
-			}
+		final PluginInfo<InputWidget> info : infos) {
+			final InputWidget<?, ?> widget = pluginService.createInstance(info);
+			if (widget == null) continue;
 			if (widget.isCompatible(model)) {
 				widget.initialize(model);
 				return widget;

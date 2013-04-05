@@ -61,7 +61,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.scijava.InstantiableException;
 import org.scijava.app.AppService;
 import org.scijava.app.StatusService;
 import org.scijava.event.EventHandler;
@@ -514,18 +513,11 @@ public final class DefaultUIService extends AbstractService implements
 		final List<PluginInfo<UserInterface>> infos =
 			pluginService.getPluginsOfType(UserInterface.class);
 		for (final PluginInfo<UserInterface> info : infos) {
-			try {
-				// instantiate user interface
-				final UserInterface ui = info.createInstance();
-				ui.setContext(getContext());
-				ui.setPriority(info.getPriority());
-				log.info("Discovered user interface: " + ui.getClass().getName());
-
-				addUI(info.getName(), ui);
-			}
-			catch (final InstantiableException e) {
-				log.warn("Invalid user interface: " + info, e);
-			}
+			// instantiate user interface
+			final UserInterface ui = pluginService.createInstance(info);
+			if (ui == null) continue;
+			log.info("Discovered user interface: " + ui.getClass().getName());
+			addUI(info.getName(), ui);
 		}
 
 		// check system property for explicit UI preference

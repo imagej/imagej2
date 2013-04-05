@@ -47,7 +47,6 @@ import net.imglib2.ops.img.ImageCombiner;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
-import org.scijava.InstantiableException;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -68,10 +67,10 @@ public class CalculatorService extends AbstractService {
 	// -- Parameters --
 
 	@Parameter
-	private LogService logSrv;
+	private LogService log;
 
 	@Parameter
-	private PluginService pluginSrv;
+	private PluginService pluginService;
 
 	// -- instance variables --
 
@@ -136,19 +135,14 @@ public class CalculatorService extends AbstractService {
 
 	@SuppressWarnings("rawtypes")
 	private void findOperators() {
-		List<PluginInfo<CalculatorOp>> pluginInfos =
-			pluginSrv.getPluginsOfType(CalculatorOp.class);
-		for (final PluginInfo<CalculatorOp> info : pluginInfos)
-		{
-			try {
-				final String name = info.getName();
-				final CalculatorOp<?, ?> op = info.createInstance();
-				operators.put(name, op);
-				operatorNames.add(name);
-			}
-			catch (final InstantiableException exc) {
-				logSrv.warn("Invalid calculator op: " + info.getClassName(), exc);
-			}
+		final List<PluginInfo<CalculatorOp>> pluginInfos =
+			pluginService.getPluginsOfType(CalculatorOp.class);
+		for (final PluginInfo<CalculatorOp> info : pluginInfos) {
+			final String name = info.getName();
+			final CalculatorOp<?, ?> op = pluginService.createInstance(info);
+			if (op == null) continue;
+			operators.put(name, op);
+			operatorNames.add(name);
 		}
 		Collections.sort(operatorNames);
 	}
