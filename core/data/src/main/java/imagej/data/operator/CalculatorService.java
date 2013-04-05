@@ -112,7 +112,7 @@ public class CalculatorService extends AbstractService {
 	}
 
 	/**
-	 * Creates an {@link Img}<DoubleType> from the combination of two input
+	 * Creates an {@code Img<DoubleType>} from the combination of two input
 	 * {@link Img}s. The size of the output {@link Img} matches the region of
 	 * overlap between the two input {@link Img}s. The combination is done pixel
 	 * by pixel using a given {@link CalculatorOp}.
@@ -120,8 +120,8 @@ public class CalculatorService extends AbstractService {
 	 * @param img1 data input Img 1
 	 * @param img2 data input Img 2
 	 * @param op The CalculatorOp algorithm used to combine the two inputs
-	 * @return An Img<DoubleType> containing the combined data of the overlapping
-	 *         regions of the two input Imgs.
+	 * @return An {@code Img<DoubleType>} containing the combined data of the
+	 *         overlapping regions of the two input Imgs.
 	 */
 	public <U extends RealType<U>, V extends RealType<V>> Img<DoubleType>
 		combine(Img<U> img1, Img<V> img2, CalculatorOp<U, V> op)
