@@ -86,7 +86,7 @@ public class SWTStatusBar extends Composite implements StatusBar {
 
 	@EventHandler
 	protected void onEvent(final StatusEvent event) {
-		final String message = uiService.getStatusService().getStatusMessage(event);
+		final String message = uiService.getStatusMessage(event);
 		final int val = event.getProgressValue();
 		final int max = event.getProgressMaximum();
 		setStatus(message);

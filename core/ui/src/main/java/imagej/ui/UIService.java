@@ -50,8 +50,9 @@ import imagej.widget.FileWidget;
 import java.io.File;
 import java.util.List;
 
-import org.scijava.app.AppService;
+import org.scijava.app.App;
 import org.scijava.app.StatusService;
+import org.scijava.app.event.StatusEvent;
 import org.scijava.event.EventService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.PluginInfo;
@@ -69,6 +70,8 @@ public interface UIService extends Service {
 	/** System property to set for overriding the default UI. */
 	String UI_PROPERTY = "ij.ui";
 
+	App getApp();
+
 	LogService getLog();
 
 	ThreadService getThreadService();
@@ -76,8 +79,6 @@ public interface UIService extends Service {
 	EventService getEventService();
 
 	StatusService getStatusService();
-
-	AppService getAppService();
 
 	PlatformService getPlatformService();
 
@@ -321,5 +322,12 @@ public interface UIService extends Service {
 	 * </p>
 	 */
 	void showContextMenu(String menuRoot, Display<?> display, int x, int y);
+
+	/**
+	 * Gets the status message associated with the given event.
+	 * 
+	 * @see StatusService#getStatusMessage(String, StatusEvent)
+	 */
+	String getStatusMessage(StatusEvent statusEvent);
 
 }

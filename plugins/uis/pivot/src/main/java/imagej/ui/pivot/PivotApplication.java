@@ -88,7 +88,7 @@ public class PivotApplication extends AbstractContextual implements Application
 		contentPane.add(toolBar);
 		contentPane.add(statusBar);
 
-		frame.setTitle(uiService.getAppService().getTitle());
+		frame.setTitle(uiService.getApp().getTitle());
 		frame.setMaximized(true);
 		frame.open(display);
 	}

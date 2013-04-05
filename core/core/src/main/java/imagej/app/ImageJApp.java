@@ -35,31 +35,34 @@
 
 package imagej.app;
 
-import org.scijava.app.DefaultAppService;
+import org.scijava.app.AbstractApp;
+import org.scijava.app.App;
 import org.scijava.plugin.Plugin;
-import org.scijava.service.Service;
-import org.scijava.util.POM;
 
 /**
- * ImageJ service for providing application-level functionality.
+ * Application metadata about ImageJ.
  * 
  * @author Curtis Rueden
+ * @see org.scijava.app.AppService
  */
-@Plugin(type = Service.class)
-public class ImageJAppService extends DefaultAppService {
+@Plugin(type = App.class, name = ImageJApp.NAME)
+public class ImageJApp extends AbstractApp {
 
-	// -- AppService methods --
+	public static final String NAME = "ImageJ";
 
 	@Override
 	public String getTitle() {
-		return "ImageJ";
+		return NAME;
 	}
 
-	// -- Internal methods --
+	@Override
+	public String getGroupId() {
+		return "net.imagej";
+	}
 
 	@Override
-	protected POM loadPOM() {
-		return POM.getPOM(getClass(), "net.imagej", "ij-core");
+	public String getArtifactId() {
+		return "ij-core";
 	}
 
 }

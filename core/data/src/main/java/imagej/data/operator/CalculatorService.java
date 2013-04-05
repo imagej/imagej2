@@ -47,7 +47,6 @@ import net.imglib2.ops.img.ImageCombiner;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
-import org.scijava.InstantiableException;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -68,10 +67,10 @@ public class CalculatorService extends AbstractService {
 	// -- Parameters --
 
 	@Parameter
-	private LogService logSrv;
+	private LogService log;
 
 	@Parameter
-	private PluginService pluginSrv;
+	private PluginService pluginService;
 
 	// -- instance variables --
 
@@ -113,7 +112,7 @@ public class CalculatorService extends AbstractService {
 	}
 
 	/**
-	 * Creates an {@link Img}<DoubleType> from the combination of two input
+	 * Creates an {@code Img<DoubleType>} from the combination of two input
 	 * {@link Img}s. The size of the output {@link Img} matches the region of
 	 * overlap between the two input {@link Img}s. The combination is done pixel
 	 * by pixel using a given {@link CalculatorOp}.
@@ -121,8 +120,8 @@ public class CalculatorService extends AbstractService {
 	 * @param img1 data input Img 1
 	 * @param img2 data input Img 2
 	 * @param op The CalculatorOp algorithm used to combine the two inputs
-	 * @return An Img<DoubleType> containing the combined data of the overlapping
-	 *         regions of the two input Imgs.
+	 * @return An {@code Img<DoubleType>} containing the combined data of the
+	 *         overlapping regions of the two input Imgs.
 	 */
 	public <U extends RealType<U>, V extends RealType<V>> Img<DoubleType>
 		combine(Img<U> img1, Img<V> img2, CalculatorOp<U, V> op)
@@ -136,19 +135,14 @@ public class CalculatorService extends AbstractService {
 
 	@SuppressWarnings("rawtypes")
 	private void findOperators() {
-		List<PluginInfo<CalculatorOp>> pluginInfos =
-			pluginSrv.getPluginsOfType(CalculatorOp.class);
-		for (final PluginInfo<CalculatorOp> info : pluginInfos)
-		{
-			try {
-				final String name = info.getName();
-				final CalculatorOp<?, ?> op = info.createInstance();
-				operators.put(name, op);
-				operatorNames.add(name);
-			}
-			catch (final InstantiableException exc) {
-				logSrv.warn("Invalid calculator op: " + info.getClassName(), exc);
-			}
+		final List<PluginInfo<CalculatorOp>> pluginInfos =
+			pluginService.getPluginsOfType(CalculatorOp.class);
+		for (final PluginInfo<CalculatorOp> info : pluginInfos) {
+			final String name = info.getName();
+			final CalculatorOp<?, ?> op = pluginService.createInstance(info);
+			if (op == null) continue;
+			operators.put(name, op);
+			operatorNames.add(name);
 		}
 		Collections.sort(operatorNames);
 	}

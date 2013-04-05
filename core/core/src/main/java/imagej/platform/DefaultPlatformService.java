@@ -44,7 +44,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.scijava.InstantiableException;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.log.LogService;
@@ -176,15 +175,10 @@ public final class DefaultPlatformService extends AbstractService implements
 		final List<Platform> platforms = new ArrayList<Platform>();
 		final List<PluginInfo<Platform>> infos =
 			pluginService.getPluginsOfType(Platform.class);
-		for (final PluginInfo<? extends Platform> info : infos) {
-			try {
-				final Platform platform = info.createInstance();
-				if (!isTargetPlatform(platform)) continue;
-				platforms.add(platform);
-			}
-			catch (final InstantiableException e) {
-				log.warn("Invalid platform: " + info, e);
-			}
+		for (final PluginInfo<Platform> info : infos) {
+			final Platform platform = pluginService.createInstance(info);
+			if (!isTargetPlatform(platform)) continue;
+			platforms.add(platform);
 		}
 		return platforms;
 	}
@@ -194,6 +188,7 @@ public final class DefaultPlatformService extends AbstractService implements
 	 * platform.
 	 */
 	private boolean isTargetPlatform(final Platform p) {
+		if (p == null) return false;
 		if (p.javaVendor() != null) {
 			final String javaVendor = System.getProperty("java.vendor");
 			if (!javaVendor.matches(".*" + p.javaVendor() + ".*")) return false;

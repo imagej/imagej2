@@ -45,7 +45,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.scijava.InstantiableException;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.log.LogService;
@@ -219,20 +218,15 @@ public final class DefaultDisplayService extends AbstractService implements
 		final List<PluginInfo<Display<?>>> displayPlugins = getDisplayPlugins();
 
 		for (final PluginInfo<Display<?>> info : displayPlugins) {
-			try {
-				final Display<?> display = info.createInstance();
-				display.setContext(getContext());
-				// display object using the first compatible Display
-				// TODO: how to handle multiple matches? prompt user with dialog box?
-				if (display.canDisplay(o)) {
-					display.display(o);
-					if (name != null) display.setName(name);
-					eventService.publish(new DisplayCreatedEvent(display));
-					return display;
-				}
-			}
-			catch (final InstantiableException e) {
-				log.error("Invalid display plugin: " + info, e);
+			final Display<?> display = pluginService.createInstance(info);
+			if (display == null) continue;
+			// display object using the first compatible Display
+			// TODO: how to handle multiple matches? prompt user with dialog box?
+			if (display.canDisplay(o)) {
+				display.display(o);
+				if (name != null) display.setName(name);
+				eventService.publish(new DisplayCreatedEvent(display));
+				return display;
 			}
 		}
 		return null;

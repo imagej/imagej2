@@ -35,6 +35,7 @@
 
 package imagej.ui;
 
+import imagej.app.ImageJApp;
 import imagej.command.CommandService;
 import imagej.data.display.ImageDisplayService;
 import imagej.display.Display;
@@ -61,9 +62,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.scijava.InstantiableException;
+import org.scijava.app.App;
 import org.scijava.app.AppService;
 import org.scijava.app.StatusService;
+import org.scijava.app.event.StatusEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.log.LogService;
@@ -147,6 +149,11 @@ public final class DefaultUIService extends AbstractService implements
 	// -- UIService methods --
 
 	@Override
+	public App getApp() {
+		return appService.getApp(ImageJApp.NAME);
+	}
+
+	@Override
 	public LogService getLog() {
 		return log;
 	}
@@ -164,11 +171,6 @@ public final class DefaultUIService extends AbstractService implements
 	@Override
 	public StatusService getStatusService() {
 		return statusService;
-	}
-
-	@Override
-	public AppService getAppService() {
-		return appService;
 	}
 
 	@Override
@@ -284,6 +286,11 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
+	public boolean isDefaultUI(final String name) {
+		return getDefaultUI() == getUI(name);
+	}
+
+	@Override
 	public UserInterface getUI(final String name) {
 		return uiMap.get(name);
 	}
@@ -341,21 +348,20 @@ public final class DefaultUIService extends AbstractService implements
 
 	@Override
 	public DialogPrompt.Result showDialog(final String message) {
-		return showDialog(message, getAppService().getTitle());
+		return showDialog(message, getApp().getTitle());
 	}
 
 	@Override
 	public Result showDialog(final String message, final MessageType messageType)
 	{
-		return showDialog(message, getAppService().getTitle(), messageType);
+		return showDialog(message, getApp().getTitle(), messageType);
 	}
 
 	@Override
 	public Result showDialog(final String message, final MessageType messageType,
 		final OptionType optionType)
 	{
-		return showDialog(message, getAppService().getTitle(), messageType,
-			optionType);
+		return showDialog(message, getApp().getTitle(), messageType, optionType);
 	}
 
 	@Override
@@ -400,6 +406,11 @@ public final class DefaultUIService extends AbstractService implements
 		final UserInterface ui = getDefaultUI();
 		if (ui == null) return;
 		ui.showContextMenu(menuRoot, display, x, y);
+	}
+
+	@Override
+	public String getStatusMessage(final StatusEvent statusEvent) {
+		return statusService.getStatusMessage(ImageJApp.NAME, statusEvent);
 	}
 
 	// -- Service methods --
@@ -514,18 +525,11 @@ public final class DefaultUIService extends AbstractService implements
 		final List<PluginInfo<UserInterface>> infos =
 			pluginService.getPluginsOfType(UserInterface.class);
 		for (final PluginInfo<UserInterface> info : infos) {
-			try {
-				// instantiate user interface
-				final UserInterface ui = info.createInstance();
-				ui.setContext(getContext());
-				ui.setPriority(info.getPriority());
-				log.info("Discovered user interface: " + ui.getClass().getName());
-
-				addUI(info.getName(), ui);
-			}
-			catch (final InstantiableException e) {
-				log.warn("Invalid user interface: " + info, e);
-			}
+			// instantiate user interface
+			final UserInterface ui = pluginService.createInstance(info);
+			if (ui == null) continue;
+			log.info("Discovered user interface: " + ui.getClass().getName());
+			addUI(info.getName(), ui);
 		}
 
 		// check system property for explicit UI preference
@@ -540,11 +544,6 @@ public final class DefaultUIService extends AbstractService implements
 			// set the default UI to the one with the highest priority
 			setDefaultUI(uiList.get(0));
 		}
-	}
-
-	@Override
-	public boolean isDefaultUI(final String name) {
-		return getDefaultUI() == getUI(name);
 	}
 
 }
