@@ -51,8 +51,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.scijava.Context;
 import org.scijava.util.Log;
+import org.scijava.util.POM;
 
 /**
  * This class reads launcher configuration parameters from a file and allows
@@ -72,6 +72,18 @@ public class ConfigFileParameters {
 	private static final String SENTINEL = "ImageJ startup properties";
 	private static final String MEMORY_KEY = "maxheap.mb";
 	private static final String JVMARGS_KEY = "jvmargs";
+
+	/** @deprecated FIXME */
+	@Deprecated
+	private static final String VERSION = getStaticVersion();
+
+	/** @deprecated FIXME */
+	@Deprecated
+	private static String getStaticVersion() {
+		final POM pom =
+			POM.getPOM(ConfigFileParameters.class, "net.imagej", "ij-core");
+		return pom == null ? "Unknown" : pom.getVersion();
+	}
 
 	// -- private instance variables --
 
@@ -281,7 +293,7 @@ public class ConfigFileParameters {
 			final FileOutputStream fos = new FileOutputStream(file);
 			final OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF8");
 			final BufferedWriter out = new BufferedWriter(osw);
-			out.write("#" + SENTINEL + " (" + Context.VERSION + ")");
+			out.write("#" + SENTINEL + " (" + VERSION + ")");
 			out.newLine();
 			for (final String key : map.keySet()) {
 				String value = map.get(key);
