@@ -41,6 +41,8 @@ import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
+import imagej.data.event.DatasetRestructuredEvent;
+import imagej.data.event.DatasetUpdatedEvent;
 import imagej.ui.UIService;
 
 import java.awt.BasicStroke;
@@ -74,6 +76,7 @@ import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.scijava.event.EventHandler;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -150,6 +153,7 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 	private JButton logButton;
 	private JButton chanButton;
 	private int currHistNum;
+	private boolean liveUpdates = false;
 
 	// -- public interface --
 
@@ -164,10 +168,7 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 	@Override
 	public void run() {
 		if (!inputOkay()) return;
-		calcBinInfo(); // 1st pass through data
-		allocateDataStructures();
-		computeStats(); // 2nd pass through data
-		// create and display window
+		build();
 		createDialogResources();
 		display(histograms.length - 1);
 	}
@@ -211,11 +212,9 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 	public void actionPerformed(ActionEvent evt) {
 		String command = evt.getActionCommand();
 		if (ACTION_LIVE.equals(command)) {
-			// TODO
-			// In IJ1 this command enables live mode. In live mode the chart is
-			// continuously update from the dataset. As the backing data changes the
-			// chart updates.
-			uiService.showDialog("To be implemented");
+			liveUpdates = !liveUpdates;
+			liveButton.setText(liveUpdates ? "Live" : "Static");
+			if (liveUpdates) liveUpdate(dataset);
 		}
 		if (ACTION_LOG.equals(command)) {
 			// TODO
@@ -240,7 +239,7 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		}
 		if (ACTION_CHANNEL.equals(command)) {
 			int nextHistNum =
-				(currHistNum == histograms.length - 1) ? 0 : currHistNum + 1;
+				(currHistNum >= histograms.length - 1) ? 0 : currHistNum + 1;
 			if (nextHistNum == histograms.length - 1) {
 				chanButton.setText("Composite");
 			}
@@ -249,6 +248,18 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 			}
 			display(nextHistNum);
 		}
+	}
+
+	// -- EventHandlers --
+
+	@EventHandler
+	protected void onEvent(DatasetRestructuredEvent evt) {
+		liveUpdate(evt.getObject());
+	}
+
+	@EventHandler
+	protected void onEvent(DatasetUpdatedEvent evt) {
+		liveUpdate(evt.getObject());
 	}
 
 	// -- private helpers --
@@ -271,7 +282,7 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		listButton = new JButton("List");
 		copyButton = new JButton("Copy");
 		logButton = new JButton("Log");
-		liveButton = new JButton("Live");
+		liveButton = new JButton("Static");
 		chanButton = new JButton("Composite");
 		listButton.setActionCommand(ACTION_LIST);
 		copyButton.setActionCommand(ACTION_COPY);
@@ -286,7 +297,9 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 	}
 
 	private void display(int histNumber) {
-		currHistNum = histNumber;
+		int h = histNumber;
+		if (h >= histograms.length) h = histograms.length - 1;
+		currHistNum = h;
 		setTitle(histNumber);
 		Container pane = frame.getContentPane();
 		if (chartPanel != null) pane.remove(chartPanel);
@@ -514,6 +527,19 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		}
 	}
 
+	private void build() {
+		calcBinInfo();
+		allocateDataStructures();
+		computeStats();
+	}
+
+	private void liveUpdate(Dataset ds) {
+		if (!liveUpdates) return;
+		if (ds != dataset) return;
+		build();
+		display(currHistNum);
+	}
+
 	/*
 
 	// TODO - avoid this structure. Use a measurement engine and whiteboard
@@ -585,5 +611,4 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 	}
 
 	*/
-
 }
