@@ -83,9 +83,8 @@ public class SystemInformation implements Command {
 	@Override
 	public void run() {
 		final StringBuilder sb = new StringBuilder();
-		final App app = appService.getApp(ImageJApp.NAME);
 
-		sb.append(app.getInfo(false) + NL);
+		sb.append(appService.getApp(ImageJApp.NAME).getInfo(false) + NL);
 
 		sb.append(NL);
 		sb.append("-- Services --" + NL);
@@ -94,11 +93,19 @@ public class SystemInformation implements Command {
 			sb.append(service + NL);
 		}
 
-		final Manifest manifest = app.getManifest();
-		if (manifest != null) {
+		final Map<String, App> apps = appService.getApps();
+		for (final String name : apps.keySet()) {
+			final App app = apps.get(name);
+			final Manifest manifest = app.getManifest();
 			sb.append(NL);
-			sb.append("-- Manifest details --" + NL);
-			sb.append(getManifestData(manifest));
+			sb.append("-- Application: " + name + " --" + NL);
+			sb.append("Title = " + app.getTitle());
+			sb.append("Version = " + app.getVersion());
+			sb.append("groupId = " + app.getGroupId());
+			sb.append("artifactId = " + app.getArtifactId());
+			if (manifest != null) {
+				sb.append(getManifestData(manifest));
+			}
 		}
 
 		sb.append(NL);
