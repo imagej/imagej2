@@ -58,6 +58,11 @@ public class LegacyImageJApp extends ImageJApp {
 	// so that it takes precedence in the AppService.
 
 	@Override
+	public String getArtifactId() {
+		return "ij-legacy";
+	}
+
+	@Override
 	public String getVersion() {
 		final LegacyService legacyService =
 			getContext().getService(LegacyService.class);
