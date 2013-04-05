@@ -30,9 +30,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.scijava</groupId>
+			<groupId>${scijava-common.groupId}</groupId>
 			<artifactId>scijava-common</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>${scijava-common.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
