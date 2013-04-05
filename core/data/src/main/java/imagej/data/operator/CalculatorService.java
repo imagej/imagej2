@@ -35,81 +35,39 @@
 
 package imagej.data.operator;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import net.imglib2.img.Img;
-import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.ops.img.ImageCombiner;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
-import org.scijava.log.LogService;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginInfo;
-import org.scijava.plugin.PluginService;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
- * CalculatorService discovers {@link CalculatorOp}s known to the system and
- * allows one to combine {@link Img}s using these operators.
+ * Interface for service which manages available {@link CalculatorOp}s. It
+ * allows the combination of {@link Img}s using these operators.
  * 
  * @author Barry DeZonia
  */
-@Plugin(type = Service.class)
-public class CalculatorService extends AbstractService {
-	
-	// -- Parameters --
-
-	@Parameter
-	private LogService log;
-
-	@Parameter
-	private PluginService pluginService;
-
-	// -- instance variables --
-
-	private Map<String, CalculatorOp<?, ?>> operators;
-	private List<String> operatorNames;
-
-	// -- service initializer --
-
-	@Override
-	public void initialize() {
-		operators = new HashMap<String, CalculatorOp<?, ?>>();
-		operatorNames = new ArrayList<String>();
-		findOperators();
-	}
-
-	// -- OperatorService methods --
+public interface CalculatorService extends Service {
 
 	/**
 	 * Returns the collection of {@link CalculatorOp}s known to the system. This
 	 * collection is a {@link Map} from operator names to operators.
 	 */
-	public Map<String, CalculatorOp<?, ?>> getOperators() {
-		return Collections.unmodifiableMap(operators);
-	}
+	Map<String, CalculatorOp<?, ?>> getOperators();
 
 	/**
 	 * Returns the collection of {@link CalculatorOp}s known to the system. This
 	 * collection is a {@link List} of operator names.
 	 */
-	public List<String> getOperatorNames() {
-		return Collections.unmodifiableList(operatorNames);
-	}
+	List<String> getOperatorNames();
 
 	/**
 	 * Returns the {@link CalculatorOp} associated with the given name.
 	 */
-	public CalculatorOp<?, ?> getOperator(String operatorName) {
-		return operators.get(operatorName);
-	}
+	CalculatorOp<?, ?> getOperator(String operatorName);
 
 	/**
 	 * Creates an {@code Img<DoubleType>} from the combination of two input
@@ -123,28 +81,7 @@ public class CalculatorService extends AbstractService {
 	 * @return An {@code Img<DoubleType>} containing the combined data of the
 	 *         overlapping regions of the two input Imgs.
 	 */
-	public <U extends RealType<U>, V extends RealType<V>> Img<DoubleType>
-		combine(Img<U> img1, Img<V> img2, CalculatorOp<U, V> op)
-	{
-		// TODO - limited by ArrayImg size constraints
-		return ImageCombiner.applyOp(op, img1, img2,
-			new ArrayImgFactory<DoubleType>(), new DoubleType());
-	}
-
-	// -- helpers --
-
-	@SuppressWarnings("rawtypes")
-	private void findOperators() {
-		final List<PluginInfo<CalculatorOp>> pluginInfos =
-			pluginService.getPluginsOfType(CalculatorOp.class);
-		for (final PluginInfo<CalculatorOp> info : pluginInfos) {
-			final String name = info.getName();
-			final CalculatorOp<?, ?> op = pluginService.createInstance(info);
-			if (op == null) continue;
-			operators.put(name, op);
-			operatorNames.add(name);
-		}
-		Collections.sort(operatorNames);
-	}
+	<U extends RealType<U>, V extends RealType<V>> Img<DoubleType> combine(
+		Img<U> img1, Img<V> img2, CalculatorOp<U, V> op);
 
 }
