@@ -143,6 +143,12 @@ public class ImageJ extends AbstractContextual {
 		this(new Context(serviceClasses));
 	}
 
+	/**
+	 * Creates a new ImageJ application context which wraps the given existing
+	 * SciJava context.
+	 * 
+	 * @see Context
+	 */
 	public ImageJ(final Context context) {
 		setContext(context);
 	}
