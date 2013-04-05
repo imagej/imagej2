@@ -67,8 +67,8 @@ public class IJMethods {
 		if (Utils.isLegacyMode(legacyService)) return;
 		legacyService.getLogService().debug("showProgress: " + currentIndex + "/" + finalIndex);
 		// report progress through global event mechanism
-		final StatusService statusService =
-			legacyService.getContext().getService(StatusService.class);
+		final StatusService statusService = legacyService.getStatusService();
+		// legacyService.getContext().getService(StatusService.class);
 		if (statusService == null) return;
 		statusService.showProgress(currentIndex, finalIndex);
 	}
@@ -82,8 +82,8 @@ public class IJMethods {
 			return;
 		}
 		// report status through global event mechanism
-		final StatusService statusService =
-			legacyService.getContext().getService(StatusService.class);
+		final StatusService statusService = legacyService.getStatusService();
+		// legacyService.getContext().getService(StatusService.class);
 		if (statusService == null) return;
 		statusService.showStatus(s);
 	}

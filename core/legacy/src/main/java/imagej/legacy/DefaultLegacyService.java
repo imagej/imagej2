@@ -69,6 +69,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.scijava.app.StatusService;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.input.KeyCode;
@@ -144,10 +145,8 @@ public final class DefaultLegacyService extends AbstractService implements
 	@Parameter
 	private MenuService menuService;
 
-	// lurking bug?
-	// NB BDZ - don't enable this - infinite loop in service initialization code
-	// @Parameter
-	// private StatusService statusService;
+	@Parameter
+	private StatusService statusService;
 
 	private boolean lastDebugMode;
 	private static DefaultLegacyService instance;
@@ -220,10 +219,10 @@ public final class DefaultLegacyService extends AbstractService implements
 		return thresholdService;
 	}
 
-	// @Override
-	// public StatusService getStatusService() {
-	// return statusService;
-	// }
+	@Override
+	public StatusService getStatusService() {
+		return statusService;
+	}
 
 	@Override
 	public void

@@ -44,6 +44,7 @@ import imagej.data.threshold.ThresholdService;
 import imagej.display.DisplayService;
 import imagej.options.OptionsService;
 
+import org.scijava.app.StatusService;
 import org.scijava.event.EventService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.PluginService;
@@ -85,8 +86,8 @@ public interface LegacyService extends Service {
 	/** Gets the LogService associated with this LegacyService. */
 	LogService getLogService();
 
-	// /** Gets the StatusService associated with this LegacyService. */
-	// StatusService getStatusService();
+	/** Gets the StatusService associated with this LegacyService. */
+	StatusService getStatusService();
 
 	/** Gets the LegacyImageMap associated with this LegacyService. */
 	LegacyImageMap getImageMap();
