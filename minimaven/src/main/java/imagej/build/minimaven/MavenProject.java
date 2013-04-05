@@ -882,6 +882,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 			dependency.version = "1.0";
 		if (dependency.version == null && "provided".equals(dependency.scope))
 			return null;
+		if (dependency.groupId == null) throw new IllegalArgumentException("Need fully qualified GAVs: " + dependency.getGAV());
 		if (dependency.artifactId.equals(expand(coordinate.artifactId)) &&
 				dependency.groupId.equals(expand(coordinate.groupId)) &&
 				dependency.version.equals(expand(coordinate.version)))
