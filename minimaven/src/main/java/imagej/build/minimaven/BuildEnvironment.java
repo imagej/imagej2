@@ -92,7 +92,7 @@ public class BuildEnvironment {
 		try {
 			repository = repository.getCanonicalFile();
 		} catch (IOException e) {
-			// ignore
+			e.printStackTrace();
 		}
 		mavenRepository = repository;
 	}
