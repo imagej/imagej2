@@ -99,10 +99,10 @@ public class SystemInformation implements Command {
 			final Manifest manifest = app.getManifest();
 			sb.append(NL);
 			sb.append("-- Application: " + name + " --" + NL);
-			sb.append("Title = " + app.getTitle());
-			sb.append("Version = " + app.getVersion());
-			sb.append("groupId = " + app.getGroupId());
-			sb.append("artifactId = " + app.getArtifactId());
+			sb.append("Title = " + app.getTitle() + NL);
+			sb.append("Version = " + app.getVersion() + NL);
+			sb.append("groupId = " + app.getGroupId() + NL);
+			sb.append("artifactId = " + app.getArtifactId() + NL);
 			if (manifest != null) {
 				sb.append(getManifestData(manifest));
 			}
