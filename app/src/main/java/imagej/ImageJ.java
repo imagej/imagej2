@@ -35,6 +35,7 @@
 
 package imagej;
 
+import imagej.app.ImageJApp;
 import imagej.command.CommandService;
 import imagej.console.ConsoleService;
 import imagej.data.DatasetService;
@@ -69,6 +70,7 @@ import java.util.Collection;
 
 import org.scijava.AbstractContextual;
 import org.scijava.Context;
+import org.scijava.app.App;
 import org.scijava.app.AppService;
 import org.scijava.app.StatusService;
 import org.scijava.event.EventHistory;
@@ -153,7 +155,7 @@ public class ImageJ extends AbstractContextual {
 		setContext(context);
 	}
 
-	// -- ImageJ methods --
+	// -- ImageJ methods - services --
 
 	public <S extends Service> S get(final Class<S> serviceClass) {
 		return getContext().getService(serviceClass);
@@ -309,6 +311,28 @@ public class ImageJ extends AbstractContextual {
 
 	public WindowService window() {
 		return get(WindowService.class);
+	}
+
+	// -- ImageJ methods - application --
+
+	/** @see org.scijava.app.AppService */
+	public App getApp() {
+		return app().getApp(ImageJApp.NAME);
+	}
+
+	/** @see org.scijava.app.App#getTitle() */
+	public String getTitle() {
+		return getApp().getTitle();
+	}
+
+	/** @see org.scijava.app.App#getVersion() */
+	public String getVersion() {
+		return getApp().getVersion();
+	}
+
+	/** @see org.scijava.app.App#getInfo(boolean) */
+	public String getInfo(boolean mem) {
+		return getApp().getInfo(mem);
 	}
 
 }
