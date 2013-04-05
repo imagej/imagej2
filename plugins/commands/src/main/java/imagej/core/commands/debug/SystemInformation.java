@@ -35,6 +35,7 @@
 
 package imagej.core.commands.debug;
 
+import imagej.app.ImageJApp;
 import imagej.command.Command;
 
 import java.io.File;
@@ -47,6 +48,7 @@ import java.util.regex.Pattern;
 
 import org.scijava.Context;
 import org.scijava.ItemIO;
+import org.scijava.app.App;
 import org.scijava.app.AppService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -81,8 +83,9 @@ public class SystemInformation implements Command {
 	@Override
 	public void run() {
 		final StringBuilder sb = new StringBuilder();
+		final App app = appService.getApp(ImageJApp.NAME);
 
-		sb.append(appService.getInfo(false) + NL);
+		sb.append(app.getInfo(false) + NL);
 
 		sb.append(NL);
 		sb.append("-- Services --" + NL);
@@ -91,7 +94,7 @@ public class SystemInformation implements Command {
 			sb.append(service + NL);
 		}
 
-		final Manifest manifest = appService.getManifest();
+		final Manifest manifest = app.getManifest();
 		if (manifest != null) {
 			sb.append(NL);
 			sb.append("-- Manifest details --" + NL);

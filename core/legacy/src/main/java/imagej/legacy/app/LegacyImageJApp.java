@@ -35,31 +35,33 @@
 
 package imagej.legacy.app;
 
-import imagej.app.ImageJAppService;
+import imagej.app.ImageJApp;
 import imagej.legacy.LegacyService;
 
 import org.scijava.Priority;
-import org.scijava.plugin.Parameter;
+import org.scijava.app.App;
 import org.scijava.plugin.Plugin;
-import org.scijava.service.Service;
 
 /**
- * An extension of {@link ImageJAppService} that provides the legacy ImageJ 1.x
+ * An extension of {@link ImageJApp} that provides the legacy ImageJ 1.x
  * version (in paretheses) in addition to the regular ImageJ version, when
  * {@link #getVersion()} is called.
  * 
  * @author Curtis Rueden
+ * @see org.scijava.app.AppService
  */
-@Plugin(type = Service.class, priority = Priority.HIGH_PRIORITY)
-public final class LegacyAppService extends ImageJAppService {
+@Plugin(type = App.class, name = ImageJApp.NAME,
+	priority = Priority.HIGH_PRIORITY)
+public class LegacyImageJApp extends ImageJApp {
 
-	@Parameter
-	private LegacyService legacyService;
-
-	// -- AppService methods --
+	// NB: This app uses the same name as ImageJApp, but with a higher priority,
+	// so that it takes precedence in the AppService.
 
 	@Override
 	public String getVersion() {
+		final LegacyService legacyService =
+			getContext().getService(LegacyService.class);
+		if (legacyService == null) return super.getVersion();
 		return super.getVersion() + " (" + legacyService.getLegacyVersion() + ")";
 	}
 

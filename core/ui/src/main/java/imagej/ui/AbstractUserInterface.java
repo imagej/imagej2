@@ -44,7 +44,7 @@ import imagej.util.Prefs;
 
 import java.util.List;
 
-import org.scijava.app.AppService;
+import org.scijava.app.App;
 import org.scijava.app.StatusService;
 import org.scijava.event.EventService;
 import org.scijava.log.LogService;
@@ -204,13 +204,13 @@ public abstract class AbstractUserInterface extends SortablePlugin
 		return getUIService().getStatusService();
 	}
 
-	protected AppService getAppService() {
-		return getUIService().getAppService();
+	protected App getApp() {
+		return getUIService().getApp();
 	}
 
 	/** Shows the readme, if this is the first time ImageJ has run. */
 	private void displayReadme() {
-		final String version = getAppService().getVersion();
+		final String version = getApp().getVersion();
 		final String prefFirstRun = "firstRun-" + version;
 		final String firstRun = Prefs.get(getClass(), prefFirstRun);
 		if (firstRun != null) return;
