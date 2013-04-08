@@ -75,6 +75,17 @@ public class SampleImageUploader implements Command {
 
 	private static String baseURL = "http://upload.imagej.net/";
 
+	/**
+	 * This method provides a Java API to upload sample images to the ImageJ2 dropbox.
+	 */
+	public static void run(final File file, final StatusService status, final LogService log) {
+		final SampleImageUploader uploader = new SampleImageUploader();
+		uploader.sampleImage = file;
+		uploader.status = status;
+		uploader.log = log;
+		uploader.run();
+	}
+
 	@Override
 	public void run() {
 		try {
