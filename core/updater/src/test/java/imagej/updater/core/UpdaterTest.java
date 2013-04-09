@@ -548,7 +548,7 @@ public class UpdaterTest {
 
 		// check that webRoot's db.xml.gz's previous versions contain the old filename
 		final File webRoot = getWebRoot(files);
-		final String db = readGzippedStream(new FileInputStream(new File(webRoot, "db.xml.gz")));
+		final String db = readGzippedStream(new FileInputStream(new File(webRoot, "db.xml.gz"))).replace('\\', '/');
 		Pattern regex = Pattern.compile(".*<previous-version [^>]*filename=\"jars/too-old-3.11.jar\".*", Pattern.DOTALL);
 		assertTrue(regex.matcher(db).matches());
 

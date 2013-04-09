@@ -130,7 +130,7 @@ public class UpdaterTestUtils {
 
 	public static File addUpdateSite(final FilesCollection files, final String name) throws Exception {
 		final File directory = FileUtils.createTemporaryDirectory("update-site-" + name, "");
-		final String url = directory.toURI().toURL().toString();
+		final String url = directory.toURI().toURL().toString().replace('\\', '/');
 		final String sshHost = "file:localhost";
 		final String uploadDirectory = directory.getAbsolutePath();
 		final FilesUploader uploader = FilesUploader.initialUpload(url, sshHost, uploadDirectory);
