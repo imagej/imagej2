@@ -439,13 +439,6 @@ public class CommandLine {
 				//$FALL-THROUGH$
 			case LOCAL_ONLY:
 				file.updateSite = updateSite;
-
-				// remove all dependencies of the same upload site; they will be re-added appropriately by setAction(... UPLOAD)
-				for (final FileObject dependency : file.getFileDependencies(files, false)) {
-					if (updateSite.equals(dependency.updateSite)) {
-						file.removeDependency(dependency.getFilename(false));
-					}
-				}
 				file.setAction(files, Action.UPLOAD);
 				if (simulate) System.err.println("Would upload new " + (file.getStatus() == Status.LOCAL_ONLY ? "" : "version of ") + file.getLocalFilename(true));
 				uploadCount++;
@@ -462,6 +455,16 @@ public class CommandLine {
 			case OBSOLETE_UNINSTALLED:
 				// leave these alone
 				break;
+			}
+		}
+
+		// remove all obsolete dependencies of the same upload site
+		for (final FileObject file : files.forUpdateSite(updateSite)) {
+			if (!file.willBeUpToDate()) continue;
+			for (final FileObject dependency : file.getFileDependencies(files, false)) {
+				if (dependency.willNotBeInstalled() && updateSite.equals(dependency.updateSite)) {
+					file.removeDependency(dependency.getFilename(false));
+				}
 			}
 		}
 
