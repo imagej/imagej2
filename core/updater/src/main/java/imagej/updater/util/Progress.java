@@ -36,7 +36,7 @@
 package imagej.updater.util;
 
 /**
- * TODO
+ * A progress dialog abstraction.
  * 
  * @author Johannes Schindelin
  */

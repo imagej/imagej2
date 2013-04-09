@@ -38,7 +38,7 @@ package imagej.updater.util;
 import java.io.File;
 
 /**
- * TODO
+ * Represents a file to be downloaded from an update site.
  * 
  * @author Johannes Schindelin
  */

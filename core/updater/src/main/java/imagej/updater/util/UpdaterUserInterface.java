@@ -42,7 +42,7 @@ import java.io.OutputStream;
 import org.scijava.log.LogService;
 
 /**
- * TODO
+ * A user interface abstraction.
  * 
  * @author Johannes Schindelin
  */

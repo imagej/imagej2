@@ -40,7 +40,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 /**
- * TODO
+ * Our own error handler for XML validation.
  * 
  * @author Johannes Schindelin
  */

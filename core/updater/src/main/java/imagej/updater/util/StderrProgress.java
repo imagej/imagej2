@@ -36,7 +36,7 @@
 package imagej.updater.util;
 
 /**
- * TODO
+ * A default implementation of the {@link Progress} interface.
  * 
  * @author Johannes Schindelin
  */

@@ -40,7 +40,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * TODO
+ * Copies an {@link InputStream} into an {@link OutputStream}.
  * 
  * @author Johannes Schindelin
  */

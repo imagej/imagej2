@@ -38,7 +38,10 @@ package imagej.updater.util;
 import java.util.Iterator;
 
 /**
- * TODO
+ * An analyzer to find out which .jar files a given .jar file depends on.
+ * 
+ * The idea is to inspect the bytecode to determine which classes are used,
+ * and which .jar files offer them.
  * 
  * @author Johannes Schindelin
  */

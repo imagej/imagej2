@@ -53,7 +53,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * TODO
+ * A class that updates local files from all available update sites.
  * 
  * @author Johannes Schindelin
  */
