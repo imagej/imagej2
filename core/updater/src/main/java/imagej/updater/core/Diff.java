@@ -194,6 +194,8 @@ public class Diff {
 					localIndex++;
 				}
 			}
+			localJar.close();
+			remoteJar.close();
 			return;
 		}
 

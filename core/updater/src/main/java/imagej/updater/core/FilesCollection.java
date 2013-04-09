@@ -322,6 +322,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		ParserConfigurationException, SAXException
 	{
 		new XMLFileReader(this).read(in);
+		in.close();
 	}
 
 	public void write() throws IOException, SAXException,

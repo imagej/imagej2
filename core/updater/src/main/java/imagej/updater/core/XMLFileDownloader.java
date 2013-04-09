@@ -96,6 +96,7 @@ public class XMLFileDownloader extends AbstractProgressable {
 					getInputStream(new GZIPInputStream(connection.getInputStream()),
 						fileSize);
 				reader.read(name, in, updateSite.timestamp);
+				in.close();
 				updateSite.setLastModified(lastModified);
 			}
 			catch (final Exception e) {
@@ -150,6 +151,11 @@ public class XMLFileDownloader extends AbstractProgressable {
 					setItemCount(current, fileSize);
 				}
 				return result;
+			}
+
+			@Override
+			public void close() throws IOException {
+				in.close();
 			}
 		};
 	}
