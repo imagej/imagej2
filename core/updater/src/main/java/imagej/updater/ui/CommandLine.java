@@ -439,6 +439,13 @@ public class CommandLine {
 				//$FALL-THROUGH$
 			case LOCAL_ONLY:
 				file.updateSite = updateSite;
+
+				// remove all dependencies of the same upload site; they will be re-added appropriately by setAction(... UPLOAD)
+				for (final FileObject dependency : file.getFileDependencies(files, false)) {
+					if (updateSite.equals(dependency.updateSite)) {
+						file.removeDependency(dependency.getFilename(false));
+					}
+				}
 				file.setAction(files, Action.UPLOAD);
 				if (simulate) System.err.println("Would upload new " + (file.getStatus() == Status.LOCAL_ONLY ? "" : "version of ") + file.getLocalFilename(true));
 				uploadCount++;
