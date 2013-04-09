@@ -137,6 +137,7 @@ public class UpdaterTestUtils {
 		assertTrue(uploader.login());
 		uploader.upload(progress);
 		CommandLine.main(files.prefix(""), -1, "add-update-site", name, url, sshHost, uploadDirectory);
+		System.err.println("Initialized update site at " + url);
 		return directory;
 	}
 
