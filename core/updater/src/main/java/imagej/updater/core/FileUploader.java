@@ -107,8 +107,12 @@ public class FileUploader extends AbstractUploader {
 			final File lockFile = new File(uploadDir, lock + ".lock");
 			final File backup = new File(uploadDir, lock + ".old");
 			if (backup.exists()) backup.delete();
-			file.renameTo(backup);
-			lockFile.renameTo(file);
+			if (file.exists() && !file.renameTo(backup)) {
+				throw new IOException("Could not rename " + file + " to " + backup);
+			}
+			if (!lockFile.renameTo(file)) {
+				throw new IOException("Could not rename " + lockFile + " to " + file);
+			}
 		}
 
 		done();
