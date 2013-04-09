@@ -74,6 +74,7 @@ public class JavaEngineTest {
 		final File jar = new File(dir, "target/MinimalTest-1.0.0.jar");
 		assertTrue(jar.exists());
 
+		System.gc();
 		assertTrue(FileUtils.deleteRecursively(dir));
 	}
 
@@ -106,6 +107,7 @@ public class JavaEngineTest {
 		final File jar = new File(dir, "target/MinimalTest-1.0.0.jar");
 		assertTrue(jar.exists());
 
+		System.gc();
 		assertTrue(FileUtils.deleteRecursively(dir));
 	}
 
