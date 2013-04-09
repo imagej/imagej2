@@ -88,6 +88,7 @@ public class Class2JarFilesMap extends HashMap<String, ArrayList<String>> {
 				if (name.endsWith(".class")) addClass(Util.stripSuffix(name, ".class")
 					.replace('/', '.'), jar);
 			}
+			file.close();
 		}
 		catch (final ZipException e) {
 			UpdaterUserInterface.get().log("Warning: could not open " + jar);

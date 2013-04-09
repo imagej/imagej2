@@ -468,10 +468,15 @@ public class Diff {
 		for (;;) {
 			int a = in1.read();
 			int b = in2.read();
-			if (a != b) return counter;
-			if (a < 0)
-				return -1;
+			if (a != b) break;
+			if (a < 0) {
+				counter = -1;
+				break;
+			}
 		}
+		in1.close();
+		in2.close();
+		return counter;
 	}
 
 	/**

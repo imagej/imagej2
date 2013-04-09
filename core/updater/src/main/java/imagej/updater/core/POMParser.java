@@ -74,6 +74,7 @@ public class POMParser extends DefaultHandler {
 				break;
 			}
 		}
+		jar.close();
 	}
 
 	public void read(final InputStream in) throws ParserConfigurationException, IOException, SAXException {
