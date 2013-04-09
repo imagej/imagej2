@@ -128,12 +128,14 @@ public class UpdaterTestUtils {
 		return readDb(files);
 	}
 
-	public static File addUpdateSite(final FilesCollection files, final String name) throws IOException {
+	public static File addUpdateSite(final FilesCollection files, final String name) throws Exception {
 		final File directory = FileUtils.createTemporaryDirectory("update-site-" + name, "");
 		final String url = directory.toURI().toURL().toString();
 		final String sshHost = "file:localhost";
 		final String uploadDirectory = directory.getAbsolutePath();
-		FilesUploader.initialUpload(url, sshHost, uploadDirectory);
+		final FilesUploader uploader = FilesUploader.initialUpload(url, sshHost, uploadDirectory);
+		assertTrue(uploader.login());
+		uploader.upload(progress);
 		CommandLine.main(files.prefix(""), -1, "add-update-site", name, url, sshHost, uploadDirectory);
 		return directory;
 	}
