@@ -452,6 +452,8 @@ public class CommandLine {
 				break;
 			case NEW:
 			case NOT_INSTALLED:
+				// special: keep tools-1.4.2.jar, needed for ImageJ 1.x
+				if ("ImageJ".equals(updateSite) && file.getFilename(true).equals("jars/tools.jar")) break;
 				file.setAction(files, Action.REMOVE);
 				if (simulate) System.err.println("Would mark " + file.filename + " obsolete");
 				removeCount++;
