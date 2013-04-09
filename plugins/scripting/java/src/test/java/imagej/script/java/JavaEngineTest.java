@@ -51,7 +51,7 @@ import org.junit.Test;
 import org.scijava.util.FileUtils;
 
 /**
- * TODO
+ * Tests the Java 'scripting' backend.
  * 
  * @author Johannes Schindelin
  */
