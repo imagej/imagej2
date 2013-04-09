@@ -36,6 +36,7 @@
 package imagej.script.java;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -47,6 +48,7 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.scijava.util.FileUtils;
 
@@ -56,6 +58,15 @@ import org.scijava.util.FileUtils;
  * @author Johannes Schindelin
  */
 public class JavaEngineTest {
+
+	@Before
+	public void assumeJavaC() {
+		boolean found = false;
+		try {
+			found = getClass().getClassLoader().loadClass("com.sun.tools.javac.Main") != null;
+		} catch (Throwable t) {}
+		assumeTrue(found);
+	}
 
 	@Test
 	public void minimalProjectFromPOM() throws Exception {
