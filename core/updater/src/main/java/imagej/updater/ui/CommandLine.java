@@ -390,13 +390,15 @@ public class CommandLine {
 
 	public void uploadCompleteSite(final List<String> list) {
 		if (list == null) throw die("Which files do you mean to upload?");
-		boolean ignoreWarnings = false, forceShadow = false;
+		boolean ignoreWarnings = false, forceShadow = false, simulate = false;
 		while (list.size() > 0 && list.get(0).startsWith("-")) {
 			final String option = list.remove(0);
 			if ("--force".equals(option)) {
 				ignoreWarnings = true;
 			} else if ("--force-shadow".equals(option)) {
 				forceShadow = true;
+			} else if ("--simulate".equals(option)) {
+				simulate = true;
 			} else {
 				throw die("Unknown option: " + option);
 			}
@@ -419,6 +421,7 @@ public class CommandLine {
 				if (forceShadow || (ignoreWarnings && updateSite.equals(file.updateSite))) {
 					file.updateSite = updateSite;
 					file.setAction(files, Action.UPLOAD);
+					if (simulate) System.err.println("Would upload " + file.filename);
 					uploadCount++;
 				} else {
 					System.err.println("Warning: obsolete '" + name + "' still installed!");
@@ -437,11 +440,13 @@ public class CommandLine {
 			case LOCAL_ONLY:
 				file.updateSite = updateSite;
 				file.setAction(files, Action.UPLOAD);
+				if (simulate) System.err.println("Would upload new " + (file.getStatus() == Status.LOCAL_ONLY ? "" : "version of ") + file.getLocalFilename(true));
 				uploadCount++;
 				break;
 			case NEW:
 			case NOT_INSTALLED:
 				file.setAction(files, Action.REMOVE);
+				if (simulate) System.err.println("Would mark " + file.filename + " obsolete");
 				removeCount++;
 				break;
 			case INSTALLED:
@@ -457,6 +462,17 @@ public class CommandLine {
 
 		if (removeCount == 0 && uploadCount == 0) {
 			System.err.println("Nothing to upload");
+			return;
+		}
+
+		if (simulate) {
+			final Conflicts conflicts = new Conflicts(files);
+			if (conflicts.hasUploadConflicts()) {
+				System.err.println("Unresolved upload conflicts!\n\n" + Util.join("\n", conflicts.getConflicts(true)));
+			} else {
+				System.err.println("Would upload " + uploadCount + " (removing " + removeCount
+					+ ") to " + getLongUpdateSiteName(updateSite));
+			}
 			return;
 		}
 
@@ -643,7 +659,7 @@ public class CommandLine {
 			+ "\tupdate-force [<files>]\n"
 			+ "\tupdate-force-pristine [<files>]\n"
 			+ "\tupload [--update-site <name>] [<files>]\n"
-			+ "\tupload-complete-site [--force] [--force-shadow] <name>\n"
+			+ "\tupload-complete-site [--simulate] [--force] [--force-shadow] <name>\n"
 			+ "\tlist-update-sites [<nick>...]\n"
 			+ "\tadd-update-site <nick> <url> [<host> <upload-directory>]\n"
 			+ "\tedit-update-site <nick> <url> [<host> <upload-directory>]");
