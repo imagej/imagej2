@@ -41,5 +41,6 @@ package imagej.updater.util;
  * @author Johannes Schindelin
  */
 public class UpdateCanceledException extends RuntimeException {
+	private static final long serialVersionUID = 1L;
 	// no implementation needed
 }

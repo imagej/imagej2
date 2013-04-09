@@ -42,4 +42,6 @@ package imagej.updater.util;
  * @deprecated Use {@link UpdateCanceledException} instead.
  */
 @Deprecated
-public class Canceled extends UpdateCanceledException {}
+public class Canceled extends UpdateCanceledException {
+	private static final long serialVersionUID = 1L;
+}
