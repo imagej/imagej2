@@ -33,8 +33,6 @@
  * #L%
  */
 
-// TODO: make a nice button to add Fiji...
-
 package imagej.updater.core;
 
 import static imagej.updater.core.UpdaterTestUtils.assertAction;

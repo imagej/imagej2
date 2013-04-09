@@ -87,7 +87,6 @@ public class FilesUploader {
 		this(createUploaderService(), files, updateSite);
 	}
 
-	// TODO: add a button to check for new db.xml.gz, and merge if necessary
 	public FilesUploader(final UploaderService uploaderService,
 		final FilesCollection files, final String updateSite)
 	{

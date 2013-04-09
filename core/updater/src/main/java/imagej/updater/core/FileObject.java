@@ -116,7 +116,6 @@ public class FileObject {
 
 		// changes
 		UNINSTALL("Uninstall it"), INSTALL("Install it"), UPDATE("Update it"),
-		// TODO: FORCE_UPDATE
 
 		// developer-only changes
 		UPLOAD("Upload it", true), REMOVE("Remove it", true);
