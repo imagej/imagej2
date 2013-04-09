@@ -65,7 +65,9 @@ public class JavaEngineTest {
 		try {
 			evalJava(new File(dir, "pom.xml"));
 		} catch (ScriptException e) {
-			result = e.getCause().getCause().getMessage().equals("success");
+			final Throwable cause = e.getCause();
+			result = cause != null && cause.getCause() != null && cause.getCause().getMessage().equals("success");
+			if (!result) e.printStackTrace();
 		}
 		assertTrue(result);
 
