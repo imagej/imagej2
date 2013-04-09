@@ -35,6 +35,7 @@
 
 package imagej.updater.core;
 
+import static imagej.updater.core.UpdaterTestUtils.addUpdateSite;
 import static imagej.updater.core.UpdaterTestUtils.assertAction;
 import static imagej.updater.core.UpdaterTestUtils.assertCount;
 import static imagej.updater.core.UpdaterTestUtils.assertNotEqual;
@@ -63,7 +64,6 @@ import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.Conflicts.Resolution;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
-import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.test.Dependencee;
 import imagej.updater.test.Dependency;
 import imagej.updater.util.Util;
@@ -1273,15 +1273,7 @@ public class UpdaterTest {
 		files = initialize("jars/something-cool.jar");
 
 		// add another update site
-		final File webRoot2 = FileUtils.createTemporaryDirectory("testUpdaterWebRoot2", "");
-		files = readDb(files);
-		files.addUpdateSite("Second", webRoot2.toURI().toURL().toString(), "file:localhost", webRoot2.getAbsolutePath(), -1);
-		files.write();
-
-		final UpdateSite second = files.getUpdateSite("Second");
-		FilesUploader uploader = FilesUploader.initialUpload(second.url, second.sshHost, second.uploadDirectory);
-		assertTrue(uploader.login());
-		uploader.upload(progress);
+		final File webRoot2 = addUpdateSite(files, "Second");
 
 		// upload a new .jar file to the second update site which depends on one of the first update site's .jar files
 		writeFile(files, "jars/blub.jar");
