@@ -274,6 +274,7 @@ public class ConfigFileParameters {
 				}
 
 			}
+			br.close();
 			return true;
 		}
 		catch (final IOException e) {

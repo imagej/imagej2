@@ -396,6 +396,7 @@ public class BuildEnvironment {
 				String actual = "";
 				for (byte b : digestBytes)
 					actual += String.format("%02x", b & 0xff);
+				fileStream.close();
 				throw new IOException("SHA1 mismatch: " + sha1 + ": " + Integer.toHexString(value) + " != " + Integer.toHexString(d) + " (actual SHA-1: " + actual + ")");
 			}
 		}

@@ -44,6 +44,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -454,9 +456,11 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		final String manifestClassPath = getManifestClassPath();
 		File file = new File(target, "META-INF/MANIFEST.MF");
 		Manifest manifest = null;
-		if (file.exists())
-			manifest = new Manifest(new FileInputStream(file));
-		else {
+		if (file.exists()) {
+			final InputStream in = new FileInputStream(file);
+			manifest = new Manifest(in);
+			in.close();
+		} else {
 			manifest = new Manifest();
 			manifest.getMainAttributes().put(Name.MANIFEST_VERSION, "1.0");
 			file.getParentFile().mkdirs();
@@ -469,12 +473,16 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		main.put(CREATED_BY , "MiniMaven");
 		if (includeImplementationBuild && !getArtifactId().equals("Fiji_Updater"))
 			main.put(new Name("Implementation-Build"), env.getImplementationBuild(directory));
-		manifest.write(new FileOutputStream(file));
+		final OutputStream manifestOut = new FileOutputStream(file);
+		manifest.write(manifestOut);
+		manifestOut.close();
 
 		if (makeJar) {
-			JarOutputStream out = new JarOutputStream(new FileOutputStream(getTarget()));
+			final OutputStream jarOut = new FileOutputStream(getTarget());
+			JarOutputStream out = new JarOutputStream(jarOut);
 			addToJarRecursively(out, target, "");
 			out.close();
+			jarOut.close();
 		}
 
 		built = true;
@@ -1002,8 +1010,10 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		BufferedReader reader = new BufferedReader(new FileReader(file));
 		for (;;) {
 			String line = reader.readLine();
-			if (line == null)
+			if (line == null) {
+				reader.close();
 				throw new RuntimeException("Could not determine version for " + path);
+			}
 			int tag = line.indexOf("<version>");
 			if (tag < 0)
 				continue;

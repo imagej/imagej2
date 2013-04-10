@@ -73,11 +73,15 @@ public class ChangeIcon {
 			final File debug = new File(executable.getParentFile(), "debug.exe");
 			if (!debug.exists())
 				debug.createNewFile();
-			final FileChannel source = new FileInputStream(executable).getChannel();
-			final FileChannel target = new FileOutputStream(debug).getChannel();
+			final FileInputStream in = new FileInputStream(executable);
+			final FileOutputStream out = new FileOutputStream(debug);
+			final FileChannel source = in.getChannel();
+			final FileChannel target = out.getChannel();
 			target.transferFrom(source, 0, source.size());
 			source.close();
 			target.close();
+			in.close();
+			out.close();
 
 			// call a copy to change the icon (needs to be a copy due to Windows' locking)
 			ProcessUtils.exec(null, System.err, System.out, debug.getPath(),
