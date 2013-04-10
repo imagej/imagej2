@@ -57,12 +57,12 @@ import org.scijava.util.FileUtils;
  */
 public class LutFinder {
 
-	public static final String LUT_DIRECTORY;
+	private static final File LUT_DIRECTORY;
 
 	static {
 		final File appBaseDirectory = AppUtils.getBaseDirectory();
 		LUT_DIRECTORY = appBaseDirectory == null ?
-				null : appBaseDirectory + File.separator + "luts";
+				null : new File(appBaseDirectory, "luts");
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class LutFinder {
 	private URL getDirectoryURL() {
 		if (LUT_DIRECTORY == null) return null;
 		try {
-			return new URL("file://" + LUT_DIRECTORY);
+			return LUT_DIRECTORY.toURI().toURL();
 		}
 		catch (MalformedURLException e) {
 			return null;
