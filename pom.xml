@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>1.33</version>
+		<version>1.34</version>
 	</parent>
 
 	<groupId>net.imagej</groupId>

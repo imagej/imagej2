@@ -68,7 +68,7 @@ import imagej.widget.WidgetService;
 
 import java.util.Collection;
 
-import org.scijava.AbstractContextual;
+import org.scijava.AbstractGateway;
 import org.scijava.Context;
 import org.scijava.app.App;
 import org.scijava.app.AppService;
@@ -88,7 +88,7 @@ import org.scijava.thread.ThreadService;
  * 
  * @author Curtis Rueden
  */
-public class ImageJ extends AbstractContextual {
+public class ImageJ extends AbstractGateway {
 
 	// -- Constructors --
 
@@ -156,14 +156,6 @@ public class ImageJ extends AbstractContextual {
 	}
 
 	// -- ImageJ methods - services --
-
-	public <S extends Service> S get(final Class<S> serviceClass) {
-		return getContext().getService(serviceClass);
-	}
-
-	public Service get(final String serviceClassName) {
-		return getContext().getService(serviceClassName);
-	}
 
 	public AnimationService animation() {
 		return get(AnimationService.class);
