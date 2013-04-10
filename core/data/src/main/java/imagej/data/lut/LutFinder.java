@@ -57,8 +57,13 @@ import org.scijava.util.FileUtils;
  */
 public class LutFinder {
 
-	public static final String LUT_DIRECTORY = AppUtils.getBaseDirectory() +
-		File.separator + "luts";
+	public static final String LUT_DIRECTORY;
+
+	static {
+		final File appBaseDirectory = AppUtils.getBaseDirectory();
+		LUT_DIRECTORY = appBaseDirectory == null ?
+				null : appBaseDirectory + File.separator + "luts";
+	}
 
 	/**
 	 * Finds the {@link URL}s of the .lut files known to ImageJ. .lut files can
@@ -68,11 +73,13 @@ public class LutFinder {
 	 * @return A collection of URLs referencing the known .lut files
 	 */
 	public Collection<URL> findLuts() {
-		URL jarURL = getJarURL();
-		URL dirURL = getDirectoryURL();
-		Collection<URL> jarLutURLs = getLuts(jarURL);
-		Collection<URL> dirLutURLs = getLuts(dirURL);
-		HashMap<String, URL> combined = new HashMap<String, URL>();
+		final URL jarURL = getJarURL();
+		final Collection<URL> jarLutURLs = getLuts(jarURL);
+		final URL dirURL = getDirectoryURL();
+		if (dirURL == null) return jarLutURLs;
+
+		final Collection<URL> dirLutURLs = getLuts(dirURL);
+		final HashMap<String, URL> combined = new HashMap<String, URL>();
 		// do jar luts first
 		putAll(jarLutURLs, combined);
 		// do file luts second: user can thus override jar luts if desired
@@ -87,6 +94,7 @@ public class LutFinder {
 	}
 
 	private URL getDirectoryURL() {
+		if (LUT_DIRECTORY == null) return null;
 		try {
 			return new URL("file://" + LUT_DIRECTORY);
 		}
