@@ -41,6 +41,7 @@ import imagej.data.DrawingTool;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.data.event.DatasetUpdatedEvent;
 import imagej.data.options.OptionsChannels;
 import imagej.display.event.input.MsButtonEvent;
 import imagej.display.event.input.MsDraggedEvent;
@@ -53,6 +54,7 @@ import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
 import org.scijava.Context;
+import org.scijava.event.EventService;
 
 /**
  * Abstract class that is used by PencilTool, PaintBrushTool, and their erase
@@ -103,7 +105,12 @@ public abstract class AbstractLineTool extends AbstractTool {
 	@Override
 	public void onMouseUp(final MsReleasedEvent evt) {
 		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
-		drawingTool = null;
+		if (drawingTool != null) {
+			Dataset dataset = drawingTool.getDataset();
+			EventService srv = getContext().getService(EventService.class);
+			if (srv != null) srv.publish(new DatasetUpdatedEvent(dataset, false));
+			drawingTool = null;
+		}
 		evt.consume();
 	}
 

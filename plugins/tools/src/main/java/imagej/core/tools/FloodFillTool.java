@@ -41,6 +41,7 @@ import imagej.data.Dataset;
 import imagej.data.DrawingTool;
 import imagej.data.FloodFiller;
 import imagej.data.display.ImageDisplay;
+import imagej.data.event.DatasetUpdatedEvent;
 import imagej.data.options.OptionsChannels;
 import imagej.display.event.input.MsButtonEvent;
 import imagej.display.event.input.MsClickedEvent;
@@ -49,6 +50,7 @@ import imagej.render.RenderingService;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 
+import org.scijava.event.EventService;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -105,7 +107,9 @@ public class FloodFillTool extends AbstractTool {
 								evt.getContext().getService(RenderingService.class));
 					final long[] currPos = getCurrPosition(imageDisplay);
 					floodFill(recorder.getCX(), recorder.getCY(), currPos, connectivity, drawingTool);
-					evt.getDisplay().update();
+					Dataset dataset = drawingTool.getDataset();
+					EventService srv = getContext().getService(EventService.class);
+					if (srv != null) srv.publish(new DatasetUpdatedEvent(dataset, false));
 				}
 			}
 			evt.consume();
