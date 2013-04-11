@@ -43,8 +43,8 @@ import imagej.ui.dnd.event.DropEvent;
 
 import java.util.List;
 
+import org.scijava.app.StatusService;
 import org.scijava.event.EventHandler;
-import org.scijava.event.StatusService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
