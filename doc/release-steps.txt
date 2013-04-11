@@ -16,7 +16,7 @@ I. BUILD IMGLIB2 RELEASE BINARIES:
        mvn clean install
 
 3) If all is well (i.e., "BUILD SUCCESSFUL") then deploy the result:
-       mvn -DskipTests deploy
+       mvn -DupdateReleaseInfo=true -DskipTests deploy
 
 4) Push the tag:
        git push origin v2.x.x
