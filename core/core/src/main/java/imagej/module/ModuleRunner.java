@@ -49,8 +49,8 @@ import java.util.concurrent.Callable;
 
 import org.scijava.AbstractContextual;
 import org.scijava.Context;
+import org.scijava.app.StatusService;
 import org.scijava.event.EventService;
-import org.scijava.event.StatusService;
 import org.scijava.log.LogService;
 
 /**
@@ -125,10 +125,15 @@ public class ModuleRunner extends AbstractContextual implements
 		try {
 			run();
 		}
-		catch (final RuntimeException e) {
+		catch (final RuntimeException exc) {
 			final LogService log = getContext().getService(LogService.class);
-			if (log != null) log.error("Module threw exception", e);
-			throw e;
+			if (log != null) log.error("Module threw exception", exc);
+			throw exc;
+		}
+		catch (final Error err) {
+			final LogService log = getContext().getService(LogService.class);
+			if (log != null) log.error("Module threw error", err);
+			throw err;
 		}
 		return module;
 	}

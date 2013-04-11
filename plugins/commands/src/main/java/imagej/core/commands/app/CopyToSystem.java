@@ -46,7 +46,7 @@ import imagej.menu.MenuConstants;
 import imagej.ui.UserInterface;
 import imagej.util.ARGBPlane;
 
-import org.scijava.event.StatusService;
+import org.scijava.app.StatusService;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

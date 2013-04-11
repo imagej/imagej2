@@ -60,7 +60,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.scijava.AbstractContextual;
-import org.scijava.Context;
 import org.scijava.event.EventHandler;
 
 /**
@@ -119,10 +118,9 @@ public class LegacyImageMap extends AbstractContextual {
 	public LegacyImageMap(final DefaultLegacyService legacyService) {
 		setContext(legacyService.getContext());
 		this.legacyService = legacyService;
-		final Context context = legacyService.getContext();
 		imagePlusTable = new ConcurrentHashMap<ImageDisplay, ImagePlus>();
 		displayTable = new ConcurrentHashMap<ImagePlus, ImageDisplay>();
-		imageTranslator = new DefaultImageTranslator(context);
+		imageTranslator = new DefaultImageTranslator(legacyService);
 	}
 
 	// -- LegacyImageMap methods --
@@ -167,7 +165,7 @@ public class LegacyImageMap extends AbstractContextual {
 
 	public synchronized void toggleLegacyMode(boolean toggle) {
 		final Harmonizer harmonizer =
-				new Harmonizer(legacyService.getContext(), imageTranslator);
+			new Harmonizer(legacyService, imageTranslator);
 		if (toggle) {
 			// make sure that all ImageDisplays have a corresponding ImagePlus
 			final ImageDisplayService imageDisplayService =

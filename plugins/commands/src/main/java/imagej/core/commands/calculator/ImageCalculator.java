@@ -39,29 +39,24 @@ import imagej.command.Command;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
+import imagej.data.operator.CalculatorOp;
+import imagej.data.operator.CalculatorService;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
-import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.ops.img.ImageCombiner;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
-import org.scijava.InstantiableException;
 import org.scijava.ItemIO;
-import org.scijava.log.LogService;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginInfo;
-import org.scijava.plugin.PluginService;
 
 /**
  * Fills an output Dataset with a combination of two input Datasets. The
@@ -84,10 +79,7 @@ public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 	// -- instance variables that are Parameters --
 
 	@Parameter
-	private PluginService pluginService;
-
-	@Parameter
-	private LogService log;
+	private CalculatorService calculatorService;
 
 	@Parameter
 	private DatasetService datasetService;
@@ -112,8 +104,6 @@ public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 
 	// -- other instance variables --
 
-	private HashMap<String, CalculatorOp<U, V>> operators;
-
 	private CalculatorOp<U, V> operator;
 
 	// -- public interface --
@@ -123,18 +113,16 @@ public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 	 * combination of the two input images.
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public void run() {
-		if (operator == null) operator = operators.get(opName);
+		if (operator == null) {
+			operator = (CalculatorOp<U, V>) calculatorService.getOperator(opName);
+		}
 		Img<DoubleType> img = null;
 		try {
-			@SuppressWarnings("unchecked")
 			final Img<U> img1 = (Img<U>) input1.getImgPlus();
-			@SuppressWarnings("unchecked")
 			final Img<V> img2 = (Img<V>) input2.getImgPlus();
-			// TODO - limited by ArrayImg size constraints
-			img =
-				ImageCombiner.applyOp(operator, img1, img2,
-					new ArrayImgFactory<DoubleType>(), new DoubleType());
+			img = calculatorService.combine(img1, img2, operator);
 		}
 		catch (final IllegalArgumentException e) {
 			cancel(e.toString());
@@ -163,78 +151,98 @@ public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 				datasetService.create(span, "Result of operation", input1.getAxes(),
 					bits, signed, floating);
 			copyDataInto(output.getImgPlus(), img, span);
-			output.update(); // TODO - probably unecessary
+			output.update(); // TODO - probably unnecessary
 		}
 	}
 
+	/**
+	 * Returns the {@link Dataset} that is input 1 for this image calculation.
+	 */
 	public Dataset getInput1() {
 		return input1;
 	}
 
+	/**
+	 * Sets the {@link Dataset} that will be input 1 for this image calculation.
+	 */
 	public void setInput1(final Dataset input1) {
 		this.input1 = input1;
 	}
 
+	/**
+	 * Returns the {@link Dataset} that is input 2 for this image calculation.
+	 */
 	public Dataset getInput2() {
 		return input2;
 	}
 
+	/**
+	 * Sets the {@link Dataset} that will be input 2 for this image calculation.
+	 */
 	public void setInput2(final Dataset input2) {
 		this.input2 = input2;
 	}
 
+	/**
+	 * Returns the output {@link Dataset} of the image calculation.
+	 */
 	public Dataset getOutput() {
 		return output;
 	}
 
+	/**
+	 * Returns the {@link CalculatorOp} that was used in the image calculation.
+	 */
 	public CalculatorOp<U, V> getOperation() {
 		return operator;
 	}
 
 	// TODO - due to generics is this too difficult to specify for real world use?
 
+	/**
+	 * Sets the {@link CalculatorOp} to be used in the image calculation.
+	 */
 	public void setOperation(final CalculatorOp<U, V> operation) {
 		this.operator = operation;
 	}
 
+	/**
+	 * Returns true if image calculation with create a new image window. Otherwise
+	 * the existing image that is input 1 is changed.
+	 */
 	public boolean isNewWindow() {
 		return newWindow;
 	}
 
+	/**
+	 * Sets whether image calculation will create a new image window. If true then
+	 * yes else the existing image that is input 1 is changed.
+	 */
 	public void setNewWindow(final boolean newWindow) {
 		this.newWindow = newWindow;
 	}
 
+	/**
+	 * Returns true if image calculation will return a double backed Img as
+	 * output.
+	 */
 	public boolean isDoubleOutput() {
 		return wantDoubles;
 	}
 
+	/**
+	 * Sets whether image calculation will create double backed output. If true
+	 * then yes else data is created that matches input image 1's data type.
+	 */
 	public void setDoubleOutput(final boolean wantDoubles) {
 		this.wantDoubles = wantDoubles;
 	}
 
+
 	// -- initializer --
 
-	public void initCalculator() {
-		operators = new HashMap<String, CalculatorOp<U, V>>();
-		final ArrayList<String> opNames = new ArrayList<String>();
-
-		for (@SuppressWarnings("rawtypes")
-		final PluginInfo<CalculatorOp> info : pluginService
-			.getPluginsOfType(CalculatorOp.class))
-		{
-			try {
-				final String name = info.getName();
-				@SuppressWarnings("unchecked")
-				final CalculatorOp<U, V> op = info.createInstance();
-				operators.put(name, op);
-				opNames.add(name);
-			}
-			catch (final InstantiableException exc) {
-				log.warn("Invalid calculator op: " + info.getClassName(), exc);
-			}
-		}
-
+	protected void initCalculator() {
+		List<String> opNames = calculatorService.getOperatorNames();
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<String> opNameInput =
 			(DefaultModuleItem<String>) getInfo().getInput("opName");

@@ -39,6 +39,7 @@ import imagej.module.MethodCallException;
 import imagej.module.Module;
 import imagej.module.ModuleItem;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.scijava.ItemVisibility;
@@ -96,6 +97,8 @@ public class WidgetModel {
 	 * values, but rather provides a list of possibilities in cases where the
 	 * realm of values is not defined by the type in some other way.
 	 * </p>
+	 * 
+	 * @see ObjectWidget
 	 */
 	public List<?> getObjectPool() {
 		return objectPool;
@@ -111,15 +114,26 @@ public class WidgetModel {
 		return widgetLabel;
 	}
 
-	/** Gets the current value of the module input. */
+	/**
+	 * Gets the current value of the module input.
+	 * <p>
+	 * In the case of inputs with a limited set of choices (i.e.,
+	 * {@link ChoiceWidget}s and {@link ObjectWidget}s), this method ensures the
+	 * value is in the set; if not, it returns the first item of the set.
+	 * </p>
+	 */
 	public Object getValue() {
-		return item.getValue(module);
+		final Object value = item.getValue(module);
+
+		if (isMultipleChoice()) return ensureValidChoice(value);
+		if (getObjectPool().size() > 0) return ensureValidObject(value);
+		return value;
 	}
 
 	/** Sets the current value of the module input. */
 	public void setValue(final Object value) {
 		final String name = item.getName();
-		if (objectsEqual(getValue(), value)) return; // no change
+		if (objectsEqual(item.getValue(module), value)) return; // no change
 		module.setInput(name, value);
 		if (initialized) {
 			callback();
@@ -185,6 +199,7 @@ public class WidgetModel {
 	 * Gets the multiple choice list for the module input.
 	 * 
 	 * @return The available choices, or an empty list if not multiple choice.
+	 * @see ChoiceWidget
 	 */
 	public String[] getChoices() {
 		final List<?> choicesList = item.getChoices();
@@ -289,6 +304,39 @@ public class WidgetModel {
 	private boolean objectsEqual(final Object obj1, final Object obj2) {
 		if (obj1 == null) return obj2 == null;
 		return obj1.equals(obj2);
+	}
+
+	/**
+	 * For multiple choice widgets, ensure the value is a valid choice.
+	 * 
+	 * @see #getChoices()
+	 * @see ChoiceWidget
+	 */
+	private Object ensureValidChoice(final Object value) {
+		return ensureValid(value, Arrays.asList(getChoices()));
+	}
+
+	/**
+	 * For object widgets, ensure the value is a valid object.
+	 * 
+	 * @see #getObjectPool()
+	 * @see ObjectWidget
+	 */
+	private Object ensureValidObject(final Object value) {
+		return ensureValid(value, getObjectPool());
+	}
+
+	/** Ensures the value is on the given list. */
+	private Object ensureValid(Object value, List<?> list) {
+		for (final Object o : list) {
+			if (o.equals(value)) return value; // value is valid
+		}
+
+		// value is not valid; override with the first item on the list instead
+		final Object validValue = list.get(0);
+		// CTR TODO: Mutating the model in a getter is dirty. Find a better way?
+		setValue(validValue);
+		return validValue;
 	}
 
 }

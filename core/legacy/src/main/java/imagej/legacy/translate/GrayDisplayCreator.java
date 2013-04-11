@@ -41,12 +41,11 @@ import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.display.ImageDisplay;
 import imagej.display.DisplayService;
+import imagej.legacy.LegacyService;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
-
-import org.scijava.Context;
 
 /**
  * Creates {@link ImageDisplay}s containing gray data values from
@@ -58,7 +57,7 @@ public class GrayDisplayCreator implements DisplayCreator {
 
 	// -- instance variables --
 
-	private final Context context;
+	private final LegacyService legSrv;
 
 	private final GrayPixelHarmonizer pixelHarmonizer;
 	private final ColorTableHarmonizer colorTableHarmonizer;
@@ -75,14 +74,15 @@ public class GrayDisplayCreator implements DisplayCreator {
 
 	// -- constructor --
 
-	public GrayDisplayCreator(final Context context) {
-		this.context = context;
+	public GrayDisplayCreator(final LegacyService legSrv) {
+		this.legSrv = legSrv;
 		pixelHarmonizer = new GrayPixelHarmonizer();
-		colorTableHarmonizer = new ColorTableHarmonizer(context);
+		colorTableHarmonizer =
+			new ColorTableHarmonizer(legSrv.getImageDisplayService());
 		metadataHarmonizer = new MetadataHarmonizer();
 		compositeHarmonizer = new CompositeHarmonizer();
-		planeHarmonizer = new PlaneHarmonizer(context);
-		overlayHarmonizer = new OverlayHarmonizer(context);
+		planeHarmonizer = new PlaneHarmonizer(legSrv.getLogService());
+		overlayHarmonizer = new OverlayHarmonizer(legSrv);
 		positionHarmonizer = new PositionHarmonizer();
 		nameHarmonizer = new NameHarmonizer();
 	}
@@ -113,8 +113,8 @@ public class GrayDisplayCreator implements DisplayCreator {
 		metadataHarmonizer.updateDataset(ds, imp);
 		compositeHarmonizer.updateDataset(ds, imp);
 
-		final DisplayService displayService =
-			context.getService(DisplayService.class);
+		final DisplayService displayService = legSrv.getDisplayService();
+
 		// CTR FIXME
 		final ImageDisplay display =
 			(ImageDisplay) displayService.createDisplay(ds.getName(), ds);
@@ -148,8 +148,8 @@ public class GrayDisplayCreator implements DisplayCreator {
 		metadataHarmonizer.updateDataset(ds, imp);
 		compositeHarmonizer.updateDataset(ds, imp);
 
-		final DisplayService displayService =
-			context.getService(DisplayService.class);
+		final DisplayService displayService = legSrv.getDisplayService();
+
 		// CTR FIXME
 		final ImageDisplay display =
 			(ImageDisplay) displayService.createDisplay(ds.getName(), ds);
@@ -193,8 +193,9 @@ public class GrayDisplayCreator implements DisplayCreator {
 		final int bitsPerPixel = 8;
 		final boolean signed = false;
 		final boolean floating = false;
-		final DatasetService datasetService =
-			context.getService(DatasetService.class);
+
+		final DatasetService datasetService = legSrv.getDatasetService();
+
 		final Dataset ds =
 			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
 
@@ -274,8 +275,7 @@ public class GrayDisplayCreator implements DisplayCreator {
 		final int bitsPerPixel = imp.getBitDepth();
 		final boolean signed = isSigned(imp);
 		final boolean floating = isFloating(imp);
-		final DatasetService datasetService =
-			context.getService(DatasetService.class);
+		final DatasetService datasetService = legSrv.getDatasetService();
 		final Dataset ds =
 			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
 
@@ -319,8 +319,8 @@ public class GrayDisplayCreator implements DisplayCreator {
 			floating = isFloating(imp);
 		}
 
-		final DatasetService datasetService =
-			context.getService(DatasetService.class);
+		final DatasetService datasetService = legSrv.getDatasetService();
+
 		final Dataset ds =
 			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
 

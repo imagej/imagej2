@@ -61,7 +61,14 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- * TODO
+ * Writes a db.xml.gz file for local and remote use of the updater.
+ * 
+ * The index of available and previous plugins and update sites is held locally
+ * in a file called db.xml.gz. For simplicity, update sites use the same format
+ * for the plugin index, although they do not contain a list of update sites, of
+ * course.
+ * 
+ * This class writes both versions of the index.
  * 
  * @author Johannes Schindelin
  */
@@ -103,8 +110,7 @@ public class XMLFileWriter {
 	}
 
 	public byte[] toByteArray(final boolean local) throws SAXException,
-		TransformerConfigurationException, IOException,
-		ParserConfigurationException
+		TransformerConfigurationException, IOException
 	{
 		final ByteArrayOutputStream out = new ByteArrayOutputStream();
 		write(out, local);
@@ -112,8 +118,7 @@ public class XMLFileWriter {
 	}
 
 	public byte[] toCompressedByteArray(final boolean local) throws SAXException,
-		TransformerConfigurationException, IOException,
-		ParserConfigurationException
+		TransformerConfigurationException, IOException
 	{
 		final ByteArrayOutputStream out = new ByteArrayOutputStream();
 		write(new GZIPOutputStream(out), local);
@@ -130,8 +135,7 @@ public class XMLFileWriter {
 	}
 
 	public void write(final OutputStream out, final boolean local)
-		throws SAXException, TransformerConfigurationException, IOException,
-		ParserConfigurationException
+		throws SAXException, TransformerConfigurationException, IOException
 	{
 		createHandler(out);
 

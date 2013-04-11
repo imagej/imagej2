@@ -40,6 +40,7 @@ import ij.ImageStack;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.legacy.LegacyService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,8 +53,6 @@ import net.imglib2.type.numeric.integer.ShortType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 
-import org.scijava.Context;
-
 /**
  * Provides methods for synchronizing data between an {@link ImageDisplay} and
  * an {@link ImagePlus}.
@@ -64,7 +63,7 @@ public class Harmonizer {
 
 	// -- instance variables --
 
-	private final Context context;
+	private final LegacyService legSrv;
 
 	private final ImageTranslator imageTranslator;
 	private final Map<ImagePlus, Integer> bitDepthMap;
@@ -81,17 +80,18 @@ public class Harmonizer {
 
 	// -- constructor --
 
-	public Harmonizer(final Context context, final ImageTranslator trans) {
-		this.context = context;
+	public Harmonizer(final LegacyService legSrv, final ImageTranslator trans) {
+		this.legSrv = legSrv;
 		imageTranslator = trans;
 		bitDepthMap = new HashMap<ImagePlus, Integer>();
 		grayPixelHarmonizer = new GrayPixelHarmonizer();
 		colorPixelHarmonizer = new ColorPixelHarmonizer();
-		colorTableHarmonizer = new ColorTableHarmonizer(context);
+		colorTableHarmonizer =
+			new ColorTableHarmonizer(legSrv.getImageDisplayService());
 		metadataHarmonizer = new MetadataHarmonizer();
 		compositeHarmonizer = new CompositeHarmonizer();
-		planeHarmonizer = new PlaneHarmonizer(context);
-		overlayHarmonizer = new OverlayHarmonizer(context);
+		planeHarmonizer = new PlaneHarmonizer(legSrv.getLogService());
+		overlayHarmonizer = new OverlayHarmonizer(legSrv);
 		positionHarmonizer = new PositionHarmonizer();
 		nameHarmonizer = new NameHarmonizer();
 	}
@@ -107,7 +107,7 @@ public class Harmonizer {
 		updateLegacyImage(final ImageDisplay display, final ImagePlus imp)
 	{
 		final ImageDisplayService imageDisplayService =
-			context.getService(ImageDisplayService.class);
+			legSrv.getImageDisplayService();
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
 		boolean binaryTypeChange = false;
 		if (imp.getBitDepth() == 8) {
@@ -160,7 +160,7 @@ public class Harmonizer {
 					"cannot update a display with an ImagePlus that has an empty stack");
 
 		final ImageDisplayService imageDisplayService =
-			context.getService(ImageDisplayService.class);
+			legSrv.getImageDisplayService();
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
 
 		// did type of ImagePlus change?
@@ -377,7 +377,7 @@ public class Harmonizer {
 		//		imageTranslator.createDisplay(impCopy, ds.getAxes());
 		final ImageDisplay tmpDisplay = 
 			imageTranslator.createDisplay(imp, ds.getAxes(), isBinaryImp);
-		ImageDisplayService idSrv = context.getService(ImageDisplayService.class);
+		ImageDisplayService idSrv = legSrv.getImageDisplayService();
 		final Dataset tmpDs = idSrv.getActiveDataset(tmpDisplay);
 		ds.setImgPlus(tmpDs.getImgPlus());
 		ds.setRGBMerged(tmpDs.isRGBMerged());

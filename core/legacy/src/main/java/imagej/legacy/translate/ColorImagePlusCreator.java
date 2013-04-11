@@ -41,8 +41,6 @@ import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 
-import org.scijava.Context;
-
 /**
  * Creates {@link ImagePlus}es from {@link ImageDisplay}s containing color
  * merged data.
@@ -53,7 +51,7 @@ public class ColorImagePlusCreator implements ImagePlusCreator {
 
 	// -- instance variables --
 
-	private final Context context;
+	private final ImageDisplayService imgDispSrv;
 	
 	private final ColorPixelHarmonizer pixelHarmonizer;
 	private final MetadataHarmonizer metadataHarmonizer;
@@ -62,8 +60,8 @@ public class ColorImagePlusCreator implements ImagePlusCreator {
 
 	// -- public interface --
 
-	public ColorImagePlusCreator(Context context) {
-		this.context = context;
+	public ColorImagePlusCreator(ImageDisplayService imgDispSrv) {
+		this.imgDispSrv = imgDispSrv;
 		pixelHarmonizer = new ColorPixelHarmonizer();
 		metadataHarmonizer = new MetadataHarmonizer();
 		positionHarmonizer = new PositionHarmonizer();
@@ -77,9 +75,7 @@ public class ColorImagePlusCreator implements ImagePlusCreator {
 	 */
 	@Override
 	public ImagePlus createLegacyImage(final ImageDisplay display) {
-		final ImageDisplayService imageDisplayService =
-			context.getService(ImageDisplayService.class);
-		final Dataset ds = imageDisplayService.getActiveDataset(display);
+		final Dataset ds = imgDispSrv.getActiveDataset(display);
 		final ImagePlus imp = makeColorImagePlus(ds);
 		pixelHarmonizer.updateLegacyImage(ds, imp);
 		metadataHarmonizer.updateLegacyImage(ds, imp);

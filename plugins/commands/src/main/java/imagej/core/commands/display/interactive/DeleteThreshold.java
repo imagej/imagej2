@@ -38,7 +38,7 @@ package imagej.core.commands.display.interactive;
 import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.display.ImageDisplay;
-import imagej.data.overlay.ThresholdService;
+import imagej.data.threshold.ThresholdService;
 import imagej.menu.MenuConstants;
 
 import org.scijava.plugin.Menu;

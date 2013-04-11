@@ -42,10 +42,14 @@ import ij.WindowManager;
 import ij.gui.ImageWindow;
 import imagej.command.CommandService;
 import imagej.core.options.OptionsMisc;
+import imagej.data.DatasetService;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.data.display.OverlayService;
 import imagej.data.options.OptionsChannels;
+import imagej.data.threshold.ThresholdService;
+import imagej.display.DisplayService;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.input.KyPressedEvent;
 import imagej.display.event.input.KyReleasedEvent;
@@ -65,6 +69,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.scijava.app.StatusService;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.input.KeyCode;
@@ -108,6 +113,9 @@ public final class DefaultLegacyService extends AbstractService implements
 	}
 
 	@Parameter
+	private OverlayService overlayService;
+
+	@Parameter
 	private LogService log;
 
 	@Parameter
@@ -126,7 +134,19 @@ public final class DefaultLegacyService extends AbstractService implements
 	private ImageDisplayService imageDisplayService;
 
 	@Parameter
+	private DisplayService displayService;
+
+	@Parameter
+	private ThresholdService thresholdService;
+
+	@Parameter
+	private DatasetService datasetService;
+
+	@Parameter
 	private MenuService menuService;
+
+	@Parameter
+	private StatusService statusService;
 
 	private boolean lastDebugMode;
 	private static DefaultLegacyService instance;
@@ -177,6 +197,31 @@ public final class DefaultLegacyService extends AbstractService implements
 	@Override
 	public LegacyImageMap getImageMap() {
 		return imageMap;
+	}
+
+	@Override
+	public DisplayService getDisplayService() {
+		return displayService;
+	}
+
+	@Override
+	public DatasetService getDatasetService() {
+		return datasetService;
+	}
+
+	@Override
+	public OverlayService getOverlayService() {
+		return overlayService;
+	}
+
+	@Override
+	public ThresholdService getThresholdService() {
+		return thresholdService;
+	}
+
+	@Override
+	public StatusService getStatusService() {
+		return statusService;
 	}
 
 	@Override
@@ -305,6 +350,11 @@ public final class DefaultLegacyService extends AbstractService implements
 		imageMap.toggleLegacyMode(toggle);
 	}
 
+	@Override
+	public String getLegacyVersion() {
+		return IJ.getVersion();
+	}
+
 	// -- Service methods --
 
 	@Override
@@ -431,10 +481,7 @@ public final class DefaultLegacyService extends AbstractService implements
 	}
 
 	private OptionsChannels getChannels() {
-		final OptionsService service =
-			getContext().getService(OptionsService.class);
-
-		return service.getOptions(OptionsChannels.class);
+		return optionsService.getOptions(OptionsChannels.class);
 	}
 
 	private void updateMenus(final OptionsMisc optsMisc) {

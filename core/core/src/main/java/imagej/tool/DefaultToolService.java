@@ -54,10 +54,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.scijava.InstantiableException;
+import org.scijava.app.StatusService;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
-import org.scijava.event.StatusService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -356,17 +355,9 @@ public class DefaultToolService extends AbstractService implements ToolService
 		tools = new HashMap<String, Tool>();
 		toolList = new ArrayList<Tool>();
 		for (final PluginInfo<Tool> info : toolEntries) {
-			final Tool tool;
-			try {
-				tool = info.createInstance();
-				tool.setContext(getContext());
-				tool.setPriority(info.getPriority());
-				tool.setInfo(info);
-			}
-			catch (final InstantiableException e) {
-				log.error("Invalid tool: " + info.getName(), e);
-				continue;
-			}
+			final Tool tool = pluginService.createInstance(info);
+			if (tool == null) continue;
+			tool.setInfo(info);
 			if (info.is(Tool.ALWAYS_ACTIVE)) {
 				alwaysActiveTools.put(info.getName(), tool);
 				alwaysActiveToolList.add(tool);

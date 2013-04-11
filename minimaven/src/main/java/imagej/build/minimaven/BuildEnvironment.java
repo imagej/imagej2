@@ -73,7 +73,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * 
  * @author Johannes Schindelin
  */
-@SuppressWarnings("hiding")
 public class BuildEnvironment {
 	public final static String IMAGEJ_APP_DIRECTORY = "imagej.app.directory";
 
@@ -93,7 +92,7 @@ public class BuildEnvironment {
 		try {
 			repository = repository.getCanonicalFile();
 		} catch (IOException e) {
-			// ignore
+			e.printStackTrace();
 		}
 		mavenRepository = repository;
 	}
@@ -139,6 +138,10 @@ public class BuildEnvironment {
 		}
 	}
 
+	public PrintStream getErr() {
+		return err;
+	}
+
 	protected void print80(String string) {
 		int length = string.length();
 		err.print((verbose || length < 80 ? string : string.substring(0, 80)) + endLine);
@@ -153,8 +156,16 @@ public class BuildEnvironment {
 	}
 
 	public MavenProject parse(File file, MavenProject parent, String classifier) throws IOException, ParserConfigurationException, SAXException {
-		if (file2pom.containsKey(file))
-			return file2pom.get(file);
+		if (file2pom.containsKey(file)) {
+			final MavenProject result = file2pom.get(file);
+			if (classifier == null) {
+				if (result.coordinate.classifier == null) {
+					return result;
+				}
+			} else if (classifier.equals(result.coordinate.classifier)) {
+				return result;
+			}
+		}
 
 		if (!file.exists())
 			return null;
@@ -260,7 +271,7 @@ public class BuildEnvironment {
 			pom.dependencies.add(new Coordinate("jfree", "jcommon", "1.0.17"));
 
 		String key = dependency.getKey();
-		if (localPOMCache.containsKey(key))
+		if (debug && localPOMCache.containsKey(key))
 			err.println("Warning: " + target + " overrides " + localPOMCache.get(key));
 		localPOMCache.put(key, pom);
 
@@ -385,6 +396,7 @@ public class BuildEnvironment {
 				String actual = "";
 				for (byte b : digestBytes)
 					actual += String.format("%02x", b & 0xff);
+				fileStream.close();
 				throw new IOException("SHA1 mismatch: " + sha1 + ": " + Integer.toHexString(value) + " != " + Integer.toHexString(d) + " (actual SHA-1: " + actual + ")");
 			}
 		}

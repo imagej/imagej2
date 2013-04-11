@@ -56,7 +56,7 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Command.class)
 public class ShowReadme implements Command {
 
-	private static final String README_FILE = "README.txt";
+	private static final String README_FILE = "README.md";
 
 	@Parameter(label = "Readme", type = ItemIO.OUTPUT)
 	private String readmeText;

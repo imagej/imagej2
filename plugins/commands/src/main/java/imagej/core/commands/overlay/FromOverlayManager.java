@@ -42,7 +42,7 @@ import imagej.data.display.OverlayInfoList;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.ThresholdOverlay;
-import imagej.data.overlay.ThresholdService;
+import imagej.data.threshold.ThresholdService;
 import imagej.menu.MenuConstants;
 
 import java.util.List;

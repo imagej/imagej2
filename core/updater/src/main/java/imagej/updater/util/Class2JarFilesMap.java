@@ -46,7 +46,9 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipException;
 
 /**
- * TODO
+ * Maps class names to the .jar files containing them.
+ * 
+ * The same class can be contained in multiple .jar files, of course.
  * 
  * @author Johannes Schindelin
  */
@@ -86,6 +88,7 @@ public class Class2JarFilesMap extends HashMap<String, ArrayList<String>> {
 				if (name.endsWith(".class")) addClass(Util.stripSuffix(name, ".class")
 					.replace('/', '.'), jar);
 			}
+			file.close();
 		}
 		catch (final ZipException e) {
 			UpdaterUserInterface.get().log("Warning: could not open " + jar);

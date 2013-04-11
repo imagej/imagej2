@@ -44,8 +44,6 @@ import imagej.data.table.Table;
 import imagej.data.table.TableDisplay;
 import imagej.display.DisplayService;
 
-import org.scijava.Context;
-
 /**
  * Harmonizes data between legacy ImageJ and modern ImageJ ResultsTables
  * 
@@ -59,8 +57,8 @@ public class ResultsTableHarmonizer {
 
 	// -- constructor --
 
-	public ResultsTableHarmonizer(Context context) {
-		displayService = context.getService(DisplayService.class);
+	public ResultsTableHarmonizer(DisplayService dispSrv) {
+		displayService = dispSrv;
 	}
 
 	// -- ResultsTableHarmonizer methods --

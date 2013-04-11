@@ -53,7 +53,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * TODO
+ * A class that updates local files from all available update sites.
  * 
  * @author Johannes Schindelin
  */
@@ -182,6 +182,8 @@ public class Installer extends Downloader {
 				} else switch (file.getStatus()) {
 				case NEW: case NOT_INSTALLED: case UPDATEABLE:
 					result.add(file2);
+					break;
+				default:
 				}
 			}
 		}

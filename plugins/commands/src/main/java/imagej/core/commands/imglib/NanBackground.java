@@ -41,7 +41,7 @@ import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.overlay.ThresholdOverlay;
-import imagej.data.overlay.ThresholdService;
+import imagej.data.threshold.ThresholdService;
 import imagej.menu.MenuConstants;
 import net.imglib2.RandomAccess;
 import net.imglib2.ops.pointset.PointSet;

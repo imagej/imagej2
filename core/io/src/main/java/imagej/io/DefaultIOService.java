@@ -46,8 +46,8 @@ import net.imglib2.io.ImgOpener;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
+import org.scijava.app.StatusService;
 import org.scijava.event.EventService;
-import org.scijava.event.StatusService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;

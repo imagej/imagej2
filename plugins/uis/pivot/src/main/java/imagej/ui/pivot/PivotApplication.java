@@ -58,10 +58,6 @@ public class PivotApplication extends AbstractContextual implements Application
 
 	private Display display;
 
-	private EventService eventService;
-	private MenuService menuService;
-	private UIService uiService;
-
 	private PivotApplicationFrame frame;
 	private PivotToolBar toolBar;
 	private PivotStatusBar statusBar;
@@ -71,13 +67,13 @@ public class PivotApplication extends AbstractContextual implements Application
 	// -- PivotApplication methods --
 
 	public void initialize() {
-		eventService = getContext().getService(EventService.class);
-		menuService = getContext().getService(MenuService.class);
-		uiService = getContext().getService(UIService.class);
+		final UIService uiService = getContext().getService(UIService.class);
+		final EventService eventService = uiService.getEventService();
+		final MenuService menuService = uiService.getMenuService();
 
 		frame = new PivotApplicationFrame();
 		toolBar = new PivotToolBar(uiService);
-		statusBar = new PivotStatusBar(eventService);
+		statusBar = new PivotStatusBar(uiService);
 
 		contentPane = new BoxPane();
 		contentPane.setOrientation(Orientation.VERTICAL);
@@ -92,7 +88,7 @@ public class PivotApplication extends AbstractContextual implements Application
 		contentPane.add(toolBar);
 		contentPane.add(statusBar);
 
-		frame.setTitle(getContext().getTitle());
+		frame.setTitle(uiService.getApp().getTitle());
 		frame.setMaximized(true);
 		frame.open(display);
 	}

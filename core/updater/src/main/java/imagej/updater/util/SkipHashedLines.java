@@ -62,7 +62,7 @@ public class SkipHashedLines extends BufferedInputStream {
 	}
 
 	@Override
-	public int read() throws IOException {
+	public synchronized int read() throws IOException {
 		int ch = super.read();
 		if (atLineStart) {
 			if (ch == '#')
@@ -82,7 +82,7 @@ public class SkipHashedLines extends BufferedInputStream {
 	}
 
 	@Override
-	public int read(final byte[] b, final int off, final int len) throws IOException {
+	public synchronized int read(final byte[] b, final int off, final int len) throws IOException {
 		int count = 0;
 		while (count < len) {
 			int ch = read();
@@ -95,7 +95,7 @@ public class SkipHashedLines extends BufferedInputStream {
 	}
 
 	@Override
-	public long skip(final long n) throws IOException {
+	public synchronized long skip(final long n) throws IOException {
 		throw new IOException("unsupported skip");
 	}
 }

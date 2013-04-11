@@ -84,26 +84,9 @@ public class PivotObjectWidget extends PivotInputWidget<Object> implements
 
 	@Override
 	public void refreshWidget() {
-		listButton.setSelectedItem(getValidValue());
-	}
-
-	// -- Helper methods --
-
-	private Object getValidValue() {
-		final int itemCount = listButton.getListSize();
-		if (itemCount == 0) return null; // no valid values exist
-
 		final Object value = getModel().getValue();
-		for (int i = 0; i < itemCount; i++) {
-			final Object item = listButton.getListData().get(i);
-			if (value == item) return value;
-		}
-
-		// value was invalid; reset to first choice on the list
-		final Object validValue = listButton.getListData().get(0);
-		// CTR FIXME should not update model in getter!
-		getModel().setValue(validValue);
-		return validValue;
+		if (value == listButton.getSelectedItem()) return; // no change
+		listButton.setSelectedItem(value);
 	}
 
 }

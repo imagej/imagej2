@@ -129,7 +129,7 @@ public class AWTUI extends AbstractUserInterface {
 
 	@Override
 	protected void createUI() {
-		frame = new AWTApplicationFrame(getContext().getTitle());
+		frame = new AWTApplicationFrame(getApp().getTitle());
 		toolBar = new AWTToolBar(getUIService());
 		statusBar = new AWTStatusBar(getUIService());
 		systemClipboard = new AWTClipboard();
@@ -140,7 +140,7 @@ public class AWTUI extends AbstractUserInterface {
 
 			@Override
 			public void windowClosing(final WindowEvent e) {
-				getUIService().getAppService().quit();
+				getUIService().getAppEventService().quit();
 			}
 		});
 

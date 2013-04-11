@@ -243,4 +243,33 @@ final class SSHSessionCreator {
 		}
 	}
 
+	/**
+	 * For debugging only.
+	 * 
+	 * This connects to an SSH server for testing purposes. The given host must
+	 * be specified in $HOME/.ssh/config and it must be equipped with a private
+	 * key.
+	 * 
+	 * @param host the ssh host, as specified in $HOME/.ssh/config
+	 * @param log the log service
+	 * @return a valid SSH session
+	 * @throws JSchException
+	 */
+	protected static Session debugConnect(final String host, final LogService log) throws JSchException {
+		final ConfigInfo info = getIdentity(null, host, log);
+		if (info.username == null || info.identity == null) {
+			throw new JSchException("Could not determine user name or identity for " + host);
+		}
+		final JSch jsch = new JSch();
+		jsch.addIdentity(info.identity);
+
+		// Reuse ~/.ssh/known_hosts file
+		final File knownHosts =
+			new File(new File(System.getProperty("user.home"), ".ssh"), "known_hosts");
+		jsch.setKnownHosts(knownHosts.getAbsolutePath());
+
+		final Session session = jsch.getSession(info.username, info.sshHost);
+		session.connect();
+		return session;
+	}
 }

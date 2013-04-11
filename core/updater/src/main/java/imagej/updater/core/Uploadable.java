@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * TODO
+ * A container representing one file to upload.
  * 
  * @author Johannes Schindelin
  */

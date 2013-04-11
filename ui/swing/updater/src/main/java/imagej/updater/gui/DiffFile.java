@@ -294,6 +294,7 @@ public class DiffFile extends JFrame {
 	private static String getCommit(final URL jarURL) {
 		try {
 			final JarInputStream in = new JarInputStream(jarURL.openStream());
+			in.close();
 			Manifest manifest = in.getManifest();
 			if (manifest == null)
 				for (;;) {
@@ -304,6 +305,7 @@ public class DiffFile extends JFrame {
 						break;
 					}
 				}
+			@SuppressWarnings("null")
 			final Attributes attributes = manifest.getMainAttributes(); 
 			return attributes.getValue(new Attributes.Name("Implementation-Build"));
 		} catch (IOException e) {
@@ -343,8 +345,10 @@ public class DiffFile extends JFrame {
 				path = path.substring(0, path.length() - suffix.length());
 				if ("".equals(path)) path = ".";
 				else if (path.endsWith("/src/main/java/")) path = path.substring(0, path.length() - "/src/main/java/".length());
+				in.close();
 				return path;
 			}
+			in.close();
 		} catch (IOException e) { /* ignore */ e.printStackTrace(); }
 		return null;
 	}

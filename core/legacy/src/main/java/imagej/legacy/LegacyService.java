@@ -36,10 +36,15 @@
 package imagej.legacy;
 
 import ij.ImagePlus;
+import imagej.data.DatasetService;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.data.display.OverlayService;
+import imagej.data.threshold.ThresholdService;
+import imagej.display.DisplayService;
 import imagej.options.OptionsService;
 
+import org.scijava.app.StatusService;
 import org.scijava.event.EventService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.PluginService;
@@ -66,8 +71,23 @@ public interface LegacyService extends Service {
 	/** Gets the ImageDisplayService associated with this LegacyService. */
 	ImageDisplayService getImageDisplayService();
 
+	/** Gets the DisplayService associated with this LegacyService. */
+	DisplayService getDisplayService();
+
+	/** Gets the ImageDisplayService associated with this LegacyService. */
+	DatasetService getDatasetService();
+
+	/** Gets the OverlayService associated with this LegacyService. */
+	OverlayService getOverlayService();
+
+	/** Gets the ThresholdService associated with this LegacyService. */
+	ThresholdService getThresholdService();
+
 	/** Gets the LogService associated with this LegacyService. */
 	LogService getLogService();
+
+	/** Gets the StatusService associated with this LegacyService. */
+	StatusService getStatusService();
 
 	/** Gets the LegacyImageMap associated with this LegacyService. */
 	LegacyImageMap getImageMap();
@@ -125,5 +145,8 @@ public interface LegacyService extends Service {
 	 * Switch to/from running legacy ImageJ 1.x mode.
 	 */
 	void toggleLegacyMode(boolean toggle);
+
+	/** Gets the version of ImageJ 1.x being used. */
+	String getLegacyVersion();
 
 }

@@ -63,7 +63,7 @@ final class SFTPOperations {
 	/**
 	 * Create new instance of operations and initialize connection to remote site.
 	 * 
-	 * @param Session JSch session.
+	 * @param session JSch session.
 	 * @throws JSchException if the connection fails.
 	 */
 	public SFTPOperations(final Session session) throws JSchException {

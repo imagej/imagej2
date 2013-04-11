@@ -62,7 +62,8 @@ import imagej.data.overlay.RectangleOverlay;
 import imagej.data.overlay.TextOverlay;
 import imagej.data.overlay.TextOverlay.Justification;
 import imagej.data.overlay.ThresholdOverlay;
-import imagej.data.overlay.ThresholdService;
+import imagej.data.threshold.ThresholdService;
+import imagej.legacy.LegacyService;
 import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
@@ -88,7 +89,6 @@ import net.imglib2.roi.RectangleRegionOfInterest;
 import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.logic.BitType;
 
-import org.scijava.AbstractContextual;
 import org.scijava.Context;
 import org.scijava.log.LogService;
 
@@ -100,18 +100,20 @@ import org.scijava.log.LogService;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public class OverlayHarmonizer extends AbstractContextual implements
-	DisplayHarmonizer
+public class OverlayHarmonizer implements DisplayHarmonizer
 {
+
+	private final Context context;
 	private final LogService log;
 	private final OverlayService overlayService;
 	private final ThresholdService threshService;
 
-	public OverlayHarmonizer(final Context context) {
-		setContext(context);
-		log = context.getService(LogService.class);
-		overlayService = context.getService(OverlayService.class);
-		threshService = context.getService(ThresholdService.class);
+	public OverlayHarmonizer(LegacyService legSrv)
+	{
+		this.context = legSrv.getContext();
+		this.log = legSrv.getLogService();
+		this.overlayService = legSrv.getOverlayService();
+		this.threshService = legSrv.getThresholdService();
 	}
 
 	/**
@@ -121,6 +123,9 @@ public class OverlayHarmonizer extends AbstractContextual implements
 	 */
 	@Override
 	public void updateDisplay(final ImageDisplay display, final ImagePlus imp) {
+		//if (overlayService == null) {
+		//	System.out.println("Trying to use NULL OverlayService!");
+		//}
 		final List<Overlay> overlaysToRemove = overlayService.getOverlays(display);
 		for (final Overlay overlay : overlaysToRemove) {
 			overlayService.removeOverlay(display, overlay);
@@ -234,7 +239,8 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		List<Roi> rois = new ArrayList<Roi>();
 		for (Overlay o : overlays) {
 			if (o != activeOverlay) {
-				rois.add(createRoi(o));
+				Roi roi = createRoi(o);
+				if (roi != null) rois.add(roi);
 			}
 		}
 		if (rois.size() == 0) return null;
@@ -591,7 +597,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		PolygonRoi pRoi = (PolygonRoi) roi;
 		FloatPolygon poly = pRoi.getFloatPolygon();
 		double[] pt;
-		AngleOverlay angleOverlay = new AngleOverlay(getContext());
+		AngleOverlay angleOverlay = new AngleOverlay(context);
 		pt = new double[] { poly.xpoints[0], poly.ypoints[0] };
 		angleOverlay.setPoint1(pt);
 		pt = new double[] { poly.xpoints[1], poly.ypoints[1] };
@@ -607,7 +613,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		assert roi instanceof Line;
 		final Line line = (Line) roi;
 		final LineOverlay lineOverlay =
-			new LineOverlay(getContext(), new double[] { line.x1d, line.y1d },
+			new LineOverlay(context, new double[] { line.x1d, line.y1d },
 				new double[] { line.x2d, line.y2d });
 		assignPropertiesToOverlay(lineOverlay, roi);
 		return lineOverlay;
@@ -615,7 +621,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 
 	private RectangleOverlay createRectangleOverlay(final Roi roi)
 	{
-		final RectangleOverlay overlay = new RectangleOverlay(getContext());
+		final RectangleOverlay overlay = new RectangleOverlay(context);
 		final RectangleRegionOfInterest region = overlay.getRegionOfInterest();
 		final Rectangle bounds = roi.getBounds();
 		region.setOrigin(bounds.x, 0);
@@ -628,7 +634,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 
 	private EllipseOverlay createEllipseOverlay(final Roi roi)
 	{
-		final EllipseOverlay overlay = new EllipseOverlay(getContext());
+		final EllipseOverlay overlay = new EllipseOverlay(context);
 		final EllipseRegionOfInterest region = overlay.getRegionOfInterest();
 		final Rectangle bounds = roi.getBounds();
 		final double radiusX = bounds.width / 2.0;
@@ -647,7 +653,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 	{
 		assert roi instanceof PolygonRoi;
 		final PolygonRoi polygonRoi = (PolygonRoi) roi;
-		final PolygonOverlay overlay = new PolygonOverlay(getContext());
+		final PolygonOverlay overlay = new PolygonOverlay(context);
 		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
 		final int[] xCoords = polygonRoi.getXCoordinates();
 		final int[] yCoords = polygonRoi.getYCoordinates();
@@ -666,11 +672,14 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		assert roi instanceof ShapeRoi;
 		final ShapeRoi polygonRoi = (ShapeRoi) roi;
 		final Rectangle bounds = polygonRoi.getBounds();
-		final GeneralPathOverlay overlay = new GeneralPathOverlay(getContext());
+		final GeneralPathOverlay overlay = new GeneralPathOverlay(context);
 		final GeneralPathRegionOfInterest region = overlay.getRegionOfInterest();
 		region.reset();
 		final double[] coords = new double[6];
-		for (final PathIterator iterator = polygonRoi.getShape().getPathIterator(null); !iterator.isDone(); iterator.next()) {
+		for (final PathIterator iterator =
+			polygonRoi.getShape().getPathIterator(null); !iterator.isDone(); iterator
+			.next())
+		{
 			int type = iterator.currentSegment(coords);
 			switch (type) {
 				case PathIterator.SEG_MOVETO:
@@ -710,7 +719,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 			final double[] pt = new double[]{x,y};
 			points.add(pt);
 		}
-		final PointOverlay overlay = new PointOverlay(getContext(), points);
+		final PointOverlay overlay = new PointOverlay(context, points);
 		assignPropertiesToOverlay(overlay, roi);
 		return overlay;
 	}
@@ -741,7 +750,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		final BinaryMaskRegionOfInterest<BitType, Img<BitType>> broi =
 			new BinaryMaskRegionOfInterest<BitType, Img<BitType>>(img);
 		Overlay overlay =
-			new BinaryMaskOverlay<BitType, Img<BitType>>(getContext(), broi);
+			new BinaryMaskOverlay<BitType, Img<BitType>>(context, broi);
 		assignPropertiesToOverlay(overlay, roi);
 		return overlay;
 	}
@@ -753,7 +762,7 @@ public class OverlayHarmonizer extends AbstractContextual implements
 		Rectangle bounds = tRoi.getBounds();
 		double x = bounds.x;
 		double y = bounds.y;
-		TextOverlay overlay = new TextOverlay(getContext(), x, y, tRoi.getText());
+		TextOverlay overlay = new TextOverlay(context, x, y, tRoi.getText());
 		switch (tRoi.getJustification()) {
 			case TextRoi.LEFT:
 				overlay.setJustification(Justification.LEFT);

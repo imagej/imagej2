@@ -1282,12 +1282,14 @@ public class TextEditor extends JFrame implements ActionListener,
 				}
 				new Thread() {
 					{ setPriority(Thread.NORM_PRIORITY); }
+					@Override
 					public void run() {
 						PrintWriter pw = new PrintWriter(po);
 						pw.write(text);
 						pw.flush(); // will lock and wait in some cases
 						try { po.close(); }
 						catch (Throwable tt) { tt.printStackTrace(); }
+						pw.close();
 					}
 				}.start();
 			} catch (Throwable t) {

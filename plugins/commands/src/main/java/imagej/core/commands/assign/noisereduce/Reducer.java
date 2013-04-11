@@ -46,7 +46,7 @@ import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.Context;
-import org.scijava.event.StatusService;
+import org.scijava.app.StatusService;
 
 /**
  * TODO

@@ -35,6 +35,7 @@
 
 package imagej;
 
+import imagej.app.ImageJApp;
 import imagej.command.CommandService;
 import imagej.console.ConsoleService;
 import imagej.data.DatasetService;
@@ -55,7 +56,7 @@ import imagej.legacy.LegacyService;
 import imagej.menu.MenuService;
 import imagej.module.ModuleService;
 import imagej.options.OptionsService;
-import imagej.platform.AppService;
+import imagej.platform.AppEventService;
 import imagej.platform.PlatformService;
 import imagej.render.RenderingService;
 import imagej.script.ScriptService;
@@ -67,11 +68,13 @@ import imagej.widget.WidgetService;
 
 import java.util.Collection;
 
-import org.scijava.AbstractContextual;
+import org.scijava.AbstractGateway;
 import org.scijava.Context;
+import org.scijava.app.App;
+import org.scijava.app.AppService;
+import org.scijava.app.StatusService;
 import org.scijava.event.EventHistory;
 import org.scijava.event.EventService;
-import org.scijava.event.StatusService;
 import org.scijava.log.LogService;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.PluginService;
@@ -85,7 +88,7 @@ import org.scijava.thread.ThreadService;
  * 
  * @author Curtis Rueden
  */
-public class ImageJ extends AbstractContextual {
+public class ImageJ extends AbstractGateway {
 
 	// -- Constructors --
 
@@ -142,20 +145,17 @@ public class ImageJ extends AbstractContextual {
 		this(new Context(serviceClasses));
 	}
 
+	/**
+	 * Creates a new ImageJ application context which wraps the given existing
+	 * SciJava context.
+	 * 
+	 * @see Context
+	 */
 	public ImageJ(final Context context) {
 		setContext(context);
-		context.setTitle("ImageJ");
 	}
 
-	// -- ImageJ methods --
-
-	public <S extends Service> S get(final Class<S> serviceClass) {
-		return getContext().getService(serviceClass);
-	}
-
-	public Service get(final String serviceClassName) {
-		return getContext().getService(serviceClassName);
-	}
+	// -- ImageJ methods - services --
 
 	public AnimationService animation() {
 		return get(AnimationService.class);
@@ -163,6 +163,10 @@ public class ImageJ extends AbstractContextual {
 
 	public AppService app() {
 		return get(AppService.class);
+	}
+
+	public AppEventService appEvent() {
+		return get(AppEventService.class);
 	}
 
 	public CommandService command() {
@@ -299,6 +303,28 @@ public class ImageJ extends AbstractContextual {
 
 	public WindowService window() {
 		return get(WindowService.class);
+	}
+
+	// -- ImageJ methods - application --
+
+	/** @see org.scijava.app.AppService */
+	public App getApp() {
+		return app().getApp(ImageJApp.NAME);
+	}
+
+	/** @see org.scijava.app.App#getTitle() */
+	public String getTitle() {
+		return getApp().getTitle();
+	}
+
+	/** @see org.scijava.app.App#getVersion() */
+	public String getVersion() {
+		return getApp().getVersion();
+	}
+
+	/** @see org.scijava.app.App#getInfo(boolean) */
+	public String getInfo(boolean mem) {
+		return getApp().getInfo(mem);
 	}
 
 }

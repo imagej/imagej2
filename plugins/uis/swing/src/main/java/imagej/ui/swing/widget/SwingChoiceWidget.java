@@ -45,17 +45,21 @@ import java.awt.event.ActionListener;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
+import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
 /**
- * Swing implementation of multiple choice selector widget.
+ * Swing implementation of multiple choice selector widget using a
+ * {@link JComboBox}.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = InputWidget.class)
+@Plugin(type = InputWidget.class, priority = SwingChoiceWidget.PRIORITY)
 public class SwingChoiceWidget extends SwingInputWidget<String> implements
 	ActionListener, ChoiceWidget<JPanel>
 {
+
+	public static final double PRIORITY = Priority.NORMAL_PRIORITY;
 
 	private JComboBox comboBox;
 
@@ -95,28 +99,9 @@ public class SwingChoiceWidget extends SwingInputWidget<String> implements
 
 	@Override
 	public void refreshWidget() {
-		final Object value = getValidValue();
+		final Object value = getModel().getValue();
 		if (value.equals(comboBox.getSelectedItem())) return; // no change
 		comboBox.setSelectedItem(value);
-	}
-
-	// -- Helper methods --
-
-	private Object getValidValue() {
-		final int itemCount = comboBox.getItemCount();
-		if (itemCount == 0) return null; // no valid values exist
-
-		final Object value = getModel().getValue();
-		for (int i = 0; i < itemCount; i++) {
-			final Object item = comboBox.getItemAt(i);
-			if (item.equals(value)) return value;
-		}
-
-		// value was invalid; reset to first choice on the list
-		final Object validValue = comboBox.getItemAt(0);
-		// CTR FIXME should not update model in getter!
-		getModel().setValue(validValue);
-		return validValue;
 	}
 
 }

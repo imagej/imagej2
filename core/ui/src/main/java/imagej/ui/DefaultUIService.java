@@ -35,6 +35,7 @@
 
 package imagej.ui;
 
+import imagej.app.ImageJApp;
 import imagej.command.CommandService;
 import imagej.data.display.ImageDisplayService;
 import imagej.display.Display;
@@ -45,7 +46,7 @@ import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.DisplayUpdatedEvent;
 import imagej.menu.MenuService;
 import imagej.options.OptionsService;
-import imagej.platform.AppService;
+import imagej.platform.AppEventService;
 import imagej.platform.PlatformService;
 import imagej.platform.event.AppQuitEvent;
 import imagej.tool.ToolService;
@@ -61,10 +62,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.scijava.InstantiableException;
+import org.scijava.app.App;
+import org.scijava.app.AppService;
+import org.scijava.app.StatusService;
+import org.scijava.app.event.StatusEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
-import org.scijava.event.StatusService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -97,6 +100,9 @@ public final class DefaultUIService extends AbstractService implements
 	private ThreadService threadService;
 
 	@Parameter
+	private AppService appService;
+
+	@Parameter
 	private PlatformService platformService;
 
 	@Parameter
@@ -118,7 +124,7 @@ public final class DefaultUIService extends AbstractService implements
 	private OptionsService optionsService;
 
 	@Parameter
-	private AppService appService;
+	private AppEventService appEventService;
 
 	@Parameter
 	private ImageDisplayService imageDisplayService;
@@ -141,6 +147,11 @@ public final class DefaultUIService extends AbstractService implements
 	private boolean activationInvocationPending = false;
 
 	// -- UIService methods --
+
+	@Override
+	public App getApp() {
+		return appService.getApp(ImageJApp.NAME);
+	}
 
 	@Override
 	public LogService getLog() {
@@ -198,8 +209,8 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
-	public AppService getAppService() {
-		return appService;
+	public AppEventService getAppEventService() {
+		return appEventService;
 	}
 
 	@Override
@@ -275,6 +286,11 @@ public final class DefaultUIService extends AbstractService implements
 	}
 
 	@Override
+	public boolean isDefaultUI(final String name) {
+		return getDefaultUI() == getUI(name);
+	}
+
+	@Override
 	public UserInterface getUI(final String name) {
 		return uiMap.get(name);
 	}
@@ -332,20 +348,20 @@ public final class DefaultUIService extends AbstractService implements
 
 	@Override
 	public DialogPrompt.Result showDialog(final String message) {
-		return showDialog(message, getContext().getTitle());
+		return showDialog(message, getApp().getTitle());
 	}
 
 	@Override
 	public Result showDialog(final String message, final MessageType messageType)
 	{
-		return showDialog(message, getContext().getTitle(), messageType);
+		return showDialog(message, getApp().getTitle(), messageType);
 	}
 
 	@Override
 	public Result showDialog(final String message, final MessageType messageType,
 		final OptionType optionType)
 	{
-		return showDialog(message, getContext().getTitle(), messageType, optionType);
+		return showDialog(message, getApp().getTitle(), messageType, optionType);
 	}
 
 	@Override
@@ -392,6 +408,11 @@ public final class DefaultUIService extends AbstractService implements
 		ui.showContextMenu(menuRoot, display, x, y);
 	}
 
+	@Override
+	public String getStatusMessage(final StatusEvent statusEvent) {
+		return statusService.getStatusMessage(ImageJApp.NAME, statusEvent);
+	}
+
 	// -- Service methods --
 
 	@Override
@@ -408,7 +429,10 @@ public final class DefaultUIService extends AbstractService implements
 	@Override
 	public void dispose() {
 		// dispose active display viewers
-		for (final DisplayViewer<?> viewer : displayViewers) {
+		// NB - copy list to avoid ConcurrentModificationExceptions
+		List<DisplayViewer<?>> viewers = new ArrayList<DisplayViewer<?>>();
+		viewers.addAll(displayViewers);
+		for (final DisplayViewer<?> viewer : viewers) {
 			viewer.dispose();
 		}
 
@@ -501,18 +525,11 @@ public final class DefaultUIService extends AbstractService implements
 		final List<PluginInfo<UserInterface>> infos =
 			pluginService.getPluginsOfType(UserInterface.class);
 		for (final PluginInfo<UserInterface> info : infos) {
-			try {
-				// instantiate user interface
-				final UserInterface ui = info.createInstance();
-				ui.setContext(getContext());
-				ui.setPriority(info.getPriority());
-				log.info("Discovered user interface: " + ui.getClass().getName());
-
-				addUI(info.getName(), ui);
-			}
-			catch (final InstantiableException e) {
-				log.warn("Invalid user interface: " + info, e);
-			}
+			// instantiate user interface
+			final UserInterface ui = pluginService.createInstance(info);
+			if (ui == null) continue;
+			log.info("Discovered user interface: " + ui.getClass().getName());
+			addUI(info.getName(), ui);
 		}
 
 		// check system property for explicit UI preference
@@ -527,11 +544,6 @@ public final class DefaultUIService extends AbstractService implements
 			// set the default UI to the one with the highest priority
 			setDefaultUI(uiList.get(0));
 		}
-	}
-
-	@Override
-	public boolean isDefaultUI(final String name) {
-		return getDefaultUI() == getUI(name);
 	}
 
 }

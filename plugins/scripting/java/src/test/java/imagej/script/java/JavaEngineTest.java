@@ -36,6 +36,7 @@
 package imagej.script.java;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -47,15 +48,25 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.scijava.util.FileUtils;
 
 /**
- * TODO
+ * Tests the Java 'scripting' backend.
  * 
  * @author Johannes Schindelin
  */
 public class JavaEngineTest {
+
+	@Before
+	public void assumeJavaC() {
+		boolean found = false;
+		try {
+			found = getClass().getClassLoader().loadClass("com.sun.tools.javac.Main") != null;
+		} catch (Throwable t) {}
+		assumeTrue(found);
+	}
 
 	@Test
 	public void minimalProjectFromPOM() throws Exception {
@@ -65,7 +76,9 @@ public class JavaEngineTest {
 		try {
 			evalJava(new File(dir, "pom.xml"));
 		} catch (ScriptException e) {
-			result = e.getCause().getCause().getMessage().equals("success");
+			final Throwable cause = e.getCause();
+			result = cause != null && cause.getCause() != null && cause.getCause().getMessage().equals("success");
+			if (!result) e.printStackTrace();
 		}
 		assertTrue(result);
 
@@ -74,6 +87,7 @@ public class JavaEngineTest {
 		final File jar = new File(dir, "target/MinimalTest-1.0.0.jar");
 		assertTrue(jar.exists());
 
+		System.gc();
 		assertTrue(FileUtils.deleteRecursively(dir));
 	}
 
@@ -106,6 +120,7 @@ public class JavaEngineTest {
 		final File jar = new File(dir, "target/MinimalTest-1.0.0.jar");
 		assertTrue(jar.exists());
 
+		System.gc();
 		assertTrue(FileUtils.deleteRecursively(dir));
 	}
 

@@ -42,9 +42,9 @@ import java.awt.Graphics;
 import java.awt.Label;
 import java.util.List;
 
+import org.scijava.app.event.StatusEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventSubscriber;
-import org.scijava.event.StatusEvent;
 
 /**
  * AWT implementation of {@link StatusBar}.
@@ -53,7 +53,7 @@ import org.scijava.event.StatusEvent;
  */
 public class AWTStatusBar extends Label implements StatusBar {
 
-	protected final UIService uiService;
+	private final UIService uiService;
 
 	private int value;
 	private int maximum;
@@ -98,7 +98,7 @@ public class AWTStatusBar extends Label implements StatusBar {
 
 	@EventHandler
 	protected void onEvent(final StatusEvent event) {
-		final String message = event.getStatusMessage();
+		final String message = uiService.getStatusMessage(event);
 		final int val = event.getProgressValue();
 		final int max = event.getProgressMaximum();
 		setStatus(message);

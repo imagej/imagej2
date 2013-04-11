@@ -35,6 +35,7 @@
 
 package imagej.core.commands.app;
 
+import imagej.app.ImageJApp;
 import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.ChannelCollection;
@@ -68,8 +69,9 @@ import net.imglib2.io.ImgIOException;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
-import org.scijava.Context;
 import org.scijava.ItemIO;
+import org.scijava.app.App;
+import org.scijava.app.AppService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
@@ -107,10 +109,10 @@ public class AboutImageJ extends ContextCommand {
 	// -- parameters --
 
 	@Parameter
-	private Context context;
+	private LogService log;
 
 	@Parameter
-	private LogService log;
+	private AppService appService;
 
 	@Parameter
 	private DatasetService dataSrv;
@@ -142,7 +144,7 @@ public class AboutImageJ extends ContextCommand {
 	public void run() {
 		final Dataset dataset = createDataset();
 		drawTextOverImage(dataset);
-		final String title = context.getTitle();
+		final String title = getApp().getTitle();
 		display = dispSrv.createDisplay("About " + title, dataset);
 	}
 
@@ -283,7 +285,7 @@ public class AboutImageJ extends ContextCommand {
 	 * image.
 	 */
 	private List<String> getTextBlock() {
-		Manifest mft = context.getManifest();
+		final Manifest mft = getApp().getManifest();
 
 		final LinkedList<String> stringList = new LinkedList<String>();
 		if (mft != null) {
@@ -405,7 +407,11 @@ public class AboutImageJ extends ContextCommand {
 	}
 
 	private String getAppString() {
-		return context.getTitle() + " " + context.getVersion();
+		return getApp().getTitle() + " " + getApp().getVersion();
+	}
+
+	private App getApp() {
+		return appService.getApp(ImageJApp.NAME);
 	}
 
 }

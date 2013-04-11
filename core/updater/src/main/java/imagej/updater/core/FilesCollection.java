@@ -322,10 +322,11 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		ParserConfigurationException, SAXException
 	{
 		new XMLFileReader(this).read(in);
+		in.close();
 	}
 
 	public void write() throws IOException, SAXException,
-		TransformerConfigurationException, ParserConfigurationException
+		TransformerConfigurationException
 	{
 		new XMLFileWriter(this).write(new GZIPOutputStream(new FileOutputStream(
 			prefix(Util.XML_COMPRESSED))), true);
@@ -785,9 +786,6 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		}
 	}
 
-	// TODO: for developers, there should be a consistency check:
-	// no dependencies on local-only files, no circular dependencies,
-	// and no overriding circular dependencies.
 	void addDependencies(final FileObject file, final DependencyMap map,
 		final boolean overriding)
 	{
@@ -920,7 +918,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	}
 
 	@Deprecated
-	public FileObject get(@SuppressWarnings("unused") final int index) {
+	public FileObject get(final int index) {
 		throw new UnsupportedOperationException();
 	}
 

@@ -165,10 +165,9 @@ public class ThresholdFigure extends AbstractAttributedFigure implements
 		while (cursor.hasNext()) {
 			long[] pos = cursor.next();
 			// only draw points that satisfy the threshold conditions
-			color = null;
 			int classification = overlay.classify(pos);
 			if (classification == Integer.MAX_VALUE) { // NaN data value
-				color = Color.black;
+				color = null;
 			}
 			else if (classification < 0) {
 				color = lessColor;

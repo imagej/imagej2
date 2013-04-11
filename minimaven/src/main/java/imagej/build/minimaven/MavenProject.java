@@ -44,6 +44,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -73,7 +75,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * 
  * @author Johannes Schindelin
  */
-@SuppressWarnings("hiding")
 public class MavenProject extends DefaultHandler implements Comparable<MavenProject> {
 	protected final BuildEnvironment env;
 	protected boolean buildFromSource, built;
@@ -102,6 +103,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 	protected Coordinate latestDependency = new Coordinate();
 	protected boolean isCurrentProfile;
 	protected String currentPluginName;
+	private static Name CREATED_BY = new Name("Created-By");
 
 	protected MavenProject addModule(String name) throws IOException, ParserConfigurationException, SAXException {
 		return addChild(env.parse(new File(new File(directory, name), "pom.xml"), this));
@@ -180,13 +182,12 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 					BooleanState.YES : BooleanState.NO;
 			}
 			return jarUpToDate == BooleanState.YES;
-		} else {
-			if (upToDate == BooleanState.UNKNOWN) {
-				upToDate = checkUpToDate(false) ?
-					BooleanState.YES : BooleanState.NO;
-			}
-			return upToDate == BooleanState.YES;
 		}
+		if (upToDate == BooleanState.UNKNOWN) {
+			upToDate = checkUpToDate(false) ?
+				BooleanState.YES : BooleanState.NO;
+		}
+		return upToDate == BooleanState.YES;
 	}
 
 	public boolean checkUpToDate(boolean includingJar) throws IOException, ParserConfigurationException, SAXException {
@@ -281,7 +282,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 	 * @throws SAXException
 	 */
 	public void buildAndInstall() throws CompileError, IOException, ParserConfigurationException, SAXException {
-		final String ijDirProperty = getProperty(BuildEnvironment.IMAGEJ_APP_DIRECTORY);
+		final String ijDirProperty = expand(getProperty(BuildEnvironment.IMAGEJ_APP_DIRECTORY));
 		if (ijDirProperty == null) {
 			throw new IOException(BuildEnvironment.IMAGEJ_APP_DIRECTORY + " does not point to an ImageJ.app/ directory!");
 		}
@@ -452,27 +453,36 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 			BuildEnvironment.copyFile(pom, targetFile);
 		}
 
-		if (mainClass != null || includeImplementationBuild) {
-			File file = new File(target, "META-INF/MANIFEST.MF");
-			Manifest manifest = null;
-			if (file.exists())
-				manifest = new Manifest(new FileInputStream(file));
-			else {
-				manifest = new Manifest();
-				manifest.getMainAttributes().put(Name.MANIFEST_VERSION, "1.0");
-				file.getParentFile().mkdirs();
-			}
-			if (mainClass != null)
-				manifest.getMainAttributes().put(Name.MAIN_CLASS, mainClass);
-			if (includeImplementationBuild && !getArtifactId().equals("Fiji_Updater"))
-				manifest.getMainAttributes().put(new Name("Implementation-Build"), env.getImplementationBuild(directory));
-			manifest.write(new FileOutputStream(file));
+		final String manifestClassPath = getManifestClassPath();
+		File file = new File(target, "META-INF/MANIFEST.MF");
+		Manifest manifest = null;
+		if (file.exists()) {
+			final InputStream in = new FileInputStream(file);
+			manifest = new Manifest(in);
+			in.close();
+		} else {
+			manifest = new Manifest();
+			manifest.getMainAttributes().put(Name.MANIFEST_VERSION, "1.0");
+			file.getParentFile().mkdirs();
 		}
+		final java.util.jar.Attributes main = manifest.getMainAttributes();
+		if (mainClass != null)
+			main.put(Name.MAIN_CLASS, mainClass);
+		if (manifestClassPath != null)
+			main.put(Name.CLASS_PATH, manifestClassPath);
+		main.put(CREATED_BY , "MiniMaven");
+		if (includeImplementationBuild && !getArtifactId().equals("Fiji_Updater"))
+			main.put(new Name("Implementation-Build"), env.getImplementationBuild(directory));
+		final OutputStream manifestOut = new FileOutputStream(file);
+		manifest.write(manifestOut);
+		manifestOut.close();
 
 		if (makeJar) {
-			JarOutputStream out = new JarOutputStream(new FileOutputStream(getTarget()));
+			final OutputStream jarOut = new FileOutputStream(getTarget());
+			JarOutputStream out = new JarOutputStream(jarOut);
 			addToJarRecursively(out, target, "");
 			out.close();
+			jarOut.close();
 		}
 
 		built = true;
@@ -534,6 +544,10 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		return coordinate;
 	}
 
+	public String getGAV() {
+		return getGroupId() + ":" + getArtifactId() + ":" + getVersion() + ":" + getPackaging();
+	}
+
 	public String getGroupId() {
 		return coordinate.groupId;
 	}
@@ -585,11 +599,23 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		return builder.toString();
 	}
 
-	private final void deleteVersions(final File directory, final String filename) {
+	private String getManifestClassPath() throws IOException, ParserConfigurationException, SAXException {
+		StringBuilder builder = new StringBuilder();
+		for (MavenProject pom : getDependencies(true, env.downloadAutomatically, "test", "provided")) {
+			if (!"jar".equals(pom.getPackaging())) continue;
+			builder.append(" ").append(pom.getArtifactId() + "-" + pom.coordinate.version + ".jar");
+		}
+		if (builder.length() == 0) return null;
+		builder.delete(0, 1);
+		return builder.toString();
+	}
+
+	private final void deleteVersions(final File directory, final String filename, final File excluding) {
 		final File[] versioned = FileUtils.getAllVersions(directory, filename);
 		if (versioned == null)
 			return;
 		for (final File file : versioned) {
+			if (file.equals(excluding)) continue;
 			if (!file.getName().equals(filename))
 				env.err.println("Warning: deleting '" + file + "'");
 			if (!file.delete())
@@ -609,7 +635,11 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 	private void copyToImageJAppDirectory(final File ijDir, boolean deleteOtherVersions) throws IOException {
 		if ("pom".equals(getPackaging())) return;
 		final File source = getTarget();
-		if (!source.exists()) throw new IOException("Artifact does not exist: " + source);
+		if (!source.exists()) {
+			if ("imglib-tests".equals(getArtifactId())) return; // ignore obsolete ImgLib
+			if ("imglib2-tests".equals(getArtifactId())) return; // ignore inherited kludge
+			throw new IOException("Artifact does not exist: " + source);
+		}
 
 		final File targetDir = new File(ijDir, isImageJ1Plugin(source) ? "plugins" : "jars");
 		final File target = new File(targetDir, getArtifactId()
@@ -620,9 +650,10 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 				throw new IOException("Could not make directory " + targetDir);
 			}
 		} else if (target.exists() && target.lastModified() >= source.lastModified()) {
+			if (deleteOtherVersions) deleteVersions(targetDir, target.getName(), target);
 			return;
 		}
-		if (deleteOtherVersions) deleteVersions(targetDir, target.getName());
+		if (deleteOtherVersions) deleteVersions(targetDir, target.getName(), null);
 		BuildEnvironment.copyFile(source, target);
 	}
 
@@ -729,6 +760,14 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		}
 	}
 
+	public List<Coordinate> getDirectDependencies() {
+		final List<Coordinate> result = new ArrayList<Coordinate>();
+		for (final Coordinate coordinate : dependencies) {
+			result.add(expand(coordinate));
+		}
+		return result;
+	}
+
 	protected boolean arrayContainsString(String[] array, String key) {
 		for (String string : array)
 			if (string.equals(key))
@@ -787,6 +826,16 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 			return properties.get(key);
 		if (key.equals("project.basedir"))
 			return directory.getPath();
+		if (key.equals("rootdir")) {
+			File directory = this.directory;
+			for (;;) {
+				final File parent = directory.getParentFile();
+				if (parent == null || !new File(parent, "pom.xml").exists()) {
+					return directory.getPath();
+				}
+				directory = parent;
+			}
+		}
 		if (parent == null) {
 			// hard-code a few variables
 			if (key.equals("bio-formats.groupId"))
@@ -798,6 +847,10 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 			return null;
 		}
 		return parent.getProperty(key);
+	}
+
+	public MavenProject getParent() {
+		return parent;
 	}
 
 	public MavenProject[] getChildren() {
@@ -837,6 +890,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 			dependency.version = "1.0";
 		if (dependency.version == null && "provided".equals(dependency.scope))
 			return null;
+		if (dependency.groupId == null) throw new IllegalArgumentException("Need fully qualified GAVs: " + dependency.getGAV());
 		if (dependency.artifactId.equals(expand(coordinate.artifactId)) &&
 				dependency.groupId.equals(expand(coordinate.groupId)) &&
 				dependency.version.equals(expand(coordinate.version)))
@@ -956,8 +1010,10 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		BufferedReader reader = new BufferedReader(new FileReader(file));
 		for (;;) {
 			String line = reader.readLine();
-			if (line == null)
+			if (line == null) {
+				reader.close();
 				throw new RuntimeException("Could not determine version for " + path);
+			}
 			int tag = line.indexOf("<version>");
 			if (tag < 0)
 				continue;
@@ -1044,6 +1100,21 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 			if (env.debug)
 				env.err.println((isCurrentProfile ? "Activating" : "Ignoring") + " profile " + string);
 		}
+		else if (!isCurrentProfile && prefix.equals(">project>profiles>profile>activation>os>name"))
+			isCurrentProfile = string.equalsIgnoreCase(System.getProperty("os.name"));
+		else if (!isCurrentProfile && prefix.equals(">project>profiles>profile>activation>os>family")) {
+			String osName = System.getProperty("os.name").toLowerCase();
+			if (string.equalsIgnoreCase("windows")) {
+				isCurrentProfile = osName.startsWith("win");
+			} else if (string.toLowerCase().startsWith("mac")) {
+				isCurrentProfile = osName.startsWith("mac");
+			} else if (string.equalsIgnoreCase("unix")) {
+				isCurrentProfile = !osName.startsWith("win") && !osName.startsWith("mac");
+			} else {
+				env.err.println("Ignoring unknown OS family: " + string);
+				isCurrentProfile = false;
+			}
+		}
 		else if (!isCurrentProfile && prefix.equals(">project>profiles>profile>activation>file>exists"))
 			isCurrentProfile = new File(directory, string).exists();
 		else if (!isCurrentProfile && prefix.equals(">project>profiles>profile>activation>activeByDefault"))
@@ -1106,6 +1177,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 	}
 
 	protected void checkParentTag(String tag, String string1, String string2) {
+		if (!env.debug) return;
 		String expanded1 = expand(string1);
 		String expanded2 = expand(string2);
 		if ((expanded1 == null && expanded2 != null) ||

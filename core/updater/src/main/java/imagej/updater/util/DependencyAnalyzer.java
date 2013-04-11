@@ -133,6 +133,7 @@ public class DependencyAnalyzer {
 				}
 			}
 		}
+		jar.close();
 		return result;
 	}
 
@@ -170,6 +171,7 @@ public class DependencyAnalyzer {
 			final ByteCodeAnalyzer analyzer = new ByteCodeAnalyzer(code, Mode.METHODS);
 			if (analyzer.containsDebugInfo()) return true;
 		}
+		jar.close();
 		return false;
 	}
 

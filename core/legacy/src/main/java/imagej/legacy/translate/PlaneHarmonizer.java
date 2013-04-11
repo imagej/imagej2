@@ -42,7 +42,6 @@ import imagej.data.Extents;
 import imagej.data.Position;
 import net.imglib2.meta.Axes;
 
-import org.scijava.Context;
 import org.scijava.log.LogService;
 
 /**
@@ -56,8 +55,8 @@ public class PlaneHarmonizer implements DataHarmonizer {
 
 	private final LogService log;
 
-	public PlaneHarmonizer(Context context) {
-		log = context.getService(LogService.class);
+	public PlaneHarmonizer(LogService log) {
+		this.log = log;
 	}
 
 	/**

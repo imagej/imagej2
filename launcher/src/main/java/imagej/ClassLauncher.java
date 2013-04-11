@@ -122,7 +122,7 @@ public class ClassLauncher {
 
 		if (!"false".equals(System.getProperty("patch.ij1")) &&
 			!mainClass.equals("imagej.Main") &&
-			!mainClass.equals("fiji.build.MiniMaven"))
+			!mainClass.equals("imagej.build.MiniMaven"))
 		{
 			classLoader =
 				ClassLoaderPlus.getInImageJDirectory(null, "jars/fiji-compat.jar",

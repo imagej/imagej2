@@ -54,7 +54,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * TODO
+ * A helper class to read information from Maven-built .jar files.
  * 
  * @author Johannes Schindelin
  */
@@ -74,6 +74,7 @@ public class POMParser extends DefaultHandler {
 				break;
 			}
 		}
+		jar.close();
 	}
 
 	public void read(final InputStream in) throws ParserConfigurationException, IOException, SAXException {

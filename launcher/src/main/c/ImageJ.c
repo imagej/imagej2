@@ -2636,8 +2636,8 @@ static void add_extension(struct subcommand *subcommand, const char *extension)
  *
  * Example:
  *
- * --build --ij-jar=jars/fake.jar --main-class=fiji.build.Fake
- *  Start the Fiji Build in the current directory
+ * --mini-maven --ij-jar=jars/ij-minimaven.jar --main-class=imagej.build.MiniMaven
+ *  Start MiniMaven in the current directory
  */
 static void add_subcommand(const char *line)
 {
@@ -2718,7 +2718,7 @@ const char *default_subcommands[] = {
 	" file ending in .js)",
 	"--ant --tools-jar --ij-jar=jars/ant.jar --ij-jar=jars/ant-launcher.jar --ij-jar=jars/ant-nodeps.jar --ij-jar=jars/ant-junit.jar --dont-patch-ij1 --headless --main-class=org.apache.tools.ant.Main",
 	" run Apache Ant",
-	"--mini-maven --ij-jar=jars/fake.jar --dont-patch-ij1 --main-class=fiji.build.MiniMaven",
+	"--mini-maven --ij-jar=jars/ij-minimaven.jar --dont-patch-ij1 --main-class=imagej.build.MiniMaven",
 	" run Fiji's very simple Maven mockup",
 	"--javac --ij-jar=jars/javac.jar --freeze-classloader --headless --full-classpath --dont-patch-ij1 --pass-classpath --main-class=com.sun.tools.javac.Main",
 	" start JavaC, the Java Compiler, instead of ImageJ",
@@ -3099,9 +3099,6 @@ static void __attribute__((__noreturn__)) usage(void)
 		"\n",
 		"Options to run programs other than ImageJ:\n",
 		subcommands.buffer,
-		"--build\n"
-		"\tstart a build instead of ImageJ\n"
-		"\n"
 		"--main-class <class name> (this is the\n"
 		"\tdefault when called with a file ending in .class)\n"
 		"\tstart the given class instead of ImageJ\n"
@@ -3247,19 +3244,6 @@ static void try_with_less_memory(long megabytes)
 	MessageBox(NULL, buffer->buffer, "Error executing ImageJ", MB_OK);
 #endif
 	die("%s", buffer->buffer);
-}
-
-static int is_building(const char *target)
-{
-	int i;
-	if (main_argc < 3 ||
-			(strcmp(main_argv[1], "--build") &&
-			 strcmp(main_argv[1], "--fake")))
-		return 0;
-	for (i = 2; i < main_argc; i++)
-		if (!strcmp(main_argv[i], target))
-			return 1;
-	return 0;
 }
 
 static const char *maybe_substitute_ij_jar(const char *relative_path)
@@ -3459,6 +3443,8 @@ static int handle_one_option2(int *i, int argc, const char **argv)
 #ifdef WIN32
 		open_win_console();
 #endif
+		error("Fiji Build is deprecated! Please port your project to (Mini)Maven:\n"
+			"\n\thttp://fiji.sc/Maven");
 		skip_class_launcher = 1;
 		headless = 1;
 		fake_jar = ij_path("jars/fake.jar");
@@ -3466,9 +3452,6 @@ static int handle_one_option2(int *i, int argc, const char **argv)
 		if (run_precompiled || !file_exists(fake_jar) ||
 				file_is_newer(precompiled_fake_jar, fake_jar))
 			fake_jar = precompiled_fake_jar;
-		if (file_is_newer(ij_path("src-plugins/fake/fiji/build/Fake.java"), fake_jar) &&
-				!is_building("jars/fake.jar"))
-			error("Warning: jars/fake.jar is not up-to-date");
 		string_set_length(&arg, 0);
 		string_addf(&arg, "-Djava.class.path=%s", fake_jar);
 		add_option_string(&options, &arg, 0);
@@ -3567,13 +3550,6 @@ static void parse_command_line(void)
 #else
 #define EXE_EXTENSION
 #endif
-
-	string_setf(&buffer, "%s/ij" EXE_EXTENSION, ij_dir);
-	string_setf(&buffer2, "%s/ij.c", ij_dir);
-	if (file_exists(ij_path("ImageJ" EXE_EXTENSION)) &&
-			file_is_newer(ij_path("ImageJ.c"), ij_path("ImageJ" EXE_EXTENSION)) &&
-			!is_building("ImageJ"))
-		error("Warning: your ImageJ executable is not up-to-date");
 
 #ifdef __linux__
 	string_append_path_list(java_library_path, getenv("LD_LIBRARY_PATH"));
@@ -4995,13 +4971,20 @@ int main(int argc, char **argv, char **e)
 	main_argc_backup = argc;
 
 	/* For now, launch Fiji1 when fiji-compat.jar was found */
-	if (has_jar(ij_path("jars/"), "fiji-compat"))
+	if (has_jar(ij_path("jars/"), "fiji-compat")) {
+		if (debug)
+			error("Detected Fiji");
 		legacy_mode = 1;
+	}
 	/* If no ImageJ2 was found, try to fall back to ImageJ 1.x */
 	else if (!has_jar(ij_path("jars/"), "ij-app")) {
+		if (debug)
+			error("Detected ImageJ 1.x");
 		legacy_mode = 1;
 		main_class = legacy_ij1_class;
 	}
+	else if (debug)
+		error("Detected ImageJ2");
 
 	initialize_ij_launcher_jar_path();
 	parse_command_line();

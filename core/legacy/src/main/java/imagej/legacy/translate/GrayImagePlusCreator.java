@@ -42,10 +42,9 @@ import ij.measure.Calibration;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.legacy.LegacyService;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.type.numeric.integer.ShortType;
-
-import org.scijava.Context;
 
 /**
  * Creates {@link ImagePlus}es from {@link ImageDisplay}s containing gray data.
@@ -56,7 +55,7 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 
 	// -- instance variables --
 
-	private final Context context;
+	private final LegacyService legSrv;
 	
 	private final GrayPixelHarmonizer pixelHarmonizer;
 	private final ColorTableHarmonizer colorTableHarmonizer;
@@ -67,12 +66,13 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 
 	// -- public interface --
 
-	public GrayImagePlusCreator(Context context) {
-		this.context = context;
+	public GrayImagePlusCreator(LegacyService legSrv) {
+		this.legSrv = legSrv;
 		pixelHarmonizer = new GrayPixelHarmonizer();
-		colorTableHarmonizer = new ColorTableHarmonizer(context);
+		colorTableHarmonizer =
+			new ColorTableHarmonizer(legSrv.getImageDisplayService());
 		metadataHarmonizer = new MetadataHarmonizer();
-		planeHarmonizer = new PlaneHarmonizer(context);
+		planeHarmonizer = new PlaneHarmonizer(legSrv.getLogService());
 		positionHarmonizer = new PositionHarmonizer();
 		nameHarmonizer = new NameHarmonizer();
 	}
@@ -80,7 +80,7 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 	@Override
 	public ImagePlus createLegacyImage(final ImageDisplay display) {
 		final ImageDisplayService imageDisplayService =
-			context.getService(ImageDisplayService.class);
+			legSrv.getImageDisplayService();
 		final Dataset dataset = imageDisplayService.getActiveDataset(display);
 		ImagePlus imp;
 		if (LegacyUtils.datasetIsIJ1Compatible(dataset)) {

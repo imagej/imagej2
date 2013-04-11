@@ -55,8 +55,8 @@ import imagej.tool.IconDrawer;
 import imagej.tool.IconService;
 import imagej.util.ColorRGB;
 
+import org.scijava.app.StatusService;
 import org.scijava.event.EventHandler;
-import org.scijava.event.StatusService;
 
 /**
  * TODO

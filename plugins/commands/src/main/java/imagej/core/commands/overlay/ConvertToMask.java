@@ -43,7 +43,7 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.overlay.BinaryMaskOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.ThresholdOverlay;
-import imagej.data.overlay.ThresholdService;
+import imagej.data.threshold.ThresholdService;
 import imagej.menu.MenuConstants;
 import imagej.util.ColorRGB;
 import net.imglib2.RandomAccess;

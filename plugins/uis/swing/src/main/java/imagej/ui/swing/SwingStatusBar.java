@@ -50,9 +50,9 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.border.BevelBorder;
 
+import org.scijava.app.event.StatusEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventSubscriber;
-import org.scijava.event.StatusEvent;
 
 /**
  * Swing implementation of {@link StatusBar}.
@@ -71,7 +71,7 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 
 	public SwingStatusBar(final UIService uiService) {
 		this.uiService = uiService;
-		statusText = new JLabel(uiService.getContext().getInfo(false));
+		statusText = new JLabel(uiService.getApp().getInfo(false));
 		statusText.setBorder(new BevelBorder(BevelBorder.LOWERED));
 		progressBar = new JProgressBar();
 		progressBar.setVisible(false);
@@ -132,8 +132,7 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 		final OptionsMemoryAndThreads options =
 			uiService.getOptionsService().getOptions(OptionsMemoryAndThreads.class);
 		if (options.isRunGcOnClick()) System.gc();
-		uiService.getStatusService().showStatus(
-			uiService.getContext().getInfo(true));
+		uiService.getStatusService().showStatus(uiService.getApp().getInfo(true));
 	}
 
 	@Override
@@ -145,7 +144,8 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 
 	@EventHandler
 	protected void onEvent(final StatusEvent event) {
-		final String message = event.getStatusMessage();
+		final String message = uiService.getStatusMessage(event);
+
 		final int val = event.getProgressValue();
 		final int max = event.getProgressMaximum();
 		final boolean warning = event.isWarning();

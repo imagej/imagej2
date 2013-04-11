@@ -167,14 +167,15 @@ public class LegacyCommand implements Command {
 			this.group = getThreadGroup();
 			this.map = legacyService.getImageMap();
 			final ImageTranslator imageTranslator =
-				new DefaultImageTranslator(context);
-			this.harmonizer = new Harmonizer(context, imageTranslator);
+				new DefaultImageTranslator(legacyService);
+			this.harmonizer = new Harmonizer(legacyService, imageTranslator);
 		}
 
 		@Override
 		public void run() {
 			
-			ResultsTableHarmonizer rtHarmonizer = new ResultsTableHarmonizer(context);
+			ResultsTableHarmonizer rtHarmonizer =
+				new ResultsTableHarmonizer(legacyService.getDisplayService());
 
 			rtHarmonizer.setLegacyImageJResultsTable();
 

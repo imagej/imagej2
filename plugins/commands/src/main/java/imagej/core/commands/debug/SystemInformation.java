@@ -35,6 +35,7 @@
 
 package imagej.core.commands.debug;
 
+import imagej.app.ImageJApp;
 import imagej.command.Command;
 
 import java.io.File;
@@ -47,6 +48,8 @@ import java.util.regex.Pattern;
 
 import org.scijava.Context;
 import org.scijava.ItemIO;
+import org.scijava.app.App;
+import org.scijava.app.AppService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;
@@ -69,6 +72,9 @@ public class SystemInformation implements Command {
 	@Parameter
 	private Context context;
 
+	@Parameter
+	private AppService appService;
+
 	@Parameter(label = "System Information", type = ItemIO.OUTPUT)
 	private String info;
 
@@ -78,7 +84,7 @@ public class SystemInformation implements Command {
 	public void run() {
 		final StringBuilder sb = new StringBuilder();
 
-		sb.append(context.getInfo(false) + NL);
+		sb.append(appService.getApp(ImageJApp.NAME).getInfo(false) + NL);
 
 		sb.append(NL);
 		sb.append("-- Services --" + NL);
@@ -87,11 +93,19 @@ public class SystemInformation implements Command {
 			sb.append(service + NL);
 		}
 
-		final Manifest manifest = context.getManifest();
-		if (manifest != null) {
+		final Map<String, App> apps = appService.getApps();
+		for (final String name : apps.keySet()) {
+			final App app = apps.get(name);
+			final Manifest manifest = app.getManifest();
 			sb.append(NL);
-			sb.append("-- Manifest details --" + NL);
-			sb.append(getManifestData(manifest));
+			sb.append("-- Application: " + name + " --" + NL);
+			sb.append("Title = " + app.getTitle() + NL);
+			sb.append("Version = " + app.getVersion() + NL);
+			sb.append("groupId = " + app.getGroupId() + NL);
+			sb.append("artifactId = " + app.getArtifactId() + NL);
+			if (manifest != null) {
+				sb.append(getManifestData(manifest));
+			}
 		}
 
 		sb.append(NL);
