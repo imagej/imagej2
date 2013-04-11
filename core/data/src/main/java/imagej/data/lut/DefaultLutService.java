@@ -194,12 +194,6 @@ public class DefaultLutService extends AbstractService implements LutService {
 		return info;
 	}
 
-	private String nameBeyondBase(String filename) {
-		int lutsIndex = filename.indexOf("/luts/");
-		if (lutsIndex < 0) return filename;
-		return filename.substring(lutsIndex + 6, filename.length());
-	}
-
 	private String tableName(final String filename) {
 		int ext = filename.lastIndexOf(".lut");
 		return filename.substring(0, ext);
@@ -214,6 +208,7 @@ public class DefaultLutService extends AbstractService implements LutService {
 			int size = 0;
 			while (stream.read() != -1)
 				size++;
+			stream.close();
 			return size;
 		}
 		catch (IOException e) {
@@ -224,7 +219,6 @@ public class DefaultLutService extends AbstractService implements LutService {
 	// -- private modern lut loading method --
 
 	private Tuple2<Integer, ColorTable> openModernImageJLut(URL url)
-		throws IOException
 	{
 		// TODO : support some new more flexible format
 		return new Tuple2<Integer, ColorTable>(0, null);
