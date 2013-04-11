@@ -60,6 +60,12 @@ public interface IOService extends Service {
 
 	DatasetService getDatasetService();
 
+	/**
+	 * Determines whether the given source is image data (and hence compatible
+	 * with the {@link #loadDataset(String)} method).
+	 */
+	boolean isImageData(String source);
+
 	/** Loads a dataset from a source (such as a file on disk). */
 	Dataset loadDataset(String source) throws ImgIOException,
 		IncompatibleTypeException;
