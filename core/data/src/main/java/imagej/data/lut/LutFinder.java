@@ -38,17 +38,15 @@ package imagej.data.lut;
 import imagej.util.AppUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.scijava.util.ClassUtils;
 import org.scijava.util.FileUtils;
+import org.scijava.util.IteratorPlus;
 
 /**
  * The LutFinder determines the locations of all .lut files known to ImageJ.
@@ -57,6 +55,7 @@ import org.scijava.util.FileUtils;
  */
 public class LutFinder {
 
+	private final static Pattern lutsPattern = Pattern.compile(".*\\.lut$");
 	private static final File LUT_DIRECTORY;
 
 	static {
@@ -72,25 +71,25 @@ public class LutFinder {
 	 * 
 	 * @return A collection of URLs referencing the known .lut files
 	 */
-	public Collection<URL> findLuts() {
-		final URL jarURL = getJarURL();
-		final Collection<URL> jarLutURLs = getLuts(jarURL);
-		final URL dirURL = getDirectoryURL();
-		if (dirURL == null) return jarLutURLs;
-
-		final Collection<URL> dirLutURLs = getLuts(dirURL);
-		final HashMap<String, URL> combined = new HashMap<String, URL>();
-		// do jar luts first
-		putAll(jarLutURLs, combined);
+	public Map<String, URL> findLuts() {
+		final HashMap<String, URL> result = new HashMap<String, URL>();
+		try {
+			for (final URL jarURL : getJarURLs()) {
+				getLuts(result, jarURL);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		// do file luts second: user can thus override jar luts if desired
-		putAll(dirLutURLs, combined);
-		return combined.values();
+		final URL dirURL = getDirectoryURL();
+		if (dirURL != null) getLuts(result, dirURL);
+		return result;
 	}
 
 	// -- private helpers --
 
-	private URL getJarURL() {
-		return ClassUtils.getLocation(this.getClass());
+	private Iterable<URL> getJarURLs() throws IOException {
+		return new IteratorPlus<URL>(getClass().getClassLoader().getResources("luts/"));
 	}
 
 	private URL getDirectoryURL() {
@@ -103,32 +102,12 @@ public class LutFinder {
 		}
 	}
 
-	private Collection<URL> getLuts(URL base) {
-		Collection<URL> urls = FileUtils.listContents(base);
-		return filter(urls, ".*\\.lut$");
-	}
-
-	private Collection<URL> filter(Collection<URL> urlCollection, String regex) {
-		final List<URL> list = new ArrayList<URL>();
-		if (urlCollection == null) return list;
-		Pattern p = Pattern.compile(regex);
-		for (URL url : urlCollection) {
-			if (p.matcher(url.toString()).matches()) list.add(url);
-		}
-		return list;
-	}
-
-	// this will put urls into a map. the names are determined relative to the
-	// "/luts" directory. Since there is a luts dir in the app and in the jar
-	// one set can overwrite the other. Above we have order such that user luts
-	// can override jar luts.
-
-	private void putAll(Collection<URL> urls, Map<String, URL> map) {
-		for (URL url : urls) {
-			String id = url.toString();
-			int lutIndex = id.lastIndexOf("/luts/");
-			if (lutIndex >= 0) id = id.substring(lutIndex, id.length());
-			map.put(id, url);
+	private void getLuts(final Map<String, URL> result, final URL base) {
+		final String prefix = base.toString();
+		for (final URL url : FileUtils.listContents(base)) {
+			final String string = url.toString();
+			if (!string.startsWith(prefix)) continue;
+			if (lutsPattern.matcher(string).matches()) result.put(string.substring(prefix.length()), url);
 		}
 	}
 

@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
@@ -153,10 +154,10 @@ public class DefaultLutService extends AbstractService implements LutService {
 
 	@Override
 	public void initialize() {
-		Collection<URL> urls = new LutFinder().findLuts();
+		Map<String, URL> luts = new LutFinder().findLuts();
 		List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
-		for (final URL url : urls) {
-			modules.add(createInfo(url));
+		for (final String key : luts.keySet()) {
+			modules.add(createInfo(key, luts.get(key)));
 		}
 
 		// register the modules with the module service
@@ -165,17 +166,9 @@ public class DefaultLutService extends AbstractService implements LutService {
 
 	// -- private initialization code --
 
-	private ModuleInfo createInfo(final URL url) {
+	private ModuleInfo createInfo(final String key, final URL url) {
 		// set menu path
-		String filename;
-		try {
-			filename = url.toURI().getPath();
-		}
-		catch (URISyntaxException e) {
-			filename = url.getPath();
-		}
-		String shortenedName = nameBeyondBase(filename);
-		String[] subPaths = shortenedName.split("/");
+		String[] subPaths = key.split("/");
 		final MenuPath menuPath = new MenuPath();
 		menuPath.add(new MenuEntry(MenuConstants.IMAGE_LABEL));
 		menuPath.add(new MenuEntry("Lookup Tables"));
