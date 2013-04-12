@@ -79,11 +79,10 @@ public class RevertImage extends ContextCommand {
 	@Override
 	public void run() {
 		final String source = dataset.getSource();
-		if (source == null) {
-			uiService.showDialog("Cannot revert an image with no source");
+		if (source == null || source.equals("")) {
+			uiService.showDialog("Cannot revert image of unknown origin");
 			return;
 		}
-
 		try {
 			ioService.revertDataset(dataset);
 		}
