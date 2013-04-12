@@ -43,6 +43,7 @@ import imagej.data.overlay.RectangleOverlay;
 import imagej.menu.MenuConstants;
 
 import org.scijava.Context;
+import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -72,7 +73,7 @@ public class SelectionSpecify extends ContextCommand {
 	@Parameter
 	private Context context;
 
-	@Parameter
+	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	@Parameter(label = "X")
@@ -99,9 +100,9 @@ public class SelectionSpecify extends ContextCommand {
 	public void run() {
 		long x = px;
 		long y = py;
-		if (centered) {
-			x -= w / 2;
-			y -= h / 2;
+		if (! centered) {
+			x += w / 2;
+			y += h / 2;
 		}
 		if (oval) {
 			final EllipseOverlay overlay = new EllipseOverlay(context);
@@ -113,8 +114,8 @@ public class SelectionSpecify extends ContextCommand {
 		}
 		else { // rectangle
 			final RectangleOverlay overlay = new RectangleOverlay(context);
-			overlay.setOrigin(x, 0);
-			overlay.setOrigin(y, 1);
+			overlay.setOrigin(x - w/2, 0);
+			overlay.setOrigin(y - h/2, 1);
 			overlay.setExtent(w, 0);
 			overlay.setExtent(h, 1);
 			display.display(overlay);
