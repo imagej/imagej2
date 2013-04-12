@@ -125,7 +125,8 @@ public class DefaultUploaderService extends AbstractService implements
 		try {
 			installer.start();
 			installer.moveUpdatedIntoPlace();
-			URLClassLoader loader = new URLClassLoader(urls.toArray(new URL[urls.size()]), Thread.currentThread().getContextClassLoader());
+			final ClassLoader parent = Thread.currentThread().getContextClassLoader();
+			final URLClassLoader loader = new URLClassLoader(urls.toArray(new URL[urls.size()]), parent);
 			Thread.currentThread().setContextClassLoader(loader);
 			initialize();
 			return hasUploader(protocol) ? getUploader(protocol) : null;
