@@ -102,8 +102,8 @@ public class DefaultUploaderService extends AbstractService implements
 					"No uploader found for protocol " + protocol);
 		}
 		final Set<URL> urls = new LinkedHashSet<URL>();
-		final FilesCollection toInstall = new FilesCollection(files.prefix(""));
-		for (final FileObject file : uploader.getFileDependencies(files, true)) {
+		final FilesCollection toInstall = files.clone(uploader.getFileDependencies(files, true));
+		for (final FileObject file : toInstall) {
 			switch (file.getStatus()) {
 			case NOT_INSTALLED:
 				toInstall.add(file);
