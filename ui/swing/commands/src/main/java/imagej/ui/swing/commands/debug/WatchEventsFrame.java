@@ -71,6 +71,7 @@ import org.scijava.event.EventDetails;
 import org.scijava.event.EventHistory;
 import org.scijava.event.SciJavaEvent;
 import org.scijava.log.LogService;
+import org.scijava.util.ClassUtils;
 import org.scijava.util.IteratorPlus;
 
 /**
@@ -353,16 +354,13 @@ public class WatchEventsFrame extends JFrame implements ActionListener,
 		final CheckBoxNodeData data = getData(node);
 		if (data == null) return null;
 		final String className = data.getText();
-		try {
-			@SuppressWarnings({ "rawtypes", "unchecked" })
-			final Class<? extends SciJavaEvent> eventType =
-				(Class) Class.forName(className);
-			return eventType;
-		}
-		catch (final ClassNotFoundException exc) {
-			log.error(exc);
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		final Class<? extends SciJavaEvent> eventType =
+			(Class) ClassUtils.loadClass(className);
+		if (eventType == null) {
 			throw new IllegalStateException("Invalid class: " + className);
 		}
+		return eventType;
 	}
 
 	/** Extracts the check box state of a given tree node. */
