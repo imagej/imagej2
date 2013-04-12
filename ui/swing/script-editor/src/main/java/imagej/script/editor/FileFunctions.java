@@ -174,26 +174,6 @@ public class FileFunctions {
 		return "http://fiji.sc/" + className.replace('.', '/') + ".java";
 	}
 
-	public String getJar(String className) {
-		try {
-			Class clazz = Class.forName(className);
-			String baseName = className;
-			int dot = baseName.lastIndexOf('.');
-			if (dot > 0)
-				baseName = baseName.substring(dot + 1);
-			baseName += ".class";
-			String url = clazz.getResource(baseName).toString();
-			int dotJar = url.indexOf("!/");
-			if (dotJar < 0)
-				return null;
-			int offset = url.startsWith("jar:file:") ? 9 : 0;
-			return url.substring(offset, dotJar);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
 	protected static Map<String, List<String>> class2source;
 
 	public String findSourcePath(String className) {
