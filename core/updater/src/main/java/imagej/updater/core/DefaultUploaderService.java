@@ -97,8 +97,10 @@ public class DefaultUploaderService extends AbstractService implements
 	public Uploader installUploader(String protocol, FilesCollection files, final Progress progress) {
 		if (hasUploader(protocol)) return getUploader(protocol);
 		final FileObject uploader = files.get("jars/ij-updater-" + protocol + ".jar");
-		if (uploader.getStatus() != Status.NOT_INSTALLED)
-			return null;
+		if (uploader == null || uploader.getStatus() != Status.NOT_INSTALLED) {
+			throw new IllegalArgumentException(
+					"No uploader found for protocol " + protocol);
+		}
 		final Set<URL> urls = new LinkedHashSet<URL>();
 		final FilesCollection toInstall = new FilesCollection(files.prefix(""));
 		for (final FileObject file : uploader.getFileDependencies(files, true)) {
