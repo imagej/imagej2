@@ -367,7 +367,7 @@ public class CommandLine {
 							+ name + " to " + file.updateSite + ")");
 				}
 			}
-			if (file.getStatus() == Status.NOT_INSTALLED) {
+			if (file.getStatus() == Status.NOT_INSTALLED || file.getStatus() == Status.NEW) {
 				System.err.println("Removing file '" + name + "'");
 				file.setAction(files, Action.REMOVE);
 			} else {
