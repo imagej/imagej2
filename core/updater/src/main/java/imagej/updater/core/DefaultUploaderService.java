@@ -96,7 +96,11 @@ public class DefaultUploaderService extends AbstractService implements
 	@Override
 	public Uploader installUploader(String protocol, FilesCollection files, final Progress progress) {
 		if (hasUploader(protocol)) return getUploader(protocol);
-		final FileObject uploader = files.get("jars/ij-updater-" + protocol + ".jar");
+
+		FileObject uploader = files.get("jars/ij-updater-" + protocol + ".jar");
+		if (uploader == null && "sftp".equals(protocol)) {
+			uploader = files.get("jars/ij-updater-ssh.jar");
+		}
 		if (uploader == null || uploader.getStatus() != Status.NOT_INSTALLED) {
 			throw new IllegalArgumentException(
 					"No uploader found for protocol " + protocol);
