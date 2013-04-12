@@ -56,6 +56,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1031,5 +1032,19 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 			sb.append(file).append("\n");
 		}
 		return sb.toString();
+	}
+
+	public Collection<String> getProtocols(Iterable<FileObject> selected) {
+		final Set<String> protocols = new LinkedHashSet<String>();
+		for (final FileObject file : selected) {
+			final UpdateSite site = getUpdateSite(file.updateSite);
+			if (site != null) {
+				if (site.sshHost == null)
+					protocols.add("unknown(" + file.filename + ")");
+				else
+					protocols.add(site.getUploadProtocol());
+			}
+		}
+		return protocols;
 	}
 }
