@@ -35,6 +35,8 @@
 
 package imagej.updater.core;
 
+import imagej.updater.util.Progress;
+
 import org.scijava.service.Service;
 
 /**
@@ -50,4 +52,6 @@ public interface UploaderService extends Service {
 	/** TODO. */
 	Uploader getUploader(String protocol) throws IllegalArgumentException;
 
+	/** TODO. */
+	Uploader installUploader(String protocol, FilesCollection files, final Progress progress);
 }

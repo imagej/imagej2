@@ -35,8 +35,18 @@
 
 package imagej.updater.core;
 
+import imagej.updater.core.FileObject.Action;
+import imagej.updater.core.FileObject.Status;
+import imagej.updater.util.Progress;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
@@ -81,6 +91,45 @@ public class DefaultUploaderService extends AbstractService implements
 				protocol);
 		}
 		return uploader;
+	}
+
+	@Override
+	public Uploader installUploader(String protocol, FilesCollection files, final Progress progress) {
+		if (hasUploader(protocol)) return getUploader(protocol);
+		final FileObject uploader = files.get("jars/ij-updater-" + protocol + ".jar");
+		if (uploader.getStatus() != Status.NOT_INSTALLED)
+			return null;
+		final Set<URL> urls = new LinkedHashSet<URL>();
+		final FilesCollection toInstall = new FilesCollection(files.prefix(""));
+		for (final FileObject file : uploader.getFileDependencies(files, true)) {
+			switch (file.getStatus()) {
+			case NOT_INSTALLED:
+				toInstall.add(file);
+				file.setAction(toInstall, Action.INSTALL);
+				//$FALL-THROUGH$
+			case INSTALLED:
+				try {
+					urls.add(toInstall.prefix(file.filename).toURI().toURL());
+				} catch (MalformedURLException e) {
+					return null;
+				}
+				break;
+			default:
+				return null;
+			}
+		}
+		progress.setTitle("Installing uploader for '" + protocol + "'");
+		final Installer installer = new Installer(toInstall, progress);
+		try {
+			installer.start();
+			installer.moveUpdatedIntoPlace();
+			URLClassLoader loader = new URLClassLoader(urls.toArray(new URL[urls.size()]), Thread.currentThread().getContextClassLoader());
+			Thread.currentThread().setContextClassLoader(loader);
+			initialize();
+			return hasUploader(protocol) ? getUploader(protocol) : null;
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
 	// -- Service methods --
