@@ -507,7 +507,7 @@ public class CommandLine {
 	private void upload(final String updateSite) {
 		FilesUploader uploader = null;
 		try {
-			uploader = new FilesUploader(files, updateSite);
+			uploader = new FilesUploader(null, files, updateSite, progress);
 			if (!uploader.login())
 				throw die("Login failed!");
 			uploader.upload(progress);

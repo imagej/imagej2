@@ -226,7 +226,7 @@ public class UpdaterTestUtils {
 				assertNotNull(name, file);
 				file.stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
 			}
-			uploader = new FilesUploader(files, FilesCollection.DEFAULT_UPDATE_SITE);
+			uploader = new FilesUploader(null, files, FilesCollection.DEFAULT_UPDATE_SITE, progress);
 			assertTrue(uploader.login());
 			uploader.upload(progress);
 			assertTrue(remoteDb.exists());
@@ -300,7 +300,7 @@ public class UpdaterTestUtils {
 		for (final FileObject file : files.toUpload())
 			assertEquals(updateSite, file.updateSite);
 		final FilesUploader uploader =
-			new FilesUploader(files, updateSite);
+			new FilesUploader(null, files, updateSite, progress);
 		assertTrue(uploader.login());
 		uploader.upload(progress);
 		files.write();

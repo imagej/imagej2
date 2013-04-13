@@ -822,7 +822,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 					"Which site do you want to upload to?", "Update site");
 			if (updateSiteName == null) return;
 		}
-		final FilesUploader uploader = new FilesUploader(files, updateSiteName);
+		final FilesUploader uploader = new FilesUploader(uploaderService, files, updateSiteName, getProgress(null));
 
 		Progress progress = null;
 		try {

@@ -189,7 +189,7 @@ public class UpdaterGUITest {
 				file.stageForUpload(files, updateSite);
 			}
 		}
-		final FilesUploader uploader = new FilesUploader(files, updateSite);
+		final FilesUploader uploader = new FilesUploader(null, files, updateSite, progress);
 		assertTrue(uploader.login());
 		uploader.upload(progress);
 		System.err.println("description in " + ijRoot + ": " + files.get("jars/ij-updater-core.jar").getDescription());

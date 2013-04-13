@@ -382,7 +382,7 @@ public class FilesUploader {
 		final FilesCollection files = new FilesCollection(null);
 		files.addUpdateSite(updateSiteName, url, sshHost, uploadDirectory, Long
 			.parseLong(Util.timestamp(-1)));
-		return new FilesUploader(files, updateSiteName);
+		return new FilesUploader(uploaderService, files, updateSiteName, progress);
 	}
 
 	public LogService getLog() {
