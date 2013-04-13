@@ -133,7 +133,7 @@ public class UpdaterTestUtils {
 		final String url = directory.toURI().toURL().toString().replace('\\', '/');
 		final String sshHost = "file:localhost";
 		final String uploadDirectory = directory.getAbsolutePath();
-		final FilesUploader uploader = FilesUploader.initialUpload(url, sshHost, uploadDirectory);
+		final FilesUploader uploader = FilesUploader.initialUploader(null, url, sshHost, uploadDirectory, progress);
 		assertTrue(uploader.login());
 		uploader.upload(progress);
 		CommandLine.main(files.prefix(""), -1, "add-update-site", name, url, sshHost, uploadDirectory);
@@ -181,7 +181,7 @@ public class UpdaterTestUtils {
 		assertFalse(remoteDb.exists());
 
 		FilesUploader uploader =
-			FilesUploader.initialUpload(url, sshHost, uploadDirectory);
+			FilesUploader.initialUploader(null, url, sshHost, uploadDirectory, progress);
 		assertTrue(uploader.login());
 		uploader.upload(progress);
 
@@ -226,7 +226,7 @@ public class UpdaterTestUtils {
 				assertNotNull(name, file);
 				file.stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
 			}
-			uploader = new FilesUploader(files, FilesCollection.DEFAULT_UPDATE_SITE);
+			uploader = new FilesUploader(null, files, FilesCollection.DEFAULT_UPDATE_SITE, progress);
 			assertTrue(uploader.login());
 			uploader.upload(progress);
 			assertTrue(remoteDb.exists());
@@ -300,7 +300,7 @@ public class UpdaterTestUtils {
 		for (final FileObject file : files.toUpload())
 			assertEquals(updateSite, file.updateSite);
 		final FilesUploader uploader =
-			new FilesUploader(files, updateSite);
+			new FilesUploader(null, files, updateSite, progress);
 		assertTrue(uploader.login());
 		uploader.upload(progress);
 		files.write();

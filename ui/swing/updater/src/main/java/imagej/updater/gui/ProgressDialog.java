@@ -156,7 +156,7 @@ public class ProgressDialog extends JDialog implements Progress {
 		cancel.addKeyListener(keyAdapter);
 
 		setLocationRelativeTo(null);
-		setVisible(true);
+		if (title != null) setVisible(true);
 	}
 
 	public void cancel() {
@@ -172,6 +172,7 @@ public class ProgressDialog extends JDialog implements Progress {
 		this.title = title;
 		progress.setStringPainted(true);
 		setTitle();
+		setVisible(true);
 	}
 
 	protected void setTitle() {

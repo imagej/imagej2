@@ -37,6 +37,7 @@ package imagej.updater.core;
 
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Progress;
+import imagej.updater.util.StderrProgress;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
 
@@ -83,18 +84,32 @@ public class FilesUploader {
 		return context.getService(UploaderService.class);
 	}
 
+	@Deprecated
 	public FilesUploader(final FilesCollection files, final String updateSite) {
 		this(createUploaderService(), files, updateSite);
 	}
 
+	@Deprecated
 	public FilesUploader(final UploaderService uploaderService,
-		final FilesCollection files, final String updateSite)
-	{
+			final FilesCollection files, final String updateSite) {
+		this(uploaderService, files, updateSite, null);
+	}
+
+	public FilesUploader(UploaderService uploaderService,
+			final FilesCollection files, final String updateSite,
+			final Progress progress) {
+		if (uploaderService == null) uploaderService = createUploaderService();
 		this.files = files;
 		siteName = updateSite;
 		site = files.getUpdateSite(updateSite);
 		compressed = Util.XML_COMPRESSED;
-		uploader = uploaderService.getUploader(site.getUploadProtocol());
+		final String protocol = site.getUploadProtocol();
+		uploader = uploaderService.installUploader(protocol, files,
+				progress == null ? new StderrProgress() : progress);
+		if (uploader == null) {
+			throw new IllegalArgumentException(
+					"No uploader found for protocol " + protocol);
+		}
 	}
 
 	public boolean hasUploader() {
@@ -360,14 +375,22 @@ public class FilesUploader {
 			uploader.logout();
 	}
 
+	@Deprecated
 	public static FilesUploader initialUpload(final String url,
 		final String sshHost, final String uploadDirectory)
+	{
+		return initialUploader(null, url, sshHost, uploadDirectory, null);
+	}
+
+	public static FilesUploader initialUploader(
+		final UploaderService uploaderService, final String url,
+		final String sshHost, final String uploadDirectory, final Progress progress)
 	{
 		final String updateSiteName = "Dummy";
 		final FilesCollection files = new FilesCollection(null);
 		files.addUpdateSite(updateSiteName, url, sshHost, uploadDirectory, Long
 			.parseLong(Util.timestamp(-1)));
-		return new FilesUploader(files, updateSiteName);
+		return new FilesUploader(uploaderService, files, updateSiteName, progress);
 	}
 
 	public LogService getLog() {

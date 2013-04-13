@@ -35,8 +35,18 @@
 
 package imagej.updater.core;
 
+import imagej.updater.core.FileObject.Action;
+import imagej.updater.core.FileObject.Status;
+import imagej.updater.util.Progress;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
@@ -81,6 +91,57 @@ public class DefaultUploaderService extends AbstractService implements
 				protocol);
 		}
 		return uploader;
+	}
+
+	@Override
+	public Uploader installUploader(String protocol, FilesCollection files, final Progress progress) {
+		if (hasUploader(protocol)) return getUploader(protocol);
+
+		FileObject uploader = files.get("jars/ij-updater-" + protocol + ".jar");
+		if (uploader == null && "sftp".equals(protocol)) {
+			uploader = files.get("jars/ij-updater-ssh.jar");
+		}
+		if (uploader == null || uploader.getStatus() != Status.NOT_INSTALLED) {
+			throw new IllegalArgumentException(
+					"No uploader found for protocol " + protocol);
+		}
+		final Set<URL> urls = new LinkedHashSet<URL>();
+		final FilesCollection toInstall = files.clone(uploader.getFileDependencies(files, true));
+		for (final FileObject file : toInstall) {
+			switch (file.getStatus()) {
+			case NOT_INSTALLED:
+				toInstall.add(file);
+				file.setAction(toInstall, Action.INSTALL);
+				try {
+					urls.add(toInstall.prefixUpdate(file.filename).toURI().toURL());
+				} catch (MalformedURLException e) {
+					return null;
+				}
+				break;
+			case INSTALLED:
+				try {
+					urls.add(toInstall.prefix(file.filename).toURI().toURL());
+				} catch (MalformedURLException e) {
+					return null;
+				}
+				break;
+			default:
+				return null;
+			}
+		}
+		progress.setTitle("Installing uploader for '" + protocol + "'");
+		final Installer installer = new Installer(toInstall, progress);
+		try {
+			installer.start();
+			final ClassLoader parent = Thread.currentThread().getContextClassLoader();
+			final URLClassLoader loader = new URLClassLoader(urls.toArray(new URL[urls.size()]), parent);
+			Thread.currentThread().setContextClassLoader(loader);
+			pluginService.reloadPlugins();
+			initialize();
+			return hasUploader(protocol) ? getUploader(protocol) : null;
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
 	// -- Service methods --

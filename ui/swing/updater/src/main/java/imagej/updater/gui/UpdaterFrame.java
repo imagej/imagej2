@@ -822,7 +822,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 					"Which site do you want to upload to?", "Update site");
 			if (updateSiteName == null) return;
 		}
-		final FilesUploader uploader = new FilesUploader(files, updateSiteName);
+		final FilesUploader uploader = new FilesUploader(uploaderService, files, updateSiteName, getProgress(null));
 
 		Progress progress = null;
 		try {
@@ -862,7 +862,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		throws InstantiationException
 	{
 		final FilesUploader uploader =
-			FilesUploader.initialUpload(url, sshHost, uploadDirectory);
+			FilesUploader.initialUploader(uploaderService, url, sshHost, uploadDirectory, getProgress(null));
 		Progress progress = null;
 		try {
 			if (!uploader.login()) return false;

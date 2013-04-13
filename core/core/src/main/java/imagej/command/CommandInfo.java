@@ -172,7 +172,7 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo {
 	protected CommandInfo(final PluginInfo<Command> info, final String className,
 		final Class<? extends Command> commandClass, final Plugin annotation)
 	{
-		super(className, commandClass, Command.class, annotation);
+		super(className, commandClass, Command.class, annotation, null);
 		this.info = info;
 		setPresets(null);
 		setCommandModuleFactory(null);
