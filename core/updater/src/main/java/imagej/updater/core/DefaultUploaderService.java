@@ -108,7 +108,12 @@ public class DefaultUploaderService extends AbstractService implements
 			case NOT_INSTALLED:
 				toInstall.add(file);
 				file.setAction(toInstall, Action.INSTALL);
-				//$FALL-THROUGH$
+				try {
+					urls.add(toInstall.prefixUpdate(file.filename).toURI().toURL());
+				} catch (MalformedURLException e) {
+					return null;
+				}
+				break;
 			case INSTALLED:
 				try {
 					urls.add(toInstall.prefix(file.filename).toURI().toURL());
@@ -124,7 +129,6 @@ public class DefaultUploaderService extends AbstractService implements
 		final Installer installer = new Installer(toInstall, progress);
 		try {
 			installer.start();
-			installer.moveUpdatedIntoPlace();
 			final ClassLoader parent = Thread.currentThread().getContextClassLoader();
 			final URLClassLoader loader = new URLClassLoader(urls.toArray(new URL[urls.size()]), parent);
 			Thread.currentThread().setContextClassLoader(loader);
