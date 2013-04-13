@@ -133,7 +133,7 @@ public class UpdaterTestUtils {
 		final String url = directory.toURI().toURL().toString().replace('\\', '/');
 		final String sshHost = "file:localhost";
 		final String uploadDirectory = directory.getAbsolutePath();
-		final FilesUploader uploader = FilesUploader.initialUpload(url, sshHost, uploadDirectory);
+		final FilesUploader uploader = FilesUploader.initialUploader(null, url, sshHost, uploadDirectory, progress);
 		assertTrue(uploader.login());
 		uploader.upload(progress);
 		CommandLine.main(files.prefix(""), -1, "add-update-site", name, url, sshHost, uploadDirectory);
@@ -181,7 +181,7 @@ public class UpdaterTestUtils {
 		assertFalse(remoteDb.exists());
 
 		FilesUploader uploader =
-			FilesUploader.initialUpload(url, sshHost, uploadDirectory);
+			FilesUploader.initialUploader(null, url, sshHost, uploadDirectory, progress);
 		assertTrue(uploader.login());
 		uploader.upload(progress);
 

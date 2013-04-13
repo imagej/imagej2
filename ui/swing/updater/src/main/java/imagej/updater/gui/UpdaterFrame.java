@@ -862,7 +862,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		throws InstantiationException
 	{
 		final FilesUploader uploader =
-			FilesUploader.initialUpload(url, sshHost, uploadDirectory);
+			FilesUploader.initialUploader(uploaderService, url, sshHost, uploadDirectory, getProgress(null));
 		Progress progress = null;
 		try {
 			if (!uploader.login()) return false;
