@@ -474,13 +474,18 @@ public class UpdaterTest {
 
 	@Test
 	public void testReChecksumming() throws Exception {
-		files = initialize();
-		writeFile(files, "jars/new.jar");
-		new Checksummer(files, progress).updateFromLocal();
-		assertStatus(Status.LOCAL_ONLY, files.get("jars/new.jar"));
+		files = initialize("jars/new.jar");
+		assertStatus(Status.INSTALLED, files.get("jars/new.jar"));
+
 		writeFile(files, "jars/new.jar", "modified");
+		files.prefix(".checksums").delete();
 		new Checksummer(files, progress).updateFromLocal();
-		assertStatus(Status.LOCAL_ONLY, files.get("jars/new.jar"));
+		assertStatus(Status.MODIFIED, files.get("jars/new.jar"));
+
+		writeFile(files, "jars/new.jar");
+		files.prefix(".checksums").delete();
+		new Checksummer(files, progress).updateFromLocal();
+		assertStatus(Status.INSTALLED, files.get("jars/new.jar"));
 	}
 
 	@Test
