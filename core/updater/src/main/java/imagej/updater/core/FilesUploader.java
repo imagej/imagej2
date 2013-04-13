@@ -84,6 +84,7 @@ public class FilesUploader {
 		return context.getService(UploaderService.class);
 	}
 
+	@Deprecated
 	public FilesUploader(final FilesCollection files, final String updateSite) {
 		this(createUploaderService(), files, updateSite);
 	}
@@ -94,9 +95,10 @@ public class FilesUploader {
 		this(uploaderService, files, updateSite, null);
 	}
 
-	public FilesUploader(final UploaderService uploaderService,
+	public FilesUploader(UploaderService uploaderService,
 			final FilesCollection files, final String updateSite,
 			final Progress progress) {
+		if (uploaderService == null) uploaderService = createUploaderService();
 		this.files = files;
 		siteName = updateSite;
 		site = files.getUpdateSite(updateSite);
