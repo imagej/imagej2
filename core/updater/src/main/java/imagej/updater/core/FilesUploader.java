@@ -37,6 +37,7 @@ package imagej.updater.core;
 
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Progress;
+import imagej.updater.util.StderrProgress;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
 
@@ -87,14 +88,26 @@ public class FilesUploader {
 		this(createUploaderService(), files, updateSite);
 	}
 
+	@Deprecated
 	public FilesUploader(final UploaderService uploaderService,
-		final FilesCollection files, final String updateSite)
-	{
+			final FilesCollection files, final String updateSite) {
+		this(uploaderService, files, updateSite, null);
+	}
+
+	public FilesUploader(final UploaderService uploaderService,
+			final FilesCollection files, final String updateSite,
+			final Progress progress) {
 		this.files = files;
 		siteName = updateSite;
 		site = files.getUpdateSite(updateSite);
 		compressed = Util.XML_COMPRESSED;
-		uploader = uploaderService.getUploader(site.getUploadProtocol());
+		final String protocol = site.getUploadProtocol();
+		uploader = uploaderService.installUploader(protocol, files,
+				progress == null ? new StderrProgress() : progress);
+		if (uploader == null) {
+			throw new IllegalArgumentException(
+					"No uploader found for protocol " + protocol);
+		}
 	}
 
 	public boolean hasUploader() {
