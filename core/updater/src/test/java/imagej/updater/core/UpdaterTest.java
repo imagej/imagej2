@@ -145,6 +145,7 @@ public class UpdaterTest {
 
 		// Update with the local files
 
+		files.prefix(".checksums").delete();
 		final Checksummer czechsummer = new Checksummer(files, progress);
 		czechsummer.updateFromLocal();
 
@@ -406,6 +407,7 @@ public class UpdaterTest {
 
 		assertTrue(files.prefix(obsoleted).delete());
 		assertTrue(files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).url.startsWith("file:"));
+		files.prefix(".checksums").delete();
 		new Checksummer(files, progress).updateFromLocal();
 		assertStatus(Status.NOT_INSTALLED, obsoleted);
 		obsoleted.setAction(files, Action.REMOVE);
@@ -433,6 +435,7 @@ public class UpdaterTest {
 		// Now trigger the conflicts
 
 		writeFile(files, obsoleted.getFilename());
+		files.prefix(".checksums").delete();
 		new Checksummer(files, progress).updateFromLocal();
 		assertStatus(Status.OBSOLETE, obsoleted);
 
@@ -534,6 +537,7 @@ public class UpdaterTest {
 		assertSame(files.get("jars/with.jar"), files.get("jars/with-2.0.jar"));
 
 		assertTrue(files.prefix(obsoleted).delete());
+		files.prefix(".checksums").delete();
 		new Checksummer(files, progress).updateFromLocal();
 		assertStatus(Status.NOT_INSTALLED, obsoleted);
 		obsoleted.setAction(files, Action.REMOVE);
@@ -544,6 +548,7 @@ public class UpdaterTest {
 		files = readDb(files);
 		assertTrue(files.prefix("jars/too-old-3.11.jar").delete());
 		writeFile(files, "jars/too-old-3.12.jar");
+		files.prefix(".checksums").delete();
 		new Checksummer(files, progress).updateFromLocal();
 		tooOld = files.get("jars/too-old.jar");
 		assertTrue(tooOld.getFilename().equals("jars/too-old-3.11.jar"));
@@ -701,6 +706,7 @@ public class UpdaterTest {
 		assertTrue(files.prefix(".checksums").delete());
 		assertTrue(files.prefix("jars/hello.jar").delete());
 		writeJar(files, "jars/hello-2.0.jar", "new-file", "empty");
+		files.prefix(".checksums").delete();
 		new Checksummer(files, progress).updateFromLocal();
 
 		files.reReadUpdateSite("second", progress);
@@ -720,6 +726,7 @@ public class UpdaterTest {
 		assertTrue(files.prefix(".checksums").delete());
 		assertTrue(files.prefix("jars/hello.jar").delete());
 		writeJar(files, "jars/hello-2.0.jar", "new-file", "empty");
+		files.prefix(".checksums").delete();
 		new Checksummer(files, progress).updateFromLocal();
 		String newChecksum = files.get("jars/hello.jar").localChecksum;
 		assertEquals(newChecksum, Util.getJarDigest(files.prefix("jars/hello-2.0.jar")));
@@ -775,6 +782,7 @@ public class UpdaterTest {
 
 		files = readDb(files);
 		assertEquals("Narf", files.get("macros/macro.ijm").description);
+		files.prefix(".checksums").delete();
 		new Checksummer(files, progress).updateFromLocal();
 		assertEquals("Narf", files.get("macros/macro.ijm").description);
 	}
@@ -816,6 +824,7 @@ public class UpdaterTest {
 		assertTrue(files.prefix(name1).delete());
 		assertFalse(files.prefix(name2).exists());
 		assertTrue(files.prefix("update/" + name2).renameTo(files.prefix(name2)));
+		files.prefix(".checksums").delete();
 		new Checksummer(files, progress).updateFromLocal();
 		assertEquals(modifiedChecksum, files.get(name2).current.checksum);
 	}
@@ -830,6 +839,7 @@ public class UpdaterTest {
 				+ "  <developer><name>Bugs Bunny</name></developer>"
 				+ " </developers>"
 				+ "</project>");
+		files.prefix(".checksums").delete();
 		new Checksummer(files, progress).updateFromLocal();
 		final FileObject object = files.get("jars/hello.jar");
 		assertNotNull(object);
@@ -948,6 +958,7 @@ public class UpdaterTest {
 					.getTimestamp(jar), Status.NOT_INSTALLED);
 			file.addPreviousVersion(triplet[0], 1, null);
 			files.add(file);
+			files.prefix(".checksums").delete();
 			new Checksummer(files, progress).updateFromLocal();
 			final FileObject file2 = files.get("jars/new.jar");
 			assertTrue(file == file2);
@@ -1040,6 +1051,7 @@ public class UpdaterTest {
 
 		assertTrue(files.prefix("jars/egads-0.1.jar").delete());
 		writeJar(files.prefix("jars/egads-0.2.jar"), "hello", "world2");
+		files.prefix(".checksums").delete();
 		new Checksummer(files, progress).updateFromLocal();
 		files.get("jars/egads.jar").stageForUpload(files, FilesCollection.DEFAULT_UPDATE_SITE);
 		upload(files);
@@ -1112,6 +1124,7 @@ public class UpdaterTest {
 		files = initialize();
 		writeJar(files, "jars/dependencee.jar", Dependencee.class);
 		writeJar(files, "jars/dependency.jar", Dependency.class);
+		files.prefix(".checksums").delete();
 		new Checksummer(files, progress).updateFromLocal();
 
 		FileObject dependencee = files.get("jars/dependencee.jar");
@@ -1123,6 +1136,7 @@ public class UpdaterTest {
 		writeJar(files, "jars/bogus.jar", Dependency.class, Dependencee.class);
 		files = new FilesCollection(files.prefix("")); // force a new dependency analyzer
 		files.read();
+		files.prefix(".checksums").delete();
 		new Checksummer(files, progress).updateFromLocal();
 		dependencee = files.get("jars/dependencee.jar");
 		dependencee.addDependency(files, files.get("jars/dependency.jar"));
@@ -1208,6 +1222,7 @@ public class UpdaterTest {
 		update(files2);
 
 		writeFile(files, "jars/dependency.jar");
+		files.prefix(".checksums").delete();
 		new Checksummer(files, progress).updateFromLocal();
 		final FileObject dependency = files.get("jars/dependency.jar");
 		assertNotNull(dependency);
