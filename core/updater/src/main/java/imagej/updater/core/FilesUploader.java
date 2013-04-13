@@ -375,8 +375,16 @@ public class FilesUploader {
 			uploader.logout();
 	}
 
+	@Deprecated
 	public static FilesUploader initialUpload(final String url,
 		final String sshHost, final String uploadDirectory)
+	{
+		return initialUploader(null, url, sshHost, uploadDirectory, null);
+	}
+
+	public static FilesUploader initialUploader(
+		final UploaderService uploaderService, final String url,
+		final String sshHost, final String uploadDirectory, final Progress progress)
 	{
 		final String updateSiteName = "Dummy";
 		final FilesCollection files = new FilesCollection(null);
