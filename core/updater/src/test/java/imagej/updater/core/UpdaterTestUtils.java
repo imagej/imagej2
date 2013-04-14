@@ -246,6 +246,48 @@ public class UpdaterTestUtils {
 		return true;
 	}
 
+	/**
+	 * Deletes a directory recursively, falling back to deleteOnExit().
+	 * 
+	 * Thanks to Windows' incredibly sophisticated and intelligent file
+	 * locking, we cannot delete files that are in use, even if they are
+	 * "in use" by, say, a ClassLoader that is about to be garbage
+	 * collected.
+	 * 
+	 * For single files, Java's API has the File#deleteOnExit method, but
+	 * it does not perform what you'd think it should do on directories.
+	 * 
+	 * To be able to clean up directories reliably, we introduce this
+	 * function which tries to delete all files and directories directly,
+	 * falling back to deleteOnExit.
+	 * 
+	 * @param directory the directory to delete recursively
+	 * @return whether the directory was deleted successfully
+	 */
+	public static boolean deleteRecursivelyAtLeastOnExit(final File directory) {
+		boolean result = true;
+		final File[] list = directory.listFiles();
+		if (list != null) {
+			for (final File file : list) {
+				if (file.isDirectory()) {
+					if (!deleteRecursivelyAtLeastOnExit(file)) {
+						result = false;
+					}
+					continue;
+				}
+				if (!file.delete()) {
+					file.deleteOnExit();
+					result = false;
+				}
+			}
+		}
+		if (!result || !directory.delete()) {
+			directory.deleteOnExit();
+			result = false;
+		}
+		return result;
+	}
+
 	protected static FilesCollection readDb(FilesCollection files) throws ParserConfigurationException,
 			SAXException {
 		return readDb(files.prefix(""));
