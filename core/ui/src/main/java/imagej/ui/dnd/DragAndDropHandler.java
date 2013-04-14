@@ -58,22 +58,98 @@ import org.scijava.plugin.Plugin;
  * @see Plugin
  * @see DragAndDropService
  */
-public interface DragAndDropHandler extends ImageJPlugin, Contextual,
+public interface DragAndDropHandler<D> extends ImageJPlugin, Contextual,
 	Prioritized
 {
 
-	/**
-	 * Gets whether this handler supports the given display and data Object.
-	 */
-	boolean isCompatible(final Display<?> display, final Object data);
+	/** Gets the native Java type handled by this handler. */
+	Class<D> getType();
 
 	/**
-	 * Performs a drop operation with the given data Object in the specified
-	 * display.
+	 * Gets whether this handler supports dropping the given data object onto a
+	 * compatible display.
+	 */
+	boolean isCompatible(final D dataObject);
+
+	/**
+	 * Gets whether this handler supports dropping the given data object onto the
+	 * specified display.
+	 */
+	boolean isCompatible(final D dataObject, final Display<?> display);
+
+	/**
+	 * Gets whether this handler supports dropping the given
+	 * {@link DragAndDropData} onto a compatible display.
+	 */
+	boolean isCompatibleData(final DragAndDropData data);
+
+	/**
+	 * Gets whether this handler supports dropping the given
+	 * {@link DragAndDropData} onto the specified display.
+	 */
+	boolean isCompatibleData(final DragAndDropData data, final Display<?> display);
+
+	/**
+	 * Gets whether this handler supports dropping the given object onto a
+	 * compatible display.
+	 */
+	boolean isCompatibleObject(final Object object);
+
+	/**
+	 * Gets whether this handler supports dropping the given object onto the
+	 * specified display.
+	 */
+	boolean isCompatibleObject(final Object object, final Display<?> display);
+
+	/**
+	 * Gets whether this handler supports dropping an assumed-to-be-compatible
+	 * data object onto the given {@link Display}.
+	 */
+	boolean isCompatibleDisplay(final Display<?> display);
+
+	/**
+	 * Converts the given {@link DragAndDropData} to the type of data object
+	 * supported by this handler.
+	 * 
+	 * @throws IllegalArgumentException if the handler does not support the given
+	 *           {@link DragAndDropData}.
+	 */
+	D convertData(final DragAndDropData data);
+
+	/**
+	 * Converts the given object to the type of data object supported by this
+	 * handler.
+	 * 
+	 * @throws IllegalArgumentException if the handler does not support the given
+	 *           object.
+	 */
+	D convertObject(final Object object);
+
+	/**
+	 * Performs a drop operation with the given data object in the specified
+	 * {@link Display}.
 	 * 
 	 * @throws IllegalArgumentException if the handler is not compatible with the
-	 *           given display or drag-and-drop data.
+	 *           given data/display combination.
 	 */
-	boolean drop(final Display<?> display, final Object data);
+	boolean drop(final D dataObject, final Display<?> display);
+
+	/**
+	 * Performs a drop operation with the given data in the specified
+	 * {@link Display}.
+	 * 
+	 * @throws IllegalArgumentException if the handler is not compatible with the
+	 *           given data/display combination.
+	 */
+	boolean dropData(final DragAndDropData data, final Display<?> display);
+
+	/**
+	 * Performs a drop operation with the given data in the specified
+	 * {@link Display}.
+	 * 
+	 * @throws IllegalArgumentException if the handler is not compatible with the
+	 *           given data/display combination.
+	 */
+	boolean dropObject(final Object object, final Display<?> display);
 
 }

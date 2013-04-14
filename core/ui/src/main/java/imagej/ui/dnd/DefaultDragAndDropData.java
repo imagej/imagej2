@@ -35,36 +35,58 @@
 
 package imagej.ui.dnd;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
- * Interface for drag-and-drop data.
+ * Default implementation of {@link DragAndDropData}, which provides a
+ * UI-agnostic way to bundle an object together with its MIME type.
  * 
+ * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public interface DragAndDropData {
+public class DefaultDragAndDropData extends AbstractDragAndDropData {
+
+	// -- Fields --
+
+	private final String mime;
+	private final Object data;
+
+	// -- Constructor --
+
+	public DefaultDragAndDropData(final String mimeType, final Object data) {
+		this.mime = createMIMEType(mimeType, data);
+		this.data = data;
+	}
+
+	// -- DragAndDropData methods --
+
+	@Override
+	public boolean isSupported(final String mimeType) {
+		return mime.equals(mimeType) || mime.startsWith(mimeType + ";");
+	}
+
+	@Override
+	public Object getData(final String mimeType) {
+		return isSupported(mimeType) ? data : null;
+	}
+
+	@Override
+	public List<String> getMIMETypes() {
+		return Collections.singletonList(mime);
+	}
+
+	// -- Helper methods --
 
 	/**
-	 * Gets whether the data can be provided as an object with the given MIME
-	 * type.
+	 * Ensures the MIME type includes the corresponding fully qualified Java class
+	 * name.
 	 */
-	boolean isSupported(String mimeType);
-
-	/**
-	 * Gets whether the data can be provided as an object of the given Java class.
-	 */
-	boolean isSupported(Class<?> type);
-
-	/** Gets the data with respect to the given MIME type. */
-	Object getData(String mimeType);
-
-	/** Gets the data as an object of the given Java class. */
-	<T> T getData(Class<T> type);
-
-	/** Gets the best supported MIME type matching the given Java class. */
-	String getMIMEType(Class<?> type);
-
-	/** Gets the list of supported MIME types. */
-	List<String> getMIMETypes();
+	private String createMIMEType(final String mimeType, final Object o) {
+		final String classFragment = "; class=" + o.getClass().getName();
+		if (mimeType.endsWith(classFragment)) return mimeType;
+		if (mimeType.contains(classFragment + ";")) return mimeType;
+		return mimeType + classFragment;
+	}
 
 }

@@ -35,6 +35,8 @@
 
 package imagej.ui.dnd;
 
+import imagej.display.Display;
+
 import org.scijava.plugin.SortablePlugin;
 
 /**
@@ -42,8 +44,119 @@ import org.scijava.plugin.SortablePlugin;
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractDragAndDropHandler extends SortablePlugin
-	implements DragAndDropHandler
+public abstract class AbstractDragAndDropHandler<D> extends SortablePlugin
+	implements DragAndDropHandler<D>
 {
-	// NB: No implementation needed.
+
+	// -- DragAndDropHandler methods --
+
+	@Override
+	public boolean isCompatible(final D dataObject) {
+		return dataObject != null;
+	}
+
+	@Override
+	public boolean isCompatible(final D dataObject, final Display<?> display) {
+		return isCompatibleDisplay(display) && isCompatible(dataObject);
+	}
+
+	@Override
+	public boolean isCompatibleData(final DragAndDropData data) {
+		return data.isSupported(getType()) &&
+			isCompatible(convertDataUnchecked(data));
+	}
+
+	@Override
+	public boolean isCompatibleData(final DragAndDropData data,
+		final Display<?> display)
+	{
+		return isCompatibleDisplay(display) && isCompatibleData(data);
+	}
+
+	@Override
+	public boolean isCompatibleObject(final Object object) {
+		return object != null && getType().isAssignableFrom(object.getClass()) &&
+			isCompatible(convertObjectUnchecked(object));
+	}
+
+	@Override
+	public boolean isCompatibleObject(final Object object,
+		final Display<?> display)
+	{
+		return isCompatibleDisplay(display) && isCompatibleObject(object);
+	}
+
+	@Override
+	public boolean isCompatibleDisplay(final Display<?> display) {
+		return true;
+	}
+
+	@Override
+	public D convertData(final DragAndDropData data) {
+		if (!isCompatibleData(data)) {
+			throw new IllegalArgumentException("Incompatible data object");
+		}
+		return convertDataUnchecked(data);
+	}
+
+	@Override
+	public D convertObject(final Object object) {
+		if (!isCompatibleObject(object)) {
+			throw new IllegalArgumentException("Incompatible data object");
+		}
+		return convertObjectUnchecked(object);
+	}
+
+	@Override
+	public boolean
+		dropData(final DragAndDropData data, final Display<?> display)
+	{
+		return drop(convertData(data), display);
+	}
+
+	@Override
+	public boolean dropObject(final Object object, final Display<?> display) {
+		return drop(convertObject(object), display);
+	}
+
+	// -- Internal methods --
+
+	/**
+	 * Throws {@link IllegalArgumentException} if (data, display) pair is
+	 * incompatible.
+	 */
+	protected void check(final D dataObject, final Display<?> display) {
+		// NB: First check compatibility of data and display individually.
+		if (!isCompatible(dataObject)) {
+			throw new IllegalArgumentException("Incompatible data object");
+		}
+		if (!isCompatibleDisplay(display)) {
+			throw new IllegalArgumentException("Incompatible display");
+		}
+		// NB: The data and display are individually compatible,
+		// but are they compatible with one another?
+		if (!isCompatible(dataObject, display)) {
+			throw new IllegalArgumentException(
+				"Data object and display are incompatible");
+		}
+	}
+
+	/**
+	 * Converts the given data to this handler's native data type, without
+	 * verifying compatibility first.
+	 */
+	protected D convertDataUnchecked(final DragAndDropData data) {
+		return data.getData(getType());
+	}
+
+	/**
+	 * Converts the given object to this handler's native data type, without
+	 * verifying compatibility first.
+	 */
+	protected D convertObjectUnchecked(final Object object) {
+		@SuppressWarnings("unchecked")
+		final D dataObject = (D) object;
+		return dataObject;
+	}
+
 }

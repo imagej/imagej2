@@ -129,7 +129,7 @@ public class AWTDropTargetEventDispatcher implements DropTargetListener {
 		final DragAndDropService dragAndDropService =
 			eventService.getContext().getService(DragAndDropService.class);
 		if (dragAndDropService != null &&
-			dragAndDropService.isCompatible(display, data))
+			dragAndDropService.isCompatible(data, display))
 		{
 			e.acceptDrop(DnDConstants.ACTION_COPY);
 		}

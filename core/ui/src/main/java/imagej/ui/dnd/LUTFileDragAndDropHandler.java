@@ -35,88 +35,95 @@
 
 package imagej.ui.dnd;
 
+import imagej.data.display.ImageDisplay;
+import imagej.data.lut.LutService;
 import imagej.display.Display;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
+import net.imglib2.display.ColorTable;
+
+import org.scijava.log.LogService;
 import org.scijava.plugin.Plugin;
 
 /**
- * Drag-and-drop handler for lists of files.
+ * Drag-and-drop handler for {@link ColorTable} files.
  * 
- * @author Curtis Rueden
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
 @Plugin(type = DragAndDropHandler.class)
-public class FileListDragAndDropHandler extends AbstractDragAndDropHandler {
-
-	// -- constants --
-
-	public static final String MIME_TYPE =
-		"application/x-java-file-list; class=java.util.List";
+public class LUTFileDragAndDropHandler extends
+	AbstractDragAndDropHandler<File>
+{
 
 	// -- DragAndDropHandler methods --
 
 	@Override
-	public boolean isCompatible(final Display<?> display, final Object data)
-	{
-		if (isListOfFiles(data)) return true;
-		if (!(data instanceof DragAndDropData)) return false;
-		DragAndDropData dndData = (DragAndDropData) data;
-		for (final String mimeType : dndData.getMimeTypes()) {
-			if (MIME_TYPE.equals(mimeType)) return true;
-		}
-		return false;
+	public Class<File> getType() {
+		return File.class;
 	}
 
 	@Override
-	public boolean drop(final Display<?> display, final Object data) {
-		final DragAndDropService dndService =
-			getContext().getService(DragAndDropService.class);
-		if (dndService == null) return false;
+	public boolean isCompatible(final File file) {
+		if (!super.isCompatible(file)) return false;
 
-		final List<File> files = getFileList(data);
-		if (files == null) return false;
+		// verify that the file contains a color table
+		final LutService lutService = getContext().getService(LutService.class);
+		if (lutService == null) return false;
+		return lutService.isLUT(file);
+	}
 
-		// drop each file
-		for (final File file : files) {
-			if (dndService.isCompatible(display, file)) {
-				dndService.drop(display, file);
-			}
+	@Override
+	public boolean isCompatibleDisplay(final Display<?> display) {
+		return display == null || display instanceof ImageDisplay;
+	}
+
+	@Override
+	public boolean drop(final File file, final Display<?> display) {
+		check(file, display);
+
+		final LutService lutService = getContext().getService(LutService.class);
+		if (lutService == null) return false;
+
+		final ImageDisplay imageDisplay = (ImageDisplay) display;
+
+		// load color table
+		final ColorTable colorTable = loadLUT(file, lutService);
+		if (colorTable == null) return false;
+
+		if (display == null) {
+			// create a new display the LUT as a ramp
+			lutService.createDisplay(getBaseName(file), colorTable);
+		}
+		else {
+			// apply the LUT to the specified display
+			lutService.applyLUT(colorTable, imageDisplay);
 		}
 		return true;
 	}
 
-	// -- helpers --
+	// -- Helper methods --
 
-	private boolean isListOfFiles(Object data) {
-		if (!(data instanceof List)) return false;
-		List<?> list = (List<?>) data;
-		if (list.size() == 0) return false;
-		for (Object o : list) {
-			if (!(o instanceof File)) return false;
+	private ColorTable loadLUT(final File file, final LutService lutService) {
+		final LogService log = getContext().getService(LogService.class);
+
+		final ColorTable colorTable;
+		try {
+			colorTable = lutService.loadLUT(file);
 		}
-		return true;
+		catch (final IOException exc) {
+			if (log != null) log.error("Error opening LUT: " + file, exc);
+			return null;
+		}
+		return colorTable;
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<File> getFileList(Object data) {
-		if (data instanceof DragAndDropData) {
-			DragAndDropData dndData = (DragAndDropData) data;
-			return (List<File>) dndData.getData(MIME_TYPE);
-		}
-		if (isListOfFiles(data)) {
-			List<?> list = (List<?>) data;
-			// NB - the list could be a List<Object> containing only Files so rather
-			// than a possibly unsafe cast we copy data
-			List<File> files = new ArrayList<File>();
-			for (Object o : list) {
-				files.add((File) o);
-			}
-			return files;
-		}
-		return null;
+	private String getBaseName(File file) {
+		final String name = file.getName();
+		return name.toLowerCase().endsWith(".lut") ? name.substring(0, name
+			.length() - 4) : name;
 	}
+
 }

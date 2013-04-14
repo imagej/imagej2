@@ -35,36 +35,38 @@
 
 package imagej.ui.dnd;
 
-import java.util.List;
+import org.scijava.AbstractContextual;
 
 /**
- * Interface for drag-and-drop data.
+ * Abstract superclass for {@link DragAndDropData} implementations.
  * 
  * @author Curtis Rueden
  */
-public interface DragAndDropData {
+public abstract class AbstractDragAndDropData extends AbstractContextual
+	implements DragAndDropData
+{
 
-	/**
-	 * Gets whether the data can be provided as an object with the given MIME
-	 * type.
-	 */
-	boolean isSupported(String mimeType);
+	@Override
+	public boolean isSupported(final Class<?> type) {
+		return getMIMEType(type) != null;
+	}
 
-	/**
-	 * Gets whether the data can be provided as an object of the given Java class.
-	 */
-	boolean isSupported(Class<?> type);
+	@Override
+	public <T> T getData(final Class<T> type) {
+		final String mimeType = getMIMEType(type);
+		if (mimeType == null) return null;
+		@SuppressWarnings("unchecked")
+		final T data = (T) getData(mimeType);
+		return data;
+	}
 
-	/** Gets the data with respect to the given MIME type. */
-	Object getData(String mimeType);
-
-	/** Gets the data as an object of the given Java class. */
-	<T> T getData(Class<T> type);
-
-	/** Gets the best supported MIME type matching the given Java class. */
-	String getMIMEType(Class<?> type);
-
-	/** Gets the list of supported MIME types. */
-	List<String> getMIMETypes();
+	@Override
+	public String getMIMEType(final Class<?> type) {
+		final String suffix = "; class=" + type.getName();
+		for (final String mimeType : getMIMETypes()) {
+			if (mimeType.endsWith(suffix)) return mimeType;
+		}
+		return null;
+	}
 
 }

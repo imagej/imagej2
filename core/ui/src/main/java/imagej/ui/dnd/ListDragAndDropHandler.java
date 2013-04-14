@@ -35,36 +35,70 @@
 
 package imagej.ui.dnd;
 
+import imagej.display.Display;
+
 import java.util.List;
 
+import org.scijava.plugin.Plugin;
+
 /**
- * Interface for drag-and-drop data.
+ * Drag-and-drop handler for lists of objects.
  * 
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
-public interface DragAndDropData {
+@Plugin(type = DragAndDropHandler.class)
+public class ListDragAndDropHandler extends
+	AbstractDragAndDropHandler<List<?>>
+{
 
-	/**
-	 * Gets whether the data can be provided as an object with the given MIME
-	 * type.
-	 */
-	boolean isSupported(String mimeType);
+	// -- DragAndDropHandler methods --
 
-	/**
-	 * Gets whether the data can be provided as an object of the given Java class.
-	 */
-	boolean isSupported(Class<?> type);
+	@Override
+	public Class<List<?>> getType() {
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		final Class<List<?>> listClass = (Class) List.class;
+		return listClass;
+	}
 
-	/** Gets the data with respect to the given MIME type. */
-	Object getData(String mimeType);
+	@Override
+	public boolean isCompatible(final List<?> list, final Display<?> display) {
+		if (!super.isCompatible(list, display)) return false;
 
-	/** Gets the data as an object of the given Java class. */
-	<T> T getData(Class<T> type);
+		final DragAndDropService dndService =
+			getContext().getService(DragAndDropService.class);
+		if (dndService == null) return false;
 
-	/** Gets the best supported MIME type matching the given Java class. */
-	String getMIMEType(Class<?> type);
+		// empty lists are trivially compatible
+		if (list.size() == 0) return true;
 
-	/** Gets the list of supported MIME types. */
-	List<String> getMIMETypes();
+		// the list is deemed compatible if at least one item is compatible
+		for (final Object item : list) {
+			if (dndService.isCompatible(item, display)) return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean drop(final List<?> list, final Display<?> display) {
+		check(list, display);
+
+		final DragAndDropService dndService =
+			getContext().getService(DragAndDropService.class);
+		if (dndService == null) return false;
+
+		// dropping an empty list trivially succeeds
+		if (list.size() == 0) return true;
+
+		// use the drag-and-drop service to handle each item separately
+		boolean success = false;
+		for (final Object item : list) {
+			if (dndService.isCompatible(item, display)) {
+				final boolean result = dndService.drop(item, display);
+				if (result) success = true;
+			}
+		}
+		return success;
+	}
 
 }

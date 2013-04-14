@@ -40,7 +40,6 @@ import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.io.IOService;
 import imagej.ui.dnd.AbstractDragAndDropHandler;
-import imagej.ui.dnd.DragAndDropData;
 import imagej.ui.dnd.DragAndDropHandler;
 
 import java.io.File;
@@ -48,7 +47,6 @@ import java.io.File;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.io.ImgIOException;
 
-import org.scijava.Priority;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Plugin;
 
@@ -58,86 +56,59 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Plugin(type = DragAndDropHandler.class, priority = Priority.VERY_LOW_PRIORITY)
-public class ImageFileDragAndDropHandler extends AbstractDragAndDropHandler {
-
-	// -- constants --
-
-	public static final String MIME_TYPE = "application/imagej-image";
+@Plugin(type = DragAndDropHandler.class)
+public class ImageFileDragAndDropHandler extends
+	AbstractDragAndDropHandler<File>
+{
 
 	// -- DragAndDropHandler methods --
 
 	@Override
-	public boolean isCompatible(final Display<?> display, final Object data)
-	{
-		if (data instanceof File) {
-			// TODO
-			// Right now we've made this plugin a very low priority handler. So all
-			// other handlers get first crack. If they can't handle we assume its an
-			// image file and open it here.
-			// I think we want to make the TextDragAndDropHandler act like this
-			// instead. What we really need to do here is ask the IOService if the
-			// File is an image.
-			return true;
-		}
-		if (data instanceof DragAndDropData) {
-			DragAndDropData dndData = (DragAndDropData) data;
-			for (final String mimeType : dndData.getMimeTypes()) {
-				if (MIME_TYPE.equals(mimeType)) return true;
-			}
-		}
-		return false;
+	public Class<File> getType() {
+		return File.class;
 	}
 
 	@Override
-	public boolean drop(final Display<?> display, final Object data) {
+	public boolean isCompatible(final File file) {
+		if (!super.isCompatible(file)) return false;
+
+		// verify that the file is image data
 		final IOService ioService = getContext().getService(IOService.class);
+		if (ioService == null) return false;
+		return ioService.isImageData(file.getAbsolutePath());
+	}
+
+	@Override
+	public boolean drop(final File file, final Display<?> display) {
+		check(file, display);
+
+		final IOService ioService = getContext().getService(IOService.class);
+		if (ioService == null) return false;
+
 		final DisplayService displayService =
 			getContext().getService(DisplayService.class);
-		if (ioService == null || displayService == null) return false;
+		if (displayService == null) return false;
 
 		final LogService log = getContext().getService(LogService.class);
 
-		String filename = null;
-
-		if (data instanceof File) {
-			filename = ((File) data).getAbsolutePath();
-		}
-
-		if (data instanceof DragAndDropData) {
-			DragAndDropData dndData = (DragAndDropData) data;
-			filename = (String) dndData.getData(MIME_TYPE);
-		}
-
-		if (filename == null) return false;
-
-		// load file
-		boolean success = true;
+		// load dataset
+		final String filename = file.getAbsolutePath();
+		final Dataset dataset;
 		try {
-			final Dataset dataset = ioService.loadDataset(filename);
-			final Display<?> d = displayService.createDisplay(dataset);
-			// HACK: update display a bit later - else data is not drawn correctly
-			new Thread() {
-
-				@Override
-				public void run() {
-					try {
-						Thread.sleep(50);
-					}
-					catch (Exception e) {/**/}
-					d.update();
-				}
-			}.start();
+			dataset = ioService.loadDataset(filename);
 		}
 		catch (final ImgIOException exc) {
 			if (log != null) log.error("Error opening file: " + filename, exc);
-			success = false;
+			return false;
 		}
 		catch (final IncompatibleTypeException exc) {
 			if (log != null) log.error("Error opening file: " + filename, exc);
-			success = false;
+			return false;
 		}
-		return success;
+
+		// display result
+		displayService.createDisplay(dataset);
+		return true;
 	}
 
 }

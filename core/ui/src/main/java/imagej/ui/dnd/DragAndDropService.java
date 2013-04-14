@@ -49,29 +49,67 @@ import org.scijava.service.Service;
 public interface DragAndDropService extends Service {
 
 	/**
-	 * Checks whether the given Object can be dropped onto the specified display.
-	 * A (display, data) pair is deemed compatible if a compatible handler exists
-	 * for them.
+	 * Checks whether the given {@link DragAndDropData} can be dropped onto the
+	 * specified display. A (data, display) pair is deemed compatible if a
+	 * compatible handler exists for them.
 	 * 
 	 * @see DragAndDropHandler
 	 */
-	boolean isCompatible(Display<?> display, Object data);
+	boolean isCompatible(DragAndDropData data, Display<?> display);
+
+	/**
+	 * Checks whether the given object can be dropped onto the specified display.
+	 * An (object, display) pair is deemed compatible if a compatible handler
+	 * exists for them.
+	 * 
+	 * @see DragAndDropHandler
+	 */
+	boolean isCompatible(Object object, Display<?> display);
 
 	/**
 	 * Performs a drag-and-drop operation in the given display with the specified
-	 * data Object, using the first available compatible handler.
+	 * {@link DragAndDropData}, using the first available compatible handler.
 	 * 
 	 * @see DragAndDropHandler
 	 * @return true if the drop operation was successful
-	 * @throws IllegalArgumentException if the display and/or data Object are
+	 * @throws IllegalArgumentException if the display and/or data object are
 	 *           unsupported, or are incompatible with one another.
 	 */
-	boolean drop(Display<?> display, Object data);
+	boolean drop(DragAndDropData data, Display<?> display);
+
+	/**
+	 * Performs a drag-and-drop operation in the given display with the specified
+	 * data object, using the first available compatible handler.
+	 * 
+	 * @see DragAndDropHandler
+	 * @return true if the drop operation was successful
+	 * @throws IllegalArgumentException if the display and/or data object are
+	 *           unsupported, or are incompatible with one another.
+	 */
+	boolean drop(Object data, Display<?> display);
+
+	/**
+	 * Gets the drag-and-drop handler which will be used to handle the given
+	 * {@link DragAndDropData} dragged onto the specified display.
+	 * 
+	 * @return The first compatible drag-and-drop handler, or null if none
+	 *         available.
+	 */
+	DragAndDropHandler<?> getHandler(DragAndDropData data, Display<?> display);
+
+	/**
+	 * Gets the drag-and-drop handler which will be used to handle the given
+	 * object dragged onto the specified display.
+	 * 
+	 * @return The first compatible drag-and-drop handler, or null if none
+	 *         available.
+	 */
+	DragAndDropHandler<?> getHandler(Object object, Display<?> display);
 
 	/**
 	 * Gets the list of available drag-and-drop handlers, which are used to
 	 * perform drag-and-drop operations.
 	 */
-	List<DragAndDropHandler> getHandlers();
+	List<DragAndDropHandler<?>> getHandlers();
 
 }

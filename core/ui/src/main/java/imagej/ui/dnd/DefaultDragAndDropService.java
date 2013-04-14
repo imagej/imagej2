@@ -41,6 +41,7 @@ import imagej.ui.dnd.event.DragExitEvent;
 import imagej.ui.dnd.event.DragOverEvent;
 import imagej.ui.dnd.event.DropEvent;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.scijava.app.StatusService;
@@ -62,8 +63,7 @@ public class DefaultDragAndDropService extends AbstractService implements
 	DragAndDropService
 {
 
-	private static final String DRAG_DROP_YES = "< <Drag and Drop> >";
-	private static final String DRAG_DROP_NO = "< <Unsupported Object> >";
+	private static final String UNSUPPORTED = "Unsupported Object";
 
 	@Parameter
 	private PluginService pluginService;
@@ -74,30 +74,56 @@ public class DefaultDragAndDropService extends AbstractService implements
 	@Parameter
 	private StatusService statusService;
 
-	private List<DragAndDropHandler> handlers;
+	private List<DragAndDropHandler<?>> handlers;
 
 	@Override
-	public boolean isCompatible(final Display<?> display,
- final Object data)
+	public boolean isCompatible(final DragAndDropData data,
+		final Display<?> display)
 	{
-		for (final DragAndDropHandler handler : getHandlers()) {
-			if (handler.isCompatible(display, data)) return true;
-		}
-		return false;
+		return getHandler(data, display) != null;
 	}
 
 	@Override
-	public boolean drop(final Display<?> display, final Object data) {
-		for (final DragAndDropHandler handler : getHandlers()) {
-			if (handler.isCompatible(display, data)) {
-				return handler.drop(display, data);
-			}
-		}
-		return false;
+	public boolean isCompatible(final Object object, final Display<?> display) {
+		return getHandler(object, display) != null;
 	}
 
 	@Override
-	public List<DragAndDropHandler> getHandlers() {
+	public boolean drop(final DragAndDropData data, final Display<?> display) {
+		final DragAndDropHandler<?> handler = getHandler(data, display);
+		if (handler == null) return false;
+		return handler.dropData(data, display);
+	}
+
+	@Override
+	public boolean drop(final Object data, final Display<?> display) {
+		final DragAndDropHandler<?> handler = getHandler(data, display);
+		if (handler == null) return false;
+		return handler.dropObject(data, display);
+	}
+
+	@Override
+	public DragAndDropHandler<?> getHandler(final DragAndDropData data,
+		final Display<?> display)
+	{
+		for (final DragAndDropHandler<?> handler : getHandlers()) {
+			if (handler.isCompatibleData(data, display)) return handler;
+		}
+		return null;
+	}
+
+	@Override
+	public DragAndDropHandler<?> getHandler(final Object object,
+		final Display<?> display)
+	{
+		for (final DragAndDropHandler<?> handler : getHandlers()) {
+			if (handler.isCompatibleObject(object, display)) return handler;
+		}
+		return null;
+	}
+
+	@Override
+	public List<DragAndDropHandler<?>> getHandlers() {
 		return handlers;
 	}
 
@@ -106,16 +132,23 @@ public class DefaultDragAndDropService extends AbstractService implements
 	@Override
 	public void initialize() {
 		// ask the plugin service for the list of available drag-and-drop handlers
-		handlers = pluginService.createInstancesOfType(DragAndDropHandler.class);
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		final List<DragAndDropHandler<?>> instances =
+			(List) pluginService.createInstancesOfType(DragAndDropHandler.class);
+		handlers = Collections.unmodifiableList(instances);
 		log.info("Found " + handlers.size() + " drag-and-drop handlers.");
 	}
+
 	// -- Event handlers --
 
 	@EventHandler
 	protected void onEvent(final DragEnterEvent e) {
-		final boolean compatible = isCompatible(e.getDisplay(), e.getData());
-		statusService.showStatus(compatible ? DRAG_DROP_YES : DRAG_DROP_NO);
-		if (!compatible) return;
+		final DragAndDropHandler<?> handler =
+			getHandler(e.getData(), e.getDisplay());
+		final String message =
+			handler == null ? UNSUPPORTED : handler.getClass().getName();
+		statusService.showStatus("< <" + message + "> >");
+		if (handler == null) return;
 
 		// accept the drag
 		e.setAccepted(true);
@@ -133,10 +166,10 @@ public class DefaultDragAndDropService extends AbstractService implements
 
 	@EventHandler
 	protected void onEvent(final DropEvent e) {
-		if (!isCompatible(e.getDisplay(), e.getData())) return;
+		if (!isCompatible(e.getData(), e.getDisplay())) return;
 
 		// perform the drop
-		final boolean success = drop(e.getDisplay(), e.getData());
+		final boolean success = drop(e.getData(), e.getDisplay());
 		e.setSuccessful(success);
 	}
 

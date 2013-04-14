@@ -35,45 +35,58 @@
 
 package imagej.ui.dnd;
 
-import java.util.Arrays;
-import java.util.List;
+import imagej.display.Display;
+import imagej.script.ScriptService;
+
+import java.io.File;
+
+import org.scijava.plugin.Plugin;
 
 /**
- * Provides a programmatic way to bundle an object and a mime type together as
- * DragAndDropData.
+ * Drag-and-drop handler for script files.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-public class GeneralDragAndDropData implements DragAndDropData {
+@Plugin(type = DragAndDropHandler.class)
+public class ScriptFileDragAndDropHandler extends
+	AbstractDragAndDropHandler<File>
+{
 
-	// -- instance variables --
-
-	private final String mime;
-	private final Object data;
-
-	// -- constructor --
-
-	public GeneralDragAndDropData(String mimeType, Object data) {
-		this.mime = mimeType;
-		this.data = data;
-	}
-
-	// -- DragAndDropData methods --
+	// -- DragAndDropHandler methods --
 
 	@Override
-	public boolean isSupported(String mimeType) {
-		return mime.equals(mimeType);
+	public Class<File> getType() {
+		return File.class;
 	}
 
 	@Override
-	public Object getData(String mimeType) {
-		if (isSupported(mimeType)) return data;
-		return null;
+	public boolean isCompatible(final File file) {
+		if (!super.isCompatible(file)) return false;
+
+		// verify that the file is a script
+		final ScriptService scriptService =
+			getContext().getService(ScriptService.class);
+		if (scriptService == null) return false;
+		return scriptService.canHandleFile(file);
 	}
 
 	@Override
-	public List<String> getMimeTypes() {
-		return Arrays.asList(mime);
+	public boolean drop(final File file, final Display<?> display) {
+		check(file, display);
+
+		final ScriptService scriptService =
+			getContext().getService(ScriptService.class);
+		if (scriptService == null) return false;
+
+		// TODO: Use the script service to open the file in the script editor.
+		// We may also want to be context sensitive about which type of display
+		// received the drop:
+		// - If it's the main window, open a new Script Editor window.
+		// - If it's an existing Script Editor window, open a new tab.
+		// -- This will require the Script Editor windows to be Displays.
+		// - Should a drop onto any other displays do anything?
+
+		return true;
 	}
 
 }

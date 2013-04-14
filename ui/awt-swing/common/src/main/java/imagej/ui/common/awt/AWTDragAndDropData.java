@@ -35,6 +35,7 @@
 
 package imagej.ui.common.awt;
 
+import imagej.ui.dnd.AbstractDragAndDropData;
 import imagej.ui.dnd.DragAndDropData;
 
 import java.awt.datatransfer.DataFlavor;
@@ -42,9 +43,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
-import org.scijava.AbstractContextual;
 import org.scijava.Context;
 import org.scijava.log.LogService;
 
@@ -53,9 +52,7 @@ import org.scijava.log.LogService;
  * 
  * @author Curtis Rueden
  */
-public class AWTDragAndDropData extends AbstractContextual implements
-	DragAndDropData
-{
+public class AWTDragAndDropData extends AbstractDragAndDropData {
 
 	private final Transferable t;
 
@@ -63,6 +60,8 @@ public class AWTDragAndDropData extends AbstractContextual implements
 		setContext(context);
 		this.t = t;
 	}
+
+	// -- DragAndDrop methods --
 
 	@Override
 	public boolean isSupported(final String mimeType) {
@@ -80,7 +79,7 @@ public class AWTDragAndDropData extends AbstractContextual implements
 					return t.getTransferData(flavor);
 				}
 				catch (final UnsupportedFlavorException exc) {
-					throw new IllegalArgumentException("Unsupported mime type: " +
+					throw new IllegalArgumentException("Unsupported MIME type: " +
 						mimeType, exc);
 				}
 				catch (final IOException exc) {
@@ -89,11 +88,11 @@ public class AWTDragAndDropData extends AbstractContextual implements
 				}
 			}
 		}
-		throw new IllegalArgumentException("Unsupported mime type: " + mimeType);
+		throw new IllegalArgumentException("Unsupported MIME type: " + mimeType);
 	}
 
 	@Override
-	public List<String> getMimeTypes() {
+	public ArrayList<String> getMIMETypes() {
 		final ArrayList<String> mimeTypes = new ArrayList<String>();
 		for (final DataFlavor flavor : t.getTransferDataFlavors()) {
 			mimeTypes.add(flavor.getMimeType());
