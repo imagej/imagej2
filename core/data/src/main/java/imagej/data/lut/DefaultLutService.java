@@ -36,27 +36,35 @@
 package imagej.data.lut;
 
 import imagej.command.CommandInfo;
-import imagej.data.table.ResultsTable;
-import imagej.data.table.TableLoader;
+import imagej.data.Dataset;
+import imagej.data.DatasetService;
+import imagej.data.display.DatasetView;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
+import imagej.display.DisplayService;
 import imagej.menu.MenuConstants;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
 
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
-import net.imglib2.ops.util.Tuple2;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 import org.scijava.MenuEntry;
 import org.scijava.MenuPath;
@@ -79,9 +87,18 @@ import org.scijava.service.Service;
  * 
  * @author Barry DeZonia
  * @author Wayne Rasband
+ * @author Curtis Rueden
  */
 @Plugin(type = Service.class)
 public class DefaultLutService extends AbstractService implements LutService {
+
+	// -- Constants --
+
+	private static final int RAMP_WIDTH = 256;
+	private static final int RAMP_HEIGHT = 32;
+
+	/** 640K should be more than enough for any LUT! */
+	private static final int MAX_LUT_LENGTH = 640 * 1024;
 
 	// -- Parameters --
 
@@ -91,71 +108,90 @@ public class DefaultLutService extends AbstractService implements LutService {
 	@Parameter
 	private ModuleService moduleService;
 
+	@Parameter
+	private DatasetService datasetService;
+
+	@Parameter
+	private DisplayService displayService;
+
+	@Parameter
+	private ImageDisplayService imageDisplayService;
+
 	// -- LutService methods --
 
-	/**
-	 * Loads a {@link ColorTable} from a url (represented as a string).
-	 * 
-	 * @param urlString The url (as a String) where the color table file is found.
-	 * @return The color table loaded from the given url.
-	 */
 	@Override
-	public ColorTable loadLut(String urlString) {
-		try {
-			return loadLut(new URL(urlString));
-		}
-		catch (Exception e) {
-			logService.error(e);
-			return null;
-		}
+	public boolean isLUT(final File file) {
+		return file.getAbsolutePath().toLowerCase().endsWith(".lut");
 	}
 
-	/**
-	 * Loads a {@link ColorTable} from a url (represented as a URL).
-	 * 
-	 * @param url The url (as a URL) where the color table file is found.
-	 * @return The color table loaded from the given url.
-	 */
 	@Override
-	public ColorTable loadLut(URL url) {
-		Tuple2<Integer, ColorTable> result = new Tuple2<Integer, ColorTable>(0, null);
+	public ColorTable loadLUT(final File file) throws IOException {
+		final FileInputStream is = new FileInputStream(file);
+		final int length = (int) Math.min(file.length(), Integer.MAX_VALUE);
+		final ColorTable colorTable;
 		try {
-			int length = determineByteCount(url);
-			if (length > 768) {
-				// attempt to read NIH Image LUT
-				result = openNihImageBinaryLut(url);
-			}
-			if (result.get1() == 0 && (length == 0 || length == 768 || length == 970)) {
-				// otherwise read raw LUT
-				result = openLegacyImageJBinaryLut(url);
-			}
-			if (result.get1() == 0 && length > 768) {
-				result = openLegacyImageJTextLut(url);
-			}
-			if (result.get1() == 0) {
-				result = openModernImageJLut(url);
-			}
-		}		catch (IOException e) {
-			logService.error(e.getMessage());
+			colorTable = loadLUT(is, length);
 		}
-		return result.get2();
+		finally {
+			is.close();
+		}
+		return colorTable;
 	}
 
-	/**
-	 * Loads a {@link ColorTable} from a {@link File}.
-	 * 
-	 * @param file The File containing the color table.
-	 * @return The color table loaded from the given File.
-	 */
 	@Override
-	public ColorTable loadLut(File file) {
-		return loadLut("file://" + file.getAbsolutePath());
+	public ColorTable loadLUT(final URL url) throws IOException {
+		final InputStream is = url.openStream();
+		final ColorTable colorTable;
+		try {
+			colorTable = loadLUT(is);
+		}
+		finally {
+			is.close();
+		}
+		return colorTable;
 	}
+
+	@Override
+	public ColorTable loadLUT(final InputStream is) throws IOException {
+		// read bytes from input stream, up to maximum LUT length
+		final byte[] bytes = new byte[MAX_LUT_LENGTH];
+		int length = 0;
+		while (true) {
+			final int r = is.read(bytes, length, bytes.length - length);
+			if (r < 0) break; // eof
+			length += r;
+		}
+
+		return loadLUT(new ByteArrayInputStream(bytes, 0, length), length);
+	}
+
+	@Override
+	public ColorTable loadLUT(final InputStream is, final int length)
+		throws IOException
+	{
+		if (length > 768) {
+			// attempt to read NIH Image LUT
+			final ColorTable lut = nihImageBinaryLUT(is);
+			if (lut != null) return lut;
+		}
+		if (length == 0 || length == 768 || length == 970) {
+			// attempt to read raw LUT
+			final ColorTable lut = legacyBinaryLUT(is);
+			if (lut != null) return lut;
+		}
+		if (length > 768) {
+			final ColorTable lut = legacyTextLUT(is);
+			if (lut != null) return lut;
+		}
+		return modernLUT(is);
+	}
+
+	// -- Service methods --
 
 	@Override
 	public void initialize() {
-		Map<String, URL> luts = new LutFinder().findLuts();
-		List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
+		final Map<String, URL> luts = new LutFinder().findLuts();
+		final List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
 		for (final String key : luts.keySet()) {
 			modules.add(createInfo(key, luts.get(key)));
 		}
@@ -168,7 +204,7 @@ public class DefaultLutService extends AbstractService implements LutService {
 
 	private ModuleInfo createInfo(final String key, final URL url) {
 		// set menu path
-		String[] subPaths = key.split("/");
+		final String[] subPaths = key.split("/");
 		final MenuPath menuPath = new MenuPath();
 		menuPath.add(new MenuEntry(MenuConstants.IMAGE_LABEL));
 		menuPath.add(new MenuEntry("Lookup Tables"));
@@ -194,123 +230,94 @@ public class DefaultLutService extends AbstractService implements LutService {
 		return info;
 	}
 
-	private String nameBeyondBase(String filename) {
-		int lutsIndex = filename.indexOf("/luts/");
-		if (lutsIndex < 0) return filename;
-		return filename.substring(lutsIndex + 6, filename.length());
-	}
-
 	private String tableName(final String filename) {
-		int ext = filename.lastIndexOf(".lut");
+		final int ext = filename.lastIndexOf(".lut");
 		return filename.substring(0, ext);
 	}
 
+	// -- private modern LUT loading method --
 
-	// -- private lut loading helpers --
-
-	private int determineByteCount(URL url) {
-		try {
-			InputStream stream = url.openStream();
-			int size = 0;
-			while (stream.read() != -1)
-				size++;
-			return size;
-		}
-		catch (IOException e) {
-			return 0;
-		}
-	}
-
-	// -- private modern lut loading method --
-
-	private Tuple2<Integer, ColorTable> openModernImageJLut(URL url)
-		throws IOException
-	{
+	private ColorTable modernLUT(final InputStream is) throws IOException {
 		// TODO : support some new more flexible format
-		return new Tuple2<Integer, ColorTable>(0, null);
+		return null;
 	}
 
-	// -- private legacy lut loading methods --
+	// -- private legacy LUT loading methods --
 
 	// note: adapted from IJ1 LutLoader class
 
-	private Tuple2<Integer, ColorTable> openNihImageBinaryLut(URL url)
+	private ColorTable nihImageBinaryLUT(final InputStream is)
 		throws IOException
 	{
-		return openOldBinaryLut(false, url);
+		return oldBinaryLUT(false, is);
 	}
 
-	private Tuple2<Integer, ColorTable> openLegacyImageJBinaryLut(URL url)
-		throws IOException
-	{
-		return openOldBinaryLut(true, url);
+	private ColorTable legacyBinaryLUT(final InputStream is) throws IOException {
+		return oldBinaryLUT(true, is);
 	}
 
-	private Tuple2<Integer, ColorTable> openLegacyImageJTextLut(URL url)
-		throws IOException
-	{
-		ResultsTable table = new TableLoader().valuesFromTextFile(url);
-		if (table == null) return null;
-		byte[] reds = new byte[256];
-		byte[] greens = new byte[256];
-		byte[] blues = new byte[256];
-		int cols = table.getColumnCount();
-		int rows = table.getRowCount();
-		if (cols < 3 || cols > 4 || rows < 256 || rows > 258) return null;
-		int x = cols == 4 ? 1 : 0;
-		int y = rows > 256 ? 1 : 0;
-		for (int r = 0; r < 256; r++) {
-			reds[r] = (byte) table.getValue(x + 0, y + r);
-			greens[r] = (byte) table.getValue(x + 1, y + r);
-			blues[r] = (byte) table.getValue(x + 2, y + r);
-		}
-		ColorTable colorTable = new ColorTable8(reds, greens, blues);
-		return new Tuple2<Integer, ColorTable>(256, colorTable);
+	private ColorTable legacyTextLUT(final InputStream is) throws IOException {
+		return null;
+		// CTR FIXME: TableLoader requires a URL, which is awkward.
+//		ResultsTable table = new TableLoader().valuesFromTextFile(is);
+//		if (table == null) return null;
+//		byte[] reds = new byte[256];
+//		byte[] greens = new byte[256];
+//		byte[] blues = new byte[256];
+//		int cols = table.getColumnCount();
+//		int rows = table.getRowCount();
+//		if (cols < 3 || cols > 4 || rows < 256 || rows > 258) return null;
+//		int x = cols == 4 ? 1 : 0;
+//		int y = rows > 256 ? 1 : 0;
+//		for (int r = 0; r < 256; r++) {
+//			reds[r] = (byte) table.getValue(x + 0, y + r);
+//			greens[r] = (byte) table.getValue(x + 1, y + r);
+//			blues[r] = (byte) table.getValue(x + 2, y + r);
+//		}
+//		return new ColorTable8(reds, greens, blues);
 	}
 
-	private Tuple2<Integer, ColorTable> openOldBinaryLut(boolean raw, URL url)
+	private ColorTable oldBinaryLUT(final boolean raw, final InputStream is)
 		throws IOException
 	{
-		InputStream is = url.openStream();
-		DataInputStream f = new DataInputStream(is);
+		final DataInputStream f = new DataInputStream(is);
 		int nColors = 256;
 		if (!raw) {
 			// attempt to read 32 byte NIH Image LUT header
-			int id = f.readInt();
+			final int id = f.readInt();
 			if (id != 1229147980) { // 'ICOL'
 				f.close();
-				return new Tuple2<Integer, ColorTable>(0, null);
+				return null;
 			}
-			int version = f.readShort();
+			f.readShort(); // version
 			nColors = f.readShort();
-			int start = f.readShort();
-			int end = f.readShort();
-			long fill1 = f.readLong();
-			long fill2 = f.readLong();
-			int filler = f.readInt();
+			f.readShort(); // start
+			f.readShort(); // end
+			f.readLong(); // fill1
+			f.readLong(); // fill2
+			f.readInt(); // filler
 		}
-		byte[] reds = new byte[256];
-		byte[] greens = new byte[256];
-		byte[] blues = new byte[256];
+		final byte[] reds = new byte[256];
+		final byte[] greens = new byte[256];
+		final byte[] blues = new byte[256];
 		f.read(reds, 0, nColors);
 		f.read(greens, 0, nColors);
 		f.read(blues, 0, nColors);
 		if (nColors < 256) interpolate(reds, greens, blues, nColors);
 		f.close();
-		ColorTable colorTable = new ColorTable8(reds, greens, blues);
-		return new Tuple2<Integer, ColorTable>(256, colorTable);
+		return new ColorTable8(reds, greens, blues);
 	}
 
-	private void
-		interpolate(byte[] reds, byte[] greens, byte[] blues, int nColors)
+	private void interpolate(final byte[] reds, final byte[] greens,
+		final byte[] blues, final int nColors)
 	{
-		byte[] r = new byte[nColors];
-		byte[] g = new byte[nColors];
-		byte[] b = new byte[nColors];
+		final byte[] r = new byte[nColors];
+		final byte[] g = new byte[nColors];
+		final byte[] b = new byte[nColors];
 		System.arraycopy(reds, 0, r, 0, nColors);
 		System.arraycopy(greens, 0, g, 0, nColors);
 		System.arraycopy(blues, 0, b, 0, nColors);
-		double scale = nColors / 256.0;
+		final double scale = nColors / 256.0;
 		int i1, i2;
 		double fraction;
 		for (int i = 0; i < 256; i++) {
@@ -328,5 +335,43 @@ public class DefaultLutService extends AbstractService implements LutService {
 		}
 	}
 
+	@Override
+	public ImageDisplay createDisplay(final String title,
+		final ColorTable colorTable)
+	{
+		final Dataset dataset =
+			datasetService.create(new UnsignedByteType(), new long[] { RAMP_WIDTH,
+				RAMP_HEIGHT }, title, new AxisType[] { Axes.X, Axes.Y });
+		rampFill(dataset);
+		// TODO - is this papering over a bug in the dataset/imgplus code?
+		if (dataset.getColorTableCount() == 0) dataset.initializeColorTables(1);
+		dataset.setColorTable(colorTable, 0);
+		// CTR FIXME: May not be safe.
+		return (ImageDisplay) displayService.createDisplay(dataset);
+	}
+
+	@Override
+	public void
+		applyLUT(final ColorTable colorTable, final ImageDisplay display)
+	{
+		final DatasetView view = imageDisplayService.getActiveDatasetView(display);
+		if (view == null) return;
+		final int channel = view.getIntPosition(Axes.CHANNEL);
+		view.setColorTable(colorTable, channel);
+	}
+
+	// -- Helper methods --
+
+	private void rampFill(final Dataset dataset) {
+		final RandomAccess<? extends RealType<?>> accessor =
+			dataset.getImgPlus().randomAccess();
+		for (int x = 0; x < RAMP_WIDTH; x++) {
+			accessor.setPosition(x, 0);
+			for (int y = 0; y < RAMP_HEIGHT; y++) {
+				accessor.setPosition(y, 1);
+				accessor.get().setReal(x);
+			}
+		}
+	}
 
 }

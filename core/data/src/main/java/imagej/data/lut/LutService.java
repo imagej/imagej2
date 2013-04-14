@@ -35,7 +35,11 @@
 
 package imagej.data.lut;
 
+import imagej.data.display.ImageDisplay;
+
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 import net.imglib2.display.ColorTable;
@@ -43,34 +47,83 @@ import net.imglib2.display.ColorTable;
 import org.scijava.service.Service;
 
 /**
- * The LutService loads {@link ColorTable}s from files (hosted locally or
- * externally).
+ * The LutService loads {@link ColorTable}s (i.e., <b>L</b>ook-<b>U</b>p
+ * <b>T</b>ables or LUTs) from various data sources.
  * 
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
 public interface LutService extends Service {
 
 	/**
-	 * Loads a {@link ColorTable} from a url (represented as a string).
-	 * 
-	 * @param urlString The url (as a String) where the color table file is found.
-	 * @return The color table loaded from the given url.
+	 * Gets whether the given file can be parsed as a color table by
+	 * {@link #loadLUT(File)}.
+	 * <p>
+	 * This method is heuristic in nature, and does not offer a guarantee that
+	 * calling {@link #loadLUT(File)} will be successful. However, if it returns
+	 * false, it is highly likely that the file is not parsable as a
+	 * {@link ColorTable}.
+	 * </p>
 	 */
-	ColorTable loadLut(String urlString);
-
-	/**
-	 * Loads a {@link ColorTable} from a url (represented as a URL).
-	 * 
-	 * @param url The url (as a URL) where the color table file is found.
-	 * @return The color table loaded from the given url.
-	 */
-	ColorTable loadLut(URL url);
+	boolean isLUT(File file);
 
 	/**
 	 * Loads a {@link ColorTable} from a {@link File}.
 	 * 
-	 * @param file The File containing the color table.
-	 * @return The color table loaded from the given File.
+	 * @param file The file from which the color table data will be read.
+	 * @return The color table loaded from the given file.
+	 * @throws IOException if there is a problem reading the color table
 	 */
-	ColorTable loadLut(File file);
+	ColorTable loadLUT(File file) throws IOException;
+
+	/**
+	 * Loads a {@link ColorTable} from a {@link URL}.
+	 * 
+	 * @param url The URL from which the color table data will be read.
+	 * @return The color table loaded from the given URL.
+	 * @throws IOException if there is a problem reading the color table
+	 */
+	ColorTable loadLUT(URL url) throws IOException;
+
+	/**
+	 * Loads a {@link ColorTable} from an input stream.
+	 * <p>
+	 * Does not close the input stream after reading the color table.
+	 * </p>
+	 * 
+	 * @param is The stream from which the color table data will be read.
+	 * @return The color table loaded from the given URL.
+	 * @throws IOException if there is a problem reading the color table
+	 */
+	ColorTable loadLUT(InputStream is) throws IOException;
+
+	/**
+	 * Loads a {@link ColorTable} from an input stream with the given expected
+	 * length.
+	 * 
+	 * @param is The stream from which the color table data will be read.
+	 * @param length The expected length of the input stream.
+	 * @return The color table loaded from the given URL.
+	 * @throws IOException if there is a problem reading the color table
+	 */
+	ColorTable loadLUT(InputStream is, int length) throws IOException;
+
+	/**
+	 * Creates a new image display showing the given {@link ColorTable} as a ramp.
+	 * 
+	 * @param title The title of the new display.
+	 * @param colorTable The color table to display.
+	 * @return The newly created image display.
+	 */
+	ImageDisplay createDisplay(String title, ColorTable colorTable);
+
+	/**
+	 * Applies the given {@link ColorTable} to the active view of the specified
+	 * {@link ImageDisplay}.
+	 * 
+	 * @param colorTable
+	 * @param display
+	 */
+	void applyLUT(final ColorTable colorTable, final ImageDisplay display);
+
 }

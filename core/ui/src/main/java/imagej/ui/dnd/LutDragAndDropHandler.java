@@ -45,6 +45,7 @@ import imagej.display.Display;
 import imagej.display.DisplayService;
 
 import java.io.File;
+import java.io.IOException;
 
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable;
@@ -53,6 +54,7 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 
+import org.scijava.log.LogService;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -138,7 +140,14 @@ public class LutDragAndDropHandler extends AbstractDragAndDropHandler {
 		if (data instanceof File) {
 			File file = (File) data;
 			LutService lutService = getContext().getService(LutService.class);
-			return lutService.loadLut(file);
+			try {
+				return lutService.loadLUT(file);
+			}
+			catch (final IOException exc) {
+				final LogService log = getContext().getService(LogService.class);
+				if (log != null) log.error("Error loading LUT: " + file, exc);
+				return null;
+			}
 		}
 		if (data instanceof DragAndDropData) {
 			DragAndDropData dndData = (DragAndDropData) data;

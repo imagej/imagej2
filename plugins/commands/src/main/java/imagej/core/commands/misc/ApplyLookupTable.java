@@ -44,6 +44,7 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.lut.LutService;
 import imagej.display.DisplayService;
 
+import java.io.IOException;
 import java.net.URL;
 
 import net.imglib2.RandomAccess;
@@ -111,12 +112,20 @@ public class ApplyLookupTable implements Command {
 	@Override
 	public void run() {
 		if (tableURL == null) {
-			logService.warn("ApplyLookupTable: no url string provided.");
+			logService.warn("ApplyLookupTable: no URL string provided.");
 			return;
 		}
-		ColorTable colorTable = lutService.loadLut(tableURL);
+		final ColorTable colorTable;
+		try {
+			colorTable = lutService.loadLUT(tableURL);
+		}
+		catch (IOException exc) {
+			logService.error("ApplyLookupTable: error loading color table at URL: " +
+				tableURL, exc);
+			return;
+		}
 		if (colorTable == null) {
-			logService.error("ApplyLookupTable: could not load color table - " +
+			logService.error("ApplyLookupTable: no color table at URL: " +
 				tableURL);
 			return;
 		}
