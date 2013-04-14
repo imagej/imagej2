@@ -238,10 +238,17 @@ public class UpdaterTestUtils {
 
 	public static boolean cleanup(final FilesCollection files) {
 		final File ijRoot = files.prefix("");
-		if (ijRoot.isDirectory() && !FileUtils.deleteRecursively(ijRoot)) return false;
+		if (ijRoot.isDirectory() && !deleteRecursivelyAtLeastOnExit(ijRoot)) {
+			System.err.println("Warning: Deleting " + ijRoot
+					+ " deferred to exit");
+		}
 		for (String updateSite : files.getUpdateSiteNames()) {
 			final File webRoot = getWebRoot(files, updateSite);
-			if (webRoot != null && webRoot.isDirectory() && !FileUtils.deleteRecursively(webRoot)) return false;
+			if (webRoot != null && webRoot.isDirectory()
+					&& !deleteRecursivelyAtLeastOnExit(webRoot)) {
+				System.err.println("Warning: Deleting " + webRoot
+						+ " deferred to exit");
+			}
 		}
 		return true;
 	}
