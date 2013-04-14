@@ -42,6 +42,8 @@
 				<version>1.8</version>
 				<configuration>
 					<!-- <debug>true</debug> -->
+					<showErrors>true</showErrors>
+					<streamLogs>true</streamLogs>
 					<addTestClassPath>true</addTestClassPath>
 					<properties>
 						<imagej.version>${project.version}</imagej.version>
@@ -61,6 +63,7 @@
 					<execution>
 						<id>integration-test</id>
 						<goals>
+							<goal>install</goal>
 							<goal>run</goal>
 						</goals>
 					</execution>
