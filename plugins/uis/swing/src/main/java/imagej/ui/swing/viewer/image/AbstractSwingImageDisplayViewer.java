@@ -80,6 +80,7 @@ public abstract class AbstractSwingImageDisplayViewer extends
 
 		dispatcher = new AWTInputEventDispatcher(getDisplay(), getEventService());
 
+		// broadcast input events (keyboard and mouse)
 		imgCanvas = new JHotDrawImageCanvas(this);
 		imgCanvas.addEventDispatcher(dispatcher);
 

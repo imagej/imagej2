@@ -68,8 +68,13 @@ public class SwingUI extends AbstractSwingUI {
 	@Override
 	public SwingDisplayWindow createDisplayWindow(final Display<?> display) {
 		final SwingDisplayWindow displayWindow = new SwingDisplayWindow();
+
+		// broadcast input events (keyboard and mouse)
 		new AWTInputEventDispatcher(display).register(displayWindow, true, false);
+
+		// broadcast window events
 		new AWTWindowEventDispatcher(display).register(displayWindow);
+
 		return displayWindow;
 	}
 

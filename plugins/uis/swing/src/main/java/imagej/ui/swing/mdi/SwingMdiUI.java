@@ -80,8 +80,11 @@ public class SwingMdiUI extends AbstractSwingUI {
 	@Override
 	public SwingMdiDisplayWindow createDisplayWindow(Display<?> display) {
 		final SwingMdiDisplayWindow displayWindow = new SwingMdiDisplayWindow();
+
+		// broadcast internal frame events
 		displayWindow
 			.addEventDispatcher(new InternalFrameEventDispatcher(display));
+
 		return displayWindow;
 	}
 
