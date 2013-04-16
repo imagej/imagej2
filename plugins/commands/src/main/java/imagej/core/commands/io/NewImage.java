@@ -203,24 +203,34 @@ public class NewImage extends DynamicCommand {
 		dataset =
 			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
 
-		final boolean isMax = fillType.equals(MAX);
-		final boolean isMin = fillType.equals(MIN);
-		final boolean isZero = fillType.equals(ZERO);
-
 		// fill in the diagonal gradient
 		final long[] pos = new long[2];
 		final Cursor<? extends RealType<?>> cursor =
 			dataset.getImgPlus().localizingCursor();
+		final RealType<?> type = cursor.get();
+
+		final boolean isMax = fillType.equals(MAX);
+		final boolean isMin = fillType.equals(MIN);
+		final boolean isZero = fillType.equals(ZERO);
+		final boolean isRamp = fillType.equals(RAMP);
+
+		double v = Double.NaN;
+		if (isMax) v = type.getMaxValue();
+		else if (isMin) v = type.getMinValue();
+		else if (isZero) v = 0;
+		// else fill type == ramp and v still NaN
+
 		while (cursor.hasNext()) {
 			cursor.fwd();
-			pos[0] = cursor.getLongPosition(0);
-			pos[1] = cursor.getLongPosition(1);
-			final RealType<?> type = cursor.get();
 			final double value;
-			if (isMax) value = type.getMaxValue();
-			else if (isMin) value = type.getMinValue();
-			else if (isZero) value = 0;
-			else value = rampedValue(pos, dims, type); // fillWith == RAMP
+			if (!isRamp) {
+				value = v;
+			}
+			else { // isRamp
+				pos[0] = cursor.getLongPosition(0);
+				pos[1] = cursor.getLongPosition(1);
+				value = rampedValue(pos, dims, type);
+			}
 			type.setReal(value);
 		}
 	}
