@@ -40,6 +40,7 @@ import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
+import imagej.ui.common.awt.AWTDropTargetEventDispatcher;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.image.AbstractImageDisplayViewer;
@@ -83,6 +84,11 @@ public abstract class AbstractSwingImageDisplayViewer extends
 		// broadcast input events (keyboard and mouse)
 		imgCanvas = new JHotDrawImageCanvas(this);
 		imgCanvas.addEventDispatcher(dispatcher);
+
+		// broadcast drag-and-drop events
+		final AWTDropTargetEventDispatcher dropDispatcher =
+			new AWTDropTargetEventDispatcher(getDisplay(), getEventService());
+		imgCanvas.addEventDispatcher(dropDispatcher);
 
 		imgPanel = new SwingDisplayPanel(this, getWindow());
 		setPanel(imgPanel);

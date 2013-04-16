@@ -52,6 +52,8 @@ import imagej.tool.Tool;
 import imagej.tool.ToolService;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.ui.common.awt.AWTCursors;
+import imagej.ui.common.awt.AWTDragAndDropData;
+import imagej.ui.common.awt.AWTDropTargetEventDispatcher;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.overlay.FigureCreatedEvent;
@@ -197,6 +199,11 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 
 	public void addEventDispatcher(final AWTInputEventDispatcher dispatcher) {
 		dispatcher.register(drawingView, true, true);
+	}
+
+	public void addEventDispatcher(final AWTDropTargetEventDispatcher dispatcher)
+	{
+		dispatcher.register(drawingView);
 	}
 
 	/**
