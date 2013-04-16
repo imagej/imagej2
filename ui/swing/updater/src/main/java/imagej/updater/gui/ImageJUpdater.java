@@ -155,49 +155,44 @@ public class ImageJUpdater implements UpdaterUI {
 		}
 
 		if (Installer.isTheUpdaterUpdateable(files, commandService)) {
-			if (SwingTools.showQuestion(main, "Update the updater",
-				"There is an update available for the Updater. Install now?"))
-			{
-				try {
-					// download just the updater
-					Installer.updateTheUpdater(files, main.getProgress("Installing the updater..."), commandService);
-				}
-				catch (final UpdateCanceledException e) {
-					main.error("Canceled");
-					return;
-				}
-				catch (final IOException e) {
-					main.error("Installer failed: " + e);
-					return;
-				}
-
-				// make a class path using the updated files
-				final List<URL> classPath = new ArrayList<URL>();
-				for (FileObject component : Installer.getUpdaterFiles(files, commandService, false)) {
-					final String name = component.getLocalFilename(false);
-					File file = files.prefix(name);
-					try {
-						classPath.add(file.toURI().toURL());
-					} catch (MalformedURLException e) {
-						log.error(e);
-					}
-				}
-				try {
-					log.info("Trying to install and execute the new updater");
-					new Installer(files, null).moveUpdatedIntoPlace();
-					final URL[] urls = classPath.toArray(new URL[classPath.size()]);
-					URLClassLoader remoteClassLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
-					System.setProperty("imagej.update.updater", "true");
-					Class<?> runnable = remoteClassLoader.loadClass(ImageJUpdater.class.getName());
-					new Thread((Runnable)runnable.newInstance()).start();
-					return;
-				} catch (Throwable t) {
-					log.error(t);
-				}
-
-				main.info("Please restart ImageJ and call Help>Update to continue with the update");
+			try {
+				// download just the updater
+				Installer.updateTheUpdater(files, main.getProgress("Installing the updater..."), commandService);
 			}
-			// we do not save the files to prevent the mtime from changing
+			catch (final UpdateCanceledException e) {
+				main.error("Canceled");
+				return;
+			}
+			catch (final IOException e) {
+				main.error("Installer failed: " + e);
+				return;
+			}
+
+			// make a class path using the updated files
+			final List<URL> classPath = new ArrayList<URL>();
+			for (FileObject component : Installer.getUpdaterFiles(files, commandService, false)) {
+				final String name = component.getLocalFilename(false);
+				File file = files.prefix(name);
+				try {
+					classPath.add(file.toURI().toURL());
+				} catch (MalformedURLException e) {
+					log.error(e);
+				}
+			}
+			try {
+				log.info("Trying to install and execute the new updater");
+				new Installer(files, null).moveUpdatedIntoPlace();
+				final URL[] urls = classPath.toArray(new URL[classPath.size()]);
+				URLClassLoader remoteClassLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
+				System.setProperty("imagej.update.updater", "true");
+				Class<?> runnable = remoteClassLoader.loadClass(ImageJUpdater.class.getName());
+				new Thread((Runnable)runnable.newInstance()).start();
+				return;
+			} catch (Throwable t) {
+				log.error(t);
+			}
+
+			main.info("Please restart ImageJ and call Help>Update to continue with the update");
 			return;
 		}
 
