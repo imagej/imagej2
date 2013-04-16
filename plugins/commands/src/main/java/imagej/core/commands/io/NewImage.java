@@ -57,7 +57,8 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Plugin(type = Command.class, label = "New Image...", iconPath = "/icons/commands/picture.png",
+@Plugin(type = Command.class, label = "New Image...",
+	iconPath = "/icons/commands/picture.png",
 	initializer = "init",
 	menu = {
 		@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
@@ -85,10 +86,10 @@ public class NewImage extends DynamicCommand {
 	public static final String DEPTH32 = "32-bit";
 	public static final String DEPTH64 = "64-bit";
 
-	public static final String WHITE = "White";
-	public static final String BLACK = "Black";
-	public static final String RAMP = "Ramp";
+	public static final String MAX = "Max";
+	public static final String MIN = "Min";
 	public static final String ZERO = "Zero";
+	public static final String RAMP = "Ramp";
 
 	private static final String DEFAULT_NAME = "Untitled";
 	
@@ -110,8 +111,8 @@ public class NewImage extends DynamicCommand {
 	@Parameter(callback = "floatingChanged")
 	private boolean floating = false;
 
-	@Parameter(label = "Fill With", choices = { WHITE, BLACK, RAMP, ZERO })
-	private String fillType = WHITE;
+	@Parameter(label = "Fill With", choices = { MAX, MIN, ZERO, RAMP })
+	private String fillType = MAX;
 
 	@Parameter(type = ItemIO.OUTPUT)
 	private Dataset dataset;
@@ -160,7 +161,10 @@ public class NewImage extends DynamicCommand {
 	}
 
 	public void setFillType(final String fillType) {
-		this.fillType = fillType;
+		if (MIN.toString().equalsIgnoreCase(fillType)) this.fillType = MIN;
+		else if (MAX.toString().equalsIgnoreCase(fillType)) this.fillType = MAX;
+		else if (RAMP.toString().equalsIgnoreCase(fillType)) this.fillType = RAMP;
+		else this.fillType = ZERO;
 	}
 
 	public long getDimension(final AxisType axisType) {
@@ -199,8 +203,8 @@ public class NewImage extends DynamicCommand {
 		dataset =
 			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
 
-		final boolean isWhite = fillType.equals(WHITE);
-		final boolean isBlack = fillType.equals(BLACK);
+		final boolean isMax = fillType.equals(MAX);
+		final boolean isMin = fillType.equals(MIN);
 		final boolean isZero = fillType.equals(ZERO);
 
 		// fill in the diagonal gradient
@@ -213,8 +217,8 @@ public class NewImage extends DynamicCommand {
 			pos[1] = cursor.getLongPosition(1);
 			final RealType<?> type = cursor.get();
 			final double value;
-			if (isWhite) value = type.getMaxValue();
-			else if (isBlack) value = type.getMinValue();
+			if (isMax) value = type.getMaxValue();
+			else if (isMin) value = type.getMinValue();
 			else if (isZero) value = 0;
 			else value = rampedValue(pos, dims, type); // fillWith == RAMP
 			type.setReal(value);
