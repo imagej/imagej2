@@ -358,6 +358,7 @@ public class DefaultLUTService extends AbstractService implements LUTService {
 		if (view == null) return;
 		final int channel = view.getIntPosition(Axes.CHANNEL);
 		view.setColorTable(colorTable, channel);
+		display.update();
 	}
 
 	// -- Helper methods --
