@@ -38,6 +38,8 @@ package imagej.ui.dnd;
 import java.util.Collections;
 import java.util.List;
 
+import org.scijava.Context;
+
 /**
  * Default implementation of {@link DragAndDropData}, which provides a
  * UI-agnostic way to bundle an object together with its MIME type.
@@ -54,7 +56,10 @@ public class DefaultDragAndDropData extends AbstractDragAndDropData {
 
 	// -- Constructor --
 
-	public DefaultDragAndDropData(final MIMEType mimeType, final Object data) {
+	public DefaultDragAndDropData(final Context context, final MIMEType mimeType,
+		final Object data)
+	{
+		setContext(context);
 		this.mime = mimeType;
 		this.data = data;
 	}
