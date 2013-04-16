@@ -63,6 +63,7 @@ public class DefaultDragAndDropService extends AbstractService implements
 	DragAndDropService
 {
 
+	private static final String SUPPORTED = "Drag and Drop";
 	private static final String UNSUPPORTED = "Unsupported Object";
 
 	@Parameter
@@ -143,15 +144,15 @@ public class DefaultDragAndDropService extends AbstractService implements
 
 	@EventHandler
 	protected void onEvent(final DragEnterEvent e) {
-		final DragAndDropHandler<?> handler =
-			getHandler(e.getData(), e.getDisplay());
-		final String message =
-			handler == null ? UNSUPPORTED : handler.getClass().getName();
-		statusService.showStatus("< <" + message + "> >");
-		if (handler == null) return;
+		// determine whether the given drop operation is supported
+		final boolean compatible = isCompatible(e.getData(), e.getDisplay());
 
-		// accept the drag
-		e.setAccepted(true);
+		// update the ImageJ status accordingly
+		final String message = compatible ? SUPPORTED : UNSUPPORTED;
+		statusService.showStatus("< <" + message + "> >");
+
+		// accept the drag if the operation is supported
+		if (compatible) e.setAccepted(true);
 	}
 
 	@EventHandler
