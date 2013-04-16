@@ -53,7 +53,7 @@ public abstract class AbstractDragAndDropData extends AbstractContextual
 
 	@Override
 	public <T> T getData(final Class<T> type) {
-		final String mimeType = getMIMEType(type);
+		final MIMEType mimeType = getMIMEType(type);
 		if (mimeType == null) return null;
 		@SuppressWarnings("unchecked")
 		final T data = (T) getData(mimeType);
@@ -61,10 +61,9 @@ public abstract class AbstractDragAndDropData extends AbstractContextual
 	}
 
 	@Override
-	public String getMIMEType(final Class<?> type) {
-		final String suffix = "; class=" + type.getName();
-		for (final String mimeType : getMIMETypes()) {
-			if (mimeType.endsWith(suffix)) return mimeType;
+	public MIMEType getMIMEType(final Class<?> type) {
+		for (final MIMEType mimeType : getMIMETypes()) {
+			if (mimeType.isCompatible(type)) return mimeType;
 		}
 		return null;
 	}

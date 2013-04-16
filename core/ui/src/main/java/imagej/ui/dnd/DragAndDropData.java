@@ -48,7 +48,7 @@ public interface DragAndDropData {
 	 * Gets whether the data can be provided as an object with the given MIME
 	 * type.
 	 */
-	boolean isSupported(String mimeType);
+	boolean isSupported(MIMEType mimeType);
 
 	/**
 	 * Gets whether the data can be provided as an object of the given Java class.
@@ -56,15 +56,15 @@ public interface DragAndDropData {
 	boolean isSupported(Class<?> type);
 
 	/** Gets the data with respect to the given MIME type. */
-	Object getData(String mimeType);
+	Object getData(MIMEType mimeType);
 
 	/** Gets the data as an object of the given Java class. */
 	<T> T getData(Class<T> type);
 
 	/** Gets the best supported MIME type matching the given Java class. */
-	String getMIMEType(Class<?> type);
+	MIMEType getMIMEType(Class<?> type);
 
 	/** Gets the list of supported MIME types. */
-	List<String> getMIMETypes();
+	List<MIMEType> getMIMETypes();
 
 }

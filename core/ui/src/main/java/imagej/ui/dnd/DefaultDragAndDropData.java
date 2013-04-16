@@ -49,44 +49,31 @@ public class DefaultDragAndDropData extends AbstractDragAndDropData {
 
 	// -- Fields --
 
-	private final String mime;
+	private final MIMEType mime;
 	private final Object data;
 
 	// -- Constructor --
 
-	public DefaultDragAndDropData(final String mimeType, final Object data) {
-		this.mime = createMIMEType(mimeType, data);
+	public DefaultDragAndDropData(final MIMEType mimeType, final Object data) {
+		this.mime = mimeType;
 		this.data = data;
 	}
 
 	// -- DragAndDropData methods --
 
 	@Override
-	public boolean isSupported(final String mimeType) {
-		return mime.equals(mimeType) || mime.startsWith(mimeType + ";");
+	public boolean isSupported(final MIMEType mimeType) {
+		return mime.equals(mimeType);
 	}
 
 	@Override
-	public Object getData(final String mimeType) {
+	public Object getData(final MIMEType mimeType) {
 		return isSupported(mimeType) ? data : null;
 	}
 
 	@Override
-	public List<String> getMIMETypes() {
+	public List<MIMEType> getMIMETypes() {
 		return Collections.singletonList(mime);
-	}
-
-	// -- Helper methods --
-
-	/**
-	 * Ensures the MIME type includes the corresponding fully qualified Java class
-	 * name.
-	 */
-	private String createMIMEType(final String mimeType, final Object o) {
-		final String classFragment = "; class=" + o.getClass().getName();
-		if (mimeType.endsWith(classFragment)) return mimeType;
-		if (mimeType.contains(classFragment + ";")) return mimeType;
-		return mimeType + classFragment;
 	}
 
 }

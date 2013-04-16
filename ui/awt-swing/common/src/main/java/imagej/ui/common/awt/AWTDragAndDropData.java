@@ -37,6 +37,7 @@ package imagej.ui.common.awt;
 
 import imagej.ui.dnd.AbstractDragAndDropData;
 import imagej.ui.dnd.DragAndDropData;
+import imagej.ui.dnd.MIMEType;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -64,17 +65,17 @@ public class AWTDragAndDropData extends AbstractDragAndDropData {
 	// -- DragAndDrop methods --
 
 	@Override
-	public boolean isSupported(final String mimeType) {
+	public boolean isSupported(final MIMEType mimeType) {
 		for (final DataFlavor flavor : t.getTransferDataFlavors()) {
-			if (mimeType.equals(flavor.getMimeType())) return true;
+			if (mimeType.isCompatible(flavor.getMimeType())) return true;
 		}
 		return false;
 	}
 
 	@Override
-	public Object getData(final String mimeType) {
+	public Object getData(final MIMEType mimeType) {
 		for (final DataFlavor flavor : t.getTransferDataFlavors()) {
-			if (mimeType.equals(flavor.getMimeType())) {
+			if (mimeType.isCompatible(flavor.getMimeType())) {
 				try {
 					return t.getTransferData(flavor);
 				}
@@ -92,10 +93,10 @@ public class AWTDragAndDropData extends AbstractDragAndDropData {
 	}
 
 	@Override
-	public ArrayList<String> getMIMETypes() {
-		final ArrayList<String> mimeTypes = new ArrayList<String>();
+	public ArrayList<MIMEType> getMIMETypes() {
+		final ArrayList<MIMEType> mimeTypes = new ArrayList<MIMEType>();
 		for (final DataFlavor flavor : t.getTransferDataFlavors()) {
-			mimeTypes.add(flavor.getMimeType());
+			mimeTypes.add(new MIMEType(flavor.getMimeType()));
 		}
 		return mimeTypes;
 	}
