@@ -42,7 +42,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.display.event.DelayedPositionEvent;
-import imagej.data.display.event.LutsChangedEvent;
+import imagej.data.display.event.LUTsChangedEvent;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.SwingColorBar;
@@ -223,7 +223,7 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 	}
 
 	@EventHandler
-	protected void onEvent(LutsChangedEvent event) {
+	protected void onEvent(LUTsChangedEvent event) {
 		if (!getDisplay().contains(event.getView())) return;
 		final int value = (int) display.getLongPosition(Axes.CHANNEL);
 		updateColorBar(value);

@@ -45,7 +45,7 @@ import imagej.data.display.InputService;
 import imagej.data.display.OverlayService;
 import imagej.data.display.ScreenCaptureService;
 import imagej.data.display.WindowService;
-import imagej.data.lut.LutService;
+import imagej.data.lut.LUTService;
 import imagej.data.measure.MeasurementService;
 import imagej.data.measure.StatisticsService;
 import imagej.data.sampler.SamplerService;
@@ -217,8 +217,8 @@ public class ImageJ extends AbstractGateway {
 		return get(LogService.class);
 	}
 
-	public LutService lut() {
-		return get(LutService.class);
+	public LUTService lut() {
+		return get(LUTService.class);
 	}
 
 	public MeasurementService measurement() {

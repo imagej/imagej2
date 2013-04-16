@@ -41,7 +41,7 @@ import imagej.data.DatasetService;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.data.lut.LutService;
+import imagej.data.lut.LUTService;
 import imagej.display.DisplayService;
 
 import java.io.IOException;
@@ -78,7 +78,7 @@ public class ApplyLookupTable implements Command {
 	private LogService logService;
 
 	@Parameter
-	private LutService lutService;
+	private LUTService lutService;
 
 	@Parameter
 	private DisplayService displayService;

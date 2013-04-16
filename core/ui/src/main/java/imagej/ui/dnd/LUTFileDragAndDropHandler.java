@@ -36,7 +36,7 @@
 package imagej.ui.dnd;
 
 import imagej.data.display.ImageDisplay;
-import imagej.data.lut.LutService;
+import imagej.data.lut.LUTService;
 import imagej.display.Display;
 
 import java.io.File;
@@ -70,7 +70,7 @@ public class LUTFileDragAndDropHandler extends
 		if (file == null) return true; // trivial case
 
 		// verify that the file contains a color table
-		final LutService lutService = getContext().getService(LutService.class);
+		final LUTService lutService = getContext().getService(LUTService.class);
 		if (lutService == null) return false;
 		return lutService.isLUT(file);
 	}
@@ -85,7 +85,7 @@ public class LUTFileDragAndDropHandler extends
 		check(file, display);
 		if (file == null) return true; // trivial case
 
-		final LutService lutService = getContext().getService(LutService.class);
+		final LUTService lutService = getContext().getService(LUTService.class);
 		if (lutService == null) return false;
 
 		final ImageDisplay imageDisplay = (ImageDisplay) display;
@@ -107,7 +107,7 @@ public class LUTFileDragAndDropHandler extends
 
 	// -- Helper methods --
 
-	private ColorTable loadLUT(final File file, final LutService lutService) {
+	private ColorTable loadLUT(final File file, final LUTService lutService) {
 		final LogService log = getContext().getService(LogService.class);
 
 		final ColorTable colorTable;

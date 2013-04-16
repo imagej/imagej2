@@ -49,11 +49,11 @@ import org.scijava.util.FileUtils;
 import org.scijava.util.IteratorPlus;
 
 /**
- * The LutFinder determines the locations of all .lut files known to ImageJ.
+ * The LUTFinder determines the locations of all .lut files known to ImageJ.
  * 
  * @author Barry DeZonia
  */
-public class LutFinder {
+public class LUTFinder {
 
 	private final static Pattern lutsPattern = Pattern.compile(".*\\.lut$");
 	private static final File LUT_DIRECTORY;
@@ -71,18 +71,18 @@ public class LutFinder {
 	 * 
 	 * @return A collection of URLs referencing the known .lut files
 	 */
-	public Map<String, URL> findLuts() {
+	public Map<String, URL> findLUTs() {
 		final HashMap<String, URL> result = new HashMap<String, URL>();
 		try {
 			for (final URL jarURL : getJarURLs()) {
-				getLuts(result, jarURL);
+				getLUTs(result, jarURL);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		// do file luts second: user can thus override jar luts if desired
 		final URL dirURL = getDirectoryURL();
-		if (dirURL != null) getLuts(result, dirURL);
+		if (dirURL != null) getLUTs(result, dirURL);
 		return result;
 	}
 
@@ -102,7 +102,7 @@ public class LutFinder {
 		}
 	}
 
-	private void getLuts(final Map<String, URL> result, final URL base) {
+	private void getLUTs(final Map<String, URL> result, final URL base) {
 		final String prefix = base.toString();
 		for (final URL url : FileUtils.listContents(base)) {
 			final String string = url.toString();

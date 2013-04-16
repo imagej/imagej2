@@ -77,12 +77,12 @@ import org.scijava.service.Service;
 // Attribution: Much of this code was adapted from ImageJ 1.x LutLoader class
 // courtesy of Wayne Rasband.
 
-//TODO - DefaultRecentFileService, DefaultWindowService, and DefaultLutService
+//TODO - DefaultRecentFileService, DefaultWindowService, and DefaultLUTService
 //all build menus dynamically (see createInfo()). We may be able to abstract a
 //helper class out of these that can be used by them and future services.
 
 /**
- * The DefaultLutService loads {@link ColorTable}s from files (hosted locally or
+ * The DefaultLUTService loads {@link ColorTable}s from files (hosted locally or
  * externally).
  * 
  * @author Barry DeZonia
@@ -90,7 +90,7 @@ import org.scijava.service.Service;
  * @author Curtis Rueden
  */
 @Plugin(type = Service.class)
-public class DefaultLutService extends AbstractService implements LutService {
+public class DefaultLUTService extends AbstractService implements LUTService {
 
 	// -- Constants --
 
@@ -117,7 +117,7 @@ public class DefaultLutService extends AbstractService implements LutService {
 	@Parameter
 	private ImageDisplayService imageDisplayService;
 
-	// -- LutService methods --
+	// -- LUTService methods --
 
 	@Override
 	public boolean isLUT(final File file) {
@@ -190,7 +190,7 @@ public class DefaultLutService extends AbstractService implements LutService {
 
 	@Override
 	public void initialize() {
-		final Map<String, URL> luts = new LutFinder().findLuts();
+		final Map<String, URL> luts = new LUTFinder().findLUTs();
 		final List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
 		for (final String key : luts.keySet()) {
 			modules.add(createInfo(key, luts.get(key)));

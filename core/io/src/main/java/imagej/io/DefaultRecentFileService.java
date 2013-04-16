@@ -59,7 +59,7 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 import org.scijava.util.FileUtils;
 
-// TODO - DefaultRecentFileService, DefaultWindowService, and DefaultLutService
+// TODO - DefaultRecentFileService, DefaultWindowService, and DefaultLUTService
 // all build menus dynamically (see createInfo()). We may be able to abstract a
 // helper class out of these that can be used by them and future services.
 

@@ -47,13 +47,13 @@ import net.imglib2.display.ColorTable;
 import org.scijava.service.Service;
 
 /**
- * The LutService loads {@link ColorTable}s (i.e., <b>L</b>ook-<b>U</b>p
+ * The LUTService loads {@link ColorTable}s (i.e., <b>L</b>ook-<b>U</b>p
  * <b>T</b>ables or LUTs) from various data sources.
  * 
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public interface LutService extends Service {
+public interface LUTService extends Service {
 
 	/**
 	 * Gets whether the given file can be parsed as a color table by
