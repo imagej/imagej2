@@ -117,7 +117,8 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		}
 
 		public boolean isUploadable() {
-			return uploadDirectory != null && !uploadDirectory.equals("");
+			return (uploadDirectory != null && !uploadDirectory.equals("")) ||
+					(sshHost != null && sshHost.indexOf(':') > 0);
 		}
 
 		@Override
