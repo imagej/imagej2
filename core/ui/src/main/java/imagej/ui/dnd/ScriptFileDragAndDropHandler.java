@@ -33,47 +33,61 @@
  * #L%
  */
 
-package imagej.io;
+package imagej.ui.dnd;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.module.ModuleService;
-import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.io.ImgIOException;
+import imagej.display.Display;
+import imagej.script.ScriptService;
 
-import org.scijava.app.StatusService;
-import org.scijava.event.EventService;
-import org.scijava.service.Service;
+import java.io.File;
+
+import org.scijava.plugin.Plugin;
 
 /**
- * Interface for providing I/O convenience methods.
+ * Drag-and-drop handler for script files.
  * 
  * @author Curtis Rueden
  */
-public interface IOService extends Service {
+@Plugin(type = DragAndDropHandler.class)
+public class ScriptFileDragAndDropHandler extends
+	AbstractDragAndDropHandler<File>
+{
 
-	EventService getEventService();
+	// -- DragAndDropHandler methods --
 
-	StatusService getStatusService();
+	@Override
+	public Class<File> getType() {
+		return File.class;
+	}
 
-	ModuleService getModuleService();
+	@Override
+	public boolean isCompatible(final File file) {
+		if (file == null) return true; // trivial case
 
-	DatasetService getDatasetService();
+		// verify that the file is a script
+		final ScriptService scriptService =
+			getContext().getService(ScriptService.class);
+		if (scriptService == null) return false;
+		return scriptService.canHandleFile(file);
+	}
 
-	/**
-	 * Determines whether the given source is image data (and hence compatible
-	 * with the {@link #loadDataset(String)} method).
-	 */
-	boolean isImageData(String source);
+	@Override
+	public boolean drop(final File file, final Display<?> display) {
+		check(file, display);
+		if (file == null) return true; // trivial case
 
-	/** Loads a dataset from a source (such as a file on disk). */
-	Dataset loadDataset(String source) throws ImgIOException,
-		IncompatibleTypeException;
+		final ScriptService scriptService =
+			getContext().getService(ScriptService.class);
+		if (scriptService == null) return false;
 
-	/** Reverts the given dataset to its original source. */
-	void revertDataset(Dataset dataset) throws ImgIOException,
-		IncompatibleTypeException;
+		// TODO: Use the script service to open the file in the script editor.
+		// We may also want to be context sensitive about which type of display
+		// received the drop:
+		// - If it's the main window, open a new Script Editor window.
+		// - If it's an existing Script Editor window, open a new tab.
+		// -- This will require the Script Editor windows to be Displays.
+		// - Should a drop onto any other displays do anything?
 
-	// TODO: Add a saveDataset method, and use it in SaveAsImage plugin.
+		return true;
+	}
 
 }

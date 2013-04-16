@@ -33,47 +33,25 @@
  * #L%
  */
 
-package imagej.io;
+package imagej.ui.dnd.event;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.module.ModuleService;
-import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.io.ImgIOException;
+import imagej.display.Display;
+import imagej.ui.dnd.DragAndDropData;
 
-import org.scijava.app.StatusService;
-import org.scijava.event.EventService;
-import org.scijava.service.Service;
+import org.scijava.input.InputModifiers;
 
 /**
- * Interface for providing I/O convenience methods.
+ * An event indicating an object was dragged within a display.
  * 
  * @author Curtis Rueden
  */
-public interface IOService extends Service {
+public class DragOverEvent extends DragAndDropEvent {
 
-	EventService getEventService();
-
-	StatusService getStatusService();
-
-	ModuleService getModuleService();
-
-	DatasetService getDatasetService();
-
-	/**
-	 * Determines whether the given source is image data (and hence compatible
-	 * with the {@link #loadDataset(String)} method).
-	 */
-	boolean isImageData(String source);
-
-	/** Loads a dataset from a source (such as a file on disk). */
-	Dataset loadDataset(String source) throws ImgIOException,
-		IncompatibleTypeException;
-
-	/** Reverts the given dataset to its original source. */
-	void revertDataset(Dataset dataset) throws ImgIOException,
-		IncompatibleTypeException;
-
-	// TODO: Add a saveDataset method, and use it in SaveAsImage plugin.
+	public DragOverEvent(final Display<?> display,
+		final InputModifiers modifiers, final int x, final int y,
+		final DragAndDropData data)
+	{
+		super(display, modifiers, x, y, data);
+	}
 
 }

@@ -75,9 +75,9 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	 */
 	@Override
 	public void updateDisplay(final ImageDisplay disp, final ImagePlus imp) {
-		final boolean sixteenBitLuts = imp.getType() == ImagePlus.GRAY16;
+		final boolean sixteenBitLUTs = imp.getType() == ImagePlus.GRAY16;
 		final List<ColorTable> colorTables = colorTablesFromImagePlus(imp);
-		assignColorTables(disp, colorTables, sixteenBitLuts);
+		assignColorTables(disp, colorTables, sixteenBitLUTs);
 		assignChannelMinMax(disp, imp);
 
 		/* BDZ REMOVING on Dec-8-2011. Does not seem to be needed anymore. Resurrect
@@ -107,7 +107,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			final CompositeImage ci = (CompositeImage) imp;
 			final List<ColorTable> colorTables =
 				(activeView == null) ? null : activeView.getColorTables();
-			setCompositeImageLuts(ci, colorTables);
+			setCompositeImageLUTs(ci, colorTables);
 			final int composChannCount =
 				(activeView == null) ? 1 : activeView.getData()
 					.getCompositeChannelCount();
@@ -119,9 +119,9 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 			// a significant behavior change.
 			if (activeView == null) {
 				final Dataset ds = imgDispSrv.getActiveDataset(disp);
-				setImagePlusLutToFirstInDataset(ds, imp);
+				setImagePlusLUTToFirstInDataset(ds, imp);
 			}
-			else setImagePlusLutToFirstInView(activeView, imp);
+			else setImagePlusLUTToFirstInView(activeView, imp);
 		}
 		assignImagePlusMinMax(disp, imp);
 	}
@@ -132,10 +132,10 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	 * For each channel in CompositeImage, sets LUT to one from default
 	 * progression
 	 */
-	private void setCompositeImageLutsToDefault(final CompositeImage ci) {
+	private void setCompositeImageLUTsToDefault(final CompositeImage ci) {
 		for (int i = 0; i < ci.getNChannels(); i++) {
 			final ColorTable cTable = ColorTables.getDefaultColorTable(i);
-			final LUT lut = make8BitLut(cTable);
+			final LUT lut = make8BitLUT(cTable);
 			ci.setChannelLut(lut, i + 1);
 		}
 	}
@@ -143,16 +143,16 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	/**
 	 * For each channel in CompositeImage, sets LUT to one from given ColorTables
 	 */
-	private void setCompositeImageLuts(final CompositeImage ci,
+	private void setCompositeImageLUTs(final CompositeImage ci,
 		final List<ColorTable> cTables)
 	{
 		if (cTables == null || cTables.size() == 0) {
-			setCompositeImageLutsToDefault(ci);
+			setCompositeImageLUTsToDefault(ci);
 		}
 		else {
 			for (int i = 0; i < ci.getNChannels(); i++) {
 				final ColorTable cTable = cTables.get(i);
-				final LUT lut = make8BitLut(cTable);
+				final LUT lut = make8BitLUT(cTable);
 				ci.setChannelLut(lut, i + 1);
 			}
 		}
@@ -185,23 +185,23 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	}
 
 	/** Sets the single LUT of an ImagePlus to the first ColorTable of a Dataset */
-	private void setImagePlusLutToFirstInDataset(final Dataset ds,
+	private void setImagePlusLUTToFirstInDataset(final Dataset ds,
 		final ImagePlus imp)
 	{
 		ColorTable cTable = ds.getColorTable(0);
 		if (cTable == null) cTable = ColorTables.GRAYS;
-		final LUT lut = make8BitLut(cTable);
+		final LUT lut = make8BitLUT(cTable);
 		imp.getProcessor().setColorModel(lut);
 		// or imp.getStack().setColorModel(lut);
 	}
 
 	/** Sets the single LUT of an ImagePlus to the first ColorTable of a Dataset */
-	private void setImagePlusLutToFirstInView(final DatasetView view,
+	private void setImagePlusLUTToFirstInView(final DatasetView view,
 		final ImagePlus imp)
 	{
 		ColorTable cTable = view.getColorTables().get(0);
 		if (cTable == null) cTable = ColorTables.GRAYS;
-		final LUT lut = make8BitLut(cTable);
+		final LUT lut = make8BitLUT(cTable);
 		imp.getProcessor().setColorModel(lut);
 		// or imp.getStack().setColorModel(lut);
 	}
@@ -299,7 +299,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	 * visualization) the default palette is typically a ramp so the ColorTable8
 	 * version is functionally equivalent.
 	 */
-	private LUT make8BitLut(final ColorTable cTable) {
+	private LUT make8BitLUT(final ColorTable cTable) {
 		final byte[] reds = new byte[256];
 		final byte[] greens = new byte[256];
 		final byte[] blues = new byte[256];
@@ -315,7 +315,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	/** Assigns the color tables of the active view of a ImageDisplay. */
 	private void assignColorTables(final ImageDisplay disp,
 		final List<ColorTable> colorTables,
-		@SuppressWarnings("unused") final boolean sixteenBitLuts)
+		@SuppressWarnings("unused") final boolean sixteenBitLUTs)
 	{
 		// FIXME HACK
 		// Grab the active view of the given ImageDisplay and set it's default

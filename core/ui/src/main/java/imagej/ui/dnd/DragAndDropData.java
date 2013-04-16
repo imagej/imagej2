@@ -33,47 +33,48 @@
  * #L%
  */
 
-package imagej.io;
+package imagej.ui.dnd;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.module.ModuleService;
-import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.io.ImgIOException;
+import imagej.ui.dnd.event.DragEnterEvent;
+import imagej.ui.dnd.event.DropEvent;
 
-import org.scijava.app.StatusService;
-import org.scijava.event.EventService;
-import org.scijava.service.Service;
+import java.util.List;
 
 /**
- * Interface for providing I/O convenience methods.
+ * Interface for drag-and-drop data.
  * 
  * @author Curtis Rueden
  */
-public interface IOService extends Service {
-
-	EventService getEventService();
-
-	StatusService getStatusService();
-
-	ModuleService getModuleService();
-
-	DatasetService getDatasetService();
+public interface DragAndDropData {
 
 	/**
-	 * Determines whether the given source is image data (and hence compatible
-	 * with the {@link #loadDataset(String)} method).
+	 * Gets whether the data can be provided as an object with the given MIME
+	 * type.
 	 */
-	boolean isImageData(String source);
+	boolean isSupported(MIMEType mimeType);
 
-	/** Loads a dataset from a source (such as a file on disk). */
-	Dataset loadDataset(String source) throws ImgIOException,
-		IncompatibleTypeException;
+	/**
+	 * Gets whether the data can be provided as an object of the given Java class.
+	 */
+	boolean isSupported(Class<?> type);
 
-	/** Reverts the given dataset to its original source. */
-	void revertDataset(Dataset dataset) throws ImgIOException,
-		IncompatibleTypeException;
+	/**
+	 * Gets the data with respect to the given MIME type.
+	 * 
+	 * @return The data object for the given MIME type. May return null if the
+	 *         data is requested too early in the drag-and-drop process, such as
+	 *         during a {@link DragEnterEvent} rather than a {@link DropEvent}.
+	 * @throws IllegalArgumentException if the MIME type is not supported.
+	 */
+	Object getData(MIMEType mimeType);
 
-	// TODO: Add a saveDataset method, and use it in SaveAsImage plugin.
+	/** Gets the data as an object of the given Java class. */
+	<T> T getData(Class<T> type);
+
+	/** Gets the best supported MIME type matching the given Java class. */
+	MIMEType getMIMEType(Class<?> type);
+
+	/** Gets the list of supported MIME types. */
+	List<MIMEType> getMIMETypes();
 
 }

@@ -33,47 +33,84 @@
  * #L%
  */
 
-package imagej.io;
+package imagej.io.dnd;
 
 import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.module.ModuleService;
+import imagej.display.Display;
+import imagej.display.DisplayService;
+import imagej.io.IOService;
+import imagej.ui.dnd.AbstractDragAndDropHandler;
+import imagej.ui.dnd.DragAndDropHandler;
+
+import java.io.File;
+
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.io.ImgIOException;
 
-import org.scijava.app.StatusService;
-import org.scijava.event.EventService;
-import org.scijava.service.Service;
+import org.scijava.Priority;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Plugin;
 
 /**
- * Interface for providing I/O convenience methods.
+ * Drag-and-drop handler for image files.
  * 
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
-public interface IOService extends Service {
+@Plugin(type = DragAndDropHandler.class, priority = Priority.LOW_PRIORITY)
+public class ImageFileDragAndDropHandler extends
+	AbstractDragAndDropHandler<File>
+{
 
-	EventService getEventService();
+	// -- DragAndDropHandler methods --
 
-	StatusService getStatusService();
+	@Override
+	public Class<File> getType() {
+		return File.class;
+	}
 
-	ModuleService getModuleService();
+	@Override
+	public boolean isCompatible(final File file) {
+		if (file == null) return true; // trivial case
 
-	DatasetService getDatasetService();
+		// verify that the file is image data
+		final IOService ioService = getContext().getService(IOService.class);
+		if (ioService == null) return false;
+		return ioService.isImageData(file.getAbsolutePath());
+	}
 
-	/**
-	 * Determines whether the given source is image data (and hence compatible
-	 * with the {@link #loadDataset(String)} method).
-	 */
-	boolean isImageData(String source);
+	@Override
+	public boolean drop(final File file, final Display<?> display) {
+		check(file, display);
+		if (file == null) return true; // trivial case
 
-	/** Loads a dataset from a source (such as a file on disk). */
-	Dataset loadDataset(String source) throws ImgIOException,
-		IncompatibleTypeException;
+		final IOService ioService = getContext().getService(IOService.class);
+		if (ioService == null) return false;
 
-	/** Reverts the given dataset to its original source. */
-	void revertDataset(Dataset dataset) throws ImgIOException,
-		IncompatibleTypeException;
+		final DisplayService displayService =
+			getContext().getService(DisplayService.class);
+		if (displayService == null) return false;
 
-	// TODO: Add a saveDataset method, and use it in SaveAsImage plugin.
+		final LogService log = getContext().getService(LogService.class);
+
+		// load dataset
+		final String filename = file.getAbsolutePath();
+		final Dataset dataset;
+		try {
+			dataset = ioService.loadDataset(filename);
+		}
+		catch (final ImgIOException exc) {
+			if (log != null) log.error("Error opening file: " + filename, exc);
+			return false;
+		}
+		catch (final IncompatibleTypeException exc) {
+			if (log != null) log.error("Error opening file: " + filename, exc);
+			return false;
+		}
+
+		// display result
+		displayService.createDisplay(dataset);
+		return true;
+	}
 
 }

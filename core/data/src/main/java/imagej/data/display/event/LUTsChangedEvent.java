@@ -42,9 +42,9 @@ import imagej.data.display.DataView;
  * 
  * @author Barry DeZonia
  */
-public class LutsChangedEvent extends DataViewEvent {
+public class LUTsChangedEvent extends DataViewEvent {
 
-	public LutsChangedEvent(final DataView view) {
+	public LUTsChangedEvent(final DataView view) {
 		super(view);
 	}
 

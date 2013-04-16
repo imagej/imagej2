@@ -33,44 +33,46 @@
  * #L%
  */
 
-package imagej.data.lut;
+package imagej.ui.dnd.event;
 
-import java.io.File;
-import java.net.URL;
+import imagej.display.Display;
+import imagej.ui.dnd.DragAndDropData;
 
-import net.imglib2.display.ColorTable;
-
-import org.scijava.service.Service;
+import org.scijava.input.InputModifiers;
 
 /**
- * The LutService loads {@link ColorTable}s from files (hosted locally or
- * externally).
+ * An event indicating an object was dropped onto a display.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-public interface LutService extends Service {
+public class DropEvent extends DragAndDropEvent {
 
-	/**
-	 * Loads a {@link ColorTable} from a url (represented as a string).
-	 * 
-	 * @param urlString The url (as a String) where the color table file is found.
-	 * @return The color table loaded from the given url.
-	 */
-	ColorTable loadLut(String urlString);
+	private boolean successful;
 
-	/**
-	 * Loads a {@link ColorTable} from a url (represented as a URL).
-	 * 
-	 * @param url The url (as a URL) where the color table file is found.
-	 * @return The color table loaded from the given url.
-	 */
-	ColorTable loadLut(URL url);
+	public DropEvent(final Display<?> display,
+		final InputModifiers modifiers, final int x, final int y,
+		final DragAndDropData data)
+	{
+		super(display, modifiers, x, y, data);
+	}
 
-	/**
-	 * Loads a {@link ColorTable} from a {@link File}.
-	 * 
-	 * @param file The File containing the color table.
-	 * @return The color table loaded from the given File.
-	 */
-	ColorTable loadLut(File file);
+	// -- DropEvent methods --
+
+	/** Gets whether the drop operation was successful. */
+	public boolean isSuccessful() {
+		return successful;
+	}
+
+	/** Sets whether the drop operation was successful. */
+	public void setSuccessful(final boolean successful) {
+		this.successful = successful;
+	}
+
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\tsuccessful = " + successful;
+	}
+
 }

@@ -33,47 +33,52 @@
  * #L%
  */
 
-package imagej.io;
+package imagej.ui.dnd.event;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.module.ModuleService;
-import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.io.ImgIOException;
+import imagej.display.Display;
+import imagej.display.event.input.InputEvent;
+import imagej.ui.dnd.DragAndDropData;
 
-import org.scijava.app.StatusService;
-import org.scijava.event.EventService;
-import org.scijava.service.Service;
+import org.scijava.input.InputModifiers;
 
 /**
- * Interface for providing I/O convenience methods.
+ * An event indicating drag-and-drop activity in a display.
  * 
  * @author Curtis Rueden
  */
-public interface IOService extends Service {
+public abstract class DragAndDropEvent extends InputEvent {
 
-	EventService getEventService();
+	private final DragAndDropData data;
 
-	StatusService getStatusService();
+	public DragAndDropEvent(final Display<?> display) {
+		this(display, null);
+	}
 
-	ModuleService getModuleService();
+	public DragAndDropEvent(final Display<?> display, final DragAndDropData data)
+	{
+		this(display, null, -1, -1, data);
+	}
 
-	DatasetService getDatasetService();
+	public DragAndDropEvent(final Display<?> display,
+		final InputModifiers modifiers, final int x, final int y,
+		final DragAndDropData data)
+	{
+		super(display, modifiers, x, y);
+		this.data = data;
+	}
 
-	/**
-	 * Determines whether the given source is image data (and hence compatible
-	 * with the {@link #loadDataset(String)} method).
-	 */
-	boolean isImageData(String source);
+	// -- DragAndDropEvent methods --
 
-	/** Loads a dataset from a source (such as a file on disk). */
-	Dataset loadDataset(String source) throws ImgIOException,
-		IncompatibleTypeException;
+	/** Gets the drag-and-drop data. */
+	public DragAndDropData getData() {
+		return data;
+	}
 
-	/** Reverts the given dataset to its original source. */
-	void revertDataset(Dataset dataset) throws ImgIOException,
-		IncompatibleTypeException;
+	// -- Object methods --
 
-	// TODO: Add a saveDataset method, and use it in SaveAsImage plugin.
+	@Override
+	public String toString() {
+		return super.toString() + "\n\tdata = " + data;
+	}
 
 }

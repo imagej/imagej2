@@ -42,7 +42,7 @@ import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.ui.AbstractUserInterface;
 import imagej.ui.SystemClipboard;
 import imagej.ui.common.awt.AWTClipboard;
-import imagej.ui.common.awt.AWTDropListener;
+import imagej.ui.common.awt.AWTDropTargetEventDispatcher;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.swing.menu.SwingJMenuBarCreator;
 import imagej.ui.swing.menu.SwingJPopupMenuCreator;
@@ -51,7 +51,6 @@ import imagej.widget.FileWidget;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.dnd.DropTarget;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -173,18 +172,19 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		appFrame.getContentPane().add(statusBar, BorderLayout.SOUTH);
 
 		// listen for input events on all components of the app frame
-		final AWTInputEventDispatcher dispatcher =
+		final AWTInputEventDispatcher inputDispatcher =
 			new AWTInputEventDispatcher(null, getEventService());
-		appFrame.addEventDispatcher(dispatcher);
+		appFrame.addEventDispatcher(inputDispatcher);
+
+		// listen for drag and drop events
+		final AWTDropTargetEventDispatcher dropTargetDispatcher =
+			new AWTDropTargetEventDispatcher(null, getEventService());
+		dropTargetDispatcher.register(toolBar);
+		dropTargetDispatcher.register(statusBar);
+		dropTargetDispatcher.register(appFrame);
 
 		appFrame.pack();
 		appFrame.setVisible(true);
-
-		// setup drag and drop targets
-		final AWTDropListener dropListener = new AWTDropListener(getUIService());
-		new DropTarget(toolBar, dropListener);
-		new DropTarget(statusBar, dropListener);
-		new DropTarget(appFrame, dropListener);
 	}
 
 	/**

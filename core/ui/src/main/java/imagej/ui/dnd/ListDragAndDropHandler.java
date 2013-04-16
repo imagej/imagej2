@@ -33,47 +33,78 @@
  * #L%
  */
 
-package imagej.io;
+package imagej.ui.dnd;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.module.ModuleService;
-import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.io.ImgIOException;
+import imagej.display.Display;
 
-import org.scijava.app.StatusService;
-import org.scijava.event.EventService;
-import org.scijava.service.Service;
+import java.util.List;
+
+import org.scijava.plugin.Plugin;
 
 /**
- * Interface for providing I/O convenience methods.
+ * Drag-and-drop handler for lists of objects.
  * 
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
-public interface IOService extends Service {
+@Plugin(type = DragAndDropHandler.class)
+public class ListDragAndDropHandler extends
+	AbstractDragAndDropHandler<List<?>>
+{
 
-	EventService getEventService();
+	// -- DragAndDropHandler methods --
 
-	StatusService getStatusService();
+	@Override
+	public Class<List<?>> getType() {
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		final Class<List<?>> listClass = (Class) List.class;
+		return listClass;
+	}
 
-	ModuleService getModuleService();
+	@Override
+	public boolean isCompatible(final List<?> dataObject) {
+		return true;
+	}
 
-	DatasetService getDatasetService();
+	@Override
+	public boolean isCompatible(final List<?> list, final Display<?> display) {
+		if (!super.isCompatible(list, display)) return false;
 
-	/**
-	 * Determines whether the given source is image data (and hence compatible
-	 * with the {@link #loadDataset(String)} method).
-	 */
-	boolean isImageData(String source);
+		final DragAndDropService dndService =
+			getContext().getService(DragAndDropService.class);
+		if (dndService == null) return false;
 
-	/** Loads a dataset from a source (such as a file on disk). */
-	Dataset loadDataset(String source) throws ImgIOException,
-		IncompatibleTypeException;
+		// empty lists are trivially compatible
+		if (list.size() == 0) return true;
 
-	/** Reverts the given dataset to its original source. */
-	void revertDataset(Dataset dataset) throws ImgIOException,
-		IncompatibleTypeException;
+		// the list is deemed compatible if at least one item is compatible
+		for (final Object item : list) {
+			if (dndService.isCompatible(item, display)) return true;
+		}
+		return false;
+	}
 
-	// TODO: Add a saveDataset method, and use it in SaveAsImage plugin.
+	@Override
+	public boolean drop(final List<?> list, final Display<?> display) {
+		check(list, display);
+		if (list == null) return true; // trivial case
+
+		final DragAndDropService dndService =
+			getContext().getService(DragAndDropService.class);
+		if (dndService == null) return false;
+
+		// dropping an empty list trivially succeeds
+		if (list.size() == 0) return true;
+
+		// use the drag-and-drop service to handle each item separately
+		boolean success = false;
+		for (final Object item : list) {
+			if (dndService.isCompatible(item, display)) {
+				final boolean result = dndService.drop(item, display);
+				if (result) success = true;
+			}
+		}
+		return success;
+	}
 
 }

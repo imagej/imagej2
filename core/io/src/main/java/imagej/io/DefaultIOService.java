@@ -39,6 +39,10 @@ import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.io.event.FileOpenedEvent;
 import imagej.module.ModuleService;
+
+import java.io.IOException;
+
+import loci.formats.ImageReader;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.io.ImgIOException;
@@ -98,6 +102,22 @@ public final class DefaultIOService<T extends RealType<T> & NativeType<T>>
 	@Override
 	public DatasetService getDatasetService() {
 		return datasetService;
+	}
+
+	@Override
+	public boolean isImageData(final String source) {
+		final ImageReader reader = new ImageReader();
+		final boolean isImageData = reader.isThisType(source);
+
+		// NB: Unnecessary, but makes Eclipse shut up.
+		try {
+			reader.close();
+		}
+		catch (final IOException exc) {
+			throw new IllegalStateException(exc);
+		}
+
+		return isImageData;
 	}
 
 	@Override

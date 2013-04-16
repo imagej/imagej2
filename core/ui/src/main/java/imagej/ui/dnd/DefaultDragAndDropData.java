@@ -33,47 +33,52 @@
  * #L%
  */
 
-package imagej.io;
+package imagej.ui.dnd;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.module.ModuleService;
-import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.io.ImgIOException;
+import java.util.Collections;
+import java.util.List;
 
-import org.scijava.app.StatusService;
-import org.scijava.event.EventService;
-import org.scijava.service.Service;
+import org.scijava.Context;
 
 /**
- * Interface for providing I/O convenience methods.
+ * Default implementation of {@link DragAndDropData}, which provides a
+ * UI-agnostic way to bundle an object together with its MIME type.
  * 
+ * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public interface IOService extends Service {
+public class DefaultDragAndDropData extends AbstractDragAndDropData {
 
-	EventService getEventService();
+	// -- Fields --
 
-	StatusService getStatusService();
+	private final MIMEType mime;
+	private final Object data;
 
-	ModuleService getModuleService();
+	// -- Constructor --
 
-	DatasetService getDatasetService();
+	public DefaultDragAndDropData(final Context context, final MIMEType mimeType,
+		final Object data)
+	{
+		setContext(context);
+		this.mime = mimeType;
+		this.data = data;
+	}
 
-	/**
-	 * Determines whether the given source is image data (and hence compatible
-	 * with the {@link #loadDataset(String)} method).
-	 */
-	boolean isImageData(String source);
+	// -- DragAndDropData methods --
 
-	/** Loads a dataset from a source (such as a file on disk). */
-	Dataset loadDataset(String source) throws ImgIOException,
-		IncompatibleTypeException;
+	@Override
+	public boolean isSupported(final MIMEType mimeType) {
+		return mime.equals(mimeType);
+	}
 
-	/** Reverts the given dataset to its original source. */
-	void revertDataset(Dataset dataset) throws ImgIOException,
-		IncompatibleTypeException;
+	@Override
+	public Object getData(final MIMEType mimeType) {
+		return isSupported(mimeType) ? data : null;
+	}
 
-	// TODO: Add a saveDataset method, and use it in SaveAsImage plugin.
+	@Override
+	public List<MIMEType> getMIMETypes() {
+		return Collections.singletonList(mime);
+	}
 
 }

@@ -33,47 +33,39 @@
  * #L%
  */
 
-package imagej.io;
+package imagej.ui.dnd;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.module.ModuleService;
-import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.io.ImgIOException;
-
-import org.scijava.app.StatusService;
-import org.scijava.event.EventService;
-import org.scijava.service.Service;
+import org.scijava.AbstractContextual;
 
 /**
- * Interface for providing I/O convenience methods.
+ * Abstract superclass for {@link DragAndDropData} implementations.
  * 
  * @author Curtis Rueden
  */
-public interface IOService extends Service {
+public abstract class AbstractDragAndDropData extends AbstractContextual
+	implements DragAndDropData
+{
 
-	EventService getEventService();
+	@Override
+	public boolean isSupported(final Class<?> type) {
+		return getMIMEType(type) != null;
+	}
 
-	StatusService getStatusService();
+	@Override
+	public <T> T getData(final Class<T> type) {
+		final MIMEType mimeType = getMIMEType(type);
+		if (mimeType == null) return null;
+		@SuppressWarnings("unchecked")
+		final T data = (T) getData(mimeType);
+		return data;
+	}
 
-	ModuleService getModuleService();
-
-	DatasetService getDatasetService();
-
-	/**
-	 * Determines whether the given source is image data (and hence compatible
-	 * with the {@link #loadDataset(String)} method).
-	 */
-	boolean isImageData(String source);
-
-	/** Loads a dataset from a source (such as a file on disk). */
-	Dataset loadDataset(String source) throws ImgIOException,
-		IncompatibleTypeException;
-
-	/** Reverts the given dataset to its original source. */
-	void revertDataset(Dataset dataset) throws ImgIOException,
-		IncompatibleTypeException;
-
-	// TODO: Add a saveDataset method, and use it in SaveAsImage plugin.
+	@Override
+	public MIMEType getMIMEType(final Class<?> type) {
+		for (final MIMEType mimeType : getMIMETypes()) {
+			if (mimeType.isCompatible(type)) return mimeType;
+		}
+		return null;
+	}
 
 }

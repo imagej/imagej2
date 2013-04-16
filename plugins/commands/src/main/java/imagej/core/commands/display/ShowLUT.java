@@ -141,11 +141,11 @@ public class ShowLUT extends ContextCommand {
 		boolean floating = false;
 		Dataset ds = datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
 		ds.setRGBMerged(true);
-		drawLutInfo(ds, lut);
+		drawLUTInfo(ds, lut);
 		return ds;
 	}
 	
-	private void drawLutInfo(Dataset ds, ColorTable ct) {
+	private void drawLUTInfo(Dataset ds, ColorTable ct) {
 		DrawingTool tool = new DrawingTool(ds, renderingService);
 		int xMargin = 35;
 		int yMargin = 20;
