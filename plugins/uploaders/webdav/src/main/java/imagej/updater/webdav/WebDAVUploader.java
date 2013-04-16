@@ -115,25 +115,34 @@ public class WebDAVUploader extends AbstractUploader {
 			}
 		}
 
+		UpdateSite site = uploader.getFilesCollection().getUpdateSite(uploader.getSiteName());
+		baseURL = site.url;
+
 		if (username == null) {
 			uploader.getDefaultUsername();
-			if (username == null) username = UpdaterUserInterface.get().getString("Login for " + uploader.getUploadHost());
+			if (username == null) username = UpdaterUserInterface.get().getString("Login for " + baseURL);
 			if (username == null) return false;
 		}
 
 		if (password == null) {
-			final String prompt = "Password for " + username + "@" + uploader.getUploadHost();
+			final String prompt = "Password for " + username + "@" + baseURL;
 			password = UpdaterUserInterface.get().getPassword(prompt);
 			if (password == null) return false;
 		}
 
-		UpdateSite site = uploader.getFilesCollection().getUpdateSite(uploader.getSiteName());
-		baseURL = site.url;
 		if (!baseURL.endsWith("/")) baseURL += "/";
 
 		existingDirectories = new HashSet<String>();
 
-		return isAllowed() && directoryExists("");
+		if (!isAllowed()) {
+			UpdaterUserInterface.get().error("User " + username + " lacks upload permissions for " + baseURL);
+			return false;
+		}
+		if (!directoryExists("")) {
+			UpdaterUserInterface.get().error(baseURL + " does not exist yet!");
+			return false;
+		}
+		return true;
 	}
 
 	@Override
