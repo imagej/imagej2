@@ -140,11 +140,24 @@ public class MIMEType {
 		return paramNames;
 	}
 
-	/** Gets whether this MIME type matches the given MIME type string. */
-	public boolean isCompatible(final String mimeType) {
-		// TODO: This logic may be too simple in some cases. E.g., we probably
-		// don't want to require all parameters to match and in the same order.
-		return toString().equals(mimeType);
+	/**
+	 * Gets whether this MIME type is compatible with the given one. Being
+	 * "compatible" means that the base types match, and that the given MIME type
+	 * has the same parameters with the same values as this one does (although the
+	 * given MIME type may also have additional parameters not present in this
+	 * one).
+	 */
+	public boolean isCompatible(final MIMEType mimeType) {
+		// ensure the base MIME types match
+		if (!getBase().equals(mimeType.getBase())) return false;
+
+		// ensure target MIME type has the same parameters as this one
+		// (but don't worry about any extra parameters it has)
+		for (String name : getParameters()) {
+			if (!getParameter(name).equals(mimeType.getParameter(name))) return false;
+		}
+
+		return true;
 	}
 
 	/** Gets whether this MIME type represents objects of the given Java class. */
@@ -161,7 +174,9 @@ public class MIMEType {
 
 	@Override
 	public boolean equals(final Object o) {
-		return toString().equals(o.toString());
+		if (!(o instanceof MIMEType)) return false;
+		final MIMEType mimeType = (MIMEType) o;
+		return isCompatible(mimeType) && mimeType.isCompatible(this);
 	}
 
 	@Override

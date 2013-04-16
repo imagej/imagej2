@@ -68,7 +68,9 @@ public class AWTDragAndDropData extends AbstractDragAndDropData {
 	@Override
 	public boolean isSupported(final MIMEType mimeType) {
 		for (final DataFlavor flavor : t.getTransferDataFlavors()) {
-			if (mimeType.isCompatible(flavor.getMimeType())) return true;
+			if (mimeType.isCompatible(new MIMEType(flavor.getMimeType()))) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -76,7 +78,7 @@ public class AWTDragAndDropData extends AbstractDragAndDropData {
 	@Override
 	public Object getData(final MIMEType mimeType) {
 		for (final DataFlavor flavor : t.getTransferDataFlavors()) {
-			if (mimeType.isCompatible(flavor.getMimeType())) {
+			if (mimeType.isCompatible(new MIMEType(flavor.getMimeType()))) {
 				try {
 					return t.getTransferData(flavor);
 				}
