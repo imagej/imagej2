@@ -47,6 +47,7 @@ import java.io.File;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.io.ImgIOException;
 
+import org.scijava.Priority;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Plugin;
 
@@ -56,7 +57,7 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Plugin(type = DragAndDropHandler.class)
+@Plugin(type = DragAndDropHandler.class, priority = Priority.LOW_PRIORITY)
 public class ImageFileDragAndDropHandler extends
 	AbstractDragAndDropHandler<File>
 {
