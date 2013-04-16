@@ -10,23 +10,12 @@ ij.plugin.Selection("add")                 # Edit > Selection > Add To Manager
 ij.plugin.Selection("all")                 # Edit > Selection > Select All
 ij.plugin.Selection("none")                # Edit > Selection > Select None
 ij.plugin.frame.RoiManager                 # Image > Analyze > Tools > ROI Manager
-ij.plugin.frame.Channels                   # Image > Color > Channels Tool
 ij.plugin.frame.ColorPicker                # Image > Color > Color Picker
 ij.plugin.CompositeConverter               # Image > Color > Make Composite
 ij.plugin.Duplicator                       # Image > Duplicate
 ij.plugin.HyperStackConverter("hstostack") # Image > HyperStack > HyperStack To Stack
 ij.plugin.HyperStackConverter("stacktohs") # Image > HyperStack > Stack To HyperStack
-ij.plugin.LutLoader("fire")                # Image > Lookup Tables > Fire
-ij.plugin.LutLoader("grays")               # Image > Lookup Tables > Grays
-ij.plugin.LutLoader("ice")                 # Image > Lookup Tables > Ice
-ij.plugin.LutLoader("spectrum")            # Image > Lookup Tables > Spectrum
 ij.plugin.LutLoader("3-3-2 RGB")           # Image > Lookup Tables > 3-3-2 RGB
-ij.plugin.LutLoader("red")                 # Image > Lookup Tables > Red
-ij.plugin.LutLoader("green")               # Image > Lookup Tables > Green
-ij.plugin.LutLoader("blue")                # Image > Lookup Tables > Blue
-ij.plugin.LutLoader("cyan")                # Image > Lookup Tables > Cyan
-ij.plugin.LutLoader("magenta")             # Image > Lookup Tables > Magenta
-ij.plugin.LutLoader("yellow")              # Image > Lookup Tables > Yellow
 ij.plugin.LutLoader("redgreen")            # Image > Lookup Tables > Red/Green
 ij.plugin.OverlayCommands("image")         # Image > Overlay > Add Image
 ij.plugin.OverlayCommands("add")           # Image > Overlay > Add Selection
@@ -58,7 +47,6 @@ ij.plugin.filter.ImageMath("sqr")          # Process > Math > Sqr
 ij.plugin.filter.ImageMath("sqrt")         # Process > Math > Sqrt
 ij.plugin.filter.Filters("add")            # Process > Noise > Add Noise
 ij.plugin.Hotkeys("install")               # Plugins > Shortcuts > Create Shortcut...
-ij.plugin.filter.Benchmark                 # Plugins > Utilities > Benchmark
 ij.plugin.AboutBox                         # Help > About ImageJ...
 ij.plugin.ImageJ_Updater                   # Help > Update ImageJ...
 ###### PHASE THESE OUT SOON
