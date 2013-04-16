@@ -40,6 +40,7 @@ import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.UserInterface;
+import imagej.ui.common.awt.AWTDropTargetEventDispatcher;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import imagej.ui.swing.AbstractSwingUI;
@@ -50,6 +51,7 @@ import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 
+import org.scijava.event.EventService;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -74,6 +76,10 @@ public class SwingUI extends AbstractSwingUI {
 
 		// broadcast window events
 		new AWTWindowEventDispatcher(display).register(displayWindow);
+
+		// broadcast drag-and-drop events
+		final EventService eventService = getUIService().getEventService();
+		new AWTDropTargetEventDispatcher(display, eventService);
 
 		return displayWindow;
 	}

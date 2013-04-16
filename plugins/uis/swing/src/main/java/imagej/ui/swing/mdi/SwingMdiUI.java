@@ -41,6 +41,7 @@ import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
+import imagej.ui.common.awt.AWTDropTargetEventDispatcher;
 import imagej.ui.swing.AbstractSwingUI;
 import imagej.ui.swing.SwingApplicationFrame;
 import imagej.ui.swing.mdi.viewer.SwingMdiDisplayWindow;
@@ -52,6 +53,7 @@ import java.awt.Rectangle;
 import javax.swing.JScrollPane;
 
 import org.scijava.Priority;
+import org.scijava.event.EventService;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -84,6 +86,10 @@ public class SwingMdiUI extends AbstractSwingUI {
 		// broadcast internal frame events
 		displayWindow
 			.addEventDispatcher(new InternalFrameEventDispatcher(display));
+
+		// broadcast drag-and-drop events
+		final EventService eventService = getUIService().getEventService();
+		new AWTDropTargetEventDispatcher(display, eventService);
 
 		return displayWindow;
 	}
