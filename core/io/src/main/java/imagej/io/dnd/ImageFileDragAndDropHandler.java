@@ -70,7 +70,7 @@ public class ImageFileDragAndDropHandler extends
 
 	@Override
 	public boolean isCompatible(final File file) {
-		if (!super.isCompatible(file)) return false;
+		if (file == null) return true; // trivial case
 
 		// verify that the file is image data
 		final IOService ioService = getContext().getService(IOService.class);
@@ -81,6 +81,7 @@ public class ImageFileDragAndDropHandler extends
 	@Override
 	public boolean drop(final File file, final Display<?> display) {
 		check(file, display);
+		if (file == null) return true; // trivial case
 
 		final IOService ioService = getContext().getService(IOService.class);
 		if (ioService == null) return false;

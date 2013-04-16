@@ -51,11 +51,6 @@ public abstract class AbstractDragAndDropHandler<D> extends SortablePlugin
 	// -- DragAndDropHandler methods --
 
 	@Override
-	public boolean isCompatible(final D dataObject) {
-		return dataObject != null;
-	}
-
-	@Override
 	public boolean isCompatible(final D dataObject, final Display<?> display) {
 		return isCompatibleDisplay(display) && isCompatible(dataObject);
 	}

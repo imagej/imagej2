@@ -67,7 +67,7 @@ public class LUTFileDragAndDropHandler extends
 
 	@Override
 	public boolean isCompatible(final File file) {
-		if (!super.isCompatible(file)) return false;
+		if (file == null) return true; // trivial case
 
 		// verify that the file contains a color table
 		final LutService lutService = getContext().getService(LutService.class);
@@ -83,6 +83,7 @@ public class LUTFileDragAndDropHandler extends
 	@Override
 	public boolean drop(final File file, final Display<?> display) {
 		check(file, display);
+		if (file == null) return true; // trivial case
 
 		final LutService lutService = getContext().getService(LutService.class);
 		if (lutService == null) return false;

@@ -35,6 +35,9 @@
 
 package imagej.ui.dnd;
 
+import imagej.ui.dnd.event.DragEnterEvent;
+import imagej.ui.dnd.event.DropEvent;
+
 import java.util.List;
 
 /**
@@ -55,7 +58,14 @@ public interface DragAndDropData {
 	 */
 	boolean isSupported(Class<?> type);
 
-	/** Gets the data with respect to the given MIME type. */
+	/**
+	 * Gets the data with respect to the given MIME type.
+	 * 
+	 * @return The data object for the given MIME type. May return null if the
+	 *         data is requested too early in the drag-and-drop process, such as
+	 *         during a {@link DragEnterEvent} rather than a {@link DropEvent}.
+	 * @throws IllegalArgumentException if the MIME type is not supported.
+	 */
 	Object getData(MIMEType mimeType);
 
 	/** Gets the data as an object of the given Java class. */

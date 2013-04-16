@@ -61,7 +61,7 @@ public class ScriptFileDragAndDropHandler extends
 
 	@Override
 	public boolean isCompatible(final File file) {
-		if (!super.isCompatible(file)) return false;
+		if (file == null) return true; // trivial case
 
 		// verify that the file is a script
 		final ScriptService scriptService =
@@ -73,6 +73,7 @@ public class ScriptFileDragAndDropHandler extends
 	@Override
 	public boolean drop(final File file, final Display<?> display) {
 		check(file, display);
+		if (file == null) return true; // trivial case
 
 		final ScriptService scriptService =
 			getContext().getService(ScriptService.class);

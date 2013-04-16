@@ -62,6 +62,11 @@ public class ListDragAndDropHandler extends
 	}
 
 	@Override
+	public boolean isCompatible(final List<?> dataObject) {
+		return true;
+	}
+
+	@Override
 	public boolean isCompatible(final List<?> list, final Display<?> display) {
 		if (!super.isCompatible(list, display)) return false;
 
@@ -82,6 +87,7 @@ public class ListDragAndDropHandler extends
 	@Override
 	public boolean drop(final List<?> list, final Display<?> display) {
 		check(list, display);
+		if (list == null) return true; // trivial case
 
 		final DragAndDropService dndService =
 			getContext().getService(DragAndDropService.class);

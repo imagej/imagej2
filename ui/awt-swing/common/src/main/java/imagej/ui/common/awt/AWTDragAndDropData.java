@@ -42,6 +42,7 @@ import imagej.ui.dnd.MIMEType;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.InvalidDnDOperationException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -86,6 +87,15 @@ public class AWTDragAndDropData extends AbstractDragAndDropData {
 				catch (final IOException exc) {
 					final LogService log = getContext().getService(LogService.class);
 					if (log != null) log.error("Drag-and-drop error", exc);
+				}
+				catch (final InvalidDnDOperationException exc) {
+					// NB: This exception is thrown when the data is requested at an
+					// inappropriate time, typically too early in the drag-and-drop
+					// process such as during a dragEnter event. In that case, we simply
+					// return null for now.
+					//
+					// ImageJ's drag-and-drop layer does its best to deal with it.
+					return null;
 				}
 			}
 		}
