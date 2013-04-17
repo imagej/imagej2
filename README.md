@@ -5,21 +5,24 @@ interface closely modeled after the original.
 
 Under the hood, ImageJ2 completely isolates the image processing logic from the
 graphical user interface (UI), allowing ImageJ2 commands to be used in many
-contexts, including headless in the cloud or on a server such as OMERO, or from
-within another application such as KNIME, ICY or CellProfiler (a Python
-application).
+contexts, including headless in the cloud or on a server such as
+[OMERO](http://openmicroscopy.org/site/support/omero4), or from within another
+application such as [KNIME](http://knime.org/),
+[Icy](http://icy.bioimageanalysis.org/) or
+[CellProfiler](http://cellprofiler.org/) (a Python application).
 
-ImageJ2 has an N-dimensional data model driven by the powerful ImgLib2 library,
-which supports image data expressed in an extensible set of numeric and
-non-numeric types, and accessed from an extensible set of data sources. ImageJ2
-is driven by a state-of-the-art, collaborative development process, including
-version control, unit testing, automated builds via a continuous integration
-system, a bug tracker and more.
+ImageJ2 has an N-dimensional data model driven by the powerful
+[ImgLib2](http://imglib2.net/) library, which supports image data expressed in
+an extensible set of numeric and non-numeric types, and accessed from an
+extensible set of data sources. ImageJ2 is driven by a state-of-the-art,
+collaborative development process, including version control, unit testing,
+automated builds via a continuous integration system, a bug tracker and more.
 
-We are collaborating closely with related projects including Fiji, Bio-Formats
-and OMERO, and are striving to deliver a coherent software stack reusable
-throughout the life sciences community and beyond. For more details, see the
-[SciJava web site](http://scijava.org/).
+We are collaborating closely with related projects including
+[Fiji](http://fiji.sc/), [SCIFIO](http://loci.wisc.edu/software/scifio) and
+[OME](http://openmicroscopy.org/), and are striving to deliver a coherent
+software stack reusable throughout the life sciences community and beyond. For
+more details, see the [SciJava web site](http://scijava.org/).
 
 ImageJ2 is currently in the "beta" stage, meaning the code is not finished. It
 is being released for early community feedback and testing. Comments, questions
