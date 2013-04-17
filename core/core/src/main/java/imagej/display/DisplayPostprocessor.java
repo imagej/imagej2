@@ -83,6 +83,11 @@ public class DisplayPostprocessor extends AbstractPostprocessorPlugin {
 	public void handleOutput(final DisplayService displayService,
 		final String defaultName, final Object output)
 	{
+		if (output == null) {
+			// ignore null outputs
+			return;
+		}
+
 		if (output instanceof Display) {
 			// output is itself a display; just update it
 			final Display<?> display = (Display<?>) output;
@@ -151,8 +156,7 @@ public class DisplayPostprocessor extends AbstractPostprocessorPlugin {
 		// no available displays for this type of output
 		final LogService log = getContext().getService(LogService.class);
 		if (log != null) {
-			final String valueClass =
-				output == null ? "null" : output.getClass().getName();
+			final String valueClass = output.getClass().getName();
 			log.warn("Ignoring unsupported output: " + valueClass);
 		}
 	}
