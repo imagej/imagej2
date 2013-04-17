@@ -120,9 +120,6 @@ public class SwingTextDisplayPanel extends JScrollPane implements
 		final boolean html = text.startsWith("<html>");
 		textArea.setContentType(html ? "text/html" : "text/plain");
 		textArea.setText(text);
-
-		// make sure the last line is always visible
-		textArea.setCaretPosition(targetText.length());
 	}
 
 }
