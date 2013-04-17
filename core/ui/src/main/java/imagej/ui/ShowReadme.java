@@ -36,12 +36,10 @@
 package imagej.ui;
 
 import imagej.command.Command;
+import imagej.text.TextService;
 import imagej.util.AppUtils;
 
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.scijava.ItemIO;
@@ -57,6 +55,9 @@ import org.scijava.plugin.Plugin;
 public class ShowReadme implements Command {
 
 	private static final String README_FILE = "README.md";
+
+	@Parameter
+	private TextService textService;
 
 	@Parameter(label = "Readme", type = ItemIO.OUTPUT)
 	private String readmeText;
@@ -79,19 +80,8 @@ public class ShowReadme implements Command {
 	private String loadReadmeFile() {
 		final File baseDir = AppUtils.getBaseDirectory();
 		final File readmeFile = new File(baseDir, README_FILE);
-
 		try {
-			final DataInputStream in =
-				new DataInputStream(new FileInputStream(readmeFile));
-			final int len = (int) readmeFile.length();
-			final byte[] bytes = new byte[len];
-			in.readFully(bytes);
-			in.close();
-			return new String(bytes);
-		}
-		catch (final FileNotFoundException e) {
-			throw new IllegalArgumentException(README_FILE + " not found at " +
-				baseDir.getAbsolutePath());
+			return textService.asHTML(readmeFile);
 		}
 		catch (final IOException e) {
 			throw new IllegalStateException(e.getMessage());
