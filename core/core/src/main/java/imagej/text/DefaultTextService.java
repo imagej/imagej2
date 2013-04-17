@@ -87,6 +87,11 @@ public final class DefaultTextService extends AbstractService implements
 	}
 
 	@Override
+	public boolean isText(final File file) {
+		return getFormat(file) != null;
+	}
+
+	@Override
 	public TextFormat getFormat(final File file) {
 		final String extension = FileUtils.getExtension(file);
 		for (final TextFormat format : formats) {

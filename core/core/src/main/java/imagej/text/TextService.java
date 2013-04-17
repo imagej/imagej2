@@ -51,6 +51,9 @@ public interface TextService extends Service {
 	/** Reads the data from the given file into a string. */
 	String open(File file) throws IOException;
 
+	/** Gets whether the given file contains text data in a supported format. */
+	boolean isText(File file);
+
 	/** Gets the text format which best handles the given file. */
 	TextFormat getFormat(File file);
 
