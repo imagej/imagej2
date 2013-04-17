@@ -39,15 +39,17 @@ import imagej.display.TextDisplay;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.text.TextDisplayPanel;
 
+import java.awt.Dimension;
 import java.awt.Font;
 
+import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 
 /**
  * This is the display panel for {@link String}s.
  * 
  * @author Lee Kamentsky
+ * @author Curtis Rueden
  */
 public class SwingTextDisplayPanel extends JScrollPane implements
 	TextDisplayPanel
@@ -55,17 +57,16 @@ public class SwingTextDisplayPanel extends JScrollPane implements
 
 	private final DisplayWindow window;
 	private final TextDisplay display;
-	private final JTextArea textArea;
+	private final JEditorPane textArea;
 
 	public SwingTextDisplayPanel(final TextDisplay display,
 		final DisplayWindow window)
 	{
 		this.display = display;
 		this.window = window;
-		textArea = new JTextArea();
+		textArea = new JEditorPane();
+		textArea.setPreferredSize(new Dimension(600, 500));
 		textArea.setEditable(false);
-		textArea.setRows(25);
-		textArea.setColumns(84);
 		final Font font = new Font(Font.MONOSPACED, Font.PLAIN, 12);
 		textArea.setFont(font);
 		setViewportView(textArea);
@@ -111,19 +112,15 @@ public class SwingTextDisplayPanel extends JScrollPane implements
 		// The strategy is to compare the lines in the text area against
 		// those in the display. We clear the control if we find a mismatch.
 
-		final String currentText = textArea.getText();
 		final StringBuffer targetText = new StringBuffer();
 		for (final String line : display) {
 			targetText.append(line + "\n");
 		}
-		if (targetText.toString().startsWith(currentText)) {
-			if (targetText.length() > currentText.length()) {
-				textArea.append(targetText.substring(currentText.length()));
-			}
-		}
-		else {
-			textArea.setText(targetText.toString());
-		}
+		final String text = targetText.toString();
+		final boolean html = text.startsWith("<html>");
+		textArea.setContentType(html ? "text/html" : "text/plain");
+		textArea.setText(text);
+
 		// make sure the last line is always visible
 		textArea.setCaretPosition(targetText.length());
 	}
