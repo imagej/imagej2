@@ -112,7 +112,7 @@ public final class DefaultTextService extends AbstractService implements
 	public String asHTML(final File file) throws IOException {
 		final TextFormat format = getFormat(file);
 		if (format == null) return null;
-		return format.asHTML(open(file));
+		return "<html><body>" + format.asHTML(open(file)) + "</body></html>";
 	}
 
 	// -- Service methods --
