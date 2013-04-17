@@ -33,59 +33,37 @@
  * #L%
  */
 
-package imagej.ui;
+package imagej.text;
 
-import imagej.command.Command;
-import imagej.text.TextService;
-import imagej.util.AppUtils;
+import imagej.plugin.ImageJPlugin;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.List;
 
-import org.scijava.ItemIO;
-import org.scijava.plugin.Parameter;
+import org.scijava.Contextual;
+import org.scijava.Prioritized;
 import org.scijava.plugin.Plugin;
 
 /**
- * Displays the ImageJ readme file.
+ * {@code TextFormat} is a plugin that provides handling for a text markup
+ * language.
+ * <p>
+ * Text formats discoverable at runtime must implement this interface and be
+ * annotated with @{@link Plugin} with attribute {@link Plugin#type()} =
+ * {@link TextFormat}.class. While it possible to create a text format merely by
+ * implementing this interface, it is encouraged to instead extend
+ * {@link AbstractTextFormat}, for convenience.
+ * </p>
  * 
  * @author Curtis Rueden
+ * @see Plugin
+ * @see TextService
  */
-@Plugin(type = Command.class)
-public class ShowReadme implements Command {
+public interface TextFormat extends ImageJPlugin, Contextual, Prioritized {
 
-	private static final String README_FILE = "README.md";
+	/** Gets the list of filename extensions for text in this format. */
+	List<String> getExtensions();
 
-	@Parameter
-	private TextService textService;
-
-	@Parameter(label = "Readme", type = ItemIO.OUTPUT)
-	private String readmeText;
-
-	// -- ShowReadme methods --
-
-	public String getReadmeText() {
-		return readmeText;
-	}
-
-	// -- Runnable methods --
-
-	@Override
-	public void run() {
-		readmeText = loadReadmeFile();
-	}
-
-	// -- Helper methods --
-
-	private String loadReadmeFile() {
-		final File baseDir = AppUtils.getBaseDirectory();
-		final File readmeFile = new File(baseDir, README_FILE);
-		try {
-			return textService.asHTML(readmeFile);
-		}
-		catch (final IOException e) {
-			throw new IllegalStateException(e.getMessage());
-		}
-	}
+	/** Expresses the given text string in HTML format. */
+	String asHTML(String text);
 
 }

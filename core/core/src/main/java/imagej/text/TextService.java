@@ -33,59 +33,34 @@
  * #L%
  */
 
-package imagej.ui;
-
-import imagej.command.Command;
-import imagej.text.TextService;
-import imagej.util.AppUtils;
+package imagej.text;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
-import org.scijava.ItemIO;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
+import org.scijava.service.Service;
 
 /**
- * Displays the ImageJ readme file.
+ * Interface for service that works with text formats.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Command.class)
-public class ShowReadme implements Command {
+public interface TextService extends Service {
 
-	private static final String README_FILE = "README.md";
+	/** Reads the data from the given file into a string. */
+	String open(File file) throws IOException;
 
-	@Parameter
-	private TextService textService;
+	/** Gets whether the given file contains text data in a supported format. */
+	boolean isText(File file);
 
-	@Parameter(label = "Readme", type = ItemIO.OUTPUT)
-	private String readmeText;
+	/** Gets the text format which best handles the given file. */
+	TextFormat getFormat(File file);
 
-	// -- ShowReadme methods --
+	/** Gets the list of available text formats. */
+	List<TextFormat> getFormats();
 
-	public String getReadmeText() {
-		return readmeText;
-	}
-
-	// -- Runnable methods --
-
-	@Override
-	public void run() {
-		readmeText = loadReadmeFile();
-	}
-
-	// -- Helper methods --
-
-	private String loadReadmeFile() {
-		final File baseDir = AppUtils.getBaseDirectory();
-		final File readmeFile = new File(baseDir, README_FILE);
-		try {
-			return textService.asHTML(readmeFile);
-		}
-		catch (final IOException e) {
-			throw new IllegalStateException(e.getMessage());
-		}
-	}
+	/** Expresses the given text string as HTML. */
+	String asHTML(File file) throws IOException;
 
 }

@@ -40,10 +40,12 @@ import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.io.IOService;
 import imagej.menu.MenuConstants;
+import imagej.text.TextService;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 
 import java.io.File;
+import java.io.IOException;
 
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.io.ImgIOException;
@@ -55,7 +57,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * Opens the selected file as a {@link Dataset}.
+ * Opens the selected file.
  * 
  * @author Curtis Rueden
  * @author Mark Hiner
@@ -67,13 +69,16 @@ import org.scijava.plugin.Plugin;
 			mnemonic = MenuConstants.FILE_MNEMONIC),
 		@Menu(label = "Open...", weight = 1, mnemonic = 'o',
 			accelerator = "control O") })
-public class OpenImage extends ContextCommand {
+public class OpenFile extends ContextCommand {
 
 	@Parameter
 	private LogService log;
 
 	@Parameter
 	private IOService ioService;
+
+	@Parameter
+	private TextService textService;
 
 	@Parameter
 	private UIService uiService;
@@ -84,20 +89,21 @@ public class OpenImage extends ContextCommand {
 	@Parameter(type = ItemIO.OUTPUT)
 	private Dataset dataset;
 
+	@Parameter(type = ItemIO.OUTPUT, label = "Text")
+	private String html;
+
 	@Override
 	public void run() {
 		final String source = inputFile.getAbsolutePath();
-		try {
-			dataset = ioService.loadDataset(source);
+		if (ioService.isImageData(source)) {
+			openImage(source);
 		}
-		catch (final ImgIOException e) {
-			log.error(e);
-			uiService.showDialog(e.getMessage(),
-				DialogPrompt.MessageType.ERROR_MESSAGE);
+		else if (textService.isText(inputFile)) {
+			openText(inputFile);
 		}
-		catch (final IncompatibleTypeException e) {
-			log.error(e);
-			uiService.showDialog(e.getMessage(),
+		else {
+			uiService.showDialog("The file is not in a supported format\n\n" +
+				inputFile.getPath(),
 				DialogPrompt.MessageType.ERROR_MESSAGE);
 		}
 	}
@@ -116,6 +122,44 @@ public class OpenImage extends ContextCommand {
 
 	public void setDataset(final Dataset dataset) {
 		this.dataset = dataset;
+	}
+
+	public String getHTML() {
+		return html;
+	}
+
+	public void setHTML(final String html) {
+		this.html = html;
+	}
+
+	// -- Helper methods --
+
+	private void openImage(String source) {
+		try {
+			dataset = ioService.loadDataset(source);
+		}
+		catch (final ImgIOException e) {
+			log.error(e);
+			error(e.getMessage());
+		}
+		catch (final IncompatibleTypeException e) {
+			log.error(e);
+			error(e.getMessage());
+		}
+	}
+
+	private void openText(File file) {
+		try {
+			html = textService.asHTML(file);
+		}
+		catch (final IOException e) {
+			log.error(e);
+			error(e.getMessage());
+		}
+	}
+
+	private void error(String message) {
+		uiService.showDialog(message, DialogPrompt.MessageType.ERROR_MESSAGE);
 	}
 
 }

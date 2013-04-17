@@ -33,59 +33,17 @@
  * #L%
  */
 
-package imagej.ui;
+package imagej.text;
 
-import imagej.command.Command;
-import imagej.text.TextService;
-import imagej.util.AppUtils;
-
-import java.io.File;
-import java.io.IOException;
-
-import org.scijava.ItemIO;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
+import org.scijava.plugin.SortablePlugin;
 
 /**
- * Displays the ImageJ readme file.
+ * Abstract superclass of {@link TextFormat} implementations.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Command.class)
-public class ShowReadme implements Command {
-
-	private static final String README_FILE = "README.md";
-
-	@Parameter
-	private TextService textService;
-
-	@Parameter(label = "Readme", type = ItemIO.OUTPUT)
-	private String readmeText;
-
-	// -- ShowReadme methods --
-
-	public String getReadmeText() {
-		return readmeText;
-	}
-
-	// -- Runnable methods --
-
-	@Override
-	public void run() {
-		readmeText = loadReadmeFile();
-	}
-
-	// -- Helper methods --
-
-	private String loadReadmeFile() {
-		final File baseDir = AppUtils.getBaseDirectory();
-		final File readmeFile = new File(baseDir, README_FILE);
-		try {
-			return textService.asHTML(readmeFile);
-		}
-		catch (final IOException e) {
-			throw new IllegalStateException(e.getMessage());
-		}
-	}
-
+public abstract class AbstractTextFormat extends SortablePlugin implements
+	TextFormat
+{
+	// NB: No implementation needed.
 }

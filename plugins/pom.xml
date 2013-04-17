@@ -21,6 +21,7 @@
 		<module>commands</module>
 		<module>platforms</module>
 		<module>scripting</module>
+		<module>text</module>
 		<module>tools</module>
 		<module>uis</module>
 		<module>uploaders</module>

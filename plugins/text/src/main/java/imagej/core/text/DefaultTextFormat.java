@@ -33,93 +33,34 @@
  * #L%
  */
 
-package imagej.ui.swing.viewer.text;
+package imagej.core.text;
 
-import imagej.display.TextDisplay;
-import imagej.ui.viewer.DisplayWindow;
-import imagej.ui.viewer.text.TextDisplayPanel;
+import imagej.text.AbstractTextFormat;
+import imagej.text.TextFormat;
 
-import java.awt.Dimension;
-import java.awt.Font;
+import java.util.Arrays;
+import java.util.List;
 
-import javax.swing.JEditorPane;
-import javax.swing.JScrollPane;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
 
 /**
- * This is the display panel for {@link String}s.
+ * Default text format, which handles vanilla .txt files.
  * 
- * @author Lee Kamentsky
  * @author Curtis Rueden
  */
-public class SwingTextDisplayPanel extends JScrollPane implements
-	TextDisplayPanel
-{
-
-	private final DisplayWindow window;
-	private final TextDisplay display;
-	private final JEditorPane textArea;
-
-	public SwingTextDisplayPanel(final TextDisplay display,
-		final DisplayWindow window)
-	{
-		this.display = display;
-		this.window = window;
-		textArea = new JEditorPane();
-		textArea.setPreferredSize(new Dimension(600, 500));
-		textArea.setEditable(false);
-		final Font font = new Font(Font.MONOSPACED, Font.PLAIN, 12);
-		textArea.setFont(font);
-		setViewportView(textArea);
-		window.setContent(this);
-	}
-
-	// -- TextDisplayPanel methods --
+@Plugin(type = TextFormat.class, priority = Priority.VERY_LOW_PRIORITY)
+public class DefaultTextFormat extends AbstractTextFormat {
 
 	@Override
-	public void append(final String text) {
-		display.add(text);
+	public List<String> getExtensions() {
+		return Arrays.asList("txt");
 	}
 
 	@Override
-	public void clear() {
-		display.clear();
-	}
-
-	// -- DisplayPanel methods --
-
-	@Override
-	public TextDisplay getDisplay() {
-		return display;
-	}
-
-	@Override
-	public DisplayWindow getWindow() {
-		return window;
-	}
-
-	@Override
-	public void redoLayout() {
-		// Nothing to layout
-	}
-
-	@Override
-	public void setLabel(final String s) {
-		// The label is not shown.
-	}
-
-	@Override
-	public void redraw() {
-		// The strategy is to compare the lines in the text area against
-		// those in the display. We clear the control if we find a mismatch.
-
-		final StringBuffer targetText = new StringBuffer();
-		for (final String line : display) {
-			targetText.append(line + "\n");
-		}
-		final String text = targetText.toString();
-		final boolean html = text.startsWith("<html>");
-		textArea.setContentType(html ? "text/html" : "text/plain");
-		textArea.setText(text);
+	public String asHTML(final String text) {
+		return StringEscapeUtils.escapeHtml4(text);
 	}
 
 }
