@@ -37,18 +37,13 @@ package imagej.core.commands.io;
 
 import imagej.command.Command;
 import imagej.command.ContextCommand;
-import imagej.data.Dataset;
 import imagej.io.IOService;
 import imagej.menu.MenuConstants;
-import imagej.text.TextService;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 
 import java.io.File;
 import java.io.IOException;
-
-import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.io.ImgIOException;
 
 import org.scijava.ItemIO;
 import org.scijava.log.LogService;
@@ -78,33 +73,26 @@ public class OpenFile extends ContextCommand {
 	private IOService ioService;
 
 	@Parameter
-	private TextService textService;
-
-	@Parameter
 	private UIService uiService;
 
 	@Parameter(label = "File to open")
 	private File inputFile;
 
-	@Parameter(type = ItemIO.OUTPUT)
-	private Dataset dataset;
-
-	@Parameter(type = ItemIO.OUTPUT, label = "Text")
-	private String html;
+	@Parameter(type = ItemIO.OUTPUT, label = "Data")
+	private Object data;
 
 	@Override
 	public void run() {
-		final String source = inputFile.getAbsolutePath();
-		if (ioService.isImageData(source)) {
-			openImage(source);
+		try {
+			data = ioService.load(inputFile);
+			if (data == null) {
+				error("The file is not in a supported format\n\n" +
+					inputFile.getPath());
+			}
 		}
-		else if (textService.isText(inputFile)) {
-			openText(inputFile);
-		}
-		else {
-			uiService.showDialog("The file is not in a supported format\n\n" +
-				inputFile.getPath(),
-				DialogPrompt.MessageType.ERROR_MESSAGE);
+		catch (final IOException exc) {
+			log.error(exc);
+			error(exc.getMessage());
 		}
 	}
 
@@ -116,49 +104,17 @@ public class OpenFile extends ContextCommand {
 		this.inputFile = inputFile;
 	}
 
-	public Dataset getDataset() {
-		return dataset;
+	public Object getData() {
+		return data;
 	}
 
-	public void setDataset(final Dataset dataset) {
-		this.dataset = dataset;
-	}
-
-	public String getHTML() {
-		return html;
-	}
-
-	public void setHTML(final String html) {
-		this.html = html;
+	public void setData(final Object data) {
+		this.data = data;
 	}
 
 	// -- Helper methods --
 
-	private void openImage(String source) {
-		try {
-			dataset = ioService.loadDataset(source);
-		}
-		catch (final ImgIOException e) {
-			log.error(e);
-			error(e.getMessage());
-		}
-		catch (final IncompatibleTypeException e) {
-			log.error(e);
-			error(e.getMessage());
-		}
-	}
-
-	private void openText(File file) {
-		try {
-			html = textService.asHTML(file);
-		}
-		catch (final IOException e) {
-			log.error(e);
-			error(e.getMessage());
-		}
-	}
-
-	private void error(String message) {
+	private void error(final String message) {
 		uiService.showDialog(message, DialogPrompt.MessageType.ERROR_MESSAGE);
 	}
 
