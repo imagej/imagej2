@@ -38,6 +38,11 @@ package imagej.io;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.module.ModuleService;
+import imagej.text.TextService;
+
+import java.io.File;
+import java.io.IOException;
+
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.io.ImgIOException;
 
@@ -59,6 +64,23 @@ public interface IOService extends Service {
 	ModuleService getModuleService();
 
 	DatasetService getDatasetService();
+
+	TextService getTextService();
+
+	/**
+	 * Loads data from the given file.
+	 * <p>
+	 * The type of data is automatically determined. In the case of image data,
+	 * the returned object will be a {@link Dataset}. If the file contains text
+	 * data, the returned object will be a {@link String}.
+	 * </p>
+	 * 
+	 * @param file The file from which to load data.
+	 * @return An object representing the loaded data, or null if the file is not
+	 *         in a supported format.
+	 * @throws IOException if something goes wrong loading the data.
+	 */
+	Object load(File file) throws IOException;
 
 	/**
 	 * Determines whether the given source is image data (and hence compatible

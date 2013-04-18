@@ -39,7 +39,9 @@ import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.io.event.FileOpenedEvent;
 import imagej.module.ModuleService;
+import imagej.text.TextService;
 
+import java.io.File;
 import java.io.IOException;
 
 import loci.formats.ImageReader;
@@ -82,6 +84,9 @@ public final class DefaultIOService<T extends RealType<T> & NativeType<T>>
 	@Parameter
 	private DatasetService datasetService;
 
+	@Parameter
+	private TextService textService;
+
 	// -- IOService methods --
 
 	@Override
@@ -102,6 +107,31 @@ public final class DefaultIOService<T extends RealType<T> & NativeType<T>>
 	@Override
 	public DatasetService getDatasetService() {
 		return datasetService;
+	}
+
+	@Override
+	public TextService getTextService() {
+		return textService;
+	}
+
+	@Override
+	public Object load(final File file) throws IOException {
+		final String source = file.getAbsolutePath();
+		if (isImageData(source)) {
+			try {
+				return loadDataset(source);
+			}
+			catch (final ImgIOException e) {
+				throw new IOException(e);
+			}
+			catch (final IncompatibleTypeException e) {
+				throw new IOException(e);
+			}
+		}
+		else if (textService.isText(file)) {
+			return textService.asHTML(file);
+		}
+		return null;
 	}
 
 	@Override
