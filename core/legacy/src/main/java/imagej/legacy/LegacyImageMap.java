@@ -89,7 +89,9 @@ public class LegacyImageMap extends AbstractContextual {
 
 	// -- Fields --
 
-	/** Table of {@link ImagePlus} objects corresponding to {@link ImageDisplay}s. */
+	/**
+	 * Table of {@link ImagePlus} objects corresponding to {@link ImageDisplay}s.
+	 */
 	private final Map<ImageDisplay, ImagePlus> imagePlusTable;
 
 	/**
@@ -254,7 +256,8 @@ public class LegacyImageMap extends AbstractContextual {
 	/**
 	 * Gets a list of {@link ImageDisplay} instances known to this legacy service.
 	 * 
-	 * @return a collection of {@link ImageDisplay} instances linked to legacy {@link ImagePlus} instances.
+	 * @return a collection of {@link ImageDisplay} instances linked to legacy
+	 *         {@link ImagePlus} instances.
 	 */
 	public Collection<ImageDisplay> getImageDisplays() {
 		return imagePlusTable.keySet();
@@ -263,7 +266,8 @@ public class LegacyImageMap extends AbstractContextual {
 	/**
 	 * Gets a list of {@link ImagePlus} instances known to this legacy service.
 	 * 
-	 * @return a collection of legacy {@link ImagePlus} instances linked to {@link ImageDisplay} instances.
+	 * @return a collection of legacy {@link ImagePlus} instances linked to
+	 *         {@link ImageDisplay} instances.
 	 */
 	public Collection<ImagePlus> getImagePlusInstances() {
 		Collection<ImagePlus> result = new HashSet<ImagePlus>();
@@ -275,7 +279,8 @@ public class LegacyImageMap extends AbstractContextual {
 	// -- Helper methods --
 
 	private void addMapping(final ImageDisplay display, final ImagePlus imp) {
-		// System.out.println("CREATE MAPPING "+display+" to "+imp+" isComposite()="+imp.isComposite());
+		// System.out.println("CREATE MAPPING "+display+" to "+imp+
+		// " isComposite()="+imp.isComposite());
 
 		// Must remove old mappings to avoid memory leaks
 		// Removal is tricky for the displayTable. Without removal different
@@ -296,7 +301,8 @@ public class LegacyImageMap extends AbstractContextual {
 	}
 
 	private void removeMapping(final ImageDisplay display, final ImagePlus imp) {
-		// System.out.println("REMOVE MAPPING "+display+" to "+imp+" isComposite()="+imp.isComposite());
+		// System.out.println("REMOVE MAPPING "+display+" to "+imp+
+		// " isComposite()="+imp.isComposite());
 
 		if (display != null) {
 			imagePlusTable.remove(display);
