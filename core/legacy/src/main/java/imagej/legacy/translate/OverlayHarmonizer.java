@@ -44,7 +44,6 @@ import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.gui.TextRoi;
 import ij.plugin.filter.ThresholdToSelection;
-import ij.plugin.frame.RoiManager;
 import ij.process.ByteProcessor;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
@@ -191,16 +190,26 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 		final ij.gui.Overlay o = createIJ1Overlay(overlays, activeOverlay);
 		imp.setRoi(roi);
 		imp.setOverlay(o);
-
+		/*
+		 * BDZ 4-18-13 disabling for now. Especially because implementation is
+		 * broken since called muiltple times per plugin run and thus reset is
+		 * called too often and results unpredictable.
+		 * 
 		// now make sure the correct rois end up in the RoiManager
 		RoiManager mgr = RoiManager.getInstance();
 		if (mgr == null) mgr = new RoiManager();
 		mgr.runCommand("reset");
 		if (roi != null) mgr.addRoi(roi);
+		*/
+
 		// TODO: do the rois in the IJ1 Overlay belong in the manager? In IJ1 if you
 		// load a file that has a saved overlay it does not auto fill into Roi Mgr.
 		// However when you select ROIs in Mgr and run Overlay > From ROI Manager
 		// the rois go into the overlay and stay in the Roi Mgr. Decide later.
+
+		// NB 4-18-13 - BDZ and CTR discussed and we'd eventually like to translate
+		// all overlays into the ROI Manager and not translate any ROIs into the
+		// Overlay of any ImagePlus. Haven't yet thought this through.
 	}
 
 	// -- Helper methods - legacy Roi creation --
