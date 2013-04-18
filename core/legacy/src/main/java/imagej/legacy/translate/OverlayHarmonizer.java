@@ -195,7 +195,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 		// now make sure the correct rois end up in the RoiManager
 		RoiManager mgr = RoiManager.getInstance();
 		if (mgr == null) mgr = new RoiManager();
-		mgr.removeAll();
+		mgr.runCommand("reset");
 		if (roi != null) mgr.addRoi(roi);
 		// TODO: do the rois in the IJ1 Overlay belong in the manager? In IJ1 if you
 		// load a file that has a saved overlay it does not auto fill into Roi Mgr.

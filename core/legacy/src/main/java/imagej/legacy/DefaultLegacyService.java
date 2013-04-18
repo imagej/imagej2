@@ -40,6 +40,7 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.ImageWindow;
+import ij.plugin.frame.RoiManager;
 import imagej.command.CommandService;
 import imagej.core.options.OptionsMisc;
 import imagej.data.DatasetService;
@@ -100,6 +101,7 @@ import org.scijava.service.Service;
  * 
  * @author Barry DeZonia
  * @author Curtis Rueden
+ * @author Johannes Schindelin
  */
 @Plugin(type = Service.class)
 public final class DefaultLegacyService extends AbstractService implements
@@ -310,6 +312,9 @@ public final class DefaultLegacyService extends AbstractService implements
 	@Override
 	public synchronized void toggleLegacyMode(final boolean toggle) {
 		if (toggle) legacyIJ1Mode = toggle;
+
+		RoiManager mgr = RoiManager.getInstance();
+		if (mgr != null) mgr.setVisible(toggle);
 
 		final ij.ImageJ ij = IJ.getInstance();
 
