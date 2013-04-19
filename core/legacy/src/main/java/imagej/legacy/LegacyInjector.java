@@ -57,6 +57,13 @@ public class LegacyInjector {
 		hacker.insertBeforeMethod("ij.ImageJ",
 			"public java.awt.Point getLocationOnScreen()",
 			"if ($isLegacyMode()) return super.getLocationOnScreen();");
+		// hacker.insertMethod("ij.ImageJ", "public void run()");
+		hacker.insertBeforeMethod("ij.ImageJ", "public void run()");
+		// hacker
+		// .insertBeforeMethod(
+		// "ij.ImageJ",
+		// "public void run()",
+		// "if ($isLegacyMode()) imagej.legacy.LegacyInjector.toggleLegacyMode(); else super.run();");
 		hacker.loadClass("ij.ImageJ");
 
 		// override behavior of ij.IJ
@@ -115,13 +122,16 @@ public class LegacyInjector {
 		}
 
 		// override behavior of ij.plugin.frame.RoiManager
-		hacker
-.insertMethod("ij.plugin.frame.RoiManager", "public void show()",
+		hacker.insertMethod("ij.plugin.frame.RoiManager", "public void show()",
 			"if ($isLegacyMode()) { super.show(); }");
 		hacker.insertMethod("ij.plugin.frame.RoiManager",
 			"public void setVisible(boolean b)",
 			"if ($isLegacyMode()) { super.setVisible($1); }");
 		hacker.loadClass("ij.plugin.frame.RoiManager");
+	}
+
+	public static void toggleLegacyMode() {
+		System.out.println("CALLING INTERNAL CODE");
 	}
 
 }
