@@ -57,6 +57,8 @@ public class LegacyInjector {
 		hacker.insertBeforeMethod("ij.ImageJ",
 			"public java.awt.Point getLocationOnScreen()",
 			"if ($isLegacyMode()) return super.getLocationOnScreen();");
+		hacker.insertBeforeMethod("ij.ImageJ", "public void quit()",
+			"$service.getContext().dispose(); if (true) return;");
 		hacker.loadClass("ij.ImageJ");
 
 		// override behavior of ij.IJ
