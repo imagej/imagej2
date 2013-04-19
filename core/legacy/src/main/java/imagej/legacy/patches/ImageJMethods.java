@@ -57,8 +57,4 @@ public class ImageJMethods {
 		return new Point(0, 0);
 	}
 
-	public static void run(final LegacyService legSrv, ImageJ ij) {
-		if (legSrv.isLegacyMode()) legSrv.toggleLegacyMode(false);
-		else ij.run();
-	}
 }

@@ -310,11 +310,11 @@ public final class DefaultLegacyService extends AbstractService implements
 	 * Switch to/from running legacy ImageJ 1.x mode.
 	 */
 	@Override
-	public synchronized void toggleLegacyMode(final boolean wantIJ1) {
-		if (wantIJ1) legacyIJ1Mode = true;
+	public synchronized void toggleLegacyMode(final boolean toggle) {
+		if (toggle) legacyIJ1Mode = toggle;
 
 		RoiManager mgr = RoiManager.getInstance();
-		if (mgr != null) mgr.setVisible(wantIJ1);
+		if (mgr != null) mgr.setVisible(toggle);
 
 		final ij.ImageJ ij = IJ.getInstance();
 
@@ -328,32 +328,31 @@ public final class DefaultLegacyService extends AbstractService implements
 			// hide/show the IJ2 main window
 			final ApplicationFrame appFrame =
 				uiService.getDefaultUI().getApplicationFrame();
-			appFrame.setVisible(!wantIJ1);
+			appFrame.setVisible(!toggle);
 
-			// TODO: move this into the LegacyImageMap's toggleLegacyMode, passing
-			// the uiService
+			// TODO: move this into the LegacyImageMap's toggleLegacyMode, passing the uiService
 			// hide/show the IJ2 datasets corresponding to legacy ImagePlus instances
 			for (final ImageDisplay display : imageMap.getImageDisplays()) {
 				final ImageDisplayViewer viewer =
 					(ImageDisplayViewer) uiService.getDisplayViewer(display);
 				if (viewer == null) continue;
 				final DisplayWindow window = viewer.getWindow();
-				if (window != null) window.showDisplay(!wantIJ1);
+				if (window != null) window.showDisplay(!toggle);
 			}
 		}
 
 		// hide/show IJ1 main window
-		if (wantIJ1) ij.pack();
-		ij.setVisible(wantIJ1);
+		if (toggle) ij.pack();
+		ij.setVisible(toggle);
 
 		// hide/show the legacy ImagePlus instances
 		for (final ImagePlus imp : imageMap.getImagePlusInstances()) {
 			final ImageWindow window = imp.getWindow();
-			if (window != null) window.setVisible(wantIJ1);
+			if (window != null) window.setVisible(toggle);
 		}
 
-		if (!wantIJ1) legacyIJ1Mode = false;
-		imageMap.toggleLegacyMode(wantIJ1);
+		if (!toggle) legacyIJ1Mode = toggle;
+		imageMap.toggleLegacyMode(toggle);
 	}
 
 	@Override
