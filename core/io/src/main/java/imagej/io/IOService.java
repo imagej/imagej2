@@ -72,7 +72,7 @@ public interface IOService extends Service {
 	 * <p>
 	 * The type of data is automatically determined. In the case of image data,
 	 * the returned object will be a {@link Dataset}. If the file contains text
-	 * data, the returned object will be a {@link String}.
+	 * data, the returned object will be a {@link String} formatted as HTML.
 	 * </p>
 	 * 
 	 * @param file The file from which to load data.
