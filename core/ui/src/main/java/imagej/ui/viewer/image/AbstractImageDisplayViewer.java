@@ -35,6 +35,7 @@
 
 package imagej.ui.viewer.image;
 
+import imagej.core.options.OptionsAppearance;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
@@ -48,6 +49,7 @@ import imagej.data.event.DatasetUpdatedEvent;
 import imagej.display.Display;
 import imagej.display.event.DisplayUpdatedEvent;
 import imagej.display.event.window.WinActivatedEvent;
+import imagej.options.OptionsService;
 import imagej.tool.ToolService;
 import imagej.ui.viewer.AbstractDisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
@@ -118,7 +120,13 @@ public abstract class AbstractImageDisplayViewer extends
 	 * @return {@link ZoomScaleOption#OPTIONS_PERCENT_SCALE} or
 	 *         {@link ZoomScaleOption#OPTIONS_FRACTIONAL_SCALE}
 	 */
-	protected abstract ZoomScaleOption getZoomScaleOption();
+	protected ZoomScaleOption getZoomScaleOption() {
+		final OptionsService optionsService =
+			getContext().getService(OptionsService.class);
+		return optionsService.getOptions(OptionsAppearance.class)
+			.isDisplayFractionalScales() ? ZoomScaleOption.OPTIONS_FRACTIONAL_SCALE
+			: ZoomScaleOption.OPTIONS_PERCENT_SCALE;
+	}
 
 	// -- Helper methods --
 
