@@ -223,8 +223,7 @@ public class ImageJUpdater implements UpdaterUI {
 		final FileObject file)
 	{
 		File downloaded = files.prefix("update/" + file.filename);
-		if (!downloaded.exists()) return true; // assume all is well if there is no
-																						// updated file
+		if (!downloaded.exists()) return true; // assume all is well if there is no updated file
 		final File jar = files.prefix(file.filename);
 		if (!jar.delete() && !moveOutOfTheWay(jar)) return false;
 		if (!downloaded.renameTo(jar)) return false;
