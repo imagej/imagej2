@@ -287,19 +287,13 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 		// make sure that sezpoz finds the classes when triggered from the EDT
 		final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-		try {
-			SwingUtilities.invokeAndWait(new Runnable() {
-				@Override
-				public void run() {
-					if (contextClassLoader != null)
-						Thread.currentThread().setContextClassLoader(contextClassLoader);
-				}
-			});
-		} catch (InterruptedException e1) {
-			log.error(e1);
-		} catch (InvocationTargetException e1) {
-			log.error(e1);
-		}
+		SwingTools.invokeOnEDT(new Runnable() {
+			@Override
+			public void run() {
+				if (contextClassLoader != null)
+					Thread.currentThread().setContextClassLoader(contextClassLoader);
+			}
+		});
 
 		// Button to start actions
 		apply =
@@ -485,6 +479,21 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 	@Override
 	public void setVisible(final boolean visible) {
+		if (!SwingUtilities.isEventDispatchThread()) {
+			try {
+				SwingUtilities.invokeAndWait(new Runnable() {
+					@Override
+					public void run() {
+						setVisible(visible);
+					}
+				});
+			} catch (InterruptedException e) {
+				// ignore
+			} catch (InvocationTargetException e) {
+				log.error(e);
+			}
+			return;
+		}
 		showOrHide();
 		super.setVisible(visible);
 		if (visible) {
@@ -503,9 +512,26 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		return new ProgressDialog(this, title);
 	}
 
+	/**
+	 * Sets the context class loader if necessary.
+	 *
+	 * If the current class cannot be found by the current Thread's context
+	 * class loader, we should tell the Thread about the class loader that
+	 * loaded this class.
+	 */
+	private void setClassLoaderIfNecessary() {
+		ClassLoader thisLoader = getClass().getClassLoader();
+		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		for (; loader != null; loader = loader.getParent()) {
+			if (thisLoader == loader) return;
+		}
+		Thread.currentThread().setContextClassLoader(thisLoader);
+	}
+
 	/** Gets the uploader service associated with this updater frame. */
 	public UploaderService getUploaderService() {
 		if (uploaderService == null) {
+			setClassLoaderIfNecessary();
 			final Context context = new Context(UploaderService.class);
 			uploaderService = context.getService(UploaderService.class);
 		}
@@ -582,25 +608,35 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	}
 
 	public void setViewOption(final ViewOptions.Option option) {
-		viewOptions.setSelectedItem(option);
-		updateFilesTable();
+		SwingTools.invokeOnEDT(new Runnable() {
+			@Override
+			public void run() {
+				viewOptions.setSelectedItem(option);
+				updateFilesTable();
+			}
+		});
 	}
 
 	public void updateFilesTable() {
-		Iterable<FileObject> view = viewOptions.getView(table);
-		final Set<FileObject> selected = new HashSet<FileObject>();
-		for (final FileObject file : table.getSelectedFiles())
-			selected.add(file);
-		table.clearSelection();
+		SwingTools.invokeOnEDT(new Runnable() {
+			@Override
+			public void run() {
+				Iterable<FileObject> view = viewOptions.getView(table);
+				final Set<FileObject> selected = new HashSet<FileObject>();
+				for (final FileObject file : table.getSelectedFiles())
+					selected.add(file);
+				table.clearSelection();
 
-		final String search = searchTerm.getText().trim();
-		if (!search.equals("")) view = FilesCollection.filter(search, view);
+				final String search = searchTerm.getText().trim();
+				if (!search.equals("")) view = FilesCollection.filter(search, view);
 
-		// Directly update the table for display
-		table.setFiles(view);
-		for (int i = 0; i < table.getRowCount(); i++)
-			if (selected.contains(table.getFile(i))) table.addRowSelectionInterval(i,
-				i);
+				// Directly update the table for display
+				table.setFiles(view);
+				for (int i = 0; i < table.getRowCount(); i++)
+					if (selected.contains(table.getFile(i))) table.addRowSelectionInterval(i,
+						i);
+			}
+		});
 	}
 
 	public void applyChanges() {

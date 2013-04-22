@@ -45,6 +45,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -61,6 +62,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentListener;
 
 /**
@@ -235,10 +237,15 @@ public class SwingTools {
 	public static void showMessageBox(final Component owner,
 		final String message, final int type)
 	{
-		final String title =
-			type == JOptionPane.ERROR_MESSAGE ? "Error"
-				: type == JOptionPane.WARNING_MESSAGE ? "Warning" : "Information";
-		JOptionPane.showMessageDialog(owner, message, title, type);
+		SwingTools.invokeOnEDT(new Runnable() {
+			@Override
+			public void run() {
+				final String title =
+					type == JOptionPane.ERROR_MESSAGE ? "Error"
+						: type == JOptionPane.WARNING_MESSAGE ? "Warning" : "Information";
+				JOptionPane.showMessageDialog(owner, message, title, type);
+			}
+		});
 	}
 
 	public static String getChoice(final Component owner,
@@ -274,5 +281,16 @@ public class SwingTools {
 			}
 		}
 		catch (final InterruptedException e) { /* ignore */}
+	}
+
+	public static void invokeOnEDT(final Runnable job) {
+		if (SwingUtilities.isEventDispatchThread()) job.run();
+		else try {
+			SwingUtilities.invokeAndWait(job);
+		} catch (InterruptedException e) {
+			return;
+		} catch (InvocationTargetException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

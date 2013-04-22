@@ -101,31 +101,48 @@ public class DefaultUploaderService extends AbstractService implements
 		if (uploader == null && "sftp".equals(protocol)) {
 			uploader = files.get("jars/ij-updater-ssh.jar");
 		}
-		if (uploader == null || uploader.getStatus() != Status.NOT_INSTALLED) {
-			throw new IllegalArgumentException(
-					"No uploader found for protocol " + protocol);
+		if (uploader == null) {
+			throw new IllegalArgumentException("No uploader found for protocol " + protocol);
+		}
+		switch (uploader.getStatus()) {
+			case NEW:
+			case NOT_INSTALLED:
+				break;
+			default:
+				throw new IllegalArgumentException("The uploader found for protocol " + protocol
+					+ " could not be instantiated; the status of "
+					+ uploader + " is " + uploader.getStatus());
 		}
 		final Set<URL> urls = new LinkedHashSet<URL>();
 		final FilesCollection toInstall = files.clone(uploader.getFileDependencies(files, true));
 		for (final FileObject file : toInstall) {
 			switch (file.getStatus()) {
+			case NEW:
 			case NOT_INSTALLED:
+			case UPDATEABLE:
 				toInstall.add(file);
 				file.setAction(toInstall, Action.INSTALL);
 				try {
 					urls.add(toInstall.prefixUpdate(file.filename).toURI().toURL());
 				} catch (MalformedURLException e) {
+					log.error(e);
 					return null;
 				}
 				break;
+			case MODIFIED:
+				toInstall.ignoredConflicts.add(file);
+				log.warn("Dependency " + file + " modified; the uploader might not be compatible");
+				// FALL THRU
 			case INSTALLED:
 				try {
 					urls.add(toInstall.prefix(file.filename).toURI().toURL());
 				} catch (MalformedURLException e) {
+					log.error(e);
 					return null;
 				}
 				break;
 			default:
+				log.debug("Failure: dependency not installed: " + file + " (" + file.getStatus() + ")");
 				return null;
 			}
 		}
@@ -140,6 +157,7 @@ public class DefaultUploaderService extends AbstractService implements
 			initialize();
 			return hasUploader(protocol) ? getUploader(protocol) : null;
 		} catch (IOException e) {
+			log.error(e);
 			return null;
 		}
 	}
