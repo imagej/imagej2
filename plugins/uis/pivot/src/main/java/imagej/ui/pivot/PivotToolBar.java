@@ -62,6 +62,11 @@ public class PivotToolBar extends BoxPane implements ToolBar {
 		return toolService;
 	}
 
+	@Override
+	public void refresh() {
+		//TODO
+	}
+
 	// -- Helper methods --
 
 	private void populateToolBar() {

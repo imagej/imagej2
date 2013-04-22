@@ -102,6 +102,14 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 	public ToolService getToolService() {
 		return uiService.getToolService();
 	}
+	
+	@Override
+	public void refresh() {
+		removeAll();
+		toolButtons.clear();
+		populateToolBar();
+		validate();
+	}
 
 	// -- Helper methods --
 

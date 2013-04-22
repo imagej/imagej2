@@ -57,6 +57,7 @@ import org.scijava.plugin.SortablePlugin;
 public abstract class AbstractTool extends SortablePlugin implements Tool {
 
 	private PluginInfo<? extends Tool> info;
+	private boolean hidden = false;
 
 	@Override
 	public PluginInfo<? extends Tool> getInfo() {
@@ -71,6 +72,16 @@ public abstract class AbstractTool extends SortablePlugin implements Tool {
 	@Override
 	public MouseCursor getCursor() {
 		return MouseCursor.DEFAULT;
+	}
+
+	@Override
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
+	}
+
+	@Override
+	public boolean getHidden() {
+		return hidden;
 	}
 
 	@Override

@@ -100,6 +100,12 @@ public interface Tool extends ImageJPlugin, Contextual, Prioritized {
 	/** The tool's mouse pointer. */
 	MouseCursor getCursor();
 
+	/** Sets whether to hide tool. */
+	void setHidden(boolean hidden);
+
+	/** Returns whether tool is hidden. */
+	boolean getHidden();
+
 	/** Informs the tool that it is now active. */
 	void activate();
 

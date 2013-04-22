@@ -137,7 +137,14 @@ public class DefaultToolService extends AbstractService implements ToolService
 
 	@Override
 	public List<Tool> getTools() {
-		return toolList;
+		List<Tool> list = new ArrayList<Tool>();
+		for (Tool tool : toolList) {
+			// skip currently hidden tools
+			if (!tool.getHidden()) {
+				list.add(tool);
+			}
+		}
+		return list;
 	}
 
 	@Override
@@ -166,6 +173,21 @@ public class DefaultToolService extends AbstractService implements ToolService
 		this.activeTool = activeTool;
 		activeTool.activate();
 		eventService.publish(new ToolActivatedEvent(activeTool));
+	}
+	
+	@Override
+	public void setHiddenTool(final Tool tool, boolean hidden) {
+		tool.setHidden(hidden);
+		if (hidden) {
+			// if hiding active tool, select default tool as active instead
+			if (tool == getActiveTool()) {
+				setDefaultActiveTool();
+			}
+		}
+		else {
+			// select newly un-hidden tool as active
+			setActiveTool(tool);
+		}
 	}
 
 	@Override
@@ -244,12 +266,7 @@ public class DefaultToolService extends AbstractService implements ToolService
 	@Override
 	public void initialize() {
 		createTools();
-		activeTool = new DummyTool();
-
-		final Tool rectangleTool = getTool("Rectangle");
-		if (rectangleTool != null) {
-			setActiveTool(rectangleTool);
-		}
+		setDefaultActiveTool();
 	}
 
 	// -- Event handlers --
@@ -366,6 +383,15 @@ public class DefaultToolService extends AbstractService implements ToolService
 				tools.put(info.getName(), tool);
 				toolList.add(tool);
 			}
+		}
+	}
+	
+	private void setDefaultActiveTool() {
+		activeTool = new DummyTool();
+
+		final Tool rectangleTool = getTool("Rectangle");
+		if (rectangleTool != null) {
+			setActiveTool(rectangleTool);
 		}
 	}
 

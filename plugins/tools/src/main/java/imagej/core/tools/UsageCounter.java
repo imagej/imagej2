@@ -33,27 +33,25 @@
  * #L%
  */
 
-package imagej.ui;
-
-import imagej.tool.ToolService;
+package imagej.core.tools;
 
 /**
- * Common interface for tool bars, which are button bars with selectable tools,
- * similar to ImageJ 1.x.
+ * Add-on interface for a hidable tool.  Used to create a tool that counts users
+ * and shows/hides tool as needed.
  * 
- * @author Curtis Rueden
+ * @author Aivar Grislis
  */
-public interface ToolBar {
-
+public interface UsageCounter {
+	
 	/**
-	 * Gets associated tool service.
-	 * 
-	 * @return tool service
+	 * Increments the number of users that need this tool.  Shows tool if not
+	 * shown.
 	 */
-	ToolService getToolService();
-
+	public void show();
+	
 	/**
-	 * Redraw toolbar, e.g. after hiding/showing tools.
+	 * Decrements the number of users that need this tool.  Hides tool when no
+	 * longer needed.
 	 */
-	void refresh();
+	public void hide();
 }

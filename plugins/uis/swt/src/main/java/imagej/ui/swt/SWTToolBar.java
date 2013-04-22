@@ -86,6 +86,12 @@ public class SWTToolBar extends Composite implements ToolBar {
 	public ToolService getToolService() {
 		return toolService;
 	}
+	
+	@Override
+	public void refresh() {
+		toolButtons.clear();
+		populateToolBar();
+	}
 
 	// -- Helper methods --
 

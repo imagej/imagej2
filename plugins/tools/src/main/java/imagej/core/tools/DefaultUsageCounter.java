@@ -33,27 +33,59 @@
  * #L%
  */
 
-package imagej.ui;
+package imagej.core.tools;
 
+import imagej.tool.AbstractTool;
 import imagej.tool.ToolService;
+import imagej.ui.ToolBar;
+import imagej.ui.UIService;
 
 /**
- * Common interface for tool bars, which are button bars with selectable tools,
- * similar to ImageJ 1.x.
+ * Hides and shows tool according to usage count.  Mix-in class for tools.
  * 
- * @author Curtis Rueden
+ * @author Aivar Grislis
  */
-public interface ToolBar {
+public class DefaultUsageCounter implements UsageCounter {
+	private final AbstractTool tool;
+	private int counter;
+	
+	public DefaultUsageCounter(AbstractTool tool) {
+		this.tool = tool;
+		
+		// initially hidden
+		tool.setHidden(true);
+		counter = 0;
+	}
 
-	/**
-	 * Gets associated tool service.
-	 * 
-	 * @return tool service
-	 */
-	ToolService getToolService();
+	@Override
+	public synchronized void show() {
+		++counter;
+		if (1 == counter) {
+			// first user
+			setHidden(false);
+		}
+	}
 
-	/**
-	 * Redraw toolbar, e.g. after hiding/showing tools.
-	 */
-	void refresh();
+	@Override
+	public synchronized void hide() {
+		--counter;
+		if (0 == counter) {
+			// no more users
+			setHidden(true);
+		}
+	}
+	
+	private void setHidden(boolean hidden) {
+		// set tool hidden state
+		final ToolService toolService =
+				tool.getContext().getService(ToolService.class);
+		toolService.setHiddenTool(tool, hidden);
+		
+		// refresh toolbar
+		final UIService uiService =
+				tool.getContext().getService(UIService.class);
+		final ToolBar toolBar = uiService.getDefaultUI().getToolBar();
+		assert null != toolBar;
+		toolBar.refresh();
+	}
 }

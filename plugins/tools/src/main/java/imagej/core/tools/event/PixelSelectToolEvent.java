@@ -33,27 +33,38 @@
  * #L%
  */
 
-package imagej.ui;
+package imagej.core.tools.event;
 
-import imagej.tool.ToolService;
+import imagej.core.tools.DefaultPixelSelectTool;
+import imagej.data.display.ImageDisplay;
+import imagej.display.Display;
+import imagej.tool.event.ToolEvent;
 
 /**
- * Common interface for tool bars, which are button bars with selectable tools,
- * similar to ImageJ 1.x.
+ * An event indicating a pixel selection.
  * 
- * @author Curtis Rueden
+ * @author Aivar Grislis
  */
-public interface ToolBar {
+public class PixelSelectToolEvent extends ToolEvent {
+	private final ImageDisplay imageDisplay;
+	private final int[] position;
+	
+	
+	public PixelSelectToolEvent(final DefaultPixelSelectTool tool,
+			final ImageDisplay imageDisplay, final int[] position)
+	{
+		super(tool);
+		this.imageDisplay = imageDisplay;
+		this.position = position;
+	}
+	
+	// -- PixelSelectToolEvent methods --
 
-	/**
-	 * Gets associated tool service.
-	 * 
-	 * @return tool service
-	 */
-	ToolService getToolService();
-
-	/**
-	 * Redraw toolbar, e.g. after hiding/showing tools.
-	 */
-	void refresh();
+	public ImageDisplay getImageDisplay() {
+		return imageDisplay;
+	}
+	
+	public int[] getPosition() {
+		return position;
+	}
 }

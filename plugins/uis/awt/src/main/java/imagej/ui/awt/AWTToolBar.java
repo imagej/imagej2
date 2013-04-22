@@ -83,6 +83,14 @@ public class AWTToolBar extends Panel implements ToolBar {
 		return uiService.getToolService();
 	}
 
+	@Override
+	public void refresh() {
+		removeAll();
+		toolButtons.clear();
+		populateToolBar();
+		validate();
+	}
+
 	// -- Helper methods --
 
 	private void populateToolBar() {

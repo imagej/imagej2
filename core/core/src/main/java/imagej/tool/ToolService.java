@@ -52,12 +52,33 @@ import org.scijava.service.Service;
  */
 public interface ToolService extends Service {
 
+	/**
+	 * Get event service.
+	 * 
+	 * @return event service
+	 */
 	EventService getEventService();
 
+	/**
+	 * Get status service.
+	 *
+	 * @return status service
+	 */
 	StatusService getStatusService();
 
+	/**
+	 * Get plugin service.
+	 * 
+	 * @return plugin service
+	 */
 	PluginService getPluginService();
 
+	/**
+	 * Get a tool given its name.
+	 * 
+	 * @param name
+	 * @return the tool, or null if no such tool
+	 */
 	Tool getTool(String name);
 
 	/**
@@ -69,38 +90,103 @@ public interface ToolService extends Service {
 	 */
 	<T extends Tool> T getTool(Class<T> toolClass);
 
+	/**
+	 * Gets list of all (non-hidden) tools.
+	 * 
+	 * @return list of tools
+	 */
 	List<Tool> getTools();
 
+	/**
+	 * Gets list of tools that don't have to be selected to be active.
+	 * 
+	 * @return 
+	 */
 	List<Tool> getAlwaysActiveTools();
 
+	/**
+	 * Gets current selected tool.
+	 * 
+	 * @return 
+	 */
 	Tool getActiveTool();
 
+	/**
+	 * Sets current selected tool.
+	 * 
+	 * @param activeTool
+	 */
 	void setActiveTool(Tool activeTool);
+
+	/**
+	 * Hides and shows tools.
+	 * 
+	 * @param tool
+	 * @param hide 
+	 */
+	void setHiddenTool(Tool tool, boolean hide);
 
 	/**
 	 * Returns true if the two specified tools should have a separator between
 	 * them on the tool bar.
+	 * 
+	 * @param tool1
+	 * @param tool2
+	 * @return whether need separator
 	 */
 	boolean isSeparatorNeeded(Tool tool1, Tool tool2);
 
-	/** Publishes rectangle dimensions in the status bar. */
+	/**
+	 * Publishes rectangle dimensions in the status bar.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param w
+	 * @param h 
+	 */
 	void reportRectangle(final double x, final double y, final double w,
 		final double h);
 
-	/** Publishes rectangle dimensions in the status bar. */
+	/**
+	 * Publishes rectangle dimensions in the status bar.
+	 * 
+	 * @param p1
+	 * @param p2 
+	 */
 	void reportRectangle(final RealCoords p1, final RealCoords p2);
 
-	/** Publishes line length and angle in the status bar. */
+	/**
+	 * Publishes line length and angle in the status bar.
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2 
+	 */
 	void reportLine(final double x1, final double y1, final double x2,
 		final double y2);
 
-	/** Publishes line length and angle in the status bar. */
+	/**
+	 * Publishes line length and angle in the status bar.
+	 * 
+	 * @param p1
+	 * @param p2 
+	 */
 	void reportLine(final RealCoords p1, final RealCoords p2);
 
-	/** Publishes point coordinates to the status bar. */
+	/**
+	 * Publishes point coordinates to the status bar.
+	 * 
+	 * @param x
+	 * @param y 
+	 */
 	void reportPoint(final double x, final double y);
 
-	/** Publishes point coordinates to the status bar. */
+	/**
+	 * Publishes point coordinates to the status bar.
+	 * 
+	 * @param p 
+	 */
 	void reportPoint(final RealCoords p);
 
 }

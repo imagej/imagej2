@@ -33,27 +33,40 @@
  * #L%
  */
 
-package imagej.ui;
+package imagej.core.tools;
 
-import imagej.tool.ToolService;
+import imagej.tool.Tool;
+import org.scijava.plugin.Plugin;
 
 /**
- * Common interface for tool bars, which are button bars with selectable tools,
- * similar to ImageJ 1.x.
+ * Tool implementation for lifetime fitting.
  * 
- * @author Curtis Rueden
+ * Clicking on the image initiates a request to explore lifetime information at
+ * that pixel.
+ * 
+ * @author Aivar Grislis
  */
-public interface ToolBar {
+@Plugin(type = Tool.class, name = "Lifetime", description = "Lifetime Tool",
+	iconPath = "/icons/tools/lifetime.png", priority = LifetimeTool.PRIORITY)
+public class LifetimeTool extends DefaultPixelSelectTool implements UsageCounter {
+	private final UsageCounter toolUsageCounter;
+	
+	public LifetimeTool() {
+		super();
 
-	/**
-	 * Gets associated tool service.
-	 * 
-	 * @return tool service
-	 */
-	ToolService getToolService();
+		// will show and hide tool as needed
+		toolUsageCounter = new DefaultUsageCounter(this);
+	}
 
-	/**
-	 * Redraw toolbar, e.g. after hiding/showing tools.
-	 */
-	void refresh();
+	@Override
+	public void show() {
+		// show tool if not visible
+		toolUsageCounter.show();
+	}
+
+	@Override
+	public void hide() {
+		// hide tool if not needed
+		toolUsageCounter.hide();
+	}
 }
