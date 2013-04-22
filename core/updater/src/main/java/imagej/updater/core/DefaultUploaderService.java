@@ -101,9 +101,9 @@ public class DefaultUploaderService extends AbstractService implements
 		if (uploader == null && "sftp".equals(protocol)) {
 			uploader = files.get("jars/ij-updater-ssh.jar");
 		}
-		if (uploader == null || uploader.getStatus() != Status.NOT_INSTALLED) {
-			throw new IllegalArgumentException(
-					"No uploader found for protocol " + protocol);
+		if (uploader == null || (uploader.getStatus() != Status.NOT_INSTALLED && uploader.getStatus() != Status.NEW)) {
+			throw new IllegalArgumentException("No uploader found for protocol " + protocol
+					+ (uploader == null ? "" : " (status of " + uploader + " is " + uploader.getStatus()));
 		}
 		final Set<URL> urls = new LinkedHashSet<URL>();
 		final FilesCollection toInstall = files.clone(uploader.getFileDependencies(files, true));
