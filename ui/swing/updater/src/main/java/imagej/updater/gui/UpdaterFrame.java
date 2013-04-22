@@ -503,9 +503,26 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		return new ProgressDialog(this, title);
 	}
 
+	/**
+	 * Sets the context class loader if necessary.
+	 *
+	 * If the current class cannot be found by the current Thread's context
+	 * class loader, we should tell the Thread about the class loader that
+	 * loaded this class.
+	 */
+	private void setClassLoaderIfNecessary() {
+		ClassLoader thisLoader = getClass().getClassLoader();
+		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		for (; loader != null; loader = loader.getParent()) {
+			if (thisLoader == loader) return;
+		}
+		Thread.currentThread().setContextClassLoader(thisLoader);
+	}
+
 	/** Gets the uploader service associated with this updater frame. */
 	public UploaderService getUploaderService() {
 		if (uploaderService == null) {
+			setClassLoaderIfNecessary();
 			final Context context = new Context(UploaderService.class);
 			uploaderService = context.getService(UploaderService.class);
 		}
