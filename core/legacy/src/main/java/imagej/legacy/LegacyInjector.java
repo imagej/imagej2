@@ -52,57 +52,57 @@ public class LegacyInjector {
 		final CodeHacker hacker = new CodeHacker(classLoader);
 
 		// override behavior of ij.ImageJ
-		hacker.insertMethod("ij.ImageJ",
+		hacker.insertNewMethod("ij.ImageJ",
 			"public java.awt.Point getLocationOnScreen()");
-		hacker.insertBeforeMethod("ij.ImageJ",
+		hacker.insertAtTopOfMethod("ij.ImageJ",
 			"public java.awt.Point getLocationOnScreen()",
 			"if ($isLegacyMode()) return super.getLocationOnScreen();");
-		hacker.insertBeforeMethod("ij.ImageJ", "public void quit()",
+		hacker.insertAtTopOfMethod("ij.ImageJ", "public void quit()",
 			"$service.getContext().dispose(); if (true) return;");
 		hacker.loadClass("ij.ImageJ");
 
 		// override behavior of ij.IJ
-		hacker.insertAfterMethod("ij.IJ",
+		hacker.insertAtBottomOfMethod("ij.IJ",
 			"public static void showProgress(double progress)");
-		hacker.insertAfterMethod("ij.IJ",
+		hacker.insertAtBottomOfMethod("ij.IJ",
 			"public static void showProgress(int currentIndex, int finalIndex)");
-		hacker.insertAfterMethod("ij.IJ",
+		hacker.insertAtBottomOfMethod("ij.IJ",
 			"public static void showStatus(java.lang.String s)");
 		hacker.loadClass("ij.IJ");
 
 		// override behavior of ij.ImagePlus
-		hacker.insertAfterMethod("ij.ImagePlus", "public void updateAndDraw()");
-		hacker.insertAfterMethod("ij.ImagePlus", "public void repaintWindow()");
-		hacker.insertAfterMethod("ij.ImagePlus",
+		hacker.insertAtBottomOfMethod("ij.ImagePlus", "public void updateAndDraw()");
+		hacker.insertAtBottomOfMethod("ij.ImagePlus", "public void repaintWindow()");
+		hacker.insertAtBottomOfMethod("ij.ImagePlus",
 			"public void show(java.lang.String statusMessage)");
-		hacker.insertAfterMethod("ij.ImagePlus", "public void hide()");
-		hacker.insertAfterMethod("ij.ImagePlus", "public void close()");
+		hacker.insertAtBottomOfMethod("ij.ImagePlus", "public void hide()");
+		hacker.insertAtBottomOfMethod("ij.ImagePlus", "public void close()");
 		hacker.loadClass("ij.ImagePlus");
 
 		// override behavior of ij.gui.ImageWindow
-		hacker.insertMethod("ij.gui.ImageWindow",
+		hacker.insertNewMethod("ij.gui.ImageWindow",
 			"public void setVisible(boolean vis)");
-		hacker.insertBeforeMethod("ij.gui.ImageWindow",
+		hacker.insertAtTopOfMethod("ij.gui.ImageWindow",
 			"public void setVisible(boolean vis)",
 			"if ($isLegacyMode()) { super.setVisible($1); }");
-		hacker.insertMethod("ij.gui.ImageWindow", "public void show()");
-		hacker.insertBeforeMethod("ij.gui.ImageWindow",
+		hacker.insertNewMethod("ij.gui.ImageWindow", "public void show()");
+		hacker.insertAtTopOfMethod("ij.gui.ImageWindow",
 			"public void show()",
 			"if ($isLegacyMode()) { super.show(); }");
-		hacker.insertBeforeMethod("ij.gui.ImageWindow", "public void close()");
+		hacker.insertAtTopOfMethod("ij.gui.ImageWindow", "public void close()");
 		hacker.loadClass("ij.gui.ImageWindow");
 
 		// override behavior of PluginClassLoader
-		hacker.insertBeforeMethod("ij.io.PluginClassLoader", "void init(java.lang.String path)");
+		hacker.insertAtTopOfMethod("ij.io.PluginClassLoader", "void init(java.lang.String path)");
 		hacker.loadClass("ij.io.PluginClassLoader");
 
 		// override behavior of ij.macro.Functions
 		hacker
-			.insertBeforeMethod("ij.macro.Functions",
+			.insertAtTopOfMethod("ij.macro.Functions",
 				"void displayBatchModeImage(ij.ImagePlus imp2)",
 				"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageBefore($service, $1);");
 		hacker
-			.insertAfterMethod("ij.macro.Functions",
+			.insertAtBottomOfMethod("ij.macro.Functions",
 				"void displayBatchModeImage(ij.ImagePlus imp2)",
 				"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageAfter($service, $1);");
 		hacker.loadClass("ij.macro.Functions");
@@ -110,7 +110,7 @@ public class LegacyInjector {
 		// override behavior of MacAdapter, if needed
 		if (ClassUtils.hasClass("com.apple.eawt.ApplicationListener")) {
 			// NB: If com.apple.eawt package is present, override IJ1's MacAdapter.
-			hacker.insertBeforeMethod("MacAdapter",
+			hacker.insertAtTopOfMethod("MacAdapter",
 				"public void run(java.lang.String arg)",
 				"if (!$isLegacyMode()) return;");
 			hacker.loadClass("MacAdapter");
@@ -118,9 +118,9 @@ public class LegacyInjector {
 
 		// override behavior of ij.plugin.frame.RoiManager
 		hacker
-.insertMethod("ij.plugin.frame.RoiManager", "public void show()",
+.insertNewMethod("ij.plugin.frame.RoiManager", "public void show()",
 			"if ($isLegacyMode()) { super.show(); }");
-		hacker.insertMethod("ij.plugin.frame.RoiManager",
+		hacker.insertNewMethod("ij.plugin.frame.RoiManager",
 			"public void setVisible(boolean b)",
 			"if ($isLegacyMode()) { super.setVisible($1); }");
 		hacker.loadClass("ij.plugin.frame.RoiManager");

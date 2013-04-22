@@ -76,7 +76,7 @@ public class CodeHacker {
 	 * method's body.
 	 * <p>
 	 * The extra code is defined in the imagej.legacy.patches package, as
-	 * described in the documentation for {@link #insertMethod(String, String)}.
+	 * described in the documentation for {@link #insertNewMethod(String, String)}.
 	 * </p>
 	 * 
 	 * @param fullClass Fully qualified name of the class to modify.
@@ -84,9 +84,9 @@ public class CodeHacker {
 	 *          "public void updateAndDraw()"
 	 */
 	public void
-		insertAfterMethod(final String fullClass, final String methodSig)
+		insertAtBottomOfMethod(final String fullClass, final String methodSig)
 	{
-		insertAfterMethod(fullClass, methodSig, newCode(fullClass, methodSig));
+		insertAtBottomOfMethod(fullClass, methodSig, newCode(fullClass, methodSig));
 	}
 
 	/**
@@ -99,7 +99,7 @@ public class CodeHacker {
 	 * @param newCode The string of code to add; e.g., System.out.println(\"Hello
 	 *          World!\");
 	 */
-	public void insertAfterMethod(final String fullClass,
+	public void insertAtBottomOfMethod(final String fullClass,
 		final String methodSig, final String newCode)
 	{
 		try {
@@ -116,7 +116,7 @@ public class CodeHacker {
 	 * method's body.
 	 * <p>
 	 * The extra code is defined in the imagej.legacy.patches package, as
-	 * described in the documentation for {@link #insertMethod(String, String)}.
+	 * described in the documentation for {@link #insertNewMethod(String, String)}.
 	 * </p>
 	 * 
 	 * @param fullClass Fully qualified name of the class to override.
@@ -124,9 +124,9 @@ public class CodeHacker {
 	 *          "public void updateAndDraw()"
 	 */
 	public void
-		insertBeforeMethod(final String fullClass, final String methodSig)
+		insertAtTopOfMethod(final String fullClass, final String methodSig)
 	{
-		insertBeforeMethod(fullClass, methodSig, newCode(fullClass, methodSig));
+		insertAtTopOfMethod(fullClass, methodSig, newCode(fullClass, methodSig));
 	}
 
 	/**
@@ -139,7 +139,7 @@ public class CodeHacker {
 	 * @param newCode The string of code to add; e.g., System.out.println(\"Hello
 	 *          World!\");
 	 */
-	public void insertBeforeMethod(final String fullClass,
+	public void insertAtTopOfMethod(final String fullClass,
 		final String methodSig, final String newCode)
 	{
 		try {
@@ -155,7 +155,7 @@ public class CodeHacker {
 	 * Modifies a class by injecting a new method.
 	 * <p>
 	 * The body of the method is defined in the imagej.legacy.patches package, as
-	 * described in the {@link #insertMethod(String, String)} method
+	 * described in the {@link #insertNewMethod(String, String)} method
 	 * documentation.
 	 * <p>
 	 * The new method implementation should be declared in the
@@ -172,8 +172,8 @@ public class CodeHacker {
 	 * @param methodSig Method signature of the method to override; e.g.,
 	 *          "public void setVisible(boolean vis)"
 	 */
-	public void insertMethod(final String fullClass, final String methodSig) {
-		insertMethod(fullClass, methodSig, newCode(fullClass, methodSig));
+	public void insertNewMethod(final String fullClass, final String methodSig) {
+		insertNewMethod(fullClass, methodSig, newCode(fullClass, methodSig));
 	}
 
 	/**
@@ -185,7 +185,7 @@ public class CodeHacker {
 	 * @param newCode The string of code to add; e.g., System.out.println(\"Hello
 	 *          World!\");
 	 */
-	public void insertMethod(final String fullClass, final String methodSig,
+	public void insertNewMethod(final String fullClass, final String methodSig,
 		final String newCode)
 	{
 		final CtClass classRef = getClass(fullClass);
