@@ -57,8 +57,10 @@ public class ImageJMethods {
 		return new Point(0, 0);
 	}
 
+	/* an old approach
 	public static void quit(final LegacyService legSrv, ImageJ ij)
 	{
 		legSrv.getContext().dispose();
 	}
+	*/
 }
