@@ -272,6 +272,9 @@ public class SwingDialog {
 		}
 		dialog.setVisible(true);
 
+		// clean up the dialog afterwards
+		dialog.dispose();
+
 		if (!modal) return JOptionPane.OK_OPTION; // it's all good!
 
 		// get result
