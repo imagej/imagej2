@@ -90,9 +90,8 @@ public class UpdaterTestUtils {
 	public static void show(final FilesCollection files) {
 		try {
 			String url = ClassUtils.getLocation(UpdaterTestUtils.class).toString();
-			final String suffix =
-				"/core/updater/core/target/test-classes/imagej/updater/core/UpdaterTest.class";
-			assertTrue(url.endsWith(suffix));
+			final String suffix = "/core/updater/target/test-classes/";
+			assertTrue(url + " ends with " + suffix, url.endsWith(suffix));
 			url =
 				url.substring(0, url.length() - suffix.length()) +
 					"/ui/swing/updater/target/classes/";
