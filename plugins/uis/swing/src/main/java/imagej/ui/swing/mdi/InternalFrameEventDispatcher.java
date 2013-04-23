@@ -44,6 +44,7 @@ import imagej.display.event.window.WinDeiconifiedEvent;
 import imagej.display.event.window.WinIconifiedEvent;
 import imagej.display.event.window.WinOpenedEvent;
 
+import javax.swing.JInternalFrame;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
@@ -71,37 +72,44 @@ public class InternalFrameEventDispatcher implements InternalFrameListener {
 
 	@Override
 	public void internalFrameActivated(final InternalFrameEvent e) {
-		eventService.publish(new WinActivatedEvent(display));
+		final JInternalFrame window = e.getInternalFrame();
+		eventService.publish(new WinActivatedEvent(display, window));
 	}
 
 	@Override
 	public void internalFrameClosed(final InternalFrameEvent e) {
-		eventService.publish(new WinClosedEvent(display));
+		final JInternalFrame window = e.getInternalFrame();
+		eventService.publish(new WinClosedEvent(display, window));
 	}
 
 	@Override
 	public void internalFrameClosing(final InternalFrameEvent e) {
-		eventService.publish(new WinClosingEvent(display));
+		final JInternalFrame window = e.getInternalFrame();
+		eventService.publish(new WinClosingEvent(display, window));
 	}
 
 	@Override
 	public void internalFrameDeactivated(final InternalFrameEvent e) {
-		eventService.publish(new WinDeactivatedEvent(display));
+		final JInternalFrame window = e.getInternalFrame();
+		eventService.publish(new WinDeactivatedEvent(display, window));
 	}
 
 	@Override
 	public void internalFrameDeiconified(final InternalFrameEvent e) {
-		eventService.publish(new WinDeiconifiedEvent(display));
+		final JInternalFrame window = e.getInternalFrame();
+		eventService.publish(new WinDeiconifiedEvent(display, window));
 	}
 
 	@Override
 	public void internalFrameIconified(final InternalFrameEvent e) {
-		eventService.publish(new WinIconifiedEvent(display));
+		final JInternalFrame window = e.getInternalFrame();
+		eventService.publish(new WinIconifiedEvent(display, window));
 	}
 
 	@Override
 	public void internalFrameOpened(final InternalFrameEvent e) {
-		eventService.publish(new WinOpenedEvent(display));
+		final JInternalFrame window = e.getInternalFrame();
+		eventService.publish(new WinOpenedEvent(display, window));
 	}
 
 }
