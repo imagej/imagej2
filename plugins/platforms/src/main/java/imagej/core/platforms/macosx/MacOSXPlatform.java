@@ -94,7 +94,7 @@ public class MacOSXPlatform extends AbstractPlatform {
 		if (SCREEN_MENU) removeAppCommandsFromMenu();
 
 		// translate Mac OS X application events into ImageJ events
-		final EventService eventService = platformService.getEventService();
+		final EventService eventService = getPlatformService().getEventService();
 		try {
 			appEventDispatcher = new MacOSXAppEventDispatcher(eventService);
 		}
@@ -108,7 +108,7 @@ public class MacOSXPlatform extends AbstractPlatform {
 
 	@Override
 	public void open(final URL url) throws IOException {
-		if (platformService.exec("open", url.toString()) != 0) {
+		if (getPlatformService().exec("open", url.toString()) != 0) {
 			throw new IOException("Could not open " + url);
 		}
 	}
@@ -139,6 +139,7 @@ public class MacOSXPlatform extends AbstractPlatform {
 	// -- Helper methods --
 
 	private void removeAppCommandsFromMenu() {
+		final PlatformService platformService = getPlatformService();
 		final EventService eventService = platformService.getEventService();
 		final CommandService commandService = platformService.getCommandService();
 		final AppEventService appEventService =

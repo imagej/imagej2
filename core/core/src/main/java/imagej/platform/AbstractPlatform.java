@@ -42,7 +42,7 @@ package imagej.platform;
  */
 public abstract class AbstractPlatform implements Platform {
 
-	protected PlatformService platformService;
+	private PlatformService platformService;
 
 	// -- Platform methods --
 
@@ -86,6 +86,12 @@ public abstract class AbstractPlatform implements Platform {
 	@Override
 	public void dispose() {
 		// NB: Do nothing by default.
+	}
+
+	// -- Internal methods --
+
+	protected PlatformService getPlatformService() {
+		return platformService;
 	}
 
 }
