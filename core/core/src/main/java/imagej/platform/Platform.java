@@ -40,6 +40,7 @@ import imagej.plugin.ImageJPlugin;
 import java.io.IOException;
 import java.net.URL;
 
+import org.scijava.Disposable;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -57,7 +58,7 @@ import org.scijava.plugin.Plugin;
  * @see Plugin
  * @see PlatformService
  */
-public interface Platform extends ImageJPlugin {
+public interface Platform extends ImageJPlugin, Disposable {
 
 	// TODO: change this and PlatformService to provide a single "isCompatible" or
 	// similar test method, and initialize method. This would allow a platform to

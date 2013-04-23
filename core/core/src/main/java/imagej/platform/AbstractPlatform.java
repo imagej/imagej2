@@ -81,4 +81,11 @@ public abstract class AbstractPlatform implements Platform {
 		return false;
 	}
 
+	// -- Disposable methods --
+
+	@Override
+	public void dispose() {
+		// NB: Do nothing by default.
+	}
+
 }

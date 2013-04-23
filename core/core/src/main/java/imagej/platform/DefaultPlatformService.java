@@ -161,6 +161,15 @@ public final class DefaultPlatformService extends AbstractService implements
 		if (platforms.size() == 0) log.info("No platforms to configure.");
 	}
 
+	// -- Disposable methods --
+
+	@Override
+	public void dispose() {
+		for (final Platform p : targetPlatforms) {
+			p.dispose();
+		}
+	}
+
 	// -- Event handlers --
 
 	@EventHandler
