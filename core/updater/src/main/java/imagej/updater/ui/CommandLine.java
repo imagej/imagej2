@@ -478,9 +478,10 @@ public class CommandLine {
 		}
 
 		if (simulate) {
-			final Conflicts conflicts = new Conflicts(files);
-			if (conflicts.hasUploadConflicts()) {
-				System.err.println("Unresolved upload conflicts!\n\n" + Util.join("\n", conflicts.getConflicts(true)));
+			final Iterable<Conflict> conflicts = new Conflicts(files).getConflicts(true);
+			if (Conflicts.needsFeedback(conflicts)) {
+				System.err.println("Unresolved upload conflicts!\n\n"
+					+ Util.join("\n", conflicts));
 			} else {
 				System.err.println("Would upload " + uploadCount + " (removing " + removeCount
 					+ ") to " + getLongUpdateSiteName(updateSite));

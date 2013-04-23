@@ -37,6 +37,7 @@ package imagej.updater.core;
 
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
+import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.Downloadable;
@@ -102,8 +103,15 @@ public class Installer extends Downloader {
 	}
 
 	public synchronized void start() throws IOException {
-		if (new Conflicts(files).hasDownloadConflicts()) throw new RuntimeException(
-			"Unresolved conflicts!");
+		final Iterable<Conflict> conflicts = new Conflicts(files).getConflicts(false);
+		if (Conflicts.needsFeedback(conflicts)) {
+			final StringBuilder builder = new StringBuilder();
+			builder.append("Unresolved conflicts:\n");
+			for (Conflict conflict : conflicts) {
+				builder.append(conflict.getFilename()).append(": ").append(conflict.getConflict());
+			}
+			throw new RuntimeException(builder.toString());
+		}
 
 		// mark for removal
 		final FilesCollection uninstalled = files.clone(files.toUninstall());

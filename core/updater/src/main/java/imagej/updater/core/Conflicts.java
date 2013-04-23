@@ -69,7 +69,8 @@ public class Conflicts {
 		public enum Severity {
 			CRITICAL_ERROR,
 			ERROR,
-			WARNING;
+			WARNING,
+			NOTICE;
 
 			@Override
 			public String toString() {
@@ -157,6 +158,15 @@ public class Conflicts {
 		}
 	}
 
+	/**
+	 * Part of the conflict list, but really only a non-critical notice.
+	 */
+	public static class Notice extends Conflict {
+		public Notice(final String message) {
+			super(Severity.NOTICE, (String)null, message);
+		}
+	}
+
 	public abstract static class Resolution {
 
 		private final String description;
@@ -206,12 +216,9 @@ public class Conflicts {
 
 		if (automatic.size() > 0) {
 			conflicts
-				.add(new Conflict(
-					null,
+				.add(new Notice(
 					"There are files which need to be updated/installed since other files depend on them:\n"
-					+ Util.join(", ", automatic),
-					actionResolution("Install them all", automatic,
-						Action.INSTALL, Action.UPDATE)));
+					+ Util.join(", ", automatic)));
 		}
 	}
 
@@ -490,6 +497,22 @@ public class Conflicts {
 		conflicts = new ArrayList<Conflict>();
 		listUploadIssues();
 		return conflicts.size() > 0;
+	}
+
+	/**
+	 * Determine whether a list of conflicts requires user feedback.
+	 *
+	 * There are {@link Conflict}s which do not require the user to
+	 * choose between resolutions, but which are merely notifications.
+	 * The upload (or download) should not be stopped by those.
+	 */
+	public static boolean needsFeedback(Iterable<Conflict> conflicts) {
+		if (conflicts == null) return false;
+		for (final Conflict conflict : conflicts) {
+			if (conflict instanceof Notice) continue;
+			return true;
+		}
+		return false;
 	}
 
 }

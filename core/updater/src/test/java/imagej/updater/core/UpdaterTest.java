@@ -466,9 +466,7 @@ public class UpdaterTest {
 		conflict = conflicts.conflicts.get(2);
 		assertEquals(null, conflict.getFilename());
 		resolutions = conflict.getResolutions();
-		assertEquals(1, resolutions.length);
-		assertTrue(resolutions[0].getDescription().startsWith("Install"));
-		conflict.resolutions[0].resolve();
+		assertEquals(0, resolutions.length);
 
 		update(files);
 
