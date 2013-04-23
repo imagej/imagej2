@@ -57,6 +57,13 @@ public class Conflicts {
 	private final FilesCollection files;
 	protected List<Conflict> conflicts;
 
+	/**
+	 * An upload or download conflict requiring user resolution.
+	 *
+	 * A conflict can be associated with a specific FileObject, can be an
+	 * error, can be critical and have an arbitrary number of {@link
+	 * Resolution}s.
+	 */
 	public static class Conflict {
 
 		private final boolean isError, isCritical;
