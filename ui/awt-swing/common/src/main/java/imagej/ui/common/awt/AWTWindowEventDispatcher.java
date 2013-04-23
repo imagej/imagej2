@@ -72,6 +72,15 @@ public class AWTWindowEventDispatcher implements WindowListener {
 		eventService = display.getContext().getService(EventService.class);
 	}
 
+	/**
+	 * Creates an AWT window event dispatcher for a null display, using the given
+	 * event service.
+	 */
+	public AWTWindowEventDispatcher(final EventService eventService) {
+		display = null;
+		this.eventService = eventService;
+	}
+
 	// -- AWTWindowEventDispatcher methods --
 
 	public void register(final Window w) {
