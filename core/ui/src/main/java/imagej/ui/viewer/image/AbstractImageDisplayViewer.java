@@ -293,8 +293,9 @@ public abstract class AbstractImageDisplayViewer extends
 	protected void onEvent(final WinActivatedEvent event) {
 		if (event.getDisplay() != getDisplay()) return;
 		final ToolService toolService = getContext().getService(ToolService.class);
-		getDisplay().getCanvas().setCursor(
-			toolService.getActiveTool().getCursor());
+		final ImageDisplay d = getDisplay();
+		if (d == null) return;
+		d.getCanvas().setCursor(toolService.getActiveTool().getCursor());
 	}
 
 	@EventHandler
