@@ -124,6 +124,18 @@ public class MacOSXPlatform extends AbstractPlatform {
 		return false;
 	}
 
+	// -- Disposable methods --
+
+	@Override
+	public void dispose() {
+		if (SCREEN_MENU) {
+			// FIXME: This call is insufficient to clean up after the earlier call
+			// to Application.setDefaultMenuBar. Figure out how to do it so that
+			// the JVM can shut down cleanly after application context disposal.
+			Application.getApplication().setDefaultMenuBar(null);
+		}
+	}
+
 	// -- Helper methods --
 
 	private void removeAppCommandsFromMenu() {
