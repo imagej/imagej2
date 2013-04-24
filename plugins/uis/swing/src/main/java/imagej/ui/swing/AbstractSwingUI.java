@@ -207,6 +207,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 			// something else (e.g., MacOSXPlatform) handled the menus
 			return null;
 		}
+		appMenusCreatedEvent.consume();
 		return menuBar;
 	}
 
