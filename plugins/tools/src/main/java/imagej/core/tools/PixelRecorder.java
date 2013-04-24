@@ -215,6 +215,10 @@ public class PixelRecorder {
 	public boolean wasAltKeyDown() {
 		return wasAltKeyDown;
 	}
+
+	public void releaseDataset() {
+		dataset = null;
+	}
 	
 	// -- private helpers --
 

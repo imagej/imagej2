@@ -128,6 +128,8 @@ public abstract class AbstractColorTool extends AbstractTool implements
 		// let user know the FG or BG values changed
 		statusMessage(getLabel(), values);
 
+		recorder.releaseDataset();
+
 		evt.consume();
 	}
 

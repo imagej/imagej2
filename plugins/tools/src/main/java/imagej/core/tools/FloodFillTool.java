@@ -111,6 +111,7 @@ public class FloodFillTool extends AbstractTool {
 					EventService srv = getContext().getService(EventService.class);
 					if (srv != null) srv.publish(new DatasetUpdatedEvent(dataset, false));
 				}
+				recorder.releaseDataset();
 			}
 			evt.consume();
 		}
