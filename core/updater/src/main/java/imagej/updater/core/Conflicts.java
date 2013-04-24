@@ -66,47 +66,77 @@ public class Conflicts {
 	 */
 	public static class Conflict {
 
-		private final boolean isError, isCritical;
+		public enum Severity {
+			CRITICAL_ERROR,
+			ERROR,
+			WARNING;
+
+			@Override
+			public String toString() {
+				return Util.toCamelCase(name());
+			}
+		};
+		private final Severity severity;
 		protected final String filename;
 		private final String conflict;
 		protected final Resolution[] resolutions;
 
+		@Deprecated
 		public Conflict(final FileObject file, final String conflict,
 			final Resolution... resolutions)
 		{
-			this(true, file, conflict, resolutions);
+			this(Severity.ERROR, file, conflict, resolutions);
 		}
 
+		@Deprecated
 		public Conflict(final boolean isError, final FileObject file,
 			final String conflict, final Resolution... resolutions)
 		{
-			this(isError, false, file, conflict, resolutions);
+			this(isError ? Severity.ERROR : Severity.WARNING, file, conflict, resolutions);
 		}
 
+		@Deprecated
 		public Conflict(final boolean isError, final boolean isCritical,
 			final FileObject file, final String conflict,
 			final Resolution... resolutions)
 		{
-			this(isError, isCritical, file == null ? null : file.getFilename(), conflict, resolutions);
+			this(isCritical ? Severity.CRITICAL_ERROR : (isError ? Severity.ERROR : Severity.WARNING),
+					file == null ? null : file.getFilename(), conflict, resolutions);
 		}
 
+		@Deprecated
 		public Conflict(final boolean isError, final boolean isCritical,
+				final String filename, final String conflict,
+				final Resolution... resolutions) {
+			this(isCritical ? Severity.CRITICAL_ERROR : (isError ? Severity.ERROR : Severity.WARNING),
+					filename, conflict, resolutions);
+		}
+
+		public Conflict(final Severity severity,
+				final FileObject file, final String conflict,
+				final Resolution... resolutions) {
+			this(severity, file == null ? null : file.getFilename(), conflict, resolutions);
+		}
+
+		public Conflict(final Severity severity,
 			final String filename, final String conflict,
-			final Resolution... resolutions)
-		{
-			this.isError = isError;
-			this.isCritical = isCritical;
+			final Resolution... resolutions) {
+			this.severity = severity;
 			this.filename = filename;
 			this.conflict = conflict;
 			this.resolutions = resolutions;
 		}
 
+		public Severity getSeverity() {
+			return severity;
+		}
+
 		public boolean isError() {
-			return isError;
+			return severity.compareTo(Severity.ERROR) <= 0;
 		}
 
 		public boolean isCritical() {
-			return isCritical;
+			return severity.compareTo(Severity.CRITICAL_ERROR) <= 0;
 		}
 
 		public String getFilename() {
