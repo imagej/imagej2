@@ -61,12 +61,14 @@ public class SwingDialogPrompt implements DialogPrompt {
 				.get(optionType));
 		// pane.set.Xxxx(...); // Configure
 		dialog = pane.createDialog(null, title);
+		// dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 	}
 
 	@Override
 	public Result prompt() {
 		dialog.setVisible(true);
 		final Object selectedValue = pane.getValue();
+		dialog.dispose();
 		return resultMap.get(selectedValue);
 
 	}
