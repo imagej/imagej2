@@ -139,7 +139,7 @@ public class SSHFileUploader extends AbstractUploader {
 
 		// Unlock process
 		for (final String lock : locks)
-			setCommand("mv " + uploadDir + lock + ".lock " + uploadDir + lock);
+			setCommand("mv -f " + uploadDir + lock + ".lock " + uploadDir + lock);
 
 		out.close();
 		disconnectSession();
