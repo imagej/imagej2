@@ -463,4 +463,22 @@ public class Util {
 		return new StderrLogService();
 	}
 
+	/**
+	 * CamelCases a {@link String}.
+	 */
+	public static String toCamelCase(final String string) {
+		if (string == null || string.length() == 0) return string;
+		final StringBuilder builder = new StringBuilder();
+		boolean upCase = true;
+		for (char ch : string.toCharArray()) {
+			if (Character.isLetterOrDigit(ch)) {
+				builder.append(upCase ? Character.toUpperCase(ch) : Character.toLowerCase(ch));
+				upCase = false;
+			} else {
+				upCase = true;
+			}
+		}
+		return builder.toString();
+	}
+
 }

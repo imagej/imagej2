@@ -35,6 +35,7 @@
 
 package imagej.updater.gui;
 
+import imagej.updater.core.Conflicts;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.Conflicts.Resolution;
 
@@ -170,13 +171,9 @@ public abstract class ConflictDialog extends JDialog implements ActionListener {
 		updateConflictList();
 		panel.setText("");
 
-		int count = 0;
 		for (final Conflict conflict : conflictList) {
-			count++;
 			maybeAddSeparator();
-			newText(conflict.isError() ? "Conflict: " : "Warning: ", conflict
-				.isError() ||
-				conflict.isCritical() ? red : normal);
+			newText(conflict.getSeverity().toString() + ": ", conflict.isError() ? red : normal);
 			final String filename = conflict.getFilename();
 			if (filename != null) addText(filename, bold);
 			addText("\n" + conflict.getConflict());
@@ -194,7 +191,7 @@ public abstract class ConflictDialog extends JDialog implements ActionListener {
 			}
 		}
 
-		ok.setEnabled(count == 0);
+		ok.setEnabled(!Conflicts.needsFeedback(conflictList));
 		if (ok.isEnabled()) ok.requestFocus();
 
 		if (isShowing()) {

@@ -57,49 +57,87 @@ public class Conflicts {
 	private final FilesCollection files;
 	protected List<Conflict> conflicts;
 
+	/**
+	 * An upload or download conflict requiring user resolution.
+	 *
+	 * A conflict can be associated with a specific FileObject, can be an
+	 * error, can be critical and have an arbitrary number of {@link
+	 * Resolution}s.
+	 */
 	public static class Conflict {
 
-		private final boolean isError, isCritical;
+		public enum Severity {
+			CRITICAL_ERROR,
+			ERROR,
+			WARNING,
+			NOTICE;
+
+			@Override
+			public String toString() {
+				return Util.toCamelCase(name());
+			}
+		};
+		private final Severity severity;
 		protected final String filename;
 		private final String conflict;
 		protected final Resolution[] resolutions;
 
+		@Deprecated
 		public Conflict(final FileObject file, final String conflict,
 			final Resolution... resolutions)
 		{
-			this(true, file, conflict, resolutions);
+			this(Severity.ERROR, file, conflict, resolutions);
 		}
 
+		@Deprecated
 		public Conflict(final boolean isError, final FileObject file,
 			final String conflict, final Resolution... resolutions)
 		{
-			this(isError, false, file, conflict, resolutions);
+			this(isError ? Severity.ERROR : Severity.WARNING, file, conflict, resolutions);
 		}
 
+		@Deprecated
 		public Conflict(final boolean isError, final boolean isCritical,
 			final FileObject file, final String conflict,
 			final Resolution... resolutions)
 		{
-			this(isError, isCritical, file == null ? null : file.getFilename(), conflict, resolutions);
+			this(isCritical ? Severity.CRITICAL_ERROR : (isError ? Severity.ERROR : Severity.WARNING),
+					file == null ? null : file.getFilename(), conflict, resolutions);
 		}
 
+		@Deprecated
 		public Conflict(final boolean isError, final boolean isCritical,
+				final String filename, final String conflict,
+				final Resolution... resolutions) {
+			this(isCritical ? Severity.CRITICAL_ERROR : (isError ? Severity.ERROR : Severity.WARNING),
+					filename, conflict, resolutions);
+		}
+
+		public Conflict(final Severity severity,
+				final FileObject file, final String conflict,
+				final Resolution... resolutions) {
+			this(severity, file == null ? null : file.getFilename(), conflict, resolutions);
+		}
+
+		public Conflict(final Severity severity,
 			final String filename, final String conflict,
-			final Resolution... resolutions)
-		{
-			this.isError = isError;
-			this.isCritical = isCritical;
+			final Resolution... resolutions) {
+			this.severity = severity;
 			this.filename = filename;
 			this.conflict = conflict;
 			this.resolutions = resolutions;
 		}
 
+		public Severity getSeverity() {
+			return severity;
+		}
+
 		public boolean isError() {
-			return isError;
+			return severity.compareTo(Severity.ERROR) <= 0;
 		}
 
 		public boolean isCritical() {
-			return isCritical;
+			return severity.compareTo(Severity.CRITICAL_ERROR) <= 0;
 		}
 
 		public String getFilename() {
@@ -117,6 +155,15 @@ public class Conflicts {
 		@Override
 		public String toString() {
 			return getFilename() + ": " + getConflict();
+		}
+	}
+
+	/**
+	 * Part of the conflict list, but really only a non-critical notice.
+	 */
+	public static class Notice extends Conflict {
+		public Notice(final String message) {
+			super(Severity.NOTICE, (String)null, message);
 		}
 	}
 
@@ -169,12 +216,9 @@ public class Conflicts {
 
 		if (automatic.size() > 0) {
 			conflicts
-				.add(new Conflict(
-					null,
+				.add(new Notice(
 					"There are files which need to be updated/installed since other files depend on them:\n"
-					+ Util.join(", ", automatic),
-					actionResolution("Install them all", automatic,
-						Action.INSTALL, Action.UPDATE)));
+					+ Util.join(", ", automatic)));
 		}
 	}
 
@@ -453,6 +497,22 @@ public class Conflicts {
 		conflicts = new ArrayList<Conflict>();
 		listUploadIssues();
 		return conflicts.size() > 0;
+	}
+
+	/**
+	 * Determine whether a list of conflicts requires user feedback.
+	 *
+	 * There are {@link Conflict}s which do not require the user to
+	 * choose between resolutions, but which are merely notifications.
+	 * The upload (or download) should not be stopped by those.
+	 */
+	public static boolean needsFeedback(Iterable<Conflict> conflicts) {
+		if (conflicts == null) return false;
+		for (final Conflict conflict : conflicts) {
+			if (conflict instanceof Notice) continue;
+			return true;
+		}
+		return false;
 	}
 
 }

@@ -103,10 +103,11 @@ public class Installer extends Downloader {
 	}
 
 	public synchronized void start() throws IOException {
-		if (new Conflicts(files).hasDownloadConflicts()) {
+		final Iterable<Conflict> conflicts = new Conflicts(files).getConflicts(false);
+		if (Conflicts.needsFeedback(conflicts)) {
 			final StringBuilder builder = new StringBuilder();
 			builder.append("Unresolved conflicts:\n");
-			for (Conflict conflict : new Conflicts(files).getConflicts(false)) {
+			for (Conflict conflict : conflicts) {
 				builder.append(conflict.getFilename()).append(": ").append(conflict.getConflict());
 			}
 			throw new RuntimeException(builder.toString());

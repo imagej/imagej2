@@ -35,6 +35,7 @@
 
 package imagej.updater.core;
 
+import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Progress;
 import imagej.updater.util.StderrProgress;
@@ -183,9 +184,11 @@ public class FilesUploader {
 		if (uploader == null) throw new RuntimeException("No uploader set for " +
 			site.sshHost);
 		if (!loggedIn) throw new RuntimeException("Not logged in!");
-		final Conflicts conflicts = new Conflicts(files);
-		if (conflicts.hasUploadConflicts()) throw new RuntimeException(
-			"Unresolved upload conflicts!\n\n" + Util.join("\n", conflicts.getConflicts(true)));
+		final Iterable<Conflict> conflicts = new Conflicts(files).getConflicts(true);
+		if (Conflicts.needsFeedback(conflicts)) {
+			throw new RuntimeException("Unresolved upload conflicts!\n\n"
+				+ Util.join("\n", conflicts));
+		}
 		uploader.addProgress(progress);
 		uploader.addProgress(new VerifyTimestamp());
 
