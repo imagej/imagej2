@@ -41,6 +41,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.sampler.AxisSubrange;
 import imagej.data.sampler.SamplerService;
 import imagej.data.sampler.SamplingDefinition;
+import imagej.display.DisplayService;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
 
@@ -74,10 +75,16 @@ public class DuplicateImage extends DynamicCommand {
 	private SamplerService samplerService;
 
 	@Parameter
+	private DisplayService displayService;
+
+	@Parameter
 	private ImageDisplay inputDisplay;
 
 	@Parameter(type = ItemIO.OUTPUT)
 	private ImageDisplay outputDisplay;
+
+	@Parameter(label = "Title:", initializer = "initName", persist = false)
+	private String name = "";
 
 	@Parameter(label = "Constrain axes as below:")
 	private boolean specialBehavior = false;
@@ -182,6 +189,8 @@ public class DuplicateImage extends DynamicCommand {
 		} catch (Exception e) {
 			cancel(e.getMessage());
 		}
+		if (name.length() != 0) outputDisplay.setName(name);
+		else outputDisplay.setName("Untitled");
 	}
 
 	// -- plugin parameter initializer --
@@ -196,6 +205,10 @@ public class DuplicateImage extends DynamicCommand {
 			axisItem.setValue(this, fullRangeString(inputDisplay, axis));
 			addInput(axisItem);
 		}
+	}
+
+	protected void initName() {
+		name = getUniqueName();
 	}
 
 	// -- private helpers --
@@ -232,5 +245,42 @@ public class DuplicateImage extends DynamicCommand {
 
 	private String name(final AxisType axis) {
 		return axis.getLabel() + " axis range";
+	}
+
+	private String getUniqueName() {
+		String origName = inputDisplay.getName();
+		String extension = "";
+		int extPos = origName.lastIndexOf(".");
+		if (extPos >= 0) {
+			extension = origName.substring(extPos);
+			origName = origName.substring(0, extPos);
+		}
+		String base = origName;
+		if (isDefaultEnding(origName)) {
+			int dashPos = base.lastIndexOf("-");
+			base = base.substring(0, dashPos);
+		}
+		String s;
+		int num = 1;
+		do {
+			s = base + "-" + num + extension;
+			num++;
+		}
+		while (!displayService.isUniqueName(s));
+		return s;
+	}
+
+	private boolean isDefaultEnding(String s) {
+		int dashPos = s.lastIndexOf("-");
+		if (dashPos < 0) return false;
+		String rest = s.substring(dashPos + 1);
+		if (rest == null || rest.length() == 0) return false;
+		try {
+			Integer.parseInt(rest);
+			return true;
+		}
+		catch (NumberFormatException e) {
+			return false;
+		}
 	}
 }
