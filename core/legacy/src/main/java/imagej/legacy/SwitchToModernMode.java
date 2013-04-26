@@ -45,6 +45,8 @@ import java.util.Hashtable;
 
 import javax.swing.SwingUtilities;
 
+import org.scijava.Context;
+
 /**
  * An ImageJ 1.x plugin to switch back from the legacy mode.
  * 
@@ -58,6 +60,8 @@ public class SwitchToModernMode implements PlugIn {
 			SwingUtilities.invokeAndWait(new Runnable() {
 				@Override
 				public void run() {
+					// Make sure that we have a valid context.
+					IJ.runPlugIn(Context.class.getName(), null);
 					/*
 					 * The LegacyService which has the ImageJ context.
 					 * 
