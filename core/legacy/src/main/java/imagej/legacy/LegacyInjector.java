@@ -158,6 +158,16 @@ public class LegacyInjector {
 			}
 		}
 
+		// handle mighty mouse (at least on old Linux, Java mistakes the horizontal wheel for a popup trigger)
+		for (String fullClass : new String[] {
+				"ij.gui.ImageCanvas",
+				"ij.plugin.frame.RoiManager",
+				"ij.text.TextPanel",
+				"ij.gui.Toolbar"
+		}) {
+			hacker.handleMightyMousePressed(fullClass);
+		}
+
 		// commit patches
 		hacker.loadClasses();
 

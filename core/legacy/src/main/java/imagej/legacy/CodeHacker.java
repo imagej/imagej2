@@ -48,6 +48,8 @@ import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.Modifier;
 import javassist.NotFoundException;
+import javassist.expr.ExprEditor;
+import javassist.expr.MethodCall;
 
 /**
  * The code hacker provides a mechanism for altering the behavior of classes
@@ -210,6 +212,29 @@ public class CodeHacker {
 			throw new IllegalArgumentException("Cannot add method: " + methodSig, e);
 		}
 	}
+
+	/*
+	 * Works around a bug where the horizontal scroll wheel of the mighty mouse is mistaken for a popup trigger.
+	 */
+	public void handleMightyMousePressed(final String fullClass) {
+		ExprEditor editor = new ExprEditor() {
+			@Override
+			public void edit(MethodCall call) throws CannotCompileException {
+				if (call.getMethodName().equals("isPopupTrigger"))
+					call.replace("$_ = $0.isPopupTrigger() && $0.getButton() != 0;");
+			}
+		};
+		final CtClass classRef = getClass(fullClass);
+		for (final String methodName : new String[] { "mousePressed", "mouseDragged" }) try {
+			final CtMethod method = classRef.getMethod(methodName, "(Ljava/awt/event/MouseEvent;)V");
+			method.instrument(editor);
+		} catch (NotFoundException e) {
+			/* ignore */
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException("Cannot instrument method: " + methodName, e);
+		}
+	}
+
 
 	public void insertPrivateStaticField(final String fullClass,
 			final Class<?> clazz, final String name) {
