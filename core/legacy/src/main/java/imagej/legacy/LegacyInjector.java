@@ -35,6 +35,7 @@
 
 package imagej.legacy;
 
+import org.scijava.Context;
 import org.scijava.util.ClassUtils;
 
 /**
@@ -67,6 +68,11 @@ public class LegacyInjector {
 			"public static void showProgress(int currentIndex, int finalIndex)");
 		hacker.insertAfterMethod("ij.IJ",
 			"public static void showStatus(java.lang.String s)");
+		hacker.insertPrivateStaticField("ij.IJ", Context.class, "_context");
+		hacker.insertMethod("ij.IJ",
+			"public synchronized static org.scijava.Context getContext()",
+			"if (_context == null) _context = new org.scijava.Context();"
+			+ "return _context;");
 		hacker.loadClass("ij.IJ");
 
 		// override behavior of ij.ImagePlus
