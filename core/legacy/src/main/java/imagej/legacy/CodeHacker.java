@@ -35,6 +35,10 @@
 
 package imagej.legacy;
 
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
@@ -65,6 +69,7 @@ public class CodeHacker {
 
 	private final ClassPool pool;
 	protected final ClassLoader classLoader;
+	private final Set<CtClass> handledClasses = new LinkedHashSet<CtClass>();
 
 	public CodeHacker(ClassLoader classLoader) {
 		this.classLoader = classLoader;
@@ -236,13 +241,28 @@ public class CodeHacker {
 	 */
 	public Class<?> loadClass(final String fullClass) {
 		final CtClass classRef = getClass(fullClass);
+		return loadClass(classRef);
+	}
+
+	/**
+	 * Loads the given, possibly modified, class.
+	 * <p>
+	 * This method must be called to confirm any changes made with
+	 * {@link #insertAfterMethod}, {@link #insertBeforeMethod},
+	 * or {@link #insertMethod}.
+	 * </p>
+	 * 
+	 * @param classRef class to load.
+	 * @return the loaded class
+	 */
+	public Class<?> loadClass(final CtClass classRef) {
 		try {
 			return classRef.toClass(classLoader, null);
 		}
 		catch (final CannotCompileException e) {
 			// Cannot use LogService; it will not be initialized by the time the DefaultLegacyService
 			// class is loaded, which is when the CodeHacker is run
-			System.err.println("Warning: Cannot load class: " + fullClass);
+			System.err.println("Warning: Cannot load class: " + classRef.getName());
 			e.printStackTrace();
 			return null;
 		} finally {
@@ -250,10 +270,23 @@ public class CodeHacker {
 		}
 	}
 
+	public void loadClasses() {
+		final Iterator<CtClass> iter = handledClasses.iterator();
+		while (iter.hasNext()) {
+			final CtClass classRef = iter.next();
+			if (!classRef.isFrozen() && classRef.isModified()) {
+				loadClass(classRef);
+			}
+			iter.remove();
+		}
+	}
+
 	/** Gets the Javassist class object corresponding to the given class name. */
 	private CtClass getClass(final String fullClass) {
 		try {
-			return pool.get(fullClass);
+			final CtClass classRef = pool.get(fullClass);
+			if (classRef.getClassPool() == pool) handledClasses.add(classRef);
+			return classRef;
 		}
 		catch (final NotFoundException e) {
 			throw new IllegalArgumentException("No such class: " + fullClass, e);
