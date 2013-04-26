@@ -73,6 +73,12 @@ public class LegacyInjector {
 			"public synchronized static org.scijava.Context getContext()",
 			"if (_context == null) _context = new org.scijava.Context();"
 			+ "return _context;");
+		hacker.insertBeforeMethod("ij.IJ",
+				"public static Object runPlugIn(java.lang.String className, java.lang.String arg)",
+				"if (\"" + LegacyService.class.getName() + "\".equals($1))"
+				+ " return getLegacyService();"
+				+ "if (\"" + Context.class.getName() + "\".equals($1))"
+				+ " return getContext();");
 		hacker.loadClass("ij.IJ");
 
 		// override behavior of ij.ImagePlus
