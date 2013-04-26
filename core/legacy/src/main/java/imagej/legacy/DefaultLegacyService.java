@@ -35,12 +35,7 @@
 
 package imagej.legacy;
 
-import ij.IJ;
-import ij.ImageJ;
 import ij.ImagePlus;
-import ij.WindowManager;
-import ij.gui.ImageWindow;
-import ij.plugin.frame.RoiManager;
 import imagej.command.CommandService;
 import imagej.core.options.OptionsMisc;
 import imagej.data.DatasetService;
@@ -161,11 +156,16 @@ public final class DefaultLegacyService extends AbstractService implements
 	/** Method of synchronizing modern & legacy options. */
 	private OptionsSynchronizer optionsSynchronizer;
 
+	/** Keep references to ImageJ 1.x separate */
+	private final IJ1Helper ij1Helper;
+
 	public DefaultLegacyService() {
 		if (GraphicsEnvironment.isHeadless()) {
 			throw new IllegalStateException(
 				"Legacy support not available in headless mode.");
 		}
+
+		ij1Helper = new IJ1Helper(this);
 	}
 
 	/** Legacy ImageJ 1.x mode: stop synchronizing */
@@ -257,12 +257,7 @@ public final class DefaultLegacyService extends AbstractService implements
 	public void syncActiveImage() {
 		final ImageDisplay activeDisplay =
 			imageDisplayService.getActiveImageDisplay();
-		final ImagePlus activeImagePlus = imageMap.lookupImagePlus(activeDisplay);
-		// NB - old way - caused probs with 3d Project
-		// WindowManager.setTempCurrentImage(activeImagePlus);
-		// NB - new way - test thoroughly
-		if (activeImagePlus == null) WindowManager.setCurrentWindow(null);
-		else WindowManager.setCurrentWindow(activeImagePlus.getWindow());
+		ij1Helper.syncActiveImage(activeDisplay);
 	}
 
 	@Override
@@ -315,11 +310,6 @@ public final class DefaultLegacyService extends AbstractService implements
 	public synchronized void toggleLegacyMode(final boolean wantIJ1) {
 		if (wantIJ1) legacyIJ1Mode = true;
 
-		RoiManager mgr = RoiManager.getInstance();
-		if (mgr != null) mgr.setVisible(wantIJ1);
-
-		final ij.ImageJ ij = IJ.getInstance();
-
 		SwitchToModernMode.registerMenuItem();
 
 		// TODO: hide/show Brightness/Contrast, Color Picker, Command Launcher, etc
@@ -349,14 +339,7 @@ public final class DefaultLegacyService extends AbstractService implements
 		}
 
 		// hide/show IJ1 main window
-		if (wantIJ1) ij.pack();
-		ij.setVisible(wantIJ1);
-
-		// hide/show the legacy ImagePlus instances
-		for (final ImagePlus imp : imageMap.getImagePlusInstances()) {
-			final ImageWindow window = imp.getWindow();
-			if (window != null) window.setVisible(wantIJ1);
-		}
+		ij1Helper.setVisible(wantIJ1);
 
 		if (!wantIJ1) legacyIJ1Mode = false;
 		imageMap.toggleLegacyMode(wantIJ1);
@@ -364,7 +347,7 @@ public final class DefaultLegacyService extends AbstractService implements
 
 	@Override
 	public String getLegacyVersion() {
-		return IJ.getVersion();
+		return ij1Helper.getVersion();
 	}
 
 	// -- Service methods --
@@ -382,13 +365,7 @@ public final class DefaultLegacyService extends AbstractService implements
 			legacyInjector.setLegacyService(this);
 		}
 
-		// initialize legacy ImageJ application
-		if (IJ.getInstance() == null) try {
-			new ij.ImageJ(ij.ImageJ.NO_SHOW);
-		}
-		catch (final Throwable t) {
-			log.warn("Failed to instantiate IJ1.", t);
-		}
+		ij1Helper.initialize();
 
 		// discover legacy plugins
 		final OptionsMisc optsMisc = optionsService.getOptions(OptionsMisc.class);
@@ -403,23 +380,9 @@ public final class DefaultLegacyService extends AbstractService implements
 
 	@Override
 	public void dispose() {
-		final ImageJ ij = IJ.getInstance();
-		if (ij != null) {
-			// close out all image windows, without dialog prompts
-			while (true) {
-				final ImagePlus imp = WindowManager.getCurrentImage();
-				if (imp == null) break;
-				imp.changes = false;
-				imp.close();
-			}
+		ij1Helper.dispose();
 
-			// close any remaining (non-image) windows
-			WindowManager.closeAllWindows();
-
-			// quit legacy ImageJ on the same thread
-			ij.run();
-		}
-
+		legacyInjector.setLegacyService(new DummyLegacyService());
 		instance = null;
 	}
 
@@ -448,24 +411,24 @@ public final class DefaultLegacyService extends AbstractService implements
 	@EventHandler
 	protected void onEvent(final KyPressedEvent event) {
 		final KeyCode code = event.getCode();
-		if (code == KeyCode.SPACE) IJ.setKeyDown(KeyCode.SPACE.getCode());
-		if (code == KeyCode.ALT) IJ.setKeyDown(KeyCode.ALT.getCode());
-		if (code == KeyCode.SHIFT) IJ.setKeyDown(KeyCode.SHIFT.getCode());
-		if (code == KeyCode.CONTROL) IJ.setKeyDown(KeyCode.CONTROL.getCode());
-		if (IJ.isMacintosh() && code == KeyCode.META) {
-			IJ.setKeyDown(KeyCode.CONTROL.getCode());
+		if (code == KeyCode.SPACE) ij1Helper.setKeyDown(KeyCode.SPACE.getCode());
+		if (code == KeyCode.ALT) ij1Helper.setKeyDown(KeyCode.ALT.getCode());
+		if (code == KeyCode.SHIFT) ij1Helper.setKeyDown(KeyCode.SHIFT.getCode());
+		if (code == KeyCode.CONTROL) ij1Helper.setKeyDown(KeyCode.CONTROL.getCode());
+		if (ij1Helper.isMacintosh() && code == KeyCode.META) {
+			ij1Helper.setKeyDown(KeyCode.CONTROL.getCode());
 		}
 	}
 
 	@EventHandler
 	protected void onEvent(final KyReleasedEvent event) {
 		final KeyCode code = event.getCode();
-		if (code == KeyCode.SPACE) IJ.setKeyUp(KeyCode.SPACE.getCode());
-		if (code == KeyCode.ALT) IJ.setKeyUp(KeyCode.ALT.getCode());
-		if (code == KeyCode.SHIFT) IJ.setKeyUp(KeyCode.SHIFT.getCode());
-		if (code == KeyCode.CONTROL) IJ.setKeyUp(KeyCode.CONTROL.getCode());
-		if (IJ.isMacintosh() && code == KeyCode.META) {
-			IJ.setKeyUp(KeyCode.CONTROL.getCode());
+		if (code == KeyCode.SPACE) ij1Helper.setKeyUp(KeyCode.SPACE.getCode());
+		if (code == KeyCode.ALT) ij1Helper.setKeyUp(KeyCode.ALT.getCode());
+		if (code == KeyCode.SHIFT) ij1Helper.setKeyUp(KeyCode.SHIFT.getCode());
+		if (code == KeyCode.CONTROL) ij1Helper.setKeyUp(KeyCode.CONTROL.getCode());
+		if (ij1Helper.isMacintosh() && code == KeyCode.META) {
+			ij1Helper.setKeyUp(KeyCode.CONTROL.getCode());
 		}
 	}
 
