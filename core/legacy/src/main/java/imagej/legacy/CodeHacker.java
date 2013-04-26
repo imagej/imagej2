@@ -245,6 +245,8 @@ public class CodeHacker {
 			System.err.println("Warning: Cannot load class: " + fullClass);
 			e.printStackTrace();
 			return null;
+		} finally {
+			classRef.freeze();
 		}
 	}
 
