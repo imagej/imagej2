@@ -53,6 +53,7 @@ import org.scijava.Context;
  * @author Johannes Schindelin
  */
 public class SwitchToModernMode implements PlugIn {
+	public final static String MENU_LABEL = "Switch to Modern Mode";
 
 	@Override
 	public void run(String arg) {
@@ -89,16 +90,15 @@ public class SwitchToModernMode implements PlugIn {
 	 */
 	static void registerMenuItem(final LegacyService service) {
 		// inject Help>Switch to Modern Mode
-		final String menuLabel = "Switch to Modern Mode";
 		@SuppressWarnings("unchecked")
 		final Hashtable<String, String> commands = Menus.getCommands();
-		if (!commands.containsKey(menuLabel)) {
+		if (!commands.containsKey(MENU_LABEL)) {
 			final Menu helpMenu = Menus.getMenuBar().getHelpMenu();
-			final MenuItem item = new MenuItem(menuLabel);
+			final MenuItem item = new MenuItem(MENU_LABEL);
 			item.addActionListener(IJ.getInstance());
 			helpMenu.add(item);
 
-			commands.put(menuLabel, SwitchToModernMode.class.getName());
+			commands.put(MENU_LABEL, SwitchToModernMode.class.getName());
 		}
 	}
 }
