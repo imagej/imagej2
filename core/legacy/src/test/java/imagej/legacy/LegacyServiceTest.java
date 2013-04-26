@@ -95,5 +95,13 @@ public class LegacyServiceTest {
 		assertEquals(legacyService, legacyService2);
 	}
 
+	@Test
+	public void testContextWasDisposed() {
+		context = new Context(LegacyService.class);
+		final LegacyService legacyService =
+			context.getService(LegacyService.class);
+		assumeTrue(legacyService != null);
+	}
+
 }
 
