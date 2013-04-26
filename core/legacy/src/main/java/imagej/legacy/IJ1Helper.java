@@ -127,6 +127,10 @@ public class IJ1Helper {
 		IJ.setKeyUp(keyCode);
 	}
 
+	public boolean hasInstance() {
+		return IJ.getInstance() != null;
+	}
+
 	public String getVersion() {
 		return IJ.getVersion();
 	}
