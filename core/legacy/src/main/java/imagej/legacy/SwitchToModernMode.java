@@ -99,7 +99,16 @@ public class SwitchToModernMode implements PlugIn {
 				final Menu helpMenu = Menus.getMenuBar().getHelpMenu();
 				final MenuItem item = new MenuItem(MENU_LABEL);
 				item.addActionListener(ij1);
-				helpMenu.add(item);
+				int index = helpMenu.getItemCount();
+				while (index > 0) {
+					final String label = helpMenu.getItem(index - 1).getLabel();
+					if (label.equals("-") || label.startsWith("Update") || label.endsWith("Wiki")) {
+						index--;
+					} else {
+						break;
+					}
+				}
+				helpMenu.insert(item, index);
 			}
 
 			commands.put(MENU_LABEL, SwitchToModernMode.class.getName());
