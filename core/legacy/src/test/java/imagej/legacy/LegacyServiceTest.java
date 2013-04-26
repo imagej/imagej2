@@ -38,6 +38,9 @@ package imagej.legacy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assume.assumeTrue;
+
+import java.awt.GraphicsEnvironment;
+
 import ij.IJ;
 
 import org.junit.Before;
@@ -61,21 +64,24 @@ public class LegacyServiceTest {
 
 	@Before
 	public void cannotRunHeadlesslyYet() {
-		assumeTrue(!"true".equals(System.getProperty("java.awt.headless")));
+		assumeTrue(!GraphicsEnvironment.isHeadless());
 	}
 
 	@Test
 	public void testContext() {
 		final Context context = new Context(LegacyService.class);
+		final LegacyService legacyService =
+			context.getService(LegacyService.class);
+		assumeTrue(legacyService != null);
 
 		Context context2 = (Context)IJ.runPlugIn(Context.class.getName(), null);
 		assertNotNull(context2);
 		assertEquals(context, context2);
 
-		final LegacyService legacyService = (LegacyService)
+		final LegacyService legacyService2 = (LegacyService)
 				IJ.runPlugIn(LegacyService.class.getName(), null);
-		assertNotNull(legacyService);
-		assertEquals(legacyService, context.getService(LegacyService.class));
+		assertNotNull(legacyService2);
+		assertEquals(legacyService, legacyService2);
 	}
 
 }
