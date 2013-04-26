@@ -41,6 +41,7 @@ import ij.plugin.PlugIn;
 
 import java.awt.Menu;
 import java.awt.MenuItem;
+import java.awt.event.ActionListener;
 import java.util.Hashtable;
 
 import javax.swing.SwingUtilities;
@@ -93,10 +94,13 @@ public class SwitchToModernMode implements PlugIn {
 		@SuppressWarnings("unchecked")
 		final Hashtable<String, String> commands = Menus.getCommands();
 		if (!commands.containsKey(MENU_LABEL)) {
-			final Menu helpMenu = Menus.getMenuBar().getHelpMenu();
-			final MenuItem item = new MenuItem(MENU_LABEL);
-			item.addActionListener(IJ.getInstance());
-			helpMenu.add(item);
+			ActionListener ij1 = IJ.getInstance();
+			if (ij1 != null) {
+				final Menu helpMenu = Menus.getMenuBar().getHelpMenu();
+				final MenuItem item = new MenuItem(MENU_LABEL);
+				item.addActionListener(ij1);
+				helpMenu.add(item);
+			}
 
 			commands.put(MENU_LABEL, SwitchToModernMode.class.getName());
 		}
