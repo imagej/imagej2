@@ -128,10 +128,12 @@ public class LegacyInjector {
 		}
 
 		// override behavior of ij.plugin.frame.RoiManager
-		hacker
-			.insertMethod("ij.plugin.frame.RoiManager", "public void show()", ";");
 		hacker.insertMethod("ij.plugin.frame.RoiManager",
-			"public void setVisible(boolean b)", ";");
+			"public void show()",
+			"if ($isLegacyMode()) super.show();");
+		hacker.insertMethod("ij.plugin.frame.RoiManager",
+			"public void setVisible(boolean b)",
+			"if ($isLegacyMode()) super.setVisible($1);");
 		hacker.loadClass("ij.plugin.frame.RoiManager");
 
 		// make sure that there is a legacy service
