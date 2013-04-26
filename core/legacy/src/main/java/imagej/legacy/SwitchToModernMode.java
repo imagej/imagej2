@@ -88,7 +88,7 @@ public class SwitchToModernMode implements PlugIn {
 	 * 
 	 * @param service the legacy service holding the ImageJ context
 	 */
-	static void registerMenuItem(final LegacyService service) {
+	public static void registerMenuItem() {
 		// inject Help>Switch to Modern Mode
 		@SuppressWarnings("unchecked")
 		final Hashtable<String, String> commands = Menus.getCommands();
