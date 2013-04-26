@@ -72,6 +72,11 @@ public class IJ1Helper {
 		}
 		catch (final Throwable t) {
 			legacyService.getLogService().warn("Failed to instantiate IJ1.", t);
+		} else {
+			final LegacyImageMap imageMap = legacyService.getImageMap();
+			for (int i = 1; i <= WindowManager.getImageCount(); i++) {
+				imageMap.registerLegacyImage(WindowManager.getImage(i));
+			}
 		}
 	}
 
