@@ -43,6 +43,7 @@ import java.awt.GraphicsEnvironment;
 
 import ij.IJ;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.scijava.Context;
@@ -62,14 +63,24 @@ public class LegacyServiceTest {
 		DefaultLegacyService.getInstance();
 	}
 
+	private Context context;
+
 	@Before
 	public void cannotRunHeadlesslyYet() {
 		assumeTrue(!GraphicsEnvironment.isHeadless());
 	}
 
+	@After
+	public void disposeContext() {
+		if (context != null) {
+			context.dispose();
+			context = null;
+		}
+	}
+
 	@Test
 	public void testContext() {
-		final Context context = new Context(LegacyService.class);
+		context = new Context(LegacyService.class);
 		final LegacyService legacyService =
 			context.getService(LegacyService.class);
 		assumeTrue(legacyService != null);
@@ -82,6 +93,14 @@ public class LegacyServiceTest {
 				IJ.runPlugIn(LegacyService.class.getName(), null);
 		assertNotNull(legacyService2);
 		assertEquals(legacyService, legacyService2);
+	}
+
+	@Test
+	public void testContextWasDisposed() {
+		context = new Context(LegacyService.class);
+		final LegacyService legacyService =
+			context.getService(LegacyService.class);
+		assumeTrue(legacyService != null);
 	}
 
 }
