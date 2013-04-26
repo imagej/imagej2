@@ -36,10 +36,8 @@
 package imagej.ui.dnd;
 
 import imagej.display.Display;
-import imagej.plugin.ImageJPlugin;
+import imagej.plugin.TypedPlugin;
 
-import org.scijava.Contextual;
-import org.scijava.Prioritized;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -58,54 +56,43 @@ import org.scijava.plugin.Plugin;
  * @see Plugin
  * @see DragAndDropService
  */
-public interface DragAndDropHandler<D> extends ImageJPlugin, Contextual,
-	Prioritized
-{
-
-	/** Gets the native Java type handled by this handler. */
-	Class<D> getType();
-
-	/**
-	 * Gets whether this handler supports dropping the given data object onto a
-	 * compatible display.
-	 */
-	boolean isCompatible(final D dataObject);
+public interface DragAndDropHandler<D> extends TypedPlugin<D> {
 
 	/**
 	 * Gets whether this handler supports dropping the given data object onto the
 	 * specified display.
 	 */
-	boolean isCompatible(final D dataObject, final Display<?> display);
+	boolean supports(final D dataObject, final Display<?> display);
 
 	/**
 	 * Gets whether this handler supports dropping the given
 	 * {@link DragAndDropData} onto a compatible display.
 	 */
-	boolean isCompatibleData(final DragAndDropData data);
+	boolean supportsData(final DragAndDropData data);
 
 	/**
 	 * Gets whether this handler supports dropping the given
 	 * {@link DragAndDropData} onto the specified display.
 	 */
-	boolean isCompatibleData(final DragAndDropData data, final Display<?> display);
+	boolean supportsData(final DragAndDropData data, final Display<?> display);
 
 	/**
 	 * Gets whether this handler supports dropping the given object onto a
 	 * compatible display.
 	 */
-	boolean isCompatibleObject(final Object object);
+	boolean supportsObject(final Object object);
 
 	/**
 	 * Gets whether this handler supports dropping the given object onto the
 	 * specified display.
 	 */
-	boolean isCompatibleObject(final Object object, final Display<?> display);
+	boolean supportsObject(final Object object, final Display<?> display);
 
 	/**
 	 * Gets whether this handler supports dropping an assumed-to-be-compatible
 	 * data object onto the given {@link Display}.
 	 */
-	boolean isCompatibleDisplay(final Display<?> display);
+	boolean supportsDisplay(final Display<?> display);
 
 	/**
 	 * Converts the given {@link DragAndDropData} to the type of data object
@@ -151,5 +138,17 @@ public interface DragAndDropHandler<D> extends ImageJPlugin, Contextual,
 	 *           given data/display combination.
 	 */
 	boolean dropObject(final Object object, final Display<?> display);
+
+	// NB: The following method declarations are overridden solely to provide more
+	// appropriate, context-specific javadoc.
+
+	// -- Typed methods --
+
+	/**
+	 * Gets whether this handler supports dropping the given data object onto a
+	 * compatible display.
+	 */
+	@Override
+	boolean supports(final Object dataObject);
 
 }

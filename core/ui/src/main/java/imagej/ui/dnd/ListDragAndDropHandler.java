@@ -48,27 +48,19 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  */
 @Plugin(type = DragAndDropHandler.class)
-public class ListDragAndDropHandler extends
-	AbstractDragAndDropHandler<List<?>>
+public class ListDragAndDropHandler extends AbstractDragAndDropHandler<List<?>>
 {
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public ListDragAndDropHandler() {
+		super((Class) List.class);
+	}
 
 	// -- DragAndDropHandler methods --
 
 	@Override
-	public Class<List<?>> getType() {
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final Class<List<?>> listClass = (Class) List.class;
-		return listClass;
-	}
-
-	@Override
-	public boolean isCompatible(final List<?> dataObject) {
-		return true;
-	}
-
-	@Override
-	public boolean isCompatible(final List<?> list, final Display<?> display) {
-		if (!super.isCompatible(list, display)) return false;
+	public boolean supports(final List<?> list, final Display<?> display) {
+		if (!super.supports(list, display)) return false;
 
 		final DragAndDropService dndService =
 			getContext().getService(DragAndDropService.class);
@@ -79,7 +71,7 @@ public class ListDragAndDropHandler extends
 
 		// the list is deemed compatible if at least one item is compatible
 		for (final Object item : list) {
-			if (dndService.isCompatible(item, display)) return true;
+			if (dndService.supports(item, display)) return true;
 		}
 		return false;
 	}
@@ -99,7 +91,7 @@ public class ListDragAndDropHandler extends
 		// use the drag-and-drop service to handle each item separately
 		boolean success = false;
 		for (final Object item : list) {
-			if (dndService.isCompatible(item, display)) {
+			if (dndService.supports(item, display)) {
 				final boolean result = dndService.drop(item, display);
 				if (result) success = true;
 			}
