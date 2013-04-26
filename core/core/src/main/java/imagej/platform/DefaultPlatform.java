@@ -71,7 +71,7 @@ public class DefaultPlatform extends AbstractPlatform {
 				"epiphany", "lynx" };
 		for (final String browser : browsers) {
 			try {
-				final int exitCode = platformService.exec(browser, url.toString());
+				final int exitCode = getPlatformService().exec(browser, url.toString());
 				if (exitCode == 0) return;
 			}
 			catch (final IOException e) {

@@ -116,6 +116,7 @@ public class PixelProbe extends AbstractTool {
 			}
 			builder.append(")");
 		}
+		recorder.releaseDataset();
 		statusService.showStatus(builder.toString());
 	}
 	

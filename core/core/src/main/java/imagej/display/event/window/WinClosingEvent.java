@@ -44,8 +44,8 @@ import imagej.display.Display;
  */
 public class WinClosingEvent extends WinEvent {
 
-	public WinClosingEvent(final Display<?> display) {
-		super(display);
+	public WinClosingEvent(final Display<?> display, final Object window) {
+		super(display, window);
 	}
 
 }

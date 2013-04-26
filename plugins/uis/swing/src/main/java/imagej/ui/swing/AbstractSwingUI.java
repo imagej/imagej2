@@ -44,6 +44,7 @@ import imagej.ui.SystemClipboard;
 import imagej.ui.common.awt.AWTClipboard;
 import imagej.ui.common.awt.AWTDropTargetEventDispatcher;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
+import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import imagej.ui.swing.menu.SwingJMenuBarCreator;
 import imagej.ui.swing.menu.SwingJPopupMenuCreator;
 import imagej.ui.viewer.DisplayViewer;
@@ -176,6 +177,11 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 			new AWTInputEventDispatcher(null, getEventService());
 		appFrame.addEventDispatcher(inputDispatcher);
 
+		// listen for window events on the app frame
+		final AWTWindowEventDispatcher windowDispatcher =
+			new AWTWindowEventDispatcher(getEventService());
+		windowDispatcher.register(appFrame);
+
 		// listen for drag and drop events
 		final AWTDropTargetEventDispatcher dropTargetDispatcher =
 			new AWTDropTargetEventDispatcher(null, getEventService());
@@ -201,6 +207,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 			// something else (e.g., MacOSXPlatform) handled the menus
 			return null;
 		}
+		appMenusCreatedEvent.consume();
 		return menuBar;
 	}
 

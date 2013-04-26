@@ -238,15 +238,14 @@ public final class DefaultDisplayService extends AbstractService implements
 	@EventHandler
 	protected void onEvent(final WinClosedEvent event) {
 		final Display<?> display = event.getDisplay();
-
-		display.close();
+		if (display != null) display.close();
 	}
 
 	/** Sets the display to active when its window is activated. */
 	@EventHandler
 	protected void onEvent(final WinActivatedEvent event) {
 		final Display<?> display = event.getDisplay();
-		setActiveDisplay(display);
+		if (display != null) setActiveDisplay(display);
 	}
 
 	/** Removes a display from the display list when it is deleted */

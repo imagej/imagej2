@@ -72,6 +72,7 @@ public class SwingMdiDialogPrompt implements DialogPrompt {
 	public Result prompt() {
 		dialog.setVisible(true);
 		final Object value = pane.getValue();
+		dialog.dispose();
 		return resultMap.get(value);
 	}
 

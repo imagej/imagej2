@@ -72,6 +72,15 @@ public class AWTWindowEventDispatcher implements WindowListener {
 		eventService = display.getContext().getService(EventService.class);
 	}
 
+	/**
+	 * Creates an AWT window event dispatcher for a null display, using the given
+	 * event service.
+	 */
+	public AWTWindowEventDispatcher(final EventService eventService) {
+		display = null;
+		this.eventService = eventService;
+	}
+
 	// -- AWTWindowEventDispatcher methods --
 
 	public void register(final Window w) {
@@ -82,37 +91,37 @@ public class AWTWindowEventDispatcher implements WindowListener {
 
 	@Override
 	public void windowActivated(final WindowEvent e) {
-		eventService.publish(new WinActivatedEvent(display));
+		eventService.publish(new WinActivatedEvent(display, e.getWindow()));
 	}
 
 	@Override
 	public void windowClosed(final WindowEvent e) {
-		eventService.publish(new WinClosedEvent(display));
+		eventService.publish(new WinClosedEvent(display, e.getWindow()));
 	}
 
 	@Override
 	public void windowClosing(final WindowEvent e) {
-		eventService.publish(new WinClosingEvent(display));
+		eventService.publish(new WinClosingEvent(display, e.getWindow()));
 	}
 
 	@Override
 	public void windowDeactivated(final WindowEvent e) {
-		eventService.publish(new WinDeactivatedEvent(display));
+		eventService.publish(new WinDeactivatedEvent(display, e.getWindow()));
 	}
 
 	@Override
 	public void windowDeiconified(final WindowEvent e) {
-		eventService.publish(new WinDeiconifiedEvent(display));
+		eventService.publish(new WinDeiconifiedEvent(display, e.getWindow()));
 	}
 
 	@Override
 	public void windowIconified(final WindowEvent e) {
-		eventService.publish(new WinIconifiedEvent(display));
+		eventService.publish(new WinIconifiedEvent(display, e.getWindow()));
 	}
 
 	@Override
 	public void windowOpened(final WindowEvent e) {
-		eventService.publish(new WinOpenedEvent(display));
+		eventService.publish(new WinOpenedEvent(display, e.getWindow()));
 	}
 
 }

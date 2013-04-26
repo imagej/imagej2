@@ -35,11 +35,10 @@
 
 package imagej.core.platforms.macosx;
 
-import com.apple.eawt.Application;
-
 import imagej.command.Command;
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
+import imagej.display.event.window.WinActivatedEvent;
 import imagej.module.ModuleInfo;
 import imagej.module.event.ModulesUpdatedEvent;
 import imagej.platform.AbstractPlatform;
@@ -52,9 +51,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 
+import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
+import org.scijava.event.EventSubscriber;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -76,6 +78,10 @@ public class MacOSXPlatform extends AbstractPlatform {
 	@SuppressWarnings("unused")
 	private MacOSXAppEventDispatcher appEventDispatcher;
 
+	private JMenuBar menuBar;
+
+	private List<EventSubscriber<?>> subscribers;
+
 	// -- Platform methods --
 
 	@Override
@@ -94,7 +100,7 @@ public class MacOSXPlatform extends AbstractPlatform {
 		if (SCREEN_MENU) removeAppCommandsFromMenu();
 
 		// translate Mac OS X application events into ImageJ events
-		final EventService eventService = platformService.getEventService();
+		final EventService eventService = getPlatformService().getEventService();
 		try {
 			appEventDispatcher = new MacOSXAppEventDispatcher(eventService);
 		}
@@ -104,11 +110,14 @@ public class MacOSXPlatform extends AbstractPlatform {
 			// - on MacOSX Tiger without recent Java Updates
 			// - on earlier MacOSX versions
 		}
+
+		// subscribe to relevant window-related events
+		subscribers = eventService.subscribe(this);
 	}
 
 	@Override
 	public void open(final URL url) throws IOException {
-		if (platformService.exec("open", url.toString()) != 0) {
+		if (getPlatformService().exec("open", url.toString()) != 0) {
 			throw new IOException("Could not open " + url);
 		}
 	}
@@ -116,10 +125,7 @@ public class MacOSXPlatform extends AbstractPlatform {
 	@Override
 	public boolean registerAppMenus(final Object menus) {
 		if (SCREEN_MENU && menus instanceof JMenuBar) {
-			final JMenuBar menuBar = (JMenuBar) menus;
-			// TODO: Test whether this works on older versions of Mac OS X.
-			Application.getApplication().setDefaultMenuBar(menuBar);
-			return true;
+			menuBar = (JMenuBar) menus;
 		}
 		return false;
 	}
@@ -128,17 +134,26 @@ public class MacOSXPlatform extends AbstractPlatform {
 
 	@Override
 	public void dispose() {
-		if (SCREEN_MENU) {
-			// FIXME: This call is insufficient to clean up after the earlier call
-			// to Application.setDefaultMenuBar. Figure out how to do it so that
-			// the JVM can shut down cleanly after application context disposal.
-			Application.getApplication().setDefaultMenuBar(null);
-		}
+		getPlatformService().getEventService().unsubscribe(subscribers);
+	}
+
+	// -- Event handlers --
+
+	@EventHandler
+	protected void onEvent(final WinActivatedEvent evt) {
+		if (!SCREEN_MENU) return;
+
+		final Object window = evt.getWindow();
+		if (!(window instanceof JFrame)) return;
+
+		// assign the singleton menu bar to newly activated window
+		((JFrame) window).setJMenuBar(menuBar);
 	}
 
 	// -- Helper methods --
 
 	private void removeAppCommandsFromMenu() {
+		final PlatformService platformService = getPlatformService();
 		final EventService eventService = platformService.getEventService();
 		final CommandService commandService = platformService.getCommandService();
 		final AppEventService appEventService =

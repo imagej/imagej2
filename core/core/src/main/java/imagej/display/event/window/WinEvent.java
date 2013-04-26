@@ -49,8 +49,25 @@ import imagej.display.event.DisplayEvent;
  */
 public abstract class WinEvent extends DisplayEvent {
 
-	public WinEvent(final Display<?> display) {
+	private final Object window;
+
+	public WinEvent(final Display<?> display, final Object window) {
 		super(display);
+		this.window = window;
+	}
+
+	// -- WinEvent methods --
+
+	/** Gets the actual UI-specific window. */
+	public Object getWindow() {
+		return window;
+	}
+
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return super.toString() + "\n\twindow = " + window;
 	}
 
 }
