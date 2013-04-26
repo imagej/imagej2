@@ -36,59 +36,59 @@
 package imagej.ui.dnd;
 
 import imagej.display.Display;
-
-import org.scijava.plugin.SortablePlugin;
+import imagej.plugin.AbstractTypedPlugin;
 
 /**
  * Abstract superclass for {@link DragAndDropHandler}s.
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractDragAndDropHandler<D> extends SortablePlugin
-	implements DragAndDropHandler<D>
+public abstract class AbstractDragAndDropHandler<D> extends
+	AbstractTypedPlugin<D> implements DragAndDropHandler<D>
 {
+
+	public AbstractDragAndDropHandler(final Class<D> type) {
+		super(type, true);
+	}
 
 	// -- DragAndDropHandler methods --
 
 	@Override
-	public boolean isCompatible(final D dataObject, final Display<?> display) {
-		return isCompatibleDisplay(display) && isCompatible(dataObject);
+	public boolean supports(final D dataObject, final Display<?> display) {
+		return supportsDisplay(display) && supports(dataObject);
 	}
 
 	@Override
-	public boolean isCompatibleData(final DragAndDropData data) {
-		return data.isSupported(getType()) &&
-			isCompatible(convertDataUnchecked(data));
+	public boolean supportsData(final DragAndDropData data) {
+		return data.isSupported(getType()) && supports(convertDataUnchecked(data));
 	}
 
 	@Override
-	public boolean isCompatibleData(final DragAndDropData data,
+	public boolean supportsData(final DragAndDropData data,
 		final Display<?> display)
 	{
-		return isCompatibleDisplay(display) && isCompatibleData(data);
+		return supportsDisplay(display) && supportsData(data);
 	}
 
 	@Override
-	public boolean isCompatibleObject(final Object object) {
+	public boolean supportsObject(final Object object) {
 		return object != null && getType().isAssignableFrom(object.getClass()) &&
-			isCompatible(convertObjectUnchecked(object));
+			supports(convertObjectUnchecked(object));
 	}
 
 	@Override
-	public boolean isCompatibleObject(final Object object,
-		final Display<?> display)
-	{
-		return isCompatibleDisplay(display) && isCompatibleObject(object);
+	public boolean supportsObject(final Object object, final Display<?> display) {
+		return supportsDisplay(display) && supportsObject(object);
 	}
 
 	@Override
-	public boolean isCompatibleDisplay(final Display<?> display) {
+	public boolean supportsDisplay(final Display<?> display) {
 		return true;
 	}
 
 	@Override
 	public D convertData(final DragAndDropData data) {
-		if (!isCompatibleData(data)) {
+		if (!supportsData(data)) {
 			throw new IllegalArgumentException("Incompatible data object");
 		}
 		return convertDataUnchecked(data);
@@ -96,15 +96,14 @@ public abstract class AbstractDragAndDropHandler<D> extends SortablePlugin
 
 	@Override
 	public D convertObject(final Object object) {
-		if (!isCompatibleObject(object)) {
+		if (!supportsObject(object)) {
 			throw new IllegalArgumentException("Incompatible data object");
 		}
 		return convertObjectUnchecked(object);
 	}
 
 	@Override
-	public boolean
-		dropData(final DragAndDropData data, final Display<?> display)
+	public boolean dropData(final DragAndDropData data, final Display<?> display)
 	{
 		return drop(convertData(data), display);
 	}
@@ -122,15 +121,15 @@ public abstract class AbstractDragAndDropHandler<D> extends SortablePlugin
 	 */
 	protected void check(final D dataObject, final Display<?> display) {
 		// NB: First check compatibility of data and display individually.
-		if (!isCompatible(dataObject)) {
+		if (!supports(dataObject)) {
 			throw new IllegalArgumentException("Incompatible data object");
 		}
-		if (!isCompatibleDisplay(display)) {
+		if (!supportsDisplay(display)) {
 			throw new IllegalArgumentException("Incompatible display");
 		}
 		// NB: The data and display are individually compatible,
 		// but are they compatible with one another?
-		if (!isCompatible(dataObject, display)) {
+		if (!supports(dataObject, display)) {
 			throw new IllegalArgumentException(
 				"Data object and display are incompatible");
 		}

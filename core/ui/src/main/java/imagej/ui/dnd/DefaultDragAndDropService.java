@@ -36,21 +36,16 @@
 package imagej.ui.dnd;
 
 import imagej.display.Display;
+import imagej.plugin.AbstractHandlerService;
 import imagej.ui.dnd.event.DragEnterEvent;
 import imagej.ui.dnd.event.DragExitEvent;
 import imagej.ui.dnd.event.DragOverEvent;
 import imagej.ui.dnd.event.DropEvent;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.scijava.app.StatusService;
 import org.scijava.event.EventHandler;
-import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginService;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
@@ -59,7 +54,8 @@ import org.scijava.service.Service;
  * @author Curtis Rueden
  */
 @Plugin(type = Service.class)
-public class DefaultDragAndDropService extends AbstractService implements
+public class DefaultDragAndDropService extends
+	AbstractHandlerService<Object, DragAndDropHandler<Object>> implements
 	DragAndDropService
 {
 
@@ -67,25 +63,24 @@ public class DefaultDragAndDropService extends AbstractService implements
 	private static final String UNSUPPORTED = "Unsupported Object";
 
 	@Parameter
-	private PluginService pluginService;
-
-	@Parameter
-	private LogService log;
-
-	@Parameter
 	private StatusService statusService;
 
-	private List<DragAndDropHandler<?>> handlers;
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public DefaultDragAndDropService() {
+		super(Object.class, (Class) DragAndDropHandler.class);
+	}
+
+	// -- DragAndDropService methods --
 
 	@Override
-	public boolean isCompatible(final DragAndDropData data,
+	public boolean supports(final DragAndDropData data,
 		final Display<?> display)
 	{
 		return getHandler(data, display) != null;
 	}
 
 	@Override
-	public boolean isCompatible(final Object object, final Display<?> display) {
+	public boolean supports(final Object object, final Display<?> display) {
 		return getHandler(object, display) != null;
 	}
 
@@ -108,7 +103,7 @@ public class DefaultDragAndDropService extends AbstractService implements
 		final Display<?> display)
 	{
 		for (final DragAndDropHandler<?> handler : getHandlers()) {
-			if (handler.isCompatibleData(data, display)) return handler;
+			if (handler.supportsData(data, display)) return handler;
 		}
 		return null;
 	}
@@ -118,26 +113,9 @@ public class DefaultDragAndDropService extends AbstractService implements
 		final Display<?> display)
 	{
 		for (final DragAndDropHandler<?> handler : getHandlers()) {
-			if (handler.isCompatibleObject(object, display)) return handler;
+			if (handler.supportsObject(object, display)) return handler;
 		}
 		return null;
-	}
-
-	@Override
-	public List<DragAndDropHandler<?>> getHandlers() {
-		return handlers;
-	}
-
-	// -- Service methods --
-
-	@Override
-	public void initialize() {
-		// ask the plugin service for the list of available drag-and-drop handlers
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final List<DragAndDropHandler<?>> instances =
-			(List) pluginService.createInstancesOfType(DragAndDropHandler.class);
-		handlers = Collections.unmodifiableList(instances);
-		log.info("Found " + handlers.size() + " drag-and-drop handlers.");
 	}
 
 	// -- Event handlers --
@@ -145,7 +123,7 @@ public class DefaultDragAndDropService extends AbstractService implements
 	@EventHandler
 	protected void onEvent(final DragEnterEvent e) {
 		// determine whether the given drop operation is supported
-		final boolean compatible = isCompatible(e.getData(), e.getDisplay());
+		final boolean compatible = supports(e.getData(), e.getDisplay());
 
 		// update the ImageJ status accordingly
 		final String message = compatible ? SUPPORTED : UNSUPPORTED;
@@ -167,7 +145,7 @@ public class DefaultDragAndDropService extends AbstractService implements
 
 	@EventHandler
 	protected void onEvent(final DropEvent e) {
-		if (!isCompatible(e.getData(), e.getDisplay())) return;
+		if (!supports(e.getData(), e.getDisplay())) return;
 
 		// perform the drop
 		final boolean success = drop(e.getData(), e.getDisplay());
