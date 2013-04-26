@@ -35,8 +35,6 @@
 
 package imagej.legacy;
 
-import java.lang.reflect.Field;
-
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
@@ -66,7 +64,7 @@ public class CodeHacker {
 	private static final String PATCH_SUFFIX = "Methods";
 
 	private final ClassPool pool;
-	private final ClassLoader classLoader;
+	protected final ClassLoader classLoader;
 
 	public CodeHacker(ClassLoader classLoader) {
 		this.classLoader = classLoader;
@@ -360,23 +358,6 @@ public class CodeHacker {
 		final String methodPrefix = methodSig.substring(0, parenIndex);
 		return methodPrefix.startsWith("void ") ||
 			methodPrefix.indexOf(" void ") > 0;
-	}
-
-	void setLegacyService(final LegacyService legacyService) {
-		try {
-			Class<?> ij = classLoader.loadClass("ij.IJ");
-			final Field field = ij.getDeclaredField("_legacyService");
-			field.setAccessible(true);
-			field.set(null, legacyService);
-		} catch (ClassNotFoundException e) {
-			throw new IllegalArgumentException("Cannot find ij.IJ", e);
-		} catch (SecurityException e) {
-			throw new IllegalArgumentException("Cannot find ij.IJ", e);
-		} catch (NoSuchFieldException e) {
-			throw new IllegalArgumentException("Cannot find the _legacyService field in ij.IJ", e);
-		} catch (IllegalAccessException e) {
-			throw new IllegalArgumentException("Cannot access the _legacyService field in ij.IJ", e);
-		}
 	}
 
 }
