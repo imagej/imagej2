@@ -51,13 +51,6 @@ import javax.swing.SwingUtilities;
  * @author Johannes Schindelin
  */
 public class SwitchToModernMode implements PlugIn {
-	/**
-	 * The LegacyService which has the ImageJ context.
-	 * 
-	 * Since ImageJ 1.x had no context, we have to set this variable just before
-	 * switching to the legacy mode.
-	 */
-	static LegacyService legacyService;
 
 	@Override
 	public void run(String arg) {
@@ -65,6 +58,18 @@ public class SwitchToModernMode implements PlugIn {
 			SwingUtilities.invokeAndWait(new Runnable() {
 				@Override
 				public void run() {
+					/*
+					 * The LegacyService which has the ImageJ context.
+					 * 
+					 * Since ImageJ 1.x had no context, we have to set this variable just before
+					 * switching to the legacy mode.
+					 */
+					final LegacyService legacyService = (LegacyService)
+						IJ.runPlugIn(LegacyService.class.getName(), null);
+					if (legacyService == null) {
+						IJ.error("No LegacyService available!");
+						return;
+					}
 					legacyService.toggleLegacyMode(false);
 				}
 			});
@@ -79,8 +84,6 @@ public class SwitchToModernMode implements PlugIn {
 	 * @param service the legacy service holding the ImageJ context
 	 */
 	static void registerMenuItem(final LegacyService service) {
-		SwitchToModernMode.legacyService = service;
-
 		// inject Help>Switch to Modern Mode
 		final String menuLabel = "Switch to Modern Mode";
 		@SuppressWarnings("unchecked")
