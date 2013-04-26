@@ -35,31 +35,13 @@
 
 package imagej.view;
 
-import java.util.List;
-
-import org.scijava.event.EventService;
-import org.scijava.plugin.PluginService;
-import org.scijava.service.Service;
+import imagej.plugin.WrapperService;
 
 /**
  * Interface for services that work with {@link View}s.
  * 
  * @author Curtis Rueden
  */
-public interface ViewService extends Service {
-
-	EventService getEventService();
-
-	PluginService getPluginService();
-
-	/** Creates a new {@link View} wrapping the given data object. */
-	<D> View<D> createView(D data);
-
-	/**
-	 * Gets the list of available {@link View}s. The list will contain one
-	 * uninitialized instance of each {@link View} implementation known to the
-	 * {@link PluginService}.
-	 */
-	List<View<?>> getViews();
-
+public interface ViewService extends WrapperService<Object, View<Object>> {
+	// NB: Marker interface.
 }

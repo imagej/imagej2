@@ -35,19 +35,19 @@
 
 package imagej.view;
 
-import org.scijava.Priority;
-import org.scijava.plugin.Plugin;
+import imagej.plugin.AbstractWrapperPlugin;
 
 /**
- * Default implementation for {@link View}s, which accepts any object.
+ * Abstract base class for {@link View}s.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = View.class, priority = Priority.VERY_LOW_PRIORITY)
-public class DefaultView extends AbstractView<Object> {
+public abstract class AbstractView<D> extends AbstractWrapperPlugin<D>
+	implements View<D>
+{
 
-	public DefaultView() {
-		super(Object.class);
+	public AbstractView(final Class<D> type) {
+		super(type, false);
 	}
 
 }

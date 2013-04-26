@@ -35,13 +35,9 @@
 
 package imagej.view;
 
-import java.util.List;
+import imagej.plugin.AbstractWrapperService;
 
-import org.scijava.event.EventService;
-import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginService;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
@@ -50,47 +46,13 @@ import org.scijava.service.Service;
  * @author Curtis Rueden
  */
 @Plugin(type = Service.class)
-public final class DefaultViewService extends AbstractService
-	implements ViewService
+public final class DefaultViewService extends
+	AbstractWrapperService<Object, View<Object>> implements ViewService
 {
 
-	@Parameter
-	private EventService eventService;
-
-	@Parameter
-	private PluginService pluginService;
-
-	// -- ViewService methods --
-
-	@Override
-	public EventService getEventService() {
-		return eventService;
-	}
-
-	@Override
-	public PluginService getPluginService() {
-		return pluginService;
-	}
-
-	@Override
-	public <D> View<D> createView(final D data) {
-		for (final View<?> view : getViews()) {
-			if (!view.isCompatible(data)) continue;
-
-			@SuppressWarnings("unchecked")
-			final View<D> typedView = (View<D>) view;
-			typedView.setData(data);
-			return typedView;
-		}
-		throw new IllegalArgumentException("No view found for data: " + data);
-	}
-
-	@Override
-	public List<View<?>> getViews() {
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final List<View<?>> result =
-			(List) pluginService.createInstancesOfType(View.class);
-		return result;
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public DefaultViewService() {
+		super(Object.class, (Class) View.class);
 	}
 
 }

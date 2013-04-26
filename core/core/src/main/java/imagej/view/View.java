@@ -36,10 +36,8 @@
 package imagej.view;
 
 import imagej.display.Display;
-import imagej.plugin.ImageJPlugin;
+import imagej.plugin.WrapperPlugin;
 
-import org.scijava.Contextual;
-import org.scijava.Prioritized;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -56,26 +54,29 @@ import org.scijava.plugin.Plugin;
  * </p>
  * 
  * @author Curtis Rueden
+ * @see Plugin
+ * @see ViewService
  */
-public interface View<D> extends ImageJPlugin, Contextual, Prioritized {
+public interface View<D> extends WrapperPlugin<D> {
 
-	/** Gets the class of data objects handled by this view. */
-	Class<D> getDataClass();
+	// NB: The following method declarations are overridden solely to provide more
+	// appropriate, context-specific javadoc.
+
+	// -- Typed methods --
 
 	/**
-	 * Gets whether this view is compatible with the given object.
+	 * Gets whether this view is compatible with the given data object.
 	 * <p>
 	 * Typically, this will be the case when {@code data.getClass()} is assignable
 	 * to the view's {@code D} generic parameter. But each {@code View}
 	 * implementation may have other requirements beyond class assignability.
 	 * </p>
 	 */
-	boolean isCompatible(Object object);
+	@Override
+	boolean supports(Object data);
 
-	/** Initializes the view with the given data object. */
-	void setData(D data);
-
-	/** Gets the data object represented by this view. */
-	D getData();
+	/** Gets the class of data objects handled by this view. */
+	@Override
+	Class<D> getType();
 
 }
