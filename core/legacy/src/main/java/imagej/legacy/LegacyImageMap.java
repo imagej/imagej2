@@ -87,6 +87,23 @@ import org.scijava.event.EventHandler;
  */
 public class LegacyImageMap extends AbstractContextual {
 
+	static {
+		/*
+		 * We absolutely require that the LegacyInjector did its job
+		 * before we use the ImageJ 1.x classes here, just in case
+		 * somebody wants to use the LegacyService later (and hence
+		 * requires the ImageJ 1.x classes to be patched
+		 * appropriately).
+		 *
+		 * Just loading the class is not enough; it will not get
+		 * initialized. So we call the getInstance() method (which will
+		 * naturally return null at this point) just to force class
+		 * initialization (and thereby the LegacyInjector to patch
+		 * ImageJ 1.x).
+		 */
+		DefaultLegacyService.getInstance();
+	}
+
 	// -- Fields --
 
 	/**
