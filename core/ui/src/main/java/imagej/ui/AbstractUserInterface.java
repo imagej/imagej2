@@ -140,6 +140,7 @@ public abstract class AbstractUserInterface extends SortablePlugin
 				displayWindow.setTitle(display.getName());
 				getUIService().addDisplayViewer(finalViewer);
 				displayWindow.showDisplay(true);
+				display.update();
 			}
 		});
 	}
