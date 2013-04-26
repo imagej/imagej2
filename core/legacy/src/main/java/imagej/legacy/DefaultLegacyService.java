@@ -107,11 +107,13 @@ import org.scijava.service.Service;
 public final class DefaultLegacyService extends AbstractService implements
 	LegacyService
 {
+	private final static LegacyInjector legacyInjector;
 
 	static {
 		final ClassLoader contextClassLoader =
 			Thread.currentThread().getContextClassLoader();
-		new LegacyInjector().injectHooks(contextClassLoader);
+		legacyInjector = new LegacyInjector();
+		legacyInjector.injectHooks(contextClassLoader);
 	}
 
 	@Parameter
@@ -318,7 +320,7 @@ public final class DefaultLegacyService extends AbstractService implements
 
 		final ij.ImageJ ij = IJ.getInstance();
 
-		SwitchToModernMode.registerMenuItem(this);
+		SwitchToModernMode.registerMenuItem();
 
 		// TODO: hide/show Brightness/Contrast, Color Picker, Command Launcher, etc
 		// TODO: prevent IJ1 from quitting without IJ2 quitting, too
@@ -328,7 +330,11 @@ public final class DefaultLegacyService extends AbstractService implements
 			// hide/show the IJ2 main window
 			final ApplicationFrame appFrame =
 				uiService.getDefaultUI().getApplicationFrame();
-			appFrame.setVisible(!wantIJ1);
+			if (appFrame == null) {
+				if (!wantIJ1) uiService.showUI();
+			} else {
+				appFrame.setVisible(!wantIJ1);
+			}
 
 			// TODO: move this into the LegacyImageMap's toggleLegacyMode, passing
 			// the uiService
@@ -373,10 +379,11 @@ public final class DefaultLegacyService extends AbstractService implements
 		synchronized (DefaultLegacyService.class) {
 			checkInstance();
 			instance = this;
+			legacyInjector.setLegacyService(this);
 		}
 
 		// initialize legacy ImageJ application
-		try {
+		if (IJ.getInstance() == null) try {
 			new ij.ImageJ(ij.ImageJ.NO_SHOW);
 		}
 		catch (final Throwable t) {

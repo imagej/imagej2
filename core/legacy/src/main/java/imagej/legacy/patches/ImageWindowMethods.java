@@ -57,11 +57,11 @@ public final class ImageWindowMethods {
 
 	/** Replaces {@link ImageWindow#setVisible(boolean)}. */
 	public static void setVisible(final LegacyService legacyService, final ImageWindow obj, final boolean visible) {
-		if (!Utils.isLegacyMode(legacyService)) {
+		if (!legacyService.isLegacyMode()) {
 			legacyService.getLogService().debug("ImageWindow.setVisible(" + visible + "): " + obj);
 		}
 		if (!visible) return;
-		if (Utils.isLegacyMode(legacyService) || Utils.isLegacyThread(Thread.currentThread())) {
+		if (legacyService.isLegacyMode() || Utils.isLegacyThread(Thread.currentThread())) {
 			legacyService.legacyImageChanged(obj.getImagePlus());
 		}
 		// TODO - not sure this is correct. Does setVisible(true) imply that it
@@ -72,13 +72,13 @@ public final class ImageWindowMethods {
 
 	/** Replaces {@link ImageWindow#show()}. */
 	public static void show(final LegacyService legacyService, final ImageWindow obj) {
-		if (Utils.isLegacyMode(legacyService)) return;
+		if (legacyService.isLegacyMode()) return;
 		setVisible(legacyService, obj, true);
 	}
 
 	/** Prepends {@link ImageWindow#close()}. */
 	public static void close(final LegacyService legacyService, final ImageWindow obj) {
-		if (!Utils.isLegacyMode(legacyService) && !Utils.isLegacyThread(Thread.currentThread())) return;
+		if (!legacyService.isLegacyMode() && !Utils.isLegacyThread(Thread.currentThread())) return;
 		final ImagePlus imp = obj.getImagePlus();
 		if (imp == null) return;
 		LegacyOutputTracker.addClosed(imp);

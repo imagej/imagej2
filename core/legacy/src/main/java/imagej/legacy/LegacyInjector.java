@@ -35,6 +35,7 @@
 
 package imagej.legacy;
 
+import org.scijava.Context;
 import org.scijava.util.ClassUtils;
 
 /**
@@ -45,11 +46,12 @@ import org.scijava.util.ClassUtils;
  * @author Curtis Rueden
  */
 public class LegacyInjector {
+	private CodeHacker hacker;
 
 	/** Overrides class behavior of ImageJ1 classes by injecting method hooks. */
 	public void injectHooks(final ClassLoader classLoader) {
 		// NB: Override class behavior before class loading gets too far along.
-		final CodeHacker hacker = new CodeHacker(classLoader);
+		hacker = new CodeHacker(classLoader);
 
 		// override behavior of ij.ImageJ
 		hacker.insertNewMethod("ij.ImageJ",
@@ -68,6 +70,17 @@ public class LegacyInjector {
 			"public static void showProgress(int currentIndex, int finalIndex)");
 		hacker.insertAtBottomOfMethod("ij.IJ",
 			"public static void showStatus(java.lang.String s)");
+		hacker.insertPrivateStaticField("ij.IJ", Context.class, "_context");
+		hacker.insertNewMethod("ij.IJ",
+			"public synchronized static org.scijava.Context getContext()",
+			"if (_context == null) _context = new org.scijava.Context();"
+			+ "return _context;");
+		hacker.insertAtTopOfMethod("ij.IJ",
+				"public static Object runPlugIn(java.lang.String className, java.lang.String arg)",
+				"if (\"" + LegacyService.class.getName() + "\".equals($1))"
+				+ " return getLegacyService();"
+				+ "if (\"" + Context.class.getName() + "\".equals($1))"
+				+ " return getContext();");
 		hacker.loadClass("ij.IJ");
 
 		// override behavior of ij.ImagePlus
@@ -117,13 +130,19 @@ public class LegacyInjector {
 		}
 
 		// override behavior of ij.plugin.frame.RoiManager
-		hacker
-.insertNewMethod("ij.plugin.frame.RoiManager", "public void show()",
+		hacker.insertNewMethod("ij.plugin.frame.RoiManager",
+			"public void show()",
 			"if ($isLegacyMode()) { super.show(); }");
 		hacker.insertNewMethod("ij.plugin.frame.RoiManager",
 			"public void setVisible(boolean b)",
 			"if ($isLegacyMode()) { super.setVisible($1); }");
 		hacker.loadClass("ij.plugin.frame.RoiManager");
+
+		// make sure that there is a legacy service
+		setLegacyService(new DummyLegacyService());
 	}
 
+	void setLegacyService(final LegacyService legacyService) {
+		hacker.setLegacyService(legacyService);
+	}
 }

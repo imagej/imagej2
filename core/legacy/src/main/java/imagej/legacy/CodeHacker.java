@@ -35,10 +35,13 @@
 
 package imagej.legacy;
 
+import java.lang.reflect.Field;
+
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.CtField;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.Modifier;
@@ -67,8 +70,14 @@ public class CodeHacker {
 
 	public CodeHacker(ClassLoader classLoader) {
 		this.classLoader = classLoader;
-		pool = new ClassPool();
+		pool = ClassPool.getDefault();
 		pool.appendClassPath(new ClassClassPath(getClass()));
+
+		// the CodeHacker offers the LegacyService instance, therefore it needs to add that field here
+		insertPrivateStaticField("ij.IJ", LegacyService.class, "_legacyService");
+		insertNewMethod("ij.IJ",
+			"public static imagej.legacy.LegacyService getLegacyService()",
+			"return _legacyService;");
 	}
 
 	/**
@@ -199,6 +208,23 @@ public class CodeHacker {
 		}
 	}
 
+	public void insertPrivateStaticField(final String fullClass,
+			final Class<?> clazz, final String name) {
+		final CtClass classRef = getClass(fullClass);
+		try {
+			final CtField field = new CtField(pool.get(clazz.getName()), name,
+					classRef);
+			field.setModifiers(Modifier.PRIVATE | Modifier.STATIC);
+			classRef.addField(field);
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException("Cannot add field " + name
+					+ " to " + fullClass, e);
+		} catch (NotFoundException e) {
+			throw new IllegalArgumentException("Cannot add field " + name
+					+ " to " + fullClass, e);
+		}
+	}
+
 	/**
 	 * Loads the given, possibly modified, class.
 	 * <p>
@@ -295,8 +321,8 @@ public class CodeHacker {
 	/** Patches in the current legacy service for '$service' */
 	private String expand(final String code) {
 		return code
-			.replace("$isLegacyMode()", "imagej.legacy.Utils.isLegacyMode($service)")
-			.replace("$service", "imagej.legacy.DefaultLegacyService.getInstance()");
+			.replace("$isLegacyMode()", "$service.isLegacyMode()")
+			.replace("$service", "ij.IJ.getLegacyService()");
 	}
 
 	/** Extracts the method name from the given method signature. */
@@ -334,6 +360,23 @@ public class CodeHacker {
 		final String methodPrefix = methodSig.substring(0, parenIndex);
 		return methodPrefix.startsWith("void ") ||
 			methodPrefix.indexOf(" void ") > 0;
+	}
+
+	void setLegacyService(final LegacyService legacyService) {
+		try {
+			Class<?> ij = classLoader.loadClass("ij.IJ");
+			final Field field = ij.getDeclaredField("_legacyService");
+			field.setAccessible(true);
+			field.set(null, legacyService);
+		} catch (ClassNotFoundException e) {
+			throw new IllegalArgumentException("Cannot find ij.IJ", e);
+		} catch (SecurityException e) {
+			throw new IllegalArgumentException("Cannot find ij.IJ", e);
+		} catch (NoSuchFieldException e) {
+			throw new IllegalArgumentException("Cannot find the _legacyService field in ij.IJ", e);
+		} catch (IllegalAccessException e) {
+			throw new IllegalArgumentException("Cannot access the _legacyService field in ij.IJ", e);
+		}
 	}
 
 }

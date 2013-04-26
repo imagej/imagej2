@@ -41,9 +41,12 @@ import ij.plugin.PlugIn;
 
 import java.awt.Menu;
 import java.awt.MenuItem;
+import java.awt.event.ActionListener;
 import java.util.Hashtable;
 
 import javax.swing.SwingUtilities;
+
+import org.scijava.Context;
 
 /**
  * An ImageJ 1.x plugin to switch back from the legacy mode.
@@ -51,13 +54,7 @@ import javax.swing.SwingUtilities;
  * @author Johannes Schindelin
  */
 public class SwitchToModernMode implements PlugIn {
-	/**
-	 * The LegacyService which has the ImageJ context.
-	 * 
-	 * Since ImageJ 1.x had no context, we have to set this variable just before
-	 * switching to the legacy mode.
-	 */
-	static LegacyService legacyService;
+	public final static String MENU_LABEL = "Switch to Modern Mode";
 
 	@Override
 	public void run(String arg) {
@@ -65,6 +62,20 @@ public class SwitchToModernMode implements PlugIn {
 			SwingUtilities.invokeAndWait(new Runnable() {
 				@Override
 				public void run() {
+					// Make sure that we have a valid context.
+					IJ.runPlugIn(Context.class.getName(), null);
+					/*
+					 * The LegacyService which has the ImageJ context.
+					 * 
+					 * Since ImageJ 1.x had no context, we have to set this variable just before
+					 * switching to the legacy mode.
+					 */
+					final LegacyService legacyService = (LegacyService)
+						IJ.runPlugIn(LegacyService.class.getName(), null);
+					if (legacyService == null) {
+						IJ.error("No LegacyService available!");
+						return;
+					}
 					legacyService.toggleLegacyMode(false);
 				}
 			});
@@ -78,20 +89,29 @@ public class SwitchToModernMode implements PlugIn {
 	 * 
 	 * @param service the legacy service holding the ImageJ context
 	 */
-	static void registerMenuItem(final LegacyService service) {
-		SwitchToModernMode.legacyService = service;
-
+	public static void registerMenuItem() {
 		// inject Help>Switch to Modern Mode
-		final String menuLabel = "Switch to Modern Mode";
 		@SuppressWarnings("unchecked")
 		final Hashtable<String, String> commands = Menus.getCommands();
-		if (!commands.containsKey(menuLabel)) {
-			final Menu helpMenu = Menus.getMenuBar().getHelpMenu();
-			final MenuItem item = new MenuItem(menuLabel);
-			item.addActionListener(IJ.getInstance());
-			helpMenu.add(item);
+		if (!commands.containsKey(MENU_LABEL)) {
+			ActionListener ij1 = IJ.getInstance();
+			if (ij1 != null) {
+				final Menu helpMenu = Menus.getMenuBar().getHelpMenu();
+				final MenuItem item = new MenuItem(MENU_LABEL);
+				item.addActionListener(ij1);
+				int index = helpMenu.getItemCount();
+				while (index > 0) {
+					final String label = helpMenu.getItem(index - 1).getLabel();
+					if (label.equals("-") || label.startsWith("Update") || label.endsWith("Wiki")) {
+						index--;
+					} else {
+						break;
+					}
+				}
+				helpMenu.insert(item, index);
+			}
 
-			commands.put(menuLabel, SwitchToModernMode.class.getName());
+			commands.put(MENU_LABEL, SwitchToModernMode.class.getName());
 		}
 	}
 }
