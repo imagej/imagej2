@@ -35,6 +35,8 @@
 
 package imagej.legacy;
 
+import java.lang.reflect.Field;
+
 import org.scijava.Context;
 import org.scijava.util.ClassUtils;
 
@@ -143,6 +145,31 @@ public class LegacyInjector {
 	}
 
 	void setLegacyService(final LegacyService legacyService) {
-		hacker.setLegacyService(legacyService);
+		try {
+			final Class<?> ij = hacker.classLoader.loadClass("ij.IJ");
+			Field field = ij.getDeclaredField("_legacyService");
+			field.setAccessible(true);
+			field.set(null, legacyService);
+
+			Context context;
+			try {
+				context = legacyService.getContext();
+			} catch (UnsupportedOperationException e) {
+				// DummyLegacyService does not have a context
+				context = null;
+			}
+			field = ij.getDeclaredField("_context");
+			field.setAccessible(true);
+			field.set(null, context);
+		} catch (ClassNotFoundException e) {
+			throw new IllegalArgumentException("Cannot find ij.IJ", e);
+		} catch (SecurityException e) {
+			throw new IllegalArgumentException("Cannot find ij.IJ", e);
+		} catch (NoSuchFieldException e) {
+			throw new IllegalArgumentException("Cannot find field in ij.IJ", e);
+		} catch (IllegalAccessException e) {
+			throw new IllegalArgumentException("Cannot access field in ij.IJ", e);
+		}
 	}
+
 }
