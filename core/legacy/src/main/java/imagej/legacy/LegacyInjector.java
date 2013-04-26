@@ -37,6 +37,8 @@ package imagej.legacy;
 
 import java.lang.reflect.Field;
 
+import javassist.bytecode.DuplicateMemberException;
+
 import org.scijava.Context;
 import org.scijava.util.ClassUtils;
 
@@ -131,6 +133,30 @@ public class LegacyInjector {
 		hacker.insertNewMethod("ij.plugin.frame.RoiManager",
 			"public void setVisible(boolean b)",
 			"if ($isLegacyMode()) { super.setVisible($1); }");
+
+		// for backwards-compatibility
+		try {
+			hacker.insertNewMethod("ij.CompositeImage",
+				"public ij.ImagePlus[] splitChannels(boolean closeAfter)",
+				"ij.ImagePlus[] result = ij.plugin.ChannelSplitter.split(this);"
+				+ "if (closeAfter) close();"
+				+ "return result;");
+			hacker.insertNewMethod("ij.plugin.filter.RGBStackSplitter",
+				"public static ij.ImagePlus[] splitChannelsToArray(ij.ImagePlus imp, boolean closeAfter)",
+				"if (!imp.isComposite()) {"
+				+ "  ij.IJ.error(\"splitChannelsToArray was called on a non-composite image\");"
+				+ "  return null;"
+				+ "}"
+				+ "ij.ImagePlus[] result = ij.plugin.ChannelSplitter.split(imp);"
+				+ "if (closeAfter)"
+				+ "  imp.close();"
+				+ "return result;");
+		} catch (IllegalArgumentException e) {
+			final Throwable cause = e.getCause();
+			if (cause != null && !(cause instanceof DuplicateMemberException)) {
+				throw e;
+			}
+		}
 
 		// commit patches
 		hacker.loadClasses();
