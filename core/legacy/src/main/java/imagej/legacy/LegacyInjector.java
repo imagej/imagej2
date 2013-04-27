@@ -135,6 +135,24 @@ public class LegacyInjector {
 			"if ($isLegacyMode()) { super.setVisible($1); }");
 
 		// for backwards-compatibility
+
+		// add back the (deprecated) killProcessor(), and overlay methods
+		final String[] imagePlusMethods = {
+				"public void killProcessor()",
+				"{}",
+				"public void setDisplayList(java.util.Vector list)",
+				"getCanvas().setDisplayList(list);",
+				"public java.util.Vector getDisplayList()",
+				"return getCanvas().getDisplayList();",
+				"public void setDisplayList(ij.gui.Roi roi, java.awt.Color strokeColor,"
+				+ " int strokeWidth, java.awt.Color fillColor)",
+				"setOverlay(roi, strokeColor, strokeWidth, fillColor);"
+		};
+		for (int i = 0; i < imagePlusMethods.length; i++) try {
+			hacker.insertNewMethod("ij.ImagePlus",
+					imagePlusMethods[i], imagePlusMethods[++i]);
+		} catch (Exception e) { /* ignore */ }
+
 		try {
 			hacker.insertNewMethod("ij.CompositeImage",
 				"public ij.ImagePlus[] splitChannels(boolean closeAfter)",
