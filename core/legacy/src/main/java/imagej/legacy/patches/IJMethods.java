@@ -37,7 +37,9 @@ package imagej.legacy.patches;
 
 import ij.IJ;
 import imagej.legacy.LegacyService;
-import imagej.legacy.Utils;
+
+import java.io.BufferedWriter;
+import java.util.Date;
 
 import org.scijava.app.StatusService;
 
@@ -86,6 +88,35 @@ public class IJMethods {
 		// legacyService.getContext().getService(StatusService.class);
 		if (statusService == null) return;
 		statusService.showStatus(s);
+	}
+
+	// if the ij.log.file property is set, log every message to the file pointed to
+	private static BufferedWriter logFileWriter;
+
+	public static void log(final LegacyService legacyService, String message) {
+		if (message != null) {
+			String logFilePath = System.getProperty("ij.log.file");
+			if (logFilePath != null) {
+				try {
+					if (logFileWriter == null) {
+						java.io.OutputStream out = new java.io.FileOutputStream(
+								logFilePath, true);
+						java.io.Writer writer = new java.io.OutputStreamWriter(
+								out, "UTF-8");
+						logFileWriter = new java.io.BufferedWriter(writer);
+						logFileWriter.write("Started new log on " + new Date() + "\n");
+					}
+					logFileWriter.write(message);
+					if (!message.endsWith("\n"))
+						logFileWriter.newLine();
+					logFileWriter.flush();
+				} catch (Throwable t) {
+					t.printStackTrace();
+					System.getProperties().remove("ij.log.file");
+					logFileWriter = null;
+				}
+			}
+		}
 	}
 
 }

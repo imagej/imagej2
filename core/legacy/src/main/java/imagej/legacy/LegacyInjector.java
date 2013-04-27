@@ -84,6 +84,10 @@ public class LegacyInjector {
 				+ " return getLegacyService();"
 				+ "if (\"" + Context.class.getName() + "\".equals($1))"
 				+ " return getContext();");
+		hacker.insertAtTopOfMethod("ij.IJ", "public static void log(java.lang.String message)");
+		hacker.insertAtTopOfMethod("ij.IJ",
+			"static java.lang.Object runUserPlugIn(java.lang.String commandName, java.lang.String className, java.lang.String arg, boolean createNewLoader)",
+			"if (classLoader != null) Thread.currentThread().setContextClassLoader(classLoader);");
 
 		// override behavior of ij.ImagePlus
 		hacker.insertAtBottomOfMethod("ij.ImagePlus", "public void updateAndDraw()");
@@ -152,6 +156,11 @@ public class LegacyInjector {
 			hacker.insertNewMethod("ij.ImagePlus",
 					imagePlusMethods[i], imagePlusMethods[++i]);
 		} catch (Exception e) { /* ignore */ }
+
+		// make sure that ImageJ has been initialized in batch mode
+		hacker.insertAtTopOfMethod("ij.IJ",
+				"public static java.lang.String runMacro(java.lang.String macro, java.lang.String arg)",
+				"if (ij==null && ij.Menus.getCommands()==null) init();");
 
 		try {
 			hacker.insertNewMethod("ij.CompositeImage",
