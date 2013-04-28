@@ -64,7 +64,8 @@ public class LegacyInjector {
 			"public java.awt.Point getLocationOnScreen()",
 			"if ($isLegacyMode()) return super.getLocationOnScreen();");
 		hacker.insertAtTopOfMethod("ij.ImageJ", "public void quit()",
-			"$service.getContext().dispose(); if (true) return;");
+			"if (!($service instanceof imagej.legacy.DummyLegacyService)) $service.getContext().dispose();"
+			+ "if (!$isLegacyMode()) return;");
 
 		// override behavior of ij.IJ
 		hacker.insertAtBottomOfMethod("ij.IJ",
