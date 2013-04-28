@@ -39,11 +39,11 @@ import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.Position;
-import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
+import imagej.data.view.DatasetView;
 import imagej.menu.MenuConstants;
 import net.imglib2.type.numeric.RealType;
 

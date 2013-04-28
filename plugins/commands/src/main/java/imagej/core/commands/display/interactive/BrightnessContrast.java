@@ -37,7 +37,7 @@ package imagej.core.commands.display.interactive;
 
 import imagej.command.Command;
 import imagej.data.Dataset;
-import imagej.data.display.DatasetView;
+import imagej.data.view.DatasetView;
 import imagej.menu.MenuConstants;
 import imagej.widget.NumberWidget;
 import net.imglib2.algorithm.stats.ComputeMinMax;

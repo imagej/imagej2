@@ -36,9 +36,9 @@
 package imagej.ui.swing.tools.overlay;
 
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayView;
 import imagej.data.overlay.AngleOverlay;
 import imagej.data.overlay.Overlay;
+import imagej.data.view.OverlayView;
 import imagej.tool.Tool;
 import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;

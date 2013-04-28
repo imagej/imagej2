@@ -35,7 +35,7 @@
 
 package imagej.data.display.event;
 
-import imagej.data.display.DataView;
+import imagej.data.view.DataView;
 
 /**
  * An event indicating a change in the composition of color tables of a view.

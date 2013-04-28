@@ -36,8 +36,8 @@
 package imagej.ui.swing.overlay;
 
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayView;
 import imagej.data.display.event.DataViewEvent;
+import imagej.data.view.OverlayView;
 
 import org.jhotdraw.draw.Figure;
 

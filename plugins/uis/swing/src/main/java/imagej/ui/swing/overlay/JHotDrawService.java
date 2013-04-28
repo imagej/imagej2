@@ -35,11 +35,11 @@
 
 package imagej.ui.swing.overlay;
 
-import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
+import imagej.data.view.DataView;
+import imagej.data.view.OverlayView;
 import imagej.tool.Tool;
 
 import java.util.ArrayList;

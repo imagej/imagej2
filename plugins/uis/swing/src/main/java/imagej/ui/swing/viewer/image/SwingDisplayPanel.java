@@ -36,13 +36,13 @@
 package imagej.ui.swing.viewer.image;
 
 import imagej.data.Extents;
-import imagej.data.display.DatasetView;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.display.event.DelayedPositionEvent;
 import imagej.data.display.event.LUTsChangedEvent;
+import imagej.data.view.DatasetView;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;
 import imagej.ui.swing.SwingColorBar;

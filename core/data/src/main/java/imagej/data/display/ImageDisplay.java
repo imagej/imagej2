@@ -38,6 +38,7 @@ package imagej.data.display;
 import imagej.data.CalibratedInterval;
 import imagej.data.Data;
 import imagej.data.PositionableByAxis;
+import imagej.data.view.DataView;
 import imagej.display.Display;
 import imagej.util.RealRect;
 import net.imglib2.meta.AxisType;

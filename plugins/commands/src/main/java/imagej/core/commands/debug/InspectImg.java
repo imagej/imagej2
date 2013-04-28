@@ -38,7 +38,7 @@ package imagej.core.commands.debug;
 import com.github.sbridges.objectinspector.Inspector;
 
 import imagej.command.Command;
-import imagej.data.display.DataView;
+import imagej.data.view.DataView;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

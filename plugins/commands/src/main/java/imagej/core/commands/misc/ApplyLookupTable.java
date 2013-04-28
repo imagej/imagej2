@@ -38,10 +38,10 @@ package imagej.core.commands.misc;
 import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
-import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.lut.LUTService;
+import imagej.data.view.DatasetView;
 import imagej.display.DisplayService;
 
 import java.io.IOException;

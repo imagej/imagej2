@@ -45,6 +45,8 @@ import imagej.data.options.OptionsOverlay;
 import imagej.data.overlay.CompositeOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
+import imagej.data.view.DataView;
+import imagej.data.view.OverlayView;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.options.OptionsService;

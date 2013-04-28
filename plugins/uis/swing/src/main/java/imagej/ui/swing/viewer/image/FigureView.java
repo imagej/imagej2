@@ -35,7 +35,7 @@
 
 package imagej.ui.swing.viewer.image;
 
-import imagej.data.display.DataView;
+import imagej.data.view.DataView;
 
 import org.jhotdraw.draw.Figure;
 

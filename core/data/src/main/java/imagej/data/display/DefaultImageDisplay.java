@@ -42,6 +42,7 @@ import imagej.data.display.event.AxisActivatedEvent;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.event.DataRestructuredEvent;
 import imagej.data.event.DataUpdatedEvent;
+import imagej.data.view.DataView;
 import imagej.display.AbstractDisplay;
 import imagej.display.DisplayService;
 import imagej.display.event.DisplayDeletedEvent;

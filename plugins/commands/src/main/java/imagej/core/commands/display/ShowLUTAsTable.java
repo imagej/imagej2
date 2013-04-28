@@ -38,11 +38,11 @@ package imagej.core.commands.display;
 import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.Position;
-import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.table.DefaultResultsTable;
 import imagej.data.table.ResultsTable;
+import imagej.data.view.DatasetView;
 import imagej.menu.MenuConstants;
 
 import java.util.List;

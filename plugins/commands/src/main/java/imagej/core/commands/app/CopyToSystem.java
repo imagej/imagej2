@@ -37,11 +37,11 @@ package imagej.core.commands.app;
 
 import imagej.command.Command;
 import imagej.command.ContextCommand;
-import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
+import imagej.data.view.DatasetView;
 import imagej.menu.MenuConstants;
 import imagej.ui.UserInterface;
 import imagej.util.ARGBPlane;

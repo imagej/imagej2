@@ -35,10 +35,10 @@
 
 package imagej.ui.swing.viewer.image;
 
-import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
+import imagej.data.view.DataView;
+import imagej.data.view.OverlayView;
 import imagej.display.Display;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawService;

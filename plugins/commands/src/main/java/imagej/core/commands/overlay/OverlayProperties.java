@@ -37,9 +37,9 @@ package imagej.core.commands.overlay;
 
 import imagej.command.Command;
 import imagej.data.Data;
-import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.Overlay;
+import imagej.data.view.DataView;
 import imagej.menu.MenuConstants;
 
 import java.util.ArrayList;

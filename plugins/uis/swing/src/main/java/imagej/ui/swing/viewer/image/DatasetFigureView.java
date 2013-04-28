@@ -36,8 +36,8 @@
 package imagej.ui.swing.viewer.image;
 
 import imagej.data.Dataset;
-import imagej.data.display.DatasetView;
 import imagej.data.display.event.DataViewUpdatedEvent;
+import imagej.data.view.DatasetView;
 import imagej.util.awt.AWTImageTools;
 
 import java.awt.Image;

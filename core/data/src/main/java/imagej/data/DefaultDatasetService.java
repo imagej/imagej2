@@ -35,8 +35,8 @@
 
 package imagej.data;
 
-import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
+import imagej.data.view.DataView;
 
 import java.util.ArrayList;
 import java.util.List;

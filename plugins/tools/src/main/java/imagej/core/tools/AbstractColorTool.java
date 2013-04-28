@@ -37,10 +37,10 @@ package imagej.core.tools;
 
 import imagej.command.CommandService;
 import imagej.data.ChannelCollection;
-import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.options.OptionsChannels;
+import imagej.data.view.DatasetView;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.display.event.DisplayActivatedEvent;

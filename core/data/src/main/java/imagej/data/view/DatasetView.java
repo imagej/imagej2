@@ -33,10 +33,11 @@
  * #L%
  */
 
-package imagej.data.display;
+package imagej.data.view;
 
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
+import imagej.data.display.ColorMode;
 import imagej.display.Display;
 import imagej.util.ColorRGB;
 

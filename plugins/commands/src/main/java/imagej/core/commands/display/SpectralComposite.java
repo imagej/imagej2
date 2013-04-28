@@ -37,7 +37,7 @@ package imagej.core.commands.display;
 
 import imagej.command.Command;
 import imagej.command.ContextCommand;
-import imagej.data.display.DatasetView;
+import imagej.data.view.DatasetView;
 import imagej.menu.MenuConstants;
 import imagej.util.ColorRGB;
 import net.imglib2.display.ColorTable8;

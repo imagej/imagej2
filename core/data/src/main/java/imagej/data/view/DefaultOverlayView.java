@@ -33,9 +33,10 @@
  * #L%
  */
 
-package imagej.data.display;
+package imagej.data.view;
 
 import imagej.data.Data;
+import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.Overlay;
 
 import org.scijava.plugin.Plugin;

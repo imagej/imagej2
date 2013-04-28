@@ -35,7 +35,7 @@
 
 package imagej.data.display.event;
 
-import imagej.data.display.DataView;
+import imagej.data.view.DataView;
 
 import org.scijava.event.SciJavaEvent;
 

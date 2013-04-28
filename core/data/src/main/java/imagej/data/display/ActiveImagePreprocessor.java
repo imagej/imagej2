@@ -36,6 +36,8 @@
 package imagej.data.display;
 
 import imagej.data.Dataset;
+import imagej.data.view.DataView;
+import imagej.data.view.DatasetView;
 import imagej.module.Module;
 import imagej.module.ModuleItem;
 import imagej.module.ModuleService;

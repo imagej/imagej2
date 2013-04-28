@@ -33,12 +33,15 @@
  * #L%
  */
 
-package imagej.data.display;
+package imagej.data.view;
 
 import imagej.data.ChannelCollection;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
+import imagej.data.display.ColorMode;
+import imagej.data.display.ColorTables;
+import imagej.data.display.ImageDisplay;
 import imagej.data.display.event.DataViewUpdatedEvent;
 import imagej.data.display.event.LUTsChangedEvent;
 import imagej.data.event.DatasetRGBChangedEvent;

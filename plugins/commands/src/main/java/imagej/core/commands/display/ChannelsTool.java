@@ -39,7 +39,7 @@ import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.command.Previewable;
 import imagej.data.display.ColorMode;
-import imagej.data.display.DatasetView;
+import imagej.data.view.DatasetView;
 import imagej.menu.MenuConstants;
 
 import org.scijava.ItemIO;

@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.data.display;
+package imagej.data.view;
 
 import imagej.data.Data;
 import imagej.data.Extents;

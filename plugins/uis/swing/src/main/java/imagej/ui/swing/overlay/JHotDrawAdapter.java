@@ -36,8 +36,8 @@
 package imagej.ui.swing.overlay;
 
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
+import imagej.data.view.OverlayView;
 import imagej.display.Display;
 import imagej.plugin.ImageJPlugin;
 import imagej.tool.Tool;

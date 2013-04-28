@@ -42,10 +42,10 @@ import ij.process.ImageProcessor;
 import ij.process.LUT;
 import imagej.data.Dataset;
 import imagej.data.display.ColorTables;
-import imagej.data.display.DataView;
-import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.data.view.DataView;
+import imagej.data.view.DatasetView;
 
 import java.awt.image.IndexColorModel;
 import java.util.ArrayList;

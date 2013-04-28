@@ -35,7 +35,7 @@
 
 package imagej.data;
 
-import imagej.data.display.DatasetView;
+import imagej.data.view.DatasetView;
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ARGBScreenImage;
 import net.imglib2.img.ImgPlus;

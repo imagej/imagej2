@@ -37,10 +37,10 @@ package imagej.core.commands.display;
 
 import imagej.command.Command;
 import imagej.command.ContextCommand;
-import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayService;
-import imagej.data.display.OverlayView;
+import imagej.data.view.DataView;
+import imagej.data.view.OverlayView;
 import imagej.menu.MenuConstants;
 
 import java.util.ArrayList;

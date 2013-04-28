@@ -35,8 +35,8 @@
 
 package imagej.ui.viewer.image;
 
-import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
+import imagej.data.view.DataView;
 import imagej.ui.viewer.DisplayPanel;
 
 /**

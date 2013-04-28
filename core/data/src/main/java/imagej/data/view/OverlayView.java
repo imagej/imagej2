@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.data.display;
+package imagej.data.view;
 
 import imagej.data.overlay.Overlay;
 import imagej.display.Display;

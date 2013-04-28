@@ -33,12 +33,13 @@
  * #L%
  */
 
-package imagej.data.display;
+package imagej.data.view;
 
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.PositionableByAxis;
+import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.Overlay;
 import imagej.plugin.ImageJPlugin;
 import net.imglib2.meta.AxisType;

@@ -37,11 +37,11 @@ package imagej.data.sampler;
 
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
-import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
+import imagej.data.view.DatasetView;
 import imagej.display.DisplayService;
 import imagej.util.RealRect;
 
