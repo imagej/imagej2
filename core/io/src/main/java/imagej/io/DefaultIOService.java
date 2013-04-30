@@ -46,7 +46,7 @@ import java.io.IOException;
 
 import loci.formats.ImageReader;
 import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.io.ImgIOException;
 import net.imglib2.io.ImgOpener;
 import net.imglib2.type.NativeType;

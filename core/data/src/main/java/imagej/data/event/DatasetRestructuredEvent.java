@@ -36,7 +36,7 @@
 package imagej.data.event;
 
 import imagej.data.Dataset;
-import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.ImgPlus;
 
 /**
  * An event indicating a {@link Dataset}'s dimensional extents may have changed.

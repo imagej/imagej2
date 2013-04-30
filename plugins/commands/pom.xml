@@ -54,6 +54,11 @@
 		</dependency>
 		<dependency>
 			<groupId>${imglib2.groupId}</groupId>
+			<artifactId>imglib2-meta</artifactId>
+			<version>${imglib2.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${imglib2.groupId}</groupId>
 			<artifactId>imglib2-ops</artifactId>
 			<version>${imglib2.version}</version>
 		</dependency>

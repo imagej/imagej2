@@ -44,6 +44,11 @@
 			<version>${imglib2.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>${imglib2.groupId}</groupId>
+			<artifactId>imglib2-meta</artifactId>
+			<version>${imglib2.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.jhotdraw</groupId>
 			<artifactId>jhotdraw</artifactId>
 			<version>7.6.0</version>

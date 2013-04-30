@@ -46,7 +46,7 @@ import imagej.data.display.OverlayService;
 import imagej.menu.MenuConstants;
 import imagej.util.RealRect;
 import net.imglib2.RandomAccess;
-import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
 

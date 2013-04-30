@@ -41,7 +41,7 @@ import imagej.data.event.OverlayUpdatedEvent;
 import imagej.display.Displayable;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
-import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.meta.AxisType;
 import net.imglib2.ops.condition.Condition;
 import net.imglib2.ops.condition.FunctionGreaterCondition;

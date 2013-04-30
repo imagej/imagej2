@@ -45,7 +45,7 @@ import imagej.legacy.LegacyService;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;

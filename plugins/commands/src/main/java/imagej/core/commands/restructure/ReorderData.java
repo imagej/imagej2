@@ -45,7 +45,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import net.imglib2.RandomAccess;
-import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.ops.pointset.HyperVolumePointSet;

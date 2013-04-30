@@ -43,7 +43,7 @@ import java.util.List;
 
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
-import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.img.planar.PlanarImgFactory;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.NativeType;

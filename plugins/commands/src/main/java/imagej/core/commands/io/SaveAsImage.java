@@ -50,7 +50,7 @@ import imagej.widget.FileWidget;
 import java.io.File;
 
 import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.io.ImgIOException;
 import net.imglib2.io.ImgSaver;
 
