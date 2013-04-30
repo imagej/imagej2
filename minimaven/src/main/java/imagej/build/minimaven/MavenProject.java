@@ -944,7 +944,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 			}
 			else {
 				if (!quiet && !dependency.optional)
-					env.err.println("Skipping artifact " + dependency.artifactId + " (for " + coordinate.artifactId + "): not found");
+					env.err.println("Skipping artifact " + dependency.getGAV() + " (for " + coordinate.getGAV() + "): not found");
 				if (!downloadAutomatically && env.downloadAutomatically)
 					return null;
 				return cacheAndReturn(key, null);
