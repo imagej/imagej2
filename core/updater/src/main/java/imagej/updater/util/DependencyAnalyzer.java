@@ -205,7 +205,10 @@ public class DependencyAnalyzer {
 			(equals("jars/bsh", jarPath) &&
 			 equals("jars/testng", dependency)) ||
 			(equals("jars/testng", jarPath) &&
-			 equals("jars/guice", dependency));
+			 equals("jars/guice", dependency)) ||
+			((equals("jars/MMCoreJ", jarPath) ||
+			  equals("plugins/MMCoreJ", jarPath)) &&
+			 equals("plugins/MMJ_", dependency));
 	}
 
 }
