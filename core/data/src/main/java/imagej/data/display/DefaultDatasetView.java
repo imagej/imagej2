@@ -57,6 +57,7 @@ import net.imglib2.display.ARGBScreenImage;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.CompositeXYProjector;
 import net.imglib2.display.RealLUTConverter;
+import net.imglib2.display.SourceOptimizedCompositeXYProjector;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
@@ -447,7 +448,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			converters.add(converter);
 		}
 		projector =
-			new CompositeXYProjector(getData().getImgPlus(), screenImage, converters,
+			new SourceOptimizedCompositeXYProjector(getData().getImgPlus(), screenImage, converters,
 				channelDimIndex);
 		projector.setComposite(composite);
 	}

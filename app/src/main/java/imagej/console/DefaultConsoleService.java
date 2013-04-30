@@ -41,7 +41,8 @@ import imagej.data.Dataset;
 import imagej.display.DisplayService;
 import imagej.io.IOService;
 import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.io.ImgIOException;
+
+import ome.scifio.io.img.ImgIOException;
 
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;

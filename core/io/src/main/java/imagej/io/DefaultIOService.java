@@ -44,13 +44,15 @@ import imagej.text.TextService;
 import java.io.File;
 import java.io.IOException;
 
-import loci.formats.ImageReader;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.io.ImgIOException;
-import net.imglib2.io.ImgOpener;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
+import ome.scifio.Format;
+import ome.scifio.FormatException;
+import ome.scifio.SCIFIO;
+import ome.scifio.io.img.ImgIOException;
+import ome.scifio.io.img.ImgOpener;
 
 import org.scijava.app.StatusService;
 import org.scijava.event.EventService;
@@ -136,18 +138,15 @@ public final class DefaultIOService<T extends RealType<T> & NativeType<T>>
 
 	@Override
 	public boolean isImageData(final String source) {
-		final ImageReader reader = new ImageReader();
-		final boolean isImageData = reader.isThisType(source);
 
-		// NB: Unnecessary, but makes Eclipse shut up.
-		try {
-			reader.close();
-		}
-		catch (final IOException exc) {
-			throw new IllegalStateException(exc);
-		}
+	  Format format = null;
+	  try {
+	    format = new SCIFIO(getContext()).format().getFormat(source, true);
+	  } catch (FormatException e) {
+	    throw new IllegalStateException(e);
+	  }
 
-		return isImageData;
+	  return format != null;
 	}
 
 	@Override
@@ -164,15 +163,14 @@ public final class DefaultIOService<T extends RealType<T> & NativeType<T>>
 		// NativeType. Later, when that has been accomplished remove this cast.
 		final ImgPlus<T> imgPlus = (ImgPlus<T>) imageOpener.openImg(source);
 		*/
-		final ImgPlus<T> imgPlus = imageOpener.openImg(source);
+		final ImgPlus<T> imgPlus = imageOpener.openImg(source, 0, true, false);
 		final Dataset dataset = datasetService.create(imgPlus);
 		eventService.publish(new FileOpenedEvent(source));
 		return dataset;
 	}
 
 	@Override
-	public void revertDataset(final Dataset dataset) throws ImgIOException,
-		IncompatibleTypeException
+	public void revertDataset(final Dataset dataset) throws IncompatibleTypeException, ImgIOException
 	{
 		final String source = dataset.getSource();
 		if (source == null) return; // no way to revert

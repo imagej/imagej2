@@ -45,7 +45,8 @@ import imagej.ui.dnd.DragAndDropHandler;
 import java.io.File;
 
 import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.io.ImgIOException;
+
+import ome.scifio.io.img.ImgIOException;
 
 import org.scijava.Priority;
 import org.scijava.log.LogService;

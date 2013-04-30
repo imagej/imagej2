@@ -43,7 +43,8 @@ import imagej.menu.MenuConstants;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.io.ImgIOException;
+
+import ome.scifio.io.img.ImgIOException;
 
 import org.scijava.ItemIO;
 import org.scijava.log.LogService;

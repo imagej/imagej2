@@ -65,9 +65,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.io.ImgIOException;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+
+import ome.scifio.io.img.ImgIOException;
 
 import org.scijava.ItemIO;
 import org.scijava.app.App;
