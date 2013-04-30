@@ -198,6 +198,9 @@ public class DependencyAnalyzer {
 	protected static boolean exclude(final String jarPath, final String dependency) {
 		return jarPath.equals(dependency) ||
 			equals("jars/javac", dependency) ||
+			equals("jars/j3d-core", dependency) ||
+			equals("jars/j3d-core-utils", dependency) ||
+			equals("jars/vecmath", dependency) ||
 			(equals("jars/slf4j-api", jarPath) &&
 			 equals("jars/slf4j-log4j", dependency)) ||
 			(equals("jars/logkit", jarPath) &&
