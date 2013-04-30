@@ -50,6 +50,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.regex.Matcher;
+
+import org.scijava.util.FileUtils;
 
 /**
  * This class generates a list of dependencies for a given file. The
@@ -175,6 +178,14 @@ public class DependencyAnalyzer {
 		return false;
 	}
 
+	private static boolean equals(final String unversionedBaseName,
+			final String other) {
+		if (other.equals(unversionedBaseName + ".jar")) return true;
+		final Matcher matcher = FileUtils.matchVersionedFilename(other);
+		return matcher.matches() &&
+			unversionedBaseName.equals(matcher.group(1));
+	}
+
 	/**
 	 * Exclude some dependencies Sometimes we just know better. for example,
 	 * slf4j-api.jar and slf4j-log4j12.jar contain circular references, so we
@@ -184,15 +195,17 @@ public class DependencyAnalyzer {
 	 * @param dependency the path of the dependency to exclude
 	 * @return whether it should be forced to have no dependencies
 	 */
-	protected boolean exclude(final String jarPath, final String dependency) {
+	protected static boolean exclude(final String jarPath, final String dependency) {
 		return jarPath.equals(dependency) ||
-			dependency.equals("jars/javac.jar") ||
-			(jarPath.startsWith("jars/slf4j-api") && dependency
-				.startsWith("jars/slf4j-log4j")) ||
-			(jarPath.startsWith("jars/logkit") && dependency
-				.startsWith("jars/avalon-framework")) ||
-			(jarPath.startsWith("jars/bsh") && dependency.startsWith("jars/testng")) ||
-			(jarPath.startsWith("jars/testng") && dependency.startsWith("jars/guice"));
+			equals("jars/javac", dependency) ||
+			(equals("jars/slf4j-api", jarPath) &&
+			 equals("jars/slf4j-log4j", dependency)) ||
+			(equals("jars/logkit", jarPath) &&
+			 equals("jars/avalon-framework", dependency)) ||
+			(equals("jars/bsh", jarPath) &&
+			 equals("jars/testng", dependency)) ||
+			(equals("jars/testng", jarPath) &&
+			 equals("jars/guice", dependency));
 	}
 
 }
