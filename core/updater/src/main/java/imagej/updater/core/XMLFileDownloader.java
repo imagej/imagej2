@@ -89,7 +89,7 @@ public class XMLFileDownloader extends AbstractProgressable {
 			setCount(current, total);
 			try {
 				final URLConnection connection =
-					new URL(updateSite.url + Util.XML_COMPRESSED).openConnection();
+					files.util.openConnection(new URL(updateSite.url + Util.XML_COMPRESSED));
 				final long lastModified = connection.getLastModified();
 				final int fileSize = connection.getContentLength();
 				final InputStream in =

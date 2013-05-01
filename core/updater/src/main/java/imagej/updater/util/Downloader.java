@@ -59,11 +59,21 @@ public class Downloader extends AbstractProgressable {
 	protected String error;
 	protected boolean cancelled;
 
-	public Downloader() {}
+	private final Util util;
 
+	@Deprecated
+	public Downloader() {
+		this(null, null);
+	}
+
+	@Deprecated
 	public Downloader(final Progress progress) {
-		this();
-		addProgress(progress);
+		this(progress, null);
+	}
+
+	public Downloader(final Progress progress, final Util util) {
+		if (progress != null) addProgress(progress);
+		this.util = util == null ? new Util(null) : util;
 	}
 
 	public synchronized void cancel() {
@@ -97,7 +107,7 @@ public class Downloader extends AbstractProgressable {
 	protected synchronized void download(final Downloadable current)
 		throws IOException
 	{
-		final URLConnection connection = new URL(current.getURL()).openConnection();
+		final URLConnection connection = util.openConnection(new URL(current.getURL()));
 		connection.setUseCaches(false);
 		lastModified = connection.getLastModified();
 		int currentTotal = connection.getContentLength();

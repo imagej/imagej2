@@ -239,7 +239,7 @@ public class CommandLine {
 	public void download(final FileObject file) {
 		ensureChecksummed();
 		try {
-			new Downloader(progress).start(new OneFile(file));
+			new Downloader(progress, files.util).start(new OneFile(file));
 			if (file.executable && !files.util.platform.startsWith("win")) try {
 				Runtime.getRuntime()
 					.exec(

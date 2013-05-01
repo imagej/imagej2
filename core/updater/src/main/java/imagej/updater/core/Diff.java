@@ -99,14 +99,27 @@ public class Diff {
 	}
 
 	private final PrintStream out;
+	private final Util util;
 
 	/**
 	 * Construct a Diff object.
 	 * 
 	 * @param out this is where the output goes
 	 */
+	@Deprecated
 	public Diff(final PrintStream out) {
+		this(out, null);
+	}
+
+	/**
+	 * Construct a Diff object.
+	 * 
+	 * @param out this is where the output goes
+	 * @param util an instance of {@link Util} to access URLs
+	 */
+	public Diff(final PrintStream out, final Util util) {
 		this.out = out;
+		this.util = util != null ? util : new Util(null);
 	}
 
 	/**
@@ -430,14 +443,14 @@ public class Diff {
 	 * @return the cached file, or the original file if nothing was cached
 	 * @throws IOException
 	 */
-	protected static File cacheFile(final URL url, boolean evenLocal) throws IOException {
+	protected File cacheFile(final URL url, boolean evenLocal) throws IOException {
 		if (!evenLocal && isLocal(url))
 			return new File(url.getPath());
 		String extension = FileUtils.getExtension(url.getFile());
 		if (extension.startsWith("jar-")) extension = "jar";
 		final File result = File.createTempFile("diff-", "".equals(extension) ? "" : "." + extension);
 		result.deleteOnExit();
-		copy(url.openStream(), new FileOutputStream(result), true, true);
+		copy(util.openStream(url), new FileOutputStream(result), true, true);
 		return result;
 	}
 
@@ -524,6 +537,6 @@ public class Diff {
 				flush();
 			}
 		};
-		new Diff(out).showDiff(args[0], args[0].startsWith("http") ? new URL(args[0]) : new File(args[0]).toURI().toURL(), new File(args[1]).toURI().toURL(), Mode.JAVAP);
+		new Diff(out, null).showDiff(args[0], args[0].startsWith("http") ? new URL(args[0]) : new File(args[0]).toURI().toURL(), new File(args[1]).toURI().toURL(), Mode.JAVAP);
 	}
 }
