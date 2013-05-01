@@ -193,7 +193,7 @@ public class UpToDate {
 	 */
 	public static long getLastModified(final String url) {
 		try {
-			final URLConnection connection = new URL(url).openConnection();
+			final URLConnection connection = new Util(null).openConnection(new URL(url));
 			if (connection instanceof HttpURLConnection) ((HttpURLConnection) connection)
 				.setRequestMethod("HEAD");
 			connection.setUseCaches(false);

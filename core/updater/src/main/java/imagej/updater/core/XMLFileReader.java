@@ -101,7 +101,7 @@ public class XMLFileReader extends DefaultHandler {
 		final UpdateSite site = files.getUpdateSite(updateSite);
 		if (site == null) throw new IOException("Unknown update site: " + site);
 		final URL url = new URL(site.url + Util.XML_COMPRESSED);
-		final URLConnection connection = url.openConnection();
+		final URLConnection connection = files.util.openConnection(url);
 		final long lastModified = connection.getLastModified();
 		read(updateSite, new GZIPInputStream(connection.getInputStream()),
 			site.timestamp);

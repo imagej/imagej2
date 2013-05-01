@@ -48,7 +48,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -350,7 +349,11 @@ public class SitesDialog extends JDialog implements ActionListener,
 
 		protected boolean validURL(String url) {
 			if (!url.endsWith("/")) url += "/";
-			return Util.getLastModified(url + Util.XML_COMPRESSED) != -1;
+			try {
+				return files.util.getLastModified(new URL(url + Util.XML_COMPRESSED)) != -1;
+			} catch (MalformedURLException e) {
+				throw new RuntimeException(e);
+			}
 		}
 
 		protected boolean readFromSite(final String name) {

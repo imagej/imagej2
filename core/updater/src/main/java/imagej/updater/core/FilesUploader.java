@@ -336,12 +336,12 @@ public class FilesUploader {
 		try {
 			URLConnection connection;
 			try {
-				connection = new URL(site.url + Util.XML_COMPRESSED).openConnection();
+				connection = files.util.openConnection(new URL(site.url + Util.XML_COMPRESSED));
 			}
 			catch (final FileNotFoundException e) {
 				files.log.error(e);
 				Thread.sleep(500);
-				connection = new URL(site.url + Util.XML_COMPRESSED).openConnection();
+				connection = files.util.openConnection(new URL(site.url + Util.XML_COMPRESSED));
 			}
 			connection.setUseCaches(false);
 			final long lastModified = connection.getLastModified();

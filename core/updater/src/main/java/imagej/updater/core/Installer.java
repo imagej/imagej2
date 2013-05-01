@@ -63,6 +63,7 @@ public class Installer extends Downloader {
 	private FilesCollection files;
 
 	public Installer(final FilesCollection files, final Progress progress) {
+		super(progress, files.util);
 		this.files = files;
 		if (progress != null)
 			addProgress(progress);
