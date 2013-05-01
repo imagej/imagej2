@@ -358,6 +358,16 @@ public class Util {
 		}
 		catch (final IOException e) {
 			if (e.getMessage().startsWith("Server returned HTTP response code: 407")) return -111381;
+			if (e.getMessage().startsWith("Server returned HTTP response code: 405")) try {
+				final URLConnection connection = openConnection(url);
+				connection.setUseCaches(false);
+				final long lastModified = connection.getLastModified();
+				connection.getInputStream().close();
+				return lastModified;
+			} catch (IOException e2) {
+				e.printStackTrace();
+				e2.printStackTrace();
+			}
 			// assume no network; so let's pretend everything's ok.
 			return -1;
 		}
