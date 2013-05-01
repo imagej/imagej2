@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.DigestInputStream;
@@ -101,6 +102,8 @@ public class Util {
 	public final String[] platforms, launchers;
 	protected final Set<String> updateablePlatforms;
 
+	protected final DropboxURLMapper dropboxURLMapper;
+
 	public Util(final File imagejRoot) {
 		platform = getPlatform();
 
@@ -127,6 +130,7 @@ public class Util {
 				updateablePlatforms.add(platformForLauncher(name));
 			}
 		}
+		dropboxURLMapper = new DropboxURLMapper(this);
 	}
 
 	public static String platformForLauncher(final String fileName) {
@@ -333,9 +337,18 @@ public class Util {
 		System.setProperty("java.net.useSystemProxies", "true");
 	}
 
+	@Deprecated
 	public static long getLastModified(final String url) {
 		try {
-			final URLConnection connection = new URL(url).openConnection();
+			return new Util(null).getLastModified(new URL(url));
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public long getLastModified(final URL url) {
+		try {
+			final URLConnection connection = openConnection(url);
 			if (connection instanceof HttpURLConnection) ((HttpURLConnection) connection)
 				.setRequestMethod("HEAD");
 			connection.setUseCaches(false);
@@ -358,12 +371,24 @@ public class Util {
 	 * @param url the URL to open
 	 */
 	public InputStream openStream(final URL url) throws IOException {
-		final URLConnection connection = url.openConnection();
+		return openConnection(url).getInputStream();
+	}
+
+	/**
+	 * Open a connection to a {@link URL}.
+	 * 
+	 * ... possibly mapping Dropbox URLs.
+	 * 
+	 * @param url the URL to open
+	 */
+	public URLConnection openConnection(final URL url) throws IOException {
+		final URLConnection connection = dropboxURLMapper.get(url).openConnection();
 		if (connection instanceof HttpURLConnection) {
 			HttpURLConnection http = (HttpURLConnection)connection;
-			http.setRequestProperty("User-Agent", "curl/7.22.0 compatible ImageJ updater/2.0.0-SNAPSHOT");
+			http.setRequestProperty("User-Agent",
+					"curl/7.22.0 compatible ImageJ updater/2.0.0-SNAPSHOT");
 		}
-		return connection.getInputStream();
+		return connection;
 	}
 
 	// Get entire byte data
