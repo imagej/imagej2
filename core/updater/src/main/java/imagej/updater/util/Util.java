@@ -350,6 +350,22 @@ public class Util {
 		}
 	}
 
+	/**
+	 * Open a stream to a {@link URL}.
+	 * 
+	 * ... possibly mapping Dropbox URLs.
+	 * 
+	 * @param url the URL to open
+	 */
+	public InputStream openStream(final URL url) throws IOException {
+		final URLConnection connection = url.openConnection();
+		if (connection instanceof HttpURLConnection) {
+			HttpURLConnection http = (HttpURLConnection)connection;
+			http.setRequestProperty("User-Agent", "curl/7.22.0 compatible ImageJ updater/2.0.0-SNAPSHOT");
+		}
+		return connection.getInputStream();
+	}
+
 	// Get entire byte data
 	public static byte[] readStreamAsBytes(final InputStream input)
 		throws IOException
