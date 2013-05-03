@@ -35,7 +35,6 @@
 
 package imagej.data.display;
 
-import imagej.data.CombinedInterval;
 import imagej.data.Data;
 import imagej.data.Extents;
 import imagej.data.display.event.AxisActivatedEvent;
@@ -54,6 +53,7 @@ import net.imglib2.Positionable;
 import net.imglib2.RealPositionable;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CombinedRealInterval;
 
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
@@ -71,7 +71,7 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 {
 
 	/** Data structure that aggregates dimensional axes from constituent views. */
-	private final CombinedInterval combinedInterval = new CombinedInterval();
+	private final CombinedRealInterval combinedInterval = new CombinedRealInterval();
 
 	private AxisType activeAxis = null;
 

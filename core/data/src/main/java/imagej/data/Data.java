@@ -37,6 +37,8 @@ package imagej.data;
 
 import imagej.data.overlay.Overlay;
 
+import net.imglib2.meta.TypedUnitRealInterval;
+
 import org.scijava.Contextual;
 
 /**
@@ -46,7 +48,7 @@ import org.scijava.Contextual;
  * 
  * @author Curtis Rueden
  */
-public interface Data extends CalibratedInterval, Contextual {
+public interface Data extends TypedUnitRealInterval, Contextual {
 
 	/**
 	 * Informs interested parties that the data object has undergone a
