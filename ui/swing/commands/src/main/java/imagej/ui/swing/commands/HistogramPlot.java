@@ -61,6 +61,8 @@ import javax.swing.JTextArea;
 
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
+import net.imglib2.algorithm.histogram.Histogram1d;
+import net.imglib2.algorithm.histogram.Real1dBinMapper;
 import net.imglib2.meta.Axes;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSetIterator;
@@ -132,7 +134,7 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 
 	private Dataset dataset;
 	private long channels;
-	private long[][] histograms;
+	private Histogram1d<?>[] histograms;
 	private double[] means;
 	private double[] stdDevs;
 	private double[] mins;
@@ -143,7 +145,7 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 	private double binWidth;
 	private double dataMin;
 	private double dataMax;
-	private int binCount;
+	private long binCount;
 	private JFrame frame;
 	private JPanel embellPanel;
 	private JPanel chartPanel;
@@ -198,15 +200,22 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		for (int i = 0; i < histogram.length; i++) {
 			series.add(i, histogram[i]);
 		}
-		final XYSeriesCollection data = new XYSeriesCollection(series);
-		final JFreeChart chart =
-			ChartFactory.createXYBarChart(title, null, false, null, data,
-				PlotOrientation.VERTICAL, false, true, false);
-		setTheme(chart);
-		// chart.getXYPlot().setForegroundAlpha(0.50f);
-		return chart;
+		return createChart(title, series);
 	}
 
+	/**
+	 * Returns a JFreeChart containing data from the provided histogram.
+	 */
+	public static JFreeChart getChart(String title, Histogram1d<?> histogram) {
+		final XYSeries series = new XYSeries("histo");
+		long total = histogram.getBinCount();
+		long[] binPos = new long[1];
+		for (long i = 0; i < total; i++) {
+			binPos[0] = i;
+			series.add(i, histogram.frequency(i));
+		}
+		return createChart(title, series);
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent evt) {
@@ -341,7 +350,7 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		final JTextArea text = new JTextArea();
 		valuesPanel.add(text, BorderLayout.CENTER);
 		final StringBuilder sb = new StringBuilder();
-		addStr(sb, "Pixels", sampleCount);
+		addStr(sb, "Pixels", sampleCount / channels);
 		sb.append("\n");
 		addStr(sb, "Min", mins[histNumber]);
 		sb.append("   ");
@@ -361,7 +370,7 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 	}
 
 	private void
-		addStr(final StringBuilder sb, final String label, final int num)
+		addStr(final StringBuilder sb, final String label, final long num)
 	{
 		sb.append(String.format("%12s:", label));
 		sb.append(String.format("%10d", num));
@@ -443,7 +452,7 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		if (dataset.isInteger()) {
 			dataRange += 1;
 			if (dataRange <= 65536) {
-				binCount = (int) dataRange;
+				binCount = (long) dataRange;
 				binWidth = 1;
 			}
 			else {
@@ -457,13 +466,21 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		}
 	}
 
+	// NB : this plugin uses raw histograms and bin mappers. Histograms are
+	// designed to be fed an iterable data source. But in the case of this
+	// plugin we do direct computations on the histograms' dfd's for efficency
+	// reasons (so we can calc stats from the same data). Histograms thus have
+	// a high level generic API with access to a low level nongeneric API.
+
 	private void allocateDataStructures() {
 		// initialize data structures
 		int chIndex = dataset.getAxisIndex(Axes.CHANNEL);
 		channels = (chIndex < 0) ? 1 : dataset.dimension(chIndex);
-		histograms = new long[(int) channels + 1][]; // add one for chan compos
+		histograms = new Histogram1d<?>[(int) channels + 1]; // +1 for chan compos
+		Real1dBinMapper<?> mapper =
+			new Real1dBinMapper(dataMin, dataMax, binCount, false); // raw
 		for (int i = 0; i < histograms.length; i++)
-			histograms[i] = new long[binCount];
+			histograms[i] = new Histogram1d(mapper); // raw
 		means = new double[histograms.length];
 		stdDevs = new double[histograms.length];
 		sum1s = new double[histograms.length];
@@ -487,6 +504,7 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		HyperVolumePointSet pixelSpace = new HyperVolumePointSet(span);
 		PointSetIterator pixelSpaceIter = pixelSpace.iterator();
 		sampleCount = 0;
+		long[] binPos = new long[1];
 		while (pixelSpaceIter.hasNext()) {
 			long[] pos = pixelSpaceIter.next();
 			accessor.setPosition(pos);
@@ -497,11 +515,12 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 				if (chIndex >= 0) accessor.setPosition(chan, chIndex);
 				double val = accessor.get().getRealDouble();
 				composVal += val;
-				int index = (int) ((val - dataMin) / binWidth);
+				long index = (long) ((val - dataMin) / binWidth);
 				// NB in float case the max data point overflows the index range
 				if (index >= binCount) index = binCount - 1;
 				int c = (int) chan;
-				histograms[c][index]++;
+				binPos[0] = index;
+				histograms[c].dfd().increment(binPos);
 				sum1s[c] += val;
 				sum2s[c] += val * val;
 				if (val < mins[c]) mins[c] = val;
@@ -509,10 +528,11 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 				sampleCount++;
 			}
 			composVal /= channels;
-			int index = (int) ((composVal - dataMin) / binWidth);
+			long index = (long) ((composVal - dataMin) / binWidth);
 			// NB in float case the max data point overflows the index range
 			if (index >= binCount) index = binCount - 1;
-			histograms[composH][index]++;
+			binPos[0] = index;
+			histograms[composH].dfd().increment(binPos);
 			sum1s[composH] += composVal;
 			sum2s[composH] += composVal * composVal;
 			if (composVal < mins[composH]) mins[composH] = composVal;
@@ -538,6 +558,16 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		if (ds != dataset) return;
 		build();
 		display(currHistNum);
+	}
+
+	private static JFreeChart createChart(String title, XYSeries series) {
+		final XYSeriesCollection data = new XYSeriesCollection(series);
+		final JFreeChart chart =
+			ChartFactory.createXYBarChart(title, null, false, null, data,
+				PlotOrientation.VERTICAL, false, true, false);
+		setTheme(chart);
+		// chart.getXYPlot().setForegroundAlpha(0.50f);
+		return chart;
 	}
 
 	/*
