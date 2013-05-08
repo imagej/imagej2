@@ -51,7 +51,7 @@ public abstract class AbstractInputWidget<T, W> implements InputWidget<T, W> {
 	@Override
 	public boolean supports(final WidgetModel model) {
 		// check compatibility with the intended input panel
-		return model.getPanel().isCompatible(this);
+		return model.getPanel().supports(this);
 	}
 
 	@Override

@@ -54,7 +54,7 @@ public abstract class AbstractInputPanel<P, W> implements InputPanel<P, W> {
 	// -- InputPanel methods --
 
 	@Override
-	public boolean isCompatible(final InputWidget<?, ?> widget) {
+	public boolean supports(final InputWidget<?, ?> widget) {
 		// verify this panel's widget type matches that of the given widget
 		final Class<?> thisType = getWidgetComponentType();
 		final Class<?> thatType = widget.getComponentType();
