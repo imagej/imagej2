@@ -272,8 +272,12 @@ public class SwingDialog {
 		}
 		dialog.setVisible(true);
 
+		// NB: surprisingly explicit dispose() required for modal dialogs to not
+		// hang up program exit. and even more surprising that it's not needed for
+		// modeless cases (like B&C). But testing bears this out.
+
 		// clean up the dialog afterwards
-		dialog.dispose();
+		if (modal) dialog.dispose();
 
 		if (!modal) return JOptionPane.OK_OPTION; // it's all good!
 
