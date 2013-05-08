@@ -186,44 +186,10 @@ public final class DefaultPlatformService extends AbstractService implements
 			pluginService.getPluginsOfType(Platform.class);
 		for (final PluginInfo<Platform> info : infos) {
 			final Platform platform = pluginService.createInstance(info);
-			if (!isTargetPlatform(platform)) continue;
+			if (!platform.isTarget()) continue;
 			platforms.add(platform);
 		}
 		return platforms;
-	}
-
-	/**
-	 * Determines whether the given platform description is applicable to this
-	 * platform.
-	 */
-	private boolean isTargetPlatform(final Platform p) {
-		if (p == null) return false;
-		if (p.javaVendor() != null) {
-			final String javaVendor = System.getProperty("java.vendor");
-			if (!javaVendor.matches(".*" + p.javaVendor() + ".*")) return false;
-		}
-
-		if (p.javaVersion() != null) {
-			final String javaVersion = System.getProperty("java.version");
-			if (javaVersion.compareTo(p.javaVersion()) < 0) return false;
-		}
-
-		if (p.osName() != null) {
-			final String osName = System.getProperty("os.name");
-			if (!osName.matches(".*" + p.osName() + ".*")) return false;
-		}
-
-		if (p.osArch() != null) {
-			final String osArch = System.getProperty("os.arch");
-			if (!osArch.matches(".*" + p.osArch() + ".*")) return false;
-		}
-
-		if (p.osVersion() != null) {
-			final String osVersion = System.getProperty("os.version");
-			if (osVersion.compareTo(p.osVersion()) < 0) return false;
-		}
-
-		return true;
 	}
 
 }
