@@ -58,6 +58,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.WindowConstants;
 
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
@@ -288,6 +289,7 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 
 	private void createDialogResources() {
 		frame = new JFrame("");
+		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		listButton = new JButton("List");
 		copyButton = new JButton("Copy");
 		logButton = new JButton("Log");
