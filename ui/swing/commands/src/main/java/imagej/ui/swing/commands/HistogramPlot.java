@@ -210,9 +210,7 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 	public static JFreeChart getChart(String title, Histogram1d<?> histogram) {
 		final XYSeries series = new XYSeries("histo");
 		long total = histogram.getBinCount();
-		long[] binPos = new long[1];
 		for (long i = 0; i < total; i++) {
-			binPos[0] = i;
 			series.add(i, histogram.frequency(i));
 		}
 		return createChart(title, series);
