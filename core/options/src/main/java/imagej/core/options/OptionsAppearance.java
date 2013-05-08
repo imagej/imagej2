@@ -80,10 +80,14 @@ public class OptionsAppearance extends OptionsPlugin {
 	@Parameter(label = "Menu font size (points)", min = "0")
 	private int menuFontSize = 0;
 
-	// NOTE - this one is not part of legacy ImageJ but is a modern ImageJ
-	// enhancement
+	// NB: The following are not part of legacy ImageJ
+	// but are modern ImageJ enhancements.
+
 	@Parameter(label = "Display fractional scales")
 	private boolean displayFractionalScales = false;
+
+	@Parameter(label = "Use modeless dialogs instead of frames")
+	private boolean useDialogs = false;
 
 	// -- OptionsAppearance methods --
 
@@ -123,6 +127,10 @@ public class OptionsAppearance extends OptionsPlugin {
 		return displayFractionalScales;
 	}
 
+	public boolean isUseDialogs() {
+		return useDialogs;
+	}
+
 	public void setSelectionColor(final ColorRGB c) {
 		this.selectionColor = c;
 	}
@@ -158,6 +166,10 @@ public class OptionsAppearance extends OptionsPlugin {
 	public void setDisplayFractionalScales(final boolean displayFractionalScales)
 	{
 		this.displayFractionalScales = displayFractionalScales;
+	}
+
+	public void setUseDialogs(final boolean useDialogs) {
+		this.useDialogs = useDialogs;
 	}
 
 }
