@@ -56,6 +56,13 @@ public interface SwingService extends Service {
 	 * or a modeless {@link JDialog}, depending on the setting of
 	 * {@link OptionsAppearance#isUseDialogs()}.
 	 */
-	Window createWindow(Window owner, String title);
+	SwingWindow createWindow(String title);
+
+	/**
+	 * Creates a toplevel window of the appropriate kind: either a {@link JFrame}
+	 * or a modeless {@link JDialog} with the given parent, depending on the
+	 * setting of {@link OptionsAppearance#isUseDialogs()}.
+	 */
+	SwingWindow createWindow(Window parent, String title);
 
 }

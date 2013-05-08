@@ -37,6 +37,9 @@ package imagej.ui.swing;
 
 import imagej.core.options.OptionsAppearance;
 import imagej.options.OptionsService;
+import imagej.ui.ApplicationFrame;
+import imagej.ui.UIService;
+import imagej.ui.swing.sdi.SwingUI;
 
 import java.awt.Dialog.ModalityType;
 import java.awt.Window;
@@ -60,14 +63,35 @@ public class DefaultSwingService extends AbstractService implements
 {
 
 	@Parameter
+	private UIService uiService;
+	
+	@Parameter
 	private OptionsService optionsService;
 
 	@Override
-	public Window createWindow(final Window owner, final String title) {
+	public SwingWindow createWindow(final String title) {
+		return createWindow(null, title);
+	}
+
+	@Override
+	public SwingWindow createWindow(final Window parent, final String title) {
 		final boolean useDialogs =
 			optionsService.getOptions(OptionsAppearance.class).isUseDialogs();
-		return useDialogs ? new JDialog(owner, title, ModalityType.MODELESS)
-			: new JFrame(title);
+
+		final Window owner;
+		if (useDialogs && parent == null) {
+			// NB: Use the Swing UI's main application frame by default.
+			final ApplicationFrame appFrame =
+				uiService.getUI(SwingUI.NAME).getApplicationFrame();
+			owner = (SwingApplicationFrame) appFrame;
+		}
+		else owner = parent;
+
+		if (useDialogs) {
+			final JDialog dialog = new JDialog(owner, title, ModalityType.MODELESS);
+			return new SwingWindow(dialog);
+		}
+		return new SwingWindow(new JFrame(title));
 	}
 
 }

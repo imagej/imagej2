@@ -49,6 +49,8 @@ import imagej.script.ParameterObject;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 import imagej.ui.swing.StaticSwingUtils;
+import imagej.ui.swing.SwingService;
+import imagej.ui.swing.SwingWindow;
 
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
@@ -63,10 +65,8 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.WindowConstants;
 
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
@@ -91,6 +91,9 @@ public class SwingScriptRecorder extends ContextCommand {
 	@Parameter
 	private UIService uiService;
 
+	@Parameter
+	private SwingService swingService;
+	
 	// private static SwingOutputWindow window;
 	JTextArea textArea = new JTextArea();
 
@@ -110,15 +113,14 @@ public class SwingScriptRecorder extends ContextCommand {
 	}
 
 	void createFrame() {
-		final JFrame frame = new JFrame("Recorder");
-		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		final SwingWindow window = swingService.createWindow("Recorder");
 		textArea.setEditable(false);
 		textArea.setRows(20);
 		textArea.setColumns(50);
 		final java.awt.Font font =
 			new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12);
 		textArea.setFont(font);
-		frame.getContentPane().add(new JScrollPane(textArea), BorderLayout.CENTER);
+		window.getContentPane().add(new JScrollPane(textArea), BorderLayout.CENTER);
 
 		final JButton button = new JButton();
 
@@ -141,10 +143,10 @@ public class SwingScriptRecorder extends ContextCommand {
 			}
 
 		});
-		frame.getContentPane().add(button, BorderLayout.NORTH);
-		frame.setBounds(new Rectangle(400, 400, 700, 300));
-		frame.setVisible(true);
-		StaticSwingUtils.locateUpperRight(frame);
+		window.getContentPane().add(button, BorderLayout.NORTH);
+		window.getComponent().setBounds(new Rectangle(400, 400, 700, 300));
+		window.getComponent().setVisible(true);
+		StaticSwingUtils.locateUpperRight(window.getComponent());
 	}
 
 	private void startRecording() {

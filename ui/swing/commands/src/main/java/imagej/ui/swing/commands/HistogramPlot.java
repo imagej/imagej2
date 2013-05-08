@@ -44,6 +44,8 @@ import imagej.data.display.OverlayService;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.ui.UIService;
+import imagej.ui.swing.SwingService;
+import imagej.ui.swing.SwingWindow;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -55,7 +57,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
@@ -126,6 +127,9 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 	private OverlayService overlayService;
 
 	@Parameter
+	private SwingService swingService;
+
+	@Parameter
 	private ImageDisplay display;
 
 	// -- other instance variables --
@@ -144,7 +148,7 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 	private double dataMin;
 	private double dataMax;
 	private int binCount;
-	private JFrame frame;
+	private SwingWindow window;
 	private JPanel embellPanel;
 	private JPanel chartPanel;
 	private JButton listButton;
@@ -278,7 +282,8 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 	}
 
 	private void createDialogResources() {
-		frame = new JFrame("");
+
+		window = swingService.createWindow("");
 		listButton = new JButton("List");
 		copyButton = new JButton("Copy");
 		logButton = new JButton("Log");
@@ -301,15 +306,15 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		if (h >= histograms.length) h = histograms.length - 1;
 		currHistNum = h;
 		setTitle(histNumber);
-		Container pane = frame.getContentPane();
+		Container pane = window.getContentPane();
 		if (chartPanel != null) pane.remove(chartPanel);
 		if (embellPanel != null) pane.remove(embellPanel);
 		chartPanel = makeChartPanel(histNumber);
 		embellPanel = makeEmbellishmentPanel(histNumber);
 		pane.add(chartPanel, BorderLayout.CENTER);
 		pane.add(embellPanel, BorderLayout.SOUTH);
-		frame.pack();
-		frame.setVisible(true);
+		window.getComponent().pack();
+		window.getComponent().setVisible(true);
 	}
 
 	private JPanel makeChartPanel(int histNumber) {
@@ -383,7 +388,7 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 			title = "Channel " + histNum + " histogram of ";
 		}
 		title += display.getName();
-		frame.setTitle(title);
+		window.setTitle(title);
 	}
 
 	private static final void setTheme(final JFreeChart chart) {

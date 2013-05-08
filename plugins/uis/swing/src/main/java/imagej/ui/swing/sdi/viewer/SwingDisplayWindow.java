@@ -36,6 +36,7 @@
 package imagej.ui.swing.sdi.viewer;
 
 import imagej.ui.swing.StaticSwingUtils;
+import imagej.ui.swing.SwingWindow;
 import imagej.ui.swing.viewer.image.JHotDrawImageCanvas;
 import imagej.ui.viewer.DisplayPanel;
 import imagej.ui.viewer.DisplayWindow;
@@ -45,7 +46,6 @@ import java.awt.Container;
 import java.awt.HeadlessException;
 
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 /**
@@ -54,7 +54,7 @@ import javax.swing.WindowConstants;
  * @author Grant Harris
  * @author Barry DeZonia
  */
-public class SwingDisplayWindow extends JFrame implements DisplayWindow {
+public class SwingDisplayWindow extends SwingWindow implements DisplayWindow {
 
 	private JComponent panel;
 
