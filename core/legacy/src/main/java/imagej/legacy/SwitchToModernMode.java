@@ -39,12 +39,11 @@ import ij.IJ;
 import ij.Menus;
 import ij.plugin.PlugIn;
 
+import java.awt.EventQueue;
 import java.awt.Menu;
 import java.awt.MenuItem;
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
-
-import javax.swing.SwingUtilities;
 
 import org.scijava.Context;
 
@@ -59,7 +58,7 @@ public class SwitchToModernMode implements PlugIn {
 	@Override
 	public void run(String arg) {
 		try {
-			SwingUtilities.invokeAndWait(new Runnable() {
+			EventQueue.invokeAndWait(new Runnable() {
 				@Override
 				public void run() {
 					// Make sure that we have a valid context.
