@@ -52,6 +52,7 @@ import imagej.widget.FileWidget;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Window;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -138,6 +139,13 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	@Override
 	public void dispose() {
 		if (appFrame != null) appFrame.dispose();
+
+		// HACK TEMP BDZ
+		// Sure fire hack to make sure all things dispose correctly
+		Window[] windows = Window.getWindows();
+		for (Window w : windows) {
+			w.dispose();
+		}
 	}
 
 	// -- Internal methods --
