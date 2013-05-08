@@ -59,8 +59,8 @@ public class PivotColorWidget extends PivotInputWidget<ColorRGB> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return super.isCompatible(model) && model.isType(ColorRGB.class);
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isType(ColorRGB.class);
 	}
 
 	@Override

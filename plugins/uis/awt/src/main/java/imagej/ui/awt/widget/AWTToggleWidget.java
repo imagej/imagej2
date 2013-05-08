@@ -60,8 +60,8 @@ public class AWTToggleWidget extends AWTInputWidget<Boolean> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return super.isCompatible(model) && model.isBoolean();
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isBoolean();
 	}
 
 	@Override

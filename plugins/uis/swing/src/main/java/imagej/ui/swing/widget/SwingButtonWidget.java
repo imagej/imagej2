@@ -84,7 +84,7 @@ public class SwingButtonWidget extends SwingInputWidget<Button> implements
 	}
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
+	public boolean supports(final WidgetModel model) {
 		return model.isType(Button.class);
 	}
 

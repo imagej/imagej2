@@ -75,7 +75,7 @@ public class AWTButtonWidget extends AWTInputWidget<Button> implements
 	}
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
+	public boolean supports(final WidgetModel model) {
 		return model.isType(Button.class);
 	}
 

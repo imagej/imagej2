@@ -75,7 +75,7 @@ public class SWTButtonWidget extends SWTInputWidget<Button> implements
 	}
 
 	@Override
-	public boolean isCompatible(WidgetModel model) {
+	public boolean supports(WidgetModel model) {
 		return model.isType(Button.class);
 	}
 	

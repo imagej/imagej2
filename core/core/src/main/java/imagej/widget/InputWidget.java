@@ -63,7 +63,7 @@ import org.scijava.plugin.Plugin;
 public interface InputWidget<T, W> extends ImageJPlugin, UIComponent<W> {
 
 	/** Gets whether this widget would be appropriate for the given model. */
-	boolean isCompatible(WidgetModel model);
+	boolean supports(WidgetModel model);
 
 	/**
 	 * Initializes the widget to use the given widget model. Once initialized, the

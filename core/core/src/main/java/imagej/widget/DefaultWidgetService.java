@@ -72,7 +72,7 @@ public class DefaultWidgetService extends AbstractService implements
 		final PluginInfo<InputWidget> info : infos) {
 			final InputWidget<?, ?> widget = pluginService.createInstance(info);
 			if (widget == null) continue;
-			if (widget.isCompatible(model)) {
+			if (widget.supports(model)) {
 				widget.initialize(model);
 				return widget;
 			}

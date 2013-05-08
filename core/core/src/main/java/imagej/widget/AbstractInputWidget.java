@@ -49,7 +49,7 @@ public abstract class AbstractInputWidget<T, W> implements InputWidget<T, W> {
 	// -- InputWidget methods --
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
+	public boolean supports(final WidgetModel model) {
 		// check compatibility with the intended input panel
 		return model.getPanel().isCompatible(this);
 	}

@@ -61,10 +61,10 @@ public class PivotNumberScrollBarWidget extends PivotNumberWidget implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
+	public boolean supports(final WidgetModel model) {
 		final String style = model.getItem().getWidgetStyle();
 		if (!NumberWidget.SCROLL_BAR_STYLE.equals(style)) return false;
-		return super.isCompatible(model);
+		return super.supports(model);
 	}
 
 	@Override
