@@ -187,6 +187,12 @@ public class BrightnessContrast extends InteractiveCommand {
 	// -- Helper methods --
 
 	private <T extends RealType<T>> void computeDataMinMax(final ImgPlus<T> img) {
+		// FIXME: Reconcile this with DefaultDatasetView.autoscale(int). There is
+		// no reason to hardcode the usage of ComputeMinMax twice. Rather, there
+		// should be a single entry point for obtain the channel min/maxes from
+		// the metadata, and if they aren't there, then compute them. Probably
+		// Dataset (not DatasetView) is a good place for it, because it is metadata
+		// independent of the visualization settings.
 		final ComputeMinMax<T> computeMinMax = new ComputeMinMax<T>(img);
 		computeMinMax.process();
 		dataMin = computeMinMax.getMin().getRealDouble();
