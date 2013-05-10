@@ -41,7 +41,7 @@ import imagej.data.display.DatasetView;
 import imagej.menu.MenuConstants;
 import imagej.widget.NumberWidget;
 import net.imglib2.algorithm.stats.ComputeMinMax;
-import net.imglib2.img.Img;
+import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
@@ -166,7 +166,7 @@ public class BrightnessContrast extends InteractiveCommand {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void viewChanged() {
 		final Dataset dataset = view.getData();
-		final Img img = dataset.getImgPlus();
+		final ImgPlus img = dataset.getImgPlus();
 		computeDataMinMax(img);
 		computeInitialMinMax();
 		if (Double.isNaN(min)) min = initialMin;
@@ -186,7 +186,7 @@ public class BrightnessContrast extends InteractiveCommand {
 
 	// -- Helper methods --
 
-	private <T extends RealType<T>> void computeDataMinMax(final Img<T> img) {
+	private <T extends RealType<T>> void computeDataMinMax(final ImgPlus<T> img) {
 		final ComputeMinMax<T> computeMinMax = new ComputeMinMax<T>(img);
 		computeMinMax.process();
 		dataMin = computeMinMax.getMin().getRealDouble();
