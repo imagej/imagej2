@@ -107,8 +107,9 @@ import org.scijava.plugin.Plugin;
 	@Menu(label = "Analyze"),
 	@Menu(label = "Histogram Plot", accelerator = "control shift alt H",
 		weight = 0) })
-public class HistogramPlot extends ContextCommand implements ActionListener {
-
+public class HistogramPlot<T extends RealType<T>> extends ContextCommand
+	implements ActionListener
+{
 	// -- constants --
 
 	private static final String ACTION_LIVE = "LIVE";
@@ -135,7 +136,7 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 
 	private Dataset dataset;
 	private long channels;
-	private Histogram1d<?>[] histograms;
+	private Histogram1d<T>[] histograms;
 	private double[] means;
 	private double[] stdDevs;
 	private double[] mins;
@@ -466,21 +467,21 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		}
 	}
 
-	// NB : this plugin uses raw histograms and bin mappers. Histograms are
+	// NB : this plugin uses low level access. Histograms are
 	// designed to be fed an iterable data source. But in the case of this
-	// plugin we do direct computations on the histograms' dfd's for efficency
+	// plugin we do direct computations on the histograms' bins for efficency
 	// reasons (so we can calc stats from the same data). Histograms thus have
-	// a high level generic API with access to a low level nongeneric API.
+	// both a high level generic API and a low level nongeneric API.
 
 	private void allocateDataStructures() {
 		// initialize data structures
 		int chIndex = dataset.getAxisIndex(Axes.CHANNEL);
 		channels = (chIndex < 0) ? 1 : dataset.dimension(chIndex);
-		histograms = new Histogram1d<?>[(int) channels + 1]; // +1 for chan compos
-		Real1dBinMapper<?> mapper =
-			new Real1dBinMapper(dataMin, dataMax, binCount, false); // raw
+		histograms = new Histogram1d[(int) channels + 1]; // +1 for chan compos
+		Real1dBinMapper<T> mapper =
+			new Real1dBinMapper<T>(dataMin, dataMax, binCount, false);
 		for (int i = 0; i < histograms.length; i++)
-			histograms[i] = new Histogram1d(mapper); // raw
+			histograms[i] = new Histogram1d<T>(mapper);
 		means = new double[histograms.length];
 		stdDevs = new double[histograms.length];
 		sum1s = new double[histograms.length];
@@ -504,7 +505,6 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 		HyperVolumePointSet pixelSpace = new HyperVolumePointSet(span);
 		PointSetIterator pixelSpaceIter = pixelSpace.iterator();
 		sampleCount = 0;
-		long[] binPos = new long[1];
 		while (pixelSpaceIter.hasNext()) {
 			long[] pos = pixelSpaceIter.next();
 			accessor.setPosition(pos);
@@ -519,8 +519,7 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 				// NB in float case the max data point overflows the index range
 				if (index >= binCount) index = binCount - 1;
 				int c = (int) chan;
-				binPos[0] = index;
-				histograms[c].dfd().increment(binPos);
+				histograms[c].increment(index);
 				sum1s[c] += val;
 				sum2s[c] += val * val;
 				if (val < mins[c]) mins[c] = val;
@@ -531,8 +530,7 @@ public class HistogramPlot extends ContextCommand implements ActionListener {
 			long index = (long) ((composVal - dataMin) / binWidth);
 			// NB in float case the max data point overflows the index range
 			if (index >= binCount) index = binCount - 1;
-			binPos[0] = index;
-			histograms[composH].dfd().increment(binPos);
+			histograms[composH].increment(index);
 			sum1s[composH] += composVal;
 			sum2s[composH] += composVal * composVal;
 			if (composVal < mins[composH]) mins[composH] = composVal;
