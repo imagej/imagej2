@@ -124,7 +124,7 @@ public abstract class AbstractInputHarvester<P, W> extends AbstractContextual
 
 		final WidgetService widgetService =
 			getContext().getService(WidgetService.class);
-		final InputWidget<?, ?> widget = widgetService.createWidget(model);
+		final InputWidget<?, ?> widget = widgetService.create(model);
 		if (widget != null) {
 			// FIXME: This cast is NOT safe! Multiple UIs in the
 			// classpath will have clashing widget implementations.

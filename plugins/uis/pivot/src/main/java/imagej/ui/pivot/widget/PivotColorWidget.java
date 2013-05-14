@@ -59,21 +59,6 @@ public class PivotColorWidget extends PivotInputWidget<ColorRGB> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isType(ColorRGB.class);
-	}
-
-	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
-
-		textInput = new TextInput();
-		getComponent().add(textInput);
-
-		refreshWidget();
-	}
-
-	@Override
 	public ColorRGB getValue() {
 		final String text = textInput.getText();
 		final ColorRGB color = ColorRGB.fromHTMLColor(text);
@@ -82,10 +67,29 @@ public class PivotColorWidget extends PivotInputWidget<ColorRGB> implements
 
 	@Override
 	public void refreshWidget() {
-		final ColorRGB value = (ColorRGB) getModel().getValue();
+		final ColorRGB value = (ColorRGB) get().getValue();
 		final String text = value == null ? "" : value.toHTMLColor();
 		if (textInput.getText().equals(text)) return; // no change
 		textInput.setText(text);
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
+
+		textInput = new TextInput();
+		getComponent().add(textInput);
+
+		refreshWidget();
+	}
+
+	// -- Typed methods --
+
+	@Override
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isType(ColorRGB.class);
 	}
 
 }

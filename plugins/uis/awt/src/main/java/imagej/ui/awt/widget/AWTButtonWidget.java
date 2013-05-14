@@ -59,25 +59,7 @@ public class AWTButtonWidget extends AWTInputWidget<Button> implements
 
 	private java.awt.Button button;
 
-	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
-
-		button = new java.awt.Button(model.getWidgetLabel());
-		button.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				model.callback();
-			}
-		});
-		getComponent().add(button);
-	}
-
-	@Override
-	public boolean supports(final WidgetModel model) {
-		return model.isType(Button.class);
-	}
+	// -- InputWidget methods --
 
 	@Override
 	public Button getValue() {
@@ -92,6 +74,30 @@ public class AWTButtonWidget extends AWTInputWidget<Button> implements
 	@Override
 	public boolean isLabeled() {
 		return false;
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
+
+		button = new java.awt.Button(model.getWidgetLabel());
+		button.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				model.callback();
+			}
+		});
+		getComponent().add(button);
+	}
+
+	// -- Typed methods --
+
+	@Override
+	public boolean supports(final WidgetModel model) {
+		return model.isType(Button.class);
 	}
 
 }

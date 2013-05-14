@@ -35,6 +35,8 @@
 
 package imagej.widget;
 
+import org.scijava.plugin.SortablePlugin;
+
 /**
  * Base class for input widgets.
  * 
@@ -42,30 +44,13 @@ package imagej.widget;
  * @param <T> The input type of the widget.
  * @param <W> The type of UI component housing the widget.
  */
-public abstract class AbstractInputWidget<T, W> implements InputWidget<T, W> {
+public abstract class AbstractInputWidget<T, W> extends SortablePlugin
+	implements InputWidget<T, W>
+{
 
 	private WidgetModel widgetModel;
 
 	// -- InputWidget methods --
-
-	@Override
-	public boolean supports(final WidgetModel model) {
-		// check compatibility with the intended input panel
-		return model.getPanel().supports(this);
-	}
-
-	@Override
-	public void initialize(final WidgetModel model) {
-		if (widgetModel != null) {
-			throw new IllegalStateException("Widget already initialized");
-		}
-		widgetModel = model;
-	}
-
-	@Override
-	public WidgetModel getModel() {
-		return widgetModel;
-	}
 
 	@Override
 	public void updateModel() {
@@ -80,6 +65,34 @@ public abstract class AbstractInputWidget<T, W> implements InputWidget<T, W> {
 	@Override
 	public boolean isMessage() {
 		return false;
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		if (widgetModel != null) {
+			throw new IllegalStateException("Widget already initialized");
+		}
+		widgetModel = model;
+	}
+
+	@Override
+	public WidgetModel get() {
+		return widgetModel;
+	}
+
+	// -- Typed methods --
+
+	@Override
+	public boolean supports(final WidgetModel model) {
+		// check compatibility with the intended input panel
+		return model.getPanel().supports(this);
+	}
+
+	@Override
+	public Class<WidgetModel> getType() {
+		return WidgetModel.class;
 	}
 
 }

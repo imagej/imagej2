@@ -54,10 +54,27 @@ public class PivotButtonWidget extends PivotInputWidget<Button> implements
 	ButtonWidget<BoxPane>
 {
 	// private Button button;
+
+	@Override
+	public Button getValue() {
+		return null;
+	}
+
+	@Override
+	public void refreshWidget() {
+		// nothing to do
+	}
+
+	@Override
+	public boolean isLabeled() {
+		return false;
+	}
+
+	// -- WrapperPlugin methods --
 	
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		throw new UnsupportedOperationException("unimplemented feature");
 		
@@ -74,24 +91,11 @@ public class PivotButtonWidget extends PivotInputWidget<Button> implements
 		*/
 	}
 
+	// -- Typed methods --
+
 	@Override
 	public boolean supports(WidgetModel model) {
 		return model.isType(Button.class);
 	}
 	
-	@Override
-	public Button getValue() {
-		return null;
-	}
-
-	@Override
-	public void refreshWidget() {
-		// nothing to do
-	}
-
-	@Override
-	public boolean isLabeled() {
-		return false;
-	}
-
 }

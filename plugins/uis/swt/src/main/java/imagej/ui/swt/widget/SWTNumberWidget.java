@@ -59,13 +59,22 @@ public class SWTNumberWidget extends SWTInputWidget<Number> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isNumber();
+	public Number getValue() {
+		return slider.getSelection();
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void refreshWidget() {
+		final int value = ((Number) get().getValue()).intValue();
+		if (slider.getSelection() == value) return; // no change
+		slider.setSelection(value);
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		final Number min = model.getMin();
 		final Number max = model.getMax();
@@ -78,16 +87,11 @@ public class SWTNumberWidget extends SWTInputWidget<Number> implements
 		refreshWidget();
 	}
 
-	@Override
-	public Number getValue() {
-		return slider.getSelection();
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		final int value = ((Number) getModel().getValue()).intValue();
-		if (slider.getSelection() == value) return; // no change
-		slider.setSelection(value);
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isNumber();
 	}
 
 }

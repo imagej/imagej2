@@ -58,14 +58,22 @@ public class PivotTextFieldWidget extends PivotInputWidget<String> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isText() &&
-			!model.isMultipleChoice() && !model.isMessage();
+	public String getValue() {
+		return textInput.getText();
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void refreshWidget() {
+		final String text = get().getText();
+		if (textInput.getText().equals(text)) return; // no change
+		textInput.setText(text);
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		textInput = new TextInput();
 		getComponent().add(textInput);
@@ -73,16 +81,12 @@ public class PivotTextFieldWidget extends PivotInputWidget<String> implements
 		refreshWidget();
 	}
 
-	@Override
-	public String getValue() {
-		return textInput.getText();
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		final String text = getModel().getText();
-		if (textInput.getText().equals(text)) return; // no change
-		textInput.setText(text);
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isText() &&
+			!model.isMultipleChoice() && !model.isMessage();
 	}
 
 }

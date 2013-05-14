@@ -69,13 +69,22 @@ public class AWTNumberWidget extends AWTInputWidget<Number> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isNumber();
+	public Number getValue() {
+		return scrollBar.getValue();
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void refreshWidget() {
+		final String value = get().getValue().toString();
+		if (textField.getText().equals(value)) return; // no change
+		textField.setText(value);
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		final Number min = model.getMin();
 		final Number max = model.getMax();
@@ -95,16 +104,11 @@ public class AWTNumberWidget extends AWTInputWidget<Number> implements
 		refreshWidget();
 	}
 
-	@Override
-	public Number getValue() {
-		return scrollBar.getValue();
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		final String value = getModel().getValue().toString();
-		if (textField.getText().equals(value)) return; // no change
-		textField.setText(value);
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isNumber();
 	}
 
 	// -- AdjustmentListener methods --

@@ -62,13 +62,22 @@ public class AWTObjectWidget extends AWTInputWidget<Object> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.getObjectPool().size() > 0;
+	public Object getValue() {
+		return get().getObjectPool().get(choice.getSelectedIndex());
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void refreshWidget() {
+		final String value = get().getValue().toString();
+		if (value.equals(choice.getSelectedItem())) return; // no change
+		choice.select(value);
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		choice = new Choice();
 		for (final Object item : model.getObjectPool()) {
@@ -80,16 +89,11 @@ public class AWTObjectWidget extends AWTInputWidget<Object> implements
 		refreshWidget();
 	}
 
-	@Override
-	public Object getValue() {
-		return getModel().getObjectPool().get(choice.getSelectedIndex());
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		final String value = getModel().getValue().toString();
-		if (value.equals(choice.getSelectedItem())) return; // no change
-		choice.select(value);
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.getObjectPool().size() > 0;
 	}
 
 	// -- ItemListener methods --

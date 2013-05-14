@@ -74,14 +74,24 @@ public class SwingChoiceRadioWidget extends SwingInputWidget<String> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isText() &&
-			model.isMultipleChoice() && isRadioButtonStyle(model);
+	public String getValue() {
+		final JRadioButton selectedButton = getSelectedButton();
+		return selectedButton == null ? null : selectedButton.getText();
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void refreshWidget() {
+		final Object value = get().getValue();
+		final JRadioButton radioButton = getButton(value);
+		if (radioButton.isSelected()) return; // no change
+		radioButton.setSelected(true);
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		final String[] items = model.getChoices();
 
@@ -104,18 +114,12 @@ public class SwingChoiceRadioWidget extends SwingInputWidget<String> implements
 		refreshWidget();
 	}
 
-	@Override
-	public String getValue() {
-		final JRadioButton selectedButton = getSelectedButton();
-		return selectedButton == null ? null : selectedButton.getText();
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		final Object value = getModel().getValue();
-		final JRadioButton radioButton = getButton(value);
-		if (radioButton.isSelected()) return; // no change
-		radioButton.setSelected(true);
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isText() &&
+			model.isMultipleChoice() && isRadioButtonStyle(model);
 	}
 
 	// -- Helper methods --

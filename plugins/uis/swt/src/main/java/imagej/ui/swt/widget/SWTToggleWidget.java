@@ -59,28 +59,32 @@ public class SWTToggleWidget extends SWTInputWidget<Boolean> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isBoolean();
-	}
-
-	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
-
-		checkbox = new Button(getComponent(), SWT.CHECK);
-
-		refreshWidget();
-	}
-
-	@Override
 	public Boolean getValue() {
 		return checkbox.getSelection();
 	}
 
 	@Override
 	public void refreshWidget() {
-		final Boolean value = (Boolean) getModel().getValue();
+		final Boolean value = (Boolean) get().getValue();
 		if (value != getValue()) checkbox.setSelection(value != null && value);
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
+
+		checkbox = new Button(getComponent(), SWT.CHECK);
+
+		refreshWidget();
+	}
+
+	// -- Typed methods --
+
+	@Override
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isBoolean();
 	}
 
 }

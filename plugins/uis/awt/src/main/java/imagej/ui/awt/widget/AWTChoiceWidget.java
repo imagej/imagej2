@@ -62,13 +62,21 @@ public class AWTChoiceWidget extends AWTInputWidget<String> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isText() &&
-			model.isMultipleChoice();
+	public String getValue() {
+		return choice.getSelectedItem();
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
+	public void refreshWidget() {
+		final String value = get().getValue().toString();
+		if (value.equals(choice.getSelectedItem())) return; // no change
+		choice.select(value);
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
 		final String[] items = model.getChoices();
 
 		choice = new Choice();
@@ -81,16 +89,12 @@ public class AWTChoiceWidget extends AWTInputWidget<String> implements
 		refreshWidget();
 	}
 
-	@Override
-	public String getValue() {
-		return choice.getSelectedItem();
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		final String value = getModel().getValue().toString();
-		if (value.equals(choice.getSelectedItem())) return; // no change
-		choice.select(value);
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isText() &&
+			model.isMultipleChoice();
 	}
 
 	// -- ItemListener methods --

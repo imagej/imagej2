@@ -82,14 +82,22 @@ public class SwingTextFieldWidget extends SwingInputWidget<String> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isText() &&
-			!model.isMultipleChoice() && !model.isMessage();
+	public String getValue() {
+		return textField.getText();
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void refreshWidget() {
+		final String text = get().getText();
+		if (textField.getText().equals(text)) return; // no change
+		textField.setText(text);
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		final int columns = model.getItem().getColumnCount();
 		textField = new JTextField("", columns);
@@ -101,23 +109,19 @@ public class SwingTextFieldWidget extends SwingInputWidget<String> implements
 		refreshWidget();
 	}
 
-	@Override
-	public String getValue() {
-		return textField.getText();
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		final String text = getModel().getText();
-		if (textField.getText().equals(text)) return; // no change
-		textField.setText(text);
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isText() &&
+			!model.isMultipleChoice() && !model.isMessage();
 	}
 
 	// -- Helper methods --
 
 	private void limitLength() {
 		// only limit length for single-character inputs
-		if (!getModel().isCharacter()) return;
+		if (!get().isCharacter()) return;
 
 		// limit text field to a single character
 		final int maxChars = 1;

@@ -35,16 +35,23 @@
 
 package imagej.widget;
 
-import org.scijava.service.Service;
+import imagej.plugin.WrapperService;
 
 /**
  * Interface for services that manage available {@link InputWidget}s.
  * 
  * @author Curtis Rueden
  */
-public interface WidgetService extends Service {
+public interface WidgetService extends
+	WrapperService<WidgetModel, InputWidget<?, ?>>
+{
+
+	// NB: Javadoc overrides.
+
+	// -- WrapperService methods --
 
 	/** Creates a widget that represents the given widget model. */
-	InputWidget<?, ?> createWidget(WidgetModel model);
+	@Override
+	InputWidget<?, ?> create(WidgetModel model);
 
 }

@@ -59,13 +59,22 @@ public class SWTObjectWidget extends SWTInputWidget<Object> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.getObjectPool().size() > 0;
+	public Object getValue() {
+		return get().getObjectPool().get(combo.getSelectionIndex());
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void refreshWidget() {
+		final Object value = get().getValue();
+		final int index = get().getObjectPool().indexOf(value);
+		if (index >= 0) combo.select(index);
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		combo = new Combo(getComponent(), SWT.DROP_DOWN);
 		for (final Object item : model.getObjectPool()) {
@@ -75,16 +84,11 @@ public class SWTObjectWidget extends SWTInputWidget<Object> implements
 		refreshWidget();
 	}
 
-	@Override
-	public Object getValue() {
-		return getModel().getObjectPool().get(combo.getSelectionIndex());
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		final Object value = getModel().getValue();
-		final int index = getModel().getObjectPool().indexOf(value);
-		if (index >= 0) combo.select(index);
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.getObjectPool().size() > 0;
 	}
 
 }

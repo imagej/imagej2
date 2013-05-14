@@ -51,11 +51,11 @@ public abstract class PivotInputWidget<T> extends
 
 	private BoxPane uiComponent;
 
-	// -- InputWidget methods --
+	// -- WrapperPlugin methods --
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void set(final WidgetModel model) {
+		super.set(model);
 		uiComponent = new BoxPane();
 	}
 

@@ -49,7 +49,7 @@ public abstract class PivotNumberWidget extends PivotInputWidget<Number>
 	implements NumberWidget<BoxPane>
 {
 
-	// -- InputWidget methods --
+	// -- Typed methods --
 
 	@Override
 	public boolean supports(final WidgetModel model) {

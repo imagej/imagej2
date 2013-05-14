@@ -57,22 +57,6 @@ public class SWTMessageWidget extends SWTInputWidget<String> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isMessage();
-	}
-
-	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
-
-		final String text = model.getText();
-
-		final Label label = new Label(getComponent(), 0);
-		label.setText(text);
-		label.setLayoutData("span");
-	}
-
-	@Override
 	public String getValue() {
 		return null;
 	}
@@ -90,6 +74,26 @@ public class SWTMessageWidget extends SWTInputWidget<String> implements
 	@Override
 	public boolean isMessage() {
 		return true;
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
+
+		final String text = model.getText();
+
+		final Label label = new Label(getComponent(), 0);
+		label.setText(text);
+		label.setLayoutData("span");
+	}
+
+	// -- Typed methods --
+
+	@Override
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isMessage();
 	}
 
 }

@@ -60,13 +60,22 @@ public class PivotObjectWidget extends PivotInputWidget<Object> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.getObjectPool().size() > 0;
+	public Object getValue() {
+		return listButton.getSelectedItem();
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void refreshWidget() {
+		final Object value = get().getValue();
+		if (value == listButton.getSelectedItem()) return; // no change
+		listButton.setSelectedItem(value);
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		listButton = new ListButton();
 		final Object[] items = model.getObjectPool().toArray();
@@ -77,16 +86,11 @@ public class PivotObjectWidget extends PivotInputWidget<Object> implements
 		refreshWidget();
 	}
 
-	@Override
-	public Object getValue() {
-		return listButton.getSelectedItem();
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		final Object value = getModel().getValue();
-		if (value == listButton.getSelectedItem()) return; // no change
-		listButton.setSelectedItem(value);
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.getObjectPool().size() > 0;
 	}
 
 }

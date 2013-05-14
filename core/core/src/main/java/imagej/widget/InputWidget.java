@@ -36,7 +36,7 @@
 package imagej.widget;
 
 import imagej.module.ModuleItem;
-import imagej.plugin.ImageJPlugin;
+import imagej.plugin.WrapperPlugin;
 
 import org.scijava.plugin.Plugin;
 
@@ -60,19 +60,9 @@ import org.scijava.plugin.Plugin;
  * @see InputHarvester
  * @see InputPanel
  */
-public interface InputWidget<T, W> extends ImageJPlugin, UIComponent<W> {
-
-	/** Gets whether this widget would be appropriate for the given model. */
-	boolean supports(WidgetModel model);
-
-	/**
-	 * Initializes the widget to use the given widget model. Once initialized, the
-	 * widget's UI pane will be accessible via {@link #getComponent()}.
-	 */
-	void initialize(WidgetModel model);
-
-	/** Gets the model object backing this widget. */
-	WidgetModel getModel();
+public interface InputWidget<T, W> extends WrapperPlugin<WidgetModel>,
+	UIComponent<W>
+{
 
 	/** Updates the model to reflect the latest widget state. */
 	void updateModel();
@@ -99,5 +89,26 @@ public interface InputWidget<T, W> extends ImageJPlugin, UIComponent<W> {
 	 * returns true for all of its widgets.
 	 */
 	boolean isMessage();
+
+	// NB: Javadoc overrides.
+
+	// -- WrapperPlugin methods --
+
+	/**
+	 * Initializes the widget to use the given widget model. Once initialized, the
+	 * widget's UI pane will be accessible via {@link #getComponent()}.
+	 */
+	@Override
+	void set(WidgetModel model);
+
+	/** Gets the model object backing this widget. */
+	@Override
+	WidgetModel get();
+
+	// -- Typed methods --
+
+	/** Gets whether this widget would be appropriate for the given model. */
+	@Override
+	boolean supports(WidgetModel model);
 
 }

@@ -35,14 +35,12 @@
 
 package imagej.widget;
 
-import java.util.List;
+import imagej.plugin.AbstractWrapperService;
 
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
-import org.scijava.plugin.PluginService;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
@@ -51,34 +49,43 @@ import org.scijava.service.Service;
  * @author Curtis Rueden
  */
 @Plugin(type = Service.class)
-public class DefaultWidgetService extends AbstractService implements
+public class DefaultWidgetService extends
+	AbstractWrapperService<WidgetModel, InputWidget<?, ?>> implements
 	WidgetService
 {
 
 	@Parameter
 	private LogService log;
 
-	@Parameter
-	private PluginService pluginService;
-
-	// -- WidgetService methods --
+	// -- WrapperService methods --
 
 	@Override
-	public InputWidget<?, ?> createWidget(final WidgetModel model) {
-		@SuppressWarnings("rawtypes")
-		final List<PluginInfo<InputWidget>> infos =
-			pluginService.getPluginsOfType(InputWidget.class);
-		for (@SuppressWarnings("rawtypes")
-		final PluginInfo<InputWidget> info : infos) {
-			final InputWidget<?, ?> widget = pluginService.createInstance(info);
+	public InputWidget<?, ?> create(final WidgetModel model) {
+		for (final PluginInfo<InputWidget<?, ?>> info : getPlugins()) {
+			final InputWidget<?, ?> widget = getPluginService().createInstance(info);
 			if (widget == null) continue;
 			if (widget.supports(model)) {
-				widget.initialize(model);
+				widget.set(model);
 				return widget;
 			}
 		}
 		log.warn("No widget found for input: " + model.getItem().getName());
 		return null;
+	}
+
+	// -- PTService methods --
+
+	@Override
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	public Class<InputWidget<?, ?>> getPluginType() {
+		return (Class) InputWidget.class;
+	}
+
+	// -- Typed methods --
+
+	@Override
+	public Class<WidgetModel> getType() {
+		return WidgetModel.class;
 	}
 
 }

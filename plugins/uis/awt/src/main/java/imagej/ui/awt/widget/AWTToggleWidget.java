@@ -60,13 +60,21 @@ public class AWTToggleWidget extends AWTInputWidget<Boolean> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isBoolean();
+	public Boolean getValue() {
+		return checkbox.getState();
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void refreshWidget() {
+		final Boolean value = (Boolean) get().getValue();
+		if (value != getValue()) checkbox.setState(value != null && value);
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		checkbox = new Checkbox("");
 		getComponent().add(checkbox, BorderLayout.CENTER);
@@ -74,15 +82,11 @@ public class AWTToggleWidget extends AWTInputWidget<Boolean> implements
 		refreshWidget();
 	}
 
-	@Override
-	public Boolean getValue() {
-		return checkbox.getState();
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		final Boolean value = (Boolean) getModel().getValue();
-		if (value != getValue()) checkbox.setState(value != null && value);
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isBoolean();
 	}
 
 }

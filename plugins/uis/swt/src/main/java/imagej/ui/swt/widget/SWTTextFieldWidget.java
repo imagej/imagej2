@@ -58,14 +58,20 @@ public class SWTTextFieldWidget extends SWTInputWidget<String> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isText() &&
-			!model.isMultipleChoice() && !model.isMessage();
+	public String getValue() {
+		return text.getText();
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void refreshWidget() {
+		text.setText(get().getValue().toString());
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		text = new Text(getComponent(), 0);
 		final int columns = model.getItem().getColumnCount();
@@ -74,14 +80,12 @@ public class SWTTextFieldWidget extends SWTInputWidget<String> implements
 		refreshWidget();
 	}
 
-	@Override
-	public String getValue() {
-		return text.getText();
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		text.setText(getModel().getValue().toString());
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isText() &&
+			!model.isMultipleChoice() && !model.isMessage();
 	}
 
 }

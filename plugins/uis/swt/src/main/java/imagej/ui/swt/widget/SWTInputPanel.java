@@ -64,7 +64,7 @@ public class SWTInputPanel extends AbstractInputPanel<Composite, Composite> {
 	public void addWidget(final InputWidget<?, Composite> widget) {
 		super.addWidget(widget);
 		// CTR FIXME: Find a way to put the label first.
-		addLabel(widget.getModel().getWidgetLabel());
+		addLabel(widget.get().getWidgetLabel());
 	}
 
 	@Override

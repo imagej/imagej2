@@ -60,7 +60,7 @@ public class AWTInputPanel extends AbstractInputPanel<Panel, Panel> {
 	public void addWidget(final InputWidget<?, Panel> widget) {
 		super.addWidget(widget);
 		final Panel widgetPane = widget.getComponent();
-		final WidgetModel model = widget.getModel();
+		final WidgetModel model = widget.get();
 
 		// add widget to panel
 		if (widget.isLabeled()) {
