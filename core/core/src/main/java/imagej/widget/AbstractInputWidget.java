@@ -35,7 +35,7 @@
 
 package imagej.widget;
 
-import org.scijava.plugin.SortablePlugin;
+import imagej.plugin.AbstractWrapperPlugin;
 
 /**
  * Base class for input widgets.
@@ -44,8 +44,8 @@ import org.scijava.plugin.SortablePlugin;
  * @param <T> The input type of the widget.
  * @param <W> The type of UI component housing the widget.
  */
-public abstract class AbstractInputWidget<T, W> extends SortablePlugin
-	implements InputWidget<T, W>
+public abstract class AbstractInputWidget<T, W> extends
+	AbstractWrapperPlugin<WidgetModel> implements InputWidget<T, W>
 {
 
 	private WidgetModel widgetModel;
