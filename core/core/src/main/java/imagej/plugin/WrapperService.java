@@ -43,16 +43,18 @@ package imagej.plugin;
  * sequentially querying each {@link WrapperPlugin} on its list for
  * compatibility.
  * <p>
- * Note that like {@link PTService} and {@link TypedService},
- * {@code WrapperService} is not a service interface defining API for a default
- * service implementation, but rather a more general layer of a type hierarchy
- * intended to ease creation of services that fit its pattern.
+ * Note that like {@link PTService}, {@link SingletonService} and
+ * {@link TypedService}, {@code WrapperService} is not a service interface
+ * defining API for a specific concrete service implementation, but rather a
+ * more general layer in a type hierarchy intended to ease creation of services
+ * that fit its pattern.
  * </p>
  * 
  * @author Curtis Rueden
  * @param <DT> Base data type
  * @param <PT> Plugin type
  * @see WrapperPlugin
+ * @see PTService
  */
 public interface WrapperService<DT, PT extends WrapperPlugin<DT>> extends
 	TypedService<DT, PT>

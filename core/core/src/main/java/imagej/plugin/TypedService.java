@@ -40,16 +40,18 @@ import imagej.Typed;
 /**
  * A service for managing a particular sort of {@link TypedPlugin}.
  * <p>
- * Note that like {@link PTService} and {@link WrapperService},
- * {@code TypedService} is not a service interface defining API for a default
- * service implementation, but rather a more general layer of a type hierarchy
- * intended to ease creation of services that fit its pattern.
+ * Note that like {@link PTService}, {@link SingletonService} and
+ * {@link WrapperService}, {@code TypedService} is not a service interface
+ * defining API for a specific concrete service implementation, but rather a
+ * more general layer in a type hierarchy intended to ease creation of services
+ * that fit its pattern.
  * </p>
  * 
  * @author Curtis Rueden
  * @param <DT> Base data type of the {@link TypedPlugin}s.
  * @param <PT> Plugin type of the {@link TypedPlugin}s.
  * @see TypedPlugin
+ * @see PTService
  */
 public interface TypedService<DT, PT extends TypedPlugin<DT>> extends
 	PTService<PT>, Typed<DT>
