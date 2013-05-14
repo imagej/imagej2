@@ -59,17 +59,6 @@ public class ScriptFileDragAndDropHandler extends
 	// -- DragAndDropHandler methods --
 
 	@Override
-	public boolean supports(final File file) {
-		if (!super.supports(file)) return false;
-
-		// verify that the file is a script
-		final ScriptService scriptService =
-			getContext().getService(ScriptService.class);
-		if (scriptService == null) return false;
-		return scriptService.canHandleFile(file);
-	}
-
-	@Override
 	public boolean drop(final File file, final Display<?> display) {
 		check(file, display);
 		if (file == null) return true; // trivial case
@@ -87,6 +76,19 @@ public class ScriptFileDragAndDropHandler extends
 		// - Should a drop onto any other displays do anything?
 
 		return true;
+	}
+
+	// -- Typed methods --
+
+	@Override
+	public boolean supports(final File file) {
+		if (!super.supports(file)) return false;
+
+		// verify that the file is a script
+		final ScriptService scriptService =
+			getContext().getService(ScriptService.class);
+		if (scriptService == null) return false;
+		return scriptService.canHandleFile(file);
 	}
 
 }
