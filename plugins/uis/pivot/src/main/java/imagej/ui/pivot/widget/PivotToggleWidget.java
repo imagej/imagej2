@@ -58,13 +58,21 @@ public class PivotToggleWidget extends PivotInputWidget<Boolean> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return super.isCompatible(model) && model.isBoolean();
+	public Boolean getValue() {
+		return checkbox.isSelected();
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void refreshWidget() {
+		final Boolean value = (Boolean) get().getValue();
+		if (value != getValue()) checkbox.setSelected(value != null && value);
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		checkbox = new Checkbox();
 		getComponent().add(checkbox);
@@ -72,15 +80,11 @@ public class PivotToggleWidget extends PivotInputWidget<Boolean> implements
 		refreshWidget();
 	}
 
-	@Override
-	public Boolean getValue() {
-		return checkbox.isSelected();
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		final Boolean value = (Boolean) getModel().getValue();
-		if (value != getValue()) checkbox.setSelected(value != null && value);
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isBoolean();
 	}
 
 }

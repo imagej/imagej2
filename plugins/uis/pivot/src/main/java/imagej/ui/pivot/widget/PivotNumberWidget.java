@@ -49,11 +49,11 @@ public abstract class PivotNumberWidget extends PivotInputWidget<Number>
 	implements NumberWidget<BoxPane>
 {
 
-	// -- InputWidget methods --
+	// -- Typed methods --
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return super.isCompatible(model) && model.isNumber();
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isNumber();
 	}
 
 }

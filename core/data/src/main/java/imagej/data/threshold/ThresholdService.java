@@ -37,20 +37,20 @@ package imagej.data.threshold;
 
 import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.ThresholdOverlay;
+import imagej.plugin.SingletonService;
 
 import java.util.List;
 import java.util.Map;
-
-import org.scijava.service.Service;
 
 /**
  * Interface for service that works with thresholds.
  * 
  * @author Barry DeZonia
  * @see ThresholdOverlay
- * @see AutoThresholdMethod
+ * @see ThresholdMethod
  */
-public interface ThresholdService extends Service {
+public interface ThresholdService extends SingletonService<ThresholdMethod>
+{
 
 	/**
 	 * Returns true if a {@link ThresholdOverlay} is defined for a given display.
@@ -63,26 +63,21 @@ public interface ThresholdService extends Service {
 	 */
 	ThresholdOverlay getThreshold(ImageDisplay display);
 
-	/**
-	 * Removes the {@link ThresholdOverlay} associated with a display.
-	 */
+	/** Removes the {@link ThresholdOverlay} associated with a display. */
 	void removeThreshold(ImageDisplay display);
 
-	/**
-	 * Returns the collection of {@link AutoThresholdMethod}s discovered by the
-	 * system. The collection is a String index {@link Map}.
-	 */
-	Map<String, AutoThresholdMethod> getAutoThresholdMethods();
+	/** Returns a map of available {@link ThresholdMethod}s, indexed by name. */
+	Map<String, ThresholdMethod> getThresholdMethods();
 
 	/**
-	 * Returns the collection of {@link AutoThresholdMethod} names discovered by
-	 * the system. The collection is a {@link List} of Strings.
+	 * Returns the names of all available {@link ThresholdMethod}s, ordered by
+	 * priority.
 	 */
-	List<String> getAutoThresholdMethodNames();
+	List<String> getThresholdMethodNames();
 
 	/**
-	 * Returns the {@link AutoThresholdMethod} associated with the given name.
+	 * Returns the {@link ThresholdMethod} associated with the given name.
 	 */
-	AutoThresholdMethod getAutoThresholdMethod(String name);
+	ThresholdMethod getThresholdMethod(String name);
 
 }

@@ -58,21 +58,6 @@ public class AWTMessageWidget extends AWTInputWidget<String> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return super.isCompatible(model) && model.isMessage();
-	}
-
-	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
-
-		final String text = model.getText();
-
-		final Label label = new Label(text);
-		getComponent().add(label, "span");
-	}
-
-	@Override
 	public String getValue() {
 		return null;
 	}
@@ -90,6 +75,25 @@ public class AWTMessageWidget extends AWTInputWidget<String> implements
 	@Override
 	public boolean isMessage() {
 		return true;
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
+
+		final String text = model.getText();
+
+		final Label label = new Label(text);
+		getComponent().add(label, "span");
+	}
+
+	// -- Typed methods --
+
+	@Override
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isMessage();
 	}
 
 }

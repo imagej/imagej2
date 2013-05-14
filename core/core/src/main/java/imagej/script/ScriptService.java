@@ -58,6 +58,8 @@ import org.scijava.service.Service;
  */
 public interface ScriptService extends Service {
 
+	// CTR TODO: Extend SingletonService<ScriptEngineFactory>.
+
 	/**
 	 * The script service puts the current ImageJ context into the engine's bindings
 	 * using this key. That way, scripts can access the context by accessing the global

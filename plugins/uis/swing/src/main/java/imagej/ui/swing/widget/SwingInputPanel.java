@@ -60,7 +60,7 @@ public class SwingInputPanel extends AbstractInputPanel<JPanel, JPanel> {
 	public void addWidget(final InputWidget<?, JPanel> widget) {
 		super.addWidget(widget);
 		final JPanel widgetPane = widget.getComponent();
-		final WidgetModel model = widget.getModel();
+		final WidgetModel model = widget.get();
 
 		// add widget to panel
 		if (widget.isLabeled()) {

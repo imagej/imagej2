@@ -77,13 +77,22 @@ public class SwingNumberWidget extends SwingInputWidget<Number> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return super.isCompatible(model) && model.isNumber();
+	public Number getValue() {
+		return (Number) spinner.getValue();
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void refreshWidget() {
+		final Object value = get().getValue();
+		if (spinner.getValue().equals(value)) return; // no change
+		spinner.setValue(value);
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		final Number min = model.getMin();
 		final Number max = model.getMax();
@@ -130,16 +139,11 @@ public class SwingNumberWidget extends SwingInputWidget<Number> implements
 		syncSliders();
 	}
 
-	@Override
-	public Number getValue() {
-		return (Number) spinner.getValue();
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		final Object value = getModel().getValue();
-		if (spinner.getValue().equals(value)) return; // no change
-		spinner.setValue(value);
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isNumber();
 	}
 
 	// -- AdjustmentListener methods --

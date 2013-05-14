@@ -68,13 +68,21 @@ public class SwingToggleWidget extends SwingInputWidget<Boolean> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return super.isCompatible(model) && model.isBoolean();
+	public Boolean getValue() {
+		return checkBox.isSelected();
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void refreshWidget() {
+		final Boolean value = (Boolean) get().getValue();
+		if (value != getValue()) checkBox.setSelected(value != null && value);
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		checkBox = new JCheckBox("");
 		setToolTip(checkBox);
@@ -84,15 +92,11 @@ public class SwingToggleWidget extends SwingInputWidget<Boolean> implements
 		refreshWidget();
 	}
 
-	@Override
-	public Boolean getValue() {
-		return checkBox.isSelected();
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		final Boolean value = (Boolean) getModel().getValue();
-		if (value != getValue()) checkBox.setSelected(value != null && value);
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isBoolean();
 	}
 
 }

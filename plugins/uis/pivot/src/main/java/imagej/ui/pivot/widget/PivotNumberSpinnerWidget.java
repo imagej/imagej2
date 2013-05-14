@@ -56,8 +56,22 @@ public class PivotNumberSpinnerWidget extends PivotNumberWidget {
 	// -- InputWidget methods --
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public Number getValue() {
+		final String value = spinner.getSelectedItem().toString();
+		return NumberUtils.toNumber(value, get().getItem().getType());
+	}
+
+	@Override
+	public void refreshWidget() {
+		final Number value = (Number) get().getValue();
+		spinner.setSelectedItem(value.intValue());
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		final Number min = model.getMin();
 		final Number max = model.getMax();
@@ -82,18 +96,6 @@ public class PivotNumberSpinnerWidget extends PivotNumberWidget {
 		getComponent().add(spinner);
 
 		refreshWidget();
-	}
-
-	@Override
-	public Number getValue() {
-		final String value = spinner.getSelectedItem().toString();
-		return NumberUtils.toNumber(value, getModel().getItem().getType());
-	}
-
-	@Override
-	public void refreshWidget() {
-		final Number value = (Number) getModel().getValue();
-		spinner.setSelectedItem(value.intValue());
 	}
 
 }

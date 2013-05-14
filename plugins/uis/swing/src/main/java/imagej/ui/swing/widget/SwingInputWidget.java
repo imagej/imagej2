@@ -54,11 +54,11 @@ public abstract class SwingInputWidget<T> extends
 
 	private JPanel uiComponent;
 
-	// -- InputWidget methods --
+	// -- WrapperPlugin methods --
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void set(final WidgetModel model) {
+		super.set(model);
 		uiComponent = new JPanel();
 		final MigLayout layout =
 			new MigLayout("fillx,ins 3 0 3 0", "[fill,grow|pref]");
@@ -81,7 +81,7 @@ public abstract class SwingInputWidget<T> extends
 
 	/** Assigns the model's description as the given component's tool tip. */
 	protected void setToolTip(final JComponent c) {
-		final String desc = getModel().getItem().getDescription();
+		final String desc = get().getItem().getDescription();
 		if (desc == null || desc.isEmpty()) return;
 		c.setToolTipText(desc);
 	}

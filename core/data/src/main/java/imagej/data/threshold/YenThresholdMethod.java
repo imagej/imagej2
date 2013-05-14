@@ -46,8 +46,8 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  * @author Gabriel Landini
  */
-@Plugin(type = AutoThresholdMethod.class, name = "Yen")
-public class YenThresholdMethod implements AutoThresholdMethod {
+@Plugin(type = ThresholdMethod.class, name = "Yen")
+public class YenThresholdMethod extends AbstractThresholdMethod {
 
 	@Override
 	public int getThreshold(long[] histogram) {

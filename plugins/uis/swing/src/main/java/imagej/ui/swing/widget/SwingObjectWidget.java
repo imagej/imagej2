@@ -69,13 +69,22 @@ public class SwingObjectWidget extends SwingInputWidget<Object> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return super.isCompatible(model) && model.getObjectPool().size() > 0;
+	public Object getValue() {
+		return comboBox.getSelectedItem();
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void refreshWidget() {
+		final Object value = get().getValue();
+		if (value == comboBox.getSelectedItem()) return; // no change
+		comboBox.setSelectedItem(value);
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		comboBox = new JComboBox(model.getObjectPool().toArray());
 		setToolTip(comboBox);
@@ -85,16 +94,11 @@ public class SwingObjectWidget extends SwingInputWidget<Object> implements
 		refreshWidget();
 	}
 
-	@Override
-	public Object getValue() {
-		return comboBox.getSelectedItem();
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		final Object value = getModel().getValue();
-		if (value == comboBox.getSelectedItem()) return; // no change
-		comboBox.setSelectedItem(value);
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.getObjectPool().size() > 0;
 	}
 
 }

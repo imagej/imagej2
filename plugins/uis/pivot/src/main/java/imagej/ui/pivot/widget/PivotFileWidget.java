@@ -66,13 +66,23 @@ public class PivotFileWidget extends PivotInputWidget<File> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return super.isCompatible(model) && model.isType(File.class);
+	public File getValue() {
+		final String text = path.getText();
+		return text.isEmpty() ? null : new File(text);
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void refreshWidget() {
+		final String text = get().getText();
+		if (text.equals(path.getText())) return; // no change
+		path.setText(text);
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		path = new TextInput();
 		getComponent().add(path);
@@ -84,17 +94,11 @@ public class PivotFileWidget extends PivotInputWidget<File> implements
 		refreshWidget();
 	}
 
-	@Override
-	public File getValue() {
-		final String text = path.getText();
-		return text.isEmpty() ? null : new File(text);
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		final String text = getModel().getText();
-		if (text.equals(path.getText())) return; // no change
-		path.setText(text);
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isType(File.class);
 	}
 
 	// -- ButtonPressListener methods --
@@ -107,7 +111,7 @@ public class PivotFileWidget extends PivotInputWidget<File> implements
 		}
 
 		// display file chooser in appropriate mode
-		final String style = getModel().getItem().getWidgetStyle();
+		final String style = get().getItem().getWidgetStyle();
 		final FileBrowserSheet browser;
 		if (FileWidget.SAVE_STYLE.equals(style)) {
 			browser = new FileBrowserSheet(Mode.SAVE_AS);

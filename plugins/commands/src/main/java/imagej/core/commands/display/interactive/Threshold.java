@@ -41,7 +41,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.overlay.ThresholdOverlay;
-import imagej.data.threshold.AutoThresholdMethod;
+import imagej.data.threshold.ThresholdMethod;
 import imagej.data.threshold.ThresholdService;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultModuleItem;
@@ -204,7 +204,7 @@ public class Threshold extends InteractiveCommand {
 
 		if (display == null) return;
 
-		getAutoThresholdMethodNames();
+		getThresholdMethodNames();
 
 		boolean alreadyHadOne = threshSrv.hasThreshold(display);
 		ThresholdOverlay overlay = threshSrv.getThreshold(display);
@@ -249,7 +249,7 @@ public class Threshold extends InteractiveCommand {
 	// -- callbacks --
 
 	protected void autoThreshold() {
-		AutoThresholdMethod method = threshSrv.getAutoThresholdMethod(methodName);
+		ThresholdMethod method = threshSrv.getThresholdMethod(methodName);
 		int cutoff = method.getThreshold(histogram());
 		if (cutoff < 0) {
 			DialogPrompt dialog =
@@ -373,11 +373,11 @@ public class Threshold extends InteractiveCommand {
 		}
 	}
 	
-	private void getAutoThresholdMethodNames() {
+	private void getThresholdMethodNames() {
 		@SuppressWarnings("unchecked")
 		final DefaultModuleItem<String> methodNameInput =
 			(DefaultModuleItem<String>) getInfo().getInput("methodName");
-		methodNameInput.setChoices(threshSrv.getAutoThresholdMethodNames());
+		methodNameInput.setChoices(threshSrv.getThresholdMethodNames());
 	}
 
 	// calcs the data range of the whole dataset

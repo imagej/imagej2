@@ -40,13 +40,15 @@ import net.imglib2.ops.operation.real.binary.RealBinaryOperation;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
+import org.scijava.plugin.SortablePlugin;
+
 /**
  * Abstract base class for {@link CalculatorOp} implementations.
  * 
  * @author Curtis Rueden
  */
 public class AbstractCalculatorOp<I1 extends RealType<I1>, I2 extends RealType<I2>>
-	implements CalculatorOp<I1, I2>
+	extends SortablePlugin implements CalculatorOp<I1, I2>
 {
 
 	/** The wrapped operation. */
@@ -57,6 +59,8 @@ public class AbstractCalculatorOp<I1 extends RealType<I1>, I2 extends RealType<I
 	{
 		this.op = op;
 	}
+
+	// -- BinaryOperation methods --
 
 	@Override
 	public DoubleType compute(final I1 input1, final I2 input2,

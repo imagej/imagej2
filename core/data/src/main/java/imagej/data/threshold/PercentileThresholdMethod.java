@@ -46,8 +46,8 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  * @author Gabriel Landini
  */
-@Plugin(type = AutoThresholdMethod.class, name = "Percentile")
-public class PercentileThresholdMethod implements AutoThresholdMethod {
+@Plugin(type = ThresholdMethod.class, name = "Percentile")
+public class PercentileThresholdMethod extends AbstractThresholdMethod {
 
 	@Override
 	public int getThreshold(long[] histogram) {

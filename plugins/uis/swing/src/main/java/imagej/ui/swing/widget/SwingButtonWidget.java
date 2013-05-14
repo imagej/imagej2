@@ -61,32 +61,7 @@ public class SwingButtonWidget extends SwingInputWidget<Button> implements
 
 	private JButton button;
 
-	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
-
-		button = new JButton(model.getWidgetLabel());
-		button.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-
-				// call the code attached to this button
-				model.callback();
-
-				// make sure panel owning button is refreshed in case button changed
-				// some panel fields
-				getModel().getPanel().refresh();
-			}
-		});
-		setToolTip(button);
-		getComponent().add(button);
-	}
-
-	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return model.isType(Button.class);
-	}
+	// -- InputWidget methods --
 
 	@Override
 	public Button getValue() {
@@ -101,6 +76,37 @@ public class SwingButtonWidget extends SwingInputWidget<Button> implements
 	@Override
 	public boolean isLabeled() {
 		return false;
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
+
+		button = new JButton(model.getWidgetLabel());
+		button.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+
+				// call the code attached to this button
+				model.callback();
+
+				// make sure panel owning button is refreshed in case button changed
+				// some panel fields
+				get().getPanel().refresh();
+			}
+		});
+		setToolTip(button);
+		getComponent().add(button);
+	}
+
+	// -- Typed methods --
+
+	@Override
+	public boolean supports(final WidgetModel model) {
+		return model.isType(Button.class);
 	}
 
 }

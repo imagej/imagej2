@@ -48,7 +48,7 @@ public interface InputPanel<P, W> extends UIComponent<P> {
 	// TODO - groups of fields
 
 	/** Gets whether the given widget would be appropriate for the given panel. */
-	boolean isCompatible(InputWidget<?, ?> widget);
+	boolean supports(InputWidget<?, ?> widget);
 
 	/** Adds a widget to the panel. */
 	void addWidget(InputWidget<?, W> widget);

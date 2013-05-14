@@ -73,14 +73,22 @@ public class SwingChoiceWidget extends SwingInputWidget<String> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return super.isCompatible(model) && model.isText() &&
-			model.isMultipleChoice();
+	public String getValue() {
+		return comboBox.getSelectedItem().toString();
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void refreshWidget() {
+		final Object value = get().getValue();
+		if (value.equals(comboBox.getSelectedItem())) return; // no change
+		comboBox.setSelectedItem(value);
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		final String[] items = model.getChoices();
 
@@ -92,16 +100,12 @@ public class SwingChoiceWidget extends SwingInputWidget<String> implements
 		refreshWidget();
 	}
 
-	@Override
-	public String getValue() {
-		return comboBox.getSelectedItem().toString();
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		final Object value = getModel().getValue();
-		if (value.equals(comboBox.getSelectedItem())) return; // no change
-		comboBox.setSelectedItem(value);
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isText() &&
+			model.isMultipleChoice();
 	}
 
 }

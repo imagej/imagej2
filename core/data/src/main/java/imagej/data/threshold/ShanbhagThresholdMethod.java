@@ -46,8 +46,8 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  * @author Gabriel Landini
  */
-@Plugin(type = AutoThresholdMethod.class, name = "Shanbhag")
-public class ShanbhagThresholdMethod implements AutoThresholdMethod {
+@Plugin(type = ThresholdMethod.class, name = "Shanbhag")
+public class ShanbhagThresholdMethod extends AbstractThresholdMethod {
 
 	@Override
 	public int getThreshold(long[] histogram) {

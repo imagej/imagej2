@@ -72,6 +72,36 @@ public abstract class AbstractPlatform implements Platform {
 	}
 
 	@Override
+	public boolean isTarget() {
+		if (javaVendor() != null) {
+			final String javaVendor = System.getProperty("java.vendor");
+			if (!javaVendor.matches(".*" + javaVendor() + ".*")) return false;
+		}
+
+		if (javaVersion() != null) {
+			final String javaVersion = System.getProperty("java.version");
+			if (javaVersion.compareTo(javaVersion()) < 0) return false;
+		}
+
+		if (osName() != null) {
+			final String osName = System.getProperty("os.name");
+			if (!osName.matches(".*" + osName() + ".*")) return false;
+		}
+
+		if (osArch() != null) {
+			final String osArch = System.getProperty("os.arch");
+			if (!osArch.matches(".*" + osArch() + ".*")) return false;
+		}
+
+		if (osVersion() != null) {
+			final String osVersion = System.getProperty("os.version");
+			if (osVersion.compareTo(osVersion()) < 0) return false;
+		}
+
+		return true;
+	}
+
+	@Override
 	public void configure(final PlatformService service) {
 		platformService = service;
 	}

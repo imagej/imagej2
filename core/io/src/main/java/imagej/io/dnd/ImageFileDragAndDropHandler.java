@@ -62,16 +62,15 @@ public class ImageFileDragAndDropHandler extends
 	AbstractDragAndDropHandler<File>
 {
 
+	public ImageFileDragAndDropHandler() {
+		super(File.class);
+	}
+
 	// -- DragAndDropHandler methods --
 
 	@Override
-	public Class<File> getType() {
-		return File.class;
-	}
-
-	@Override
-	public boolean isCompatible(final File file) {
-		if (file == null) return true; // trivial case
+	public boolean supports(final File file) {
+		if (!super.supports(file)) return false;
 
 		// verify that the file is image data
 		final IOService ioService = getContext().getService(IOService.class);

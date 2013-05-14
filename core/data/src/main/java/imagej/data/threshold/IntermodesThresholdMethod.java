@@ -46,8 +46,8 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  * @author Gabriel Landini
  */
-@Plugin(type = AutoThresholdMethod.class, name = "Intermodes")
-public class IntermodesThresholdMethod implements AutoThresholdMethod {
+@Plugin(type = ThresholdMethod.class, name = "Intermodes")
+public class IntermodesThresholdMethod extends AbstractThresholdMethod {
 
 	private String errMsg = null;
 

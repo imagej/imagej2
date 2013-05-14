@@ -35,7 +35,7 @@
 
 package imagej.platform;
 
-import imagej.plugin.ImageJPlugin;
+import imagej.plugin.SingletonPlugin;
 
 import java.io.IOException;
 import java.net.URL;
@@ -58,17 +58,7 @@ import org.scijava.plugin.Plugin;
  * @see Plugin
  * @see PlatformService
  */
-public interface Platform extends ImageJPlugin, Disposable {
-
-	// TODO: change this and PlatformService to provide a single "isCompatible" or
-	// similar test method, and initialize method. This would allow a platform to
-	// trigger on *any* code rather than only based on the five canonical common
-	// things below.
-
-	// Further, such logic would be very similar to that of other plugin types,
-	// such as InputWidget and DataView (both of which have isCompatible and
-	// initialize methods), and maybe even DisplayViewer and InputPanel (both of
-	// which have isCompatible methods, too).
+public interface Platform extends SingletonPlugin, Disposable {
 
 	/** Java Runtime Environment vendor to match. */
 	String javaVendor();
@@ -85,6 +75,10 @@ public interface Platform extends ImageJPlugin, Disposable {
 	/** Minimum required operating system version. */
 	String osVersion();
 
+	/** Determines whether the given platform is applicable to this runtime. */
+	boolean isTarget();
+
+	/** Activates and configures the platform. */
 	void configure(PlatformService service);
 
 	void open(URL url) throws IOException;

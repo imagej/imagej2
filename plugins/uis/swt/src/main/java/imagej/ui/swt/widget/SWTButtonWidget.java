@@ -54,10 +54,29 @@ public class SWTButtonWidget extends SWTInputWidget<Button> implements
 	ButtonWidget<Composite>
 {
 	// private Button button;
+
+	// -- InputWidget methods --
+
+	@Override
+	public Button getValue() {
+		return null;
+	}
+
+	@Override
+	public void refreshWidget() {
+		// nothing to do
+	}
+
+	@Override
+	public boolean isLabeled() {
+		return false;
+	}
+
+	// -- WrapperPlugin methods --
 	
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		throw new UnsupportedOperationException("unimplemented feature");
 		
@@ -74,24 +93,11 @@ public class SWTButtonWidget extends SWTInputWidget<Button> implements
 		*/
 	}
 
+	// -- Typed methods --
+
 	@Override
-	public boolean isCompatible(WidgetModel model) {
+	public boolean supports(WidgetModel model) {
 		return model.isType(Button.class);
 	}
 	
-	@Override
-	public Button getValue() {
-		return null;
-	}
-
-	@Override
-	public void refreshWidget() {
-		// nothing to do
-	}
-
-	@Override
-	public boolean isLabeled() {
-		return false;
-	}
-
 }

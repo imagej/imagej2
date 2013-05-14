@@ -47,8 +47,8 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  * @author Gabriel Landini
  */
-@Plugin(type = AutoThresholdMethod.class, name = "Li")
-public class LiThresholdMethod implements AutoThresholdMethod {
+@Plugin(type = ThresholdMethod.class, name = "Li")
+public class LiThresholdMethod extends AbstractThresholdMethod {
 
 	@Override
 	public int getThreshold(long[] histogram) {

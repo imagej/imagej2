@@ -36,13 +36,10 @@
 package imagej.options;
 
 import imagej.command.CommandInfo;
+import imagej.plugin.PTService;
 
 import java.util.List;
 import java.util.Map;
-
-import org.scijava.event.EventService;
-import org.scijava.plugin.PluginService;
-import org.scijava.service.Service;
 
 /**
  * Interface for the options handling service.
@@ -51,11 +48,7 @@ import org.scijava.service.Service;
  * @author Barry DeZonia
  * @see OptionsPlugin
  */
-public interface OptionsService extends Service {
-
-	EventService getEventService();
-
-	PluginService getPluginService();
+public interface OptionsService extends PTService<OptionsPlugin> {
 
 	/** Gets a list of all available options. */
 	List<OptionsPlugin> getOptions();

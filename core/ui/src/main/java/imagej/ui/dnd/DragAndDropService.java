@@ -36,17 +36,18 @@
 package imagej.ui.dnd;
 
 import imagej.display.Display;
+import imagej.plugin.HandlerService;
 
 import java.util.List;
-
-import org.scijava.service.Service;
 
 /**
  * Interface for service that handles drag and drop events.
  * 
  * @author Curtis Rueden
  */
-public interface DragAndDropService extends Service {
+public interface DragAndDropService extends
+	HandlerService<Object, DragAndDropHandler<Object>>
+{
 
 	/**
 	 * Checks whether the given {@link DragAndDropData} can be dropped onto the
@@ -55,7 +56,7 @@ public interface DragAndDropService extends Service {
 	 * 
 	 * @see DragAndDropHandler
 	 */
-	boolean isCompatible(DragAndDropData data, Display<?> display);
+	boolean supports(DragAndDropData data, Display<?> display);
 
 	/**
 	 * Checks whether the given object can be dropped onto the specified display.
@@ -64,7 +65,7 @@ public interface DragAndDropService extends Service {
 	 * 
 	 * @see DragAndDropHandler
 	 */
-	boolean isCompatible(Object object, Display<?> display);
+	boolean supports(Object object, Display<?> display);
 
 	/**
 	 * Performs a drag-and-drop operation in the given display with the specified
@@ -106,10 +107,15 @@ public interface DragAndDropService extends Service {
 	 */
 	DragAndDropHandler<?> getHandler(Object object, Display<?> display);
 
+	// NB: Javadoc overrides.
+
+	// -- SingletonService methods --
+
 	/**
 	 * Gets the list of available drag-and-drop handlers, which are used to
 	 * perform drag-and-drop operations.
 	 */
-	List<DragAndDropHandler<?>> getHandlers();
+	@Override
+	List<DragAndDropHandler<Object>> getInstances();
 
 }

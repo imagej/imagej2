@@ -59,14 +59,28 @@ public class SWTChoiceWidget extends SWTInputWidget<String> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return super.isCompatible(model) && model.isText() &&
-			model.isMultipleChoice();
+	public String getValue() {
+		return combo.getItem(combo.getSelectionIndex());
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void refreshWidget() {
+		final String value = get().getValue().toString();
+		if (value.equals(getValue())) return; // no change
+		for (int i = 0; i < combo.getItemCount(); i++) {
+			final String item = combo.getItem(i);
+			if (item.equals(value)) {
+				combo.select(i);
+				break;
+			}
+		}
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		final String[] items = model.getChoices();
 
@@ -76,22 +90,12 @@ public class SWTChoiceWidget extends SWTInputWidget<String> implements
 		refreshWidget();
 	}
 
-	@Override
-	public String getValue() {
-		return combo.getItem(combo.getSelectionIndex());
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		final String value = getModel().getValue().toString();
-		if (value.equals(getValue())) return; // no change
-		for (int i = 0; i < combo.getItemCount(); i++) {
-			final String item = combo.getItem(i);
-			if (item.equals(value)) {
-				combo.select(i);
-				break;
-			}
-		}
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isText() &&
+			model.isMultipleChoice();
 	}
 
 }

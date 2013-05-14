@@ -69,13 +69,23 @@ public class AWTFileWidget extends AWTInputWidget<File> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return super.isCompatible(model) && model.isType(File.class);
+	public File getValue() {
+		final String text = path.getText();
+		return text.isEmpty() ? null : new File(text);
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void refreshWidget() {
+		final String text = get().getText();
+		if (text.equals(path.getText())) return; // no change
+		path.setText(text);
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		getComponent().setLayout(new BorderLayout());
 
@@ -90,17 +100,11 @@ public class AWTFileWidget extends AWTInputWidget<File> implements
 		refreshWidget();
 	}
 
-	@Override
-	public File getValue() {
-		final String text = path.getText();
-		return text.isEmpty() ? null : new File(text);
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		final String text = getModel().getText();
-		if (text.equals(path.getText())) return; // no change
-		path.setText(text);
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isType(File.class);
 	}
 
 	// -- ActionListener methods --
@@ -113,7 +117,7 @@ public class AWTFileWidget extends AWTInputWidget<File> implements
 		}
 
 		// display file chooser in appropriate mode
-		final String style = getModel().getItem().getWidgetStyle();
+		final String style = get().getItem().getWidgetStyle();
 		final FileDialog fileDialog = new FileDialog((Frame) null);
 		if (FileWidget.SAVE_STYLE.equals(style)) {
 			fileDialog.setMode(FileDialog.SAVE);

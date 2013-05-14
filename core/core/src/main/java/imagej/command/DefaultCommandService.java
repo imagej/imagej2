@@ -38,6 +38,7 @@ package imagej.command;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
+import imagej.plugin.AbstractPTService;
 import imagej.plugin.PostprocessorPlugin;
 import imagej.plugin.PreprocessorPlugin;
 import imagej.plugin.ServicePreprocessor;
@@ -58,7 +59,6 @@ import org.scijava.plugin.PluginService;
 import org.scijava.plugin.SciJavaPlugin;
 import org.scijava.plugin.event.PluginsAddedEvent;
 import org.scijava.plugin.event.PluginsRemovedEvent;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 import org.scijava.util.ListUtils;
 
@@ -71,7 +71,7 @@ import org.scijava.util.ListUtils;
  * @see Command
  */
 @Plugin(type = Service.class)
-public class DefaultCommandService extends AbstractService implements
+public class DefaultCommandService extends AbstractPTService<Command> implements
 	CommandService
 {
 
@@ -228,6 +228,13 @@ public class DefaultCommandService extends AbstractService implements
 		final Map<String, Object> inputMap)
 	{
 		return moduleService.run(module, pre(), post(), inputMap);
+	}
+
+	// -- PTService methods --
+
+	@Override
+	public Class<Command> getPluginType() {
+		return Command.class;
 	}
 
 	// -- Service methods --

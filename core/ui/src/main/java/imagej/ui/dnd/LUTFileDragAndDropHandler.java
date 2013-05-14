@@ -54,20 +54,18 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  */
 @Plugin(type = DragAndDropHandler.class)
-public class LUTFileDragAndDropHandler extends
-	AbstractDragAndDropHandler<File>
+public class LUTFileDragAndDropHandler extends AbstractDragAndDropHandler<File>
 {
+
+	public LUTFileDragAndDropHandler() {
+		super(File.class);
+	}
 
 	// -- DragAndDropHandler methods --
 
 	@Override
-	public Class<File> getType() {
-		return File.class;
-	}
-
-	@Override
-	public boolean isCompatible(final File file) {
-		if (file == null) return true; // trivial case
+	public boolean supports(final File file) {
+		if (!super.supports(file)) return false;
 
 		// verify that the file contains a color table
 		final LUTService lutService = getContext().getService(LUTService.class);
@@ -76,7 +74,7 @@ public class LUTFileDragAndDropHandler extends
 	}
 
 	@Override
-	public boolean isCompatibleDisplay(final Display<?> display) {
+	public boolean supportsDisplay(final Display<?> display) {
 		return display == null || display instanceof ImageDisplay;
 	}
 
@@ -121,7 +119,7 @@ public class LUTFileDragAndDropHandler extends
 		return colorTable;
 	}
 
-	private String getBaseName(File file) {
+	private String getBaseName(final File file) {
 		final String name = file.getName();
 		return name.toLowerCase().endsWith(".lut") ? name.substring(0, name
 			.length() - 4) : name;

@@ -46,6 +46,8 @@ import org.scijava.service.Service;
  */
 public interface UploaderService extends Service {
 
+	// CTR TODO: Extend SingletonService<Uploader>.
+
 	/** TODO. */
 	boolean hasUploader(String protocol);
 

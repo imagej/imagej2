@@ -64,13 +64,23 @@ public class SWTFileWidget extends SWTInputWidget<File> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return super.isCompatible(model) && model.isType(File.class);
+	public File getValue() {
+		final String text = path.getText();
+		return text.isEmpty() ? null : new File(text);
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void refreshWidget() {
+		final String text = get().getText();
+		if (text.equals(path.getText())) return; // no change
+		path.setText(text);
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		getComponent().setLayout(new MigLayout());
 
@@ -83,17 +93,11 @@ public class SWTFileWidget extends SWTInputWidget<File> implements
 		refreshWidget();
 	}
 
-	@Override
-	public File getValue() {
-		final String text = path.getText();
-		return text.isEmpty() ? null : new File(text);
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		final String text = getModel().getText();
-		if (text.equals(path.getText())) return; // no change
-		path.setText(text);
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isType(File.class);
 	}
 
 }

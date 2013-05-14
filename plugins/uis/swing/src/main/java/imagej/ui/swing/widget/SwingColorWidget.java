@@ -100,13 +100,30 @@ public class SwingColorWidget extends SwingInputWidget<ColorRGB> implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		return super.isCompatible(model) && model.isType(ColorRGB.class);
+	public ColorRGB getValue() {
+		return AWTColors.getColorRGB(color);
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void refreshWidget() {
+		final ColorRGB value = (ColorRGB) get().getValue();
+		color = AWTColors.getColor(value);
+
+		final BufferedImage image =
+			new BufferedImage(SWATCH_WIDTH, SWATCH_HEIGHT, BufferedImage.TYPE_INT_RGB);
+		final Graphics g = image.getGraphics();
+		g.setColor(color);
+		g.fillRect(0, 0, image.getWidth(), image.getHeight());
+		g.dispose();
+		final ImageIcon icon = new ImageIcon(image);
+		choose.setIcon(icon);
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		getComponent().setLayout(new BoxLayout(getComponent(), BoxLayout.X_AXIS));
 
@@ -124,24 +141,11 @@ public class SwingColorWidget extends SwingInputWidget<ColorRGB> implements
 		refreshWidget();
 	}
 
-	@Override
-	public ColorRGB getValue() {
-		return AWTColors.getColorRGB(color);
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		final ColorRGB value = (ColorRGB) getModel().getValue();
-		color = AWTColors.getColor(value);
-
-		final BufferedImage image =
-			new BufferedImage(SWATCH_WIDTH, SWATCH_HEIGHT, BufferedImage.TYPE_INT_RGB);
-		final Graphics g = image.getGraphics();
-		g.setColor(color);
-		g.fillRect(0, 0, image.getWidth(), image.getHeight());
-		g.dispose();
-		final ImageIcon icon = new ImageIcon(image);
-		choose.setIcon(icon);
+	public boolean supports(final WidgetModel model) {
+		return super.supports(model) && model.isType(ColorRGB.class);
 	}
 
 	// -- Utility methods --

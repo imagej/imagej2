@@ -35,6 +35,8 @@
 
 package imagej.text;
 
+import imagej.plugin.AbstractHandlerService;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -42,14 +44,10 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 import org.scijava.util.FileUtils;
 
@@ -59,8 +57,8 @@ import org.scijava.util.FileUtils;
  * @author Curtis Rueden
  */
 @Plugin(type = Service.class)
-public final class DefaultTextService extends AbstractService implements
-	TextService
+public final class DefaultTextService extends
+	AbstractHandlerService<File, TextFormat> implements TextService
 {
 
 	@Parameter
@@ -87,12 +85,16 @@ public final class DefaultTextService extends AbstractService implements
 	}
 
 	@Override
-	public boolean isText(final File file) {
-		return getFormat(file) != null;
+	public String asHTML(final File file) throws IOException {
+		final TextFormat format = getHandler(file);
+		if (format == null) return null;
+		return "<html><body>" + format.asHTML(open(file)) + "</body></html>";
 	}
 
+	// -- HandlerService methods --
+
 	@Override
-	public TextFormat getFormat(final File file) {
+	public TextFormat getHandler(final File file) {
 		final String extension = FileUtils.getExtension(file);
 		for (final TextFormat format : formats) {
 			for (final String ext : format.getExtensions()) {
@@ -103,27 +105,18 @@ public final class DefaultTextService extends AbstractService implements
 		return null;
 	}
 
+	// -- PTService methods --
+
 	@Override
-	public List<TextFormat> getFormats() {
-		return Collections.unmodifiableList(formats);
+	public Class<TextFormat> getPluginType() {
+		return TextFormat.class;
 	}
 
-	@Override
-	public String asHTML(final File file) throws IOException {
-		final TextFormat format = getFormat(file);
-		if (format == null) return null;
-		return "<html><body>" + format.asHTML(open(file)) + "</body></html>";
-	}
-
-	// -- Service methods --
+	// -- Typed methods --
 
 	@Override
-	public void initialize() {
-		for (final PluginInfo<TextFormat> info : pluginService
-			.getPluginsOfType(TextFormat.class))
-		{
-			formats.add(pluginService.createInstance(info));
-		}
+	public Class<File> getType() {
+		return File.class;
 	}
 
 }

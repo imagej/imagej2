@@ -59,7 +59,7 @@ public class PivotInputPanel extends AbstractInputPanel<TablePane, BoxPane> {
 	public void addWidget(final InputWidget<?, BoxPane> widget) {
 		super.addWidget(widget);
 		final BoxPane widgetPane = widget.getComponent();
-		final WidgetModel model = widget.getModel();
+		final WidgetModel model = widget.get();
 
 		final TablePane.Row row = new TablePane.Row();
 		if (widget.isLabeled()) {

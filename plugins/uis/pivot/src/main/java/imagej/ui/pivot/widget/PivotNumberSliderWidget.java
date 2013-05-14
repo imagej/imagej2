@@ -61,15 +61,23 @@ public class PivotNumberSliderWidget extends PivotNumberWidget implements
 	// -- InputWidget methods --
 
 	@Override
-	public boolean isCompatible(final WidgetModel model) {
-		final String style = model.getItem().getWidgetStyle();
-		if (!NumberWidget.SPINNER_STYLE.equals(style)) return false;
-		return super.isCompatible(model);
+	public Number getValue() {
+		final String value = "" + slider.getValue();
+		return NumberUtils.toNumber(value, get().getItem().getType());
 	}
 
 	@Override
-	public void initialize(final WidgetModel model) {
-		super.initialize(model);
+	public void refreshWidget() {
+		final Number value = (Number) get().getValue();
+		slider.setValue(value.intValue());
+		label.setText(value.toString());
+	}
+
+	// -- WrapperPlugin methods --
+
+	@Override
+	public void set(final WidgetModel model) {
+		super.set(model);
 
 		final Number min = model.getMin();
 		final Number max = model.getMax();
@@ -85,17 +93,13 @@ public class PivotNumberSliderWidget extends PivotNumberWidget implements
 		refreshWidget();
 	}
 
-	@Override
-	public Number getValue() {
-		final String value = "" + slider.getValue();
-		return NumberUtils.toNumber(value, getModel().getItem().getType());
-	}
+	// -- Typed methods --
 
 	@Override
-	public void refreshWidget() {
-		final Number value = (Number) getModel().getValue();
-		slider.setValue(value.intValue());
-		label.setText(value.toString());
+	public boolean supports(final WidgetModel model) {
+		final String style = model.getItem().getWidgetStyle();
+		if (!NumberWidget.SPINNER_STYLE.equals(style)) return false;
+		return super.supports(model);
 	}
 
 	// -- SliderValueListener methods --

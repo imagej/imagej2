@@ -35,6 +35,8 @@
 
 package imagej.data.operator;
 
+import imagej.plugin.SingletonService;
+
 import java.util.List;
 import java.util.Map;
 
@@ -42,15 +44,14 @@ import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
-import org.scijava.service.Service;
-
 /**
  * Interface for service which manages available {@link CalculatorOp}s. It
  * allows the combination of {@link Img}s using these operators.
  * 
  * @author Barry DeZonia
  */
-public interface CalculatorService extends Service {
+public interface CalculatorService extends SingletonService<CalculatorOp<?, ?>>
+{
 
 	/**
 	 * Returns the collection of {@link CalculatorOp}s known to the system. This

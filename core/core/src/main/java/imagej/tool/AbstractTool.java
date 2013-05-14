@@ -45,7 +45,6 @@ import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
 
 import org.scijava.input.MouseCursor;
-import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.SortablePlugin;
 
 /**
@@ -55,18 +54,6 @@ import org.scijava.plugin.SortablePlugin;
  * @author Grant Harris
  */
 public abstract class AbstractTool extends SortablePlugin implements Tool {
-
-	private PluginInfo<? extends Tool> info;
-
-	@Override
-	public PluginInfo<? extends Tool> getInfo() {
-		return info;
-	}
-
-	@Override
-	public void setInfo(final PluginInfo<? extends Tool> info) {
-		this.info = info;
-	}
 
 	@Override
 	public MouseCursor getCursor() {
@@ -130,7 +117,7 @@ public abstract class AbstractTool extends SortablePlugin implements Tool {
 
 	@Override
 	public String getDescription() {
-		return info.getDescription();
+		return getInfo().getDescription();
 	}
 
 }

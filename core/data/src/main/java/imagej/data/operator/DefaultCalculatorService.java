@@ -35,6 +35,8 @@
 
 package imagej.data.operator;
 
+import imagej.plugin.AbstractSingletonService;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,12 +49,7 @@ import net.imglib2.ops.img.ImageCombiner;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
-import org.scijava.log.LogService;
-import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginInfo;
-import org.scijava.plugin.PluginService;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
@@ -61,31 +58,14 @@ import org.scijava.service.Service;
  * @author Barry DeZonia
  */
 @Plugin(type = Service.class)
-public class DefaultCalculatorService extends AbstractService implements
-	CalculatorService
+public class DefaultCalculatorService extends
+	AbstractSingletonService<CalculatorOp<?, ?>> implements CalculatorService
 {
-
-	// -- Parameters --
-
-	@Parameter
-	private LogService log;
-
-	@Parameter
-	private PluginService pluginService;
 
 	// -- instance variables --
 
 	private Map<String, CalculatorOp<?, ?>> operators;
 	private List<String> operatorNames;
-
-	// -- service initializer --
-
-	@Override
-	public void initialize() {
-		operators = new HashMap<String, CalculatorOp<?, ?>>();
-		operatorNames = new ArrayList<String>();
-		findOperators();
-	}
 
 	// -- CalculatorService methods --
 
@@ -113,20 +93,32 @@ public class DefaultCalculatorService extends AbstractService implements
 			new ArrayImgFactory<DoubleType>(), new DoubleType());
 	}
 
+	// -- PTService methods --
+
+	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Class<CalculatorOp<?, ?>> getPluginType() {
+		return (Class) CalculatorOp.class;
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		super.initialize();
+		buildDataStructures();
+	}
+
 	// -- helpers --
 
-	@SuppressWarnings("rawtypes")
-	private void findOperators() {
-		final List<PluginInfo<CalculatorOp>> pluginInfos =
-			pluginService.getPluginsOfType(CalculatorOp.class);
-		for (final PluginInfo<CalculatorOp> info : pluginInfos) {
-			final String name = info.getName();
-			final CalculatorOp<?, ?> op = pluginService.createInstance(info);
-			if (op == null) continue;
+	private void buildDataStructures() {
+		operators = new HashMap<String, CalculatorOp<?, ?>>();
+		operatorNames = new ArrayList<String>();
+		for (final CalculatorOp<?, ?> op : getInstances()) {
+			final String name = op.getInfo().getName();
 			operators.put(name, op);
 			operatorNames.add(name);
 		}
-		Collections.sort(operatorNames);
 	}
 
 }

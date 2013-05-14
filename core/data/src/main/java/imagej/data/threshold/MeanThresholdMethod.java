@@ -46,8 +46,8 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  * @author Gabriel Landini
  */
-@Plugin(type = AutoThresholdMethod.class, name = "Mean")
-public class MeanThresholdMethod implements AutoThresholdMethod {
+@Plugin(type = ThresholdMethod.class, name = "Mean")
+public class MeanThresholdMethod extends AbstractThresholdMethod {
 
 	@Override
 	public int getThreshold(long[] histogram) {

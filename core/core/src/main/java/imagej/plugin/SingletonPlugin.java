@@ -33,28 +33,22 @@
  * #L%
  */
 
-package imagej.data.threshold;
-
-import imagej.plugin.ImageJPlugin;
+package imagej.plugin;
 
 /**
- * TODO
- *
- * @author Barry DeZonia
+ * Interface for plugins intended to be instantiated as singletons. A singleton
+ * plugin is a stateless {@link ImageJPlugin}, such that the
+ * {@link SingletonService} can maintain a list of singleton instances.
+ * <p>
+ * This interface exists mainly to facilitate differentiation between plugin
+ * types intended as singletons and those which are not. It also serves as a
+ * placeholder for any potential singleton-plugin-specific API added in the
+ * future.
+ * </p>
+ * 
+ * @author Curtis Rueden
+ * @see SingletonService
  */
-public interface AutoThresholdMethod extends ImageJPlugin {
-
-	/**
-	 * Calculates the threshold index from an unnormalized histogram of data.
-	 * Returns -1 if the threshold index cannot be found.
-	 */
-	int getThreshold(long[] histogram);
-
-	/**
-	 * Returns any message associated with the last call to getThreshold(). If
-	 * getThreshold() last returned -1 the internal message may shed light on the
-	 * issue. If getThreshold() is successful this message still may contain
-	 * warning info.
-	 */
-	String getMessage();
+public interface SingletonPlugin extends ImageJPlugin {
+	// NB: Marker interface.
 }
