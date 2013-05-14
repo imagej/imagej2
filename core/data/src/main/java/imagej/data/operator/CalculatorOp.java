@@ -35,11 +35,14 @@
 
 package imagej.data.operator;
 
-import imagej.plugin.ImageJPlugin;
+import imagej.plugin.SingletonPlugin;
 import net.imglib2.ops.operation.real.binary.RealBinaryOperation;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
+import org.scijava.Contextual;
+import org.scijava.Prioritized;
+import org.scijava.plugin.HasPluginInfo;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -56,7 +59,8 @@ import org.scijava.plugin.Plugin;
  * @see Plugin
  */
 public interface CalculatorOp<I1 extends RealType<I1>, I2 extends RealType<I2>>
-	extends RealBinaryOperation<I1, I2, DoubleType>, ImageJPlugin
+	extends RealBinaryOperation<I1, I2, DoubleType>, Contextual, Prioritized,
+	HasPluginInfo, SingletonPlugin
 {
 	// NB: No implementation needed.
 }
