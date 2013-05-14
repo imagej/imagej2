@@ -139,8 +139,7 @@ public interface DragAndDropHandler<D> extends TypedPlugin<D> {
 	 */
 	boolean dropObject(final Object object, final Display<?> display);
 
-	// NB: The following method declarations are overridden solely to provide more
-	// appropriate, context-specific javadoc.
+	// NB: Javadoc overrides.
 
 	// -- Typed methods --
 

@@ -107,8 +107,7 @@ public interface DragAndDropService extends
 	 */
 	DragAndDropHandler<?> getHandler(Object object, Display<?> display);
 
-	// NB: The following method declarations are overridden solely to provide more
-	// appropriate, context-specific javadoc.
+	// NB: Javadoc overrides.
 
 	// -- HandlerService methods --
 
