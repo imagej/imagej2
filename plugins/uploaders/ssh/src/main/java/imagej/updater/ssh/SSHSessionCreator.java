@@ -246,12 +246,19 @@ final class SSHSessionCreator {
 	/**
 	 * For debugging only.
 	 * 
-	 * This connects to an SSH server for testing purposes. The given host must
+	 * <p>This connects to an SSH server for testing purposes. The given host must
 	 * be specified in $HOME/.ssh/config and it must be equipped with a private
-	 * key.
+	 * key.</p>
 	 * 
-	 * @param host the ssh host, as specified in $HOME/.ssh/config
-	 * @param log the log service
+	 * <p>Note that you need to connect with command-line ssh first, to record the
+	 * finger-print of the host. It might be necessary to call
+	 * <tt>ssh-keyscan test.imagej.net >> $HOME/.ssh/known_hosts</tt> if your
+	 * <tt>$HOME/.ssh/known_hosts contains hashed lines.</p>
+	 * 
+	 * @param host
+	 *            the ssh host, as specified in $HOME/.ssh/config
+	 * @param log
+	 *            the log service
 	 * @return a valid SSH session
 	 * @throws JSchException
 	 */
