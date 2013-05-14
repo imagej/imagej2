@@ -35,13 +35,14 @@
 
 package imagej.plugin;
 
+import org.scijava.plugin.Plugin;
 import org.scijava.plugin.SciJavaPlugin;
 
 /**
  * Top-level interface for ImageJ plugins.
  * <p>
  * Plugins discoverable at runtime must implement this interface (usually a
- * subinterface) and be annotated with @{@link org.scijava.plugin.Plugin}.
+ * subinterface) and be annotated with @{@link Plugin}.
  * </p>
  * <p>
  * The core types of ImageJ plugins are as follows:
@@ -67,7 +68,7 @@ import org.scijava.plugin.SciJavaPlugin;
  * behavior.</li>
  * </ul>
  * <p>
- * There are also one very important non-ImageJ-specific plugin type:
+ * There is also one very important non-ImageJ-specific plugin type:
  * </p>
  * <ul>
  * <li>{@link org.scijava.service.Service} - plugins that define new API in a
@@ -75,12 +76,11 @@ import org.scijava.plugin.SciJavaPlugin;
  * </ul>
  * <p>
  * What all plugins have in common is that they are declared using an annotation
- * (@{@link org.scijava.plugin.Plugin}), and discovered if present on the
- * classpath at runtime.
+ * (@{@link Plugin}), and discovered if present on the classpath at runtime.
  * </p>
  * 
  * @author Curtis Rueden
- * @see org.scijava.plugin.Plugin
+ * @see Plugin
  * @see org.scijava.plugin.PluginService
  */
 public interface ImageJPlugin extends SciJavaPlugin {
