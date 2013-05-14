@@ -72,8 +72,10 @@ public abstract class AbstractUploaderTestBase {
 
 	@After
 	public void after() {
-		files.removeUpdateSite(updateSiteName);
-		if (files != null) cleanup(files);
+		if (files != null) {
+			files.removeUpdateSite(updateSiteName);
+			cleanup(files);
+		}
 	}
 
 	public void test(final Deleter deleter, final String host, final String uploadDirectory) throws Exception {
