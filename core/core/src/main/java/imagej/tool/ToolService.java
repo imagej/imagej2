@@ -35,14 +35,13 @@
 
 package imagej.tool;
 
+import imagej.plugin.SingletonService;
 import imagej.util.RealCoords;
 
 import java.util.List;
 
 import org.scijava.app.StatusService;
 import org.scijava.event.EventService;
-import org.scijava.plugin.PluginService;
-import org.scijava.service.Service;
 
 /**
  * Interface for service that tracks available tools.
@@ -50,13 +49,11 @@ import org.scijava.service.Service;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-public interface ToolService extends Service {
+public interface ToolService extends SingletonService<Tool> {
 
 	EventService getEventService();
 
 	StatusService getStatusService();
-
-	PluginService getPluginService();
 
 	Tool getTool(String name);
 

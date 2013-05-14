@@ -44,6 +44,7 @@ import imagej.display.event.input.MsMovedEvent;
 import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
+import imagej.plugin.AbstractSingletonService;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.tool.event.ToolDeactivatedEvent;
 import imagej.util.RealCoords;
@@ -57,12 +58,9 @@ import java.util.Map;
 import org.scijava.app.StatusService;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
-import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
-import org.scijava.plugin.PluginService;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
@@ -75,22 +73,17 @@ import org.scijava.service.Service;
  * @see Tool
  */
 @Plugin(type = Service.class)
-public class DefaultToolService extends AbstractService implements ToolService
+public class DefaultToolService extends AbstractSingletonService<Tool>
+	implements ToolService
 {
 
 	private static final double SEPARATOR_DISTANCE = 10;
-
-	@Parameter
-	private LogService log;
 
 	@Parameter
 	private EventService eventService;
 
 	@Parameter
 	private StatusService statusService;
-
-	@Parameter
-	private PluginService pluginService;
 
 	private Map<String, Tool> alwaysActiveTools;
 	private Map<String, Tool> tools;
@@ -110,11 +103,6 @@ public class DefaultToolService extends AbstractService implements ToolService
 	@Override
 	public StatusService getStatusService() {
 		return statusService;
-	}
-
-	@Override
-	public PluginService getPluginService() {
-		return pluginService;
 	}
 
 	@Override
@@ -239,11 +227,19 @@ public class DefaultToolService extends AbstractService implements ToolService
 		reportPoint(p.x, p.y);
 	}
 
+	// -- PTService methods --
+
+	@Override
+	public Class<Tool> getPluginType() {
+		return Tool.class;
+	}
+
 	// -- Service methods --
 
 	@Override
 	public void initialize() {
-		createTools();
+		super.initialize();
+		buildDataStructures();
 		activeTool = new DummyTool();
 
 		final Tool rectangleTool = getTool("Rectangle");
@@ -344,26 +340,19 @@ public class DefaultToolService extends AbstractService implements ToolService
 
 	// -- Helper methods --
 
-	private void createTools() {
-		// discover available tools
-		final List<PluginInfo<Tool>> toolEntries =
-			pluginService.getPluginsOfType(Tool.class);
-
+	private void buildDataStructures() {
 		// create tool instances
 		alwaysActiveTools = new HashMap<String, Tool>();
 		alwaysActiveToolList = new ArrayList<Tool>();
 		tools = new HashMap<String, Tool>();
 		toolList = new ArrayList<Tool>();
-		for (final PluginInfo<Tool> info : toolEntries) {
-			final Tool tool = pluginService.createInstance(info);
-			if (tool == null) continue;
-			tool.setInfo(info);
-			if (info.is(Tool.ALWAYS_ACTIVE)) {
-				alwaysActiveTools.put(info.getName(), tool);
+		for (final Tool tool : getInstances()) {
+			if (tool.getInfo().is(Tool.ALWAYS_ACTIVE)) {
+				alwaysActiveTools.put(tool.getInfo().getName(), tool);
 				alwaysActiveToolList.add(tool);
 			}
 			else {
-				tools.put(info.getName(), tool);
+				tools.put(tool.getInfo().getName(), tool);
 				toolList.add(tool);
 			}
 		}
