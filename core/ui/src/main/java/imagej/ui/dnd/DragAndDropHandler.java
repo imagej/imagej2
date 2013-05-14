@@ -148,6 +148,6 @@ public interface DragAndDropHandler<D> extends HandlerPlugin<D> {
 	 * compatible display.
 	 */
 	@Override
-	boolean supports(final Object dataObject);
+	boolean supports(final D dataObject);
 
 }
