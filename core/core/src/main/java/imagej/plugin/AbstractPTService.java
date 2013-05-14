@@ -35,35 +35,36 @@
 
 package imagej.plugin;
 
+import java.util.List;
+
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
+import org.scijava.service.AbstractService;
+
 /**
- * A service for managing {@link WrapperPlugin}s of a particular type. A
- * {@link WrapperPlugin} is a stateful {@link TypedPlugin} which wraps a
- * particular object of its associated data type. For any given data object, the
- * service is capable of wrapping it with the most appropriate wrapper by
- * sequentially querying each {@link WrapperPlugin} on its list for
- * compatibility.
- * <p>
- * Note that like {@link PTService} and {@link TypedService},
- * {@code WrapperService} is not a service interface defining API for a default
- * service implementation, but rather a more general layer of a type hierarchy
- * intended to ease creation of services that fit its pattern.
- * </p>
+ * Abstract base class for {@link PTService}s.
  * 
  * @author Curtis Rueden
- * @param <DT> Base data type
- * @param <PT> Plugin type
- * @see WrapperPlugin
+ * @param <PT> Plugin type of the {@link ImageJPlugin}s being managed.
  */
-public interface WrapperService<DT, PT extends WrapperPlugin<DT>> extends
-	TypedService<DT, PT>
+public abstract class AbstractPTService<PT extends ImageJPlugin> extends
+	AbstractService implements PTService<PT>
 {
 
-	/**
-	 * Creates a new plugin instance wrapping the given associated data object.
-	 * 
-	 * @throws IllegalArgumentException if the data is not compatible with any
-	 *           available plugin.
-	 */
-	<D extends DT> WrapperPlugin<D> create(D data);
+	@Parameter
+	private PluginService pluginService;
+
+	// -- PTService methods --
+
+	@Override
+	public PluginService getPluginService() {
+		return pluginService;
+	}
+
+	@Override
+	public List<PluginInfo<PT>> getPlugins() {
+		return pluginService.getPluginsOfType(getPluginType());
+	}
 
 }

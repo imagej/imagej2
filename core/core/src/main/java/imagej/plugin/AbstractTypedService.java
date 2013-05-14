@@ -35,37 +35,15 @@
 
 package imagej.plugin;
 
-import java.util.List;
-
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.PluginInfo;
-import org.scijava.plugin.PluginService;
-import org.scijava.service.AbstractService;
-
 /**
  * Abstract base class for {@link TypedService}s.
  * 
  * @author Curtis Rueden
- * @param <DT> Base data type wrapped by the wrappers.
- * @param <PT> Plugin type of the wrappers.
+ * @param <DT> Base data type of the {@link TypedPlugin}s.
+ * @param <PT> Plugin type of the {@link TypedPlugin}s.
  */
 public abstract class AbstractTypedService<DT, PT extends TypedPlugin<DT>>
-	extends AbstractService implements TypedService<DT, PT>
+	extends AbstractPTService<PT> implements TypedService<DT, PT>
 {
-
-	@Parameter
-	private PluginService pluginService;
-
-	// -- TypedService methods --
-
-	@Override
-	public PluginService getPluginService() {
-		return pluginService;
-	}
-
-	@Override
-	public List<PluginInfo<PT>> getPlugins() {
-		return pluginService.getPluginsOfType(getPluginType());
-	}
-
+	// NB: No implementation needed.
 }
