@@ -38,6 +38,7 @@ package imagej.options;
 import imagej.command.Command;
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
+import imagej.plugin.AbstractPTService;
 import imagej.plugin.InitPreprocessor;
 import imagej.plugin.PreprocessorPlugin;
 import imagej.plugin.ValidityPreprocessor;
@@ -46,13 +47,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.scijava.event.EventService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
-import org.scijava.plugin.PluginService;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 import org.scijava.util.ClassUtils;
 
@@ -65,18 +63,12 @@ import org.scijava.util.ClassUtils;
  * @see OptionsPlugin
  */
 @Plugin(type = Service.class)
-public class DefaultOptionsService extends AbstractService implements
-	OptionsService
+public class DefaultOptionsService extends AbstractPTService<OptionsPlugin>
+	implements OptionsService
 {
 
 	@Parameter
 	private LogService log;
-
-	@Parameter
-	private EventService eventService;
-
-	@Parameter
-	private PluginService pluginService;
 
 	@Parameter
 	private CommandService commandService;
@@ -84,20 +76,10 @@ public class DefaultOptionsService extends AbstractService implements
 	// -- OptionsService methods --
 
 	@Override
-	public EventService getEventService() {
-		return eventService;
-	}
-
-	@Override
-	public PluginService getPluginService() {
-		return pluginService;
-	}
-
-	@Override
 	public List<OptionsPlugin> getOptions() {
 		// get the list of available options plugins
 		final List<PluginInfo<OptionsPlugin>> infos =
-			pluginService.getPluginsOfType(OptionsPlugin.class);
+			getPluginService().getPluginsOfType(OptionsPlugin.class);
 
 		// instantiate one instance of each options plugin
 		final ArrayList<OptionsPlugin> optionsPlugins =
@@ -179,6 +161,13 @@ public class DefaultOptionsService extends AbstractService implements
 		optionsPlugin.run();
 	}
 
+	// -- PTService methods --
+
+	@Override
+	public Class<OptionsPlugin> getPluginType() {
+		return OptionsPlugin.class;
+	}
+
 	// -- Helper methods --
 
 	/**
@@ -191,7 +180,7 @@ public class DefaultOptionsService extends AbstractService implements
 		if (info == null) return null;
 
 		// instantiate the options plugin
-		final Command command = pluginService.createInstance(info);
+		final Command command = getPluginService().createInstance(info);
 		if (command == null) return null;
 		if (!(command instanceof OptionsPlugin)) return null;
 		final OptionsPlugin optionsPlugin = (OptionsPlugin) command;
@@ -200,15 +189,15 @@ public class DefaultOptionsService extends AbstractService implements
 		final ArrayList<PluginInfo<PreprocessorPlugin>> preInfos =
 			new ArrayList<PluginInfo<PreprocessorPlugin>>();
 		final PluginInfo<PreprocessorPlugin> validityInfo =
-			pluginService.getPlugin(ValidityPreprocessor.class,
+			getPluginService().getPlugin(ValidityPreprocessor.class,
 				PreprocessorPlugin.class);
 		preInfos.add(validityInfo);
 		final PluginInfo<PreprocessorPlugin> initInfo =
-			pluginService
-				.getPlugin(InitPreprocessor.class, PreprocessorPlugin.class);
+			getPluginService().getPlugin(InitPreprocessor.class,
+				PreprocessorPlugin.class);
 		preInfos.add(initInfo);
 		final List<PreprocessorPlugin> pre =
-			pluginService.createInstances(preInfos);
+			getPluginService().createInstances(preInfos);
 		for (final PreprocessorPlugin pp : pre) {
 			pp.process(optionsPlugin);
 		}
