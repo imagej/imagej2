@@ -69,4 +69,12 @@ public interface HandlerService<DT, PT extends TypedPlugin<DT>> extends
 	 */
 	List<PT> getHandlers();
 
+	// NB: Javadoc overrides.
+
+	// -- Typed methods --
+
+	/** Gets whether the given data object is supported. */
+	@Override
+	boolean supports(DT data);
+
 }
