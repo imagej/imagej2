@@ -67,6 +67,8 @@ import org.scijava.thread.ThreadService;
  */
 public interface UIService extends Service {
 
+	// CTR TODO: Extend SingletonService<UserInterface>.
+
 	/** System property to set for overriding the default UI. */
 	String UI_PROPERTY = "ij.ui";
 

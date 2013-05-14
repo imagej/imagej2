@@ -48,6 +48,10 @@ import org.scijava.service.Service;
  */
 public interface ConsoleService extends Service {
 
+	// CTR TODO: Move to ij-core and extend HandlerService<ConsoleArgument>.
+	// This will be a new type of plugin that handles command line arguments.
+	// In this way, command line flags can be made extensible.
+
 	/**
 	 * Handles arguments to ImageJ coming from an external source such as the
 	 * command line.

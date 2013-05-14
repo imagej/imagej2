@@ -57,6 +57,8 @@ import org.scijava.service.Service;
  */
 public interface IOService extends Service {
 
+	// CTR TODO: Extend HandlerService<IOPlugin>.
+
 	EventService getEventService();
 
 	StatusService getStatusService();
