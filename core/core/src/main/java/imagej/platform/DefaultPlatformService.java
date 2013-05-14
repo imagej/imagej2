@@ -37,6 +37,7 @@ package imagej.platform;
 
 import imagej.command.CommandService;
 import imagej.platform.event.AppMenusCreatedEvent;
+import imagej.plugin.AbstractSingletonService;
 
 import java.io.IOException;
 import java.net.URL;
@@ -50,8 +51,6 @@ import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
-import org.scijava.plugin.PluginService;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
@@ -60,8 +59,8 @@ import org.scijava.service.Service;
  * @author Curtis Rueden
  */
 @Plugin(type = Service.class)
-public final class DefaultPlatformService extends AbstractService implements
-	PlatformService
+public final class DefaultPlatformService extends
+	AbstractSingletonService<Platform> implements PlatformService
 {
 
 	@Parameter
@@ -69,9 +68,6 @@ public final class DefaultPlatformService extends AbstractService implements
 
 	@Parameter
 	private EventService eventService;
-
-	@Parameter
-	private PluginService pluginService;
 
 	@Parameter
 	private CommandService commandService;
@@ -87,11 +83,6 @@ public final class DefaultPlatformService extends AbstractService implements
 	@Override
 	public EventService getEventService() {
 		return eventService;
-	}
-
-	@Override
-	public PluginService getPluginService() {
-		return pluginService;
 	}
 
 	@Override
@@ -148,6 +139,13 @@ public final class DefaultPlatformService extends AbstractService implements
 		return false;
 	}
 
+	// -- PTService methods --
+
+	@Override
+	public Class<Platform> getPluginType() {
+		return Platform.class;
+	}
+
 	// -- Service methods --
 
 	@Override
@@ -181,11 +179,14 @@ public final class DefaultPlatformService extends AbstractService implements
 
 	/** Discovers target platform handlers. */
 	private List<Platform> discoverTargetPlatforms() {
+		// CTR FIXME: Rather than doing it this way, lean on the getInstances()
+		// method in initialize(), and filter and configure the instances based
+		// on the result of isTarget().
 		final List<Platform> platforms = new ArrayList<Platform>();
 		final List<PluginInfo<Platform>> infos =
-			pluginService.getPluginsOfType(Platform.class);
+			getPluginService().getPluginsOfType(Platform.class);
 		for (final PluginInfo<Platform> info : infos) {
-			final Platform platform = pluginService.createInstance(info);
+			final Platform platform = getPluginService().createInstance(info);
 			if (!platform.isTarget()) continue;
 			platforms.add(platform);
 		}
