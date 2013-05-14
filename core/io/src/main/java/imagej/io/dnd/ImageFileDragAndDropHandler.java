@@ -62,10 +62,6 @@ public class ImageFileDragAndDropHandler extends
 	AbstractDragAndDropHandler<File>
 {
 
-	public ImageFileDragAndDropHandler() {
-		super(File.class);
-	}
-
 	// -- DragAndDropHandler methods --
 
 	@Override
@@ -110,6 +106,13 @@ public class ImageFileDragAndDropHandler extends
 		// display result
 		displayService.createDisplay(dataset);
 		return true;
+	}
+
+	// -- Typed methods --
+
+	@Override
+	public Class<File> getType() {
+		return File.class;
 	}
 
 }

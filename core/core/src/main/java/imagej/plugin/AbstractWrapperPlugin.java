@@ -48,11 +48,6 @@ public abstract class AbstractWrapperPlugin<D> extends AbstractTypedPlugin<D>
 	/** Data object associated with this plugin. */
 	private D data;
 
-	public AbstractWrapperPlugin(final Class<D> type, final boolean acceptsNulls)
-	{
-		super(type, acceptsNulls);
-	}
-
 	// -- WrapperPlugin methods --
 
 	@Override

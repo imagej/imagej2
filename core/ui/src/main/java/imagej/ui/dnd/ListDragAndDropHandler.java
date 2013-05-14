@@ -51,11 +51,6 @@ import org.scijava.plugin.Plugin;
 public class ListDragAndDropHandler extends AbstractDragAndDropHandler<List<?>>
 {
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public ListDragAndDropHandler() {
-		super((Class) List.class);
-	}
-
 	// -- DragAndDropHandler methods --
 
 	@Override
@@ -97,6 +92,14 @@ public class ListDragAndDropHandler extends AbstractDragAndDropHandler<List<?>>
 			}
 		}
 		return success;
+	}
+
+	// -- Typed methods --
+
+	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Class<List<?>> getType() {
+		return (Class) List.class;
 	}
 
 }

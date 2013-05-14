@@ -50,28 +50,11 @@ public abstract class AbstractTypedPlugin<D> extends SortablePlugin implements
 	TypedPlugin<D>
 {
 
-	/** Type associated with the plugin. */
-	private final Class<D> type;
-
-	/** Whether the {@link #supports(Object)} method accepts null objects. */
-	private final boolean acceptsNulls;
-
-	public AbstractTypedPlugin(final Class<D> type, final boolean acceptsNulls) {
-		this.type = type;
-		this.acceptsNulls = acceptsNulls;
-	}
-
 	// -- Typed methods --
 
 	@Override
-	public boolean supports(final Object data) {
-		if (data == null) return acceptsNulls;
-		return getType().isAssignableFrom(data.getClass());
-	}
-
-	@Override
-	public Class<D> getType() {
-		return type;
+	public boolean supports(final D data) {
+		return true;
 	}
 
 }

@@ -47,10 +47,6 @@ public abstract class AbstractDragAndDropHandler<D> extends
 	AbstractTypedPlugin<D> implements DragAndDropHandler<D>
 {
 
-	public AbstractDragAndDropHandler(final Class<D> type) {
-		super(type, true);
-	}
-
 	// -- DragAndDropHandler methods --
 
 	@Override

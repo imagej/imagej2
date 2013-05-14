@@ -57,10 +57,6 @@ import org.scijava.plugin.Plugin;
 public class LUTFileDragAndDropHandler extends AbstractDragAndDropHandler<File>
 {
 
-	public LUTFileDragAndDropHandler() {
-		super(File.class);
-	}
-
 	// -- DragAndDropHandler methods --
 
 	@Override
@@ -101,6 +97,13 @@ public class LUTFileDragAndDropHandler extends AbstractDragAndDropHandler<File>
 			lutService.applyLUT(colorTable, imageDisplay);
 		}
 		return true;
+	}
+
+	// -- Typed methods --
+
+	@Override
+	public Class<File> getType() {
+		return File.class;
 	}
 
 	// -- Helper methods --

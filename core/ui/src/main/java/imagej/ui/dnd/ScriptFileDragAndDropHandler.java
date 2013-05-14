@@ -52,10 +52,6 @@ public class ScriptFileDragAndDropHandler extends
 	AbstractDragAndDropHandler<File>
 {
 
-	public ScriptFileDragAndDropHandler() {
-		super(File.class);
-	}
-
 	// -- DragAndDropHandler methods --
 
 	@Override
@@ -89,6 +85,11 @@ public class ScriptFileDragAndDropHandler extends
 			getContext().getService(ScriptService.class);
 		if (scriptService == null) return false;
 		return scriptService.canHandleFile(file);
+	}
+
+	@Override
+	public Class<File> getType() {
+		return File.class;
 	}
 
 }
