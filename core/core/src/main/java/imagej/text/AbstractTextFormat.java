@@ -35,7 +35,10 @@
 
 package imagej.text;
 
+import java.io.File;
+
 import org.scijava.plugin.SortablePlugin;
+import org.scijava.util.FileUtils;
 
 /**
  * Abstract superclass of {@link TextFormat} implementations.
@@ -45,5 +48,20 @@ import org.scijava.plugin.SortablePlugin;
 public abstract class AbstractTextFormat extends SortablePlugin implements
 	TextFormat
 {
-	// NB: No implementation needed.
+
+	// -- Typed methods --
+
+	@Override
+	public boolean supports(final File file) {
+		for (final String ext : getExtensions()) {
+			if (FileUtils.getExtension(file).equalsIgnoreCase(ext)) return true;
+		}
+		return false;
+	}
+
+	@Override
+	public Class<File> getType() {
+		return File.class;
+	}
+
 }

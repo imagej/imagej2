@@ -128,7 +128,7 @@ public final class DefaultIOService<T extends RealType<T> & NativeType<T>>
 				throw new IOException(e);
 			}
 		}
-		else if (textService.isText(file)) {
+		else if (textService.supports(file)) {
 			return textService.asHTML(file);
 		}
 		return null;

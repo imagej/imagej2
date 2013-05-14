@@ -35,32 +35,43 @@
 
 package imagej.text;
 
+import imagej.plugin.HandlerService;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-
-import org.scijava.service.Service;
 
 /**
  * Interface for service that works with text formats.
  * 
  * @author Curtis Rueden
  */
-public interface TextService extends Service {
+public interface TextService extends HandlerService<File, TextFormat> {
 
 	/** Reads the data from the given file into a string. */
 	String open(File file) throws IOException;
 
-	/** Gets whether the given file contains text data in a supported format. */
-	boolean isText(File file);
-
-	/** Gets the text format which best handles the given file. */
-	TextFormat getFormat(File file);
-
-	/** Gets the list of available text formats. */
-	List<TextFormat> getFormats();
-
 	/** Expresses the given text string as HTML. */
 	String asHTML(File file) throws IOException;
+
+	// NB: Javadoc overrides.
+
+	// -- HandlerService methods --
+
+	/** Gets the text format which best handles the given file. */
+	@Override
+	TextFormat getHandler(File file);
+
+	// -- SingletonService methods --
+
+	/** Gets the list of available text formats. */
+	@Override
+	List<TextFormat> getInstances();
+
+	// -- Typed methods --
+
+	/** Gets whether the given file contains text data in a supported format. */
+	@Override
+	boolean supports(File file);
 
 }

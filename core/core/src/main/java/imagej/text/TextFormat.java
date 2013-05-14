@@ -35,12 +35,11 @@
 
 package imagej.text;
 
-import imagej.plugin.ImageJPlugin;
+import imagej.plugin.HandlerPlugin;
 
+import java.io.File;
 import java.util.List;
 
-import org.scijava.Contextual;
-import org.scijava.Prioritized;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -58,7 +57,7 @@ import org.scijava.plugin.Plugin;
  * @see Plugin
  * @see TextService
  */
-public interface TextFormat extends ImageJPlugin, Contextual, Prioritized {
+public interface TextFormat extends HandlerPlugin<File> {
 
 	/** Gets the list of filename extensions for text in this format. */
 	List<String> getExtensions();
