@@ -93,7 +93,13 @@ public abstract class AbstractUploaderTestBase {
 		final String contents = "print(\"Hello, world!\");";
 		final File file = new File(ijRoot, path);
 		writeFile(file, contents);
-		CommandLine.main(ijRoot, -1, "upload", "--update-site", updateSiteName, path);
+
+		final String path2 = "macros/Has (Spaces).ijm";
+		final String contents2 = "print(\"Space. The final frontier.\");";
+		final File file2 = new File(ijRoot, path2);
+		writeFile(file2, contents2);
+
+		CommandLine.main(ijRoot, -1, "upload", "--update-site", updateSiteName, path, path2);
 
 		assertFalse(isUpdateSiteEmpty());
 
@@ -106,8 +112,10 @@ public abstract class AbstractUploaderTestBase {
 				timestamp >= minimalTimestamp);
 
 		assertTrue(file.delete());
-		CommandLine.main(ijRoot, -1, "update", path);
+		assertTrue(file2.delete());
+		CommandLine.main(ijRoot, -1, "update", path, path2);
 		assertTrue(file.exists());
+		assertTrue(file2.exists());
 	}
 
 	public String getURL() {
