@@ -72,6 +72,7 @@ public abstract class AbstractUploaderTestBase {
 
 	@After
 	public void after() {
+		files.removeUpdateSite(updateSiteName);
 		if (files != null) cleanup(files);
 	}
 
