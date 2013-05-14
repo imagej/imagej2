@@ -47,8 +47,8 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(type = AutoThresholdMethod.class, name = "MaxLikelihood")
-public class MaxLikelihoodThresholdMethod implements AutoThresholdMethod {
+@Plugin(type = ThresholdMethod.class, name = "MaxLikelihood")
+public class MaxLikelihoodThresholdMethod extends AbstractThresholdMethod {
 
 	private static final int MAX_ATTEMPTS = 10000;
 

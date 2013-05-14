@@ -47,8 +47,8 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  * @author Gabriel Landini
  */
-@Plugin(type = AutoThresholdMethod.class, name = "MinError(I)")
-public class MinErrorThresholdMethod implements AutoThresholdMethod {
+@Plugin(type = ThresholdMethod.class, name = "MinError(I)")
+public class MinErrorThresholdMethod extends AbstractThresholdMethod {
 
 	private String errMsg = null;
 

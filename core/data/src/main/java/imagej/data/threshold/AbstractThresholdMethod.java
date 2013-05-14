@@ -35,39 +35,15 @@
 
 package imagej.data.threshold;
 
-import org.scijava.plugin.Plugin;
-
-// NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
-// plugin found in Fiji (version 1.14).
+import org.scijava.plugin.SortablePlugin;
 
 /**
- * Implements a mean threshold method by Glasbey.
+ * Abstract base class for {@link ThresholdMethod} plugins.
  * 
- * @author Barry DeZonia
- * @author Gabriel Landini
+ * @author Curtis Rueden
  */
-@Plugin(type = ThresholdMethod.class, name = "Mean")
-public class MeanThresholdMethod extends AbstractThresholdMethod {
-
-	@Override
-	public int getThreshold(long[] histogram) {
-		// C. A. Glasbey, "An analysis of histogram-based thresholding algorithms,"
-		// CVGIP: Graphical Models and Image Processing, vol. 55, pp. 532-537, 1993.
-		//
-		// The threshold is the mean of the greyscale data
-		int threshold = -1;
-		double tot = 0, sum = 0;
-		for (int i = 0; i < histogram.length; i++) {
-			tot += histogram[i];
-			sum += (i * histogram[i]);
-		}
-		threshold = (int) Math.floor(sum / tot);
-		return threshold;
-	}
-
-	@Override
-	public String getMessage() {
-		return null;
-	}
-
+public abstract class AbstractThresholdMethod extends SortablePlugin implements
+	ThresholdMethod
+{
+	// NB: No implementation needed.
 }

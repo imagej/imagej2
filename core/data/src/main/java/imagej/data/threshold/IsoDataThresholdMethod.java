@@ -46,8 +46,8 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  * @author Gabriel Landini
  */
-@Plugin(type = AutoThresholdMethod.class, name = "IsoData")
-public class IsoDataThresholdMethod implements AutoThresholdMethod {
+@Plugin(type = ThresholdMethod.class, name = "IsoData")
+public class IsoDataThresholdMethod extends AbstractThresholdMethod {
 
 	private String errMsg = null;
 

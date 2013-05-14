@@ -35,14 +35,21 @@
 
 package imagej.data.threshold;
 
-import imagej.plugin.ImageJPlugin;
+import imagej.plugin.SingletonPlugin;
+
+import org.scijava.Contextual;
+import org.scijava.Prioritized;
+import org.scijava.plugin.HasPluginInfo;
 
 /**
- * TODO
- *
+ * An algorithm for thresholding an image into two classes of pixels from its
+ * histogram.
+ * 
  * @author Barry DeZonia
  */
-public interface AutoThresholdMethod extends ImageJPlugin {
+public interface ThresholdMethod extends Contextual, Prioritized,
+	HasPluginInfo, SingletonPlugin
+{
 
 	/**
 	 * Calculates the threshold index from an unnormalized histogram of data.

@@ -46,8 +46,8 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  * @author Gabriel Landini
  */
-@Plugin(type = AutoThresholdMethod.class, name = "MaxEntropy")
-public class MaxEntropyThresholdMethod implements AutoThresholdMethod {
+@Plugin(type = ThresholdMethod.class, name = "MaxEntropy")
+public class MaxEntropyThresholdMethod extends AbstractThresholdMethod {
 
 	@Override
 	public int getThreshold(long[] histogram) {

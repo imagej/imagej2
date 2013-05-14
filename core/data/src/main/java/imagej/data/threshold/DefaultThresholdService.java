@@ -44,6 +44,7 @@ import imagej.data.overlay.Overlay;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.display.Display;
 import imagej.display.event.DisplayDeletedEvent;
+import imagej.plugin.AbstractSingletonService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,13 +54,9 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.scijava.event.EventHandler;
-import org.scijava.event.EventService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginInfo;
-import org.scijava.plugin.PluginService;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
@@ -68,23 +65,17 @@ import org.scijava.service.Service;
  * @author Barry DeZonia
  */
 @Plugin(type = Service.class)
-public class DefaultThresholdService extends AbstractService implements
-	ThresholdService
+public class DefaultThresholdService extends
+	AbstractSingletonService<ThresholdMethod> implements ThresholdService
 {
 
 	// -- parameters --
-
-	@Parameter
-	private EventService eventService;
 
 	@Parameter
 	private ImageDisplayService displayService;
 
 	@Parameter
 	private OverlayService overlayService;
-
-	@Parameter
-	private PluginService pluginService;
 
 	@Parameter
 	private LogService log;
@@ -94,7 +85,7 @@ public class DefaultThresholdService extends AbstractService implements
 	private final ConcurrentHashMap<ImageDisplay, ThresholdOverlay> map =
 		new ConcurrentHashMap<ImageDisplay, ThresholdOverlay>();
 
-	private ConcurrentHashMap<String, AutoThresholdMethod> methods;
+	private ConcurrentHashMap<String, ThresholdMethod> methods;
 
 	private List<String> methodNames;
 
@@ -140,27 +131,33 @@ public class DefaultThresholdService extends AbstractService implements
 	}
 
 	@Override
-	public Map<String, AutoThresholdMethod> getAutoThresholdMethods() {
+	public Map<String, ThresholdMethod> getThresholdMethods() {
 		return Collections.unmodifiableMap(methods);
-
 	}
 
 	@Override
-	public List<String> getAutoThresholdMethodNames() {
+	public List<String> getThresholdMethodNames() {
 		return Collections.unmodifiableList(methodNames);
 	}
 
 	@Override
-	public AutoThresholdMethod getAutoThresholdMethod(String name) {
+	public ThresholdMethod getThresholdMethod(String name) {
 		return methods.get(name);
+	}
+
+	// -- PTService methods --
+
+	@Override
+	public Class<ThresholdMethod> getPluginType() {
+		return ThresholdMethod.class;
 	}
 
 	// -- Service methods --
 
 	@Override
 	public void initialize() {
-		eventService.subscribe(this);
-		discoverThresholdMethods();
+		super.initialize();
+		buildDataStructures();
 	}
 
 	// -- event handlers --
@@ -185,17 +182,14 @@ public class DefaultThresholdService extends AbstractService implements
 
 	// -- helpers --
 
-	private void discoverThresholdMethods() {
-		methods = new ConcurrentHashMap<String, AutoThresholdMethod>();
+	private void buildDataStructures() {
+		methods = new ConcurrentHashMap<String, ThresholdMethod>();
 		methodNames = new ArrayList<String>();
-		final List<PluginInfo<AutoThresholdMethod>> infos =
-			pluginService.getPluginsOfType(AutoThresholdMethod.class);
-		for (final PluginInfo<AutoThresholdMethod> info : infos) {
-			final String name = info.getName();
-			final AutoThresholdMethod method = pluginService.createInstance(info);
-			if (method == null) continue;
+		for (final ThresholdMethod method : getInstances()) {
+			final String name = method.getInfo().getName();
 			methods.put(name, method);
 			methodNames.add(name);
 		}
 	}
+
 }
