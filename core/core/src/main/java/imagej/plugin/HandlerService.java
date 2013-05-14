@@ -61,7 +61,7 @@ public interface HandlerService<DT, PT extends TypedPlugin<DT>> extends
 	 * Gets the most appropriate handler for the given data object, or null if no
 	 * handler supports it.
 	 */
-	<D extends DT> TypedPlugin<D> getHandler(D data);
+	PT getHandler(DT data);
 
 	/**
 	 * Gets the list of available handler plugins. There will be one singleton

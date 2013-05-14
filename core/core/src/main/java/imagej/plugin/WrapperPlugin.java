@@ -49,7 +49,7 @@ public interface WrapperPlugin<D> extends TypedPlugin<D> {
 
 	/**
 	 * Associates the given data object with this plugin. It must be a compatible
-	 * object (i.e., {@link #supports(Object)} must return true).
+	 * object (i.e., {@link #supports} must return true).
 	 * 
 	 * @param data The data object to associate with the plugin.
 	 * @throws IllegalArgumentException if the data object is not compatible.

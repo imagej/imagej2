@@ -79,13 +79,13 @@ public abstract class AbstractWrapperService<DT, PT extends WrapperPlugin<DT>>
 	// -- Typed methods --
 
 	@Override
-	public boolean supports(final Object data) {
+	public boolean supports(final DT data) {
 		return wrap(data) != null;
 	}
 
 	// -- Helper methods --
 
-	private PT wrap(final Object data) {
+	private <D extends DT> PT wrap(final D data) {
 		for (final PluginInfo<PT> plugin : getPlugins()) {
 			final PT instance = getPluginService().createInstance(plugin);
 			if (instance.supports(data)) return instance;

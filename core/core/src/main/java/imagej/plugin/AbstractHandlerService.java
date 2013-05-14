@@ -64,11 +64,11 @@ public abstract class AbstractHandlerService<DT, PT extends TypedPlugin<DT>>
 	// -- HandlerService methods --
 
 	@Override
-	public <D extends DT> TypedPlugin<D> getHandler(final D data) {
-		final PT handler = handler(data);
-		@SuppressWarnings("unchecked")
-		final TypedPlugin<D> typedHandler = (TypedPlugin<D>) handler;
-		return typedHandler;
+	public PT getHandler(final DT data) {
+		for (final PT handler : getHandlers()) {
+			if (handler.supports(data)) return handler;
+		}
+		return null;
 	}
 
 	@Override
@@ -86,8 +86,8 @@ public abstract class AbstractHandlerService<DT, PT extends TypedPlugin<DT>>
 	// -- Typed methods --
 
 	@Override
-	public boolean supports(final Object data) {
-		return handler(data) != null;
+	public boolean supports(final DT data) {
+		return getHandler(data) != null;
 	}
 
 	// -- Helper methods --
@@ -99,13 +99,6 @@ public abstract class AbstractHandlerService<DT, PT extends TypedPlugin<DT>>
 
 		log.info("Found " + handlers.size() + " " +
 			getPluginType().getSimpleName() + " plugins.");
-	}
-
-	private PT handler(final Object data) {
-		for (final PT handler : getHandlers()) {
-			if (handler.supports(data)) return handler;
-		}
-		return null;
 	}
 
 }

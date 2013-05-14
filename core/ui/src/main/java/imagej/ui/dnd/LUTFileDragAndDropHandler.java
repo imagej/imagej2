@@ -64,9 +64,8 @@ public class LUTFileDragAndDropHandler extends AbstractDragAndDropHandler<File>
 	// -- DragAndDropHandler methods --
 
 	@Override
-	public boolean supports(final Object data) {
-		if (!super.supports(data)) return false;
-		final File file = (File) data;
+	public boolean supports(final File file) {
+		if (!super.supports(file)) return false;
 
 		// verify that the file contains a color table
 		final LUTService lutService = getContext().getService(LUTService.class);

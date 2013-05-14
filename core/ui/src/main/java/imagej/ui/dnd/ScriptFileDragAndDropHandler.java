@@ -59,9 +59,8 @@ public class ScriptFileDragAndDropHandler extends
 	// -- DragAndDropHandler methods --
 
 	@Override
-	public boolean supports(final Object data) {
-		if (!super.supports(data)) return false;
-		final File file = (File) data;
+	public boolean supports(final File file) {
+		if (!super.supports(file)) return false;
 
 		// verify that the file is a script
 		final ScriptService scriptService =
