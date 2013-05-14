@@ -53,12 +53,6 @@ public abstract class AbstractWrapperService<DT, PT extends WrapperPlugin<DT>>
 	@Parameter
 	private LogService log;
 
-	public AbstractWrapperService(final Class<DT> dataType,
-		final Class<PT> pluginType)
-	{
-		super(dataType, pluginType);
-	}
-
 	// -- WrapperService methods --
 
 	@Override

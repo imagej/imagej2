@@ -65,11 +65,6 @@ public class DefaultDragAndDropService extends
 	@Parameter
 	private StatusService statusService;
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public DefaultDragAndDropService() {
-		super(Object.class, (Class) DragAndDropHandler.class);
-	}
-
 	// -- DragAndDropService methods --
 
 	@Override
@@ -116,6 +111,21 @@ public class DefaultDragAndDropService extends
 			if (handler.supportsObject(object, display)) return handler;
 		}
 		return null;
+	}
+
+	// -- PTService methods --
+
+	@Override
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	public Class<DragAndDropHandler<Object>> getPluginType() {
+		return (Class) DragAndDropHandler.class;
+	}
+
+	// -- Typed methods --
+
+	@Override
+	public Class<Object> getType() {
+		return Object.class;
 	}
 
 	// -- Event handlers --

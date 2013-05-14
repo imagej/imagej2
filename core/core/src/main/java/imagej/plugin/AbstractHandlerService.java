@@ -61,12 +61,6 @@ public abstract class AbstractHandlerService<DT, PT extends TypedPlugin<DT>>
 	/** List of handler plugin instances. */
 	private List<PT> handlers;
 
-	public AbstractHandlerService(final Class<DT> dataType,
-		final Class<PT> pluginType)
-	{
-		super(dataType, pluginType);
-	}
-
 	// -- HandlerService methods --
 
 	@Override

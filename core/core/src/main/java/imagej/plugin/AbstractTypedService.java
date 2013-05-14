@@ -56,16 +56,6 @@ public abstract class AbstractTypedService<DT, PT extends TypedPlugin<DT>>
 	@Parameter
 	private PluginService pluginService;
 
-	private final Class<DT> dataType;
-	private final Class<PT> pluginType;
-
-	public AbstractTypedService(final Class<DT> dataType,
-		final Class<PT> pluginType)
-	{
-		this.dataType = dataType;
-		this.pluginType = pluginType;
-	}
-
 	// -- TypedService methods --
 
 	@Override
@@ -74,20 +64,8 @@ public abstract class AbstractTypedService<DT, PT extends TypedPlugin<DT>>
 	}
 
 	@Override
-	public Class<PT> getPluginType() {
-		return pluginType;
-	}
-
-	@Override
 	public List<PluginInfo<PT>> getPlugins() {
 		return pluginService.getPluginsOfType(getPluginType());
-	}
-
-	// -- Typed methods --
-
-	@Override
-	public Class<DT> getType() {
-		return dataType;
 	}
 
 }
