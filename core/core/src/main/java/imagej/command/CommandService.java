@@ -39,6 +39,7 @@ import imagej.module.Module;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
 import imagej.plugin.ImageJPlugin;
+import imagej.plugin.PTService;
 import imagej.plugin.PostprocessorPlugin;
 import imagej.plugin.PreprocessorPlugin;
 
@@ -68,11 +69,9 @@ import org.scijava.service.Service;
  * @see ModuleService
  * @see PluginService
  */
-public interface CommandService extends Service {
+public interface CommandService extends PTService<Command> {
 
 	EventService getEventService();
-
-	PluginService getPluginService();
 
 	ModuleService getModuleService();
 
