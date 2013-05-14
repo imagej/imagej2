@@ -109,13 +109,13 @@ public interface DragAndDropService extends
 
 	// NB: Javadoc overrides.
 
-	// -- HandlerService methods --
+	// -- SingletonService methods --
 
 	/**
 	 * Gets the list of available drag-and-drop handlers, which are used to
 	 * perform drag-and-drop operations.
 	 */
 	@Override
-	List<DragAndDropHandler<Object>> getHandlers();
+	List<DragAndDropHandler<Object>> getInstances();
 
 }

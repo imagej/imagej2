@@ -35,46 +35,28 @@
 
 package imagej.plugin;
 
-import java.util.List;
-
 /**
- * A service for managing {@link HandlerPlugin}s of a particular type.
+ * Interface for plugins which "handle" a particular subset of data objects. A
+ * handler plugin is a {@link SingletonPlugin} associated with a specific data
+ * type (i.e., implementing {@link TypedPlugin}).
  * <p>
- * For any given data object, the service is capable of determining the most
- * appropriate handler by sequentially querying each handler plugin on its list
- * (via {@link HandlerPlugin#supports}).
+ * For a given data object (of type {@code D}), the {@code HandlerPlugin}
+ * declares whether it can handle that data object via the {@link #supports}
+ * method. The plugin's associated {@link HandlerService#getHandler} method then
+ * uses this capability to determine the most appropriate handler for any given
+ * data object.
+ * </p>
+ * <p>
+ * Note that there is no single {@code handle(D)} method for actually handling
+ * data objects, because it would be rather inflexible; e.g., handlers may have
+ * other required inputs, or may provide more than one possible avenue of
+ * handling (i.e., more than one "handle"-style method).
  * </p>
  * 
  * @author Curtis Rueden
- * @param <DT> Base data type handled by the handlers.
- * @param <PT> Plugin type of the handlers.
- * @see HandlerPlugin
+ * @param <D> Data type associated with the plugin.
+ * @see HandlerService
  */
-public interface HandlerService<DT, PT extends HandlerPlugin<DT>> extends
-	SingletonService<PT>, TypedService<DT, PT>
-{
-
-	/**
-	 * Gets the most appropriate handler for the given data object, or null if no
-	 * handler supports it.
-	 */
-	PT getHandler(DT data);
-
-	// NB: Javadoc overrides.
-
-	// -- SingletonService methods --
-
-	/**
-	 * Gets the list of handlers. There will be one singleton instance for each
-	 * available handler plugin.
-	 */
-	@Override
-	List<PT> getInstances();
-
-	// -- Typed methods --
-
-	/** Gets whether the given data object is supported. */
-	@Override
-	boolean supports(DT data);
-
+public interface HandlerPlugin<D> extends SingletonPlugin, TypedPlugin<D> {
+	// NB: Marker interface.
 }

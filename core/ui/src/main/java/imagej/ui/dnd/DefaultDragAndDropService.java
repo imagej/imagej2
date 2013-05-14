@@ -97,7 +97,7 @@ public class DefaultDragAndDropService extends
 	public DragAndDropHandler<?> getHandler(final DragAndDropData data,
 		final Display<?> display)
 	{
-		for (final DragAndDropHandler<?> handler : getHandlers()) {
+		for (final DragAndDropHandler<?> handler : getInstances()) {
 			if (handler.supportsData(data, display)) return handler;
 		}
 		return null;
@@ -107,7 +107,7 @@ public class DefaultDragAndDropService extends
 	public DragAndDropHandler<?> getHandler(final Object object,
 		final Display<?> display)
 	{
-		for (final DragAndDropHandler<?> handler : getHandlers()) {
+		for (final DragAndDropHandler<?> handler : getInstances()) {
 			if (handler.supportsObject(object, display)) return handler;
 		}
 		return null;

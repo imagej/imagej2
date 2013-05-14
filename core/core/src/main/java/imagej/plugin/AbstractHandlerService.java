@@ -35,12 +35,6 @@
 
 package imagej.plugin;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.scijava.log.LogService;
-import org.scijava.plugin.Parameter;
-
 /**
  * Abstract base class for {@link HandlerService}s.
  * 
@@ -48,39 +42,18 @@ import org.scijava.plugin.Parameter;
  * @param <DT> Base data type handled by the handlers.
  * @param <PT> Plugin type of the handlers.
  */
-public abstract class AbstractHandlerService<DT, PT extends TypedPlugin<DT>>
-	extends AbstractTypedService<DT, PT> implements HandlerService<DT, PT>
+public abstract class AbstractHandlerService<DT, PT extends HandlerPlugin<DT>>
+	extends AbstractSingletonService<PT> implements HandlerService<DT, PT>
 {
-
-	@Parameter
-	private LogService log;
-
-	// TODO: Listen for PluginsAddedEvent and PluginsRemovedEvent
-	// and update the list of singletons accordingly.
-
-	/** List of handler plugin instances. */
-	private List<PT> handlers;
 
 	// -- HandlerService methods --
 
 	@Override
 	public PT getHandler(final DT data) {
-		for (final PT handler : getHandlers()) {
+		for (final PT handler : getInstances()) {
 			if (handler.supports(data)) return handler;
 		}
 		return null;
-	}
-
-	@Override
-	public List<PT> getHandlers() {
-		return handlers;
-	}
-
-	// -- Service methods --
-
-	@Override
-	public void initialize() {
-		createHandlers();
 	}
 
 	// -- Typed methods --
@@ -88,17 +61,6 @@ public abstract class AbstractHandlerService<DT, PT extends TypedPlugin<DT>>
 	@Override
 	public boolean supports(final DT data) {
 		return getHandler(data) != null;
-	}
-
-	// -- Helper methods --
-
-	private void createHandlers() {
-		final List<PT> instances =
-			getPluginService().createInstancesOfType(getPluginType());
-		handlers = Collections.unmodifiableList(instances);
-
-		log.info("Found " + handlers.size() + " " +
-			getPluginType().getSimpleName() + " plugins.");
 	}
 
 }

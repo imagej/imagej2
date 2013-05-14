@@ -36,7 +36,7 @@
 package imagej.ui.dnd;
 
 import imagej.display.Display;
-import imagej.plugin.TypedPlugin;
+import imagej.plugin.HandlerPlugin;
 
 import org.scijava.plugin.Plugin;
 
@@ -56,7 +56,7 @@ import org.scijava.plugin.Plugin;
  * @see Plugin
  * @see DragAndDropService
  */
-public interface DragAndDropHandler<D> extends TypedPlugin<D> {
+public interface DragAndDropHandler<D> extends HandlerPlugin<D> {
 
 	/**
 	 * Gets whether this handler supports dropping the given data object onto the
