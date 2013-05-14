@@ -47,10 +47,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -393,8 +395,8 @@ public class WebDAVUploader extends AbstractUploader {
 		return false;
 	}
 
-	private URL getURL(final String path, boolean isDirectory) throws MalformedURLException {
-		final String url = baseURL + path;
+	private URL getURL(final String path, boolean isDirectory) throws MalformedURLException, UnsupportedEncodingException {
+		final String url = baseURL + URLEncoder.encode(path, "UTF-8").replaceAll("%2F", "/").replaceAll("\\+","%20");
 		if (!isDirectory || "".equals(path) && path.endsWith("/")) return new URL(url);
 		return new URL(url + "/");
 	}
