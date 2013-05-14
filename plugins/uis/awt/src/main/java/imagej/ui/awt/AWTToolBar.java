@@ -106,7 +106,7 @@ public class AWTToolBar extends Panel implements ToolBar {
 	}
 
 	private Button createButton(final Tool tool) throws InstantiableException {
-		final PluginInfo<? extends Tool> info = tool.getInfo();
+		final PluginInfo<?> info = tool.getInfo();
 		final String name = info.getName();
 		final String label = info.getLabel();
 		final URL iconURL = info.getIconURL();

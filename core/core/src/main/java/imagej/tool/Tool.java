@@ -48,8 +48,8 @@ import imagej.plugin.ImageJPlugin;
 import org.scijava.Contextual;
 import org.scijava.Prioritized;
 import org.scijava.input.MouseCursor;
+import org.scijava.plugin.HasPluginInfo;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginInfo;
 
 /**
  * Interface for ImageJ tools. A tool is a collection of rules binding user
@@ -73,7 +73,9 @@ import org.scijava.plugin.PluginInfo;
  * @see Plugin
  * @see ToolService
  */
-public interface Tool extends ImageJPlugin, Contextual, Prioritized {
+public interface Tool extends ImageJPlugin, Contextual, Prioritized,
+	HasPluginInfo
+{
 
 	/**
 	 * When true, tool has no button but rather is active all the time.
@@ -90,12 +92,6 @@ public interface Tool extends ImageJPlugin, Contextual, Prioritized {
 	 * @see Plugin#attrs()
 	 */
 	String ACTIVE_IN_APP_FRAME = "activeInAppFrame";
-
-	/** Gets the info describing the tool. */
-	PluginInfo<? extends Tool> getInfo();
-
-	/** Sets the info describing the tool. */
-	void setInfo(PluginInfo<? extends Tool> info);
 
 	/** The tool's mouse pointer. */
 	MouseCursor getCursor();
