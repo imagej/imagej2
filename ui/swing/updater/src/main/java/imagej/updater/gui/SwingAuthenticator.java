@@ -56,17 +56,20 @@ public class SwingAuthenticator extends Authenticator {
 	@Override
 	protected PasswordAuthentication getPasswordAuthentication() {
 		final JPanel panel = new JPanel();
-		panel.setLayout(new MigLayout());
+		panel.setLayout(new MigLayout("wrap 2"));
+
+		panel.add(new JLabel(getRequestingHost() + " asks for authentication:"), "span 2");
+		panel.add(new JLabel("    " + getRequestingPrompt()), "span 2");
 
 		panel.add(new JLabel("User:"));
 		final JTextField user = new JTextField(20);
-		panel.add(user, "wrap");
+		panel.add(user);
 
 		panel.add(new JLabel("Password:"));
 		final JPasswordField password = new JPasswordField(20);
 		panel.add(password);
 
-		if (JOptionPane.showConfirmDialog(null, panel, "Proxy Authentication",
+		if (JOptionPane.showConfirmDialog(null, panel, getRequestingPrompt(),
 			JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) return null;
 		return new PasswordAuthentication(user.getText(), password.getPassword());
 	}
