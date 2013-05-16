@@ -216,7 +216,7 @@ public class SitesDialog extends JDialog implements ActionListener,
 
 		protected int tableWidth;
 		protected int[] widths = { 100, 300, 150, 150 };
-		protected String[] headers = { "Name", "URL", "SSH Host",
+		protected String[] headers = { "Name", "URL", "Host",
 			"Directory on Host" };
 
 		public void setColumnWidths() {
@@ -316,7 +316,7 @@ public class SitesDialog extends JDialog implements ActionListener,
 				c.weightx = 0;
 				c.gridx = 0;
 				c.gridy++;
-				contentPane.add(new JLabel("SSH host:"), c);
+				contentPane.add(new JLabel("Host:"), c);
 				c.weightx = 1;
 				c.gridx++;
 				contentPane.add(this.sshHost, c);
