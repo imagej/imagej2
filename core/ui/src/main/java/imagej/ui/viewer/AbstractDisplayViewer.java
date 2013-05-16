@@ -134,14 +134,15 @@ public abstract class AbstractDisplayViewer<T> extends SortablePlugin implements
 	protected void updateTitle() {
 		String trailer = "";
 		if (display instanceof ImageDisplay) {
-			ImageDisplayService src =
+			ImageDisplayService srv =
 				getContext().getService(ImageDisplayService.class);
-			if (src != null) {
-				Dataset ds = src.getActiveDataset((ImageDisplay) display);
-				Img<?> img = ds.getImgPlus().getImg();
-				if (AbstractCellImg.class.isAssignableFrom(img.getClass()))
-				{
-					trailer = " (V)";
+			if (srv != null) {
+				Dataset ds = srv.getActiveDataset((ImageDisplay) display);
+				if (ds != null) {
+					Img<?> img = ds.getImgPlus().getImg();
+					if (AbstractCellImg.class.isAssignableFrom(img.getClass())) {
+						trailer = " (V)";
+					}
 				}
 			}
 		}
