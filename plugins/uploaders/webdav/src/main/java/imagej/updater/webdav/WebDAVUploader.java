@@ -450,7 +450,7 @@ public class WebDAVUploader extends AbstractUploader {
 		setRequestMethod(connection, method);
 
 		final String authentication = username + ":" + password;
-		connection.setRequestProperty("Authorization", "Basic " + Base64.encodeBytes(authentication.getBytes()));
+		connection.setRequestProperty("Authorization", "Basic " + Base64.encodeBytes(authentication.getBytes("UTF-8")));
 
 		if (headers != null) {
 			for (int i = 0; i < headers.length; i += 2) {
