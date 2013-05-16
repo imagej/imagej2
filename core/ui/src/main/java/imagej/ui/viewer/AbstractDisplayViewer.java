@@ -35,12 +35,17 @@
 
 package imagej.ui.viewer;
 
+import imagej.data.Dataset;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.display.Display;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.DisplayCreatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.DisplayUpdatedEvent;
 import imagej.display.event.DisplayUpdatedEvent.DisplayUpdateLevel;
+import net.imglib2.img.Img;
+import net.imglib2.img.cell.AbstractCellImg;
 
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
@@ -127,7 +132,20 @@ public abstract class AbstractDisplayViewer<T> extends SortablePlugin implements
 	}
 
 	protected void updateTitle() {
-		getWindow().setTitle(getDisplay().getName());
+		String trailer = "";
+		if (display instanceof ImageDisplay) {
+			ImageDisplayService src =
+				getContext().getService(ImageDisplayService.class);
+			if (src != null) {
+				Dataset ds = src.getActiveDataset((ImageDisplay) display);
+				Img<?> img = ds.getImgPlus().getImg();
+				if (AbstractCellImg.class.isAssignableFrom(img.getClass()))
+				{
+					trailer = " (V)";
+				}
+			}
+		}
+		getWindow().setTitle(getDisplay().getName() + trailer);
 	}
 
 	// -- Event handlers --
