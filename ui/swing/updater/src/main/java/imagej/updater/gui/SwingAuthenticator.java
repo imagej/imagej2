@@ -35,6 +35,7 @@
 
 package imagej.updater.gui;
 
+import java.io.UnsupportedEncodingException;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 
@@ -71,7 +72,17 @@ public class SwingAuthenticator extends Authenticator {
 
 		if (JOptionPane.showConfirmDialog(null, panel, getRequestingPrompt(),
 			JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) return null;
-		return new PasswordAuthentication(user.getText(), password.getPassword());
+		// work around Java's internal ISO-8859-1 encoding
+		final String string = new String(password.getPassword());
+		final byte[] bytes;
+		try {
+			bytes = string.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+		final char[] chars = new char[bytes.length];
+		for (int i = 0; i < bytes.length; i++) chars[i] = (char)(bytes[i] & 0xff);
+		return new PasswordAuthentication(user.getText(), chars);
 	}
 
 }
