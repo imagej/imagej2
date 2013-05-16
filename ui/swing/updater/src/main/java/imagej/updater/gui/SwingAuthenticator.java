@@ -59,11 +59,11 @@ public class SwingAuthenticator extends Authenticator {
 		panel.setLayout(new MigLayout());
 
 		panel.add(new JLabel("User:"));
-		final JTextField user = new JTextField();
+		final JTextField user = new JTextField(20);
 		panel.add(user, "wrap");
 
 		panel.add(new JLabel("Password:"));
-		final JPasswordField password = new JPasswordField();
+		final JPasswordField password = new JPasswordField(20);
 		panel.add(password);
 
 		if (JOptionPane.showConfirmDialog(null, panel, "Proxy Authentication",
