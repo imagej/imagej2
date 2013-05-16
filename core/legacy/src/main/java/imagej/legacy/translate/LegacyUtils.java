@@ -422,13 +422,20 @@ public class LegacyUtils {
 			if (ip == null) return false; // null possible : treat as numeric data
 			return ip.isBinary();
 		}
+		final int slice = imp.getCurrentSlice();
 		final ImageStack stack = imp.getStack();
 		// stack cannot be null here as numSlices > 1
 		//   and in such cases you always get a non-null processor
 		for (int i = 1; i <= numSlices; i++) {
 			final ImageProcessor ip = stack.getProcessor(i);
-			if (!ip.isBinary()) return false;
+			if (!ip.isBinary()) {
+				// fix virtual stack problems
+				stack.getProcessor(slice);
+				return false;
+			}
 		}
+		// fix virtual stack problems
+		stack.getProcessor(slice);
 		return true;
 	}
 

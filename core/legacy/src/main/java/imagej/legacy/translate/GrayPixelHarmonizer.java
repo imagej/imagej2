@@ -56,6 +56,14 @@ import net.imglib2.type.numeric.integer.ShortType;
  */
 public class GrayPixelHarmonizer implements DataHarmonizer {
 
+	private double[] savedPlane;
+	private int savedPos;
+
+	public void savePlane(int pos, double[] plane) {
+		savedPos = pos;
+		savedPlane = plane;
+	}
+
 	/**
 	 * Assigns the data values of a {@link Dataset} from a paired
 	 * {@link ImagePlus}. Assumes the Dataset and ImagePlus have compatible
@@ -86,19 +94,29 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 		final ImageStack stack = imp.getStack();
 		int planeNum = 1;
 		final long[] pos = new long[dims.length];
+		int slice = imp.getCurrentSlice();
 		for (int t = 0; t < tSize; t++) {
 			if (tIndex >= 0) pos[tIndex] = t;
 			for (int z = 0; z < zSize; z++) {
 				if (zIndex >= 0) pos[zIndex] = z;
 				for (int c = 0; c < cSize; c++) {
 					LegacyUtils.fillChannelIndices(dims, axes, c, pos);
-					final ImageProcessor proc = stack.getProcessor(planeNum++);
+					ImageProcessor proc = stack.getProcessor(planeNum++);
+					// TEMP HACK THAT FIXES VIRT STACK PROB BUT SLOW
+					// imp.setPosition(planeNum - 1);
 					for (int x = 0; x < xSize; x++) {
 						if (xIndex >= 0) pos[xIndex] = x;
 						for (int y = 0; y < ySize; y++) {
 							if (yIndex >= 0) pos[yIndex] = y;
 							accessor.setPosition(pos);
-							double value = proc.getf(x, y);
+							double value;
+							if (savedPos == planeNum - 1) {
+								int index = xSize * y + x;
+								value = savedPlane[index];
+							}
+							else {
+								value = proc.getf(x, y);
+							}
 							if (signed16BitData) value -= 32768.0;
 							if (value < typeMin) value = typeMin;
 							else if (value > typeMax) value = typeMax;
@@ -108,6 +126,9 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 				}
 			}
 		}
+		// NB - virtual stack fix
+		stack.getProcessor(slice);
+
 		ds.update();
 	}
 
@@ -141,6 +162,7 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 		final ImageStack stack = imp.getStack();
 		int planeNum = 1;
 		final long[] pos = new long[dims.length];
+		int slice = imp.getCurrentSlice();
 		for (int t = 0; t < tSize; t++) {
 			if (tIndex >= 0) pos[tIndex] = t;
 			for (int z = 0; z < zSize; z++) {
@@ -148,6 +170,8 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 				for (int c = 0; c < cSize; c++) {
 					LegacyUtils.fillChannelIndices(dims, axes, c, pos);
 					final ImageProcessor proc = stack.getProcessor(planeNum++);
+					// TEMP HACK THAT FIXES VIRT STACK PROB BUT SLOW
+					// imp.setPosition(planeNum - 1);
 					for (int x = 0; x < xSize; x++) {
 						if (xIndex >= 0) pos[xIndex] = x;
 						for (int y = 0; y < ySize; y++) {
@@ -162,6 +186,8 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 				}
 			}
 		}
+		// NB - virtual stack fix
+		stack.getProcessor(slice);
 	}
 
 }

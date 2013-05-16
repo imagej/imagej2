@@ -37,6 +37,7 @@ package imagej.legacy.translate;
 
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.process.ImageProcessor;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -128,12 +129,18 @@ public class Harmonizer {
 				rebuildImagePlusData(display, imp);
 			}
 			else if (imp.getType() == ImagePlus.COLOR_RGB) {
-				colorPixelHarmonizer.updateLegacyImage(ds, imp);
+				if (!imp.getStack().isVirtual()) {
+					colorPixelHarmonizer.updateLegacyImage(ds, imp);
+				}
 			}
 			else if (LegacyUtils.datasetIsIJ1Compatible(ds)) {
 				planeHarmonizer.updateLegacyImage(ds, imp);
 			}
-			else grayPixelHarmonizer.updateLegacyImage(ds, imp);
+			else {
+				if (!imp.getStack().isVirtual()) {
+					grayPixelHarmonizer.updateLegacyImage(ds, imp);
+				}
+			}
 		}
 		metadataHarmonizer.updateLegacyImage(ds, imp);
 		colorTableHarmonizer.updateLegacyImage(display, imp);
@@ -158,6 +165,11 @@ public class Harmonizer {
 		if (imp.getStack().getSize() == 0)
 			throw new IllegalArgumentException(
 					"cannot update a display with an ImagePlus that has an empty stack");
+
+		// NB - Remember current plane data and use in pixel harmonizers later.
+		// This makes sure that IJ2 can propagate IJ1 changes to current plane for
+		// virtual stacks.
+		saveCurrentSlice(imp);
 
 		final ImageDisplayService imageDisplayService =
 			legSrv.getImageDisplayService();
@@ -407,4 +419,20 @@ public class Harmonizer {
 		
 		return typeChanged;
 	}
+
+	private void saveCurrentSlice(ImagePlus imp) {
+		ImageProcessor proc = imp.getProcessor();
+		int pos = imp.getCurrentSlice();
+		double[] plane = new double[imp.getWidth() * imp.getHeight()];
+		for (int i = 0; i < plane.length; i++) {
+			plane[i] = proc.getf(i);
+		}
+		if (imp.getType() == ImagePlus.COLOR_RGB) {
+			colorPixelHarmonizer.savePlane(pos, plane);
+		}
+		else {
+			grayPixelHarmonizer.savePlane(pos, plane);
+		}
+	}
+
 }

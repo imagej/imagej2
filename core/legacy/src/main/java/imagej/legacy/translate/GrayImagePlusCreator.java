@@ -1,5 +1,5 @@
 /*
- * #%L
+// * #%L
  * ImageJ software for multidimensional image processing and analysis.
  * %%
  * Copyright (C) 2009 - 2013 Board of Regents of the University of
@@ -43,8 +43,18 @@ import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.legacy.LegacyService;
+import net.imglib2.converter.Converter;
+import net.imglib2.img.Img;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
+import net.imglib2.img.cell.AbstractCellImg;
+import net.imglib2.img.display.imagej.ImageJVirtualStackFloat;
+import net.imglib2.img.display.imagej.ImageJVirtualStackUnsignedByte;
+import net.imglib2.img.display.imagej.ImageJVirtualStackUnsignedShort;
+import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.ShortType;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
+import net.imglib2.type.numeric.real.FloatType;
 
 /**
  * Creates {@link ImagePlus}es from {@link ImageDisplay}s containing gray data.
@@ -82,8 +92,12 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 		final ImageDisplayService imageDisplayService =
 			legSrv.getImageDisplayService();
 		final Dataset dataset = imageDisplayService.getActiveDataset(display);
+		Img<?> img = dataset.getImgPlus().getImg();
 		ImagePlus imp;
-		if (LegacyUtils.datasetIsIJ1Compatible(dataset)) {
+		if (AbstractCellImg.class.isAssignableFrom(img.getClass())) {
+			imp = cellImgCase(display, dataset);
+		}
+		else if (LegacyUtils.datasetIsIJ1Compatible(dataset)) {
 			imp = makeExactImagePlus(dataset);
 			planeHarmonizer.updateLegacyImage(dataset, imp);
 		}
@@ -182,6 +196,8 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 		imp.setDimensions(c, z, t);
 		
 		imp.setOpenAsHyperStack(imp.getNDimensions() > 3);
+
+		if (ds.getType() instanceof ShortType) markAsSigned16Bit(imp);
 
 		return imp;
 	}
@@ -290,5 +306,79 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 		public Object makePlane(final int w, final int h) {
 			return new float[w * h];
 		}
+	}
+
+	private ImagePlus cellImgCase(ImageDisplay display, Dataset ds) {
+		Img<? extends RealType<?>> img = ds.getImgPlus();
+		RealType<?> type = img.firstElement();
+		int bitDepth = type.getBitsPerPixel();
+		boolean isSigned = ds.isSigned();
+		ImageStack stack;
+		// TODO : what about ARGB type's CellImgs? Note also that ARGB is not a
+		// RealType and thus our dataset can't support it directly.
+		if (bitDepth <= 8 && !isSigned) {
+			stack = new ImageJVirtualStackUnsignedByte(img, new ByteConverter());
+		}
+		else if (bitDepth <= 16 && !isSigned) {
+			stack = new ImageJVirtualStackUnsignedShort(img, new ShortConverter());
+		}
+		else { // other types translated as 32-bit float data
+			stack = new ImageJVirtualStackFloat(img, new FloatConverter());
+		}
+		ImagePlus imp = new ImagePlus(ds.getName(), stack);
+
+		// TODO - is this right? what about 6d and up? encoded channels?
+		final int[] dimIndices = new int[5];
+		final int[] dimValues = new int[5];
+		LegacyUtils.getImagePlusDims(ds, dimIndices, dimValues);
+		final int cCount = dimValues[2];
+		final int zCount = dimValues[3];
+		final int tCount = dimValues[4];
+		imp.setDimensions(cCount, zCount, tCount);
+
+		// TODO - is this right?
+		imp.setOpenAsHyperStack(ds.numDimensions() > 3);
+
+		return imp;
+	}
+
+	private class ByteConverter implements
+		Converter<RealType<?>, UnsignedByteType>
+	{
+
+		@Override
+		public void convert(RealType<?> input, UnsignedByteType output) {
+			double val = input.getRealDouble();
+			if (val < 0) val = 0;
+			else if (val > 255) val = 255;
+			output.setReal(val);
+		}
+
+	}
+
+	private class ShortConverter implements
+		Converter<RealType<?>, UnsignedShortType>
+	{
+
+		@Override
+		public void convert(RealType<?> input, UnsignedShortType output) {
+			double val = input.getRealDouble();
+			if (val < 0) val = 0;
+			else if (val > 65535) val = 65535;
+			output.setReal(val);
+		}
+
+	}
+
+	private class FloatConverter implements Converter<RealType<?>, FloatType> {
+
+		@Override
+		public void convert(RealType<?> input, FloatType output) {
+			double val = input.getRealDouble();
+			if (val < -Float.MAX_VALUE) val = -Float.MAX_VALUE;
+			else if (val > Float.MAX_VALUE) val = Float.MAX_VALUE;
+			output.setReal(val);
+		}
+
 	}
 }

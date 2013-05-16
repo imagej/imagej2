@@ -36,6 +36,7 @@
 package imagej.legacy.translate;
 
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.process.ImageProcessor;
 import imagej.data.Dataset;
 import net.imglib2.RandomAccess;
@@ -50,6 +51,14 @@ import net.imglib2.type.numeric.RealType;
  */
 public class ColorPixelHarmonizer implements DataHarmonizer {
 
+	private double[] savedPlane;
+	private int savedPos;
+
+	public void savePlane(int pos, double[] plane) {
+		savedPos = pos;
+		savedPlane = plane;
+	}
+
 	/**
 	 * Assigns the data values of a color {@link Dataset} from a paired
 	 * {@link ImagePlus}. Assumes the Dataset and ImagePlus have compatible
@@ -63,40 +72,53 @@ public class ColorPixelHarmonizer implements DataHarmonizer {
 		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
 		final int zIndex = ds.getAxisIndex(Axes.Z);
 		final int tIndex = ds.getAxisIndex(Axes.TIME);
-		final int x = imp.getWidth();
-		final int y = imp.getHeight();
-		final int c = imp.getNChannels();
-		final int z = imp.getNSlices();
-		final int t = imp.getNFrames();
+		final int xSize = imp.getWidth();
+		final int ySize = imp.getHeight();
+		final int cSize = imp.getNChannels();
+		final int zSize = imp.getNSlices();
+		final int tSize = imp.getNFrames();
+		final ImageStack stack = imp.getStack();
 		int imagejPlaneNumber = 1;
 		final RandomAccess<? extends RealType<?>> accessor =
 			ds.getImgPlus().randomAccess();
-		for (int ti = 0; ti < t; ti++) {
-			if (tIndex >= 0) accessor.setPosition(ti, tIndex);
-			for (int zi = 0; zi < z; zi++) {
-				if (zIndex >= 0) accessor.setPosition(zi, zIndex);
-				for (int ci = 0; ci < c; ci++) {
-					final ImageProcessor proc =
-						imp.getStack().getProcessor(imagejPlaneNumber++);
-					for (int yi = 0; yi < y; yi++) {
-						accessor.setPosition(yi, yIndex);
-						for (int xi = 0; xi < x; xi++) {
-							accessor.setPosition(xi, xIndex);
-							final int value = proc.get(xi, yi);
+		int slice = imp.getCurrentSlice();
+		for (int t = 0; t < tSize; t++) {
+			if (tIndex >= 0) accessor.setPosition(t, tIndex);
+			for (int z = 0; z < zSize; z++) {
+				if (zIndex >= 0) accessor.setPosition(z, zIndex);
+				for (int c = 0; c < cSize; c++) {
+					final ImageProcessor proc = stack.getProcessor(imagejPlaneNumber++);
+					// TEMP HACK THAT FIXES VIRT STACK PROB BUT SLOW
+					// imp.setPosition(planeNum - 1);
+					for (int y = 0; y < ySize; y++) {
+						accessor.setPosition(y, yIndex);
+						for (int x = 0; x < xSize; x++) {
+							accessor.setPosition(x, xIndex);
+							final int value;
+							if (savedPos == imagejPlaneNumber - 1) {
+								int index = xSize * y + x;
+								value = (int) savedPlane[index];
+							}
+							else {
+								value = proc.get(x, y);
+							}
 							final int rValue = (value >> 16) & 0xff;
 							final int gValue = (value >> 8) & 0xff;
 							final int bValue = (value >> 0) & 0xff;
-							accessor.setPosition(ci * 3 + 0, cIndex);
+							accessor.setPosition(c * 3, cIndex);
 							accessor.get().setReal(rValue);
-							accessor.setPosition(ci * 3 + 1, cIndex);
+							accessor.fwd(cIndex);
 							accessor.get().setReal(gValue);
-							accessor.setPosition(ci * 3 + 2, cIndex);
+							accessor.fwd(cIndex);
 							accessor.get().setReal(bValue);
 						}
 					}
 				}
 			}
 		}
+		// NB - virtual stack fix
+		stack.getProcessor(slice);
+
 		ds.update();
 	}
 
@@ -114,44 +136,49 @@ public class ColorPixelHarmonizer implements DataHarmonizer {
 		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
 		final int zIndex = ds.getAxisIndex(Axes.Z);
 		final int tIndex = ds.getAxisIndex(Axes.TIME);
-		final int x = imp.getWidth();
-		final int y = imp.getHeight();
-		final int c = imp.getNChannels();
-		final int z = imp.getNSlices();
-		final int t = imp.getNFrames();
+		final int xSize = imp.getWidth();
+		final int ySize = imp.getHeight();
+		final int cSize = imp.getNChannels();
+		final int zSize = imp.getNSlices();
+		final int tSize = imp.getNFrames();
+		final ImageStack stack = imp.getStack();
 		int imagejPlaneNumber = 1;
 		final RandomAccess<? extends RealType<?>> accessor =
 			ds.getImgPlus().randomAccess();
-		for (int ti = 0; ti < t; ti++) {
-			if (tIndex >= 0) accessor.setPosition(ti, tIndex);
-			for (int zi = 0; zi < z; zi++) {
-				if (zIndex >= 0) accessor.setPosition(zi, zIndex);
-				for (int ci = 0; ci < c; ci++) {
-					final ImageProcessor proc =
-						imp.getStack().getProcessor(imagejPlaneNumber++);
-					for (int yi = 0; yi < y; yi++) {
-						accessor.setPosition(yi, yIndex);
-						for (int xi = 0; xi < x; xi++) {
-							accessor.setPosition(xi, xIndex);
+		int slice = imp.getCurrentSlice();
+		for (int t = 0; t < tSize; t++) {
+			if (tIndex >= 0) accessor.setPosition(t, tIndex);
+			for (int z = 0; z < zSize; z++) {
+				if (zIndex >= 0) accessor.setPosition(z, zIndex);
+				for (int c = 0; c < cSize; c++) {
+					final ImageProcessor proc = stack.getProcessor(imagejPlaneNumber++);
+					// TEMP HACK THAT FIXES VIRT STACK PROB BUT SLOW
+					// imp.setPosition(planeNum - 1);
+					for (int y = 0; y < ySize; y++) {
+						accessor.setPosition(y, yIndex);
+						for (int x = 0; x < xSize; x++) {
+							accessor.setPosition(x, xIndex);
 
-							accessor.setPosition(3 * ci + 0, cIndex);
+							accessor.setPosition(3 * c, cIndex);
 							final int rValue = ((int) accessor.get().getRealDouble()) & 0xff;
 
-							accessor.setPosition(3 * ci + 1, cIndex);
+							accessor.fwd(cIndex);
 							final int gValue = ((int) accessor.get().getRealDouble()) & 0xff;
 
-							accessor.setPosition(3 * ci + 2, cIndex);
+							accessor.fwd(cIndex);
 							final int bValue = ((int) accessor.get().getRealDouble()) & 0xff;
 
 							final int intValue =
 								(0xff << 24) | (rValue << 16) | (gValue << 8) | (bValue);
 
-							proc.set(xi, yi, intValue);
+							proc.set(x, y, intValue);
 						}
 					}
 				}
 			}
 		}
+		// NB - virtual stack fix
+		stack.getProcessor(slice);
 	}
 
 }
