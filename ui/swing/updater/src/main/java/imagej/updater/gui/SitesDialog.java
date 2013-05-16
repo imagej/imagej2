@@ -36,8 +36,10 @@
 package imagej.updater.gui;
 
 import imagej.updater.core.FileObject;
+import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.FilesCollection.UpdateSite;
+import imagej.updater.core.UploaderService;
 import imagej.updater.util.Util;
 
 import java.awt.Container;
@@ -46,8 +48,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -55,8 +55,8 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -70,6 +70,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
@@ -84,6 +85,8 @@ public class SitesDialog extends JDialog implements ActionListener {
 	protected UpdaterFrame updaterFrame;
 	protected FilesCollection files;
 	protected List<String> names;
+	protected String newUpdateSiteName;
+	protected UpdateSite newUpdateSite;
 
 	protected DataModel tableModel;
 	protected JTable table;
@@ -109,6 +112,110 @@ public class SitesDialog extends JDialog implements ActionListener {
 				edit.setEnabled(getSelectedRow() >= 0);
 				remove.setEnabled(getSelectedRow() > 0);
 			}
+
+			@Override
+			public boolean isCellEditable(final int row, final int column) {
+				return column >= 0 && column < getColumnCount() && row >= 0 && row < getRowCount();
+			}
+
+			@Override
+			public TableCellEditor getCellEditor(final int row, final int column) {
+				final JTextField field = new JTextField();
+				return new DefaultCellEditor(field) {
+					@Override
+					public boolean stopCellEditing() {
+						String value = field.getText();
+						if ((column == 1 || column == 3) && !value.equals("") && !value.endsWith("/")) {
+							value += "/";
+						}
+						if (column == 0) {
+							if (value.equals(getUpdateSiteName(row))) return super.stopCellEditing();
+							if (files.getUpdateSite(value) != null) {
+								error("Update site '" + value + "' exists already!");
+								return false;
+							}
+						} else if (column == 1) {
+							if ("/".equals(value)) value = "";
+							final UpdateSite site = getUpdateSite(row);
+							if (value.equals(site.url)) return super.stopCellEditing();
+							if (!validURL(value)) {
+								if (site == null || site.sshHost == null || site.sshHost.equals("")) {
+									error("URL does not refer to an update site: " + value + "\n"
+										+ "If you want to initialize that site, you need to provide upload information first.");
+									return false;
+								} else {
+									if (!showYesNoQuestion("Initialize upload site?",
+											"It appears that the URL\n"
+											+ "\t" + value + "\n"
+											+ "is not (yet) valid. "
+											+ "Do you want to initialize it (host: "
+											+ site.sshHost + "; directory: "
+											+ site.uploadDirectory + ")?"))
+										return false;
+									if (!initializeUpdateSite((String)getValueAt(row, 0),
+											value, site.sshHost, site.uploadDirectory))
+										return false;
+								}
+							}
+							if (row == names.size()) {
+								files.addUpdateSite(newUpdateSiteName, value, site.sshHost, site.uploadDirectory, 0l);
+								names.add(newUpdateSiteName);
+								newUpdateSiteName = null;
+								newUpdateSite = null;
+							}
+						} else if (column == 2) {
+							final UpdateSite site = getUpdateSite(row);
+							if (value.equals(site.sshHost)) return super.stopCellEditing();
+							final int colon = value.indexOf(':');
+							if (colon > 0) {
+								final String protocol = value.substring(0, colon);
+								final UploaderService uploaderService = updaterFrame.getUploaderService();
+								if (null == uploaderService.installUploader(protocol, files, updaterFrame.getProgress(null))) {
+									error("Unknown upload protocol: " + protocol);
+									return false;
+								}
+							}
+						} else if (column == 3) {
+							final UpdateSite site = getUpdateSite(row);
+							if (value.equals(site.uploadDirectory)) return super.stopCellEditing();
+						}
+						updaterFrame.enableUploadOrNot();
+						return super.stopCellEditing();
+					}
+				};
+			}
+
+			@Override
+			public void setValueAt(final Object value, final int row, final int column)
+			{
+				final String string = (String)value;
+				final UpdateSite site = getUpdateSite(row);
+				// if the name changed, or if we auto-fill the name from the URL
+				switch (column) {
+				case 0:
+					final String name = getUpdateSiteName(row);
+					if (name.equals(string)) return;
+					files.renameUpdateSite(name, string);
+					names.set(row, string);
+					break;
+				case 1:
+					site.url = string;
+					break;
+				case 2:
+					site.sshHost = string;
+					break;
+				case 3:
+					site.uploadDirectory = string;
+					break;
+				default:
+					updaterFrame.log.error("Whoa! Column " + column + " is not handled!");
+				}
+				if (!readFromSite(row)) {
+					error("There were problems reading from the site '"
+						+ getUpdateSiteName(row) + "' (URL: " + getUpdateSite(row).url + ")");
+				}
+			}
+
 		};
 		table.setColumnSelectionAllowed(false);
 		table.setRowSelectionAllowed(true);
@@ -134,18 +241,39 @@ public class SitesDialog extends JDialog implements ActionListener {
 		setLocationRelativeTo(owner);
 	}
 
-	protected UpdateSite getUpdateSite(final String name) {
-		return files.getUpdateSite(name);
+	protected String getUpdateSiteName(int row) {
+		if (row == names.size()) return newUpdateSiteName;
+		return names.get(row);
+	}
+
+	protected UpdateSite getUpdateSite(int row) {
+		if (row == names.size()) return newUpdateSite;
+		return files.getUpdateSite(names.get(row));
 	}
 
 	protected void add() {
-		final SiteDialog dialog = new SiteDialog();
-		dialog.setVisible(true);
+		if (newUpdateSite != null) {
+			error("Let's fill out the values of the previously added site first, okay?");
+			return;
+		}
+		final int row = names.size();
+		newUpdateSiteName = makeUniqueSiteName("New");
+		newUpdateSite = new UpdateSite("", "", "", 0l);
+		tableModel.rowsChanged();
+		tableModel.rowChanged(row);
+		table.setRowSelectionInterval(row, row);
+	}
+
+	private String makeUniqueSiteName(final String prefix) {
+		if (files.getUpdateSite(prefix) == null) return prefix;
+		for (int i = 2; ; i++) {
+			if (files.getUpdateSite(prefix + "-" + i) == null) return prefix + "-" + i;
+		}
 	}
 
 	protected void edit(final int row) {
 		final String name = names.get(row);
-		final UpdateSite updateSite = getUpdateSite(name);
+		final UpdateSite updateSite = getUpdateSite(row);
 		final SiteDialog dialog =
 			new SiteDialog(name, updateSite.url, updateSite.sshHost,
 				updateSite.uploadDirectory, row);
@@ -154,6 +282,10 @@ public class SitesDialog extends JDialog implements ActionListener {
 
 	protected void delete(final int row) {
 		final String name = names.get(row);
+		if (!showYesNoQuestion("Remove " + name + "?",
+				"Do you really want to remove the site '" + name + "' from the list?\n"
+				+ "URL: " + getUpdateSite(row).url))
+			return;
 		final List<FileObject> list = new ArrayList<FileObject>();
 		int count = 0;
 		for (final FileObject file : files.forUpdateSite(name))
@@ -225,14 +357,13 @@ public class SitesDialog extends JDialog implements ActionListener {
 
 		@Override
 		public int getRowCount() {
-			return names.size();
+			return names.size() + (newUpdateSite == null ? 0 : 1);
 		}
 
 		@Override
 		public Object getValueAt(final int row, final int col) {
-			final String name = names.get(row);
-			if (col == 0) return name;
-			final UpdateSite site = getUpdateSite(name);
+			if (col == 0) return getUpdateSiteName(row);
+			final UpdateSite site = getUpdateSite(row);
 			if (col == 1) return site.url;
 			if (col == 2) return site.sshHost;
 			if (col == 3) return site.uploadDirectory;
@@ -247,11 +378,64 @@ public class SitesDialog extends JDialog implements ActionListener {
 			rowsChanged(0, names.size());
 		}
 
-		@SuppressWarnings("unused")
 		public void rowsChanged(final int firstRow, final int lastRow) {
 			// fireTableChanged(new TableModelEvent(this, firstRow, lastRow));
 			fireTableChanged(new TableModelEvent(this));
 		}
+	}
+
+	protected boolean validURL(String url) {
+		if (!url.endsWith("/"))
+			url += "/";
+		try {
+			return files.util.getLastModified(new URL(url
+					+ Util.XML_COMPRESSED)) != -1;
+		} catch (MalformedURLException e) {
+			updaterFrame.log.error(e);
+			return false;
+		}
+	}
+
+	protected boolean readFromSite(final int row) {
+		try {
+			final String updateSite = names.get(row);
+			files.reReadUpdateSite(updateSite, updaterFrame.getProgress(null));
+			markForUpdate(updateSite, false);
+		} catch (final Exception e) {
+			error("Not a valid URL: " + getUpdateSite(row).url);
+			return false;
+		}
+		return true;
+	}
+
+	private void markForUpdate(final String updateSite, final boolean evenForcedUpdates) {
+		for (final FileObject file : files.forUpdateSite(updateSite)) {
+			if (file.isUpdateable(evenForcedUpdates) && file.isUpdateablePlatform(files)) {
+				file.setFirstValidAction(files, Action.UPDATE,
+					Action.UNINSTALL, Action.INSTALL);
+			}
+		}
+	}
+
+	protected boolean initializeUpdateSite(final String siteName,
+			String url, final String host, String uploadDirectory) {
+		if (!url.endsWith("/"))
+			url += "/";
+		if (!uploadDirectory.endsWith("/"))
+			uploadDirectory += "/";
+		boolean result;
+		try {
+			result = updaterFrame.initializeUpdateSite(url, host,
+					uploadDirectory) && validURL(url);
+		} catch (final InstantiationException e) {
+			updaterFrame.log.error(e);
+			result = false;
+		}
+		if (result)
+			info("Initialized update site '" + siteName + "'");
+		else
+			error("Could not initialize update site '" + siteName + "'");
+		return result;
 	}
 
 	protected class SiteDialog extends JDialog implements ActionListener {
@@ -330,46 +514,6 @@ public class SitesDialog extends JDialog implements ActionListener {
 			setLocationRelativeTo(SitesDialog.this);
 		}
 
-		protected boolean validURL(String url) {
-			if (!url.endsWith("/")) url += "/";
-			try {
-				return files.util.getLastModified(new URL(url + Util.XML_COMPRESSED)) != -1;
-			} catch (MalformedURLException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
-		protected boolean readFromSite(final String name) {
-			try {
-				files.reReadUpdateSite(name, updaterFrame.getProgress("Czechsummer"));
-			}
-			catch (final Exception e) {
-				error("Not a valid URL: " + url.getText());
-				return false;
-			}
-			return true;
-		}
-
-		protected boolean initializeUpdateSite(final String siteName, String url,
-			final String host, String uploadDirectory)
-		{
-			if (!url.endsWith("/")) url += "/";
-			if (!uploadDirectory.endsWith("/")) uploadDirectory += "/";
-			boolean result;
-			try {
-				result =
-					updaterFrame.initializeUpdateSite(url, host, uploadDirectory) &&
-						validURL(url);
-			}
-			catch (final InstantiationException e) {
-				updaterFrame.log.error(e);
-				result = false;
-			}
-			if (result) info("Initialized update site '" + siteName + "'");
-			else error("Could not initialize update site '" + siteName + "'");
-			return result;
-		}
-
 		@Override
 		public void actionPerformed(final ActionEvent e) {
 			final Object source = e.getSource();
@@ -410,10 +554,11 @@ public class SitesDialog extends JDialog implements ActionListener {
 					files.addUpdateSite(name.getText(), url.getText(), sshHost.getText(),
 						uploadDirectory.getText(), 0l);
 					names.add(name.getText());
+					readFromSite(names.size() - 1);
 				}
 				else {
 					final String originalName = names.get(row);
-					final UpdateSite updateSite = getUpdateSite(originalName);
+					final UpdateSite updateSite = getUpdateSite(row);
 					final String name = this.name.getText();
 					final boolean nameChanged = !name.equals(originalName);
 					if (nameChanged) {
@@ -427,8 +572,8 @@ public class SitesDialog extends JDialog implements ActionListener {
 					updateSite.url = url.getText();
 					updateSite.sshHost = sshHost.getText();
 					updateSite.uploadDirectory = uploadDirectory.getText();
+					readFromSite(row);
 				}
-				readFromSite(name.getText());
 				tableModel.rowChanged(row);
 				table.setRowSelectionInterval(row, row);
 				updaterFrame.enableUploadOrNot();
