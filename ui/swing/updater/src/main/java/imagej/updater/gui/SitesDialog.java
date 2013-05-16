@@ -79,9 +79,7 @@ import javax.swing.table.TableColumnModel;
  * @author Johannes Schindelin
  */
 @SuppressWarnings("serial")
-public class SitesDialog extends JDialog implements ActionListener,
-	ItemListener
-{
+public class SitesDialog extends JDialog implements ActionListener {
 
 	protected UpdaterFrame updaterFrame;
 	protected FilesCollection files;
@@ -90,10 +88,8 @@ public class SitesDialog extends JDialog implements ActionListener,
 	protected DataModel tableModel;
 	protected JTable table;
 	protected JButton add, edit, remove, close;
-	protected JCheckBox forUpload;
 
-	public SitesDialog(final UpdaterFrame owner, final FilesCollection files,
-		final boolean forUpload)
+	public SitesDialog(final UpdaterFrame owner, final FilesCollection files)
 	{
 		super(owner, "Manage update sites");
 		updaterFrame = owner;
@@ -103,9 +99,6 @@ public class SitesDialog extends JDialog implements ActionListener,
 
 		final Container contentPane = getContentPane();
 		contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.PAGE_AXIS));
-
-		this.forUpload = new JCheckBox("For Uploading", forUpload);
-		this.forUpload.addItemListener(this);
 
 		tableModel = new DataModel();
 		table = new JTable(tableModel) {
@@ -126,7 +119,6 @@ public class SitesDialog extends JDialog implements ActionListener,
 		contentPane.add(scrollpane);
 
 		final JPanel buttons = new JPanel();
-		buttons.add(this.forUpload);
 		add = SwingTools.button("Add", "Add", this, buttons);
 		edit = SwingTools.button("Edit", "Edit", this, buttons);
 		edit.setEnabled(false);
@@ -203,15 +195,6 @@ public class SitesDialog extends JDialog implements ActionListener,
 		}
 	}
 
-	@Override
-	public void itemStateChanged(final ItemEvent e) {
-		int selectedColumn = table.getSelectedColumn();
-		int selectedRow = table.getSelectedRow();
-		tableModel.fireTableStructureChanged();
-		tableModel.setColumnWidths();
-		if (selectedRow >= 0) table.changeSelection(selectedRow, selectedColumn, false, false);
-	}
-
 	protected class DataModel extends AbstractTableModel {
 
 		protected int tableWidth;
@@ -232,7 +215,7 @@ public class SitesDialog extends JDialog implements ActionListener,
 
 		@Override
 		public int getColumnCount() {
-			return forUpload.isSelected() ? 4 : 2;
+			return 4;
 		}
 
 		@Override
@@ -312,22 +295,22 @@ public class SitesDialog extends JDialog implements ActionListener,
 			c.weightx = 1;
 			c.gridx++;
 			contentPane.add(this.url, c);
-			if (forUpload.isSelected()) {
-				c.weightx = 0;
-				c.gridx = 0;
-				c.gridy++;
-				contentPane.add(new JLabel("Host:"), c);
-				c.weightx = 1;
-				c.gridx++;
-				contentPane.add(this.sshHost, c);
-				c.weightx = 0;
-				c.gridx = 0;
-				c.gridy++;
-				contentPane.add(new JLabel("Upload directory:"), c);
-				c.weightx = 1;
-				c.gridx++;
-				contentPane.add(this.uploadDirectory, c);
-			}
+			c.weightx = 0;
+			c.gridx = 0;
+			c.gridy++;
+
+			contentPane.add(new JLabel("Host:"), c);
+			c.weightx = 1;
+			c.gridx++;
+			contentPane.add(this.sshHost, c);
+			c.weightx = 0;
+			c.gridx = 0;
+			c.gridy++;
+			contentPane.add(new JLabel("Upload directory:"), c);
+			c.weightx = 1;
+			c.gridx++;
+			contentPane.add(this.uploadDirectory, c);
+
 			final JPanel buttons = new JPanel();
 			ok = new JButton("OK");
 			ok.addActionListener(this);
