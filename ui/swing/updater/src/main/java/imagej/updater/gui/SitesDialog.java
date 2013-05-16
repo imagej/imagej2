@@ -44,8 +44,6 @@ import imagej.updater.util.Util;
 
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
@@ -59,7 +57,6 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -90,7 +87,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 
 	protected DataModel tableModel;
 	protected JTable table;
-	protected JButton add, edit, remove, close;
+	protected JButton add, remove, close;
 
 	public SitesDialog(final UpdaterFrame owner, final FilesCollection files)
 	{
@@ -109,7 +106,6 @@ public class SitesDialog extends JDialog implements ActionListener {
 			@Override
 			public void valueChanged(final ListSelectionEvent e) {
 				super.valueChanged(e);
-				edit.setEnabled(getSelectedRow() >= 0);
 				remove.setEnabled(getSelectedRow() > 0);
 			}
 
@@ -227,8 +223,6 @@ public class SitesDialog extends JDialog implements ActionListener {
 
 		final JPanel buttons = new JPanel();
 		add = SwingTools.button("Add", "Add", this, buttons);
-		edit = SwingTools.button("Edit", "Edit", this, buttons);
-		edit.setEnabled(false);
 		remove = SwingTools.button("Remove", "Remove", this, buttons);
 		remove.setEnabled(false);
 		close = SwingTools.button("Close", "Close", this, buttons);
@@ -271,15 +265,6 @@ public class SitesDialog extends JDialog implements ActionListener {
 		}
 	}
 
-	protected void edit(final int row) {
-		final String name = names.get(row);
-		final UpdateSite updateSite = getUpdateSite(row);
-		final SiteDialog dialog =
-			new SiteDialog(name, updateSite.url, updateSite.sshHost,
-				updateSite.uploadDirectory, row);
-		dialog.setVisible(true);
-	}
-
 	protected void delete(final int row) {
 		final String name = names.get(row);
 		if (!showYesNoQuestion("Remove " + name + "?",
@@ -320,7 +305,6 @@ public class SitesDialog extends JDialog implements ActionListener {
 	public void actionPerformed(final ActionEvent e) {
 		final Object source = e.getSource();
 		if (source == add) add();
-		else if (source == edit) edit(table.getSelectedRow());
 		else if (source == remove) delete(table.getSelectedRow());
 		else if (source == close) {
 			dispose();
@@ -436,150 +420,6 @@ public class SitesDialog extends JDialog implements ActionListener {
 		else
 			error("Could not initialize update site '" + siteName + "'");
 		return result;
-	}
-
-	protected class SiteDialog extends JDialog implements ActionListener {
-
-		protected int row;
-		protected JTextField name, url, sshHost, uploadDirectory;
-		protected JButton ok, cancel;
-
-		public SiteDialog() {
-			this("", "", "", "", -1);
-		}
-
-		public SiteDialog(final String name, final String url,
-			final String sshHost, final String uploadDirectory, final int row)
-		{
-			super(SitesDialog.this, "Add update site");
-			this.row = row;
-
-			setPreferredSize(new Dimension(400, 150));
-			final Container contentPane = getContentPane();
-			contentPane.setLayout(new GridBagLayout());
-			final GridBagConstraints c = new GridBagConstraints();
-			c.fill = GridBagConstraints.HORIZONTAL;
-			c.gridwidth = c.gridheight = 1;
-			c.weightx = c.weighty = 0;
-			c.gridx = c.gridy = 0;
-
-			this.name = new JTextField(name, tableModel.widths[0]);
-			this.url = new JTextField(url, tableModel.widths[1]);
-			this.sshHost = new JTextField(sshHost, tableModel.widths[2]);
-			this.uploadDirectory =
-				new JTextField(uploadDirectory, tableModel.widths[3]);
-			contentPane.add(new JLabel("Name:"), c);
-			c.weightx = 1;
-			c.gridx++;
-			contentPane.add(this.name, c);
-			c.weightx = 0;
-			c.gridx = 0;
-			c.gridy++;
-			contentPane.add(new JLabel("URL:"), c);
-			c.weightx = 1;
-			c.gridx++;
-			contentPane.add(this.url, c);
-			c.weightx = 0;
-			c.gridx = 0;
-			c.gridy++;
-
-			contentPane.add(new JLabel("Host:"), c);
-			c.weightx = 1;
-			c.gridx++;
-			contentPane.add(this.sshHost, c);
-			c.weightx = 0;
-			c.gridx = 0;
-			c.gridy++;
-			contentPane.add(new JLabel("Upload directory:"), c);
-			c.weightx = 1;
-			c.gridx++;
-			contentPane.add(this.uploadDirectory, c);
-
-			final JPanel buttons = new JPanel();
-			ok = new JButton("OK");
-			ok.addActionListener(this);
-			buttons.add(ok);
-			cancel = new JButton("Cancel");
-			cancel.addActionListener(this);
-			buttons.add(cancel);
-			c.weightx = 0;
-			c.gridx = 0;
-			c.gridwidth = 2;
-			c.gridy++;
-			contentPane.add(buttons, c);
-
-			getRootPane().setDefaultButton(ok);
-			pack();
-			escapeCancels(this);
-			setLocationRelativeTo(SitesDialog.this);
-		}
-
-		@Override
-		public void actionPerformed(final ActionEvent e) {
-			final Object source = e.getSource();
-			if (source == ok) {
-				if (name.getText().equals("")) {
-					error("Need a name");
-					return;
-				}
-				if (!validURL(url.getText())) {
-					try {
-						new URL(url.getText());
-					}
-					catch (final MalformedURLException e2) {
-						error("Not a valid URL: " + url.getText());
-						return;
-					}
-					if (!uploadDirectory.getText().equals("")) {
-						if (!showYesNoQuestion("Initialize upload site?",
-							"It appears that the URL is not (yet) valid.\n" +
-								"Do you want to upload an empty db.xml.gz to " +
-								sshHost.getText() + ":" + uploadDirectory.getText() + "?")) return;
-						String host = sshHost.getText();
-						if (host.equals("")) host = null; // Try the file system
-						if (!initializeUpdateSite(name.getText(), url.getText(), host,
-							uploadDirectory.getText())) return;
-					}
-					else {
-						error("URL does not refer to an update site: " + url.getText());
-						return;
-					}
-				}
-				if (row < 0) {
-					if (names.contains(name.getText())) {
-						error("Site '" + name.getText() + "' exists already!");
-						return;
-					}
-					row = names.size();
-					files.addUpdateSite(name.getText(), url.getText(), sshHost.getText(),
-						uploadDirectory.getText(), 0l);
-					names.add(name.getText());
-					readFromSite(names.size() - 1);
-				}
-				else {
-					final String originalName = names.get(row);
-					final UpdateSite updateSite = getUpdateSite(row);
-					final String name = this.name.getText();
-					final boolean nameChanged = !name.equals(originalName);
-					if (nameChanged) {
-						if (names.contains(name)) {
-							error("Site '" + name + "' exists already!");
-							return;
-						}
-						files.renameUpdateSite(originalName, name);
-						names.set(row, name);
-					}
-					updateSite.url = url.getText();
-					updateSite.sshHost = sshHost.getText();
-					updateSite.uploadDirectory = uploadDirectory.getText();
-					readFromSite(row);
-				}
-				tableModel.rowChanged(row);
-				table.setRowSelectionInterval(row, row);
-				updaterFrame.enableUploadOrNot();
-			}
-			dispose();
-		}
 	}
 
 	@Override
