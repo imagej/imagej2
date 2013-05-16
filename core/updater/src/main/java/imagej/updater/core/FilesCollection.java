@@ -203,7 +203,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 
 		// handle all files
 		for (final FileObject file : this)
-			if (file.updateSite.equals(oldName)) file.updateSite = newName;
+			if (oldName.equals(file.updateSite)) file.updateSite = newName;
 
 		// preserve order
 		final Map<String, UpdateSite> oldMap = updateSites;
