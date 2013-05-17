@@ -35,12 +35,14 @@
 
 package imagej.command;
 
+import imagej.ValidityProblem;
 import imagej.module.DefaultModuleInfo;
 import imagej.module.DefaultModuleItem;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import org.scijava.MenuPath;
 import org.scijava.UIDetails;
@@ -230,6 +232,18 @@ public class DynamicCommandInfo extends DefaultModuleInfo {
 	@Override
 	public void setDescription(final String description) {
 		info.setDescription(description);
+	}
+
+	// -- Validated methods --
+
+	@Override
+	public boolean isValid() {
+		return info.isValid();
+	}
+
+	@Override
+	public List<ValidityProblem> getProblems() {
+		return info.getProblems();
 	}
 
 	// -- Helper methods --
