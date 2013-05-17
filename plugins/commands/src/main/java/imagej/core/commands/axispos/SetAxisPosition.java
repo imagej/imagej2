@@ -71,9 +71,8 @@ public class SetAxisPosition extends DynamicCommand {
 
 	
 	protected void initPosition() {
-		@SuppressWarnings("unchecked")
 		final MutableModuleItem<Long> positionItem =
-			(MutableModuleItem<Long>) getInfo().getInput("oneBasedPosition");
+			getInfo().getMutableInput("oneBasedPosition", Long.class);
 		positionItem.setLabel("Position");
 		positionItem.setMinimumValue(1L);
 		final AxisType axis = display.getActiveAxis();

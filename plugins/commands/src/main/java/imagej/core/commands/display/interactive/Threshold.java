@@ -44,7 +44,7 @@ import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.threshold.ThresholdMethod;
 import imagej.data.threshold.ThresholdService;
 import imagej.menu.MenuConstants;
-import imagej.module.DefaultMutableModuleItem;
+import imagej.module.MutableModuleItem;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 import imagej.util.Colors;
@@ -199,7 +199,6 @@ public class Threshold extends InteractiveCommand {
 
 	// -- initializers --
 
-	@SuppressWarnings("unchecked")
 	protected void initValues() {
 
 		if (display == null) return;
@@ -229,15 +228,15 @@ public class Threshold extends InteractiveCommand {
 		// the widget style for min and max here below.
 
 		// set min range widget
-		final DefaultMutableModuleItem<Double> minItem =
-			(DefaultMutableModuleItem<Double>) getInfo().getInput("minimum");
+		final MutableModuleItem<Double> minItem =
+			getInfo().getMutableInput("minimum", Double.class);
 		minItem.setMinimumValue(dataMin);
 		minItem.setMaximumValue(dataMax);
 		minItem.setValue(this, overlay.getRangeMin());
 
 		// set max range widget
-		final DefaultMutableModuleItem<Double> maxItem =
-			(DefaultMutableModuleItem<Double>) getInfo().getInput("maximum");
+		final MutableModuleItem<Double> maxItem =
+			getInfo().getMutableInput("maximum", Double.class);
 		maxItem.setMinimumValue(dataMin);
 		maxItem.setMaximumValue(dataMax);
 		maxItem.setValue(this, overlay.getRangeMax());
@@ -374,9 +373,8 @@ public class Threshold extends InteractiveCommand {
 	}
 	
 	private void getThresholdMethodNames() {
-		@SuppressWarnings("unchecked")
-		final DefaultMutableModuleItem<String> methodNameInput =
-			(DefaultMutableModuleItem<String>) getInfo().getInput("methodName");
+		final MutableModuleItem<String> methodNameInput =
+			getInfo().getMutableInput("methodName", String.class);
 		methodNameInput.setChoices(threshSrv.getThresholdMethodNames());
 	}
 

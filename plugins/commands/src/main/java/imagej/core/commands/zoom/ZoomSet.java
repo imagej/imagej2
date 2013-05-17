@@ -149,9 +149,8 @@ public class ZoomSet extends DynamicCommand {
 	private void initZoom() {
 		final ImageCanvas canvas = display.getCanvas();
 
-		@SuppressWarnings("unchecked")
 		final MutableModuleItem<Double> zoomItem =
-			(MutableModuleItem<Double>) getInfo().getInput(ZOOM);
+			getInfo().getMutableInput(ZOOM, Double.class);
 		zoomItem.setMinimumValue(0.1);
 		zoomItem.setMaximumValue(500000.0);
 		setZoomPercent(100 * canvas.getZoomFactor());
@@ -162,16 +161,14 @@ public class ZoomSet extends DynamicCommand {
 		final ImageCanvas canvas = display.getCanvas();
 		final RealCoords panCenter = canvas.getPanCenter();
 
-		@SuppressWarnings("unchecked")
 		final MutableModuleItem<Double> centerUItem =
-			(MutableModuleItem<Double>) getInfo().getInput(CTR_U);
+			getInfo().getMutableInput(CTR_U, Double.class);
 		centerUItem.setMinimumValue(planeExtents.x);
 		centerUItem.setMaximumValue(planeExtents.x + planeExtents.width);
 		setCenterU(panCenter.x);
 
-		@SuppressWarnings("unchecked")
 		final MutableModuleItem<Double> centerVItem =
-			(MutableModuleItem<Double>) getInfo().getInput(CTR_V);
+			getInfo().getMutableInput(CTR_V, Double.class);
 		centerVItem.setMinimumValue(planeExtents.y);
 		centerVItem.setMaximumValue(planeExtents.y + planeExtents.height);
 		setCenterV(panCenter.y);

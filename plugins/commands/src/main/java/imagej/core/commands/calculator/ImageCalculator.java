@@ -243,9 +243,8 @@ public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 
 	protected void initCalculator() {
 		List<String> opNames = calculatorService.getOperatorNames();
-		@SuppressWarnings("unchecked")
 		final MutableModuleItem<String> opNameInput =
-			(MutableModuleItem<String>) getInfo().getInput("opName");
+			getInfo().getMutableInput("opName", String.class);
 		opNameInput.setChoices(opNames);
 	}
 

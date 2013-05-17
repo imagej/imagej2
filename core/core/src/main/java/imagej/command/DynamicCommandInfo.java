@@ -76,6 +76,48 @@ public class DynamicCommandInfo extends DefaultMutableModuleInfo {
 		populateItems();
 	}
 
+	// -- DynamicCommandInfo methods --
+
+	/**
+	 * Gets the mutable input with the given name and type.
+	 * <p>
+	 * If the input is not mutable (i.e., a {@link MutableModuleItem}), a
+	 * {@link ClassCastException} will be thrown. However, this method is always
+	 * safe to call for inputs declared using the @{@link Parameter} notation of
+	 * {@link Command}s; it is only unsafe when called to retrieve inputs added
+	 * dynamically using {@link #addInput(ModuleItem)}, where the
+	 * {@link ModuleItem} in question was of unknown (i.e., potentially
+	 * non-mutable) origin.
+	 * </p>
+	 * 
+	 * @throws ClassCastException if input is not a {@link MutableModuleItem}.
+	 */
+	public <T> MutableModuleItem<T> getMutableInput(final String name,
+		final Class<T> type)
+	{
+		return (MutableModuleItem<T>) getInput(name, type);
+	}
+
+	/**
+	 * Gets the mutable output with the given name and type.
+	 * <p>
+	 * If the output is not mutable (i.e., a {@link MutableModuleItem}), a
+	 * {@link ClassCastException} will be thrown. However, this method is always
+	 * safe to call for outputs declared using the @{@link Parameter} notation of
+	 * {@link Command}s; it is only unsafe when called to retrieve outputs added
+	 * dynamically using {@link #addInput(ModuleItem)}, where the
+	 * {@link ModuleItem} in question was of unknown (i.e., potentially
+	 * non-mutable) origin.
+	 * </p>
+	 * 
+	 * @throws ClassCastException if output is not a {@link MutableModuleItem}.
+	 */
+	public <T> MutableModuleItem<T> getMutableOutput(final String name,
+		final Class<T> type)
+	{
+		return (MutableModuleItem<T>) getOutput(name, type);
+	}
+
 	// -- Internal methods --
 
 	/**

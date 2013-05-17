@@ -36,7 +36,7 @@
 package imagej.script.editor.command;
 
 import imagej.command.DynamicCommand;
-import imagej.module.DefaultMutableModuleItem;
+import imagej.module.MutableModuleItem;
 import imagej.script.editor.TextEditor;
 
 import org.scijava.plugin.Parameter;
@@ -62,9 +62,8 @@ public class ChooseTabSize extends DynamicCommand {
 	}
 
 	protected void initializeChoice() {
-		@SuppressWarnings("unchecked")
-		DefaultMutableModuleItem<Integer> item =
-				(DefaultMutableModuleItem<Integer>) getInfo().getInput(TAB_SIZE_NAME);
+		final MutableModuleItem<Integer> item =
+			getInfo().getMutableInput(TAB_SIZE_NAME, Integer.class);
 		item.setValue(this, editor.getEditorPane().getTabSize());
 	}
 }

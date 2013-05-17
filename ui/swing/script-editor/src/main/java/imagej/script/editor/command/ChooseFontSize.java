@@ -35,8 +35,7 @@
 
 package imagej.script.editor.command;
 
-import imagej.command.DynamicCommand;
-import imagej.module.DefaultMutableModuleItem;
+import imagej.command.ContextCommand;
 import imagej.script.editor.TextEditor;
 
 import org.scijava.plugin.Parameter;
@@ -46,14 +45,13 @@ import org.scijava.plugin.Parameter;
  * 
  * @author Johannes Schindelin
  */
-public class ChooseFontSize extends DynamicCommand {
+public class ChooseFontSize extends ContextCommand {
 
 	@Parameter
 	private TextEditor editor;
 
 	@Parameter(initializer = "initializeChoice")
 	private int fontSize;
-	private final static String FONT_SIZE_NAME = "fontSize";
 
 	@Override
 	public void run() {
@@ -62,9 +60,6 @@ public class ChooseFontSize extends DynamicCommand {
 	}
 
 	protected void initializeChoice() {
-		@SuppressWarnings("unchecked")
-		DefaultMutableModuleItem<Integer> item =
-				(DefaultMutableModuleItem<Integer>) getInfo().getInput(FONT_SIZE_NAME);
-		item.setValue(this, (int) editor.getEditorPane().getFontSize());
+		fontSize = (int) editor.getEditorPane().getFontSize();
 	}
 }

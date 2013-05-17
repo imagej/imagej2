@@ -295,9 +295,8 @@ public class AddData extends DynamicCommand {
 	}
 
 	private void initAxisName() {
-		@SuppressWarnings("unchecked")
 		final MutableModuleItem<String> axisNameItem =
-			(MutableModuleItem<String>) getInfo().getInput(AXIS_NAME);
+			getInfo().getMutableInput(AXIS_NAME, String.class);
 		final AxisType[] axes = getDataset().getAxes();
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (final AxisType a : axes) {
@@ -350,9 +349,8 @@ public class AddData extends DynamicCommand {
 	private void setItemRange(final String fieldName, final long min,
 		@SuppressWarnings("unused") final long max)
 	{
-		@SuppressWarnings("unchecked")
 		final MutableModuleItem<Long> item =
-			(MutableModuleItem<Long>) getInfo().getInput(fieldName);
+			getInfo().getMutableInput(fieldName, Long.class);
 		item.setMinimumValue(min);
 		// TODO - disable until we fix ticket #886
 		// item.setMaximumValue(max);

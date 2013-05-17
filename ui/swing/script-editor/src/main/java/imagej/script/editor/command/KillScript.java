@@ -76,9 +76,8 @@ public class KillScript extends DynamicCommand {
 	}
 
 	protected void initializeChoice() {
-		@SuppressWarnings("unchecked")
-		MutableModuleItem<Executer> item =
-				(MutableModuleItem<Executer>) getInfo().getInput(SCRIPT_NAME);
+		final MutableModuleItem<Executer> item =
+			getInfo().getMutableInput(SCRIPT_NAME, Executer.class);
 		item.setChoices(editor.getExecutingTasks());
 	}
 }
