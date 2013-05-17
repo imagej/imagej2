@@ -75,28 +75,23 @@ public class DefaultImageTranslator implements ImageTranslator {
 	@Override
 	public ImageDisplay createDisplay(final ImagePlus imp) {
 		
-		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder(), LegacyUtils
-			.isBinary(imp));
+		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder());
 	}
 
 	/**
 	 * Creates a {@link ImageDisplay} from an {@link ImagePlus}. Shares planes of
-	 * data when possible. Builds ImageDisplay with preferred Axis ordering. The
-	 * isBinaryImp flag should specify whether the passed in ImagePlus is a binary
-	 * ImagePlus. This is useful for users who know and are trying to minimize
-	 * calls to the expensive LegacyUtils::isBinary(imp). 
+	 * data when possible. Builds ImageDisplay with preferred Axis ordering.
 	 */
 	@Override
 	public ImageDisplay createDisplay(final ImagePlus imp,
-		final AxisType[] preferredOrder, boolean isBinaryImp)
+		final AxisType[] preferredOrder)
 	{
 
 		if ((imp.getType() == ImagePlus.COLOR_RGB) && (imp.getNChannels() == 1)) {
-			// NB : can force isBinaryImp to false since we know it is COLOR_RGB
-			return colorDisplayCreator.createDisplay(imp, preferredOrder, false);
+			return colorDisplayCreator.createDisplay(imp, preferredOrder);
 		}
 
-		return grayDisplayCreator.createDisplay(imp, preferredOrder, isBinaryImp);
+		return grayDisplayCreator.createDisplay(imp, preferredOrder);
 	}
 
 	/**

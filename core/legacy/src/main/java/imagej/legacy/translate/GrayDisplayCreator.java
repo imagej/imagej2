@@ -91,22 +91,23 @@ public class GrayDisplayCreator implements DisplayCreator {
 
 	@Override
 	public ImageDisplay createDisplay(final ImagePlus imp) {
-		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder(), LegacyUtils.isBinary(imp));
+		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder());
 	}
 
 	@Override
 	public ImageDisplay createDisplay(final ImagePlus imp,
-		final AxisType[] preferredOrder, boolean isBinaryImp)
+		final AxisType[] preferredOrder)
 	{
-		if (imp.getType() == ImagePlus.COLOR_RGB)
-			return colorCase(imp, preferredOrder, isBinaryImp);
-		return grayCase(imp, preferredOrder, isBinaryImp);
+		if (imp.getType() == ImagePlus.COLOR_RGB) {
+			return colorCase(imp, preferredOrder);
+		}
+		return grayCase(imp, preferredOrder);
 	}
 
 	// -- private interface --
 
 	private ImageDisplay colorCase(final ImagePlus imp,
-		final AxisType[] preferredOrder,@SuppressWarnings("unused") boolean isBinaryImp)
+		final AxisType[] preferredOrder)
 	{
 		final Dataset ds = makeGrayDatasetFromColorImp(imp, preferredOrder);
 		setDatasetGrayDataFromColorImp(ds, imp);
@@ -130,19 +131,18 @@ public class GrayDisplayCreator implements DisplayCreator {
 	}
 
 	private ImageDisplay grayCase(final ImagePlus imp,
-		final AxisType[] preferredOrder, boolean isBinaryImp)
+		final AxisType[] preferredOrder)
 	{
 		Dataset ds;
 		if (preferredOrder[0] == Axes.X &&
 				preferredOrder[1] == Axes.Y &&
-				!imp.getCalibration().isSigned16Bit() &&
-				!isBinaryImp)
+			!imp.getCalibration().isSigned16Bit())
 		{
 			ds = makeExactDataset(imp, preferredOrder);
 			planeHarmonizer.updateDataset(ds, imp);
 		}
 		else {
-			ds = makeGrayDatasetFromGrayImp(imp, preferredOrder, isBinaryImp);
+			ds = makeGrayDatasetFromGrayImp(imp, preferredOrder);
 			pixelHarmonizer.updateDataset(ds, imp);
 		}
 		metadataHarmonizer.updateDataset(ds, imp);
@@ -291,7 +291,7 @@ public class GrayDisplayCreator implements DisplayCreator {
 	 * metadata of Dataset.
 	 */
 	private Dataset makeGrayDatasetFromGrayImp(final ImagePlus imp,
-		final AxisType[] preferredOrder, boolean isBinaryImp)
+		final AxisType[] preferredOrder)
 	{
 		final int x = imp.getWidth();
 		final int y = imp.getHeight();
@@ -304,20 +304,9 @@ public class GrayDisplayCreator implements DisplayCreator {
 		final long[] dims = LegacyUtils.orderedDims(axes, inputDims);
 		final String name = imp.getTitle();
 
-		final boolean signed;
-		final boolean floating;
-		final int bitsPerPixel;
-
-		if (isBinaryImp) {
-			bitsPerPixel = 1;
-			signed = false;
-			floating = false;
-		}
-		else { // not binary
-			bitsPerPixel = imp.getBitDepth();
-			signed = isSigned(imp);
-			floating = isFloating(imp);
-		}
+		final int bitsPerPixel = imp.getBitDepth();
+		final boolean signed = isSigned(imp);
+		final boolean floating = isFloating(imp);
 
 		final DatasetService datasetService = legSrv.getDatasetService();
 

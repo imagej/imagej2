@@ -36,11 +36,9 @@
 package imagej.legacy.translate;
 
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.WindowManager;
 import ij.gui.ImageWindow;
 import ij.macro.Interpreter;
-import ij.process.ImageProcessor;
 import imagej.data.Dataset;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.meta.Axes;
@@ -409,10 +407,10 @@ public class LegacyUtils {
 		return false;
 	}
 
-	/**
+	/* OLD AND TOO SLOW FOR LARGE VIRTUAL IMAGES
+	 * 
 	 * Determines whether an ImagePlus is an legacy ImageJ binary image (i.e. it
 	 * is unsigned 8 bit data with only values 0 & 255 present)
-	 */
 	public static boolean isBinary(final ImagePlus imp) {
 		final int numSlices = imp.getStackSize();
 		// don't let degenerate images report themselves as binary
@@ -438,5 +436,6 @@ public class LegacyUtils {
 		stack.getProcessor(slice);
 		return true;
 	}
+	 */
 
 }

@@ -84,14 +84,12 @@ public class ColorDisplayCreator implements DisplayCreator {
 
 	@Override
 	public ImageDisplay createDisplay(final ImagePlus imp) {
-		// NB: can assume false for isBinary because we are only called when type
-		// of image is COLOR_RGB
-		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder(), false);
+		return createDisplay(imp, LegacyUtils.getPreferredAxisOrder());
 	}
 
 	@Override
 	public ImageDisplay createDisplay(final ImagePlus imp,
-		final AxisType[] preferredOrder, boolean isBinaryImp)
+		final AxisType[] preferredOrder)
 	{
 		final Dataset ds = makeColorDataset(imp, preferredOrder);
 		pixelHarmonizer.updateDataset(ds, imp);
