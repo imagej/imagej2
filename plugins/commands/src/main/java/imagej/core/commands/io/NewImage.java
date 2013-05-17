@@ -40,7 +40,7 @@ import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.menu.MenuConstants;
-import imagej.module.DefaultModuleItem;
+import imagej.module.DefaultMutableModuleItem;
 import net.imglib2.Cursor;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
@@ -239,8 +239,8 @@ public class NewImage extends DynamicCommand {
 
 	protected void init() {
 		for (AxisType axisType : defaultAxes) {
-			final DefaultModuleItem<Long> axisItem =
-				new DefaultModuleItem<Long>(this, axisType.getLabel(), Long.class);
+			final DefaultMutableModuleItem<Long> axisItem =
+				new DefaultMutableModuleItem<Long>(this, axisType.getLabel(), Long.class);
 			// NB - persist all values for now
 			//if (!axisType.isXY()) axisItem.setPersisted(false);
 			axisItem.setValue(this, 0L);

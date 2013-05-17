@@ -43,7 +43,7 @@ import imagej.data.sampler.SamplerService;
 import imagej.data.sampler.SamplingDefinition;
 import imagej.display.DisplayService;
 import imagej.menu.MenuConstants;
-import imagej.module.DefaultModuleItem;
+import imagej.module.DefaultMutableModuleItem;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -199,8 +199,8 @@ public class DuplicateImage extends DynamicCommand {
 		definitions = new HashMap<AxisType, AxisSubrange>();
 		theAxes = inputDisplay.getAxes();
 		for (final AxisType axis : theAxes) {
-			final DefaultModuleItem<String> axisItem =
-				new DefaultModuleItem<String>(this, name(axis), String.class);
+			final DefaultMutableModuleItem<String> axisItem =
+				new DefaultMutableModuleItem<String>(this, name(axis), String.class);
 			axisItem.setPersisted(false);
 			axisItem.setValue(this, fullRangeString(inputDisplay, axis));
 			addInput(axisItem);

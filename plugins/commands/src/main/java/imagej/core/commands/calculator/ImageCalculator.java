@@ -42,7 +42,7 @@ import imagej.data.DatasetService;
 import imagej.data.operator.CalculatorOp;
 import imagej.data.operator.CalculatorService;
 import imagej.menu.MenuConstants;
-import imagej.module.DefaultModuleItem;
+import imagej.module.MutableModuleItem;
 
 import java.util.List;
 
@@ -243,9 +243,8 @@ public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 
 	protected void initCalculator() {
 		List<String> opNames = calculatorService.getOperatorNames();
-		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<String> opNameInput =
-			(DefaultModuleItem<String>) getInfo().getInput("opName");
+		final MutableModuleItem<String> opNameInput =
+			getInfo().getMutableInput("opName", String.class);
 		opNameInput.setChoices(opNames);
 	}
 

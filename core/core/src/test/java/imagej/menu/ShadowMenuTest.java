@@ -40,7 +40,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import imagej.module.DefaultModuleInfo;
+import imagej.module.DefaultMutableModuleInfo;
 import imagej.module.ModuleInfo;
 
 import java.util.ArrayList;
@@ -154,7 +154,7 @@ public class ShadowMenuTest {
 	}
 
 	private ModuleInfo createModuleInfo(final String path) {
-		final DefaultModuleInfo info = new DefaultModuleInfo();
+		final DefaultMutableModuleInfo info = new DefaultMutableModuleInfo();
 		info.setMenuPath(new MenuPath(path));
 		return info;
 	}

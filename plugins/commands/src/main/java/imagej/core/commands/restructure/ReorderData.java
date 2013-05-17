@@ -39,7 +39,7 @@ import imagej.command.Command;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.menu.MenuConstants;
-import imagej.module.DefaultModuleItem;
+import imagej.module.DefaultMutableModuleItem;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -155,8 +155,8 @@ public class ReorderData extends DynamicCommand {
 			choices.add(axes[i].getLabel());
 		}
 		for (int i = 0; i < axes.length; i++) {
-			final DefaultModuleItem<String> axisItem =
-				new DefaultModuleItem<String>(this, name(i), String.class);
+			final DefaultMutableModuleItem<String> axisItem =
+				new DefaultMutableModuleItem<String>(this, name(i), String.class);
 			axisItem.setChoices(choices);
 			axisItem.setPersisted(false);
 			axisItem.setValue(this, axes[i].getLabel());

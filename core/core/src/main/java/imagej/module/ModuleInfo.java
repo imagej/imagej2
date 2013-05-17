@@ -54,8 +54,24 @@ public interface ModuleInfo extends UIDetails, Validated {
 	/** Gets the input item with the given name. */
 	ModuleItem<?> getInput(String name);
 
+	/**
+	 * Gets the input item with the given name and type.
+	 * 
+	 * @throws IllegalArgumentException if the given type is incompatible with the
+	 *           named input item
+	 */
+	<T> ModuleItem<T> getInput(String name, Class<T> type);
+
 	/** Gets the output item with the given name. */
 	ModuleItem<?> getOutput(String name);
+
+	/**
+	 * Gets the output item with the given name and type.
+	 * 
+	 * @throws IllegalArgumentException if the given type is incompatible with the
+	 *           named output item
+	 */
+	<T> ModuleItem<T> getOutput(String name, Class<T> type);
 
 	/** Gets the list of input items. */
 	Iterable<ModuleItem<?>> inputs();
@@ -121,7 +137,7 @@ public interface ModuleInfo extends UIDetails, Validated {
 	 * <p>
 	 * For classes implementing this interface directly, this method should
 	 * publish a {@link ModulesUpdatedEvent} to the event bus (see
-	 * {@link DefaultModuleInfo#update(EventService)} for an example).
+	 * {@link AbstractModuleInfo#update(EventService)} for an example).
 	 * </p>
 	 */
 	void update(EventService eventService);

@@ -36,36 +36,78 @@
 package imagej.module;
 
 /**
- * {@link ModuleInfo} extension allowing manipulation of its metadata.
+ * Default {@link MutableModuleInfo} implementation.
  * <p>
- * In particular, module inputs and outputs can be added, edited and removed.
- * </p>
- * <p>
- * Note that a {@code MutableModuleInfo} does not necessarily have
- * {@link MutableModuleItem}s!
+ * The {@link Module} {@link Class} given in the {@link #setModuleClass(Class)}
+ * method is used by {@link #getDelegateClassName()} as the delegate class name,
+ * and instantiated using a no-argument constructor. As such, it is important
+ * for downstream code to call the {@link #setModuleClass(Class)} method to
+ * associate the module info with its module class prior to using the module
+ * info for anything; the {@link #getDelegateClassName()} and
+ * {@link #createModule()} methods will fail if the module class has not been
+ * set.
  * </p>
  * 
  * @author Curtis Rueden
- * @see imagej.command.DynamicCommand
  */
-public interface MutableModuleInfo extends ModuleInfo {
+public class DefaultMutableModuleInfo extends AbstractModuleInfo implements
+	MutableModuleInfo
+{
 
-	/** Sets the module class described by this {@link ModuleInfo}. */
-	void setModuleClass(Class<? extends Module> moduleClass);
+	private Class<? extends Module> moduleClass;
 
-	/** Gets the module class described by this {@link ModuleInfo}. */
-	Class<? extends Module> getModuleClass();
+	// -- MutableModuleInfo methods --
 
-	/** Adds an input to the list. */
-	void addInput(ModuleItem<?> input);
+	@Override
+	public void setModuleClass(final Class<? extends Module> moduleClass) {
+		this.moduleClass = moduleClass;
+	}
 
-	/** Adds an output to the list. */
-	void addOutput(ModuleItem<?> output);
+	@Override
+	public Class<? extends Module> getModuleClass() {
+		return moduleClass;
+	}
 
-	/** Removes an input from the list. */
-	void removeInput(ModuleItem<?> input);
+	@Override
+	public void addInput(final ModuleItem<?> input) {
+		inputMap.put(input.getName(), input);
+		inputList.add(input);
+	}
 
-	/** Removes an output from the list. */
-	void removeOutput(ModuleItem<?> output);
+	@Override
+	public void addOutput(final ModuleItem<?> output) {
+		outputMap.put(output.getName(), output);
+		outputList.add(output);
+	}
+
+	@Override
+	public void removeInput(final ModuleItem<?> input) {
+		inputMap.remove(input.getName());
+		inputList.remove(input);
+	}
+
+	@Override
+	public void removeOutput(final ModuleItem<?> output) {
+		outputMap.remove(output.getName());
+		outputList.remove(output);
+	}
+
+	// -- ModuleInfo methods --
+
+	@Override
+	public String getDelegateClassName() {
+		return getModuleClass().getName();
+	}
+
+	@Override
+	public Module createModule() throws ModuleException {
+		try {
+			return getModuleClass().newInstance();
+		}
+		catch (final Exception e) {
+			// NB: Several types of exceptions; simpler to handle them all the same.
+			throw new ModuleException(e);
+		}
+	}
 
 }

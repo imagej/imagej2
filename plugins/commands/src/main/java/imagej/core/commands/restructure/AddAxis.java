@@ -234,9 +234,8 @@ public class AddAxis extends DynamicCommand {
 	}
 
 	private void initAxisName() {
-		@SuppressWarnings("unchecked")
 		final MutableModuleItem<String> axisNameItem =
-			(MutableModuleItem<String>) getInfo().getInput(AXIS_NAME);
+			getInfo().getMutableInput(AXIS_NAME, String.class);
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (final AxisType axis : Axes.values()) {
 			if (Axes.isXY(axis)) continue;
@@ -246,9 +245,8 @@ public class AddAxis extends DynamicCommand {
 	}
 
 	private void initAxisSize() {
-		@SuppressWarnings("unchecked")
 		final MutableModuleItem<Long> axisSizeModuleItem =
-			(MutableModuleItem<Long>) getInfo().getInput(AXIS_SIZE);
+			getInfo().getMutableInput(AXIS_SIZE, Long.class);
 		axisSizeModuleItem.setMinimumValue(2L);
 	}
 

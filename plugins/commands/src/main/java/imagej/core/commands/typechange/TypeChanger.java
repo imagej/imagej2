@@ -37,7 +37,7 @@ package imagej.core.commands.typechange;
 
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
-import imagej.module.DefaultModuleItem;
+import imagej.module.DefaultMutableModuleItem;
 import imagej.util.Prefs;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
@@ -88,8 +88,8 @@ public abstract class TypeChanger extends DynamicCommand {
 	protected void maybeAddChannelInput() {
 		int axisIndex = data.getAxisIndex(Axes.CHANNEL);
 		if (axisIndex < 0) return;
-		DefaultModuleItem<Boolean> booleanItem =
-				new DefaultModuleItem<Boolean>(this, FIELDNAME, Boolean.class);
+		DefaultMutableModuleItem<Boolean> booleanItem =
+				new DefaultMutableModuleItem<Boolean>(this, FIELDNAME, Boolean.class);
 		booleanItem.setLabel("Combine channels");
 		booleanItem.setDescription(
 				"Combine all channels into one channel by averaging");

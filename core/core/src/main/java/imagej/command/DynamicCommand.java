@@ -36,7 +36,7 @@
 package imagej.command;
 
 import imagej.Cancelable;
-import imagej.module.DefaultModule;
+import imagej.module.DefaultMutableModule;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -56,7 +56,7 @@ import org.scijava.util.ClassUtils;
  * 
  * @author Curtis Rueden
  */
-public abstract class DynamicCommand extends DefaultModule implements
+public abstract class DynamicCommand extends DefaultMutableModule implements
 	Cancelable, Command, Contextual
 {
 
