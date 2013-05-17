@@ -43,13 +43,13 @@ import org.scijava.ItemIO;
 import org.scijava.ItemVisibility;
 
 /**
- * Default {@link ModuleItem} implementation, for use with custom {@link Module}
- * implementations.
+ * Default {@link MutableModuleItem} implementation, for use with custom
+ * {@link MutableModule} implementations.
  * 
  * @author Curtis Rueden
  */
-public class DefaultModuleItem<T> extends AbstractModuleItem<T> implements
-	MutableModuleItem<T>
+public class DefaultMutableModuleItem<T> extends AbstractModuleItem<T>
+	implements MutableModuleItem<T>
 {
 
 	private final Class<T> type;
@@ -70,13 +70,13 @@ public class DefaultModuleItem<T> extends AbstractModuleItem<T> implements
 	private String label;
 	private String description;
 
-	public DefaultModuleItem(final Module module, final String name,
+	public DefaultMutableModuleItem(final Module module, final String name,
 		final Class<T> type)
 	{
 		this(module.getInfo(), name, type);
 	}
 
-	public DefaultModuleItem(final ModuleInfo info, final String name,
+	public DefaultMutableModuleItem(final ModuleInfo info, final String name,
 		final Class<T> type)
 	{
 		super(info);
@@ -101,7 +101,9 @@ public class DefaultModuleItem<T> extends AbstractModuleItem<T> implements
 	}
 
 	/** Creates a new module item with the same values as the given item. */
-	public DefaultModuleItem(final ModuleInfo info, final ModuleItem<T> item) {
+	public DefaultMutableModuleItem(final ModuleInfo info,
+		final ModuleItem<T> item)
+	{
 		super(info);
 		name = item.getName();
 		type = item.getType();

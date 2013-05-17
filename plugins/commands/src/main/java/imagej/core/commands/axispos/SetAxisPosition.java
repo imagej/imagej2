@@ -40,7 +40,7 @@ import imagej.command.DynamicCommand;
 import imagej.data.animation.AnimationService;
 import imagej.data.display.ImageDisplay;
 import imagej.menu.MenuConstants;
-import imagej.module.DefaultModuleItem;
+import imagej.module.MutableModuleItem;
 import net.imglib2.meta.AxisType;
 
 import org.scijava.ItemIO;
@@ -72,8 +72,8 @@ public class SetAxisPosition extends DynamicCommand {
 	
 	protected void initPosition() {
 		@SuppressWarnings("unchecked")
-		final DefaultModuleItem<Long> positionItem =
-			(DefaultModuleItem<Long>) getInfo().getInput("oneBasedPosition");
+		final MutableModuleItem<Long> positionItem =
+			(MutableModuleItem<Long>) getInfo().getInput("oneBasedPosition");
 		positionItem.setLabel("Position");
 		positionItem.setMinimumValue(1L);
 		final AxisType axis = display.getActiveAxis();

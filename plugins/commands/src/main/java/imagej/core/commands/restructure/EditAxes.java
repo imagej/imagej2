@@ -39,7 +39,7 @@ import imagej.command.Command;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.menu.MenuConstants;
-import imagej.module.DefaultModuleItem;
+import imagej.module.DefaultMutableModuleItem;
 
 import java.util.ArrayList;
 
@@ -128,8 +128,8 @@ public class EditAxes extends DynamicCommand {
 			choices.add(axis.getLabel());
 		}
 		for (int i = 0; i < dataset.numDimensions(); i++) {
-			final DefaultModuleItem<String> axisItem =
-				new DefaultModuleItem<String>(this, name(i), String.class);
+			final DefaultMutableModuleItem<String> axisItem =
+				new DefaultMutableModuleItem<String>(this, name(i), String.class);
 			axisItem.setChoices(choices);
 			axisItem.setPersisted(false);
 			axisItem.setValue(this, dataset.axis(i).getLabel());

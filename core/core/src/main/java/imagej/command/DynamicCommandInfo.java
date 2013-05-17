@@ -35,10 +35,12 @@
 
 package imagej.command;
 
-import imagej.module.DefaultModuleInfo;
-import imagej.module.DefaultModuleItem;
+import imagej.module.DefaultMutableModuleInfo;
+import imagej.module.DefaultMutableModuleItem;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
+import imagej.module.MutableModuleInfo;
+import imagej.module.MutableModuleItem;
 
 import java.lang.reflect.Field;
 
@@ -56,13 +58,13 @@ import org.scijava.plugin.Plugin;
  * annotation. So this class adapts that object, delegating to it for the
  * {@link UIDetails} methods. The plain {@link CommandInfo} cannot be used
  * as-is, however, because we need to override the {@link ModuleInfo} methods as
- * well as provide new functionality such as
- * {@link DefaultModuleInfo#addInput(ModuleItem)}.
+ * well as provide metadata manipulation functionality such as
+ * {@link MutableModuleInfo#addInput(ModuleItem)}.
  * </p>
  * 
  * @author Curtis Rueden
  */
-public class DynamicCommandInfo extends DefaultModuleInfo {
+public class DynamicCommandInfo extends DefaultMutableModuleInfo {
 
 	private final CommandInfo info;
 
@@ -249,8 +251,8 @@ public class DynamicCommandInfo extends DefaultModuleInfo {
 	}
 
 	/** Creates a mutable copy of the given module item. */
-	private <T> DefaultModuleItem<T> copy(final ModuleItem<T> item) {
-		return new DefaultModuleItem<T>(this, item);
+	private <T> DefaultMutableModuleItem<T> copy(final ModuleItem<T> item) {
+		return new DefaultMutableModuleItem<T>(this, item);
 	}
 
 }

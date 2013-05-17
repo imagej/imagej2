@@ -40,15 +40,17 @@ package imagej.module;
  * 
  * @author Curtis Rueden
  */
-public class DefaultModule extends AbstractModule implements MutableModule {
+public class DefaultMutableModule extends AbstractModule implements
+	MutableModule
+{
 
-	private final DefaultModuleInfo info;
+	private final MutableModuleInfo info;
 
-	public DefaultModule() {
-		this(new DefaultModuleInfo());
+	public DefaultMutableModule() {
+		this(new DefaultMutableModuleInfo());
 	}
 
-	public DefaultModule(final DefaultModuleInfo info) {
+	public DefaultMutableModule(final MutableModuleInfo info) {
 		super();
 		this.info = info;
 		info.setModuleClass(getClass());
@@ -60,8 +62,8 @@ public class DefaultModule extends AbstractModule implements MutableModule {
 	public <T> MutableModuleItem<T> addInput(final String name,
 		final Class<T> type)
 	{
-		final DefaultModuleItem<T> item =
-			new DefaultModuleItem<T>(this, name, type);
+		final DefaultMutableModuleItem<T> item =
+			new DefaultMutableModuleItem<T>(this, name, type);
 		addInput(item);
 		return item;
 	}
@@ -75,8 +77,8 @@ public class DefaultModule extends AbstractModule implements MutableModule {
 	public <T> MutableModuleItem<T> addOutput(final String name,
 		final Class<T> type)
 	{
-		final DefaultModuleItem<T> item =
-			new DefaultModuleItem<T>(this, name, type);
+		final DefaultMutableModuleItem<T> item =
+			new DefaultMutableModuleItem<T>(this, name, type);
 		addOutput(item);
 		return item;
 	}
@@ -99,7 +101,7 @@ public class DefaultModule extends AbstractModule implements MutableModule {
 	// -- Module methods --
 
 	@Override
-	public DefaultModuleInfo getInfo() {
+	public MutableModuleInfo getInfo() {
 		return info;
 	}
 

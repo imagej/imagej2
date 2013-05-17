@@ -48,82 +48,37 @@ import org.scijava.AbstractUIDetails;
 import org.scijava.event.EventService;
 
 /**
- * Default {@link ModuleInfo} implementation.
+ * Abstract superclass of {@link ModuleInfo} implementation.
  * <p>
  * By default, {@link ModuleItem}s are stored in {@link HashMap}s and
- * {@link ArrayList}s, internally. The {@link Module} {@link Class} given in the
- * {@link #setModuleClass(Class)} method is given as the delegate class name for
- * {@link #getDelegateClassName()}, and instantiated using a constructor that
- * takes a single {@link ModuleInfo} parameter.
+ * {@link ArrayList}s, internally.
  * </p>
- * By default, {@link ModuleItem}s are stored in {@link HashMap}s and
- * {@link ArrayList}s, internally. </p>
  * <p>
- * It is important for downstream code to call the
- * {@link #setModuleClass(Class)} method to associate the module info with its
- * module class prior to using the module info for anything; the
- * {@link #getDelegateClassName()} and {@link #createModule()} methods will fail
- * if the module class has not been set.
+ * By default, {@link ModuleItem}s are stored in {@link HashMap}s and
+ * {@link ArrayList}s, internally.
  * </p>
  * 
  * @author Curtis Rueden
  */
-public class DefaultModuleInfo extends AbstractUIDetails implements
-	MutableModuleInfo
+public abstract class AbstractModuleInfo extends AbstractUIDetails implements
+	ModuleInfo
 {
 
 	/** Table of inputs, keyed on name. */
-	private final Map<String, ModuleItem<?>> inputMap =
+	protected final Map<String, ModuleItem<?>> inputMap =
 		new HashMap<String, ModuleItem<?>>();
 
 	/** Table of outputs, keyed on name. */
-	private final Map<String, ModuleItem<?>> outputMap =
+	protected final Map<String, ModuleItem<?>> outputMap =
 		new HashMap<String, ModuleItem<?>>();
 
 	/** Ordered list of input items. */
-	private final List<ModuleItem<?>> inputList = new ArrayList<ModuleItem<?>>();
-
-	/** Ordered list of output items. */
-	private final List<ModuleItem<?>> outputList =
+	protected final List<ModuleItem<?>> inputList =
 		new ArrayList<ModuleItem<?>>();
 
-	private Class<? extends Module> moduleClass;
-
-	// -- MutableModuleInfo methods --
-
-	@Override
-	public void setModuleClass(final Class<? extends Module> moduleClass) {
-		this.moduleClass = moduleClass;
-	}
-
-	@Override
-	public Class<? extends Module> getModuleClass() {
-		return moduleClass;
-	}
-
-	@Override
-	public void addInput(final ModuleItem<?> input) {
-		inputMap.put(input.getName(), input);
-		inputList.add(input);
-	}
-
-	@Override
-	public void addOutput(final ModuleItem<?> output) {
-		outputMap.put(output.getName(), output);
-		outputList.add(output);
-	}
-
-	@Override
-	public void removeInput(final ModuleItem<?> input) {
-		inputMap.remove(input.getName());
-		inputList.remove(input);
-	}
-
-	@Override
-	public void removeOutput(final ModuleItem<?> output) {
-		outputMap.remove(output.getName());
-		outputList.remove(output);
-	}
+	/** Ordered list of output items. */
+	protected final List<ModuleItem<?>> outputList =
+		new ArrayList<ModuleItem<?>>();
 
 	// -- ModuleInfo methods --
 
@@ -145,22 +100,6 @@ public class DefaultModuleInfo extends AbstractUIDetails implements
 	@Override
 	public Iterable<ModuleItem<?>> outputs() {
 		return Collections.unmodifiableList(outputList);
-	}
-
-	@Override
-	public String getDelegateClassName() {
-		return getModuleClass().getName();
-	}
-
-	@Override
-	public Module createModule() throws ModuleException {
-		try {
-			return getModuleClass().newInstance();
-		}
-		catch (final Exception e) {
-			// NB: Several types of exceptions; simpler to handle them all the same.
-			throw new ModuleException(e);
-		}
 	}
 
 	@Override
