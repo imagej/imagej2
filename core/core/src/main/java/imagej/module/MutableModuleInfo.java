@@ -40,6 +40,10 @@ package imagej.module;
  * <p>
  * In particular, module inputs and outputs can be added, edited and removed.
  * </p>
+ * <p>
+ * Note that a {@code MutableModuleInfo} does not necessarily have
+ * {@link MutableModuleItem}s!
+ * </p>
  * 
  * @author Curtis Rueden
  * @see imagej.command.DynamicCommand
