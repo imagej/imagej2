@@ -58,6 +58,7 @@ import net.imglib2.display.ColorTable;
 import net.imglib2.display.CompositeXYProjector;
 import net.imglib2.display.RealLUTConverter;
 import net.imglib2.img.ImgPlus;
+import net.imglib2.img.cell.AbstractCellImg;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
@@ -156,8 +157,10 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 		double max = imgPlus.getChannelMaximum(c);
 		if (Double.isNaN(min) || Double.isNaN(max)) {
 			// not provided in metadata, so calculate the min/max
-			final RandomAccessibleInterval<RealType> interval =
+			RandomAccessibleInterval<RealType> interval =
 				channelData(getData(), c);
+			
+			interval = planeData(interval);
 			final ComputeMinMax<? extends RealType<?>> cmm =
 				new ComputeMinMax(interval);
 			cmm.process();
@@ -169,6 +172,24 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 		}
 		setChannelRange(c, min, max);
 	}
+	
+  private RandomAccessibleInterval<RealType> planeData(
+      RandomAccessibleInterval<RealType> interval) {
+
+    long[] min = new long[interval.numDimensions()];
+    long[] max = new long[interval.numDimensions()];
+    interval.dimensions(max);
+
+    for(int i=0; i<2 && i<max.length; i++) {
+      max[i]--;
+    }
+
+    for(int i=2; i<max.length; i++) {
+      max[i] = min[i];
+    }
+
+    return Views.interval(interval, min, max);
+  }
 
 	@Override
 	public void setComposite(final boolean composite) {
@@ -446,9 +467,20 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 					getData().getImgPlus().getChannelMaximum(c), null);
 			converters.add(converter);
 		}
-		projector =
-			new CompositeXYProjector(getData().getImgPlus(), screenImage, converters,
-				channelDimIndex);
+		
+		ImgPlus<?> img = getData().getImgPlus();
+		
+		if (AbstractCellImg.class.isAssignableFrom(img.getImg().getClass())) {
+		  projector =
+		      new SourceOptimizedCompositeXYProjector(getData().getImgPlus(), screenImage, converters,
+		          channelDimIndex);
+		}
+		else {
+      projector =
+          new CompositeXYProjector(getData().getImgPlus(), screenImage, converters,
+              channelDimIndex);
+		}
+		
 		projector.setComposite(composite);
 	}
 
