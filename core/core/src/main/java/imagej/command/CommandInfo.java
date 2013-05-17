@@ -274,9 +274,23 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo {
 	}
 
 	@Override
+	public <T> CommandModuleItem<T> getInput(final String name,
+		final Class<T> type)
+	{
+		return castItem(getInput(name), type);
+	}
+
+	@Override
 	public CommandModuleItem<?> getOutput(final String name) {
 		parseParams();
 		return (CommandModuleItem<?>) outputMap.get(name);
+	}
+
+	@Override
+	public <T> CommandModuleItem<T> getOutput(final String name,
+		final Class<T> type)
+	{
+		return castItem(getOutput(name), type);
 	}
 
 	@Override
@@ -430,6 +444,19 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo {
 			problems.add(new ValidityProblem(error, e));
 		}
 		return null;
+	}
+
+	private <T> CommandModuleItem<T> castItem(final CommandModuleItem<?> item,
+		final Class<T> type)
+	{
+		final Class<?> itemType = item.getType();
+		if (!type.isAssignableFrom(itemType)) {
+			throw new IllegalArgumentException("Type " + type.getName() +
+				" is incompatible with item of type " + itemType.getName());
+		}
+		@SuppressWarnings("unchecked")
+		final CommandModuleItem<T> typedItem = (CommandModuleItem<T>) item;
+		return typedItem;
 	}
 
 }

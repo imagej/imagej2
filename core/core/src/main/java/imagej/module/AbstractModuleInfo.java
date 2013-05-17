@@ -88,8 +88,18 @@ public abstract class AbstractModuleInfo extends AbstractUIDetails implements
 	}
 
 	@Override
+	public <T> ModuleItem<T> getInput(final String name, final Class<T> type) {
+		return castItem(getInput(name), type);
+	}
+
+	@Override
 	public ModuleItem<?> getOutput(final String name) {
 		return outputMap.get(name);
+	}
+
+	@Override
+	public <T> ModuleItem<T> getOutput(final String name, final Class<T> type) {
+		return castItem(getOutput(name), type);
 	}
 
 	@Override
@@ -150,6 +160,21 @@ public abstract class AbstractModuleInfo extends AbstractUIDetails implements
 	@Override
 	public List<ValidityProblem> getProblems() {
 		return null;
+	}
+
+	// -- Helper methods --
+
+	private <T> ModuleItem<T> castItem(final ModuleItem<?> item,
+		final Class<T> type)
+	{
+		final Class<?> itemType = item.getType();
+		if (!type.isAssignableFrom(itemType)) {
+			throw new IllegalArgumentException("Type " + type.getName() +
+				" is incompatible with item of type " + itemType.getName());
+		}
+		@SuppressWarnings("unchecked")
+		ModuleItem<T> typedItem = (ModuleItem<T>) item;
+		return typedItem;
 	}
 
 }
