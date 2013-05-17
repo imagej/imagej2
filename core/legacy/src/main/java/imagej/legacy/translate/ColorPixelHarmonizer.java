@@ -134,7 +134,9 @@ public class ColorPixelHarmonizer implements DataHarmonizer {
 				}
 			}
 		}
-		// NB - virtual stack fix
+		// NOTE: the stack.getProcessor() calls that have been called so far have
+		// changed the current plane's pixels for virtual stacks. So reset pixels
+		// to correct plane's values
 		stack.getProcessor(slice);
 
 		ds.update();
@@ -195,7 +197,9 @@ public class ColorPixelHarmonizer implements DataHarmonizer {
 				}
 			}
 		}
-		// NB - virtual stack fix
+		// NOTE: the stack.getProcessor() calls that have been called so far have
+		// changed the current plane's pixels for virtual stacks. So reset pixels
+		// to correct plane's values
 		stack.getProcessor(slice);
 	}
 
