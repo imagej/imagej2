@@ -40,6 +40,10 @@ package imagej.module;
  * <p>
  * In particular, module inputs and outputs can be added, edited and removed.
  * </p>
+ * <p>
+ * A {@code MutableModule} always has {@link MutableModuleInfo} attached to it,
+ * accessible via the {@link #getInfo()} method.
+ * </p>
  * 
  * @author Curtis Rueden
  * @see imagej.command.DynamicCommand
@@ -63,5 +67,12 @@ public interface MutableModule extends Module {
 
 	/** Removes an output from the list. */
 	void removeOutput(ModuleItem<?> output);
+
+	// NB: Type narrowing.
+
+	// -- ModuleInfo methods --
+
+	@Override
+	MutableModuleInfo getInfo();
 
 }
