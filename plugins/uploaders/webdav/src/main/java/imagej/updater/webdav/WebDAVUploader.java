@@ -59,6 +59,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import net.iharder.Base64;
 
 import org.scijava.log.LogService;
@@ -66,6 +68,7 @@ import org.scijava.log.StderrLogService;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.XML;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * Uploads files to an update server using WebDAV.
@@ -140,11 +143,19 @@ public class WebDAVUploader extends AbstractUploader {
 			UpdaterUserInterface.get().error("User " + username + " lacks upload permissions for " + baseURL);
 			return false;
 		}
-		if (!directoryExists("")) {
-			UpdaterUserInterface.get().error(baseURL + " does not exist yet!");
+		try {
+			if (!directoryExists("")) {
+				UpdaterUserInterface.get().error(baseURL + " does not exist yet!");
+				return false;
+			}
+		} catch (UnauthenticatedException e) {
 			return false;
 		}
 		return true;
+	}
+
+	private static class UnauthenticatedException extends Exception {
+		private static final long serialVersionUID = 8269335582341674291L;
 	}
 
 	@Override
@@ -317,9 +328,13 @@ public class WebDAVUploader extends AbstractUploader {
 			return true;
 		}
 
-		if (directoryExists(path)) {
-			existingDirectories.add(path);
-			return true;
+		try {
+			if (directoryExists(path)) {
+				existingDirectories.add(path);
+				return true;
+			}
+		} catch (UnauthenticatedException e) {
+			return false;
 		}
 
 		int slash = path.lastIndexOf('/', path.length() - 2);
@@ -351,7 +366,7 @@ public class WebDAVUploader extends AbstractUploader {
 		return null;
 	}
 
-	private boolean directoryExists(final String path) {
+	private boolean directoryExists(final String path) throws UnauthenticatedException {
 		String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
 				+ "<propfind xmlns=\"DAV:\">"
 				+ "<prop>"
@@ -361,12 +376,21 @@ public class WebDAVUploader extends AbstractUploader {
 		try {
 			final HttpURLConnection connection = connect("PROPFIND", getURL(path, true), xml);
 
-			final XML result = new XML(connection.getInputStream());
-			final NodeList list = result.xpath("/multistatus/response/propstat/prop/resourcetype/collection");
-			return list != null && list.getLength() > 0;
+			try {
+				final XML result = new XML(connection.getInputStream());
+				final NodeList list = result.xpath("/multistatus/response/propstat/prop/resourcetype/collection");
+				return list != null && list.getLength() > 0;
+			} catch (IOException e) {
+				if (connection.getResponseCode() == 401) throw new UnauthenticatedException();
+				throw e;
+			}
 		} catch (FileNotFoundException e) {
 			return false;
-		} catch (Exception e) {
+		} catch (IOException e) {
+			log.error(e);
+		} catch (ParserConfigurationException e) {
+			log.error(e);
+		} catch (SAXException e) {
 			log.error(e);
 		}
 		return false;
@@ -426,7 +450,7 @@ public class WebDAVUploader extends AbstractUploader {
 		setRequestMethod(connection, method);
 
 		final String authentication = username + ":" + password;
-		connection.setRequestProperty("Authorization", "Basic " + Base64.encodeBytes(authentication.getBytes()));
+		connection.setRequestProperty("Authorization", "Basic " + Base64.encodeBytes(authentication.getBytes("UTF-8")));
 
 		if (headers != null) {
 			for (int i = 0; i < headers.length; i += 2) {

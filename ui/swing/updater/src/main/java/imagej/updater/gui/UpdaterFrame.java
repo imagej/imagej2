@@ -315,8 +315,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 					@Override
 					public void actionPerformed(final ActionEvent e) {
-						new SitesDialog(UpdaterFrame.this, UpdaterFrame.this.files,
-							UpdaterFrame.this.files.hasUploadableSites()).setVisible(true);
+						new SitesDialog(UpdaterFrame.this, UpdaterFrame.this.files).setVisible(true);
 					}
 				}, bottomPanel2);
 
