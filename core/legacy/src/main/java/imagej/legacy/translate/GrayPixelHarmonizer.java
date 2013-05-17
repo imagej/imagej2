@@ -56,9 +56,24 @@ import net.imglib2.type.numeric.integer.ShortType;
  */
 public class GrayPixelHarmonizer implements DataHarmonizer {
 
+	// -- instance variables --
+
 	private double[] savedPlane;
 	private int savedPos;
 
+	// -- public api --
+
+	// NOTE: to propagate a VirtualStack's first plane pixel changes we save it
+	// early in the harmonization process and refer to it later. This code is part
+	// of that process
+
+	/**
+	 * Users of GrayPixelHarmonizer can pass it a copy of the current plane of
+	 * pixels of an ImagePlus.
+	 * 
+	 * @param pos Slice number of the current plane
+	 * @param plane Pixels copy of the current plane
+	 */
 	public void savePlane(int pos, double[] plane) {
 		savedPos = pos;
 		savedPlane = plane;
@@ -109,6 +124,9 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 						for (int y = 0; y < ySize; y++) {
 							if (yIndex >= 0) pos[yIndex] = y;
 							accessor.setPosition(pos);
+							// NOTE: to propagate a VirtualStack's first plane pixel changes
+							// we save it early in the harmonization process and refer to it
+							// later. This code is part of that process
 							double value;
 							if (savedPos == planeNum - 1) {
 								int index = xSize * y + x;
@@ -126,7 +144,9 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 				}
 			}
 		}
-		// NB - virtual stack fix
+		// NOTE: the stack.getProcessor() calls that have been called so far have
+		// changed the current plane's pixels for virtual stacks. So reset pixels
+		// to correct plane's values
 		stack.getProcessor(slice);
 
 		ds.update();
@@ -186,7 +206,9 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 				}
 			}
 		}
-		// NB - virtual stack fix
+		// NOTE: the stack.getProcessor() calls that have been called so far have
+		// changed the current plane's pixels for virtual stacks. So reset pixels
+		// to correct plane's values
 		stack.getProcessor(slice);
 	}
 

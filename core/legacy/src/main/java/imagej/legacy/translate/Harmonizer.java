@@ -420,6 +420,10 @@ public class Harmonizer {
 		return typeChanged;
 	}
 
+	// NOTE: to propagate a VirtualStack's first plane pixel changes we save it
+	// early in the harmonization process and refer to it later. This code is part
+	// of that process
+
 	private void saveCurrentSlice(ImagePlus imp) {
 		ImageProcessor proc = imp.getProcessor();
 		int pos = imp.getCurrentSlice();

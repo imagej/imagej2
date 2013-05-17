@@ -51,9 +51,24 @@ import net.imglib2.type.numeric.RealType;
  */
 public class ColorPixelHarmonizer implements DataHarmonizer {
 
+	// -- instance variables --
+
 	private double[] savedPlane;
 	private int savedPos;
 
+	// -- public api --
+
+	// NOTE: to propagate a VirtualStack's first plane pixel changes we save it
+	// early in the harmonization process and refer to it later. This code is part
+	// of that process
+
+	/**
+	 * Users of ColorPixelHarmonizer can pass it a copy of the current plane of
+	 * pixels of an ImagePlus.
+	 * 
+	 * @param pos Slice number of the current plane
+	 * @param plane Pixels copy of the current plane
+	 */
 	public void savePlane(int pos, double[] plane) {
 		savedPos = pos;
 		savedPlane = plane;
@@ -94,6 +109,9 @@ public class ColorPixelHarmonizer implements DataHarmonizer {
 						accessor.setPosition(y, yIndex);
 						for (int x = 0; x < xSize; x++) {
 							accessor.setPosition(x, xIndex);
+							// NOTE: to propagate a VirtualStack's first plane pixel changes
+							// we save it early in the harmonization process and refer to it
+							// later. This code is part of that process
 							final int value;
 							if (savedPos == imagejPlaneNumber - 1) {
 								int index = xSize * y + x;
