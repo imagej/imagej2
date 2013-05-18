@@ -160,7 +160,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			RandomAccessibleInterval<RealType> interval =
 				channelData(getData(), c);
 			
-			interval = planeData(interval);
+			interval = (RandomAccessibleInterval<RealType>) planeData(interval);
 			final ComputeMinMax<? extends RealType<?>> cmm =
 				new ComputeMinMax(interval);
 			cmm.process();
@@ -172,24 +172,6 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 		}
 		setChannelRange(c, min, max);
 	}
-	
-  private RandomAccessibleInterval<RealType> planeData(
-      RandomAccessibleInterval<RealType> interval) {
-
-    long[] min = new long[interval.numDimensions()];
-    long[] max = new long[interval.numDimensions()];
-    interval.dimensions(max);
-
-    for(int i=0; i<2 && i<max.length; i++) {
-      max[i]--;
-    }
-
-    for(int i=2; i<max.length; i++) {
-      max[i] = min[i];
-    }
-
-    return Views.interval(interval, min, max);
-  }
 
 	@Override
 	public void setComposite(final boolean composite) {
@@ -436,7 +418,18 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	}
 
 	// -- Helper methods --
+  
+  private RandomAccessibleInterval<?> planeData(
+      RandomAccessibleInterval<?> interval) {
 
+    //FIXME repeated code with AbstractPlanarCommand
+    for (int i=2; i<interval.numDimensions(); i++) {
+      interval = Views.hyperSlice(interval, i, getLongPosition(i));
+    }
+
+    return interval;
+  }
+  
 	private int getChannelDimIndex() {
 		return getData().getAxisIndex(Axes.CHANNEL);
 	}
