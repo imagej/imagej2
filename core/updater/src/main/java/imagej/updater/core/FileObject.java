@@ -118,18 +118,12 @@ public class FileObject {
 		UNINSTALL("Uninstall it"), INSTALL("Install it"), UPDATE("Update it"),
 
 		// developer-only changes
-		UPLOAD("Upload it", true), REMOVE("Remove it", true);
+		UPLOAD("Upload it"), REMOVE("Remove it");
 
 		private String label;
-		private boolean uploadersOnly;
 
 		Action(final String label) {
-			this(label, false);
-		}
-
-		Action(final String label, final boolean uploadersOnly) {
 			this.label = label;
-			this.uploadersOnly = uploadersOnly;
 		}
 
 		@Override
@@ -149,31 +143,26 @@ public class FileObject {
 		OBSOLETE(Action.OBSOLETE, Action.UNINSTALL, Action.UPLOAD),
 		OBSOLETE_MODIFIED( Action.MODIFIED, Action.UNINSTALL, Action.UPLOAD);
 
-		private Action[] actions, developerActions;
+		private final Action[] actions;
+		private final boolean[] validActions;
 
 		Status(final Action... actions) {
-			developerActions = actions;
-			if (!actions[actions.length - 1].uploadersOnly)
-				this.actions = actions;
-			else {
-				this.actions = new Action[actions.length - 1];
-				System.arraycopy(actions, 0, this.actions, 0,
-						this.actions.length);
-			}
+			this.actions = actions;
+			validActions = new boolean[Action.values().length];
+			for (final Action action : actions) validActions[action.ordinal()] = true;
 		}
 
+		@Deprecated
 		public Action[] getActions() {
 			return actions;
 		}
 
 		public Action[] getDeveloperActions() {
-			return developerActions;
+			return actions;
 		}
 
 		public boolean isValid(final Action action) {
-			for (final Action a : developerActions)
-				if (a.equals(action)) return true;
-			return false;
+			return validActions[action.ordinal()];
 		}
 
 		public Action getNoAction() {
