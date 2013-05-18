@@ -113,6 +113,11 @@ public abstract class AbstractModuleInfo extends AbstractUIDetails implements
 	}
 
 	@Override
+	public boolean isInteractive() {
+		return false;
+	}
+
+	@Override
 	public boolean canPreview() {
 		return false;
 	}

@@ -316,6 +316,13 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo {
 	}
 
 	@Override
+	public boolean isInteractive() {
+		final Class<?> commandClass = loadCommandClass();
+		if (commandClass == null) return false;
+		return Interactive.class.isAssignableFrom(commandClass);
+	}
+
+	@Override
 	public boolean canPreview() {
 		final Class<?> commandClass = loadCommandClass();
 		if (commandClass == null) return false;

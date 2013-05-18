@@ -103,6 +103,13 @@ public interface ModuleInfo extends UIDetails, Validated {
 	Module createModule() throws ModuleException;
 
 	/**
+	 * Gets whether the module is intended to be run interactively. Typically this
+	 * means its inputs are supposed to be presented in a non-modal dialog box,
+	 * with {@link Module#run()} being called whenever any of the values change.
+	 */
+	boolean isInteractive();
+
+	/**
 	 * Gets whether the module supports previews. A preview is a quick
 	 * approximation of the results that would be obtained by actually executing
 	 * the module with {@link Module#run()}. If this method returns false, then

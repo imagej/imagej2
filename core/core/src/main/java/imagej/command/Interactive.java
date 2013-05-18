@@ -35,20 +35,21 @@
 
 package imagej.command;
 
+import imagej.module.Module;
+import imagej.module.ModuleInfo;
+
 /**
- * An operation (usually a {@link Command}) whose results can be previewed.
+ * An operation (usually a {@link Command}) which is intended to be run
+ * interactively. Typically this means its inputs are supposed to be presented
+ * in a non-modal dialog box, with {@link Module#run()} being called whenever
+ * any of the values change.
+ * <p>
+ * See {@link InteractiveCommand} for the most typical use case.
+ * </p>
  * 
  * @author Curtis Rueden
+ * @see ModuleInfo#isInteractive()
  */
-public interface Previewable {
-
-	/** Computes a preview of the operation's results. */
-	void preview();
-
-	/**
-	 * Does whatever is necessary upon cancelation to reset things back to before
-	 * the operation was executed.
-	 */
-	void cancel();
-
+public interface Interactive {
+	// NB: No implementation needed.
 }

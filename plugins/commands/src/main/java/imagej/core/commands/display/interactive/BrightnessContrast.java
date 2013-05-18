@@ -37,6 +37,7 @@ package imagej.core.commands.display.interactive;
 
 import imagej.command.Command;
 import imagej.data.Dataset;
+import imagej.data.command.InteractiveImageCommand;
 import imagej.data.display.DatasetView;
 import imagej.menu.MenuConstants;
 import imagej.widget.NumberWidget;
@@ -63,7 +64,7 @@ import org.scijava.plugin.Plugin;
 	@Menu(label = "Brightness/Contrast...", accelerator = "control shift C",
 		weight = 0) }, iconPath = "/icons/commands/contrast.png", headless = true,
 	initializer = "initValues")
-public class BrightnessContrast extends InteractiveCommand {
+public class BrightnessContrast extends InteractiveImageCommand {
 
 	private static final int SLIDER_MIN = 0;
 	private static final int SLIDER_MAX = 100;

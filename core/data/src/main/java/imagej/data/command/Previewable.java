@@ -33,10 +33,10 @@
  * #L%
  */
 
-package imagej.command;
+package imagej.data.command;
 
 /**
- * An operation (usually a {@link Command}) whose results can be previewed.
+ * A operation whose results can be previewed.
  * 
  * @author Curtis Rueden
  */

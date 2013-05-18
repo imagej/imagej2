@@ -37,6 +37,7 @@ package imagej.core.commands.display.interactive;
 
 import imagej.command.Command;
 import imagej.data.Dataset;
+import imagej.data.command.InteractiveImageCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.AxisPositionEvent;
@@ -114,7 +115,7 @@ import org.scijava.plugin.Plugin;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Adjust"),
 	@Menu(label = "Threshold...", accelerator = "control shift T") },
 	initializer = "initValues")
-public class Threshold extends InteractiveCommand {
+public class Threshold extends InteractiveImageCommand {
 
 	// -- constants --
 	

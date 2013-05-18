@@ -145,6 +145,11 @@ public class DynamicCommandInfo extends DefaultMutableModuleInfo {
 	// -- ModuleInfo methods --
 
 	@Override
+	public boolean isInteractive() {
+		return info.isInteractive();
+	}
+
+	@Override
 	public boolean canPreview() {
 		return info.canPreview();
 	}

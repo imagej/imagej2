@@ -33,13 +33,10 @@
  * #L%
  */
 
-package imagej.core.commands.display.interactive;
+package imagej.command;
 
 import imagej.command.DynamicCommand;
 import imagej.command.Previewable;
-import imagej.data.Dataset;
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageDisplayService;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.display.event.DisplayActivatedEvent;
@@ -52,30 +49,25 @@ import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 
 /**
- * A command intended to be used interactively.
+ * A command intended to be run interactively.
  * <p>
- * It is {@link Previewable}, with the previews used for interactive
- * exploration. Further, this class provides added convenience for keeping
- * certain input parameters up to date with active {@link Display}s,
- * {@link DatasetView}s and {@link Dataset}s. It listens for
+ * It is {@link Interactive} and {@link Previewable}, with the previews used for
+ * interactive exploration.
+ * </p>
+ * <p>
+ * Further, this class provides added convenience for keeping certain input
+ * parameters synced with active {@link Display}s. It listens for
  * {@link DisplayActivatedEvent}s, updating the inputs specified in the
  * constructor when such events occur. Individual interactive commands can then
  * add callback methods to affected inputs, for reacting to a change in the
  * active display.
  * </p>
- * <p>
- * See the {@code BrightnessContrast} command in {@code ij-commands-display} for
- * an example.
- * </p>
  * 
  * @author Curtis Rueden
  */
 public abstract class InteractiveCommand extends DynamicCommand implements
-	Previewable
+	Interactive, Previewable
 {
-
-	@Parameter
-	protected ImageDisplayService imageDisplayService;
 
 	@Parameter
 	protected DisplayService displayService;
@@ -93,8 +85,7 @@ public abstract class InteractiveCommand extends DynamicCommand implements
 	 * Creates a new interactive command.
 	 * 
 	 * @param listenerNames The list of names of inputs to keep in sync when the
-	 *          active display changes. Each input must be a {@link Display},
-	 *          {@link DatasetView} or {@link Dataset}.
+	 *          active display changes. Each input must be a {@link Display}.
 	 */
 	public InteractiveCommand(final String... listenerNames) {
 		this.listenerNames = listenerNames;
@@ -114,26 +105,50 @@ public abstract class InteractiveCommand extends DynamicCommand implements
 		// That is, closing the non-modal dialog does nothing.
 	}
 
+	// -- Internal methods --
+
+	protected void updateInput(ModuleItem<?> item) {
+		final ModuleItem<Display<?>> displayItem = asDisplay(item);
+		if (displayItem != null) updateDisplay(displayItem);
+		else {
+			log.warn("Input '" + item.getName() + "' (" + item.getClass().getName() +
+				") is not supported");
+		}
+	}
+
+	protected <T> ModuleItem<T>
+		asType(final ModuleItem<?> item, final Class<T> type)
+	{
+		if (!type.isAssignableFrom(item.getType())) {
+			return null;
+		}
+		@SuppressWarnings("unchecked")
+		final ModuleItem<T> typedItem = (ModuleItem<T>) item;
+		return typedItem;
+	}
+
+	protected <T> void update(final ModuleItem<T> item, final T newValue) {
+		final T oldValue = item.getValue(this);
+		if (oldValue != newValue) {
+			item.setValue(this, newValue);
+			try {
+				item.callback(this);
+			}
+			catch (final MethodCallException exc) {
+				log.error(exc);
+			}
+		}
+	}
+
 	// -- Event handlers --
 
 	@EventHandler
-	protected void updateListeners(
+	protected void onEvent(
 		@SuppressWarnings("unused") final DisplayActivatedEvent evt)
 	{
 		for (final String listenerName : listenerNames) {
 			final ModuleItem<?> item = getInfo().getInput(listenerName);
-
-			final ModuleItem<Display<?>> displayItem = asDisplay(item);
-			final ModuleItem<DatasetView> viewItem = asView(item);
-			final ModuleItem<Dataset> datasetItem = asDataset(item);
-
-			if (displayItem != null) updateDisplay(displayItem);
-			else if (viewItem != null) updateView(viewItem);
-			else if (datasetItem != null) updateDataset(datasetItem);
-			else {
-				log.warn("Input '" + listenerName + "' (" + item.getClass().getName() +
-					") is not supported");
-			}
+			updateInput(item);
 		}
 	}
 
@@ -145,48 +160,8 @@ public abstract class InteractiveCommand extends DynamicCommand implements
 		return asType(item, displayClass);
 	}
 
-	private ModuleItem<DatasetView> asView(final ModuleItem<?> item) {
-		return asType(item, DatasetView.class);
-	}
-
-	private ModuleItem<Dataset> asDataset(final ModuleItem<?> item) {
-		return asType(item, Dataset.class);
-	}
-
-	private <T> ModuleItem<T>
-		asType(final ModuleItem<?> item, final Class<T> type)
-	{
-		if (!type.isAssignableFrom(item.getType())) {
-			return null;
-		}
-		@SuppressWarnings("unchecked")
-		final ModuleItem<T> typedItem = (ModuleItem<T>) item;
-		return typedItem;
-	}
-
 	private <D extends Display<?>> void updateDisplay(final ModuleItem<D> item) {
 		update(item, displayService.getActiveDisplay(item.getType()));
-	}
-
-	private void updateView(final ModuleItem<DatasetView> item) {
-		update(item, imageDisplayService.getActiveDatasetView());
-	}
-
-	private void updateDataset(final ModuleItem<Dataset> item) {
-		update(item, imageDisplayService.getActiveDataset());
-	}
-
-	private <T> void update(final ModuleItem<T> item, final T newValue) {
-		final T oldValue = item.getValue(this);
-		if (oldValue != newValue) {
-			item.setValue(this, newValue);
-			try {
-				item.callback(this);
-			}
-			catch (final MethodCallException exc) {
-				log.error(exc);
-			}
-		}
 	}
 
 }
