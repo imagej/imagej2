@@ -406,7 +406,7 @@ public class FileTable extends JTable {
 			updateMappings();
 			if (row < 0 || row >= files.size()) return null;
 			final FileObject file = rowToFile.get(row);
-			return column == 1 ? file.getAction().toString() : file.getFilename();
+			return column == 1 ? file.getAction().toString() : file.getFilename(true);
 		}
 
 		@Override
