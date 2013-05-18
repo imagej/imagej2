@@ -43,9 +43,9 @@ import org.scijava.Context;
 
 /**
  * A command that knows its context. Its service parameters are automatically
- * populated at construction, to make it easier to use via Java API calls (i.e.,
- * without invoking it via {@link CommandService#run}). This improves
- * compile-time safety of downstream code that calls the command.
+ * populated when {@link #setContext} is called, to make it easier to use via
+ * Java API calls (i.e., without invoking it via {@link CommandService#run}).
+ * This improves compile-time safety of downstream code that calls the command.
  * <p>
  * Here is an example command execution using {@link CommandService#run}:
  * </p>
