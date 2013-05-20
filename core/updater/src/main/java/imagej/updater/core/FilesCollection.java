@@ -81,7 +81,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 
 	public final static String DEFAULT_UPDATE_SITE = "ImageJ";
 	private File imagejRoot;
-	public LogService log;
+	public final LogService log;
 	protected Set<FileObject> ignoredConflicts = new HashSet<FileObject>();
 	protected List<Conflict> conflicts = new ArrayList<Conflict>();
 
