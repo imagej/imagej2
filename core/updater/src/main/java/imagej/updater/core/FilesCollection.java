@@ -472,7 +472,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 
 			@Override
 			public boolean matches(final FileObject file) {
-				return file.getAction() != file.getStatus().getActions()[0];
+				return file.getAction() != file.getStatus().getNoAction();
 			}
 		});
 	}
