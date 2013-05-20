@@ -66,13 +66,15 @@ public class PlaneHarmonizer implements DataHarmonizer {
 	 */
 	@Override
 	public void updateDataset(final Dataset ds, final ImagePlus imp) {
-		final int c = imp.getNChannels();
-		final int z = imp.getNSlices();
-		final int t = imp.getNFrames();
+		final int cCount = imp.getNChannels();
+		final int zCount = imp.getNSlices();
+		final int tCount = imp.getNFrames();
 
 		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
 		final int zIndex = ds.getAxisIndex(Axes.Z);
 		final int tIndex = ds.getAxisIndex(Axes.TIME);
+
+		final ImageStack stack = imp.getStack();
 
 		final long[] fullDims = ds.getDims();
 		final long[] planeDims = new long[fullDims.length - 2];
@@ -87,15 +89,15 @@ public class PlaneHarmonizer implements DataHarmonizer {
 		}
 		else {
 			int stackPosition = 1;
-			for (int ti = 0; ti < t; ti++) {
-				if (tIndex >= 0) planePos.setPosition(ti, tIndex - 2);
-				for (int zi = 0; zi < z; zi++) {
-					if (zIndex >= 0) planePos.setPosition(zi, zIndex - 2);
-					for (int ci = 0; ci < c; ci++) {
-						if (cIndex >= 0) planePos.setPosition(ci, cIndex - 2);
-						final Object plane = imp.getStack().getPixels(stackPosition++);
+			for (int t = 0; t < tCount; t++) {
+				if (tIndex >= 0) planePos.setPosition(t, tIndex - 2);
+				for (int z = 0; z < zCount; z++) {
+					if (zIndex >= 0) planePos.setPosition(z, zIndex - 2);
+					for (int c = 0; c < cCount; c++) {
+						if (cIndex >= 0) planePos.setPosition(c, cIndex - 2);
+						final Object plane = stack.getPixels(stackPosition++);
 						if (plane == null) {
-							log.error("Could not extract plane from ImageStack: " +
+							log.error("Could not extract plane from ImageStack position: " +
 								(stackPosition - 1));
 						}
 						final int planeNum = (int) planePos.getIndex();
@@ -120,13 +122,13 @@ public class PlaneHarmonizer implements DataHarmonizer {
 		LegacyUtils.getImagePlusDims(ds, dimIndices, dimValues);
 		LegacyUtils.assertXYPlanesCorrectlyOriented(dimIndices);
 
-		final int cIndex = dimIndices[2];
-		final int zIndex = dimIndices[3];
-		final int tIndex = dimIndices[4];
-
 		final int cCount = dimValues[2];
 		final int zCount = dimValues[3];
 		final int tCount = dimValues[4];
+
+		final int cIndex = dimIndices[2];
+		final int zIndex = dimIndices[3];
+		final int tIndex = dimIndices[4];
 
 		final ImageStack stack = imp.getStack();
 
@@ -139,6 +141,7 @@ public class PlaneHarmonizer implements DataHarmonizer {
 
 		// copy planes by reference
 
+		int currSlice = imp.getCurrentSlice();
 		Object plane = null;
 		int stackPosition = 1;
 		for (int t = 0; t < tCount; t++) {
@@ -152,16 +155,12 @@ public class PlaneHarmonizer implements DataHarmonizer {
 					if (plane == null) {
 						log.error(message("Can't extract plane from Dataset ", c, z, t));
 					}
-					stack.setPixels(plane, stackPosition++);
+					stack.setPixels(plane, stackPosition);
+					if (stackPosition == currSlice) imp.getProcessor().setPixels(plane);
+					stackPosition++;
 				}
 			}
 		}
-		// NB - in the original code this next line was all that happened for single
-		// plane images since they might have a null stack. But testing showed that
-		// the stack.setPixels() call was always needed. Thus this proc.setPixels()
-		// call may no longer be necessary. But it may avoid some other undocumented
-		// bug. So since this seems safe will leave for now.
-		if (imp.getStackSize() == 1) imp.getProcessor().setPixels(plane);
 	}
 
 	// -- private interface --
