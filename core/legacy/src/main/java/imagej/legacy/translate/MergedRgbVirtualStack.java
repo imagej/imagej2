@@ -45,9 +45,6 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.IntervalIndexer;
 
-// TODO: this class might not be necessary. A merged Dataset is as of now always
-// a single plane image. But if that were to change this is more useful.
-
 /**
  * This class allows a merged color {@link Dataset} to be treated as a
  * {@link VirtualStack} of int[] data.
