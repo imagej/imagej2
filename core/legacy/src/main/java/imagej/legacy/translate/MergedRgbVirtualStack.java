@@ -45,6 +45,9 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.IntervalIndexer;
 
+// TODO: this class might not be necessary. A merged Dataset is as of now always
+// a single plane image. But if that were to change this is more useful.
+
 /**
  * This class allows a merged color {@link Dataset} to be treated as a
  * {@link VirtualStack} of int[] data.
@@ -66,7 +69,6 @@ public class MergedRgbVirtualStack extends VirtualStack {
 	private final long[] planeDims;
 	private final long[] planePos;
 	private final long[] pos;
-	private int planeLoaded = -1;
 
 	public MergedRgbVirtualStack(Dataset ds) {
 		if (!ds.isRGBMerged()) {
@@ -114,8 +116,6 @@ public class MergedRgbVirtualStack extends VirtualStack {
 
 	@Override
 	public ImageProcessor getProcessor(int n) {
-		if (n == planeLoaded) return processor;
-		planeLoaded = n;
 		positionToPlane(n);
 		for (int x = 0; x < w; x++) {
 			accessor.setPosition(x, xAxis);
