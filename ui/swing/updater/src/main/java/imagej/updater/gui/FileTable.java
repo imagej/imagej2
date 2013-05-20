@@ -203,13 +203,6 @@ public class FileTable extends JTable {
 
 				@Override
 				public void actionPerformed(final ActionEvent e) {
-					if (action == Action.UPLOAD) {
-						String missing = protocolsMissingUploaders(selected);
-						if (missing != null) {
-							UpdaterUserInterface.get().error("Missing uploaders: " + missing);
-							return;
-						}
-					}
 					for (final FileObject file : selected)
 						setFileAction(file, action);
 				}
@@ -223,20 +216,6 @@ public class FileTable extends JTable {
 			menu.add(noActions);
 		}
 		menu.show(e.getComponent(), e.getX(), e.getY());
-	}
-
-	protected String protocolsMissingUploaders(final Iterable<FileObject> selected) {
-		Collection<String> protocols = files.getProtocols(selected);
-		String result = null;
-		for (String protocol : protocols) {
-			if (updaterFrame.getUploaderService().installUploader(protocol, files, updaterFrame.getProgress(null)) == null) {
-				if (result == null)
-					result = protocol;
-				else
-					result = result + ", " + protocol;
-			}
-		}
-		return result;
 	}
 
 	public FileObject getFile(final int row) {

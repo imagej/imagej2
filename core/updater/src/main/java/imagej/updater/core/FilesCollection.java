@@ -49,6 +49,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -278,6 +279,33 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		final Checksummer checksummer =
 			new Checksummer(this, progress);
 		checksummer.updateFromLocal(filesFromSite);
+	}
+
+	public String protocolsMissingUploaders(final UploaderService uploaderService, final Progress progress) {
+		final Map<String, Set<String>> map = new LinkedHashMap<String, Set<String>>();
+		for (final Map.Entry<String, UpdateSite> entry : updateSites.entrySet()) {
+			final UpdateSite site = entry.getValue();
+			if (!site.isUploadable()) continue;
+			final String protocol = site.getUploadProtocol();
+			try {
+				uploaderService.installUploader(protocol, this, progress);
+			} catch (IllegalArgumentException e) {
+				Set<String> set = map.get(protocol);
+				if (set == null) {
+					set = new LinkedHashSet<String>();
+					map.put(protocol, set);
+				}
+				set.add(entry.getKey());
+			}
+		}
+		if (map.size() == 0) return null;
+		final StringBuilder builder = new StringBuilder();
+		builder.append("Missing uploaders:\n");
+		for (final Map.Entry<String, Set<String>> entry : map.entrySet()) {
+			final String list = Arrays.toString(entry.getValue().toArray());
+			builder.append("'").append(entry.getKey()).append("': ").append(list).append("\n");
+		}
+		return builder.toString();
 	}
 
 	public Action[] getActions(final FileObject file) {

@@ -204,6 +204,11 @@ public class ImageJUpdater implements UpdaterUI {
 			return;
 		}
 
+		final String missingUploaders = main.files.protocolsMissingUploaders(main.getUploaderService(), main.getProgress(null));
+		if (missingUploaders != null) {
+			main.warn(missingUploaders);
+		}
+
 		main.setLocationRelativeTo(null);
 		main.setVisible(true);
 		main.requestFocus();
