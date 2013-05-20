@@ -44,9 +44,9 @@
 			<version>${imglib2.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${scifio.groupId}</groupId>
+			<groupId>scifio</groupId>
 			<artifactId>scifio-devel</artifactId>
-			<version>${scifio.version}</version>
+			<version>0.1.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
