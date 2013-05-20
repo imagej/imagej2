@@ -276,12 +276,12 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		final JPanel bottomPanel2 = SwingTools.horizontalPanel();
 		final JPanel bottomPanel = SwingTools.horizontalPanel();
 		bottomPanel.setBorder(BorderFactory.createEmptyBorder(5, 15, 15, 15));
-		bottomPanel.add(new FileAction("Keep as-is", null));
+		bottomPanel.add(new FileActionButton("Keep as-is", null));
 		bottomPanel.add(Box.createRigidArea(new Dimension(15, 0)));
-		bottomPanel.add(new FileAction("Install", Action.INSTALL, "Update",
+		bottomPanel.add(new FileActionButton("Install", Action.INSTALL, "Update",
 			Action.UPDATE));
 		bottomPanel.add(Box.createRigidArea(new Dimension(15, 0)));
-		bottomPanel.add(new FileAction("Uninstall", Action.UNINSTALL));
+		bottomPanel.add(new FileActionButton("Uninstall", Action.UNINSTALL));
 
 		bottomPanel.add(Box.createHorizontalGlue());
 
@@ -543,18 +543,18 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		filesChanged();
 	}
 
-	List<FileAction> fileActions = new ArrayList<FileAction>();
+	List<FileActionButton> fileActions = new ArrayList<FileActionButton>();
 
-	protected class FileAction extends JButton implements ActionListener {
+	private class FileActionButton extends JButton implements ActionListener {
 
 		protected String label, otherLabel;
 		protected Action action, otherAction;
 
-		public FileAction(final String label, final Action action) {
+		public FileActionButton(final String label, final Action action) {
 			this(label, action, null, null);
 		}
 
-		public FileAction(final String label, final Action action,
+		public FileActionButton(final String label, final Action action,
 			final String otherLabel, final Action otherAction)
 		{
 			super(label);
@@ -671,7 +671,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	}
 
 	protected void showOrHide() {
-		for (final FileAction action : fileActions) {
+		for (final FileActionButton action : fileActions) {
 			action.setVisible(!easyMode);
 		}
 		searchPanel.setVisible(!easyMode);
@@ -744,7 +744,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			table.areAllSelectedFilesUploadable()) fileDetails
 			.setEditableForDevelopers();
 
-		for (final FileAction button : fileActions)
+		for (final FileActionButton button : fileActions)
 			button.enableIfValid();
 
 		if (showChanges != null) showChanges.setEnabled(table.getSelectedFiles().iterator().hasNext());
