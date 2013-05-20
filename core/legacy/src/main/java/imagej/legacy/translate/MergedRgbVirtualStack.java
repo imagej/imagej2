@@ -108,6 +108,10 @@ public class MergedRgbVirtualStack extends VirtualStack {
 		this.pos = new long[dims.length];
 	}
 
+	public Dataset getDataset() {
+		return ds;
+	}
+
 	@Override
 	public ImageProcessor getProcessor(int n) {
 		if (n == planeLoaded) return processor;
