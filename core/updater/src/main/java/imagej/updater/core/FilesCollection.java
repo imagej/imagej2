@@ -171,6 +171,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	/**
 	 * This constructor takes the imagejRoot primarily for testing purposes.
 	 * 
+	 * @param log the log service
 	 * @param imagejRoot the ImageJ directory
 	 */
 	public FilesCollection(final LogService log, final File imagejRoot) {
