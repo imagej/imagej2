@@ -55,7 +55,7 @@ public abstract class AbstractPlanarCommand implements PlanarCommand {
   private DatasetView view;
   
   @Parameter
-  private Boolean doWholeDataset;
+	private boolean doWholeDataset;
 
   // -- Runnable API Methods --
   
@@ -91,7 +91,7 @@ public abstract class AbstractPlanarCommand implements PlanarCommand {
   }
   
   @Override
-  public void setPlanar(Boolean planar) {
+	public void setPlanar(boolean planar) {
     doWholeDataset = !planar;
   }
 }

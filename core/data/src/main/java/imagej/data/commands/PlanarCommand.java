@@ -77,5 +77,5 @@ public interface PlanarCommand extends Command {
   /**
    * @param planar - Whether or not to operate on the current plane only.
    */
-  void setPlanar(Boolean planar);
+	void setPlanar(boolean planar);
 }
