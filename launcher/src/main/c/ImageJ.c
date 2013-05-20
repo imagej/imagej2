@@ -3561,6 +3561,8 @@ static void parse_command_line(void)
 	if (get_platform() != NULL) {
 		struct string *buffer = string_initf("%s/%s", ij_path("lib"), get_platform());
 		string_append_path_list(java_library_path, buffer->buffer);
+		string_setf(buffer, "%s/%s", ij_path("mm"), get_platform());
+		string_append_path_list(java_library_path, buffer->buffer);
 		string_release(buffer);
 	}
 
