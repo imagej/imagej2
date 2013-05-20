@@ -81,7 +81,7 @@ public abstract class AbstractPlanarCommand implements PlanarCommand {
   }
   
   @Override
-  public Boolean isPlanar() {
+	public boolean isPlanar() {
    return !doWholeDataset; 
   }
   

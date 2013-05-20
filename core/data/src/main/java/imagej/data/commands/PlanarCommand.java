@@ -67,7 +67,7 @@ public interface PlanarCommand extends Command {
    * @return true if this command will restrict operation to the current plane of
    * its view.
    */
-  Boolean isPlanar();
+	boolean isPlanar();
   
   /**
    * @param view - The view this command will operate on.
