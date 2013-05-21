@@ -478,10 +478,36 @@ public class FileObject {
 		}
 	}
 
+	@Deprecated
 	public void markRemoved() {
+		throw new UnsupportedOperationException("Use #markRemoved(FilesCollection) instead!");
+	}
+
+	public void markRemoved(final FilesCollection files) {
+		FileObject overriding = null;
+		int overridingRank = -1;
+		for (final Map.Entry<String, FileObject> entry : overriddenUpdateSites.entrySet()) {
+			final FileObject file = entry.getValue();
+			if (file.isObsolete()) continue;
+			final UpdateSite site = files.getUpdateSite(entry.getKey());
+			if (overridingRank < site.rank) {
+				overriding = file;
+				overridingRank = site.rank;
+			}
+		}
 		addPreviousVersion(current.checksum, current.timestamp, current.filename);
-		setStatus(Status.OBSOLETE);
+		setStatus(Status.OBSOLETE_UNINSTALLED);
 		current = null;
+
+		if (overriding != null) {
+			for (final Map.Entry<String, FileObject> entry : overriddenUpdateSites.entrySet()) {
+				final FileObject file = entry.getValue();
+				if (file == overriding) continue;
+				overriding.overriddenUpdateSites.put(entry.getKey(), file);
+			}
+			overriding.overriddenUpdateSites.put(updateSite, this);
+			files.add(overriding);
+		}
 	}
 
 	public String getLocalFilename(boolean forDisplay) {

@@ -859,8 +859,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 					file.setStatus(Status.INSTALLED);
 				}
 				else {
-					file.markRemoved();
-					file.setStatus(Status.OBSOLETE_UNINSTALLED);
+					file.markRemoved(files);
 				}
 			updateFilesTable();
 			canUpload = false;
