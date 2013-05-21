@@ -173,7 +173,7 @@ public class FileObject {
 	protected Map<String, FileObject> overriddenUpdateSites = new HashMap<String, FileObject>();
 	private Status status;
 	private Action action;
-	public String updateSite, filename, description;
+	public String updateSite, originalUpdateSite, filename, description;
 	public boolean executable;
 	public Version current;
 	public Set<Version> previous;
@@ -256,6 +256,10 @@ public class FileObject {
 			if (overridden.getValue().hasPreviousVersion(checksum))
 				return true;
 		return false;
+	}
+
+	public boolean overridesOtherUpdateSite() {
+		return !overriddenUpdateSites.isEmpty();
 	}
 
 	public boolean isNewerThan(final long timestamp) {
@@ -425,6 +429,9 @@ public class FileObject {
 				filename = localFilename;
 			}
 			files.updateDependencies(this);
+		} else if (originalUpdateSite != null && action != Action.REMOVE) {
+			updateSite = originalUpdateSite;
+			originalUpdateSite = null;
 		}
 		this.action = action;
 	}
