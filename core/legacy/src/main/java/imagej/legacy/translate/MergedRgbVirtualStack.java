@@ -133,6 +133,7 @@ public class MergedRgbVirtualStack extends VirtualStack {
 	}
 
 	private void positionToPlane(int pNum) {
+		if (planeDims.length == 0) return; // already there
 		IntervalIndexer.indexToPosition(pNum - 1, planeDims, planePos);
 		int j = 0;
 		for (int i = 0; i < pos.length; i++) {
