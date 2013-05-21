@@ -176,6 +176,7 @@ public class SwingUserInterface extends UpdaterUserInterface {
 
 		panel.add(new JLabel("User"));
 		final JTextField user = new JTextField() {
+			private static final long serialVersionUID = 1L;
 			int counter = 5;
 
 			@Override
@@ -205,6 +206,7 @@ public class SwingUserInterface extends UpdaterUserInterface {
 
 		panel.add(new JLabel("Password:"));
 		final JPasswordField password = new JPasswordField() {
+			private static final long serialVersionUID = 1L;
 			int counter = 15;
 
 			@Override
