@@ -41,6 +41,16 @@ import imagej.updater.core.GroupAction;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 
+/**
+ * The <i>update</i> action.
+ * 
+ * <p>
+ * This class determines whether a bunch of files can be updated (or installed),
+ * how to mark them for update, and what to call this action in the GUI.
+ * </p>
+ * 
+ * @author Johannes Schindelin
+ */
 public class InstallOrUpdate implements GroupAction {
 
 	@Override

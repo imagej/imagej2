@@ -35,8 +35,21 @@
 
 package imagej.updater.core;
 
+/**
+ * A common interface for all actions to be applied to a set of files.
+ * 
+ * <p>
+ * This is the business end of the combo-boxes and context menus in the updater
+ * GUI ("Keep as-is", "Update / Install", ...).
+ * </p>
+ * 
+ * @author Johannes Schindelin
+ */
 public interface GroupAction {
 	boolean isValid(final FilesCollection files, final FileObject file);
+
 	void setAction(final FilesCollection files, final FileObject file);
-	String getLabel(final FilesCollection files, final Iterable<FileObject> selected);
+
+	String getLabel(final FilesCollection files,
+			final Iterable<FileObject> selected);
 }

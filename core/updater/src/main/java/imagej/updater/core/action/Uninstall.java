@@ -40,6 +40,16 @@ import imagej.updater.core.FilesCollection;
 import imagej.updater.core.GroupAction;
 import imagej.updater.core.FileObject.Action;
 
+/**
+ * The <i>uninstall</i> action.
+ * 
+ * <p>
+ * This class determines whether a bunch of files can be uninstalled, how to
+ * mark them to be uninstalled, and what to call this action in the GUI.
+ * </p>
+ * 
+ * @author Johannes Schindelin
+ */
 public class Uninstall implements GroupAction {
 
 	@Override

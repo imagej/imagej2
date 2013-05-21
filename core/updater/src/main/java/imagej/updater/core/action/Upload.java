@@ -45,6 +45,18 @@ import imagej.updater.core.GroupAction;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * The <i>upload</i> action.
+ * 
+ * <p>
+ * This class determines whether a bunch of files can be uploaded to a given
+ * update site (possibly shadowing another update site's versions of the same
+ * files), how to mark them to be uploaded, and what to call this action in the
+ * GUI.
+ * </p>
+ * 
+ * @author Johannes Schindelin
+ */
 public class Upload implements GroupAction {
 
 	private String updateSite;

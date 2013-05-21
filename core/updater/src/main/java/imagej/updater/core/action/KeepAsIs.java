@@ -39,6 +39,16 @@ import imagej.updater.core.FileObject;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.GroupAction;
 
+/**
+ * The <i>no-op</i> action.
+ * 
+ * <p>
+ * This class implements the action that keeps all selected files' versions as
+ * they are in the current ImageJ.app/ directory, i.e. the "no-action".
+ * </p>
+ * 
+ * @author Johannes Schindelin
+ */
 public class KeepAsIs implements GroupAction {
 
 	@Override
