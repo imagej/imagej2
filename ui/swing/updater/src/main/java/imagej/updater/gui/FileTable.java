@@ -36,6 +36,7 @@
 package imagej.updater.gui;
 
 import imagej.updater.core.FileObject;
+import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.FilesCollection.UpdateSite;
@@ -53,6 +54,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +72,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableRowSorter;
 
 /**
  * This class's role is to be in charge of how the Table should be displayed.
@@ -109,7 +112,17 @@ public class FileTable extends JTable {
 		setModel(fileTableModel);
 		getModel().addTableModelListener(this);
 		setColumnWidths(250, 100);
-		setAutoCreateRowSorter(true);
+		TableRowSorter<FileTableModel> sorter =
+			new TableRowSorter<FileTableModel>(fileTableModel);
+		sorter.setComparator(1, new Comparator<FileObject.Action>() {
+
+			@Override
+			public int compare(Action o1, Action o2) {
+				return o1.toString().compareTo(o2.toString());
+			}
+
+		});
+		setRowSorter(sorter);
 
 		setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
 
@@ -312,7 +325,7 @@ public class FileTable extends JTable {
 				case 0:
 					return String.class; // filename
 				case 1:
-					return String.class; // status/action
+					return FileObject.Action.class; // status/action
 				default:
 					return Object.class;
 			}
