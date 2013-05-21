@@ -72,7 +72,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 /**
- * TODO
+ * The dialog in which the user can choose which update sites to follow.
  * 
  * @author Johannes Schindelin
  */
