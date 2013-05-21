@@ -40,8 +40,9 @@ import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.action.InstallOrUpdate;
 import imagej.updater.core.action.KeepAsIs;
+import imagej.updater.core.action.Remove;
 import imagej.updater.core.action.Uninstall;
-import imagej.updater.core.action.UploadOrRemove;
+import imagej.updater.core.action.Upload;
 import imagej.updater.util.DependencyAnalyzer;
 import imagej.updater.util.Progress;
 import imagej.updater.util.UpdateCanceledException;
@@ -327,7 +328,11 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		}
 		for (final Map.Entry<String, UpdateSite> entry : updateSites.entrySet()) {
 			final UpdateSite updateSite = entry.getValue();
-			if (updateSite.isUploadable()) actions.add(new UploadOrRemove(entry.getKey()));
+			if (updateSite.isUploadable()) {
+				final String name = entry.getKey();
+				actions.add(new Upload(name));
+				actions.add(new Remove(name));
+			}
 		}
 		actions.add(new Uninstall());
 		return actions;
