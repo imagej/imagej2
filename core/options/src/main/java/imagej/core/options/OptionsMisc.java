@@ -76,6 +76,9 @@ public class OptionsMisc extends OptionsPlugin {
 	@Parameter(label = "Debug mode")
 	private boolean debugMode = false;
 
+	@Parameter(label = "Exit when quitting")
+	private boolean exitWhenQuitting = false;
+
 	// -- OptionsMisc methods --
 
 	public String getDivByZeroVal() {
@@ -106,6 +109,10 @@ public class OptionsMisc extends OptionsPlugin {
 		return debugMode;
 	}
 
+	public boolean isExitWhenQuitting() {
+		return exitWhenQuitting;
+	}
+
 	public void setDivByZeroVal(final String divByZeroVal) {
 		this.divByZeroVal = divByZeroVal;
 	}
@@ -134,6 +141,10 @@ public class OptionsMisc extends OptionsPlugin {
 
 	public void setDebugMode(final boolean debugMode) {
 		this.debugMode = debugMode;
+	}
+
+	public void setExitWhenQuitting(boolean val) {
+		exitWhenQuitting = val;
 	}
 
 }

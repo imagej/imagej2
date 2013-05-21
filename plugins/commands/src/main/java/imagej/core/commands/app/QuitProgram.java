@@ -37,8 +37,10 @@ package imagej.core.commands.app;
 
 import imagej.command.Command;
 import imagej.command.ContextCommand;
+import imagej.core.options.OptionsMisc;
 import imagej.data.display.WindowService;
 import imagej.menu.MenuConstants;
+import imagej.options.OptionsService;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 
@@ -54,7 +56,8 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-@Plugin(type = Command.class, label = "Quit", iconPath = "/icons/commands/door_in.png", menu = {
+@Plugin(type = Command.class, label = "Quit",
+	iconPath = "/icons/commands/door_in.png", menu = {
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Quit", weight = Double.MAX_VALUE, mnemonic = 'q',
@@ -72,6 +75,9 @@ public class QuitProgram extends ContextCommand {
 	@Parameter
 	private UIService uiService;
 
+	@Parameter
+	private OptionsService optionsService;
+
 	@Override
 	public void run() {
 		if (windowService != null && windowService.getOpenWindows().size() > 0) {
@@ -86,6 +92,8 @@ public class QuitProgram extends ContextCommand {
 			statusService.showStatus("Quitting...");
 		}
 		getContext().dispose();
+		OptionsMisc opts = optionsService.getOptions(OptionsMisc.class);
+		if (opts.isExitWhenQuitting()) System.exit(0);
 	}
 
 	private boolean promptForQuit() {
