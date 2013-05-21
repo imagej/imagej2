@@ -53,6 +53,8 @@ import net.imglib2.util.IntervalIndexer;
  */
 public class MergedRgbVirtualStack extends VirtualStack {
 
+	// -- instance variables --
+
 	private final Dataset ds;
 	private final int[] plane;
 	private final RandomAccess<? extends RealType<?>> accessor;
@@ -67,6 +69,17 @@ public class MergedRgbVirtualStack extends VirtualStack {
 	private final long[] planePos;
 	private final long[] pos;
 
+	// -- MergedRgbVirtualStack methods --
+
+	/**
+	 * Constructs a MergedRgbVirtualStack from a {@link Dataset}. The Dataset must
+	 * return true when querying isRGBMerged(). Thus the data must have 3 channels
+	 * and be backed by unsigned 8-bit data. Additional checking is done for
+	 * validity of total plane count (<= Integer.MAX_VALUE) and the size of the
+	 * planes (also <= Integer.MAX_VALUE).
+	 * 
+	 * @param ds The merged color Dataset to wrap
+	 */
 	public MergedRgbVirtualStack(Dataset ds) {
 		if (!ds.isRGBMerged()) {
 			throw new IllegalArgumentException("Dataset is not merged color");
@@ -111,6 +124,8 @@ public class MergedRgbVirtualStack extends VirtualStack {
 		return ds;
 	}
 
+	// -- VirtualStack/ImageStack methods --
+
 	@Override
 	public ImageProcessor getProcessor(int n) {
 		positionToPlane(n);
@@ -130,17 +145,6 @@ public class MergedRgbVirtualStack extends VirtualStack {
 			}
 		}
 		return processor;
-	}
-
-	private void positionToPlane(int pNum) {
-		if (planeDims.length == 0) return; // already there
-		IntervalIndexer.indexToPosition(pNum - 1, planeDims, planePos);
-		int j = 0;
-		for (int i = 0; i < pos.length; i++) {
-			if (i == xAxis || i == yAxis || i == cAxis) pos[i] = 0;
-			else pos[i] = planePos[j++];
-		}
-		accessor.setPosition(pos);
 	}
 
 	@Override
@@ -291,4 +295,18 @@ public class MergedRgbVirtualStack extends VirtualStack {
 	public String getFileName(final int n) {
 		return null;
 	}
+
+	// -- private helpers --
+
+	private void positionToPlane(int pNum) {
+		if (planeDims.length == 0) return; // already there
+		IntervalIndexer.indexToPosition(pNum - 1, planeDims, planePos);
+		int j = 0;
+		for (int i = 0; i < pos.length; i++) {
+			if (i == xAxis || i == yAxis || i == cAxis) pos[i] = 0;
+			else pos[i] = planePos[j++];
+		}
+		accessor.setPosition(pos);
+	}
+
 }
