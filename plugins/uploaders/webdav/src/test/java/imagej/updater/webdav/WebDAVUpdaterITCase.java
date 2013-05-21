@@ -76,6 +76,14 @@ public class WebDAVUpdaterITCase extends AbstractUploaderTestBase {
 		}
 
 		@Override
+		public boolean login() {
+			return true; // we did that already in the constructor
+		}
+
+		@Override
+		public void logout() { }
+
+		@Override
 		public void delete(final String path) throws IOException {
 			final URL target = new URL(url + path);
 			final boolean isDirectory = path.endsWith("/");

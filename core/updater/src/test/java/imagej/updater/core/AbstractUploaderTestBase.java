@@ -87,8 +87,10 @@ public abstract class AbstractUploaderTestBase {
 				updateSiteName, url, host, uploadDirectory);
 
 		if (!isUpdateSiteEmpty()) {
+			assertTrue(deleter.login());
 			deleter.delete(Util.XML_COMPRESSED);
 			deleter.delete("plugins/");
+			deleter.logout();
 		}
 
 		final String path = "plugins/Say_Hello.bsh";
@@ -145,6 +147,8 @@ public abstract class AbstractUploaderTestBase {
 	}
 
 	public interface Deleter {
+		public abstract boolean login();
 		public abstract void delete(final String path) throws IOException;
+		public abstract void logout();
 	}
 }

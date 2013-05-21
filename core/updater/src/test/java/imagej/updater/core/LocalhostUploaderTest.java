@@ -83,6 +83,14 @@ public class LocalhostUploaderTest extends AbstractUploaderTestBase {
 
 	private class FileDeleter implements AbstractUploaderTestBase.Deleter {
 		@Override
+		public boolean login() {
+			return true;
+		}
+
+		@Override
+		public void logout() {}
+
+		@Override
 		public void delete(final String path) throws IOException {
 			final File file = files.prefix(path);
 			if (!file.delete()) throw new IOException("Could not delete " + file);

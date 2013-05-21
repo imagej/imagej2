@@ -47,7 +47,6 @@ import java.io.IOException;
  */
 public class SSHDeleter extends SSHFileUploader implements Deleter {
 	private final String host, uploadDirectory;
-	private boolean loggedIn;
 
 	public SSHDeleter(final String host, final String uploadDirectory) {
 		this.host = host;
@@ -55,12 +54,17 @@ public class SSHDeleter extends SSHFileUploader implements Deleter {
 	}
 
 	@Override
+	public boolean login() {
+		System.err.println("logging into " + host);
+		return debugLogin(host);
+	}
+
+	@Override
 	public void delete(final String file) throws IOException {
-		if (!loggedIn) {
-			assertTrue(debugLogin(host));
-			loggedIn = true;
-		}
 		final boolean isDirectory = file.endsWith("/");
-		setCommand("rm " + (isDirectory ? "-r " : "") + "'" + uploadDirectory + file + "'");
+		String command = "rm " + (isDirectory ? "-r " : "") + "'" + uploadDirectory + file + "'";
+		System.err.println("Executing: " + command);
+		setCommand(command);
+		System.err.println("logging out");
 	}
 }
