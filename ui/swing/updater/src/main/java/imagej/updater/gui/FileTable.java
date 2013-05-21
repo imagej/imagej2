@@ -36,13 +36,10 @@
 package imagej.updater.gui;
 
 import imagej.updater.core.FileObject;
-import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.FilesCollection.UpdateSite;
-import imagej.updater.core.UploaderService;
-import imagej.updater.util.Progress;
-import imagej.updater.util.UpdaterUserInterface;
+import imagej.updater.core.GroupAction;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -55,10 +52,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
@@ -185,8 +183,8 @@ public class FileTable extends JTable {
 
 		// As we follow FileTableModel, 1st column is filename
 		if (col == 0) return super.getCellEditor(row, col);
-		final Action[] actions = files.getActions(file);
-		return new DefaultCellEditor(new JComboBox(actions));
+		final Set<GroupAction> actions = files.getValidActions(Collections.singleton(file));
+		return new DefaultCellEditor(new JComboBox(actions.toArray()));
 	}
 
 	public void maybeShowPopupMenu(final MouseEvent e) {
@@ -197,14 +195,16 @@ public class FileTable extends JTable {
 		if (!selected.iterator().hasNext()) return;
 		final JPopupMenu menu = new JPopupMenu();
 		int count = 0;
-		for (final FileObject.Action action : files.getActions(selected)) {
-			final JMenuItem item = new JMenuItem(action.toString());
+		for (final GroupAction action : files.getValidActions(selected)) {
+			final JMenuItem item = new JMenuItem(action.getLabel(files, selected));
 			item.addActionListener(new ActionListener() {
 
 				@Override
 				public void actionPerformed(final ActionEvent e) {
-					for (final FileObject file : selected)
-						setFileAction(file, action);
+					for (final FileObject file : selected) {
+						action.setAction(files, file);
+						fireFileChanged(file);
+					}
 				}
 			});
 			menu.add(item);
@@ -277,40 +277,6 @@ public class FileTable extends JTable {
 		if (updateSite == null) return false;
 		file.updateSite = updateSite;
 		return true;
-	}
-
-	protected void setFileAction(final FileObject file, final Action action) {
-		if (!file.getStatus().isValid(action)) return;
-		if (action == Action.UPLOAD) {
-			final Collection<String> sitesWithUploads =
-				updaterFrame.files.getSiteNamesToUpload();
-			if (sitesWithUploads.size() > 1) {
-				error("Internal error: multiple upload sites selected");
-				return;
-			}
-			final boolean isNew = file.getStatus() == Status.LOCAL_ONLY;
-			if (sitesWithUploads.size() == 0) {
-				if (isNew && !chooseUpdateSite(updaterFrame.files, file)) return;
-				String protocol = updaterFrame.files.getUpdateSite(file.updateSite).getUploadProtocol();
-				final UploaderService uploaderService = updaterFrame.getUploaderService();
-				final Progress uploaderProgress = updaterFrame.getProgress(null);
-				if (uploaderService.installUploader(protocol, files, uploaderProgress) == null) {
-					UpdaterUserInterface.get().error("Missing uploader for protocol " + protocol);
-					return;
-				}
-			}
-			else {
-				final String siteName = sitesWithUploads.iterator().next();
-				if (isNew) file.updateSite = siteName;
-				else if (!file.updateSite.equals(siteName)) {
-					error("Already have uploads for site '" + siteName +
-						"', cannot upload to '" + file.updateSite + "', too!");
-					return;
-				}
-			}
-		}
-		file.setAction(updaterFrame.files, action);
-		fireFileChanged(file);
 	}
 
 	protected class FileTableModel extends AbstractTableModel {
@@ -390,9 +356,10 @@ public class FileTable extends JTable {
 		public void setValueAt(final Object value, final int row, final int column)
 		{
 			if (column == 1) {
-				final Action action = (Action) value;
+				final GroupAction action = (GroupAction) value;
 				final FileObject file = getFile(row);
-				setFileAction(file, action);
+				action.setAction(files, file);
+				fireFileChanged(file);
 			}
 		}
 
