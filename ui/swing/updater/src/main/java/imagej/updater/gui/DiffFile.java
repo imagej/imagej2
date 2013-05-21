@@ -307,7 +307,6 @@ public class DiffFile extends JFrame {
 						break;
 					}
 				}
-			@SuppressWarnings("null")
 			final Attributes attributes = manifest.getMainAttributes(); 
 			return attributes.getValue(new Attributes.Name("Implementation-Build"));
 		} catch (IOException e) {

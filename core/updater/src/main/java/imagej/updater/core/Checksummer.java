@@ -37,6 +37,7 @@ package imagej.updater.core;
 
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.Conflicts.Resolution;
+import imagej.updater.core.Conflicts.Conflict.Severity;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.AbstractProgressable;
 import imagej.updater.util.Progress;
@@ -278,7 +279,8 @@ public class Checksummer extends AbstractProgressable {
 				removeConflict(filename);
 			}
 		};
-		files.conflicts.add(new Conflict(true, isCritical, filename, conflictMessage, ignore, delete));
+		files.conflicts.add(new Conflict(isCritical ? Severity.CRITICAL_ERROR : Severity.ERROR,
+				filename, conflictMessage, ignore, delete));
 	}
 
 	protected void removeConflict(final String filename) {

@@ -35,11 +35,13 @@
 
 package imagej.updater.core;
 
+import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Util;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -118,18 +120,12 @@ public class FileObject {
 		UNINSTALL("Uninstall it"), INSTALL("Install it"), UPDATE("Update it"),
 
 		// developer-only changes
-		UPLOAD("Upload it", true), REMOVE("Remove it", true);
+		UPLOAD("Upload it"), REMOVE("Remove it");
 
 		private String label;
-		private boolean uploadersOnly;
 
 		Action(final String label) {
-			this(label, false);
-		}
-
-		Action(final String label, final boolean uploadersOnly) {
 			this.label = label;
-			this.uploadersOnly = uploadersOnly;
 		}
 
 		@Override
@@ -149,31 +145,26 @@ public class FileObject {
 		OBSOLETE(Action.OBSOLETE, Action.UNINSTALL, Action.UPLOAD),
 		OBSOLETE_MODIFIED( Action.MODIFIED, Action.UNINSTALL, Action.UPLOAD);
 
-		private Action[] actions, developerActions;
+		private final Action[] actions;
+		private final boolean[] validActions;
 
 		Status(final Action... actions) {
-			developerActions = actions;
-			if (!actions[actions.length - 1].uploadersOnly)
-				this.actions = actions;
-			else {
-				this.actions = new Action[actions.length - 1];
-				System.arraycopy(actions, 0, this.actions, 0,
-						this.actions.length);
-			}
+			this.actions = actions;
+			validActions = new boolean[Action.values().length];
+			for (final Action action : actions) validActions[action.ordinal()] = true;
 		}
 
+		@Deprecated
 		public Action[] getActions() {
 			return actions;
 		}
 
 		public Action[] getDeveloperActions() {
-			return developerActions;
+			return actions;
 		}
 
 		public boolean isValid(final Action action) {
-			for (final Action a : developerActions)
-				if (a.equals(action)) return true;
-			return false;
+			return validActions[action.ordinal()];
 		}
 
 		public Action getNoAction() {
@@ -184,7 +175,7 @@ public class FileObject {
 	protected Map<String, FileObject> overriddenUpdateSites = new HashMap<String, FileObject>();
 	private Status status;
 	private Action action;
-	public String updateSite, filename, description;
+	public String updateSite, originalUpdateSite, filename, description;
 	public boolean executable;
 	public Version current;
 	public Set<Version> previous;
@@ -267,6 +258,10 @@ public class FileObject {
 			if (overridden.getValue().hasPreviousVersion(checksum))
 				return true;
 		return false;
+	}
+
+	public boolean overridesOtherUpdateSite() {
+		return !overriddenUpdateSites.isEmpty();
 	}
 
 	public boolean isNewerThan(final long timestamp) {
@@ -435,7 +430,17 @@ public class FileObject {
 				current.filename = filename;
 				filename = localFilename;
 			}
+			if (updateSite == null) {
+				Collection<String> sites = files.getSiteNamesToUpload();
+				if (sites == null || sites.size() != 1) {
+					throw new Error("Need an update site to upload to!");
+				}
+				updateSite = sites.iterator().next();
+			}
 			files.updateDependencies(this);
+		} else if (originalUpdateSite != null && action != Action.REMOVE) {
+			updateSite = originalUpdateSite;
+			originalUpdateSite = null;
 		}
 		this.action = action;
 	}
@@ -473,10 +478,36 @@ public class FileObject {
 		}
 	}
 
+	@Deprecated
 	public void markRemoved() {
+		throw new UnsupportedOperationException("Use #markRemoved(FilesCollection) instead!");
+	}
+
+	public void markRemoved(final FilesCollection files) {
+		FileObject overriding = null;
+		int overridingRank = -1;
+		for (final Map.Entry<String, FileObject> entry : overriddenUpdateSites.entrySet()) {
+			final FileObject file = entry.getValue();
+			if (file.isObsolete()) continue;
+			final UpdateSite site = files.getUpdateSite(entry.getKey());
+			if (overridingRank < site.rank) {
+				overriding = file;
+				overridingRank = site.rank;
+			}
+		}
 		addPreviousVersion(current.checksum, current.timestamp, current.filename);
-		setStatus(Status.OBSOLETE);
+		setStatus(Status.OBSOLETE_UNINSTALLED);
 		current = null;
+
+		if (overriding != null) {
+			for (final Map.Entry<String, FileObject> entry : overriddenUpdateSites.entrySet()) {
+				final FileObject file = entry.getValue();
+				if (file == overriding) continue;
+				overriding.overriddenUpdateSites.put(entry.getKey(), file);
+			}
+			overriding.overriddenUpdateSites.put(updateSite, this);
+			files.add(overriding);
+		}
 	}
 
 	public String getLocalFilename(boolean forDisplay) {
@@ -717,13 +748,13 @@ public class FileObject {
 			localChecksum = current.checksum;
 			localTimestamp = current.timestamp;
 		}
+		this.updateSite = updateSite;
 		if (status == Status.NOT_INSTALLED) {
 			setAction(files, Action.REMOVE);
 		}
 		else {
 			setAction(files, Action.UPLOAD);
 		}
-		this.updateSite = updateSite;
 
 		String baseName = getBaseName();
 		String withoutVersion = getFilename(true);

@@ -36,7 +36,6 @@
 package imagej.updater.core;
 
 import imagej.updater.core.FileObject.Action;
-import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.Progress;
 
 import java.io.IOException;

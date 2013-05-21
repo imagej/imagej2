@@ -38,6 +38,11 @@ package imagej.updater.core;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
+import imagej.updater.core.action.InstallOrUpdate;
+import imagej.updater.core.action.KeepAsIs;
+import imagej.updater.core.action.Remove;
+import imagej.updater.core.action.Uninstall;
+import imagej.updater.core.action.Upload;
 import imagej.updater.util.DependencyAnalyzer;
 import imagej.updater.util.Progress;
 import imagej.updater.util.UpdateCanceledException;
@@ -49,6 +54,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -81,7 +87,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 
 	public final static String DEFAULT_UPDATE_SITE = "ImageJ";
 	private File imagejRoot;
-	public LogService log;
+	public final LogService log;
 	protected Set<FileObject> ignoredConflicts = new HashSet<FileObject>();
 	protected List<Conflict> conflicts = new ArrayList<Conflict>();
 
@@ -171,6 +177,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	/**
 	 * This constructor takes the imagejRoot primarily for testing purposes.
 	 * 
+	 * @param log the log service
 	 * @param imagejRoot the ImageJ directory
 	 */
 	public FilesCollection(final LogService log, final File imagejRoot) {
@@ -279,11 +286,79 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		checksummer.updateFromLocal(filesFromSite);
 	}
 
+	public String protocolsMissingUploaders(final UploaderService uploaderService, final Progress progress) {
+		final Map<String, Set<String>> map = new LinkedHashMap<String, Set<String>>();
+		for (final Map.Entry<String, UpdateSite> entry : updateSites.entrySet()) {
+			final UpdateSite site = entry.getValue();
+			if (!site.isUploadable()) continue;
+			final String protocol = site.getUploadProtocol();
+			try {
+				uploaderService.installUploader(protocol, this, progress);
+			} catch (IllegalArgumentException e) {
+				Set<String> set = map.get(protocol);
+				if (set == null) {
+					set = new LinkedHashSet<String>();
+					map.put(protocol, set);
+				}
+				set.add(entry.getKey());
+			}
+		}
+		if (map.size() == 0) return null;
+		final StringBuilder builder = new StringBuilder();
+		builder.append("Missing uploaders:\n");
+		for (final Map.Entry<String, Set<String>> entry : map.entrySet()) {
+			final String list = Arrays.toString(entry.getValue().toArray());
+			builder.append("'").append(entry.getKey()).append("': ").append(list).append("\n");
+		}
+		return builder.toString();
+	}
+
+	public Set<GroupAction> getValidActions() {
+		final Set<GroupAction> actions = new LinkedHashSet<GroupAction>();
+		actions.add(new KeepAsIs());
+		actions.add(new InstallOrUpdate());
+		final Collection<String> siteNames = getSiteNamesToUpload();
+		final Map<String, UpdateSite> updateSites;
+		if (siteNames.size() == 0) updateSites = this.updateSites;
+		else {
+			updateSites = new LinkedHashMap<String, UpdateSite>();
+			for (final String name : siteNames) {
+				updateSites.put(name, getUpdateSite(name));
+			}
+		}
+		for (final Map.Entry<String, UpdateSite> entry : updateSites.entrySet()) {
+			final UpdateSite updateSite = entry.getValue();
+			if (updateSite.isUploadable()) {
+				final String name = entry.getKey();
+				actions.add(new Upload(name));
+				actions.add(new Remove(name));
+			}
+		}
+		actions.add(new Uninstall());
+		return actions;
+	}
+
+	public Set<GroupAction> getValidActions(final Iterable<FileObject> selected) {
+		final Set<GroupAction> actions = getValidActions();
+		for (final Iterator<GroupAction> iter = actions.iterator(); iter.hasNext(); ) {
+			final GroupAction action = iter.next();
+			for (final FileObject file : selected) {
+				if (!action.isValid(this, file)) {
+					iter.remove();
+					break;
+				}
+			}
+		}
+		return actions;
+	}
+
+	@Deprecated
 	public Action[] getActions(final FileObject file) {
 		return file.isUploadable(this) ? file.getStatus().getDeveloperActions()
 			: file.getStatus().getActions();
 	}
 
+	@Deprecated
 	public Action[] getActions(final Iterable<FileObject> files) {
 		List<Action> result = null;
 		for (final FileObject file : files) {
@@ -471,7 +546,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 
 			@Override
 			public boolean matches(final FileObject file) {
-				return file.getAction() != file.getStatus().getActions()[0];
+				return file.getAction() != file.getStatus().getNoAction();
 			}
 		});
 	}
@@ -883,8 +958,9 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 			result.append(checkForCircularDependency(file, circularChecked));
 			// only non-obsolete components can have dependencies
 			final Set<String> deps = file.dependencies.keySet();
-			if (deps.size() > 0 && file.isObsolete()) result.append("Obsolete file " +
-				file + "has dependencies: " + Util.join(", ", deps) + "!\n");
+			if (deps.size() > 0 && file.isObsolete() && file.getAction() != Action.UPLOAD) {
+				result.append("Obsolete file " + file + " has dependencies: " + Util.join(", ", deps) + "!\n");
+			}
 			for (final String dependency : deps) {
 				final FileObject dep = get(dependency);
 				if (dep == null || dep.current == null) result.append("The file " +

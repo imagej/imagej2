@@ -37,11 +37,15 @@ package imagej.updater.gui;
 
 import imagej.updater.core.Checksummer;
 import imagej.updater.core.Diff.Mode;
+import imagej.updater.core.GroupAction;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.FilesCollection.DependencyMap;
+import imagej.updater.core.action.InstallOrUpdate;
+import imagej.updater.core.action.KeepAsIs;
+import imagej.updater.core.action.Uninstall;
 import imagej.updater.core.FilesUploader;
 import imagej.updater.core.Installer;
 import imagej.updater.core.UploaderService;
@@ -276,12 +280,11 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		final JPanel bottomPanel2 = SwingTools.horizontalPanel();
 		final JPanel bottomPanel = SwingTools.horizontalPanel();
 		bottomPanel.setBorder(BorderFactory.createEmptyBorder(5, 15, 15, 15));
-		bottomPanel.add(new FileAction("Keep as-is", null));
+		bottomPanel.add(new FileActionButton(new KeepAsIs()));
 		bottomPanel.add(Box.createRigidArea(new Dimension(15, 0)));
-		bottomPanel.add(new FileAction("Install", Action.INSTALL, "Update",
-			Action.UPDATE));
+		bottomPanel.add(new FileActionButton(new InstallOrUpdate()));
 		bottomPanel.add(Box.createRigidArea(new Dimension(15, 0)));
-		bottomPanel.add(new FileAction("Uninstall", Action.UNINSTALL));
+		bottomPanel.add(new FileActionButton(new Uninstall()));
 
 		bottomPanel.add(Box.createHorizontalGlue());
 
@@ -543,25 +546,15 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		filesChanged();
 	}
 
-	List<FileAction> fileActions = new ArrayList<FileAction>();
+	List<FileActionButton> fileActions = new ArrayList<FileActionButton>();
 
-	protected class FileAction extends JButton implements ActionListener {
+	private class FileActionButton extends JButton implements ActionListener {
 
-		protected String label, otherLabel;
-		protected Action action, otherAction;
+		private GroupAction goal;
 
-		public FileAction(final String label, final Action action) {
-			this(label, action, null, null);
-		}
-
-		public FileAction(final String label, final Action action,
-			final String otherLabel, final Action otherAction)
-		{
-			super(label);
-			this.label = label;
-			this.action = action;
-			this.otherLabel = otherLabel;
-			this.otherAction = otherAction;
+		public FileActionButton(final GroupAction goal) {
+			super(goal.toString());
+			this.goal = goal;
 			addActionListener(this);
 			fileActions.add(this);
 		}
@@ -570,30 +563,25 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		public void actionPerformed(final ActionEvent e) {
 			if (table.isEditing()) table.editingCanceled(null);
 			for (final FileObject file : table.getSelectedFiles()) {
-				if (action == null) file.setNoAction();
-				else if (!setAction(file)) continue;
+				goal.setAction(files, file);
 				table.fireFileChanged(file);
 			}
 			filesChanged();
 		}
 
-		protected boolean setAction(final FileObject file) {
-			return file.setFirstValidAction(files,
-				new Action[] { action, otherAction });
-		}
-
 		public void enableIfValid() {
-			boolean enable = false, enableOther = false;
+			boolean enable = true;
+			int count = 0;
 
 			for (final FileObject file : table.getSelectedFiles()) {
-				final Status status = file.getStatus();
-				if (action == null) enable = true;
-				else if (status.isValid(action)) enable = true;
-				else if (status.isValid(otherAction)) enableOther = true;
-				if (enable && enableOther) break;
+				count++;
+				if (!goal.isValid(files, file)) {
+					enable = false;
+					break;
+				}
 			}
-			setText(!enableOther ? label : (enable ? label + "/" : "") + otherLabel);
-			setEnabled(enable || enableOther);
+			setText(goal.getLabel(files, table.getSelectedFiles()));
+			setEnabled(count > 0 && enable);
 		}
 	}
 
@@ -671,7 +659,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	}
 
 	protected void showOrHide() {
-		for (final FileAction action : fileActions) {
+		for (final FileActionButton action : fileActions) {
 			action.setVisible(!easyMode);
 		}
 		searchPanel.setVisible(!easyMode);
@@ -744,7 +732,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 			table.areAllSelectedFilesUploadable()) fileDetails
 			.setEditableForDevelopers();
 
-		for (final FileAction button : fileActions)
+		for (final FileActionButton button : fileActions)
 			button.enableIfValid();
 
 		if (showChanges != null) showChanges.setEnabled(table.getSelectedFiles().iterator().hasNext());
@@ -771,6 +759,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 					upload++;
 					bytesToUpload += file.filesize;
 					break;
+				default:
 			}
 		int implicated = 0;
 		final DependencyMap map = files.getDependencies(true);
@@ -870,8 +859,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 					file.setStatus(Status.INSTALLED);
 				}
 				else {
-					file.markRemoved();
-					file.setStatus(Status.OBSOLETE_UNINSTALLED);
+					file.markRemoved(files);
 				}
 			updateFilesTable();
 			canUpload = false;
