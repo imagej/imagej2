@@ -38,6 +38,10 @@ package imagej.updater.core;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
+import imagej.updater.core.action.InstallOrUpdate;
+import imagej.updater.core.action.KeepAsIs;
+import imagej.updater.core.action.Uninstall;
+import imagej.updater.core.action.UploadOrRemove;
 import imagej.updater.util.DependencyAnalyzer;
 import imagej.updater.util.Progress;
 import imagej.updater.util.UpdateCanceledException;
@@ -308,11 +312,48 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		return builder.toString();
 	}
 
+	public Set<GroupAction> getValidActions() {
+		final Set<GroupAction> actions = new LinkedHashSet<GroupAction>();
+		actions.add(new KeepAsIs());
+		actions.add(new InstallOrUpdate());
+		final Collection<String> siteNames = getSiteNamesToUpload();
+		final Map<String, UpdateSite> updateSites;
+		if (siteNames.size() == 0) updateSites = this.updateSites;
+		else {
+			updateSites = new LinkedHashMap<String, UpdateSite>();
+			for (final String name : siteNames) {
+				updateSites.put(name, getUpdateSite(name));
+			}
+		}
+		for (final Map.Entry<String, UpdateSite> entry : updateSites.entrySet()) {
+			final UpdateSite updateSite = entry.getValue();
+			if (updateSite.isUploadable()) actions.add(new UploadOrRemove(entry.getKey()));
+		}
+		actions.add(new Uninstall());
+		return actions;
+	}
+
+	public Set<GroupAction> getValidActions(final Iterable<FileObject> selected) {
+		final Set<GroupAction> actions = getValidActions();
+		for (final Iterator<GroupAction> iter = actions.iterator(); iter.hasNext(); ) {
+			final GroupAction action = iter.next();
+			for (final FileObject file : selected) {
+				if (!action.isValid(this, file)) {
+					iter.remove();
+					break;
+				}
+			}
+		}
+		return actions;
+	}
+
+	@Deprecated
 	public Action[] getActions(final FileObject file) {
 		return file.isUploadable(this) ? file.getStatus().getDeveloperActions()
 			: file.getStatus().getActions();
 	}
 
+	@Deprecated
 	public Action[] getActions(final Iterable<FileObject> files) {
 		List<Action> result = null;
 		for (final FileObject file : files) {
