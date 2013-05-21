@@ -771,6 +771,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 					upload++;
 					bytesToUpload += file.filesize;
 					break;
+				default:
 			}
 		int implicated = 0;
 		final DependencyMap map = files.getDependencies(true);
