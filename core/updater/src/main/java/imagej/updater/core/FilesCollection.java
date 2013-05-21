@@ -953,8 +953,9 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 			result.append(checkForCircularDependency(file, circularChecked));
 			// only non-obsolete components can have dependencies
 			final Set<String> deps = file.dependencies.keySet();
-			if (deps.size() > 0 && file.isObsolete()) result.append("Obsolete file " +
-				file + "has dependencies: " + Util.join(", ", deps) + "!\n");
+			if (deps.size() > 0 && file.isObsolete() && file.getAction() != Action.UPLOAD) {
+				result.append("Obsolete file " + file + " has dependencies: " + Util.join(", ", deps) + "!\n");
+			}
 			for (final String dependency : deps) {
 				final FileObject dep = get(dependency);
 				if (dep == null || dep.current == null) result.append("The file " +
