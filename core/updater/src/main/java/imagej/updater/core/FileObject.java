@@ -35,11 +35,13 @@
 
 package imagej.updater.core;
 
+import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Util;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -428,6 +430,13 @@ public class FileObject {
 				current.filename = filename;
 				filename = localFilename;
 			}
+			if (updateSite == null) {
+				Collection<String> sites = files.getSiteNamesToUpload();
+				if (sites == null || sites.size() != 1) {
+					throw new Error("Need an update site to upload to!");
+				}
+				updateSite = sites.iterator().next();
+			}
 			files.updateDependencies(this);
 		} else if (originalUpdateSite != null && action != Action.REMOVE) {
 			updateSite = originalUpdateSite;
@@ -713,13 +722,13 @@ public class FileObject {
 			localChecksum = current.checksum;
 			localTimestamp = current.timestamp;
 		}
+		this.updateSite = updateSite;
 		if (status == Status.NOT_INSTALLED) {
 			setAction(files, Action.REMOVE);
 		}
 		else {
 			setAction(files, Action.UPLOAD);
 		}
-		this.updateSite = updateSite;
 
 		String baseName = getBaseName();
 		String withoutVersion = getFilename(true);
