@@ -38,14 +38,8 @@ package imagej.updater.gui;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.util.Prefs;
 
-import java.awt.Container;
 import java.awt.Frame;
 import java.awt.Graphics;
-import java.awt.Window;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -54,9 +48,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
 
 import net.miginfocom.swing.MigLayout;
 
