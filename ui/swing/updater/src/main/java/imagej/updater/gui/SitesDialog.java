@@ -46,10 +46,14 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
@@ -70,11 +74,10 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import javax.xml.parsers.ParserConfigurationException;
 
-import net.sourceforge.jwbf.core.actions.util.ActionException;
-import net.sourceforge.jwbf.core.actions.util.ProcessException;
-import net.sourceforge.jwbf.core.contentRep.Article;
-import net.sourceforge.jwbf.mediawiki.bots.MediaWikiBot;
+import org.xml.sax.SAXException;
+
 
 /**
  * The dialog in which the user can choose which update sites to follow.
@@ -460,26 +463,37 @@ public class SitesDialog extends JDialog implements ActionListener {
 	}
 
 	private static String stripWikiMarkup(final String string) {
-		return string.replaceAll("'''", "").replaceAll("\\[http://[^ ]*([^\\]]*)\\]", "\\1");
+		return string.replaceAll("'''", "").replaceAll("\\[\\[([^\\|\\]]*\\|)?([^\\]]*)\\]\\]", "$2").replaceAll("\\[[^\\[][^ ]*([^\\]]*)\\]", "$1");
 	}
+
+	private static final String FIJI_WIKI_URL = "http://fiji.sc/";
+	private static final String SITE_LIST_PAGE_TITLE = "List of update sites";
 
 	private static class UpdateSiteMetadata {
 		public String name, url, description, maintainer;
 	}
 
-	private static List<UpdateSiteMetadata> getAvailableSites() throws ActionException, ProcessException, MalformedURLException {
-		final MediaWikiBot b = new MediaWikiBot("http://fiji.sc/");
-		final Article article = b.readContent("List of update sites");
-		final String text = article.getText();
+	private static Map<String, UpdateSiteMetadata> getAvailableSites() throws IOException {
+		final MediaWikiClient wiki = new MediaWikiClient(FIJI_WIKI_URL);
+		final String text;
+		try {
+			text = wiki.getPageSource(SITE_LIST_PAGE_TITLE);
+		} catch (MalformedURLException e) {
+			throw new IOException(e);
+		} catch (ParserConfigurationException e) {
+			throw new IOException(e);
+		} catch (SAXException e) {
+			throw new IOException(e);
+		}
 
 		final int start = text.indexOf("\n{| class=\"wikitable\"\n");
 		final int end = text.indexOf("\n|}\n", start);
 		if (start < 0 || end < 0) {
-			throw new ProcessException("Could not find table");
+			throw new Error("Could not find table");
 		}
 		final String[] table = text.substring(start + 1, end).split("\n\\|-");
 
-		final List<UpdateSiteMetadata> result = new ArrayList<UpdateSiteMetadata>();
+		final Map<String, UpdateSiteMetadata> result = new LinkedHashMap<String, UpdateSiteMetadata>();
 		for (final String row : table) {
 			if (row.matches("(?s)(\\{\\||[\\|!](style=\"vertical-align|colspan=\"4\")).*")) continue;
 			final String[] columns = row.split("\n[\\|!]");
@@ -489,18 +503,23 @@ public class SitesDialog extends JDialog implements ActionListener {
 				metadata.url = columns[2];
 				metadata.description = columns[3];
 				metadata.maintainer = columns[4];
-				result.add(metadata);
+				result.put(metadata.url, metadata);
 			}
 		}
-		if (result.size() < 2) throw new ProcessException("Invalid page: " + article);
-		final UpdateSiteMetadata ij = result.get(0);
-		if (!ij.name.equals("ImageJ") || !ij.url.equals("http://update.imagej.net/")) {
-			throw new ProcessException("Invalid page: " + article);
+
+		// Sanity checks
+		final Iterator<UpdateSiteMetadata> iter = result.values().iterator();
+		if (!iter.hasNext()) throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
+		UpdateSiteMetadata site = iter.next();
+		if (!site.name.equals("ImageJ") || !site.url.equals("http://update.imagej.net/")) {
+			throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
 		}
-		final UpdateSiteMetadata fiji = result.get(1);
-		if (!fiji.name.equals("Fiji") || !fiji.url.equals("http://fiji.sc/update/")) {
-			throw new ProcessException("Invalid page: " + article);
+		if (!iter.hasNext()) throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
+		site = iter.next();
+		if (!site.name.equals("Fiji") || !site.url.equals("http://fiji.sc/update/")) {
+			throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
 		}
+
 		return result;
 	}
 
