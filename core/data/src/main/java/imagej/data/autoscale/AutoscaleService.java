@@ -80,6 +80,7 @@ public interface AutoscaleService extends SingletonService<AutoscaleMethod> {
 	 * 
 	 * @return The calculated range of values stored (min,max) in a Tuple2
 	 */
+	@SuppressWarnings("rawtypes")
 	Tuple2<Double, Double> getDefaultIntervalRange(
 		IterableInterval<RealType> interval);
 
@@ -89,6 +90,7 @@ public interface AutoscaleService extends SingletonService<AutoscaleMethod> {
 	 * 
 	 * @return The calculated range of values stored (min,max) in a Tuple2
 	 */
+	@SuppressWarnings("rawtypes")
 	Tuple2<Double, Double> getDefaultRandomAccessRange(
 		RandomAccessibleInterval<RealType> interval);
 }

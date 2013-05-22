@@ -51,10 +51,10 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = AutoscaleMethod.class, name = "Default")
 public class DefaultAutoscaleMethod extends AbstractAutoscaleMethod {
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Tuple2<Double, Double> getRange(IterableInterval<RealType> interval)
 	{
-		@SuppressWarnings({ "rawtypes", "unchecked" })
 		ComputeMinMax<? extends RealType<?>> minmax = new ComputeMinMax(interval);
 		minmax.process();
 		double min = minmax.getMin().getRealDouble();
