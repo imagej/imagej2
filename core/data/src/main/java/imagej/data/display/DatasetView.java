@@ -148,13 +148,13 @@ public interface DatasetView extends DataView {
 	/**
 	 * @return The current XY slice of the underlying data.
 	 */
-	RandomAccessibleInterval<?> xyPlane();
+	RandomAccessibleInterval<? extends RealType<?>> xyPlane();
 	
 	/**
 	 * @param interval - An interval to extract the current XY slice from.
 	 * @return The provided interval as a fixed XY slice using the current view position.
 	 */
-	RandomAccessibleInterval<?> xyPlane(RandomAccessibleInterval<?> interval);
+	RandomAccessibleInterval<? extends RealType<?>> xyPlane(RandomAccessibleInterval<? extends RealType<?>> interval);
 	
 	ColorRGB getColor(ChannelCollection channels);
 

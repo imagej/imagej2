@@ -199,9 +199,7 @@ public class BrightnessContrast extends InteractiveImageCommand {
 		// the metadata, and if they aren't there, then compute them. Probably
 		// Dataset (not DatasetView) is a good place for it, because it is metadata
 		// independent of the visualization settings.
-		Tuple2<Double, Double> range =
-			autoscaleService
-				.getDefaultIntervalRange((ImgPlus<RealType>) (ImgPlus) img);
+		Tuple2<Double, Double> range = autoscaleService.getDefaultIntervalRange(img);
 		dataMin = range.get1();
 		dataMax = range.get2();
 		log.debug("computeDataMinMax: dataMin=" + dataMin + ", dataMax=" + dataMax);

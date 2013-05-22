@@ -82,7 +82,7 @@ public interface AutoscaleService extends SingletonService<AutoscaleMethod> {
 	 */
 	@SuppressWarnings("rawtypes")
 	Tuple2<Double, Double> getDefaultIntervalRange(
-		IterableInterval<RealType> interval);
+		IterableInterval<? extends RealType<?>> interval);
 
 	/**
 	 * Calculates the range of interest from the data contained in the given
@@ -92,5 +92,5 @@ public interface AutoscaleService extends SingletonService<AutoscaleMethod> {
 	 */
 	@SuppressWarnings("rawtypes")
 	Tuple2<Double, Double> getDefaultRandomAccessRange(
-		RandomAccessibleInterval<RealType> interval);
+		RandomAccessibleInterval<? extends RealType<?>> interval);
 }

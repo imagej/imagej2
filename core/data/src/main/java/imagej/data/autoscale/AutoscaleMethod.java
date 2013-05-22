@@ -49,7 +49,7 @@ import org.scijava.plugin.HasPluginInfo;
  * 
  * @author Barry DeZonia
  */
-public interface AutoscaleMethod extends Contextual, Prioritized,
+public interface AutoscaleMethod<T extends RealType<T>> extends Contextual, Prioritized,
 	HasPluginInfo, SingletonPlugin
 {
 	/**
@@ -58,6 +58,5 @@ public interface AutoscaleMethod extends Contextual, Prioritized,
 	 * 
 	 * @return The calculated range of values stored (min,max) in a Tuple2
 	 */
-	@SuppressWarnings("rawtypes")
-	Tuple2<Double, Double> getRange(IterableInterval<RealType> interval);
+	Tuple2<Double, Double> getRange(IterableInterval<T> interval);
 }

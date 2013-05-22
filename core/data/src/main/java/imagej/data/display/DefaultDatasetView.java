@@ -158,8 +158,8 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 		double max = imgPlus.getChannelMaximum(c);
 		if (Double.isNaN(min) || Double.isNaN(max)) {
 			// not provided in metadata, so calculate the min/max
-			RandomAccessibleInterval<RealType> interval = channelData(getData(), c);
-			interval = (RandomAccessibleInterval<RealType>) xyPlane(interval);
+			RandomAccessibleInterval<? extends RealType<?>> interval = channelData(getData(), c);
+			interval = xyPlane(interval);
 			AutoscaleService service = getContext().getService(AutoscaleService.class);
 			Tuple2<Double, Double> result =
 				service.getDefaultRandomAccessRange(interval);
@@ -293,16 +293,16 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 		return new ColorRGB(r, g, b);
 	}
 
-  @Override
-  public RandomAccessibleInterval<?> xyPlane() {
+  //@Override
+  public RandomAccessibleInterval<? extends RealType<?>> xyPlane() {
     return xyPlane(getData().getImgPlus());
   }
   
-	@Override
-	public RandomAccessibleInterval<?> xyPlane(
-		RandomAccessibleInterval<?> inputInterval)
+	//@Override
+	public RandomAccessibleInterval<? extends RealType<?>> xyPlane(
+		RandomAccessibleInterval<? extends RealType<?>> inputInterval)
 	{
-		RandomAccessibleInterval<?> interval = inputInterval;
+		RandomAccessibleInterval<? extends RealType<?>> interval = inputInterval;
 
     long[] min = new long[interval.numDimensions()];
     long[] max = new long[interval.numDimensions()];
@@ -521,14 +521,13 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 		return defaultLUTs.get(cPos); // return default channel LUT
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private RandomAccessibleInterval<RealType> channelData(final Dataset d,
+	private RandomAccessibleInterval<? extends RealType<?>> channelData(final Dataset d,
 		final int c)
 	{
 		final ImgPlus<? extends RealType<?>> imgPlus = d.getImgPlus();
 		final int chIndex = imgPlus.getAxisIndex(Axes.CHANNEL);
 		if (chIndex < 0) {
-			return (RandomAccessibleInterval) imgPlus;
+			return imgPlus;
 		}
 		final long[] mn = new long[d.numDimensions()];
 		final long[] mx = d.getDims();
@@ -537,9 +536,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 		}
 		mn[chIndex] = c;
 		mx[chIndex] = c;
-		return Views.interval(
-			(RandomAccessibleInterval<RealType>) (RandomAccessibleInterval) imgPlus,
-			mn, mx);
+		return Views.interval(imgPlus, mn, mx);
 	}
 
 }

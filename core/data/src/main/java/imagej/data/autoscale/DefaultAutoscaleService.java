@@ -120,7 +120,7 @@ public class DefaultAutoscaleService extends
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Tuple2<Double, Double> getDefaultIntervalRange(
-		IterableInterval<RealType> interval)
+		IterableInterval<? extends RealType<?>> interval)
 	{
 		return getDefaultAutoscaleMethod().getRange(interval);
 	}
@@ -128,9 +128,9 @@ public class DefaultAutoscaleService extends
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Tuple2<Double, Double> getDefaultRandomAccessRange(
-		RandomAccessibleInterval<RealType> interval)
+		RandomAccessibleInterval<? extends RealType<?>> interval)
 	{
-		IterableInterval<RealType> newInterval = Views.iterable(interval);
+		IterableInterval<? extends RealType<?>> newInterval = Views.iterable(interval);
 		return getDefaultIntervalRange(newInterval);
 	}
 

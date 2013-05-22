@@ -40,7 +40,6 @@ import net.imglib2.algorithm.histogram.Histogram1d;
 import net.imglib2.algorithm.histogram.Real1dBinMapper;
 import net.imglib2.ops.util.Tuple2;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.real.DoubleType;
 
 import org.scijava.plugin.Plugin;
 
@@ -51,18 +50,17 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  */
 @Plugin(type = AutoscaleMethod.class, name = "95% CI")
-public class ConfidenceIntervalAutoscaleMethod extends AbstractAutoscaleMethod {
+public class ConfidenceIntervalAutoscaleMethod<T extends RealType<T>> extends AbstractAutoscaleMethod<T> {
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public Tuple2<Double, Double> getRange(IterableInterval<RealType> interval) {
+	public Tuple2<Double, Double> getRange(IterableInterval<T> interval) {
 		// pass one through data
 		AutoscaleService service = getContext().getService(AutoscaleService.class);
 		Tuple2<Double, Double> range = service.getDefaultIntervalRange(interval);
 		// pass two through data
-		Real1dBinMapper mapper =
-			new Real1dBinMapper(range.get1(), range.get2(), 1000, false);
-		Histogram1d<RealType> histogram = new Histogram1d<RealType>(mapper);
+		Real1dBinMapper<T> mapper =
+			new Real1dBinMapper<T>(range.get1(), range.get2(), 1000, false);
+		Histogram1d<T> histogram = new Histogram1d<T>(mapper);
 		histogram.countData(interval);
 		// determine bin number containing > 2.5%
 		long totValues = histogram.dfd().totalValues();
@@ -79,8 +77,8 @@ public class ConfidenceIntervalAutoscaleMethod extends AbstractAutoscaleMethod {
 			soFar += histogram.frequency(top--);
 		}
 		// determine approx boundaries
-		DoubleType approxMin = new DoubleType();
-		DoubleType approxMax = new DoubleType();
+		T approxMin = interval.firstElement().createVariable();
+		T approxMax = approxMin.createVariable();
 		histogram.getLowerBound(bottom, approxMin);
 		histogram.getUpperBound(top, approxMax);
 		double min = approxMin.getRealDouble();
