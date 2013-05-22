@@ -42,6 +42,7 @@ import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.core.UploaderService;
 import imagej.updater.util.Util;
 
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -232,6 +233,18 @@ public class SitesDialog extends JDialog implements ActionListener {
 				}
 			}
 
+			@Override
+			public Component prepareRenderer(TableCellRenderer renderer,int row, int column) {
+				Component component = super.prepareRenderer(renderer, row, column);
+				if (component instanceof JComponent) {
+					final UpdateSite site = getUpdateSite(row);
+					if (site != null) {
+						JComponent jcomponent = (JComponent) component;
+						jcomponent.setToolTipText(wrapToolTip(site.description, site.maintainer));
+					}
+				}
+			    return component;
+			}
 		};
 		table.setColumnSelectionAllowed(false);
 		table.setRowSelectionAllowed(true);
@@ -253,6 +266,13 @@ public class SitesDialog extends JDialog implements ActionListener {
 		pack();
 		add.requestFocusInWindow();
 		setLocationRelativeTo(owner);
+	}
+
+	private static String wrapToolTip(final String description, final String maintainer) {
+		if (description == null) return null;
+		return  "<html><p width='400'>" + description.replaceAll("\n", "<br />")
+			+ (maintainer != null ? "</p><p>Maintainer: " + maintainer + "</p>": "")
+			+ "</p></html>";
 	}
 
 	private static List<UpdateSite> initializeSites(final FilesCollection files) {
