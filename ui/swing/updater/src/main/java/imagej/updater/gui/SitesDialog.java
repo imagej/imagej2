@@ -71,6 +71,11 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import net.sourceforge.jwbf.core.actions.util.ActionException;
+import net.sourceforge.jwbf.core.actions.util.ProcessException;
+import net.sourceforge.jwbf.core.contentRep.Article;
+import net.sourceforge.jwbf.mediawiki.bots.MediaWikiBot;
+
 /**
  * The dialog in which the user can choose which update sites to follow.
  * 
@@ -453,4 +458,50 @@ public class SitesDialog extends JDialog implements ActionListener {
 			}
 		});
 	}
+
+	private static String stripWikiMarkup(final String string) {
+		return string.replaceAll("'''", "").replaceAll("\\[http://[^ ]*([^\\]]*)\\]", "\\1");
+	}
+
+	private static class UpdateSiteMetadata {
+		public String name, url, description, maintainer;
+	}
+
+	private static List<UpdateSiteMetadata> getAvailableSites() throws ActionException, ProcessException, MalformedURLException {
+		final MediaWikiBot b = new MediaWikiBot("http://fiji.sc/");
+		final Article article = b.readContent("List of update sites");
+		final String text = article.getText();
+
+		final int start = text.indexOf("\n{| class=\"wikitable\"\n");
+		final int end = text.indexOf("\n|}\n", start);
+		if (start < 0 || end < 0) {
+			throw new ProcessException("Could not find table");
+		}
+		final String[] table = text.substring(start + 1, end).split("\n\\|-");
+
+		final List<UpdateSiteMetadata> result = new ArrayList<UpdateSiteMetadata>();
+		for (final String row : table) {
+			if (row.matches("(?s)(\\{\\||[\\|!](style=\"vertical-align|colspan=\"4\")).*")) continue;
+			final String[] columns = row.split("\n[\\|!]");
+			if (columns.length == 5 && !columns[1].endsWith("|'''Name'''")) {
+				final UpdateSiteMetadata metadata = new UpdateSiteMetadata();
+				metadata.name = stripWikiMarkup(columns[1]);
+				metadata.url = columns[2];
+				metadata.description = columns[3];
+				metadata.maintainer = columns[4];
+				result.add(metadata);
+			}
+		}
+		if (result.size() < 2) throw new ProcessException("Invalid page: " + article);
+		final UpdateSiteMetadata ij = result.get(0);
+		if (!ij.name.equals("ImageJ") || !ij.url.equals("http://update.imagej.net/")) {
+			throw new ProcessException("Invalid page: " + article);
+		}
+		final UpdateSiteMetadata fiji = result.get(1);
+		if (!fiji.name.equals("Fiji") || !fiji.url.equals("http://fiji.sc/update/")) {
+			throw new ProcessException("Invalid page: " + article);
+		}
+		return result;
+	}
+
 }
