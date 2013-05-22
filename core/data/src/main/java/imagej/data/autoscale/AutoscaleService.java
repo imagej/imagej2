@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.imglib2.IterableInterval;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.ops.util.Tuple2;
 import net.imglib2.type.numeric.RealType;
 
@@ -79,6 +80,15 @@ public interface AutoscaleService extends SingletonService<AutoscaleMethod> {
 	 * 
 	 * @return The calculated range of values stored (min,max) in a Tuple2
 	 */
-	Tuple2<Double, Double> getDefaultRange(
-		IterableInterval<? extends RealType<?>> interval);
+	Tuple2<Double, Double> getDefaultIntervalRange(
+		IterableInterval<RealType> interval);
+
+	/**
+	 * Calculates the range of interest from the data contained in the given
+	 * {@link RandomAccessibleInterval} using the default autoscale method.
+	 * 
+	 * @return The calculated range of values stored (min,max) in a Tuple2
+	 */
+	Tuple2<Double, Double> getDefaultRandomAccessRange(
+		RandomAccessibleInterval<RealType> interval);
 }

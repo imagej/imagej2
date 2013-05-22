@@ -39,6 +39,7 @@ import imagej.data.ChannelCollection;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
+import imagej.data.autoscale.AutoscaleService;
 import imagej.data.display.event.DataViewUpdatedEvent;
 import imagej.data.display.event.LUTsChangedEvent;
 import imagej.data.event.DatasetRGBChangedEvent;
@@ -52,7 +53,6 @@ import java.util.List;
 
 import net.imglib2.Binning;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.algorithm.stats.ComputeMinMax;
 import net.imglib2.display.ARGBScreenImage;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.CompositeXYProjector;
@@ -61,6 +61,7 @@ import net.imglib2.img.ImgPlus;
 import net.imglib2.img.cell.AbstractCellImg;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.ops.util.Tuple2;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
 
@@ -157,15 +158,13 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 		double max = imgPlus.getChannelMaximum(c);
 		if (Double.isNaN(min) || Double.isNaN(max)) {
 			// not provided in metadata, so calculate the min/max
-			RandomAccessibleInterval<RealType> interval =
-				channelData(getData(), c);
-			
+			RandomAccessibleInterval<RealType> interval = channelData(getData(), c);
 			interval = (RandomAccessibleInterval<RealType>) xyPlane(interval);
-			final ComputeMinMax<? extends RealType<?>> cmm =
-				new ComputeMinMax(interval);
-			cmm.process();
-			min = cmm.getMin().getRealDouble();
-			max = cmm.getMax().getRealDouble();
+			AutoscaleService service = getContext().getService(AutoscaleService.class);
+			Tuple2<Double, Double> result =
+				service.getDefaultRandomAccessRange(interval);
+			min = result.get1();
+			max = result.get2();
 			// cache min/max in metadata for next time
 			imgPlus.setChannelMinimum(c, min);
 			imgPlus.setChannelMaximum(c, max);
@@ -299,10 +298,12 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
     return xyPlane(getData().getImgPlus());
   }
   
-  @Override
-  public RandomAccessibleInterval<?> xyPlane(
-      RandomAccessibleInterval<?> interval) {
-    
+	@Override
+	public RandomAccessibleInterval<?> xyPlane(
+		RandomAccessibleInterval<?> inputInterval)
+	{
+		RandomAccessibleInterval<?> interval = inputInterval;
+
     long[] min = new long[interval.numDimensions()];
     long[] max = new long[interval.numDimensions()];
     

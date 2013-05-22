@@ -46,8 +46,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.imglib2.IterableInterval;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.ops.util.Tuple2;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.view.Views;
 
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
@@ -130,11 +132,21 @@ public class DefaultAutoscaleService extends
 		return getAutoscaleMethod("Default");
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
-	public Tuple2<Double, Double> getDefaultRange(
-		IterableInterval<? extends RealType<?>> interval)
+	public Tuple2<Double, Double> getDefaultIntervalRange(
+		IterableInterval<RealType> interval)
 	{
 		return getDefaultAutoscaleMethod().getRange(interval);
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public Tuple2<Double, Double> getDefaultRandomAccessRange(
+		RandomAccessibleInterval<RealType> interval)
+	{
+		IterableInterval<RealType> newInterval = Views.iterable(interval);
+		return getDefaultIntervalRange(newInterval);
 	}
 
 }

@@ -58,6 +58,5 @@ public interface AutoscaleMethod extends Contextual, Prioritized,
 	 * 
 	 * @return The calculated range of values stored (min,max) in a Tuple2
 	 */
-	Tuple2<Double, Double> getRange(
-		IterableInterval<? extends RealType<?>> interval);
+	Tuple2<Double, Double> getRange(IterableInterval<RealType> interval);
 }
