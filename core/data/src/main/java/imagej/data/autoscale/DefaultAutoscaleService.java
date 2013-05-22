@@ -35,8 +35,6 @@
 
 package imagej.data.autoscale;
 
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayService;
 import imagej.plugin.AbstractSingletonService;
 
 import java.util.ArrayList;
@@ -51,8 +49,6 @@ import net.imglib2.ops.util.Tuple2;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
 
-import org.scijava.log.LogService;
-import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;
 
@@ -65,17 +61,6 @@ import org.scijava.service.Service;
 public class DefaultAutoscaleService extends
 	AbstractSingletonService<AutoscaleMethod> implements AutoscaleService
 {
-
-	// -- parameters --
-
-	@Parameter
-	private ImageDisplayService displayService;
-
-	@Parameter
-	private OverlayService overlayService;
-
-	@Parameter
-	private LogService log;
 
 	// -- instance variables --
 
