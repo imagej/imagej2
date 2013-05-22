@@ -154,7 +154,7 @@ public final class DefaultIOService<T extends RealType<T> & NativeType<T>>
 		IncompatibleTypeException
 	{
 		if (source == null) return null;
-		final ImgOpener imageOpener = new ImgOpener();
+		final ImgOpener imageOpener = new ImgOpener(getContext());
 		imageOpener.addStatusListener(new StatusDispatcher(statusService));
 		/* Restore this when NativeType can be eliminated from this class decl.
 		// TODO BDZ 7-17-12 Lowering reliance on NativeType. This cast is safe but
