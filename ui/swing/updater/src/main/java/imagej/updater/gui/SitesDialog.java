@@ -260,7 +260,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 		}
 		final int row = names.size();
 		newUpdateSiteName = makeUniqueSiteName("New");
-		newUpdateSite = new UpdateSite("", "", "", 0l);
+		newUpdateSite = new UpdateSite(newUpdateSiteName, "", "", "", null, null, 0l);
 		tableModel.rowsChanged();
 		tableModel.rowChanged(row);
 		table.setRowSelectionInterval(row, row);

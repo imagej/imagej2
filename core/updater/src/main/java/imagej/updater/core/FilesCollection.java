@@ -93,25 +93,29 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 
 	public static class UpdateSite implements Cloneable, Comparable<UpdateSite> {
 
-		public String url, sshHost, uploadDirectory;
+		public boolean active;
+		public String name, url, sshHost, uploadDirectory, description, maintainer;
 		public long timestamp;
 		public int rank;
 
-		public UpdateSite(String url, final String sshHost, String uploadDirectory,
-			final long timestamp)
+		public UpdateSite(final String name, String url, final String sshHost, String uploadDirectory,
+			final String description, final String maintainer, final long timestamp)
 		{
 			if (!url.endsWith("/")) url += "/";
 			if (uploadDirectory != null && !uploadDirectory.equals("") &&
 				!uploadDirectory.endsWith("/")) uploadDirectory += "/";
+			this.name = name;
 			this.url = url;
 			this.sshHost = sshHost;
 			this.uploadDirectory = uploadDirectory;
+			this.description = description;
+			this.maintainer = maintainer;
 			this.timestamp = timestamp;
 		}
 
 		@Override
 		public Object clone() {
-			return new UpdateSite(url, sshHost, uploadDirectory, timestamp);
+			return new UpdateSite(name, url, sshHost, uploadDirectory, description, maintainer, timestamp);
 		}
 
 		public boolean isLastModified(final long lastModified) {
@@ -189,11 +193,17 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 			imagejRoot == null ? 0 : Util.getTimestamp(prefix(Util.XML_COMPRESSED)));
 	}
 
-	public void addUpdateSite(final String name, final String url,
+	public UpdateSite addUpdateSite(final String name, final String url,
 		final String sshHost, final String uploadDirectory, final long timestamp)
 	{
-		addUpdateSite(name, new UpdateSite(url, sshHost, uploadDirectory,
-			timestamp));
+		return addUpdateSite(new UpdateSite(name, url, sshHost, uploadDirectory,
+				null, null, timestamp));
+	}
+
+	public UpdateSite addUpdateSite(UpdateSite site) {
+		site.active = true;
+		addUpdateSite(site.name, site);
+		return site;
 	}
 
 	protected void addUpdateSite(final String name, final UpdateSite updateSite) {
@@ -216,7 +226,9 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		final Map<String, UpdateSite> oldMap = updateSites;
 		updateSites = new LinkedHashMap<String, UpdateSite>();
 		for (final String name : oldMap.keySet()) {
-			addUpdateSite(name.equals(oldName) ? newName : name, oldMap.get(name));
+			final UpdateSite site = oldMap.get(name);
+			if (name.equals(oldName)) site.name = newName;
+			addUpdateSite(site.name, site);
 		}
 	}
 
