@@ -37,12 +37,13 @@ package imagej.core.commands.display.interactive;
 
 import imagej.command.Command;
 import imagej.data.Dataset;
+import imagej.data.autoscale.AutoscaleService;
 import imagej.data.command.InteractiveImageCommand;
 import imagej.data.display.DatasetView;
 import imagej.menu.MenuConstants;
 import imagej.widget.NumberWidget;
-import net.imglib2.algorithm.stats.ComputeMinMax;
 import net.imglib2.img.ImgPlus;
+import net.imglib2.ops.util.Tuple2;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
@@ -78,6 +79,9 @@ public class BrightnessContrast extends InteractiveImageCommand {
 	 * at minimum contrast.
 	 */
 	private static final int MAX_POWER = 4;
+
+	@Parameter
+	private AutoscaleService autoscaleService;
 
 	@Parameter(type = ItemIO.BOTH, callback = "viewChanged")
 	private DatasetView view;
@@ -194,10 +198,10 @@ public class BrightnessContrast extends InteractiveImageCommand {
 		// the metadata, and if they aren't there, then compute them. Probably
 		// Dataset (not DatasetView) is a good place for it, because it is metadata
 		// independent of the visualization settings.
-		final ComputeMinMax<T> computeMinMax = new ComputeMinMax<T>(img);
-		computeMinMax.process();
-		dataMin = computeMinMax.getMin().getRealDouble();
-		dataMax = computeMinMax.getMax().getRealDouble();
+		Tuple2<Double, Double> range =
+			autoscaleService.getDefaultIntervalRange((ImgPlus<RealType>) img);
+		dataMin = range.get1();
+		dataMax = range.get2();
 		log.debug("computeDataMinMax: dataMin=" + dataMin + ", dataMax=" + dataMax);
 	}
 
