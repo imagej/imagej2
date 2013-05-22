@@ -264,6 +264,21 @@ public class SitesDialog extends JDialog implements ActionListener {
 		sites.add(mainSite);
 		url2index.put(mainSite.url, 0);
 
+		// read available sites from the Fiji Wiki
+		try {
+			for (final UpdateSite site : getAvailableSites().values()) {
+				Integer index = url2index.get(site.url);
+				if (index == null) {
+					url2index.put(site.url, sites.size());
+					sites.add(site);
+				} else {
+					sites.set(index.intValue(), site);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		// add active / upload information
 		final Set<String> names = new HashSet<String>();
 		for (final String name : files.getUpdateSiteNames()) {
@@ -541,11 +556,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 	private static final String FIJI_WIKI_URL = "http://fiji.sc/";
 	private static final String SITE_LIST_PAGE_TITLE = "List of update sites";
 
-	private static class UpdateSiteMetadata {
-		public String name, url, description, maintainer;
-	}
-
-	private static Map<String, UpdateSiteMetadata> getAvailableSites() throws IOException {
+	private static Map<String, UpdateSite> getAvailableSites() throws IOException {
 		final MediaWikiClient wiki = new MediaWikiClient(FIJI_WIKI_URL);
 		final String text;
 		try {
@@ -565,24 +576,20 @@ public class SitesDialog extends JDialog implements ActionListener {
 		}
 		final String[] table = text.substring(start + 1, end).split("\n\\|-");
 
-		final Map<String, UpdateSiteMetadata> result = new LinkedHashMap<String, UpdateSiteMetadata>();
+		final Map<String, UpdateSite> result = new LinkedHashMap<String, UpdateSite>();
 		for (final String row : table) {
 			if (row.matches("(?s)(\\{\\||[\\|!](style=\"vertical-align|colspan=\"4\")).*")) continue;
 			final String[] columns = row.split("\n[\\|!]");
 			if (columns.length == 5 && !columns[1].endsWith("|'''Name'''")) {
-				final UpdateSiteMetadata metadata = new UpdateSiteMetadata();
-				metadata.name = stripWikiMarkup(columns[1]);
-				metadata.url = columns[2];
-				metadata.description = columns[3];
-				metadata.maintainer = columns[4];
-				result.put(metadata.url, metadata);
+				final UpdateSite info = new UpdateSite(stripWikiMarkup(columns[1]), stripWikiMarkup(columns[2]), null, null, stripWikiMarkup(columns[3]), stripWikiMarkup(columns[4]), 0l);
+				result.put(info.url, info);
 			}
 		}
 
 		// Sanity checks
-		final Iterator<UpdateSiteMetadata> iter = result.values().iterator();
+		final Iterator<UpdateSite> iter = result.values().iterator();
 		if (!iter.hasNext()) throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
-		UpdateSiteMetadata site = iter.next();
+		UpdateSite site = iter.next();
 		if (!site.name.equals("ImageJ") || !site.url.equals("http://update.imagej.net/")) {
 			throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
 		}
