@@ -238,7 +238,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tableModel.setColumnWidths();
 		final JScrollPane scrollpane = new JScrollPane(table);
-		scrollpane.setPreferredSize(new Dimension(tableModel.tableWidth, 100));
+		scrollpane.setPreferredSize(new Dimension(tableModel.tableWidth, 400));
 		contentPane.add(scrollpane);
 
 		final JPanel buttons = new JPanel();
