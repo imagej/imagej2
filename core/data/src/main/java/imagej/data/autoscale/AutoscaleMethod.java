@@ -45,8 +45,7 @@ import org.scijava.Prioritized;
 import org.scijava.plugin.HasPluginInfo;
 
 /**
- * An algorithm for thresholding an image into two classes of pixels from its
- * histogram.
+ * An algorithm for computing suitable display ranges from interval data.
  * 
  * @author Barry DeZonia
  */
