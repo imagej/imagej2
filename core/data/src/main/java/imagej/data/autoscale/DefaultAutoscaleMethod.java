@@ -46,7 +46,7 @@ import org.scijava.plugin.Plugin;
  * Computes he data range from the entire set of values in an
  * {@link IterableInterval}.
  * 
- * @author bdezonia
+ * @author Barry DeZonia
  */
 @Plugin(type = AutoscaleMethod.class, name = "Default")
 public class DefaultAutoscaleMethod extends AbstractAutoscaleMethod {

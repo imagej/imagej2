@@ -48,7 +48,7 @@ import org.scijava.plugin.Plugin;
  * Computes a 95% confidence interval from the entire set of values in an
  * {@link IterableInterval}.
  * 
- * @author bdezonia
+ * @author Barry DeZonia
  */
 @Plugin(type = AutoscaleMethod.class, name = "95% CI")
 public class ConfidenceIntervalAutoscaleMethod extends AbstractAutoscaleMethod {
