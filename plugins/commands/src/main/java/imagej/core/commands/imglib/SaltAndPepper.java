@@ -171,7 +171,7 @@ public class SaltAndPepper extends ContextCommand {
 		accessor = inputImage.randomAccess();
 		if (autoCalcMinMax) {
 			Tuple2<Double, Double> range =
-				autoscaleService.getDefaultIntervalRange((Img<RealType>) inputImage);
+				autoscaleService.getDefaultIntervalRange((Img<RealType>) (Img) inputImage);
 			pepperValue = range.get1();
 			saltValue = range.get2();
 			@SuppressWarnings({"unchecked","rawtypes"})

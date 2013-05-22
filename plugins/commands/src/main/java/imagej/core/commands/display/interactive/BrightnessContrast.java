@@ -191,6 +191,7 @@ public class BrightnessContrast extends InteractiveImageCommand {
 
 	// -- Helper methods --
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private <T extends RealType<T>> void computeDataMinMax(final ImgPlus<T> img) {
 		// FIXME: Reconcile this with DefaultDatasetView.autoscale(int). There is
 		// no reason to hardcode the usage of ComputeMinMax twice. Rather, there
@@ -199,7 +200,8 @@ public class BrightnessContrast extends InteractiveImageCommand {
 		// Dataset (not DatasetView) is a good place for it, because it is metadata
 		// independent of the visualization settings.
 		Tuple2<Double, Double> range =
-			autoscaleService.getDefaultIntervalRange((ImgPlus<RealType>) img);
+			autoscaleService
+				.getDefaultIntervalRange((ImgPlus<RealType>) (ImgPlus) img);
 		dataMin = range.get1();
 		dataMax = range.get2();
 		log.debug("computeDataMinMax: dataMin=" + dataMin + ", dataMax=" + dataMax);
