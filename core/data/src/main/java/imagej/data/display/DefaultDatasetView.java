@@ -160,7 +160,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			RandomAccessibleInterval<RealType> interval =
 				channelData(getData(), c);
 			
-			interval = (RandomAccessibleInterval<RealType>) planeData(interval);
+			interval = (RandomAccessibleInterval<RealType>) xyPlane(interval);
 			final ComputeMinMax<? extends RealType<?>> cmm =
 				new ComputeMinMax(interval);
 			cmm.process();
@@ -294,6 +294,31 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 		return new ColorRGB(r, g, b);
 	}
 
+  @Override
+  public RandomAccessibleInterval<?> xyPlane() {
+    return xyPlane(getData().getImgPlus());
+  }
+  
+  @Override
+  public RandomAccessibleInterval<?> xyPlane(
+      RandomAccessibleInterval<?> interval) {
+    
+    long[] min = new long[interval.numDimensions()];
+    long[] max = new long[interval.numDimensions()];
+    
+    interval.dimensions(max);
+    
+    for (int i=0; i<2; i++) max[i]--;
+    
+    for (int i=2; i<interval.numDimensions(); i++) {
+      min[i] = max[i] = getLongPosition(i);  
+    }
+    
+    interval = Views.interval(interval, min, max);
+
+    return interval;
+  }
+  
 	// -- DataView methods --
 
 	@Override
@@ -416,19 +441,8 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			projector.map();
 		}
 	}
-
-	// -- Helper methods --
   
-  private RandomAccessibleInterval<?> planeData(
-      RandomAccessibleInterval<?> interval) {
-
-    //FIXME repeated code with AbstractPlanarCommand
-    for (int i=2; i<interval.numDimensions(); i++) {
-      interval = Views.hyperSlice(interval, i, getLongPosition(i));
-    }
-
-    return interval;
-  }
+	// -- Helper methods --
   
 	private int getChannelDimIndex() {
 		return getData().getAxisIndex(Axes.CHANNEL);

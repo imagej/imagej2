@@ -42,6 +42,7 @@ import imagej.util.ColorRGB;
 
 import java.util.List;
 
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.stats.ComputeMinMax;
 import net.imglib2.display.ARGBScreenImage;
 import net.imglib2.display.ColorTable;
@@ -143,7 +144,18 @@ public interface DatasetView extends DataView {
 
 	@Override
 	Dataset getData();
-
+	
+	/**
+	 * @return The current XY slice of the underlying data.
+	 */
+	RandomAccessibleInterval<?> xyPlane();
+	
+	/**
+	 * @param interval - An interval to extract the current XY slice from.
+	 * @return The provided interval as a fixed XY slice using the current view position.
+	 */
+	RandomAccessibleInterval<?> xyPlane(RandomAccessibleInterval<?> interval);
+	
 	ColorRGB getColor(ChannelCollection channels);
 
 }
