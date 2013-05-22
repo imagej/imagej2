@@ -1015,6 +1015,13 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	}
 
 	@Override
+	public FileObject remove(final Object file) {
+		if (file instanceof FileObject) super.remove(((FileObject) file).getFilename(true));
+		if (file instanceof String) return super.remove(FileObject.getFilename((String)file, true));
+		return null;
+	}
+
+	@Override
 	public Iterator<FileObject> iterator() {
 		final Iterator<Map.Entry<String, FileObject>> iterator = entrySet().iterator();
 		return new Iterator<FileObject>() {
