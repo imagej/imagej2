@@ -43,6 +43,9 @@ import java.net.URLEncoder;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.scijava.util.XML;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -75,8 +78,20 @@ class MediaWikiClient {
 		return xml.cdata("/mediawiki/page/revision/text");
 	}
 
+	public boolean userExists(final String name) throws MalformedURLException, ParserConfigurationException, SAXException, IOException {
+		final XML xml = query("list", "users", "ususers", name);
+		final NodeList list = xml.xpath("/api/query/users/user");
+		int count = list.getLength();
+		for (int i = 0; i < count; i++) {
+			final NamedNodeMap node = list.item(i).getAttributes();
+			if (node != null && node.getNamedItem("missing") == null) return true;
+		}
+		return false;
+	}
+
 	public static void main(String... args) throws Exception {
 		final MediaWikiClient wiki = new MediaWikiClient("http://fiji.sc/");
-		System.err.println("source:\n" + wiki.getPageSource("List of update sites"));
+		System.err.println("exists: " + wiki.userExists("Schindelin"));
+		System.err.println("exists: " + wiki.userExists("Schindelin2"));
 	}
 }
