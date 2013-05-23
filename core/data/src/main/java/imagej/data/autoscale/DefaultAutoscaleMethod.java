@@ -54,7 +54,7 @@ public class DefaultAutoscaleMethod<T extends RealType<T>> extends AbstractAutos
 	@Override
 	public Tuple2<Double, Double> getRange(IterableInterval<T> interval)
 	{
-		ComputeMinMax<T> minmax = new ComputeMinMax(interval);
+		ComputeMinMax<T> minmax = new ComputeMinMax<T>(interval);
 		minmax.process();
 		double min = minmax.getMin().getRealDouble();
 		double max = minmax.getMax().getRealDouble();
