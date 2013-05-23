@@ -195,6 +195,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 				if (column == 0) {
 					site.setActive(Boolean.TRUE.equals(value));
 				} else {
+					if (isEditing()) return;
 					final String string = (String)value;
 					// if the name changed, or if we auto-fill the name from the URL
 					switch (column) {
