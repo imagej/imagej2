@@ -53,7 +53,7 @@ public class UpdateSite implements Cloneable, Comparable<UpdateSite> {
 	boolean active;
 	private String name;
 	private String url;
-	private String sshHost;
+	private String host;
 	private String uploadDirectory;
 	private String description;
 	private String maintainer;
@@ -98,11 +98,11 @@ public class UpdateSite implements Cloneable, Comparable<UpdateSite> {
 	}
 
 	public String getHost() {
-		return sshHost;
+		return host;
 	}
 
 	public void setHost(final String host) {
-		this.sshHost = host;
+		this.host = host;
 	}
 
 	public String getUploadDirectory() {
@@ -144,7 +144,7 @@ public class UpdateSite implements Cloneable, Comparable<UpdateSite> {
 
 	@Override
 	public Object clone() {
-		return new UpdateSite(name, url, sshHost, uploadDirectory, description, maintainer, timestamp);
+		return new UpdateSite(name, url, host, uploadDirectory, description, maintainer, timestamp);
 	}
 
 	public boolean isLastModified(final long lastModified) {
@@ -157,12 +157,12 @@ public class UpdateSite implements Cloneable, Comparable<UpdateSite> {
 
 	public boolean isUploadable() {
 		return (uploadDirectory != null && !uploadDirectory.equals("")) ||
-				(sshHost != null && sshHost.indexOf(':') > 0);
+				(host != null && host.indexOf(':') > 0);
 	}
 
 	@Override
 	public String toString() {
-		return url + (sshHost != null ? ", " + sshHost : "") +
+		return url + (host != null ? ", " + host : "") +
 			(uploadDirectory != null ? ", " + uploadDirectory : "");
 	}
 
@@ -184,11 +184,11 @@ public class UpdateSite implements Cloneable, Comparable<UpdateSite> {
 	}
 
 	public String getUploadProtocol() {
-		if (sshHost == null)
+		if (host == null)
 			throw new RuntimeException("Missing upload information for site " + url);
-		final int at = sshHost.indexOf('@');
-		final int colon = sshHost.indexOf(':');
-		if (colon > 0 && (at < 0 || colon < at)) return sshHost.substring(0, colon);
+		final int at = host.indexOf('@');
+		final int colon = host.indexOf(':');
+		if (colon > 0 && (at < 0 || colon < at)) return host.substring(0, colon);
 		return "ssh";
 	}
 }
