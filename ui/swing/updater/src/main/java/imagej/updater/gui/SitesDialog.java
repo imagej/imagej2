@@ -227,15 +227,6 @@ public class SitesDialog extends JDialog implements ActionListener {
 				}
 			}
 
-			private void activateUpdateSite(final int row) {
-				getUpdateSite(row).setActive(true);
-				if (!readFromSite(row)) {
-					error("There were problems reading from the site '"
-						+ getUpdateSiteName(row) + "' (URL: " + getUpdateSite(row).getURL() + ")");
-					getUpdateSite(row).setActive(false);
-				}
-			}
-
 			@Override
 			public Component prepareRenderer(TableCellRenderer renderer,int row, int column) {
 				Component component = super.prepareRenderer(renderer, row, column);
@@ -491,12 +482,14 @@ public class SitesDialog extends JDialog implements ActionListener {
 		}
 	}
 
-	protected boolean readFromSite(final int row) {
+	protected boolean activateUpdateSite(final int row) {
+		final UpdateSite updateSite = getUpdateSite(row);
+		updateSite.setActive(true);
 		try {
-			final UpdateSite updateSite = getUpdateSite(row);
 			if (files.getUpdateSite(updateSite.getName()) == null) files.addUpdateSite(updateSite);
 			files.reReadUpdateSite(updateSite.getName(), updaterFrame.getProgress(null));
 			markForUpdate(updateSite.getName(), false);
+			updaterFrame.filesChanged();
 		} catch (final Exception e) {
 			error("Not a valid URL: " + getUpdateSite(row).getURL());
 			return false;
