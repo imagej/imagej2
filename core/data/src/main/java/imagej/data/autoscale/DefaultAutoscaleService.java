@@ -57,6 +57,7 @@ import org.scijava.service.Service;
  * 
  * @author Barry DeZonia
  */
+@SuppressWarnings("rawtypes")
 @Plugin(type = Service.class)
 public class DefaultAutoscaleService extends
 	AbstractSingletonService<AutoscaleMethod> implements AutoscaleService
@@ -117,7 +118,7 @@ public class DefaultAutoscaleService extends
 		return getAutoscaleMethod("Default");
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings("unchecked")
 	@Override
 	public Tuple2<Double, Double> getDefaultIntervalRange(
 		IterableInterval<? extends RealType<?>> interval)
@@ -125,7 +126,6 @@ public class DefaultAutoscaleService extends
 		return getDefaultAutoscaleMethod().getRange(interval);
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public Tuple2<Double, Double> getDefaultRandomAccessRange(
 		RandomAccessibleInterval<? extends RealType<?>> interval)

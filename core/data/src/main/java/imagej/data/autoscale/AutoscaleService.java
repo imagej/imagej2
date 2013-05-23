@@ -51,6 +51,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Barry DeZonia
  * @see AutoscaleMethod
  */
+@SuppressWarnings("rawtypes")
 public interface AutoscaleService extends SingletonService<AutoscaleMethod> {
 
 	/** Returns a map of available {@link AutoscaleMethod}s, indexed by name. */
@@ -80,7 +81,6 @@ public interface AutoscaleService extends SingletonService<AutoscaleMethod> {
 	 * 
 	 * @return The calculated range of values stored (min,max) in a Tuple2
 	 */
-	@SuppressWarnings("rawtypes")
 	Tuple2<Double, Double> getDefaultIntervalRange(
 		IterableInterval<? extends RealType<?>> interval);
 
@@ -90,7 +90,6 @@ public interface AutoscaleService extends SingletonService<AutoscaleMethod> {
 	 * 
 	 * @return The calculated range of values stored (min,max) in a Tuple2
 	 */
-	@SuppressWarnings("rawtypes")
 	Tuple2<Double, Double> getDefaultRandomAccessRange(
 		RandomAccessibleInterval<? extends RealType<?>> interval);
 }
