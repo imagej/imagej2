@@ -42,7 +42,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
-import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.ui.CommandLine;
 import imagej.updater.util.Progress;
 import imagej.updater.util.StderrProgress;
@@ -312,9 +311,9 @@ public class UpdaterTestUtils {
 		final UpdateSite updateSite = files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE);
 		assertNotNull(updateSite);
 
-		updateSite.url = webRoot.toURI().toURL().toString() + "/";
-		updateSite.sshHost = "file:localhost";
-		updateSite.uploadDirectory = webRoot.getAbsolutePath() + "/";
+		updateSite.setURL( webRoot.toURI().toURL().toString());
+		updateSite.setHost("file:localhost");
+		updateSite.setUploadDirectory(webRoot.getAbsolutePath());
 	}
 
 	public static File getWebRoot(final FilesCollection files) {
@@ -324,11 +323,11 @@ public class UpdaterTestUtils {
 	public static File getWebRoot(final FilesCollection files, final String updateSite) {
 		final UpdateSite site = files.getUpdateSite(updateSite);
 		if (!DEFAULT_UPDATE_SITE.equals(updateSite)
-				&& (site.sshHost == null || site.sshHost.startsWith("file:"))) {
+				&& (site.getHost() == null || site.getHost().startsWith("file:"))) {
 			return null;
 		}
-		assertTrue("file:localhost".equals(site.sshHost));
-		return new File(site.uploadDirectory);
+		assertTrue("file:localhost".equals(site.getHost()));
+		return new File(site.getUploadDirectory());
 	}
 
 	protected static void update(final FilesCollection files) throws IOException {

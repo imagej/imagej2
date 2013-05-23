@@ -38,7 +38,7 @@ package imagej.updater.gui;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FilesCollection;
-import imagej.updater.core.FilesCollection.UpdateSite;
+import imagej.updater.core.UpdateSite;
 import imagej.updater.core.UploaderService;
 import imagej.updater.util.Util;
 
@@ -144,11 +144,11 @@ public class SitesDialog extends JDialog implements ActionListener {
 						} else if (column == 2) {
 							if ("/".equals(value)) value = "";
 							final UpdateSite site = getUpdateSite(row);
-							if (value.equals(site.url)) return super.stopCellEditing();
+							if (value.equals(site.getURL())) return super.stopCellEditing();
 							if (validURL(value)) {
 								activateUpdateSite(row);
 							} else {
-								if (site == null || site.sshHost == null || site.sshHost.equals("")) {
+								if (site == null || site.getHost() == null || site.getHost().equals("")) {
 									error("URL does not refer to an update site: " + value + "\n"
 										+ "If you want to initialize that site, you need to provide upload information first.");
 									return false;
@@ -158,17 +158,17 @@ public class SitesDialog extends JDialog implements ActionListener {
 											+ "\t" + value + "\n"
 											+ "is not (yet) valid. "
 											+ "Do you want to initialize it (host: "
-											+ site.sshHost + "; directory: "
-											+ site.uploadDirectory + ")?"))
+											+ site.getHost() + "; directory: "
+											+ site.getUploadDirectory() + ")?"))
 										return false;
 									if (!initializeUpdateSite((String)getValueAt(row, 0),
-											value, site.sshHost, site.uploadDirectory))
+											value, site.getHost(), site.getUploadDirectory()))
 										return false;
 								}
 							}
 						} else if (column == 3) {
 							final UpdateSite site = getUpdateSite(row);
-							if (value.equals(site.sshHost)) return super.stopCellEditing();
+							if (value.equals(site.getHost())) return super.stopCellEditing();
 							final int colon = value.indexOf(':');
 							if (colon > 0) {
 								final String protocol = value.substring(0, colon);
@@ -180,7 +180,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 							}
 						} else if (column == 4) {
 							final UpdateSite site = getUpdateSite(row);
-							if (value.equals(site.uploadDirectory)) return super.stopCellEditing();
+							if (value.equals(site.getUploadDirectory())) return super.stopCellEditing();
 						}
 						updaterFrame.enableUploadOrNot();
 						return super.stopCellEditing();
@@ -193,7 +193,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 			{
 				final UpdateSite site = getUpdateSite(row);
 				if (column == 0) {
-					site.active = Boolean.TRUE.equals(value);
+					site.setActive(Boolean.TRUE.equals(value));
 				} else {
 					final String string = (String)value;
 					// if the name changed, or if we auto-fill the name from the URL
@@ -202,13 +202,13 @@ public class SitesDialog extends JDialog implements ActionListener {
 						final String name = getUpdateSiteName(row);
 						if (name.equals(string)) return;
 						files.renameUpdateSite(name, string);
-						sites.get(row).name = string;
+						sites.get(row).setName(string);
 						break;
 					case 2:
 						site.setURL(string);
 						break;
 					case 3:
-						site.sshHost = string;
+						site.setHost(string);
 						break;
 					case 4:
 						site.setUploadDirectory(string);
@@ -217,21 +217,21 @@ public class SitesDialog extends JDialog implements ActionListener {
 						updaterFrame.log.error("Whoa! Column " + column + " is not handled!");
 					}
 				}
-				if (site.active) {
+				if (site.isActive()) {
 					if (column == 0 || column == 2) {
 						activateUpdateSite(row);
 					}
 				} else {
-					deactivateUpdateSite(site.name);
+					deactivateUpdateSite(site.getName());
 				}
 			}
 
 			private void activateUpdateSite(final int row) {
-				getUpdateSite(row).active = true;
+				getUpdateSite(row).setActive(true);
 				if (!readFromSite(row)) {
 					error("There were problems reading from the site '"
-						+ getUpdateSiteName(row) + "' (URL: " + getUpdateSite(row).url + ")");
-					getUpdateSite(row).active = false;
+						+ getUpdateSiteName(row) + "' (URL: " + getUpdateSite(row).getURL() + ")");
+					getUpdateSite(row).setActive(false);
 				}
 			}
 
@@ -242,7 +242,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 					final UpdateSite site = getUpdateSite(row);
 					if (site != null) {
 						JComponent jcomponent = (JComponent) component;
-						jcomponent.setToolTipText(wrapToolTip(site.description, site.maintainer));
+						jcomponent.setToolTipText(wrapToolTip(site.getDescription(), site.getMaintainer()));
 					}
 				}
 			    return component;
@@ -284,14 +284,14 @@ public class SitesDialog extends JDialog implements ActionListener {
 		// make sure that the main update site is the first one.
 		final UpdateSite mainSite = new UpdateSite(FilesCollection.DEFAULT_UPDATE_SITE, Util.MAIN_URL, "", "", null, null, 0l);
 		sites.add(mainSite);
-		url2index.put(mainSite.url, 0);
+		url2index.put(mainSite.getURL(), 0);
 
 		// read available sites from the Fiji Wiki
 		try {
 			for (final UpdateSite site : getAvailableSites().values()) {
-				Integer index = url2index.get(site.url);
+				Integer index = url2index.get(site.getURL());
 				if (index == null) {
-					url2index.put(site.url, sites.size());
+					url2index.put(site.getURL(), sites.size());
 					sites.add(site);
 				} else {
 					sites.set(index.intValue(), site);
@@ -305,36 +305,36 @@ public class SitesDialog extends JDialog implements ActionListener {
 		final Set<String> names = new HashSet<String>();
 		for (final String name : files.getUpdateSiteNames()) {
 			final UpdateSite site = files.getUpdateSite(name);
-			Integer index = url2index.get(site.url);
+			Integer index = url2index.get(site.getURL());
 			if (index == null) {
-				url2index.put(site.url, sites.size());
+				url2index.put(site.getURL(), sites.size());
 				sites.add(site);
 			} else {
 				final UpdateSite listed = sites.get(index.intValue());
-				listed.active = true;
-				listed.name = site.name;
-				listed.sshHost = site.sshHost;
-				listed.uploadDirectory = site.uploadDirectory;
+				listed.setActive(true);
+				listed.setName(site.getName());
+				listed.setHost(site.getHost());
+				listed.setUploadDirectory(site.getUploadDirectory());
 			}
 		}
 
 		// make sure names are unique
 		for (final UpdateSite site : sites) {
-			if (site.active) continue;
-			if (names.contains(site.name)) {
+			if (site.isActive()) continue;
+			if (names.contains(site.getName())) {
 				int i = 2;
-				while (names.contains(site.name + "-" + i))
+				while (names.contains(site.getName() + "-" + i))
 					i++;
-				site.name += "-" + i;
+				site.setName(site.getName() + ("-" + i));
 			}
-			names.add(site.name);
+			names.add(site.getName());
 		}
 
 		return sites;
 	}
 
 	protected String getUpdateSiteName(int row) {
-		return sites.get(row).name;
+		return sites.get(row).getName();
 	}
 
 	protected UpdateSite getUpdateSite(int row) {
@@ -352,7 +352,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 
 	private String makeUniqueSiteName(final String prefix) {
 		final Set<String> names = new HashSet<String>();
-		for (final UpdateSite site : sites) names.add(site.name);
+		for (final UpdateSite site : sites) names.add(site.getName());
 		if (!names.contains(prefix)) return prefix;
 		for (int i = 2; ; i++) {
 			if (!names.contains(prefix + "-" + i)) return prefix + "-" + i;
@@ -363,7 +363,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 		final String name = getUpdateSiteName(row);
 		if (!showYesNoQuestion("Remove " + name + "?",
 				"Do you really want to remove the site '" + name + "' from the list?\n"
-				+ "URL: " + getUpdateSite(row).url))
+				+ "URL: " + getUpdateSite(row).getURL()))
 			return;
 		deactivateUpdateSite(name);
 		sites.remove(row);
@@ -457,10 +457,10 @@ public class SitesDialog extends JDialog implements ActionListener {
 		public Object getValueAt(final int row, final int col) {
 			if (col == 1) return getUpdateSiteName(row);
 			final UpdateSite site = getUpdateSite(row);
-			if (col == 0) return Boolean.valueOf(site.active);
-			if (col == 2) return site.url;
-			if (col == 3) return site.sshHost;
-			if (col == 4) return site.uploadDirectory;
+			if (col == 0) return Boolean.valueOf(site.isActive());
+			if (col == 2) return site.getURL();
+			if (col == 3) return site.getHost();
+			if (col == 4) return site.getUploadDirectory();
 			return null;
 		}
 
@@ -493,11 +493,11 @@ public class SitesDialog extends JDialog implements ActionListener {
 	protected boolean readFromSite(final int row) {
 		try {
 			final UpdateSite updateSite = getUpdateSite(row);
-			if (files.getUpdateSite(updateSite.name) == null) files.addUpdateSite(updateSite);
-			files.reReadUpdateSite(updateSite.name, updaterFrame.getProgress(null));
-			markForUpdate(updateSite.name, false);
+			if (files.getUpdateSite(updateSite.getName()) == null) files.addUpdateSite(updateSite);
+			files.reReadUpdateSite(updateSite.getName(), updaterFrame.getProgress(null));
+			markForUpdate(updateSite.getName(), false);
 		} catch (final Exception e) {
-			error("Not a valid URL: " + getUpdateSite(row).url);
+			error("Not a valid URL: " + getUpdateSite(row).getURL());
 			return false;
 		}
 		return true;
@@ -598,7 +598,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 			final String[] columns = row.split("\n[\\|!]");
 			if (columns.length == 5 && !columns[1].endsWith("|'''Name'''")) {
 				final UpdateSite info = new UpdateSite(stripWikiMarkup(columns[1]), stripWikiMarkup(columns[2]), null, null, stripWikiMarkup(columns[3]), stripWikiMarkup(columns[4]), 0l);
-				result.put(info.url, info);
+				result.put(info.getURL(), info);
 			}
 		}
 
@@ -606,12 +606,12 @@ public class SitesDialog extends JDialog implements ActionListener {
 		final Iterator<UpdateSite> iter = result.values().iterator();
 		if (!iter.hasNext()) throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
 		UpdateSite site = iter.next();
-		if (!site.name.equals("ImageJ") || !site.url.equals("http://update.imagej.net/")) {
+		if (!site.getName().equals("ImageJ") || !site.getURL().equals("http://update.imagej.net/")) {
 			throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
 		}
 		if (!iter.hasNext()) throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
 		site = iter.next();
-		if (!site.name.equals("Fiji") || !site.url.equals("http://fiji.sc/update/")) {
+		if (!site.getName().equals("Fiji") || !site.getURL().equals("http://fiji.sc/update/")) {
 			throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
 		}
 

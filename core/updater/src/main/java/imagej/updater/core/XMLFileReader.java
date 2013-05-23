@@ -37,7 +37,6 @@ package imagej.updater.core;
 
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FileObject.Version;
-import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Util;
 
 import java.io.IOException;
@@ -100,14 +99,14 @@ public class XMLFileReader extends DefaultHandler {
 	{
 		final UpdateSite site = files.getUpdateSite(updateSite);
 		if (site == null) throw new IOException("Unknown update site: " + site);
-		final URL url = new URL(site.url + Util.XML_COMPRESSED);
+		final URL url = new URL(site.getURL() + Util.XML_COMPRESSED);
 		final URLConnection connection = files.util.openConnection(url);
 		final long lastModified = connection.getLastModified();
 		read(updateSite, new GZIPInputStream(connection.getInputStream()),
-			site.timestamp);
+			site.getTimestamp());
 
 		// lastModified is a Unix epoch, we need a timestamp
-		site.timestamp = Long.parseLong(Util.timestamp(lastModified));
+		site.setTimestamp(Long.parseLong(Util.timestamp(lastModified)));
 	}
 
 	public void read(final InputStream in) throws ParserConfigurationException,
@@ -328,6 +327,6 @@ public class XMLFileReader extends DefaultHandler {
 	private int getRank(final FilesCollection files, final String updateSite) {
 		if (updateSite == null || files == null) return -1;
 		UpdateSite site = files.getUpdateSite(updateSite);
-		return site == null ? -1 : site.rank;
+		return site == null ? -1 : site.getRank();
 	}
 }

@@ -39,8 +39,8 @@ import imagej.updater.core.FileObject;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection;
-import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.core.GroupAction;
+import imagej.updater.core.UpdateSite;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -144,7 +144,7 @@ public class Upload implements GroupAction {
 		if (shadowing) {
 			final UpdateSite shadowingSite = files.getUpdateSite(updateSite);
 			final UpdateSite shadowedSite = files.getUpdateSite(file.updateSite);
-			if (shadowingSite.rank < shadowedSite.rank) return false;
+			if (shadowingSite.getRank() < shadowedSite.getRank()) return false;
 		}
 
 		return true;

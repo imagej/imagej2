@@ -36,8 +36,8 @@
 package imagej.updater.webdav;
 
 import imagej.updater.core.AbstractUploader;
-import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.core.FilesUploader;
+import imagej.updater.core.UpdateSite;
 import imagej.updater.core.Uploadable;
 import imagej.updater.core.Uploader;
 import imagej.updater.util.UpdaterUserInterface;
@@ -121,7 +121,7 @@ public class WebDAVUploader extends AbstractUploader {
 		}
 
 		UpdateSite site = uploader.getFilesCollection().getUpdateSite(uploader.getSiteName());
-		baseURL = site.url;
+		baseURL = site.getURL();
 
 		if (username == null) {
 			uploader.getDefaultUsername();

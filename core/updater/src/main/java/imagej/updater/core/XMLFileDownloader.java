@@ -35,7 +35,6 @@
 
 package imagej.updater.core;
 
-import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.AbstractProgressable;
 import imagej.updater.util.Util;
 
@@ -84,18 +83,18 @@ public class XMLFileDownloader extends AbstractProgressable {
 		for (final String name : updateSites) {
 			final UpdateSite updateSite = files.getUpdateSite(name);
 			final String title =
-				"Updating from " + (name.equals("") ? "main" : name) + " site: " + updateSite.url;
+				"Updating from " + (name.equals("") ? "main" : name) + " site: " + updateSite.getURL();
 			addItem(title);
 			setCount(current, total);
 			try {
 				final URLConnection connection =
-					files.util.openConnection(new URL(updateSite.url + Util.XML_COMPRESSED));
+					files.util.openConnection(new URL(updateSite.getURL() + Util.XML_COMPRESSED));
 				final long lastModified = connection.getLastModified();
 				final int fileSize = connection.getContentLength();
 				final InputStream in =
 					getInputStream(new GZIPInputStream(connection.getInputStream()),
 						fileSize);
-				reader.read(name, in, updateSite.timestamp);
+				reader.read(name, in, updateSite.getTimestamp());
 				in.close();
 				updateSite.setLastModified(lastModified);
 			}

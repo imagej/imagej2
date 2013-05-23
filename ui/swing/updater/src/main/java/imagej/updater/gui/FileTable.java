@@ -39,8 +39,8 @@ import imagej.updater.core.FileObject;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection;
-import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.core.GroupAction;
+import imagej.updater.core.UpdateSite;
 
 import java.awt.Color;
 import java.awt.Component;

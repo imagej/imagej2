@@ -91,86 +91,6 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	protected Set<FileObject> ignoredConflicts = new HashSet<FileObject>();
 	protected List<Conflict> conflicts = new ArrayList<Conflict>();
 
-	public static class UpdateSite implements Cloneable, Comparable<UpdateSite> {
-
-		public boolean active;
-		public String name, url, sshHost, uploadDirectory, description, maintainer;
-		public long timestamp;
-		public int rank;
-
-		public UpdateSite(final String name, String url, final String sshHost, String uploadDirectory,
-			final String description, final String maintainer, final long timestamp)
-		{
-			setURL(url);
-			setUploadDirectory(uploadDirectory);
-			this.name = name;
-			this.sshHost = sshHost;
-			this.uploadDirectory = uploadDirectory;
-			this.description = description;
-			this.maintainer = maintainer;
-			this.timestamp = timestamp;
-		}
-
-		public void setURL(final String url) {
-			if (url == null || url.equals("") || url.endsWith("/")) this.url = url;
-			else this.url = url + "/";
-		}
-
-		public void setUploadDirectory(final String uploadDirectory) {
-			if (uploadDirectory == null || uploadDirectory.equals("") || uploadDirectory.endsWith("/")) this.uploadDirectory = uploadDirectory;
-			else this.uploadDirectory = uploadDirectory + "/";
-		}
-		@Override
-		public Object clone() {
-			return new UpdateSite(name, url, sshHost, uploadDirectory, description, maintainer, timestamp);
-		}
-
-		public boolean isLastModified(final long lastModified) {
-			return timestamp == Long.parseLong(Util.timestamp(lastModified));
-		}
-
-		public void setLastModified(final long lastModified) {
-			timestamp = Long.parseLong(Util.timestamp(lastModified));
-		}
-
-		public boolean isUploadable() {
-			return (uploadDirectory != null && !uploadDirectory.equals("")) ||
-					(sshHost != null && sshHost.indexOf(':') > 0);
-		}
-
-		@Override
-		public String toString() {
-			return url + (sshHost != null ? ", " + sshHost : "") +
-				(uploadDirectory != null ? ", " + uploadDirectory : "");
-		}
-
-		@Override
-		public int compareTo(UpdateSite other) {
-			return rank - other.rank;
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (other instanceof UpdateSite)
-				return rank == ((UpdateSite)other).rank;
-			return false;
-		}
-
-		@Override
-		public int hashCode() {
-			return rank;
-		}
-
-		public String getUploadProtocol() {
-			if (sshHost == null)
-				throw new RuntimeException("Missing upload information for site " + url);
-			final int at = sshHost.indexOf('@');
-			final int colon = sshHost.indexOf(':');
-			if (colon > 0 && (at < 0 || colon < at)) return sshHost.substring(0, colon);
-			return "ssh";
-		}
-	}
-
 	private Map<String, UpdateSite> updateSites;
 
 	private DependencyAnalyzer dependencyAnalyzer;
@@ -209,7 +129,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 
 	public UpdateSite addUpdateSite(UpdateSite site) {
 		site.active = true;
-		addUpdateSite(site.name, site);
+		addUpdateSite(site.getName(), site);
 		return site;
 	}
 
@@ -234,8 +154,8 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		updateSites = new LinkedHashMap<String, UpdateSite>();
 		for (final String name : oldMap.keySet()) {
 			final UpdateSite site = oldMap.get(name);
-			if (name.equals(oldName)) site.name = newName;
-			addUpdateSite(site.name, site);
+			if (name.equals(oldName)) site.setName(newName);
+			addUpdateSite(site.getName(), site);
 		}
 	}
 
@@ -859,7 +779,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		assert (siteName != null && !siteName.equals(""));
 		final UpdateSite site = getUpdateSite(siteName);
 		if (site == null) return null;
-		return site.url + file.filename.replace(" ", "%20") + "-" +
+		return site.getURL() + file.filename.replace(" ", "%20") + "-" +
 			file.getTimestamp();
 	}
 
@@ -1142,7 +1062,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		for (final FileObject file : selected) {
 			final UpdateSite site = getUpdateSite(file.updateSite);
 			if (site != null) {
-				if (site.sshHost == null)
+				if (site.getHost() == null)
 					protocols.add("unknown(" + file.filename + ")");
 				else
 					protocols.add(site.getUploadProtocol());
