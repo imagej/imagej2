@@ -94,8 +94,6 @@ public class SitesDialog extends JDialog implements ActionListener {
 	protected UpdaterFrame updaterFrame;
 	protected FilesCollection files;
 	protected List<UpdateSite> sites;
-	protected String newUpdateSiteName;
-	protected UpdateSite newUpdateSite;
 
 	protected DataModel tableModel;
 	protected JTable table;
@@ -147,7 +145,9 @@ public class SitesDialog extends JDialog implements ActionListener {
 							if ("/".equals(value)) value = "";
 							final UpdateSite site = getUpdateSite(row);
 							if (value.equals(site.url)) return super.stopCellEditing();
-							if (!validURL(value)) {
+							if (validURL(value)) {
+								activateUpdateSite(row);
+							} else {
 								if (site == null || site.sshHost == null || site.sshHost.equals("")) {
 									error("URL does not refer to an update site: " + value + "\n"
 										+ "If you want to initialize that site, you need to provide upload information first.");
@@ -165,11 +165,6 @@ public class SitesDialog extends JDialog implements ActionListener {
 											value, site.sshHost, site.uploadDirectory))
 										return false;
 								}
-							}
-							if (row == sites.size()) {
-								sites.add(files.addUpdateSite(newUpdateSiteName, value, site.sshHost, site.uploadDirectory, 0l));
-								newUpdateSiteName = null;
-								newUpdateSite = null;
 							}
 						} else if (column == 3) {
 							final UpdateSite site = getUpdateSite(row);
@@ -223,13 +218,20 @@ public class SitesDialog extends JDialog implements ActionListener {
 					}
 				}
 				if (site.active) {
-					if ((column == 0 || column == 2) && !readFromSite(row)) {
-						error("There were problems reading from the site '"
-							+ getUpdateSiteName(row) + "' (URL: " + getUpdateSite(row).url + ")");
-						site.active = false;
+					if (column == 0 || column == 2) {
+						activateUpdateSite(row);
 					}
 				} else {
 					deactivateUpdateSite(site.name);
+				}
+			}
+
+			private void activateUpdateSite(final int row) {
+				getUpdateSite(row).active = true;
+				if (!readFromSite(row)) {
+					error("There were problems reading from the site '"
+						+ getUpdateSiteName(row) + "' (URL: " + getUpdateSite(row).url + ")");
+					getUpdateSite(row).active = false;
 				}
 			}
 
@@ -332,23 +334,17 @@ public class SitesDialog extends JDialog implements ActionListener {
 	}
 
 	protected String getUpdateSiteName(int row) {
-		if (row == sites.size()) return newUpdateSiteName;
 		return sites.get(row).name;
 	}
 
 	protected UpdateSite getUpdateSite(int row) {
-		if (row == sites.size()) return newUpdateSite;
 		return sites.get(row);
 	}
 
 	protected void add() {
-		if (newUpdateSite != null) {
-			error("Let's fill out the values of the previously added site first, okay?");
-			return;
-		}
 		final int row = sites.size();
-		newUpdateSiteName = makeUniqueSiteName("New");
-		newUpdateSite = new UpdateSite(newUpdateSiteName, "", "", "", null, null, 0l);
+		final String newUpdateSiteName = makeUniqueSiteName("New");
+		sites.add(new UpdateSite(newUpdateSiteName, "", "", "", null, null, 0l));
 		tableModel.rowsChanged();
 		tableModel.rowChanged(row);
 		table.setRowSelectionInterval(row, row);
@@ -454,7 +450,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 
 		@Override
 		public int getRowCount() {
-			return sites.size() + (newUpdateSite == null ? 0 : 1);
+			return sites.size();
 		}
 
 		@Override
