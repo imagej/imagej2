@@ -101,11 +101,9 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		public UpdateSite(final String name, String url, final String sshHost, String uploadDirectory,
 			final String description, final String maintainer, final long timestamp)
 		{
-			if (!url.endsWith("/")) url += "/";
-			if (uploadDirectory != null && !uploadDirectory.equals("") &&
-				!uploadDirectory.endsWith("/")) uploadDirectory += "/";
+			setURL(url);
+			setUploadDirectory(uploadDirectory);
 			this.name = name;
-			this.url = url;
 			this.sshHost = sshHost;
 			this.uploadDirectory = uploadDirectory;
 			this.description = description;
@@ -113,6 +111,15 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 			this.timestamp = timestamp;
 		}
 
+		public void setURL(final String url) {
+			if (url == null || url.equals("") || url.endsWith("/")) this.url = url;
+			else this.url = url + "/";
+		}
+
+		public void setUploadDirectory(final String uploadDirectory) {
+			if (uploadDirectory == null || uploadDirectory.equals("") || uploadDirectory.endsWith("/")) this.uploadDirectory = uploadDirectory;
+			else this.uploadDirectory = uploadDirectory + "/";
+		}
 		@Override
 		public Object clone() {
 			return new UpdateSite(name, url, sshHost, uploadDirectory, description, maintainer, timestamp);

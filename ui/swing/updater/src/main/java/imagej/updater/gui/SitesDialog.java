@@ -205,13 +205,13 @@ public class SitesDialog extends JDialog implements ActionListener {
 						sites.get(row).name = string;
 						break;
 					case 2:
-						site.url = string;
+						site.setURL(string);
 						break;
 					case 3:
 						site.sshHost = string;
 						break;
 					case 4:
-						site.uploadDirectory = string;
+						site.setUploadDirectory(string);
 						break;
 					default:
 						updaterFrame.log.error("Whoa! Column " + column + " is not handled!");
