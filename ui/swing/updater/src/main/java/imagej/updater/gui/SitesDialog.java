@@ -80,9 +80,6 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.xml.sax.SAXException;
 
 /**
  * The dialog in which the user can choose which update sites to follow.
@@ -581,16 +578,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 
 	private static Map<String, UpdateSite> getAvailableSites() throws IOException {
 		final MediaWikiClient wiki = new MediaWikiClient(FIJI_WIKI_URL);
-		final String text;
-		try {
-			text = wiki.getPageSource(SITE_LIST_PAGE_TITLE);
-		} catch (MalformedURLException e) {
-			throw new IOException(e);
-		} catch (ParserConfigurationException e) {
-			throw new IOException(e);
-		} catch (SAXException e) {
-			throw new IOException(e);
-		}
+		final String text = wiki.getPageSource(SITE_LIST_PAGE_TITLE);
 
 		final int start = text.indexOf("\n{| class=\"wikitable\"\n");
 		final int end = text.indexOf("\n|}\n", start);

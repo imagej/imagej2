@@ -36,7 +36,6 @@
 package imagej.updater.gui;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
@@ -44,7 +43,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.scijava.util.XML;
 import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -62,23 +60,29 @@ class MediaWikiClient {
 		else this.baseURL = baseURL + "/";
 	}
 
-	public XML query(final String... parameters) throws MalformedURLException, ParserConfigurationException, SAXException, IOException {
+	public XML query(final String... parameters) throws IOException {
 		if (parameters.length % 2 != 0)  throw new IllegalArgumentException("Requires key/value pairs");
-		final StringBuilder url = new StringBuilder();
-		url.append(baseURL).append("api.php?action=query&format=xml");
-		for (int i = 0; i < parameters.length; i += 2) {
-			url.append("&").append(URLEncoder.encode(parameters[i], "UTF-8"));
-			url.append("=").append(URLEncoder.encode(parameters[i + 1], "UTF-8"));
+		try {
+			final StringBuilder url = new StringBuilder();
+			url.append(baseURL).append("api.php?action=query&format=xml");
+			for (int i = 0; i < parameters.length; i += 2) {
+				url.append("&").append(URLEncoder.encode(parameters[i], "UTF-8"));
+				url.append("=").append(URLEncoder.encode(parameters[i + 1], "UTF-8"));
+			}
+			return new XML(new URL(url.toString()).openStream());
+		} catch (ParserConfigurationException e) {
+			throw new IOException(e);
+		} catch (SAXException e) {
+			throw new IOException(e);
 		}
-		return new XML(new URL(url.toString()).openStream());
 	}
 
-	public String getPageSource(final String title) throws MalformedURLException, ParserConfigurationException, SAXException, IOException {
+	public String getPageSource(final String title) throws IOException {
 		final XML xml = query("titles", title, "export", "true", "exportnowrap", "true");
 		return xml.cdata("/mediawiki/page/revision/text");
 	}
 
-	public boolean userExists(final String name) throws MalformedURLException, ParserConfigurationException, SAXException, IOException {
+	public boolean userExists(final String name) throws IOException {
 		final XML xml = query("list", "users", "ususers", name);
 		final NodeList list = xml.xpath("/api/query/users/user");
 		int count = list.getLength();
