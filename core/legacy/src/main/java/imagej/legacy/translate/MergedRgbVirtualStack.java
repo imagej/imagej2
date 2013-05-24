@@ -129,6 +129,7 @@ public class MergedRgbVirtualStack extends VirtualStack {
 	@Override
 	public ImageProcessor getProcessor(int n) {
 		positionToPlane(n);
+		int index = 0;
 		for (int x = 0; x < w; x++) {
 			accessor.setPosition(x, xAxis);
 			for (int y = 0; y < h; y++) {
@@ -140,8 +141,7 @@ public class MergedRgbVirtualStack extends VirtualStack {
 				accessor.fwd(cAxis);
 				int b = (int) accessor.get().getRealDouble();
 				int argb = (255 << 24) | (r << 16) | (g << 8) | b;
-				int index = y * w + x;
-				plane[index] = argb;
+				plane[index++] = argb;
 			}
 		}
 		return processor;

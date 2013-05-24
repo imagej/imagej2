@@ -117,17 +117,24 @@ public class MergedRgbVirtualStackTest {
 
 		proc = vstack.getProcessor(1);
 		assertEquals(rgb, proc.get(0));
+		assertEquals(rgb, proc.get(1));
+		assertEquals(rgb, proc.get(2));
+		assertEquals(rgb, proc.get(3));
 
 		rgb = (0xff << 24) | (35 << 16) | (45 << 8) | (55 << 0);
 
 		proc = vstack.getProcessor(2);
 		assertEquals(rgb, proc.get(0));
 
-		proc.set(0, 77);
-		assertEquals(77, proc.get(0));
-		proc = vstack.getProcessor(1);
+		for (int i = 0; i < 4; i++) {
+			proc.set(i, 77);
+			assertEquals(77, proc.get(i));
+		}
+		// proc = vstack.getProcessor(1);
 		proc = vstack.getProcessor(2);
-		assertEquals(rgb, proc.get(0));
+		for (int i = 0; i < 4; i++) {
+			assertEquals(rgb, proc.get(i));
+		}
 	}
 
 	private void setPlane(Dataset ds, int channel, int val) {
