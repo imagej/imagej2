@@ -150,7 +150,6 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	}
 
 	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void autoscale(final int c) {
 		// get the channel min/max from metadata
 		final ImgPlus<? extends RealType<?>> imgPlus = getData().getImgPlus();
@@ -293,12 +292,12 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 		return new ColorRGB(r, g, b);
 	}
 
-  //@Override
+	@Override
   public RandomAccessibleInterval<? extends RealType<?>> xyPlane() {
     return xyPlane(getData().getImgPlus());
   }
   
-	//@Override
+	@Override
 	public RandomAccessibleInterval<? extends RealType<?>> xyPlane(
 		RandomAccessibleInterval<? extends RealType<?>> inputInterval)
 	{
