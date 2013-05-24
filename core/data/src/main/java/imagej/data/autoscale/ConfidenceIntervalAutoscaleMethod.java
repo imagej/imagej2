@@ -56,7 +56,7 @@ public class ConfidenceIntervalAutoscaleMethod<T extends RealType<T>> extends
 
 	// -- instance variables --
 
-	private final double lowerTail, upperTail;
+	private double lowerTail, upperTail;
 
 	// -- ConfidenceIntervalAutoscaleMethod methods --
 
@@ -72,27 +72,53 @@ public class ConfidenceIntervalAutoscaleMethod<T extends RealType<T>> extends
 	 * range. Ranges are specified as fractions of 1. They must sum to less than
 	 * 1.
 	 * 
-	 * @param lowerTailFrac The proportion of the distribution to be treated as
-	 *          lower tail values
-	 * @param upperTailFrac The proportion of the distribution to be treated as
-	 *          upper tail values
+	 * @param lowerTailProportion The proportion of the distribution to be treated
+	 *          as lower tail values
+	 * @param upperTailProportion The proportion of the distribution to be treated
+	 *          as upper tail values
 	 */
-	public ConfidenceIntervalAutoscaleMethod(double lowerTailFrac,
-		double upperTailFrac)
+	public ConfidenceIntervalAutoscaleMethod(double lowerTailProportion,
+		double upperTailProportion)
 	{
-		this.lowerTail = lowerTailFrac;
-		this.upperTail = upperTailFrac;
-		if (lowerTail < 0 || lowerTail > 1) {
+		setTailProportions(lowerTailProportion, upperTailProportion);
+	}
+
+	/**
+	 * Returns the fractional proportion of the distribution to count as in lower
+	 * tail.
+	 */
+	public double getLowerTailProportion() {
+		return lowerTail;
+	}
+
+	/**
+	 * Returns the fractional proportion of the distribution to count as in upper
+	 * tail.
+	 */
+	public double getUpperTailProportion() {
+		return upperTail;
+	}
+
+	/**
+	 * Sets the fractional proportions of the distribution.
+	 * 
+	 * @param lower A fraction of 1 specifying the size of the lower tail
+	 * @param upper A fraction of 1 specifying the size of the upper tail
+	 */
+	public void setTailProportions(double lower, double upper) {
+		if (lower < 0 || lower > 1) {
 			throw new IllegalArgumentException(
 				"lower tail fraction must be between 0 and 1");
 		}
-		if (upperTail < 0 || upperTail > 1) {
+		if (upper < 0 || upper > 1) {
 			throw new IllegalArgumentException(
 				"upper tail fraction must be between 0 and 1");
 		}
-		if (lowerTail + upperTail >= 1) {
+		if (lower + upper >= 1) {
 			throw new IllegalArgumentException("tails must not span whole data range");
 		}
+		lowerTail = lower;
+		upperTail = upper;
 	}
 
 	// -- AutoscaleMethod methods --
