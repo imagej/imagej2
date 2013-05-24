@@ -70,11 +70,17 @@ public class ConfidenceIntervalAutoscaleMethod<T extends RealType<T>> extends Ab
 		while (soFar < twoPtFivePercent) {
 			soFar += histogram.frequency(bottom++);
 		}
+		while (histogram.frequency(bottom) == 0) {
+			bottom++;
+		}
 		// determine bin number containing < 97.5%
 		soFar = 0;
 		int top = 999;
 		while (soFar < twoPtFivePercent) {
 			soFar += histogram.frequency(top--);
+		}
+		while (histogram.frequency(top) == 0) {
+			top--;
 		}
 		// determine approx boundaries
 		T approxMin = interval.firstElement().createVariable();
