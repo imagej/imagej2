@@ -1,6 +1,6 @@
 package imagej.data.autoscale;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.ops.util.Tuple2;
@@ -21,9 +21,10 @@ public class ConfidenceIntervalAutoscaleMethodTest {
 		AutoscaleMethod method = service.getAutoscaleMethod("95% CI");
 		Img<RealType> img = getImg();
 		Tuple2<Double, Double> range = method.getRange(img);
-		System.out.println(range.get1());
-		System.out.println(range.get2());
-		assertTrue(true);
+		// System.out.println(range.get1());
+		// System.out.println(range.get2());
+		assertEquals(2, range.get1(), 0);
+		assertEquals(97, range.get2(), 0);
 	}
 
 	private Img<RealType> getImg() {
