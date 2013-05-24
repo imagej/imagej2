@@ -40,6 +40,7 @@ import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.UpdateSite;
 import imagej.updater.core.UploaderService;
+import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
 
 import java.awt.Component;
@@ -97,7 +98,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 
 	protected DataModel tableModel;
 	protected JTable table;
-	protected JButton add, remove, close;
+	protected JButton addNewSite, addPersonalSite, remove, close;
 
 	public SitesDialog(final UpdaterFrame owner, final FilesCollection files)
 	{
@@ -249,7 +250,8 @@ public class SitesDialog extends JDialog implements ActionListener {
 		contentPane.add(scrollpane);
 
 		final JPanel buttons = new JPanel();
-		add = SwingTools.button("Add", "Add", this, buttons);
+		addPersonalSite = SwingTools.button("Add my site", "Add my personal update site", this, buttons);
+		addNewSite = SwingTools.button("Add", "Add", this, buttons);
 		remove = SwingTools.button("Remove", "Remove", this, buttons);
 		remove.setEnabled(false);
 		close = SwingTools.button("Close", "Close", this, buttons);
@@ -258,7 +260,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 		getRootPane().setDefaultButton(close);
 		escapeCancels(this);
 		pack();
-		add.requestFocusInWindow();
+		addNewSite.requestFocusInWindow();
 		setLocationRelativeTo(owner);
 	}
 
@@ -333,10 +335,20 @@ public class SitesDialog extends JDialog implements ActionListener {
 		return sites.get(row);
 	}
 
-	protected void add() {
+	private void addNew() {
+		add(new UpdateSite(makeUniqueSiteName("New"), "", "", "", null, null, 0l));
+	}
+
+	private final static String PERSONAL_SITES_URL = "http://sites.imagej.net/";
+
+	private void addPersonalSite() {
+		final String user = UpdaterUserInterface.get().getString("Your Fiji Wiki Account?");
+		add(new UpdateSite(makeUniqueSiteName("My Site"), PERSONAL_SITES_URL + user, "webdav:" + user, "", null, null, 0l));
+	}
+
+	private void add(final UpdateSite site) {
 		final int row = sites.size();
-		final String newUpdateSiteName = makeUniqueSiteName("New");
-		sites.add(new UpdateSite(newUpdateSiteName, "", "", "", null, null, 0l));
+		sites.add(site);
 		tableModel.rowsChanged();
 		tableModel.rowChanged(row);
 		table.setRowSelectionInterval(row, row);
@@ -400,7 +412,8 @@ public class SitesDialog extends JDialog implements ActionListener {
 	@Override
 	public void actionPerformed(final ActionEvent e) {
 		final Object source = e.getSource();
-		if (source == add) add();
+		if (source == addNewSite) addNew();
+		else if (source == addPersonalSite) addPersonalSite();
 		else if (source == remove) delete(table.getSelectedRow());
 		else if (source == close) {
 			dispose();
