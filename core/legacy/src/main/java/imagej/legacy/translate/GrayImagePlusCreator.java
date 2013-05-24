@@ -95,7 +95,7 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 		Img<?> img = dataset.getImgPlus().getImg();
 		ImagePlus imp;
 		if (AbstractCellImg.class.isAssignableFrom(img.getClass())) {
-			imp = cellImgCase(display, dataset);
+			imp = cellImgCase(dataset);
 		}
 		else if (LegacyUtils.datasetIsIJ1Compatible(dataset)) {
 			imp = makeExactImagePlus(dataset);
@@ -308,7 +308,8 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 		}
 	}
 
-	private ImagePlus cellImgCase(ImageDisplay display, Dataset ds) {
+	@SuppressWarnings({ "rawtypes", "synthetic-access", "unchecked" })
+	private ImagePlus cellImgCase(Dataset ds) {
 		Img<? extends RealType<?>> img = ds.getImgPlus();
 		RealType<?> type = img.firstElement();
 		int bitDepth = type.getBitsPerPixel();
