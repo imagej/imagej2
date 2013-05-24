@@ -107,10 +107,11 @@ public class ConfidenceIntervalAutoscaleMethod<T extends RealType<T>> extends
 			new Real1dBinMapper<T>(range.get1(), range.get2(), 1000, false);
 		Histogram1d<T> histogram = new Histogram1d<T>(mapper);
 		histogram.countData(interval);
-		// determine bin number containing > 2.5%
+		// calc some sizes
 		long totValues = histogram.dfd().totalValues();
 		long lowerSize = (long) Math.floor(lowerTail * totValues);
 		long upperSize = (long) Math.floor(upperTail * totValues);
+		// determine bin number containing > than lower tail size
 		long soFar = 0;
 		int bottom = 0;
 		while (soFar < lowerSize) {
@@ -119,7 +120,7 @@ public class ConfidenceIntervalAutoscaleMethod<T extends RealType<T>> extends
 		while (histogram.frequency(bottom) == 0) {
 			bottom++;
 		}
-		// determine bin number containing < 97.5%
+		// determine bin number containing < upper tail size
 		soFar = 0;
 		int top = 999;
 		while (soFar < upperSize) {
