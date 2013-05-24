@@ -18,7 +18,7 @@ public class ConfidenceIntervalAutoscaleMethodTest {
 	@Test
 	public void test() {
 		AutoscaleService service = context.getService(AutoscaleService.class);
-		AutoscaleMethod method = service.getAutoscaleMethod("95% CI");
+		AutoscaleMethod method = service.getAutoscaleMethod("Confidence Interval");
 		Img<RealType> img = getImg();
 		Tuple2<Double, Double> range = method.getRange(img);
 		// System.out.println(range.get1());

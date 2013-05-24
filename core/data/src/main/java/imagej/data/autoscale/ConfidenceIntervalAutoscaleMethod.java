@@ -44,13 +44,58 @@ import net.imglib2.type.numeric.RealType;
 import org.scijava.plugin.Plugin;
 
 /**
- * Computes a 95% confidence interval from the entire set of values in an
- * {@link IterableInterval}.
+ * Computes a confidence interval containing percentages of the an entire set of
+ * values in an {@link IterableInterval}.
  * 
  * @author Barry DeZonia
  */
-@Plugin(type = AutoscaleMethod.class, name = "95% CI")
-public class ConfidenceIntervalAutoscaleMethod<T extends RealType<T>> extends AbstractAutoscaleMethod<T> {
+@Plugin(type = AutoscaleMethod.class, name = "Confidence Interval")
+public class ConfidenceIntervalAutoscaleMethod<T extends RealType<T>> extends
+	AbstractAutoscaleMethod<T>
+{
+
+	// -- instance variables --
+
+	private final double lowerTail, upperTail;
+
+	// -- ConfidenceIntervalAutoscaleMethod methods --
+
+	/**
+	 * Construct a confidence interval that contains 95% of the data range.
+	 */
+	public ConfidenceIntervalAutoscaleMethod() {
+		this(0.025, 0.025); // fit 95% of the data range
+	}
+
+	/**
+	 * Construct a confidence interval with user specified percentages of the data
+	 * range. Ranges are specified as fractions of 1. They must sum to less than
+	 * 1.
+	 * 
+	 * @param lowerTailFrac The proportion of the distribution to be treated as
+	 *          lower tail values
+	 * @param upperTailFrac The proportion of the distribution to be treated as
+	 *          upper tail values
+	 */
+	public ConfidenceIntervalAutoscaleMethod(double lowerTailFrac,
+		double upperTailFrac)
+	{
+		this.lowerTail = lowerTailFrac;
+		this.upperTail = upperTailFrac;
+		if (lowerTail < 0 || lowerTail > 1) {
+			throw new IllegalArgumentException(
+				"lower tail fraction must be between 0 and 1");
+		}
+		if (upperTail < 0 || upperTail > 1) {
+			throw new IllegalArgumentException(
+				"upper tail fraction must be between 0 and 1");
+		}
+		if (lowerTail + upperTail >= 1) {
+			throw new IllegalArgumentException("tails must not span whole data range");
+		}
+	}
+
+	// -- AutoscaleMethod methods --
 
 	@Override
 	public Tuple2<Double, Double> getRange(IterableInterval<T> interval) {
@@ -64,10 +109,11 @@ public class ConfidenceIntervalAutoscaleMethod<T extends RealType<T>> extends Ab
 		histogram.countData(interval);
 		// determine bin number containing > 2.5%
 		long totValues = histogram.dfd().totalValues();
-		long twoPtFivePercent = (long) Math.floor(0.025 * totValues);
+		long lowerSize = (long) Math.floor(lowerTail * totValues);
+		long upperSize = (long) Math.floor(upperTail * totValues);
 		long soFar = 0;
 		int bottom = 0;
-		while (soFar < twoPtFivePercent) {
+		while (soFar < lowerSize) {
 			soFar += histogram.frequency(bottom++);
 		}
 		while (histogram.frequency(bottom) == 0) {
@@ -76,7 +122,7 @@ public class ConfidenceIntervalAutoscaleMethod<T extends RealType<T>> extends Ab
 		// determine bin number containing < 97.5%
 		soFar = 0;
 		int top = 999;
-		while (soFar < twoPtFivePercent) {
+		while (soFar < upperSize) {
 			soFar += histogram.frequency(top--);
 		}
 		while (histogram.frequency(top) == 0) {
