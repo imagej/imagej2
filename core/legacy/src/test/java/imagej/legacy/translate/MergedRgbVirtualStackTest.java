@@ -78,9 +78,9 @@ public class MergedRgbVirtualStackTest {
 		ds.setRGBMerged(true);
 		MergedRgbVirtualStack vstack = new MergedRgbVirtualStack(ds);
 		
-		setPlane(ds, 0, 5);
-		setPlane(ds, 1, 15);
-		setPlane(ds, 2, 25);
+		setPlane(ds, 0, 5, 6, 7, 8);
+		setPlane(ds, 1, 15, 16, 17, 18);
+		setPlane(ds, 2, 25, 26, 27, 28);
 
 		RandomAccess<? extends RealType<?>> accessor =
 			ds.getImgPlus().randomAccess();
@@ -104,27 +104,33 @@ public class MergedRgbVirtualStackTest {
 				Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z }, 8, false, false);
 		ds.setRGBMerged(true);
 
-		setPlane(ds, 0, 5);
-		setPlane(ds, 1, 15);
-		setPlane(ds, 2, 25);
-		setPlane(ds, 3, 35);
-		setPlane(ds, 4, 45);
-		setPlane(ds, 5, 55);
+		setPlane(ds, 0, 5, 6, 7, 8);
+		setPlane(ds, 1, 15, 16, 17, 18);
+		setPlane(ds, 2, 25, 26, 27, 28);
+		setPlane(ds, 3, 35, 36, 37, 38);
+		setPlane(ds, 4, 45, 46, 47, 48);
+		setPlane(ds, 5, 55, 56, 57, 58);
 
 		vstack = new MergedRgbVirtualStack(ds);
 
-		rgb = (0xff << 24) | (5 << 16) | (15 << 8) | (25 << 0);
+		int rgb0 = (0xff << 24) | (5 << 16) | (15 << 8) | (25 << 0);
+		int rgb1 = (0xff << 24) | (6 << 16) | (16 << 8) | (26 << 0);
+		int rgb2 = (0xff << 24) | (7 << 16) | (17 << 8) | (27 << 0);
+		int rgb3 = (0xff << 24) | (8 << 16) | (18 << 8) | (28 << 0);
 
 		proc = vstack.getProcessor(1);
-		assertEquals(rgb, proc.get(0));
-		assertEquals(rgb, proc.get(1));
-		assertEquals(rgb, proc.get(2));
-		assertEquals(rgb, proc.get(3));
+		assertEquals(rgb0, proc.get(0));
+		assertEquals(rgb1, proc.get(1));
+		assertEquals(rgb2, proc.get(2));
+		assertEquals(rgb3, proc.get(3));
 
-		rgb = (0xff << 24) | (35 << 16) | (45 << 8) | (55 << 0);
+		rgb0 = (0xff << 24) | (35 << 16) | (45 << 8) | (55 << 0);
+		rgb1 = (0xff << 24) | (36 << 16) | (46 << 8) | (56 << 0);
+		rgb2 = (0xff << 24) | (37 << 16) | (47 << 8) | (57 << 0);
+		rgb3 = (0xff << 24) | (38 << 16) | (48 << 8) | (58 << 0);
 
 		proc = vstack.getProcessor(2);
-		assertEquals(rgb, proc.get(0));
+		assertEquals(rgb0, proc.get(0));
 
 		for (int i = 0; i < 4; i++) {
 			proc.set(i, 77);
@@ -132,15 +138,20 @@ public class MergedRgbVirtualStackTest {
 		}
 		// proc = vstack.getProcessor(1);
 		proc = vstack.getProcessor(2);
-		for (int i = 0; i < 4; i++) {
-			assertEquals(rgb, proc.get(i));
-		}
+		assertEquals(rgb0, proc.get(0));
+		assertEquals(rgb1, proc.get(1));
+		assertEquals(rgb2, proc.get(2));
+		assertEquals(rgb3, proc.get(3));
 	}
 
-	private void setPlane(Dataset ds, int channel, int val) {
+	private void
+		setPlane(Dataset ds, int channel, int v0, int v1, int v2, int v3)
+	{
 		byte[] plane = new byte[4];
-		for (int i = 0; i < plane.length; i++)
-			plane[i] = (byte) val;
+		plane[0] = (byte) v0;
+		plane[1] = (byte) v1;
+		plane[2] = (byte) v2;
+		plane[3] = (byte) v3;
 		// when planar container is no longer default this code must change or
 		// setPlane() must copy pixels values rather than plane refs.
 		ds.setPlane(channel, plane);
