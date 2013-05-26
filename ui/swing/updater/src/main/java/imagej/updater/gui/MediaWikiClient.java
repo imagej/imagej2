@@ -53,6 +53,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.scijava.util.XML;
 import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -64,6 +65,7 @@ import org.xml.sax.SAXException;
 class MediaWikiClient {
 	private final String baseURL;
 	private final Set<String> postActions = new HashSet<String>(Arrays.asList("login", "changeuploadpassword"));
+	private String currentUser;
 	private Map<String, String> cookies = new LinkedHashMap<String, String>();
 
 	public MediaWikiClient(final String baseURL) {
@@ -86,6 +88,44 @@ class MediaWikiClient {
 			if (node != null && node.getNamedItem("missing") == null) return true;
 		}
 		return false;
+	}
+
+	public boolean changeUploadPassword(final String password) throws IOException {
+		if (currentUser == null) throw new IOException("Can only change the password for a logged-in user");
+		System.err.println("action: changeuploadpassword");
+		final XML xml = request(null, "changeuploadpassword", "password", password);
+		final String error = getAttribute(xml.xpath("/api/error"), "info");
+		if (error != null) {
+			System.err.println("Error setting upload password for user '" + currentUser + "': " + error);
+			return false;
+		}
+		final NodeList response = xml.xpath("/api/changeuploadpassword");
+		final boolean result = "0".equals(getAttribute(response, "result"));
+		if (!result) {
+			System.err.println("a1: " + response.item(0));
+			System.err.println("Error: " + getAttribute(response, "output"));
+		}
+		return result;
+	}
+
+	public boolean login(final String user, final String password) throws IOException {
+		XML xml = request(null, "login", "lgname", user, "lgpassword", password);
+		final String loginToken = getAttribute(xml.xpath("/api/login"), "token");
+		if (loginToken == null) {
+			System.err.println("Did not get a token!");
+			return false;
+		}
+		xml = request(null, "login", "lgname", user, "lgpassword", password, "lgtoken", loginToken);
+		final boolean result = "Success".equals(getAttribute(xml.xpath("/api/login"), "result"));
+		currentUser = result ? user : null;
+		return result;
+	}
+
+	public void logout() throws IOException {
+		if (currentUser == null) return;
+		request(null, "logout");
+		cookies.clear();
+		currentUser = null;
 	}
 
 	public XML request(final String[] headers, final String action, final String... parameters) throws IOException {
@@ -150,9 +190,19 @@ class MediaWikiClient {
 	public XML query(final String... parameters) throws IOException {
 		return request(null, "query", parameters);
 	}
+
+	public static String getAttribute(final NodeList list, final String attributeName) {
+		if (list == null || list.getLength() != 1) return null;
+		final NamedNodeMap attrs = list.item(0).getAttributes();
+		if (attrs == null) return null;
+		final Node node = attrs.getNamedItem(attributeName);
+		return node == null ? null : node.getNodeValue();
+	}
+
 	public static void main(String... args) throws Exception {
-		final MediaWikiClient wiki = new MediaWikiClient("http://fiji.sc/");
-		System.err.println("exists: " + wiki.userExists("Schindelin"));
-		System.err.println("exists: " + wiki.userExists("Schindelin2"));
+		final MediaWikiClient wiki = new MediaWikiClient("http://fiji.sc.localhost/");
+		System.err.println("login: " + wiki.login("BugsBunny", "12345"));
+		System.err.println("change upload password: " + wiki.changeUploadPassword("12345"));
+		wiki.logout();
 	}
 }
