@@ -90,6 +90,23 @@ class MediaWikiClient {
 		return false;
 	}
 
+	public boolean createUser(final String userName, final String realName, final String email, final String reason) throws IOException {
+		final String[] headers = {
+				"Requested-User", userName
+		};
+		final XML xml = request(headers, "createfijiwikiaccount",
+				"name", userName, "email", email, "realname", realName, "reason", reason);
+		final String error = getAttribute(xml.xpath("/api/error"), "info");
+		if (error != null) {
+			System.err.println("Error creating user " + userName + ": " + error);
+			return false;
+		}
+		if (userName.equals(getAttribute(xml.xpath("/api/createfijiwikiaccount"), "created"))) {
+			return true;
+		}
+		return false;
+	}
+
 	public boolean changeUploadPassword(final String password) throws IOException {
 		if (currentUser == null) throw new IOException("Can only change the password for a logged-in user");
 		System.err.println("action: changeuploadpassword");
