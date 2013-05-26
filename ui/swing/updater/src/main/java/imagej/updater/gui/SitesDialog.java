@@ -40,7 +40,6 @@ import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.UpdateSite;
 import imagej.updater.core.UploaderService;
-import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
 
 import java.awt.Component;
@@ -48,6 +47,8 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -66,8 +67,10 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -80,6 +83,8 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+
+import net.miginfocom.swing.MigLayout;
 
 /**
  * The dialog in which the user can choose which update sites to follow.
@@ -339,8 +344,11 @@ public class SitesDialog extends JDialog implements ActionListener {
 	private final static String PERSONAL_SITES_URL = "http://sites.imagej.net/";
 
 	private void addPersonalSite() {
-		final String user = UpdaterUserInterface.get().getString("Your Fiji Wiki Account?");
-		add(new UpdateSite(makeUniqueSiteName("My Site"), PERSONAL_SITES_URL + user, "webdav:" + user, "", null, null, 0l));
+		final PersonalSiteDialog dialog = new PersonalSiteDialog();
+		final String user = dialog.name;
+		if (user == null) return;
+		final String url = PERSONAL_SITES_URL + user;
+		add(new UpdateSite(makeUniqueSiteName("My Site"), url, "webdav:" + user, "", null, null, 0l));
 	}
 
 	private void add(final UpdateSite site) {
@@ -611,6 +619,150 @@ public class SitesDialog extends JDialog implements ActionListener {
 		}
 
 		return result;
+	}
+
+	private class PersonalSiteDialog extends JDialog implements ActionListener {
+		private String name;
+		private JLabel userLabel, realNameLabel, emailLabel, passwordLabel;
+		private JTextField userField, realNameField, emailField;
+		private JPasswordField passwordField;
+		private JButton cancel, okay;
+
+		public PersonalSiteDialog() {
+			super(SitesDialog.this, "Add Personal Site");
+			setLayout(new MigLayout("wrap 2"));
+			add(new JLabel("<html><h2>Personal update site setup</h2>" +
+					"<p width=400>For security reasons, personal update sites are associated with a Fiji Wiki account. " +
+					"Please provide the account name of your Fiji Wiki account.</p>" +
+					"<p width=400>If your personal udate site was not yet initialized, you can initialize it in this dialog.</p>" +
+					"<p width=400>If you do not have a Fiji Wiki account</p></html>"), "span 2");
+			userLabel = new JLabel("Fiji Wiki account");
+			add(userLabel);
+			userField = new JTextField();
+			userField.setColumns(30);
+			add(userField);
+			realNameLabel = new JLabel("Real Name");
+			add(realNameLabel);
+			realNameField = new JTextField();
+			realNameField.setColumns(30);
+			add(realNameField);
+			emailLabel = new JLabel("Email");
+			add(emailLabel);
+			emailField = new JTextField();
+			emailField.setColumns(30);
+			add(emailField);
+			passwordLabel = new JLabel("Password");
+			add(passwordLabel);
+			passwordField = new JPasswordField();
+			passwordField.setColumns(30);
+			add(passwordField);
+			final JPanel panel = new JPanel();
+			cancel = new JButton("Cancel");
+			cancel.addActionListener(this);
+			panel.add(cancel);
+			okay = new JButton("OK");
+			okay.addActionListener(this);
+			panel.add(okay);
+			add(panel, "span 2, right");
+			setWikiAccountFieldsEnabled(false);
+			setChangePasswordEnabled(false);
+			pack();
+			final KeyAdapter keyListener = new KeyAdapter() {
+
+				@Override
+				public void keyReleased(final KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_ESCAPE) dispose();
+					else if (e.getKeyCode() == KeyEvent.VK_ENTER) actionPerformed(new ActionEvent(okay, -1, null));
+				}
+
+			};
+			userField.addKeyListener(keyListener);
+			realNameField.addKeyListener(keyListener);
+			emailField.addKeyListener(keyListener);
+			passwordField.addKeyListener(keyListener);
+			cancel.addKeyListener(keyListener);
+			okay.addKeyListener(keyListener);
+			setModal(true);
+			setVisible(true);
+		}
+
+		private void setWikiAccountFieldsEnabled(final boolean enabled) {
+			realNameLabel.setEnabled(enabled);
+			realNameField.setEnabled(enabled);
+			emailLabel.setEnabled(enabled);
+			emailField.setEnabled(enabled);
+			if (enabled) realNameField.requestFocusInWindow();
+		}
+
+		private void setChangePasswordEnabled(final boolean enabled) {
+			passwordLabel.setEnabled(enabled);
+			passwordField.setEnabled(enabled);
+			if (enabled) passwordField.requestFocusInWindow();
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (e.getSource() == cancel) {
+				dispose();
+				return;
+			} else if (e.getSource() == okay) {
+				final String name = userField.getText();
+				if ("".equals(name)) {
+					error("Please provide a Fiji Wiki account name!");
+					return;
+				}
+				if (validURL(PERSONAL_SITES_URL + name)) {
+					this.name = name;
+					dispose();
+					return;
+				}
+
+				// create a Fiji Wiki user if needed
+				final MediaWikiClient wiki = new MediaWikiClient(FIJI_WIKI_URL);
+				try {
+					if (!wiki.userExists(name)) {
+						if (realNameLabel.isEnabled()) {
+							final String realName = realNameField.getText();
+							final String email = emailField.getText();
+							if ("".equals(realName) || "".equals(email)) {
+								error("<html><p width=400>Please provide your name and email address to register an account on the Fiji Wiki!</p></html>");
+							} else {
+								if (wiki.createUser(name, realName, email, "Wants a personal site")) {
+									setWikiAccountFieldsEnabled(false);
+									setChangePasswordEnabled(true);
+									info("<html><p width=400>An email with the activation code was sent. " +
+											"Please provide your Fiji Wiki password after activating the account.</p></html>");
+								} else {
+									error("<html><p width=400>There was a problem creating the user account!</p></html>");
+								}
+							}
+						} else {
+							setWikiAccountFieldsEnabled(true);
+							error("<html><p width=400>Please provide your name and email address to register an account on the Fiji Wiki</p></html>");
+						}
+						return;
+					}
+
+					// initialize the personal update site
+					final String password = new String(passwordField.getPassword());
+					if (!wiki.login(name, password)) {
+						error("Could not log in (incorrect password?)");
+						return;
+					}
+					if (!wiki.changeUploadPassword(password)) {
+						error("Could not initialize the personal update site");
+						return;
+					}
+					wiki.logout();
+					this.name = name;
+					dispose();
+				} catch (IOException e2) {
+					updaterFrame.log.error(e2);
+					error("<html><p width=400>There was a problem contacting the Fiji Wiki: " + e2 + "</p></html>");
+					return;
+				}
+			}
+		}
 	}
 
 }
