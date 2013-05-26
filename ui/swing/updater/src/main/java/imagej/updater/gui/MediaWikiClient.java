@@ -36,8 +36,18 @@
 package imagej.updater.gui;
 
 import java.io.IOException;
+import java.io.PrintStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -53,28 +63,13 @@ import org.xml.sax.SAXException;
  */
 class MediaWikiClient {
 	private final String baseURL;
+	private final Set<String> postActions = new HashSet<String>(Arrays.asList("login", "changeuploadpassword"));
+	private Map<String, String> cookies = new LinkedHashMap<String, String>();
 
 	public MediaWikiClient(final String baseURL) {
 		if (baseURL.endsWith("/index.php")) this.baseURL = baseURL.substring(0, baseURL.length() - 9);
 		else if (baseURL.endsWith("/")) this.baseURL = baseURL;
 		else this.baseURL = baseURL + "/";
-	}
-
-	public XML query(final String... parameters) throws IOException {
-		if (parameters.length % 2 != 0)  throw new IllegalArgumentException("Requires key/value pairs");
-		try {
-			final StringBuilder url = new StringBuilder();
-			url.append(baseURL).append("api.php?action=query&format=xml");
-			for (int i = 0; i < parameters.length; i += 2) {
-				url.append("&").append(URLEncoder.encode(parameters[i], "UTF-8"));
-				url.append("=").append(URLEncoder.encode(parameters[i + 1], "UTF-8"));
-			}
-			return new XML(new URL(url.toString()).openStream());
-		} catch (ParserConfigurationException e) {
-			throw new IOException(e);
-		} catch (SAXException e) {
-			throw new IOException(e);
-		}
 	}
 
 	public String getPageSource(final String title) throws IOException {
@@ -93,6 +88,68 @@ class MediaWikiClient {
 		return false;
 	}
 
+	public XML request(final String[] headers, final String action, final String... parameters) throws IOException {
+		if (parameters.length % 2 != 0) throw new IllegalArgumentException("Requires key/value pairs");
+		final boolean requiresPOST = postActions.contains(action);
+		try {
+			final StringBuilder url = new StringBuilder();
+			url.append(baseURL).append("api.php?action=").append(action).append("&format=xml");
+			if (!requiresPOST) {
+				for (int i = 0; i < parameters.length; i += 2) {
+					url.append("&").append(URLEncoder.encode(parameters[i], "UTF-8"));
+					url.append("=").append(URLEncoder.encode(parameters[i + 1], "UTF-8"));
+				}
+			}
+			final URLConnection connection = new URL(url.toString()).openConnection();
+			for (final Entry<String, String> entry : cookies.entrySet()) {
+				connection.addRequestProperty("Cookie", entry.getKey() + "=" + entry.getValue());
+			}
+			if (headers != null) {
+				if (headers.length % 2 != 0) throw new IllegalArgumentException("Requires key/value pairs");
+				for (int i = 0; i < headers.length; i += 2) {
+					connection.setRequestProperty(headers[i], headers[i + 1]);
+				}
+			}
+			final HttpURLConnection http = (connection instanceof HttpURLConnection) ? (HttpURLConnection) connection : null;
+			if (http != null && requiresPOST) {
+				http.setRequestMethod("POST");
+				final String boundary = "---e69de29bb2d1d6434b8b29ae775ad8c2e48c5391";
+				http.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+				http.setDoOutput(true);
+				http.connect();
+				final PrintStream ps = new PrintStream(http.getOutputStream());
+				for (int i = 0; i < parameters.length; i += 2) {
+				 ps.print("--" + boundary + "\r\n"
+					 + "Content-Disposition: "
+					 + "form-data; name=\""
+					 + parameters[i] + "\"\r\n\r\n"
+					 + parameters[i + 1] + "\r\n");
+				}
+				ps.println("--" + boundary + "--");
+				ps.close();
+			}
+			final List<String> newCookies = http.getHeaderFields().get("Set-Cookie");
+			if (newCookies != null) {
+				for (final String cookie : newCookies) {
+					final int equal = cookie.indexOf("=");
+					if (equal < 0) continue;
+					final String key = cookie.substring(0, equal);
+					final String value = cookie.substring(equal + 1);
+					if (value.startsWith("deleted; ")) cookies.remove(key);
+					else cookies.put(key, value);
+				}
+			}
+			return new XML(connection.getInputStream());
+		} catch (ParserConfigurationException e) {
+			throw new IOException(e);
+		} catch (SAXException e) {
+			throw new IOException(e);
+		}
+	}
+
+	public XML query(final String... parameters) throws IOException {
+		return request(null, "query", parameters);
+	}
 	public static void main(String... args) throws Exception {
 		final MediaWikiClient wiki = new MediaWikiClient("http://fiji.sc/");
 		System.err.println("exists: " + wiki.userExists("Schindelin"));
