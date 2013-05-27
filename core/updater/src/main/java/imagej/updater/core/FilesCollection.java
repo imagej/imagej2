@@ -91,75 +91,6 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	protected Set<FileObject> ignoredConflicts = new HashSet<FileObject>();
 	protected List<Conflict> conflicts = new ArrayList<Conflict>();
 
-	public static class UpdateSite implements Cloneable, Comparable<UpdateSite> {
-
-		public String url, sshHost, uploadDirectory;
-		public long timestamp;
-		public int rank;
-
-		public UpdateSite(String url, final String sshHost, String uploadDirectory,
-			final long timestamp)
-		{
-			if (!url.endsWith("/")) url += "/";
-			if (uploadDirectory != null && !uploadDirectory.equals("") &&
-				!uploadDirectory.endsWith("/")) uploadDirectory += "/";
-			this.url = url;
-			this.sshHost = sshHost;
-			this.uploadDirectory = uploadDirectory;
-			this.timestamp = timestamp;
-		}
-
-		@Override
-		public Object clone() {
-			return new UpdateSite(url, sshHost, uploadDirectory, timestamp);
-		}
-
-		public boolean isLastModified(final long lastModified) {
-			return timestamp == Long.parseLong(Util.timestamp(lastModified));
-		}
-
-		public void setLastModified(final long lastModified) {
-			timestamp = Long.parseLong(Util.timestamp(lastModified));
-		}
-
-		public boolean isUploadable() {
-			return (uploadDirectory != null && !uploadDirectory.equals("")) ||
-					(sshHost != null && sshHost.indexOf(':') > 0);
-		}
-
-		@Override
-		public String toString() {
-			return url + (sshHost != null ? ", " + sshHost : "") +
-				(uploadDirectory != null ? ", " + uploadDirectory : "");
-		}
-
-		@Override
-		public int compareTo(UpdateSite other) {
-			return rank - other.rank;
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (other instanceof UpdateSite)
-				return rank == ((UpdateSite)other).rank;
-			return false;
-		}
-
-		@Override
-		public int hashCode() {
-			return rank;
-		}
-
-		public String getUploadProtocol() {
-			if (sshHost == null)
-				throw new RuntimeException("Missing upload information for site " + url);
-			final int at = sshHost.indexOf('@');
-			final int colon = sshHost.indexOf(':');
-			if (colon > 0 && (at < 0 || colon < at)) return sshHost.substring(0, colon);
-			return "ssh";
-		}
-	}
-
 	private Map<String, UpdateSite> updateSites;
 
 	private DependencyAnalyzer dependencyAnalyzer;
@@ -189,11 +120,17 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 			imagejRoot == null ? 0 : Util.getTimestamp(prefix(Util.XML_COMPRESSED)));
 	}
 
-	public void addUpdateSite(final String name, final String url,
+	public UpdateSite addUpdateSite(final String name, final String url,
 		final String sshHost, final String uploadDirectory, final long timestamp)
 	{
-		addUpdateSite(name, new UpdateSite(url, sshHost, uploadDirectory,
-			timestamp));
+		return addUpdateSite(new UpdateSite(name, url, sshHost, uploadDirectory,
+				null, null, timestamp));
+	}
+
+	public UpdateSite addUpdateSite(UpdateSite site) {
+		site.active = true;
+		addUpdateSite(site.getName(), site);
+		return site;
 	}
 
 	protected void addUpdateSite(final String name, final UpdateSite updateSite) {
@@ -216,7 +153,9 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		final Map<String, UpdateSite> oldMap = updateSites;
 		updateSites = new LinkedHashMap<String, UpdateSite>();
 		for (final String name : oldMap.keySet()) {
-			addUpdateSite(name.equals(oldName) ? newName : name, oldMap.get(name));
+			final UpdateSite site = oldMap.get(name);
+			if (name.equals(oldName)) site.setName(newName);
+			addUpdateSite(site.getName(), site);
 		}
 	}
 
@@ -840,7 +779,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		assert (siteName != null && !siteName.equals(""));
 		final UpdateSite site = getUpdateSite(siteName);
 		if (site == null) return null;
-		return site.url + file.filename.replace(" ", "%20") + "-" +
+		return site.getURL() + file.filename.replace(" ", "%20") + "-" +
 			file.getTimestamp();
 	}
 
@@ -1015,6 +954,13 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	}
 
 	@Override
+	public FileObject remove(final Object file) {
+		if (file instanceof FileObject) super.remove(((FileObject) file).getFilename(true));
+		if (file instanceof String) return super.remove(FileObject.getFilename((String)file, true));
+		return null;
+	}
+
+	@Override
 	public Iterator<FileObject> iterator() {
 		final Iterator<Map.Entry<String, FileObject>> iterator = entrySet().iterator();
 		return new Iterator<FileObject>() {
@@ -1116,7 +1062,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		for (final FileObject file : selected) {
 			final UpdateSite site = getUpdateSite(file.updateSite);
 			if (site != null) {
-				if (site.sshHost == null)
+				if (site.getHost() == null)
 					protocols.add("unknown(" + file.filename + ")");
 				else
 					protocols.add(site.getUploadProtocol());

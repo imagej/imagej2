@@ -71,7 +71,7 @@ public class SwingAuthenticator extends Authenticator {
 		panel.add(password);
 
 		if (JOptionPane.showConfirmDialog(null, panel, getRequestingPrompt(),
-			JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) return null;
+			JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return null;
 		// work around Java's internal ISO-8859-1 encoding
 		final String string = new String(password.getPassword());
 		final byte[] bytes;

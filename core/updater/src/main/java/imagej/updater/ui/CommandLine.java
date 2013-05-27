@@ -43,9 +43,9 @@ import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.FilesCollection.Filter;
-import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.core.FilesUploader;
 import imagej.updater.core.Installer;
+import imagej.updater.core.UpdateSite;
 import imagej.updater.util.Downloadable;
 import imagej.updater.util.Downloader;
 import imagej.updater.util.Progress;
@@ -535,8 +535,8 @@ public class CommandLine {
 		final List<String> options = new ArrayList<String>();
 		for (final String name : files.getUpdateSiteNames()) {
 			final UpdateSite updateSite = files.getUpdateSite(name);
-			if (updateSite.uploadDirectory == null ||
-				updateSite.uploadDirectory.equals("")) continue;
+			if (updateSite.getUploadDirectory() == null ||
+				updateSite.getUploadDirectory().equals("")) continue;
 			names.add(name);
 			options.add(getLongUpdateSiteName(name));
 		}
@@ -554,8 +554,8 @@ public class CommandLine {
 	public String getLongUpdateSiteName(final String name) {
 		final UpdateSite site = files.getUpdateSite(name);
 		return name + " (" +
-			(site.sshHost == null || site.equals("") ? "" : site.sshHost + ":") +
-			site.uploadDirectory + ")";
+			(site.getHost() == null || site.equals("") ? "" : site.getHost() + ":") +
+			site.getUploadDirectory() + ")";
 	}
 
 	public void listUpdateSites(Collection<String> args) {
@@ -564,11 +564,11 @@ public class CommandLine {
 			args = files.getUpdateSiteNames();
 		for (final String name : args) {
 			final UpdateSite site = files.getUpdateSite(name);
-			System.out.print(name + ": " + site.url);
-			if (site.uploadDirectory == null)
+			System.out.print(name + ": " + site.getURL());
+			if (site.getUploadDirectory() == null)
 				System.out.println();
 			else
-				System.out.println(" (upload host: " + site.sshHost + ", upload directory: " + site.uploadDirectory);
+				System.out.println(" (upload host: " + site.getHost() + ", upload directory: " + site.getUploadDirectory());
 		}
 	}
 
@@ -589,9 +589,9 @@ public class CommandLine {
 		else {
 			if (site == null)
 				throw die("Site '" + name + "' was not yet added!");
-			site.url = url;
-			site.sshHost = sshHost;
-			site.uploadDirectory = uploadDirectory;
+			site.setURL(url);
+			site.setHost(sshHost);
+			site.setUploadDirectory(uploadDirectory);
 		}
 		try {
 			files.write();

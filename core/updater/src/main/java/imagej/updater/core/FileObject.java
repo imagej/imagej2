@@ -35,7 +35,6 @@
 
 package imagej.updater.core;
 
-import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Util;
 
 import java.io.File;
@@ -490,9 +489,9 @@ public class FileObject {
 			final FileObject file = entry.getValue();
 			if (file.isObsolete()) continue;
 			final UpdateSite site = files.getUpdateSite(entry.getKey());
-			if (overridingRank < site.rank) {
+			if (overridingRank < site.getRank()) {
 				overriding = file;
-				overridingRank = site.rank;
+				overridingRank = site.getRank();
 			}
 		}
 		addPreviousVersion(current.checksum, current.timestamp, current.filename);
@@ -621,7 +620,7 @@ public class FileObject {
 			default:
 		}
 		if (updateSite == null) return files.hasUploadableSites();
-		final FilesCollection.UpdateSite updateSite =
+		final UpdateSite updateSite =
 			files.getUpdateSite(this.updateSite);
 		return updateSite != null && updateSite.isUploadable();
 	}

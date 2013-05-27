@@ -35,7 +35,6 @@
 
 package imagej.updater.core;
 
-import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Util;
 import imagej.util.AppUtils;
 import imagej.util.Prefs;
@@ -114,7 +113,7 @@ public class UpToDate {
 			for (final String name : plugins.getUpdateSiteNames()) {
 				final UpdateSite updateSite = plugins.getUpdateSite(name);
 				final long lastModified =
-					getLastModified(updateSite.url + Util.XML_COMPRESSED);
+					getLastModified(updateSite.getURL() + Util.XML_COMPRESSED);
 				if (lastModified == FOUR_O_SEVEN) return Result.PROXY_NEEDS_AUTHENTICATION;
 				if (lastModified < 0) return Result.OFFLINE; // assume network is down
 				if (!updateSite.isLastModified(lastModified)) return Result.UPDATEABLE;

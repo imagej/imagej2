@@ -38,18 +38,28 @@ package imagej.updater.gui;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FilesCollection;
-import imagej.updater.core.FilesCollection.UpdateSite;
+import imagej.updater.core.UpdateSite;
 import imagej.updater.core.UploaderService;
 import imagej.updater.util.Util;
 
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
@@ -57,8 +67,10 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -66,13 +78,16 @@ import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableModelEvent;
-import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import net.miginfocom.swing.MigLayout;
+
 /**
- * TODO
+ * The dialog in which the user can choose which update sites to follow.
  * 
  * @author Johannes Schindelin
  */
@@ -81,21 +96,19 @@ public class SitesDialog extends JDialog implements ActionListener {
 
 	protected UpdaterFrame updaterFrame;
 	protected FilesCollection files;
-	protected List<String> names;
-	protected String newUpdateSiteName;
-	protected UpdateSite newUpdateSite;
+	protected List<UpdateSite> sites;
 
 	protected DataModel tableModel;
 	protected JTable table;
-	protected JButton add, remove, close;
+	protected JButton addNewSite, addPersonalSite, remove, close;
 
 	public SitesDialog(final UpdaterFrame owner, final FilesCollection files)
 	{
 		super(owner, "Manage update sites");
 		updaterFrame = owner;
 		this.files = files;
-		names = new ArrayList<String>(files.getUpdateSiteNames());
-		names.set(0, FilesCollection.DEFAULT_UPDATE_SITE);
+
+		sites = initializeSites(files);
 
 		final Container contentPane = getContentPane();
 		contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.PAGE_AXIS));
@@ -116,26 +129,29 @@ public class SitesDialog extends JDialog implements ActionListener {
 
 			@Override
 			public TableCellEditor getCellEditor(final int row, final int column) {
+				if (column == 0) return super.getCellEditor(row, column);
 				final JTextField field = new JTextField();
 				return new DefaultCellEditor(field) {
 					@Override
 					public boolean stopCellEditing() {
 						String value = field.getText();
-						if ((column == 1 || column == 3) && !value.equals("") && !value.endsWith("/")) {
+						if ((column == 2 || column == 4) && !value.equals("") && !value.endsWith("/")) {
 							value += "/";
 						}
-						if (column == 0) {
+						if (column == 1) {
 							if (value.equals(getUpdateSiteName(row))) return super.stopCellEditing();
 							if (files.getUpdateSite(value) != null) {
 								error("Update site '" + value + "' exists already!");
 								return false;
 							}
-						} else if (column == 1) {
+						} else if (column == 2) {
 							if ("/".equals(value)) value = "";
 							final UpdateSite site = getUpdateSite(row);
-							if (value.equals(site.url)) return super.stopCellEditing();
-							if (!validURL(value)) {
-								if (site == null || site.sshHost == null || site.sshHost.equals("")) {
+							if (value.equals(site.getURL())) return super.stopCellEditing();
+							if (validURL(value)) {
+								activateUpdateSite(row);
+							} else {
+								if (site == null || site.getHost() == null || site.getHost().equals("")) {
 									error("URL does not refer to an update site: " + value + "\n"
 										+ "If you want to initialize that site, you need to provide upload information first.");
 									return false;
@@ -145,23 +161,17 @@ public class SitesDialog extends JDialog implements ActionListener {
 											+ "\t" + value + "\n"
 											+ "is not (yet) valid. "
 											+ "Do you want to initialize it (host: "
-											+ site.sshHost + "; directory: "
-											+ site.uploadDirectory + ")?"))
+											+ site.getHost() + "; directory: "
+											+ site.getUploadDirectory() + ")?"))
 										return false;
 									if (!initializeUpdateSite((String)getValueAt(row, 0),
-											value, site.sshHost, site.uploadDirectory))
+											value, site.getHost(), site.getUploadDirectory()))
 										return false;
 								}
 							}
-							if (row == names.size()) {
-								files.addUpdateSite(newUpdateSiteName, value, site.sshHost, site.uploadDirectory, 0l);
-								names.add(newUpdateSiteName);
-								newUpdateSiteName = null;
-								newUpdateSite = null;
-							}
-						} else if (column == 2) {
+						} else if (column == 3) {
 							final UpdateSite site = getUpdateSite(row);
-							if (value.equals(site.sshHost)) return super.stopCellEditing();
+							if (value.equals(site.getHost())) return super.stopCellEditing();
 							final int colon = value.indexOf(':');
 							if (colon > 0) {
 								final String protocol = value.substring(0, colon);
@@ -171,9 +181,9 @@ public class SitesDialog extends JDialog implements ActionListener {
 									return false;
 								}
 							}
-						} else if (column == 3) {
+						} else if (column == 4) {
 							final UpdateSite site = getUpdateSite(row);
-							if (value.equals(site.uploadDirectory)) return super.stopCellEditing();
+							if (value.equals(site.getUploadDirectory())) return super.stopCellEditing();
 						}
 						updaterFrame.enableUploadOrNot();
 						return super.stopCellEditing();
@@ -184,45 +194,66 @@ public class SitesDialog extends JDialog implements ActionListener {
 			@Override
 			public void setValueAt(final Object value, final int row, final int column)
 			{
-				final String string = (String)value;
 				final UpdateSite site = getUpdateSite(row);
-				// if the name changed, or if we auto-fill the name from the URL
-				switch (column) {
-				case 0:
-					final String name = getUpdateSiteName(row);
-					if (name.equals(string)) return;
-					files.renameUpdateSite(name, string);
-					names.set(row, string);
-					break;
-				case 1:
-					site.url = string;
-					break;
-				case 2:
-					site.sshHost = string;
-					break;
-				case 3:
-					site.uploadDirectory = string;
-					break;
-				default:
-					updaterFrame.log.error("Whoa! Column " + column + " is not handled!");
+				if (column == 0) {
+					site.setActive(Boolean.TRUE.equals(value));
+				} else {
+					if (isEditing()) return;
+					final String string = (String)value;
+					// if the name changed, or if we auto-fill the name from the URL
+					switch (column) {
+					case 1:
+						final String name = getUpdateSiteName(row);
+						if (name.equals(string)) return;
+						files.renameUpdateSite(name, string);
+						sites.get(row).setName(string);
+						break;
+					case 2:
+						site.setURL(string);
+						break;
+					case 3:
+						site.setHost(string);
+						break;
+					case 4:
+						site.setUploadDirectory(string);
+						break;
+					default:
+						updaterFrame.log.error("Whoa! Column " + column + " is not handled!");
+					}
 				}
-				if (!readFromSite(row)) {
-					error("There were problems reading from the site '"
-						+ getUpdateSiteName(row) + "' (URL: " + getUpdateSite(row).url + ")");
+				if (site.isActive()) {
+					if (column == 0 || column == 2) {
+						activateUpdateSite(row);
+					}
+				} else {
+					deactivateUpdateSite(site.getName());
 				}
 			}
 
+			@Override
+			public Component prepareRenderer(TableCellRenderer renderer,int row, int column) {
+				Component component = super.prepareRenderer(renderer, row, column);
+				if (component instanceof JComponent) {
+					final UpdateSite site = getUpdateSite(row);
+					if (site != null) {
+						JComponent jcomponent = (JComponent) component;
+						jcomponent.setToolTipText(wrapToolTip(site.getDescription(), site.getMaintainer()));
+					}
+				}
+			    return component;
+			}
 		};
 		table.setColumnSelectionAllowed(false);
 		table.setRowSelectionAllowed(true);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tableModel.setColumnWidths();
 		final JScrollPane scrollpane = new JScrollPane(table);
-		scrollpane.setPreferredSize(new Dimension(tableModel.tableWidth, 100));
+		scrollpane.setPreferredSize(new Dimension(tableModel.tableWidth, 400));
 		contentPane.add(scrollpane);
 
 		final JPanel buttons = new JPanel();
-		add = SwingTools.button("Add", "Add", this, buttons);
+		addPersonalSite = SwingTools.button("Add my site", "Add my personal update site", this, buttons);
+		addNewSite = SwingTools.button("Add", "Add", this, buttons);
 		remove = SwingTools.button("Remove", "Remove", this, buttons);
 		remove.setEnabled(false);
 		close = SwingTools.button("Close", "Close", this, buttons);
@@ -231,47 +262,128 @@ public class SitesDialog extends JDialog implements ActionListener {
 		getRootPane().setDefaultButton(close);
 		escapeCancels(this);
 		pack();
-		add.requestFocusInWindow();
+		addNewSite.requestFocusInWindow();
 		setLocationRelativeTo(owner);
 	}
 
+	private static String wrapToolTip(final String description, final String maintainer) {
+		if (description == null) return null;
+		return  "<html><p width='400'>" + description.replaceAll("\n", "<br />")
+			+ (maintainer != null ? "</p><p>Maintainer: " + maintainer + "</p>": "")
+			+ "</p></html>";
+	}
+
+	private static List<UpdateSite> initializeSites(final FilesCollection files) {
+		final List<UpdateSite> sites = new ArrayList<UpdateSite>();
+		final Map<String, Integer> url2index = new HashMap<String, Integer>();
+
+		// make sure that the main update site is the first one.
+		final UpdateSite mainSite = new UpdateSite(FilesCollection.DEFAULT_UPDATE_SITE, Util.MAIN_URL, "", "", null, null, 0l);
+		sites.add(mainSite);
+		url2index.put(mainSite.getURL(), 0);
+
+		// read available sites from the Fiji Wiki
+		try {
+			for (final UpdateSite site : getAvailableSites().values()) {
+				Integer index = url2index.get(site.getURL());
+				if (index == null) {
+					url2index.put(site.getURL(), sites.size());
+					sites.add(site);
+				} else {
+					sites.set(index.intValue(), site);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// add active / upload information
+		final Set<String> names = new HashSet<String>();
+		for (final String name : files.getUpdateSiteNames()) {
+			final UpdateSite site = files.getUpdateSite(name);
+			Integer index = url2index.get(site.getURL());
+			if (index == null) {
+				url2index.put(site.getURL(), sites.size());
+				sites.add(site);
+			} else {
+				final UpdateSite listed = sites.get(index.intValue());
+				listed.setActive(true);
+				listed.setName(site.getName());
+				listed.setHost(site.getHost());
+				listed.setUploadDirectory(site.getUploadDirectory());
+			}
+		}
+
+		// make sure names are unique
+		for (final UpdateSite site : sites) {
+			if (site.isActive()) continue;
+			if (names.contains(site.getName())) {
+				int i = 2;
+				while (names.contains(site.getName() + "-" + i))
+					i++;
+				site.setName(site.getName() + ("-" + i));
+			}
+			names.add(site.getName());
+		}
+
+		return sites;
+	}
+
 	protected String getUpdateSiteName(int row) {
-		if (row == names.size()) return newUpdateSiteName;
-		return names.get(row);
+		return sites.get(row).getName();
 	}
 
 	protected UpdateSite getUpdateSite(int row) {
-		if (row == names.size()) return newUpdateSite;
-		return files.getUpdateSite(names.get(row));
+		return sites.get(row);
 	}
 
-	protected void add() {
-		if (newUpdateSite != null) {
-			error("Let's fill out the values of the previously added site first, okay?");
-			return;
-		}
-		final int row = names.size();
-		newUpdateSiteName = makeUniqueSiteName("New");
-		newUpdateSite = new UpdateSite("", "", "", 0l);
+	private void addNew() {
+		add(new UpdateSite(makeUniqueSiteName("New"), "", "", "", null, null, 0l));
+	}
+
+	private final static String PERSONAL_SITES_URL = "http://sites.imagej.net/";
+
+	private void addPersonalSite() {
+		final PersonalSiteDialog dialog = new PersonalSiteDialog();
+		final String user = dialog.name;
+		if (user == null) return;
+		final String url = PERSONAL_SITES_URL + user;
+		final int row = sites.size();
+		add(new UpdateSite(makeUniqueSiteName("My Site"), url, "webdav:" + user, "", null, null, 0l));
+		activateUpdateSite(row);
+	}
+
+	private void add(final UpdateSite site) {
+		final int row = sites.size();
+		sites.add(site);
 		tableModel.rowsChanged();
 		tableModel.rowChanged(row);
 		table.setRowSelectionInterval(row, row);
 	}
 
 	private String makeUniqueSiteName(final String prefix) {
-		if (files.getUpdateSite(prefix) == null) return prefix;
+		final Set<String> names = new HashSet<String>();
+		for (final UpdateSite site : sites) names.add(site.getName());
+		if (!names.contains(prefix)) return prefix;
 		for (int i = 2; ; i++) {
-			if (files.getUpdateSite(prefix + "-" + i) == null) return prefix + "-" + i;
+			if (!names.contains(prefix + "-" + i)) return prefix + "-" + i;
 		}
 	}
 
 	protected void delete(final int row) {
-		final String name = names.get(row);
+		final String name = getUpdateSiteName(row);
 		if (!showYesNoQuestion("Remove " + name + "?",
 				"Do you really want to remove the site '" + name + "' from the list?\n"
-				+ "URL: " + getUpdateSite(row).url))
+				+ "URL: " + getUpdateSite(row).getURL()))
 			return;
+		deactivateUpdateSite(name);
+		sites.remove(row);
+		tableModel.rowChanged(row);
+	}
+
+	private void deactivateUpdateSite(final String name) {
 		final List<FileObject> list = new ArrayList<FileObject>();
+		final List<FileObject> remove = new ArrayList<FileObject>();
 		int count = 0;
 		for (final FileObject file : files.forUpdateSite(name))
 			switch (file.getStatus()) {
@@ -279,43 +391,47 @@ public class SitesDialog extends JDialog implements ActionListener {
 				case NOT_INSTALLED:
 				case OBSOLETE_UNINSTALLED:
 					count--;
+					remove.add(file);
 					break;
 				default:
 					count++;
 					list.add(file);
 			}
 		if (count > 0) info("" +
-			count +
-			" files are installed from the site '" +
+			count + (count == 1 ? " file is" : " files are") +
+			" installed from the site '" +
 			name +
 			"'\n" +
 			"These files will not be deleted automatically.\n" +
 			"Note: even if marked as 'Local-only', they might be available from other sites.");
 		for (final FileObject file : list) {
 			file.updateSite = null;
+			// TODO: unshadow
 			file.setStatus(FileObject.Status.LOCAL_ONLY);
 		}
+		for (final FileObject file : remove) {
+			files.remove(file);
+		}
 		files.removeUpdateSite(name);
-		names.remove(row);
-		tableModel.rowChanged(row);
 		updaterFrame.updateFilesTable();
 	}
 
 	@Override
 	public void actionPerformed(final ActionEvent e) {
 		final Object source = e.getSource();
-		if (source == add) add();
+		if (source == addNewSite) addNew();
+		else if (source == addPersonalSite) addPersonalSite();
 		else if (source == remove) delete(table.getSelectedRow());
 		else if (source == close) {
 			dispose();
 		}
 	}
 
-	protected class DataModel extends AbstractTableModel {
+	protected class DataModel extends DefaultTableModel {
 
 		protected int tableWidth;
-		protected int[] widths = { 100, 300, 150, 150 };
-		protected String[] headers = { "Name", "URL", "Host",
+		protected int[] widths = { 20, 150, 280, 125, 125 };
+		protected String[] headers = { "Active", "Name", "URL", "Host",
 			"Directory on Host" };
 
 		public void setColumnWidths() {
@@ -331,7 +447,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 
 		@Override
 		public int getColumnCount() {
-			return 4;
+			return 5;
 		}
 
 		@Override
@@ -340,17 +456,23 @@ public class SitesDialog extends JDialog implements ActionListener {
 		}
 
 		@Override
+		public Class<?> getColumnClass(final int column) {
+			return column == 0 ? Boolean.class : String.class;
+		}
+
+		@Override
 		public int getRowCount() {
-			return names.size() + (newUpdateSite == null ? 0 : 1);
+			return sites.size();
 		}
 
 		@Override
 		public Object getValueAt(final int row, final int col) {
-			if (col == 0) return getUpdateSiteName(row);
+			if (col == 1) return getUpdateSiteName(row);
 			final UpdateSite site = getUpdateSite(row);
-			if (col == 1) return site.url;
-			if (col == 2) return site.sshHost;
-			if (col == 3) return site.uploadDirectory;
+			if (col == 0) return Boolean.valueOf(site.isActive());
+			if (col == 2) return site.getURL();
+			if (col == 3) return site.getHost();
+			if (col == 4) return site.getUploadDirectory();
 			return null;
 		}
 
@@ -359,7 +481,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 		}
 
 		public void rowsChanged() {
-			rowsChanged(0, names.size());
+			rowsChanged(0, sites.size());
 		}
 
 		public void rowsChanged(final int firstRow, final int lastRow) {
@@ -380,13 +502,16 @@ public class SitesDialog extends JDialog implements ActionListener {
 		}
 	}
 
-	protected boolean readFromSite(final int row) {
+	protected boolean activateUpdateSite(final int row) {
+		final UpdateSite updateSite = getUpdateSite(row);
+		updateSite.setActive(true);
 		try {
-			final String updateSite = names.get(row);
-			files.reReadUpdateSite(updateSite, updaterFrame.getProgress(null));
-			markForUpdate(updateSite, false);
+			if (files.getUpdateSite(updateSite.getName()) == null) files.addUpdateSite(updateSite);
+			files.reReadUpdateSite(updateSite.getName(), updaterFrame.getProgress(null));
+			markForUpdate(updateSite.getName(), false);
+			updaterFrame.filesChanged();
 		} catch (final Exception e) {
-			error("Not a valid URL: " + getUpdateSite(row).url);
+			error("Not a valid URL: " + getUpdateSite(row).getURL());
 			return false;
 		}
 		return true;
@@ -453,4 +578,193 @@ public class SitesDialog extends JDialog implements ActionListener {
 			}
 		});
 	}
+
+	private static String stripWikiMarkup(final String string) {
+		return string.replaceAll("'''", "").replaceAll("\\[\\[([^\\|\\]]*\\|)?([^\\]]*)\\]\\]", "$2").replaceAll("\\[[^\\[][^ ]*([^\\]]*)\\]", "$1");
+	}
+
+	private static final String FIJI_WIKI_URL = "http://fiji.sc/";
+	private static final String SITE_LIST_PAGE_TITLE = "List of update sites";
+
+	private static Map<String, UpdateSite> getAvailableSites() throws IOException {
+		final MediaWikiClient wiki = new MediaWikiClient(FIJI_WIKI_URL);
+		final String text = wiki.getPageSource(SITE_LIST_PAGE_TITLE);
+
+		final int start = text.indexOf("\n{| class=\"wikitable\"\n");
+		final int end = text.indexOf("\n|}\n", start);
+		if (start < 0 || end < 0) {
+			throw new Error("Could not find table");
+		}
+		final String[] table = text.substring(start + 1, end).split("\n\\|-");
+
+		final Map<String, UpdateSite> result = new LinkedHashMap<String, UpdateSite>();
+		for (final String row : table) {
+			if (row.matches("(?s)(\\{\\||[\\|!](style=\"vertical-align|colspan=\"4\")).*")) continue;
+			final String[] columns = row.split("\n[\\|!]");
+			if (columns.length == 5 && !columns[1].endsWith("|'''Name'''")) {
+				final UpdateSite info = new UpdateSite(stripWikiMarkup(columns[1]), stripWikiMarkup(columns[2]), null, null, stripWikiMarkup(columns[3]), stripWikiMarkup(columns[4]), 0l);
+				result.put(info.getURL(), info);
+			}
+		}
+
+		// Sanity checks
+		final Iterator<UpdateSite> iter = result.values().iterator();
+		if (!iter.hasNext()) throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
+		UpdateSite site = iter.next();
+		if (!site.getName().equals("ImageJ") || !site.getURL().equals("http://update.imagej.net/")) {
+			throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
+		}
+		if (!iter.hasNext()) throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
+		site = iter.next();
+		if (!site.getName().equals("Fiji") || !site.getURL().equals("http://fiji.sc/update/")) {
+			throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
+		}
+
+		return result;
+	}
+
+	private class PersonalSiteDialog extends JDialog implements ActionListener {
+		private String name;
+		private JLabel userLabel, realNameLabel, emailLabel, passwordLabel;
+		private JTextField userField, realNameField, emailField;
+		private JPasswordField passwordField;
+		private JButton cancel, okay;
+
+		public PersonalSiteDialog() {
+			super(SitesDialog.this, "Add Personal Site");
+			setLayout(new MigLayout("wrap 2"));
+			add(new JLabel("<html><h2>Personal update site setup</h2>" +
+					"<p width=400>For security reasons, personal update sites are associated with a Fiji Wiki account. " +
+					"Please provide the account name of your Fiji Wiki account.</p>" +
+					"<p width=400>If your personal udate site was not yet initialized, you can initialize it in this dialog.</p>" +
+					"<p width=400>If you do not have a Fiji Wiki account</p></html>"), "span 2");
+			userLabel = new JLabel("Fiji Wiki account");
+			add(userLabel);
+			userField = new JTextField();
+			userField.setColumns(30);
+			add(userField);
+			realNameLabel = new JLabel("Real Name");
+			add(realNameLabel);
+			realNameField = new JTextField();
+			realNameField.setColumns(30);
+			add(realNameField);
+			emailLabel = new JLabel("Email");
+			add(emailLabel);
+			emailField = new JTextField();
+			emailField.setColumns(30);
+			add(emailField);
+			passwordLabel = new JLabel("Password");
+			add(passwordLabel);
+			passwordField = new JPasswordField();
+			passwordField.setColumns(30);
+			add(passwordField);
+			final JPanel panel = new JPanel();
+			cancel = new JButton("Cancel");
+			cancel.addActionListener(this);
+			panel.add(cancel);
+			okay = new JButton("OK");
+			okay.addActionListener(this);
+			panel.add(okay);
+			add(panel, "span 2, right");
+			setWikiAccountFieldsEnabled(false);
+			setChangePasswordEnabled(false);
+			pack();
+			final KeyAdapter keyListener = new KeyAdapter() {
+
+				@Override
+				public void keyReleased(final KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_ESCAPE) dispose();
+					else if (e.getKeyCode() == KeyEvent.VK_ENTER) actionPerformed(new ActionEvent(okay, -1, null));
+				}
+
+			};
+			userField.addKeyListener(keyListener);
+			realNameField.addKeyListener(keyListener);
+			emailField.addKeyListener(keyListener);
+			passwordField.addKeyListener(keyListener);
+			cancel.addKeyListener(keyListener);
+			okay.addKeyListener(keyListener);
+			setModal(true);
+			setVisible(true);
+		}
+
+		private void setWikiAccountFieldsEnabled(final boolean enabled) {
+			realNameLabel.setEnabled(enabled);
+			realNameField.setEnabled(enabled);
+			emailLabel.setEnabled(enabled);
+			emailField.setEnabled(enabled);
+			if (enabled) realNameField.requestFocusInWindow();
+		}
+
+		private void setChangePasswordEnabled(final boolean enabled) {
+			passwordLabel.setEnabled(enabled);
+			passwordField.setEnabled(enabled);
+			if (enabled) passwordField.requestFocusInWindow();
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (e.getSource() == cancel) {
+				dispose();
+				return;
+			} else if (e.getSource() == okay) {
+				final String name = userField.getText();
+				if ("".equals(name)) {
+					error("Please provide a Fiji Wiki account name!");
+					return;
+				}
+				if (validURL(PERSONAL_SITES_URL + name)) {
+					this.name = name;
+					dispose();
+					return;
+				}
+
+				// create a Fiji Wiki user if needed
+				final MediaWikiClient wiki = new MediaWikiClient(FIJI_WIKI_URL);
+				try {
+					if (!wiki.userExists(name)) {
+						if (realNameLabel.isEnabled()) {
+							final String realName = realNameField.getText();
+							final String email = emailField.getText();
+							if ("".equals(realName) || "".equals(email)) {
+								error("<html><p width=400>Please provide your name and email address to register an account on the Fiji Wiki!</p></html>");
+							} else {
+								if (wiki.createUser(name, realName, email, "Wants a personal site")) {
+									setWikiAccountFieldsEnabled(false);
+									setChangePasswordEnabled(true);
+									info("<html><p width=400>An email with the activation code was sent. " +
+											"Please provide your Fiji Wiki password after activating the account.</p></html>");
+								} else {
+									error("<html><p width=400>There was a problem creating the user account!</p></html>");
+								}
+							}
+						} else {
+							setWikiAccountFieldsEnabled(true);
+							error("<html><p width=400>Please provide your name and email address to register an account on the Fiji Wiki</p></html>");
+						}
+						return;
+					}
+
+					// initialize the personal update site
+					final String password = new String(passwordField.getPassword());
+					if (!wiki.login(name, password)) {
+						error("Could not log in (incorrect password?)");
+						return;
+					}
+					if (!wiki.changeUploadPassword(password)) {
+						error("Could not initialize the personal update site");
+						return;
+					}
+					wiki.logout();
+					this.name = name;
+					dispose();
+				} catch (IOException e2) {
+					updaterFrame.log.error(e2);
+					error("<html><p width=400>There was a problem contacting the Fiji Wiki: " + e2 + "</p></html>");
+					return;
+				}
+			}
+		}
+	}
+
 }

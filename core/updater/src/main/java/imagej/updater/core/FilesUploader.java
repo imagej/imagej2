@@ -36,7 +36,6 @@
 package imagej.updater.core;
 
 import imagej.updater.core.Conflicts.Conflict;
-import imagej.updater.core.FilesCollection.UpdateSite;
 import imagej.updater.util.Progress;
 import imagej.updater.util.StderrProgress;
 import imagej.updater.util.UpdaterUserInterface;
@@ -143,7 +142,7 @@ public class FilesUploader {
 	}
 
 	public String getDefaultUsername() {
-		String host = site.sshHost;
+		String host = site.getHost();
 		if (host.startsWith("sftp:")) host = host.substring(5);
 		final int at = host.indexOf('@');
 		if (at > 0) return host.substring(0, at);
@@ -153,7 +152,7 @@ public class FilesUploader {
 	}
 
 	public String getUploadHost() {
-		String host = site.sshHost;
+		String host = site.getHost();
 		if (uploader != null) {
 			final String protocol = uploader.getProtocol();
 			if (protocol != null && host.startsWith(protocol + ":")) {
@@ -164,7 +163,7 @@ public class FilesUploader {
 	}
 
 	public String getUploadDirectory() {
-		return site.uploadDirectory;
+		return site.getUploadDirectory();
 	}
 
 	protected class DbXmlFile implements Uploadable {
@@ -199,7 +198,7 @@ public class FilesUploader {
 
 	public void upload(final Progress progress) throws Exception {
 		if (uploader == null) throw new RuntimeException("No uploader set for " +
-			site.sshHost);
+			site.getHost());
 		if (!loggedIn) throw new RuntimeException("Not logged in!");
 		final Iterable<Conflict> conflicts = new Conflicts(files).getConflicts(true);
 		if (Conflicts.needsFeedback(conflicts)) {
@@ -353,12 +352,12 @@ public class FilesUploader {
 		try {
 			URLConnection connection;
 			try {
-				connection = files.util.openConnection(new URL(site.url + Util.XML_COMPRESSED));
+				connection = files.util.openConnection(new URL(site.getURL() + Util.XML_COMPRESSED));
 			}
 			catch (final FileNotFoundException e) {
 				files.log.error(e);
 				Thread.sleep(500);
-				connection = files.util.openConnection(new URL(site.url + Util.XML_COMPRESSED));
+				connection = files.util.openConnection(new URL(site.getURL() + Util.XML_COMPRESSED));
 			}
 			connection.setUseCaches(false);
 			final long lastModified = connection.getLastModified();
@@ -377,10 +376,10 @@ public class FilesUploader {
 	}
 
 	protected void verifyTimestamp() {
-		if (site.timestamp == 0) return;
+		if (site.getTimestamp() == 0) return;
 		final long lastModified = getCurrentLastModified();
 		if (!site.isLastModified(lastModified)) throw new RuntimeException(
-			"db.xml.gz was " + "changed in the meantime (was " + site.timestamp +
+			"db.xml.gz was " + "changed in the meantime (was " + site.getTimestamp() +
 				" but now is " + Util.timestamp(lastModified) + ")");
 	}
 

@@ -35,7 +35,6 @@
 
 package imagej.updater.core;
 
-import imagej.updater.core.FilesCollection.UpdateSite;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -148,11 +147,11 @@ public class XMLFileWriter {
 				attr.clear();
 				final UpdateSite site = files.getUpdateSite(name);
 				setAttribute(attr, "name", name);
-				setAttribute(attr, "url", site.url);
-				if (site.sshHost != null) setAttribute(attr, "ssh-host", site.sshHost);
-				if (site.uploadDirectory != null) setAttribute(attr,
-					"upload-directory", site.uploadDirectory);
-				setAttribute(attr, "timestamp", "" + site.timestamp);
+				setAttribute(attr, "url", site.getURL());
+				if (site.getHost() != null) setAttribute(attr, "ssh-host", site.getHost());
+				if (site.getUploadDirectory() != null) setAttribute(attr,
+					"upload-directory", site.getUploadDirectory());
+				setAttribute(attr, "timestamp", "" + site.getTimestamp());
 				writeSimpleTag("update-site", null, attr);
 			}
 		}
