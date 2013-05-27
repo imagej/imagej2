@@ -23,7 +23,7 @@ do
 	factorypath=$directory/.factorypath
 	test -f $factorypath || cat > $factorypath << EOF
 <factorypath>
-    <factorypathentry kind="VARJAR" id="M2_REPO/net/java/sezpoz/sezpoz/1.9/sezpoz-1.9.jar" enabled="true" runInBatchMode="true"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/net/java/sezpoz/sezpoz/1.9-imagej/sezpoz-1.9-imagej.jar" enabled="true" runInBatchMode="true"/>
 </factorypath>
 EOF
 	prefs=$directory/.settings/org.eclipse.jdt.core.prefs
