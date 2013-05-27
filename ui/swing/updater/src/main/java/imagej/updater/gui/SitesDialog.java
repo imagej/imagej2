@@ -348,7 +348,9 @@ public class SitesDialog extends JDialog implements ActionListener {
 		final String user = dialog.name;
 		if (user == null) return;
 		final String url = PERSONAL_SITES_URL + user;
+		final int row = sites.size();
 		add(new UpdateSite(makeUniqueSiteName("My Site"), url, "webdav:" + user, "", null, null, 0l));
+		activateUpdateSite(row);
 	}
 
 	private void add(final UpdateSite site) {
