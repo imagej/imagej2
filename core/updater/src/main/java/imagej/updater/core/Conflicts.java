@@ -35,6 +35,7 @@
 
 package imagej.updater.core;
 
+import imagej.updater.core.Conflicts.Conflict.Severity;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection.DependencyMap;
@@ -230,7 +231,7 @@ public class Conflicts {
 			final FilesCollection installReasons,
 			final FilesCollection obsoleteReasons)
 	{
-		return new Conflict(file, "Required by \n\n" + installReasons +
+		return new Conflict(Severity.ERROR, file, "Required by \n\n" + installReasons +
 			"\nbut made obsolete by\n\n" + obsoleteReasons, ignoreResolution(
 			"Ignore this issue", file), actionResolution("Do not update " +
 			installReasons, installReasons));
@@ -239,7 +240,7 @@ public class Conflicts {
 	protected Conflict needUninstall(final FileObject file,
 		final FilesCollection obsoleteReasons)
 	{
-		return new Conflict(file, "Locally modified but made obsolete by\n\n" +
+		return new Conflict(Severity.ERROR, file, "Locally modified but made obsolete by\n\n" +
 			obsoleteReasons, actionResolution("Uninstall " + file, file,
 			Action.UNINSTALL), actionResolution("Do not update " + obsoleteReasons,
 			obsoleteReasons));
@@ -249,7 +250,7 @@ public class Conflicts {
 		final FilesCollection installReasons)
 	{
 		final boolean toInstall = file.getStatus().isValid(Action.INSTALL);
-		return new Conflict(false, file,
+		return new Conflict(Severity.WARNING, file,
 			"Locally modified and the Updater cannot determine its " +
 				"status. A newer version might be required by\n\n" + installReasons,
 			ignoreResolution("Keep the local version", file), actionResolution(
@@ -313,7 +314,7 @@ public class Conflicts {
 	}
 
 	protected Conflict timestampChanged(final FileObject file) {
-		return new Conflict(file, "The timestamp of " + file +
+		return new Conflict(Severity.ERROR, file, "The timestamp of " + file +
 			" changed in the meantime", new Resolution(
 			"Recalculate checksum and dependencies of " + file)
 		{
@@ -350,7 +351,7 @@ public class Conflicts {
 					other.removeDependency(file.getFilename());
 			}
 		});
-		return new Conflict(true, localOnly || obsolete, file, (localOnly
+		return new Conflict(localOnly || obsolete ? Severity.CRITICAL_ERROR : Severity.ERROR, file, (localOnly
 			? "Not uploaded yet" : "Is " +
 				(notInstalled ? "not installed" : (obsolete ? "marked obsolete"
 					: "locally modified"))) +
@@ -382,7 +383,7 @@ public class Conflicts {
 				}
 			});
 		}
-		return new Conflict(obsoleted, "The file " + obsoleting.getFilename() +
+		return new Conflict(Severity.ERROR, obsoleted, "The file " + obsoleting.getFilename() +
 			" overrides the file " + obsoleted.getFilename() + ", but " +
 			obsoleted.getFilename() + " was not removed", resolutions
 			.toArray(new Resolution[resolutions.size()]));
@@ -391,7 +392,7 @@ public class Conflicts {
 	protected Conflict dependencyNotUploaded(final FileObject file,
 		final String dependency)
 	{
-		return new Conflict(file, "Depends on " + dependency +
+		return new Conflict(Severity.ERROR, file, "Depends on " + dependency +
 			" which was not uploaded.", dependencyResolution("Break the dependency",
 			file, dependency, null));
 	}
@@ -410,13 +411,13 @@ public class Conflicts {
 				dependency + " with " + toUpload, null, dependency, toUpload
 				.getFilename()));
 		}
-		return new Conflict(true, file, "Depends on " + dependency +
+		return new Conflict(Severity.ERROR, file, "Depends on " + dependency +
 			" which is about to be removed.", resolutions
 			.toArray(new Resolution[resolutions.size()]));
 	}
 
 	protected Conflict conflictingVersions(final FileObject file, final File otherFile, final String otherFileName) {
-		return new Conflict(true, file, "Conflicting version found: " + otherFileName,
+		return new Conflict(Severity.ERROR, file, "Conflicting version found: " + otherFileName,
 				deleteFile("Delete " + otherFileName + " (dangerous!)", otherFile),
 				ignoreResolution("Ignore the problem (also dangerous!)", file));
 	}
