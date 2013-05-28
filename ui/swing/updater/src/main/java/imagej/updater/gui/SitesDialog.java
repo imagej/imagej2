@@ -198,23 +198,25 @@ public class SitesDialog extends JDialog implements ActionListener {
 				if (column == 0) {
 					site.setActive(Boolean.TRUE.equals(value));
 				} else {
-					if (isEditing()) return;
 					final String string = (String)value;
 					// if the name changed, or if we auto-fill the name from the URL
 					switch (column) {
 					case 1:
-						final String name = getUpdateSiteName(row);
+						final String name = site.getName();
 						if (name.equals(string)) return;
 						files.renameUpdateSite(name, string);
 						sites.get(row).setName(string);
 						break;
 					case 2:
+						if (site.getURL().equals(string)) return;
 						site.setURL(string);
 						break;
 					case 3:
+						if (site.getHost().equals(string)) return;
 						site.setHost(string);
 						break;
 					case 4:
+						if (site.getUploadDirectory().equals(string)) return;
 						site.setUploadDirectory(string);
 						break;
 					default:
