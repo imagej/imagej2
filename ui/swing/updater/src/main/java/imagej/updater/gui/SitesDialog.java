@@ -212,11 +212,11 @@ public class SitesDialog extends JDialog implements ActionListener {
 						site.setURL(string);
 						break;
 					case 3:
-						if (site.getHost().equals(string)) return;
+						if (string.equals(site.getHost())) return;
 						site.setHost(string);
 						break;
 					case 4:
-						if (site.getUploadDirectory().equals(string)) return;
+						if (string.equals(site.getUploadDirectory())) return;
 						site.setUploadDirectory(string);
 						break;
 					default:
