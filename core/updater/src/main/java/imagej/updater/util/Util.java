@@ -459,6 +459,52 @@ public class Util {
 		}
 	}
 
+	private static Set<File> protectedFiles;
+	private final static Pattern majorVersionPattern = Pattern.compile("([0-9]+).*");
+
+	/**
+	 * Determines whether the ImageJ root directory is in an area protected by the OS.
+	 * 
+	 * <p>On Windows Vista and later, C:\Program Files is a protected location.
+	 * 
+	 * @param ijRoot the root directory to test
+	 * @return whether the directory is protected by the OS
+	 */
+	public static boolean isProtectedLocation(final File ijRoot) {
+		if (getPlatform().startsWith("win")) {
+			final String osVersion = System.getProperty("os.version");
+			if (osVersion == null) return false;
+			final Matcher matcher = majorVersionPattern.matcher(osVersion);
+			/*
+			 * Vista is 6.0, Server 2008, too, to keep it confusing, Server 2008
+			 * R2 is 6.1, to keep it more confusing, Windows 7 is 6.1 (just to
+			 * keep it even more confusing). See:
+			 * http://msdn.microsoft.com/en-us/library/windows/desktop/ms724832%28v=vs.85%29.aspx
+			 */
+			if (!matcher.matches() || Integer.parseInt(matcher.group(1)) < 6) return false;
+			try {
+				if (protectedFiles == null) {
+					protectedFiles = new HashSet<File>();
+					for (final String key : new String[] {
+									"PROGRAMFILES", "PROGRAMFILES(X86)", "SystemRoot", "ALLUSERSPROFILE"
+					}) {
+						final String path = System.getenv(key);
+						if (path != null) protectedFiles.add(new File(path).getCanonicalFile());
+					}
+				}
+				for (File dir = ijRoot.getCanonicalFile(); dir != null; dir = dir.getParentFile()) {
+					if (protectedFiles.contains(dir)) {
+						protectedFiles.add(ijRoot);
+						return true;
+					}
+				}
+			} catch (final IOException e) {
+				e.printStackTrace(); // but ignore otherwise
+			}
+		}
+		return false;
+	}
+
 	public static boolean patchInfoPList(final File infoPList, final String executable)
 		throws IOException
 	{
