@@ -134,6 +134,7 @@ public class ImageJUpdater implements UpdaterUI {
 
 		try {
 			String warnings = files.downloadIndexAndChecksum(progress);
+			main.checkWritable();
 			main.addCustomViewOptions();
 			if (!warnings.equals("")) main.warn(warnings);
 			final List<Conflict> conflicts = files.getConflicts();
