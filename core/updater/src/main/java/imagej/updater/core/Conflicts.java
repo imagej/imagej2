@@ -215,6 +215,9 @@ public class Conflicts {
 				.get(file)));
 
 		if (automatic.size() > 0) {
+			for (final FileObject file : automatic) {
+				file.setFirstValidAction(files, Action.UPDATE, Action.INSTALL);
+			}
 			conflicts
 				.add(new Notice(
 					"There are files which need to be updated/installed since other files depend on them:\n"
