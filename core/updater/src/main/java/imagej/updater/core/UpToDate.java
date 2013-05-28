@@ -66,7 +66,8 @@ public class UpToDate {
 
 	public enum Result {
 		UP_TO_DATE, UPDATEABLE, PROXY_NEEDS_AUTHENTICATION, OFFLINE, REMIND_LATER,
-			CHECK_TURNED_OFF, READ_ONLY, UPDATES_MANAGED_DIFFERENTLY /* e.g. Debian packaging */, DEVELOPER
+		CHECK_TURNED_OFF, READ_ONLY, UPDATES_MANAGED_DIFFERENTLY /* e.g. Debian packaging */, DEVELOPER,
+		PROTECTED_LOCATION /* e.g. C:\Program Files on Windows Vista and later */
 	}
 
 	private final static String KEY = "latestNag";
@@ -102,6 +103,7 @@ public class UpToDate {
 		if (neverRemind()) return Result.CHECK_TURNED_OFF;
 		if (shouldRemindLater()) return Result.REMIND_LATER;
 		if (!canWrite(ijRoot)) return Result.READ_ONLY;
+		if (Util.isProtectedLocation(ijRoot)) return Result.PROTECTED_LOCATION;
 		if (isDeveloper()) return Result.DEVELOPER;
 		if (!haveNetworkConnection()) return Result.OFFLINE;
 		final FilesCollection plugins = new FilesCollection(ijRoot);
