@@ -42,6 +42,7 @@ import imagej.data.autoscale.DataRange;
 import imagej.data.command.InteractiveImageCommand;
 import imagej.data.display.DatasetView;
 import imagej.menu.MenuConstants;
+import imagej.widget.Button;
 import imagej.widget.NumberWidget;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.type.numeric.RealType;
@@ -99,6 +100,9 @@ public class BrightnessContrast extends InteractiveImageCommand {
 	@Parameter(callback = "brightnessContrastChanged", persist = false,
 		style = NumberWidget.SCROLL_BAR_STYLE, min = S_MIN, max = S_MAX)
 	private int contrast;
+
+	@Parameter(label = "Default", callback = "setDefault")
+	private Button defaultButton;
 
 	/** The minimum and maximum values of the data itself. */
 	private double dataMin, dataMax;
@@ -187,6 +191,13 @@ public class BrightnessContrast extends InteractiveImageCommand {
 	/** Called when brightness or contrast changes. Updates min and max. */
 	protected void brightnessContrastChanged() {
 		computeMinMax();
+	}
+
+	protected void setDefault() {
+		brightness = (SLIDER_MIN + SLIDER_MAX) / 2;
+		contrast = (SLIDER_MIN + SLIDER_MAX) / 2;
+		brightnessContrastChanged();
+		updateDisplay();
 	}
 
 	// -- Helper methods --
