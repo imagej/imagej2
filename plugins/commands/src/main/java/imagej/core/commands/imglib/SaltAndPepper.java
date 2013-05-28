@@ -41,6 +41,7 @@ import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
 import imagej.data.autoscale.AutoscaleService;
+import imagej.data.autoscale.DataRange;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
@@ -52,7 +53,6 @@ import java.util.Random;
 import net.imglib2.RandomAccess;
 import net.imglib2.algorithm.stats.ComputeMinMax;
 import net.imglib2.img.Img;
-import net.imglib2.ops.util.Tuple2;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
@@ -170,10 +170,10 @@ public class SaltAndPepper extends ContextCommand {
 		position = new long[inputImage.numDimensions()];
 		accessor = inputImage.randomAccess();
 		if (autoCalcMinMax) {
-			Tuple2<Double, Double> range =
+			DataRange range =
 				autoscaleService.getDefaultIntervalRange(inputImage);
-			pepperValue = range.get1();
-			saltValue = range.get2();
+			pepperValue = range.getMin();
+			saltValue = range.getMax();
 			@SuppressWarnings({"unchecked","rawtypes"})
 			final ComputeMinMax<? extends RealType<?>> cmm =
 					new ComputeMinMax(inputImage);

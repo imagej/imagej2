@@ -38,7 +38,6 @@ package imagej.data.autoscale;
 import net.imglib2.IterableInterval;
 import net.imglib2.algorithm.histogram.Histogram1d;
 import net.imglib2.algorithm.histogram.Real1dBinMapper;
-import net.imglib2.ops.util.Tuple2;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.plugin.Plugin;
@@ -124,13 +123,13 @@ public class ConfidenceIntervalAutoscaleMethod<T extends RealType<T>> extends
 	// -- AutoscaleMethod methods --
 
 	@Override
-	public Tuple2<Double, Double> getRange(IterableInterval<T> interval) {
+	public DataRange getRange(IterableInterval<T> interval) {
 		// pass one through data
 		AutoscaleService service = getContext().getService(AutoscaleService.class);
-		Tuple2<Double, Double> range = service.getDefaultIntervalRange(interval);
+		DataRange range = service.getDefaultIntervalRange(interval);
 		// pass two through data
 		Real1dBinMapper<T> mapper =
-			new Real1dBinMapper<T>(range.get1(), range.get2(), 1000, false);
+			new Real1dBinMapper<T>(range.getMin(), range.getMax(), 1000, false);
 		Histogram1d<T> histogram = new Histogram1d<T>(mapper);
 		histogram.countData(interval);
 		// calc some sizes
@@ -163,7 +162,7 @@ public class ConfidenceIntervalAutoscaleMethod<T extends RealType<T>> extends
 		double min = approxMin.getRealDouble();
 		double max = approxMax.getRealDouble();
 		// return them
-		return new Tuple2<Double, Double>(min, max);
+		return new DataRange(min, max);
 	}
 
 }

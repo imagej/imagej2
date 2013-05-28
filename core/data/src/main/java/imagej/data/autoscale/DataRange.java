@@ -35,60 +35,41 @@
 
 package imagej.data.autoscale;
 
-import imagej.plugin.SingletonService;
-
-import java.util.List;
-import java.util.Map;
-
-import net.imglib2.IterableInterval;
-import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.type.numeric.RealType;
 
 /**
- * Interface for service that works with autoscale algorithms.
- * 
  * @author Barry DeZonia
- * @see AutoscaleMethod
  */
-@SuppressWarnings("rawtypes")
-public interface AutoscaleService extends SingletonService<AutoscaleMethod> {
+public class DataRange {
 
-	/** Returns a map of available {@link AutoscaleMethod}s, indexed by name. */
-	Map<String, AutoscaleMethod> getAutoscaleMethods();
+	// -- instance variables --
 
-	/**
-	 * Returns the names of all available {@link AutoscaleMethod}s, ordered by
-	 * priority.
-	 */
-	List<String> getAutoscaleMethodNames();
+	private final double min, max;
+
+	// -- DataRange methods --
 
 	/**
-	 * Returns the {@link AutoscaleMethod} associated with the given name.
-	 */
-	AutoscaleMethod getAutoscaleMethod(String name);
-
-	/**
-	 * Returns the default autoscaling method.
-	 */
-	AutoscaleMethod getDefaultAutoscaleMethod();
-
-	// TODO - remove this method?
-
-	/**
-	 * Calculates the range of interest from the data contained in the given
-	 * {@link IterableInterval} using the default autoscale method.
+	 * Constructs a data range given two end points of an interval. Order of
+	 * points is unimportant.
 	 * 
-	 * @return The calculated range of values.
+	 * @param p1 One end point of the data range.
+	 * @param p2 The other end point of the data range.
 	 */
-	DataRange getDefaultIntervalRange(
-		IterableInterval<? extends RealType<?>> interval);
+	public DataRange(double p1, double p2) {
+		min = Math.min(p1, p2);
+		max = Math.max(p1, p2);
+	}
 
 	/**
-	 * Calculates the range of interest from the data contained in the given
-	 * {@link RandomAccessibleInterval} using the default autoscale method.
-	 * 
-	 * @return The calculated range of values.
+	 * Returns the smallest end point of the data range.
 	 */
-	DataRange getDefaultRandomAccessRange(
-		RandomAccessibleInterval<? extends RealType<?>> interval);
+	public double getMin() {
+		return min;
+	}
+
+	/**
+	 * Returns the largest end point of the data range.
+	 */
+	public double getMax() {
+		return max;
+	}
 }

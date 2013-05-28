@@ -40,6 +40,7 @@ import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.autoscale.AutoscaleService;
+import imagej.data.autoscale.DataRange;
 import imagej.data.display.event.DataViewUpdatedEvent;
 import imagej.data.display.event.LUTsChangedEvent;
 import imagej.data.event.DatasetRGBChangedEvent;
@@ -61,7 +62,6 @@ import net.imglib2.img.ImgPlus;
 import net.imglib2.img.cell.AbstractCellImg;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import net.imglib2.ops.util.Tuple2;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
 
@@ -160,10 +160,9 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			RandomAccessibleInterval<? extends RealType<?>> interval = channelData(getData(), c);
 			interval = xyPlane(interval);
 			AutoscaleService service = getContext().getService(AutoscaleService.class);
-			Tuple2<Double, Double> result =
-				service.getDefaultRandomAccessRange(interval);
-			min = result.get1();
-			max = result.get2();
+			DataRange result = service.getDefaultRandomAccessRange(interval);
+			min = result.getMin();
+			max = result.getMax();
 			// cache min/max in metadata for next time
 			imgPlus.setChannelMinimum(c, min);
 			imgPlus.setChannelMaximum(c, max);

@@ -37,7 +37,6 @@ package imagej.data.autoscale;
 
 import imagej.plugin.SingletonPlugin;
 import net.imglib2.IterableInterval;
-import net.imglib2.ops.util.Tuple2;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.Contextual;
@@ -52,11 +51,12 @@ import org.scijava.plugin.HasPluginInfo;
 public interface AutoscaleMethod<T extends RealType<T>> extends Contextual, Prioritized,
 	HasPluginInfo, SingletonPlugin
 {
+	
 	/**
 	 * Calculates the range of interest from the data contained in the given
 	 * {@link IterableInterval}.
 	 * 
-	 * @return The calculated range of values stored (min,max) in a Tuple2
+	 * @return The calculated range of values.
 	 */
-	Tuple2<Double, Double> getRange(IterableInterval<T> interval);
+	DataRange getRange(IterableInterval<T> interval);
 }

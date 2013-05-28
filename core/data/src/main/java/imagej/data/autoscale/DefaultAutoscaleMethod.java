@@ -37,7 +37,6 @@ package imagej.data.autoscale;
 
 import net.imglib2.IterableInterval;
 import net.imglib2.algorithm.stats.ComputeMinMax;
-import net.imglib2.ops.util.Tuple2;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.plugin.Plugin;
@@ -52,13 +51,13 @@ import org.scijava.plugin.Plugin;
 public class DefaultAutoscaleMethod<T extends RealType<T>> extends AbstractAutoscaleMethod<T> {
 
 	@Override
-	public Tuple2<Double, Double> getRange(IterableInterval<T> interval)
+	public DataRange getRange(IterableInterval<T> interval)
 	{
 		ComputeMinMax<T> minmax = new ComputeMinMax<T>(interval);
 		minmax.process();
 		double min = minmax.getMin().getRealDouble();
 		double max = minmax.getMax().getRealDouble();
-		return new Tuple2<Double, Double>(min, max);
+		return new DataRange(min, max);
 	}
 
 }
