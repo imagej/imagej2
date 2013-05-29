@@ -124,6 +124,7 @@ public class SaveAsImage extends ContextCommand {
 
 		if (overwrite) {
 			final ImgSaver imageSaver = new ImgSaver();
+			imageSaver.setContext(getContext());
 			boolean saveImage = true;
 			try {
 				imageSaver.addStatusListener(new StatusDispatcher(statusService));
