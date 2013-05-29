@@ -52,6 +52,7 @@ import imagej.updater.core.UploaderService;
 import imagej.updater.util.Progress;
 import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.UpdaterUserInterface;
+import imagej.updater.util.Util;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -799,6 +800,11 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 
 	// checkWritable() is guaranteed to be called after Checksummer ran
 	public void checkWritable() {
+		if (Util.isProtectedLocation(files.prefix(""))) {
+			error("<html><p width=400>Windows' security model for the directory '" + files.prefix("") + "' is incompatible with the ImageJ updater.</p>" +
+				"<p>Please install ImageJ into a user-writable directory, e.g. onto the Desktop.</p></html>");
+			return;
+		}
 		String list = null;
 		for (final FileObject object : files) {
 			final File file = files.prefix(object);
