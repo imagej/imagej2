@@ -244,7 +244,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		}
 		if (map.size() == 0) return null;
 		final StringBuilder builder = new StringBuilder();
-		builder.append("Missing uploaders:\n");
+		builder.append(prefixUpdate("").isDirectory() ? "Uploads via these protocols require a restart" : "Missing uploaders:\n");
 		for (final Map.Entry<String, Set<String>> entry : map.entrySet()) {
 			final String list = Arrays.toString(entry.getValue().toArray());
 			builder.append("'").append(entry.getKey()).append("': ").append(list).append("\n");
