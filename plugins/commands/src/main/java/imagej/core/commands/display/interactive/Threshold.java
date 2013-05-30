@@ -154,10 +154,10 @@ public class Threshold extends InteractiveImageCommand {
 	private boolean nanBackground;
 
 	@Parameter(label = "Minimum", callback = "rangeChanged", persist = false)
-	private Double minimum;
+	private double minimum;
 
 	@Parameter(label = "Maximum", callback = "rangeChanged", persist = false)
-	private Double maximum;
+	private double maximum;
 
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
