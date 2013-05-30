@@ -35,6 +35,7 @@
 
 package imagej.ui.swing.tools.overlay;
 
+import imagej.data.Position;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
@@ -136,10 +137,10 @@ public class DefaultJHotDrawAdapter extends
 			final DataBufferByte db = (DataBufferByte) dbuncast;
 			final byte[] bankData = db.getData();
 			final RealRandomAccess<BitType> ra = roi.realRandomAccess();
-			for (int i = 2; i < ra.numDimensions(); i++) {
-				final long position =
-					overlay.getPlanePosition().getLongPosition(i - 2);
-				ra.setPosition(position, i);
+			final Position planePos = overlay.getPlanePosition();
+			for (int i = 0; i < planePos.numDimensions(); i++) {
+				final long position = planePos.getLongPosition(i);
+				ra.setPosition(position, i + 2);
 			}
 			int index = 0;
 			for (int j = 0; j < h; j++) {
