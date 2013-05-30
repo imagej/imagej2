@@ -36,15 +36,15 @@
 package imagej.core.commands.display.interactive;
 
 import imagej.command.Command;
-import imagej.data.Dataset;
 import imagej.data.autoscale.AutoscaleService;
 import imagej.data.autoscale.DataRange;
 import imagej.data.command.InteractiveImageCommand;
 import imagej.data.display.DatasetView;
 import imagej.menu.MenuConstants;
 import imagej.widget.Button;
+import imagej.widget.ChoiceWidget;
 import imagej.widget.NumberWidget;
-import net.imglib2.img.ImgPlus;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
@@ -103,6 +103,10 @@ public class BrightnessContrast extends InteractiveImageCommand {
 
 	@Parameter(label = "Default", callback = "setDefault")
 	private Button defaultButton;
+	
+	@Parameter(label = "Range:", style = ChoiceWidget.RADIO_BUTTON_HORIZONTAL_STYLE, choices = 
+	  { "Plane", "Global" }, callback = "viewChanged")
+	String rangeChoice = "Plane";
 
 	/** The minimum and maximum values of the data itself. */
 	private double dataMin, dataMax;
@@ -172,11 +176,13 @@ public class BrightnessContrast extends InteractiveImageCommand {
 	// -- Callback methods --
 
 	/** Called when view changes. Updates everything to match. */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void viewChanged() {
-		final Dataset dataset = view.getData();
-		final ImgPlus img = dataset.getImgPlus();
-		computeDataMinMax(img);
+		RandomAccessibleInterval<? extends RealType<?>> interval;
+		
+		if (rangeChoice.equals("Plane")) interval = view.xyPlane();
+		else interval = view.getData().getImgPlus();
+		
+		computeDataMinMax(interval);
 		computeInitialMinMax();
 		if (Double.isNaN(min)) min = initialMin;
 		if (Double.isNaN(max)) max = initialMax;
@@ -202,14 +208,14 @@ public class BrightnessContrast extends InteractiveImageCommand {
 
 	// -- Helper methods --
 
-	private <T extends RealType<T>> void computeDataMinMax(final ImgPlus<T> img) {
+	private void computeDataMinMax(final RandomAccessibleInterval<? extends RealType<?>> img) {
 		// FIXME: Reconcile this with DefaultDatasetView.autoscale(int). There is
 		// no reason to hardcode the usage of ComputeMinMax twice. Rather, there
 		// should be a single entry point for obtain the channel min/maxes from
 		// the metadata, and if they aren't there, then compute them. Probably
 		// Dataset (not DatasetView) is a good place for it, because it is metadata
 		// independent of the visualization settings.
-		DataRange range = autoscaleService.getDefaultIntervalRange(img);
+		DataRange range = autoscaleService.getDefaultRandomAccessRange(img);
 		dataMin = range.getMin();
 		dataMax = range.getMax();
 		log.debug("computeDataMinMax: dataMin=" + dataMin + ", dataMax=" + dataMax);
