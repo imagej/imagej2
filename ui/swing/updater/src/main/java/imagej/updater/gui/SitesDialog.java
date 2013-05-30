@@ -309,10 +309,9 @@ public class SitesDialog extends JDialog implements ActionListener {
 				sites.add(site);
 			} else {
 				final UpdateSite listed = sites.get(index.intValue());
-				listed.setActive(true);
-				listed.setName(site.getName());
-				listed.setHost(site.getHost());
-				listed.setUploadDirectory(site.getUploadDirectory());
+				site.setDescription(listed.getDescription());
+				site.setMaintainer(listed.getMaintainer());
+				sites.set(index.intValue(), site);
 			}
 		}
 
