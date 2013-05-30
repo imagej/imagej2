@@ -323,7 +323,7 @@ public class Threshold extends InteractiveImageCommand {
 		double max = (Double) getInput("maximum");
 		ThresholdOverlay overlay = getThreshold();
 		overlay.setRange(min, max);
-		overlay.update();
+		display.update();
 	}
 
 	protected void stackHistogram() {
