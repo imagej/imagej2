@@ -148,7 +148,7 @@ public class Threshold extends InteractiveImageCommand {
 
 	@Parameter(label = "Stack Histogram", callback = "stackHistogram",
 		persist = false)
-	private boolean stackHistogram = true;
+	private boolean stackHistogram = false;
 
 	@Parameter(label = "Nan Background", persist = false)
 	private boolean nanBackground;
@@ -176,8 +176,6 @@ public class Threshold extends InteractiveImageCommand {
 	private long[] fullHistogram;
 
 	private long[] planeHistogram;
-
-	private boolean invalidPlaneHist = true;
 
 	private double dataMin, dataMax;
 
@@ -211,14 +209,13 @@ public class Threshold extends InteractiveImageCommand {
 
 		calcDataRange();
 
-		fullHistogram = buildHistogram(true, null);
+		fullHistogram = null;
 		planeHistogram = null;
-		invalidPlaneHist = true;
 
 		if (!alreadyHadOne) {
-			// default the thresh to something sensible: 85/170 is IJ1's default
-			double min = 85 * (dataMax - dataMin) / 255;
-			double max = 170 * (dataMax - dataMin) / 255;
+			// default the thresh to something sensible: 1/3 : 2/3 is IJ1's default
+			double min = 1 * (dataMax - dataMin) / 3;
+			double max = 2 * (dataMax - dataMin) / 3;
 			overlay.setRange(min, max);
 		}
 
@@ -227,20 +224,7 @@ public class Threshold extends InteractiveImageCommand {
 		// However the current number widget code cannot handle sliders/scrolls on
 		// doubles but just ints. Make that widget allow doubles and then change the
 		// the widget style for min and max here below.
-
-		// set min range widget
-		final MutableModuleItem<Double> minItem =
-			getInfo().getMutableInput("minimum", Double.class);
-		minItem.setMinimumValue(dataMin);
-		minItem.setMaximumValue(dataMax);
-		minItem.setValue(this, overlay.getRangeMin());
-
-		// set max range widget
-		final MutableModuleItem<Double> maxItem =
-			getInfo().getMutableInput("maximum", Double.class);
-		maxItem.setMinimumValue(dataMin);
-		maxItem.setMaximumValue(dataMax);
-		maxItem.setValue(this, overlay.getRangeMax());
+		setMinMaxFieldRanges(overlay.getRangeMin(), overlay.getRangeMax());
 
 		// initialize the colors of the overlay
 		colorize(overlay);
@@ -335,7 +319,11 @@ public class Threshold extends InteractiveImageCommand {
 	@EventHandler
 	protected void onEvent(AxisPositionEvent evt) {
 		if (evt.getDisplay() != display) return;
-		invalidPlaneHist = true;
+		if (!stackHistogram) {
+			calcDataRange();
+			setMinMaxFieldRanges(dataMin, dataMax);
+			planeHistogram = null;
+		}
 	}
 
 	// -- helpers --
@@ -347,10 +335,14 @@ public class Threshold extends InteractiveImageCommand {
 	}
 
 	private long[] histogram() {
-		if (stackHistogram) return fullHistogram;
-		if (invalidPlaneHist) {
-			planeHistogram = buildHistogram(false, planeHistogram);
-			invalidPlaneHist = false;
+		if (stackHistogram) {
+			if (fullHistogram == null) {
+				fullHistogram = buildHistogram(true, null);
+			}
+			return fullHistogram;
+		}
+		if (planeHistogram == null) {
+			planeHistogram = buildHistogram(false, null);
 		}
 		return planeHistogram;
 	}
@@ -379,14 +371,14 @@ public class Threshold extends InteractiveImageCommand {
 		methodNameInput.setChoices(threshSrv.getThresholdMethodNames());
 	}
 
-	// calcs the data range of the whole dataset
+	// calcs the data range of some of the dataset
 
 	private void calcDataRange() {
-		Dataset ds = imgDispSrv.getActiveDataset(display);
+		IterableInterval<? extends RealType<?>> data =
+			determineDataInterval(stackHistogram);
 		dataMin = Double.POSITIVE_INFINITY;
 		dataMax = Double.NEGATIVE_INFINITY;
-		ImgPlus<? extends RealType<?>> imgPlus = ds.getImgPlus();
-		Cursor<? extends RealType<?>> cursor = imgPlus.cursor();
+		Cursor<? extends RealType<?>> cursor = data.cursor();
 		while (cursor.hasNext()) {
 			cursor.fwd();
 			double value = cursor.get().getRealDouble();
@@ -406,6 +398,32 @@ public class Threshold extends InteractiveImageCommand {
 	}
 
 	private long[] buildHistogramFromViews(boolean allData, long[] existingHist) {
+		final long[] histogram;
+		IterableInterval<? extends RealType<?>> data =
+			determineDataInterval(allData);
+		if (existingHist == null) {
+			// +1 needed for int but maybe not float
+			histogram = allocateHistogram(dataMax - dataMin + 1);
+		}
+		else {
+			zeroOut(existingHist);
+			histogram = existingHist;
+		}
+		Cursor<? extends RealType<?>> cursor = data.cursor();
+		while (cursor.hasNext()) {
+			double value = cursor.next().getRealDouble();
+			double relPos = (value - dataMin) / (dataMax - dataMin);
+			if (relPos < 0) relPos = 0;
+			if (relPos > 1) relPos = 1;
+			int binNumber = (int) Math.round((histogram.length - 1) * relPos);
+			histogram[binNumber]++;
+		}
+		return histogram;
+	}
+
+	private IterableInterval<? extends RealType<?>> determineDataInterval(
+		boolean allData)
+	{
 		Dataset ds = imgDispSrv.getActiveDataset(display);
 		long[] min = new long[ds.numDimensions()];
 		long[] max = min.clone();
@@ -425,24 +443,7 @@ public class Threshold extends InteractiveImageCommand {
 		}
 		Img<? extends RealType<?>> img = ds.getImgPlus();
 		IntervalView<? extends RealType<?>> view = Views.interval(img, min, max);
-		IterableInterval<? extends RealType<?>> data = Views.iterable(view);
-		final long[] histogram;
-		if (existingHist == null) {
-			// +1 needed for int but maybe not float
-			histogram = allocateHistogram(dataMax - dataMin + 1);
-		}
-		else {
-			zeroOut(existingHist);
-			histogram = existingHist;
-		}
-		Cursor<? extends RealType<?>> cursor = data.cursor();
-		while (cursor.hasNext()) {
-			double value = cursor.next().getRealDouble();
-			double relPos = (value - dataMin) / (dataMax - dataMin);
-			int binNumber = (int) Math.round((histogram.length - 1) * relPos);
-			histogram[binNumber]++;
-		}
-		return histogram;
+		return Views.iterable(view);
 	}
 
 	@SuppressWarnings("unused")
@@ -468,6 +469,8 @@ public class Threshold extends InteractiveImageCommand {
 			accessor.setPosition(pos);
 			double value = accessor.get().getRealDouble();
 			double relPos = (value - dataMin) / (dataMax - dataMin);
+			if (relPos < 0) relPos = 0;
+			if (relPos > 1) relPos = 1;
 			int binNumber = (int) Math.round((histogram.length - 1) * relPos);
 			histogram[binNumber]++;
 		}
@@ -510,5 +513,23 @@ public class Threshold extends InteractiveImageCommand {
 		for (int i = 0; i < histogram.length; i++) {
 			histogram[i] = 0;
 		}
+	}
+
+	private void setMinMaxFieldRanges(double min, double max) {
+		// set min range widget
+		final MutableModuleItem<Double> minItem =
+			getInfo().getMutableInput("minimum", Double.class);
+		minItem.setMinimumValue(dataMin);
+		minItem.setMaximumValue(dataMax);
+		if (min < dataMin) min = dataMin;
+		minItem.setValue(this, min);
+
+		// set max range widget
+		final MutableModuleItem<Double> maxItem =
+			getInfo().getMutableInput("maximum", Double.class);
+		maxItem.setMinimumValue(dataMin);
+		maxItem.setMaximumValue(dataMax);
+		if (max > dataMax) max = dataMax;
+		maxItem.setValue(this, max);
 	}
 }
