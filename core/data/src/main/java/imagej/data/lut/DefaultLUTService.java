@@ -175,28 +175,23 @@ public class DefaultLUTService extends AbstractService implements LUTService {
 		ColorTable lut = null;
 		BufferedInputStream bufferedStr = new BufferedInputStream(is);
 		bufferedStr.mark(length);
-		if (length > 768) {
+		if (lut == null && length > 768) {
 			// attempt to read NIH Image LUT
-			if (lut == null) {
-				lut = nihImageBinaryLUT(bufferedStr);
-				bufferedStr.reset();
-			}
+			lut = nihImageBinaryLUT(bufferedStr);
+			bufferedStr.reset();
 		}
-		if (length == 0 || length == 768 || length == 970) {
+		if (lut == null && (length == 0 || length == 768 || length == 970)) {
 			// attempt to read raw LUT
-			if (lut == null) {
-				lut = legacyBinaryLUT(bufferedStr);
-				bufferedStr.reset();
-			}
+			lut = legacyBinaryLUT(bufferedStr);
+			bufferedStr.reset();
 		}
-		if (length > 768) {
-			if (lut == null) {
-				lut = legacyTextLUT(bufferedStr);
-				bufferedStr.reset();
-			}
+		if (lut == null && length > 768) {
+			lut = legacyTextLUT(bufferedStr);
+			bufferedStr.reset();
 		}
 		if (lut == null) {
 			lut = modernLUT(bufferedStr);
+			// bufferedStr.reset();
 		}
 		is.close();
 		return lut;
