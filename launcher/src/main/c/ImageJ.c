@@ -4060,14 +4060,14 @@ static void maybe_write_desktop_file(void)
 
 	if (debug)
 		error("Writing '%s'", path->buffer);
-	write_desktop_file(path->buffer, title, executable_path->buffer, icon_path->buffer, wm_class);
+	write_desktop_file(path->buffer, title, executable_path->buffer, icon_path ? icon_path->buffer : NULL, wm_class);
 	string_setf(path, "%s/.local/share/applications", getenv("HOME"));
 	if (dir_exists(path->buffer)) {
 		string_addf(path, "/%s.desktop", name);
 		if (!file_exists(path->buffer)) {
 			if (debug)
 				error("Writing '%s'", path->buffer);
-			write_desktop_file(path->buffer, title, executable_path->buffer, icon_path->buffer, wm_class);
+			write_desktop_file(path->buffer, title, executable_path->buffer, icon_path ? icon_path->buffer : NULL, wm_class);
 		}
 		else if (debug)
 			error("iKeep existing '%s'", path->buffer);
