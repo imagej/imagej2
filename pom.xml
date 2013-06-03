@@ -265,17 +265,10 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 			<archive>http://imagej.net/pipermail/imagej-devel/</archive>
 		</mailingList>
 		<mailingList>
-			<name>Fiji-users</name>
-			<subscribe>http://groups.google.com/group/fiji-users</subscribe>
-			<unsubscribe>http://groups.google.com/group/fiji-users</unsubscribe>
-			<post>fiji-users@googlegroups.com</post>
-			<archive>http://groups.google.com/group/fiji-users</archive>
-		</mailingList>
-		<mailingList>
 			<name>Fiji-devel</name>
 			<subscribe>http://groups.google.com/group/fiji-devel</subscribe>
 			<unsubscribe>http://groups.google.com/group/fiji-devel</unsubscribe>
-			<post>fiji-devel@googlegroups.com</post>
+			<post>fiji@fiji.sc</post>
 			<archive>http://groups.google.com/group/fiji-devel</archive>
 		</mailingList>
 	</mailingLists>
