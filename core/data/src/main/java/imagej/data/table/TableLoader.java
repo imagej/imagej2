@@ -35,6 +35,7 @@
 
 package imagej.data.table;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -63,17 +64,21 @@ public class TableLoader {
 	// -- private legacy text file support methods --
 
 	/**
-	 * Loads the values of a table stored in a text file as a ResultsTable.
+	 * Loads the values of a table stored in a text file as a ResultsTable. Given
+	 * BufferedInputStream must be marked to hold entire contents in buffer. This
+	 * method rewinds the buggered stream so it can read it twice.
 	 * 
-	 * @param str The InputStream containing the data of the text table
+	 * @param str The BufferedInputStream containing the data of the text table
 	 * @return A ResultsTable containing the values (and headers)
 	 * @throws IOException
 	 */
-	public ResultsTable valuesFromTextFile(InputStream str) throws IOException {
+	public ResultsTable valuesFromTextFile(BufferedInputStream str)
+		throws IOException
+	{
 		countRowsAndCols(str);
 		if (rows == 0) return null;
 		ResultsTable values = new DefaultResultsTable(cols, rows);
-		if (str.markSupported()) str.reset();
+		str.reset();
 		read(str, values);
 		int firstRowNaNCount = 0;
 		for (int i = 0; i < cols; i++) {
@@ -118,7 +123,10 @@ public class TableLoader {
 	 * @throws IOException
 	 */
 	public ResultsTable valuesFromTextFile(File file) throws IOException {
-		return valuesFromTextFile(new FileInputStream(file));
+		FileInputStream fstr = new FileInputStream(file);
+		BufferedInputStream stream = new BufferedInputStream(fstr);
+		stream.mark((int) file.length());
+		return valuesFromTextFile(stream);
 	}
 
 	/**
@@ -129,7 +137,10 @@ public class TableLoader {
 	 * @throws IOException
 	 */
 	public ResultsTable valuesFromTextFile(URL url) throws IOException {
-		return valuesFromTextFile(url.openStream());
+		InputStream istr = url.openStream();
+		BufferedInputStream stream = new BufferedInputStream(istr);
+		stream.mark(8000000); // about 8 megabytes: FIXME HACK
+		return valuesFromTextFile(stream);
 	}
 
 	// -- private helpers -
@@ -138,13 +149,11 @@ public class TableLoader {
 		Reader r = new BufferedReader(new InputStreamReader(str));
 		StreamTokenizer tok = new StreamTokenizer(r);
 		tok.resetSyntax();
+		tok.wordChars(43, 43);
+		tok.wordChars(45, 126);
 		tok.whitespaceChars(0, 42);
-		tok.wordChars(43, 43); // '+'
 		tok.whitespaceChars(44, 44);
-		tok.wordChars(45, 46); // '-', '.'
-		tok.whitespaceChars(47, 47);
-		tok.wordChars(48, 57); // 0 - 9
-		tok.whitespaceChars(58, 255);
+		tok.whitespaceChars(127, 255);
 		tok.eolIsSignificant(true);
 
 		int words = 0, wordsPrevLine = 0;
@@ -174,13 +183,11 @@ public class TableLoader {
 		Reader r = new BufferedReader(new InputStreamReader(str));
 		StreamTokenizer tok = new StreamTokenizer(r);
 		tok.resetSyntax();
+		tok.wordChars(43, 43);
+		tok.wordChars(45, 126);
 		tok.whitespaceChars(0, 42);
-		tok.wordChars(43, 43); // '+'
 		tok.whitespaceChars(44, 44);
-		tok.wordChars(45, 46); // '-', '.'
-		tok.whitespaceChars(47, 47);
-		tok.wordChars(48, 57); // 0 - 9
-		tok.whitespaceChars(58, 255);
+		tok.whitespaceChars(127, 255);
 
 		int row = 0, col = 0;
 		while (tok.nextToken() != StreamTokenizer.TT_EOF) {
