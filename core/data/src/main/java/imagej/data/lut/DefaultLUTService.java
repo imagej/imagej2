@@ -173,27 +173,33 @@ public class DefaultLUTService extends AbstractService implements LUTService {
 		throws IOException
 	{
 		ColorTable lut = null;
-		BufferedInputStream bufferedStr = new BufferedInputStream(is);
-		bufferedStr.mark(length);
-		if (lut == null && length > 768) {
-			// attempt to read NIH Image LUT
-			lut = nihImageBinaryLUT(bufferedStr);
-			bufferedStr.reset();
+		BufferedInputStream bufferedStr = null;
+		try {
+			bufferedStr = new BufferedInputStream(is);
+			bufferedStr.mark(length);
+			if (lut == null && length > 768) {
+				// attempt to read NIH Image LUT
+				lut = nihImageBinaryLUT(bufferedStr);
+				bufferedStr.reset();
+			}
+			if (lut == null && (length == 0 || length == 768 || length == 970)) {
+				// attempt to read raw LUT
+				lut = legacyBinaryLUT(bufferedStr);
+				bufferedStr.reset();
+			}
+			if (lut == null && length > 768) {
+				lut = legacyTextLUT(bufferedStr);
+				bufferedStr.reset();
+			}
+			if (lut == null) {
+				lut = modernLUT(bufferedStr);
+				// bufferedStr.reset();
+			}
 		}
-		if (lut == null && (length == 0 || length == 768 || length == 970)) {
-			// attempt to read raw LUT
-			lut = legacyBinaryLUT(bufferedStr);
-			bufferedStr.reset();
+		finally {
+			if (bufferedStr != null) bufferedStr.close();
+			is.close();
 		}
-		if (lut == null && length > 768) {
-			lut = legacyTextLUT(bufferedStr);
-			bufferedStr.reset();
-		}
-		if (lut == null) {
-			lut = modernLUT(bufferedStr);
-			// bufferedStr.reset();
-		}
-		is.close();
 		return lut;
 	}
 
@@ -267,7 +273,9 @@ public class DefaultLUTService extends AbstractService implements LUTService {
 		return oldBinaryLUT(true, is);
 	}
 
-	private ColorTable legacyTextLUT(final InputStream is) throws IOException {
+	private ColorTable legacyTextLUT(final BufferedInputStream is)
+		throws IOException
+	{
 		ResultsTable table = new TableLoader().valuesFromTextFile(is);
 		if (table == null) return null;
 		byte[] reds = new byte[256];
