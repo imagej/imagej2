@@ -495,15 +495,12 @@ public class Threshold extends InteractiveImageCommand {
 		// What is the best way to determine size?
 		// Do we want some power of two as size? For now yes.
 		final int MAX = 4096;
-		int histSize = -1;
-		for (int i = 256; i <= MAX; i *= 2) {
-			if (dataRange <= i) {
-				histSize = i;
-				break;
+		for (int histSize = 256; histSize <= MAX; histSize *= 2) {
+			if (dataRange <= histSize) {
+				return new long[histSize];
 			}
 		}
-		if (histSize == -1) histSize = MAX;
-		return new long[histSize];
+		return new long[MAX];
 	}
 
 	private void zeroOut(long[] histogram) {
