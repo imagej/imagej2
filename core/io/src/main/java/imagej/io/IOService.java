@@ -39,13 +39,13 @@ import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.module.ModuleService;
 import imagej.text.TextService;
+import io.scif.io.img.ImgIOException;
 
 import java.io.File;
 import java.io.IOException;
 
 import net.imglib2.exception.IncompatibleTypeException;
 
-import ome.scifio.io.img.ImgIOException;
 
 import org.scijava.app.StatusService;
 import org.scijava.event.EventService;

@@ -40,6 +40,11 @@ import imagej.data.DatasetService;
 import imagej.io.event.FileOpenedEvent;
 import imagej.module.ModuleService;
 import imagej.text.TextService;
+import io.scif.Format;
+import io.scif.FormatException;
+import io.scif.SCIFIO;
+import io.scif.io.img.ImgIOException;
+import io.scif.io.img.ImgOpener;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,11 +53,6 @@ import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
-import ome.scifio.Format;
-import ome.scifio.FormatException;
-import ome.scifio.SCIFIO;
-import ome.scifio.io.img.ImgIOException;
-import ome.scifio.io.img.ImgOpener;
 
 import org.scijava.app.StatusService;
 import org.scijava.event.EventService;

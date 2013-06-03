@@ -39,21 +39,19 @@ import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.display.Display;
-import imagej.io.StatusDispatcher;
 import imagej.io.event.FileSavedEvent;
 import imagej.menu.MenuConstants;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.Result;
 import imagej.ui.UIService;
 import imagej.widget.FileWidget;
+import io.scif.io.img.ImgIOException;
+import io.scif.io.img.ImgSaver;
 
 import java.io.File;
 
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgPlus;
-
-import ome.scifio.io.img.ImgIOException;
-import ome.scifio.io.img.ImgSaver;
 
 import org.scijava.ItemIO;
 import org.scijava.app.StatusService;
@@ -127,8 +125,6 @@ public class SaveAsImage extends ContextCommand {
 			imageSaver.setContext(getContext());
 			boolean saveImage = true;
 			try {
-				imageSaver.addStatusListener(new StatusDispatcher(statusService));
-
 				if (imageSaver.isCompressible(img)) {
 					result =
 					uiService.showDialog("Your image contains axes other than XYZCT.\n"

@@ -41,12 +41,12 @@ import imagej.display.DisplayService;
 import imagej.io.IOService;
 import imagej.ui.dnd.AbstractDragAndDropHandler;
 import imagej.ui.dnd.DragAndDropHandler;
+import io.scif.io.img.ImgIOException;
 
 import java.io.File;
 
 import net.imglib2.exception.IncompatibleTypeException;
 
-import ome.scifio.io.img.ImgIOException;
 
 import org.scijava.Priority;
 import org.scijava.log.LogService;
