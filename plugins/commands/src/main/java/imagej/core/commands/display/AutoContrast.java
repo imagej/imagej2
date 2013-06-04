@@ -41,7 +41,7 @@ import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
 import imagej.menu.MenuConstants;
 import net.imglib2.Cursor;
-import net.imglib2.meta.AxisType;
+import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
@@ -131,7 +131,7 @@ public class AutoContrast extends ContextCommand {
 			// reset by clamping the histogram
 			double mn = Double.MAX_VALUE;
 			double mx = Double.MIN_VALUE;
-			for (int ch = 0; ch < getNumChannels(dataset); ch++) {
+			for (long ch = 0; ch < getNumChannels(dataset); ch++) {
 				if (ch < mn) mn = ch;
 				if (ch > mx) mx = ch;
 			}
@@ -200,16 +200,10 @@ public class AutoContrast extends ContextCommand {
 		view.update();
 	}
 
-	// TODO - rewrite this ugly code unless we just throw this impl away
-
-	private int getNumChannels(final Dataset dataset) {
-		final AxisType[] axes = dataset.getAxes();
-		for (int d = 0; d < axes.length; d++) {
-			if (axes[d].getLabel() == "Channel") {
-				return (int) dataset.getDims()[d];
-			}
-		}
-		return 0;
+	private long getNumChannels(final Dataset dataset) {
+		int chIdx = dataset.getAxisIndex(Axes.CHANNEL);
+		if (chIdx == -1) return 1;
+		return dataset.dimension(chIdx);
 	}
 
 }
