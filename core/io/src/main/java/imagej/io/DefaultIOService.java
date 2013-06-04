@@ -40,11 +40,10 @@ import imagej.data.DatasetService;
 import imagej.io.event.FileOpenedEvent;
 import imagej.module.ModuleService;
 import imagej.text.TextService;
-import io.scif.Format;
 import io.scif.FormatException;
-import io.scif.SCIFIO;
 import io.scif.io.img.ImgIOException;
 import io.scif.io.img.ImgOpener;
+import io.scif.services.FormatService;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,6 +55,7 @@ import net.imglib2.type.numeric.RealType;
 
 import org.scijava.app.StatusService;
 import org.scijava.event.EventService;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
@@ -73,6 +73,12 @@ public final class DefaultIOService<T extends RealType<T> & NativeType<T>>
 	
 	// TODO: eliminate bogus T parameter above. Rather, find a different way of
 	// handling ImgOpener's need to pass forward a T parameter.
+
+	@Parameter
+	private FormatService formatService;
+
+	@Parameter
+	private LogService log;
 
 	@Parameter
 	private EventService eventService;
@@ -138,15 +144,13 @@ public final class DefaultIOService<T extends RealType<T> & NativeType<T>>
 
 	@Override
 	public boolean isImageData(final String source) {
-
-	  Format format = null;
-	  try {
-	    format = new SCIFIO(getContext()).format().getFormat(source, true);
-	  } catch (FormatException e) {
-	    throw new IllegalStateException(e);
-	  }
-
-	  return format != null;
+		try {
+			return formatService.getFormat(source, true) != null;
+		}
+		catch (FormatException exc) {
+			log.error(exc);
+		}
+		return false;
 	}
 
 	@Override
