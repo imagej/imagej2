@@ -39,11 +39,6 @@
 			<version>${imglib2.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${imglib2.groupId}</groupId>
-			<artifactId>imglib2-io</artifactId>
-			<version>${imglib2.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>${scifio.groupId}</groupId>
 			<artifactId>scifio</artifactId>
 			<version>${scifio.version}</version>
