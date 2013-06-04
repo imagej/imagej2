@@ -37,6 +37,7 @@ package imagej.legacy.translate;
 
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.process.ImageProcessor;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -47,11 +48,7 @@ import java.util.Map;
 
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
-import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.integer.ShortType;
-import net.imglib2.type.numeric.integer.UnsignedByteType;
-import net.imglib2.type.numeric.integer.UnsignedShortType;
 
 /**
  * Provides methods for synchronizing data between an {@link ImageDisplay} and
@@ -109,6 +106,7 @@ public class Harmonizer {
 		final ImageDisplayService imageDisplayService =
 			legSrv.getImageDisplayService();
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
+		/*
 		boolean binaryTypeChange = false;
 		if (imp.getBitDepth() == 8) {
 			if (ds.getType() instanceof BitType) {
@@ -118,7 +116,8 @@ public class Harmonizer {
 				binaryTypeChange = LegacyUtils.isBinary(imp);
 			}
 		}
-		if (!imagePlusIsNearestType(ds, imp) || binaryTypeChange) {
+		*/
+		if (!imagePlusIsNearestType(ds, imp) /* || binaryTypeChange */) {
 			rebuildImagePlusData(display, imp);
 		}
 		else {
@@ -128,12 +127,18 @@ public class Harmonizer {
 				rebuildImagePlusData(display, imp);
 			}
 			else if (imp.getType() == ImagePlus.COLOR_RGB) {
-				colorPixelHarmonizer.updateLegacyImage(ds, imp);
+				if (!imp.getStack().isVirtual()) {
+					colorPixelHarmonizer.updateLegacyImage(ds, imp);
+				}
 			}
 			else if (LegacyUtils.datasetIsIJ1Compatible(ds)) {
 				planeHarmonizer.updateLegacyImage(ds, imp);
 			}
-			else grayPixelHarmonizer.updateLegacyImage(ds, imp);
+			else {
+				if (!imp.getStack().isVirtual()) {
+					grayPixelHarmonizer.updateLegacyImage(ds, imp);
+				}
+			}
 		}
 		metadataHarmonizer.updateLegacyImage(ds, imp);
 		colorTableHarmonizer.updateLegacyImage(display, imp);
@@ -159,6 +164,11 @@ public class Harmonizer {
 			throw new IllegalArgumentException(
 					"cannot update a display with an ImagePlus that has an empty stack");
 
+		// NB - Remember current plane data and use in pixel harmonizers later.
+		// This makes sure that IJ2 can propagate IJ1 changes to current plane for
+		// virtual stacks.
+		saveCurrentSlice(imp);
+
 		final ImageDisplayService imageDisplayService =
 			legSrv.getImageDisplayService();
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
@@ -177,12 +187,13 @@ public class Harmonizer {
 			bitDepthMap.put(imp, imp.getBitDepth());
 		}
 		boolean typeChanged = imp.getBitDepth() != oldBitDepth;
-		boolean isBinaryImp = LegacyUtils.isBinary(imp);
+		/* boolean isBinaryImp = LegacyUtils.isBinary(imp);
 		if (!typeChanged) {
 			typeChanged = sameBitDepthTypeChange(ds, imp, isBinaryImp);
 		}
+		*/
 		if ((typeChanged) || (!dimensionsCompatible(ds, imp))) {
-			rebuildDatasetData(ds, imp, isBinaryImp);
+			rebuildDatasetData(ds, imp);
 		}
 		else { // ImagePlus type and shape unchanged
 			if (imp.getType() == ImagePlus.COLOR_RGB) {
@@ -365,7 +376,7 @@ public class Harmonizer {
 	 * {@link ImagePlus}. Internally the Dataset refers to an all new {@link
 	 * ImgPlus}. 
 	 */
-	private void rebuildDatasetData(final Dataset ds, final ImagePlus imp, boolean isBinaryImp)
+	private void rebuildDatasetData(final Dataset ds, final ImagePlus imp)
 	{
 		// NB - create display from copy of original ImagePlus? Not right now. But
 		// will need to in future if createDisplay() registers "imp" with legacy
@@ -376,7 +387,7 @@ public class Harmonizer {
 		//final ImageDisplay tmpDisplay =
 		//		imageTranslator.createDisplay(impCopy, ds.getAxes());
 		final ImageDisplay tmpDisplay = 
-			imageTranslator.createDisplay(imp, ds.getAxes(), isBinaryImp);
+			imageTranslator.createDisplay(imp, ds.getAxes());
 		ImageDisplayService idSrv = legSrv.getImageDisplayService();
 		final Dataset tmpDs = idSrv.getActiveDataset(tmpDisplay);
 		ds.setImgPlus(tmpDs.getImgPlus());
@@ -384,7 +395,8 @@ public class Harmonizer {
 		tmpDisplay.close();
 	}
 	
-	/** Detect type changes when bit depth matches but sign or content incompatible */
+	/*
+	// Detect type changes when bit depth matches but sign or content incompatible
 	private boolean sameBitDepthTypeChange(Dataset ds, ImagePlus imp, boolean isBinaryImp) {
 		boolean typeChanged = false;
 		if (imp.getBitDepth() == 8) {
@@ -407,4 +419,25 @@ public class Harmonizer {
 		
 		return typeChanged;
 	}
+	*/
+
+	// NOTE: to propagate a VirtualStack's first plane pixel changes we save it
+	// early in the harmonization process and refer to it later. This code is part
+	// of that process
+
+	private void saveCurrentSlice(ImagePlus imp) {
+		ImageProcessor proc = imp.getProcessor();
+		int pos = imp.getCurrentSlice();
+		double[] plane = new double[imp.getWidth() * imp.getHeight()];
+		for (int i = 0; i < plane.length; i++) {
+			plane[i] = proc.getf(i);
+		}
+		if (imp.getType() == ImagePlus.COLOR_RGB) {
+			colorPixelHarmonizer.savePlane(pos, plane);
+		}
+		else {
+			grayPixelHarmonizer.savePlane(pos, plane);
+		}
+	}
+
 }

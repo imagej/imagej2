@@ -33,29 +33,30 @@
  * #L%
  */
 
-package imagej.legacy.translate;
+package imagej.data.autoscale;
 
-import ij.ImagePlus;
-import imagej.data.display.ImageDisplay;
-import net.imglib2.meta.AxisType;
+import imagej.plugin.SingletonPlugin;
+import net.imglib2.IterableInterval;
+import net.imglib2.type.numeric.RealType;
+
+import org.scijava.Contextual;
+import org.scijava.Prioritized;
+import org.scijava.plugin.HasPluginInfo;
 
 /**
- * The interface for creating {@link ImageDisplay}s from {@link ImagePlus}es.
+ * An algorithm for computing suitable display ranges from interval data.
  * 
  * @author Barry DeZonia
  */
-public interface DisplayCreator {
-
+public interface AutoscaleMethod<T extends RealType<T>> extends Contextual, Prioritized,
+	HasPluginInfo, SingletonPlugin
+{
+	
 	/**
-	 * Create an ImageDisplay from an ImagePlus. Default call to be preferred in
-	 * general.
+	 * Calculates the range of interest from the data contained in the given
+	 * {@link IterableInterval}.
+	 * 
+	 * @return The calculated range of values.
 	 */
-	ImageDisplay createDisplay(ImagePlus imp);
-
-	/**
-	 * Create an ImageDisplay from an ImagePlus. Use a preferred order of axes as
-	 * possible.
-	 */
-	ImageDisplay createDisplay(ImagePlus imp, AxisType[] preferredOrder);
-
+	DataRange getRange(IterableInterval<T> interval);
 }

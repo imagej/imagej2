@@ -264,8 +264,12 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		for (final DataView view : this) {
 			for (final AxisType axis : getAxes()) {
 				if (Axes.isXY(axis)) continue;
-				if (view.getData().getAxisIndex(axis) < 0) continue;
-				view.setPosition(getLongPosition(axis), axis);
+				int axisNum = view.getData().getAxisIndex(axis);
+				if (axisNum < 0) continue;
+				long p = getLongPosition(axis);
+				if (p < view.getData().dimension(axisNum)) {
+					view.setPosition(p, axis);
+				}
 			}
 			view.update();
 		}

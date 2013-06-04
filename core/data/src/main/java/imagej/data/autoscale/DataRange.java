@@ -33,72 +33,43 @@
  * #L%
  */
 
-package imagej.io;
+package imagej.data.autoscale;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.module.ModuleService;
-import imagej.text.TextService;
-import io.scif.io.img.ImgIOException;
-
-import java.io.File;
-import java.io.IOException;
-
-import net.imglib2.exception.IncompatibleTypeException;
-
-
-import org.scijava.app.StatusService;
-import org.scijava.event.EventService;
-import org.scijava.service.Service;
 
 /**
- * Interface for providing I/O convenience methods.
- * 
- * @author Curtis Rueden
+ * @author Barry DeZonia
  */
-public interface IOService extends Service {
+public class DataRange {
 
-	// CTR TODO: Extend HandlerService<IOPlugin>.
+	// -- instance variables --
 
-	EventService getEventService();
+	private final double min, max;
 
-	StatusService getStatusService();
-
-	ModuleService getModuleService();
-
-	DatasetService getDatasetService();
-
-	TextService getTextService();
+	// -- DataRange methods --
 
 	/**
-	 * Loads data from the given file.
-	 * <p>
-	 * The type of data is automatically determined. In the case of image data,
-	 * the returned object will be a {@link Dataset}. If the file contains text
-	 * data, the returned object will be a {@link String} formatted as HTML.
-	 * </p>
+	 * Constructs a data range given two end points of an interval. Order of
+	 * points is unimportant.
 	 * 
-	 * @param file The file from which to load data.
-	 * @return An object representing the loaded data, or null if the file is not
-	 *         in a supported format.
-	 * @throws IOException if something goes wrong loading the data.
+	 * @param p1 One end point of the data range.
+	 * @param p2 The other end point of the data range.
 	 */
-	Object load(File file) throws IOException;
+	public DataRange(double p1, double p2) {
+		min = Math.min(p1, p2);
+		max = Math.max(p1, p2);
+	}
 
 	/**
-	 * Determines whether the given source is image data (and hence compatible
-	 * with the {@link #loadDataset(String)} method).
+	 * Returns the smallest end point of the data range.
 	 */
-	boolean isImageData(String source);
+	public double getMin() {
+		return min;
+	}
 
-	/** Loads a dataset from a source (such as a file on disk). */
-	Dataset loadDataset(String source) throws ImgIOException,
-		IncompatibleTypeException;
-
-	/** Reverts the given dataset to its original source. */
-	void revertDataset(Dataset dataset) throws ImgIOException,
-		IncompatibleTypeException;
-
-	// TODO: Add a saveDataset method, and use it in SaveAsImage plugin.
-
+	/**
+	 * Returns the largest end point of the data range.
+	 */
+	public double getMax() {
+		return max;
+	}
 }

@@ -40,15 +40,17 @@ import imagej.data.DatasetService;
 import imagej.io.event.FileOpenedEvent;
 import imagej.module.ModuleService;
 import imagej.text.TextService;
+import io.scif.Format;
+import io.scif.FormatException;
+import io.scif.SCIFIO;
+import io.scif.io.img.ImgIOException;
+import io.scif.io.img.ImgOpener;
 
 import java.io.File;
 import java.io.IOException;
 
-import loci.formats.ImageReader;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgPlus;
-import net.imglib2.io.ImgIOException;
-import net.imglib2.io.ImgOpener;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
@@ -136,18 +138,15 @@ public final class DefaultIOService<T extends RealType<T> & NativeType<T>>
 
 	@Override
 	public boolean isImageData(final String source) {
-		final ImageReader reader = new ImageReader();
-		final boolean isImageData = reader.isThisType(source);
 
-		// NB: Unnecessary, but makes Eclipse shut up.
-		try {
-			reader.close();
-		}
-		catch (final IOException exc) {
-			throw new IllegalStateException(exc);
-		}
+	  Format format = null;
+	  try {
+	    format = new SCIFIO(getContext()).format().getFormat(source, true);
+	  } catch (FormatException e) {
+	    throw new IllegalStateException(e);
+	  }
 
-		return isImageData;
+	  return format != null;
 	}
 
 	@Override
@@ -155,8 +154,7 @@ public final class DefaultIOService<T extends RealType<T> & NativeType<T>>
 		IncompatibleTypeException
 	{
 		if (source == null) return null;
-		final ImgOpener imageOpener = new ImgOpener();
-		imageOpener.addStatusListener(new StatusDispatcher(statusService));
+		final ImgOpener imageOpener = new ImgOpener(getContext());
 		/* Restore this when NativeType can be eliminated from this class decl.
 		// TODO BDZ 7-17-12 Lowering reliance on NativeType. This cast is safe but
 		// necessary in the short term to get code to compile. But
@@ -164,15 +162,14 @@ public final class DefaultIOService<T extends RealType<T> & NativeType<T>>
 		// NativeType. Later, when that has been accomplished remove this cast.
 		final ImgPlus<T> imgPlus = (ImgPlus<T>) imageOpener.openImg(source);
 		*/
-		final ImgPlus<T> imgPlus = imageOpener.openImg(source);
+		final ImgPlus<T> imgPlus = imageOpener.openImg(source, 0, true, false);
 		final Dataset dataset = datasetService.create(imgPlus);
 		eventService.publish(new FileOpenedEvent(source));
 		return dataset;
 	}
 
 	@Override
-	public void revertDataset(final Dataset dataset) throws ImgIOException,
-		IncompatibleTypeException
+	public void revertDataset(final Dataset dataset) throws IncompatibleTypeException, ImgIOException
 	{
 		final String source = dataset.getSource();
 		if (source == null) return; // no way to revert

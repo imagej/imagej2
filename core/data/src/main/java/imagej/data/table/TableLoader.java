@@ -37,6 +37,7 @@ package imagej.data.table;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -64,16 +65,16 @@ public class TableLoader {
 	/**
 	 * Loads the values of a table stored in a text file as a ResultsTable.
 	 * 
-	 * @param url The url (as a URL) of the text table
+	 * @param str The InputStream containing the data of the text table
 	 * @return A ResultsTable containing the values (and headers)
 	 * @throws IOException
 	 */
-	public ResultsTable valuesFromTextFile(URL url) throws IOException {
-		ResultsTable values = null;
-		countRowsAndCols(url);
+	public ResultsTable valuesFromTextFile(InputStream str) throws IOException {
+		countRowsAndCols(str);
 		if (rows == 0) return null;
-		values = new DefaultResultsTable(cols, rows);
-		read(url, values);
+		ResultsTable values = new DefaultResultsTable(cols, rows);
+		if (str.markSupported()) str.reset();
+		read(str, values);
 		int firstRowNaNCount = 0;
 		for (int i = 0; i < cols; i++) {
 			if (Double.isNaN(values.getValue(i, 0))) firstRowNaNCount++;
@@ -100,7 +101,8 @@ public class TableLoader {
 	/**
 	 * Loads the values of a table stored in a text file as a ResultsTable.
 	 * 
-	 * @param urlString The url (as a string) of the text table
+	 * @param urlString The url (as a string) of the file containing the text
+	 *          table
 	 * @return A ResultsTable containing the values (and headers)
 	 * @throws IOException
 	 */
@@ -116,23 +118,33 @@ public class TableLoader {
 	 * @throws IOException
 	 */
 	public ResultsTable valuesFromTextFile(File file) throws IOException {
-		return valuesFromTextFile("file://" + file.getAbsolutePath());
+		return valuesFromTextFile(new FileInputStream(file));
+	}
+
+	/**
+	 * Loads the values of a table stored at a URL as a ResultsTable.
+	 * 
+	 * @param url The URL location of the file containing the text table
+	 * @return A ResultsTable containing the values (and headers)
+	 * @throws IOException
+	 */
+	public ResultsTable valuesFromTextFile(URL url) throws IOException {
+		return valuesFromTextFile(url.openStream());
 	}
 
 	// -- private helpers -
 
-	private void countRowsAndCols(URL url) throws IOException {
-		InputStream str = url.openStream();
+	private void countRowsAndCols(InputStream str) throws IOException {
 		Reader r = new BufferedReader(new InputStreamReader(str));
 		StreamTokenizer tok = new StreamTokenizer(r);
 		tok.resetSyntax();
-		tok.wordChars(43, 43);
-		tok.wordChars(45, 127);
 		tok.whitespaceChars(0, 42);
+		tok.wordChars(43, 43); // '+'
 		tok.whitespaceChars(44, 44);
-		// tok.wordChars(33, 127);
-		// tok.whitespaceChars(0, ' ');
-		tok.whitespaceChars(128, 255);
+		tok.wordChars(45, 46); // '-', '.'
+		tok.whitespaceChars(47, 47);
+		tok.wordChars(48, 57); // 0 - 9
+		tok.whitespaceChars(58, 255);
 		tok.eolIsSignificant(true);
 
 		int words = 0, wordsPrevLine = 0;
@@ -150,6 +162,7 @@ public class TableLoader {
 					words = 0;
 					break;
 				case StreamTokenizer.TT_WORD:
+					// System.out.println("read word " + tok.sval);
 					words++;
 					break;
 			}
@@ -157,19 +170,17 @@ public class TableLoader {
 		if (words == cols) rows++; // last line does not end with EOL
 	}
 
-	private void read(URL url, ResultsTable values) throws IOException {
-		InputStream str = url.openStream();
+	private void read(InputStream str, ResultsTable values) throws IOException {
 		Reader r = new BufferedReader(new InputStreamReader(str));
 		StreamTokenizer tok = new StreamTokenizer(r);
 		tok.resetSyntax();
-		tok.wordChars(43, 43);
-		tok.wordChars(45, 127);
 		tok.whitespaceChars(0, 42);
+		tok.wordChars(43, 43); // '+'
 		tok.whitespaceChars(44, 44);
-		// tok.wordChars(33, 127);
-		// tok.whitespaceChars(0, ' ');
-		tok.whitespaceChars(128, 255);
-		// tok.parseNumbers();
+		tok.wordChars(45, 46); // '-', '.'
+		tok.whitespaceChars(47, 47);
+		tok.wordChars(48, 57); // 0 - 9
+		tok.whitespaceChars(58, 255);
 
 		int row = 0, col = 0;
 		while (tok.nextToken() != StreamTokenizer.TT_EOF) {

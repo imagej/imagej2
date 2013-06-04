@@ -115,9 +115,14 @@ public abstract class AbstractDataView extends AbstractContextual implements
 		}
 		final Extents planeExtents = new Extents(planeDims);
 		final Position planePos = planeExtents.createPosition();
-		for (int d = 0; d < planePos.numDimensions(); d++) {
+		for (int d = 0; d < planeDims.length; d++) {
 			final AxisType axis = data.axis(d + 2);
-			planePos.setPosition(getLongPosition(axis), d);
+			long p = getLongPosition(axis);
+			// NB - Some data sources (like ThresholdOverlays) have fluid bounds. So
+			// make sure the desired position is not out of bounds.
+			if (p >= data.dimension(d)) p = data.dimension(d) - 1;
+			if (p >= planePos.dimension(d)) p = planePos.dimension(d) - 1;
+			planePos.setPosition(p, d);
 		}
 		return planePos;
 	}
@@ -160,6 +165,9 @@ public abstract class AbstractDataView extends AbstractContextual implements
 
 	@Override
 	public void setPosition(final long position, final AxisType axis) {
+		// TODO - bounds checking here that position fits into data's space?
+		// Remember that some data sources (like ThresholdOverlays) have fluid
+		// bounds.
 		pos.put(axis, position);
 	}
 

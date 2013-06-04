@@ -37,7 +37,6 @@ package imagej.data.overlay;
 
 import imagej.data.Dataset;
 import imagej.data.event.DatasetRestructuredEvent;
-import imagej.data.event.OverlayUpdatedEvent;
 import imagej.display.Displayable;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
@@ -59,7 +58,6 @@ import net.imglib2.type.numeric.RealType;
 
 import org.scijava.Context;
 import org.scijava.event.EventHandler;
-import org.scijava.event.EventService;
 
 /**
  * A {@link ThresholdOverlay} is an {@link Overlay} that represents the set of
@@ -522,10 +520,7 @@ public class ThresholdOverlay extends AbstractOverlay
 		defaultName =
 			"Threshold: " + conditionWithin.getMin() + " to " +
 				conditionWithin.getMax();
-		if (emitEvent) {
-			OverlayUpdatedEvent event = new OverlayUpdatedEvent(this);
-			getContext().getService(EventService.class).publish(event);
-		}
+		if (emitEvent) update();
 	}
 
 }

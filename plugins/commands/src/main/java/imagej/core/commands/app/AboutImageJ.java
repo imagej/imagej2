@@ -52,6 +52,7 @@ import imagej.util.AppUtils;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 import imagej.util.MersenneTwisterFast;
+import io.scif.io.img.ImgIOException;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -65,9 +66,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.imglib2.exception.IncompatibleTypeException;
-import net.imglib2.io.ImgIOException;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+
 
 import org.scijava.ItemIO;
 import org.scijava.app.App;

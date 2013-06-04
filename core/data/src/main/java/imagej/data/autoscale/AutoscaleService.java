@@ -33,72 +33,62 @@
  * #L%
  */
 
-package imagej.io;
+package imagej.data.autoscale;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.module.ModuleService;
-import imagej.text.TextService;
-import io.scif.io.img.ImgIOException;
+import imagej.plugin.SingletonService;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
-import net.imglib2.exception.IncompatibleTypeException;
-
-
-import org.scijava.app.StatusService;
-import org.scijava.event.EventService;
-import org.scijava.service.Service;
+import net.imglib2.IterableInterval;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.type.numeric.RealType;
 
 /**
- * Interface for providing I/O convenience methods.
+ * Interface for service that works with autoscale algorithms.
  * 
- * @author Curtis Rueden
+ * @author Barry DeZonia
+ * @see AutoscaleMethod
  */
-public interface IOService extends Service {
+@SuppressWarnings("rawtypes")
+public interface AutoscaleService extends SingletonService<AutoscaleMethod> {
 
-	// CTR TODO: Extend HandlerService<IOPlugin>.
-
-	EventService getEventService();
-
-	StatusService getStatusService();
-
-	ModuleService getModuleService();
-
-	DatasetService getDatasetService();
-
-	TextService getTextService();
+	/** Returns a map of available {@link AutoscaleMethod}s, indexed by name. */
+	Map<String, AutoscaleMethod> getAutoscaleMethods();
 
 	/**
-	 * Loads data from the given file.
-	 * <p>
-	 * The type of data is automatically determined. In the case of image data,
-	 * the returned object will be a {@link Dataset}. If the file contains text
-	 * data, the returned object will be a {@link String} formatted as HTML.
-	 * </p>
+	 * Returns the names of all available {@link AutoscaleMethod}s, ordered by
+	 * priority.
+	 */
+	List<String> getAutoscaleMethodNames();
+
+	/**
+	 * Returns the {@link AutoscaleMethod} associated with the given name.
+	 */
+	AutoscaleMethod getAutoscaleMethod(String name);
+
+	/**
+	 * Returns the default autoscaling method.
+	 */
+	AutoscaleMethod getDefaultAutoscaleMethod();
+
+	// TODO - remove this method?
+
+	/**
+	 * Calculates the range of interest from the data contained in the given
+	 * {@link IterableInterval} using the default autoscale method.
 	 * 
-	 * @param file The file from which to load data.
-	 * @return An object representing the loaded data, or null if the file is not
-	 *         in a supported format.
-	 * @throws IOException if something goes wrong loading the data.
+	 * @return The calculated range of values.
 	 */
-	Object load(File file) throws IOException;
+	DataRange getDefaultIntervalRange(
+		IterableInterval<? extends RealType<?>> interval);
 
 	/**
-	 * Determines whether the given source is image data (and hence compatible
-	 * with the {@link #loadDataset(String)} method).
+	 * Calculates the range of interest from the data contained in the given
+	 * {@link RandomAccessibleInterval} using the default autoscale method.
+	 * 
+	 * @return The calculated range of values.
 	 */
-	boolean isImageData(String source);
-
-	/** Loads a dataset from a source (such as a file on disk). */
-	Dataset loadDataset(String source) throws ImgIOException,
-		IncompatibleTypeException;
-
-	/** Reverts the given dataset to its original source. */
-	void revertDataset(Dataset dataset) throws ImgIOException,
-		IncompatibleTypeException;
-
-	// TODO: Add a saveDataset method, and use it in SaveAsImage plugin.
-
+	DataRange getDefaultRandomAccessRange(
+		RandomAccessibleInterval<? extends RealType<?>> interval);
 }

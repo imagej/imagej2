@@ -33,29 +33,65 @@
  * #L%
  */
 
-package imagej.legacy.translate;
+package imagej.data.commands;
 
-import ij.ImagePlus;
-import imagej.data.display.ImageDisplay;
-import net.imglib2.meta.AxisType;
+import imagej.data.display.DatasetView;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.view.Views;
+
+import org.scijava.plugin.Parameter;
 
 /**
- * The interface for creating {@link ImageDisplay}s from {@link ImagePlus}es.
+ * Abstract superclass for commands that can operate on a single plane.
  * 
- * @author Barry DeZonia
+ * @author Mark Hiner hinerm at gmail.com
+ *
  */
-public interface DisplayCreator {
+public abstract class AbstractPlanarCommand implements PlanarCommand {
+  
+  // -- Parameters --
+  
+  @Parameter
+  private DatasetView view;
+  
+  @Parameter
+	private boolean doWholeDataset;
 
-	/**
-	 * Create an ImageDisplay from an ImagePlus. Default call to be preferred in
-	 * general.
-	 */
-	ImageDisplay createDisplay(ImagePlus imp);
+  // -- Runnable API Methods --
+  
+  @Override
+  public void run() {
+    RandomAccessibleInterval<?> img = getView().getData().getImgPlus();
 
-	/**
-	 * Create an ImageDisplay from an ImagePlus. Use a preferred order of axes as
-	 * possible.
-	 */
-	ImageDisplay createDisplay(ImagePlus imp, AxisType[] preferredOrder);
+    if (isPlanar()) {
+      
+      // assume x,y are first
+      for (int i=2; i<img.numDimensions(); i++) {
+        img = Views.hyperSlice(img, i, getView().getLongPosition(i));
+      }
+    }
+    run(img);
+  }
+  
+  // -- PlanarCommand API methods --
 
+  @Override
+  public DatasetView getView() {
+    return view;
+  }
+  
+  @Override
+	public boolean isPlanar() {
+   return !doWholeDataset; 
+  }
+  
+  @Override
+  public void setView(DatasetView view) {
+    this.view = view;
+  }
+  
+  @Override
+	public void setPlanar(boolean planar) {
+    doWholeDataset = !planar;
+  }
 }

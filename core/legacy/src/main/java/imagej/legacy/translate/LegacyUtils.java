@@ -36,11 +36,9 @@
 package imagej.legacy.translate;
 
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.WindowManager;
 import ij.gui.ImageWindow;
 import ij.macro.Interpreter;
-import ij.process.ImageProcessor;
 import imagej.data.Dataset;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.meta.Axes;
@@ -409,10 +407,10 @@ public class LegacyUtils {
 		return false;
 	}
 
-	/**
+	/* OLD AND TOO SLOW FOR LARGE VIRTUAL IMAGES
+	 * 
 	 * Determines whether an ImagePlus is an legacy ImageJ binary image (i.e. it
 	 * is unsigned 8 bit data with only values 0 & 255 present)
-	 */
 	public static boolean isBinary(final ImagePlus imp) {
 		final int numSlices = imp.getStackSize();
 		// don't let degenerate images report themselves as binary
@@ -422,14 +420,22 @@ public class LegacyUtils {
 			if (ip == null) return false; // null possible : treat as numeric data
 			return ip.isBinary();
 		}
+		final int slice = imp.getCurrentSlice();
 		final ImageStack stack = imp.getStack();
 		// stack cannot be null here as numSlices > 1
 		//   and in such cases you always get a non-null processor
 		for (int i = 1; i <= numSlices; i++) {
 			final ImageProcessor ip = stack.getProcessor(i);
-			if (!ip.isBinary()) return false;
+			if (!ip.isBinary()) {
+				// fix virtual stack problems
+				stack.getProcessor(slice);
+				return false;
+			}
 		}
+		// fix virtual stack problems
+		stack.getProcessor(slice);
 		return true;
 	}
+	 */
 
 }

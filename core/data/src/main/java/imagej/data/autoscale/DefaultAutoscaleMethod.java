@@ -33,29 +33,31 @@
  * #L%
  */
 
-package imagej.legacy.translate;
+package imagej.data.autoscale;
 
-import ij.ImagePlus;
-import imagej.data.display.ImageDisplay;
-import net.imglib2.meta.AxisType;
+import net.imglib2.IterableInterval;
+import net.imglib2.algorithm.stats.ComputeMinMax;
+import net.imglib2.type.numeric.RealType;
+
+import org.scijava.plugin.Plugin;
 
 /**
- * The interface for creating {@link ImageDisplay}s from {@link ImagePlus}es.
+ * Computes he data range from the entire set of values in an
+ * {@link IterableInterval}.
  * 
  * @author Barry DeZonia
  */
-public interface DisplayCreator {
+@Plugin(type = AutoscaleMethod.class, name = "Default")
+public class DefaultAutoscaleMethod<T extends RealType<T>> extends AbstractAutoscaleMethod<T> {
 
-	/**
-	 * Create an ImageDisplay from an ImagePlus. Default call to be preferred in
-	 * general.
-	 */
-	ImageDisplay createDisplay(ImagePlus imp);
-
-	/**
-	 * Create an ImageDisplay from an ImagePlus. Use a preferred order of axes as
-	 * possible.
-	 */
-	ImageDisplay createDisplay(ImagePlus imp, AxisType[] preferredOrder);
+	@Override
+	public DataRange getRange(IterableInterval<T> interval)
+	{
+		ComputeMinMax<T> minmax = new ComputeMinMax<T>(interval);
+		minmax.process();
+		double min = minmax.getMin().getRealDouble();
+		double max = minmax.getMax().getRealDouble();
+		return new DataRange(min, max);
+	}
 
 }

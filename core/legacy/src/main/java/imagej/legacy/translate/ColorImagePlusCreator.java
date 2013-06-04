@@ -40,6 +40,16 @@ import ij.ImageStack;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import net.imglib2.img.Img;
+import net.imglib2.img.cell.AbstractCellImg;
+
+// TODO: virtual stack support is minorly problematic. Imglib has vstack impls
+// but they use 1-pixel to 1-pixel converters. However in IJ2 in this case we
+// have a 3 channel image going to a 1-channel rgb image. So to support virtual
+// stacks I can't use Imglib's vstacks. I need to create a special one here
+// that converts 3 channels to 1 ARGB. But also note that ARGB is not a RealType
+// and thus cannot be the basis of a Dataset.
+// Note I have written a FakeVirtualStack class to support this case.
 
 /**
  * Creates {@link ImagePlus}es from {@link ImageDisplay}s containing color
@@ -76,8 +86,15 @@ public class ColorImagePlusCreator implements ImagePlusCreator {
 	@Override
 	public ImagePlus createLegacyImage(final ImageDisplay display) {
 		final Dataset ds = imgDispSrv.getActiveDataset(display);
-		final ImagePlus imp = makeColorImagePlus(ds);
-		pixelHarmonizer.updateLegacyImage(ds, imp);
+		Img<?> img = ds.getImgPlus().getImg();
+		final ImagePlus imp;
+		if (AbstractCellImg.class.isAssignableFrom(img.getClass())) {
+			imp = cellImgCase(ds);
+		}
+		else {
+			imp = makeColorImagePlus(ds);
+			pixelHarmonizer.updateLegacyImage(ds, imp);
+		}
 		metadataHarmonizer.updateLegacyImage(ds, imp);
 		positionHarmonizer.updateLegacyImage(display, imp);
 		nameHarmonizer.updateLegacyImage(display, imp);
@@ -119,4 +136,24 @@ public class ColorImagePlusCreator implements ImagePlusCreator {
 
 		return imp;
 	}
+
+	private ImagePlus cellImgCase(Dataset ds) {
+		ImageStack stack = new MergedRgbVirtualStack(ds);
+		ImagePlus imp = new ImagePlus(ds.getName(), stack);
+
+		// TODO - is this right? what about 6d and up? encoded channels?
+		final int[] dimIndices = new int[5];
+		final int[] dimValues = new int[5];
+		LegacyUtils.getImagePlusDims(ds, dimIndices, dimValues);
+		final int cCount = dimValues[2];
+		final int zCount = dimValues[3];
+		final int tCount = dimValues[4];
+		imp.setDimensions(cCount, zCount, tCount);
+
+		// TODO - is this right?
+		imp.setOpenAsHyperStack(ds.numDimensions() > 3);
+
+		return imp;
+	}
+
 }

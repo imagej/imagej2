@@ -33,72 +33,20 @@
  * #L%
  */
 
-package imagej.io;
+package imagej.data.autoscale;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.module.ModuleService;
-import imagej.text.TextService;
-import io.scif.io.img.ImgIOException;
+import net.imglib2.type.numeric.RealType;
 
-import java.io.File;
-import java.io.IOException;
-
-import net.imglib2.exception.IncompatibleTypeException;
-
-
-import org.scijava.app.StatusService;
-import org.scijava.event.EventService;
-import org.scijava.service.Service;
+import org.scijava.plugin.SortablePlugin;
 
 /**
- * Interface for providing I/O convenience methods.
+ * Abstract base class for {@link AutoscaleMethod} plugins.
  * 
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
-public interface IOService extends Service {
-
-	// CTR TODO: Extend HandlerService<IOPlugin>.
-
-	EventService getEventService();
-
-	StatusService getStatusService();
-
-	ModuleService getModuleService();
-
-	DatasetService getDatasetService();
-
-	TextService getTextService();
-
-	/**
-	 * Loads data from the given file.
-	 * <p>
-	 * The type of data is automatically determined. In the case of image data,
-	 * the returned object will be a {@link Dataset}. If the file contains text
-	 * data, the returned object will be a {@link String} formatted as HTML.
-	 * </p>
-	 * 
-	 * @param file The file from which to load data.
-	 * @return An object representing the loaded data, or null if the file is not
-	 *         in a supported format.
-	 * @throws IOException if something goes wrong loading the data.
-	 */
-	Object load(File file) throws IOException;
-
-	/**
-	 * Determines whether the given source is image data (and hence compatible
-	 * with the {@link #loadDataset(String)} method).
-	 */
-	boolean isImageData(String source);
-
-	/** Loads a dataset from a source (such as a file on disk). */
-	Dataset loadDataset(String source) throws ImgIOException,
-		IncompatibleTypeException;
-
-	/** Reverts the given dataset to its original source. */
-	void revertDataset(Dataset dataset) throws ImgIOException,
-		IncompatibleTypeException;
-
-	// TODO: Add a saveDataset method, and use it in SaveAsImage plugin.
-
+public abstract class AbstractAutoscaleMethod<T extends RealType<T>> extends SortablePlugin implements
+	AutoscaleMethod<T>
+{
+	// NB: No implementation needed.
 }

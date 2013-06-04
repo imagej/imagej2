@@ -41,11 +41,14 @@ import imagej.data.DatasetService;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.data.table.ResultsTable;
+import imagej.data.table.TableLoader;
 import imagej.display.DisplayService;
 import imagej.menu.MenuConstants;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
@@ -169,21 +172,29 @@ public class DefaultLUTService extends AbstractService implements LUTService {
 	public ColorTable loadLUT(final InputStream is, final int length)
 		throws IOException
 	{
-		if (length > 768) {
+		ColorTable lut = null;
+		BufferedInputStream bufferedStr = new BufferedInputStream(is);
+		bufferedStr.mark(length);
+		if (lut == null && length > 768) {
 			// attempt to read NIH Image LUT
-			final ColorTable lut = nihImageBinaryLUT(is);
-			if (lut != null) return lut;
+			lut = nihImageBinaryLUT(bufferedStr);
+			bufferedStr.reset();
 		}
-		if (length == 0 || length == 768 || length == 970) {
+		if (lut == null && (length == 0 || length == 768 || length == 970)) {
 			// attempt to read raw LUT
-			final ColorTable lut = legacyBinaryLUT(is);
-			if (lut != null) return lut;
+			lut = legacyBinaryLUT(bufferedStr);
+			bufferedStr.reset();
 		}
-		if (length > 768) {
-			final ColorTable lut = legacyTextLUT(is);
-			if (lut != null) return lut;
+		if (lut == null && length > 768) {
+			lut = legacyTextLUT(bufferedStr);
+			bufferedStr.reset();
 		}
-		return modernLUT(is);
+		if (lut == null) {
+			lut = modernLUT(bufferedStr);
+			// bufferedStr.reset();
+		}
+		is.close();
+		return lut;
 	}
 
 	// -- Service methods --
@@ -257,24 +268,22 @@ public class DefaultLUTService extends AbstractService implements LUTService {
 	}
 
 	private ColorTable legacyTextLUT(final InputStream is) throws IOException {
-		return null;
-		// CTR FIXME: TableLoader requires a URL, which is awkward.
-//		ResultsTable table = new TableLoader().valuesFromTextFile(is);
-//		if (table == null) return null;
-//		byte[] reds = new byte[256];
-//		byte[] greens = new byte[256];
-//		byte[] blues = new byte[256];
-//		int cols = table.getColumnCount();
-//		int rows = table.getRowCount();
-//		if (cols < 3 || cols > 4 || rows < 256 || rows > 258) return null;
-//		int x = cols == 4 ? 1 : 0;
-//		int y = rows > 256 ? 1 : 0;
-//		for (int r = 0; r < 256; r++) {
-//			reds[r] = (byte) table.getValue(x + 0, y + r);
-//			greens[r] = (byte) table.getValue(x + 1, y + r);
-//			blues[r] = (byte) table.getValue(x + 2, y + r);
-//		}
-//		return new ColorTable8(reds, greens, blues);
+		ResultsTable table = new TableLoader().valuesFromTextFile(is);
+		if (table == null) return null;
+		byte[] reds = new byte[256];
+		byte[] greens = new byte[256];
+		byte[] blues = new byte[256];
+		int cols = table.getColumnCount();
+		int rows = table.getRowCount();
+		if (cols < 3 || cols > 4 || rows < 256 || rows > 258) return null;
+		int x = cols == 4 ? 1 : 0;
+		int y = rows > 256 ? 1 : 0;
+		for (int r = 0; r < 256; r++) {
+			reds[r] = (byte) table.getValue(x + 0, y + r);
+			greens[r] = (byte) table.getValue(x + 1, y + r);
+			blues[r] = (byte) table.getValue(x + 2, y + r);
+		}
+		return new ColorTable8(reds, greens, blues);
 	}
 
 	private ColorTable oldBinaryLUT(final boolean raw, final InputStream is)
@@ -286,7 +295,7 @@ public class DefaultLUTService extends AbstractService implements LUTService {
 			// attempt to read 32 byte NIH Image LUT header
 			final int id = f.readInt();
 			if (id != 1229147980) { // 'ICOL'
-				f.close();
+				// f.close(); // NO - this closes parent InputStream
 				return null;
 			}
 			f.readShort(); // version
@@ -304,7 +313,7 @@ public class DefaultLUTService extends AbstractService implements LUTService {
 		f.read(greens, 0, nColors);
 		f.read(blues, 0, nColors);
 		if (nColors < 256) interpolate(reds, greens, blues, nColors);
-		f.close();
+		// f.close(); // NO - this closes parent InputStream
 		return new ColorTable8(reds, greens, blues);
 	}
 

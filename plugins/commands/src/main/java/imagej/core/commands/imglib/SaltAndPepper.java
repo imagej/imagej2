@@ -40,6 +40,8 @@ import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
+import imagej.data.autoscale.AutoscaleService;
+import imagej.data.autoscale.DataRange;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
@@ -74,6 +76,9 @@ import org.scijava.plugin.Plugin;
 public class SaltAndPepper extends ContextCommand {
 
 	// -- instance variables that are Parameters --
+
+	@Parameter
+	private AutoscaleService autoscaleService;
 
 	@Parameter
 	private ImageDisplayService imageDisplayService;
@@ -165,6 +170,10 @@ public class SaltAndPepper extends ContextCommand {
 		position = new long[inputImage.numDimensions()];
 		accessor = inputImage.randomAccess();
 		if (autoCalcMinMax) {
+			DataRange range =
+				autoscaleService.getDefaultIntervalRange(inputImage);
+			pepperValue = range.getMin();
+			saltValue = range.getMax();
 			@SuppressWarnings({"unchecked","rawtypes"})
 			final ComputeMinMax<? extends RealType<?>> cmm =
 					new ComputeMinMax(inputImage);

@@ -33,29 +33,49 @@
  * #L%
  */
 
-package imagej.legacy.translate;
+package imagej.data.commands;
 
-import ij.ImagePlus;
-import imagej.data.display.ImageDisplay;
-import net.imglib2.meta.AxisType;
+import imagej.command.Command;
+import imagej.data.display.DatasetView;
+import net.imglib2.RandomAccessibleInterval;
 
 /**
- * The interface for creating {@link ImageDisplay}s from {@link ImagePlus}es.
+ * Interface marking commands that can be toggled to run on the current plane,
+ * instead of a complete image.
  * 
- * @author Barry DeZonia
+ * @author Mark Hiner hinerm at gmail.com
+ *
  */
-public interface DisplayCreator {
-
-	/**
-	 * Create an ImageDisplay from an ImagePlus. Default call to be preferred in
-	 * general.
-	 */
-	ImageDisplay createDisplay(ImagePlus imp);
-
-	/**
-	 * Create an ImageDisplay from an ImagePlus. Use a preferred order of axes as
-	 * possible.
-	 */
-	ImageDisplay createDisplay(ImagePlus imp, AxisType[] preferredOrder);
-
+public interface PlanarCommand extends Command {
+  
+  
+  /**
+   * As {@link #run()}, but operating only on the specified plane.
+   * 
+   * @param plane the current plane.
+   */
+  void run(RandomAccessibleInterval<?> plane);
+  
+  // -- Parameter Accessors and Setters --
+  
+  /**
+   * @return The view this command will operate on.
+   */
+  DatasetView getView();
+  
+  /**
+   * @return true if this command will restrict operation to the current plane of
+   * its view.
+   */
+	boolean isPlanar();
+  
+  /**
+   * @param view - The view this command will operate on.
+   */
+  void setView(DatasetView view);
+  
+  /**
+   * @param planar - Whether or not to operate on the current plane only.
+   */
+	void setPlanar(boolean planar);
 }
