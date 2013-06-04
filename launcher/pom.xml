@@ -140,7 +140,7 @@
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>org.apache.maven.plugins</groupId>
-										<artifactId>maven-nar-plugin</artifactId>
+										<artifactId>nar-maven-plugin</artifactId>
 										<versionRange>${nar.version}</versionRange>
 										<goals>
 											<goal>nar-compile</goal>
@@ -190,7 +190,7 @@
 			<build>
 				<plugins>
 					<plugin>
-						<artifactId>maven-nar-plugin</artifactId>
+						<artifactId>nar-maven-plugin</artifactId>
 						<configuration>
 							<linker>
 								<sysLibs>
@@ -224,7 +224,7 @@
 			<build>
 				<plugins>
 					<plugin>
-						<artifactId>maven-nar-plugin</artifactId>
+						<artifactId>nar-maven-plugin</artifactId>
 						<configuration>
 							<linker>
 								<sysLibs>
@@ -288,7 +288,7 @@
 			<build>
 				<plugins>
 					<plugin>
-						<artifactId>maven-nar-plugin</artifactId>
+						<artifactId>nar-maven-plugin</artifactId>
 						<configuration>
 							<c>
 								<name>gcc</name>
@@ -335,7 +335,7 @@
 				<!-- <defaultGoal>integration-test</defaultGoal> -->
 				<plugins>
 					<plugin>
-						<artifactId>maven-nar-plugin</artifactId>
+						<artifactId>nar-maven-plugin</artifactId>
 						<configuration>
 							<c>
 								<name>gcc</name>
