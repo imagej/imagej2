@@ -51,7 +51,8 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<artifactId>maven-nar-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>nar-maven-plugin</artifactId>
 				<version>${nar.version}</version>
 				<extensions>true</extensions>
 				<configuration>
@@ -149,6 +150,7 @@
 											<goal>nar-gnu-process</goal>
 											<goal>nar-gnu-resources</goal>
 											<goal>nar-javah</goal>
+											<goal>nar-process-libraries</goal>
 											<goal>nar-resources</goal>
 											<goal>nar-system-generate</goal>
 											<goal>nar-testCompile</goal>
