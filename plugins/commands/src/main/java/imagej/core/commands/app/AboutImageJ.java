@@ -69,7 +69,6 @@ import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
-
 import org.scijava.ItemIO;
 import org.scijava.app.App;
 import org.scijava.app.AppService;

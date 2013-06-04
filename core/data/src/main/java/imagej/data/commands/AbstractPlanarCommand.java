@@ -44,8 +44,7 @@ import org.scijava.plugin.Parameter;
 /**
  * Abstract superclass for commands that can operate on a single plane.
  * 
- * @author Mark Hiner hinerm at gmail.com
- *
+ * @author Mark Hiner
  */
 public abstract class AbstractPlanarCommand implements PlanarCommand {
   

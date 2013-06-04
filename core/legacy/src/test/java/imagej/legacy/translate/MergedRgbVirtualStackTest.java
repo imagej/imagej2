@@ -49,7 +49,6 @@ import net.imglib2.type.numeric.RealType;
 import org.junit.Test;
 import org.scijava.Context;
 
-
 /**
  * Tests the MergedRgbVirtualStack
  * 

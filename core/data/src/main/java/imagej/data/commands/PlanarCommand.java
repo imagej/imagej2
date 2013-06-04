@@ -43,8 +43,7 @@ import net.imglib2.RandomAccessibleInterval;
  * Interface marking commands that can be toggled to run on the current plane,
  * instead of a complete image.
  * 
- * @author Mark Hiner hinerm at gmail.com
- *
+ * @author Mark Hiner
  */
 public interface PlanarCommand extends Command {
   
