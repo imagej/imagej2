@@ -43,7 +43,6 @@ import imagej.io.IOService;
 import io.scif.io.img.ImgIOException;
 import net.imglib2.exception.IncompatibleTypeException;
 
-
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

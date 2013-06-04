@@ -46,7 +46,6 @@ import java.io.IOException;
 
 import net.imglib2.exception.IncompatibleTypeException;
 
-
 import org.scijava.app.StatusService;
 import org.scijava.event.EventService;
 import org.scijava.service.Service;

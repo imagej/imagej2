@@ -45,7 +45,6 @@ import imagej.ui.UIService;
 import io.scif.io.img.ImgIOException;
 import net.imglib2.exception.IncompatibleTypeException;
 
-
 import org.scijava.ItemIO;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Menu;
