@@ -35,8 +35,8 @@
 
 package imagej.io;
 
-import ome.scifio.common.StatusEvent;
-import ome.scifio.common.StatusListener;
+import io.scif.common.StatusEvent;
+import io.scif.common.StatusListener;
 
 import org.scijava.app.StatusService;
 
