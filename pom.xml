@@ -6,6 +6,7 @@
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
 		<version>1.44</version>
+		<relativePath />
 	</parent>
 
 	<groupId>net.imagej</groupId>
