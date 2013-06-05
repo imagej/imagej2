@@ -265,8 +265,8 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 	</mailingLists>
 
 	<scm>
-		<connection>scm:git:git://github.com/imagej/imagej.git</connection>
-		<developerConnection>scm:git:git@github.com:imagej/imagej.git</developerConnection>
+		<connection>scm:git:git://github.com/imagej/imagej</connection>
+		<developerConnection>scm:git:git@github.com:imagej/imagej</developerConnection>
 		<tag>HEAD</tag>
 		<url>https://github.com/imagej/imagej</url>
 	</scm>
