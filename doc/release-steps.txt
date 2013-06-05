@@ -3,23 +3,12 @@ Releasing a new version of ImageJ2 involves three broad steps:
 -------------------------------------------------------------------------------
 I. BUILD IMGLIB2 RELEASE BINARIES:
 
-1) In ImgLib repository, run the tag-release.sh script; e.g.:
-       bin/tag-release.sh 2.0.0-SNAPSHOT 2.0.0-beta3 1.46r 4.4.0
+In ImgLib repository, run scijava-common release-version.sh script; e.g.:
+    release-version.sh --no-batch-mode 2.0.0-beta-7
 
-   Where:
-       - "2.0.0-SNAPSHOT" is the current/previous development version
-       - "2.0.0-beta3" is the new release version
-       - "1.46r" is the desired version of ImageJ1 to pin
-       -  "4.4.0" is the desired version of SCIFIO to pin
-
-2) Make sure everything builds successfully:
-       mvn clean install
-
-3) If all is well (i.e., "BUILD SUCCESSFUL") then deploy the result:
-       mvn -DupdateReleaseInfo=true -DskipTests deploy
-
-4) Push the tag:
-       git push origin v2.x.x
+Where "2.0.0-beta-7" is the new release version.
+Set the new development version back to "2.0.0-SNAPSHOT" again.
+(Once we are out of beta, this will no longer be necessary.)
 
 -------------------------------------------------------------------------------
 II. BUILD IMAGEJ2 RELEASE BINARIES:
