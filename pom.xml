@@ -249,13 +249,6 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 			<archive>http://list.nih.gov/archives/imagej.html</archive>
 		</mailingList>
 		<mailingList>
-			<name>ImageJX</name>
-			<subscribe>http://groups.google.com/group/imagejx</subscribe>
-			<unsubscribe>http://groups.google.com/group/imagejx</unsubscribe>
-			<post>imagejx@googlegroups.com</post>
-			<archive>http://groups.google.com/group/imagejx</archive>
-		</mailingList>
-		<mailingList>
 			<name>ImageJ-devel</name>
 			<subscribe>http://imagej.net/mailman/listinfo/imagej-devel</subscribe>
 			<unsubscribe>http://imagej.net/mailman/listinfo/imagej-devel</unsubscribe>
