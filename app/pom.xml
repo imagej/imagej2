@@ -121,7 +121,6 @@
 
 	<properties>
 		<project.rootdir>${basedir}/..</project.rootdir>
-		<launcher.version>2.0.0-SNAPSHOT</launcher.version>
 	</properties>
 
 	<build>
@@ -158,10 +157,10 @@
 								<artifactItem>
 									<groupId>${project.groupId}</groupId>
 									<artifactId>ij-launcher</artifactId>
-									<version>${launcher.version}</version>
+									<version>${imagej-launcher.version}</version>
 									<type>nar</type>
 									<outputDirectory>${project.build.directory}/</outputDirectory>
-									<destFileName>ij-launcher-${launcher.version}.jar</destFileName>
+									<destFileName>ij-launcher-${imagej-launcher.version}.jar</destFileName>
 								</artifactItem>
 							</artifactItems>
 						</configuration>
@@ -177,7 +176,7 @@
 								<artifactItem>
 									<groupId>${project.groupId}</groupId>
 									<artifactId>ij-launcher</artifactId>
-									<version>${launcher.version}</version>
+									<version>${imagej-launcher.version}</version>
 									<classifier>amd64-Linux-gcc-executable</classifier>
 									<type>nar</type>
 									<outputDirectory>${project.build.directory}/</outputDirectory>
@@ -185,7 +184,7 @@
 								<artifactItem>
 									<groupId>${project.groupId}</groupId>
 									<artifactId>ij-launcher</artifactId>
-									<version>${launcher.version}</version>
+									<version>${imagej-launcher.version}</version>
 									<classifier>i386-Linux-gcc-executable</classifier>
 									<type>nar</type>
 									<outputDirectory>${project.build.directory}/</outputDirectory>
@@ -193,7 +192,7 @@
 								<artifactItem>
 									<groupId>${project.groupId}</groupId>
 									<artifactId>ij-launcher</artifactId>
-									<version>${launcher.version}</version>
+									<version>${imagej-launcher.version}</version>
 									<classifier>amd64-Windows-gcc-executable</classifier>
 									<type>nar</type>
 									<outputDirectory>${project.build.directory}/</outputDirectory>
@@ -201,7 +200,7 @@
 								<artifactItem>
 									<groupId>${project.groupId}</groupId>
 									<artifactId>ij-launcher</artifactId>
-									<version>${launcher.version}</version>
+									<version>${imagej-launcher.version}</version>
 									<classifier>x86-Windows-gcc-executable</classifier>
 									<type>nar</type>
 									<outputDirectory>${project.build.directory}/</outputDirectory>
@@ -209,7 +208,7 @@
 								<artifactItem>
 									<groupId>${project.groupId}</groupId>
 									<artifactId>ij-launcher</artifactId>
-									<version>${launcher.version}</version>
+									<version>${imagej-launcher.version}</version>
 									<classifier>i386-MacOSX-gcc-executable</classifier>
 									<type>nar</type>
 									<outputDirectory>${project.build.directory}/</outputDirectory>
@@ -217,7 +216,7 @@
 								<artifactItem>
 									<groupId>${project.groupId}</groupId>
 									<artifactId>ij-launcher</artifactId>
-									<version>${launcher.version}</version>
+									<version>${imagej-launcher.version}</version>
 									<classifier>x86_64-MacOSX-gcc-executable</classifier>
 									<type>nar</type>
 									<outputDirectory>${project.build.directory}/</outputDirectory>

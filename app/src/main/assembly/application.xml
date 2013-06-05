@@ -88,9 +88,9 @@
 
 		<!-- Include the ImageJ launcher executables in appropriate locations. -->
 		<file>
-			<source>target/ij-launcher-${project.version}.jar</source>
+			<source>target/ij-launcher-${imagej-launcher.version}.jar</source>
 			<outputDirectory>jars/</outputDirectory>
-			<destName>ij-launcher-${project.version}.jar</destName>
+			<destName>ij-launcher-${imagej-launcher.version}.jar</destName>
 		</file>
 		<file>
 			<source>target/bin/i386-Linux-gcc/ij-launcher</source>
