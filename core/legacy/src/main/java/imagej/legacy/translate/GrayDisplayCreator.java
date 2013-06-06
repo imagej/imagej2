@@ -36,6 +36,7 @@
 package imagej.legacy.translate;
 
 import ij.ImagePlus;
+import ij.VirtualStack;
 import ij.process.ImageProcessor;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
@@ -136,7 +137,8 @@ public class GrayDisplayCreator implements DisplayCreator {
 		Dataset ds;
 		if (preferredOrder[0] == Axes.X &&
 				preferredOrder[1] == Axes.Y &&
-			!imp.getCalibration().isSigned16Bit())
+			!imp.getCalibration().isSigned16Bit() &&
+			!(imp.getStack() instanceof VirtualStack))
 		{
 			ds = makeExactDataset(imp, preferredOrder);
 			planeHarmonizer.updateDataset(ds, imp);
