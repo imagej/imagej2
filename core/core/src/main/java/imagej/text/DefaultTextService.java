@@ -43,13 +43,11 @@ import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.Service;
-import org.scijava.util.FileUtils;
 
 /**
  * Default service for working with text formats.
@@ -63,9 +61,6 @@ public final class DefaultTextService extends
 
 	@Parameter
 	public PluginService pluginService;
-
-	/** List of available text formats. */
-	private ArrayList<TextFormat> formats = new ArrayList<TextFormat>();
 
 	// -- TextService methods --
 
@@ -89,20 +84,6 @@ public final class DefaultTextService extends
 		final TextFormat format = getHandler(file);
 		if (format == null) return null;
 		return "<html><body>" + format.asHTML(open(file)) + "</body></html>";
-	}
-
-	// -- HandlerService methods --
-
-	@Override
-	public TextFormat getHandler(final File file) {
-		final String extension = FileUtils.getExtension(file);
-		for (final TextFormat format : formats) {
-			for (final String ext : format.getExtensions()) {
-				if (ext.equals(extension)) return format;
-			}
-		}
-		// no suitable format
-		return null;
 	}
 
 	// -- PTService methods --
