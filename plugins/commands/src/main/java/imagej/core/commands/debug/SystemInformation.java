@@ -86,13 +86,6 @@ public class SystemInformation implements Command {
 
 		sb.append(appService.getApp(ImageJApp.NAME).getInfo(false) + NL);
 
-		sb.append(NL);
-		sb.append("-- Services --" + NL);
-		final List<Service> services = context.getServiceIndex().getAll();
-		for (final Service service : services) {
-			sb.append(service + NL);
-		}
-
 		final Map<String, App> apps = appService.getApps();
 		for (final String name : apps.keySet()) {
 			final App app = apps.get(name);
@@ -106,6 +99,13 @@ public class SystemInformation implements Command {
 			if (manifest != null) {
 				sb.append(getManifestData(manifest));
 			}
+		}
+
+		sb.append(NL);
+		sb.append("-- Services --" + NL);
+		final List<Service> services = context.getServiceIndex().getAll();
+		for (final Service service : services) {
+			sb.append(service + NL);
 		}
 
 		sb.append(NL);
