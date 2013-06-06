@@ -71,7 +71,7 @@ This project provides a native launcher for ImageJ.
 
 Then, to deploy:
 
-    open http://jenkins.imagej.net/job/ImageJ-launcher/build
+    open [http://jenkins.imagej.net/job/ImageJ-launcher/build](http://jenkins.imagej.net/job/ImageJ-launcher/build)
 
 And build the newly pushed release tag; e.g., `ij-launcher-2.0.0`.
 
@@ -92,9 +92,9 @@ The following steps perform a release of ImageJ itself:
   development version back to `2.0.0-SNAPSHOT` afterwards.
   Once ImageJ2 is out of beta, it will no longer be necessary.
 
-### Build the release candidate
+#### Build the release candidate
 
-    open http://jenkins.imagej.net/job/ImageJ-release-build/build
+    open [http://jenkins.imagej.net/job/ImageJ-release-build/build](http://jenkins.imagej.net/job/ImageJ-release-build/build)
 
 And specify the newly pushed `temp` tag.
 
