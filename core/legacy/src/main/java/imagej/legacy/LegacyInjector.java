@@ -35,6 +35,7 @@
 
 package imagej.legacy;
 
+import java.awt.GraphicsEnvironment;
 import java.lang.reflect.Field;
 
 import javassist.bytecode.DuplicateMemberException;
@@ -56,6 +57,10 @@ public class LegacyInjector {
 	public void injectHooks(final ClassLoader classLoader) {
 		// NB: Override class behavior before class loading gets too far along.
 		hacker = new CodeHacker(classLoader);
+
+		if (GraphicsEnvironment.isHeadless()) {
+			new LegacyHeadless(hacker).patch();
+		}
 
 		// override behavior of ij.ImageJ
 		hacker.insertNewMethod("ij.ImageJ",
