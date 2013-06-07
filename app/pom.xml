@@ -59,12 +59,6 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ui-swing-script-editor</artifactId>
-			<version>${project.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-platforms</artifactId>
 			<version>${project.version}</version>
 			<scope>runtime</scope>
@@ -78,30 +72,6 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-tools</artifactId>
-			<version>${project.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ui-swing</artifactId>
-			<version>${project.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ui-swing-commands</artifactId>
-			<version>${project.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ui-swing-tools</artifactId>
-			<version>${project.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ui-swing-updater</artifactId>
 			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
@@ -366,6 +336,49 @@
 			</build>
 		</profile>
 
+		<!-- The swing profile includes the Swing UI components.
+		     They are always included unless java.awt.headless is set. -->
+		<profile>
+			<id>swing</id>
+			<activation>
+				<property>
+					<name>!java.awt.headless</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>ij-ui-swing</artifactId>
+					<version>${project.version}</version>
+					<scope>runtime</scope>
+				</dependency>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>ij-ui-swing-commands</artifactId>
+					<version>${project.version}</version>
+					<scope>runtime</scope>
+				</dependency>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>ij-ui-swing-script-editor</artifactId>
+					<version>${project.version}</version>
+					<scope>runtime</scope>
+				</dependency>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>ij-ui-swing-tools</artifactId>
+					<version>${project.version}</version>
+					<scope>runtime</scope>
+				</dependency>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>ij-ui-swing-updater</artifactId>
+					<version>${project.version}</version>
+					<scope>runtime</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
 		<!-- The deps profile builds the imagej-x.y.z-all uber-jar, which is a
 		     bundle of ij-app with all dependencies. While we do not encourage
 		     its use, it can simplify deployment in some environments; see:
@@ -400,6 +413,7 @@
 				</plugins>
 			</build>
 		</profile>
+
 		<profile>
 			<id>populate-app</id>
 			<build>
