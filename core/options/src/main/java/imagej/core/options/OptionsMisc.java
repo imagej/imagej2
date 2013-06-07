@@ -77,7 +77,7 @@ public class OptionsMisc extends OptionsPlugin {
 	private boolean debugMode = false;
 
 	@Parameter(label = "Exit when quitting")
-	private boolean exitWhenQuitting = false;
+	private boolean exitWhenQuitting = true;
 
 	// -- OptionsMisc methods --
 
