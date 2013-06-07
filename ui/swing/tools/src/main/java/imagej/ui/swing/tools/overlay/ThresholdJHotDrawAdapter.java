@@ -1,0 +1,117 @@
+/*
+ * #%L
+ * ImageJ software for multidimensional image processing and analysis.
+ * %%
+ * Copyright (C) 2009 - 2013 Board of Regents of the University of
+ * Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
+ * Institute of Molecular Cell Biology and Genetics.
+ * %%
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * The views and conclusions contained in the software and documentation are
+ * those of the authors and should not be interpreted as representing official
+ * policies, either expressed or implied, of any organization.
+ * #L%
+ */
+
+package imagej.ui.swing.tools.overlay;
+
+import imagej.data.Dataset;
+import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
+import imagej.data.overlay.Overlay;
+import imagej.data.overlay.ThresholdOverlay;
+import imagej.data.threshold.ThresholdService;
+import imagej.tool.Tool;
+import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
+import imagej.ui.swing.overlay.IJCreationTool;
+import imagej.ui.swing.overlay.JHotDrawAdapter;
+import imagej.ui.swing.overlay.JHotDrawTool;
+
+import java.awt.Shape;
+
+import org.jhotdraw.draw.Figure;
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
+
+/**
+ * @author Barry DeZonia
+ */
+@Plugin(type = JHotDrawAdapter.class, priority = Priority.HIGH_PRIORITY)
+public class ThresholdJHotDrawAdapter extends
+	AbstractJHotDrawAdapter<ThresholdOverlay, ThresholdFigure>
+{
+
+	// -- JHotDrawAdapter methods --
+
+	@Override
+	public boolean supports(Tool tool) {
+		return false; // there is no threshold tool
+	}
+
+	@Override
+	public boolean supports(Overlay overlay, Figure figure) {
+		if (!(overlay instanceof ThresholdOverlay)) return false;
+		return figure == null || figure instanceof ThresholdFigure;
+	}
+
+	@Override
+	public Overlay createNewOverlay() {
+		ImageDisplayService imageDisplayService = getImageDisplayService();
+		ThresholdService thresholdService = getThresholdService();
+		ImageDisplay display = imageDisplayService.getActiveImageDisplay();
+		if (display == null) return null;
+		return thresholdService.getThreshold(display);
+	}
+
+	@Override
+	public Figure createDefaultFigure() {
+		ImageDisplayService imageDisplayService = getImageDisplayService();
+		ThresholdService thresholdService = getThresholdService();
+		ImageDisplay display = imageDisplayService.getActiveImageDisplay();
+		if (display == null) return null;
+		Dataset dataset = imageDisplayService.getActiveDataset();
+		if (dataset == null) return null;
+		ThresholdOverlay overlay = thresholdService.getThreshold(display);
+		return new ThresholdFigure(display, dataset, overlay);
+	}
+
+	@Override
+	public JHotDrawTool getCreationTool(ImageDisplay display) {
+		return new IJCreationTool<ThresholdFigure>(display, this);
+	}
+
+	@Override
+	public Shape toShape(ThresholdFigure figure) {
+		throw new UnsupportedOperationException("to be implemented"); // TODO
+	}
+
+	// -- helpers --
+
+	private ImageDisplayService getImageDisplayService() {
+		return getContext().getService(ImageDisplayService.class);
+	}
+
+	private ThresholdService getThresholdService() {
+		return getContext().getService(ThresholdService.class);
+	}
+}
