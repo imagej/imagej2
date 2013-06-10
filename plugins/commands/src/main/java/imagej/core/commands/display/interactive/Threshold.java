@@ -266,15 +266,7 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 		else if (method.getMessage() != null) {
 			log.warn(method.getMessage());
 		}
-		Dataset dataset = imgDispSrv.getActiveDataset(display);
-		long minBin = hist.min();
-		long maxBin = hist.max();
-		@SuppressWarnings("unchecked")
-		T lowest = (T) dataset.getImgPlus().firstElement();
-		T highest = lowest.copy();
-		hist.getLowerBound(minBin, lowest);
-		hist.getUpperBound(maxBin, highest);
-		double maxRange = highest.getRealDouble() - lowest.getRealDouble();
+		double maxRange = hist.max();
 		// TODO : what is best increment? To avoid roundoff errs use a teeny inc
 		// (like 0.0001 instead of 1). But then result does not match IJ1. With
 		// teeny inc dark bckgrnd bounces from (0,cutoff) to (cutoff,255) rather
