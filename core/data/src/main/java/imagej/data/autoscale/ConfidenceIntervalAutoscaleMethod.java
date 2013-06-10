@@ -133,7 +133,7 @@ public class ConfidenceIntervalAutoscaleMethod<T extends RealType<T>> extends
 		Histogram1d<T> histogram = new Histogram1d<T>(mapper);
 		histogram.countData(interval);
 		// calc some sizes
-		long totValues = histogram.dfd().totalValues();
+		long totValues = histogram.distributionCount();
 		long lowerSize = (long) Math.floor(lowerTail * totValues);
 		long upperSize = (long) Math.floor(upperTail * totValues);
 		// determine bin number containing > than lower tail size
