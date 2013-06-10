@@ -430,7 +430,7 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 			histogram = allocateHistogram(ds.isInteger(), minMax);
 		}
 		else {
-			existingHist.dfd().resetCounters();
+			existingHist.resetCounters();
 			histogram = existingHist;
 		}
 		histogram.countData(data);
