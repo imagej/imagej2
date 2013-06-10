@@ -35,6 +35,8 @@
 
 package imagej.data.threshold;
 
+import net.imglib2.algorithm.histogram.Histogram1d;
+
 import org.scijava.plugin.Plugin;
 
 // This plugin code ported from the original MatLab code of the max likelihood
@@ -55,7 +57,8 @@ public class MaxLikelihoodThresholdMethod extends AbstractThresholdMethod {
 	private String errMessage;
 
 	@Override
-	public int getThreshold(long[] histogram) {
+	public long getThreshold(Histogram1d<?> hist) {
+		long[] histogram = hist.toLongArray();
 		/*
 			T =  th_maxlik(I,n)
 			
@@ -93,7 +96,7 @@ public class MaxLikelihoodThresholdMethod extends AbstractThresholdMethod {
 		// % The initial estimate for the threshold is found with the MINIMUM
 		// % algorithm.
 		MinimumThresholdMethod method = new MinimumThresholdMethod();
-		int T = method.getThreshold(histogram);
+		int T = (int) method.getThreshold(hist);
 
 		double eps = 0.0000001;
 

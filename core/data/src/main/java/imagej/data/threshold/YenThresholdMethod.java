@@ -35,6 +35,8 @@
 
 package imagej.data.threshold;
 
+import net.imglib2.algorithm.histogram.Histogram1d;
+
 import org.scijava.plugin.Plugin;
 
 // NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
@@ -50,7 +52,8 @@ import org.scijava.plugin.Plugin;
 public class YenThresholdMethod extends AbstractThresholdMethod {
 
 	@Override
-	public int getThreshold(long[] histogram) {
+	public long getThreshold(Histogram1d<?> hist) {
+		long[] histogram = hist.toLongArray();
 		// Implements Yen thresholding method
 		// 1) Yen J.C., Chang F.J., and Chang S. (1995) "A New Criterion
 		// for Automatic Multilevel Thresholding" IEEE Trans. on Image

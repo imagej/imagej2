@@ -35,6 +35,8 @@
 
 package imagej.data.threshold;
 
+import net.imglib2.algorithm.histogram.Histogram1d;
+
 import org.scijava.plugin.Plugin;
 
 // NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
@@ -53,7 +55,8 @@ public class MinErrorThresholdMethod extends AbstractThresholdMethod {
 	private String errMsg = null;
 
 	@Override
-	public int getThreshold(long[] histogram) {
+	public long getThreshold(Histogram1d<?> hist) {
+		long[] histogram = hist.toLongArray();
 		// Kittler and J. Illingworth, "Minimum error thresholding," Pattern
 		// Recognition, vol. 19, pp. 41-47, 1986.
 		// C. A. Glasbey, "An analysis of histogram-based thresholding algorithms,"
@@ -65,7 +68,7 @@ public class MinErrorThresholdMethod extends AbstractThresholdMethod {
 		// presentation and the original Matlab code.
 
 		// Initial estimate for the threshold is found with the MEAN algorithm.
-		int threshold = new MeanThresholdMethod().getThreshold(histogram);
+		int threshold = (int) new MeanThresholdMethod().getThreshold(hist);
 		int Tprev = -2;
 		double mu, nu, p, q, sigma2, tau2, w0, w1, w2, sqterm, temp;
 		// int counter=1;

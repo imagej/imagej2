@@ -35,6 +35,8 @@
 
 package imagej.data.threshold;
 
+import net.imglib2.algorithm.histogram.Histogram1d;
+
 import org.scijava.plugin.Plugin;
 
 // NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
@@ -52,7 +54,8 @@ public class IsoDataThresholdMethod extends AbstractThresholdMethod {
 	private String errMsg = null;
 
 	@Override
-	public int getThreshold(long[] histogram) {
+	public long getThreshold(Histogram1d<?> hist) {
+		long[] histogram = hist.toLongArray();
 		// Also called intermeans
 		// Iterative procedure based on the isodata algorithm [T.W. Ridler,
 		// S. Calvard, Picture thresholding using an iterative selection method,

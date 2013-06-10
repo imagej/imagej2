@@ -35,6 +35,8 @@
 
 package imagej.data.threshold;
 
+import net.imglib2.algorithm.histogram.Histogram1d;
+
 import org.scijava.plugin.Plugin;
 
 // NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
@@ -50,7 +52,8 @@ import org.scijava.plugin.Plugin;
 public class PercentileThresholdMethod extends AbstractThresholdMethod {
 
 	@Override
-	public int getThreshold(long[] histogram) {
+	public long getThreshold(Histogram1d<?> hist) {
+		long[] histogram = hist.toLongArray();
 		// W. Doyle,"Operation useful for similarity-invariant pattern recognition,"
 		// Journal of the Association for Computing Machinery, vol. 9,pp. 259-267,
 		// 1962.

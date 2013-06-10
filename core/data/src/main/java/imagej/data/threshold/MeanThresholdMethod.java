@@ -35,6 +35,8 @@
 
 package imagej.data.threshold;
 
+import net.imglib2.algorithm.histogram.Histogram1d;
+
 import org.scijava.plugin.Plugin;
 
 // NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
@@ -50,7 +52,8 @@ import org.scijava.plugin.Plugin;
 public class MeanThresholdMethod extends AbstractThresholdMethod {
 
 	@Override
-	public int getThreshold(long[] histogram) {
+	public long getThreshold(Histogram1d<?> hist) {
+		long[] histogram = hist.toLongArray();
 		// C. A. Glasbey, "An analysis of histogram-based thresholding algorithms,"
 		// CVGIP: Graphical Models and Image Processing, vol. 55, pp. 532-537, 1993.
 		//

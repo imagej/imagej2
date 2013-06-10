@@ -36,6 +36,7 @@
 package imagej.data.threshold;
 
 import imagej.plugin.SingletonPlugin;
+import net.imglib2.algorithm.histogram.Histogram1d;
 
 import org.scijava.Contextual;
 import org.scijava.Prioritized;
@@ -55,7 +56,7 @@ public interface ThresholdMethod extends Contextual, Prioritized,
 	 * Calculates the threshold index from an unnormalized histogram of data.
 	 * Returns -1 if the threshold index cannot be found.
 	 */
-	int getThreshold(long[] histogram);
+	long getThreshold(Histogram1d<?> histogram);
 
 	/**
 	 * Returns any message associated with the last call to getThreshold(). If

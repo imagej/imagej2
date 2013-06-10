@@ -35,6 +35,8 @@
 
 package imagej.data.threshold;
 
+import net.imglib2.algorithm.histogram.Histogram1d;
+
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.SortablePlugin;
 
@@ -53,7 +55,8 @@ public class HuangThresholdMethod extends SortablePlugin implements
 {
 
 	@Override
-	public int getThreshold(long[] histogram) {
+	public long getThreshold(Histogram1d<?> hist) {
+		long[] histogram = hist.toLongArray();
 		// Implements Huang's fuzzy thresholding method
 		// Uses Shannon's entropy function (one can also use Yager's entropy
 		// function) Huang L.-K. and Wang M.-J.J. (1995) "Image Thresholding by
