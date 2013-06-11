@@ -88,14 +88,13 @@ public class FlipAxis extends DynamicCommand {
 
 	private AxisType axisType = null;
 
-	private String reason = null;
-
 	// -- Command methods --
 
 	@Override
 	public void run() {
-		if (inputBad()) cancel(reason);
-		swapData();
+		String err = checkInput();
+		if (err != null) cancel(err);
+		else swapData();
 	}
 
 	// -- accessors --
@@ -176,21 +175,14 @@ public class FlipAxis extends DynamicCommand {
 		}
 	}
 
-	private boolean inputBad() {
-		if (dataset == null) {
-			reason = "Dataset is null.";
-			return true;
-		}
+	private String checkInput() {
+		if (dataset == null) return "Dataset is null.";
 		axisType = getAxis();
-		if (axisType == null) {
-			reason = "Axis is null.";
-			return true;
-		}
+		if (axisType == null) return "Axis is null.";
 		if (dataset.getAxisIndex(axisType) < 0) {
-			reason = axisType + " axis is not present in dataset.";
-			return true;
+			return axisType + " axis is not present in dataset.";
 		}
-		return false;
+		return null;
 	}
 
 }
