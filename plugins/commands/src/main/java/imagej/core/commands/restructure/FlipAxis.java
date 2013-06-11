@@ -63,6 +63,10 @@ import org.scijava.plugin.Plugin;
 // The plugin is referenced twice as Image Transform Flip Z and Image Stacks
 // Tools Reverse.
 
+// TODO Whether we use Cursors or Views to make wholesale data changes I now
+// realize that a flip data along axis might need to flip color tables as well.
+// :(
+
 /**
  * Flips the planes of a {@link Dataset} along a user specified axis.
  * 
@@ -87,6 +91,8 @@ public class FlipAxis extends DynamicCommand {
 	// -- instance variables --
 
 	private AxisType axisType = null;
+
+	private int d;
 
 	// -- Command methods --
 
@@ -140,8 +146,40 @@ public class FlipAxis extends DynamicCommand {
 
 	// -- helpers --
 
+	// CTR has mentioned we can use Views.invertAxis() to get an inverted view and
+	// then assign back the Img(View?) to the Dataset. No messing with data values
+	// at all. There is an ImgView class in OPS that may be helpful.
+
+	private void newSwapDataBroken() {
+		long[] min = new long[dataset.numDimensions()];
+		long[] max = new long[dataset.numDimensions()];
+		for (int i = 0; i < max.length; i++) {
+			max[i] = dataset.dimension(i) - 1;
+		}
+		max[d] = (dataset.dimension(d) / 2) - 1;
+		// NB due to earlier error checking max[d] must be >= 0
+		IntervalView<? extends RealType<?>> halfForw =
+			Views.interval(dataset.getImgPlus(), min, max);
+		IntervalView<? extends RealType<?>> invertedView =
+			Views.invertAxis(dataset.getImgPlus(), d);
+		IntervalView<? extends RealType<?>> halfBack =
+			Views.interval(invertedView, min.clone(), max.clone());
+		IterableInterval<? extends RealType<?>> dataForw = Views.iterable(halfForw);
+		// IterableInterval<? extends RealType<?>> dataBack =
+		// Views.iterable(halfBack);
+		// Cursor<? extends RealType<?>> back = dataBack.cursor();
+		Cursor<? extends RealType<?>> forw = dataForw.cursor();
+		RandomAccess<? extends RealType<?>> back = halfBack.randomAccess();
+		while (forw.hasNext()) {
+			forw.fwd();
+			back.setPosition(forw);
+			double orig = forw.get().getRealDouble();
+			forw.get().setReal(back.get().getRealDouble());
+			back.get().setReal(orig);
+		}
+	}
+
 	private void swapData() {
-		int d = dataset.getAxisIndex(axisType);
 		long lo = 0;
 		long hi = dataset.dimension(d) - 1;
 		while (lo < hi) {
@@ -152,7 +190,6 @@ public class FlipAxis extends DynamicCommand {
 	}
 
 	private void swapChunk(long pos1, long pos2) {
-		int d = dataset.getAxisIndex(axisType);
 		long[] min = new long[dataset.numDimensions()];
 		long[] max = new long[dataset.numDimensions()];
 		for (int i = 0; i < max.length; i++) {
@@ -179,9 +216,9 @@ public class FlipAxis extends DynamicCommand {
 		if (dataset == null) return "Dataset is null.";
 		axisType = getAxis();
 		if (axisType == null) return "Axis is null.";
-		if (dataset.getAxisIndex(axisType) < 0) {
-			return axisType + " axis is not present in dataset.";
-		}
+		d = dataset.getAxisIndex(axisType);
+		if (d < 0) return axisType + " axis is not present in dataset.";
+		if (dataset.dimension(d) == 1) return axisType + " axis is a single plane.";
 		return null;
 	}
 
