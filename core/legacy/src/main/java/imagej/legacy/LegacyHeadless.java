@@ -51,19 +51,41 @@ import java.util.List;
 import java.util.Vector;
 
 /**
- * This class uses Javassist to provide headless mode operations
- *
- * At least on Linux, which is the most prevalent operating system on cluster nodes due to its
- * ease of deployment and licensing, OpenJDK/Sun Java has problems to instantiate certain GUI
- * components such as Menus and Windows. The symptom is a thrown HeadlessException.
- *
- * Therefore, this class can be used to override the superclass of ij.gui.GenericDialog and to
- * override the use of AWT menus in ij.Menus as well. For many batch mode tasks, this is
- * enough to ensure that no HeadlessException gets thrown.
+ * Limited headless support for ImageJ 1.x.
+ * 
+ * <p>
+ * <i>Headless operation</i> means: does not require a graphical user interface
+ * (GUI). Due to some limitations in Java on Linux and Unix, it is impossible to
+ * instantiate GUI elements when there is no way to display them (i.e. when
+ * there is no desktop environment) -- even if they are never to be displayed.
+ * </p>
+ * 
+ * <p>
+ * Therefore, even when running in batch mode, we have to prevent GUI elements
+ * -- such as dialogs -- to be instantiated.
+ * </p>
+ * 
+ * <p>
+ * Unfortunately, ImageJ 1.x' macro handling works exclusively by instantiating
+ * dialogs (but not displaying them). Macros are executed by overriding the
+ * dialog methods to extract the user-specified values.
+ * </p>
+ * 
+ * <p>
+ * The limited legacy headless support overrides {@link ij.gui.GenericDialog} to
+ * <b>not</b> be a subclass of {@link java.awt.Dialog}. This will always be a
+ * fragile solution, especially with plugins trying to add additional GUI
+ * elements to the dialog: when those GUI elements are instantiated, Java will
+ * throw a {@link java.awt.HeadlessException}. Hence the legacy headless support
+ * only works with standard (i.e. non-fancy) plugins; this could only be fixed
+ * by overriding the plugin class loader with a version inspecting every plugin
+ * class and using Javassist to override such instantiations. Given that
+ * ImageJ2's architecture handles headless operation much more gracefully, that
+ * enormous effort would have little to gain.
+ * </p>
  * 
  * @author Johannes Schindelin
  */
-
 public class LegacyHeadless  {
 
 	private final CodeHacker hacker;
