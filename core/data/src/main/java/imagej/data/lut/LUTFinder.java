@@ -40,6 +40,7 @@ import imagej.util.AppUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -103,13 +104,17 @@ public class LUTFinder {
 	}
 
 	private void getLUTs(final Map<String, URL> result, final URL base) {
-		final String prefix = base.toString();
-		for (final URL url : FileUtils.listContents(base)) {
-			final String string = url.toString();
-			if (!string.startsWith(prefix)) continue;
-			String key = string.substring(prefix.length());
-			key = key.replaceAll("%20", " ");
-			if (lutsPattern.matcher(string).matches()) result.put(key, url);
+		try {
+			String prefix = base.toURI().getPath();
+			for (final URL url : FileUtils.listContents(base)) {
+				String string = url.toURI().getPath();
+				if (!string.startsWith(prefix)) continue;
+				String key = string.substring(prefix.length());
+				if (lutsPattern.matcher(string).matches()) result.put(key, url);
+			}
+		}
+		catch (URISyntaxException e) {
+			throw new IllegalArgumentException(e.getMessage());
 		}
 	}
 
