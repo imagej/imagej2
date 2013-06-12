@@ -46,7 +46,9 @@ import java.util.ArrayList;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;
+import net.imglib2.display.ColorTable;
 import net.imglib2.img.Img;
+import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.IntervalView;
@@ -64,8 +66,10 @@ import org.scijava.plugin.Plugin;
 // Tools Reverse.
 
 // TODO Whether we use Cursors or Views to make wholesale data changes I now
-// realize that a flip data along axis might need to flip color tables as well.
-// :(
+// realize that a flip data along axis needs to flip color tables as well. The
+// metadata branch should allow color tables to be associated with axes and thus
+// automatically remapped by Views. Waiting for that code. Until then color
+// tables are not remapped.
 
 /**
  * Flips the planes of a {@link Dataset} along a user specified axis.
@@ -146,6 +150,16 @@ public class FlipAxis extends DynamicCommand {
 
 	// -- helpers --
 
+	private String checkInput() {
+		if (dataset == null) return "Dataset is null.";
+		axisType = getAxis();
+		if (axisType == null) return "Axis is null.";
+		d = dataset.getAxisIndex(axisType);
+		if (d < 0) return axisType + " axis is not present in dataset.";
+		if (dataset.dimension(d) == 1) return axisType + " axis is a single plane.";
+		return null;
+	}
+
 	// CTR has mentioned we can use Views.invertAxis() to get an inverted view and
 	// then assign back the Img(View?) to the Dataset. No messing with data values
 	// at all. There is an ImgView class in OPS that may be helpful.
@@ -187,6 +201,7 @@ public class FlipAxis extends DynamicCommand {
 			lo++;
 			hi--;
 		}
+		swapColorTables();
 	}
 
 	private void swapChunk(long pos1, long pos2) {
@@ -212,14 +227,43 @@ public class FlipAxis extends DynamicCommand {
 		}
 	}
 
-	private String checkInput() {
-		if (dataset == null) return "Dataset is null.";
-		axisType = getAxis();
-		if (axisType == null) return "Axis is null.";
-		d = dataset.getAxisIndex(axisType);
-		if (d < 0) return axisType + " axis is not present in dataset.";
-		if (dataset.dimension(d) == 1) return axisType + " axis is a single plane.";
-		return null;
+	// NB - this is one approach to swapping color tables. Ideally when the
+	// metadata branch is merged Axes can be tagged with color tables and Views
+	// will automatically return the right one. Then we can use the setImg() of
+	// the inverted view of the axis and color tables will auto remap.
+
+	private void swapColorTables() {
+		if (axisType == Axes.X || axisType == Axes.Y) return;
+		long numPlanes = numPlanes(dataset);
+		if (dataset.getColorTableCount() != numPlanes) return;
+		for (int i = 0; i < (numPlanes / 2) - 1; i++) {
+			int partner = findPartner(i);
+			if (partner != i) {
+				ColorTable table = dataset.getColorTable(i);
+				dataset.setColorTable(dataset.getColorTable(partner), i);
+				dataset.setColorTable(table, partner);
+			}
+		}
 	}
 
+	private long numPlanes(Dataset ds) {
+		long tot = 1;
+		AxisType[] axes = ds.getAxes();
+		for (int i = 0; i < axes.length; i++) {
+			if (axes[i].equals(Axes.X)) continue;
+			if (axes[i].equals(Axes.Y)) continue;
+			tot *= ds.dimension(i);
+		}
+		return tot;
+	}
+
+	// NB Determine if a given color table number needs to be remapped. If no then
+	// the input index is returned. If yes then the matching partner index is
+	// returned.
+
+	private int findPartner(int i) {
+		// TODO
+		// Right now no color table swapping takes place
+		return i;
+	}
 }
