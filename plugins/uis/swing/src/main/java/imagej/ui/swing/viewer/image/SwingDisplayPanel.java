@@ -250,7 +250,16 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 			if (Axes.isXY(axis)) continue; // skip spatial axes
 			final int min = (int) extents.min(i);
 			final int max = (int) extents.max(i) + 1;
-			final int value = (int) display.getLongPosition(axis);
+			int value = (int) display.getLongPosition(axis);
+
+			if (value < min) {
+				value = min;
+				display.setPosition(min, axis);
+			}
+			else if (value >= max) {
+				value = max - 1;
+				display.setPosition(max - 1, axis);
+			}
 
 			final JScrollBar axisSlider = axisSliders.get(axis);
 			if (axisSlider == null) {
