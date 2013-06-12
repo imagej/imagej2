@@ -440,12 +440,18 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 
 	@Override
 	public long getLongPosition(final AxisType axis) {
-		if (getAxisIndex(axis) < 0) {
+		int d = getAxisIndex(axis);
+		if (d < 0) {
 			// untracked axes are all at position 0 by default
 			return 0;
 		}
 		final Long value = pos.get(axis);
-		return value == null ? 0 : value;
+		if (value == null) return 0;
+		long min = combinedInterval.min(d);
+		if (value < min) return min;
+		long max = combinedInterval.max(d);
+		if (value > max) return max;
+		return value;
 	}
 
 	@Override
