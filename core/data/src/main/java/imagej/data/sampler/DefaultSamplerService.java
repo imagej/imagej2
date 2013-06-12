@@ -194,7 +194,8 @@ public class DefaultSamplerService extends AbstractService implements
 		long numPlanes = calcNumPlanes(dims, axes);
 		if (numPlanes > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException(
-				"output image has more too many planes "+numPlanes+" (max = "+Integer.MAX_VALUE+")");
+				"output image has more too many planes " + numPlanes + " (max = " +
+					Integer.MAX_VALUE + ")");
 		}
 		output.getImgPlus().initializeColorTables((int)numPlanes);
 		if (origDs.isRGBMerged()) {
@@ -209,7 +210,9 @@ public class DefaultSamplerService extends AbstractService implements
 		return (ImageDisplay) displayService.createDisplay(name, output);
 	}
 
-	/** Copies all associated data from a SamplingDefinition to an output image. */
+	/**
+	 * Copies all associated data from a SamplingDefinition to an output image.
+	 */
 	private void copyData(final SamplingDefinition def,
 		final ImageDisplay outputImage)
 	{
@@ -224,8 +227,6 @@ public class DefaultSamplerService extends AbstractService implements
 			input.getImgPlus().randomAccess();
 		final RandomAccess<? extends RealType<?>> outputAccessor =
 			output.getImgPlus().randomAccess();
-		double min = Double.MAX_VALUE;
-		double max = -Double.MAX_VALUE;
 		while (iter1.hasNext() && iter2.hasNext()) {
 
 			// determine data positions within datasets
@@ -236,8 +237,6 @@ public class DefaultSamplerService extends AbstractService implements
 
 			// copy value
 			final double value = inputAccessor.get().getRealDouble();
-			min = Math.min(value, min);
-			max = Math.max(value, max);
 			outputAccessor.get().setReal(value);
 
 			// TODO - notice there is a lot of inefficiency following here.
@@ -266,16 +265,16 @@ public class DefaultSamplerService extends AbstractService implements
 		// keep display color tables in sync
 		updateDisplayColorTables(def, outputImage);
 
-		// set the display range from actual data values
-		// TODO - could just reuse input image's display ranges for valid channels
-		setDisplayRange(outputImage, min, max);
+		// set the display range from input data's view min/max settings
+		setDisplayRanges(def, outputImage);
 	}
 
 	/** Calculates a plane number from a position within a dimensional space. */
 	private int planeNum(final long[] dims, final long[] pos) {
 		int plane = 0;
 		int inc = 1;
-		for (int i = 2; i < dims.length; i++) { // TODO - assumes X & Y are 1st two dims
+		// TODO - assumes X & Y are 1st two dims
+		for (int i = 2; i < dims.length; i++) {
 			plane += pos[i] * inc;
 			inc *= dims[i];
 		}
@@ -317,7 +316,6 @@ public class DefaultSamplerService extends AbstractService implements
 				outView.setColorTable(inputColorTables.get(i), outIndex);
 			}
 		}
-		
 		/*
 		final int chAxisIn = input.getAxisIndex(Axes.CHANNEL);
 		final int chAxisOut = output.getAxisIndex(Axes.CHANNEL);
@@ -401,12 +399,19 @@ public class DefaultSamplerService extends AbstractService implements
 		return num;
 	}
 	
-	private void setDisplayRange(ImageDisplay output, double min, double max) {
-		// TODO - remove evil cast
-		DatasetView view = (DatasetView) output.getActiveView();
-		view.setChannelRanges(min, max);
-		// NB - no need to do this here
-		//view.getProjector().map();
-		//view.update();
+	private void setDisplayRanges(SamplingDefinition def, ImageDisplay output) {
+		final ImageDisplay input = def.getDisplay();
+		final DatasetView inView = imgDispService.getActiveDatasetView(input);
+		final DatasetView outView = imgDispService.getActiveDatasetView(output);
+		final int inputChanAxis = input.getAxisIndex(Axes.CHANNEL);
+		final List<List<Long>> inputRanges = def.getInputRanges();
+		for (int i = 0; i < inView.getChannelCount(); i++) {
+			int outIndex = outputColorTableNumber(inputRanges, i, inputChanAxis);
+			if (outIndex >= 0) {
+				double min = inView.getChannelMin(i);
+				double max = inView.getChannelMax(i);
+				outView.setChannelRange(outIndex, min, max);
+			}
+		}
 	}
 }
