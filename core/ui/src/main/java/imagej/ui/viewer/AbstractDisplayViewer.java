@@ -146,7 +146,9 @@ public abstract class AbstractDisplayViewer<T> extends SortablePlugin implements
 				}
 			}
 		}
-		getWindow().setTitle(getDisplay().getName() + trailer);
+		String name = getDisplay().getName();
+		if (name == null) name = "";
+		getWindow().setTitle(name + trailer);
 	}
 
 	// -- Event handlers --
