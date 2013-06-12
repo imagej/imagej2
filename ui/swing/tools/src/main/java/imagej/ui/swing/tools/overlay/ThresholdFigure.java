@@ -84,6 +84,7 @@ public class ThresholdFigure extends AbstractAttributedFigure implements
 		setAttributeEnabled(AttributeKeys.STROKE_COLOR, false);
 		setAttributeEnabled(AttributeKeys.TEXT_COLOR, false);
 		set(AttributeKeys.FILL_COLOR, Color.DARK_GRAY); // always have a color set
+		overlay.setFigure(this);
 	}
 	
 	@Override
@@ -203,13 +204,13 @@ public class ThresholdFigure extends AbstractAttributedFigure implements
 
 	private PointSet getViewedPlane() {
 		long[] pt1 = new long[dataset.numDimensions()];
-		long[] pt2 = new long[dataset.numDimensions()];
+		long[] pt2 = pt1.clone();
+		pt2[0] = dataset.dimension(0) - 1;
+		pt2[1] = dataset.dimension(1) - 1;
 		for (int i = 2; i < pt1.length; i++) {
 			AxisType axisType = dataset.axis(i);
 			pt1[i] = pt2[i] = display.getLongPosition(axisType);
 		}
-		pt2[0] = dataset.dimension(0) - 1;
-		pt2[1] = dataset.dimension(1) - 1;
 		return new HyperVolumePointSet(pt1, pt2);
 	}
 }
