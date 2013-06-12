@@ -107,7 +107,9 @@ public class LUTFinder {
 		for (final URL url : FileUtils.listContents(base)) {
 			final String string = url.toString();
 			if (!string.startsWith(prefix)) continue;
-			if (lutsPattern.matcher(string).matches()) result.put(string.substring(prefix.length()), url);
+			String key = string.substring(prefix.length());
+			key = key.replaceAll("%20", " ");
+			if (lutsPattern.matcher(string).matches()) result.put(key, url);
 		}
 	}
 
