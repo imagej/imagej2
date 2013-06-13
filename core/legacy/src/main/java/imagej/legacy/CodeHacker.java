@@ -379,7 +379,7 @@ public class CodeHacker {
 						+ "\t}");
 				throw (LinkageError)e.getCause();
 			}
-			System.err.println("Warning: Cannot load class: " + classRef.getName());
+			System.err.println("Warning: Cannot load class: " + classRef.getName() + " into " + classLoader);
 			e.printStackTrace();
 			return null;
 		} finally {
