@@ -41,7 +41,6 @@ import ij.gui.NewImage;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import net.imglib2.Cursor;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
@@ -100,7 +99,6 @@ public class LegacyImageMapTest {
 			context.getService(DatasetService.class);
 
 		Dataset ds0;
-		final ImagePlus imp1, imp2;
 		final AxisType[] axes =
 			new AxisType[] { Axes.X, Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME };
 
@@ -150,8 +148,6 @@ public class LegacyImageMapTest {
 	@Test
 	public void testRegisterLegacyImage() {
 		ImagePlus imp;
-		final Dataset ds0, ds1;
-		final ImgPlus<?> imgPlus0;
 		int c, z, t;
 
 		// dataset that was not existing

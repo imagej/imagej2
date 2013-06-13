@@ -120,7 +120,7 @@ public class Helper {
 	 * @param y - y coordinates of the pixels
 	 * @return a binary mask overlay with the ROI inside
 	 */
-	public static BinaryMaskOverlay makeBinaryMaskOverlay(final Context context,
+	public static BinaryMaskOverlay<BitType, Img<BitType>> makeBinaryMaskOverlay(final Context context,
 		final int x, final int y, final boolean[][] mask)
 	{
 		final long w = mask.length;
@@ -139,8 +139,8 @@ public class Helper {
 		}
 		final Img<BitType> offsetImg =
 			new ImgTranslationAdapter<BitType, Img<BitType>>(img, new long[] { x, y });
-		final BinaryMaskOverlay overlay =
-			new BinaryMaskOverlay(context,
+		final BinaryMaskOverlay<BitType, Img<BitType>> overlay =
+			new BinaryMaskOverlay<BitType, Img<BitType>>(context,
 				new BinaryMaskRegionOfInterest<BitType, Img<BitType>>(offsetImg));
 		return overlay;
 	}
