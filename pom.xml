@@ -79,6 +79,22 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 					</execution>
 				</executions>
 			</plugin>
+			<!--
+			 Sometimes, one needs to pass JVM options to the JVM
+			 running the unit tests, such as -verbose:class or
+			 -Djava.awt.headless=true.
+
+			 Unfortunately, maven-surefire does not expose a
+			 command-line interface to do so, therefore let's
+			 simulate it by re-using the property 'argLine' to
+			 specify those options.
+			 -->
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<argLine>${argLine}</argLine>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
