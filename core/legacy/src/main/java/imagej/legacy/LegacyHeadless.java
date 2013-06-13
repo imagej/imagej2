@@ -154,11 +154,13 @@ public class LegacyHeadless  {
 			checkboxes.add(getMacroParameter(label, defaultValue));
 		}
 
+		@SuppressWarnings("unused")
 		public void addCheckboxGroup(int rows, int columns, String[] labels, boolean[] defaultValues) {
 			for (int i = 0; i < labels.length; i++)
 				addCheckbox(labels[i], defaultValues[i]);
 		}
 
+		@SuppressWarnings("unused")
 		public void addCheckboxGroup(int rows, int columns, String[] labels, boolean[] defaultValues, String[] headings) {
 			addCheckboxGroup(rows, columns, labels, defaultValues);
 		}
@@ -175,14 +177,17 @@ public class LegacyHeadless  {
 			choices.add(items[index]);
 		}
 
+		@SuppressWarnings("unused")
 		public void addNumericField(String label, double defaultValue, int digits) {
 			numbers.add(getMacroParameter(label, defaultValue));
 		}
 
+		@SuppressWarnings("unused")
 		public void addNumericField(String label, double defaultValue, int digits, int columns, String units) {
 			addNumericField(label, defaultValue, digits);
 		}
 
+		@SuppressWarnings("unused")
 		public void addSlider(String label, double minValue, double maxValue, double defaultValue) {
 			numbers.add(getMacroParameter(label, defaultValue));
 		}
@@ -191,10 +196,12 @@ public class LegacyHeadless  {
 			strings.add(getMacroParameter(label, defaultText));
 		}
 
+		@SuppressWarnings("unused")
 		public void addStringField(String label, String defaultText, int columns) {
 			addStringField(label, defaultText);
 		}
 
+		@SuppressWarnings("unused")
 		public void addTextAreas(String text1, String text2, int rows, int columns) {
 			textArea1 = text1;
 			textArea2 = text2;
@@ -256,16 +263,26 @@ public class LegacyHeadless  {
 		}
 
 		public void dispose() {}
+		@SuppressWarnings("unused")
 		public void addDialogListener(DialogListener dl) {}
+		@SuppressWarnings("unused")
 		public void addHelp(String url) {}
+		@SuppressWarnings("unused")
 		public void addMessage(String text) {}
+		@SuppressWarnings("unused")
 		public void addMessage(String text, Font font) {}
+		@SuppressWarnings("unused")
 		public void addPanel(Panel panel) {}
+		@SuppressWarnings("unused")
 		public void addPanel(Panel panel, int contraints, Insets insets) {}
+		@SuppressWarnings("unused")
 		public void addPreviewCheckbox(PlugInFilterRunner pfr) {}
+		@SuppressWarnings("unused")
 		public void addPreviewCheckbox(PlugInFilterRunner pfr, String label) {}
+		@SuppressWarnings("unused")
 		public void centerDialog(boolean b) {}
 		public void enableYesNoCancel() {}
+		@SuppressWarnings("unused")
 		public void enableYesNoCancel(String yesLabel, String noLabel) {}
 		public Button[] getButtons() { return null; }
 		public Vector<?> getCheckboxes() { return null; }
@@ -280,10 +297,15 @@ public class LegacyHeadless  {
 		public TextArea getTextArea1() { return null; }
 		public TextArea getTextArea2() { return null; }
 		public void hideCancelButton() {}
+		@SuppressWarnings("unused")
 		public void previewRunning(boolean isRunning) {}
+		@SuppressWarnings("unused")
 		public void setEchoChar(char echoChar) {}
+		@SuppressWarnings("unused")
 		public void setHelpLabel(String label) {}
+		@SuppressWarnings("unused")
 		public void setInsets(int top, int left, int bottom) {}
+		@SuppressWarnings("unused")
 		public void setOKLabel(String label) {}
 		protected void setup() {}
 	}
