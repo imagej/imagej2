@@ -23,6 +23,10 @@ ImgLib2 provides the core data model and image processing.
   development version back to `2.0.0-SNAPSHOT` afterwards.
   Once ImgLib2 is out of beta, it will no longer be necessary.
 
+Optionally, after performing the release, [tell Jenkins to update
+`imglib2.version` in
+pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
+
 ## [SCIFIO](https://github.com/scifio/scifio)
 
 SCIFIO provides core I/O functionality.
@@ -31,6 +35,10 @@ SCIFIO provides core I/O functionality.
     release-version.sh 0.1.0
 
 - Where `0.1.0` is the new release version.
+
+Optionally, after performing the release, [tell Jenkins to update
+`scifio.version` in
+pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
 
 ## [CPPTASKS-PARALLEL](https://github.com/scijava/cpptasks-parallel)
 
@@ -60,6 +68,10 @@ We deploy unofficial release builds.
 - Note that due to the `--thirdparty` argument,
   `release:prepare` will be called in interactive mode.
 
+Optionally, after performing the release, [tell Jenkins to update
+`nar.version` in
+pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
+
 ## [IMAGEJ LAUNCHER](https://github.com/imagej/imagej-launcher)
 
 The ImageJ launcher is a native launcher for ImageJ.
@@ -74,6 +86,10 @@ Then, to deploy:
     open http://jenkins.imagej.net/job/ImageJ-launcher/build
 
 And build the newly pushed release tag; e.g., `ij-launcher-2.0.0`.
+
+Optionally, after performing the release, [tell Jenkins to update
+`imagej-launcher.version` in
+pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
 
 ## [IMAGEJ](https://github.com/imagej/imagej)
 
@@ -118,6 +134,12 @@ And specify the newly pushed `temp` tag.
 - The `--dev-version` argument is required to set the new
   development version back to `2.0.0-SNAPSHOT` afterwards.
   Once ImageJ2 is out of beta, it will no longer be necessary.
+
+#### Update pom-scijava
+
+Optionally, after performing the release, [tell Jenkins to update
+`imagej.version` in
+pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
 
 #### Upload artifacts to the ImageJ update site
 
