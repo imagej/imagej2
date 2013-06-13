@@ -47,6 +47,8 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+import javassist.ClassPool;
+
 import org.junit.Test;
 import org.scijava.Context;
 import org.scijava.util.ClassUtils;
@@ -103,7 +105,7 @@ public class LegacyHeadlessTest {
 		}
 		final ClassLoader loader = new URLClassLoader(urls, parent);
 		if (patchHeadless) {
-			final CodeHacker hacker = new CodeHacker(loader);
+			final CodeHacker hacker = new CodeHacker(loader, new ClassPool());
 			new LegacyHeadless(hacker).patch();
 			hacker.loadClasses();
 		}
