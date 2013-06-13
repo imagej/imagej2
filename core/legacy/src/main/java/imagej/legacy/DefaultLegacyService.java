@@ -356,6 +356,11 @@ public final class DefaultLegacyService extends AbstractService implements
 	public void initialize() {
 		checkInstance();
 
+		boolean hasIJ1Instance = ij1Helper.hasInstance();
+
+		// as long as we're starting up, we're in legacy mode
+		legacyIJ1Mode = true;
+
 		imageMap = new LegacyImageMap(this);
 		optionsSynchronizer = new OptionsSynchronizer(optionsService);
 
@@ -374,6 +379,8 @@ public final class DefaultLegacyService extends AbstractService implements
 		addLegacyCommands(enableBlacklist);
 
 		updateLegacyImageJSettings();
+
+		if (!hasIJ1Instance) toggleLegacyMode(false);
 	}
 
 	// -- Disposable methods --

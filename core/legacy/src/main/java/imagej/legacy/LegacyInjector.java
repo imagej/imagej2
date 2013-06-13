@@ -35,7 +35,10 @@
 
 package imagej.legacy;
 
+import java.awt.GraphicsEnvironment;
 import java.lang.reflect.Field;
+
+import javassist.bytecode.DuplicateMemberException;
 
 import org.scijava.Context;
 import org.scijava.util.ClassUtils;
@@ -55,6 +58,10 @@ public class LegacyInjector {
 		// NB: Override class behavior before class loading gets too far along.
 		hacker = new CodeHacker(classLoader);
 
+		if (GraphicsEnvironment.isHeadless()) {
+			new LegacyHeadless(hacker).patch();
+		}
+
 		// override behavior of ij.ImageJ
 		hacker.insertNewMethod("ij.ImageJ",
 			"public java.awt.Point getLocationOnScreen()");
@@ -62,8 +69,8 @@ public class LegacyInjector {
 			"public java.awt.Point getLocationOnScreen()",
 			"if ($isLegacyMode()) return super.getLocationOnScreen();");
 		hacker.insertAtTopOfMethod("ij.ImageJ", "public void quit()",
-			"$service.getContext().dispose(); if (true) return;");
-		hacker.loadClass("ij.ImageJ");
+			"if (!($service instanceof imagej.legacy.DummyLegacyService)) $service.getContext().dispose();"
+			+ "if (!$isLegacyMode()) return;");
 
 		// override behavior of ij.IJ
 		hacker.insertAtBottomOfMethod("ij.IJ",
@@ -83,7 +90,10 @@ public class LegacyInjector {
 				+ " return getLegacyService();"
 				+ "if (\"" + Context.class.getName() + "\".equals($1))"
 				+ " return getContext();");
-		hacker.loadClass("ij.IJ");
+		hacker.insertAtTopOfMethod("ij.IJ", "public static void log(java.lang.String message)");
+		hacker.insertAtTopOfMethod("ij.IJ",
+			"static java.lang.Object runUserPlugIn(java.lang.String commandName, java.lang.String className, java.lang.String arg, boolean createNewLoader)",
+			"if (classLoader != null) Thread.currentThread().setContextClassLoader(classLoader);");
 
 		// override behavior of ij.ImagePlus
 		hacker.insertAtBottomOfMethod("ij.ImagePlus", "public void updateAndDraw()");
@@ -92,7 +102,6 @@ public class LegacyInjector {
 			"public void show(java.lang.String statusMessage)");
 		hacker.insertAtBottomOfMethod("ij.ImagePlus", "public void hide()");
 		hacker.insertAtBottomOfMethod("ij.ImagePlus", "public void close()");
-		hacker.loadClass("ij.ImagePlus");
 
 		// override behavior of ij.gui.ImageWindow
 		hacker.insertNewMethod("ij.gui.ImageWindow",
@@ -105,11 +114,9 @@ public class LegacyInjector {
 			"public void show()",
 			"if ($isLegacyMode()) { super.show(); }");
 		hacker.insertAtTopOfMethod("ij.gui.ImageWindow", "public void close()");
-		hacker.loadClass("ij.gui.ImageWindow");
 
 		// override behavior of PluginClassLoader
 		hacker.insertAtTopOfMethod("ij.io.PluginClassLoader", "void init(java.lang.String path)");
-		hacker.loadClass("ij.io.PluginClassLoader");
 
 		// override behavior of ij.macro.Functions
 		hacker
@@ -120,7 +127,6 @@ public class LegacyInjector {
 			.insertAtBottomOfMethod("ij.macro.Functions",
 				"void displayBatchModeImage(ij.ImagePlus imp2)",
 				"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageAfter($service, $1);");
-		hacker.loadClass("ij.macro.Functions");
 
 		// override behavior of MacAdapter, if needed
 		if (ClassUtils.hasClass("com.apple.eawt.ApplicationListener")) {
@@ -128,7 +134,6 @@ public class LegacyInjector {
 			hacker.insertAtTopOfMethod("MacAdapter",
 				"public void run(java.lang.String arg)",
 				"if (!$isLegacyMode()) return;");
-			hacker.loadClass("MacAdapter");
 		}
 
 		// override behavior of ij.plugin.frame.RoiManager
@@ -138,7 +143,66 @@ public class LegacyInjector {
 		hacker.insertNewMethod("ij.plugin.frame.RoiManager",
 			"public void setVisible(boolean b)",
 			"if ($isLegacyMode()) { super.setVisible($1); }");
-		hacker.loadClass("ij.plugin.frame.RoiManager");
+
+		// for backwards-compatibility
+
+		// add back the (deprecated) killProcessor(), and overlay methods
+		final String[] imagePlusMethods = {
+				"public void killProcessor()",
+				"{}",
+				"public void setDisplayList(java.util.Vector list)",
+				"getCanvas().setDisplayList(list);",
+				"public java.util.Vector getDisplayList()",
+				"return getCanvas().getDisplayList();",
+				"public void setDisplayList(ij.gui.Roi roi, java.awt.Color strokeColor,"
+				+ " int strokeWidth, java.awt.Color fillColor)",
+				"setOverlay(roi, strokeColor, strokeWidth, fillColor);"
+		};
+		for (int i = 0; i < imagePlusMethods.length; i++) try {
+			hacker.insertNewMethod("ij.ImagePlus",
+					imagePlusMethods[i], imagePlusMethods[++i]);
+		} catch (Exception e) { /* ignore */ }
+
+		// make sure that ImageJ has been initialized in batch mode
+		hacker.insertAtTopOfMethod("ij.IJ",
+				"public static java.lang.String runMacro(java.lang.String macro, java.lang.String arg)",
+				"if (ij==null && ij.Menus.getCommands()==null) init();");
+
+		try {
+			hacker.insertNewMethod("ij.CompositeImage",
+				"public ij.ImagePlus[] splitChannels(boolean closeAfter)",
+				"ij.ImagePlus[] result = ij.plugin.ChannelSplitter.split(this);"
+				+ "if (closeAfter) close();"
+				+ "return result;");
+			hacker.insertNewMethod("ij.plugin.filter.RGBStackSplitter",
+				"public static ij.ImagePlus[] splitChannelsToArray(ij.ImagePlus imp, boolean closeAfter)",
+				"if (!imp.isComposite()) {"
+				+ "  ij.IJ.error(\"splitChannelsToArray was called on a non-composite image\");"
+				+ "  return null;"
+				+ "}"
+				+ "ij.ImagePlus[] result = ij.plugin.ChannelSplitter.split(imp);"
+				+ "if (closeAfter)"
+				+ "  imp.close();"
+				+ "return result;");
+		} catch (IllegalArgumentException e) {
+			final Throwable cause = e.getCause();
+			if (cause != null && !(cause instanceof DuplicateMemberException)) {
+				throw e;
+			}
+		}
+
+		// handle mighty mouse (at least on old Linux, Java mistakes the horizontal wheel for a popup trigger)
+		for (String fullClass : new String[] {
+				"ij.gui.ImageCanvas",
+				"ij.plugin.frame.RoiManager",
+				"ij.text.TextPanel",
+				"ij.gui.Toolbar"
+		}) {
+			hacker.handleMightyMousePressed(fullClass);
+		}
+
+		// commit patches
+		hacker.loadClasses();
 
 		// make sure that there is a legacy service
 		setLegacyService(new DummyLegacyService());

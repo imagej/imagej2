@@ -54,6 +54,7 @@ import java.util.Random;
 
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealRandomAccess;
+import net.imglib2.img.Img;
 import net.imglib2.roi.PolygonRegionOfInterest;
 import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.logic.BitType;
@@ -70,6 +71,14 @@ import org.scijava.Context;
  * @author Lee Kamentsky
  */
 public class OverlayHarmonizerTest {
+
+	static {
+		/*
+		 * We absolutely require that the LegacyInjector did its job
+		 * before we use the ImageJ 1.x classes here.
+		 */
+		DefaultLegacyService.getInstance();
+	}
 
 	private Context context;
 
@@ -386,7 +395,7 @@ public class OverlayHarmonizerTest {
 		synchronized (DefaultLegacyService.class) {
 			final Random r = new Random(54321);
 			final boolean[][] data = Helper.makeRandomBooleanArray(r, 7, 8);
-			final BinaryMaskOverlay overlay =
+			final BinaryMaskOverlay<BitType, Img<BitType>> overlay =
 				Helper.makeBinaryMaskOverlay(context, 5, 6, data);
 			final RealRandomAccess<BitType> ra =
 				overlay.getRegionOfInterest().realRandomAccess();

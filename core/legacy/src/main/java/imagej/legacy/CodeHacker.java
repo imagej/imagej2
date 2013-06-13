@@ -35,15 +35,27 @@
 
 package imagej.legacy;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.CtConstructor;
 import javassist.CtField;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
+import javassist.LoaderClassPath;
 import javassist.Modifier;
 import javassist.NotFoundException;
+import javassist.expr.ConstructorCall;
+import javassist.expr.ExprEditor;
+import javassist.expr.MethodCall;
+import javassist.expr.NewExpr;
 
 /**
  * The code hacker provides a mechanism for altering the behavior of classes
@@ -57,6 +69,7 @@ import javassist.NotFoundException;
  * 
  * @author Curtis Rueden
  * @author Rick Lentz
+ * @author Johannes Schindelin
  */
 public class CodeHacker {
 
@@ -65,17 +78,23 @@ public class CodeHacker {
 
 	private final ClassPool pool;
 	protected final ClassLoader classLoader;
+	private final Set<CtClass> handledClasses = new LinkedHashSet<CtClass>();
 
-	public CodeHacker(ClassLoader classLoader) {
+	public CodeHacker(final ClassLoader classLoader, final ClassPool classPool) {
 		this.classLoader = classLoader;
-		pool = ClassPool.getDefault();
+		pool = classPool != null ? classPool : ClassPool.getDefault();
 		pool.appendClassPath(new ClassClassPath(getClass()));
+		pool.appendClassPath(new LoaderClassPath(classLoader));
 
 		// the CodeHacker offers the LegacyService instance, therefore it needs to add that field here
 		insertPrivateStaticField("ij.IJ", LegacyService.class, "_legacyService");
 		insertNewMethod("ij.IJ",
 			"public static imagej.legacy.LegacyService getLegacyService()",
 			"return _legacyService;");
+	}
+
+	public CodeHacker(ClassLoader classLoader) {
+		this(classLoader, null);
 	}
 
 	/**
@@ -206,6 +225,29 @@ public class CodeHacker {
 		}
 	}
 
+	/*
+	 * Works around a bug where the horizontal scroll wheel of the mighty mouse is mistaken for a popup trigger.
+	 */
+	public void handleMightyMousePressed(final String fullClass) {
+		ExprEditor editor = new ExprEditor() {
+			@Override
+			public void edit(MethodCall call) throws CannotCompileException {
+				if (call.getMethodName().equals("isPopupTrigger"))
+					call.replace("$_ = $0.isPopupTrigger() && $0.getButton() != 0;");
+			}
+		};
+		final CtClass classRef = getClass(fullClass);
+		for (final String methodName : new String[] { "mousePressed", "mouseDragged" }) try {
+			final CtMethod method = classRef.getMethod(methodName, "(Ljava/awt/event/MouseEvent;)V");
+			method.instrument(editor);
+		} catch (NotFoundException e) {
+			/* ignore */
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException("Cannot instrument method: " + methodName, e);
+		}
+	}
+
+
 	public void insertPrivateStaticField(final String fullClass,
 			final Class<?> clazz, final String name) {
 		final CtClass classRef = getClass(fullClass);
@@ -224,6 +266,76 @@ public class CodeHacker {
 	}
 
 	/**
+	 * Replaces the given methods with stub methods.
+	 * 
+	 * @param fullClass the class to patch
+	 * @param methodNames the names of the methods to replace
+	 * @throws NotFoundException
+	 * @throws CannotCompileException
+	 */
+	public void replaceWithStubMethods(final String fullClass, final String... methodNames) {
+		final CtClass clazz = getClass(fullClass);
+		final Set<String> override = new HashSet<String>(Arrays.asList(methodNames));
+		for (final CtMethod method : clazz.getMethods())
+			if (override.contains(method.getName())) try {
+				final CtMethod stub = makeStubMethod(clazz, method);
+				method.setBody(stub, null);
+			} catch (NotFoundException e) {
+				// ignore
+			} catch (CannotCompileException e) {
+				throw new IllegalArgumentException("Cannot instrument method: " + method.getName(), e);
+			}
+	}
+
+	/**
+	 * Replaces the superclass.
+	 * 
+	 * @param fullClass
+	 * @param fullNewSuperclass
+	 * @throws NotFoundException
+	 */
+	public void replaceSuperclass(String fullClass, String fullNewSuperclass) {
+		final CtClass clazz = getClass(fullClass);
+		try {
+			CtClass originalSuperclass = clazz.getSuperclass();
+			clazz.setSuperclass(getClass(fullNewSuperclass));
+			for (final CtConstructor ctor : clazz.getConstructors())
+				ctor.instrument(new ExprEditor() {
+					@Override
+					public void edit(final ConstructorCall call) throws CannotCompileException {
+						if (call.getMethodName().equals("super"))
+							call.replace("super();");
+					}
+				});
+			letSuperclassMethodsOverride(clazz);
+			addMissingMethods(clazz, originalSuperclass);
+		} catch (NotFoundException e) {
+			throw new IllegalArgumentException("Could not replace superclass of " + fullClass + " with " + fullNewSuperclass, e);
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException("Could not replace superclass of " + fullClass + " with " + fullNewSuperclass, e);
+		}
+	}
+
+	/**
+	 * Replaces all instantiations of a subset of AWT classes with nulls.
+	 * 
+	 * This is used by the partial headless support of legacy code.
+	 * 
+	 * @param fullClass
+	 * @throws CannotCompileException
+	 * @throws NotFoundException
+	 */
+	public void skipAWTInstantiations(String fullClass) {
+		try {
+			skipAWTInstantiations(getClass(fullClass));
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException("Could not skip AWT class instantiations in " + fullClass, e);
+		} catch (NotFoundException e) {
+			throw new IllegalArgumentException("Could not skip AWT class instantiations in " + fullClass, e);
+		}
+	}
+
+	/**
 	 * Loads the given, possibly modified, class.
 	 * <p>
 	 * This method must be called to confirm any changes made with
@@ -236,22 +348,52 @@ public class CodeHacker {
 	 */
 	public Class<?> loadClass(final String fullClass) {
 		final CtClass classRef = getClass(fullClass);
+		return loadClass(classRef);
+	}
+
+	/**
+	 * Loads the given, possibly modified, class.
+	 * <p>
+	 * This method must be called to confirm any changes made with
+	 * {@link #insertAfterMethod}, {@link #insertBeforeMethod},
+	 * or {@link #insertMethod}.
+	 * </p>
+	 * 
+	 * @param classRef class to load.
+	 * @return the loaded class
+	 */
+	public Class<?> loadClass(final CtClass classRef) {
 		try {
 			return classRef.toClass(classLoader, null);
 		}
 		catch (final CannotCompileException e) {
 			// Cannot use LogService; it will not be initialized by the time the DefaultLegacyService
 			// class is loaded, which is when the CodeHacker is run
-			System.err.println("Warning: Cannot load class: " + fullClass);
+			System.err.println("Warning: Cannot load class: " + classRef.getName());
 			e.printStackTrace();
 			return null;
+		} finally {
+			classRef.freeze();
+		}
+	}
+
+	public void loadClasses() {
+		final Iterator<CtClass> iter = handledClasses.iterator();
+		while (iter.hasNext()) {
+			final CtClass classRef = iter.next();
+			if (!classRef.isFrozen() && classRef.isModified()) {
+				loadClass(classRef);
+			}
+			iter.remove();
 		}
 	}
 
 	/** Gets the Javassist class object corresponding to the given class name. */
 	private CtClass getClass(final String fullClass) {
 		try {
-			return pool.get(fullClass);
+			final CtClass classRef = pool.get(fullClass);
+			if (classRef.getClassPool() == pool) handledClasses.add(classRef);
+			return classRef;
 		}
 		catch (final NotFoundException e) {
 			throw new IllegalArgumentException("No such class: " + fullClass, e);
@@ -358,6 +500,142 @@ public class CodeHacker {
 		final String methodPrefix = methodSig.substring(0, parenIndex);
 		return methodPrefix.startsWith("void ") ||
 			methodPrefix.indexOf(" void ") > 0;
+	}
+
+	private static int verboseLevel = 0;
+
+	private static CtMethod makeStubMethod(CtClass clazz, CtMethod original) throws CannotCompileException, NotFoundException {
+		// add a stub
+		String prefix = "";
+		if (verboseLevel > 0) {
+			prefix = "System.err.println(\"Called " + original.getLongName() + "\\n\"";
+			if (verboseLevel > 1) {
+				prefix += "+ \"\\t(\" + fiji.Headless.toString($args) + \")\\n\"";
+			}
+			prefix += ");";
+		}
+
+		CtClass type = original.getReturnType();
+		String body = "{" +
+			prefix +
+			(type == CtClass.voidType ? "" : "return " + defaultReturnValue(type) + ";") +
+			"}";
+		CtClass[] types = original.getParameterTypes();
+		return CtNewMethod.make(type, original.getName(), types, new CtClass[0], body, clazz);
+	}
+
+	private static String defaultReturnValue(CtClass type) {
+		return (type == CtClass.booleanType ? "false" :
+			(type == CtClass.byteType ? "(byte)0" :
+			 (type == CtClass.charType ? "'\0'" :
+			  (type == CtClass.doubleType ? "0.0" :
+			   (type == CtClass.floatType ? "0.0f" :
+			    (type == CtClass.intType ? "0" :
+			     (type == CtClass.longType ? "0l" :
+			      (type == CtClass.shortType ? "(short)0" : "null"))))))));
+	}
+
+	private void addMissingMethods(CtClass fakeClass, CtClass originalClass) throws CannotCompileException, NotFoundException {
+		if (verboseLevel > 0)
+			System.err.println("adding missing methods from " + originalClass.getName() + " to " + fakeClass.getName());
+		Set<String> available = new HashSet<String>();
+		for (CtMethod method : fakeClass.getMethods())
+			available.add(stripPackage(method.getLongName()));
+		for (CtMethod original : originalClass.getDeclaredMethods()) {
+			if (available.contains(stripPackage(original.getLongName()))) {
+				if (verboseLevel > 1)
+					System.err.println("Skipping available method " + original);
+				continue;
+			}
+
+			CtMethod method = makeStubMethod(fakeClass, original);
+			fakeClass.addMethod(method);
+			if (verboseLevel > 1)
+				System.err.println("adding missing method " + method);
+		}
+
+		// interfaces
+		Set<CtClass> availableInterfaces = new HashSet<CtClass>();
+		for (CtClass iface : fakeClass.getInterfaces())
+			availableInterfaces.add(iface);
+		for (CtClass iface : originalClass.getInterfaces())
+			if (!availableInterfaces.contains(iface))
+				fakeClass.addInterface(iface);
+
+		CtClass superClass = originalClass.getSuperclass();
+		if (superClass != null && !superClass.getName().equals("java.lang.Object"))
+			addMissingMethods(fakeClass, superClass);
+	}
+
+	private void letSuperclassMethodsOverride(CtClass clazz) throws CannotCompileException, NotFoundException {
+		for (CtMethod method : clazz.getSuperclass().getDeclaredMethods()) {
+			CtMethod method2 = clazz.getMethod(method.getName(), method.getSignature());
+			if (method2.getDeclaringClass().equals(clazz)) {
+				method2.setBody(method, null); // make sure no calls/accesses to GUI components are remaining
+				method2.setName("narf" + method.getName());
+			}
+		}
+	}
+
+	private static String stripPackage(String className) {
+		int lastDot = -1;
+		for (int i = 0; ; i++) {
+			if (i >= className.length())
+				return className.substring(lastDot + 1);
+			char c = className.charAt(i);
+			if (c == '.' || c == '$')
+				lastDot = i;
+			else if (c >= 'A' && c <= 'Z')
+				; // continue
+			else if (c >= 'a' && c <= 'z')
+				; // continue
+			else if (i > lastDot + 1 && c >= '0' && c <= '9')
+				; // continue
+			else
+				return className.substring(lastDot + 1);
+		}
+	}
+
+	private void skipAWTInstantiations(CtClass clazz) throws CannotCompileException, NotFoundException {
+		clazz.instrument(new ExprEditor() {
+			@Override
+			public void edit(NewExpr expr) throws CannotCompileException {
+				String name = expr.getClassName();
+				if (name.startsWith("java.awt.Menu") || name.equals("java.awt.PopupMenu") ||
+						name.startsWith("java.awt.Checkbox") || name.equals("java.awt.Frame")) {
+					expr.replace("$_ = null;");
+				} else if (expr.getClassName().equals("ij.gui.StackWindow")) {
+					expr.replace("$1.show(); $_ = null;");
+				}
+			}
+
+			@Override
+			public void edit(MethodCall call) throws CannotCompileException {
+				final String className = call.getClassName();
+				final String methodName = call.getMethodName();
+				if (className.startsWith("java.awt.Menu") || className.equals("java.awt.PopupMenu") ||
+						className.startsWith("java.awt.Checkbox")) try {
+					CtClass type = call.getMethod().getReturnType();
+					if (type == CtClass.voidType) {
+						call.replace("");
+					} else {
+						call.replace("$_ = " + defaultReturnValue(type) + ";");
+					}
+				} catch (NotFoundException e) {
+					e.printStackTrace();
+				} else if (methodName.equals("put") && className.equals("java.util.Properties")) {
+					call.replace("if ($1 != null && $2 != null) $_ = $0.put($1, $2); else $_ = null;");
+				} else if (methodName.equals("get") && className.equals("java.util.Properties")) {
+					call.replace("$_ = $1 != null ? $0.get($1) : null;");
+				} else if (className.equals("java.lang.Integer") && methodName.equals("intValue")) {
+					call.replace("$_ = $0 == null ? 0 : $0.intValue();");
+				} else if (methodName.equals("addTextListener")) {
+					call.replace("");
+				} else if (methodName.equals("elementAt")) {
+					call.replace("$_ = $0 == null ? null : $0.elementAt($$);");
+				}
+			}
+		});
 	}
 
 }
