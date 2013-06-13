@@ -71,6 +71,14 @@ import org.scijava.Context;
  */
 public class OverlayHarmonizerTest {
 
+	static {
+		/*
+		 * We absolutely require that the LegacyInjector did its job
+		 * before we use the ImageJ 1.x classes here.
+		 */
+		DefaultLegacyService.getInstance();
+	}
+
 	private Context context;
 
 	@Before
