@@ -9,6 +9,19 @@ to do some of the work. All releases are tagged in their respective Git
 repositories, with binary builds deployed to the [ImageJ Maven
 repository](http://maven.imagej.net/).
 
+## [SCIJAVA COMMON](https://github.com/scijava/scijava-common)
+
+SciJava Common provides the core plugin framework and application container.
+
+    cd scijava-common
+    release-version.sh 1.0.0
+
+- Where `1.0.0` is the new release version.
+
+Optionally, after performing the release, [tell Jenkins to update
+`scijava-common.version` in
+pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
+
 ## [IMGLIB2](https://github.com/imagej/imglib)
 
 ImgLib2 provides the core data model and image processing.
