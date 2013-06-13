@@ -11,7 +11,7 @@ repository](http://maven.imagej.net/).
 
 ## [IMGLIB2](https://github.com/imagej/imglib)
 
-This project provides the core data model and image processing.
+ImgLib2 provides the core data model and image processing.
 
     cd imglib
     release-version.sh --tag=imglib2-2.0.0-beta-7 --dev-version=2.0.0-SNAPSHOT 2.0.0-beta-7
@@ -25,7 +25,7 @@ This project provides the core data model and image processing.
 
 ## [SCIFIO](https://github.com/scifio/scifio)
 
-This project provides core I/O functionality.
+SCIFIO provides core I/O functionality.
 
     cd scifio/components/scifio-devel
     release-version.sh 0.1.0
@@ -34,7 +34,7 @@ This project provides core I/O functionality.
 
 ## [CPPTASKS-PARALLEL](https://github.com/scijava/cpptasks-parallel)
 
-This project is used by nar-maven-plugin.
+CppTasks Parallel is used by the NAR plugin.
 We deploy unofficial release builds for use with the ImageJ launcher.
 
     cd cpptasks-parellel
@@ -48,7 +48,7 @@ We deploy unofficial release builds for use with the ImageJ launcher.
 
 ## [NAR-MAVEN-PLUGIN](https://github.com/scijava/maven-nar-plugin)
 
-This project is used to build the ImageJ launcher.
+The NAR plugin is used to build the ImageJ launcher.
 We deploy unofficial release builds.
 
     cd maven-nar-plugin
@@ -62,7 +62,7 @@ We deploy unofficial release builds.
 
 ## [IMAGEJ LAUNCHER](https://github.com/imagej/imagej-launcher)
 
-This project provides a native launcher for ImageJ.
+The ImageJ launcher is a native launcher for ImageJ.
 
     cd imagej-launcher
     release-version.sh --skip-deploy 2.0.0
