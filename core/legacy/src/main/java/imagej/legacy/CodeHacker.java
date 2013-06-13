@@ -369,6 +369,16 @@ public class CodeHacker {
 		catch (final CannotCompileException e) {
 			// Cannot use LogService; it will not be initialized by the time the DefaultLegacyService
 			// class is loaded, which is when the CodeHacker is run
+			if (e.getCause() != null && e.getCause() instanceof LinkageError) {
+				System.err.println("Warning: cannot load class: " + classRef.getName() + "\n"
+						+ "It appears that this class was already defined in the class loader!\n"
+						+ "Please make sure that you initialize the LegacyService before using\n"
+						+ "any ImageJ 1.x class. You can do that by adding this static initializer:\n\n"
+						+ "\tstatic {\n"
+						+ "\t\tDefaultLegacyService.getInstance();\n"
+						+ "\t}");
+				throw (LinkageError)e.getCause();
+			}
 			System.err.println("Warning: Cannot load class: " + classRef.getName());
 			e.printStackTrace();
 			return null;
