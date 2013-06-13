@@ -148,8 +148,9 @@ public class DeleteData extends DynamicCommand {
 			RestructureUtils.copyColorTables(dataset.getImgPlus(), dstImgPlus);
 		}
 		else {
+			int d = dataset.getAxisIndex(axis);
 			final ColorTableRemapper remapper =
-				new ColorTableRemapper(new RemapAlgorithm());
+				new ColorTableRemapper(new RemapAlgorithm(dataset.getDims(), d));
 			remapper.remapColorTables(dataset.getImgPlus(), dstImgPlus);
 		}
 		// TODO - metadata, etc.?
@@ -248,12 +249,27 @@ public class DeleteData extends DynamicCommand {
 		return compositeCount;
 	}
 
+	@SuppressWarnings("synthetic-access")
 	private class RemapAlgorithm implements ColorTableRemapper.RemapAlgorithm {
+
+		private final long[] origPlaneDims;
+		private final long[] srcPlanePos;
+		private final int axisIndex;
+
+		public RemapAlgorithm(final long[] origDims, int axisIndex) {
+			this.origPlaneDims = new long[origDims.length - 2];
+			for (int i = 0; i < origPlaneDims.length; i++) {
+				origPlaneDims[i] = origDims[i + 2];
+			}
+			this.srcPlanePos = new long[origPlaneDims.length];
+			this.axisIndex = axisIndex;
+		}
 
 		@Override
 		public boolean isValidSourcePlane(final long i) {
-			if (i < position - 1) return true;
-			if (i >= position - 1 + quantity) return true;
+			ColorTableRemapper.toND(origPlaneDims, i, srcPlanePos);
+			if (srcPlanePos[axisIndex - 2] < position - 1) return true;
+			if (srcPlanePos[axisIndex - 2] >= position - 1 + quantity) return true;
 			return false;
 		}
 
@@ -261,21 +277,24 @@ public class DeleteData extends DynamicCommand {
 		public void remapPlanePosition(final long[] origPlaneDims,
 			final long[] origPlanePos, final long[] newPlanePos)
 		{
-			final AxisType axis = Axes.get(axisName);
-			final int axisIndex = dataset.getAxisIndex(axis);
 			for (int i = 0; i < origPlanePos.length; i++) {
 				if (i != axisIndex - 2) {
 					newPlanePos[i] = origPlanePos[i];
 				}
 				else {
-					if (origPlanePos[i] < position - 1) newPlanePos[i] = origPlanePos[i];
-					else if (origPlanePos[i] >= position - 1 + quantity) newPlanePos[i] =
-						origPlanePos[i] - quantity;
+					if (origPlanePos[i] < position - 1) {
+						newPlanePos[i] = origPlanePos[i];
+					}
+					else if (origPlanePos[i] >= position - 1 + quantity) {
+						newPlanePos[i] = origPlanePos[i] - quantity;
+					}
 					else {
 						// System.out.println("orig dims = "+Arrays.toString(origPlaneDims));
 						// System.out.println("orig pos  = "+Arrays.toString(origPlanePos));
 						// System.out.println("pos       = "+position);
 						// System.out.println("quantity  = "+quantity);
+						System.out.println("val = " + origPlanePos[i] + " pos-1 = " +
+							(position - 1) + " quantity = " + quantity);
 						throw new IllegalArgumentException(
 							"position remap should not be happening here!");
 					}
