@@ -104,7 +104,7 @@ public class LegacyHeadlessTest {
 
 	private static ClassLoader getClassLoader(final boolean patchHeadless) {
 		final URL[] urls = {
-				ClassUtils.getLocation(ij.IJ.class),
+				ClassUtils.getLocation(ij.CommandListener.class),
 				ClassUtils.getLocation(DefaultLegacyService.class),
 				ClassUtils.getLocation(Context.class),
 				ClassUtils.getLocation(Headless_Example_Plugin.class)
