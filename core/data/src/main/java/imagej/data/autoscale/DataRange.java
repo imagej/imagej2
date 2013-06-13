@@ -72,4 +72,11 @@ public class DataRange {
 	public double getMax() {
 		return max;
 	}
+
+	/**
+	 * Returns the extent of the data range (max - min).
+	 */
+	public double getExtent() {
+		return max - min;
+	}
 }

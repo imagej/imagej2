@@ -37,6 +37,8 @@ package imagej.core.commands.display.interactive;
 
 import imagej.command.Command;
 import imagej.data.Dataset;
+import imagej.data.autoscale.AutoscaleService;
+import imagej.data.autoscale.DataRange;
 import imagej.data.command.InteractiveImageCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -52,13 +54,11 @@ import imagej.util.Colors;
 import imagej.widget.Button;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
-import net.imglib2.RandomAccess;
+import net.imglib2.algorithm.histogram.Histogram1d;
+import net.imglib2.algorithm.histogram.Real1dBinMapper;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.AxisType;
-import net.imglib2.ops.pointset.HyperVolumePointSet;
-import net.imglib2.ops.pointset.PointSet;
-import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
@@ -115,7 +115,7 @@ import org.scijava.plugin.Plugin;
 		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Adjust"),
 	@Menu(label = "Threshold...", accelerator = "control shift T") },
 	initializer = "initValues")
-public class Threshold extends InteractiveImageCommand {
+public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 
 	// -- constants --
 	
@@ -169,17 +169,20 @@ public class Threshold extends InteractiveImageCommand {
 	private ImageDisplayService imgDispSrv;
 
 	@Parameter
+	private AutoscaleService autoscaleService;
+
+	@Parameter
 	private UIService uiSrv;
 
 	// -- instance variables --
 
-	private long[] fullHistogram;
+	private Histogram1d<T> fullHistogram;
 
-	private long[] planeHistogram;
+	private Histogram1d<T> planeHistogram;
 
 	private boolean invalidPlaneHist = true;
 
-	private double dataMin, dataMax;
+	private DataRange minMax;
 
 	// -- accessors --
 
@@ -204,12 +207,12 @@ public class Threshold extends InteractiveImageCommand {
 
 		if (display == null) return;
 
-		getThresholdMethodNames();
+		setThresholdMethodNames();
 
 		boolean alreadyHadOne = threshSrv.hasThreshold(display);
 		ThresholdOverlay overlay = threshSrv.getThreshold(display);
 
-		calcDataRange();
+		minMax = calcDataRange();
 
 		fullHistogram = buildHistogram(true, null);
 		planeHistogram = null;
@@ -217,8 +220,8 @@ public class Threshold extends InteractiveImageCommand {
 
 		if (!alreadyHadOne) {
 			// default the thresh to something sensible: 85/170 is IJ1's default
-			double min = 85 * (dataMax - dataMin) / 255;
-			double max = 170 * (dataMax - dataMin) / 255;
+			double min = 85 * minMax.getExtent() / 255;
+			double max = 170 * minMax.getExtent() / 255;
 			overlay.setRange(min, max);
 		}
 
@@ -231,15 +234,15 @@ public class Threshold extends InteractiveImageCommand {
 		// set min range widget
 		final MutableModuleItem<Double> minItem =
 			getInfo().getMutableInput("minimum", Double.class);
-		minItem.setMinimumValue(dataMin);
-		minItem.setMaximumValue(dataMax);
+		minItem.setMinimumValue(minMax.getMin());
+		minItem.setMaximumValue(minMax.getMax());
 		minItem.setValue(this, overlay.getRangeMin());
 
 		// set max range widget
 		final MutableModuleItem<Double> maxItem =
 			getInfo().getMutableInput("maximum", Double.class);
-		maxItem.setMinimumValue(dataMin);
-		maxItem.setMaximumValue(dataMax);
+		maxItem.setMinimumValue(minMax.getMin());
+		maxItem.setMaximumValue(minMax.getMax());
 		maxItem.setValue(this, overlay.getRangeMax());
 
 		// initialize the colors of the overlay
@@ -250,7 +253,8 @@ public class Threshold extends InteractiveImageCommand {
 
 	protected void autoThreshold() {
 		ThresholdMethod method = threshSrv.getThresholdMethod(methodName);
-		int cutoff = method.getThreshold(histogram());
+		Histogram1d<T> hist = histogram();
+		long cutoff = method.getThreshold(hist);
 		if (cutoff < 0) {
 			DialogPrompt dialog =
 				uiSrv.getDefaultUI().dialogPrompt(method.getMessage(),
@@ -262,7 +266,7 @@ public class Threshold extends InteractiveImageCommand {
 		else if (method.getMessage() != null) {
 			log.warn(method.getMessage());
 		}
-		double maxRange = histogram().length - 1;
+		double maxRange = hist.max();
 		// TODO : what is best increment? To avoid roundoff errs use a teeny inc
 		// (like 0.0001 instead of 1). But then result does not match IJ1. With
 		// teeny inc dark bckgrnd bounces from (0,cutoff) to (cutoff,255) rather
@@ -271,8 +275,8 @@ public class Threshold extends InteractiveImageCommand {
 		// light and dark background.
 		double bot = (darkBackground) ? cutoff + 1 : 0;
 		double top = (darkBackground) ? maxRange : cutoff;
-		minimum = dataMin + (bot / maxRange) * (dataMax - dataMin);
-		maximum = dataMin + (top / maxRange) * (dataMax - dataMin);
+		minimum = minMax.getMin() + (bot / maxRange) * (minMax.getExtent());
+		maximum = minMax.getMin() + (top / maxRange) * (minMax.getExtent());
 		rangeChanged();
 	}
 
@@ -346,7 +350,7 @@ public class Threshold extends InteractiveImageCommand {
 		return overlay;
 	}
 
-	private long[] histogram() {
+	private Histogram1d<T> histogram() {
 		if (stackHistogram) return fullHistogram;
 		if (invalidPlaneHist) {
 			planeHistogram = buildHistogram(false, planeHistogram);
@@ -373,7 +377,7 @@ public class Threshold extends InteractiveImageCommand {
 		}
 	}
 	
-	private void getThresholdMethodNames() {
+	private void setThresholdMethodNames() {
 		final MutableModuleItem<String> methodNameInput =
 			getInfo().getMutableInput("methodName", String.class);
 		methodNameInput.setChoices(threshSrv.getThresholdMethodNames());
@@ -381,31 +385,24 @@ public class Threshold extends InteractiveImageCommand {
 
 	// calcs the data range of the whole dataset
 
-	private void calcDataRange() {
+	private DataRange calcDataRange() {
 		Dataset ds = imgDispSrv.getActiveDataset(display);
-		dataMin = Double.POSITIVE_INFINITY;
-		dataMax = Double.NEGATIVE_INFINITY;
-		ImgPlus<? extends RealType<?>> imgPlus = ds.getImgPlus();
-		Cursor<? extends RealType<?>> cursor = imgPlus.cursor();
-		while (cursor.hasNext()) {
-			cursor.fwd();
-			double value = cursor.get().getRealDouble();
-			if (!Double.isNaN(value)) {
-				if (value < dataMin) dataMin = value;
-				if (value > dataMax) dataMax = value;
-			}
-		}
+		return autoscaleService.getDefaultIntervalRange(ds.getImgPlus());
 	}
 
 	// builds the histogram from either the whole data range or the currently
 	// viewed plane
 
-	private long[] buildHistogram(boolean allData, long[] existingHist) {
+	private Histogram1d<T> buildHistogram(boolean allData,
+		Histogram1d<T> existingHist)
+	{
 		// return buildHistogramFromPointSets(allData, existingHist);
 		return buildHistogramFromViews(allData, existingHist);
 	}
 
-	private long[] buildHistogramFromViews(boolean allData, long[] existingHist) {
+	private Histogram1d<T> buildHistogramFromViews(boolean allData,
+		Histogram1d<T> existingHist)
+	{
 		Dataset ds = imgDispSrv.getActiveDataset(display);
 		long[] min = new long[ds.numDimensions()];
 		long[] max = min.clone();
@@ -423,89 +420,47 @@ public class Threshold extends InteractiveImageCommand {
 				max[d] = pos;
 			}
 		}
-		Img<? extends RealType<?>> img = ds.getImgPlus();
-		IntervalView<? extends RealType<?>> view = Views.interval(img, min, max);
-		IterableInterval<? extends RealType<?>> data = Views.iterable(view);
-		final long[] histogram;
+		@SuppressWarnings("unchecked")
+		Img<T> img = (Img<T>) ds.getImgPlus();
+		IntervalView<T> view = Views.interval(img, min, max);
+		IterableInterval<T> data = Views.iterable(view);
+		final Histogram1d<T> histogram;
 		if (existingHist == null) {
 			// +1 needed for int but maybe not float
-			histogram = allocateHistogram(dataMax - dataMin + 1);
+			histogram = allocateHistogram(ds.isInteger(), minMax);
 		}
 		else {
-			zeroOut(existingHist);
+			existingHist.resetCounters();
 			histogram = existingHist;
 		}
-		Cursor<? extends RealType<?>> cursor = data.cursor();
-		while (cursor.hasNext()) {
-			double value = cursor.next().getRealDouble();
-			double relPos = (value - dataMin) / (dataMax - dataMin);
-			int binNumber = (int) Math.round((histogram.length - 1) * relPos);
-			histogram[binNumber]++;
-		}
+		histogram.countData(data);
 		return histogram;
 	}
 
-	@SuppressWarnings("unused")
-	private long[] buildHistogramFromPointSets(boolean allData,
-		long[] existingHist)
+	private Histogram1d<T> allocateHistogram(boolean dataIsIntegral,
+		DataRange dataRange)
 	{
-		Dataset ds = imgDispSrv.getActiveDataset(display);
-		final long[] histogram;
-		if (existingHist == null) {
-			// +1 needed for int but maybe not float
-			histogram = allocateHistogram(dataMax - dataMin + 1);
-		}
-		else {
-			zeroOut(existingHist);
-			histogram = existingHist;
-		}
-		RandomAccess<? extends RealType<?>> accessor =
-			ds.getImgPlus().randomAccess();
-		PointSet points = allData ? allPlanes(ds) : viewedPlane(ds);
-		PointSetIterator iter = points.iterator();
-		while (iter.hasNext()) {
-			long[] pos = iter.next();
-			accessor.setPosition(pos);
-			double value = accessor.get().getRealDouble();
-			double relPos = (value - dataMin) / (dataMax - dataMin);
-			int binNumber = (int) Math.round((histogram.length - 1) * relPos);
-			histogram[binNumber]++;
-		}
-		return histogram;
-	}
-
-	private PointSet allPlanes(Dataset dataset) {
-		return new HyperVolumePointSet(dataset.getDims());
-	}
-
-	private PointSet viewedPlane(Dataset dataset) {
-		long[] pt1 = new long[dataset.numDimensions()];
-		long[] pt2 = new long[dataset.numDimensions()];
-		for (int i = 2; i < pt1.length; i++) {
-			AxisType axisType = dataset.axis(i);
-			pt1[i] = pt2[i] = display.getLongPosition(axisType);
-		}
-		pt2[0] = dataset.dimension(0) - 1;
-		pt2[1] = dataset.dimension(1) - 1;
-		return new HyperVolumePointSet(pt1, pt2);
-	}
-
-	private long[] allocateHistogram(double dataRange) {
+		double range = dataRange.getExtent();
+		if (dataIsIntegral) range++;
+		Real1dBinMapper<T> binMapper = null;
 		// TODO - size of histogram affects speed of all autothresh methods
 		// What is the best way to determine size?
 		// Do we want some power of two as size? For now yes.
-		final int MAX = 4096;
-		for (int histSize = 256; histSize <= MAX; histSize *= 2) {
-			if (dataRange <= histSize) {
-				return new long[histSize];
+		final int MaxBinCount = 16384;
+		for (int binCount = 256; binCount <= MaxBinCount; binCount *= 2) {
+			if (range <= binCount) {
+				binMapper =
+					new Real1dBinMapper<T>(minMax.getMin(), minMax.getMax(), binCount,
+						false);
+				break;
 			}
 		}
-		return new long[MAX];
+		if (binMapper == null) {
+			binMapper =
+				new Real1dBinMapper<T>(minMax.getMin(), minMax.getMax(), MaxBinCount,
+					false);
+		}
+		return new Histogram1d<T>(binMapper);
 	}
 
-	private void zeroOut(long[] histogram) {
-		for (int i = 0; i < histogram.length; i++) {
-			histogram[i] = 0;
-		}
-	}
 }
