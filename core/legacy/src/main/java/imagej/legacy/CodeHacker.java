@@ -49,6 +49,7 @@ import javassist.CtConstructor;
 import javassist.CtField;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
+import javassist.LoaderClassPath;
 import javassist.Modifier;
 import javassist.NotFoundException;
 import javassist.expr.ConstructorCall;
@@ -79,16 +80,21 @@ public class CodeHacker {
 	protected final ClassLoader classLoader;
 	private final Set<CtClass> handledClasses = new LinkedHashSet<CtClass>();
 
-	public CodeHacker(ClassLoader classLoader) {
+	public CodeHacker(final ClassLoader classLoader, final ClassPool classPool) {
 		this.classLoader = classLoader;
-		pool = ClassPool.getDefault();
+		pool = classPool != null ? classPool : ClassPool.getDefault();
 		pool.appendClassPath(new ClassClassPath(getClass()));
+		pool.appendClassPath(new LoaderClassPath(classLoader));
 
 		// the CodeHacker offers the LegacyService instance, therefore it needs to add that field here
 		insertPrivateStaticField("ij.IJ", LegacyService.class, "_legacyService");
 		insertNewMethod("ij.IJ",
 			"public static imagej.legacy.LegacyService getLegacyService()",
 			"return _legacyService;");
+	}
+
+	public CodeHacker(ClassLoader classLoader) {
+		this(classLoader, null);
 	}
 
 	/**
