@@ -93,7 +93,7 @@ public class IJMethods {
 	// if the ij.log.file property is set, log every message to the file pointed to
 	private static BufferedWriter logFileWriter;
 
-	public static void log(final LegacyService legacyService, String message) {
+	public static void log(@SuppressWarnings("unused") final LegacyService legacyService, String message) {
 		if (message != null) {
 			String logFilePath = System.getProperty("ij.log.file");
 			if (logFilePath != null) {
