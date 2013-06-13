@@ -49,6 +49,8 @@ import java.net.URLClassLoader;
 
 import javassist.ClassPool;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.scijava.Context;
 import org.scijava.util.ClassUtils;
@@ -59,6 +61,18 @@ import org.scijava.util.ClassUtils;
  * @author Johannes Schindelin
  */
 public class LegacyHeadlessTest {
+
+	private String threadName;
+
+	@Before
+	public void saveThreadName() {
+		threadName = Thread.currentThread().getName();
+	}
+
+	@After
+	public void restoreThreadName() {
+		//if (threadName != null) Thread.currentThread().setName(threadName);
+	}
 
 	@Test
 	public void testHeadless() {
