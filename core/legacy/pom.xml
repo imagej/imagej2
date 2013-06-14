@@ -82,6 +82,9 @@
 						<manifest>
 							<packageName>imagej.legacy</packageName>
 						</manifest>
+						<manifestEntries>
+							<Premain-Class>imagej.legacy.LegacyJavaAgent</Premain-Class>
+						</manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>
