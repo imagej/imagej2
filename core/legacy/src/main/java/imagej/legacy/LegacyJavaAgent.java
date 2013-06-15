@@ -56,9 +56,34 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 			Class<?> classBeingRedefined, ProtectionDomain protectionDomain,
 			byte[] classfileBuffer) throws IllegalClassFormatException {
 		if (className.startsWith("ij.") || className.startsWith("ij/")) {
-			System.err.println("Loading " + className + " into " + loader + "!");
-			Thread.dumpStack();
+			reportCaller("Loading " + className + " into " + loader + "!");
 		}
 		return null;
+	}
+
+	private static void reportCaller(final String message) {
+		System.err.println(message);
+		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+		if (trace == null) return;
+		int i = 0;
+		// skip Thread#getStackTrace, #reportCaller and #transform
+		while (i < trace.length && isCoreClass(trace[i].getClassName())) i++;
+		for (; i < trace.length; i++) {
+			final StackTraceElement element = trace[i];
+			System.err.println("\tat " + element.getClassName() + "." + element.getMethodName()
+					+ "(" + element.getFileName() + ":" + element.getLineNumber() + ")");
+		}
+	}
+
+	private final static ClassLoader bootstrapClassLoader = ClassLoader.getSystemClassLoader().getParent();
+
+	private static boolean isCoreClass(final String className) {
+		if (LegacyJavaAgent.class.getName().equals(className)) return true;
+		try {
+			bootstrapClassLoader.loadClass(className);
+			return true;
+		} catch (Throwable t) {
+			return false;
+		}
 	}
 }
