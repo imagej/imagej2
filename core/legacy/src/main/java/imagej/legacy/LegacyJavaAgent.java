@@ -46,6 +46,17 @@ import java.security.ProtectionDomain;
  * @author Johannes Schindelin
  */
 public class LegacyJavaAgent implements ClassFileTransformer {
+	/**
+	 * The premain method started at JVM startup.
+	 * 
+	 * When this class is specified as <i>Premain-Class</i> in the manifest and
+	 * the JVM is started with the option
+	 * <tt>-javaagent:/path/to/ij-legacy.jar</tt> then this method is called
+	 * some time before the <i>main</i> method of the main class is called.
+	 * 
+	 * @param agentArgs the optional argument passed  via <tt>-javaagent:ij-legacy.jar=ARGUMENT</tt>
+	 * @param instrumentation the {@link Instrumentation} instance passed by the JVM
+	 */
 	public static void premain(final String agentArgs, final Instrumentation instrumentation) {
 		System.err.println("The legacy agent was started with the argument: " + agentArgs);
 		instrumentation.addTransformer(new LegacyJavaAgent());
