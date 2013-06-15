@@ -35,10 +35,23 @@
 
 package imagej.legacy;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
+import java.net.URL;
 import java.security.ProtectionDomain;
+import java.util.Collection;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+
+import org.scijava.util.ClassUtils;
+import org.scijava.util.FileUtils;
 
 /**
  * A Java agent to help with legacy issues.
@@ -96,5 +109,68 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 		} catch (Throwable t) {
 			return false;
 		}
+	}
+
+	/**
+	 * Writes out a minimal java agent .jar file.
+	 * 
+	 * <p>
+	 * When trying to debug class loading issues in ij-legacy itself, of course
+	 * we cannot load the complete ij-legacy.jar as a Java Agent (otherwise it
+	 * would hide the classes that we want to test with possibly out-dated
+	 * ones).
+	 * </p>
+	 * 
+	 * <p>
+	 * This main method can be used to generate a minimal .jar file for use with
+	 * <tt>-javaagent</tt> that contains only the LegacyJavaAgent class.
+	 * </p>
+	 * 
+	 * @param args
+	 *            the command-line arguments (the first one, if specified,
+	 *            refers to the output file name)
+	 * @throws IOException
+	 */
+	public static void main(final String... args) throws IOException {
+		final File file;
+		if (args == null || args.length == 0) {
+			file = File.createTempFile("ij-legacy-javaagent-", ".jar");
+		} else {
+			file = new File(args[0]);
+			if (file.exists()) {
+				System.err.println("File exists: " + file);
+				System.exit(1);
+			}
+		}
+
+		final String classUrl = ClassUtils.getLocation(LegacyJavaAgent.class).toExternalForm();
+		final int slash = classUrl.lastIndexOf('/');
+		final URL directory = new URL(classUrl.substring(0,  slash + 1));
+		final Collection<URL> urls = FileUtils.listContents(directory);
+		final String infix = LegacyJavaAgent.class.getName().replace('.', '/');
+
+		final byte[] buffer = new byte[65536];
+		final Manifest manifest = new Manifest();
+		final Attributes mainAttrs = manifest.getMainAttributes();
+		mainAttrs.put(Attributes.Name.MANIFEST_VERSION, "1.0");
+		mainAttrs.putValue("Premain-Class", LegacyJavaAgent.class.getName());
+		final JarOutputStream jar = new JarOutputStream(new FileOutputStream(file), manifest);
+
+		for (final URL url2 : urls) {
+			final String path = url2.getPath();
+			final int offset = path.indexOf(infix);
+			if (offset < 0) continue;
+			jar.putNextEntry(new JarEntry(path.substring(offset)));
+			final InputStream in = url2.openStream();
+			for (;;) {
+				int count = in.read(buffer);
+				if (count < 0) break;
+				jar.write(buffer, 0, count);
+			}
+			in.close();
+			jar.closeEntry();
+		}
+		jar.close();
+		System.err.println("Wrote " + file);
 	}
 }
