@@ -171,6 +171,10 @@ public class CommandLine {
 		list(list, files.is(Status.MODIFIED));
 	}
 
+	public void listLocalOnly(final List<String> list) {
+		list(list, files.is(Status.LOCAL_ONLY));
+	}
+
 	public void show(final List<String> list) {
 		for (String filename : list) {
 			show(filename);
@@ -667,6 +671,7 @@ public class CommandLine {
 			+ "\tlist-updateable [<files>]\n"
 			+ "\tlist-modified [<files>]\n"
 			+ "\tlist-current [<files>]\n"
+			+ "\tlist-local-only [<files>]\n"
 			+ "\tshow [<files>]\n"
 			+ "\tupdate [<files>]\n"
 			+ "\tupdate-force [<files>]\n"
@@ -743,6 +748,8 @@ public class CommandLine {
 			makeList(args, 1));
 		else if (command.equals("list-modified")) instance.listModified(
 			makeList(args, 1));
+		else if (command.equals("list-local-only")) instance.listLocalOnly(
+				makeList(args, 1));
 		else if (command.equals("show")) instance.show(makeList(args, 1));
 		else if (command.equals("update")) instance.update(makeList(args, 1));
 		else if (command.equals("update-force")) instance.update(
