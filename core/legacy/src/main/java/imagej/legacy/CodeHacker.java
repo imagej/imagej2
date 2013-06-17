@@ -377,7 +377,7 @@ public class CodeHacker {
 				final String path = url != null && "file".equals(url.getProtocol()) && url.getPath().endsWith(".jar")?
 						url.getPath() : "/path/to/ij-legacy.jar";
 
-				System.err.println("Warning: cannot load class: " + classRef.getName() + "\n"
+				throw new RuntimeException("Cannot load class: " + classRef.getName() + "\n"
 						+ "It appears that this class was already defined in the class loader!\n"
 						+ "Please make sure that you initialize the LegacyService before using\n"
 						+ "any ImageJ 1.x class. You can do that by adding this static initializer:\n\n"
@@ -385,8 +385,7 @@ public class CodeHacker {
 						+ "\t\tDefaultLegacyService.preinit();\n"
 						+ "\t}\n\n"
 						+ "To debug this issue, start the JVM with the option:\n\n"
-						+ "\t-javaagent:" + path);
-				throw (LinkageError)e.getCause();
+						+ "\t-javaagent:" + path + "\n", e.getCause());
 			}
 			System.err.println("Warning: Cannot load class: " + classRef.getName() + " into " + classLoader);
 			e.printStackTrace();
