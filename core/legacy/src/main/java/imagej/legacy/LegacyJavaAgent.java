@@ -83,6 +83,10 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 	 */
 	public static void premain(final String agentArgs, final Instrumentation instrumentation) {
 		LegacyJavaAgent.instrumentation = instrumentation;
+		if ("help".equals(agentArgs)) {
+			usage();
+			return;
+		}
 		System.err.println("The legacy agent was started with the argument: " + agentArgs);
 		agent = new LegacyJavaAgent();
 		instrumentation.addTransformer(agent);
@@ -96,6 +100,24 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 			reportCaller("Loading " + className + " into " + loader + "!");
 		}
 		return null;
+	}
+
+	private static void usage() {
+		System.err.println("ImageJ Legacy Agent Usage:\n" +
+				"\n" +
+				"The ij-legacy agent's purpose is to help with issues arising from ImageJ 1.x\n" +
+				"classes being used before the ImageJ2 legacy service's pre-initialization stage\n" +
+				"had a chance to run.\n" +
+				"\n" +
+				"Pre-initialization of the ImageJ2 legacy service is necessary in order to add\n" +
+				"the extension points to ImageJ 1.x' classes that are required for the ImageJ2\n" +
+				"legacy service to synchronize between the internal states of the legacy and\n" +
+				"modern mode, respectively.\n" +
+				"\n" +
+				"Use the agent via the JVM option -javaagent=/path/to/ij-legacy.jar[=<OPTION>].\n" +
+				"The following optional options are available:\n\n" +
+				"help\n" +
+				"\tshow this description\n");
 	}
 
 	private static void reportCaller(final String message) {
