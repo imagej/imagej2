@@ -89,6 +89,8 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 		} else if ("init".equals(agentArgs) || "preinit".equals(agentArgs) || "pre-init".equals(agentArgs)) {
 			preinit();
 			return;
+		} else if ("noop".equals(agentArgs)) {
+			return;
 		}
 		System.err.println("The legacy agent was started with the argument: " + agentArgs);
 		agent = new LegacyJavaAgent();
