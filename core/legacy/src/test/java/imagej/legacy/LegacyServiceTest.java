@@ -57,10 +57,15 @@ public class LegacyServiceTest {
 
 	static {
 		/*
-		 * We absolutely require that the LegacyInjector did its job
-		 * before we use the ImageJ 1.x classes here.
+		 * We absolutely require that the LegacyInjector did its job before we
+		 * use the ImageJ 1.x classes here, in case the LegacyService tests did
+		 * not run yet, so that the classes are properly patched before use.
+		 * 
+		 * Just loading the class is not enough; it will not get initialized. So
+		 * we call the preinit() method just to force class initialization (and
+		 * thereby the LegacyInjector to patch ImageJ 1.x).
 		 */
-		DefaultLegacyService.getInstance();
+		DefaultLegacyService.preinit();
 	}
 
 	private Context context;
