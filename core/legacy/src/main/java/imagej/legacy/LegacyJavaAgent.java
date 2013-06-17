@@ -86,6 +86,9 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 		if ("help".equals(agentArgs)) {
 			usage();
 			return;
+		} else if ("init".equals(agentArgs) || "preinit".equals(agentArgs) || "pre-init".equals(agentArgs)) {
+			preinit();
+			return;
 		}
 		System.err.println("The legacy agent was started with the argument: " + agentArgs);
 		agent = new LegacyJavaAgent();
@@ -117,7 +120,13 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 				"Use the agent via the JVM option -javaagent=/path/to/ij-legacy.jar[=<OPTION>].\n" +
 				"The following optional options are available:\n\n" +
 				"help\n" +
-				"\tshow this description\n");
+				"\tshow this description\n" +
+				"init\n" +
+				"\tforce pre-initialization of the ImageJ legacy service\n");
+	}
+
+	private static void preinit() {
+		DefaultLegacyService.preinit();
 	}
 
 	private static void reportCaller(final String message) {
