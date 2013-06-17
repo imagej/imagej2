@@ -35,11 +35,14 @@
 
 package imagej.legacy;
 
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import org.scijava.util.ClassUtils;
 
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
@@ -370,13 +373,19 @@ public class CodeHacker {
 			// Cannot use LogService; it will not be initialized by the time the DefaultLegacyService
 			// class is loaded, which is when the CodeHacker is run
 			if (e.getCause() != null && e.getCause() instanceof LinkageError) {
+				final URL url = ClassUtils.getLocation(LegacyJavaAgent.class);
+				final String path = url != null && "file".equals(url.getProtocol()) && url.getPath().endsWith(".jar")?
+						url.getPath() : "/path/to/ij-legacy.jar";
+
 				System.err.println("Warning: cannot load class: " + classRef.getName() + "\n"
 						+ "It appears that this class was already defined in the class loader!\n"
 						+ "Please make sure that you initialize the LegacyService before using\n"
 						+ "any ImageJ 1.x class. You can do that by adding this static initializer:\n\n"
 						+ "\tstatic {\n"
 						+ "\t\tDefaultLegacyService.preinit();\n"
-						+ "\t}");
+						+ "\t}\n\n"
+						+ "To debug this issue, start the JVM with the option:\n\n"
+						+ "\t-javaagent:" + path);
 				throw (LinkageError)e.getCause();
 			}
 			System.err.println("Warning: Cannot load class: " + classRef.getName() + " into " + classLoader);
