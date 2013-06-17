@@ -91,8 +91,11 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 			return;
 		} else if ("noop".equals(agentArgs)) {
 			return;
+		} else if (agentArgs != null && !"debug".equals(agentArgs)) {
+			System.err.println("Unhandled agent option: " + agentArgs);
+			usage();
+			return;
 		}
-		System.err.println("The legacy agent was started with the argument: " + agentArgs);
 		agent = new LegacyJavaAgent();
 		instrumentation.addTransformer(agent);
 	}
@@ -124,7 +127,9 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 				"help\n" +
 				"\tshow this description\n" +
 				"init\n" +
-				"\tforce pre-initialization of the ImageJ legacy service\n");
+				"\tforce pre-initialization of the ImageJ legacy service\n" +
+				"debug (this is the default)\n" +
+				"\tshow where ImageJ 1.x classes are used prematurely\n");
 	}
 
 	private static void preinit() {
