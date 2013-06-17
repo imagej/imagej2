@@ -145,12 +145,18 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 	 * @throws IOException
 	 */
 	public static void main(final String... args) throws IOException {
+		boolean overwrite = false;
 		final File file;
-		if (args == null || args.length == 0) {
+		int i = 0;
+		if ("-f".equals(args[i]) || "--force".equals(args[i])) {
+			overwrite = true;
+			i++;
+		}
+		if (args == null || args.length <= i) {
 			file = File.createTempFile("ij-legacy-javaagent-", ".jar");
 		} else {
-			file = new File(args[0]);
-			if (file.exists()) {
+			file = new File(args[i]);
+			if (!overwrite && file.exists()) {
 				System.err.println("File exists: " + file);
 				System.exit(1);
 			}
