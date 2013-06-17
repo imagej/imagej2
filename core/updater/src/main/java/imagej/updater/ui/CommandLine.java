@@ -568,7 +568,7 @@ public class CommandLine {
 			if (site.getUploadDirectory() == null)
 				System.out.println();
 			else
-				System.out.println(" (upload host: " + site.getHost() + ", upload directory: " + site.getUploadDirectory());
+				System.out.println(" (upload host: " + site.getHost() + ", upload directory: " + site.getUploadDirectory() + ")");
 		}
 	}
 
