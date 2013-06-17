@@ -385,7 +385,9 @@ public class CodeHacker {
 						+ "\t\tDefaultLegacyService.preinit();\n"
 						+ "\t}\n\n"
 						+ "To debug this issue, start the JVM with the option:\n\n"
-						+ "\t-javaagent:" + path + "\n", e.getCause());
+						+ "\t-javaagent:" + path + "\n\n"
+						+ "To enforce pre-initialization, start the JVM with the option:\n\n"
+						+ "\t-javaagent:" + path + "=init\n", e.getCause());
 			}
 			System.err.println("Warning: Cannot load class: " + classRef.getName() + " into " + classLoader);
 			e.printStackTrace();
