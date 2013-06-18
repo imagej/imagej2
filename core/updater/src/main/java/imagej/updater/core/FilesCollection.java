@@ -824,9 +824,30 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		}
 	}
 
+	/**
+	 * Gets a map listing all the dependencees of files to be installed or
+	 * updated.
+	 * 
+	 * @param overridingOnes
+	 *            whether to include files that override a particular dependency
+	 * @return the map
+	 */
 	public DependencyMap getDependencies(final boolean overridingOnes) {
+		return getDependencies(toInstallOrUpdate(), overridingOnes);
+	}
+
+	/**
+	 * Gets a map listing all the dependencees of the specified files.
+	 * 
+	 * @param files
+	 *            the dependencies
+	 * @param overridingOnes
+	 *            whether to include files that override a particular dependency
+	 * @return the map
+	 */
+	public DependencyMap getDependencies(final Iterable<FileObject> files, final boolean overridingOnes) {
 		final DependencyMap result = new DependencyMap();
-		for (final FileObject file : toInstallOrUpdate())
+		for (final FileObject file : files)
 			addDependencies(file, result, overridingOnes);
 		return result;
 	}
