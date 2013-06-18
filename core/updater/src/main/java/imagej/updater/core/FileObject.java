@@ -278,6 +278,8 @@ public class FileObject {
 
 	public void setLocalVersion(final String filename, final String checksum, final long timestamp) {
 		localFilename = filename;
+		localChecksum = checksum;
+		localTimestamp = timestamp;
 		if (current != null && checksum.equals(current.checksum)) {
 			if (status != Status.LOCAL_ONLY) status = Status.INSTALLED;
 			setNoAction();
@@ -288,8 +290,6 @@ public class FileObject {
 				: Status.UPDATEABLE) : (current == null ? Status.OBSOLETE_MODIFIED
 				: Status.MODIFIED);
 		setNoAction();
-		localChecksum = checksum;
-		localTimestamp = timestamp;
 	}
 
 	public String getDescription() {
