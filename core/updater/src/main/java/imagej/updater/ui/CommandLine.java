@@ -206,6 +206,11 @@ public class CommandLine {
 		if (!file.getFilename(true).equals(file.localFilename)) {
 			System.out.println("(Local filename: " + file.localFilename + ")");
 		}
+		String description = file.description;
+		if (description != null && description.length() > 0) {
+			description = "\t" + (description.replaceAll("\n", "\n\t"));
+			System.out.println("Description:\n" + description);
+		}
 		System.out.println("Update site: " + file.updateSite);
 		if (file.current == null) {
 			System.out.println("Removed from update site");
