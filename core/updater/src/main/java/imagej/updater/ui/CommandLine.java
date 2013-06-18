@@ -78,6 +78,7 @@ public class CommandLine {
 	protected static LogService log = Util.getLogService();
 	protected FilesCollection files;
 	protected Progress progress;
+	private FilesCollection.DependencyMap dependencyMap;
 	private boolean checksummed = false;
 
 	/**
@@ -198,6 +199,8 @@ public class CommandLine {
 
 	public void show(final FileObject file) {
 		ensureChecksummed();
+		if (dependencyMap == null) dependencyMap = files.getDependencies(files, false);
+
 		System.out.println();
 		System.out.println("File: " + file.getFilename(true));
 		if (!file.getFilename(true).equals(file.localFilename)) {
@@ -214,6 +217,30 @@ public class CommandLine {
 			System.out.println("Local checksum: " + file.localChecksum
 					+ " (" + (file.hasPreviousVersion(file.localChecksum) ? "" : "NOT a ") + "previous version)");
 		}
+		final StringBuilder builder = new StringBuilder();
+		for (final FileObject dependency : file.getFileDependencies(files, false)) {
+			if (builder.length() > 0) builder.append(", ");
+			builder.append(dependency.getFilename(true));
+		}
+		if (builder.length() > 0) {
+			System.out.println("Dependencies: " + builder.toString());
+		}
+		final FilesCollection dependencees = getDependencees(file);
+		if (dependencees != null && !dependencees.isEmpty()) {
+			builder.setLength(0);
+			for (final FileObject dependencee : dependencees) {
+				if (builder.length() > 0) builder.append(", ");
+				builder.append(dependencee.getFilename(true));
+			}
+			if (builder.length() > 0) {
+				System.out.println("Have '" + file.getFilename(true) + "' as dependency: " + builder.toString());
+			}
+		}
+	}
+
+	private FilesCollection getDependencees(final FileObject file) {
+		if (dependencyMap == null) dependencyMap = files.getDependencies(files, false);
+		return dependencyMap.get(file);
 	}
 
 	class OneFile implements Downloadable {
