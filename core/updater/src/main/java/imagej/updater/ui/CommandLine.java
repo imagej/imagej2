@@ -37,7 +37,6 @@ package imagej.updater.ui;
 
 import imagej.updater.core.Conflicts;
 import imagej.updater.core.Conflicts.Conflict;
-import imagej.updater.core.Dependency;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
@@ -79,6 +78,7 @@ public class CommandLine {
 	protected static LogService log = Util.getLogService();
 	protected FilesCollection files;
 	protected Progress progress;
+	private FilesCollection.DependencyMap dependencyMap;
 	private boolean checksummed = false;
 
 	/**
@@ -199,10 +199,17 @@ public class CommandLine {
 
 	public void show(final FileObject file) {
 		ensureChecksummed();
+		if (dependencyMap == null) dependencyMap = files.getDependencies(files, false);
+
 		System.out.println();
 		System.out.println("File: " + file.getFilename(true));
 		if (!file.getFilename(true).equals(file.localFilename)) {
 			System.out.println("(Local filename: " + file.localFilename + ")");
+		}
+		String description = file.description;
+		if (description != null && description.length() > 0) {
+			description = "\t" + (description.replaceAll("\n", "\n\t"));
+			System.out.println("Description:\n" + description);
 		}
 		System.out.println("Update site: " + file.updateSite);
 		if (file.current == null) {
@@ -215,6 +222,30 @@ public class CommandLine {
 			System.out.println("Local checksum: " + file.localChecksum
 					+ " (" + (file.hasPreviousVersion(file.localChecksum) ? "" : "NOT a ") + "previous version)");
 		}
+		final StringBuilder builder = new StringBuilder();
+		for (final FileObject dependency : file.getFileDependencies(files, false)) {
+			if (builder.length() > 0) builder.append(", ");
+			builder.append(dependency.getFilename(true));
+		}
+		if (builder.length() > 0) {
+			System.out.println("Dependencies: " + builder.toString());
+		}
+		final FilesCollection dependencees = getDependencees(file);
+		if (dependencees != null && !dependencees.isEmpty()) {
+			builder.setLength(0);
+			for (final FileObject dependencee : dependencees) {
+				if (builder.length() > 0) builder.append(", ");
+				builder.append(dependencee.getFilename(true));
+			}
+			if (builder.length() > 0) {
+				System.out.println("Have '" + file.getFilename(true) + "' as dependency: " + builder.toString());
+			}
+		}
+	}
+
+	private FilesCollection getDependencees(final FileObject file) {
+		if (dependencyMap == null) dependencyMap = files.getDependencies(files, false);
+		return dependencyMap.get(file);
 	}
 
 	class OneFile implements Downloadable {
@@ -273,18 +304,6 @@ public class CommandLine {
 		if (new File(file.filename).delete()) System.err.println("Deleted " +
 			file.filename);
 		else System.err.println("Failed to delete " + file.filename);
-	}
-
-	protected void addDependencies(final FileObject file,
-		final Set<FileObject> all)
-	{
-		ensureChecksummed();
-		if (all.contains(file)) return;
-		all.add(file);
-		for (final Dependency dependency : file.getDependencies()) {
-			final FileObject file2 = files.get(dependency.filename);
-			if (file2 != null) addDependencies(file2, all);
-		}
 	}
 
 	public void update(final List<String> list) {
@@ -368,7 +387,7 @@ public class CommandLine {
 				if (forceShadow && !updateSite.equals(file.updateSite)) {
 					// TODO: add overridden update site
 					file.updateSite = updateSite;
-					file.setStatus(Status.LOCAL_ONLY);
+					file.setStatus(Status.MODIFIED);
 					System.err.println("Uploading (force-shadow) '" + name
 							+ "' to site '" + updateSite + "'");
 				} else {

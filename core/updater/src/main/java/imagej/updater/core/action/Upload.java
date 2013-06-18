@@ -81,7 +81,7 @@ public class Upload implements GroupAction {
 	 * <tr>
 	 * <td>INSTALLED</td>
 	 * <td>NO</td>
-	 * <td>NO</td>
+	 * <td>RANK</td>
 	 * </tr>
 	 * <tr>
 	 * <td>LOCAL_ONLY</td>
@@ -136,7 +136,7 @@ public class Upload implements GroupAction {
 
 		boolean shadowing = file.updateSite != null && !updateSite.equals(file.updateSite);
 
-		if (!canUpload) return false;
+		if (!canUpload && status != Status.INSTALLED) return false;
 
 		final Collection<String> sites = files.getSiteNamesToUpload();
 		if (sites.size() > 0 && !sites.contains(updateSite)) return false;
@@ -157,6 +157,7 @@ public class Upload implements GroupAction {
 			file.originalUpdateSite = file.updateSite;
 		}
 		file.updateSite = updateSite;
+		if (file.getStatus() == Status.INSTALLED) file.setStatus(Status.MODIFIED); // TODO: add to overriding
 		file.setAction(files, Action.UPLOAD);
 	}
 
@@ -165,7 +166,7 @@ public class Upload implements GroupAction {
 		boolean shadowing = false;
 		for (final FileObject file : selected) {
 			final Status status = file.getStatus();
-			if (status.isValid(Action.UPLOAD)) {
+			if (status.isValid(Action.UPLOAD) || status == Status.INSTALLED) {
 				if (file.updateSite != null && !file.updateSite.equals(updateSite)) {
 					shadowing = true;
 				}
