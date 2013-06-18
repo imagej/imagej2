@@ -127,5 +127,17 @@ public class CommandLineUpdaterTest {
 
 		assertTrue(deleteRecursively(tmp));
 	}
+
+	@Test
+	public void testForcedShadow() throws Exception {
+		final String path = "macros/test.ijm";
+		files = initialize(path);
+
+		final File tmp = addUpdateSite(files, "second");
+		files = main(files, "upload", "--update-site", "second", "--force-shadow", path);
+
+		final File onSecondSite = new File(tmp, path + "-" + files.get(path).current.timestamp);
+		assertTrue("File exists: " + onSecondSite, onSecondSite.exists());
+	}
 }
 
