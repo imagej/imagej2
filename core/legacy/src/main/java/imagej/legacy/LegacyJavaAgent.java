@@ -147,6 +147,14 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 		DefaultLegacyService.preinit();
 	}
 
+	private static class ImageJ1ClassLoadedPrematurely extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public ImageJ1ClassLoadedPrematurely(final String message) {
+			super(message);
+		}
+	}
+
 	private static List<RuntimeException> exceptions = new ArrayList<RuntimeException>();
 
 	public static void dontCall(int i) {
@@ -156,7 +164,7 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 	private final static ClassPool pool = ClassPool.getDefault();
 
 	private static byte[] reportCaller(final String message, final byte[] classfileBuffer) throws IllegalClassFormatException {
-		final RuntimeException exception = new RuntimeException(message);
+		final RuntimeException exception = new ImageJ1ClassLoadedPrematurely(message);
 		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
 		if (trace != null) {
 			int i = 0;
