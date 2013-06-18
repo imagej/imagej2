@@ -37,7 +37,6 @@ package imagej.updater.ui;
 
 import imagej.updater.core.Conflicts;
 import imagej.updater.core.Conflicts.Conflict;
-import imagej.updater.core.Dependency;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
@@ -273,18 +272,6 @@ public class CommandLine {
 		if (new File(file.filename).delete()) System.err.println("Deleted " +
 			file.filename);
 		else System.err.println("Failed to delete " + file.filename);
-	}
-
-	protected void addDependencies(final FileObject file,
-		final Set<FileObject> all)
-	{
-		ensureChecksummed();
-		if (all.contains(file)) return;
-		all.add(file);
-		for (final Dependency dependency : file.getDependencies()) {
-			final FileObject file2 = files.get(dependency.filename);
-			if (file2 != null) addDependencies(file2, all);
-		}
 	}
 
 	public void update(final List<String> list) {
