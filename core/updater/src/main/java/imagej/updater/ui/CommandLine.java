@@ -755,8 +755,8 @@ public class CommandLine {
 			makeList(args, 1));
 		else if (command.equals("list-local-only")) instance.listLocalOnly(
 				makeList(args, 1));
-		else if (command.equals("list-from-site")) instance.listFromSite(
-				makeList(args, 1));
+		else if (command.equals("list-from-site"))
+			instance.listFromSite(makeList(args, 1));
 		else if (command.equals("show")) instance.show(makeList(args, 1));
 		else if (command.equals("update")) instance.update(makeList(args, 1));
 		else if (command.equals("update-force")) instance.update(
