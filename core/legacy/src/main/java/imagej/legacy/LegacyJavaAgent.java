@@ -72,12 +72,14 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 
 	private static Instrumentation instrumentation;
 	private static LegacyJavaAgent agent;
+	private static Transformer transformer;
 
 	public static void stop() {
 		if (instrumentation != null && agent != null) {
 			instrumentation.removeTransformer(agent);
 			agent = null;
 		}
+		transformer = null;
 	}
 
 	/**
@@ -101,7 +103,9 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 			return;
 		} else if ("noop".equals(agentArgs)) {
 			return;
-		} else if (agentArgs != null && !"debug".equals(agentArgs)) {
+		} else if ("debug".equals(agentArgs)) {
+			transformer = new Transformer();
+		} else if (agentArgs != null && !"report".equals(agentArgs)) {
 			System.err.println("Unhandled agent option: " + agentArgs);
 			usage();
 			return;
@@ -140,7 +144,9 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 				"init\n" +
 				"\tforce pre-initialization of the ImageJ legacy service\n" +
 				"debug (this is the default)\n" +
-				"\tshow where ImageJ 1.x classes are used prematurely\n");
+				"\tthrow exceptions where ImageJ 1.x classes are used prematurely\n" +
+				"report\n" +
+				"\treport whenever ImageJ 1.x classes are used prematurely\n");
 	}
 
 	private static void preinit() {
@@ -160,8 +166,6 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 	public static void dontCall(int i) {
 		throw exceptions.get(i);
 	}
-
-	private final static ClassPool pool = ClassPool.getDefault();
 
 	private static byte[] reportCaller(final String message, final byte[] classfileBuffer) throws IllegalClassFormatException {
 		final RuntimeException exception = new ImageJ1ClassLoadedPrematurely(message);
@@ -184,30 +188,46 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 		 * 
 		 * So we do something much nastier: we rewrite the class using Javassist here.
 		 */
-		int number;
-		synchronized (exceptions) {
-			number = exceptions.size();
-			exceptions.add(exception);
+		if (transformer != null) {
+			return transformer.transform(classfileBuffer, exception);
 		}
-		final String src = LegacyJavaAgent.class.getName() + ".dontCall(" + number + ");";
-		try {
-			CtClass clazz = pool.makeClass(new ByteArrayInputStream(classfileBuffer), false);
-			CtConstructor method = clazz.getClassInitializer();
-			if (method != null) {
-				method.insertBefore(src);
-			} else {
-				method = CtNewConstructor.make(new CtClass[0], new CtClass[0], src, clazz);
-				method.getMethodInfo().setName("<clinit>");
-				method.setModifiers(Modifier.STATIC);
-				clazz.addConstructor(method);
+		exception.printStackTrace();
+		return null;
+	}
+
+	private static class Transformer {
+		private final ClassPool pool;
+
+		public Transformer() {
+			pool = ClassPool.getDefault();
+		}
+
+		public byte[] transform(byte[] classfileBuffer, RuntimeException exception) {
+			int number;
+			synchronized (exceptions) {
+				number = exceptions.size();
+				exceptions.add(exception);
 			}
-			return clazz.toBytecode();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		} catch (CannotCompileException e) {
-			e.printStackTrace();
-			return null;
+			final String src = LegacyJavaAgent.class.getName() + ".dontCall(" + number + ");";
+			try {
+				CtClass clazz = pool.makeClass(new ByteArrayInputStream(classfileBuffer), false);
+				CtConstructor method = clazz.getClassInitializer();
+				if (method != null) {
+					method.insertBefore(src);
+				} else {
+					method = CtNewConstructor.make(new CtClass[0], new CtClass[0], src, clazz);
+					method.getMethodInfo().setName("<clinit>");
+					method.setModifiers(Modifier.STATIC);
+					clazz.addConstructor(method);
+				}
+				return clazz.toBytecode();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			} catch (CannotCompileException e) {
+				e.printStackTrace();
+				return null;
+			}
 		}
 	}
 
