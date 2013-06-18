@@ -115,8 +115,14 @@ public class MiniMaven {
 		final String artifactId = getSystemProperty("artifactId", root.getArtifactId().equals("pom-ij-base") ? "ij-app" : root.getArtifactId());
 
 		MavenProject pom = findPOM(root, artifactId);
-		if (pom == null)
+		if (pom == null) {
+			final String specifiedArtifactId = System.getProperty("artifactId");
+			if (specifiedArtifactId != null) {
+				System.err.println("Could not find project for artifactId '" + artifactId + "'!");
+				System.exit(1);
+			}
 			pom = root;
+		}
 		if (command.equals("compile") || command.equals("build") || command.equals("compile-and-run")) {
 			pom.build();
 			if (command.equals("compile-and-run"))
