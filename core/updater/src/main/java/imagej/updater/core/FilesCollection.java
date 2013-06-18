@@ -935,7 +935,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	}
 
 	@Deprecated
-	public FileObject get(final int index) {
+	public FileObject get(@SuppressWarnings("unused") final int index) {
 		throw new UnsupportedOperationException();
 	}
 

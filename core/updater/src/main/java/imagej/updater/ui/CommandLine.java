@@ -338,14 +338,26 @@ public class CommandLine {
 
 	public void upload(final List<String> list) {
 		if (list == null) throw die("Which files do you mean to upload?");
-		boolean forceUpdateSite = false;
+		boolean forceUpdateSite = false, forceShadow = false;
 		String updateSite = null;
-		if (list.size() > 1 && "--update-site".equals(list.get(0))) {
-			list.remove(0);
-			updateSite = list.remove(0);
-			forceUpdateSite = true;
+		while (list.size() > 0 && list.get(0).startsWith("-")) {
+			final String option = list.remove(0);
+			if ("--update-site".equals(option)) {
+				if (list.size() < 1) {
+					throw die("Missing name for --update-site");
+				}
+				updateSite = list.remove(0);
+				forceUpdateSite = true;
+			} else if ("--force-shadow".equals(option)) {
+				forceShadow = true;
+			} else {
+				throw die("Unknown option: " + option);
+			}
 		}
 		if (list.size() == 0) throw die("Which files do you mean to upload?");
+		if (forceShadow && updateSite == null) {
+			throw die("Need an explicit update site with --force-shadow");
+		}
 
 		ensureChecksummed();
 		int count = 0;
@@ -353,8 +365,16 @@ public class CommandLine {
 			final FileObject file = files.get(name);
 			if (file == null) throw die("No file '" + name + "' found!");
 			if (file.getStatus() == Status.INSTALLED) {
-				System.err.println("Skipping up-to-date " + name);
-				continue;
+				if (forceShadow && !updateSite.equals(file.updateSite)) {
+					// TODO: add overridden update site
+					file.updateSite = updateSite;
+					file.setStatus(Status.LOCAL_ONLY);
+					System.err.println("Uploading (force-shadow) '" + name
+							+ "' to site '" + updateSite + "'");
+				} else {
+					System.err.println("Skipping up-to-date " + name);
+					continue;
+				}
 			}
 			handleLauncherForUpload(file);
 			if (updateSite == null) {
@@ -683,7 +703,7 @@ public class CommandLine {
 			+ "\tupdate [<files>]\n"
 			+ "\tupdate-force [<files>]\n"
 			+ "\tupdate-force-pristine [<files>]\n"
-			+ "\tupload [--update-site <name>] [<files>]\n"
+			+ "\tupload [--update-site <name>] [--force-shadow] [<files>]\n"
 			+ "\tupload-complete-site [--simulate] [--force] [--force-shadow] <name>\n"
 			+ "\tlist-update-sites [<nick>...]\n"
 			+ "\tadd-update-site <nick> <url> [<host> <upload-directory>]\n"
