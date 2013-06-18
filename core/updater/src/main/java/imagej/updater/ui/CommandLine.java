@@ -340,10 +340,17 @@ public class CommandLine {
 		if (list == null) throw die("Which files do you mean to upload?");
 		boolean forceUpdateSite = false;
 		String updateSite = null;
-		if (list.size() > 1 && "--update-site".equals(list.get(0))) {
-			list.remove(0);
-			updateSite = list.remove(0);
-			forceUpdateSite = true;
+		while (list.size() > 0 && list.get(0).startsWith("-")) {
+			final String option = list.remove(0);
+			if ("--update-site".equals(option)) {
+				if (list.size() < 1) {
+					throw die("Missing name for --update-site");
+				}
+				updateSite = list.remove(0);
+				forceUpdateSite = true;
+			} else {
+				throw die("Unknown option: " + option);
+			}
 		}
 		if (list.size() == 0) throw die("Which files do you mean to upload?");
 
