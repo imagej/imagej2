@@ -39,12 +39,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
 import java.net.URL;
 import java.security.ProtectionDomain;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -98,6 +101,7 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 		}
 		agent = new LegacyJavaAgent();
 		instrumentation.addTransformer(agent);
+		System.err.println("Legacy Java agent initialized");
 	}
 
 	@Override
@@ -105,7 +109,7 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 			Class<?> classBeingRedefined, ProtectionDomain protectionDomain,
 			byte[] classfileBuffer) throws IllegalClassFormatException {
 		if (className.startsWith("ij.") || className.startsWith("ij/")) {
-			reportCaller("Loading " + className + " into " + loader + "!");
+			return reportCaller("Loading " + className + " into " + loader + "!", className);
 		}
 		return null;
 	}
@@ -136,18 +140,228 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 		DefaultLegacyService.preinit();
 	}
 
-	private static void reportCaller(final String message) {
-		System.err.println(message);
+	private static List<RuntimeException> exceptions = new ArrayList<RuntimeException>();
+
+	public static void dontCall(int i) {
+		throw exceptions.get(i);
+	}
+
+	private static byte[] reportCaller(final String message, final String className) throws IllegalClassFormatException {
+		final RuntimeException exception = new RuntimeException(message);
 		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-		if (trace == null) return;
-		int i = 0;
-		// skip Thread#getStackTrace, #reportCaller and #transform
-		while (i < trace.length && isCoreClass(trace[i].getClassName())) i++;
-		for (; i < trace.length; i++) {
-			final StackTraceElement element = trace[i];
-			System.err.println("\tat " + element.getClassName() + "." + element.getMethodName()
-					+ "(" + element.getFileName() + ":" + element.getLineNumber() + ")");
+		if (trace != null) {
+			int i = 0;
+			// skip Thread#getStackTrace, #reportCaller and #transform
+			while (i < trace.length && isCoreClass(trace[i].getClassName())) i++;
+			final StackTraceElement[] stackTrace = new StackTraceElement[trace.length - i];
+			for (int j = 0; i < trace.length; j++, i++) {
+				stackTrace[j] = trace[i];
+			}
+			exception.setStackTrace(stackTrace);
 		}
+
+		/*
+		 * We cannot really throw any exception here. That is, we can, but to no
+		 * avail: exceptions thrown in ClassFileTransformer#transform() are
+		 * simply ignored!
+		 * 
+		 * So we do something much nastier: we write our own Java class here.
+		 */
+		return new ClassWriter().makeClass(className, exception);
+	}
+
+	@SuppressWarnings("unused")
+	private static void hexdump(byte[] bytes) {
+		System.err.println("\nhexdump of " + bytes.length + " bytes:");
+		for (int offset = 0; offset < bytes.length; offset += 0x10) {
+			System.err.printf("%08x  ", offset);
+			String suffix = " |";
+			for (int i = 0; i < 0x10; i++) {
+				if (offset + i < bytes.length) {
+					int b = bytes[offset + i] & 0xff;
+					System.err.printf("%02x ", b);
+					suffix += (b >= 0x20 && b < 0x80 ? (char)b : '.');
+				} else {
+					System.err.print("   ");
+					suffix += " ";
+				}
+				if (i == 7) System.err.print(" ");
+			}
+			System.err.println(suffix + "|");
+		}
+	}
+
+	private static class ClassWriter {
+		private final static byte RETURN = (byte)0xb1;
+		private final static int CODE_REF = 7;
+
+		public byte[] makeClass(final String className, final RuntimeException e) {
+			int number;
+			synchronized (exceptions) {
+				number = exceptions.size();
+				exceptions.add(e);
+			}
+			return concat(new byte[] {
+				// magic: 0xcafebabe
+				-54, -2, -70, -66,
+				// class file format version (JDK 1.4 = 48.0)
+				0, 0, 0, 48,
+			},
+			constantPool(
+				// #1 super-class' constructor
+				methodRef(4, 9),
+				// #12 LegacyJavaAgent#dontCall(int)
+				methodRef(10, 11),
+				// #3 this.class
+				classRef(12),
+				// #4 Object.class
+				classRef(13),
+				// #5 "<init>"
+				string("<init>"),
+				// #6 "()V"
+				string("()V"),
+				// #7 "Code"
+				string("Code"),
+				// #8 "<clinit>"
+				string("<clinit>"),
+				// #9 constructor's signature
+				nameAndType(5, 6),
+				// #10 LegacyJavaAgent.class
+				classRef(14),
+				// #11 signature of LegacyJavaAgent#dontCall(int)
+				nameAndType(15, 16),
+				// #12 class name
+				string(className),
+				// #13 "java/lang/Object"
+				string("java/lang/Object"),
+				// #14 "imagej.legacy.LegacyJavaAgent"
+				string(LegacyJavaAgent.class.getName().replace('.', '/')),
+				// #15 "dontCall"
+				string("dontCall"),
+				// #16 "(I)V"
+				string("(I)V")
+			),
+			// class access flags (PUBLIC | SUPER)
+			(short)0x21,
+			// this / super class
+			(short)3, (short)4,
+			// interfaces implemented
+			(short)0,
+			// field count
+			(short)0,
+			// method count
+			(short)2,
+			// constructor
+			method(1 /* PUBLIC */, 5, 6, concat(aload(0), invokespecial(1), RETURN)),
+			// static initializer
+			method(8 /* STATIC */, 8, 6, concat(ipush(number), invokestatic(2), RETURN)),
+			// class attribute count
+			(short)0
+			);
+		}
+
+		private byte[] constantPool(final byte[]... elements) {
+			return concat((short)(elements.length + 1), concat((Object[])elements));
+		}
+
+		private static byte[] string(final String string) {
+			try {
+				final byte[] bytes = string.getBytes("UTF-8");
+				return concat((byte)1, (short)bytes.length, bytes);
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+
+		private static byte[] classRef(final int stringRef) {
+			return concat((byte)7, (short)stringRef);
+		}
+
+		private byte[] nameAndType(final int nameRef, final int typeRef) {
+			return concat((byte)12, (short)nameRef, (short)typeRef);
+		}
+
+		private byte[] methodRef(final int classRef, final int nameAndTypeRef) {
+			return concat((byte)10, (short)classRef, (short)nameAndTypeRef);
+		}
+
+		private byte[] method(final int accessFlags, final int nameRef, final int typeRef, final byte[] code) {
+			return concat((short)accessFlags,
+					(short)nameRef, (short)typeRef,
+					// attribute count: 1 (Code)
+					(short)1,
+					(short)CODE_REF, // "Code"
+					code.length + 12, // attribute length
+					(short)1, (short)1, // max stack, max local
+					code.length,
+					code,
+					(short)0, // code attribute's exception count
+					(short)0 // code attribute's attribute count
+				);
+		}
+
+		private byte[] aload(int i) {
+			if (i == 0) return concat((byte)0x2a);
+			throw new IllegalArgumentException("Not yet implemented: i = " + i);
+		}
+
+		private byte[] invokespecial(final int methodRef) {
+			return concat((byte)0xb7, (short)methodRef);
+		}
+
+		private byte[] ipush(final int value) {
+			if (value < 0x100) return concat((byte)0x10, (byte)value);
+			throw new IllegalArgumentException("Not yet implemented: value = " + value);
+		}
+
+		private byte[] invokestatic(final int methodRef) {
+			return concat((byte)0xb8, (short)methodRef);
+		}
+
+		private static byte[] concat(final Object... list) {
+			int length = 0;
+			for (final Object element : list) {
+				if (element == null) continue;
+				if (Byte.class.isInstance(element)) length++;
+				else if (Short.class.isInstance(element)) length += 2;
+				else if (Integer.class.isInstance(element)) length += 4;
+				else if (element instanceof byte[]) {
+					final byte[] array = (byte[])element;
+					length += array.length;
+				} else {
+					System.err.println("Cannot handle element of type " + element.getClass());
+				}
+			}
+			final byte[] result = new byte[length];
+			int offset =  0;
+			for (final Object element : list) {
+				if (element == null) continue;
+				if (Byte.class.isInstance(element)) {
+					result[offset++] = ((Byte)element).byteValue();
+				}
+				else if (Short.class.isInstance(element)) {
+					final short value = ((Short)element).shortValue();
+					result[offset++] = (byte)((value & 0xff00) >> 8);
+					result[offset++] = (byte)(value & 0xff);
+				}
+				else if (Integer.class.isInstance(element)) {
+					final int value = ((Integer)element).intValue();
+					result[offset++] = (byte)((value & 0xff000000l) >> 24);
+					result[offset++] = (byte)((value & 0xff0000) >> 16);
+					result[offset++] = (byte)((value & 0xff00) >> 8);
+					result[offset++] = (byte)(value & 0xff);
+				}
+				else if (element instanceof byte[]) {
+					final byte[] array = (byte[])element;
+					length += array.length;
+					System.arraycopy(array, 0, result, offset, array.length);
+					offset += array.length;
+				}
+			}
+			return result;
+		}
+
 	}
 
 	private final static ClassLoader bootstrapClassLoader = ClassLoader.getSystemClassLoader().getParent();
