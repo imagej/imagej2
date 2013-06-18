@@ -90,11 +90,11 @@ public class MiniMaven {
 		for (offset = 0; offset < args.length && args[offset].charAt(0) == '-'; offset++) {
 			final String option = args[offset];
 			if (option.startsWith("-D")) {
-				int equals = option.indexOf('=', 2);
-				if (equals < 0)
-					System.getProperties().remove(option.substring(2));
-				else
-					System.setProperty(option.substring(2, equals), option.substring(equals + 1));
+				final int equals = option.indexOf('=', 2);
+				final String value;
+				if (equals < 0) value = "true";
+				else value = option.substring(equals + 1);
+				System.setProperty(option.substring(2), value);
 			}
 			else {
 				usage();
