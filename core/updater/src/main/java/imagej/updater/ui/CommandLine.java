@@ -176,7 +176,6 @@ public class CommandLine {
 	}
 
 	public void listFromSite(final List<String> sites) {
-		System.out.println("sites.size(): " + sites.size());
 		if (sites.size() != 1)
 			throw die("Usage: list-from-site <name>");
 		list(null, files.isUpdateSite(sites.get(0)));
