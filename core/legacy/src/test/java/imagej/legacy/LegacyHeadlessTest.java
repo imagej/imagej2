@@ -71,7 +71,7 @@ public class LegacyHeadlessTest {
 
 	@After
 	public void restoreThreadName() {
-		//if (threadName != null) Thread.currentThread().setName(threadName);
+		if (threadName != null) Thread.currentThread().setName(threadName);
 	}
 
 	@Test

@@ -35,77 +35,37 @@
 
 package imagej.legacy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assume.assumeTrue;
-
-import java.awt.GraphicsEnvironment;
+import static org.junit.Assert.assertTrue;
 
 import ij.IJ;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.scijava.Context;
 
 /**
- * Unit tests for {@link LegacyService}.
+ * Tests that the CodeHacker gives a helpful message when ImageJ 1.x classes
+ * were already loaded.
  * 
  * @author Johannes Schindelin
  */
-public class LegacyServiceTest {
+public class CodeHackerTest {
 
-	static {
-		/*
-		 * We absolutely require that the LegacyInjector did its job before we
-		 * use the ImageJ 1.x classes here, in case the LegacyService tests did
-		 * not run yet, so that the classes are properly patched before use.
-		 * 
-		 * Just loading the class is not enough; it will not get initialized. So
-		 * we call the preinit() method just to force class initialization (and
-		 * thereby the LegacyInjector to patch ImageJ 1.x).
-		 */
-		DefaultLegacyService.preinit();
-	}
-
-	private Context context;
-
-	@Before
-	public void cannotRunHeadlesslyYet() {
-		assumeTrue(!GraphicsEnvironment.isHeadless());
-	}
-
-	@After
-	public void disposeContext() {
-		if (context != null) {
-			context.dispose();
-			context = null;
+	@Test
+	public void testExceptionMessage() {
+		IJ.log("Now ij.IJ is loaded.");
+		try {
+			DefaultLegacyService.preinit();
+			assertTrue("Should never reach here", false);
+		} catch (ExceptionInInitializerError e) {
+			final Throwable e2 = e.getCause();
+			assertTrue(e2 != null);
+			assertTrue(e2 instanceof RuntimeException);
+			final Throwable e3 = e2.getCause();
+			assertTrue(e3 != null);
+			assertTrue(e3 instanceof LinkageError);
+			final String cause = e2.getMessage();
+			assertTrue("Contains hint:\n\n" + cause, cause.indexOf("-javaagent:") > 0);
+			IJ.log("We got the hint, and all is fine:\n\n" + cause);
 		}
-	}
-
-	@Test
-	public void testContext() {
-		context = new Context(LegacyService.class);
-		final LegacyService legacyService =
-			context.getService(LegacyService.class);
-		assumeTrue(legacyService != null);
-
-		Context context2 = (Context)IJ.runPlugIn(Context.class.getName(), null);
-		assertNotNull(context2);
-		assertEquals(context, context2);
-
-		final LegacyService legacyService2 = (LegacyService)
-				IJ.runPlugIn(LegacyService.class.getName(), null);
-		assertNotNull(legacyService2);
-		assertEquals(legacyService, legacyService2);
-	}
-
-	@Test
-	public void testContextWasDisposed() {
-		context = new Context(LegacyService.class);
-		final LegacyService legacyService =
-			context.getService(LegacyService.class);
-		assumeTrue(legacyService != null);
 	}
 
 }

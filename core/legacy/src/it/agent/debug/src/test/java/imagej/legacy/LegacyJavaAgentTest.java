@@ -36,76 +36,49 @@
 package imagej.legacy;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assume.assumeTrue;
-
-import java.awt.GraphicsEnvironment;
+import static org.junit.Assert.assertTrue;
 
 import ij.IJ;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.scijava.Context;
 
 /**
- * Unit tests for {@link LegacyService}.
+ * Tests that the legacy Java agent identifies the correct spot where ImageJ 1.x classes were loaded.
  * 
  * @author Johannes Schindelin
  */
-public class LegacyServiceTest {
+public class LegacyJavaAgentTest {
 
-	static {
-		/*
-		 * We absolutely require that the LegacyInjector did its job before we
-		 * use the ImageJ 1.x classes here, in case the LegacyService tests did
-		 * not run yet, so that the classes are properly patched before use.
-		 * 
-		 * Just loading the class is not enough; it will not get initialized. So
-		 * we call the preinit() method just to force class initialization (and
-		 * thereby the LegacyInjector to patch ImageJ 1.x).
-		 */
-		DefaultLegacyService.preinit();
-	}
+	private StackTraceElement[] trace;
 
-	private Context context;
-
-	@Before
-	public void cannotRunHeadlesslyYet() {
-		assumeTrue(!GraphicsEnvironment.isHeadless());
-	}
-
-	@After
-	public void disposeContext() {
-		if (context != null) {
-			context.dispose();
-			context = null;
+	@Test
+	public void testAgent() {
+		try {
+			trace = Thread.currentThread().getStackTrace();
+			IJ.log("Now ij.IJ would be loaded.");
+			assertTrue("This code should not be reached", false);
+		} catch (final ExceptionInInitializerError e) {
+			final Throwable e2 = e.getCause();
+			assertTrue(e2 != null);
+			final String message = e2.getMessage();
+			assertTrue("Message should being with 'Loading ij/IJ': " + message,
+				message.startsWith("Loading ij/IJ "));
+			final StackTraceElement[] stackTrace = e2.getStackTrace();
+			assertEquals(getFileName(stackTrace, 0), getFileName(trace, 1));
+			assertEquals(getLineNumber(stackTrace, 0), getLineNumber(trace, 1) + 1);
+			System.err.println("All is fine, we got the exception:");
+			e2.printStackTrace();
 		}
 	}
 
-	@Test
-	public void testContext() {
-		context = new Context(LegacyService.class);
-		final LegacyService legacyService =
-			context.getService(LegacyService.class);
-		assumeTrue(legacyService != null);
-
-		Context context2 = (Context)IJ.runPlugIn(Context.class.getName(), null);
-		assertNotNull(context2);
-		assertEquals(context, context2);
-
-		final LegacyService legacyService2 = (LegacyService)
-				IJ.runPlugIn(LegacyService.class.getName(), null);
-		assertNotNull(legacyService2);
-		assertEquals(legacyService, legacyService2);
+	private int getLineNumber(final StackTraceElement[] trace, int no) {
+		if (trace == null || trace.length <= no) return -1;
+		return trace[no].getLineNumber();
 	}
 
-	@Test
-	public void testContextWasDisposed() {
-		context = new Context(LegacyService.class);
-		final LegacyService legacyService =
-			context.getService(LegacyService.class);
-		assumeTrue(legacyService != null);
+	private String getFileName(final StackTraceElement[] trace, int no) {
+		if (trace == null || trace.length <= no) return null;
+		return trace[no].getFileName();
 	}
 
 }

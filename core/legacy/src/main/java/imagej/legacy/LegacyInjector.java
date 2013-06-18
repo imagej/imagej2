@@ -201,6 +201,12 @@ public class LegacyInjector {
 			hacker.handleMightyMousePressed(fullClass);
 		}
 
+		try {
+			LegacyJavaAgent.stop();
+		} catch (Throwable t) {
+			// ignore
+		}
+
 		// commit patches
 		hacker.loadClasses();
 
