@@ -387,7 +387,7 @@ public class CommandLine {
 				if (forceShadow && !updateSite.equals(file.updateSite)) {
 					// TODO: add overridden update site
 					file.updateSite = updateSite;
-					file.setStatus(Status.LOCAL_ONLY);
+					file.setStatus(Status.MODIFIED);
 					System.err.println("Uploading (force-shadow) '" + name
 							+ "' to site '" + updateSite + "'");
 				} else {
