@@ -51,6 +51,7 @@ import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.CtField;
 import javassist.CtMethod;
+import javassist.CtNewConstructor;
 import javassist.CtNewMethod;
 import javassist.LoaderClassPath;
 import javassist.Modifier;
@@ -253,28 +254,49 @@ public class CodeHacker {
 
 	public void insertPrivateStaticField(final String fullClass,
 			final Class<?> clazz, final String name) {
-		insertStaticField(fullClass, Modifier.PRIVATE, clazz, name);
+		insertStaticField(fullClass, Modifier.PRIVATE, clazz, name, null);
 	}
 
 	public void insertPublicStaticField(final String fullClass,
-			final Class<?> clazz, final String name) {
-		insertStaticField(fullClass, Modifier.PUBLIC, clazz, name);
+			final Class<?> clazz, final String name, final String initializer) {
+		insertStaticField(fullClass, Modifier.PUBLIC, clazz, name, initializer);
 	}
 
 	public void insertStaticField(final String fullClass, int modifiers,
-			final Class<?> clazz, final String name) {
+			final Class<?> clazz, final String name, final String initializer) {
 		final CtClass classRef = getClass(fullClass);
 		try {
 			final CtField field = new CtField(pool.get(clazz.getName()), name,
 					classRef);
 			field.setModifiers(modifiers | Modifier.STATIC);
 			classRef.addField(field);
+			if (initializer != null) {
+				addToClassInitializer(fullClass, name + " = " + initializer + ";");
+			}
 		} catch (CannotCompileException e) {
 			throw new IllegalArgumentException("Cannot add field " + name
 					+ " to " + fullClass, e);
 		} catch (NotFoundException e) {
 			throw new IllegalArgumentException("Cannot add field " + name
 					+ " to " + fullClass, e);
+		}
+	}
+
+	public void addToClassInitializer(final String fullClass, final String code) {
+		final CtClass classRef = getClass(fullClass);
+		try {
+			CtConstructor method = classRef.getClassInitializer();
+			if (method != null) {
+				method.insertAfter(code);
+			} else {
+				method = CtNewConstructor.make(new CtClass[0], new CtClass[0], code, classRef);
+				method.getMethodInfo().setName("<clinit>");
+				method.setModifiers(Modifier.STATIC);
+				classRef.addConstructor(method);
+			}
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException("Cannot add " + code
+					+ " to class initializer of " + fullClass, e);
 		}
 	}
 
