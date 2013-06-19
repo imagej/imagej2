@@ -253,11 +253,21 @@ public class CodeHacker {
 
 	public void insertPrivateStaticField(final String fullClass,
 			final Class<?> clazz, final String name) {
+		insertStaticField(fullClass, Modifier.PRIVATE, clazz, name);
+	}
+
+	public void insertPublicStaticField(final String fullClass,
+			final Class<?> clazz, final String name) {
+		insertStaticField(fullClass, Modifier.PUBLIC, clazz, name);
+	}
+
+	public void insertStaticField(final String fullClass, int modifiers,
+			final Class<?> clazz, final String name) {
 		final CtClass classRef = getClass(fullClass);
 		try {
 			final CtField field = new CtField(pool.get(clazz.getName()), name,
 					classRef);
-			field.setModifiers(Modifier.PRIVATE | Modifier.STATIC);
+			field.setModifiers(modifiers | Modifier.STATIC);
 			classRef.addField(field);
 		} catch (CannotCompileException e) {
 			throw new IllegalArgumentException("Cannot add field " + name
