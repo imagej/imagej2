@@ -47,6 +47,7 @@ import org.scijava.util.ClassUtils;
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
+import javassist.CtBehavior;
 import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.CtField;
@@ -303,6 +304,157 @@ public class CodeHacker {
 	}
 
 	/**
+	 * Replaces the application name.
+	 * 
+	 * @param appName the new application name
+	 */
+	public void setAppName(final String appName) {
+		insertPublicStaticField("ij.IJ", String.class, "_appName", "\"" + appName + "\"");
+		insertAtTopOfMethod("ij.IJ", "public void error(java.lang.String title, java.lang.String msg)",
+				"if ($1 == null || $1.equals(\"ImageJ\")) $1 = ij.IJ._appName;");
+		insertAtBottomOfMethod("ij.ImageJ", "public java.lang.String version()", "$_ = $_.replace(\"ImageJ\", ij.IJ._appName);");
+		replaceAppNameInCall("ij.ImageJ", "public <init>(java.applet.Applet applet, int mode)", "super", 1);
+		replaceAppNameInNew("ij.ImageJ", "public void run()", "ij.gui.GenericDialog", 1);
+		replaceAppNameInCall("ij.ImageJ", "public void run()", "addMessage", 1);
+		replaceAppNameInNew("ij.plugin.CommandFinder", "public void export()", "ij.text.TextWindow", 1);
+		replaceAppNameInCall("ij.plugin.Hotkeys", "public void removeHotkey()", "addMessage", 1);
+		replaceAppNameInCall("ij.plugin.Hotkeys", "public void removeHotkey()", "showStatus", 1);
+		replaceAppNameInCall("ij.plugin.Options", "public void appearance()", "showMessage", 2);
+		replaceAppNameInCall("ij.gui.YesNoCancelDialog", "public <init>(java.awt.Frame parent, java.lang.String title, java.lang.String msg)", "super", 2);
+		replaceAppNameInCall("ij.gui.Toolbar", "private void showMessage(int toolId)", "showStatus", 1);
+	}
+
+	/**
+	 * Replaces the application name in the given method in the given parameter
+	 * to the given constructor call.
+	 * 
+	 * Fails silently if the specified method does not exist (e.g.
+	 * CommandFinder's export() function just went away in 1.47i).
+	 * 
+	 * @param fullClass
+	 *            Fully qualified name of the class to override.
+	 * @param methodSig
+	 *            Method signature of the method to override; e.g.,
+	 *            "public void showMessage(String title, String message)"
+	 * @param newClassName
+	 *            the name of the class which is to be constructed by the new
+	 *            operator
+	 * @param parameterIndex
+	 *            the index of the parameter containing the application name
+	 * @throws CannotCompileException
+	 */
+	private void replaceAppNameInNew(final String fullClass,
+			final String methodSig, final String newClassName,
+			final int parameterIndex) {
+		try {
+			final CtMethod method = getMethod(fullClass, methodSig);
+			method.instrument(new ExprEditor() {
+				@Override
+				public void edit(NewExpr expr) throws CannotCompileException {
+					if (expr.getClassName().equals(newClassName))
+						try {
+							final CtClass[] parameterTypes = expr
+									.getConstructor().getParameterTypes();
+							if (parameterTypes[parameterIndex] != CodeHacker.this
+									.getClass("java.lang.String")) {
+								throw new IllegalArgumentException("Parameter "
+										+ parameterIndex + " of "
+										+ expr.getConstructor() + " is not a String!");
+							}
+							final String replace = replaceAppNameParameter(
+									parameterIndex, parameterTypes.length);
+							expr.replace("$_ = new " + newClassName + replace
+									+ ";");
+						} catch (NotFoundException e) {
+							throw new IllegalArgumentException(
+									"Cannot find the parameters of the constructor of "
+											+ newClassName, e);
+					}
+				}
+			});
+		} catch (IllegalArgumentException e) {
+			// ignore: the method was not found
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException("Cannot handle app name in " + fullClass
+					+ "'s " + methodSig, e);
+		}
+	}
+
+	/**
+	 * Replaces the application name in the given method in the given parameter
+	 * to the given method call.
+	 * 
+	 * Fails silently if the specified method does not exist (e.g.
+	 * CommandFinder's export() function just went away in 1.47i).
+	 * 
+	 * @param fullClass
+	 *            Fully qualified name of the class to override.
+	 * @param methodSig
+	 *            Method signature of the method to override; e.g.,
+	 *            "public void showMessage(String title, String message)"
+	 * @param calledMethodName
+	 *            the name of the method to which the application name is passed
+	 * @param parameterIndex
+	 *            the index of the parameter containing the application name
+	 * @throws CannotCompileException
+	 */
+	private void replaceAppNameInCall(final String fullClass,
+			final String methodSig, final String calledMethodName,
+			final int parameterIndex) {
+		try {
+			final CtBehavior method;
+			if (methodSig.indexOf("<init>") < 0) {
+				method = getMethod(fullClass, methodSig);
+			} else {
+				method = getConstructor(fullClass, methodSig);
+			}
+			method.instrument(new ExprEditor() {
+				@Override
+				public void edit(MethodCall call) throws CannotCompileException {
+					if (call.getMethodName().equals(calledMethodName)) try {
+						final CtClass[] parameterTypes = call.getMethod().getParameterTypes();
+						if (parameterTypes.length <= parameterIndex) {
+								throw new IllegalArgumentException("Index " + parameterIndex + " is outside of " + call.getMethod() + "'s parameter list!");
+						}
+						if (parameterTypes[parameterIndex] != CodeHacker.this.getClass("java.lang.String")) {
+							throw new IllegalArgumentException("Parameter " + parameterIndex + " of "
+									+ call.getMethod() + " is not a String!");
+						}
+						final String replace = replaceAppNameParameter(
+								parameterIndex, parameterTypes.length);
+						call.replace("$0." + calledMethodName + replace + ";");
+					} catch (NotFoundException e) {
+						throw new IllegalArgumentException(
+								"Cannot find the parameters of the method "
+										+ calledMethodName, e);
+					}
+				}
+			});
+		} catch (IllegalArgumentException e) {
+			// ignore: the method was not found
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException("Cannot handle app name in " + fullClass
+					+ "'s " + methodSig, e);
+		}
+	}
+
+	private String replaceAppNameParameter(final int parameterIndex, final int parameterCount) {
+		final StringBuilder builder = new StringBuilder();
+		builder.append("(");
+		for (int i = 1; i <= parameterCount; i++) {
+			if (i > 1) {
+				builder.append(", ");
+			}
+			builder.append("$").append(i);
+			if (i == parameterIndex) {
+				builder.append(".replace(\"ImageJ\", ij.IJ._appName)");
+			}
+		}
+		builder.append(")");
+		return builder.toString();
+	}
+
+	/**
 	 * Replaces the given methods with stub methods.
 	 * 
 	 * @param fullClass the class to patch
@@ -471,6 +623,25 @@ public class CodeHacker {
 		}
 		catch (final NotFoundException e) {
 			throw new IllegalArgumentException("No such method: " + methodSig, e);
+		}
+	}
+
+	/**
+	 * Gets the Javassist constructor object corresponding to the given constructor
+	 * signature of the specified class name.
+	 */
+	private CtConstructor getConstructor(final String fullClass, final String constructorSig) {
+		final CtClass cc = getClass(fullClass);
+		final String[] argTypes = getMethodArgTypes(constructorSig);
+		final CtClass[] params = new CtClass[argTypes.length];
+		for (int i = 0; i < params.length; i++) {
+			params[i] = getClass(argTypes[i]);
+		}
+		try {
+			return cc.getDeclaredConstructor(params);
+		}
+		catch (final NotFoundException e) {
+			throw new IllegalArgumentException("No such method: " + constructorSig, e);
 		}
 	}
 
