@@ -467,11 +467,16 @@ public class CommandLine {
 			switch (file.getStatus()) {
 			case OBSOLETE:
 			case OBSOLETE_MODIFIED:
-				if (forceShadow || (ignoreWarnings && updateSite.equals(file.updateSite))) {
+				if (forceShadow) {
 					file.updateSite = updateSite;
 					file.setAction(files, Action.UPLOAD);
 					if (simulate) System.err.println("Would upload " + file.filename);
 					uploadCount++;
+				} else if (ignoreWarnings && updateSite.equals(file.updateSite)) {
+					file.setAction(files, Action.UPLOAD);
+					if (simulate) System.err.println("Would re-upload " + file.filename);
+					uploadCount++;
+
 				} else {
 					System.err.println("Warning: obsolete '" + name + "' still installed!");
 					warningCount++;

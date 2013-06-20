@@ -267,11 +267,11 @@ public class Conflicts {
 			for (final Dependency dependency : file.getDependencies()) {
 				final FileObject dep = files.get(dependency.filename);
 				if (dep == null || files.ignoredConflicts.contains(dep)) continue;
-				if (dep.isInstallable() ||
-					(dep.isLocalOnly() && dep.getAction() != Action.UPLOAD) ||
-					dep.isObsolete() ||
-					(dep.getStatus().isValid(Action.UPLOAD) && dep.getAction() != Action.UPLOAD)) toUpload
-					.add(dep, file);
+				if (dep.getAction() != Action.UPLOAD
+						&& (dep.isInstallable() || dep.isLocalOnly()
+								|| dep.isObsolete() || dep.getStatus().isValid(
+								Action.UPLOAD)))
+					toUpload.add(dep, file);
 			}
 			// test whether there are conflicting versions of the same file
 			if (!files.ignoredConflicts.contains(file) && file.filename.endsWith(".jar")) {
@@ -287,8 +287,9 @@ public class Conflicts {
 				}
 			}
 		}
-		for (final FileObject file : toUpload.keySet())
+		for (final FileObject file : toUpload.keySet()) {
 			conflicts.add(needUpload(file, toUpload.get(file)));
+		}
 
 		// Replace dependencies on to-be-removed files
 		for (final FileObject file : files.managedFiles()) {
@@ -300,14 +301,16 @@ public class Conflicts {
 						!dependencyObject.willNotBeInstalled()) conflicts
 						.add(dependencyObsoleted(file, dependencyObject));
 				}
-				else {
-					if (dependencyObject == null ||
-						(dependencyObject.getStatus() == Status.LOCAL_ONLY &&
-						 dependencyObject.getAction() != Action.UPLOAD)) conflicts
-						.add(dependencyNotUploaded(file, dependency.filename));
-					else if (dependencyObject.isObsolete() ||
-						dependencyObject.getAction() == Action.REMOVE) conflicts
-						.add(dependencyRemoved(file, dependency.filename));
+				else if (dependencyObject == null || dependencyObject.getAction() != Action.UPLOAD) {
+					if (dependencyObject == null
+							|| dependencyObject.getStatus() == Status.LOCAL_ONLY) {
+						conflicts.add(dependencyNotUploaded(file,
+								dependency.filename));
+					} else if (dependencyObject.isObsolete()
+							|| dependencyObject.getAction() == Action.REMOVE) {
+						conflicts.add(dependencyRemoved(file,
+								dependency.filename));
+					}
 				}
 			}
 		}
