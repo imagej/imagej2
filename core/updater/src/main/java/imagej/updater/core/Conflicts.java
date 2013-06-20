@@ -267,11 +267,11 @@ public class Conflicts {
 			for (final Dependency dependency : file.getDependencies()) {
 				final FileObject dep = files.get(dependency.filename);
 				if (dep == null || files.ignoredConflicts.contains(dep)) continue;
-				if (dep.isInstallable() ||
-					(dep.isLocalOnly() && dep.getAction() != Action.UPLOAD) ||
-					dep.isObsolete() ||
-					(dep.getStatus().isValid(Action.UPLOAD) && dep.getAction() != Action.UPLOAD)) toUpload
-					.add(dep, file);
+				if (dep.getAction() != Action.UPLOAD
+						&& (dep.isInstallable() || dep.isLocalOnly()
+								|| dep.isObsolete() || dep.getStatus().isValid(
+								Action.UPLOAD)))
+					toUpload.add(dep, file);
 			}
 			// test whether there are conflicting versions of the same file
 			if (!files.ignoredConflicts.contains(file) && file.filename.endsWith(".jar")) {
