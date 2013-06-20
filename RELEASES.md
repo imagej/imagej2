@@ -44,7 +44,7 @@ pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
 
 SCIFIO provides core I/O functionality.
 
-    cd scifio/components/scifio-devel
+    cd scifio/scifio
     release-version.sh 0.1.0
 
 - Where `0.1.0` is the new release version.
