@@ -287,8 +287,9 @@ public class Conflicts {
 				}
 			}
 		}
-		for (final FileObject file : toUpload.keySet())
+		for (final FileObject file : toUpload.keySet()) {
 			conflicts.add(needUpload(file, toUpload.get(file)));
+		}
 
 		// Replace dependencies on to-be-removed files
 		for (final FileObject file : files.managedFiles()) {
