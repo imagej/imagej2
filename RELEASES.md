@@ -156,8 +156,24 @@ pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
 
 #### Upload artifacts to the ImageJ update site
 
-Upload the new JARs to the ImageJ2 update site.
-(Script for doing this is coming later.)
+- Unpack the [application
+  ZIP](http://jenkins.imagej.net/job/ImageJ-release-build/lastSuccessfulBuild/artifact/app/target/)
+- Add upload information for the ''ImageJ'' update site:
+  
+  ```
+  ./ImageJ-linux64 --update edit-update-site ImageJ http://update.imagej.net/ \
+          <user>@update.imagej.net /home/imagej/update-site/
+  ```
+- Simulate an upload (to make sure everything is correct):
+  
+  ```
+  ./ImageJ-linux64 --update upload-complete-site --simulate ImageJ
+  ```
+- When everything is alright, upload it for real:
+  
+  ```
+  ./ImageJ-linux64 --update upload-complete-site ImageJ
+  ```
 
 #### Update web resources
 
