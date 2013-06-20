@@ -93,8 +93,8 @@ public interface Module extends Runnable {
 	/**
 	 * Gets the object containing the module's actual implementation. By
 	 * definition, this is an object whose fully qualified class name is given by
-	 * {@code getInfo().getImplementationClassName()}. This object must possess
-	 * all callback methods specified by {@link ModuleItem#getCallback()}.
+	 * {@code getInfo().getDelegateClassName()}. This object must possess all
+	 * callback methods specified by {@link ModuleItem#getCallback()}.
 	 * <p>
 	 * The nature of this method is implementation-specific; e.g., a
 	 * {@code CommandModule} will return its associated {@code Command}. For
