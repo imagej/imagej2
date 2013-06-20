@@ -301,14 +301,16 @@ public class Conflicts {
 						!dependencyObject.willNotBeInstalled()) conflicts
 						.add(dependencyObsoleted(file, dependencyObject));
 				}
-				else {
-					if (dependencyObject == null ||
-						(dependencyObject.getStatus() == Status.LOCAL_ONLY &&
-						 dependencyObject.getAction() != Action.UPLOAD)) conflicts
-						.add(dependencyNotUploaded(file, dependency.filename));
-					else if (dependencyObject.isObsolete() ||
-						dependencyObject.getAction() == Action.REMOVE) conflicts
-						.add(dependencyRemoved(file, dependency.filename));
+				else if (dependencyObject == null || dependencyObject.getAction() != Action.UPLOAD) {
+					if (dependencyObject == null
+							|| dependencyObject.getStatus() == Status.LOCAL_ONLY) {
+						conflicts.add(dependencyNotUploaded(file,
+								dependency.filename));
+					} else if (dependencyObject.isObsolete()
+							|| dependencyObject.getAction() == Action.REMOVE) {
+						conflicts.add(dependencyRemoved(file,
+								dependency.filename));
+					}
 				}
 			}
 		}
