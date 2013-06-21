@@ -35,6 +35,13 @@
 
 package imagej.legacy;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -142,6 +149,54 @@ public class IJ1Helper {
 
 	public boolean isMacintosh() {
 		return IJ.isMacintosh();
+	}
+
+	public static boolean handleNoSuchMethodError(NoSuchMethodError error) {
+		String message = error.getMessage();
+		int paren = message.indexOf("(");
+		if (paren < 0) return false;
+		int dot = message.lastIndexOf(".", paren);
+		if (dot < 0) return false;
+		String path = message.substring(0, dot).replace('.', '/') + ".class";
+		Set<String> urls = new LinkedHashSet<String>();
+		try {
+			Enumeration<URL> e = IJ.getClassLoader().getResources(path);
+			while (e.hasMoreElements()) {
+				urls.add(e.nextElement().toString());
+			}
+			e = IJ.getClassLoader().getResources("/" + path);
+			while (e.hasMoreElements()) {
+				urls.add(e.nextElement().toString());
+			}
+		} catch (Throwable t) {
+			t.printStackTrace();
+			return false;
+		}
+
+		if (urls.size() == 0) return false;
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("There was a problem with the class ");
+		buffer.append(message.substring(0, dot));
+		buffer.append(" which can be found here:\n");
+		for (String url : urls) {
+			if (url.startsWith("jar:")) url = url.substring(4);
+			if (url.startsWith("file:")) url = url.substring(5);
+			int bang = url.indexOf("!");
+			if (bang < 0) buffer.append(url);
+			else buffer.append(url.substring(0, bang));
+			buffer.append("\n");
+		}
+		if (urls.size() > 1) {
+			buffer.append("\nWARNING: multiple locations found!\n");
+		}
+
+		StringWriter writer = new StringWriter();
+		error.printStackTrace(new PrintWriter(writer));
+		buffer.append(writer.toString());
+
+		IJ.log(buffer.toString());
+		IJ.error("Could not find method " + message + "\n(See Log for details)\n");
+		return true;
 	}
 
 }
