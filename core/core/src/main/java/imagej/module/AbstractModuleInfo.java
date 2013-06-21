@@ -35,6 +35,7 @@
 
 package imagej.module;
 
+import imagej.Identifiable;
 import imagej.ValidityProblem;
 import imagej.module.event.ModulesUpdatedEvent;
 
@@ -62,7 +63,7 @@ import org.scijava.util.ClassUtils;
  * @author Curtis Rueden
  */
 public abstract class AbstractModuleInfo extends AbstractUIDetails implements
-	ModuleInfo
+	ModuleInfo, Identifiable
 {
 
 	/** Table of inputs, keyed on name. */
@@ -166,6 +167,17 @@ public abstract class AbstractModuleInfo extends AbstractUIDetails implements
 	@Override
 	public List<ValidityProblem> getProblems() {
 		return null;
+	}
+
+	// -- Identifiable methods --
+
+	@Override
+	public String getIdentifier() {
+		// NB: By default, we assume that the delegate class name uniquely
+		// distinguishes the module from others. If the same delegate class is used
+		// for more than one module, though, it may need to override this method to
+		// provide more differentiating details.
+		return "className = " + getDelegateClassName() + "\n";
 	}
 
 	// -- Helper methods --
