@@ -147,7 +147,9 @@ public class LegacyInjector {
 			"public void setVisible(boolean b)",
 			"if ($isLegacyMode()) { super.setVisible($1); }");
 
-		// for backwards-compatibility
+		//
+		// Below are patches to make ImageJ 1.x more backwards-compatible
+		//
 
 		// add back the (deprecated) killProcessor(), and overlay methods
 		final String[] imagePlusMethods = {
