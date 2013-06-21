@@ -36,6 +36,7 @@
 package imagej.command;
 
 import imagej.Cancelable;
+import imagej.Identifiable;
 import imagej.ValidityProblem;
 import imagej.module.Module;
 import imagej.module.ModuleException;
@@ -76,7 +77,9 @@ import org.scijava.util.StringMaker;
  * @see CommandModule
  * @see Command
  */
-public class CommandInfo extends PluginInfo<Command> implements ModuleInfo {
+public class CommandInfo extends PluginInfo<Command> implements ModuleInfo,
+	Identifiable
+{
 
 	/** Wrapped {@link PluginInfo}, if any. */
 	private PluginInfo<Command> info;
@@ -376,6 +379,22 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo {
 	public List<ValidityProblem> getProblems() {
 		parseParams();
 		return Collections.unmodifiableList(problems);
+	}
+
+	// -- Identifiable methods --
+
+	@Override
+	public String getIdentifier() {
+		// NB: The delegate class name, together with the list of presets, is
+		// typically enough to uniquely distinguish this command from others.
+		final StringBuilder sb = new StringBuilder();
+		sb.append("className = " + getDelegateClassName() + "\n");
+		final Map<String, Object> pre = getPresets();
+		for (final String name : pre.keySet()) {
+			final Object value = pre.get(name);
+			sb.append(name + " = " + value + "\n");
+		}
+		return sb.toString();
 	}
 
 	// -- Helper methods --
