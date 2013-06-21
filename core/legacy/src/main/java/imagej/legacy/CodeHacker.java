@@ -59,6 +59,7 @@ import javassist.Modifier;
 import javassist.NotFoundException;
 import javassist.expr.ConstructorCall;
 import javassist.expr.ExprEditor;
+import javassist.expr.Handler;
 import javassist.expr.MethodCall;
 import javassist.expr.NewExpr;
 
@@ -303,6 +304,36 @@ public class CodeHacker {
 		}
 	}
 
+	public void addCatch(final String fullClass, final String methodSig, final String exceptionClassName, final String src) {
+		try {
+			final CtMethod method = getMethod(fullClass, methodSig);
+			method.addCatch(src, getClass(exceptionClassName), "$e");
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException("Cannot add catch for exception of type'"
+				+ exceptionClassName + " in " + fullClass		+ "'s " + methodSig, e);
+		}
+	}
+
+	public void insertAtTopOfExceptionHandlers(final String fullClass, final String methodSig, final String exceptionClassName, final String src) {
+		try {
+			final CtMethod method = getMethod(fullClass, methodSig);
+			method.instrument(new ExprEditor() {
+				@Override
+				public void edit(Handler handler) throws CannotCompileException {
+					try {
+						if (handler.getType().getName().equals(exceptionClassName)) {
+							handler.insertBefore(src);
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException("Cannot edit exception handler for type'"
+				+ exceptionClassName + " in " + fullClass		+ "'s " + methodSig, e);
+		}
+	}
 	/**
 	 * Replaces the application name.
 	 * 
