@@ -204,6 +204,28 @@ public class LegacyInjector {
 			hacker.handleMightyMousePressed(fullClass);
 		}
 
+		// tell IJ#runUserPlugIn to catch NoSuchMethodErrors
+		final String runUserPlugInSig = "static java.lang.Object runUserPlugIn(java.lang.String commandName, java.lang.String className, java.lang.String arg, boolean createNewLoader)";
+		hacker.addCatch("ij.IJ", runUserPlugInSig, "java.lang.NoSuchMethodError",
+				"if (" + IJ1Helper.class.getName() + ".handleNoSuchMethodError($e))"
+				+ "  throw new RuntimeException(ij.Macro.MACRO_CANCELED);"
+				+ "throw $e;");
+
+		// tell IJ#runUserPlugIn to be more careful about catching NoClassDefFoundError
+		hacker.insertPrivateStaticField("ij.IJ", String.class, "originalClassName");
+		hacker.insertAtTopOfMethod("ij.IJ", runUserPlugInSig, "originalClassName = $2;");
+		hacker.insertAtTopOfExceptionHandlers("ij.IJ", runUserPlugInSig, "java.lang.NoClassDefFoundError",
+				"java.lang.String realClassName = $1.getMessage();"
+							+ "int spaceParen = realClassName.indexOf(\" (\");"
+							+ "if (spaceParen > 0) realClassName = realClassName.substring(0, spaceParen);"
+							+ "if (!originalClassName.replace('.', '/').equals(realClassName)) {"
+							+ " if (realClassName.startsWith(\"javax/vecmath/\") || realClassName.startsWith(\"com/sun/j3d/\") || realClassName.startsWith(\"javax/media/j3d/\"))"
+							+ "  ij.IJ.error(\"The class \" + originalClassName + \" did not find Java3D (\" + realClassName + \")\\nPlease call Plugins>3D Viewer to install\");"
+							+ " else"
+							+ "  ij.IJ.handleException($1);"
+							+ " return null;"
+							+ "}");
+
 		try {
 			LegacyJavaAgent.stop();
 		} catch (Throwable t) {
