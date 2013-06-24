@@ -106,6 +106,10 @@ pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
 
 ## [IMAGEJ](https://github.com/imagej/imagej)
 
+First, *make sure* that the pom-scijava version references the latest minor
+version of ImageJ 1.x! Otherwise, uploading a new release to the update site
+*will* downgrade all ImageJ2 and Fiji users to an obsolete ImageJ 1.x version.
+
 The following steps perform a release of ImageJ itself:
 
 #### Tag a release candidate
