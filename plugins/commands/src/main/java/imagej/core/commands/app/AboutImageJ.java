@@ -52,7 +52,7 @@ import imagej.util.AppUtils;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 import imagej.util.MersenneTwisterFast;
-import io.scif.io.img.ImgIOException;
+import io.scif.img.ImgIOException;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;

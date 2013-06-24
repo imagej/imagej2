@@ -52,7 +52,6 @@ import imagej.tool.Tool;
 import imagej.tool.ToolService;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.ui.common.awt.AWTCursors;
-import imagej.ui.common.awt.AWTDragAndDropData;
 import imagej.ui.common.awt.AWTDropTargetEventDispatcher;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.swing.StaticSwingUtils;

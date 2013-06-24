@@ -62,8 +62,8 @@ import javax.swing.WindowConstants;
 
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
-import net.imglib2.algorithm.histogram.Histogram1d;
-import net.imglib2.algorithm.histogram.Real1dBinMapper;
+import net.imglib2.histogram.Histogram1d;
+import net.imglib2.histogram.Real1dBinMapper;
 import net.imglib2.meta.Axes;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSetIterator;

@@ -45,8 +45,8 @@ import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.Result;
 import imagej.ui.UIService;
 import imagej.widget.FileWidget;
-import io.scif.io.img.ImgIOException;
-import io.scif.io.img.ImgSaver;
+import io.scif.img.ImgIOException;
+import io.scif.img.ImgSaver;
 
 import java.io.File;
 

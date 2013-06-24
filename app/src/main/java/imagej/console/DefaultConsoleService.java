@@ -40,7 +40,7 @@ import imagej.command.CommandService;
 import imagej.data.Dataset;
 import imagej.display.DisplayService;
 import imagej.io.IOService;
-import io.scif.io.img.ImgIOException;
+import io.scif.img.ImgIOException;
 import net.imglib2.exception.IncompatibleTypeException;
 
 import org.scijava.log.LogService;
