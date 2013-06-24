@@ -41,7 +41,7 @@ import imagej.display.DisplayService;
 import imagej.io.IOService;
 import imagej.ui.dnd.AbstractDragAndDropHandler;
 import imagej.ui.dnd.DragAndDropHandler;
-import io.scif.io.img.ImgIOException;
+import io.scif.img.ImgIOException;
 
 import java.io.File;
 

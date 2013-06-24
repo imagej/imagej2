@@ -39,7 +39,7 @@ import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.module.ModuleService;
 import imagej.text.TextService;
-import io.scif.io.img.ImgIOException;
+import io.scif.img.ImgIOException;
 
 import java.io.File;
 import java.io.IOException;
