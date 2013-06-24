@@ -36,7 +36,7 @@
 package imagej.data.threshold;
 
 import imagej.plugin.SingletonPlugin;
-import net.imglib2.algorithm.histogram.Histogram1d;
+import net.imglib2.histogram.Histogram1d;
 
 import org.scijava.Contextual;
 import org.scijava.Prioritized;

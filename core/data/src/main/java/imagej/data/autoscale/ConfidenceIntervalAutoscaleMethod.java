@@ -36,8 +36,8 @@
 package imagej.data.autoscale;
 
 import net.imglib2.IterableInterval;
-import net.imglib2.algorithm.histogram.Histogram1d;
-import net.imglib2.algorithm.histogram.Real1dBinMapper;
+import net.imglib2.histogram.Histogram1d;
+import net.imglib2.histogram.Real1dBinMapper;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.plugin.Plugin;

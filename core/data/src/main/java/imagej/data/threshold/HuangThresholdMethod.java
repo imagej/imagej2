@@ -35,7 +35,7 @@
 
 package imagej.data.threshold;
 
-import net.imglib2.algorithm.histogram.Histogram1d;
+import net.imglib2.histogram.Histogram1d;
 
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.SortablePlugin;
