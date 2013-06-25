@@ -641,7 +641,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 			throw new IOException("Artifact does not exist: " + source);
 		}
 
-		final File targetDir = new File(ijDir, isImageJ1Plugin(source) ? "plugins" : "jars");
+		final File targetDir = new File(ijDir, getTargetDirectory(source));
 		final File target = new File(targetDir, getArtifactId()
 				+ ("Fiji_Updater".equals(getArtifactId()) ? "" : "-" + getVersion())
 				+ ".jar");
@@ -655,6 +655,14 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		}
 		if (deleteOtherVersions) deleteVersions(targetDir, target.getName(), null);
 		BuildEnvironment.copyFile(source, target);
+	}
+
+	private static String getTargetDirectory(final File source) {
+		if (isImageJ1Plugin(source)) return "plugins";
+		if (source.getName().startsWith("scifio-4.4.") && source.getAbsolutePath().contains("loci")) {
+			return "jars/bio-formats";
+		}
+		return "jars";
 	}
 
 	/**
