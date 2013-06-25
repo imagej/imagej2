@@ -918,10 +918,29 @@ public class CodeHacker {
 		});
 	}
 
+	/**
+	 * Disassembles all methods of a class.
+	 * 
+	 * @param fullName
+	 *            the class name
+	 * @param out
+	 *            the output stream
+	 */
 	public void disassemble(final String fullName, final PrintStream out) {
 		disassemble(fullName, out, false);
 	}
 
+	/**
+	 * Disassembles all methods of a class, optionally including superclass
+	 * methods.
+	 * 
+	 * @param fullName
+	 *            the class name
+	 * @param out
+	 *            the output stream
+	 * @param evenSuperclassMethods
+	 *            whether to disassemble methods defined in superclasses
+	 */
 	public void disassemble(final String fullName, final PrintStream out, final boolean evenSuperclassMethods) {
 		CtClass clazz = getClass(fullName);
 		out.println("Class " + clazz.getName());
