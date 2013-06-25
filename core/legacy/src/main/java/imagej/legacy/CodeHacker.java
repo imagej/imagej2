@@ -960,6 +960,22 @@ public class CodeHacker {
 		out.println("");
 	}
 
+	/**
+	 * Writes a .jar file with the modified classes.
+	 * 
+	 * <p>
+	 * This comes in handy e.g. when ImageJ is to be run in an environment where
+	 * redefining classes is not allowed. If users need to run, say, the legacy
+	 * headless support in such an environment, they need to generate a
+	 * <i>headless.jar</i> file using this method and prepend it to the class
+	 * path (so that the classes of <i>ij.jar</i> are overridden by
+	 * <i>headless.jar</i>'s classes).
+	 * </p>
+	 * 
+	 * @param path
+	 *            the <i>.jar</i> file to write to
+	 * @throws IOException
+	 */
 	public void writeJar(final File path) throws IOException {
 		final JarOutputStream jar = new JarOutputStream(new FileOutputStream(path));
 		final DataOutputStream dataOut = new DataOutputStream(jar);
