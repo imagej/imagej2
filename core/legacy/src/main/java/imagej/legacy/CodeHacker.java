@@ -35,6 +35,10 @@
 
 package imagej.legacy;
 
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
 import java.util.Arrays;
@@ -42,6 +46,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.jar.JarOutputStream;
+import java.util.zip.ZipEntry;
 
 import org.scijava.util.ClassUtils;
 
@@ -935,5 +941,16 @@ public class CodeHacker {
 		out.println("");
 	}
 
+	public void writeJar(final File path) throws IOException {
+		final JarOutputStream jar = new JarOutputStream(new FileOutputStream(path));
+		final DataOutputStream dataOut = new DataOutputStream(jar);
+		for (final CtClass clazz : handledClasses) {
+			final ZipEntry entry = new ZipEntry(clazz.getName().replace('.', '/') + ".class");
+			jar.putNextEntry(entry);
+			clazz.getClassFile().write(dataOut);
+			dataOut.flush();
+		}
+		jar.close();
+	}
 
 }
