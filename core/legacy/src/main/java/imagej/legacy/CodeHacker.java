@@ -35,6 +35,7 @@
 
 package imagej.legacy;
 
+import java.io.PrintStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -57,6 +58,7 @@ import javassist.CtNewMethod;
 import javassist.LoaderClassPath;
 import javassist.Modifier;
 import javassist.NotFoundException;
+import javassist.bytecode.InstructionPrinter;
 import javassist.expr.ConstructorCall;
 import javassist.expr.ExprEditor;
 import javassist.expr.Handler;
@@ -909,5 +911,29 @@ public class CodeHacker {
 			}
 		});
 	}
+
+	public void disassemble(final String fullName, final PrintStream out) {
+		disassemble(fullName, out, false);
+	}
+
+	public void disassemble(final String fullName, final PrintStream out, final boolean evenSuperclassMethods) {
+		CtClass clazz = getClass(fullName);
+		out.println("Class " + clazz.getName());
+		for (CtConstructor ctor : clazz.getConstructors()) try {
+			disassemble(ctor.toMethod(ctor.getName(), clazz), out);
+		} catch (CannotCompileException e) {
+			e.printStackTrace(out);
+		}
+		for (CtMethod method : clazz.getDeclaredMethods())
+			if (evenSuperclassMethods || method.getDeclaringClass().equals(clazz))
+				disassemble(method, out);
+	}
+
+	private void disassemble(CtMethod method, PrintStream out) {
+		out.println(method.getLongName());
+		new InstructionPrinter(out).print(method);
+		out.println("");
+	}
+
 
 }
