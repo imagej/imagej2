@@ -203,6 +203,17 @@ public class LegacyTestUtils {
 		testMetadataSame(ds, imp);
 	}
 
+	/**
+	 * Makes a fresh class loader for use with ImageJ 1.x.
+	 * 
+	 * <p>
+	 * In particular, this class loader can be used to test ImageJ 1.x classes with and without ij-legacy patching.
+	 * </p>
+	 * 
+	 * @param patchHeadless whether to apply ij-legacy's headless patching or not
+	 * @param classNames names of classes that we want to be found in the class loader
+	 * @return a fresh class loader
+	 */
 	public static ClassLoader getFreshIJClassLoader(final boolean patchHeadless, final String... classNames) {
 		final URL[] urls = new URL[classNames.length + 3];
 		urls[0] = getClassLocation("ij.IJ");
