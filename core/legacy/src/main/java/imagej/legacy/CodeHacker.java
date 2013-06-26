@@ -49,8 +49,6 @@ import java.util.Set;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
-import org.scijava.util.ClassUtils;
-
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
@@ -70,6 +68,8 @@ import javassist.expr.ExprEditor;
 import javassist.expr.Handler;
 import javassist.expr.MethodCall;
 import javassist.expr.NewExpr;
+
+import org.scijava.util.ClassUtils;
 
 /**
  * The code hacker provides a mechanism for altering the behavior of classes
