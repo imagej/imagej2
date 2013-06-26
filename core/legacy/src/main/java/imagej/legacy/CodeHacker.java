@@ -583,6 +583,30 @@ public class CodeHacker {
 	}
 
 	/**
+	 * Makes sure that the legacy plugin class loader finds stuff in
+	 * $HOME/.plugins/
+	 * 
+	 * @param directory
+	 *            a directory where additional plugins can be found
+	 */
+	public void addExtraPlugins() {
+		insertAtTopOfMethod("ij.io.PluginClassLoader", "void init(java.lang.String path)",
+				extraPluginJarsHandler("addJAR(file);"));
+		insertAtBottomOfMethod("ij.Menus",
+				"public static synchronized java.lang.String[] getPlugins()",
+				extraPluginJarsHandler("if (jarFiles == null) jarFiles = new java.util.Vector();" +
+						"jarFiles.addElement(file.getAbsolutePath());"));
+	}
+
+	private String extraPluginJarsHandler(final String code) {
+		return "for (java.util.Iterator iter = " + IJ1Helper.class.getName() + ".handleExtraPluginJars().iterator();\n" +
+				"iter.hasNext(); ) {\n" +
+				"\tjava.io.File file = (java.io.File)iter.next();\n" +
+				code + "\n" +
+				"}\n";
+	}
+
+	/**
 	 * Loads the given, possibly modified, class.
 	 * <p>
 	 * This method must be called to confirm any changes made with
