@@ -55,8 +55,13 @@ public class LegacyInjector {
 
 	/** Overrides class behavior of ImageJ1 classes by injecting method hooks. */
 	public void injectHooks(final ClassLoader classLoader) {
-		// NB: Override class behavior before class loading gets too far along.
 		hacker = new CodeHacker(classLoader);
+		injectHooks(hacker);
+	}
+
+	/** Overrides class behavior of ImageJ1 classes by injecting method hooks. */
+	protected void injectHooks(final CodeHacker hacker) {
+		// NB: Override class behavior before class loading gets too far along.
 
 		if (GraphicsEnvironment.isHeadless()) {
 			new LegacyHeadless(hacker).patch();
@@ -235,7 +240,9 @@ public class LegacyInjector {
 		hacker.loadClasses();
 
 		// make sure that there is a legacy service
-		setLegacyService(new DummyLegacyService());
+		if (this.hacker != null) {
+			setLegacyService(new DummyLegacyService());
+		}
 	}
 
 	void setLegacyService(final LegacyService legacyService) {
