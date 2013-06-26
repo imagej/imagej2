@@ -35,18 +35,23 @@
 
 package imagej.legacy;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.jar.JarOutputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
 import javassist.CannotCompileException;
@@ -70,6 +75,7 @@ import javassist.expr.MethodCall;
 import javassist.expr.NewExpr;
 
 import org.scijava.util.ClassUtils;
+import org.scijava.util.FileUtils;
 
 /**
  * The code hacker provides a mechanism for altering the behavior of classes
@@ -986,6 +992,66 @@ public class CodeHacker {
 			dataOut.flush();
 		}
 		jar.close();
+	}
+
+	private void verify(CtClass clazz, PrintWriter output) {
+		try {
+			ByteArrayOutputStream stream = new ByteArrayOutputStream();
+			DataOutputStream out = new DataOutputStream(stream);
+			clazz.getClassFile().write(out);
+			out.flush();
+			out.close();
+			verify(stream.toByteArray(), output);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void verify(byte[] bytecode, PrintWriter out) {
+		try {
+			Collection<URL> urls;
+			urls = FileUtils.listContents(new File(System.getProperty("user.home"), "fiji/jars/").toURI().toURL());
+			if (urls.size() == 0) {
+				urls = FileUtils.listContents(new File(System.getProperty("user.home"), "Fiji.app/jars/").toURI().toURL());
+				if (urls.size() == 0) {
+					urls = FileUtils.listContents(new File("/Applications/Fiji.app/jars/").toURI().toURL());
+				}
+			}
+			ClassLoader loader = new java.net.URLClassLoader(urls.toArray(new URL[urls.size()]));
+			Class<?> readerClass = null, checkerClass = null;
+			for (final String prefix : new String[] { "org.", "jruby.", "org.jruby.org." }) try {
+				readerClass = loader.loadClass(prefix + "objectweb.asm.ClassReader");
+				checkerClass = loader.loadClass(prefix + "objectweb.asm.util.CheckClassAdapter");
+				break;
+			} catch (ClassNotFoundException e) { /* ignore */ }
+			java.lang.reflect.Constructor<?> ctor = readerClass.getConstructor(new Class[] { bytecode.getClass() });
+			Object reader = ctor.newInstance(bytecode);
+			java.lang.reflect.Method verify = checkerClass.getMethod("verify", new Class[] { readerClass, Boolean.TYPE, PrintWriter.class });
+			verify.invoke(null, new Object[] { reader, false, out });
+		} catch (Throwable e) {
+			if (e.getClass().getName().endsWith(".AnalyzerException")) {
+				final Pattern pattern = Pattern.compile("Error at instruction (\\d+): Argument (\\d+): expected L([^ ,;]+);, but found L(.*);");
+				final Matcher matcher = pattern.matcher(e.getMessage());
+				if (matcher.matches()) {
+					final CtClass clazz1 = getClass(matcher.group(3));
+					final CtClass clazz2 = getClass(matcher.group(4));
+					try {
+						if (clazz2.subtypeOf(clazz1)) return;
+					} catch (NotFoundException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+			e.printStackTrace();
+		}
+	}
+
+	protected void verify(PrintWriter out) {
+		for (final CtClass clazz : handledClasses) {
+			out.println("Verifying class " + clazz.getName());
+			out.flush();
+			verify(clazz, out);
+		}
 	}
 
 }
