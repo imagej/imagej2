@@ -35,6 +35,8 @@
 
 package imagej.legacy;
 
+import static imagej.legacy.LegacyTestUtils.getFreshIJClassLoader;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -56,6 +58,7 @@ import org.junit.Test;
  */
 public class LegacyHeadlessTest {
 
+	private final static String PLUGIN_CLASS = "imagej.legacy.Headless_Example_Plugin";
 	private String threadName;
 
 	@Before
@@ -70,13 +73,13 @@ public class LegacyHeadlessTest {
 
 	@Test
 	public void testHeadless() {
-		assertTrue(runExamplePlugin(LegacyTestUtils.getFreshIJClassLoader(true)));
+		assertTrue(runExamplePlugin(getFreshIJClassLoader(true, PLUGIN_CLASS)));
 	}
 
 	@Test
 	public void testPatchIsRequired() {
 		assumeTrue(GraphicsEnvironment.isHeadless());
-		assertFalse(runExamplePlugin(LegacyTestUtils.getFreshIJClassLoader(false)));
+		assertFalse(runExamplePlugin(getFreshIJClassLoader(false, PLUGIN_CLASS)));
 	}
 
 	private static boolean runExamplePlugin(final ClassLoader loader) {

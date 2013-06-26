@@ -203,13 +203,13 @@ public class LegacyTestUtils {
 		testMetadataSame(ds, imp);
 	}
 
-	public static ClassLoader getFreshIJClassLoader(final boolean patchHeadless) {
-		final URL[] urls = {
-				getClassLocation("ij.IJ"),
-				getClassLocation("imagej.legacy.Headless_Example_Plugin"),
-				ClassUtils.getLocation(DefaultLegacyService.class),
-				ClassUtils.getLocation(Context.class)
-		};
+	public static ClassLoader getFreshIJClassLoader(final boolean patchHeadless, final String... classNames) {
+		final URL[] urls = new URL[classNames.length + 3];
+		urls[0] = getClassLocation("ij.IJ");
+		urls[1] = ClassUtils.getLocation(DefaultLegacyService.class);
+		urls[2] = ClassUtils.getLocation(Context.class);
+		for (int i = 0; i < classNames.length; i++) urls[i + 3] = getClassLocation(classNames[i]);
+
 		// use the bootstrap class loader as parent so that ij.IJ must resolve
 		// via the new class loader
 		final ClassLoader parent = ClassLoader.getSystemClassLoader().getParent();
