@@ -33,17 +33,61 @@
  * #L%
  */
 
-package imagej.io.event;
+package imagej.io;
+
+import imagej.plugin.HandlerService;
+
+import java.io.IOException;
 
 /**
- * An event indicating a file has been opened.
+ * Interface for data I/O operations: opening and saving data.
  * 
- * @author Grant Harris
+ * @author Curtis Rueden
  */
-public class FileOpenedEvent extends FileEvent {
+public interface IOService extends HandlerService<String, IOPlugin<?>> {
 
-	public FileOpenedEvent(final String path) {
-		super(path);
-	}
+	/**
+	 * Gets the most appropriate {@link IOPlugin} for opening data from the given
+	 * source.
+	 */
+	IOPlugin<?> getOpener(String source);
+
+	/**
+	 * Gets the most appropriate {@link IOPlugin} for saving data to the given
+	 * destination.
+	 */
+	<D> IOPlugin<D> getSaver(D data, String destination);
+
+	/**
+	 * Loads data from the given source. For extensibility, the nature of the
+	 * source is left intentionally general, but two common examples include file
+	 * paths and URLs.
+	 * <p>
+	 * The opener to use is automatically determined based on available
+	 * {@link IOPlugin}s; see {@link #getOpener(String)}.
+	 * </p>
+	 * 
+	 * @param source The source (e.g., file path) from which to data should be
+	 *          loaded.
+	 * @return An object representing the loaded data, or null if the source is
+	 *         not supported.
+	 * @throws IOException if something goes wrong loading the data.
+	 */
+	Object open(String source) throws IOException;
+
+	/**
+	 * Saves data to the given destination. The nature of the destination is left
+	 * intentionally general, but the most common example is a file path.
+	 * <p>
+	 * The saver to use is automatically determined based on available
+	 * {@link IOPlugin}s; see {@link #getSaver(Object, String)}.
+	 * </p>
+	 * 
+	 * @param data The data to be saved to the destination.
+	 * @param destination The destination (e.g., file path) to which data should
+	 *          be saved.
+	 * @throws IOException if something goes wrong saving the data.
+	 */
+	void save(Object data, String destination) throws IOException;
 
 }

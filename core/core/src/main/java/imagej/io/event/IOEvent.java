@@ -33,71 +33,34 @@
  * #L%
  */
 
-package imagej.io;
+package imagej.io.event;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.module.ModuleService;
-import imagej.text.TextService;
-import io.scif.img.ImgIOException;
-
-import java.io.File;
-import java.io.IOException;
-
-import net.imglib2.exception.IncompatibleTypeException;
-
-import org.scijava.app.StatusService;
-import org.scijava.event.EventService;
-import org.scijava.service.Service;
+import org.scijava.event.SciJavaEvent;
 
 /**
- * Interface for providing I/O convenience methods.
+ * An event indicating that I/O (i.e., opening or saving) has occurred.
  * 
  * @author Curtis Rueden
  */
-public interface IOService extends Service {
+public abstract class IOEvent extends SciJavaEvent {
 
-	// CTR TODO: Extend HandlerService<IOPlugin>.
+	/** The data descriptor (source or destination). */
+	private final String descriptor;
 
-	EventService getEventService();
+	public IOEvent(final String descriptor) {
+		this.descriptor = descriptor;
+	}
 
-	StatusService getStatusService();
+	/** Gets the data descriptor (source or destination). */
+	public String getDescriptor() {
+		return descriptor;
+	}
 
-	ModuleService getModuleService();
+	// -- Object methods --
 
-	DatasetService getDatasetService();
-
-	TextService getTextService();
-
-	/**
-	 * Loads data from the given file.
-	 * <p>
-	 * The type of data is automatically determined. In the case of image data,
-	 * the returned object will be a {@link Dataset}. If the file contains text
-	 * data, the returned object will be a {@link String} formatted as HTML.
-	 * </p>
-	 * 
-	 * @param file The file from which to load data.
-	 * @return An object representing the loaded data, or null if the file is not
-	 *         in a supported format.
-	 * @throws IOException if something goes wrong loading the data.
-	 */
-	Object load(File file) throws IOException;
-
-	/**
-	 * Determines whether the given source is image data (and hence compatible
-	 * with the {@link #loadDataset(String)} method).
-	 */
-	boolean isImageData(String source);
-
-	/** Loads a dataset from a source (such as a file on disk). */
-	Dataset loadDataset(String source) throws ImgIOException,
-		IncompatibleTypeException;
-
-	/** Reverts the given dataset to its original source. */
-	void revertDataset(Dataset dataset) throws ImgIOException,
-		IncompatibleTypeException;
-
-	// TODO: Add a saveDataset method, and use it in SaveAsImage plugin.
+	@Override
+	public String toString() {
+		return super.toString() + "\n\tdescriptor = " + descriptor;
+	}
 
 }

@@ -37,8 +37,7 @@ package imagej.io;
 
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
-import imagej.io.event.FileOpenedEvent;
-import imagej.io.event.FileSavedEvent;
+import imagej.io.event.IOEvent;
 import imagej.menu.MenuConstants;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
@@ -184,13 +183,8 @@ public final class DefaultRecentFileService extends AbstractService implements
 	// -- Event handlers --
 
 	@EventHandler
-	protected void onEvent(final FileOpenedEvent event) {
-		add(event.getPath());
-	}
-
-	@EventHandler
-	protected void onEvent(final FileSavedEvent event) {
-		add(event.getPath());
+	protected void onEvent(final IOEvent event) {
+		add(event.getDescriptor());
 	}
 
 	// -- Helper methods --

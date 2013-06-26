@@ -33,34 +33,77 @@
  * #L%
  */
 
-package imagej.io.event;
+package imagej.io;
 
-import org.scijava.event.SciJavaEvent;
+import imagej.plugin.AbstractHandlerService;
+
+import java.io.IOException;
+
+import org.scijava.event.EventService;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.Service;
 
 /**
- * An event indicating something has happened to a file.
+ * Default implementation of {@link IOService}.
  * 
  * @author Curtis Rueden
  */
-public abstract class FileEvent extends SciJavaEvent {
+@Plugin(type = Service.class)
+public final class DefaultIOService
+	extends AbstractHandlerService<String, IOPlugin<?>> implements IOService
+{
 
-	/** The path of the file. */
-	private final String path;
+	@Parameter
+	private LogService log;
 
-	public FileEvent(final String path) {
-		this.path = path;
-	}
+	@Parameter
+	private EventService eventService;
 
-	/** Gets the file path. */
-	public String getPath() {
-		return path;
-	}
-
-	// -- Object methods --
+	// -- IOService methods --
 
 	@Override
-	public String toString() {
-		return super.toString() + "\n\tpath = " + path;
+	public IOPlugin<?> getOpener(final String source) {
+		for (final IOPlugin<?> handler : getInstances()) {
+			if (handler.supportsOpen(source)) return handler;
+		}
+		return null;
+	}
+
+	@Override
+	public <D> IOPlugin<D> getSaver(final D data, final String destination) {
+		for (final IOPlugin<?> handler : getInstances()) {
+			if (handler.supportsSave(data, destination)) {
+				@SuppressWarnings("unchecked")
+				IOPlugin<D> typedHandler = (IOPlugin<D>) handler;
+				return typedHandler;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Object open(final String source) throws IOException {
+		return getOpener(source).open(source);
+	}
+
+	@Override
+	public void save(Object data, String destination) throws IOException {
+		getSaver(data, destination).save(data, destination);
+	}
+
+	// -- HandlerService methods --
+
+	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Class<IOPlugin<?>> getPluginType() {
+		return (Class) IOPlugin.class;
+	}
+
+	@Override
+	public Class<String> getType() {
+		return String.class;
 	}
 
 }

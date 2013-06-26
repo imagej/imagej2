@@ -36,14 +36,21 @@
 package imagej.io.event;
 
 /**
- * An event indicating a file has been saved.
+ * An event indicating that data has been opened from a source.
  * 
- * @author Grant Harris
+ * @author Curtis Rueden
  */
-public class FileSavedEvent extends FileEvent {
+public class DataOpenedEvent extends IOEvent {
 
-	public FileSavedEvent(final String path) {
-		super(path);
+	public DataOpenedEvent(final String source) {
+		super(source);
+	}
+
+	// -- DataOpenedEvent methods --
+
+	/** Gets the source from which data was opened. */
+	public String getSource() {
+		return getDescriptor();
 	}
 
 }

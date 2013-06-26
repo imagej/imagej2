@@ -33,32 +33,27 @@
  * #L%
  */
 
-package imagej.io.dnd;
+package imagej.ui.dnd;
 
-import imagej.data.Dataset;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.io.IOService;
-import imagej.ui.dnd.AbstractDragAndDropHandler;
-import imagej.ui.dnd.DragAndDropHandler;
-import io.scif.img.ImgIOException;
 
 import java.io.File;
-
-import net.imglib2.exception.IncompatibleTypeException;
+import java.io.IOException;
 
 import org.scijava.Priority;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Plugin;
 
 /**
- * Drag-and-drop handler for image files.
+ * Drag-and-drop handler for files.
  * 
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
 @Plugin(type = DragAndDropHandler.class, priority = Priority.LOW_PRIORITY)
-public class ImageFileDragAndDropHandler extends
+public class FileDragAndDropHandler extends
 	AbstractDragAndDropHandler<File>
 {
 
@@ -68,10 +63,10 @@ public class ImageFileDragAndDropHandler extends
 	public boolean supports(final File file) {
 		if (!super.supports(file)) return false;
 
-		// verify that the file is image data
+		// verify that the file can be opened somehow
 		final IOService ioService = getContext().getService(IOService.class);
 		if (ioService == null) return false;
-		return ioService.isImageData(file.getAbsolutePath());
+		return ioService.getOpener(file.getAbsolutePath()) != null;
 	}
 
 	@Override
@@ -88,23 +83,19 @@ public class ImageFileDragAndDropHandler extends
 
 		final LogService log = getContext().getService(LogService.class);
 
-		// load dataset
+		// load the data
 		final String filename = file.getAbsolutePath();
-		final Dataset dataset;
+		final Object data;
 		try {
-			dataset = ioService.loadDataset(filename);
+			data = ioService.open(filename);
 		}
-		catch (final ImgIOException exc) {
-			if (log != null) log.error("Error opening file: " + filename, exc);
-			return false;
-		}
-		catch (final IncompatibleTypeException exc) {
+		catch (final IOException exc) {
 			if (log != null) log.error("Error opening file: " + filename, exc);
 			return false;
 		}
 
-		// display result
-		displayService.createDisplay(dataset);
+		// display the result
+		displayService.createDisplay(data);
 		return true;
 	}
 
