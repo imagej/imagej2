@@ -653,6 +653,12 @@ public class CodeHacker {
 	}
 
 	public void loadClasses() {
+		try {
+			LegacyJavaAgent.stop();
+		} catch (Throwable t) {
+			// ignore
+		}
+
 		final Iterator<CtClass> iter = handledClasses.iterator();
 		while (iter.hasNext()) {
 			final CtClass classRef = iter.next();
