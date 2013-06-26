@@ -73,6 +73,8 @@ public class LegacyInjector {
 			+ "if (!$isLegacyMode()) return;");
 
 		// override behavior of ij.IJ
+		hacker.insertAtTopOfMethod("ij.IJ",
+			"public static void runPlugIn(String className, String arg)");
 		hacker.insertAtBottomOfMethod("ij.IJ",
 			"public static void showProgress(double progress)");
 		hacker.insertAtBottomOfMethod("ij.IJ",

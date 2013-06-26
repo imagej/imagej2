@@ -53,6 +53,14 @@ public class IJMethods {
 	/** Resolution to use when converting double progress to int ratio. */
 	private static final int PROGRESS_GRANULARITY = 1000;
 
+	/** Prepends {@link IJ#runPlugIn(String, String)}. */
+	public static void runPlugIn(final LegacyService legacyService,
+		final String className, @SuppressWarnings("unused") final String arg)
+	{
+		if (legacyService.isLegacyMode()) return;
+		if ("MacAdapter".equals(className)) return; // skip IJ1 app listener
+	}
+
 	/** Appends {@link IJ#showProgress(double)}. */
 	public static void showProgress(final LegacyService legacyService, final double progress) {
 		if (legacyService.isLegacyMode()) return;
