@@ -74,7 +74,8 @@ public class LegacyInjector {
 
 		// override behavior of ij.IJ
 		hacker.insertAtTopOfMethod("ij.IJ",
-			"public static void runPlugIn(String className, String arg)");
+			"public static java.lang.Object runPlugIn(java.lang.String className, java.lang.String arg)",
+			"if (\"MacAdapter\".equals(className)) return null;");
 		hacker.insertAtBottomOfMethod("ij.IJ",
 			"public static void showProgress(double progress)");
 		hacker.insertAtBottomOfMethod("ij.IJ",
