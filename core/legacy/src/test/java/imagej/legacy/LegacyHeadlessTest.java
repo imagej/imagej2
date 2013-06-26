@@ -73,13 +73,13 @@ public class LegacyHeadlessTest {
 
 	@Test
 	public void testHeadless() {
-		assertTrue(runExamplePlugin(getFreshIJClassLoader(true, PLUGIN_CLASS)));
+		assertTrue(runExamplePlugin(getFreshIJClassLoader(false, true, PLUGIN_CLASS)));
 	}
 
 	@Test
 	public void testPatchIsRequired() {
 		assumeTrue(GraphicsEnvironment.isHeadless());
-		assertFalse(runExamplePlugin(getFreshIJClassLoader(false, PLUGIN_CLASS)));
+		assertFalse(runExamplePlugin(getFreshIJClassLoader(false, false, PLUGIN_CLASS)));
 	}
 
 	private static boolean runExamplePlugin(final ClassLoader loader) {
