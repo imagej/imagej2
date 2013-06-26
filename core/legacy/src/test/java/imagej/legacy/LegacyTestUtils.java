@@ -36,14 +36,24 @@
 package imagej.legacy;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import ij.ImagePlus;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import imagej.data.Dataset;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+
+import javassist.ClassPool;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.Context;
+import org.scijava.util.ClassUtils;
 
 /**
  * Utility methods for unit testing in the {@link imagej.legacy} package.
@@ -192,4 +202,54 @@ public class LegacyTestUtils {
 
 		testMetadataSame(ds, imp);
 	}
+
+	public static ClassLoader getFreshIJClassLoader(final boolean patchHeadless) {
+		final URL[] urls = {
+				getClassLocation("ij.IJ"),
+				getClassLocation("imagej.legacy.Headless_Example_Plugin"),
+				ClassUtils.getLocation(DefaultLegacyService.class),
+				ClassUtils.getLocation(Context.class)
+		};
+		// use the bootstrap class loader as parent so that ij.IJ must resolve
+		// via the new class loader
+		final ClassLoader parent = ClassLoader.getSystemClassLoader().getParent();
+		try {
+			assertFalse(parent.loadClass("ij.IJ") != null);
+		} catch (ClassNotFoundException e) {
+			// ignore
+		}
+		final ClassLoader loader = new URLClassLoader(urls, parent);
+		if (patchHeadless) {
+			final CodeHacker hacker = new CodeHacker(loader, new ClassPool(false));
+			new LegacyHeadless(hacker).patch();
+			hacker.loadClasses();
+		}
+		return loader;
+	}
+
+	/**
+	 * Gets the class location without loading the class.
+	 * 
+	 * @param className the name of the class
+	 * @return the URL of the class path element
+	 */
+	private static URL getClassLocation(final String className) {
+		final String path = "/" + className.replace('.', '/') + ".class";
+		final URL classURL = LegacyTestUtils.class.getResource(path);
+		final String urlAsString = classURL == null ? "(null)" : classURL.toString();
+		final String result;
+		if (urlAsString.startsWith("jar:") && urlAsString.endsWith("!" + path)) {
+			result = urlAsString.substring(4, urlAsString.length() - 1 - path.length());
+		} else if (urlAsString.startsWith("file:") && urlAsString.endsWith(path)) {
+			result = urlAsString.substring(0, urlAsString.length() + 1 - path.length());
+		} else {
+			throw new IllegalArgumentException("Unexpected location for " + path + ": " + classURL);
+		}
+		try {
+			return new URL(result);
+		} catch(MalformedURLException e) {
+			throw new IllegalArgumentException("Illegal URL: " + urlAsString);
+		}
+	}
+
 }
