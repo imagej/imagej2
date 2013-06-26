@@ -35,20 +35,22 @@
 
 package imagej.legacy;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.URL;
-import java.util.Enumeration;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.ImageWindow;
-
 import imagej.data.display.ImageDisplay;
+
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A helper class to interact with ImageJ 1.x.
@@ -197,6 +199,31 @@ public class IJ1Helper {
 		IJ.log(buffer.toString());
 		IJ.error("Could not find method " + message + "\n(See Log for details)\n");
 		return true;
+	}
+
+	public static List<File> handleExtraPluginJars() {
+		final List<File> result = new ArrayList<File>();
+		final String extraPluginDirs = System.getProperty("ij1.plugin.dirs");
+		if (extraPluginDirs != null) {
+			for (final String dir : extraPluginDirs.split(File.pathSeparator)) {
+				handleExtraPluginJars(new File(dir), result);
+			}
+			return result;
+		}
+		final String userHome = System.getProperty("user.home");
+		if (userHome != null) handleExtraPluginJars(new File(userHome, ".plugins"), result);
+		return result;
+	}
+
+	private static void handleExtraPluginJars(final File directory, final List<File> result) {
+		final File[] list = directory.listFiles();
+		if (list == null) return;
+		for (final File file : list) {
+			if (file.isDirectory()) handleExtraPluginJars(file, result);
+			else if (file.isFile() && file.getName().endsWith(".jar")) {
+				result.add(file);
+			}
+		}
 	}
 
 }

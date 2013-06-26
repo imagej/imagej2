@@ -228,6 +228,9 @@ public class LegacyInjector {
 							+ " return null;"
 							+ "}");
 
+		// let the plugin class loader find stuff in $HOME/.plugins, too
+		hacker.addExtraPlugins();
+
 		try {
 			LegacyJavaAgent.stop();
 		} catch (Throwable t) {
