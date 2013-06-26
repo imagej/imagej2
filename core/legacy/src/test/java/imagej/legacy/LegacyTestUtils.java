@@ -210,11 +210,12 @@ public class LegacyTestUtils {
 	 * In particular, this class loader can be used to test ImageJ 1.x classes with and without ij-legacy patching.
 	 * </p>
 	 * 
-	 * @param patchHeadless whether to apply ij-legacy's headless patching or not
+	 * @param patchLegacy whether to apply the legacy patches or not
+	 * @param patchHeadless whether to apply ij-legacy's headless patches or not
 	 * @param classNames names of classes that we want to be found in the class loader
 	 * @return a fresh class loader
 	 */
-	public static ClassLoader getFreshIJClassLoader(final boolean patchHeadless, final String... classNames) {
+	public static ClassLoader getFreshIJClassLoader(final boolean patchLegacy, final boolean patchHeadless, final String... classNames) {
 		final URL[] urls = new URL[classNames.length + 3];
 		urls[0] = getClassLocation("ij.IJ");
 		urls[1] = ClassUtils.getLocation(DefaultLegacyService.class);
@@ -230,9 +231,14 @@ public class LegacyTestUtils {
 			// ignore
 		}
 		final ClassLoader loader = new URLClassLoader(urls, parent);
-		if (patchHeadless) {
+		if (patchLegacy || patchHeadless) {
 			final CodeHacker hacker = new CodeHacker(loader, new ClassPool(false));
-			new LegacyHeadless(hacker).patch();
+			if (patchHeadless) {
+				new LegacyHeadless(hacker).patch();
+			}
+			if (patchLegacy) {
+				new LegacyInjector().injectHooks(hacker);
+			}
 			hacker.loadClasses();
 		}
 		return loader;
