@@ -61,7 +61,7 @@ public class CodeHackerTest {
 			assertTrue(e2 instanceof RuntimeException);
 			final Throwable e3 = e2.getCause();
 			assertTrue(e3 != null);
-			assertTrue(e3 instanceof LinkageError);
+			assertTrue("should be a LinkageError: " + e3, e3 instanceof LinkageError);
 			final String cause = e2.getMessage();
 			assertTrue("Contains hint:\n\n" + cause, cause.indexOf("-javaagent:") > 0);
 			IJ.log("We got the hint, and all is fine:\n\n" + cause);
