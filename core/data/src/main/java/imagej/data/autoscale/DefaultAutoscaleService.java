@@ -72,44 +72,17 @@ public class DefaultAutoscaleService extends
 
 	@Override
 	public Map<String, AutoscaleMethod> getAutoscaleMethods() {
-		return Collections.unmodifiableMap(methods);
+		return Collections.unmodifiableMap(methods());
 	}
 
 	@Override
 	public List<String> getAutoscaleMethodNames() {
-		return Collections.unmodifiableList(methodNames);
+		return Collections.unmodifiableList(methodNames());
 	}
 
 	@Override
 	public AutoscaleMethod getAutoscaleMethod(String name) {
-		return methods.get(name);
-	}
-
-	// -- PTService methods --
-
-	@Override
-	public Class<AutoscaleMethod> getPluginType() {
-		return AutoscaleMethod.class;
-	}
-
-	// -- Service methods --
-
-	@Override
-	public void initialize() {
-		super.initialize();
-		buildDataStructures();
-	}
-
-	// -- helpers --
-
-	private void buildDataStructures() {
-		methods = new ConcurrentHashMap<String, AutoscaleMethod>();
-		methodNames = new ArrayList<String>();
-		for (final AutoscaleMethod method : getInstances()) {
-			final String name = method.getInfo().getName();
-			methods.put(name, method);
-			methodNames.add(name);
-		}
+		return methods().get(name);
 	}
 
 	@Override
@@ -131,6 +104,35 @@ public class DefaultAutoscaleService extends
 	{
 		IterableInterval<? extends RealType<?>> newInterval = Views.iterable(interval);
 		return getDefaultIntervalRange(newInterval);
+	}
+
+	// -- PTService methods --
+
+	@Override
+	public Class<AutoscaleMethod> getPluginType() {
+		return AutoscaleMethod.class;
+	}
+
+	// -- helpers --
+
+	private void buildDataStructures() {
+		methods = new ConcurrentHashMap<String, AutoscaleMethod>();
+		methodNames = new ArrayList<String>();
+		for (final AutoscaleMethod method : getInstances()) {
+			final String name = method.getInfo().getName();
+			methods.put(name, method);
+			methodNames.add(name);
+		}
+	}
+
+	private Map<? extends String, ? extends AutoscaleMethod> methods() {
+		if (methods == null) buildDataStructures();
+		return methods;
+	}
+
+	private List<? extends String> methodNames() {
+		if (methodNames == null) buildDataStructures();
+		return methodNames;
 	}
 
 }
