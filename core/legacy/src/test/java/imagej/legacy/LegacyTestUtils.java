@@ -41,6 +41,8 @@ import ij.ImagePlus;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import imagej.data.Dataset;
+import imagej.data.display.ImageDisplay;
+import imagej.display.Display;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -224,11 +226,16 @@ public class LegacyTestUtils {
 	 * @return a fresh class loader
 	 */
 	public static ClassLoader getFreshIJClassLoader(final boolean patchLegacy, final boolean patchHeadless, final String... classNames) {
-		final URL[] urls = new URL[classNames.length + 3];
-		urls[0] = getClassLocation("ij.IJ");
-		urls[1] = ClassUtils.getLocation(DefaultLegacyService.class);
-		urls[2] = ClassUtils.getLocation(Context.class);
-		for (int i = 0; i < classNames.length; i++) urls[i + 3] = getClassLocation(classNames[i]);
+		final URL[] urls = new URL[classNames.length + 7];
+		int i = 0;
+		urls[i++] = getClassLocation("ij.IJ");
+		urls[i++] = ClassUtils.getLocation(DefaultLegacyService.class);
+		urls[i++] = ClassUtils.getLocation(Context.class);
+		urls[i++] = ClassUtils.getLocation(Display.class);
+		urls[i++] = ClassUtils.getLocation(ImageDisplay.class);
+		urls[i++] = ClassUtils.getLocation(Axes.class);
+		urls[i++] = ClassUtils.getLocation(ClassPool.class);
+		for (int j = 0; j < classNames.length; j++) urls[i++] = getClassLocation(classNames[j]);
 
 		// use the bootstrap class loader as parent so that ij.IJ must resolve
 		// via the new class loader
@@ -240,14 +247,21 @@ public class LegacyTestUtils {
 		}
 		final ClassLoader loader = new URLClassLoader(urls, parent);
 		if (patchLegacy || patchHeadless) {
-			final CodeHacker hacker = new CodeHacker(loader, new ClassPool(false));
-			if (patchHeadless) {
-				new LegacyHeadless(hacker).patch();
+			/*
+			 * We cannot use a LegacyInjector/CodeHacker combo that is loaded with
+			 * the LegacyTestUtils' class loader and apply it to a different class
+			 * loader: LegacyInjector wants to set the current legacy service to a
+			 * DummyLegacyService instance. However, that instance would be loaded
+			 * with another class loader than the URLClassLoader we just created.
+			 */
+			try {
+				final Class<?> ij1Helper = loader.loadClass(CodeHacker.class.getName());
+				final Method patchMethod = ij1Helper.getDeclaredMethod("patch", Boolean.TYPE);
+				patchMethod.setAccessible(true);
+				patchMethod.invoke(null, patchHeadless);
+			} catch (Exception e) {
+				throw new IllegalArgumentException(e);
 			}
-			if (patchLegacy) {
-				new LegacyInjector().injectHooks(hacker);
-			}
-			hacker.loadClasses();
 		}
 		return loader;
 	}
