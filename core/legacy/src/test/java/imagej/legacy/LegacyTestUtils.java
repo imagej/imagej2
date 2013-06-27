@@ -325,7 +325,14 @@ public class LegacyTestUtils {
 			IllegalAccessException, InvocationTargetException {
 		final Class<?> ij = loader.loadClass("ij.IJ");
 		final Method method = ij.getMethod("run", String.class, String.class);
-		method.invoke(null, command, options);
+		final String threadName = Thread.currentThread().getName();
+		try {
+			method.invoke(null, command, options);
+		} finally {
+			// re-instate the thread name to hide the bug in scijava-common 1.4.0's
+			// AppUtils.getBaseDirectory when there is no 'main' thread.
+			Thread.currentThread().setName(threadName);
+		}
 	}
 
 }
