@@ -42,6 +42,7 @@ import imagej.io.IOPlugin;
 
 import java.io.IOException;
 
+import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -49,7 +50,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = IOPlugin.class)
+@Plugin(type = IOPlugin.class, priority = Priority.LOW_PRIORITY)
 public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 
 	// -- IOPlugin methods --
