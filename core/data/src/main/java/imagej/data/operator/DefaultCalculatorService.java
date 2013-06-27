@@ -71,17 +71,17 @@ public class DefaultCalculatorService extends
 
 	@Override
 	public Map<String, CalculatorOp<?, ?>> getOperators() {
-		return Collections.unmodifiableMap(operators);
+		return Collections.unmodifiableMap(operators());
 	}
 
 	@Override
 	public List<String> getOperatorNames() {
-		return Collections.unmodifiableList(operatorNames);
+		return Collections.unmodifiableList(operatorNames());
 	}
 
 	@Override
 	public CalculatorOp<?, ?> getOperator(final String operatorName) {
-		return operators.get(operatorName);
+		return operators().get(operatorName);
 	}
 
 	@Override
@@ -101,14 +101,6 @@ public class DefaultCalculatorService extends
 		return (Class) CalculatorOp.class;
 	}
 
-	// -- Service methods --
-
-	@Override
-	public void initialize() {
-		super.initialize();
-		buildDataStructures();
-	}
-
 	// -- helpers --
 
 	private void buildDataStructures() {
@@ -119,6 +111,16 @@ public class DefaultCalculatorService extends
 			operators.put(name, op);
 			operatorNames.add(name);
 		}
+	}
+
+	private Map<String, CalculatorOp<?, ?>> operators() {
+		if (operators == null) buildDataStructures();
+		return operators;
+	}
+
+	private List<? extends String> operatorNames() {
+		if (operatorNames == null) buildDataStructures();
+		return operatorNames;
 	}
 
 }
