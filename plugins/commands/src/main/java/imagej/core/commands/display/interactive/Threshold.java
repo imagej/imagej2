@@ -46,6 +46,7 @@ import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.threshold.ThresholdMethod;
 import imagej.data.threshold.ThresholdService;
+import imagej.data.widget.HistogramBundle;
 import imagej.menu.MenuConstants;
 import imagej.module.MutableModuleItem;
 import imagej.ui.DialogPrompt;
@@ -124,6 +125,9 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 	private static final String OVER_UNDER = "Over/Under";
 	
 	// -- Parameters --
+
+	@Parameter(label = "Histogram")
+	private HistogramBundle histBundle;
 
 	@Parameter(label = "Display Type",
 		choices = { RED, BLACK_WHITE, OVER_UNDER },
@@ -218,12 +222,32 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 		planeHistogram = null;
 		invalidPlaneHist = true;
 
+		long binCount = fullHistogram.getBinCount();
+		long min = 0;
+		long max = binCount - 1;
+
 		if (!alreadyHadOne) {
 			// default the thresh to something sensible: 85/170 is IJ1's default
-			double min = 85 * minMax.getExtent() / 255;
-			double max = 170 * minMax.getExtent() / 255;
-			overlay.setRange(min, max);
+			double mn = 85 * minMax.getExtent() / 255;
+			double mx = 170 * minMax.getExtent() / 255;
+			overlay.setRange(mn, mx);
+			min = 1 * binCount / 3;
+			max = 2 * binCount / 3;
 		}
+		else {
+			double mn = overlay.getRangeMin();
+			double mx = overlay.getRangeMax();
+			min = (long) (mn / minMax.getExtent());
+			max = (long) (mx / minMax.getExtent());
+		}
+
+		/* TODO
+		 * calc min and max via calcMin(overlay.getRangeMin()) etc.
+		 * This approach is a little broken. We could just call hist.map(T output)
+		 * but we don't have a T. Argh.
+		 */
+
+		histBundle = new HistogramBundle(fullHistogram, min, max);
 
 		// TODO note
 		// The threshold ranges would be best as a slider with range ends noted.
@@ -328,6 +352,11 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 		ThresholdOverlay overlay = getThreshold();
 		overlay.setRange(min, max);
 		display.update();
+		/* TODO
+		histBundle.setHistogram(histogram());
+		histBundle.setMin(calcMinBin(min));
+		histBundle.setMax(calcMaxBin(max));
+		*/
 	}
 
 	protected void stackHistogram() {
