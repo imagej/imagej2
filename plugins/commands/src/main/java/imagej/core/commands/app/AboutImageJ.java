@@ -44,7 +44,6 @@ import imagej.data.DatasetService;
 import imagej.data.DrawingTool;
 import imagej.display.Display;
 import imagej.display.DisplayService;
-import imagej.io.IOService;
 import imagej.menu.MenuConstants;
 import imagej.render.RenderingService;
 import imagej.render.TextRenderer.TextJustification;
@@ -52,12 +51,12 @@ import imagej.util.AppUtils;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
 import imagej.util.MersenneTwisterFast;
-import io.scif.img.ImgIOException;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -65,7 +64,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
@@ -121,9 +119,6 @@ public class AboutImageJ extends ContextCommand {
 	private DisplayService dispSrv;
 
 	@Parameter
-	private IOService ioService;
-	
-	@Parameter
 	private RenderingService rendSrv;
 	
 	@Parameter(type = ItemIO.OUTPUT)
@@ -164,12 +159,9 @@ public class AboutImageJ extends ContextCommand {
 
 		Dataset ds = null;
 		try {
-			ds = ioService.loadDataset(imageFile.getAbsolutePath());
+			ds = dataSrv.open(imageFile.getAbsolutePath());
 		}
-		catch (final ImgIOException e) {
-			log.error(e);
-		}
-		catch (final IncompatibleTypeException e) {
+		catch (final IOException e) {
 			log.error(e);
 		}
 

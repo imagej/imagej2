@@ -33,89 +33,34 @@
  * #L%
  */
 
-package imagej.core.commands.io;
+package imagej.io.event;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
-import imagej.io.IOService;
-import imagej.menu.MenuConstants;
-import imagej.ui.DialogPrompt;
-import imagej.ui.UIService;
-
-import java.io.File;
-import java.io.IOException;
-
-import org.scijava.ItemIO;
-import org.scijava.log.LogService;
-import org.scijava.plugin.Menu;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
+import org.scijava.event.SciJavaEvent;
 
 /**
- * Opens the selected file.
+ * An event indicating that I/O (i.e., opening or saving) has occurred.
  * 
  * @author Curtis Rueden
- * @author Mark Hiner
  */
-@Plugin(type = Command.class, iconPath = "/icons/commands/folder_picture.png",
-	menu = {
-		@Menu(label = MenuConstants.FILE_LABEL,
-			weight = MenuConstants.FILE_WEIGHT,
-			mnemonic = MenuConstants.FILE_MNEMONIC),
-		@Menu(label = "Open...", weight = 1, mnemonic = 'o',
-			accelerator = "control O") })
-public class OpenFile extends ContextCommand {
+public abstract class IOEvent extends SciJavaEvent {
 
-	@Parameter
-	private LogService log;
+	/** The data descriptor (source or destination). */
+	private final String descriptor;
 
-	@Parameter
-	private IOService ioService;
+	public IOEvent(final String descriptor) {
+		this.descriptor = descriptor;
+	}
 
-	@Parameter
-	private UIService uiService;
+	/** Gets the data descriptor (source or destination). */
+	public String getDescriptor() {
+		return descriptor;
+	}
 
-	@Parameter(label = "File to open")
-	private File inputFile;
-
-	@Parameter(type = ItemIO.OUTPUT, label = "Data")
-	private Object data;
+	// -- Object methods --
 
 	@Override
-	public void run() {
-		try {
-			data = ioService.open(inputFile.getAbsolutePath());
-			if (data == null) {
-				error("The file is not in a supported format\n\n" +
-					inputFile.getPath());
-			}
-		}
-		catch (final IOException exc) {
-			log.error(exc);
-			error(exc.getMessage());
-		}
-	}
-
-	public File getInputFile() {
-		return inputFile;
-	}
-
-	public void setInputFile(final File inputFile) {
-		this.inputFile = inputFile;
-	}
-
-	public Object getData() {
-		return data;
-	}
-
-	public void setData(final Object data) {
-		this.data = data;
-	}
-
-	// -- Helper methods --
-
-	private void error(final String message) {
-		uiService.showDialog(message, DialogPrompt.MessageType.ERROR_MESSAGE);
+	public String toString() {
+		return super.toString() + "\n\tdescriptor = " + descriptor;
 	}
 
 }

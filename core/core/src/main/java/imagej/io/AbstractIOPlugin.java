@@ -35,43 +35,56 @@
 
 package imagej.io;
 
-import io.scif.common.StatusEvent;
-import io.scif.common.StatusListener;
+import java.io.IOException;
 
-import org.scijava.app.StatusService;
+import org.scijava.plugin.SortablePlugin;
 
 /**
- * Rebroadcasts {@link StatusEvent}s as ImageJ status notifications.
+ * Abstract base class for {@link IOPlugin}s.
  * 
  * @author Curtis Rueden
  */
-public class StatusDispatcher implements StatusListener {
+public abstract class AbstractIOPlugin<D> extends SortablePlugin implements
+	IOPlugin<D>
+{
 
-	private final StatusService statusService;
-
-	private long lastTime;
-
-	public StatusDispatcher(final StatusService statusService) {
-		this.statusService = statusService;
-	}
-
-	// -- StatusListener methods --
+	// -- IOPlugin methods --
 
 	@Override
-	public void statusUpdated(final StatusEvent e) {
-		final long time = System.currentTimeMillis();
-		final int progress = e.getProgressValue();
-		final int maximum = e.getProgressMaximum();
-		final String message = e.getStatusMessage();
-		final boolean warn = e.isWarning();
+	public boolean supportsOpen(final String source) {
+		return false;
+	}
 
-		// don't update more than 20 times/sec
-		if (time - lastTime < 50 && progress > 0 && progress < maximum && !warn) {
-			return;
-		}
-		lastTime = time;
+	@Override
+	public boolean supportsSave(final String destination) {
+		return false;
+	}
 
-		statusService.showStatus(progress, maximum, message, warn);
+	@Override
+	public boolean supportsSave(final Object data, final String destination) {
+		return supportsSave(destination) && getDataType().isInstance(data);
+	}
+
+	@Override
+	public D open(final String source) throws IOException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void save(final D data, final String destination) throws IOException {
+		throw new UnsupportedOperationException();
+	}
+
+	// -- Typed methods --
+
+	@Override
+	public boolean supports(String descriptor) {
+		return supportsOpen(descriptor) || supportsSave(descriptor);
+	}
+
+	@Override
+	public Class<String> getType() {
+		return String.class;
 	}
 
 }

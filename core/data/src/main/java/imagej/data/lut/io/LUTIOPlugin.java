@@ -33,71 +33,48 @@
  * #L%
  */
 
-package imagej.io;
+package imagej.data.lut.io;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.module.ModuleService;
-import imagej.text.TextService;
-import io.scif.img.ImgIOException;
+import imagej.data.lut.LUTService;
+import imagej.io.AbstractIOPlugin;
+import imagej.io.IOPlugin;
 
 import java.io.File;
 import java.io.IOException;
 
-import net.imglib2.exception.IncompatibleTypeException;
+import net.imglib2.display.ColorTable;
 
-import org.scijava.app.StatusService;
-import org.scijava.event.EventService;
-import org.scijava.service.Service;
+import org.scijava.plugin.Plugin;
 
 /**
- * Interface for providing I/O convenience methods.
+ * I/O plugin for {@link ColorTable}s.
  * 
  * @author Curtis Rueden
  */
-public interface IOService extends Service {
+@Plugin(type = IOPlugin.class)
+public class LUTIOPlugin extends AbstractIOPlugin<ColorTable> {
 
-	// CTR TODO: Extend HandlerService<IOPlugin>.
+	// -- IOPlugin methods --
 
-	EventService getEventService();
+	@Override
+	public Class<ColorTable> getDataType() {
+		return ColorTable.class;
+	}
 
-	StatusService getStatusService();
+	@Override
+	public boolean supportsOpen(final String source) {
+		return lutService().isLUT(new File(source));
+	}
 
-	ModuleService getModuleService();
+	@Override
+	public ColorTable open(final String source) throws IOException {
+		return lutService().loadLUT(new File(source));
+	}
 
-	DatasetService getDatasetService();
+	// -- Helper methods --
 
-	TextService getTextService();
-
-	/**
-	 * Loads data from the given file.
-	 * <p>
-	 * The type of data is automatically determined. In the case of image data,
-	 * the returned object will be a {@link Dataset}. If the file contains text
-	 * data, the returned object will be a {@link String} formatted as HTML.
-	 * </p>
-	 * 
-	 * @param file The file from which to load data.
-	 * @return An object representing the loaded data, or null if the file is not
-	 *         in a supported format.
-	 * @throws IOException if something goes wrong loading the data.
-	 */
-	Object load(File file) throws IOException;
-
-	/**
-	 * Determines whether the given source is image data (and hence compatible
-	 * with the {@link #loadDataset(String)} method).
-	 */
-	boolean isImageData(String source);
-
-	/** Loads a dataset from a source (such as a file on disk). */
-	Dataset loadDataset(String source) throws ImgIOException,
-		IncompatibleTypeException;
-
-	/** Reverts the given dataset to its original source. */
-	void revertDataset(Dataset dataset) throws ImgIOException,
-		IncompatibleTypeException;
-
-	// TODO: Add a saveDataset method, and use it in SaveAsImage plugin.
+	private LUTService lutService() {
+		return getContext().getService(LUTService.class);
+	}
 
 }

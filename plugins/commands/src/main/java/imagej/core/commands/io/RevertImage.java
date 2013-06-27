@@ -38,12 +38,12 @@ package imagej.core.commands.io;
 import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
-import imagej.io.IOService;
+import imagej.data.DatasetService;
 import imagej.menu.MenuConstants;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
-import io.scif.img.ImgIOException;
-import net.imglib2.exception.IncompatibleTypeException;
+
+import java.io.IOException;
 
 import org.scijava.ItemIO;
 import org.scijava.log.LogService;
@@ -68,7 +68,7 @@ public class RevertImage extends ContextCommand {
 	private LogService log;
 
 	@Parameter
-	private IOService ioService;
+	private DatasetService datasetService;
 
 	@Parameter
 	private UIService uiService;
@@ -78,22 +78,12 @@ public class RevertImage extends ContextCommand {
 
 	@Override
 	public void run() {
-		final String source = dataset.getSource();
-		if (source == null || source.equals("")) {
-			uiService.showDialog("Cannot revert image of unknown origin");
-			return;
-		}
 		try {
-			ioService.revertDataset(dataset);
+			datasetService.revert(dataset);
 		}
-		catch (final ImgIOException e) {
-			log.error(e);
-			uiService.showDialog(e.getMessage(),
-				DialogPrompt.MessageType.ERROR_MESSAGE);
-		}
-		catch (final IncompatibleTypeException e) {
-			log.error(e);
-			uiService.showDialog(e.getMessage(),
+		catch (final IOException exc) {
+			log.error(exc);
+			uiService.showDialog(exc.getMessage(),
 				DialogPrompt.MessageType.ERROR_MESSAGE);
 		}
 	}

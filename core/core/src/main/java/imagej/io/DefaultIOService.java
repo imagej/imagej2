@@ -33,95 +33,77 @@
  * #L%
  */
 
-package imagej.console;
+package imagej.io;
 
-import imagej.command.CommandInfo;
-import imagej.command.CommandService;
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.display.DisplayService;
+import imagej.plugin.AbstractHandlerService;
 
 import java.io.IOException;
 
+import org.scijava.event.EventService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
- * Default service for managing interaction with the console.
+ * Default implementation of {@link IOService}.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = Service.class)
-public class DefaultConsoleService extends AbstractService implements
-	ConsoleService
+public final class DefaultIOService
+	extends AbstractHandlerService<String, IOPlugin<?>> implements IOService
 {
 
 	@Parameter
 	private LogService log;
 
 	@Parameter
-	private CommandService commandService;
+	private EventService eventService;
 
-	@Parameter
-	private DatasetService datasetService;
-
-	@Parameter
-	private DisplayService displayService;
-
-	// -- ConsoleService methods --
+	// -- IOService methods --
 
 	@Override
-	public void processArgs(final String... args) {
-		// TODO: Implement handling of more command line arguments.
-		log.debug("Received command line arguments:");
-		for (int i = 0; i < args.length; i++) {
-			final String arg = args[i];
-			log.debug("\t" + arg);
-			if (arg.equals("--open")) {
-				open(args[i + 1]);
-			}
-			else if (arg.equals("--run")) {
-				if (!run(args[i + 1])) {
-					run(args[i + 1], args.length < i + 3 ? null : args[i + 2]);
-				}
-			}
+	public IOPlugin<?> getOpener(final String source) {
+		for (final IOPlugin<?> handler : getInstances()) {
+			if (handler.supportsOpen(source)) return handler;
 		}
+		return null;
 	}
 
-	// -- Helper methods --
-
-	/** Implements the "--open" command line argument. */
-	private void open(final String source) {
-		try {
-			final Dataset dataset = datasetService.open(source);
-			displayService.createDisplay(dataset.getName(), dataset);
-		}
-		catch (final IOException exc) {
-			log.error("Error loading dataset '" + source + "'", exc);
-		}
-	}
-
-	/** Implements the "--run" command line argument. */
-	private boolean run(final String className) {
-		return commandService.run(className) != null;
-	}
-
-	/** Implements the "--run <label> <optionString>" legacy handling */
-	private boolean run(String menuLabel, final String optionString) {
-		final String label = menuLabel.replace('_', ' ');
-		CommandInfo info = null;
-		for (final CommandInfo info2 : commandService.getCommands()) {
-			if (label.equals(info2.getTitle())) {
-				info = info2;
-				break;
+	@Override
+	public <D> IOPlugin<D> getSaver(final D data, final String destination) {
+		for (final IOPlugin<?> handler : getInstances()) {
+			if (handler.supportsSave(data, destination)) {
+				@SuppressWarnings("unchecked")
+				IOPlugin<D> typedHandler = (IOPlugin<D>) handler;
+				return typedHandler;
 			}
 		}
-		if (info == null) return false;
-		// TODO: parse the optionString a la ImageJ1
-		return commandService.run(info) != null;
+		return null;
+	}
+
+	@Override
+	public Object open(final String source) throws IOException {
+		return getOpener(source).open(source);
+	}
+
+	@Override
+	public void save(Object data, String destination) throws IOException {
+		getSaver(data, destination).save(data, destination);
+	}
+
+	// -- HandlerService methods --
+
+	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Class<IOPlugin<?>> getPluginType() {
+		return (Class) IOPlugin.class;
+	}
+
+	@Override
+	public Class<String> getType() {
+		return String.class;
 	}
 
 }

@@ -33,89 +33,61 @@
  * #L%
  */
 
-package imagej.core.commands.io;
+package imagej.io;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
-import imagej.io.IOService;
-import imagej.menu.MenuConstants;
-import imagej.ui.DialogPrompt;
-import imagej.ui.UIService;
+import imagej.plugin.HandlerService;
 
-import java.io.File;
 import java.io.IOException;
 
-import org.scijava.ItemIO;
-import org.scijava.log.LogService;
-import org.scijava.plugin.Menu;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-
 /**
- * Opens the selected file.
+ * Interface for data I/O operations: opening and saving data.
  * 
  * @author Curtis Rueden
- * @author Mark Hiner
  */
-@Plugin(type = Command.class, iconPath = "/icons/commands/folder_picture.png",
-	menu = {
-		@Menu(label = MenuConstants.FILE_LABEL,
-			weight = MenuConstants.FILE_WEIGHT,
-			mnemonic = MenuConstants.FILE_MNEMONIC),
-		@Menu(label = "Open...", weight = 1, mnemonic = 'o',
-			accelerator = "control O") })
-public class OpenFile extends ContextCommand {
+public interface IOService extends HandlerService<String, IOPlugin<?>> {
 
-	@Parameter
-	private LogService log;
+	/**
+	 * Gets the most appropriate {@link IOPlugin} for opening data from the given
+	 * source.
+	 */
+	IOPlugin<?> getOpener(String source);
 
-	@Parameter
-	private IOService ioService;
+	/**
+	 * Gets the most appropriate {@link IOPlugin} for saving data to the given
+	 * destination.
+	 */
+	<D> IOPlugin<D> getSaver(D data, String destination);
 
-	@Parameter
-	private UIService uiService;
+	/**
+	 * Loads data from the given source. For extensibility, the nature of the
+	 * source is left intentionally general, but two common examples include file
+	 * paths and URLs.
+	 * <p>
+	 * The opener to use is automatically determined based on available
+	 * {@link IOPlugin}s; see {@link #getOpener(String)}.
+	 * </p>
+	 * 
+	 * @param source The source (e.g., file path) from which to data should be
+	 *          loaded.
+	 * @return An object representing the loaded data, or null if the source is
+	 *         not supported.
+	 * @throws IOException if something goes wrong loading the data.
+	 */
+	Object open(String source) throws IOException;
 
-	@Parameter(label = "File to open")
-	private File inputFile;
-
-	@Parameter(type = ItemIO.OUTPUT, label = "Data")
-	private Object data;
-
-	@Override
-	public void run() {
-		try {
-			data = ioService.open(inputFile.getAbsolutePath());
-			if (data == null) {
-				error("The file is not in a supported format\n\n" +
-					inputFile.getPath());
-			}
-		}
-		catch (final IOException exc) {
-			log.error(exc);
-			error(exc.getMessage());
-		}
-	}
-
-	public File getInputFile() {
-		return inputFile;
-	}
-
-	public void setInputFile(final File inputFile) {
-		this.inputFile = inputFile;
-	}
-
-	public Object getData() {
-		return data;
-	}
-
-	public void setData(final Object data) {
-		this.data = data;
-	}
-
-	// -- Helper methods --
-
-	private void error(final String message) {
-		uiService.showDialog(message, DialogPrompt.MessageType.ERROR_MESSAGE);
-	}
+	/**
+	 * Saves data to the given destination. The nature of the destination is left
+	 * intentionally general, but the most common example is a file path.
+	 * <p>
+	 * The saver to use is automatically determined based on available
+	 * {@link IOPlugin}s; see {@link #getSaver(Object, String)}.
+	 * </p>
+	 * 
+	 * @param data The data to be saved to the destination.
+	 * @param destination The destination (e.g., file path) to which data should
+	 *          be saved.
+	 * @throws IOException if something goes wrong saving the data.
+	 */
+	void save(Object data, String destination) throws IOException;
 
 }

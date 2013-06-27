@@ -35,32 +35,22 @@
 
 package imagej.io.event;
 
-import org.scijava.event.SciJavaEvent;
-
 /**
- * An event indicating something has happened to a file.
+ * An event indicating that data has been opened from a source.
  * 
  * @author Curtis Rueden
  */
-public abstract class FileEvent extends SciJavaEvent {
+public class DataOpenedEvent extends IOEvent {
 
-	/** The path of the file. */
-	private final String path;
-
-	public FileEvent(final String path) {
-		this.path = path;
+	public DataOpenedEvent(final String source) {
+		super(source);
 	}
 
-	/** Gets the file path. */
-	public String getPath() {
-		return path;
-	}
+	// -- DataOpenedEvent methods --
 
-	// -- Object methods --
-
-	@Override
-	public String toString() {
-		return super.toString() + "\n\tpath = " + path;
+	/** Gets the source from which data was opened. */
+	public String getSource() {
+		return getDescriptor();
 	}
 
 }

@@ -33,86 +33,59 @@
  * #L%
  */
 
-package imagej.io.dnd;
+package imagej.data.io;
 
 import imagej.data.Dataset;
-import imagej.display.Display;
-import imagej.display.DisplayService;
-import imagej.io.IOService;
-import imagej.ui.dnd.AbstractDragAndDropHandler;
-import imagej.ui.dnd.DragAndDropHandler;
-import io.scif.img.ImgIOException;
+import imagej.data.DatasetService;
+import imagej.io.AbstractIOPlugin;
+import imagej.io.IOPlugin;
 
-import java.io.File;
-
-import net.imglib2.exception.IncompatibleTypeException;
+import java.io.IOException;
 
 import org.scijava.Priority;
-import org.scijava.log.LogService;
 import org.scijava.plugin.Plugin;
 
 /**
- * Drag-and-drop handler for image files.
+ * I/O plugin for {@link Dataset}s.
  * 
  * @author Curtis Rueden
- * @author Barry DeZonia
  */
-@Plugin(type = DragAndDropHandler.class, priority = Priority.LOW_PRIORITY)
-public class ImageFileDragAndDropHandler extends
-	AbstractDragAndDropHandler<File>
-{
+@Plugin(type = IOPlugin.class, priority = Priority.LOW_PRIORITY)
+public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 
-	// -- DragAndDropHandler methods --
+	// -- IOPlugin methods --
 
 	@Override
-	public boolean supports(final File file) {
-		if (!super.supports(file)) return false;
-
-		// verify that the file is image data
-		final IOService ioService = getContext().getService(IOService.class);
-		if (ioService == null) return false;
-		return ioService.isImageData(file.getAbsolutePath());
+	public Class<Dataset> getDataType() {
+		return Dataset.class;
 	}
 
 	@Override
-	public boolean drop(final File file, final Display<?> display) {
-		check(file, display);
-		if (file == null) return true; // trivial case
-
-		final IOService ioService = getContext().getService(IOService.class);
-		if (ioService == null) return false;
-
-		final DisplayService displayService =
-			getContext().getService(DisplayService.class);
-		if (displayService == null) return false;
-
-		final LogService log = getContext().getService(LogService.class);
-
-		// load dataset
-		final String filename = file.getAbsolutePath();
-		final Dataset dataset;
-		try {
-			dataset = ioService.loadDataset(filename);
-		}
-		catch (final ImgIOException exc) {
-			if (log != null) log.error("Error opening file: " + filename, exc);
-			return false;
-		}
-		catch (final IncompatibleTypeException exc) {
-			if (log != null) log.error("Error opening file: " + filename, exc);
-			return false;
-		}
-
-		// display result
-		displayService.createDisplay(dataset);
-		return true;
+	public boolean supportsOpen(final String source) {
+		return datasetService().canOpen(source);
 	}
 
-	// -- Typed methods --
+	@Override
+	public boolean supportsSave(final String destination) {
+		return datasetService().canSave(destination);
+	}
 
 	@Override
-	public Class<File> getType() {
-		return File.class;
+	public Dataset open(final String source) throws IOException {
+		return datasetService().open(source);
+	}
+
+	@Override
+	public void save(final Dataset dataset, final String destination)
+		throws IOException
+	{
+		datasetService().save(dataset, destination);
+	}
+
+	// -- Helper methods --
+
+	private DatasetService datasetService() {
+		return getContext().getService(DatasetService.class);
 	}
 
 }

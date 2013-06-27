@@ -33,89 +33,44 @@
  * #L%
  */
 
-package imagej.core.commands.io;
+package imagej.text.io;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
-import imagej.io.IOService;
-import imagej.menu.MenuConstants;
-import imagej.ui.DialogPrompt;
-import imagej.ui.UIService;
+import imagej.io.AbstractIOPlugin;
+import imagej.io.IOPlugin;
+import imagej.text.TextService;
 
 import java.io.File;
 import java.io.IOException;
 
-import org.scijava.ItemIO;
-import org.scijava.log.LogService;
-import org.scijava.plugin.Menu;
-import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * Opens the selected file.
+ * {@link IOPlugin} for text conversion to HTML.
  * 
  * @author Curtis Rueden
- * @author Mark Hiner
+ * @see TextService
  */
-@Plugin(type = Command.class, iconPath = "/icons/commands/folder_picture.png",
-	menu = {
-		@Menu(label = MenuConstants.FILE_LABEL,
-			weight = MenuConstants.FILE_WEIGHT,
-			mnemonic = MenuConstants.FILE_MNEMONIC),
-		@Menu(label = "Open...", weight = 1, mnemonic = 'o',
-			accelerator = "control O") })
-public class OpenFile extends ContextCommand {
+@Plugin(type = IOPlugin.class)
+public class TextIOPlugin extends AbstractIOPlugin<String> {
 
-	@Parameter
-	private LogService log;
-
-	@Parameter
-	private IOService ioService;
-
-	@Parameter
-	private UIService uiService;
-
-	@Parameter(label = "File to open")
-	private File inputFile;
-
-	@Parameter(type = ItemIO.OUTPUT, label = "Data")
-	private Object data;
+	// -- IOPlugin methods --
 
 	@Override
-	public void run() {
-		try {
-			data = ioService.open(inputFile.getAbsolutePath());
-			if (data == null) {
-				error("The file is not in a supported format\n\n" +
-					inputFile.getPath());
-			}
-		}
-		catch (final IOException exc) {
-			log.error(exc);
-			error(exc.getMessage());
-		}
+	public Class<String> getDataType() {
+		return String.class;
 	}
 
-	public File getInputFile() {
-		return inputFile;
+	@Override
+	public boolean supportsOpen(final String source) {
+		final TextService textService = getContext().getService(TextService.class);
+		return textService.supports(new File(source));
 	}
 
-	public void setInputFile(final File inputFile) {
-		this.inputFile = inputFile;
-	}
-
-	public Object getData() {
-		return data;
-	}
-
-	public void setData(final Object data) {
-		this.data = data;
-	}
-
-	// -- Helper methods --
-
-	private void error(final String message) {
-		uiService.showDialog(message, DialogPrompt.MessageType.ERROR_MESSAGE);
+	@Override
+	public String open(final String source) throws IOException {
+		if (source == null) return null;
+		final TextService textService = getContext().getService(TextService.class);
+		return textService.asHTML(new File(source));
 	}
 
 }

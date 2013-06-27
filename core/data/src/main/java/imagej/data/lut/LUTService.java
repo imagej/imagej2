@@ -117,6 +117,10 @@ public interface LUTService extends Service {
 	 * @param colorTable The color table to display.
 	 * @return The newly created image display.
 	 */
+	// CTR FIXME: The ImageDisplay needs to support ColorTables properly,
+	// rather than with a hardcoded method like this. Otherwise, using a
+	// ColorTable as an output parameter does not show it in a new display!
+	// This support is also necessary for the OpenFile command to support LUTs.
 	ImageDisplay createDisplay(String title, ColorTable colorTable);
 
 	/**

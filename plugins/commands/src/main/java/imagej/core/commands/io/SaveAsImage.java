@@ -38,24 +38,21 @@ package imagej.core.commands.io;
 import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
+import imagej.data.DatasetService;
 import imagej.display.Display;
-import imagej.io.event.FileSavedEvent;
 import imagej.menu.MenuConstants;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.Result;
 import imagej.ui.UIService;
 import imagej.widget.FileWidget;
-import io.scif.img.ImgIOException;
 import io.scif.img.ImgSaver;
 
 import java.io.File;
+import java.io.IOException;
 
-import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImgPlus;
 
 import org.scijava.ItemIO;
-import org.scijava.app.StatusService;
-import org.scijava.event.EventService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
@@ -76,10 +73,7 @@ public class SaveAsImage extends ContextCommand {
 	private LogService log;
 
 	@Parameter
-	private EventService eventService;
-
-	@Parameter
-	private StatusService statusService;
+	private DatasetService datasetService;
 
 	@Parameter
 	private UIService uiService;
@@ -100,68 +94,43 @@ public class SaveAsImage extends ContextCommand {
 
 	@Override
 	public void run() {
-		@SuppressWarnings("rawtypes")
-		final ImgPlus img = dataset.getImgPlus();
-		boolean overwrite = true;
-		Result result = null;
-
-		// TODO prompts the user if the file is dirty or being saved to a new
-		// location. Could remove the isDirty check to always overwrite the current
-		// file
-		if (outputFile.exists() &&
-			(dataset.isDirty() || !outputFile.getAbsolutePath().equals(
-				img.getSource())))
-		{
-			result =
+		if (outputFile.exists()) {
+			final Result result =
 				uiService.showDialog("\"" + outputFile.getName() +
-					"\" already exists. Do you want to replace it?", "Save [IJ2]",
+					"\" already exists. Do you want to replace it?", "Save",
 					DialogPrompt.MessageType.WARNING_MESSAGE,
 					DialogPrompt.OptionType.YES_NO_OPTION);
-			overwrite = result == DialogPrompt.Result.YES_OPTION;
+			if (result != DialogPrompt.Result.YES_OPTION) return; // abort
 		}
 
-		if (overwrite) {
-			final ImgSaver imageSaver = new ImgSaver();
-			imageSaver.setContext(getContext());
-			boolean saveImage = true;
-			try {
-				if (imageSaver.isCompressible(img)) {
-					result =
+		// FIXME: Hacky stuff for XYZCT hysterical raisins.
+		// Remove once SCIFIO's ImgSaver is fully N-dimensional.
+		final ImgSaver imageSaver = new ImgSaver();
+		imageSaver.setContext(getContext());
+		try {
+			@SuppressWarnings("rawtypes")
+			final ImgPlus img = dataset.getImgPlus();
+			if (imageSaver.isCompressible(img)) {
+				final Result result =
 					uiService.showDialog("Your image contains axes other than XYZCT.\n"
 						+ "When saving, these may be compressed to the "
 						+ "Channel axis (or the save process may simply fail).\n"
-						+ "Would you like to continue?", "Save [IJ2]",
+						+ "Would you like to continue?", "Save",
 						DialogPrompt.MessageType.WARNING_MESSAGE,
 						DialogPrompt.OptionType.YES_NO_OPTION);
-				}
-
-				saveImage = result == DialogPrompt.Result.YES_OPTION;
-				imageSaver.saveImg(outputFile.getAbsolutePath(), img);
-				eventService.publish(new FileSavedEvent(img.getSource()));
-			}
-			catch (final ImgIOException e) {
-				log.error(e);
-				uiService.showDialog(e.getMessage(), "IJ2: Save Error",
-					DialogPrompt.MessageType.ERROR_MESSAGE);
-				return;
-			}
-			catch (final IncompatibleTypeException e) {
-				log.error(e);
-				uiService.showDialog(e.getMessage(), "IJ2: Save Error",
-					DialogPrompt.MessageType.ERROR_MESSAGE);
-				return;
+				if (result != DialogPrompt.Result.YES_OPTION) return; // abort
 			}
 
-			if (saveImage) {
-				dataset.setName(outputFile.getName());
-				dataset.setDirty(false);
-
-				display.setName(outputFile.getName());
-				// NB - removed when display became ItemIO.Both.
-				//  Restore later if necessary.
-				//display.update();
-			}
+			datasetService.save(dataset, outputFile.getAbsolutePath());
 		}
+		catch (final IOException exc) {
+			log.error(exc);
+			uiService.showDialog(exc.getMessage(), "IJ2: Save Error",
+				DialogPrompt.MessageType.ERROR_MESSAGE);
+			return;
+		}
+
+		display.setName(dataset.getName());
 	}
 
 }

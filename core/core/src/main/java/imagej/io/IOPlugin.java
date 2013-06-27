@@ -33,17 +33,50 @@
  * #L%
  */
 
-package imagej.io.event;
+package imagej.io;
+
+import imagej.plugin.HandlerPlugin;
+
+import java.io.IOException;
+
+import org.scijava.plugin.HasPluginInfo;
+import org.scijava.plugin.Plugin;
 
 /**
- * An event indicating a file has been saved.
+ * A plugin which extends ImageJ's I/O capabilities.
+ * <p>
+ * I/O plugins discoverable at runtime must implement this interface and be
+ * annotated with @{@link Plugin} with attribute {@link Plugin#type()} =
+ * {@link IOPlugin}.class. While it possible to create an I/O plugin merely by
+ * implementing this interface, it is encouraged to instead extend
+ * {@link AbstractIOPlugin}, for convenience.
+ * </p>
  * 
- * @author Grant Harris
+ * @author Curtis Rueden
+ * @see Plugin
+ * @see IOService
  */
-public class FileSavedEvent extends FileEvent {
+public interface IOPlugin<D> extends HasPluginInfo, HandlerPlugin<String> {
 
-	public FileSavedEvent(final String path) {
-		super(path);
-	}
+	/** The type of data opened and/or saved by the plugin. */
+	Class<D> getDataType();
+
+	/** Checks whether the I/O plugin can open data from the given source. */
+	boolean supportsOpen(String source);
+
+	/** Checks whether the I/O plugin can save data to the given destination. */
+	boolean supportsSave(String destination);
+
+	/**
+	 * Checks whether the I/O plugin can save the given data to the specified
+	 * destination.
+	 */
+	boolean supportsSave(Object data, String destination);
+
+	/** Opens data from the given source. */
+	D open(String source) throws IOException;
+
+	/** Saves the given data to the specified destination. */
+	void save(D data, String destination) throws IOException;
 
 }

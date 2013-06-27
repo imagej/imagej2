@@ -33,17 +33,45 @@
  * #L%
  */
 
-package imagej.io.event;
+package imagej.script.io;
+
+import imagej.io.AbstractIOPlugin;
+import imagej.io.IOPlugin;
+import imagej.script.ScriptService;
+
+import java.io.IOException;
+
+import org.scijava.plugin.Plugin;
 
 /**
- * An event indicating a file has been opened.
+ * {@link IOPlugin} for scripts.
  * 
- * @author Grant Harris
+ * @author Curtis Rueden
+ * @see ScriptService
  */
-public class FileOpenedEvent extends FileEvent {
+@Plugin(type = IOPlugin.class)
+public class ScriptIOPlugin extends AbstractIOPlugin<String> {
 
-	public FileOpenedEvent(final String path) {
-		super(path);
+	// -- IOPlugin methods --
+
+	@Override
+	public Class<String> getDataType() {
+		return String.class;
+	}
+
+	@Override
+	public boolean supportsOpen(final String source) {
+		final ScriptService scriptService =
+			getContext().getService(ScriptService.class);
+		return scriptService.canHandleFile(source);
+	}
+
+	@Override
+	public String open(final String source) throws IOException {
+		final ScriptService scriptService =
+			getContext().getService(ScriptService.class);
+		// TODO: Use the script service to open the file in the script editor.
+		return null;
 	}
 
 }

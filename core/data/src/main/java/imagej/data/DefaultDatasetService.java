@@ -37,10 +37,20 @@ package imagej.data;
 
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
+import io.scif.FormatException;
+import io.scif.img.ImgIOException;
+import io.scif.img.ImgOpener;
+import io.scif.img.ImgOptions;
+import io.scif.img.ImgOptions.CheckMode;
+import io.scif.img.ImgSaver;
+import io.scif.services.FormatService;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
@@ -60,6 +70,7 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 
+import org.scijava.log.LogService;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -70,6 +81,7 @@ import org.scijava.service.Service;
  * Default service for working with {@link Dataset}s.
  * 
  * @author Curtis Rueden
+ * @author Barry DeZonia
  */
 @Plugin(type = Service.class)
 public final class DefaultDatasetService extends AbstractService implements
@@ -77,7 +89,13 @@ public final class DefaultDatasetService extends AbstractService implements
 {
 
 	@Parameter
+	private LogService log;
+
+	@Parameter
 	private ObjectService objectService;
+
+	@Parameter
+	private FormatService formatService;
 
 	// -- DatasetService methods --
 
@@ -164,9 +182,93 @@ public final class DefaultDatasetService extends AbstractService implements
 	}
 
 	@Override
-	public <T extends RealType<T>> Dataset create(final ImgPlus<T> imgPlus)
-	{
+	public <T extends RealType<T>> Dataset create(final ImgPlus<T> imgPlus) {
 		return new DefaultDataset(getContext(), imgPlus);
+	}
+
+	@Override
+	public boolean canOpen(final String source) {
+		try {
+			return formatService.getFormat(source, true) != null;
+		}
+		catch (final FormatException exc) {
+			log.error(exc);
+		}
+		return false;
+	}
+
+	@Override
+	public boolean canSave(final String destination) {
+		try {
+			return formatService.getWriterByExtension(destination) != null;
+		}
+		catch (final FormatException exc) {
+			log.error(exc);
+		}
+		return false;
+	}
+
+	@Override
+	public Dataset open(final String source) throws IOException {
+		final ImgOpener imageOpener = new ImgOpener(getContext());
+		/* Restore this when NativeType can be eliminated from this class decl.
+		// TODO BDZ 7-17-12 Lowering reliance on NativeType. This cast is safe but
+		// necessary in the short term to get code to compile. But
+		// imageOpener.openImg() is being modified to have no reference to
+		// NativeType. Later, when that has been accomplished remove this cast.
+		final ImgPlus<T> imgPlus = (ImgPlus<T>) imageOpener.openImg(source);
+		*/
+		final ImgOptions options = new ImgOptions();
+		options.setIndex(0);
+		options.setCheckMode(CheckMode.DEEP);
+		options.setComputeMinMax(false);
+		try {
+			@SuppressWarnings("rawtypes")
+			final ImgPlus imgPlus = imageOpener.openImg(source, options);
+			final DatasetService datasetService =
+				getContext().getService(DatasetService.class);
+			@SuppressWarnings("unchecked")
+			final Dataset dataset = datasetService.create(imgPlus);
+			return dataset;
+		}
+		catch (final ImgIOException exc) {
+			throw new IOException(exc);
+		}
+	}
+
+	@Override
+	public void revert(final Dataset dataset) throws IOException {
+		final String source = dataset.getSource();
+		if (source == null || source.isEmpty()) {
+			// no way to revert
+			throw new IOException("Cannot revert image of unknown origin");
+		}
+		final Dataset revertedDataset = open(source);
+		revertedDataset.copyInto(dataset);
+	}
+
+	@Override
+	public void save(final Dataset dataset, final String destination)
+		throws IOException
+	{
+		@SuppressWarnings("rawtypes")
+		final ImgPlus img = dataset.getImgPlus();
+
+		final ImgSaver imageSaver = new ImgSaver();
+		imageSaver.setContext(getContext());
+		try {
+			save(imageSaver, destination, img);
+		}
+		catch (final ImgIOException exc) {
+			throw new IOException(exc);
+		}
+		catch (final IncompatibleTypeException exc) {
+			throw new IOException(exc);
+		}
+
+		final String name = new File(destination).getName();
+		dataset.setName(name);
+		dataset.setDirty(false);
 	}
 
 	// -- Helper methods --
@@ -176,6 +278,13 @@ public final class DefaultDatasetService extends AbstractService implements
 	{
 		throw new IllegalArgumentException("Invalid parameters: bitsPerPixel=" +
 			bitsPerPixel + ", signed=" + signed + ", floating=" + floating);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void save(final ImgSaver imageSaver, final String destination,
+		final ImgPlus img) throws ImgIOException, IncompatibleTypeException
+	{
+		imageSaver.saveImg(destination, img);
 	}
 
 }
