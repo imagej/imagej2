@@ -222,32 +222,21 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 		planeHistogram = null;
 		invalidPlaneHist = true;
 
-		long binCount = fullHistogram.getBinCount();
-		long min = 0;
-		long max = binCount - 1;
-
 		if (!alreadyHadOne) {
-			// default the thresh to something sensible: 85/170 is IJ1's default
-			double mn = 85 * minMax.getExtent() / 255;
-			double mx = 170 * minMax.getExtent() / 255;
+			// default the thresh to something sensible: 85/170 of 255 is IJ1 default
+			double mn = 1 * minMax.getExtent() / 3;
+			double mx = 2 * minMax.getExtent() / 3;
 			overlay.setRange(mn, mx);
-			min = 1 * binCount / 3;
-			max = 2 * binCount / 3;
-		}
-		else {
-			double mn = overlay.getRangeMin();
-			double mx = overlay.getRangeMax();
-			min = (long) (mn / minMax.getExtent());
-			max = (long) (mx / minMax.getExtent());
 		}
 
-		/* TODO
-		 * calc min and max via calcMin(overlay.getRangeMin()) etc.
-		 * This approach is a little broken. We could just call hist.map(T output)
-		 * but we don't have a T. Argh.
-		 */
+		// TEMP HACK: finding bin numbers of curr min/max values for drawing lines
+		// on chart later. Kludgy since really we should use hist.map(T value)
+		// but we don't have a T here. Argh.
+		long binCount = fullHistogram.getBinCount();
+		long minBin = calcBin(binCount, overlay.getRangeMin());
+		long maxBin = calcBin(binCount, overlay.getRangeMax());
 
-		histBundle = new HistogramBundle(fullHistogram, min, max);
+		histBundle = new HistogramBundle(fullHistogram, minBin, maxBin);
 
 		// TODO note
 		// The threshold ranges would be best as a slider with range ends noted.
@@ -492,4 +481,11 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 		return new Histogram1d<T>(binMapper);
 	}
 
+	private long calcBin(long binCount, double val) {
+		long value =
+			(long) (binCount * (val - minMax.getMin()) / minMax.getExtent());
+		if (value < 0) value = 0;
+		if (value >= binCount) value = binCount - 1;
+		return value;
+	}
 }
