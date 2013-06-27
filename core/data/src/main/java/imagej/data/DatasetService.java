@@ -37,6 +37,7 @@ package imagej.data;
 
 import imagej.data.display.ImageDisplay;
 
+import java.io.IOException;
 import java.util.List;
 
 import net.imglib2.img.ImgFactory;
@@ -119,5 +120,26 @@ public interface DatasetService extends Service {
 	 * @return The newly created dataset.
 	 */
 	<T extends RealType<T>> Dataset create(ImgPlus<T> imgPlus);
+
+	/**
+	 * Determines whether the given source can be opened as a {@link Dataset}
+	 * using the {@link #open(String)} method.
+	 */
+	boolean canOpen(String source);
+
+	/**
+	 * Determines whether the given destination can be used to save a
+	 * {@link Dataset} using the {@link #save(Dataset, String)} method.
+	 */
+	boolean canSave(String destination);
+
+	/** Loads a dataset from a source (such as a file on disk). */
+	Dataset open(String source) throws IOException;
+
+	/** Reverts the given dataset to its original source. */
+	void revert(Dataset dataset) throws IOException;
+
+	/** Saves a dataset to a destination (such as a file on disk). */
+	void save(Dataset dataset, String destination) throws IOException;
 
 }
