@@ -596,6 +596,51 @@ public class CodeHacker {
 				"public static synchronized java.lang.String[] getPlugins()",
 				extraPluginJarsHandler("if (jarFiles == null) jarFiles = new java.util.Vector();" +
 						"jarFiles.addElement(file.getAbsolutePath());"));
+		// force IJ.getClassLoader() to instantiate a PluginClassLoader
+		replaceCallInMethod(
+				"ij.IJ",
+				"public static ClassLoader getClassLoader()",
+				"java.lang.System",
+				"getProperty",
+				"$_ = System.getProperty($1);\n"
+						+ "if ($_ == null && $1.equals(\"plugins.dir\")) $_ = \"/non-existant/\";");
+	}
+
+	/**
+	 * Replaces a call in the given method.
+	 * 
+	 * @param fullClass the class of the method to edit
+	 * @param methodSig the signature of the method to edit
+	 * @param calledClass the class of the called method to replace
+	 * @param calledMethodName the name of the called method to replace
+	 * @param newCode the code to replace the call with
+	 */
+	private void replaceCallInMethod(final String fullClass,
+			final String methodSig, final String calledClass,
+			final String calledMethodName, final String newCode) {
+		try {
+			final CtBehavior method;
+			if (methodSig.indexOf("<init>") < 0) {
+				method = getMethod(fullClass, methodSig);
+			} else {
+				method = getConstructor(fullClass, methodSig);
+			}
+			method.instrument(new ExprEditor() {
+				@Override
+				public void edit(MethodCall call) throws CannotCompileException {
+					if (call.getMethodName().equals(calledMethodName)
+							&& call.getClassName().equals(calledClass)) {
+						call.replace(newCode);
+					}
+				}
+			});
+		} catch (IllegalArgumentException e) {
+			// ignore: the method was not found
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException(
+					"Cannot handle replace call to " + calledMethodName
+							+ " in " + fullClass + "'s " + methodSig, e);
+		}
 	}
 
 	private String extraPluginJarsHandler(final String code) {
