@@ -45,7 +45,9 @@ import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.ui.UIService;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -67,8 +69,17 @@ import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
 
+import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.StandardXYBarPainter;
+import org.jfree.chart.renderer.xy.XYBarRenderer;
+import org.jfree.chart.title.TextTitle;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
@@ -484,6 +495,77 @@ public class HistogramPlot<T extends RealType<T>> extends ContextCommand
 		if (ds != dataset) return;
 		build();
 		display(currHistNum);
+	}
+
+	/*
+	 * TODO - eliminate all this FreeChart code. One should be able to use a
+	 * HistogramBundle and the widget should be automatically drawn. But right
+	 * now this dialog is very Swing-centric and needs an overhaul to support
+	 * the @Parameter HistogramBundle approach. So for now there is a bunch of
+	 * JFreeChart code here that is copied from the histogram widget classes.
+	 */
+
+	/**
+	 * Returns a JFreeChart containing data from the provided histogram.
+	 */
+	private JFreeChart getChart(String title, Histogram1d<?> histogram) {
+		// TODO - draw min/max lines from bundle
+		final XYSeries series = new XYSeries("histo");
+		long total = histogram.getBinCount();
+		for (long i = 0; i < total; i++) {
+			series.add(i, histogram.frequency(i));
+		}
+		return createChart(title, series);
+	}
+
+	private JFreeChart createChart(String title, XYSeries series) {
+		final XYSeriesCollection data = new XYSeriesCollection(series);
+		final JFreeChart chart =
+			ChartFactory.createXYBarChart(title, null, false, null, data,
+				PlotOrientation.VERTICAL, false, true, false);
+		setTheme(chart);
+		// chart.getXYPlot().setForegroundAlpha(0.50f);
+		return chart;
+	}
+
+	private final void setTheme(final JFreeChart chart) {
+		final XYPlot plot = (XYPlot) chart.getPlot();
+		final XYBarRenderer r = (XYBarRenderer) plot.getRenderer();
+		final StandardXYBarPainter bp = new StandardXYBarPainter();
+		r.setBarPainter(bp);
+		r.setSeriesOutlinePaint(0, Color.lightGray);
+		r.setShadowVisible(false);
+		r.setDrawBarOutline(false);
+		setBackgroundDefault(chart);
+		final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+
+		// rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+		rangeAxis.setTickLabelsVisible(false);
+		rangeAxis.setTickMarksVisible(false);
+		final NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
+		domainAxis.setTickLabelsVisible(false);
+		domainAxis.setTickMarksVisible(false);
+	}
+
+	private final void setBackgroundDefault(final JFreeChart chart) {
+		final BasicStroke gridStroke =
+			new BasicStroke(1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
+				1.0f, new float[] { 2.0f, 1.0f }, 0.0f);
+		final XYPlot plot = (XYPlot) chart.getPlot();
+		plot.setRangeGridlineStroke(gridStroke);
+		plot.setDomainGridlineStroke(gridStroke);
+		plot.setBackgroundPaint(new Color(235, 235, 235));
+		plot.setRangeGridlinePaint(Color.white);
+		plot.setDomainGridlinePaint(Color.white);
+		plot.setOutlineVisible(false);
+		plot.getDomainAxis().setAxisLineVisible(false);
+		plot.getRangeAxis().setAxisLineVisible(false);
+		plot.getDomainAxis().setLabelPaint(Color.gray);
+		plot.getRangeAxis().setLabelPaint(Color.gray);
+		plot.getDomainAxis().setTickLabelPaint(Color.gray);
+		plot.getRangeAxis().setTickLabelPaint(Color.gray);
+		TextTitle title = chart.getTitle();
+		if (title != null) title.setPaint(Color.black);
 	}
 
 	/*
