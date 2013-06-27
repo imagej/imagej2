@@ -42,9 +42,17 @@ import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import imagej.data.Dataset;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.jar.JarOutputStream;
+import java.util.zip.ZipEntry;
 
 import javassist.ClassPool;
 import net.imglib2.RandomAccess;
@@ -267,6 +275,43 @@ public class LegacyTestUtils {
 		} catch(MalformedURLException e) {
 			throw new IllegalArgumentException("Illegal URL: " + urlAsString);
 		}
+	}
+
+	public static void makeJar(final File jarFile, final String... classNames) throws IOException {
+		final JarOutputStream jar = new JarOutputStream(new FileOutputStream(jarFile));
+		final byte[] buffer = new byte[16384];
+		final StringBuilder pluginsConfig = new StringBuilder();
+		for (final String className : classNames) {
+			final String path = className.replace('.',  '/') + ".class";
+			final InputStream in = LegacyTestUtils.class.getResourceAsStream("/" + path);
+			final ZipEntry entry = new ZipEntry(path);
+			jar.putNextEntry(entry);
+			for (;;) {
+				int count = in.read(buffer);
+				if (count < 0) break;
+				jar.write(buffer,  0, count);
+			}
+			if (className.indexOf('_') >= 0) {
+				final String name = className.substring(className.lastIndexOf('.') + 1).replace('_', ' ');
+				pluginsConfig.append("Plugins, \"").append(name).append("\", ").append(className).append("\n");
+			}
+			in.close();
+		}
+		if (pluginsConfig.length() > 0) {
+			final ZipEntry entry = new ZipEntry("plugins.config");
+			jar.putNextEntry(entry);
+			jar.write(pluginsConfig.toString().getBytes());
+		}
+		jar.close();
+	}
+
+	public static void ijRun(final ClassLoader loader, final String command,
+			final String options) throws ClassNotFoundException,
+			SecurityException, NoSuchMethodException, IllegalArgumentException,
+			IllegalAccessException, InvocationTargetException {
+		final Class<?> ij = loader.loadClass("ij.IJ");
+		final Method method = ij.getMethod("run", String.class, String.class);
+		method.invoke(null, command, options);
 	}
 
 }
