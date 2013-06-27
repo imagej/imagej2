@@ -38,10 +38,10 @@ package imagej.console;
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
 import imagej.data.Dataset;
+import imagej.data.DatasetService;
 import imagej.display.DisplayService;
-import imagej.io.IOService;
-import io.scif.img.ImgIOException;
-import net.imglib2.exception.IncompatibleTypeException;
+
+import java.io.IOException;
 
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
@@ -66,7 +66,7 @@ public class DefaultConsoleService extends AbstractService implements
 	private CommandService commandService;
 
 	@Parameter
-	private IOService ioService;
+	private DatasetService datasetService;
 
 	@Parameter
 	private DisplayService displayService;
@@ -96,13 +96,10 @@ public class DefaultConsoleService extends AbstractService implements
 	/** Implements the "--open" command line argument. */
 	private void open(final String source) {
 		try {
-			final Dataset dataset = ioService.loadDataset(source);
+			final Dataset dataset = datasetService.open(source);
 			displayService.createDisplay(dataset.getName(), dataset);
 		}
-		catch (final ImgIOException exc) {
-			log.error("Error loading dataset '" + source + "'", exc);
-		}
-		catch (final IncompatibleTypeException exc) {
+		catch (final IOException exc) {
 			log.error("Error loading dataset '" + source + "'", exc);
 		}
 	}
