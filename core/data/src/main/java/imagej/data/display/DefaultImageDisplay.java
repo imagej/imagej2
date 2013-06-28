@@ -42,6 +42,7 @@ import imagej.data.display.event.AxisActivatedEvent;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.event.DataRestructuredEvent;
 import imagej.data.event.DataUpdatedEvent;
+import imagej.data.lut.LUTService;
 import imagej.display.AbstractDisplay;
 import imagej.display.DisplayService;
 import imagej.display.event.DisplayDeletedEvent;
@@ -52,6 +53,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.imglib2.Localizable;
 import net.imglib2.Positionable;
 import net.imglib2.RealPositionable;
+import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
@@ -208,36 +210,56 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 
 	@Override
 	public boolean canDisplay(final Class<?> c) {
-		return Data.class.isAssignableFrom(c) || super.canDisplay(c);
+		return Data.class.isAssignableFrom(c) ||
+			ColorTable.class.isAssignableFrom(c) || super.canDisplay(c);
 	}
 
 	@Override
 	public void display(final Object o) {
+		DataView dataView = null;
+		Data data = null;
 		if (o instanceof DataView) {
 			// object is a data view, natively compatible with this display
-			final DataView dataView = (DataView) o;
+			dataView = (DataView) o;
+		}
+		else if (o instanceof Data) {
+			// object is a data object, which we can wrap in a data view
+			data = (Data) o;
 			super.display(dataView);
 			updateName(dataView);
 			rebuild();
 		}
-		else if (o instanceof Data) {
-			// object is a data object, which we can wrap in a data view
-			final Data data = (Data) o;
+		else if (o instanceof ColorTable) {
+			// object is a LUT, which we can wrap in a dataset
+			final ColorTable colorTable = (ColorTable) o;
+			final LUTService lutService = getContext().getService(LUTService.class);
+			if (lutService == null) {
+				throw new IllegalStateException(
+					"A LUTService is required to display color tables");
+			}
+			data = lutService.createDataset(null, colorTable);
+		}
+
+		if (data != null) {
+			// wrap data object in a data view
 			final ImageDisplayService imageDisplayService =
-					getContext().getService(ImageDisplayService.class);
+				getContext().getService(ImageDisplayService.class);
 			if (imageDisplayService == null) {
 				throw new IllegalStateException(
-						"An ImageDisplayService is required to display Data objects");
+					"An ImageDisplayService is required to display Data objects");
 			}
-			final DataView dataView = imageDisplayService.createDataView(data);
-			add(dataView);
-			updateName(dataView);
-			rebuild();
+			dataView = imageDisplayService.createDataView(data);
 		}
-		else {
+
+		if (dataView == null) {
 			throw new IllegalArgumentException("Incompatible object: " + o + " [" +
 				o.getClass().getName() + "]");
 		}
+
+		// display the data view
+		super.display(dataView);
+		updateName(dataView);
+		rebuild();
 	}
 
 	@Override
