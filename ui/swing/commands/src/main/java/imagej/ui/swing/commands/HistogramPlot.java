@@ -36,30 +36,17 @@
 package imagej.ui.swing.commands;
 
 import imagej.command.Command;
-import imagej.command.ContextCommand;
+import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetUpdatedEvent;
+import imagej.data.widget.HistogramBundle;
+import imagej.module.MutableModuleItem;
 import imagej.ui.UIService;
-
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.WindowConstants;
-
+import imagej.widget.Button;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.histogram.Histogram1d;
@@ -69,26 +56,19 @@ import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.StandardXYBarPainter;
-import org.jfree.chart.renderer.xy.XYBarRenderer;
-import org.jfree.chart.title.TextTitle;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
+import org.scijava.ItemVisibility;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
-//
 // TODO
-// + Selection of axes to include in histogram computation
-//
+// 1) some button commands unimplemented
+// 2) dialog looks ugly
+// 3) in general we should make desired plot size part of HistBund and use it in
+//    the widget to set preferred size.
+// 4) Move this out of Swing commands since it is no longer based on Swing
+
 // TODO Add these features from IJ1
 // [++] The horizontal LUT bar below the X-axis is scaled to reflect the display
 // range of the image.
@@ -108,17 +88,8 @@ import org.scijava.plugin.Plugin;
 	@Menu(label = "Analyze"),
 	@Menu(label = "Histogram Plot", accelerator = "control shift alt H",
 		weight = 0) })
-public class HistogramPlot<T extends RealType<T>> extends ContextCommand
-	implements ActionListener
+public class HistogramPlot<T extends RealType<T>> extends DynamicCommand
 {
-	// -- constants --
-
-	private static final String ACTION_LIVE = "LIVE";
-	private static final String ACTION_LOG = "LOG";
-	private static final String ACTION_COPY = "COPY";
-	private static final String ACTION_LIST = "LIST";
-	private static final String ACTION_CHANNEL = "CHANNEL";
-
 	// -- instance variables that are Parameters --
 
 	@Parameter
@@ -132,6 +103,98 @@ public class HistogramPlot<T extends RealType<T>> extends ContextCommand
 
 	@Parameter
 	private ImageDisplay display;
+
+	@Parameter(label = "Histogram", initializer = "initBundle")
+	private HistogramBundle bundle;
+
+	@Parameter(visibility = ItemVisibility.MESSAGE)
+	private String pixelsStr = "Pixels placeholder";
+
+	@Parameter(visibility = ItemVisibility.MESSAGE)
+	private String minStr;
+
+	@Parameter(visibility = ItemVisibility.MESSAGE)
+	private String maxStr;
+
+	@Parameter(visibility = ItemVisibility.MESSAGE)
+	private String meanStr;
+
+	@Parameter(visibility = ItemVisibility.MESSAGE)
+	private String stdDevStr;
+
+	@Parameter(visibility = ItemVisibility.MESSAGE)
+	private String binsStr;
+
+	@Parameter(visibility = ItemVisibility.MESSAGE)
+	private String binWidthStr;
+
+	@Parameter(label = "Static", callback = "liveClicked")
+	private Button liveButton;
+
+	@Parameter(label = "List", callback = "listClicked")
+	private Button listButton;
+
+	@Parameter(label = "Copy", callback = "copyClicked")
+	private Button copyButton;
+
+	@Parameter(label = "Log", callback = "logClicked")
+	private Button logButton;
+
+	@Parameter(label = "Composite", callback = "chanClicked")
+	private Button chanButton;
+
+	protected void initBundle() {
+		build();
+		bundle = new HistogramBundle(histograms[histograms.length - 1], -1, -1);
+	}
+
+	protected void liveClicked() {
+		liveUpdates = !liveUpdates;
+		// TODO - doesn't work
+		final MutableModuleItem<Button> item =
+			getInfo().getMutableInput("liveButton", Button.class);
+		item.setLabel(liveUpdates ? "Live" : "Static");
+		if (liveUpdates) liveUpdate(dataset);
+	}
+
+	protected void listClicked() {
+		// TODO
+		// In IJ1 this command copies the histogram into a two column text table
+		// as a results table. The 1st column contains calibrated data values and
+		// the second column contains counts.
+		uiService.showDialog("To be implemented");
+	}
+
+	protected void copyClicked() {
+		// TODO
+		// In IJ1 this command copies the histogram into a two column text table
+		// on the clipboard. The 1st column contains calibrated data values and
+		// the second column contains counts.
+		uiService.showDialog("To be implemented");
+	}
+
+	protected void logClicked() {
+		// TODO
+		// In IJ1 this command displays additional data on the chart. The data
+		// series is displayed on a log scale in back and the linear scale in
+		// front.
+		uiService.showDialog("To be implemented");
+	}
+
+	protected void chanClicked() {
+		final MutableModuleItem<Button> item =
+			getInfo().getMutableInput("liveButton", Button.class);
+		int nextHistNum =
+			(currHistNum >= histograms.length - 1) ? 0 : currHistNum + 1;
+		// TODO - does not work
+		if (nextHistNum == histograms.length - 1) {
+			item.setLabel("Composite");
+		}
+		else {
+			item.setLabel("Channel " + nextHistNum);
+		}
+		display(nextHistNum);
+	}
 
 	// -- other instance variables --
 
@@ -149,14 +212,6 @@ public class HistogramPlot<T extends RealType<T>> extends ContextCommand
 	private double dataMin;
 	private double dataMax;
 	private long binCount;
-	private JFrame frame;
-	private JPanel embellPanel;
-	private JPanel chartPanel;
-	private JButton listButton;
-	private JButton copyButton;
-	private JButton liveButton;
-	private JButton logButton;
-	private JButton chanButton;
 	private int currHistNum;
 	private boolean liveUpdates = false;
 
@@ -164,6 +219,7 @@ public class HistogramPlot<T extends RealType<T>> extends ContextCommand
 
 	public void setDisplay(ImageDisplay disp) {
 		display = disp;
+		dataset = displayService.getActiveDataset(display);
 	}
 	
 	public ImageDisplay getDisplay() {
@@ -172,69 +228,9 @@ public class HistogramPlot<T extends RealType<T>> extends ContextCommand
 
 	@Override
 	public void run() {
-		if (!inputOkay()) return;
-		build();
-		createDialogResources();
+		// build();
+		// createDialogResources();
 		display(histograms.length - 1);
-	}
-
-	/* OLD - replace with new stuff when histogram branch code merged in imglib
-
-	public static <T extends RealType<T>> int[] computeHistogram(final Img<T> im,
-		final T min, final T max, final int bins)
-	{
-		final HistogramBinMapper<T> mapper = new RealBinMapper<T>(min, max, bins);
-		final Histogram<T> histogram = new Histogram<T>(mapper, im);
-		histogram.process();
-		final int[] d = new int[histogram.getNumBins()];
-		for (int j = 0; j < histogram.getNumBins(); j++) {
-			d[j] = histogram.getBin(j);
-		}
-		return d;
-	}
-
-	*/
-
-	@Override
-	public void actionPerformed(ActionEvent evt) {
-		String command = evt.getActionCommand();
-		if (ACTION_LIVE.equals(command)) {
-			liveUpdates = !liveUpdates;
-			liveButton.setText(liveUpdates ? "Live" : "Static");
-			if (liveUpdates) liveUpdate(dataset);
-		}
-		if (ACTION_LOG.equals(command)) {
-			// TODO
-			// In IJ1 this command displays additional data on the chart. The data
-			// series is displayed on a log scale in back and the linear scale in
-			// front.
-			uiService.showDialog("To be implemented");
-		}
-		if (ACTION_COPY.equals(command)) {
-			// TODO
-			// In IJ1 this command copies the histogram into a two column text table
-			// on the clipboard. The 1st column contains calibrated data values and
-			// the second column contains counts.
-			uiService.showDialog("To be implemented");
-		}
-		if (ACTION_LIST.equals(command)) {
-			// TODO
-			// In IJ1 this command copies the histogram into a two column text table
-			// as a results table. The 1st column contains calibrated data values and
-			// the second column contains counts.
-			uiService.showDialog("To be implemented");
-		}
-		if (ACTION_CHANNEL.equals(command)) {
-			int nextHistNum =
-				(currHistNum >= histograms.length - 1) ? 0 : currHistNum + 1;
-			if (nextHistNum == histograms.length - 1) {
-				chanButton.setText("Composite");
-			}
-			else {
-				chanButton.setText("Channel " + nextHistNum);
-			}
-			display(nextHistNum);
-		}
 	}
 
 	// -- EventHandlers --
@@ -251,115 +247,34 @@ public class HistogramPlot<T extends RealType<T>> extends ContextCommand
 
 	// -- private helpers --
 
-	private boolean inputOkay() {
-		dataset = displayService.getActiveDataset(display);
-		if (dataset == null) {
-			cancel("Input dataset must not be null.");
-			return false;
-		}
-		if (dataset.getImgPlus() == null) {
-			cancel("Input Imgplus must not be null.");
-			return false;
-		}
-		return true;
-	}
-
-	private void createDialogResources() {
-		frame = new JFrame("");
-		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		listButton = new JButton("List");
-		copyButton = new JButton("Copy");
-		logButton = new JButton("Log");
-		liveButton = new JButton("Static");
-		chanButton = new JButton("Composite");
-		listButton.setActionCommand(ACTION_LIST);
-		copyButton.setActionCommand(ACTION_COPY);
-		logButton.setActionCommand(ACTION_LOG);
-		liveButton.setActionCommand(ACTION_LIVE);
-		chanButton.setActionCommand(ACTION_CHANNEL);
-		listButton.addActionListener(this);
-		copyButton.addActionListener(this);
-		logButton.addActionListener(this);
-		liveButton.addActionListener(this);
-		chanButton.addActionListener(this);
-	}
-
 	private void display(int histNumber) {
 		int h = histNumber;
 		if (h >= histograms.length) h = histograms.length - 1;
 		currHistNum = h;
 		setTitle(histNumber);
-		Container pane = frame.getContentPane();
-		if (chartPanel != null) pane.remove(chartPanel);
-		if (embellPanel != null) pane.remove(embellPanel);
-		chartPanel = makeChartPanel(histNumber);
-		embellPanel = makeEmbellishmentPanel(histNumber);
-		pane.add(chartPanel, BorderLayout.CENTER);
-		pane.add(embellPanel, BorderLayout.SOUTH);
-		frame.pack();
-		frame.setVisible(true);
+		bundle.setHistogram(histograms[histNumber]);
+		setValues(histNumber);
+		// TODO - refresh the data panel
 	}
 
-	private JPanel makeChartPanel(int histNumber) {
-		String title = "";
-		JFreeChart chart = getChart(title, histograms[histNumber]);
-		chartPanel = new ChartPanel(chart);
-		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
-		return chartPanel;
+	private void setValues(int histNumber) {
+		pixelsStr = formatStr("Pixels", sampleCount / channels);
+		minStr = formatStr("Min", mins[histNumber]);
+		maxStr = formatStr("Max", maxes[histNumber]);
+		meanStr = formatStr("Mean", means[histNumber]);
+		stdDevStr = formatStr("Std Dev", stdDevs[histNumber]);
+		binsStr = formatStr("Bins", binCount);
+		binWidthStr = formatStr("Bin Width", binWidth);
 	}
 
-	private JPanel makeEmbellishmentPanel(int histNumber) {
-		JPanel valuesPanel = makeValuePanel(histNumber);
-		final JPanel horzPanel = new JPanel();
-		horzPanel.setLayout(new BoxLayout(horzPanel, BoxLayout.X_AXIS));
-		horzPanel.add(listButton);
-		horzPanel.add(copyButton);
-		horzPanel.add(logButton);
-		horzPanel.add(liveButton);
-		horzPanel.add(chanButton);
-		final JPanel vertPanel = new JPanel();
-		vertPanel.setLayout(new BoxLayout(vertPanel, BoxLayout.Y_AXIS));
-		vertPanel.add(valuesPanel);
-		vertPanel.add(horzPanel);
-		return vertPanel;
-	}
-
-	private JPanel makeValuePanel(int histNumber) {
-		JPanel valuesPanel = new JPanel();
-		final JTextArea text = new JTextArea();
-		valuesPanel.add(text, BorderLayout.CENTER);
-		final StringBuilder sb = new StringBuilder();
-		addStr(sb, "Pixels", sampleCount / channels);
-		sb.append("\n");
-		addStr(sb, "Min", mins[histNumber]);
-		sb.append("   ");
-		addStr(sb, "Max", maxes[histNumber]);
-		sb.append("\n");
-		addStr(sb, "Mean", means[histNumber]);
-		sb.append("   ");
-		addStr(sb, "StdDev", stdDevs[histNumber]);
-		sb.append("\n");
-		addStr(sb, "Bins", binCount);
-		sb.append("   ");
-		addStr(sb, "Bin Width", binWidth);
-		sb.append("\n");
-		text.setFont(new Font("Monospaced", Font.PLAIN, 12));
-		text.setText(sb.toString());
-		return valuesPanel;
-	}
-
-	private void
-		addStr(final StringBuilder sb, final String label, final long num)
+	private String formatStr(final String label, final long num)
 	{
-		sb.append(String.format("%12s:", label));
-		sb.append(String.format("%10d", num));
+		return String.format("%12s:%10d", label, num);
 	}
 
-	private void addStr(final StringBuilder sb, final String label,
-		final double num)
+	private String formatStr(final String label, final double num)
 	{
-		sb.append(String.format("%12s:", label));
-		sb.append(String.format("%10.2f", num));
+		return String.format("%12s:%10.2f", label, num);
 	}
 
 	private void setTitle(int histNum) {
@@ -371,7 +286,7 @@ public class HistogramPlot<T extends RealType<T>> extends ContextCommand
 			title = "Channel " + histNum + " histogram of ";
 		}
 		title += display.getName();
-		frame.setTitle(title);
+		getInfo().setLabel(title); // TODO - not working???
 	}
 
 	private void calcBinInfo() {
@@ -485,9 +400,12 @@ public class HistogramPlot<T extends RealType<T>> extends ContextCommand
 	}
 
 	private void build() {
+		dataset = displayService.getActiveDataset(display);
 		calcBinInfo();
 		allocateDataStructures();
 		computeStats();
+		// Maybe?
+		// setValues(currHistNum);
 	}
 
 	private void liveUpdate(Dataset ds) {
@@ -495,77 +413,6 @@ public class HistogramPlot<T extends RealType<T>> extends ContextCommand
 		if (ds != dataset) return;
 		build();
 		display(currHistNum);
-	}
-
-	/*
-	 * TODO - eliminate all this FreeChart code. One should be able to use a
-	 * HistogramBundle and the widget should be automatically drawn. But right
-	 * now this dialog is very Swing-centric and needs an overhaul to support
-	 * the @Parameter HistogramBundle approach. So for now there is a bunch of
-	 * JFreeChart code here that is copied from the histogram widget classes.
-	 */
-
-	/**
-	 * Returns a JFreeChart containing data from the provided histogram.
-	 */
-	private JFreeChart getChart(String title, Histogram1d<?> histogram) {
-		// TODO - draw min/max lines from bundle
-		final XYSeries series = new XYSeries("histo");
-		long total = histogram.getBinCount();
-		for (long i = 0; i < total; i++) {
-			series.add(i, histogram.frequency(i));
-		}
-		return createChart(title, series);
-	}
-
-	private JFreeChart createChart(String title, XYSeries series) {
-		final XYSeriesCollection data = new XYSeriesCollection(series);
-		final JFreeChart chart =
-			ChartFactory.createXYBarChart(title, null, false, null, data,
-				PlotOrientation.VERTICAL, false, true, false);
-		setTheme(chart);
-		// chart.getXYPlot().setForegroundAlpha(0.50f);
-		return chart;
-	}
-
-	private final void setTheme(final JFreeChart chart) {
-		final XYPlot plot = (XYPlot) chart.getPlot();
-		final XYBarRenderer r = (XYBarRenderer) plot.getRenderer();
-		final StandardXYBarPainter bp = new StandardXYBarPainter();
-		r.setBarPainter(bp);
-		r.setSeriesOutlinePaint(0, Color.lightGray);
-		r.setShadowVisible(false);
-		r.setDrawBarOutline(false);
-		setBackgroundDefault(chart);
-		final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-
-		// rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-		rangeAxis.setTickLabelsVisible(false);
-		rangeAxis.setTickMarksVisible(false);
-		final NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
-		domainAxis.setTickLabelsVisible(false);
-		domainAxis.setTickMarksVisible(false);
-	}
-
-	private final void setBackgroundDefault(final JFreeChart chart) {
-		final BasicStroke gridStroke =
-			new BasicStroke(1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
-				1.0f, new float[] { 2.0f, 1.0f }, 0.0f);
-		final XYPlot plot = (XYPlot) chart.getPlot();
-		plot.setRangeGridlineStroke(gridStroke);
-		plot.setDomainGridlineStroke(gridStroke);
-		plot.setBackgroundPaint(new Color(235, 235, 235));
-		plot.setRangeGridlinePaint(Color.white);
-		plot.setDomainGridlinePaint(Color.white);
-		plot.setOutlineVisible(false);
-		plot.getDomainAxis().setAxisLineVisible(false);
-		plot.getRangeAxis().setAxisLineVisible(false);
-		plot.getDomainAxis().setLabelPaint(Color.gray);
-		plot.getRangeAxis().setLabelPaint(Color.gray);
-		plot.getDomainAxis().setTickLabelPaint(Color.gray);
-		plot.getRangeAxis().setTickLabelPaint(Color.gray);
-		TextTitle title = chart.getTitle();
-		if (title != null) title.setPaint(Color.black);
 	}
 
 	/*
