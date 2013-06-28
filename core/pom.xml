@@ -17,7 +17,6 @@
 	<modules>
 		<module>core</module>
 		<module>data</module>
-		<module>io</module>
 		<module>legacy</module>
 		<module>options</module>
 		<module>ui</module>
