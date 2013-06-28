@@ -204,7 +204,7 @@ public class DefaultLUTService extends AbstractService implements LUTService {
 	}
 
 	@Override
-	public ImageDisplay createDisplay(final String title,
+	public Dataset createDataset(final String title,
 		final ColorTable colorTable)
 	{
 		final Dataset dataset =
@@ -214,8 +214,7 @@ public class DefaultLUTService extends AbstractService implements LUTService {
 		// TODO - is this papering over a bug in the dataset/imgplus code?
 		if (dataset.getColorTableCount() == 0) dataset.initializeColorTables(1);
 		dataset.setColorTable(colorTable, 0);
-		// CTR FIXME: May not be safe.
-		return (ImageDisplay) displayService.createDisplay(dataset);
+		return dataset;
 	}
 
 	@Override

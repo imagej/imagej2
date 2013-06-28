@@ -35,6 +35,7 @@
 
 package imagej.data.lut;
 
+import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 
 import java.io.File;
@@ -111,17 +112,13 @@ public interface LUTService extends Service {
 	ColorTable loadLUT(InputStream is, int length) throws IOException;
 
 	/**
-	 * Creates a new image display showing the given {@link ColorTable} as a ramp.
+	 * Creates a new dataset showing the given {@link ColorTable} as a ramp.
 	 * 
-	 * @param title The title of the new display.
-	 * @param colorTable The color table to display.
-	 * @return The newly created image display.
+	 * @param title The title of the new dataset.
+	 * @param colorTable The color table to use.
+	 * @return The newly created dataset.
 	 */
-	// CTR FIXME: The ImageDisplay needs to support ColorTables properly,
-	// rather than with a hardcoded method like this. Otherwise, using a
-	// ColorTable as an output parameter does not show it in a new display!
-	// This support is also necessary for the OpenFile command to support LUTs.
-	ImageDisplay createDisplay(String title, ColorTable colorTable);
+	Dataset createDataset(String title, ColorTable colorTable);
 
 	/**
 	 * Applies the given {@link ColorTable} to the active view of the specified
