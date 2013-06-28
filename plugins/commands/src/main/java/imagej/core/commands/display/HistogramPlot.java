@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.ui.swing.commands;
+package imagej.core.commands.display;
 
 import imagej.command.Command;
 import imagej.command.DynamicCommand;
