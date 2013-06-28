@@ -38,6 +38,7 @@ package imagej.legacy;
 import java.awt.GraphicsEnvironment;
 import java.lang.reflect.Field;
 
+import javassist.NotFoundException;
 import javassist.bytecode.DuplicateMemberException;
 
 import org.scijava.Context;
@@ -235,6 +236,16 @@ public class LegacyInjector {
 
 		// let the plugin class loader find stuff in $HOME/.plugins, too
 		hacker.addExtraPlugins();
+
+		// make sure that the GenericDialog is disposed in macro mode
+		try {
+			hacker.insertAtTopOfMethod("ij.gui.GenericDialog", "public void showDialog()", "if (macro) dispose();");
+		} catch (IllegalArgumentException e) {
+			// ignore if the headless patcher renamed the method away
+			if (e.getCause() == null || !(e.getCause() instanceof NotFoundException)) {
+				throw e;
+			}
+		}
 
 		// commit patches
 		hacker.loadClasses();
