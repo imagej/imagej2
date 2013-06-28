@@ -247,6 +247,9 @@ public class LegacyInjector {
 			}
 		}
 
+		// make sure NonBlockingGenericDialog does not wait in macro mode
+		hacker.replaceCallInMethod("ij.gui.NonBlockingGenericDialog", "public void showDialog()", "java.lang.Object", "wait", "if (isShowing()) wait();");
+
 		// commit patches
 		hacker.loadClasses();
 
