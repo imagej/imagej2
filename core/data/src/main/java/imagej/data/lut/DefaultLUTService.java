@@ -203,6 +203,31 @@ public class DefaultLUTService extends AbstractService implements LUTService {
 		return lut;
 	}
 
+	@Override
+	public Dataset createDataset(final String title,
+		final ColorTable colorTable)
+	{
+		final Dataset dataset =
+			datasetService.create(new UnsignedByteType(), new long[] { RAMP_WIDTH,
+				RAMP_HEIGHT }, title, new AxisType[] { Axes.X, Axes.Y });
+		rampFill(dataset);
+		// TODO - is this papering over a bug in the dataset/imgplus code?
+		if (dataset.getColorTableCount() == 0) dataset.initializeColorTables(1);
+		dataset.setColorTable(colorTable, 0);
+		return dataset;
+	}
+
+	@Override
+	public void
+		applyLUT(final ColorTable colorTable, final ImageDisplay display)
+	{
+		final DatasetView view = imageDisplayService.getActiveDatasetView(display);
+		if (view == null) return;
+		final int channel = view.getIntPosition(Axes.CHANNEL);
+		view.setColorTable(colorTable, channel);
+		display.update();
+	}
+
 	// -- Service methods --
 
 	@Override
@@ -352,33 +377,7 @@ public class DefaultLUTService extends AbstractService implements LUTService {
 		}
 	}
 
-	@Override
-	public ImageDisplay createDisplay(final String title,
-		final ColorTable colorTable)
-	{
-		final Dataset dataset =
-			datasetService.create(new UnsignedByteType(), new long[] { RAMP_WIDTH,
-				RAMP_HEIGHT }, title, new AxisType[] { Axes.X, Axes.Y });
-		rampFill(dataset);
-		// TODO - is this papering over a bug in the dataset/imgplus code?
-		if (dataset.getColorTableCount() == 0) dataset.initializeColorTables(1);
-		dataset.setColorTable(colorTable, 0);
-		// CTR FIXME: May not be safe.
-		return (ImageDisplay) displayService.createDisplay(dataset);
-	}
-
-	@Override
-	public void
-		applyLUT(final ColorTable colorTable, final ImageDisplay display)
-	{
-		final DatasetView view = imageDisplayService.getActiveDatasetView(display);
-		if (view == null) return;
-		final int channel = view.getIntPosition(Axes.CHANNEL);
-		view.setColorTable(colorTable, channel);
-		display.update();
-	}
-
-	// -- Helper methods --
+	// -- other helper methods --
 
 	private void rampFill(final Dataset dataset) {
 		final RandomAccess<? extends RealType<?>> accessor =
