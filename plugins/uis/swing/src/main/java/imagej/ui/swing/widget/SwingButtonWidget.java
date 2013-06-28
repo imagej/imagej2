@@ -70,7 +70,8 @@ public class SwingButtonWidget extends SwingInputWidget<Button> implements
 
 	@Override
 	public void refreshWidget() {
-		// nothing to do
+		// maybe dialog owner changed name of button
+		button.setText(get().getWidgetLabel());
 	}
 
 	@Override
