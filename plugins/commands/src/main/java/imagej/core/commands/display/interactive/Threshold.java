@@ -341,11 +341,7 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 		ThresholdOverlay overlay = getThreshold();
 		overlay.setRange(min, max);
 		display.update();
-		/* TODO
-		histBundle.setHistogram(histogram());
-		histBundle.setMin(calcMinBin(min));
-		histBundle.setMax(calcMaxBin(max));
-		*/
+		updateBundle(min, max);
 	}
 
 	protected void stackHistogram() {
@@ -358,6 +354,11 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 	protected void onEvent(AxisPositionEvent evt) {
 		if (evt.getDisplay() != display) return;
 		invalidPlaneHist = true;
+		/*
+		ThresholdOverlay overlay = getThreshold();
+		updateBundle(overlay.getRangeMin(), overlay.getRangeMax());
+		// TODO - axis pos events should refresh the hist widget somehow
+		 */
 	}
 
 	// -- helpers --
@@ -371,7 +372,9 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 	private Histogram1d<T> histogram() {
 		if (stackHistogram) return fullHistogram;
 		if (invalidPlaneHist) {
-			planeHistogram = buildHistogram(false, planeHistogram);
+			// null is on purpose. we want new histograms to certainly update the
+			// HistogramBundle so plane changes always reflected in panel.
+			planeHistogram = buildHistogram(false, null);
 			invalidPlaneHist = false;
 		}
 		return planeHistogram;
@@ -487,5 +490,12 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 		if (value < 0) value = 0;
 		if (value >= binCount) value = binCount - 1;
 		return value;
+	}
+
+	private void updateBundle(double min, double max) {
+		long binCount = histogram().getBinCount();
+		histBundle.setHistogram(histogram());
+		histBundle.setMin(calcBin(binCount, min));
+		histBundle.setMax(calcBin(binCount, max));
 	}
 }

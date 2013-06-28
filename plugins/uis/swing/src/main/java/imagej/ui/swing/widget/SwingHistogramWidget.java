@@ -67,7 +67,7 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 {
 
 	private HistogramBundle bundle;
-	private JPanel chartPanel;
+	private ChartPanel chartPanel;
 
 	@Override
 	public HistogramBundle getValue() {
@@ -77,10 +77,10 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 	@Override
 	public void refreshWidget() {
 		if (bundle.hasChanges()) {
-			getComponent().remove(chartPanel);
-			chartPanel = makeChartPanel(bundle);
-			getComponent().add(chartPanel);
 			bundle.changesNoted();
+			ChartPanel newChartPanel = makeChartPanel(bundle);
+			JFreeChart chart = newChartPanel.getChart();
+			chartPanel.setChart(chart);
 		}
 	}
 
@@ -89,6 +89,7 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 		super.set(model);
 		bundle = (HistogramBundle) model.getValue();
 		chartPanel = makeChartPanel(bundle);
+		bundle.changesNoted();
 		getComponent().add(chartPanel);
 	}
 
@@ -97,9 +98,9 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 		return model.isType(HistogramBundle.class);
 	}
 
-	private JPanel makeChartPanel(HistogramBundle b) {
+	private ChartPanel makeChartPanel(HistogramBundle b) {
 		JFreeChart chart = getChart(null, b);
-		JPanel panel = new ChartPanel(chart);
+		ChartPanel panel = new ChartPanel(chart);
 		panel.setPreferredSize(new java.awt.Dimension(300, 150));
 		return panel;
 	}
