@@ -602,7 +602,7 @@ public class CodeHacker {
 	 * @param calledMethodName the name of the called method to replace
 	 * @param newCode the code to replace the call with
 	 */
-	private void replaceCallInMethod(final String fullClass,
+	public void replaceCallInMethod(final String fullClass,
 			final String methodSig, final String calledClass,
 			final String calledMethodName, final String newCode) {
 		try {
