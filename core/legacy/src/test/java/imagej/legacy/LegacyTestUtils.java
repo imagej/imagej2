@@ -41,8 +41,6 @@ import ij.ImagePlus;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.display.Display;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -56,14 +54,10 @@ import java.net.URLClassLoader;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
-import javassist.ClassPool;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
-
-import org.scijava.Context;
-import org.scijava.util.ClassUtils;
 
 /**
  * Utility methods for unit testing in the {@link imagej.legacy} package.
@@ -226,16 +220,15 @@ public class LegacyTestUtils {
 	 * @return a fresh class loader
 	 */
 	public static ClassLoader getFreshIJClassLoader(final boolean patchLegacy, final boolean patchHeadless, final String... classNames) {
-		final URL[] urls = new URL[classNames.length + 7];
-		int i = 0;
-		urls[i++] = getClassLocation("ij.IJ");
-		urls[i++] = ClassUtils.getLocation(DefaultLegacyService.class);
-		urls[i++] = ClassUtils.getLocation(Context.class);
-		urls[i++] = ClassUtils.getLocation(Display.class);
-		urls[i++] = ClassUtils.getLocation(ImageDisplay.class);
-		urls[i++] = ClassUtils.getLocation(Axes.class);
-		urls[i++] = ClassUtils.getLocation(ClassPool.class);
-		for (int j = 0; j < classNames.length; j++) urls[i++] = getClassLocation(classNames[j]);
+		final URL[] urls0 = ((URLClassLoader)LegacyTestUtils.class.getClassLoader()).getURLs();
+		final URL[] urls;
+		if (classNames.length == 0) urls = urls0;
+		else {
+			urls = new URL[urls0.length + classNames.length];
+			int i = urls0.length;
+			System.arraycopy(urls0, 0, urls, 0, i);
+			for (int j = 0; j < classNames.length; j++) urls[i++] = getClassLocation(classNames[j]);
+		}
 
 		// use the bootstrap class loader as parent so that ij.IJ must resolve
 		// via the new class loader
