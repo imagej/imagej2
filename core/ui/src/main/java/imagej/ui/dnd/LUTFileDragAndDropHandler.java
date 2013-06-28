@@ -38,6 +38,7 @@ package imagej.ui.dnd;
 import imagej.data.display.ImageDisplay;
 import imagej.data.lut.LUTService;
 import imagej.display.Display;
+import imagej.display.DisplayService;
 
 import java.io.File;
 import java.io.IOException;
@@ -89,8 +90,10 @@ public class LUTFileDragAndDropHandler extends AbstractDragAndDropHandler<File>
 		if (colorTable == null) return false;
 
 		if (display == null) {
-			// create a new display the LUT as a ramp
-			lutService.createDisplay(getBaseName(file), colorTable);
+			// create a new display for the LUT
+			final DisplayService displayService =
+				getContext().getService(DisplayService.class);
+			displayService.createDisplay(getBaseName(file), colorTable);
 		}
 		else {
 			// apply the LUT to the specified display
