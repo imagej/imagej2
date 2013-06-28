@@ -150,7 +150,6 @@ public class HistogramPlot<T extends RealType<T>> extends DynamicCommand
 
 	protected void liveClicked() {
 		liveUpdates = !liveUpdates;
-		// TODO - doesn't work
 		final MutableModuleItem<Button> item =
 			getInfo().getMutableInput("liveButton", Button.class);
 		item.setLabel(liveUpdates ? "Live" : "Static");
@@ -183,10 +182,9 @@ public class HistogramPlot<T extends RealType<T>> extends DynamicCommand
 
 	protected void chanClicked() {
 		final MutableModuleItem<Button> item =
-			getInfo().getMutableInput("liveButton", Button.class);
+			getInfo().getMutableInput("chanButton", Button.class);
 		int nextHistNum =
 			(currHistNum >= histograms.length - 1) ? 0 : currHistNum + 1;
-		// TODO - does not work
 		if (nextHistNum == histograms.length - 1) {
 			item.setLabel("Composite");
 		}
@@ -254,7 +252,7 @@ public class HistogramPlot<T extends RealType<T>> extends DynamicCommand
 		setTitle(histNumber);
 		bundle.setHistogram(histograms[histNumber]);
 		setValues(histNumber);
-		// TODO - refresh the data panel
+		// TODO - refresh the data panel?
 	}
 
 	private void setValues(int histNumber) {
