@@ -151,7 +151,7 @@ public class CodeHacker {
 		final String methodSig, final String newCode)
 	{
 		try {
-			getMethod(fullClass, methodSig).insertAfter(expand(newCode));
+			getBehavior(fullClass, methodSig).insertAfter(expand(newCode));
 		}
 		catch (final CannotCompileException e) {
 			throw new IllegalArgumentException("Cannot modify method: " + methodSig,
@@ -191,7 +191,12 @@ public class CodeHacker {
 		final String methodSig, final String newCode)
 	{
 		try {
-			getMethod(fullClass, methodSig).insertBefore(expand(newCode));
+			final CtBehavior behavior = getBehavior(fullClass, methodSig);
+			if (behavior instanceof CtConstructor) {
+				((CtConstructor)behavior).insertBeforeBody(expand(newCode));
+			} else {
+				behavior.insertBefore(expand(newCode));
+			}
 		}
 		catch (final CannotCompileException e) {
 			throw new IllegalArgumentException("Cannot modify method: " + methodSig,
@@ -320,7 +325,7 @@ public class CodeHacker {
 
 	public void addCatch(final String fullClass, final String methodSig, final String exceptionClassName, final String src) {
 		try {
-			final CtMethod method = getMethod(fullClass, methodSig);
+			final CtBehavior method = getBehavior(fullClass, methodSig);
 			method.addCatch(src, getClass(exceptionClassName), "$e");
 		} catch (CannotCompileException e) {
 			throw new IllegalArgumentException("Cannot add catch for exception of type'"
@@ -330,7 +335,7 @@ public class CodeHacker {
 
 	public void insertAtTopOfExceptionHandlers(final String fullClass, final String methodSig, final String exceptionClassName, final String src) {
 		try {
-			final CtMethod method = getMethod(fullClass, methodSig);
+			final CtBehavior method = getBehavior(fullClass, methodSig);
 			method.instrument(new ExprEditor() {
 				@Override
 				public void edit(Handler handler) throws CannotCompileException {
@@ -395,7 +400,7 @@ public class CodeHacker {
 			final String methodSig, final String newClassName,
 			final int parameterIndex, final String replacement) {
 		try {
-			final CtMethod method = getMethod(fullClass, methodSig);
+			final CtBehavior method = getBehavior(fullClass, methodSig);
 			method.instrument(new ExprEditor() {
 				@Override
 				public void edit(NewExpr expr) throws CannotCompileException {
