@@ -271,6 +271,21 @@ public class LegacyInjector {
 			+ "  }"
 			+ "}");
 
+		// optionally disallow batch mode from calling System.exit()
+		hacker.insertPrivateStaticField("ij.ImageJ", Boolean.TYPE, "batchModeMayExit");
+		hacker.insertAtTopOfMethod("ij.ImageJ", "public static void main(java.lang.String[] args)",
+			"batchModeMayExit = true;"
+			+ "for (int i = 0; i < $1.length; i++) {"
+			+ "  if (\"-batch-no-exit\".equals($1[i])) {"
+			+ "    batchModeMayExit = false;"
+			+ "    $1[i] = \"-batch\";"
+			+ "  }"
+			+ "}");
+		hacker.replaceCallInMethod("ij.ImageJ", "public static void main(java.lang.String[] args)", "java.lang.System", "exit",
+			"if (batchModeMayExit) System.exit($1);"
+			+ "if ($1 == 0) return;"
+			+ "throw new RuntimeException(\"Exit code: \" + $1);");
+
 		// commit patches
 		hacker.loadClasses();
 
