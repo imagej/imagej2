@@ -447,12 +447,7 @@ public class CodeHacker {
 			final String methodSig, final String calledMethodName,
 			final int parameterIndex) {
 		try {
-			final CtBehavior method;
-			if (methodSig.indexOf("<init>") < 0) {
-				method = getMethod(fullClass, methodSig);
-			} else {
-				method = getConstructor(fullClass, methodSig);
-			}
+			final CtBehavior method = getBehavior(fullClass, methodSig);
 			method.instrument(new ExprEditor() {
 				@Override
 				public void edit(MethodCall call) throws CannotCompileException {
@@ -606,12 +601,7 @@ public class CodeHacker {
 			final String methodSig, final String calledClass,
 			final String calledMethodName, final String newCode) {
 		try {
-			final CtBehavior method;
-			if (methodSig.indexOf("<init>") < 0) {
-				method = getMethod(fullClass, methodSig);
-			} else {
-				method = getConstructor(fullClass, methodSig);
-			}
+			final CtBehavior method = getBehavior(fullClass, methodSig);
 			method.instrument(new ExprEditor() {
 				@Override
 				public void edit(MethodCall call) throws CannotCompileException {
@@ -723,6 +713,21 @@ public class CodeHacker {
 		}
 		catch (final NotFoundException e) {
 			throw new IllegalArgumentException("No such class: " + fullClass, e);
+		}
+	}
+
+	/**
+	 * Gets the method or constructor of the specified class and signature.
+	 * 
+	 * @param fullClass the class containing the method or constructor
+	 * @param methodSig the method (or if the name is <code>&lt;init&gt;</code>, the constructor)
+	 * @return the method or constructor
+	 */
+	private CtBehavior getBehavior(final String fullClass, final String methodSig) {
+		if (methodSig.indexOf("<init>") < 0) {
+			return getMethod(fullClass, methodSig);
+		} else {
+			return getConstructor(fullClass, methodSig);
 		}
 	}
 
