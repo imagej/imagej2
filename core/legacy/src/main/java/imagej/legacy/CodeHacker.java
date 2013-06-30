@@ -71,6 +71,7 @@ import javassist.NotFoundException;
 import javassist.bytecode.InstructionPrinter;
 import javassist.expr.ConstructorCall;
 import javassist.expr.ExprEditor;
+import javassist.expr.FieldAccess;
 import javassist.expr.Handler;
 import javassist.expr.MethodCall;
 import javassist.expr.NewExpr;
@@ -608,6 +609,33 @@ public class CodeHacker {
 				"getProperty",
 				"$_ = System.getProperty($1);\n"
 						+ "if ($_ == null && $1.equals(\"plugins.dir\")) $_ = \"/non-existant/\";");
+	}
+
+	/**
+	 * Replaces every field write access to the specified field in the specified method.
+	 * 
+	 * @param fullClass the full class
+	 * @param methodSig the signature of the method to instrument
+	 * @param fieldName the field whose write access to override
+	 * @param newCode the code to run instead of the field access
+	 */
+	public void overrideFieldWrite(final String fullClass, final String methodSig, final String fieldName, final String newCode) {
+		try {
+			final CtBehavior method = getBehavior(fullClass, methodSig);
+			method.instrument(new ExprEditor() {
+				@Override
+				public void edit(final FieldAccess access) throws CannotCompileException {
+					if (access.getFieldName().equals(access)) {
+						access.replace(newCode);
+					}
+				}
+			});
+		} catch (IllegalArgumentException e) {
+			// ignore: the method was not found
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException(
+					"Cannot override field access to " + fieldName + " in " + fullClass + "'s " + methodSig, e);
+		}
 	}
 
 	/**
