@@ -42,6 +42,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
@@ -353,6 +354,22 @@ public class CodeHacker {
 				+ exceptionClassName + " in " + fullClass		+ "'s " + methodSig, e);
 		}
 	}
+
+	public void setIcon(final File icon) {
+		if (!icon.exists()) return;
+		try {
+			final String initializer =
+					"_iconURL = new java.net.URL(\"" + icon.toURI().toURL() + "\");";
+			if (!hasField("ij.IJ", "_iconURL")) {
+				insertPublicStaticField("ij.IJ", URL.class, "_iconURL", initializer);
+			} else {
+				addToClassInitializer("ij.IJ", initializer);
+			}
+		} catch (MalformedURLException e) {
+			throw new IllegalArgumentException("Cannot convert to URL: " + icon, e);
+		}
+	}
+
 	/**
 	 * Replaces the application name.
 	 * 
