@@ -250,6 +250,9 @@ public class LegacyInjector {
 		// make sure NonBlockingGenericDialog does not wait in macro mode
 		hacker.replaceCallInMethod("ij.gui.NonBlockingGenericDialog", "public void showDialog()", "java.lang.Object", "wait", "if (isShowing()) wait();");
 
+		// tell the showStatus() method to show the version() instead of empty status
+		hacker.insertAtTopOfMethod("ij.ImageJ", "void showStatus(java.lang.String s)", "if ($1 == null || \"\".equals($1)) $1 = version();");
+
 		// commit patches
 		hacker.loadClasses();
 
