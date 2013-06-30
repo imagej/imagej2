@@ -286,6 +286,16 @@ public class LegacyInjector {
 			+ "if ($1 == 0) return;"
 			+ "throw new RuntimeException(\"Exit code: \" + $1);");
 
+		// do not use the current directory as IJ home on Windows
+		String prefsDir = System.getenv("IJ_PREFS_DIR");
+		if (prefsDir == null && System.getProperty("os.name").startsWith("Windows")) {
+			prefsDir = System.getenv("user.home");
+		}
+		if (prefsDir != null) {
+			hacker.overrideFieldWrite("ij.Prefs", "public java.lang.String load(java.lang.Object ij, java.applet.Applet applet)",
+				"prefsDir", "$_ = \"" + prefsDir + "\";");
+		}
+
 		// commit patches
 		hacker.loadClasses();
 
