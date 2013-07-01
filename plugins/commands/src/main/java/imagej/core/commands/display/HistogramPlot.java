@@ -252,10 +252,11 @@ public class HistogramPlot<T extends RealType<T>> extends InteractiveCommand
 		int h = histNumber;
 		if (h >= histograms.length) h = histograms.length - 1;
 		currHistNum = h;
-		setTitle(h);
 		bundle.setHistogram(histograms[h]);
+		setTitle(h);
 		setValues(h);
 		// TODO - refresh the ui panel? I think Live will not work unless we do.
+		// Also maybe just if bundle.hasChanges() is true.
 	}
 
 	private void setValues(int histNumber) {
@@ -414,6 +415,7 @@ public class HistogramPlot<T extends RealType<T>> extends InteractiveCommand
 		if (!liveUpdates) return;
 		if (ds != dataset) return;
 		build();
+		bundle.setHasChanges(true);
 		display(currHistNum);
 	}
 

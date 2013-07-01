@@ -144,17 +144,18 @@ public class HistogramBundle {
 	/**
 	 * Returns true if the bundle has been changed via use of some of the field
 	 * setting api. This information can be used by renderers to update their UI
-	 * as appropriate.
+	 * as appropriate. Note one can also force the change flag via
+	 * setHasChanges().
 	 */
 	public boolean hasChanges() {
 		return hasChanges;
 	}
 
 	/**
-	 * Clears the changes flag. Called by renderers after they have updated their
-	 * UI to reflect previous changes.
+	 * Sets the changes flag. Called by renderers after they have updated their UI
+	 * to reflect previous changes.
 	 */
-	public void changesNoted() {
-		hasChanges = false;
+	public void setHasChanges(boolean val) {
+		hasChanges = val;
 	}
 }

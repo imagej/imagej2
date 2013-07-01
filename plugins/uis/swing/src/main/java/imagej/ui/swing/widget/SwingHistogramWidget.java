@@ -83,7 +83,7 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 	@Override
 	public void refreshWidget() {
 		if (bundle.hasChanges()) {
-			bundle.changesNoted();
+			bundle.setHasChanges(false);
 			ChartPanel newChartPanel = makeChartPanel(bundle);
 			JFreeChart chart = newChartPanel.getChart();
 			chartPanel.setChart(chart);
@@ -95,7 +95,7 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 		super.set(model);
 		bundle = (HistogramBundle) model.getValue();
 		chartPanel = makeChartPanel(bundle);
-		bundle.changesNoted();
+		bundle.setHasChanges(false);
 		getComponent().add(chartPanel);
 	}
 
