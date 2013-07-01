@@ -322,6 +322,27 @@ public class LegacyInjector {
 			"ij.IJ.handleException($1);"
 			+ "return null;");
 
+		// Add back the "Convert to 8-bit Grayscale" checkbox to Import>Image Sequence
+		if (!hacker.hasField("ij.plugin.FolderOpener", "convertToGrayscale")) {
+			hacker.insertPrivateStaticField("ij.plugin.FolderOpener", Boolean.TYPE, "convertToGrayscale");
+			hacker.replaceCallInMethod("ij.plugin.FolderOpener", "public void run(java.lang.String arg)", "ij.io.Opener", "openImage",
+				"$_ = $0.openImage($1, $2);"
+				+ "if (convertToGrayscale)"
+				+ "  ij.IJ.run($_, \"8-bit\", \"\");");
+			hacker.replaceCallInMethod("ij.plugin.FolderOpener", "boolean showDialog(ij.ImagePlus imp, java.lang.String[] list)",
+				"ij.gui.GenericDialog", "addCheckbox",
+				"i$0.addCheckbox(\"Convert to 8-bit Grayscale\", convertToGrayscale);"
+				+ "$0.addCheckbox($1, $2);", 1);
+			hacker.replaceCallInMethod("ij.plugin.FolderOpener", "boolean showDialog(ij.ImagePlus imp, java.lang.String[] list)",
+					"ij.gui.GenericDialog", "getNextBoolean",
+					"convertToGrayscale = $0.getNextBoolean();"
+					+ "$_ = $0.getNextBoolean();"
+					+ "if (convertToGrayscale && $_) {"
+					+ "  ij.IJ.error(\"Cannot convert to grayscale and RGB at the same time.\");"
+					+ "  return false;"
+					+ "}", 1);
+		}
+
 		// commit patches
 		hacker.loadClasses();
 
