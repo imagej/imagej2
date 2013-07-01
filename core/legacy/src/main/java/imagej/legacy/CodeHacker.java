@@ -554,6 +554,22 @@ public class CodeHacker {
 			methodPrefix.indexOf(" void ") > 0;
 	}
 
+	/**
+	 * Determines whether the specified class has the specified field.
+	 * 
+	 * @param fullName the class name
+	 * @param fieldName the field name
+	 * @return whether the field exists
+	 */
+	public boolean hasField(final String fullName, final String fieldName) {
+		final CtClass clazz = getClass(fullName);
+		try {
+			return clazz.getField(fieldName) != null;
+		} catch (NotFoundException e) {
+			return false;
+		}
+	}
+
 	private static int verboseLevel = 0;
 
 	private static CtMethod makeStubMethod(CtClass clazz, CtMethod original) throws CannotCompileException, NotFoundException {
