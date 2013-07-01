@@ -950,6 +950,21 @@ public class CodeHacker {
 		}
 	}
 
+	/**
+	 * Determines whether the specified class is known to Javassist.
+	 * 
+	 * @param fullClass
+	 *            the class name
+	 * @return whether the class exists
+	 */
+	public boolean existsClass(final String fullClass) {
+		try {
+			return pool.get(fullClass) != null;
+		} catch (NotFoundException e) {
+			return false;
+		}
+	}
+
 	private static int verboseLevel = 0;
 
 	private static CtMethod makeStubMethod(CtClass clazz, CtMethod original) throws CannotCompileException, NotFoundException {
