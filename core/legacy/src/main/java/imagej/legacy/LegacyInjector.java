@@ -313,6 +313,10 @@ public class LegacyInjector {
 			+ "    bioformats = false;"
 			+ "}");
 
+		// make sure that symbolic links are *not* resolved (because then the parent info in the FileInfo would be wrong)
+		hacker.replaceCallInMethod("ij.plugin.DragAndDrop", "public void openFile(java.io.File f)", "java.io.File", "getCanonicalPath",
+			"$_ = $0.getAbsolutePath();");
+
 		// commit patches
 		hacker.loadClasses();
 
