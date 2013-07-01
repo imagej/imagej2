@@ -119,6 +119,8 @@ public class HistogramBundle {
 	 * Sets the preferred size for the rendering of this histogram as a widget.
 	 */
 	public void setPreferredSize(int x, int y) {
+		hasChanges |= preferredSizeX != x;
+		hasChanges |= preferredSizeY != y;
 		preferredSizeX = x;
 		preferredSizeY = y;
 	}
