@@ -67,7 +67,6 @@ import org.scijava.plugin.Plugin;
 // 2) dialog looks ugly
 // 3) in general we should make desired plot size part of HistBund and use it in
 //    the widget to set preferred size.
-// 4) Move this out of Swing commands since it is no longer based on Swing
 
 // TODO Add these features from IJ1
 // [++] The horizontal LUT bar below the X-axis is scaled to reflect the display
@@ -108,7 +107,7 @@ public class HistogramPlot<T extends RealType<T>> extends DynamicCommand
 	private HistogramBundle bundle;
 
 	@Parameter(visibility = ItemVisibility.MESSAGE)
-	private String pixelsStr = "Pixels placeholder";
+	private String pixelsStr;
 
 	@Parameter(visibility = ItemVisibility.MESSAGE)
 	private String minStr;
@@ -146,6 +145,7 @@ public class HistogramPlot<T extends RealType<T>> extends DynamicCommand
 	protected void initBundle() {
 		build();
 		bundle = new HistogramBundle(histograms[histograms.length - 1], -1, -1);
+		setValues(histograms.length - 1);
 	}
 
 	protected void liveClicked() {
@@ -249,9 +249,9 @@ public class HistogramPlot<T extends RealType<T>> extends DynamicCommand
 		int h = histNumber;
 		if (h >= histograms.length) h = histograms.length - 1;
 		currHistNum = h;
-		setTitle(histNumber);
-		bundle.setHistogram(histograms[histNumber]);
-		setValues(histNumber);
+		setTitle(h);
+		bundle.setHistogram(histograms[h]);
+		setValues(h);
 		// TODO - refresh the data panel?
 	}
 
