@@ -522,6 +522,35 @@ public class CodeHacker {
 	}
 
 	/**
+	 * Patches the bytecode of the given method to not return on a null check.
+	 * 
+	 * This is needed to patch support for alternative editors into ImageJ 1.x.
+	 * 
+	 * @param fullClass the class of the method to instrument
+	 * @param methodSig the signature of the method to instrument
+	 */
+	public void dontReturnOnNull(final String fullClass, final String methodSig) {
+		final CtBehavior behavior = getBehavior(fullClass, methodSig);
+		final MethodInfo info = behavior.getMethodInfo();
+		final CodeIterator iterator = info.getCodeAttribute().iterator();
+		while (iterator.hasNext()) try {
+			int pos = iterator.next();
+			final int c = iterator.byteAt(pos);
+			if (c == Opcode.IFNONNULL && iterator.byteAt(pos + 3) == Opcode.RETURN) {
+				iterator.writeByte(Opcode.POP, pos++);
+				iterator.writeByte(Opcode.NOP, pos++);
+				iterator.writeByte(Opcode.NOP, pos++);
+				iterator.writeByte(Opcode.NOP, pos++);
+				return;
+			}
+		}
+		catch (BadBytecode e) {
+				throw new IllegalArgumentException(e);
+		}
+		throw new IllegalArgumentException("Method " + methodSig + " in " + fullClass + " does not return on null");
+	}
+
+	/**
 	 * Replaces the given methods with stub methods.
 	 * 
 	 * @param fullClass the class to patch
