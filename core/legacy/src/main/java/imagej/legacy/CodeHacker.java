@@ -663,13 +663,32 @@ public class CodeHacker {
 	public void replaceCallInMethod(final String fullClass,
 			final String methodSig, final String calledClass,
 			final String calledMethodName, final String newCode) {
+		replaceCallInMethod(fullClass, methodSig, calledClass, calledMethodName, newCode, -1);
+	}
+
+	/**
+	 * Replaces a call in the given method.
+	 * 
+	 * @param fullClass the class of the method to edit
+	 * @param methodSig the signature of the method to edit
+	 * @param calledClass the class of the called method to replace
+	 * @param calledMethodName the name of the called method to replace
+	 * @param newCode the code to replace the call with
+	 * @param onlyNth if positive, only replace the <i>n</i>th call
+	 */
+	public void replaceCallInMethod(final String fullClass,
+			final String methodSig, final String calledClass,
+			final String calledMethodName, final String newCode, final int onlyNth) {
 		try {
 			final CtBehavior method = getBehavior(fullClass, methodSig);
 			method.instrument(new ExprEditor() {
+				private int count = 0;
+
 				@Override
 				public void edit(MethodCall call) throws CannotCompileException {
 					if (call.getMethodName().equals(calledMethodName)
 							&& call.getClassName().equals(calledClass)) {
+						if ( ++count != onlyNth && onlyNth > 0) return;
 						call.replace(newCode);
 					}
 				}
