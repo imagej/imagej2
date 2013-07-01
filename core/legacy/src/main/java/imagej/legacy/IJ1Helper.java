@@ -43,6 +43,9 @@ import ij.gui.ImageWindow;
 import imagej.data.display.ImageDisplay;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
@@ -51,6 +54,8 @@ import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.scijava.util.FileUtils;
 
 /**
  * A helper class to interact with ImageJ 1.x.
@@ -225,5 +230,99 @@ public class IJ1Helper {
 			}
 		}
 	}
+
+	/**
+	 * A minimal interface for the editor to use instead of ImageJ 1.x' limited AWT-based one.
+	 * 
+	 * @author Johannes Schindelin
+	 */
+	public interface LegacyEditorPlugin {
+		public boolean open(final File path);
+		public boolean create(final String title, final String content);
+	}
+
+	private static LegacyEditorPlugin editor;
+
+	/**
+	 * Sets the legacy editor to use instead of ImageJ 1.x' built-in one.
+	 * 
+	 * @param plugin the editor to set, or null if ImageJ 1.x' built-in editor should be used
+	 */
+	public static void setLegacyEditor(final LegacyEditorPlugin plugin) {
+		editor = plugin;
+	}
+
+	/**
+	 * Opens the given path in the registered legacy editor, if any.
+	 * 
+	 * @param path the path of the file to open
+	 * @return whether the file was opened successfully
+	 */
+	public static boolean openInLegacyEditor(final String path) {
+		if (editor == null) return false;
+		if (path.indexOf("://") > 0) return false;
+		if ("".equals(FileUtils.getExtension(path))) return false;
+		if (stackTraceContains(IJ1Helper.class.getName() + ".openEditor(")) return false;
+		final File file = new File(path);
+		if (!file.exists()) return false;
+		if (isBinaryFile(file)) return false;
+		return editor.open(file);
+	}
+
+	/**
+	 * Creates the given file in the registered legacy editor, if any.
+	 * 
+	 * @param title the title of the file to create
+	 * @param content the text of the file to be created
+	 * @return whether the fule was opened successfully
+	 */
+	public static boolean createInLegacyEditor(final String title, final String content) {
+		if (editor == null) return false;
+		return editor.create(title, content);
+	}
+
+	/**
+	 * Determines whether the current stack trace contains the specified string.
+	 * 
+	 * @param needle the text to find
+	 * @return whether the stack trace contains the text
+	 */
+	private static boolean stackTraceContains(String needle) {
+		final StringWriter writer = new StringWriter();
+		final PrintWriter out = new PrintWriter(writer);
+		new Exception().printStackTrace(out);
+		out.close();
+		return writer.toString().indexOf(needle) >= 0;
+	}
+
+    /**
+     * Determines whether a file is binary or text.
+     * 
+     * This just checks for a NUL in the first 1024 bytes.
+     * Not the best test, but a pragmatic one.
+     * 
+     * @param file the file to test
+     * @return whether it is binary
+     */
+	private static boolean isBinaryFile(final File file) {
+        try {
+			InputStream in = new FileInputStream(file);
+			byte[] buffer = new byte[1024];
+			int offset = 0;
+			while (offset < buffer.length) {
+				int count = in.read(buffer, offset, buffer.length - offset);
+				if (count < 0)
+					break;
+				else
+					offset += count;
+			}
+			in.close();
+			while (offset > 0)
+				if (buffer[--offset] == 0)
+					return true;
+		} catch (IOException e) {
+		}
+        return false;
+    }
 
 }
