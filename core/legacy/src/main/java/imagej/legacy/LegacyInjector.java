@@ -304,6 +304,15 @@ public class LegacyInjector {
 		hacker.insertAtTopOfMethod("JavaScriptEvaluator", "public void run()",
 			"Thread.currentThread().setContextClassLoader(ij.IJ.getClassLoader());");
 
+		// make sure that the check for Bio-Formats is correct
+		hacker.addToClassInitializer("ij.io.Opener",
+			"try {"
+			+ "    ij.IJ.getClassLoader().loadClass(\"loci.plugins.LociImporter\");"
+			+ "    bioformats = true;"
+			+ "} catch (ClassNotFoundException e) {"
+			+ "    bioformats = false;"
+			+ "}");
+
 		// commit patches
 		hacker.loadClasses();
 
