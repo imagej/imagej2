@@ -357,6 +357,8 @@ public class LegacyInjector {
 		hacker.handleHTTPS("ij.plugin.ListVirtualStack", "public void run(java.lang.String arg)");
 		hacker.handleHTTPS("ij.plugin.ListVirtualStack", "java.lang.String[] open(java.lang.String path)");
 
+		addEditorExtensionPoints(hacker);
+
 		// commit patches
 		hacker.loadClasses();
 
@@ -364,6 +366,52 @@ public class LegacyInjector {
 		if (this.hacker != null) {
 			setLegacyService(new DummyLegacyService());
 		}
+	}
+
+	private static void addEditorExtensionPoints(final CodeHacker hacker) {
+		hacker.insertAtTopOfMethod("ij.io.Opener", "public void open(java.lang.String path)",
+			"if (isText($1) && " + IJ1Helper.class.getName() + ".openInLegacyEditor($1)) return;");
+		hacker.dontReturnOnNull("ij.plugin.frame.Recorder", "void createMacro()");
+		hacker.replaceCallInMethod("ij.plugin.frame.Recorder", "void createMacro()",
+			"ij.plugin.frame.Editor", "runPlugIn",
+			"$_ = null;");
+		hacker.replaceCallInMethod("ij.plugin.frame.Recorder", "void createMacro()",
+			"ij.plugin.frame.Editor", "createMacro",
+			"if ($1.endsWith(\".txt\")) {"
+			+ "  $1 = $1.substring($1.length() - 3) + \"ijm\";"
+			+ "}"
+			+ "if (!" + IJ1Helper.class.getName() + ".createInLegacyEditor($1, $2)) {"
+			+ "  ((ij.plugin.frame.Editor)ij.IJ.runPlugIn(\"ij.plugin.frame.Editor\", \"\")).createMacro($1, $2);"
+			+ "}");
+		hacker.insertPublicStaticField("ij.plugin.frame.Recorder", String.class, "nameForEditor", null);
+		hacker.insertAtTopOfMethod("ij.plugin.frame.Recorder", "void createPlugin(java.lang.String text, java.lang.String name)",
+			"this.nameForEditor = $2;");
+		hacker.replaceCallInMethod("ij.plugin.frame.Recorder", "void createPlugin(java.lang.String text, java.lang.String name)",
+			"ij.IJ", "runPlugIn",
+			"$_ = null;"
+			+ "new ij.plugin.NewPlugin().createPlugin(this.nameForEditor, ij.plugin.NewPlugin.PLUGIN, $2);"
+			+ "return;");
+		hacker.replaceCallInMethod("ij.plugin.NewPlugin", "public void createMacro(java.lang.String name)",
+			"ij.plugin.frame.Editor", "<init>",
+			"$_ = null;");
+		hacker.replaceCallInMethod("ij.plugin.NewPlugin",  "public void createMacro(java.lang.String name)",
+			"ij.plugin.frame.Editor", "create",
+			"if ($1.endsWith(\".txt\")) {"
+			+ "  $1 = $1.substring(0, $1.length() - 3) + \"ijm\";"
+			+ "}"
+			+ "if ($1.endsWith(\".ijm\") && " + IJ1Helper.class.getName() + ".createInLegacyEditor($1, $2)) return;"
+			+ "int options = (monospaced ? ij.plugin.frame.Editor.MONOSPACED : 0)"
+			+ "  | (menuBar ? ij.plugin.frame.Editor.MENU_BAR : 0);"
+			+ "new ij.plugin.frame.Editor(rows, columns, 0, options).create($1, $2);");
+		hacker.dontReturnOnNull("ij.plugin.NewPlugin", "public void createPlugin(java.lang.String name, int type, java.lang.String methods)");
+		hacker.replaceCallInMethod("ij.plugin.NewPlugin", "public void createPlugin(java.lang.String name, int type, java.lang.String methods)",
+			"ij.IJ", "runPlugIn",
+			"$_ = null;");
+		hacker.replaceCallInMethod("ij.plugin.NewPlugin", "public void createPlugin(java.lang.String name, int type, java.lang.String methods)",
+			"ij.plugin.frame.Editor", "create",
+			"if (!" + IJ1Helper.class.getName() + ".createInLegacyEditor($1, $2)) {"
+			+ "  ((ij.plugin.frame.Editor)ij.IJ.runPlugIn(\"ij.plugin.frame.Editor\", \"\")).create($1, $2);"
+			+ "}");
 	}
 
 	void setLegacyService(final LegacyService legacyService) {
