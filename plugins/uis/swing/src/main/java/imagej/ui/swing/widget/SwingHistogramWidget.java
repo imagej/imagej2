@@ -59,6 +59,8 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.scijava.plugin.Plugin;
 
 /**
+ * Render a {@link HistogramBundle} in Swing.
+ * 
  * @author Barry DeZonia
  */
 @Plugin(type = InputWidget.class)
@@ -66,8 +68,12 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 	implements HistogramWidget<JPanel>
 {
 
+	// -- fields --
+
 	private HistogramBundle bundle;
 	private ChartPanel chartPanel;
+
+	// -- HistogramWidget methods --
 
 	@Override
 	public HistogramBundle getValue() {
@@ -98,10 +104,14 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 		return model.isType(HistogramBundle.class);
 	}
 
+	// -- helpers --
+
 	private ChartPanel makeChartPanel(HistogramBundle b) {
 		JFreeChart chart = getChart(null, b);
 		ChartPanel panel = new ChartPanel(chart);
-		panel.setPreferredSize(new java.awt.Dimension(300, 150));
+		int xSize = b.getPreferredSizeX();
+		int ySize = b.getPreferredSizeY();
+		panel.setPreferredSize(new java.awt.Dimension(xSize, ySize));
 		return panel;
 	}
 
