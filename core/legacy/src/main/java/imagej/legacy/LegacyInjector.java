@@ -296,6 +296,10 @@ public class LegacyInjector {
 				"prefsDir", "$_ = \"" + prefsDir + "\";");
 		}
 
+		// tool names can be prefixes of other tools, watch out for that!
+		hacker.replaceCallInMethod("ij.gui.Toolbar", "public int getToolId(java.lang.String name)", "java.lang.String", "startsWith",
+			"$_ = $0.equals($1) || $0.startsWith($1 + \"-\") || $0.startsWith($1 + \" -\");");
+
 		// commit patches
 		hacker.loadClasses();
 
