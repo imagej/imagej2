@@ -50,6 +50,7 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
@@ -125,7 +126,14 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 		for (long i = 0; i < total; i++) {
 			series.add(i, bund.getHistogram().frequency(i));
 		}
-		return createChart(title, series);
+		JFreeChart chart = createChart(title, series);
+		if (bund.getMin() != -1) {
+			chart.getXYPlot().addDomainMarker(new ValueMarker(bund.getMin()));
+		}
+		if (bund.getMax() != -1) {
+			chart.getXYPlot().addDomainMarker(new ValueMarker(bund.getMax()));
+		}
+		return chart;
 	}
 
 	private JFreeChart createChart(String title, XYSeries series) {
