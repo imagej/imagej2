@@ -225,9 +225,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		else if (o instanceof Data) {
 			// object is a data object, which we can wrap in a data view
 			data = (Data) o;
-			super.display(dataView);
-			updateName(dataView);
-			rebuild();
 		}
 		else if (o instanceof ColorTable) {
 			// object is a LUT, which we can wrap in a dataset
