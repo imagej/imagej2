@@ -36,7 +36,7 @@
 package imagej.core.commands.display;
 
 import imagej.command.Command;
-import imagej.command.DynamicCommand;
+import imagej.command.InteractiveCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -65,8 +65,6 @@ import org.scijava.plugin.Plugin;
 // TODO
 // 1) some button commands unimplemented
 // 2) dialog looks ugly
-// 3) in general we should make desired plot size part of HistBund and use it in
-//    the widget to set preferred size.
 
 // TODO Add these features from IJ1
 // [++] The horizontal LUT bar below the X-axis is scaled to reflect the display
@@ -87,15 +85,16 @@ import org.scijava.plugin.Plugin;
 	@Menu(label = "Analyze"),
 	@Menu(label = "Histogram Plot", accelerator = "control shift alt H",
 		weight = 0) })
-public class HistogramPlot<T extends RealType<T>> extends DynamicCommand
+public class HistogramPlot<T extends RealType<T>> extends InteractiveCommand
 {
-	// -- instance variables that are Parameters --
+
+	// -- fields that are Parameters --
 
 	@Parameter
 	private UIService uiService;
 
 	@Parameter
-	private ImageDisplayService displayService;
+	private ImageDisplayService imageDisplayService;
 
 	@Parameter
 	private OverlayService overlayService;
@@ -142,59 +141,7 @@ public class HistogramPlot<T extends RealType<T>> extends DynamicCommand
 	@Parameter(label = "Composite", callback = "chanClicked")
 	private Button chanButton;
 
-	protected void initBundle() {
-		build();
-		bundle = new HistogramBundle(histograms[histograms.length - 1], -1, -1);
-		setValues(histograms.length - 1);
-	}
-
-	protected void liveClicked() {
-		liveUpdates = !liveUpdates;
-		final MutableModuleItem<Button> item =
-			getInfo().getMutableInput("liveButton", Button.class);
-		item.setLabel(liveUpdates ? "Live" : "Static");
-		if (liveUpdates) liveUpdate(dataset);
-	}
-
-	protected void listClicked() {
-		// TODO
-		// In IJ1 this command copies the histogram into a two column text table
-		// as a results table. The 1st column contains calibrated data values and
-		// the second column contains counts.
-		uiService.showDialog("To be implemented");
-	}
-
-	protected void copyClicked() {
-		// TODO
-		// In IJ1 this command copies the histogram into a two column text table
-		// on the clipboard. The 1st column contains calibrated data values and
-		// the second column contains counts.
-		uiService.showDialog("To be implemented");
-	}
-
-	protected void logClicked() {
-		// TODO
-		// In IJ1 this command displays additional data on the chart. The data
-		// series is displayed on a log scale in back and the linear scale in
-		// front.
-		uiService.showDialog("To be implemented");
-	}
-
-	protected void chanClicked() {
-		final MutableModuleItem<Button> item =
-			getInfo().getMutableInput("chanButton", Button.class);
-		int nextHistNum =
-			(currHistNum >= histograms.length - 1) ? 0 : currHistNum + 1;
-		if (nextHistNum == histograms.length - 1) {
-			item.setLabel("Composite");
-		}
-		else {
-			item.setLabel("Channel " + nextHistNum);
-		}
-		display(nextHistNum);
-	}
-
-	// -- other instance variables --
+	// -- other fields --
 
 	private Dataset dataset;
 	private long channels;
@@ -217,7 +164,7 @@ public class HistogramPlot<T extends RealType<T>> extends DynamicCommand
 
 	public void setDisplay(ImageDisplay disp) {
 		display = disp;
-		dataset = displayService.getActiveDataset(display);
+		dataset = imageDisplayService.getActiveDataset(display);
 	}
 	
 	public ImageDisplay getDisplay() {
@@ -229,6 +176,62 @@ public class HistogramPlot<T extends RealType<T>> extends DynamicCommand
 		// build();
 		// createDialogResources();
 		display(histograms.length - 1);
+	}
+
+	// -- initializers --
+
+	protected void initBundle() {
+		build();
+		bundle = new HistogramBundle(histograms[histograms.length - 1], -1, -1);
+		setValues(histograms.length - 1);
+	}
+
+	// -- callbacks --
+
+	protected void chanClicked() {
+		final MutableModuleItem<Button> item =
+			getInfo().getMutableInput("chanButton", Button.class);
+		int nextHistNum =
+			(currHistNum >= histograms.length - 1) ? 0 : currHistNum + 1;
+		if (nextHistNum == histograms.length - 1) {
+			item.setLabel("Composite");
+		}
+		else {
+			item.setLabel("Channel " + nextHistNum);
+		}
+		display(nextHistNum);
+	}
+
+	protected void copyClicked() {
+		// TODO
+		// In IJ1 this command copies the histogram into a two column text table
+		// on the clipboard. The 1st column contains calibrated data values and
+		// the second column contains counts.
+		uiService.showDialog("To be implemented");
+	}
+
+	protected void listClicked() {
+		// TODO
+		// In IJ1 this command copies the histogram into a two column text table
+		// as a results table. The 1st column contains calibrated data values and
+		// the second column contains counts.
+		uiService.showDialog("To be implemented");
+	}
+
+	protected void liveClicked() {
+		liveUpdates = !liveUpdates;
+		final MutableModuleItem<Button> item =
+			getInfo().getMutableInput("liveButton", Button.class);
+		item.setLabel(liveUpdates ? "Live" : "Static");
+		if (liveUpdates) liveUpdate(dataset);
+	}
+
+	protected void logClicked() {
+		// TODO
+		// In IJ1 this command displays additional data on the chart. The data
+		// series is displayed on a log scale in back and the linear scale in
+		// front.
+		uiService.showDialog("To be implemented");
 	}
 
 	// -- EventHandlers --
@@ -252,7 +255,7 @@ public class HistogramPlot<T extends RealType<T>> extends DynamicCommand
 		setTitle(h);
 		bundle.setHistogram(histograms[h]);
 		setValues(h);
-		// TODO - refresh the data panel?
+		// TODO - refresh the ui panel? I think Live will not work unless we do.
 	}
 
 	private void setValues(int histNumber) {
@@ -325,6 +328,7 @@ public class HistogramPlot<T extends RealType<T>> extends DynamicCommand
 	// reasons (so we can calc stats from the same data). Histograms thus have
 	// both a high level generic API and a low level nongeneric API.
 
+	@SuppressWarnings("unchecked")
 	private void allocateDataStructures() {
 		// initialize data structures
 		int chIndex = dataset.getAxisIndex(Axes.CHANNEL);
@@ -398,7 +402,7 @@ public class HistogramPlot<T extends RealType<T>> extends DynamicCommand
 	}
 
 	private void build() {
-		dataset = displayService.getActiveDataset(display);
+		dataset = imageDisplayService.getActiveDataset(display);
 		calcBinInfo();
 		allocateDataStructures();
 		computeStats();
