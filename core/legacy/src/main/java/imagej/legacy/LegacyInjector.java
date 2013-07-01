@@ -300,6 +300,10 @@ public class LegacyInjector {
 		hacker.replaceCallInMethod("ij.gui.Toolbar", "public int getToolId(java.lang.String name)", "java.lang.String", "startsWith",
 			"$_ = $0.equals($1) || $0.startsWith($1 + \"-\") || $0.startsWith($1 + \" -\");");
 
+		// make sure Rhino gets the correct class loader
+		hacker.insertAtTopOfMethod("JavaScriptEvaluator", "public void run()",
+			"Thread.currentThread().setContextClassLoader(ij.IJ.getClassLoader());");
+
 		// commit patches
 		hacker.loadClasses();
 
