@@ -68,7 +68,11 @@ import javassist.CtNewMethod;
 import javassist.LoaderClassPath;
 import javassist.Modifier;
 import javassist.NotFoundException;
+import javassist.bytecode.BadBytecode;
+import javassist.bytecode.CodeIterator;
 import javassist.bytecode.InstructionPrinter;
+import javassist.bytecode.MethodInfo;
+import javassist.bytecode.Opcode;
 import javassist.expr.ConstructorCall;
 import javassist.expr.ExprEditor;
 import javassist.expr.FieldAccess;
@@ -1086,6 +1090,63 @@ public class CodeHacker {
 				}
 			}
 		});
+	}
+
+	/**
+	 * Augments all <code>startsWith("http://")</code> calls with <code>|| startsWith("https://")</code>.
+	 * 
+	 * @param fullName the class containing the method to instrument
+	 * @param methodSig the signature of the method to instrument
+	 */
+	public void handleHTTPS(final String fullClass, final String methodSig) {
+		try {
+			final CtBehavior method = getBehavior(fullClass, methodSig);
+			method.instrument(new ExprEditor() {
+				@Override
+				public void edit(MethodCall call) throws CannotCompileException {
+					try {
+						if (call.getMethodName().equals("startsWith") &&
+								"http://".equals(getLastConstantArgument(call, 0)))
+							call.replace("$_ = $0.startsWith($1) || $0.startsWith(\"https://\");");
+					} catch (BadBytecode e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException("Could not handle HTTPS in " + methodSig + " in " + fullClass);
+		}
+	}
+
+	private String getLastConstantArgument(final MethodCall call, final int skip) throws BadBytecode {
+		final int[] indices = new int[skip + 1];
+		int counter = 0;
+
+		final MethodInfo info = ((CtMethod)call.where()).getMethodInfo();
+		final CodeIterator iterator = info.getCodeAttribute().iterator();
+		int currentPos = call.indexOfBytecode();
+		while (iterator.hasNext()) {
+			int pos = iterator.next();
+			if (pos >= currentPos)
+				break;
+			switch (iterator.byteAt(pos)) {
+			case Opcode.LDC:
+				indices[(counter++) % indices.length] = iterator.byteAt(pos + 1);
+				break;
+			case Opcode.LDC_W:
+				indices[(counter++) % indices.length] = iterator.u16bitAt(pos + 1);
+				break;
+			}
+		}
+		if (counter < skip) {
+			return null;
+		}
+		counter %= indices.length;
+		if (skip > 0) {
+			counter -= skip;
+			if (counter < 0) counter += indices.length;
+		}
+		return info.getConstPool().getStringInfo(indices[counter]);
 	}
 
 	/**

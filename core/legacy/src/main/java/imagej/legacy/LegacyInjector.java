@@ -350,6 +350,13 @@ public class LegacyInjector {
 					+ "}", 1);
 		}
 
+		// handle HTTPS in addition to HTTP
+		hacker.handleHTTPS("ij.macro.Functions", "java.lang.String exec()");
+		hacker.handleHTTPS("ij.plugin.DragAndDrop", "public void drop(java.awt.dnd.DropTargetDropEvent dtde)");
+		hacker.handleHTTPS(hacker.existsClass("ij.plugin.PluginInstaller") ? "ij.plugin.PluginInstaller" : "ij.io.PluginInstaller", "public boolean install(java.lang.String path)");
+		hacker.handleHTTPS("ij.plugin.ListVirtualStack", "public void run(java.lang.String arg)");
+		hacker.handleHTTPS("ij.plugin.ListVirtualStack", "java.lang.String[] open(java.lang.String path)");
+
 		// commit patches
 		hacker.loadClasses();
 
