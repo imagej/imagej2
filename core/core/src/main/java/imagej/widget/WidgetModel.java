@@ -58,8 +58,6 @@ public class WidgetModel {
 	private final ModuleItem<?> item;
 	private final List<?> objectPool;
 
-	private final String widgetLabel;
-
 	private boolean initialized;
 
 	public WidgetModel(final InputPanel<?, ?> inputPanel, final Module module,
@@ -69,8 +67,6 @@ public class WidgetModel {
 		this.module = module;
 		this.item = item;
 		this.objectPool = objectPool;
-
-		widgetLabel = makeWidgetLabel();
 	}
 
 	/** Gets the input panel intended to house the widget. */
@@ -111,7 +107,13 @@ public class WidgetModel {
 	 * {@link ModuleItem#getName()}).
 	 */
 	public String getWidgetLabel() {
-		return widgetLabel;
+		// Do this dynamically. Don't cache this result. Some controls change their
+		// labels at runtime.
+		final String label = item.getLabel();
+		if (label != null && !label.isEmpty()) return label;
+
+		final String name = item.getName();
+		return name.substring(0, 1).toUpperCase() + name.substring(1);
 	}
 
 	/**
@@ -292,14 +294,6 @@ public class WidgetModel {
 	}
 
 	// -- Helper methods --
-
-	private String makeWidgetLabel() {
-		final String label = item.getLabel();
-		if (label != null && !label.isEmpty()) return label;
-
-		final String name = item.getName();
-		return name.substring(0, 1).toUpperCase() + name.substring(1);
-	}
 
 	private boolean objectsEqual(final Object obj1, final Object obj2) {
 		if (obj1 == null) return obj2 == null;

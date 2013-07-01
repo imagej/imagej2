@@ -33,81 +33,60 @@
  * #L%
  */
 
-package imagej.ui.swing.widget;
+package imagej.data.widget;
 
-import imagej.widget.Button;
-import imagej.widget.ButtonWidget;
-import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
+import net.imglib2.histogram.Histogram1d;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JPanel;
-
-import org.scijava.plugin.Plugin;
 
 /**
- * A Swing widget that displays a button and invokes the callback of a parameter
- * when the button is clicked.
- * 
  * @author Barry DeZonia
  */
-@Plugin(type = InputWidget.class)
-public class SwingButtonWidget extends SwingInputWidget<Button> implements
-	ButtonWidget<JPanel>
-{
+public class HistogramBundle {
 
-	private JButton button;
+	private Histogram1d<?> histogram;
+	private long min;
+	private long max;
+	private boolean hasChanges;
 
-	// -- InputWidget methods --
-
-	@Override
-	public Button getValue() {
-		return null;
+	public HistogramBundle(Histogram1d<?> hist, long min, long max) {
+		this.histogram = hist;
+		setMin(min);
+		setMax(max);
+		hasChanges = true;
 	}
 
-	@Override
-	public void refreshWidget() {
-		// maybe dialog owner changed name of button
-		button.setText(get().getWidgetLabel());
+	public void setHistogram(Histogram1d<?> hist) {
+		hasChanges |= hist != this.histogram;
+		this.histogram = hist;
 	}
 
-	@Override
-	public boolean isLabeled() {
-		return false;
+	public void setMin(long min) {
+		hasChanges |= min != this.min;
+		this.min = min;
 	}
 
-	// -- WrapperPlugin methods --
-
-	@Override
-	public void set(final WidgetModel model) {
-		super.set(model);
-
-		button = new JButton(model.getWidgetLabel());
-		button.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-
-				// call the code attached to this button
-				model.callback();
-
-				// make sure panel owning button is refreshed in case button changed
-				// some panel fields
-				get().getPanel().refresh();
-			}
-		});
-		setToolTip(button);
-		getComponent().add(button);
+	public void setMax(long max) {
+		hasChanges |= max != this.max;
+		this.max = max;
 	}
 
-	// -- Typed methods --
-
-	@Override
-	public boolean supports(final WidgetModel model) {
-		return model.isType(Button.class);
+	public Histogram1d<?> getHistogram() {
+		return histogram;
 	}
 
+	public long getMin() {
+		return min;
+	}
+
+	public long getMax() {
+		return max;
+	}
+
+	public boolean hasChanges() {
+		return hasChanges;
+	}
+
+	public void changesNoted() {
+		hasChanges = false;
+	}
 }

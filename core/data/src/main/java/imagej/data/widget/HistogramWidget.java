@@ -33,81 +33,16 @@
  * #L%
  */
 
-package imagej.ui.swing.widget;
+package imagej.data.widget;
 
-import imagej.widget.Button;
-import imagej.widget.ButtonWidget;
 import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JPanel;
-
-import org.scijava.plugin.Plugin;
 
 /**
- * A Swing widget that displays a button and invokes the callback of a parameter
- * when the button is clicked.
+ * Widget interface for charts.
  * 
  * @author Barry DeZonia
  */
-@Plugin(type = InputWidget.class)
-public class SwingButtonWidget extends SwingInputWidget<Button> implements
-	ButtonWidget<JPanel>
-{
-
-	private JButton button;
-
-	// -- InputWidget methods --
-
-	@Override
-	public Button getValue() {
-		return null;
-	}
-
-	@Override
-	public void refreshWidget() {
-		// maybe dialog owner changed name of button
-		button.setText(get().getWidgetLabel());
-	}
-
-	@Override
-	public boolean isLabeled() {
-		return false;
-	}
-
-	// -- WrapperPlugin methods --
-
-	@Override
-	public void set(final WidgetModel model) {
-		super.set(model);
-
-		button = new JButton(model.getWidgetLabel());
-		button.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-
-				// call the code attached to this button
-				model.callback();
-
-				// make sure panel owning button is refreshed in case button changed
-				// some panel fields
-				get().getPanel().refresh();
-			}
-		});
-		setToolTip(button);
-		getComponent().add(button);
-	}
-
-	// -- Typed methods --
-
-	@Override
-	public boolean supports(final WidgetModel model) {
-		return model.isType(Button.class);
-	}
-
+public interface HistogramWidget<U> extends InputWidget<HistogramBundle, U> {
+	// NB: No changes to interface.
 }

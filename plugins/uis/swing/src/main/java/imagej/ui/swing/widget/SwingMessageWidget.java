@@ -55,6 +55,8 @@ public class SwingMessageWidget extends SwingInputWidget<String> implements
 	MessageWidget<JPanel>
 {
 
+	private JLabel label;
+
 	// -- InputWidget methods --
 
 	@Override
@@ -64,7 +66,8 @@ public class SwingMessageWidget extends SwingInputWidget<String> implements
 
 	@Override
 	public void refreshWidget() {
-		// NB: No action needed.
+		// maybe dialog owner changed message content
+		label.setText(get().getText());
 	}
 
 	@Override
@@ -85,7 +88,7 @@ public class SwingMessageWidget extends SwingInputWidget<String> implements
 
 		final String text = model.getText();
 
-		final JLabel label = new JLabel(text);
+		label = new JLabel(text);
 		getComponent().add(label);
 	}
 

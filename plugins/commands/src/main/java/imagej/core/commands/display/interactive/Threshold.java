@@ -46,6 +46,7 @@ import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.threshold.ThresholdMethod;
 import imagej.data.threshold.ThresholdService;
+import imagej.data.widget.HistogramBundle;
 import imagej.menu.MenuConstants;
 import imagej.module.MutableModuleItem;
 import imagej.ui.DialogPrompt;
@@ -124,6 +125,9 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 	private static final String OVER_UNDER = "Over/Under";
 	
 	// -- Parameters --
+
+	@Parameter(label = "Histogram")
+	private HistogramBundle histBundle;
 
 	@Parameter(label = "Display Type",
 		choices = { RED, BLACK_WHITE, OVER_UNDER },
@@ -219,11 +223,20 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 		invalidPlaneHist = true;
 
 		if (!alreadyHadOne) {
-			// default the thresh to something sensible: 85/170 is IJ1's default
-			double min = 85 * minMax.getExtent() / 255;
-			double max = 170 * minMax.getExtent() / 255;
-			overlay.setRange(min, max);
+			// default the thresh to something sensible: 85/170 of 255 is IJ1 default
+			double mn = 1 * minMax.getExtent() / 3;
+			double mx = 2 * minMax.getExtent() / 3;
+			overlay.setRange(mn, mx);
 		}
+
+		// TEMP HACK: finding bin numbers of curr min/max values for drawing lines
+		// on chart later. Kludgy since really we should use hist.map(T value)
+		// but we don't have a T here. Argh.
+		long binCount = fullHistogram.getBinCount();
+		long minBin = calcBin(binCount, overlay.getRangeMin());
+		long maxBin = calcBin(binCount, overlay.getRangeMax());
+
+		histBundle = new HistogramBundle(fullHistogram, minBin, maxBin);
 
 		// TODO note
 		// The threshold ranges would be best as a slider with range ends noted.
@@ -328,6 +341,7 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 		ThresholdOverlay overlay = getThreshold();
 		overlay.setRange(min, max);
 		display.update();
+		updateBundle(min, max);
 	}
 
 	protected void stackHistogram() {
@@ -340,6 +354,11 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 	protected void onEvent(AxisPositionEvent evt) {
 		if (evt.getDisplay() != display) return;
 		invalidPlaneHist = true;
+		/*
+		ThresholdOverlay overlay = getThreshold();
+		updateBundle(overlay.getRangeMin(), overlay.getRangeMax());
+		// TODO - axis pos events should refresh the hist widget somehow
+		 */
 	}
 
 	// -- helpers --
@@ -353,7 +372,9 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 	private Histogram1d<T> histogram() {
 		if (stackHistogram) return fullHistogram;
 		if (invalidPlaneHist) {
-			planeHistogram = buildHistogram(false, planeHistogram);
+			// null is on purpose. we want new histograms to certainly update the
+			// HistogramBundle so plane changes always reflected in panel.
+			planeHistogram = buildHistogram(false, null);
 			invalidPlaneHist = false;
 		}
 		return planeHistogram;
@@ -463,4 +484,18 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 		return new Histogram1d<T>(binMapper);
 	}
 
+	private long calcBin(long binCount, double val) {
+		long value =
+			(long) (binCount * (val - minMax.getMin()) / minMax.getExtent());
+		if (value < 0) value = 0;
+		if (value >= binCount) value = binCount - 1;
+		return value;
+	}
+
+	private void updateBundle(double min, double max) {
+		long binCount = histogram().getBinCount();
+		histBundle.setHistogram(histogram());
+		histBundle.setMin(calcBin(binCount, min));
+		histBundle.setMax(calcBin(binCount, max));
+	}
 }

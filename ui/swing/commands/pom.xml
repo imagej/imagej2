@@ -66,11 +66,6 @@
 			<version>${miglayout.version}</version>
 			<classifier>swing</classifier>
 		</dependency>
-		<dependency>
-			<groupId>org.jfree</groupId>
-			<artifactId>jfreechart</artifactId>
-			<version>1.0.14</version>
-		</dependency>
 	</dependencies>
 
 	<properties>
