@@ -37,7 +37,6 @@ package imagej.data.widget;
 
 import net.imglib2.histogram.Histogram1d;
 
-
 /**
  * @author Barry DeZonia
  */
