@@ -712,6 +712,15 @@ public class CodeHacker {
 						call.replace(newCode);
 					}
 				}
+
+				@Override
+				public void edit(NewExpr expr) throws CannotCompileException {
+					if ("<init>".equals(calledMethodName)
+							&& expr.getClassName().equals(calledClass)) {
+						if ( ++count != onlyNth && onlyNth > 0) return;
+						expr.replace(newCode);
+					}
+				}
 			});
 		} catch (IllegalArgumentException e) {
 			// ignore: the method was not found
