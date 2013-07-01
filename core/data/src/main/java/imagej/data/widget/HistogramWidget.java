@@ -37,7 +37,6 @@ package imagej.data.widget;
 
 import imagej.widget.InputWidget;
 
-
 /**
  * Widget interface for charts.
  * 
