@@ -40,12 +40,17 @@ import imagej.data.autoscale.AutoscaleService;
 import imagej.data.autoscale.DataRange;
 import imagej.data.command.InteractiveImageCommand;
 import imagej.data.display.DatasetView;
+import imagej.data.widget.HistogramBundle;
 import imagej.menu.MenuConstants;
 import imagej.widget.Button;
 import imagej.widget.ChoiceWidget;
 import imagej.widget.NumberWidget;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.histogram.BinMapper1d;
+import net.imglib2.histogram.Histogram1d;
+import net.imglib2.histogram.Real1dBinMapper;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.view.Views;
 
 import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
@@ -66,7 +71,11 @@ import org.scijava.plugin.Plugin;
 	@Menu(label = "Brightness/Contrast...", accelerator = "control shift C",
 		weight = 0) }, iconPath = "/icons/commands/contrast.png", headless = true,
 	initializer = "initValues")
-public class BrightnessContrast extends InteractiveImageCommand {
+public class BrightnessContrast<T extends RealType<T>> extends
+	InteractiveImageCommand
+{
+
+	// -- constants --
 
 	private static final int SLIDER_MIN = 0;
 	private static final int SLIDER_MAX = 100;
@@ -81,11 +90,19 @@ public class BrightnessContrast extends InteractiveImageCommand {
 	 */
 	private static final int MAX_POWER = 4;
 
+	private static final String PLANE = "Plane";
+	private static final String GLOBAL = "Global";
+
+	// -- Parameter fields --
+
 	@Parameter
 	private AutoscaleService autoscaleService;
 
 	@Parameter(type = ItemIO.BOTH, callback = "viewChanged")
 	private DatasetView view;
+
+	@Parameter(label = "Histogram")
+	private HistogramBundle bundle;
 
 	@Parameter(label = "Minimum", persist = false, callback = "minMaxChanged")
 	private double min = Double.NaN;
@@ -104,15 +121,20 @@ public class BrightnessContrast extends InteractiveImageCommand {
 	@Parameter(label = "Default", callback = "setDefault")
 	private Button defaultButton;
 	
-	@Parameter(label = "Range:", style = ChoiceWidget.RADIO_BUTTON_HORIZONTAL_STYLE, choices = 
-	  { "Plane", "Global" }, callback = "viewChanged")
-	String rangeChoice = "Plane";
+	@Parameter(label = "Range:",
+		style = ChoiceWidget.RADIO_BUTTON_HORIZONTAL_STYLE, choices = { PLANE,
+			GLOBAL }, callback = "viewChanged")
+	String rangeChoice = PLANE;
+
+	// -- other fields --
 
 	/** The minimum and maximum values of the data itself. */
 	private double dataMin, dataMax;
 
 	/** The initial minimum and maximum values of the data view. */
 	private double initialMin, initialMax;
+
+	// -- constructors --
 
 	public BrightnessContrast() {
 		super("view");
@@ -179,7 +201,7 @@ public class BrightnessContrast extends InteractiveImageCommand {
 	protected void viewChanged() {
 		RandomAccessibleInterval<? extends RealType<?>> interval;
 		
-		if (rangeChoice.equals("Plane")) interval = view.xyPlane();
+		if (rangeChoice.equals(PLANE)) interval = view.xyPlane();
 		else interval = view.getData().getImgPlus();
 		
 		computeDataMinMax(interval);
@@ -218,6 +240,13 @@ public class BrightnessContrast extends InteractiveImageCommand {
 		DataRange range = autoscaleService.getDefaultRandomAccessRange(img);
 		dataMin = range.getMin();
 		dataMax = range.getMax();
+		Iterable<T> iterable =
+			Views
+				.iterable((RandomAccessibleInterval<T>) (RandomAccessibleInterval) img);
+		BinMapper1d<T> mapper =
+			new Real1dBinMapper<T>(dataMin, dataMax, 256, false);
+		Histogram1d<T> histogram = new Histogram1d<T>(iterable, mapper);
+		bundle = new HistogramBundle(histogram, -1, -1);
 		log.debug("computeDataMinMax: dataMin=" + dataMin + ", dataMax=" + dataMax);
 	}
 
