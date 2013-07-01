@@ -38,6 +38,10 @@ package imagej.data.widget;
 import net.imglib2.histogram.Histogram1d;
 
 /**
+ * A wrapper class around {@link Histogram1d}.
+ * 
+ * This class provides inferred metadata: min and max.
+ * 
  * @author Barry DeZonia
  */
 public class HistogramBundle {
