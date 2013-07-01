@@ -317,6 +317,11 @@ public class LegacyInjector {
 		hacker.replaceCallInMethod("ij.plugin.DragAndDrop", "public void openFile(java.io.File f)", "java.io.File", "getCanonicalPath",
 			"$_ = $0.getAbsolutePath();");
 
+		// let IJ.handleException override the macro interpreter's call()'s exception handling
+		hacker.insertAtTopOfExceptionHandlers("ij.macro.Functions", "java.lang.String call()", "java.lang.reflect.InvocationTargetException",
+			"ij.IJ.handleException($1);"
+			+ "return null;");
+
 		// commit patches
 		hacker.loadClasses();
 
