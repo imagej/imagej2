@@ -34,6 +34,12 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<argLine>-Dapple.awt.UIElement="true"</argLine>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
