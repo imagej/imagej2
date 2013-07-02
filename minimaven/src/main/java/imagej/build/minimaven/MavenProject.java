@@ -132,6 +132,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 	public void clean() throws IOException, ParserConfigurationException, SAXException {
 		if ("pom".equals(getPackaging())) {
 			for (final MavenProject child : getChildren()) {
+				if (child == null) continue;
 				child.clean();
 			}
 			return;
@@ -324,6 +325,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		if ("pom".equals(getPackaging())) {
 			env.err.println("Looking at children of " + getArtifactId());
 			for (final MavenProject child : getChildren()) {
+				if (child == null) continue;
 				child.buildAndInstall(ijDir, forceBuild);
 			}
 			return;
