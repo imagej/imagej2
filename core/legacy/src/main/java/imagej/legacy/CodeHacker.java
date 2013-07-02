@@ -91,10 +91,12 @@ public class CodeHacker {
 		pool.appendClassPath(new LoaderClassPath(classLoader));
 
 		// the CodeHacker offers the LegacyService instance, therefore it needs to add that field here
-		insertPrivateStaticField("ij.IJ", LegacyService.class, "_legacyService");
-		insertNewMethod("ij.IJ",
-			"public static imagej.legacy.LegacyService getLegacyService()",
-			"return _legacyService;");
+		if (!hasField("ij.IJ", "_legacyService")) {
+			insertPrivateStaticField("ij.IJ", LegacyService.class, "_legacyService");
+			insertNewMethod("ij.IJ",
+				"public static imagej.legacy.LegacyService getLegacyService()",
+				"return _legacyService;");
+		}
 	}
 
 	public CodeHacker(ClassLoader classLoader) {
