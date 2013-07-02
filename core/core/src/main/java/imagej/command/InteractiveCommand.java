@@ -35,8 +35,6 @@
 
 package imagej.command;
 
-import imagej.command.DynamicCommand;
-import imagej.command.Previewable;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.display.event.DisplayActivatedEvent;

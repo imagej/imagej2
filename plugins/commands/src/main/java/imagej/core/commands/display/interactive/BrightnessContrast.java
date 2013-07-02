@@ -209,6 +209,9 @@ public class BrightnessContrast<T extends RealType<T>> extends
 		if (Double.isNaN(min)) min = initialMin;
 		if (Double.isNaN(max)) max = initialMax;
 		computeBrightnessContrast();
+		// TEMP : try this to clear up refresh problem
+		// NOPE
+		// updateDisplay();
 	}
 
 	/** Called when min or max changes. Updates brightness and contrast. */
@@ -230,24 +233,61 @@ public class BrightnessContrast<T extends RealType<T>> extends
 
 	// -- Helper methods --
 
+	// TODO we have a couple refresh problems
+	// 1) right now if you bounce between two displays with this dialog open the
+	// dialog values (like min, max, and hist don't update)
+	// 2) even if you can fix 1) the fact that we don't change to a new
+	// HistogramBundle but rather tweak the existing one might cause refresh()
+	// probs also. Because the update() code checks if the T's are the same.
+	// This means there is a implicit requirement for object reference equality
+	// rather than using something like equals(). Or a isChanged() interface
+	// (since in this case equals() would not work either).
+
 	private void computeDataMinMax(final RandomAccessibleInterval<? extends RealType<?>> img) {
+
 		// FIXME: Reconcile this with DefaultDatasetView.autoscale(int). There is
 		// no reason to hardcode the usage of ComputeMinMax twice. Rather, there
 		// should be a single entry point for obtain the channel min/maxes from
 		// the metadata, and if they aren't there, then compute them. Probably
 		// Dataset (not DatasetView) is a good place for it, because it is metadata
 		// independent of the visualization settings.
+
 		DataRange range = autoscaleService.getDefaultRandomAccessRange(img);
 		dataMin = range.getMin();
 		dataMax = range.getMax();
+		// System.out.println("IN HERE!!!!!!");
+		// System.out.println(" dataMin = " + dataMin);
+		// System.out.println(" dataMax = " + dataMax);
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		Iterable<T> iterable =
 			Views
 				.iterable((RandomAccessibleInterval<T>) (RandomAccessibleInterval) img);
 		BinMapper1d<T> mapper =
 			new Real1dBinMapper<T>(dataMin, dataMax, 256, false);
 		Histogram1d<T> histogram = new Histogram1d<T>(iterable, mapper);
-		bundle = new HistogramBundle(histogram, -1, -1);
+		if (bundle == null) {
+			bundle = new HistogramBundle(histogram, -1, -1);
+		}
+		else {
+			bundle.setHistogram(histogram);
+		}
 		log.debug("computeDataMinMax: dataMin=" + dataMin + ", dataMax=" + dataMax);
+		// force a widget refresh to see new Hist (and also fill min and max fields)
+		// NOPE. HistBundle is unchanged. Only internals are. So no
+		// refresh called. Note that I changed InteractiveCommand::update() to
+		// always setValue() and still this did not work. !!!! Huh?
+		// update(getInfo().getMutableInput("bundle", HistogramBundle.class),
+		// bundle);
+		// NOPE
+		// getInfo().getInput("bundle", HistogramBundle.class).setValue(this,
+		// bundle);
+		// NOPE
+		// getInfo().setVisible(false);
+		// getInfo().setVisible(true);
+		// NOPE
+		// getInfo().getMutableInput("bundle",HistogramBundle.class).initialize(this);
+		// NOPE
+		// getInfo().getMutableInput("bundle",HistogramBundle.class).callback(this);
 	}
 
 	private void computeInitialMinMax() {
