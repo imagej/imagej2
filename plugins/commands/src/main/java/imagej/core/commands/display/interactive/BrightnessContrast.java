@@ -243,8 +243,9 @@ public class BrightnessContrast<T extends RealType<T>> extends
 	// rather than using something like equals(). Or a isChanged() interface
 	// (since in this case equals() would not work either).
 
-	private void computeDataMinMax(final RandomAccessibleInterval<? extends RealType<?>> img) {
-
+	private void computeDataMinMax(
+		final RandomAccessibleInterval<? extends RealType<?>> img)
+	{
 		// FIXME: Reconcile this with DefaultDatasetView.autoscale(int). There is
 		// no reason to hardcode the usage of ComputeMinMax twice. Rather, there
 		// should be a single entry point for obtain the channel min/maxes from
@@ -322,9 +323,9 @@ public class BrightnessContrast<T extends RealType<T>> extends
 		min = (dataMax - dataMin) * minUnit + dataMin;
 		max = (dataMax - dataMin) * maxUnit + dataMin;
 
-		log.debug("computeMinMax: bUnit=" + bUnit + ", cUnit=" + cUnit + ", b=" + b +
-			", m=" + m + ", minUnit=" + minUnit + ", maxUnit=" + maxUnit + ", min=" +
-			min + ", max=" + max);
+		log.debug("computeMinMax: bUnit=" + bUnit + ", cUnit=" + cUnit + ", b=" +
+			b + ", m=" + m + ", minUnit=" + minUnit + ", maxUnit=" + maxUnit +
+			", min=" + min + ", max=" + max);
 	}
 
 	/** Computes brightness and contrast from min and max. */
