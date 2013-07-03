@@ -165,6 +165,8 @@ public class HistogramBundle {
 		return preferredSizeY;
 	}
 
+	// TODO - eliminate one of slope/intercept approach or data range approach
+
 	/**
 	 * Sets the line equation for the slope line of a histogram.
 	 */
@@ -191,32 +193,52 @@ public class HistogramBundle {
 		return intercept;
 	}
 
+	// TODO - eliminate one of slope/intercept approach or data range approach
+
+	/**
+	 * Sets the min/max values of the actual range.
+	 */
 	public void setDataMinMax(double min, double max) {
 		hasChanges |= different(min, dataMin);
-		hasChanges |= different(min, dataMax);
+		hasChanges |= different(max, dataMax);
 		dataMin = min;
 		dataMax = max;
 	}
 
+	/**
+	 * Gets the minimum value of the actual data range.
+	 */
 	public double getDataMin() {
 		return dataMin;
 	}
 
+	/**
+	 * Gets the maximum value of the actual data range.
+	 */
 	public double getDataMax() {
 		return dataMax;
 	}
 
+	/**
+	 * Sets the min/max values of the desired range.
+	 */
 	public void setThreoreticalMinMax(double min, double max) {
 		hasChanges |= different(min, theoryMin);
-		hasChanges |= different(min, theoryMax);
+		hasChanges |= different(max, theoryMax);
 		theoryMin = min;
 		theoryMax = max;
 	}
 
+	/**
+	 * Gets the minimum value of the desired range.
+	 */
 	public double getTheoreticalMin() {
 		return theoryMin;
 	}
 
+	/**
+	 * Gets the maximum value of the desired range.
+	 */
 	public double getTheoreticalMax() {
 		return theoryMax;
 	}
