@@ -133,10 +133,12 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 		}
 		JFreeChart chart = createChart(title, series);
 		if (bund.getMinBin() != -1) {
-			chart.getXYPlot().addDomainMarker(new ValueMarker(bund.getMinBin()));
+			chart.getXYPlot().addDomainMarker(
+				new ValueMarker(bund.getMinBin(), Color.black, new BasicStroke(1)));
 		}
 		if (bund.getMaxBin() != -1) {
-			chart.getXYPlot().addDomainMarker(new ValueMarker(bund.getMaxBin()));
+			chart.getXYPlot().addDomainMarker(
+				new ValueMarker(bund.getMaxBin(), Color.black, new BasicStroke(1)));
 		}
 		if (displaySlopeLine(bund)) {
 			chart.getXYPlot().addAnnotation(slopeLine());
