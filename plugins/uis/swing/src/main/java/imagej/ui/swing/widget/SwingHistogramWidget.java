@@ -126,7 +126,6 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 	 * Returns a JFreeChart containing data from the provided histogram.
 	 */
 	private JFreeChart getChart(String title, HistogramBundle bund) {
-		// TODO - draw min/max lines from bundle
 		final XYSeries series = new XYSeries("histo");
 		long total = bund.getHistogram().getBinCount();
 		for (long i = 0; i < total; i++) {
