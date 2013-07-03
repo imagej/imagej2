@@ -237,8 +237,8 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 		long maxBin = calcBin(binCount, overlay.getRangeMax());
 
 		histBundle = new HistogramBundle(fullHistogram);
-		histBundle.setMin(minBin);
-		histBundle.setMax(maxBin);
+		histBundle.setMinBin(minBin);
+		histBundle.setMaxBin(maxBin);
 
 		// TODO note
 		// The threshold ranges would be best as a slider with range ends noted.
@@ -497,7 +497,7 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 	private void updateBundle(double min, double max) {
 		long binCount = histogram().getBinCount();
 		histBundle.setHistogram(histogram());
-		histBundle.setMin(calcBin(binCount, min));
-		histBundle.setMax(calcBin(binCount, max));
+		histBundle.setMinBin(calcBin(binCount, min));
+		histBundle.setMaxBin(calcBin(binCount, max));
 	}
 }

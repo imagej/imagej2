@@ -47,8 +47,12 @@ public class HistogramBundle {
 	// -- fields --
 
 	private Histogram1d<?> histogram;
-	private long min = -1;
-	private long max = -1;
+	private long binMin = -1;
+	private long binMax = -1;
+	private double theoryMin = Double.NaN;
+	private double theoryMax = Double.NaN;
+	private double dataMin = Double.NaN;
+	private double dataMax = Double.NaN;
 	private int preferredSizeX = 300;
 	private int preferredSizeY = 150;
 	private double slope = Double.NaN;
@@ -104,17 +108,17 @@ public class HistogramBundle {
 	 * display the minimum line on the histogram for example. A value of -1 notes
 	 * that the minimum value is not of interest.
 	 */
-	public void setMin(long min) {
-		hasChanges |= min != this.min;
-		this.min = min;
+	public void setMinBin(long min) {
+		hasChanges |= min != this.binMin;
+		this.binMin = min;
 	}
 
 	/**
 	 * Gets the bin number of the minimum value. A value of -1 notes the minimum
 	 * value is not of interest.
 	 */
-	public long getMin() {
-		return min;
+	public long getMinBin() {
+		return binMin;
 	}
 
 	/**
@@ -122,17 +126,17 @@ public class HistogramBundle {
 	 * display the maximum line on the histogram for example. A value of -1 notes
 	 * that the maximum value is not of interest.
 	 */
-	public void setMax(long max) {
-		hasChanges |= max != this.max;
-		this.max = max;
+	public void setMaxBin(long max) {
+		hasChanges |= max != this.binMax;
+		this.binMax = max;
 	}
 
 	/**
 	 * Gets the bin number of the maximum value. A value of -1 notes the maximum
 	 * value is not of interest.
 	 */
-	public long getMax() {
-		return max;
+	public long getMaxBin() {
+		return binMax;
 	}
 
 	/**
@@ -185,6 +189,36 @@ public class HistogramBundle {
 	 */
 	public double getLineIntercept() {
 		return intercept;
+	}
+
+	public void setDataMinMax(double min, double max) {
+		hasChanges |= different(min, dataMin);
+		hasChanges |= different(min, dataMax);
+		dataMin = min;
+		dataMax = max;
+	}
+
+	public double getDataMin() {
+		return dataMin;
+	}
+
+	public double getDataMax() {
+		return dataMax;
+	}
+
+	public void setThreoreticalMinMax(double min, double max) {
+		hasChanges |= different(min, theoryMin);
+		hasChanges |= different(min, theoryMax);
+		theoryMin = min;
+		theoryMax = max;
+	}
+
+	public double getTheoreticalMin() {
+		return theoryMin;
+	}
+
+	public double getTheoreticalMax() {
+		return theoryMax;
 	}
 
 	// -- helpers --

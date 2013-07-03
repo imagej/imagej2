@@ -133,11 +133,11 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 			series.add(i, bund.getHistogram().frequency(i));
 		}
 		JFreeChart chart = createChart(title, series);
-		if (bund.getMin() != -1) {
-			chart.getXYPlot().addDomainMarker(new ValueMarker(bund.getMin()));
+		if (bund.getMinBin() != -1) {
+			chart.getXYPlot().addDomainMarker(new ValueMarker(bund.getMinBin()));
 		}
-		if (bund.getMax() != -1) {
-			chart.getXYPlot().addDomainMarker(new ValueMarker(bund.getMax()));
+		if (bund.getMaxBin() != -1) {
+			chart.getXYPlot().addDomainMarker(new ValueMarker(bund.getMaxBin()));
 		}
 		if (displaySlopeLine(bund)) {
 			chart.getXYPlot().addAnnotation(slopeLine());
@@ -196,13 +196,17 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 	}
 
 	private boolean displaySlopeLine(HistogramBundle bund) {
-		if (Double.isNaN(bund.getLineSlope())) return false;
-		if (Double.isNaN(bund.getLineIntercept())) return false;
+		if (Double.isNaN(bund.getDataMin())) return false;
+		if (Double.isNaN(bund.getDataMax())) return false;
+		if (Double.isNaN(bund.getTheoreticalMin())) return false;
+		if (Double.isNaN(bund.getTheoreticalMax())) return false;
 		return true;
 	}
 
 	private XYAnnotation slopeLine() {
 		return new XYAnnotation() {
+
+			private double x1, y1, x2, y2;
 
 			@Override
 			public void removeChangeListener(AnnotationChangeListener listener) {
@@ -214,23 +218,63 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 				// ignore
 			}
 
-			@SuppressWarnings("synthetic-access")
 			@Override
 			public void draw(Graphics2D g2, XYPlot plot, Rectangle2D dataArea,
 				ValueAxis domainAxis, ValueAxis rangeAxis, int rendererIndex,
 				PlotRenderingInfo info)
 			{
-				double slope = bundle.getLineSlope();
-				double intercept = bundle.getLineIntercept();
-				double scaledLeft =
-					dataArea.getHeight() - intercept * dataArea.getHeight();
-				double scaledRight = scaledLeft - slope * dataArea.getWidth();
-				double xLeft = dataArea.getX();
-				double xRight = xLeft + dataArea.getWidth();
+				calcLineCoords(dataArea);
+				draw(g2);
+			}
+
+			@SuppressWarnings("synthetic-access")
+			private void calcLineCoords(Rectangle2D rect) {
+				double x = rect.getMinX();
+				double y = rect.getMinY();
+				double w = rect.getWidth();
+				double h = rect.getHeight();
+				double min = bundle.getTheoreticalMin();
+				double max = bundle.getTheoreticalMax();
+				double defaultMin = bundle.getDataMin();
+				double defaultMax = bundle.getDataMax();
+				double scale = w / (defaultMax - defaultMin);
+				double slope = 0.0;
+				if (max != min) slope = h / (max - min);
+				if (min >= defaultMin) {
+					x1 = scale * (min - defaultMin);
+					y1 = h;
+				}
+				else {
+					x1 = 0;
+					if (max > min) {
+						y1 = h - ((defaultMin - min) * slope);
+					}
+					else y1 = h;
+				}
+				if (max <= defaultMax) {
+					x2 = (scale * (max - defaultMin));
+					y2 = 0;
+				}
+				else {
+					x2 = w;
+					if (max > min) {
+						y2 = h - ((defaultMax - min) * slope);
+					}
+					else y2 = 0;
+				}
+				x1 += x;
+				x2 += x;
+				y1 += y;
+				y2 += y;
+				// System.out.println("line coords " + x1 + "," + y1 + " to " + x2 + ","
+				// +
+				// y2);
+			}
+
+			private void draw(Graphics2D g2) {
 				Color origColor = g2.getColor();
 				g2.setColor(Color.black);
-				g2.drawLine((int) xLeft, (int) scaledLeft, (int) xRight,
-					(int) scaledRight);
+				g2.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
 				g2.setColor(origColor);
 			}
 		};
