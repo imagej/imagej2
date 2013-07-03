@@ -267,11 +267,12 @@ public class BrightnessContrast<T extends RealType<T>> extends
 			new Real1dBinMapper<T>(dataMin, dataMax, 256, false);
 		Histogram1d<T> histogram = new Histogram1d<T>(iterable, mapper);
 		if (bundle == null) {
-			bundle = new HistogramBundle(histogram, -1, -1);
+			bundle = new HistogramBundle(histogram);
 		}
 		else {
 			bundle.setHistogram(histogram);
 		}
+		bundle.setLineSlopeIntercept(1, 0);
 		log.debug("computeDataMinMax: dataMin=" + dataMin + ", dataMax=" + dataMax);
 		// force a widget refresh to see new Hist (and also fill min and max fields)
 		// NOPE. HistBundle is unchanged. Only internals are. So no
@@ -323,6 +324,8 @@ public class BrightnessContrast<T extends RealType<T>> extends
 		min = (dataMax - dataMin) * minUnit + dataMin;
 		max = (dataMax - dataMin) * maxUnit + dataMin;
 
+		bundle.setLineSlopeIntercept(m, b);
+
 		log.debug("computeMinMax: bUnit=" + bUnit + ", cUnit=" + cUnit + ", b=" +
 			b + ", m=" + m + ", minUnit=" + minUnit + ", maxUnit=" + maxUnit +
 			", min=" + min + ", max=" + max);
@@ -352,6 +355,8 @@ public class BrightnessContrast<T extends RealType<T>> extends
 		// convert unit brightness/contrast to actual brightness/contrast
 		brightness = (int) ((SLIDER_MAX - SLIDER_MIN) * bUnit + SLIDER_MIN + 0.5);
 		contrast = (int) ((SLIDER_MAX - SLIDER_MIN) * cUnit + SLIDER_MIN + 0.5);
+
+		bundle.setLineSlopeIntercept(m, b);
 
 		log.debug("computeBrightnessContrast: minUnit=" + minUnit + ", maxUnit=" +
 			maxUnit + ", m=" + m + ", b=" + b + ", bUnit=" + bUnit + ", cUnit=" +

@@ -182,7 +182,7 @@ public class HistogramPlot<T extends RealType<T>> extends InteractiveCommand
 
 	protected void initBundle() {
 		build();
-		bundle = new HistogramBundle(histograms[histograms.length - 1], -1, -1);
+		bundle = new HistogramBundle(histograms[histograms.length - 1]);
 		setValues(histograms.length - 1);
 	}
 

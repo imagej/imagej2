@@ -42,14 +42,20 @@ import imagej.widget.WidgetModel;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 
 import javax.swing.JPanel;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.annotations.XYAnnotation;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.event.AnnotationChangeListener;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
@@ -133,6 +139,9 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 		if (bund.getMax() != -1) {
 			chart.getXYPlot().addDomainMarker(new ValueMarker(bund.getMax()));
 		}
+		if (displaySlopeLine(bund)) {
+			chart.getXYPlot().addAnnotation(slopeLine());
+		}
 		return chart;
 	}
 
@@ -184,5 +193,46 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 		plot.getRangeAxis().setTickLabelPaint(Color.gray);
 		TextTitle title = chart.getTitle();
 		if (title != null) title.setPaint(Color.black);
+	}
+
+	private boolean displaySlopeLine(HistogramBundle bund) {
+		if (Double.isNaN(bund.getLineSlope())) return false;
+		if (Double.isNaN(bund.getLineIntercept())) return false;
+		return true;
+	}
+
+	private XYAnnotation slopeLine() {
+		return new XYAnnotation() {
+
+			@Override
+			public void removeChangeListener(AnnotationChangeListener listener) {
+				// ignore
+			}
+
+			@Override
+			public void addChangeListener(AnnotationChangeListener listener) {
+				// ignore
+			}
+
+			@SuppressWarnings("synthetic-access")
+			@Override
+			public void draw(Graphics2D g2, XYPlot plot, Rectangle2D dataArea,
+				ValueAxis domainAxis, ValueAxis rangeAxis, int rendererIndex,
+				PlotRenderingInfo info)
+			{
+				double slope = bundle.getLineSlope();
+				double intercept = bundle.getLineIntercept();
+				double scaledLeft =
+					dataArea.getHeight() - intercept * dataArea.getHeight();
+				double scaledRight = scaledLeft - slope * dataArea.getWidth();
+				double xLeft = dataArea.getX();
+				double xRight = xLeft + dataArea.getWidth();
+				Color origColor = g2.getColor();
+				g2.setColor(Color.black);
+				g2.drawLine((int) xLeft, (int) scaledLeft, (int) xRight,
+					(int) scaledRight);
+				g2.setColor(origColor);
+			}
+		};
 	}
 }

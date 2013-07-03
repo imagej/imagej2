@@ -51,15 +51,35 @@ public class HistogramBundle {
 	private long max = -1;
 	private int preferredSizeX = 300;
 	private int preferredSizeY = 150;
+	private double slope = Double.NaN;
+	private double intercept = Double.NaN;
 	private boolean hasChanges;
 
 	// -- constructors --
 
-	public HistogramBundle(Histogram1d<?> hist, long min, long max) {
+	public HistogramBundle(Histogram1d<?> hist) {
 		this.histogram = hist;
-		setMin(min);
-		setMax(max);
 		hasChanges = true;
+	}
+
+	// -- changes api --
+
+	/**
+	 * Returns true if the bundle has been changed via use of some of the field
+	 * setting api. This information can be used by renderers to update their UI
+	 * as appropriate. Note one can also force the change flag via
+	 * setHasChanges().
+	 */
+	public boolean hasChanges() {
+		return hasChanges;
+	}
+
+	/**
+	 * Sets the changes flag. Called by renderers after they have updated their UI
+	 * to reflect previous changes.
+	 */
+	public void setHasChanges(boolean val) {
+		hasChanges = val;
 	}
 
 	// -- accessors --
@@ -141,23 +161,36 @@ public class HistogramBundle {
 		return preferredSizeY;
 	}
 
-	// -- changes api --
-
 	/**
-	 * Returns true if the bundle has been changed via use of some of the field
-	 * setting api. This information can be used by renderers to update their UI
-	 * as appropriate. Note one can also force the change flag via
-	 * setHasChanges().
+	 * Sets the line equation for the slope line of a histogram.
 	 */
-	public boolean hasChanges() {
-		return hasChanges;
+	public void setLineSlopeIntercept(double slope, double intercept) {
+		hasChanges |= different(slope, this.slope);
+		hasChanges |= different(intercept, this.intercept);
+		this.slope = slope;
+		this.intercept = intercept;
 	}
 
 	/**
-	 * Sets the changes flag. Called by renderers after they have updated their UI
-	 * to reflect previous changes.
+	 * Gets the line equation slope.
 	 */
-	public void setHasChanges(boolean val) {
-		hasChanges = val;
+	public double getLineSlope() {
+		return slope;
+	}
+
+	/**
+	 * Gets the line equation intercept. The scale is 1.0 for whole height of the
+	 * plot. This does NOT mean that value must be between 0 and 1. Intercepts can
+	 * go outside range of table height.
+	 */
+	public double getLineIntercept() {
+		return intercept;
+	}
+
+	// -- helpers --
+
+	private boolean different(double v1, double v2) {
+		if (Double.isNaN(v1) && Double.isNaN(v2)) return false;
+		return v1 != v2;
 	}
 }
