@@ -222,7 +222,7 @@ public class HistogramBundle {
 	/**
 	 * Sets the min/max values of the desired range.
 	 */
-	public void setThreoreticalMinMax(double min, double max) {
+	public void setTheoreticalMinMax(double min, double max) {
 		hasChanges |= different(min, theoryMin);
 		hasChanges |= different(max, theoryMax);
 		theoryMin = min;

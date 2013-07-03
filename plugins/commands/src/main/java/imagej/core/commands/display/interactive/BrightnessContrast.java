@@ -325,7 +325,7 @@ public class BrightnessContrast<T extends RealType<T>> extends
 		min = (dataMax - dataMin) * minUnit + dataMin;
 		max = (dataMax - dataMin) * maxUnit + dataMin;
 
-		bundle.setThreoreticalMinMax(min, max);
+		bundle.setTheoreticalMinMax(min, max);
 		// bundle.setLineSlopeIntercept(m, b);
 
 		log.debug("computeMinMax: bUnit=" + bUnit + ", cUnit=" + cUnit + ", b=" +
@@ -358,7 +358,7 @@ public class BrightnessContrast<T extends RealType<T>> extends
 		brightness = (int) ((SLIDER_MAX - SLIDER_MIN) * bUnit + SLIDER_MIN + 0.5);
 		contrast = (int) ((SLIDER_MAX - SLIDER_MIN) * cUnit + SLIDER_MIN + 0.5);
 
-		bundle.setThreoreticalMinMax(min, max);
+		bundle.setTheoreticalMinMax(min, max);
 		// bundle.setLineSlopeIntercept(m, b);
 
 		log.debug("computeBrightnessContrast: minUnit=" + minUnit + ", maxUnit=" +
