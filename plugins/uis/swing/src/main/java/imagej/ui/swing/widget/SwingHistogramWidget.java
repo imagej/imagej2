@@ -196,6 +196,10 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 	}
 
 	private boolean displaySlopeLine(HistogramBundle bund) {
+		// OLD
+		// if (Double.isNaN(bund.getLineIntercept())) return false;
+		// if (Double.isNaN(bund.getLineSlope())) return false;
+		// CURRENT
 		if (Double.isNaN(bund.getDataMin())) return false;
 		if (Double.isNaN(bund.getDataMax())) return false;
 		if (Double.isNaN(bund.getTheoreticalMin())) return false;
@@ -224,11 +228,20 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 				PlotRenderingInfo info)
 			{
 				calcLineCoords(dataArea);
-				draw(g2);
+				drawLine(g2);
+			}
+
+			private void drawLine(Graphics2D g2) {
+				Color origColor = g2.getColor();
+				g2.setColor(Color.black);
+				g2.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
+				g2.setColor(origColor);
 			}
 
 			@SuppressWarnings("synthetic-access")
 			private void calcLineCoords(Rectangle2D rect) {
+				// adapted from IJ1's ContrastAdjuster plugin
+				// calc slope line from min/max ranges
 				double x = rect.getMinX();
 				double y = rect.getMinY();
 				double w = rect.getWidth();
@@ -271,12 +284,30 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 				// y2);
 			}
 
-			private void draw(Graphics2D g2) {
-				Color origColor = g2.getColor();
-				g2.setColor(Color.black);
-				g2.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
-				g2.setColor(origColor);
+			/*
+			 * OLD code for calcing line coords from slope/intercept data. Note that
+			 * it is not stretched to the correct aspect ratio here yet.
+			 * 
+			@SuppressWarnings("synthetic-access")
+			@Override
+			public void draw(Graphics2D g2, XYPlot plot, Rectangle2D dataArea,
+				ValueAxis domainAxis, ValueAxis rangeAxis, int rendererIndex,
+				PlotRenderingInfo info)
+			{
+			 double slope = bundle.getLineSlope();
+			 double intercept = bundle.getLineIntercept();
+			 double scaledLeft =
+					 dataArea.getHeight() - intercept * dataArea.getHeight();
+			 double scaledRight = scaledLeft - slope * dataArea.getWidth();
+			 double xLeft = dataArea.getX();
+			 double xRight = xLeft + dataArea.getWidth();
+			 Color origColor = g2.getColor();
+			 g2.setColor(Color.black);
+			 g2.drawLine((int) xLeft, (int) scaledLeft, (int) xRight,
+				 (int) scaledRight);
+			 g2.setColor(origColor);
 			}
+			 */
 		};
 	}
 }
