@@ -47,19 +47,43 @@ public class HistogramBundle {
 	// -- fields --
 
 	private Histogram1d<?> histogram;
-	private long min = -1;
-	private long max = -1;
+	private long binMin = -1;
+	private long binMax = -1;
+	private double theoryMin = Double.NaN;
+	private double theoryMax = Double.NaN;
+	private double dataMin = Double.NaN;
+	private double dataMax = Double.NaN;
 	private int preferredSizeX = 300;
 	private int preferredSizeY = 150;
+	private double slope = Double.NaN;
+	private double intercept = Double.NaN;
 	private boolean hasChanges;
 
 	// -- constructors --
 
-	public HistogramBundle(Histogram1d<?> hist, long min, long max) {
+	public HistogramBundle(Histogram1d<?> hist) {
 		this.histogram = hist;
-		setMin(min);
-		setMax(max);
 		hasChanges = true;
+	}
+
+	// -- changes api --
+
+	/**
+	 * Returns true if the bundle has been changed via use of some of the field
+	 * setting api. This information can be used by renderers to update their UI
+	 * as appropriate. Note one can also force the change flag via
+	 * setHasChanges().
+	 */
+	public boolean hasChanges() {
+		return hasChanges;
+	}
+
+	/**
+	 * Sets the changes flag. Called by renderers after they have updated their UI
+	 * to reflect previous changes.
+	 */
+	public void setHasChanges(boolean val) {
+		hasChanges = val;
 	}
 
 	// -- accessors --
@@ -84,17 +108,17 @@ public class HistogramBundle {
 	 * display the minimum line on the histogram for example. A value of -1 notes
 	 * that the minimum value is not of interest.
 	 */
-	public void setMin(long min) {
-		hasChanges |= min != this.min;
-		this.min = min;
+	public void setMinBin(long min) {
+		hasChanges |= min != this.binMin;
+		this.binMin = min;
 	}
 
 	/**
 	 * Gets the bin number of the minimum value. A value of -1 notes the minimum
 	 * value is not of interest.
 	 */
-	public long getMin() {
-		return min;
+	public long getMinBin() {
+		return binMin;
 	}
 
 	/**
@@ -102,17 +126,17 @@ public class HistogramBundle {
 	 * display the maximum line on the histogram for example. A value of -1 notes
 	 * that the maximum value is not of interest.
 	 */
-	public void setMax(long max) {
-		hasChanges |= max != this.max;
-		this.max = max;
+	public void setMaxBin(long max) {
+		hasChanges |= max != this.binMax;
+		this.binMax = max;
 	}
 
 	/**
 	 * Gets the bin number of the maximum value. A value of -1 notes the maximum
 	 * value is not of interest.
 	 */
-	public long getMax() {
-		return max;
+	public long getMaxBin() {
+		return binMax;
 	}
 
 	/**
@@ -141,23 +165,88 @@ public class HistogramBundle {
 		return preferredSizeY;
 	}
 
-	// -- changes api --
+	// TODO - eliminate one of slope/intercept approach or data range approach
 
 	/**
-	 * Returns true if the bundle has been changed via use of some of the field
-	 * setting api. This information can be used by renderers to update their UI
-	 * as appropriate. Note one can also force the change flag via
-	 * setHasChanges().
+	 * Sets the line equation for the slope line of a histogram.
 	 */
-	public boolean hasChanges() {
-		return hasChanges;
+	public void setLineSlopeIntercept(double slope, double intercept) {
+		hasChanges |= different(slope, this.slope);
+		hasChanges |= different(intercept, this.intercept);
+		this.slope = slope;
+		this.intercept = intercept;
 	}
 
 	/**
-	 * Sets the changes flag. Called by renderers after they have updated their UI
-	 * to reflect previous changes.
+	 * Gets the line equation slope.
 	 */
-	public void setHasChanges(boolean val) {
-		hasChanges = val;
+	public double getLineSlope() {
+		return slope;
+	}
+
+	/**
+	 * Gets the line equation intercept. The scale is 1.0 for whole height of the
+	 * plot. This does NOT mean that value must be between 0 and 1. Intercepts can
+	 * go outside range of table height.
+	 */
+	public double getLineIntercept() {
+		return intercept;
+	}
+
+	// TODO - eliminate one of slope/intercept approach or data range approach
+
+	/**
+	 * Sets the min/max values of the actual range.
+	 */
+	public void setDataMinMax(double min, double max) {
+		hasChanges |= different(min, dataMin);
+		hasChanges |= different(max, dataMax);
+		dataMin = min;
+		dataMax = max;
+	}
+
+	/**
+	 * Gets the minimum value of the actual data range.
+	 */
+	public double getDataMin() {
+		return dataMin;
+	}
+
+	/**
+	 * Gets the maximum value of the actual data range.
+	 */
+	public double getDataMax() {
+		return dataMax;
+	}
+
+	/**
+	 * Sets the min/max values of the desired range.
+	 */
+	public void setThreoreticalMinMax(double min, double max) {
+		hasChanges |= different(min, theoryMin);
+		hasChanges |= different(max, theoryMax);
+		theoryMin = min;
+		theoryMax = max;
+	}
+
+	/**
+	 * Gets the minimum value of the desired range.
+	 */
+	public double getTheoreticalMin() {
+		return theoryMin;
+	}
+
+	/**
+	 * Gets the maximum value of the desired range.
+	 */
+	public double getTheoreticalMax() {
+		return theoryMax;
+	}
+
+	// -- helpers --
+
+	private boolean different(double v1, double v2) {
+		if (Double.isNaN(v1) && Double.isNaN(v2)) return false;
+		return v1 != v2;
 	}
 }

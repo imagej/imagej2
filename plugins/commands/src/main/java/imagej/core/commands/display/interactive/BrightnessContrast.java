@@ -40,12 +40,17 @@ import imagej.data.autoscale.AutoscaleService;
 import imagej.data.autoscale.DataRange;
 import imagej.data.command.InteractiveImageCommand;
 import imagej.data.display.DatasetView;
+import imagej.data.widget.HistogramBundle;
 import imagej.menu.MenuConstants;
 import imagej.widget.Button;
 import imagej.widget.ChoiceWidget;
 import imagej.widget.NumberWidget;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.histogram.BinMapper1d;
+import net.imglib2.histogram.Histogram1d;
+import net.imglib2.histogram.Real1dBinMapper;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.view.Views;
 
 import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
@@ -66,7 +71,11 @@ import org.scijava.plugin.Plugin;
 	@Menu(label = "Brightness/Contrast...", accelerator = "control shift C",
 		weight = 0) }, iconPath = "/icons/commands/contrast.png", headless = true,
 	initializer = "initValues")
-public class BrightnessContrast extends InteractiveImageCommand {
+public class BrightnessContrast<T extends RealType<T>> extends
+	InteractiveImageCommand
+{
+
+	// -- constants --
 
 	private static final int SLIDER_MIN = 0;
 	private static final int SLIDER_MAX = 100;
@@ -81,11 +90,19 @@ public class BrightnessContrast extends InteractiveImageCommand {
 	 */
 	private static final int MAX_POWER = 4;
 
+	private static final String PLANE = "Plane";
+	private static final String GLOBAL = "Global";
+
+	// -- Parameter fields --
+
 	@Parameter
 	private AutoscaleService autoscaleService;
 
 	@Parameter(type = ItemIO.BOTH, callback = "viewChanged")
 	private DatasetView view;
+
+	@Parameter(label = "Histogram")
+	private HistogramBundle bundle;
 
 	@Parameter(label = "Minimum", persist = false, callback = "minMaxChanged")
 	private double min = Double.NaN;
@@ -104,15 +121,20 @@ public class BrightnessContrast extends InteractiveImageCommand {
 	@Parameter(label = "Default", callback = "setDefault")
 	private Button defaultButton;
 	
-	@Parameter(label = "Range:", style = ChoiceWidget.RADIO_BUTTON_HORIZONTAL_STYLE, choices = 
-	  { "Plane", "Global" }, callback = "viewChanged")
-	String rangeChoice = "Plane";
+	@Parameter(label = "Range:",
+		style = ChoiceWidget.RADIO_BUTTON_HORIZONTAL_STYLE, choices = { PLANE,
+			GLOBAL }, callback = "viewChanged")
+	String rangeChoice = PLANE;
+
+	// -- other fields --
 
 	/** The minimum and maximum values of the data itself. */
 	private double dataMin, dataMax;
 
 	/** The initial minimum and maximum values of the data view. */
 	private double initialMin, initialMax;
+
+	// -- constructors --
 
 	public BrightnessContrast() {
 		super("view");
@@ -179,7 +201,7 @@ public class BrightnessContrast extends InteractiveImageCommand {
 	protected void viewChanged() {
 		RandomAccessibleInterval<? extends RealType<?>> interval;
 		
-		if (rangeChoice.equals("Plane")) interval = view.xyPlane();
+		if (rangeChoice.equals(PLANE)) interval = view.xyPlane();
 		else interval = view.getData().getImgPlus();
 		
 		computeDataMinMax(interval);
@@ -187,6 +209,9 @@ public class BrightnessContrast extends InteractiveImageCommand {
 		if (Double.isNaN(min)) min = initialMin;
 		if (Double.isNaN(max)) max = initialMax;
 		computeBrightnessContrast();
+		// TEMP : try this to clear up refresh problem
+		// NOPE
+		// updateDisplay();
 	}
 
 	/** Called when min or max changes. Updates brightness and contrast. */
@@ -208,17 +233,64 @@ public class BrightnessContrast extends InteractiveImageCommand {
 
 	// -- Helper methods --
 
-	private void computeDataMinMax(final RandomAccessibleInterval<? extends RealType<?>> img) {
+	// TODO we have a couple refresh problems
+	// 1) right now if you bounce between two displays with this dialog open the
+	// dialog values (like min, max, and hist don't update)
+	// 2) even if you can fix 1) the fact that we don't change to a new
+	// HistogramBundle but rather tweak the existing one might cause refresh()
+	// probs also. Because the update() code checks if the T's are the same.
+	// This means there is a implicit requirement for object reference equality
+	// rather than using something like equals(). Or a isChanged() interface
+	// (since in this case equals() would not work either).
+
+	private void computeDataMinMax(
+		final RandomAccessibleInterval<? extends RealType<?>> img)
+	{
 		// FIXME: Reconcile this with DefaultDatasetView.autoscale(int). There is
 		// no reason to hardcode the usage of ComputeMinMax twice. Rather, there
 		// should be a single entry point for obtain the channel min/maxes from
 		// the metadata, and if they aren't there, then compute them. Probably
 		// Dataset (not DatasetView) is a good place for it, because it is metadata
 		// independent of the visualization settings.
+
 		DataRange range = autoscaleService.getDefaultRandomAccessRange(img);
 		dataMin = range.getMin();
 		dataMax = range.getMax();
+		// System.out.println("IN HERE!!!!!!");
+		// System.out.println(" dataMin = " + dataMin);
+		// System.out.println(" dataMax = " + dataMax);
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		Iterable<T> iterable =
+			Views
+				.iterable((RandomAccessibleInterval<T>) (RandomAccessibleInterval) img);
+		BinMapper1d<T> mapper =
+			new Real1dBinMapper<T>(dataMin, dataMax, 256, false);
+		Histogram1d<T> histogram = new Histogram1d<T>(iterable, mapper);
+		if (bundle == null) {
+			bundle = new HistogramBundle(histogram);
+		}
+		else {
+			bundle.setHistogram(histogram);
+		}
+		bundle.setDataMinMax(dataMin, dataMax);
+		// bundle.setLineSlopeIntercept(1, 0);
 		log.debug("computeDataMinMax: dataMin=" + dataMin + ", dataMax=" + dataMax);
+		// force a widget refresh to see new Hist (and also fill min and max fields)
+		// NOPE. HistBundle is unchanged. Only internals are. So no
+		// refresh called. Note that I changed InteractiveCommand::update() to
+		// always setValue() and still this did not work. !!!! Huh?
+		// update(getInfo().getMutableInput("bundle", HistogramBundle.class),
+		// bundle);
+		// NOPE
+		// getInfo().getInput("bundle", HistogramBundle.class).setValue(this,
+		// bundle);
+		// NOPE
+		// getInfo().setVisible(false);
+		// getInfo().setVisible(true);
+		// NOPE
+		// getInfo().getMutableInput("bundle",HistogramBundle.class).initialize(this);
+		// NOPE
+		// getInfo().getMutableInput("bundle",HistogramBundle.class).callback(this);
 	}
 
 	private void computeInitialMinMax() {
@@ -253,9 +325,12 @@ public class BrightnessContrast extends InteractiveImageCommand {
 		min = (dataMax - dataMin) * minUnit + dataMin;
 		max = (dataMax - dataMin) * maxUnit + dataMin;
 
-		log.debug("computeMinMax: bUnit=" + bUnit + ", cUnit=" + cUnit + ", b=" + b +
-			", m=" + m + ", minUnit=" + minUnit + ", maxUnit=" + maxUnit + ", min=" +
-			min + ", max=" + max);
+		bundle.setThreoreticalMinMax(min, max);
+		// bundle.setLineSlopeIntercept(m, b);
+
+		log.debug("computeMinMax: bUnit=" + bUnit + ", cUnit=" + cUnit + ", b=" +
+			b + ", m=" + m + ", minUnit=" + minUnit + ", maxUnit=" + maxUnit +
+			", min=" + min + ", max=" + max);
 	}
 
 	/** Computes brightness and contrast from min and max. */
@@ -282,6 +357,9 @@ public class BrightnessContrast extends InteractiveImageCommand {
 		// convert unit brightness/contrast to actual brightness/contrast
 		brightness = (int) ((SLIDER_MAX - SLIDER_MIN) * bUnit + SLIDER_MIN + 0.5);
 		contrast = (int) ((SLIDER_MAX - SLIDER_MIN) * cUnit + SLIDER_MIN + 0.5);
+
+		bundle.setThreoreticalMinMax(min, max);
+		// bundle.setLineSlopeIntercept(m, b);
 
 		log.debug("computeBrightnessContrast: minUnit=" + minUnit + ", maxUnit=" +
 			maxUnit + ", m=" + m + ", b=" + b + ", bUnit=" + bUnit + ", cUnit=" +
