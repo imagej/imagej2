@@ -9,6 +9,12 @@
  * launch this script.
  */
 
+importClass(Packages.java.io.BufferedReader);
+importClass(Packages.java.io.InputStreamReader);
+importClass(Packages.java.lang.Runtime);
+importClass(Packages.java.lang.StringBuilder);
+importClass(Packages.java.lang.Thread);
+
 importClass(Packages.org.eclipse.core.runtime.NullProgressMonitor);
 importClass(Packages.org.eclipse.jdt.core.JavaCore);
 importClass(Packages.org.eclipse.jdt.internal.corext.fix.CleanUpRefactoring);
@@ -43,6 +49,50 @@ var cleanUp = function(file) {
 	eclipse.resources.workspace.run(perform, new NullProgressMonitor());
 
 }
+
+system = function(commandLine) {
+	var process = new Runtime.getRuntime().exec(commandLine);
+	var stderrReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+	var stderrDumper = new Thread({
+		run: function() {
+			for (;;) {
+				var line = stderrReader.readLine();
+				if (line == null) break;
+				eclipse.console.println(line);
+			}
+			stderrReader.close();
+		}
+	})
+	var output = new StringBuilder();
+	var stdoutReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+	var stdoutDumper = new Thread({
+		run: function() {
+			for (;;) {
+				var line = stdoutReader.readLine();
+				if (line == null) break;
+				if (output.length() > 0) output.append("\n");
+				output.append(line);
+			}
+			stdoutReader.close();
+		}
+	})
+	stderrDumper.start();
+	stdoutDumper.start();
+	process.getOutputStream().close();
+	stderrDumper.join();
+	stdoutDumper.join();
+	return output.toString();
+}
+
+git = function(arguments) {
+	if (typeof(arguments) == 'string') {
+		arguments = [ arguments ];
+	}
+	arguments.unshift("git");
+	return system(arguments);
+}
+
+eclipse.console.println("git version: " + git('version'));
 
 var editedFile = eclipse.editors.file;
 cleanUp(editedFile);
