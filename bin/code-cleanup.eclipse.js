@@ -15,27 +15,31 @@ importClass(Packages.org.eclipse.ltk.core.refactoring.PerformChangeOperation);
 importClass(Packages.org.eclipse.ltk.core.refactoring.RefactoringCore);
 importClass(Packages.org.eclipse.ltk.core.refactoring.RefactoringStatus);
 
-var editedFile = eclipse.editors.file;
-// File>Refresh
-editedFile.refreshLocal(1, new NullProgressMonitor());
+var cleanUp = function(file) {
+	// File>Refresh
+	file.refreshLocal(1, new NullProgressMonitor());
 
-var compilationUnit = JavaCore.create(editedFile);
+	var compilationUnit = JavaCore.create(file);
 
-var refactoring = new CleanUpRefactoring();
-refactoring.setUseOptionsFromProfile(true);
-refactoring.addCompilationUnit(compilationUnit);
+	var refactoring = new CleanUpRefactoring();
+	refactoring.setUseOptionsFromProfile(true);
+	refactoring.addCompilationUnit(compilationUnit);
 
-var cleanUps = JavaPlugin.getDefault().getCleanUpRegistry().createCleanUps();
-for (var i = 0; i < cleanUps.length; i++) {
-	refactoring.addCleanUp(cleanUps[i]);
+	var cleanUps = JavaPlugin.getDefault().getCleanUpRegistry().createCleanUps();
+	for (var i = 0; i < cleanUps.length; i++) {
+		refactoring.addCleanUp(cleanUps[i]);
+	}
+
+	var undoManager = RefactoringCore.getUndoManager();
+	var create = new CreateChangeOperation(
+		new CheckConditionsOperation(refactoring, CheckConditionsOperation.ALL_CONDITIONS),
+		RefactoringStatus.FATAL);
+	var perform = PerformChangeOperation(create);
+	// Source>Clean Up...
+	eclipse.resources.workspace.run(perform, new NullProgressMonitor());
+
 }
 
-var undoManager = RefactoringCore.getUndoManager();
-var create = new CreateChangeOperation(
-	new CheckConditionsOperation(refactoring, CheckConditionsOperation.ALL_CONDITIONS),
-	RefactoringStatus.FATAL);
-var perform = PerformChangeOperation(create);
-// Source>Clean Up...
-eclipse.resources.workspace.run(perform, new NullProgressMonitor());
-
+var editedFile = eclipse.editors.file;
+cleanUp(editedFile);
 eclipse.console.println("Cleaned up sources of " + editedFile);
