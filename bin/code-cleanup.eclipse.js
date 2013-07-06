@@ -9,8 +9,13 @@
  * launch this script.
  */
 
+println = function(arg) {
+	eclipse.console.println(arg);
+}
+
 importClass(Packages.java.io.BufferedReader);
 importClass(Packages.java.io.InputStreamReader);
+importClass(Packages.java.io.OutputStreamWriter);
 importClass(Packages.java.lang.Runtime);
 importClass(Packages.java.lang.StringBuilder);
 importClass(Packages.java.lang.Thread);
@@ -50,8 +55,12 @@ var cleanUp = function(file) {
 
 }
 
-system = function(commandLine) {
-	var process = new Runtime.getRuntime().exec(commandLine);
+var editedFile = eclipse.editors.file;
+var file = editedFile.getLocation().toFile();
+var directory = file.getParentFile();
+
+system = function(commandLine, stdin) {
+	var process = new Runtime.getRuntime().exec(commandLine, null, directory);
 	var stderrReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 	var stderrDumper = new Thread({
 		run: function() {
@@ -78,7 +87,11 @@ system = function(commandLine) {
 	})
 	stderrDumper.start();
 	stdoutDumper.start();
-	process.getOutputStream().close();
+	var stdinWriter = new OutputStreamWriter(process.getOutputStream());
+	if (stdin != undefined) {
+		stdinWriter.write(stdin);
+	}
+	stdinWriter.close();
 	stderrDumper.join();
 	stdoutDumper.join();
 	var exitValue = process.exitValue();
@@ -89,16 +102,66 @@ system = function(commandLine) {
 	return output.toString();
 }
 
-git = function(arguments) {
+git = function(arguments, stdin) {
 	if (typeof(arguments) == 'string') {
 		arguments = [ arguments ];
 	}
 	arguments.unshift("git");
-	return system(arguments);
+	return system(arguments, stdin);
 }
 
-eclipse.console.println("git version: " + git('version'));
+/* Rhino as shipped with EclipseScript has no startsWith() */
+if (!String.prototype.startsWith) {
+  Object.defineProperty(String.prototype, 'startsWith', {
+    value: function (searchString) {
+      return this.indexOf(searchString, 0) === 0;
+    }
+  });
+}
 
-var editedFile = eclipse.editors.file;
-cleanUp(editedFile);
-eclipse.console.println("Cleaned up sources of " + editedFile);
+var commitMap = {}
+/* Rewrites the original commit with the current tree and the rewritten parents */
+fixup_commit = function(originalCommit) {
+	var tree = git('write-tree');
+  lines = git(['cat-file', 'commit', originalCommit]).split('\n');
+  for (var i in lines) {
+  	var line = lines[i];
+  	if (line.startsWith('tree ')) {
+  		lines[i] = 'tree ' + tree;
+  	} else if (line.startsWith('parent ')) {
+  		var fixupped = commitMap[line.substring(7)];
+  		if (fixupped != undefined) {
+  			lines[i] = 'parent ' + fixupped;
+  		}
+  	} else if (line.startsWith('committer ')) {
+  		lines[i] = 'committer ' + git(['var', 'GIT_COMMITTER_IDENT']);
+  	} else if (lines[i] == '') {
+  		break;
+  	}
+  }
+  var fixupped = git(['hash-object', '-t', 'commit', '-w', '--stdin'], lines.join('\n'));
+  commitMap[originalCommit] = fixupped;
+  git(['checkout', fixupped])
+}
+
+tip = git(['rev-parse', 'HEAD']);
+branchName = git(['rev-parse', '--symbolic-full-name', 'HEAD']);
+if (branchName == '') throw "Cannot determine current branch name!";
+mergeBase = git(['merge-base', 'HEAD', 'origin/master']);
+if (mergeBase == '') throw "Cannot determine merge base!";
+mergeBase = '1a1bc4be622802b1d2a2292ec77906baca747cd9^';
+
+commits = git(['rev-list', '--reverse', mergeBase + '..']).split("\n");
+for (var line in commits) {
+	var commit = commits[line];
+	git('checkout', commit);
+	cleanUp(editedFile);
+	git('add', file.getAbsolutePath());
+	fixup_commit(commit);
+	eclipse.console.println("Cleaned up " + file + " in " + commit.substring(0, 8)
+		+ " (-> " + commitMap[commit].substring(0, 8) + ")");
+}
+
+git(['update-ref', '-m', 'Updated from ' + tip + ' by code-cleanup.eclipse.js',
+     branchName, commitMap[tip], tip]);
+git(['checkout', branchName]);
