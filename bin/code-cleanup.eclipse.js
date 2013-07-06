@@ -81,6 +81,11 @@ system = function(commandLine) {
 	process.getOutputStream().close();
 	stderrDumper.join();
 	stdoutDumper.join();
+	var exitValue = process.exitValue();
+	if (exitValue != 0) {
+		throw "Error (exit code: " + exitValue + ") executing:\n\t" + commandLine.join(" ")
+			+ "\nOutput so far:\n" + output + "\n";
+	}
 	return output.toString();
 }
 
