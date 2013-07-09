@@ -69,4 +69,9 @@ public class DataTypeService extends AbstractSingletonService<DataType> {
 		}
 		return null;
 	}
+
+	// TODO
+	// override getInstances()
+	// it can init lazily using super class getInstances()
+	// it returns a SORTED list of types (sorted by name). Maybe.
 }
