@@ -75,6 +75,8 @@ public class BetterTypeChanger<U extends RealType<U>, V extends RealType<V> & Na
 	// TODO: expects new type to be RealType and NativeType. My new
 	// implementations do not do this yet.
 
+	// TODO: we should be able to make NewImage also work in a similar fashion.
+
 	// -- Parameters --
 
 	@Parameter
