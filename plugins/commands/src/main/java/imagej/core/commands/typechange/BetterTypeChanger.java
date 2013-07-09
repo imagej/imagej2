@@ -37,13 +37,21 @@ package imagej.core.commands.typechange;
 
 import imagej.command.Command;
 import imagej.command.DynamicCommand;
+import imagej.data.Dataset;
+import imagej.data.DatasetService;
 import imagej.data.types.DataType;
 import imagej.data.types.DataTypeService;
+import imagej.data.types.GeneralCast;
 import imagej.menu.MenuConstants;
 import imagej.module.MutableModuleItem;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import net.imglib2.Cursor;
+import net.imglib2.RandomAccess;
+import net.imglib2.type.NativeType;
+import net.imglib2.type.numeric.RealType;
 
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
@@ -60,9 +68,17 @@ import org.scijava.plugin.Plugin;
 		@Menu(label = "Type", mnemonic = 't'),
 	@Menu(label = "Change...", mnemonic = 'c') },
 	headless = true)
-public class BetterTypeChanger extends DynamicCommand {
+public class BetterTypeChanger<U extends RealType<U>, V extends RealType<V> & NativeType<V>>
+	extends DynamicCommand
+{
+
+	// TODO: expects new type to be RealType and NativeType. My new
+	// implementations do not do this yet.
 
 	// -- Parameters --
+
+	@Parameter
+	private DatasetService datasetService;
 
 	@Parameter
 	private DataTypeService dataTypeService;
@@ -70,13 +86,31 @@ public class BetterTypeChanger extends DynamicCommand {
 	@Parameter(label = "Type", initializer = "init")
 	private String typeName;
 
+	@Parameter
+	private Dataset data;
+
 	// -- Command methods --
 
 	@Override
 	public void run() {
-		DataType<?> type = dataTypeService.getTypeByName(typeName);
+		DataType<U> inType =
+			dataTypeService.getTypeByClass(data.getImgPlus().firstElement()
+				.getClass());
+		DataType<V> outType = (DataType<V>) dataTypeService.getTypeByName(typeName);
 		System.out.println("Change type to " + typeName);
-		System.out.println(type.getType().getClass());
+		System.out.println(outType.getType().getClass());
+		Dataset newData =
+			datasetService.create(outType.getType().createVariable(), data.getDims(),
+				"Converted Image", data.getAxes());
+		Cursor<U> inCursor = (Cursor<U>) data.getImgPlus().cursor();
+		RandomAccess<V> outAccessor =
+			(RandomAccess<V>) newData.getImgPlus().randomAccess();
+		while (inCursor.hasNext()) {
+			inCursor.fwd();
+			outAccessor.setPosition(inCursor);
+			cast(inType, inCursor.get(), outType, outAccessor.get());
+		}
+		data.setImgPlus(newData.getImgPlus());
 	}
 
 	// -- initializers --
@@ -90,5 +124,30 @@ public class BetterTypeChanger extends DynamicCommand {
 		}
 		input.setChoices(choices);
 		input.setValue(this, choices.get(0));
+	}
+
+	// TODO - do all the testing outside this method once and call one of three
+	// cast methods.
+
+	private void cast(DataType<U> inputType, U i, DataType<V> outputType, V o)
+	{
+		// TODO
+		// only do general cast when data types are unbounded or are outside
+		// Double or Long precisions. Otherwise use primitives to avoid tons of
+		// Object overhead.
+		boolean useLong = false;
+		boolean useDouble = false;
+		if (useLong) {
+			// double val = inputType.asDouble(i);
+			// outputType.cast(val, o);
+		}
+		else if (useDouble) {
+			// long val = inputType.asLong(i);
+			// outputType.cast(val, o);
+		}
+		else {
+			// simplest slowest approach
+			GeneralCast.cast(inputType, i, outputType, o);
+		}
 	}
 }
