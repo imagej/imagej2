@@ -612,30 +612,6 @@ public class CodeHacker {
 	}
 
 	/**
-	 * Makes sure that the legacy plugin class loader finds stuff in
-	 * $HOME/.plugins/
-	 * 
-	 * @param directory
-	 *            a directory where additional plugins can be found
-	 */
-	public void addExtraPlugins() {
-		insertAtTopOfMethod("ij.io.PluginClassLoader", "void init(java.lang.String path)",
-				extraPluginJarsHandler("addJAR(file);"));
-		insertAtBottomOfMethod("ij.Menus",
-				"public static synchronized java.lang.String[] getPlugins()",
-				extraPluginJarsHandler("if (jarFiles == null) jarFiles = new java.util.Vector();" +
-						"jarFiles.addElement(file.getAbsolutePath());"));
-		// force IJ.getClassLoader() to instantiate a PluginClassLoader
-		replaceCallInMethod(
-				"ij.IJ",
-				"public static ClassLoader getClassLoader()",
-				"java.lang.System",
-				"getProperty",
-				"$_ = System.getProperty($1);\n"
-						+ "if ($_ == null && $1.equals(\"plugins.dir\")) $_ = \"/non-existant/\";");
-	}
-
-	/**
 	 * Replaces every field write access to the specified field in the specified method.
 	 * 
 	 * @param fullClass the full class
@@ -720,14 +696,6 @@ public class CodeHacker {
 					"Cannot handle replace call to " + calledMethodName
 							+ " in " + fullClass + "'s " + methodSig, e);
 		}
-	}
-
-	private String extraPluginJarsHandler(final String code) {
-		return "for (java.util.Iterator iter = " + IJ1Helper.class.getName() + ".handleExtraPluginJars().iterator();\n" +
-				"iter.hasNext(); ) {\n" +
-				"\tjava.io.File file = (java.io.File)iter.next();\n" +
-				code + "\n" +
-				"}\n";
 	}
 
 	/**

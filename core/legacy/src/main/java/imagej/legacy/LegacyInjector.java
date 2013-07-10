@@ -236,7 +236,7 @@ public class LegacyInjector {
 							+ "}");
 
 		// let the plugin class loader find stuff in $HOME/.plugins, too
-		hacker.addExtraPlugins();
+		addExtraPlugins(hacker);
 
 		// make sure that the GenericDialog is disposed in macro mode
 		try {
@@ -432,6 +432,38 @@ public class LegacyInjector {
 		hacker.replaceParameterInCall("ij.plugin.Options", "public void appearance()", "showMessage", 2, appName);
 		hacker.replaceParameterInCall("ij.gui.YesNoCancelDialog", "public <init>(java.awt.Frame parent, java.lang.String title, java.lang.String msg)", "super", 2, appName);
 		hacker.replaceParameterInCall("ij.gui.Toolbar", "private void showMessage(int toolId)", "showStatus", 1, appName);
+	}
+
+	/**
+	 * Makes sure that the legacy plugin class loader finds stuff in
+	 * $HOME/.plugins/
+	 * 
+	 * @param directory
+	 *            a directory where additional plugins can be found
+	 */
+	private void addExtraPlugins(final CodeHacker hacker) {
+		hacker.insertAtTopOfMethod("ij.io.PluginClassLoader", "void init(java.lang.String path)",
+				extraPluginJarsHandler("addJAR(file);"));
+		hacker.insertAtBottomOfMethod("ij.Menus",
+				"public static synchronized java.lang.String[] getPlugins()",
+				extraPluginJarsHandler("if (jarFiles == null) jarFiles = new java.util.Vector();" +
+						"jarFiles.addElement(file.getAbsolutePath());"));
+		// force IJ.getClassLoader() to instantiate a PluginClassLoader
+		hacker.replaceCallInMethod(
+				"ij.IJ",
+				"public static ClassLoader getClassLoader()",
+				"java.lang.System",
+				"getProperty",
+				"$_ = System.getProperty($1);\n"
+						+ "if ($_ == null && $1.equals(\"plugins.dir\")) $_ = \"/non-existant/\";");
+	}
+
+	private String extraPluginJarsHandler(final String code) {
+		return "for (java.util.Iterator iter = " + IJ1Helper.class.getName() + ".handleExtraPluginJars().iterator();\n" +
+				"iter.hasNext(); ) {\n" +
+				"\tjava.io.File file = (java.io.File)iter.next();\n" +
+				code + "\n" +
+				"}\n";
 	}
 
 	void setLegacyService(final LegacyService legacyService) {
