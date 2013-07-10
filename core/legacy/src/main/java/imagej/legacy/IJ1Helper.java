@@ -242,6 +242,24 @@ public class IJ1Helper {
 	}
 
 	private static LegacyEditorPlugin editor;
+	private static String appName = "ImageJ";
+
+	/**
+	 * Sets the application name for ImageJ 1.x.
+	 * 
+	 * @param name the name to display instead of <i>ImageJ</i>.
+	 */
+	public static void setAppName(final String name) {
+		appName = name;
+	}
+
+	/**
+	 * Returns the application name for use with ImageJ 1.x.
+	 * @return the application name
+	 */
+	public static String getAppName() {
+		return appName;
+	}
 
 	/**
 	 * Sets the legacy editor to use instead of ImageJ 1.x' built-in one.

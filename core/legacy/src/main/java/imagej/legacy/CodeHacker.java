@@ -376,28 +376,6 @@ public class CodeHacker {
 	}
 
 	/**
-	 * Replaces the application name.
-	 * 
-	 * @param appName the new application name
-	 */
-	public void setAppName(final String appName) {
-		insertPublicStaticField("ij.IJ", String.class, "_appName", "\"" + appName + "\"");
-		final String appNameField = "ij.IJ._appName");
-		insertAtTopOfMethod("ij.IJ", "public void error(java.lang.String title, java.lang.String msg)",
-				"if ($1 == null || $1.equals(\"ImageJ\")) $1 = " + appNameField + ";");
-		insertAtBottomOfMethod("ij.ImageJ", "public java.lang.String version()", "$_ = $_.replace(\"ImageJ\", " + appNameField + ");");
-		replaceParameterInCall("ij.ImageJ", "public <init>(java.applet.Applet applet, int mode)", "super", 1, appNameField);
-		replaceParameterInNew("ij.ImageJ", "public void run()", "ij.gui.GenericDialog", 1, appNameField);
-		replaceParameterInCall("ij.ImageJ", "public void run()", "addMessage", 1, appNameField);
-		replaceParameterInNew("ij.plugin.CommandFinder", "public void export()", "ij.text.TextWindow", 1, appNameField);
-		replaceParameterInCall("ij.plugin.Hotkeys", "public void removeHotkey()", "addMessage", 1, appNameField);
-		replaceParameterInCall("ij.plugin.Hotkeys", "public void removeHotkey()", "showStatus", 1, appNameField);
-		replaceParameterInCall("ij.plugin.Options", "public void appearance()", "showMessage", 2, appNameField);
-		replaceParameterInCall("ij.gui.YesNoCancelDialog", "public <init>(java.awt.Frame parent, java.lang.String title, java.lang.String msg)", "super", 2, appNameField);
-		replaceParameterInCall("ij.gui.Toolbar", "private void showMessage(int toolId)", "showStatus", 1, appNameField);
-	}
-
-	/**
 	 * Replaces the application name in the given method in the given parameter
 	 * to the given constructor call.
 	 * 
@@ -418,7 +396,7 @@ public class CodeHacker {
 	 *            the code to use instead of the specified parameter
 	 * @throws CannotCompileException
 	 */
-	private void replaceParameterInNew(final String fullClass,
+	protected void replaceParameterInNew(final String fullClass,
 			final String methodSig, final String newClassName,
 			final int parameterIndex, final String replacement) {
 		try {
@@ -475,7 +453,7 @@ public class CodeHacker {
 	 *            the code to use instead of the specified parameter
 	 * @throws CannotCompileException
 	 */
-	private void replaceParameterInCall(final String fullClass,
+	protected void replaceParameterInCall(final String fullClass,
 			final String methodSig, final String calledMethodName,
 			final int parameterIndex, final String replacement) {
 		try {

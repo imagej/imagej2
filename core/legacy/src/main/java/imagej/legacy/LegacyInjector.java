@@ -358,6 +358,7 @@ public class LegacyInjector {
 		hacker.handleHTTPS("ij.plugin.ListVirtualStack", "java.lang.String[] open(java.lang.String path)");
 
 		addEditorExtensionPoints(hacker);
+		insertAppNameHooks(hacker);
 
 		// commit patches
 		hacker.loadClasses();
@@ -412,6 +413,25 @@ public class LegacyInjector {
 			"if (!" + IJ1Helper.class.getName() + ".createInLegacyEditor($1, $2)) {"
 			+ "  ((ij.plugin.frame.Editor)ij.IJ.runPlugIn(\"ij.plugin.frame.Editor\", \"\")).create($1, $2);"
 			+ "}");
+	}
+
+	/**
+	 * Inserts hooks to replace the application name.
+	 */
+	private void insertAppNameHooks(final CodeHacker hacker) {
+		final String appName = IJ1Helper.class.getName() + ".getAppName()";
+		hacker.insertAtTopOfMethod("ij.IJ", "public void error(java.lang.String title, java.lang.String msg)",
+				"if ($1 == null || $1.equals(\"ImageJ\")) $1 = " + appName + ";");
+		hacker.insertAtBottomOfMethod("ij.ImageJ", "public java.lang.String version()", "$_ = $_.replace(\"ImageJ\", " + appName + ");");
+		hacker.replaceParameterInCall("ij.ImageJ", "public <init>(java.applet.Applet applet, int mode)", "super", 1, appName);
+		hacker.replaceParameterInNew("ij.ImageJ", "public void run()", "ij.gui.GenericDialog", 1, appName);
+		hacker.replaceParameterInCall("ij.ImageJ", "public void run()", "addMessage", 1, appName);
+		hacker.replaceParameterInNew("ij.plugin.CommandFinder", "public void export()", "ij.text.TextWindow", 1, appName);
+		hacker.replaceParameterInCall("ij.plugin.Hotkeys", "public void removeHotkey()", "addMessage", 1, appName);
+		hacker.replaceParameterInCall("ij.plugin.Hotkeys", "public void removeHotkey()", "showStatus", 1, appName);
+		hacker.replaceParameterInCall("ij.plugin.Options", "public void appearance()", "showMessage", 2, appName);
+		hacker.replaceParameterInCall("ij.gui.YesNoCancelDialog", "public <init>(java.awt.Frame parent, java.lang.String title, java.lang.String msg)", "super", 2, appName);
+		hacker.replaceParameterInCall("ij.gui.Toolbar", "private void showMessage(int toolId)", "showStatus", 1, appName);
 	}
 
 	void setLegacyService(final LegacyService legacyService) {
