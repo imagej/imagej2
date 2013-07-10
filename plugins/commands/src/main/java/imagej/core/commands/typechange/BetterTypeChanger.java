@@ -72,8 +72,8 @@ public class BetterTypeChanger<U extends RealType<U>, V extends RealType<V> & Na
 	extends DynamicCommand
 {
 
-	// TODO: expects new type to be RealType and NativeType. My new
-	// implementations do not do this yet.
+	// TODO: expects new type to be RealType and NativeType. The unbounded types
+	// defined in the data types package don't support NativeType.
 
 	// TODO: we should be able to make NewImage also work in a similar fashion.
 
@@ -100,10 +100,8 @@ public class BetterTypeChanger<U extends RealType<U>, V extends RealType<V> & Na
 			dataTypeService.getTypeByClass(data.getImgPlus().firstElement()
 				.getClass());
 		DataType<V> outType = (DataType<V>) dataTypeService.getTypeByName(typeName);
-		System.out.println("Change type to " + typeName);
-		System.out.println(outType.getType().getClass());
 		Dataset newData =
-			datasetService.create(outType.getType().createVariable(), data.getDims(),
+			datasetService.create(outType.createVariable(), data.getDims(),
 				"Converted Image", data.getAxes());
 		Cursor<U> inCursor = (Cursor<U>) data.getImgPlus().cursor();
 		RandomAccess<V> outAccessor =
@@ -146,11 +144,11 @@ public class BetterTypeChanger<U extends RealType<U>, V extends RealType<V> & Na
 		boolean useLong = false;
 		boolean useDouble = false;
 		if (useLong) {
-			// double val = inputType.asDouble(i);
+			// long val = inputType.asLong(i);
 			// outputType.cast(val, o);
 		}
 		else if (useDouble) {
-			// long val = inputType.asLong(i);
+			// double val = inputType.asDouble(i);
 			// outputType.cast(val, o);
 		}
 		else {
