@@ -85,7 +85,7 @@ public class BetterTypeChanger<U extends RealType<U>, V extends RealType<V> & Na
 	@Parameter
 	private DataTypeService dataTypeService;
 
-	@Parameter(label = "Type", initializer = "init")
+	@Parameter(label = "Type", persist = false, initializer = "init")
 	private String typeName;
 
 	@Parameter
@@ -93,6 +93,7 @@ public class BetterTypeChanger<U extends RealType<U>, V extends RealType<V> & Na
 
 	// -- Command methods --
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void run() {
 		DataType<U> inType =
@@ -126,7 +127,11 @@ public class BetterTypeChanger<U extends RealType<U>, V extends RealType<V> & Na
 			choices.add(dataType.name());
 		}
 		input.setChoices(choices);
-		input.setValue(this, choices.get(0));
+		RealType<?> dataVar = data.getImgPlus().firstElement();
+		@SuppressWarnings("unchecked")
+		DataType<?> type = dataTypeService.getTypeByClass(dataVar.getClass());
+		if (type == null) input.setValue(this, choices.get(0));
+		else input.setValue(this, type.name());
 	}
 
 	// TODO - do all the testing outside this method once and call one of three
