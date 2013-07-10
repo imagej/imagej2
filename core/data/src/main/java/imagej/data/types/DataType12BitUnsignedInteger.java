@@ -37,7 +37,7 @@ package imagej.data.types;
 
 import java.math.BigDecimal;
 
-import net.imglib2.type.numeric.integer.LongType;
+import net.imglib2.type.numeric.integer.Unsigned12BitType;
 
 import org.scijava.AbstractContextual;
 import org.scijava.plugin.Plugin;
@@ -46,25 +46,25 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  */
 @Plugin(type = DataType.class)
-public class DataTypeLong extends AbstractContextual implements
-	DataType<LongType>
+public class DataType12BitUnsignedInteger extends AbstractContextual implements
+	DataType<Unsigned12BitType>
 {
 
-	private final LongType type = new LongType();
+	private final Unsigned12BitType type = new Unsigned12BitType();
 
 	@Override
-	public LongType getType() {
+	public Unsigned12BitType getType() {
 		return type;
 	}
 
 	@Override
 	public String name() {
-		return "64-bit signed integer";
+		return "12-bit unsigned integer";
 	}
 
 	@Override
 	public String description() {
-		return "A Java primitive long backed data type";
+		return "An integer data type ranging between 0 and 4095";
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class DataTypeLong extends AbstractContextual implements
 
 	@Override
 	public boolean isSigned() {
-		return true;
+		return false;
 	}
 
 	@Override
@@ -93,43 +93,45 @@ public class DataTypeLong extends AbstractContextual implements
 	}
 
 	@Override
-	public void lowerBound(LongType dest) {
-		dest.set(Long.MIN_VALUE);
+	public void lowerBound(Unsigned12BitType dest) {
+		dest.set((short) 0);
 	}
 
 	@Override
-	public void upperBound(LongType dest) {
-		dest.set(Long.MAX_VALUE);
+	public void upperBound(Unsigned12BitType dest) {
+		dest.set((short) 4095);
 	}
 
 	@Override
 	public int bitCount() {
-		return 64;
+		return 12;
 	}
 
 	@Override
-	public LongType createVariable() {
-		return new LongType();
+	public Unsigned12BitType createVariable() {
+		return new Unsigned12BitType();
 	}
 
 	@Override
-	public BigDecimal asBigDecimal(LongType val) {
+	public BigDecimal asBigDecimal(Unsigned12BitType val) {
 		return BigDecimal.valueOf(val.get());
 	}
 
 	@Override
-	public void cast(long val, LongType dest) {
-		dest.set(val);
+	public void cast(long val, Unsigned12BitType dest) {
+		if (val < 0) dest.set((short) 0);
+		else if (val > 255) dest.set((short) 4095);
+		else dest.set((short) (val & 0xfff));
 	}
 
 	@Override
-	public void cast(double val, LongType dest) {
-		dest.set((long) val);
+	public void cast(double val, Unsigned12BitType dest) {
+		cast((long) val, dest);
 	}
 
 	@Override
-	public void cast(BigDecimal val, LongType dest) {
-		dest.set(val.longValue());
+	public void cast(BigDecimal val, Unsigned12BitType dest) {
+		cast(val.longValue(), dest);
 	}
 
 }

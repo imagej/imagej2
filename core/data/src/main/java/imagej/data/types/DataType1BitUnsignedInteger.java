@@ -37,7 +37,7 @@ package imagej.data.types;
 
 import java.math.BigDecimal;
 
-import net.imglib2.type.numeric.integer.UnsignedByteType;
+import net.imglib2.type.logic.BitType;
 
 import org.scijava.AbstractContextual;
 import org.scijava.plugin.Plugin;
@@ -46,25 +46,25 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  */
 @Plugin(type = DataType.class)
-public class DataTypeUnsignedByte extends AbstractContextual implements
-	DataType<UnsignedByteType>
+public class DataType1BitUnsignedInteger extends AbstractContextual implements
+	DataType<BitType>
 {
 
-	private final UnsignedByteType type = new UnsignedByteType();
+	private final BitType type = new BitType();
 
 	@Override
-	public UnsignedByteType getType() {
+	public BitType getType() {
 		return type;
 	}
 
 	@Override
 	public String name() {
-		return "8-bit unsigned integer";
+		return "1-bit unsigned integer";
 	}
 
 	@Override
 	public String description() {
-		return "A Java primitive byte backed data type ranging between 0 and 255";
+		return "A integer data type ranging between 0 and 1";
 	}
 
 	@Override
@@ -93,43 +93,44 @@ public class DataTypeUnsignedByte extends AbstractContextual implements
 	}
 
 	@Override
-	public void lowerBound(UnsignedByteType dest) {
-		dest.set(0);
+	public void lowerBound(BitType dest) {
+		dest.set(false);
 	}
 
 	@Override
-	public void upperBound(UnsignedByteType dest) {
-		dest.set(255);
+	public void upperBound(BitType dest) {
+		dest.set(true);
 	}
 
 	@Override
 	public int bitCount() {
-		return 8;
+		return 1;
 	}
 
 	@Override
-	public UnsignedByteType createVariable() {
-		return new UnsignedByteType();
+	public BitType createVariable() {
+		return new BitType();
 	}
 
 	@Override
-	public BigDecimal asBigDecimal(UnsignedByteType val) {
-		return BigDecimal.valueOf(val.get());
+	public BigDecimal asBigDecimal(BitType val) {
+		return BigDecimal.valueOf(val.get() ? 1 : 0);
 	}
 
 	@Override
-	public void cast(long val, UnsignedByteType dest) {
-		dest.set((int) (val & 0xff));
+	public void cast(long val, BitType dest) {
+		if (val <= 0) dest.set(false);
+		else dest.set(true);
 	}
 
 	@Override
-	public void cast(double val, UnsignedByteType dest) {
+	public void cast(double val, BitType dest) {
 		cast((long) val, dest);
 	}
 
 	@Override
-	public void cast(BigDecimal val, UnsignedByteType dest) {
-		dest.set(val.intValue() & 0xff);
+	public void cast(BigDecimal val, BitType dest) {
+		cast(val.longValue(), dest);
 	}
 
 }

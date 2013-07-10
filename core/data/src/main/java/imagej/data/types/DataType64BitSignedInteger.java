@@ -37,6 +37,8 @@ package imagej.data.types;
 
 import java.math.BigDecimal;
 
+import net.imglib2.type.numeric.integer.LongType;
+
 import org.scijava.AbstractContextual;
 import org.scijava.plugin.Plugin;
 
@@ -44,25 +46,26 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  */
 @Plugin(type = DataType.class)
-public class DataTypeUnboundedFloat extends AbstractContextual implements
-	DataType<UnboundedFloatType>
+public class DataType64BitSignedInteger extends AbstractContextual implements
+	DataType<LongType>
 {
 
-	private UnboundedFloatType type = new UnboundedFloatType();
+	private final LongType type = new LongType();
 
 	@Override
-	public UnboundedFloatType getType() {
+	public LongType getType() {
 		return type;
 	}
 
 	@Override
 	public String name() {
-		return "Unbounded float";
+		return "64-bit signed integer";
 	}
 
 	@Override
 	public String description() {
-		return "A float whose size and precision are unrestricted";
+		return "An integer data type ranging between " + Long.MIN_VALUE + " and " +
+			Long.MAX_VALUE;
 	}
 
 	@Override
@@ -77,57 +80,57 @@ public class DataTypeUnboundedFloat extends AbstractContextual implements
 
 	@Override
 	public boolean isBoundedFully() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isBoundedBelow() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isBoundedAbove() {
-		return false;
+		return true;
 	}
 
 	@Override
-	public void lowerBound(UnboundedFloatType dest) {
-		throw new UnsupportedOperationException("This data type is unbounded");
+	public void lowerBound(LongType dest) {
+		dest.set(Long.MIN_VALUE);
 	}
 
 	@Override
-	public void upperBound(UnboundedFloatType dest) {
-		throw new UnsupportedOperationException("This data type is unbounded");
+	public void upperBound(LongType dest) {
+		dest.set(Long.MAX_VALUE);
 	}
 
 	@Override
 	public int bitCount() {
-		throw new UnsupportedOperationException("This data type is unbounded");
+		return 64;
 	}
 
 	@Override
-	public UnboundedFloatType createVariable() {
-		return new UnboundedFloatType();
+	public LongType createVariable() {
+		return new LongType();
 	}
 
 	@Override
-	public BigDecimal asBigDecimal(UnboundedFloatType val) {
-		return val.get();
+	public BigDecimal asBigDecimal(LongType val) {
+		return BigDecimal.valueOf(val.get());
 	}
 
 	@Override
-	public void cast(long val, UnboundedFloatType dest) {
-		dest.set(BigDecimal.valueOf(val));
-	}
-
-	@Override
-	public void cast(double val, UnboundedFloatType dest) {
-		dest.set(BigDecimal.valueOf((long) val));
-	}
-
-	@Override
-	public void cast(BigDecimal val, UnboundedFloatType dest) {
+	public void cast(long val, LongType dest) {
 		dest.set(val);
+	}
+
+	@Override
+	public void cast(double val, LongType dest) {
+		dest.set((long) val);
+	}
+
+	@Override
+	public void cast(BigDecimal val, LongType dest) {
+		dest.set(val.longValue());
 	}
 
 }

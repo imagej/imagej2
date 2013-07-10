@@ -36,7 +36,8 @@
 package imagej.data.types;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
+
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 import org.scijava.AbstractContextual;
 import org.scijava.plugin.Plugin;
@@ -45,25 +46,25 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  */
 @Plugin(type = DataType.class)
-public class DataTypeUnboundedInteger extends AbstractContextual implements
-	DataType<UnboundedIntegerType>
+public class DataType8BitUnsignedInteger extends AbstractContextual implements
+	DataType<UnsignedByteType>
 {
 
-	private UnboundedIntegerType type = new UnboundedIntegerType();
+	private final UnsignedByteType type = new UnsignedByteType();
 
 	@Override
-	public UnboundedIntegerType getType() {
+	public UnsignedByteType getType() {
 		return type;
 	}
 
 	@Override
 	public String name() {
-		return "Unbounded integer";
+		return "8-bit unsigned integer";
 	}
 
 	@Override
 	public String description() {
-		return "An integer whose size is unrestricted";
+		return "An integer data type ranging between 0 and 255";
 	}
 
 	@Override
@@ -73,62 +74,64 @@ public class DataTypeUnboundedInteger extends AbstractContextual implements
 
 	@Override
 	public boolean isSigned() {
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean isBoundedFully() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isBoundedBelow() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isBoundedAbove() {
-		return false;
+		return true;
 	}
 
 	@Override
-	public void lowerBound(UnboundedIntegerType dest) {
-		throw new UnsupportedOperationException("This data type is unbounded");
+	public void lowerBound(UnsignedByteType dest) {
+		dest.set(0);
 	}
 
 	@Override
-	public void upperBound(UnboundedIntegerType dest) {
-		throw new UnsupportedOperationException("This data type is unbounded");
+	public void upperBound(UnsignedByteType dest) {
+		dest.set(255);
 	}
 
 	@Override
 	public int bitCount() {
-		throw new UnsupportedOperationException("This data type is unbounded");
+		return 8;
 	}
 
 	@Override
-	public UnboundedIntegerType createVariable() {
-		return new UnboundedIntegerType();
+	public UnsignedByteType createVariable() {
+		return new UnsignedByteType();
 	}
 
 	@Override
-	public BigDecimal asBigDecimal(UnboundedIntegerType val) {
-		return new BigDecimal(val.get());
+	public BigDecimal asBigDecimal(UnsignedByteType val) {
+		return BigDecimal.valueOf(val.get());
 	}
 
 	@Override
-	public void cast(long val, UnboundedIntegerType dest) {
-		dest.set(BigInteger.valueOf(val));
+	public void cast(long val, UnsignedByteType dest) {
+		if (val < 0) dest.set(0);
+		else if (val > 255) dest.set(255);
+		else dest.set((short) val);
 	}
 
 	@Override
-	public void cast(double val, UnboundedIntegerType dest) {
-		dest.set(BigInteger.valueOf((long) val));
+	public void cast(double val, UnsignedByteType dest) {
+		cast((long) val, dest);
 	}
 
 	@Override
-	public void cast(BigDecimal val, UnboundedIntegerType dest) {
-		dest.set(val.toBigInteger());
+	public void cast(BigDecimal val, UnsignedByteType dest) {
+		cast(val.longValue(), dest);
 	}
 
 }

@@ -37,7 +37,7 @@ package imagej.data.types;
 
 import java.math.BigDecimal;
 
-import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.type.numeric.integer.ShortType;
 
 import org.scijava.AbstractContextual;
 import org.scijava.plugin.Plugin;
@@ -46,30 +46,31 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  */
 @Plugin(type = DataType.class)
-public class DataTypeFloat extends AbstractContextual implements
-	DataType<FloatType>
+public class DataType16BitSignedInteger extends AbstractContextual implements
+	DataType<ShortType>
 {
 
-	private final FloatType type = new FloatType();
+	private final ShortType type = new ShortType();
 
 	@Override
-	public FloatType getType() {
+	public ShortType getType() {
 		return type;
 	}
 
 	@Override
 	public String name() {
-		return "32-bit signed float";
+		return "16-bit signed integer";
 	}
 
 	@Override
 	public String description() {
-		return "A Java primitive float backed data type";
+		return "A integer data type ranging between " + Short.MIN_VALUE + " and " +
+			Short.MAX_VALUE;
 	}
 
 	@Override
 	public boolean isFloat() {
-		return true;
+		return false;
 	}
 
 	@Override
@@ -93,43 +94,45 @@ public class DataTypeFloat extends AbstractContextual implements
 	}
 
 	@Override
-	public void lowerBound(FloatType dest) {
-		dest.set(-Float.MAX_VALUE);
+	public void lowerBound(ShortType dest) {
+		dest.set(Short.MIN_VALUE);
 	}
 
 	@Override
-	public void upperBound(FloatType dest) {
-		dest.set(Float.MAX_VALUE);
+	public void upperBound(ShortType dest) {
+		dest.set(Short.MAX_VALUE);
 	}
 
 	@Override
 	public int bitCount() {
-		return 32;
+		return 16;
 	}
 
 	@Override
-	public FloatType createVariable() {
-		return new FloatType();
+	public ShortType createVariable() {
+		return new ShortType();
 	}
 
 	@Override
-	public BigDecimal asBigDecimal(FloatType val) {
+	public BigDecimal asBigDecimal(ShortType val) {
 		return BigDecimal.valueOf(val.get());
 	}
 
 	@Override
-	public void cast(long val, FloatType dest) {
-		dest.set(val);
+	public void cast(long val, ShortType dest) {
+		if (val < Short.MIN_VALUE) dest.set(Short.MIN_VALUE);
+		else if (val > Short.MAX_VALUE) dest.set(Short.MAX_VALUE);
+		else dest.set((short) val);
 	}
 
 	@Override
-	public void cast(double val, FloatType dest) {
-		dest.set((float) val);
+	public void cast(double val, ShortType dest) {
+		cast((long) val, dest);
 	}
 
 	@Override
-	public void cast(BigDecimal val, FloatType dest) {
-		dest.set(val.floatValue());
+	public void cast(BigDecimal val, ShortType dest) {
+		cast(val.longValue(), dest);
 	}
 
 }
