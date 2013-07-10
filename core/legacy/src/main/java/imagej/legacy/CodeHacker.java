@@ -68,7 +68,9 @@ import javassist.LoaderClassPath;
 import javassist.Modifier;
 import javassist.NotFoundException;
 import javassist.bytecode.BadBytecode;
+import javassist.bytecode.CodeAttribute;
 import javassist.bytecode.CodeIterator;
+import javassist.bytecode.ConstPool;
 import javassist.bytecode.InstructionPrinter;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
@@ -1156,19 +1158,34 @@ public class CodeHacker {
 	public void disassemble(final String fullName, final PrintStream out, final boolean evenSuperclassMethods) {
 		CtClass clazz = getClass(fullName);
 		out.println("Class " + clazz.getName());
-		for (CtConstructor ctor : clazz.getConstructors()) try {
-			disassemble(ctor.toMethod(ctor.getName(), clazz), out);
-		} catch (CannotCompileException e) {
-			e.printStackTrace(out);
+		for (CtConstructor ctor : clazz.getConstructors()) {
+			disassemble(ctor, out);
 		}
 		for (CtMethod method : clazz.getDeclaredMethods())
 			if (evenSuperclassMethods || method.getDeclaringClass().equals(clazz))
 				disassemble(method, out);
 	}
 
-	private void disassemble(CtMethod method, PrintStream out) {
+	private void disassemble(CtBehavior method, PrintStream out) {
 		out.println(method.getLongName());
-		new InstructionPrinter(out).print(method);
+        MethodInfo info = method.getMethodInfo2();
+        ConstPool pool = info.getConstPool();
+        CodeAttribute code = info.getCodeAttribute();
+        if (code == null)
+            return;
+
+        CodeIterator iterator = code.iterator();
+        while (iterator.hasNext()) {
+            int pos;
+            try {
+                pos = iterator.next();
+            } catch (BadBytecode e) {
+                throw new RuntimeException(e);
+            }
+
+            out.println(pos + ": " + InstructionPrinter.instructionString(iterator, pos, pool));
+        }
+
 		out.println("");
 	}
 
