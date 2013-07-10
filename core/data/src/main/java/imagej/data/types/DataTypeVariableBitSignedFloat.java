@@ -111,8 +111,8 @@ public class DataTypeVariableBitSignedFloat extends AbstractContextual implement
 	}
 
 	@Override
-	public BigDecimal asBigDecimal(UnboundedFloatType val) {
-		return val.get();
+	public BigComplex asBigComplex(UnboundedFloatType val) {
+		return new BigComplex(val.get(), BigDecimal.ZERO);
 	}
 
 	@Override
@@ -126,8 +126,8 @@ public class DataTypeVariableBitSignedFloat extends AbstractContextual implement
 	}
 
 	@Override
-	public void cast(BigDecimal val, UnboundedFloatType dest) {
-		dest.set(val);
+	public void cast(BigComplex val, UnboundedFloatType dest) {
+		dest.set(val.getReal());
 	}
 
 }

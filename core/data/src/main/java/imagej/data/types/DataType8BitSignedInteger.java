@@ -114,8 +114,8 @@ public class DataType8BitSignedInteger extends AbstractContextual implements
 	}
 
 	@Override
-	public BigDecimal asBigDecimal(ByteType val) {
-		return BigDecimal.valueOf(val.get());
+	public BigComplex asBigComplex(ByteType val) {
+		return new BigComplex(BigDecimal.valueOf(val.get()), BigDecimal.ZERO);
 	}
 
 	@Override
@@ -131,8 +131,8 @@ public class DataType8BitSignedInteger extends AbstractContextual implements
 	}
 
 	@Override
-	public void cast(BigDecimal val, ByteType dest) {
-		cast(val.longValue(), dest);
+	public void cast(BigComplex val, ByteType dest) {
+		cast(val.getReal().longValue(), dest);
 	}
 
 }

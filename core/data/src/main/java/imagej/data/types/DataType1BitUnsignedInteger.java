@@ -113,8 +113,9 @@ public class DataType1BitUnsignedInteger extends AbstractContextual implements
 	}
 
 	@Override
-	public BigDecimal asBigDecimal(BitType val) {
-		return BigDecimal.valueOf(val.get() ? 1 : 0);
+	public BigComplex asBigComplex(BitType val) {
+		return new BigComplex(BigDecimal.valueOf(val.get() ? 1 : 0),
+			BigDecimal.ZERO);
 	}
 
 	@Override
@@ -129,8 +130,8 @@ public class DataType1BitUnsignedInteger extends AbstractContextual implements
 	}
 
 	@Override
-	public void cast(BigDecimal val, BitType dest) {
-		cast(val.longValue(), dest);
+	public void cast(BigComplex val, BitType dest) {
+		cast(val.getReal().longValue(), dest);
 	}
 
 }

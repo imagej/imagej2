@@ -113,15 +113,15 @@ public class DataType12BitUnsignedInteger extends AbstractContextual implements
 	}
 
 	@Override
-	public BigDecimal asBigDecimal(Unsigned12BitType val) {
-		return BigDecimal.valueOf(val.get());
+	public BigComplex asBigComplex(Unsigned12BitType val) {
+		return new BigComplex(BigDecimal.valueOf(val.get()), BigDecimal.ZERO);
 	}
 
 	@Override
 	public void cast(long val, Unsigned12BitType dest) {
 		if (val < 0) dest.set((short) 0);
-		else if (val > 255) dest.set((short) 4095);
-		else dest.set((short) (val & 0xfff));
+		else if (val > 0xfff) dest.set((short) 0xfff);
+		else dest.set((short) val);
 	}
 
 	@Override
@@ -130,8 +130,8 @@ public class DataType12BitUnsignedInteger extends AbstractContextual implements
 	}
 
 	@Override
-	public void cast(BigDecimal val, Unsigned12BitType dest) {
-		cast(val.longValue(), dest);
+	public void cast(BigComplex val, Unsigned12BitType dest) {
+		cast(val.getReal().longValue(), dest);
 	}
 
 }

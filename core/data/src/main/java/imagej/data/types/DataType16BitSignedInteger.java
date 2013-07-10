@@ -114,8 +114,8 @@ public class DataType16BitSignedInteger extends AbstractContextual implements
 	}
 
 	@Override
-	public BigDecimal asBigDecimal(ShortType val) {
-		return BigDecimal.valueOf(val.get());
+	public BigComplex asBigComplex(ShortType val) {
+		return new BigComplex(BigDecimal.valueOf(val.get()), BigDecimal.ZERO);
 	}
 
 	@Override
@@ -131,8 +131,8 @@ public class DataType16BitSignedInteger extends AbstractContextual implements
 	}
 
 	@Override
-	public void cast(BigDecimal val, ShortType dest) {
-		cast(val.longValue(), dest);
+	public void cast(BigComplex val, ShortType dest) {
+		cast(val.getReal().longValue(), dest);
 	}
 
 }

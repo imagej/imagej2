@@ -37,100 +37,35 @@ package imagej.data.types;
 
 import java.math.BigDecimal;
 
-import net.imglib2.type.numeric.integer.LongType;
-
-import org.scijava.AbstractContextual;
-import org.scijava.plugin.Plugin;
 
 /**
+ * A complex number that stores values in BigDecimal (arbitrary) precision. This
+ * class is useful for supporting DataType translations with minimal data loss.
+ * 
  * @author Barry DeZonia
  */
-@Plugin(type = DataType.class)
-public class DataType64BitSignedInteger extends AbstractContextual implements
-	DataType<LongType>
-{
+public class BigComplex {
 
-	private final LongType type = new LongType();
+	private BigDecimal r, i;
 
-	@Override
-	public LongType getType() {
-		return type;
+	public BigComplex(BigDecimal r, BigDecimal i) {
+		this.r = r;
+		this.i = i;
 	}
 
-	@Override
-	public String name() {
-		return "64-bit signed integer";
+	public BigDecimal getReal() {
+		return r;
 	}
 
-	@Override
-	public String description() {
-		return "An integer data type ranging between " + Long.MIN_VALUE + " and " +
-			Long.MAX_VALUE;
+	public BigDecimal getImag() {
+		return i;
 	}
 
-	@Override
-	public boolean isFloat() {
-		return false;
+	public void setReal(BigDecimal r) {
+		this.r = r;
 	}
 
-	@Override
-	public boolean isSigned() {
-		return true;
+	public void setImag(BigDecimal i) {
+		this.i = i;
 	}
-
-	@Override
-	public boolean isBoundedFully() {
-		return true;
-	}
-
-	@Override
-	public boolean isBoundedBelow() {
-		return true;
-	}
-
-	@Override
-	public boolean isBoundedAbove() {
-		return true;
-	}
-
-	@Override
-	public void lowerBound(LongType dest) {
-		dest.set(Long.MIN_VALUE);
-	}
-
-	@Override
-	public void upperBound(LongType dest) {
-		dest.set(Long.MAX_VALUE);
-	}
-
-	@Override
-	public int bitCount() {
-		return 64;
-	}
-
-	@Override
-	public LongType createVariable() {
-		return new LongType();
-	}
-
-	@Override
-	public BigComplex asBigComplex(LongType val) {
-		return new BigComplex(BigDecimal.valueOf(val.get()), BigDecimal.ZERO);
-	}
-
-	@Override
-	public void cast(long val, LongType dest) {
-		dest.set(val);
-	}
-
-	@Override
-	public void cast(double val, LongType dest) {
-		dest.set((long) val);
-	}
-
-	@Override
-	public void cast(BigComplex val, LongType dest) {
-		dest.set(val.getReal().longValue());
-	}
-
 }

@@ -114,8 +114,8 @@ public class DataType32BitSignedFloat extends AbstractContextual implements
 	}
 
 	@Override
-	public BigDecimal asBigDecimal(FloatType val) {
-		return BigDecimal.valueOf(val.get());
+	public BigComplex asBigComplex(FloatType val) {
+		return new BigComplex(BigDecimal.valueOf(val.get()), BigDecimal.ZERO);
 	}
 
 	@Override
@@ -129,8 +129,8 @@ public class DataType32BitSignedFloat extends AbstractContextual implements
 	}
 
 	@Override
-	public void cast(BigDecimal val, FloatType dest) {
-		dest.set(val.floatValue());
+	public void cast(BigComplex val, FloatType dest) {
+		dest.set(val.getReal().floatValue());
 	}
 
 }

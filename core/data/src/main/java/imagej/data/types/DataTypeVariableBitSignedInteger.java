@@ -112,8 +112,8 @@ public class DataTypeVariableBitSignedInteger extends AbstractContextual impleme
 	}
 
 	@Override
-	public BigDecimal asBigDecimal(UnboundedIntegerType val) {
-		return new BigDecimal(val.get());
+	public BigComplex asBigComplex(UnboundedIntegerType val) {
+		return new BigComplex(new BigDecimal(val.get()), BigDecimal.ZERO);
 	}
 
 	@Override
@@ -127,8 +127,8 @@ public class DataTypeVariableBitSignedInteger extends AbstractContextual impleme
 	}
 
 	@Override
-	public void cast(BigDecimal val, UnboundedIntegerType dest) {
-		dest.set(val.toBigInteger());
+	public void cast(BigComplex val, UnboundedIntegerType dest) {
+		dest.set(val.getReal().toBigInteger());
 	}
 
 }

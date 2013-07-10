@@ -36,9 +36,6 @@
 package imagej.data.types;
 
 import imagej.plugin.SingletonPlugin;
-
-import java.math.BigDecimal;
-
 import net.imglib2.type.numeric.NumericType;
 
 import org.scijava.Contextual;
@@ -124,10 +121,10 @@ public interface DataType<T extends NumericType<T>> extends Contextual,
 	// for imaginary value support.
 
 	/**
-	 * Returns a BigDecimal representation of a given variable in the underlying
+	 * Returns a BigComplex representation of a given variable in the underlying
 	 * NumericType.
 	 */
-	BigDecimal asBigDecimal(T val);
+	BigComplex asBigComplex(T val);
 
 	// TODO - not great for complex numbers but works. And NumericType has set()
 	// for imaginary value support.
@@ -148,7 +145,7 @@ public interface DataType<T extends NumericType<T>> extends Contextual,
 	 * Sets a given variable of the underlying NumericType to a value that is
 	 * closest to a given BigDecimal number.
 	 */
-	void cast(BigDecimal val, T dest);
+	void cast(BigComplex val, T dest);
 
 // This is here because NumericType has a reliance on float/double which can
 // cause accuracy problems. All other basic ops are supported by NumericType
