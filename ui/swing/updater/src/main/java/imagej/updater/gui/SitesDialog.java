@@ -64,6 +64,7 @@ import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultCellEditor;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -431,8 +432,8 @@ public class SitesDialog extends JDialog implements ActionListener {
 	protected class DataModel extends DefaultTableModel {
 
 		protected int tableWidth;
-		protected int[] widths = { 20, 150, 280, 125, 125 };
-		protected String[] headers = { "Active", "Name", "URL", "Host",
+		protected int[] widths = { 20, 20, 150, 280, 125, 125 };
+		protected String[] headers = { "Active", "Icon", "Name", "URL", "Host",
 			"Directory on Host" };
 
 		public void setColumnWidths() {
@@ -448,7 +449,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 
 		@Override
 		public int getColumnCount() {
-			return 5;
+			return 6;
 		}
 
 		@Override
@@ -458,7 +459,9 @@ public class SitesDialog extends JDialog implements ActionListener {
 
 		@Override
 		public Class<?> getColumnClass(final int column) {
-			return column == 0 ? Boolean.class : String.class;
+			if (column == 0) return Boolean.class;
+			if (column == 1) return ImageIcon.class;
+			return String.class;
 		}
 
 		@Override
@@ -468,13 +471,26 @@ public class SitesDialog extends JDialog implements ActionListener {
 
 		@Override
 		public Object getValueAt(final int row, final int col) {
-			if (col == 1) return getUpdateSiteName(row);
+			if (col == 2) return getUpdateSiteName(row);
 			final UpdateSite site = getUpdateSite(row);
 			if (col == 0) return Boolean.valueOf(site.isActive());
-			if (col == 2) return site.getURL();
-			if (col == 3) return site.getHost();
-			if (col == 4) return site.getUploadDirectory();
+			if (col == 1) return getIcon(site);
+			if (col == 3) return site.getURL();
+			if (col == 4) return site.getHost();
+			if (col == 5) return site.getUploadDirectory();
 			return null;
+		}
+
+		private Object getIcon(final UpdateSite site) {
+			final URL iconURL;
+			try {
+				iconURL = new URL(site.getURL() + "/favicon.png");
+			}
+			catch (final MalformedURLException e) {
+				updaterFrame.log.error(e);
+				return null;
+			}
+			return new ImageIcon(iconURL);
 		}
 
 		public void rowChanged(final int row) {
