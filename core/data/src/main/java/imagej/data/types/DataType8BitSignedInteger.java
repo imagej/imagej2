@@ -114,25 +114,17 @@ public class DataType8BitSignedInteger extends AbstractContextual implements
 	}
 
 	@Override
-	public BigComplex asBigComplex(ByteType val) {
-		return new BigComplex(BigDecimal.valueOf(val.get()), BigDecimal.ZERO);
-	}
-
-	@Override
-	public void cast(long val, ByteType dest) {
-		if (val < Byte.MIN_VALUE) dest.set(Byte.MIN_VALUE);
-		else if (val > Byte.MAX_VALUE) dest.set(Byte.MAX_VALUE);
-		else dest.set((byte) val);
-	}
-
-	@Override
-	public void cast(double val, ByteType dest) {
-		cast((long) val, dest);
+	public void cast(ByteType val, BigComplex dest) {
+		dest.setReal(BigDecimal.valueOf(val.get()));
+		dest.setImag(BigDecimal.ZERO);
 	}
 
 	@Override
 	public void cast(BigComplex val, ByteType dest) {
-		cast(val.getReal().longValue(), dest);
+		long v = val.getReal().longValue();
+		if (v < Byte.MIN_VALUE) dest.set(Byte.MIN_VALUE);
+		else if (v > Byte.MAX_VALUE) dest.set(Byte.MAX_VALUE);
+		else dest.set((byte) v);
 	}
 
 }

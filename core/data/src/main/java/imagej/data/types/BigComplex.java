@@ -48,6 +48,11 @@ public class BigComplex {
 
 	private BigDecimal r, i;
 
+	public BigComplex() {
+		this.r = BigDecimal.ZERO;
+		this.i = BigDecimal.ZERO;
+	}
+	
 	public BigComplex(BigDecimal r, BigDecimal i) {
 		this.r = r;
 		this.i = i;

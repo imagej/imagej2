@@ -114,18 +114,9 @@ public class DataType64BitSignedInteger extends AbstractContextual implements
 	}
 
 	@Override
-	public BigComplex asBigComplex(LongType val) {
-		return new BigComplex(BigDecimal.valueOf(val.get()), BigDecimal.ZERO);
-	}
-
-	@Override
-	public void cast(long val, LongType dest) {
-		dest.set(val);
-	}
-
-	@Override
-	public void cast(double val, LongType dest) {
-		dest.set((long) val);
+	public void cast(LongType val, BigComplex dest) {
+		dest.setReal(BigDecimal.valueOf(val.get()));
+		dest.setImag(BigDecimal.ZERO);
 	}
 
 	@Override

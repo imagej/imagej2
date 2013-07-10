@@ -36,7 +36,6 @@
 package imagej.data.types;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 import org.scijava.AbstractContextual;
 import org.scijava.plugin.Plugin;
@@ -112,18 +111,9 @@ public class DataTypeVariableBitSignedInteger extends AbstractContextual impleme
 	}
 
 	@Override
-	public BigComplex asBigComplex(UnboundedIntegerType val) {
-		return new BigComplex(new BigDecimal(val.get()), BigDecimal.ZERO);
-	}
-
-	@Override
-	public void cast(long val, UnboundedIntegerType dest) {
-		dest.set(BigInteger.valueOf(val));
-	}
-
-	@Override
-	public void cast(double val, UnboundedIntegerType dest) {
-		dest.set(BigInteger.valueOf((long) val));
+	public void cast(UnboundedIntegerType val, BigComplex dest) {
+		dest.setReal(new BigDecimal(val.get()));
+		dest.setImag(BigDecimal.ZERO);
 	}
 
 	@Override

@@ -113,25 +113,15 @@ public class DataType1BitUnsignedInteger extends AbstractContextual implements
 	}
 
 	@Override
-	public BigComplex asBigComplex(BitType val) {
-		return new BigComplex(BigDecimal.valueOf(val.get() ? 1 : 0),
-			BigDecimal.ZERO);
-	}
-
-	@Override
-	public void cast(long val, BitType dest) {
-		if (val <= 0) dest.set(false);
-		else dest.set(true);
-	}
-
-	@Override
-	public void cast(double val, BitType dest) {
-		cast((long) val, dest);
+	public void cast(BitType val, BigComplex dest) {
+		dest.setReal(BigDecimal.valueOf(val.get() ? 1 : 0));
+		dest.setImag(BigDecimal.ZERO);
 	}
 
 	@Override
 	public void cast(BigComplex val, BitType dest) {
-		cast(val.getReal().longValue(), dest);
+		if (val.getReal().longValue() <= 0) dest.set(false);
+		else dest.set(true);
 	}
 
 }

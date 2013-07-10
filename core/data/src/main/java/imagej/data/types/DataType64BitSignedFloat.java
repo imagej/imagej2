@@ -114,23 +114,14 @@ public class DataType64BitSignedFloat extends AbstractContextual implements
 	}
 
 	@Override
-	public BigComplex asBigComplex(DoubleType val) {
-		return new BigComplex(BigDecimal.valueOf(val.get()), BigDecimal.ZERO);
-	}
-
-	@Override
-	public void cast(long val, DoubleType dest) {
-		cast((double) val, dest);
-	}
-
-	@Override
-	public void cast(double val, DoubleType dest) {
-		dest.set(val);
+	public void cast(DoubleType val, BigComplex dest) {
+		dest.setReal(BigDecimal.valueOf(val.get()));
+		dest.setImag(BigDecimal.ZERO);
 	}
 
 	@Override
 	public void cast(BigComplex val, DoubleType dest) {
-		cast(val.getReal().doubleValue(), dest);
+		dest.set(val.getReal().doubleValue());
 	}
 
 }

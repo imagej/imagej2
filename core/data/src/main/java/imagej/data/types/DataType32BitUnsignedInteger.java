@@ -113,26 +113,15 @@ public class DataType32BitUnsignedInteger extends AbstractContextual implements
 	}
 
 	@Override
-	public BigComplex asBigComplex(UnsignedIntType val) {
-		return new BigComplex(BigDecimal.valueOf(val.get()), BigDecimal.ZERO);
-	}
-
-	@Override
-	public void cast(long val, UnsignedIntType dest) {
-		// TODO - is this broken? boundary cases impossible or applied too often?
-		if (val < 0) dest.set(0);
-		else if (val > 0xffffffffL) dest.set(0xffffffffL);
-		else dest.set(val & 0xffffffffL);
-	}
-
-	@Override
-	public void cast(double val, UnsignedIntType dest) {
-		cast((long) val, dest);
+	public void cast(UnsignedIntType val, BigComplex dest) {
+		// TODO - this is broken for neg nums. we should do some BigInteger math to fix.
+		dest.setReal(BigDecimal.valueOf(val.get()));
+		dest.setImag(BigDecimal.ZERO);
 	}
 
 	@Override
 	public void cast(BigComplex val, UnsignedIntType dest) {
-		cast(val.getReal().longValue(), dest);
+		dest.set(val.getReal().longValue());
 	}
 
 }

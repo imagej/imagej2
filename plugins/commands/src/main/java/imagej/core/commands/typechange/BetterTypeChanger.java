@@ -39,6 +39,7 @@ import imagej.command.Command;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
+import imagej.data.types.BigComplex;
 import imagej.data.types.DataType;
 import imagej.data.types.DataTypeService;
 import imagej.data.types.GeneralCast;
@@ -106,10 +107,11 @@ public class BetterTypeChanger<U extends RealType<U>, V extends RealType<V> & Na
 		Cursor<U> inCursor = (Cursor<U>) data.getImgPlus().cursor();
 		RandomAccess<V> outAccessor =
 			(RandomAccess<V>) newData.getImgPlus().randomAccess();
+		BigComplex tmp = new BigComplex();
 		while (inCursor.hasNext()) {
 			inCursor.fwd();
 			outAccessor.setPosition(inCursor);
-			cast(inType, inCursor.get(), outType, outAccessor.get());
+			cast(inType, inCursor.get(), outType, outAccessor.get(), tmp);
 		}
 		// TODO - copy more original metadata? Look at DuplicatorService
 		data.setImgPlus(newData.getImgPlus());
@@ -135,7 +137,7 @@ public class BetterTypeChanger<U extends RealType<U>, V extends RealType<V> & Na
 	// TODO - do all the testing outside this method once and call one of three
 	// cast methods.
 
-	private void cast(DataType<U> inputType, U i, DataType<V> outputType, V o)
+	private void cast(DataType<U> inputType, U i, DataType<V> outputType, V o, BigComplex tmp)
 	{
 		// TODO
 		// only do general cast when data types are unbounded or are outside
@@ -153,7 +155,7 @@ public class BetterTypeChanger<U extends RealType<U>, V extends RealType<V> & Na
 		}
 		else {
 			// simplest slowest approach
-			GeneralCast.cast(inputType, i, outputType, o);
+			GeneralCast.cast(inputType, i, outputType, o, tmp);
 		}
 	}
 }

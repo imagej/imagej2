@@ -117,33 +117,15 @@ public interface DataType<T extends NumericType<T>> extends Contextual,
 	 */
 	T createVariable();
 
-	// TODO - not great for complex numbers but works. And NumericType has set()
-	// for imaginary value support.
-
 	/**
-	 * Returns a BigComplex representation of a given variable in the underlying
+	 * Sets a BigComplex representation from a given variable of the underlying
 	 * NumericType.
 	 */
-	BigComplex asBigComplex(T val);
-
-	// TODO - not great for complex numbers but works. And NumericType has set()
-	// for imaginary value support.
+	void cast(T val, BigComplex dest);
 
 	/**
 	 * Sets a given variable of the underlying NumericType to a value that is
-	 * closest to a given long number.
-	 */
-	void cast(long val, T dest);
-
-	/**
-	 * Sets a given variable of the underlying NumericType to a value that is
-	 * closest to a given double number.
-	 */
-	void cast(double val, T dest);
-
-	/**
-	 * Sets a given variable of the underlying NumericType to a value that is
-	 * closest to a given BigDecimal number.
+	 * closest to a given BigComplex number.
 	 */
 	void cast(BigComplex val, T dest);
 

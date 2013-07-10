@@ -44,9 +44,9 @@ import net.imglib2.type.numeric.NumericType;
 public class GeneralCast {
 
 	public static <U extends NumericType<U>, V extends NumericType<V>> void cast(
-		DataType<U> inputType, U input, DataType<V> outputType, V output)
+		DataType<U> inputType, U input, DataType<V> outputType, V output, BigComplex tmp)
 	{
-		BigComplex ival = inputType.asBigComplex(input);
-		outputType.cast(ival, output);
+		inputType.cast(input, tmp);
+		outputType.cast(tmp, output);
 	}
 }
