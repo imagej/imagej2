@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -243,6 +244,7 @@ public class IJ1Helper {
 
 	private static LegacyEditorPlugin editor;
 	private static String appName = "ImageJ";
+	private static URL iconURL;
 
 	/**
 	 * Sets the application name for ImageJ 1.x.
@@ -259,6 +261,31 @@ public class IJ1Helper {
 	 */
 	public static String getAppName() {
 		return appName;
+	}
+
+	/**
+	 * Sets the icon for ImageJ 1.x.
+	 * 
+	 * @param file
+	 *            the {@link File} of the icon to use in ImageJ 1.x
+	 */
+	public static void setIcon(final File file) {
+		if (file != null && file.exists()) try {
+			iconURL = file.toURI().toURL();
+			return;
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		iconURL = null;
+	}
+
+	/**
+	 * Returns the icon for use with ImageJ 1.x.
+	 * 
+	 * @return the application name
+	 */
+	public static URL getIconURL() {
+		return iconURL;
 	}
 
 	/**

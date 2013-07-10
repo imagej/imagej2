@@ -37,7 +37,6 @@ package imagej.legacy;
 
 import java.awt.GraphicsEnvironment;
 import java.lang.reflect.Field;
-import java.net.URL;
 
 import javassist.NotFoundException;
 import javassist.bytecode.DuplicateMemberException;
@@ -255,21 +254,7 @@ public class LegacyInjector {
 		hacker.insertAtTopOfMethod("ij.ImageJ", "void showStatus(java.lang.String s)", "if ($1 == null || \"\".equals($1)) $1 = version();");
 
 		// handle custom icon (e.g. for Fiji)
-		if (!hacker.hasField("ij.IJ", "_iconURL")) { // Fiji will already have called CodeHacker#setIcon(File icon)
-			hacker.insertPublicStaticField("ij.IJ", URL.class, "_iconURL", null);
-		}
-		hacker.replaceCallInMethod("ij.ImageJ", "void setIcon()", "java.lang.Class", "getResource",
-			"if (ij.IJ._iconURL == null) $_ = $0.getResource($1);" +
-			"else $_ = ij.IJ._iconURL;");
-		hacker.insertAtTopOfMethod("ij.ImageJ", "public <init>(java.applet.Applet applet, int mode)",
-				"if ($2 != 2 /* ij.ImageJ.NO_SHOW */) setIcon();");
-		hacker.insertAtTopOfMethod("ij.WindowManager", "public void addWindow(java.awt.Frame window)",
-			"if (ij.IJ._iconURL != null && $1 != null) {"
-			+ "  java.awt.Image img = $1.createImage((java.awt.image.ImageProducer)ij.IJ._iconURL.getContent());"
-			+ "  if (img != null) {"
-			+ "    $1.setIconImage(img);"
-			+ "  }"
-			+ "}");
+		addIconHooks(hacker);
 
 		// optionally disallow batch mode from calling System.exit()
 		hacker.insertPrivateStaticField("ij.ImageJ", Boolean.TYPE, "batchModeMayExit");
@@ -432,6 +417,24 @@ public class LegacyInjector {
 		hacker.replaceParameterInCall("ij.plugin.Options", "public void appearance()", "showMessage", 2, appName);
 		hacker.replaceParameterInCall("ij.gui.YesNoCancelDialog", "public <init>(java.awt.Frame parent, java.lang.String title, java.lang.String msg)", "super", 2, appName);
 		hacker.replaceParameterInCall("ij.gui.Toolbar", "private void showMessage(int toolId)", "showStatus", 1, appName);
+	}
+
+	private void addIconHooks(final CodeHacker hacker) {
+		final String icon = IJ1Helper.class.getName() + ".getIconURL()";
+		hacker.replaceCallInMethod("ij.ImageJ", "void setIcon()", "java.lang.Class", "getResource",
+			"java.net.URL _iconURL = " + icon + ";\n" +
+			"if (_iconURL == null) $_ = $0.getResource($1);" +
+			"else $_ = _iconURL;");
+		hacker.insertAtTopOfMethod("ij.ImageJ", "public <init>(java.applet.Applet applet, int mode)",
+				"if ($2 != 2 /* ij.ImageJ.NO_SHOW */) setIcon();");
+		hacker.insertAtTopOfMethod("ij.WindowManager", "public void addWindow(java.awt.Frame window)",
+			"java.net.URL _iconURL = " + icon + ";\n"
+			+ "if (_iconURL != null && $1 != null) {"
+			+ "  java.awt.Image img = $1.createImage((java.awt.image.ImageProducer)_iconURL.getContent());"
+			+ "  if (img != null) {"
+			+ "    $1.setIconImage(img);"
+			+ "  }"
+			+ "}");
 	}
 
 	/**
