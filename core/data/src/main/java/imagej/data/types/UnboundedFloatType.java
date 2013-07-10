@@ -37,13 +37,12 @@ package imagej.data.types;
 
 import java.math.BigDecimal;
 
-import net.imglib2.type.numeric.NumericType;
+import net.imglib2.type.numeric.RealType;
 
 /**
  * @author Barry DeZonia
  */
-// TODO - implement RealType too
-public class UnboundedFloatType implements NumericType<UnboundedFloatType> {
+public class UnboundedFloatType implements RealType<UnboundedFloatType> {
 
 	// -- fields --
 
@@ -116,6 +115,124 @@ public class UnboundedFloatType implements NumericType<UnboundedFloatType> {
 	@Override
 	public void mul(double c) {
 		this.v = this.v.multiply(new BigDecimal(c));
+	}
+
+	// -- RealType methods --
+
+	// Note that most of them are precision losing methods
+
+	@Override
+	public double getRealDouble() {
+		return this.v.doubleValue();
+	}
+
+	@Override
+	public float getRealFloat() {
+		return this.v.floatValue();
+	}
+
+	@Override
+	public double getImaginaryDouble() {
+		return 0;
+	}
+
+	@Override
+	public float getImaginaryFloat() {
+		return 0;
+	}
+
+	@Override
+	public void setReal(float f) {
+		this.v = BigDecimal.valueOf(f);
+	}
+
+	@Override
+	public void setReal(double f) {
+		this.v = BigDecimal.valueOf(f);
+	}
+
+	@Override
+	public void setImaginary(float f) {
+		// do nothing
+		// TODO - throw except if f != 0 ?
+	}
+
+	@Override
+	public void setImaginary(double f) {
+		// do nothing
+		// TODO - throw except if f != 0 ?
+	}
+
+	@Override
+	public void setComplexNumber(float r, float i) {
+		setReal(r);
+		// TODO - throw except if i != 0 ?
+	}
+
+	@Override
+	public void setComplexNumber(double r, double i) {
+		setReal(r);
+		// TODO - throw except if i != 0 ?
+	}
+
+	@Override
+	public float getPowerFloat() {
+		return this.v.floatValue();
+	}
+
+	@Override
+	public double getPowerDouble() {
+		return this.v.doubleValue();
+	}
+
+	@Override
+	public float getPhaseFloat() {
+		return 0;
+	}
+
+	@Override
+	public double getPhaseDouble() {
+		return 0;
+	}
+
+	@Override
+	public void complexConjugate() {
+		// do nothing
+	}
+
+	@Override
+	public int compareTo(UnboundedFloatType o) {
+		return this.v.compareTo(o.v);
+	}
+
+	@Override
+	public void inc() {
+		this.v = this.v.add(BigDecimal.ONE);
+	}
+
+	@Override
+	public void dec() {
+		this.v = this.v.subtract(BigDecimal.ONE);
+	}
+
+	@Override
+	public double getMaxValue() {
+		return Double.MAX_VALUE; // TODO - narrowing!
+	}
+
+	@Override
+	public double getMinValue() {
+		return -Double.MAX_VALUE; // TODO - narrowing!
+	}
+
+	@Override
+	public double getMinIncrement() {
+		return Double.MIN_VALUE; // TODO - narrowing!
+	}
+
+	@Override
+	public int getBitsPerPixel() {
+		return 1024; // TODO arbitrary!
 	}
 
 }

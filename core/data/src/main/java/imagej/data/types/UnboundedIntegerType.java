@@ -127,6 +127,7 @@ public class UnboundedIntegerType implements IntegerType<UnboundedIntegerType> {
 	}
 
 	// -- required IntegerType methods
+
 	// Note that most of them are precision losing methods
 
 	@Override
