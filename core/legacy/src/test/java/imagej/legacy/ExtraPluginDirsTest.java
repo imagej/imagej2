@@ -38,11 +38,15 @@ package imagej.legacy;
 import static imagej.legacy.LegacyTestUtils.ijRun;
 import static imagej.legacy.LegacyTestUtils.makeJar;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.scijava.util.FileUtils;
 
@@ -66,9 +70,13 @@ public class ExtraPluginDirsTest {
 		}
 	}
 
+	@Before
+	public void makeTmpDir() throws IOException {
+		tmpDir = FileUtils.createTemporaryDirectory("legacy-", "");
+	}
+
 	@Test
 	public void findsExtraPluginDir() throws Exception {
-		tmpDir = FileUtils.createTemporaryDirectory("legacy-", "");
 		final File jarFile = new File(tmpDir, "Set_Property.jar");
 		makeJar(jarFile, Set_Property.class.getName());
 		assertTrue(jarFile.getAbsolutePath() + " exists", jarFile.exists());
@@ -79,5 +87,28 @@ public class ExtraPluginDirsTest {
 		final ClassLoader loader = LegacyTestUtils.getFreshIJClassLoader(true, true);
 		ijRun(loader, "Set Property", "key=" + key + " value=123");
 		assertEquals("123", System.getProperty(key));
+	}
+
+	@Test
+	public void knowsAboutJarsDirectory() throws Exception {
+		final File pluginsDir = new File(tmpDir, "plugins");
+		assertTrue(pluginsDir.mkdirs());
+		final File jarsDir = new File(tmpDir, "jars");
+		assertTrue(jarsDir.mkdirs());
+		ClassLoader loader = LegacyTestUtils.getFreshIJClassLoader(true, true);
+		final String helperClassName = Test.class.getName();
+		try {
+			assertNull(loader.loadClass(helperClassName));
+		} catch (Throwable t) {
+			/* all okay, we did not find the class */
+		}
+		final File jarFile = new File(jarsDir, "helper.jar");
+		LegacyTestUtils.makeJar(jarFile, helperClassName);
+		System.setProperty("plugins.dir", pluginsDir.getAbsolutePath());
+		try {
+			assertNotNull(loader.loadClass(helperClassName));
+		} catch (Throwable t) {
+			assertNull("Should have found " + helperClassName + " in " + jarFile);
+		}
 	}
 }
