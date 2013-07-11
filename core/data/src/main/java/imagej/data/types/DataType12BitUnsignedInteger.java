@@ -64,7 +64,7 @@ public class DataType12BitUnsignedInteger extends AbstractContextual implements
 
 	@Override
 	public String description() {
-		return "An integer data type ranging between 0 and 4095";
+		return "An integer data type ranging between 0 and " + 0xfff;
 	}
 
 	@Override
@@ -99,7 +99,7 @@ public class DataType12BitUnsignedInteger extends AbstractContextual implements
 
 	@Override
 	public void upperBound(Unsigned12BitType dest) {
-		dest.set((short) 4095);
+		dest.set((short) 0xfff);
 	}
 
 	@Override
@@ -120,10 +120,10 @@ public class DataType12BitUnsignedInteger extends AbstractContextual implements
 
 	@Override
 	public void cast(BigComplex val, Unsigned12BitType dest) {
-		short v = dest.get();
+		long v = val.getReal().longValue();
 		if (v < 0) dest.set((short) 0);
 		else if (v > 0xfff) dest.set((short) 0xfff);
-		else dest.set(v);
+		else dest.set((short) v);
 	}
 
 }
