@@ -44,6 +44,9 @@ import net.imglib2.img.ImgFactory;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.NativeType;
+import net.imglib2.type.numeric.ComplexType;
+import net.imglib2.type.numeric.IntegerType;
+import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.object.ObjectService;
@@ -142,4 +145,11 @@ public interface DatasetService extends Service {
 	/** Saves a dataset to a destination (such as a file on disk). */
 	void save(Dataset dataset, String destination) throws IOException;
 
+	ImgPlus<NumericType<?>> getNumeric(Dataset ds);
+
+	ImgPlus<ComplexType<?>> getComplex(Dataset ds);
+
+	ImgPlus<RealType<?>> getReal(Dataset ds);
+
+	ImgPlus<IntegerType<?>> getInteger(Dataset ds);
 }
