@@ -939,6 +939,14 @@ public class CodeHacker {
 		}
 	}
 
+	public boolean hasSuperclass(final String fullClass, final String fullSuperclass) {
+		try {
+			final CtClass clazz = getClass(fullClass);
+			return fullSuperclass.equals(clazz.getSuperclass().getName());
+		} catch (final Throwable e) {
+			return false;
+		}
+	}
 	private static int verboseLevel = 0;
 
 	private static CtMethod makeStubMethod(CtClass clazz, CtMethod original) throws CannotCompileException, NotFoundException {
