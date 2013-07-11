@@ -395,7 +395,10 @@ public class CodeHacker {
 				@Override
 				public void edit(MethodCall call) throws CannotCompileException {
 					if (call.getMethodName().equals(calledMethodName)) try {
-						final CtClass[] parameterTypes = call.getMethod().getParameterTypes();
+						final boolean isSuper = call.isSuper();
+						final CtClass[] parameterTypes = isSuper ?
+								((ConstructorCall) call).getConstructor().getParameterTypes() :
+								call.getMethod().getParameterTypes();
 						if (parameterTypes.length < parameterIndex) {
 								throw new IllegalArgumentException("Index " + parameterIndex + " is outside of " + call.getMethod() + "'s parameter list!");
 						}
@@ -405,12 +408,17 @@ public class CodeHacker {
 						}
 						final String replace = replaceParameter(
 								parameterIndex, parameterTypes.length, replacement);
-						call.replace("$0." + calledMethodName + replace + ";");
+						call.replace((isSuper ? "" : "$0.") + calledMethodName + replace + ";");
 					} catch (NotFoundException e) {
 						throw new IllegalArgumentException(
 								"Cannot find the parameters of the method "
 										+ calledMethodName, e);
 					}
+				}
+
+				@Override
+				public void edit(final ConstructorCall call) throws CannotCompileException {
+					edit((MethodCall)call);
 				}
 			});
 		} catch (IllegalArgumentException e) {
