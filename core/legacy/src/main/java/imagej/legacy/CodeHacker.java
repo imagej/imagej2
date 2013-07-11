@@ -475,6 +475,25 @@ public class CodeHacker {
 	}
 
 	/**
+	 * Gets the Javassist constructor object corresponding to the given constructor
+	 * signature of the specified class name.
+	 */
+	private CtConstructor getConstructor(final String fullClass, final String constructorSig) {
+		final CtClass cc = getClass(fullClass);
+		final String[] argTypes = getMethodArgTypes(constructorSig);
+		final CtClass[] params = new CtClass[argTypes.length];
+		for (int i = 0; i < params.length; i++) {
+			params[i] = getClass(argTypes[i]);
+		}
+		try {
+			return cc.getDeclaredConstructor(params);
+		}
+		catch (final NotFoundException e) {
+			throw new IllegalArgumentException("No such method: " + constructorSig, e);
+		}
+	}
+
+	/**
 	 * Generates a new line of code calling the {@link imagej.legacy.patches}
 	 * class and method corresponding to the given method signature.
 	 */
