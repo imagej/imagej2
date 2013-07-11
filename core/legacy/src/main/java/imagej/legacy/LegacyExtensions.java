@@ -100,6 +100,7 @@ public class LegacyExtensions {
 	private static LegacyEditorPlugin editor;
 	private static String appName = "ImageJ";
 	private static URL iconURL;
+	private static Runnable afterRefreshMenus;
 
 	/**
 	 * Sets the application name for ImageJ 1.x.
@@ -150,6 +151,14 @@ public class LegacyExtensions {
 	 */
 	public static void setLegacyEditor(final LegacyEditorPlugin plugin) {
 		editor = plugin;
+	}
+
+	public static void runAfterRefreshMenus(final Runnable runnable) {
+		afterRefreshMenus = runnable;
+	}
+
+	public static void runAfterRefreshMenus() {
+		if (afterRefreshMenus != null) afterRefreshMenus.run();
 	}
 
 	/*
@@ -512,6 +521,21 @@ public class LegacyExtensions {
 
 		addEditorExtensionPoints(hacker);
 		insertAppNameHooks(hacker);
+		insertRefreshMenusHook(hacker);
+	}
+
+	/**
+	 * Install a hook to optionally run a Runnable at the end of Help>Refresh Menus.
+	 * 
+	 * <p>
+	 * See {@link LegacyExtensions#runAfterRefreshMenus(Runnable)}.
+	 * </p>
+	 * 
+	 * @param hacker the {@link CodeHacker} to use for patching
+	 */
+	private static void insertRefreshMenusHook(CodeHacker hacker) {
+		hacker.insertAtBottomOfMethod("ij.Menus", "public static void updateImageJMenus()",
+			LegacyExtensions.class.getName() + ".runAfterRefreshMenus();");
 	}
 
 	private static void addEditorExtensionPoints(final CodeHacker hacker) {
