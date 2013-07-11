@@ -101,8 +101,9 @@ public class InvokeCommandTest implements Command {
 	public Dataset invokeWithArgs() {
 		final Future<Module> future =
 			commandService.run("imagej.io.plugins.NewImage", "name", "Untitled",
-				"bitDepth", "8-bit", "signed", false, "floating", false, "fillType",
-				"Ramp", "width", 512, "height", 512);
+			// TODO
+			// "typeName", "",
+				"fillType", "Ramp", "width", 512, "height", 512);
 		final Module module = moduleService.waitFor(future);
 		return (Dataset) module.getOutput("dataset");
 	}
@@ -118,9 +119,8 @@ public class InvokeCommandTest implements Command {
 	public Dataset invokeWithMap() {
 		final Map<String, Object> inputMap = new HashMap<String, Object>();
 		inputMap.put("name", "Untitled");
-		inputMap.put("bitDepth", "8-bit");
-		inputMap.put("signed", false);
-		inputMap.put("floating", false);
+		// TODO
+		// inputMap.put("typeName", "");
 		inputMap.put("fillType", "Ramp");
 		inputMap.put("width", 512L);
 		inputMap.put("height", 512L);
@@ -144,9 +144,8 @@ public class InvokeCommandTest implements Command {
 		final NewImage newImage = new NewImage();
 		newImage.setContext(context);
 		newImage.setName("Untitled");
-		newImage.setBitsPerPixel(8);
-		newImage.setSigned(false);
-		newImage.setFloating(false);
+		// TODO
+		// newImage.setDataType();
 		newImage.setFillType(NewImage.RAMP);
 		newImage.setDimension(Axes.X, 512);
 		newImage.setDimension(Axes.Y, 512);

@@ -39,11 +39,21 @@ import imagej.command.Command;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
+import imagej.data.types.BigComplex;
+import imagej.data.types.DataType;
+import imagej.data.types.DataTypeService;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultMutableModuleItem;
+import imagej.module.MutableModuleItem;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.imglib2.Cursor;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
@@ -66,7 +76,9 @@ import org.scijava.plugin.Plugin;
 		@Menu(label = "New", mnemonic = 'n'),
 		@Menu(label = "Image...", weight = 0, mnemonic = 'i',
 			accelerator = "control N") })
-public class NewImage extends DynamicCommand {
+public class NewImage<U extends RealType<U> & NativeType<U>> extends
+	DynamicCommand
+{
 
 	// -- private constants --
 
@@ -78,13 +90,6 @@ public class NewImage extends DynamicCommand {
 		Axes.Y, Axes.CHANNEL, Axes.Z, Axes.TIME };
 
 	// -- public constants --
-
-	public static final String DEPTH1 = "1-bit";
-	public static final String DEPTH8 = "8-bit";
-	public static final String DEPTH12 = "12-bit";
-	public static final String DEPTH16 = "16-bit";
-	public static final String DEPTH32 = "32-bit";
-	public static final String DEPTH64 = "64-bit";
 
 	public static final String MAX = "Max";
 	public static final String MIN = "Min";
@@ -99,17 +104,13 @@ public class NewImage extends DynamicCommand {
 	private DatasetService datasetService;
 
 	@Parameter
+	private DataTypeService dataTypeService;
+
+	@Parameter
 	private String name = DEFAULT_NAME;
 
-	@Parameter(label = "Bit Depth", callback = "bitDepthChanged", choices = {
-		DEPTH1, DEPTH8, DEPTH12, DEPTH16, DEPTH32, DEPTH64 })
-	private String bitDepth = DEPTH8;
-
-	@Parameter(callback = "signedChanged")
-	private boolean signed = false;
-
-	@Parameter(callback = "floatingChanged")
-	private boolean floating = false;
+	@Parameter(label = "Type", initializer = "initType")
+	private String typeName;
 
 	@Parameter(label = "Fill With", choices = { MAX, MIN, ZERO, RAMP })
 	private String fillType = MAX;
@@ -131,33 +132,16 @@ public class NewImage extends DynamicCommand {
 		this.name = name;
 	}
 
-	public int getBitsPerPixel() {
-		final int dash = bitDepth.indexOf("-");
-		return Integer.parseInt(bitDepth.substring(0, dash));
-	}
-
-	public void setBitsPerPixel(final int bitsPerPixel) {
-		bitDepth = bitsPerPixel + "-bit";
-	}
-
-	public boolean isSigned() {
-		return signed;
-	}
-
-	public void setSigned(final boolean signed) {
-		this.signed = signed;
-	}
-
-	public boolean isFloating() {
-		return floating;
-	}
-
-	public void setFloating(final boolean floating) {
-		this.floating = floating;
-	}
-
 	public String getFillType() {
 		return fillType;
+	}
+
+	public void setDataType(DataType<?> dataType) {
+		typeName = dataType.name();
+	}
+
+	public DataType<?> getDataType() {
+		return dataTypeService.getTypeByName(typeName);
 	}
 
 	public void setFillType(final String fillType) {
@@ -193,49 +177,59 @@ public class NewImage extends DynamicCommand {
 		setDimensions();
 		if ((name == null) || (name.trim().length() == 0)) name = DEFAULT_NAME;
 		// create the dataset
-		final int bitsPerPixel = getBitsPerPixel();
 		final long[] dims = getDims();
 		final AxisType[] axes = getAxes();
 		if (badSpecification(dims, axes)) {
 			dataset = null;
 			return;
 		}
-		dataset =
-			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
+		DataType<U> dataType = (DataType<U>) getDataType();
+		U variable = dataType.createVariable();
+		dataset = datasetService.create(variable, dims, name, axes);
 
 		// fill in the diagonal gradient
 		final long[] pos = new long[2];
-		final Cursor<? extends RealType<?>> cursor =
-			dataset.getImgPlus().localizingCursor();
-		final RealType<?> type = cursor.get();
+		final Cursor<U> cursor =
+			(Cursor<U>) dataset.getImgPlus().localizingCursor();
 
-		final boolean isMax = fillType.equals(MAX);
-		final boolean isMin = fillType.equals(MIN);
-		final boolean isZero = fillType.equals(ZERO);
-		final boolean isRamp = fillType.equals(RAMP);
+		boolean isMax = fillType.equals(MAX) && dataType.isBoundedFully();
+		boolean isMin = fillType.equals(MIN) && dataType.isBoundedFully();
+		boolean isZero = fillType.equals(ZERO);
+		boolean isRamp = fillType.equals(RAMP);
+		if (!isMax && !isMin && !isZero && !isRamp) isZero = true;
 
-		double v = Double.NaN;
-		if (isMax) v = type.getMaxValue();
-		else if (isMin) v = type.getMinValue();
-		else if (isZero) v = 0;
+		BigComplex v = new BigComplex();
+		if (isMax) {
+			U max = dataType.createVariable();
+			dataType.upperBound(max);
+			dataType.cast(max, v);
+		}
+		else if (isMin) {
+			U min = dataType.createVariable();
+			dataType.lowerBound(min);
+			dataType.cast(min, v);
+		}
+		else if (isZero) {
+			v.setReal(BigDecimal.ZERO);
+			v.setImag(BigDecimal.ZERO);
+		}
 		// else fill type == ramp and v still NaN
 
 		while (cursor.hasNext()) {
 			cursor.fwd();
-			final double value;
 			if (!isRamp) {
-				value = v;
+				dataType.cast(v, cursor.get());
 			}
 			else { // isRamp
 				pos[0] = cursor.getLongPosition(0);
 				pos[1] = cursor.getLongPosition(1);
-				value = rampedValue(pos, dims, type);
+				rampedValue(pos, dims, dataType, v);
+				dataType.cast(v, cursor.get());
 			}
-			type.setReal(value);
 		}
 	}
 
-	// -- initializer --
+	// -- initializers --
 
 	protected void init() {
 		for (AxisType axisType : defaultAxes) {
@@ -249,49 +243,32 @@ public class NewImage extends DynamicCommand {
 		}
 	}
 
+	protected void initType() {
+		MutableModuleItem<String> input =
+			getInfo().getMutableInput("typeName", String.class);
+		List<String> choices = new ArrayList<String>();
+		for (DataType<?> dataType : dataTypeService.getInstances()) {
+			choices.add(dataType.name());
+		}
+		input.setChoices(choices);
+		input.setValue(this, choices.get(0));
+	}
+
 	// -- Parameter callback methods --
 
-	protected void bitDepthChanged() {
-		if (signedForbidden()) signed = false;
-		if (signedRequired()) signed = true;
-		if (floatingForbidden()) floating = false;
-	}
-
-	protected void signedChanged() {
-		if (signed && signedForbidden() || !signed && signedRequired()) {
-			bitDepth = DEPTH8;
-		}
-		if (!signed) floating = false; // no unsigned floating types
-	}
-
-	protected void floatingChanged() {
-		if (floating && floatingForbidden()) bitDepth = DEPTH32;
-		if (floating) signed = true; // no unsigned floating types
-	}
-
-	// -- Helper methods --
-
-	private boolean signedForbidden() {
-		// 1-bit and 12-bit signed data are not supported
-		return bitDepth.equals(DEPTH1) || bitDepth.equals(DEPTH12);
-	}
-
-	private boolean signedRequired() {
-		// 64-bit unsigned data is not supported
-		return bitDepth.equals(DEPTH64);
-	}
-
-	private boolean floatingForbidden() {
-		// only 32-bit and 64-bit floating point are supported
-		return !bitDepth.equals(DEPTH32) && !bitDepth.equals(DEPTH64);
-	}
-
-	private double rampedValue(final long[] pos, final long[] dims,
-		final RealType<?> type)
+	private void rampedValue(final long[] pos, final long[] dims,
+		final DataType<U> type, BigComplex outValue)
 	{
-		double origin = type.getMinValue();
-		double range = type.getMaxValue() - type.getMinValue();
-		if (floating) {
+		U min = type.createVariable();
+		U max = type.createVariable();
+
+		type.lowerBound(min);
+		type.upperBound(max);
+
+		double origin = min.getRealDouble();
+		double range = max.getRealDouble() - min.getRealDouble();
+
+		if (type.isFloat()) {
 			origin = 0;
 			range = 1;
 		}
@@ -303,11 +280,18 @@ public class NewImage extends DynamicCommand {
 			denominator += dims[i] - 1;
 		}
 
-		if (denominator == 0) return origin;
+		if (denominator == 0) {
+			outValue.setReal(BigDecimal.valueOf(origin));
+			outValue.setImag(BigDecimal.valueOf(origin));
+			return;
+		}
 
 		final double percent = numerator / denominator;
 
-		return origin + percent * range;
+		double val = origin + percent * range;
+
+		outValue.setReal(BigDecimal.valueOf(val));
+		outValue.setImag(BigDecimal.valueOf(val));
 	}
 
 	private long[] getDims() {
