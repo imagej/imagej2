@@ -95,6 +95,10 @@ public class LegacyHeadless  {
 	}
 
 	public void patch() {
+		if (hacker.hasSuperclass("ij.gui.GenericDialog", GenericDialog.class.getName())) {
+			// if we already applied the headless patches, let's not do it again
+			return;
+		}
 		hacker.replaceWithStubMethods("ij.gui.GenericDialog", "paint", "getInsets", "showHelp");
 		hacker.replaceSuperclass("ij.gui.GenericDialog", GenericDialog.class.getName());
 		hacker.skipAWTInstantiations("ij.gui.GenericDialog");
