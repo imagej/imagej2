@@ -47,6 +47,7 @@ import org.scijava.util.ClassUtils;
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
+import javassist.CtBehavior;
 import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.CtField;
@@ -300,6 +301,140 @@ public class CodeHacker {
 			throw new IllegalArgumentException("Cannot add " + code
 					+ " to class initializer of " + fullClass, e);
 		}
+	}
+
+	/**
+	 * Replaces the application name in the given method in the given parameter
+	 * to the given constructor call.
+	 * 
+	 * Fails silently if the specified method does not exist (e.g.
+	 * CommandFinder's export() function just went away in 1.47i).
+	 * 
+	 * @param fullClass
+	 *            Fully qualified name of the class to override.
+	 * @param methodSig
+	 *            Method signature of the method to override; e.g.,
+	 *            "public void showMessage(String title, String message)"
+	 * @param newClassName
+	 *            the name of the class which is to be constructed by the new
+	 *            operator
+	 * @param parameterIndex
+	 *            the index of the parameter containing the application name
+	 * @param replacement
+	 *            the code to use instead of the specified parameter
+	 * @throws CannotCompileException
+	 */
+	private void replaceParameterInNew(final String fullClass,
+			final String methodSig, final String newClassName,
+			final int parameterIndex, final String replacement) {
+		try {
+			final CtMethod method = getMethod(fullClass, methodSig);
+			method.instrument(new ExprEditor() {
+				@Override
+				public void edit(NewExpr expr) throws CannotCompileException {
+					if (expr.getClassName().equals(newClassName))
+						try {
+							final CtClass[] parameterTypes = expr
+									.getConstructor().getParameterTypes();
+							if (parameterTypes[parameterIndex] != CodeHacker.this
+									.getClass("java.lang.String")) {
+								throw new IllegalArgumentException("Parameter "
+										+ parameterIndex + " of "
+										+ expr.getConstructor() + " is not a String!");
+							}
+							final String replace = replaceParameter(
+									parameterIndex, parameterTypes.length, replacement);
+							expr.replace("$_ = new " + newClassName + replace
+									+ ";");
+						} catch (NotFoundException e) {
+							throw new IllegalArgumentException(
+									"Cannot find the parameters of the constructor of "
+											+ newClassName, e);
+					}
+				}
+			});
+		} catch (IllegalArgumentException e) {
+			// ignore: the method was not found
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException("Cannot handle app name in " + fullClass
+					+ "'s " + methodSig, e);
+		}
+	}
+
+	/**
+	 * Replaces the application name in the given method in the given parameter
+	 * to the given method call.
+	 * 
+	 * Fails silently if the specified method does not exist (e.g.
+	 * CommandFinder's export() function just went away in 1.47i).
+	 * 
+	 * @param fullClass
+	 *            Fully qualified name of the class to override.
+	 * @param methodSig
+	 *            Method signature of the method to override; e.g.,
+	 *            "public void showMessage(String title, String message)"
+	 * @param calledMethodName
+	 *            the name of the method to which the application name is passed
+	 * @param parameterIndex
+	 *            the index of the parameter containing the application name
+	 * @param replacement
+	 *            the code to use instead of the specified parameter
+	 * @throws CannotCompileException
+	 */
+	private void replaceParameterInCall(final String fullClass,
+			final String methodSig, final String calledMethodName,
+			final int parameterIndex, final String replacement) {
+		try {
+			final CtBehavior method;
+			if (methodSig.indexOf("<init>") < 0) {
+				method = getMethod(fullClass, methodSig);
+			} else {
+				method = getConstructor(fullClass, methodSig);
+			}
+			method.instrument(new ExprEditor() {
+				@Override
+				public void edit(MethodCall call) throws CannotCompileException {
+					if (call.getMethodName().equals(calledMethodName)) try {
+						final CtClass[] parameterTypes = call.getMethod().getParameterTypes();
+						if (parameterTypes.length < parameterIndex) {
+								throw new IllegalArgumentException("Index " + parameterIndex + " is outside of " + call.getMethod() + "'s parameter list!");
+						}
+						if (parameterTypes[parameterIndex - 1] != CodeHacker.this.getClass("java.lang.String")) {
+							throw new IllegalArgumentException("Parameter " + parameterIndex + " of "
+									+ call.getMethod() + " is not a String!");
+						}
+						final String replace = replaceParameter(
+								parameterIndex, parameterTypes.length, replacement);
+						call.replace("$0." + calledMethodName + replace + ";");
+					} catch (NotFoundException e) {
+						throw new IllegalArgumentException(
+								"Cannot find the parameters of the method "
+										+ calledMethodName, e);
+					}
+				}
+			});
+		} catch (IllegalArgumentException e) {
+			// ignore: the method was not found
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException("Cannot handle app name in " + fullClass
+					+ "'s " + methodSig, e);
+		}
+	}
+
+	private String replaceParameter(final int parameterIndex, final int parameterCount, final String replacement) {
+		final StringBuilder builder = new StringBuilder();
+		builder.append("(");
+		for (int i = 1; i <= parameterCount; i++) {
+			if (i > 1) {
+				builder.append(", ");
+			}
+			builder.append("$").append(i);
+			if (i == parameterIndex) {
+				builder.append(".replace(\"ImageJ\", " + replacement + ")");
+			}
+		}
+		builder.append(")");
+		return builder.toString();
 	}
 
 	/**
