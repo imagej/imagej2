@@ -113,7 +113,8 @@ public class BetterTypeChanger<U extends RealType<U>, V extends RealType<V> & Na
 			outAccessor.setPosition(inCursor);
 			cast(inType, inCursor.get(), outType, outAccessor.get(), tmp);
 		}
-		// TODO - copy more original metadata? Look at DuplicatorService
+		// TODO - copy more original metadata? Look at DuplicatorService and/or
+		// TypeChanger
 		data.setImgPlus(newData.getImgPlus());
 	}
 

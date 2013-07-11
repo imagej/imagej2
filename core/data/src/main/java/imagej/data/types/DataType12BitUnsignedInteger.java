@@ -123,7 +123,7 @@ public class DataType12BitUnsignedInteger extends AbstractContextual implements
 		short v = dest.get();
 		if (v < 0) dest.set((short) 0);
 		else if (v > 0xfff) dest.set((short) 0xfff);
-		else dest.set((short) v);
+		else dest.set(v);
 	}
 
 }

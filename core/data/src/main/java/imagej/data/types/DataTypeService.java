@@ -35,43 +35,35 @@
 
 package imagej.data.types;
 
-import imagej.plugin.AbstractSingletonService;
-import net.imglib2.type.numeric.NumericType;
+import imagej.plugin.SingletonService;
 
-import org.scijava.plugin.Plugin;
-import org.scijava.service.Service;
+import java.util.List;
+
+import net.imglib2.type.numeric.NumericType;
 
 /**
  * @author Barry DeZonia
  */
-@SuppressWarnings("rawtypes")
-@Plugin(type = Service.class)
-public class DataTypeService extends AbstractSingletonService<DataType> {
+public interface DataTypeService extends SingletonService<DataType<?>> {
 
+	/**
+	 * Returns a list of all DataTypes known to system. List is in order sorted by
+	 * DataType's internal name.
+	 */
+	// Override to update Javadoc
 	@Override
-	public Class<DataType> getPluginType() {
-		return DataType.class;
-	}
+	List<DataType<?>> getInstances();
 
-	public DataType<?> getTypeByName(String typeName) {
-		for (DataType<?> type : getInstances()) {
-			if (type.name().equals(typeName)) return type;
-		}
-		return null;
-	}
+	/**
+	 * Returns the DataType whose internal name matches the given typeName.
+	 * Returns null if not found.
+	 */
+	DataType<?> getTypeByName(String typeName);
 
-	public <T extends NumericType<T>> DataType<?> getTypeByClass(
-		Class<T> typeClass)
-	{
-		for (DataType<?> type : getInstances()) {
-			Object numericType = type.getType();
-			if (numericType.getClass().equals(typeClass)) return type;
-		}
-		return null;
-	}
+	/**
+	 * Returns the DataType whose internal type class matches the given typeClass.
+	 * Returns null if not found.
+	 */
+	<T extends NumericType<T>> DataType<T> getTypeByClass(Class<T> typeClass);
 
-	// TODO
-	// override getInstances()
-	// it can init lazily using super class getInstances()
-	// it returns a SORTED list of types (sorted by name). Maybe.
 }

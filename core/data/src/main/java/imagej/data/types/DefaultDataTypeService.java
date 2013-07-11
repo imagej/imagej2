@@ -35,95 +35,81 @@
 
 package imagej.data.types;
 
-import java.math.BigDecimal;
+import imagej.plugin.AbstractSingletonService;
 
-import net.imglib2.type.numeric.integer.UnsignedIntType;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.scijava.AbstractContextual;
+import net.imglib2.type.numeric.NumericType;
+
 import org.scijava.plugin.Plugin;
+import org.scijava.service.Service;
 
 /**
  * @author Barry DeZonia
  */
-@Plugin(type = DataType.class)
-public class DataType32BitUnsignedInteger extends AbstractContextual implements
-	DataType<UnsignedIntType>
+@Plugin(type = Service.class)
+public class DefaultDataTypeService extends
+	AbstractSingletonService<DataType<?>> implements DataTypeService
 {
 
-	private final UnsignedIntType type = new UnsignedIntType();
+	// -- fields --
+
+	private Map<String, DataType<?>> typesByName;
+	private Map<Class<?>, DataType<?>> typesByClass;
+	private List<DataType<?>> sortedInstances;
+
+	// -- initializer --
 
 	@Override
-	public UnsignedIntType getType() {
-		return type;
+	public void initialize() {
+		super.initialize();
+		typesByName = new HashMap<String, DataType<?>>();
+		typesByClass = new HashMap<Class<?>, DataType<?>>();
+		for (DataType<?> type : super.getInstances()) {
+			typesByName.put(type.name(), type);
+			typesByClass.put(type.getType().getClass(), type);
+		}
+		sortedInstances = new ArrayList<DataType<?>>();
+		sortedInstances.addAll(super.getInstances());
+		Collections.sort(sortedInstances, new Comparator<DataType<?>>() {
+
+			@Override
+			public int compare(DataType<?> o1, DataType<?> o2) {
+				return o1.name().compareTo(o2.name());
+			}
+		});
+		sortedInstances = Collections.unmodifiableList(sortedInstances);
+	}
+
+	// -- DataTypeSerivce methods --
+
+	@Override
+	public List<DataType<?>> getInstances() {
+		return sortedInstances;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public Class<DataType<?>> getPluginType() {
+		return (Class<DataType<?>>) (Class) DataType.class;
 	}
 
 	@Override
-	public String name() {
-		return "32-bit unsigned integer";
+	public DataType<?> getTypeByName(String typeName) {
+		return typesByName.get(typeName);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public String description() {
-		return "An integer data type ranging between 0 and " + 0xffffffffL;
-	}
-
-	@Override
-	public boolean isFloat() {
-		return false;
-	}
-
-	@Override
-	public boolean isSigned() {
-		return false;
-	}
-
-	@Override
-	public boolean isBoundedFully() {
-		return true;
-	}
-
-	@Override
-	public boolean isBoundedBelow() {
-		return true;
-	}
-
-	@Override
-	public boolean isBoundedAbove() {
-		return true;
-	}
-
-	@Override
-	public void lowerBound(UnsignedIntType dest) {
-		dest.set(0);
-	}
-
-	@Override
-	public void upperBound(UnsignedIntType dest) {
-		dest.set(0xffffffffL);
-	}
-
-	@Override
-	public int bitCount() {
-		return 32;
-	}
-
-	@Override
-	public UnsignedIntType createVariable() {
-		return new UnsignedIntType();
-	}
-
-	@Override
-	public void cast(UnsignedIntType val, BigComplex dest) {
-		dest.setReal(BigDecimal.valueOf(val.get()));
-		dest.setImag(BigDecimal.ZERO);
-	}
-
-	@Override
-	public void cast(BigComplex val, UnsignedIntType dest) {
-		long v = val.getReal().longValue();
-		if (v < 0) dest.set(0);
-		else if (v > 0xffffffffL) dest.set(0xffffffffL);
-		else dest.set(v);
+	public <T extends NumericType<T>> DataType<T> getTypeByClass(
+		Class<T> typeClass)
+	{
+		return (DataType<T>) typesByClass.get(typeClass);
 	}
 
 }
