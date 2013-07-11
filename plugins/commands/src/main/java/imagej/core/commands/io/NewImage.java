@@ -199,13 +199,13 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 		if (!isMax && !isMin && !isZero && !isRamp) isZero = true;
 
 		BigComplex v = new BigComplex();
+		U min = dataType.createVariable();
+		U max = dataType.createVariable();
 		if (isMax) {
-			U max = dataType.createVariable();
 			dataType.upperBound(max);
 			dataType.cast(max, v);
 		}
 		else if (isMin) {
-			U min = dataType.createVariable();
 			dataType.lowerBound(min);
 			dataType.cast(min, v);
 		}
@@ -215,6 +215,9 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 		}
 		// else fill type == ramp and v still NaN
 
+		dataType.lowerBound(min);
+		dataType.upperBound(max);
+
 		while (cursor.hasNext()) {
 			cursor.fwd();
 			if (!isRamp) {
@@ -223,7 +226,7 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 			else { // isRamp
 				pos[0] = cursor.getLongPosition(0);
 				pos[1] = cursor.getLongPosition(1);
-				rampedValue(pos, dims, dataType, v);
+				rampedValue(pos, dims, dataType, min, max, v);
 				dataType.cast(v, cursor.get());
 			}
 		}
@@ -257,14 +260,8 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 	// -- Parameter callback methods --
 
 	private void rampedValue(final long[] pos, final long[] dims,
-		final DataType<U> type, BigComplex outValue)
+		final DataType<U> type, U min, U max, BigComplex outValue)
 	{
-		U min = type.createVariable();
-		U max = type.createVariable();
-
-		type.lowerBound(min);
-		type.upperBound(max);
-
 		double origin = min.getRealDouble();
 		double range = max.getRealDouble() - min.getRealDouble();
 
