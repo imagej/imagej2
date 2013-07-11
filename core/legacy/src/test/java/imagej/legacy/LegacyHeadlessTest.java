@@ -82,6 +82,11 @@ public class LegacyHeadlessTest {
 		assertFalse(runExampleDialogPlugin(false));
 	}
 
+	@Test
+	public void saveDialog() {
+		assertTrue(runExamplePlugin(true, "SaveDialog", "file=README.txt", "true"));
+	}
+
 	private static boolean runExampleDialogPlugin(final boolean patchHeadless) {
 		return runExamplePlugin(patchHeadless, "the argument", "prefix=[*** ]", "*** the argument");
 	}

@@ -36,6 +36,7 @@
 package imagej.legacy;
 
 import ij.gui.GenericDialog;
+import ij.io.SaveDialog;
 import ij.plugin.PlugIn;
 
 /**
@@ -51,6 +52,17 @@ public class Headless_Example_Plugin implements PlugIn {
 
 	@Override
 	public void run(String arg) {
+		if ("SaveDialog".equals(arg)) {
+			final SaveDialog dialog = new SaveDialog("File to save to", "default", "txt");
+			final String fileName = dialog.getFileName();
+			final String directory = dialog.getDirectory();
+			if (!"README.txt".equals(fileName)) {
+				throw new RuntimeException("Unexpected file name/directory: " + directory + "/" + fileName);
+			}
+			value = "true";
+			return;
+		}
+
 		final GenericDialog dialog = new GenericDialog("Example");
 		dialog.addStringField("prefix", "(prefix)");
 		dialog.showDialog();
