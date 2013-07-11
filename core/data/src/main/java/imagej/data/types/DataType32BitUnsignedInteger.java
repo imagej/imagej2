@@ -114,14 +114,16 @@ public class DataType32BitUnsignedInteger extends AbstractContextual implements
 
 	@Override
 	public void cast(UnsignedIntType val, BigComplex dest) {
-		// TODO - this is broken for neg nums. we should do some BigInteger math to fix.
 		dest.setReal(BigDecimal.valueOf(val.get()));
 		dest.setImag(BigDecimal.ZERO);
 	}
 
 	@Override
 	public void cast(BigComplex val, UnsignedIntType dest) {
-		dest.set(val.getReal().longValue());
+		long v = val.getReal().longValue();
+		if (v < 0) dest.set(0);
+		else if (v > 0xffffffffL) dest.set(0xffffffffL);
+		else dest.set((long) v);
 	}
 
 }
