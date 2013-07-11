@@ -73,21 +73,26 @@ public class LegacyHeadlessTest {
 
 	@Test
 	public void testHeadless() {
-		assertTrue(runExamplePlugin(getFreshIJClassLoader(false, true, PLUGIN_CLASS)));
+		assertTrue(runExampleDialogPlugin(true));
 	}
 
 	@Test
 	public void testPatchIsRequired() {
 		assumeTrue(GraphicsEnvironment.isHeadless());
-		assertFalse(runExamplePlugin(getFreshIJClassLoader(false, false, PLUGIN_CLASS)));
+		assertFalse(runExampleDialogPlugin(false));
 	}
 
-	private static boolean runExamplePlugin(final ClassLoader loader) {
+	private static boolean runExampleDialogPlugin(final boolean patchHeadless) {
+		return runExamplePlugin(patchHeadless, "the argument", "prefix=[*** ]", "*** the argument");
+	}
+
+	private static boolean runExamplePlugin(final boolean patchHeadless, final String arg, final String macroOptions, final String expectedValue) {
+		final ClassLoader loader = getFreshIJClassLoader(false, patchHeadless, PLUGIN_CLASS);
 		try {
 			final String value = runPlugIn(loader,
-					Headless_Example_Plugin.class.getName(), "the argument",
-					"prefix=[*** ]").toString();
-			assertEquals("*** the argument", value);
+					Headless_Example_Plugin.class.getName(), arg,
+					macroOptions).toString();
+			assertEquals(expectedValue, value);
 			return true;
 		} catch (final Throwable t) {
 			if (!(t instanceof InvocationTargetException)
