@@ -112,6 +112,10 @@ public class LegacyHeadless  {
 		hacker.skipAWTInstantiations("ij.plugin.HyperStackConverter");
 
 		hacker.skipAWTInstantiations("ij.plugin.Duplicator");
+
+		hacker.insertAtTopOfMethod("ij.plugin.filter.ScaleDialog",
+			"java.awt.Panel makeButtonPanel(ij.plugin.filter.SetScaleDialog gd)",
+			"return null;");
 	}
 
 
