@@ -1270,6 +1270,7 @@ public class CodeHacker {
 	}
 
 	protected void verify(PrintWriter out) {
+		out.println("Verifying " + handledClasses.size() + " classes");
 		for (final CtClass clazz : handledClasses) {
 			out.println("Verifying class " + clazz.getName());
 			out.flush();
