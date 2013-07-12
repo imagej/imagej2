@@ -51,6 +51,8 @@ import java.util.List;
 
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
+import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.Axes;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
@@ -113,8 +115,7 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 			outAccessor.setPosition(inCursor);
 			cast(inType, inCursor.get(), outType, outAccessor.get(), tmp);
 		}
-		// TODO - copy more original metadata? Look at DuplicatorService and/or
-		// TypeChanger
+		copyMetaData(data.getImgPlus(), newData.getImgPlus());
 		data.setImgPlus(newData.getImgPlus());
 	}
 
@@ -157,6 +158,38 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 		else {
 			// simplest slowest approach
 			GeneralCast.cast(inputType, i, outputType, o, tmp);
+		}
+	}
+
+	private void copyMetaData(ImgPlus<?> src, ImgPlus<?> dest) {
+
+		// dims and axes already correct
+
+		// name
+		dest.setName(src.getName());
+
+		// calibrations
+		double[] cal = new double[src.numDimensions()];
+		src.calibration(cal);
+		dest.setCalibration(cal);
+
+		// color tables
+		int tableCount = src.getColorTableCount();
+		dest.initializeColorTables(tableCount);
+		for (int i = 0; i < tableCount; i++) {
+			dest.setColorTable(src.getColorTable(i), i);
+		}
+		
+		// channel min/maxes
+		int chAxis = src.getAxisIndex(Axes.CHANNEL);
+		int channels;
+		if (chAxis < 0) channels = 1;
+		else channels = (int) src.dimension(chAxis);
+		for (int i = 0; i < channels; i++) {
+			double min = src.getChannelMinimum(i);
+			double max = src.getChannelMaximum(i);
+			dest.setChannelMinimum(i, min);
+			dest.setChannelMaximum(i, max);
 		}
 	}
 }
