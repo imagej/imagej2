@@ -64,14 +64,10 @@ public abstract class AbstractSingletonService<PT extends SingletonPlugin>
 
 	@Override
 	public List<PT> getInstances() {
+		if (instances == null) {
+			createInstances();
+		}
 		return instances;
-	}
-
-	// -- Service methods --
-
-	@Override
-	public void initialize() {
-		createInstances();
 	}
 
 	// -- Helper methods --
