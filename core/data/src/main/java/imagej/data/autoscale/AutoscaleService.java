@@ -35,10 +35,10 @@
 
 package imagej.data.autoscale;
 
-import imagej.plugin.SingletonService;
-
 import java.util.List;
 import java.util.Map;
+
+import org.scijava.plugin.SingletonService;
 
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;

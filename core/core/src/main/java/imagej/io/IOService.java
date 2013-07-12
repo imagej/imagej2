@@ -35,9 +35,9 @@
 
 package imagej.io;
 
-import imagej.plugin.HandlerService;
-
 import java.io.IOException;
+
+import org.scijava.plugin.HandlerService;
 
 /**
  * Interface for data I/O operations: opening and saving data.

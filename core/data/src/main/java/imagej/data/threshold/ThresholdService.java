@@ -37,10 +37,11 @@ package imagej.data.threshold;
 
 import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.ThresholdOverlay;
-import imagej.plugin.SingletonService;
 
 import java.util.List;
 import java.util.Map;
+
+import org.scijava.plugin.SingletonService;
 
 /**
  * Interface for service that works with thresholds.

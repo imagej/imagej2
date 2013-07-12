@@ -35,7 +35,6 @@
 
 package imagej.data.operator;
 
-import imagej.plugin.SingletonPlugin;
 import net.imglib2.ops.operation.real.binary.RealBinaryOperation;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
@@ -44,6 +43,7 @@ import org.scijava.Contextual;
 import org.scijava.Prioritized;
 import org.scijava.plugin.HasPluginInfo;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.SingletonPlugin;
 
 /**
  * {@code CalculatorOp} is a plugin that extends the Image Calculator command.

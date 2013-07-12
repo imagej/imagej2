@@ -35,11 +35,11 @@
 
 package imagej.text;
 
-import imagej.plugin.HandlerService;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
+import org.scijava.plugin.HandlerService;
 
 /**
  * Interface for service that works with text formats.

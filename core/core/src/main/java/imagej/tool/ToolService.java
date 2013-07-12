@@ -35,13 +35,13 @@
 
 package imagej.tool;
 
-import imagej.plugin.SingletonService;
 import imagej.util.RealCoords;
 
 import java.util.List;
 
 import org.scijava.app.StatusService;
 import org.scijava.event.EventService;
+import org.scijava.plugin.SingletonService;
 
 /**
  * Interface for service that tracks available tools.

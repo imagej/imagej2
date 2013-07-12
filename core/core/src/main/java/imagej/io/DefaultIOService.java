@@ -35,12 +35,11 @@
 
 package imagej.io;
 
-import imagej.plugin.AbstractHandlerService;
-
 import java.io.IOException;
 
 import org.scijava.event.EventService;
 import org.scijava.log.LogService;
+import org.scijava.plugin.AbstractHandlerService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;

@@ -36,9 +36,9 @@
 package imagej.widget;
 
 import imagej.module.ModuleItem;
-import imagej.plugin.WrapperPlugin;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.WrapperPlugin;
 
 /**
  * Interface for input widgets. An input widget is intended to harvest user

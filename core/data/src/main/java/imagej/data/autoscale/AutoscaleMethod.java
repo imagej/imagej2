@@ -35,13 +35,13 @@
 
 package imagej.data.autoscale;
 
-import imagej.plugin.SingletonPlugin;
 import net.imglib2.IterableInterval;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.Contextual;
 import org.scijava.Prioritized;
 import org.scijava.plugin.HasPluginInfo;
+import org.scijava.plugin.SingletonPlugin;
 
 /**
  * An algorithm for computing suitable display ranges from interval data.

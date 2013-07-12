@@ -44,7 +44,6 @@ import imagej.data.overlay.Overlay;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.display.Display;
 import imagej.display.event.DisplayDeletedEvent;
-import imagej.plugin.AbstractSingletonService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,6 +54,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.scijava.event.EventHandler;
 import org.scijava.log.LogService;
+import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;

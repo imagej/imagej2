@@ -35,8 +35,6 @@
 
 package imagej.data.autoscale;
 
-import imagej.plugin.AbstractSingletonService;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,6 +46,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
 
+import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;
 

@@ -35,12 +35,12 @@
 
 package imagej.data.threshold;
 
-import imagej.plugin.SingletonPlugin;
 import net.imglib2.histogram.Histogram1d;
 
 import org.scijava.Contextual;
 import org.scijava.Prioritized;
 import org.scijava.plugin.HasPluginInfo;
+import org.scijava.plugin.SingletonPlugin;
 
 /**
  * An algorithm for thresholding an image into two classes of pixels from its

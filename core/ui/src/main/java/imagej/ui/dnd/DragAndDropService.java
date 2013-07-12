@@ -36,9 +36,10 @@
 package imagej.ui.dnd;
 
 import imagej.display.Display;
-import imagej.plugin.HandlerService;
 
 import java.util.List;
+
+import org.scijava.plugin.HandlerService;
 
 /**
  * Interface for service that handles drag and drop events.

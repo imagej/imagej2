@@ -35,13 +35,12 @@
 
 package imagej.platform;
 
-import imagej.plugin.SingletonPlugin;
-
 import java.io.IOException;
 import java.net.URL;
 
 import org.scijava.Disposable;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.SingletonPlugin;
 
 /**
  * An interface for configuring a specific deployment platform, defined by

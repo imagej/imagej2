@@ -35,10 +35,10 @@
 
 package imagej.data.operator;
 
-import imagej.plugin.SingletonService;
-
 import java.util.List;
 import java.util.Map;
+
+import org.scijava.plugin.SingletonService;
 
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;

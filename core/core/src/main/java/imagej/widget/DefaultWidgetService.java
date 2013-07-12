@@ -35,9 +35,8 @@
 
 package imagej.widget;
 
-import imagej.plugin.AbstractWrapperService;
-
 import org.scijava.log.LogService;
+import org.scijava.plugin.AbstractWrapperService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;

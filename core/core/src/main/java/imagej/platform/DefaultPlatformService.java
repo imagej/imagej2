@@ -37,7 +37,6 @@ package imagej.platform;
 
 import imagej.command.CommandService;
 import imagej.platform.event.AppMenusCreatedEvent;
-import imagej.plugin.AbstractSingletonService;
 
 import java.io.IOException;
 import java.net.URL;
@@ -48,6 +47,7 @@ import java.util.List;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.log.LogService;
+import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;

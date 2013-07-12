@@ -35,8 +35,6 @@
 
 package imagej.data.operator;
 
-import imagej.plugin.AbstractSingletonService;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,6 +47,7 @@ import net.imglib2.ops.img.ImageCombiner;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
+import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;
 

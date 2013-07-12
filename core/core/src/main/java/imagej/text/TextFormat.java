@@ -35,11 +35,10 @@
 
 package imagej.text;
 
-import imagej.plugin.HandlerPlugin;
-
 import java.io.File;
 import java.util.List;
 
+import org.scijava.plugin.HandlerPlugin;
 import org.scijava.plugin.Plugin;
 
 /**
