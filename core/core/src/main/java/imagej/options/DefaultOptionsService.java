@@ -38,7 +38,6 @@ package imagej.options;
 import imagej.command.Command;
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
-import imagej.plugin.AbstractPTService;
 import imagej.plugin.InitPreprocessor;
 import imagej.plugin.PreprocessorPlugin;
 import imagej.plugin.ValidityPreprocessor;
@@ -48,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.scijava.log.LogService;
+import org.scijava.plugin.AbstractPTService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;

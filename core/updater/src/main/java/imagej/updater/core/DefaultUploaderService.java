@@ -77,14 +77,14 @@ public class DefaultUploaderService extends AbstractService implements
 
 	@Override
 	public boolean hasUploader(final String protocol) {
-		return uploaderMap.containsKey(protocol);
+		return uploaderMap().containsKey(protocol);
 	}
 
 	@Override
 	public Uploader getUploader(String protocol)
 		throws IllegalArgumentException
 	{
-		final Uploader uploader = uploaderMap.get(protocol);
+		final Uploader uploader = uploaderMap().get(protocol);
 		if (uploader == null) {
 			throw new IllegalArgumentException("No uploader found for protocol " +
 				protocol);
@@ -153,7 +153,7 @@ public class DefaultUploaderService extends AbstractService implements
 			final URLClassLoader loader = new URLClassLoader(urls.toArray(new URL[urls.size()]), parent);
 			Thread.currentThread().setContextClassLoader(loader);
 			pluginService.reloadPlugins();
-			initialize();
+			uploaderMap = null; // force re-discovery
 			return hasUploader(protocol) ? getUploader(protocol) : null;
 		} catch (IOException e) {
 			log.error(e);
@@ -161,18 +161,20 @@ public class DefaultUploaderService extends AbstractService implements
 		}
 	}
 
-	// -- Service methods --
+	// -- Helper methods --
 
-	@Override
-	public void initialize() {
-		// ask the plugin service for the list of available upload mechanisms
-		uploaderMap = new HashMap<String, Uploader>();
-		final List<? extends Uploader> uploaders =
-			pluginService.createInstancesOfType(Uploader.class);
-		for (final Uploader uploader : uploaders) {
-			uploaderMap.put(uploader.getProtocol(), uploader);
+	private HashMap<String, Uploader> uploaderMap() {
+		if (uploaderMap == null) {
+			// ask the plugin service for the list of available upload mechanisms
+			uploaderMap = new HashMap<String, Uploader>();
+			final List<? extends Uploader> uploaders =
+				pluginService.createInstancesOfType(Uploader.class);
+			for (final Uploader uploader : uploaders) {
+				uploaderMap.put(uploader.getProtocol(), uploader);
+			}
+			log.info("Found " + uploaderMap.size() + " upload mechanisms.");
 		}
-		log.info("Found " + uploaderMap.size() + " upload mechanisms.");
+		return uploaderMap;
 	}
 
 }

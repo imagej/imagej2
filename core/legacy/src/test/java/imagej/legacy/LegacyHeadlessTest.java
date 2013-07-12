@@ -35,6 +35,8 @@
 
 package imagej.legacy;
 
+import static imagej.legacy.LegacyTestUtils.getFreshIJClassLoader;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -44,16 +46,10 @@ import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-
-import javassist.ClassPool;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.scijava.Context;
-import org.scijava.util.ClassUtils;
 
 /**
  * Tests that the legacy headless code works as expected.
@@ -62,6 +58,7 @@ import org.scijava.util.ClassUtils;
  */
 public class LegacyHeadlessTest {
 
+	private final static String PLUGIN_CLASS = "imagej.legacy.Headless_Example_Plugin";
 	private String threadName;
 
 	@Before
@@ -76,21 +73,31 @@ public class LegacyHeadlessTest {
 
 	@Test
 	public void testHeadless() {
-		assertTrue(runExamplePlugin(getClassLoader(true)));
+		assertTrue(runExampleDialogPlugin(true));
 	}
 
 	@Test
 	public void testPatchIsRequired() {
 		assumeTrue(GraphicsEnvironment.isHeadless());
-		assertFalse(runExamplePlugin(getClassLoader(false)));
+		assertFalse(runExampleDialogPlugin(false));
 	}
 
-	private static boolean runExamplePlugin(final ClassLoader loader) {
+	@Test
+	public void saveDialog() {
+		assertTrue(runExamplePlugin(true, "SaveDialog", "file=README.txt", "true"));
+	}
+
+	private static boolean runExampleDialogPlugin(final boolean patchHeadless) {
+		return runExamplePlugin(patchHeadless, "the argument", "prefix=[*** ]", "*** the argument");
+	}
+
+	private static boolean runExamplePlugin(final boolean patchHeadless, final String arg, final String macroOptions, final String expectedValue) {
+		final ClassLoader loader = getFreshIJClassLoader(false, patchHeadless, PLUGIN_CLASS);
 		try {
 			final String value = runPlugIn(loader,
-					Headless_Example_Plugin.class.getName(), "the argument",
-					"prefix=[*** ]").toString();
-			assertEquals("*** the argument", value);
+					Headless_Example_Plugin.class.getName(), arg,
+					macroOptions).toString();
+			assertEquals(expectedValue, value);
 			return true;
 		} catch (final Throwable t) {
 			if (!(t instanceof InvocationTargetException)
@@ -100,30 +107,6 @@ public class LegacyHeadlessTest {
 			}
 			return false;
 		}
-	}
-
-	private static ClassLoader getClassLoader(final boolean patchHeadless) {
-		final URL[] urls = {
-				ClassUtils.getLocation(ij.CommandListener.class),
-				ClassUtils.getLocation(DefaultLegacyService.class),
-				ClassUtils.getLocation(Context.class),
-				ClassUtils.getLocation(Headless_Example_Plugin.class)
-		};
-		// use the bootstrap class loader as parent so that ij.IJ must resolve
-		// via the new class loader
-		final ClassLoader parent = ClassLoader.getSystemClassLoader().getParent();
-		try {
-			assertFalse(parent.loadClass("ij.IJ") != null);
-		} catch (ClassNotFoundException e) {
-			// ignore
-		}
-		final ClassLoader loader = new URLClassLoader(urls, parent);
-		if (patchHeadless) {
-			final CodeHacker hacker = new CodeHacker(loader, new ClassPool());
-			new LegacyHeadless(hacker).patch();
-			hacker.loadClasses();
-		}
-		return loader;
 	}
 
 	private static Object runPlugIn(final ClassLoader loader,

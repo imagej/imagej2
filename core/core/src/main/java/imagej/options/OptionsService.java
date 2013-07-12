@@ -36,10 +36,11 @@
 package imagej.options;
 
 import imagej.command.CommandInfo;
-import imagej.plugin.PTService;
 
 import java.util.List;
 import java.util.Map;
+
+import org.scijava.plugin.PTService;
 
 /**
  * Interface for the options handling service.

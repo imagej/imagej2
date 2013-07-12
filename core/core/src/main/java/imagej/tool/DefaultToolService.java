@@ -44,7 +44,6 @@ import imagej.display.event.input.MsMovedEvent;
 import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
-import imagej.plugin.AbstractSingletonService;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.tool.event.ToolDeactivatedEvent;
 import imagej.util.RealCoords;
@@ -58,6 +57,7 @@ import java.util.Map;
 import org.scijava.app.StatusService;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
+import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
@@ -238,7 +238,6 @@ public class DefaultToolService extends AbstractSingletonService<Tool>
 
 	@Override
 	public void initialize() {
-		super.initialize();
 		buildDataStructures();
 		activeTool = new DummyTool();
 

@@ -44,7 +44,6 @@ import imagej.data.overlay.Overlay;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.display.Display;
 import imagej.display.event.DisplayDeletedEvent;
-import imagej.plugin.AbstractSingletonService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,6 +54,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.scijava.event.EventHandler;
 import org.scijava.log.LogService;
+import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;
@@ -82,8 +82,7 @@ public class DefaultThresholdService extends
 
 	// -- instance variables --
 
-	private final ConcurrentHashMap<ImageDisplay, ThresholdOverlay> map =
-		new ConcurrentHashMap<ImageDisplay, ThresholdOverlay>();
+	private ConcurrentHashMap<ImageDisplay, ThresholdOverlay> map;
 
 	private ConcurrentHashMap<String, ThresholdMethod> methods;
 
@@ -93,12 +92,12 @@ public class DefaultThresholdService extends
 
 	@Override
 	public boolean hasThreshold(ImageDisplay display) {
-		return map.get(display) != null;
+		return map().get(display) != null;
 	}
 
 	@Override
 	public ThresholdOverlay getThreshold(ImageDisplay display) {
-		ThresholdOverlay overlay = map.get(display);
+		ThresholdOverlay overlay = map().get(display);
 		if (overlay == null) {
 			Dataset dataset = displayService.getActiveDataset(display);
 			if (dataset == null) {
@@ -106,7 +105,7 @@ public class DefaultThresholdService extends
 					"expected ImageDisplay to have active dataset");
 			}
 			overlay = new ThresholdOverlay(getContext(), dataset);
-			map.put(display, overlay);
+			map().put(display, overlay);
 			display.display(overlay);
 			// NOTE - the call on prev line did a rebuild() but not necessarily an
 			// update(). So graphics might not be up to date! This may be a bug in
@@ -123,26 +122,26 @@ public class DefaultThresholdService extends
 
 	@Override
 	public void removeThreshold(ImageDisplay display) {
-		ThresholdOverlay overlay = map.get(display);
+		ThresholdOverlay overlay = map().get(display);
 		if (overlay != null) {
 			overlayService.removeOverlay(display, overlay);
-			map.remove(display);
+			map().remove(display);
 		}
 	}
 
 	@Override
 	public Map<String, ThresholdMethod> getThresholdMethods() {
-		return Collections.unmodifiableMap(methods);
+		return Collections.unmodifiableMap(methods());
 	}
 
 	@Override
 	public List<String> getThresholdMethodNames() {
-		return Collections.unmodifiableList(methodNames);
+		return Collections.unmodifiableList(methodNames());
 	}
 
 	@Override
 	public ThresholdMethod getThresholdMethod(String name) {
-		return methods.get(name);
+		return methods().get(name);
 	}
 
 	// -- PTService methods --
@@ -150,14 +149,6 @@ public class DefaultThresholdService extends
 	@Override
 	public Class<ThresholdMethod> getPluginType() {
 		return ThresholdMethod.class;
-	}
-
-	// -- Service methods --
-
-	@Override
-	public void initialize() {
-		super.initialize();
-		buildDataStructures();
 	}
 
 	// -- event handlers --
@@ -174,7 +165,7 @@ public class DefaultThresholdService extends
 	protected void onEvent(OverlayDeletedEvent evt) {
 		Overlay overlay = evt.getObject();
 		if (overlay instanceof ThresholdOverlay) {
-			for (Entry<ImageDisplay, ThresholdOverlay> entry : map.entrySet()) {
+			for (Entry<ImageDisplay, ThresholdOverlay> entry : map().entrySet()) {
 				if (entry.getValue() == overlay) removeThreshold(entry.getKey());
 			}
 		}
@@ -183,6 +174,7 @@ public class DefaultThresholdService extends
 	// -- helpers --
 
 	private void buildDataStructures() {
+		map = new ConcurrentHashMap<ImageDisplay, ThresholdOverlay>();
 		methods = new ConcurrentHashMap<String, ThresholdMethod>();
 		methodNames = new ArrayList<String>();
 		for (final ThresholdMethod method : getInstances()) {
@@ -190,6 +182,21 @@ public class DefaultThresholdService extends
 			methods.put(name, method);
 			methodNames.add(name);
 		}
+	}
+
+	private ConcurrentHashMap<ImageDisplay, ThresholdOverlay> map() {
+		if (map == null) buildDataStructures();
+		return map;
+	}
+
+	private ConcurrentHashMap<String, ThresholdMethod> methods() {
+		if (methods == null) buildDataStructures();
+		return methods;
+	}
+
+	private List<String> methodNames() {
+		if (methodNames == null) buildDataStructures();
+		return methodNames;
 	}
 
 }

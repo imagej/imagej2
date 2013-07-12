@@ -39,7 +39,6 @@ import imagej.module.Module;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
 import imagej.plugin.ImageJPlugin;
-import imagej.plugin.PTService;
 import imagej.plugin.PostprocessorPlugin;
 import imagej.plugin.PreprocessorPlugin;
 
@@ -48,6 +47,7 @@ import java.util.Map;
 import java.util.concurrent.Future;
 
 import org.scijava.event.EventService;
+import org.scijava.plugin.PTService;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.Service;

@@ -36,7 +36,6 @@
 package imagej.ui.dnd;
 
 import imagej.display.Display;
-import imagej.plugin.AbstractHandlerService;
 import imagej.ui.dnd.event.DragEnterEvent;
 import imagej.ui.dnd.event.DragExitEvent;
 import imagej.ui.dnd.event.DragOverEvent;
@@ -44,6 +43,7 @@ import imagej.ui.dnd.event.DropEvent;
 
 import org.scijava.app.StatusService;
 import org.scijava.event.EventHandler;
+import org.scijava.plugin.AbstractHandlerService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;

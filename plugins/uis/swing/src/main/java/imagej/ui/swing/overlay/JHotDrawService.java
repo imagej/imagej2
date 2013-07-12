@@ -89,7 +89,7 @@ public class JHotDrawService extends AbstractService {
 	 * @return the highest-priority adapter that supports the tool
 	 */
 	public JHotDrawAdapter<?> getAdapter(final Tool tool) {
-		for (final JHotDrawAdapter<?> adapter : adapters) {
+		for (final JHotDrawAdapter<?> adapter : adapters()) {
 			if (adapter.supports(tool)) return adapter;
 		}
 		return null;
@@ -116,7 +116,7 @@ public class JHotDrawService extends AbstractService {
 	public JHotDrawAdapter<?> getAdapter(final Overlay overlay,
 		final Figure figure)
 	{
-		for (final JHotDrawAdapter<?> adapter : adapters) {
+		for (final JHotDrawAdapter<?> adapter : adapters()) {
 			if (adapter.supports(overlay, figure)) return adapter;
 		}
 		return null;
@@ -144,7 +144,7 @@ public class JHotDrawService extends AbstractService {
 	{
 		final ArrayList<JHotDrawAdapter<?>> result =
 			new ArrayList<JHotDrawAdapter<?>>();
-		for (final JHotDrawAdapter<?> adapter : adapters) {
+		for (final JHotDrawAdapter<?> adapter : adapters()) {
 			if (adapter.supports(overlay, figure)) result.add(adapter);
 		}
 		return result;
@@ -152,7 +152,7 @@ public class JHotDrawService extends AbstractService {
 
 	/** Gets all of the discovered adapters. */
 	public Collection<JHotDrawAdapter<?>> getAllAdapters() {
-		return Collections.unmodifiableCollection(adapters);
+		return Collections.unmodifiableCollection(adapters());
 	}
 
 	/**
@@ -174,16 +174,18 @@ public class JHotDrawService extends AbstractService {
 		eventService.publish(new FigureCreatedEvent(overlayView, figure, display));
 	}
 
-	// -- Service methods --
+	// -- Helper methods --
 
-	@Override
-	public void initialize() {
-		// ask the plugin service for the list of available JHotDraw adapters
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final List<JHotDrawAdapter<?>> instances =
-			(List) pluginService.createInstancesOfType(JHotDrawAdapter.class);
-		adapters = instances;
-		log.info("Found " + adapters.size() + " JHotDraw adapters.");
+	private List<JHotDrawAdapter<?>> adapters() {
+		if (adapters == null) {
+			// ask the plugin service for the list of available JHotDraw adapters
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+			final List<JHotDrawAdapter<?>> instances =
+				(List) pluginService.createInstancesOfType(JHotDrawAdapter.class);
+			adapters = instances;
+			log.info("Found " + adapters.size() + " JHotDraw adapters.");
+		}
+		return adapters;
 	}
 
 }

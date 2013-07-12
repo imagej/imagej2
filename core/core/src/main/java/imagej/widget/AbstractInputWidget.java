@@ -35,7 +35,7 @@
 
 package imagej.widget;
 
-import imagej.plugin.AbstractWrapperPlugin;
+import org.scijava.plugin.AbstractWrapperPlugin;
 
 /**
  * Base class for input widgets.

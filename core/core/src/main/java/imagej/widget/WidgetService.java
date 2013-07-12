@@ -35,7 +35,7 @@
 
 package imagej.widget;
 
-import imagej.plugin.WrapperService;
+import org.scijava.plugin.WrapperService;
 
 /**
  * Interface for services that manage available {@link InputWidget}s.

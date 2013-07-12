@@ -81,6 +81,11 @@ public class DummyLegacyService implements LegacyService {
 	}
 
 	@Override
+	public void registerEventHandlers() {
+		throw new UnsupportedOperationException("The DummyLegacyService is not intended to be initialized!");
+	}
+
+	@Override
 	public Context getContext() {
 		throw new UnsupportedOperationException("The DummyLegacyService is not part of a valid ImageJ Context!");
 	}

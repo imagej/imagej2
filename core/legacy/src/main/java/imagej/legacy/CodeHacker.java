@@ -35,30 +35,54 @@
 
 package imagej.legacy;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
-import org.scijava.util.ClassUtils;
+import java.util.jar.JarOutputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
 
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
+import javassist.CtBehavior;
 import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.CtField;
 import javassist.CtMethod;
+import javassist.CtNewConstructor;
 import javassist.CtNewMethod;
 import javassist.LoaderClassPath;
 import javassist.Modifier;
 import javassist.NotFoundException;
+import javassist.bytecode.BadBytecode;
+import javassist.bytecode.CodeAttribute;
+import javassist.bytecode.CodeIterator;
+import javassist.bytecode.ConstPool;
+import javassist.bytecode.InstructionPrinter;
+import javassist.bytecode.MethodInfo;
+import javassist.bytecode.Opcode;
 import javassist.expr.ConstructorCall;
 import javassist.expr.ExprEditor;
+import javassist.expr.FieldAccess;
+import javassist.expr.Handler;
 import javassist.expr.MethodCall;
 import javassist.expr.NewExpr;
+
+import org.scijava.util.ClassUtils;
+import org.scijava.util.FileUtils;
 
 /**
  * The code hacker provides a mechanism for altering the behavior of classes
@@ -90,10 +114,12 @@ public class CodeHacker {
 		pool.appendClassPath(new LoaderClassPath(classLoader));
 
 		// the CodeHacker offers the LegacyService instance, therefore it needs to add that field here
-		insertPrivateStaticField("ij.IJ", LegacyService.class, "_legacyService");
-		insertNewMethod("ij.IJ",
-			"public static imagej.legacy.LegacyService getLegacyService()",
-			"return _legacyService;");
+		if (!hasField("ij.IJ", "_legacyService")) {
+			insertPrivateStaticField("ij.IJ", LegacyService.class, "_legacyService");
+			insertNewMethod("ij.IJ",
+				"public static imagej.legacy.LegacyService getLegacyService()",
+				"return _legacyService;");
+		}
 	}
 
 	public CodeHacker(ClassLoader classLoader) {
@@ -132,7 +158,7 @@ public class CodeHacker {
 		final String methodSig, final String newCode)
 	{
 		try {
-			getMethod(fullClass, methodSig).insertAfter(expand(newCode));
+			getBehavior(fullClass, methodSig).insertAfter(expand(newCode));
 		}
 		catch (final CannotCompileException e) {
 			throw new IllegalArgumentException("Cannot modify method: " + methodSig,
@@ -172,7 +198,12 @@ public class CodeHacker {
 		final String methodSig, final String newCode)
 	{
 		try {
-			getMethod(fullClass, methodSig).insertBefore(expand(newCode));
+			final CtBehavior behavior = getBehavior(fullClass, methodSig);
+			if (behavior instanceof CtConstructor) {
+				((CtConstructor)behavior).insertBeforeBody(expand(newCode));
+			} else {
+				behavior.insertBefore(expand(newCode));
+			}
 		}
 		catch (final CannotCompileException e) {
 			throw new IllegalArgumentException("Cannot modify method: " + methodSig,
@@ -253,12 +284,25 @@ public class CodeHacker {
 
 	public void insertPrivateStaticField(final String fullClass,
 			final Class<?> clazz, final String name) {
+		insertStaticField(fullClass, Modifier.PRIVATE, clazz, name, null);
+	}
+
+	public void insertPublicStaticField(final String fullClass,
+			final Class<?> clazz, final String name, final String initializer) {
+		insertStaticField(fullClass, Modifier.PUBLIC, clazz, name, initializer);
+	}
+
+	public void insertStaticField(final String fullClass, int modifiers,
+			final Class<?> clazz, final String name, final String initializer) {
 		final CtClass classRef = getClass(fullClass);
 		try {
 			final CtField field = new CtField(pool.get(clazz.getName()), name,
 					classRef);
-			field.setModifiers(Modifier.PRIVATE | Modifier.STATIC);
+			field.setModifiers(modifiers | Modifier.STATIC);
 			classRef.addField(field);
+			if (initializer != null) {
+				addToClassInitializer(fullClass, name + " = " + initializer + ";");
+			}
 		} catch (CannotCompileException e) {
 			throw new IllegalArgumentException("Cannot add field " + name
 					+ " to " + fullClass, e);
@@ -266,6 +310,221 @@ public class CodeHacker {
 			throw new IllegalArgumentException("Cannot add field " + name
 					+ " to " + fullClass, e);
 		}
+	}
+
+	public void addToClassInitializer(final String fullClass, final String code) {
+		final CtClass classRef = getClass(fullClass);
+		try {
+			CtConstructor method = classRef.getClassInitializer();
+			if (method != null) {
+				method.insertAfter(code);
+			} else {
+				method = CtNewConstructor.make(new CtClass[0], new CtClass[0], code, classRef);
+				method.getMethodInfo().setName("<clinit>");
+				method.setModifiers(Modifier.STATIC);
+				classRef.addConstructor(method);
+			}
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException("Cannot add " + code
+					+ " to class initializer of " + fullClass, e);
+		}
+	}
+
+	public void addCatch(final String fullClass, final String methodSig, final String exceptionClassName, final String src) {
+		try {
+			final CtBehavior method = getBehavior(fullClass, methodSig);
+			method.addCatch(src, getClass(exceptionClassName), "$e");
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException("Cannot add catch for exception of type'"
+				+ exceptionClassName + " in " + fullClass		+ "'s " + methodSig, e);
+		}
+	}
+
+	public void insertAtTopOfExceptionHandlers(final String fullClass, final String methodSig, final String exceptionClassName, final String src) {
+		try {
+			final CtBehavior method = getBehavior(fullClass, methodSig);
+			method.instrument(new ExprEditor() {
+				@Override
+				public void edit(Handler handler) throws CannotCompileException {
+					try {
+						if (handler.getType().getName().equals(exceptionClassName)) {
+							handler.insertBefore(src);
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException("Cannot edit exception handler for type'"
+				+ exceptionClassName + " in " + fullClass		+ "'s " + methodSig, e);
+		}
+	}
+
+	/**
+	 * Replaces the application name in the given method in the given parameter
+	 * to the given constructor call.
+	 * 
+	 * Fails silently if the specified method does not exist (e.g.
+	 * CommandFinder's export() function just went away in 1.47i).
+	 * 
+	 * @param fullClass
+	 *            Fully qualified name of the class to override.
+	 * @param methodSig
+	 *            Method signature of the method to override; e.g.,
+	 *            "public void showMessage(String title, String message)"
+	 * @param newClassName
+	 *            the name of the class which is to be constructed by the new
+	 *            operator
+	 * @param parameterIndex
+	 *            the index of the parameter containing the application name
+	 * @param replacement
+	 *            the code to use instead of the specified parameter
+	 * @throws CannotCompileException
+	 */
+	protected void replaceParameterInNew(final String fullClass,
+			final String methodSig, final String newClassName,
+			final int parameterIndex, final String replacement) {
+		try {
+			final CtBehavior method = getBehavior(fullClass, methodSig);
+			method.instrument(new ExprEditor() {
+				@Override
+				public void edit(NewExpr expr) throws CannotCompileException {
+					if (expr.getClassName().equals(newClassName))
+						try {
+							final CtClass[] parameterTypes = expr
+									.getConstructor().getParameterTypes();
+							if (parameterTypes[parameterIndex] != CodeHacker.this
+									.getClass("java.lang.String")) {
+								throw new IllegalArgumentException("Parameter "
+										+ parameterIndex + " of "
+										+ expr.getConstructor() + " is not a String!");
+							}
+							final String replace = replaceParameter(
+									parameterIndex, parameterTypes.length, replacement);
+							expr.replace("$_ = new " + newClassName + replace
+									+ ";");
+						} catch (NotFoundException e) {
+							throw new IllegalArgumentException(
+									"Cannot find the parameters of the constructor of "
+											+ newClassName, e);
+					}
+				}
+			});
+		} catch (IllegalArgumentException e) {
+			// ignore: the method was not found
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException("Cannot handle app name in " + fullClass
+					+ "'s " + methodSig, e);
+		}
+	}
+
+	/**
+	 * Replaces the application name in the given method in the given parameter
+	 * to the given method call.
+	 * 
+	 * Fails silently if the specified method does not exist (e.g.
+	 * CommandFinder's export() function just went away in 1.47i).
+	 * 
+	 * @param fullClass
+	 *            Fully qualified name of the class to override.
+	 * @param methodSig
+	 *            Method signature of the method to override; e.g.,
+	 *            "public void showMessage(String title, String message)"
+	 * @param calledMethodName
+	 *            the name of the method to which the application name is passed
+	 * @param parameterIndex
+	 *            the index of the parameter containing the application name
+	 * @param replacement
+	 *            the code to use instead of the specified parameter
+	 * @throws CannotCompileException
+	 */
+	protected void replaceParameterInCall(final String fullClass,
+			final String methodSig, final String calledMethodName,
+			final int parameterIndex, final String replacement) {
+		try {
+			final CtBehavior method = getBehavior(fullClass, methodSig);
+			method.instrument(new ExprEditor() {
+				@Override
+				public void edit(MethodCall call) throws CannotCompileException {
+					if (call.getMethodName().equals(calledMethodName)) try {
+						final boolean isSuper = call.isSuper();
+						final CtClass[] parameterTypes = isSuper ?
+								((ConstructorCall) call).getConstructor().getParameterTypes() :
+								call.getMethod().getParameterTypes();
+						if (parameterTypes.length < parameterIndex) {
+								throw new IllegalArgumentException("Index " + parameterIndex + " is outside of " + call.getMethod() + "'s parameter list!");
+						}
+						if (parameterTypes[parameterIndex - 1] != CodeHacker.this.getClass("java.lang.String")) {
+							throw new IllegalArgumentException("Parameter " + parameterIndex + " of "
+									+ call.getMethod() + " is not a String!");
+						}
+						final String replace = replaceParameter(
+								parameterIndex, parameterTypes.length, replacement);
+						call.replace((isSuper ? "" : "$0.") + calledMethodName + replace + ";");
+					} catch (NotFoundException e) {
+						throw new IllegalArgumentException(
+								"Cannot find the parameters of the method "
+										+ calledMethodName, e);
+					}
+				}
+
+				@Override
+				public void edit(final ConstructorCall call) throws CannotCompileException {
+					edit((MethodCall)call);
+				}
+			});
+		} catch (IllegalArgumentException e) {
+			// ignore: the method was not found
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException("Cannot handle app name in " + fullClass
+					+ "'s " + methodSig, e);
+		}
+	}
+
+	private String replaceParameter(final int parameterIndex, final int parameterCount, final String replacement) {
+		final StringBuilder builder = new StringBuilder();
+		builder.append("(");
+		for (int i = 1; i <= parameterCount; i++) {
+			if (i > 1) {
+				builder.append(", ");
+			}
+			builder.append("$").append(i);
+			if (i == parameterIndex) {
+				builder.append(".replace(\"ImageJ\", " + replacement + ")");
+			}
+		}
+		builder.append(")");
+		return builder.toString();
+	}
+
+	/**
+	 * Patches the bytecode of the given method to not return on a null check.
+	 * 
+	 * This is needed to patch support for alternative editors into ImageJ 1.x.
+	 * 
+	 * @param fullClass the class of the method to instrument
+	 * @param methodSig the signature of the method to instrument
+	 */
+	public void dontReturnOnNull(final String fullClass, final String methodSig) {
+		final CtBehavior behavior = getBehavior(fullClass, methodSig);
+		final MethodInfo info = behavior.getMethodInfo();
+		final CodeIterator iterator = info.getCodeAttribute().iterator();
+		while (iterator.hasNext()) try {
+			int pos = iterator.next();
+			final int c = iterator.byteAt(pos);
+			if (c == Opcode.IFNONNULL && iterator.byteAt(pos + 3) == Opcode.RETURN) {
+				iterator.writeByte(Opcode.POP, pos++);
+				iterator.writeByte(Opcode.NOP, pos++);
+				iterator.writeByte(Opcode.NOP, pos++);
+				iterator.writeByte(Opcode.NOP, pos++);
+				return;
+			}
+		}
+		catch (BadBytecode e) {
+				throw new IllegalArgumentException(e);
+		}
+		throw new IllegalArgumentException("Method " + methodSig + " in " + fullClass + " does not return on null");
 	}
 
 	/**
@@ -339,6 +598,93 @@ public class CodeHacker {
 	}
 
 	/**
+	 * Replaces every field write access to the specified field in the specified method.
+	 * 
+	 * @param fullClass the full class
+	 * @param methodSig the signature of the method to instrument
+	 * @param fieldName the field whose write access to override
+	 * @param newCode the code to run instead of the field access
+	 */
+	public void overrideFieldWrite(final String fullClass, final String methodSig, final String fieldName, final String newCode) {
+		try {
+			final CtBehavior method = getBehavior(fullClass, methodSig);
+			method.instrument(new ExprEditor() {
+				@Override
+				public void edit(final FieldAccess access) throws CannotCompileException {
+					if (access.getFieldName().equals(access)) {
+						access.replace(newCode);
+					}
+				}
+			});
+		} catch (IllegalArgumentException e) {
+			// ignore: the method was not found
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException(
+					"Cannot override field access to " + fieldName + " in " + fullClass + "'s " + methodSig, e);
+		}
+	}
+
+	/**
+	 * Replaces a call in the given method.
+	 * 
+	 * @param fullClass the class of the method to edit
+	 * @param methodSig the signature of the method to edit
+	 * @param calledClass the class of the called method to replace
+	 * @param calledMethodName the name of the called method to replace
+	 * @param newCode the code to replace the call with
+	 */
+	public void replaceCallInMethod(final String fullClass,
+			final String methodSig, final String calledClass,
+			final String calledMethodName, final String newCode) {
+		replaceCallInMethod(fullClass, methodSig, calledClass, calledMethodName, newCode, -1);
+	}
+
+	/**
+	 * Replaces a call in the given method.
+	 * 
+	 * @param fullClass the class of the method to edit
+	 * @param methodSig the signature of the method to edit
+	 * @param calledClass the class of the called method to replace
+	 * @param calledMethodName the name of the called method to replace
+	 * @param newCode the code to replace the call with
+	 * @param onlyNth if positive, only replace the <i>n</i>th call
+	 */
+	public void replaceCallInMethod(final String fullClass,
+			final String methodSig, final String calledClass,
+			final String calledMethodName, final String newCode, final int onlyNth) {
+		try {
+			final CtBehavior method = getBehavior(fullClass, methodSig);
+			method.instrument(new ExprEditor() {
+				private int count = 0;
+
+				@Override
+				public void edit(MethodCall call) throws CannotCompileException {
+					if (call.getMethodName().equals(calledMethodName)
+							&& call.getClassName().equals(calledClass)) {
+						if ( ++count != onlyNth && onlyNth > 0) return;
+						call.replace(newCode);
+					}
+				}
+
+				@Override
+				public void edit(NewExpr expr) throws CannotCompileException {
+					if ("<init>".equals(calledMethodName)
+							&& expr.getClassName().equals(calledClass)) {
+						if ( ++count != onlyNth && onlyNth > 0) return;
+						expr.replace(newCode);
+					}
+				}
+			});
+		} catch (IllegalArgumentException e) {
+			// ignore: the method was not found
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException(
+					"Cannot handle replace call to " + calledMethodName
+							+ " in " + fullClass + "'s " + methodSig, e);
+		}
+	}
+
+	/**
 	 * Loads the given, possibly modified, class.
 	 * <p>
 	 * This method must be called to confirm any changes made with
@@ -398,6 +744,12 @@ public class CodeHacker {
 	}
 
 	public void loadClasses() {
+		try {
+			LegacyJavaAgent.stop();
+		} catch (Throwable t) {
+			// ignore
+		}
+
 		final Iterator<CtClass> iter = handledClasses.iterator();
 		while (iter.hasNext()) {
 			final CtClass classRef = iter.next();
@@ -421,6 +773,21 @@ public class CodeHacker {
 	}
 
 	/**
+	 * Gets the method or constructor of the specified class and signature.
+	 * 
+	 * @param fullClass the class containing the method or constructor
+	 * @param methodSig the method (or if the name is <code>&lt;init&gt;</code>, the constructor)
+	 * @return the method or constructor
+	 */
+	private CtBehavior getBehavior(final String fullClass, final String methodSig) {
+		if (methodSig.indexOf("<init>") < 0) {
+			return getMethod(fullClass, methodSig);
+		} else {
+			return getConstructor(fullClass, methodSig);
+		}
+	}
+
+	/**
 	 * Gets the Javassist method object corresponding to the given method
 	 * signature of the specified class name.
 	 */
@@ -437,6 +804,25 @@ public class CodeHacker {
 		}
 		catch (final NotFoundException e) {
 			throw new IllegalArgumentException("No such method: " + methodSig, e);
+		}
+	}
+
+	/**
+	 * Gets the Javassist constructor object corresponding to the given constructor
+	 * signature of the specified class name.
+	 */
+	private CtConstructor getConstructor(final String fullClass, final String constructorSig) {
+		final CtClass cc = getClass(fullClass);
+		final String[] argTypes = getMethodArgTypes(constructorSig);
+		final CtClass[] params = new CtClass[argTypes.length];
+		for (int i = 0; i < params.length; i++) {
+			params[i] = getClass(argTypes[i]);
+		}
+		try {
+			return cc.getDeclaredConstructor(params);
+		}
+		catch (final NotFoundException e) {
+			throw new IllegalArgumentException("No such method: " + constructorSig, e);
 		}
 	}
 
@@ -522,6 +908,45 @@ public class CodeHacker {
 			methodPrefix.indexOf(" void ") > 0;
 	}
 
+	/**
+	 * Determines whether the specified class has the specified field.
+	 * 
+	 * @param fullName the class name
+	 * @param fieldName the field name
+	 * @return whether the field exists
+	 */
+	public boolean hasField(final String fullName, final String fieldName) {
+		final CtClass clazz = getClass(fullName);
+		try {
+			return clazz.getField(fieldName) != null;
+		} catch (NotFoundException e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Determines whether the specified class is known to Javassist.
+	 * 
+	 * @param fullClass
+	 *            the class name
+	 * @return whether the class exists
+	 */
+	public boolean existsClass(final String fullClass) {
+		try {
+			return pool.get(fullClass) != null;
+		} catch (NotFoundException e) {
+			return false;
+		}
+	}
+
+	public boolean hasSuperclass(final String fullClass, final String fullSuperclass) {
+		try {
+			final CtClass clazz = getClass(fullClass);
+			return fullSuperclass.equals(clazz.getSuperclass().getName());
+		} catch (final Throwable e) {
+			return false;
+		}
+	}
 	private static int verboseLevel = 0;
 
 	private static CtMethod makeStubMethod(CtClass clazz, CtMethod original) throws CannotCompileException, NotFoundException {
@@ -656,6 +1081,231 @@ public class CodeHacker {
 				}
 			}
 		});
+	}
+
+	/**
+	 * Augments all <code>startsWith("http://")</code> calls with <code>|| startsWith("https://")</code>.
+	 * 
+	 * @param fullName the class containing the method to instrument
+	 * @param methodSig the signature of the method to instrument
+	 */
+	public void handleHTTPS(final String fullClass, final String methodSig) {
+		try {
+			final CtBehavior method = getBehavior(fullClass, methodSig);
+			method.instrument(new ExprEditor() {
+				@Override
+				public void edit(MethodCall call) throws CannotCompileException {
+					try {
+						if (call.getMethodName().equals("startsWith") &&
+								"http://".equals(getLastConstantArgument(call, 0)))
+							call.replace("$_ = $0.startsWith($1) || $0.startsWith(\"https://\");");
+					} catch (BadBytecode e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		} catch (CannotCompileException e) {
+			throw new IllegalArgumentException("Could not handle HTTPS in " + methodSig + " in " + fullClass);
+		}
+	}
+
+	private String getLastConstantArgument(final MethodCall call, final int skip) throws BadBytecode {
+		final int[] indices = new int[skip + 1];
+		int counter = 0;
+
+		final MethodInfo info = ((CtMethod)call.where()).getMethodInfo();
+		final CodeIterator iterator = info.getCodeAttribute().iterator();
+		int currentPos = call.indexOfBytecode();
+		while (iterator.hasNext()) {
+			int pos = iterator.next();
+			if (pos >= currentPos)
+				break;
+			switch (iterator.byteAt(pos)) {
+			case Opcode.LDC:
+				indices[(counter++) % indices.length] = iterator.byteAt(pos + 1);
+				break;
+			case Opcode.LDC_W:
+				indices[(counter++) % indices.length] = iterator.u16bitAt(pos + 1);
+				break;
+			}
+		}
+		if (counter < skip) {
+			return null;
+		}
+		counter %= indices.length;
+		if (skip > 0) {
+			counter -= skip;
+			if (counter < 0) counter += indices.length;
+		}
+		return info.getConstPool().getStringInfo(indices[counter]);
+	}
+
+	/**
+	 * Disassembles all methods of a class.
+	 * 
+	 * @param fullName
+	 *            the class name
+	 * @param out
+	 *            the output stream
+	 */
+	public void disassemble(final String fullName, final PrintStream out) {
+		disassemble(fullName, out, false);
+	}
+
+	/**
+	 * Disassembles all methods of a class, optionally including superclass
+	 * methods.
+	 * 
+	 * @param fullName
+	 *            the class name
+	 * @param out
+	 *            the output stream
+	 * @param evenSuperclassMethods
+	 *            whether to disassemble methods defined in superclasses
+	 */
+	public void disassemble(final String fullName, final PrintStream out, final boolean evenSuperclassMethods) {
+		CtClass clazz = getClass(fullName);
+		out.println("Class " + clazz.getName());
+		for (CtConstructor ctor : clazz.getConstructors()) {
+			disassemble(ctor, out);
+		}
+		for (CtMethod method : clazz.getDeclaredMethods())
+			if (evenSuperclassMethods || method.getDeclaringClass().equals(clazz))
+				disassemble(method, out);
+	}
+
+	private void disassemble(CtBehavior method, PrintStream out) {
+		out.println(method.getLongName());
+        MethodInfo info = method.getMethodInfo2();
+        ConstPool pool = info.getConstPool();
+        CodeAttribute code = info.getCodeAttribute();
+        if (code == null)
+            return;
+
+        CodeIterator iterator = code.iterator();
+        while (iterator.hasNext()) {
+            int pos;
+            try {
+                pos = iterator.next();
+            } catch (BadBytecode e) {
+                throw new RuntimeException(e);
+            }
+
+            out.println(pos + ": " + InstructionPrinter.instructionString(iterator, pos, pool));
+        }
+
+		out.println("");
+	}
+
+	/**
+	 * Writes a .jar file with the modified classes.
+	 * 
+	 * <p>
+	 * This comes in handy e.g. when ImageJ is to be run in an environment where
+	 * redefining classes is not allowed. If users need to run, say, the legacy
+	 * headless support in such an environment, they need to generate a
+	 * <i>headless.jar</i> file using this method and prepend it to the class
+	 * path (so that the classes of <i>ij.jar</i> are overridden by
+	 * <i>headless.jar</i>'s classes).
+	 * </p>
+	 * 
+	 * @param path
+	 *            the <i>.jar</i> file to write to
+	 * @throws IOException
+	 */
+	public void writeJar(final File path) throws IOException {
+		final JarOutputStream jar = new JarOutputStream(new FileOutputStream(path));
+		final DataOutputStream dataOut = new DataOutputStream(jar);
+		for (final CtClass clazz : handledClasses) {
+			final ZipEntry entry = new ZipEntry(clazz.getName().replace('.', '/') + ".class");
+			jar.putNextEntry(entry);
+			clazz.getClassFile().write(dataOut);
+			dataOut.flush();
+		}
+		jar.close();
+	}
+
+	private void verify(CtClass clazz, PrintWriter output) {
+		try {
+			ByteArrayOutputStream stream = new ByteArrayOutputStream();
+			DataOutputStream out = new DataOutputStream(stream);
+			clazz.getClassFile().write(out);
+			out.flush();
+			out.close();
+			verify(stream.toByteArray(), output);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void verify(byte[] bytecode, PrintWriter out) {
+		try {
+			Collection<URL> urls;
+			urls = FileUtils.listContents(new File(System.getProperty("user.home"), "fiji/jars/").toURI().toURL());
+			if (urls.size() == 0) {
+				urls = FileUtils.listContents(new File(System.getProperty("user.home"), "Fiji.app/jars/").toURI().toURL());
+				if (urls.size() == 0) {
+					urls = FileUtils.listContents(new File("/Applications/Fiji.app/jars/").toURI().toURL());
+				}
+			}
+			ClassLoader loader = new java.net.URLClassLoader(urls.toArray(new URL[urls.size()]));
+			Class<?> readerClass = null, checkerClass = null;
+			for (final String prefix : new String[] { "org.", "jruby.", "org.jruby.org." }) try {
+				readerClass = loader.loadClass(prefix + "objectweb.asm.ClassReader");
+				checkerClass = loader.loadClass(prefix + "objectweb.asm.util.CheckClassAdapter");
+				break;
+			} catch (ClassNotFoundException e) { /* ignore */ }
+			java.lang.reflect.Constructor<?> ctor = readerClass.getConstructor(new Class[] { bytecode.getClass() });
+			Object reader = ctor.newInstance(bytecode);
+			java.lang.reflect.Method verify = checkerClass.getMethod("verify", new Class[] { readerClass, Boolean.TYPE, PrintWriter.class });
+			verify.invoke(null, new Object[] { reader, false, out });
+		} catch (Throwable e) {
+			if (e.getClass().getName().endsWith(".AnalyzerException")) {
+				final Pattern pattern = Pattern.compile("Error at instruction (\\d+): Argument (\\d+): expected L([^ ,;]+);, but found L(.*);");
+				final Matcher matcher = pattern.matcher(e.getMessage());
+				if (matcher.matches()) {
+					final CtClass clazz1 = getClass(matcher.group(3));
+					final CtClass clazz2 = getClass(matcher.group(4));
+					try {
+						if (clazz2.subtypeOf(clazz1)) return;
+					} catch (NotFoundException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+			e.printStackTrace();
+		}
+	}
+
+	protected void verify(PrintWriter out) {
+		out.println("Verifying " + handledClasses.size() + " classes");
+		for (final CtClass clazz : handledClasses) {
+			out.println("Verifying class " + clazz.getName());
+			out.flush();
+			verify(clazz, out);
+		}
+	}
+
+	/**
+	 * Applies legacy patches, optionally including the headless ones.
+	 * 
+	 * <p>
+	 * Intended to be used in unit tests only, for newly-created class loaders,
+	 * via reflection.
+	 * </p>
+	 * 
+	 * @param forceHeadless
+	 *            also apply the headless patches
+	 */
+	@SuppressWarnings("unused")
+	private static void patch(final boolean forceHeadless) {
+		final ClassLoader loader = CodeHacker.class.getClassLoader();
+		final CodeHacker hacker = new CodeHacker(loader, new ClassPool(false));
+		if (forceHeadless) {
+			new LegacyHeadless(hacker).patch();
+		}
+		 new LegacyInjector().injectHooks(hacker);
+		hacker.loadClasses();
 	}
 
 }

@@ -43,13 +43,13 @@ import imagej.display.event.input.MsMovedEvent;
 import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
-import imagej.plugin.SingletonPlugin;
 
 import org.scijava.Contextual;
 import org.scijava.Prioritized;
 import org.scijava.input.MouseCursor;
 import org.scijava.plugin.HasPluginInfo;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.SingletonPlugin;
 
 /**
  * Interface for ImageJ tools. A tool is a collection of rules binding user

@@ -38,8 +38,6 @@ package imagej.legacy;
 import java.awt.GraphicsEnvironment;
 import java.lang.reflect.Field;
 
-import javassist.bytecode.DuplicateMemberException;
-
 import org.scijava.Context;
 import org.scijava.util.ClassUtils;
 
@@ -55,8 +53,13 @@ public class LegacyInjector {
 
 	/** Overrides class behavior of ImageJ1 classes by injecting method hooks. */
 	public void injectHooks(final ClassLoader classLoader) {
-		// NB: Override class behavior before class loading gets too far along.
 		hacker = new CodeHacker(classLoader);
+		injectHooks(hacker);
+	}
+
+	/** Overrides class behavior of ImageJ1 classes by injecting method hooks. */
+	protected void injectHooks(final CodeHacker hacker) {
+		// NB: Override class behavior before class loading gets too far along.
 
 		if (GraphicsEnvironment.isHeadless()) {
 			new LegacyHeadless(hacker).patch();
@@ -147,74 +150,15 @@ public class LegacyInjector {
 			"public void setVisible(boolean b)",
 			"if ($isLegacyMode()) { super.setVisible($1); }");
 
-		// for backwards-compatibility
-
-		// add back the (deprecated) killProcessor(), and overlay methods
-		final String[] imagePlusMethods = {
-				"public void killProcessor()",
-				"{}",
-				"public void setDisplayList(java.util.Vector list)",
-				"getCanvas().setDisplayList(list);",
-				"public java.util.Vector getDisplayList()",
-				"return getCanvas().getDisplayList();",
-				"public void setDisplayList(ij.gui.Roi roi, java.awt.Color strokeColor,"
-				+ " int strokeWidth, java.awt.Color fillColor)",
-				"setOverlay(roi, strokeColor, strokeWidth, fillColor);"
-		};
-		for (int i = 0; i < imagePlusMethods.length; i++) try {
-			hacker.insertNewMethod("ij.ImagePlus",
-					imagePlusMethods[i], imagePlusMethods[++i]);
-		} catch (Exception e) { /* ignore */ }
-
-		// make sure that ImageJ has been initialized in batch mode
-		hacker.insertAtTopOfMethod("ij.IJ",
-				"public static java.lang.String runMacro(java.lang.String macro, java.lang.String arg)",
-				"if (ij==null && ij.Menus.getCommands()==null) init();");
-
-		try {
-			hacker.insertNewMethod("ij.CompositeImage",
-				"public ij.ImagePlus[] splitChannels(boolean closeAfter)",
-				"ij.ImagePlus[] result = ij.plugin.ChannelSplitter.split(this);"
-				+ "if (closeAfter) close();"
-				+ "return result;");
-			hacker.insertNewMethod("ij.plugin.filter.RGBStackSplitter",
-				"public static ij.ImagePlus[] splitChannelsToArray(ij.ImagePlus imp, boolean closeAfter)",
-				"if (!imp.isComposite()) {"
-				+ "  ij.IJ.error(\"splitChannelsToArray was called on a non-composite image\");"
-				+ "  return null;"
-				+ "}"
-				+ "ij.ImagePlus[] result = ij.plugin.ChannelSplitter.split(imp);"
-				+ "if (closeAfter)"
-				+ "  imp.close();"
-				+ "return result;");
-		} catch (IllegalArgumentException e) {
-			final Throwable cause = e.getCause();
-			if (cause != null && !(cause instanceof DuplicateMemberException)) {
-				throw e;
-			}
-		}
-
-		// handle mighty mouse (at least on old Linux, Java mistakes the horizontal wheel for a popup trigger)
-		for (String fullClass : new String[] {
-				"ij.gui.ImageCanvas",
-				"ij.plugin.frame.RoiManager",
-				"ij.text.TextPanel",
-				"ij.gui.Toolbar"
-		}) {
-			hacker.handleMightyMousePressed(fullClass);
-		}
-
-		try {
-			LegacyJavaAgent.stop();
-		} catch (Throwable t) {
-			// ignore
-		}
+		LegacyExtensions.injectHooks(hacker);
 
 		// commit patches
 		hacker.loadClasses();
 
 		// make sure that there is a legacy service
-		setLegacyService(new DummyLegacyService());
+		if (this.hacker != null) {
+			setLegacyService(new DummyLegacyService());
+		}
 	}
 
 	void setLegacyService(final LegacyService legacyService) {

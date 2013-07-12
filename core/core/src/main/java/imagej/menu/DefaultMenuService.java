@@ -93,7 +93,7 @@ public class DefaultMenuService extends AbstractService implements MenuService
 
 	@Override
 	public ShadowMenu getMenu(final String menuRoot) {
-		return rootMenus.get(menuRoot);
+		return rootMenus().get(menuRoot);
 	}
 
 	@Override
@@ -139,17 +139,6 @@ public class DefaultMenuService extends AbstractService implements MenuService
 		info.update(eventService);
 	}
 
-	// -- Service methods --
-
-	@Override
-	public void initialize() {
-		rootMenus = new HashMap<String, ShadowMenu>();
-
-		final List<ModuleInfo> allModules =
-			getCommandService().getModuleService().getModules();
-		addModules(allModules);
-	}
-
 	// -- Event handlers --
 
 	@EventHandler
@@ -159,14 +148,14 @@ public class DefaultMenuService extends AbstractService implements MenuService
 
 	@EventHandler
 	protected void onEvent(final ModulesRemovedEvent event) {
-		for (final ShadowMenu menu : rootMenus.values()) {
+		for (final ShadowMenu menu : rootMenus().values()) {
 			menu.removeAll(event.getItems());
 		}
 	}
 
 	@EventHandler
 	protected void onEvent(final ModulesUpdatedEvent event) {
-		for (final ShadowMenu menu : rootMenus.values()) {
+		for (final ShadowMenu menu : rootMenus().values()) {
 			menu.updateAll(event.getItems());
 		}
 	}
@@ -190,11 +179,11 @@ public class DefaultMenuService extends AbstractService implements MenuService
 		// process each menu root separately
 		for (final String menuRoot : modulesByMenuRoot.keySet()) {
 			final ArrayList<ModuleInfo> modules = modulesByMenuRoot.get(menuRoot);
-			ShadowMenu menu = rootMenus.get(menuRoot);
+			ShadowMenu menu = rootMenus().get(menuRoot);
 			if (menu == null) {
 				// new menu root: create new menu structure
 				menu = new ShadowMenu(getContext(), modules);
-				rootMenus.put(menuRoot, menu);
+				rootMenus().put(menuRoot, menu);
 			}
 			else {
 				// existing menu root: add to menu structure
@@ -202,6 +191,17 @@ public class DefaultMenuService extends AbstractService implements MenuService
 			}
 		}
 
+	}
+
+	private HashMap<String, ShadowMenu> rootMenus() {
+		if (rootMenus == null) {
+			rootMenus = new HashMap<String, ShadowMenu>();
+
+			final List<ModuleInfo> allModules =
+					getCommandService().getModuleService().getModules();
+			addModules(allModules);
+		}
+		return rootMenus;
 	}
 
 }

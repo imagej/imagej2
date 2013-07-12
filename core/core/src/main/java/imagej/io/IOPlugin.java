@@ -35,10 +35,9 @@
 
 package imagej.io;
 
-import imagej.plugin.HandlerPlugin;
-
 import java.io.IOException;
 
+import org.scijava.plugin.HandlerPlugin;
 import org.scijava.plugin.HasPluginInfo;
 import org.scijava.plugin.Plugin;
 

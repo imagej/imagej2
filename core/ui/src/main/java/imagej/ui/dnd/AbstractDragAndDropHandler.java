@@ -35,8 +35,9 @@
 
 package imagej.ui.dnd;
 
+import org.scijava.plugin.AbstractTypedPlugin;
+
 import imagej.display.Display;
-import imagej.plugin.AbstractTypedPlugin;
 
 /**
  * Abstract superclass for {@link DragAndDropHandler}s.

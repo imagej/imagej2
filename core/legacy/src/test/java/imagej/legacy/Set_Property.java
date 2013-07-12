@@ -33,22 +33,35 @@
  * #L%
  */
 
-package imagej.plugin;
+package imagej.legacy;
+
+import ij.gui.GenericDialog;
+import ij.plugin.PlugIn;
 
 /**
- * Interface for plugins intended to be instantiated as singletons. A singleton
- * plugin is a stateless {@link ImageJPlugin}, such that the
- * {@link SingletonService} can maintain a list of singleton instances.
+ * A simple plugin to test the legacy service.
+ * 
  * <p>
- * This interface exists mainly to facilitate differentiation between plugin
- * types intended as singletons and those which are not. It also serves as a
- * placeholder for any potential singleton-plugin-specific API added in the
- * future.
+ * Since regular plugins do not return anything, the quickest way to test that a
+ * plugin ran alright found by this developer is to set a system property,
+ * specified via a {@link GenericDialog}.
  * </p>
  * 
- * @author Curtis Rueden
- * @see SingletonService
+ * @author Johannes Schindelin
  */
-public interface SingletonPlugin extends ImageJPlugin {
-	// NB: Marker interface.
+public class Set_Property implements PlugIn {
+
+	@Override
+	public void run(final String arg) {
+		final GenericDialog gd = new GenericDialog("Set Property");
+		gd.addStringField("key", "hello");
+		gd.addStringField("value", "world");
+		gd.showDialog();
+		if (gd.wasCanceled()) return;
+
+		final String key = gd.getNextString();
+		final String value = gd.getNextString();
+		System.setProperty(key, value);
+	}
+
 }
