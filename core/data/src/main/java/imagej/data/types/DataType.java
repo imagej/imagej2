@@ -81,17 +81,7 @@ public interface DataType<T extends NumericType<T>> extends Contextual,
 	 * Returns true if DataType is fully bounded (bounded below and bounded
 	 * above).
 	 */
-	boolean isBoundedFully();
-
-	/**
-	 * Returns true if DataType is bounded below.
-	 */
-	boolean isBoundedBelow();
-
-	/**
-	 * Returns true if DataType is bounded above.
-	 */
-	boolean isBoundedAbove();
+	boolean isBounded();
 
 	/**
 	 * Sets a given variable to the lower bound of the underlying NumericType. If

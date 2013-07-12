@@ -78,17 +78,7 @@ public class DataType16BitUnsignedInteger extends AbstractContextual implements
 	}
 
 	@Override
-	public boolean isBoundedFully() {
-		return true;
-	}
-
-	@Override
-	public boolean isBoundedBelow() {
-		return true;
-	}
-
-	@Override
-	public boolean isBoundedAbove() {
+	public boolean isBounded() {
 		return true;
 	}
 

@@ -82,17 +82,7 @@ public class DataType128BitSignedComplexFloat extends AbstractContextual
 	}
 
 	@Override
-	public boolean isBoundedFully() {
-		return false;
-	}
-
-	@Override
-	public boolean isBoundedBelow() {
-		return false;
-	}
-
-	@Override
-	public boolean isBoundedAbove() {
+	public boolean isBounded() {
 		return false;
 	}
 

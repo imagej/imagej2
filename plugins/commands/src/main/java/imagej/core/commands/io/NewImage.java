@@ -192,8 +192,8 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 		final Cursor<U> cursor =
 			(Cursor<U>) dataset.getImgPlus().localizingCursor();
 
-		boolean isMax = fillType.equals(MAX) && dataType.isBoundedFully();
-		boolean isMin = fillType.equals(MIN) && dataType.isBoundedFully();
+		boolean isMax = fillType.equals(MAX) && dataType.isBounded();
+		boolean isMin = fillType.equals(MIN) && dataType.isBounded();
 		boolean isZero = fillType.equals(ZERO);
 		boolean isRamp = fillType.equals(RAMP);
 		if (!isMax && !isMin && !isZero && !isRamp) isZero = true;
