@@ -38,12 +38,12 @@ package imagej.data.types;
 import java.math.BigDecimal;
 
 import org.scijava.AbstractContextual;
-import org.scijava.plugin.Plugin;
 
 /**
  * @author Barry DeZonia
  */
-@Plugin(type = DataType.class)
+//TODO - uncomment when we are ready to support
+//@Plugin(type = DataType.class)
 public class DataTypeVariableBitSignedInteger extends AbstractContextual implements
 	DataType<UnboundedIntegerType>
 {

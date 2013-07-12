@@ -40,12 +40,12 @@ import java.math.BigDecimal;
 import net.imglib2.type.numeric.complex.ComplexFloatType;
 
 import org.scijava.AbstractContextual;
-import org.scijava.plugin.Plugin;
 
 /**
  * @author Barry DeZonia
  */
-@Plugin(type = DataType.class)
+// TODO - uncomment when we are ready to support
+//@Plugin(type = DataType.class)
 public class DataType64BitSignedComplexFloat extends AbstractContextual
 	implements DataType<ComplexFloatType>
 {
