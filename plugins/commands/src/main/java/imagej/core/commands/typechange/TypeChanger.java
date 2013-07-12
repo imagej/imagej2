@@ -69,7 +69,7 @@ import org.scijava.plugin.Plugin;
 		@Menu(label = "Type", mnemonic = 't'),
 	@Menu(label = "Change...", mnemonic = 'c') },
 	headless = true)
-public class BetterTypeChanger<U extends RealType<U>, V extends RealType<V> & NativeType<V>>
+public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeType<V>>
 	extends DynamicCommand
 {
 
