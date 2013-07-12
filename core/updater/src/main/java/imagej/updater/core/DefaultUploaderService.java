@@ -153,7 +153,7 @@ public class DefaultUploaderService extends AbstractService implements
 			final URLClassLoader loader = new URLClassLoader(urls.toArray(new URL[urls.size()]), parent);
 			Thread.currentThread().setContextClassLoader(loader);
 			pluginService.reloadPlugins();
-			initialize();
+			uploaderMap = null; // force re-discovery
 			return hasUploader(protocol) ? getUploader(protocol) : null;
 		} catch (IOException e) {
 			log.error(e);
