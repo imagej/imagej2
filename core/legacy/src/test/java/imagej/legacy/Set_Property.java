@@ -35,38 +35,33 @@
 
 package imagej.legacy;
 
-import static org.junit.Assert.assertTrue;
-
-import ij.IJ;
-
-import org.junit.Test;
+import ij.gui.GenericDialog;
+import ij.plugin.PlugIn;
 
 /**
- * Tests that the CodeHacker gives a helpful message when ImageJ 1.x classes
- * were already loaded.
+ * A simple plugin to test the legacy service.
+ * 
+ * <p>
+ * Since regular plugins do not return anything, the quickest way to test that a
+ * plugin ran alright found by this developer is to set a system property,
+ * specified via a {@link GenericDialog}.
+ * </p>
  * 
  * @author Johannes Schindelin
  */
-public class CodeHackerTest {
+public class Set_Property implements PlugIn {
 
-	@Test
-	public void testExceptionMessage() {
-		IJ.log("Now ij.IJ is loaded.");
-		try {
-			DefaultLegacyService.preinit();
-			assertTrue("Should never reach here", false);
-		} catch (ExceptionInInitializerError e) {
-			final Throwable e2 = e.getCause();
-			assertTrue(e2 != null);
-			assertTrue(e2 instanceof RuntimeException);
-			final Throwable e3 = e2.getCause();
-			assertTrue(e3 != null);
-			assertTrue("should be a LinkageError: " + e3, e3 instanceof LinkageError);
-			final String cause = e2.getMessage();
-			assertTrue("Contains hint:\n\n" + cause, cause.indexOf("-javaagent:") > 0);
-			IJ.log("We got the hint, and all is fine:\n\n" + cause);
-		}
+	@Override
+	public void run(final String arg) {
+		final GenericDialog gd = new GenericDialog("Set Property");
+		gd.addStringField("key", "hello");
+		gd.addStringField("value", "world");
+		gd.showDialog();
+		if (gd.wasCanceled()) return;
+
+		final String key = gd.getNextString();
+		final String value = gd.getNextString();
+		System.setProperty(key, value);
 	}
 
 }
-

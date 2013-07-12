@@ -40,7 +40,6 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.ImageWindow;
-
 import imagej.data.display.ImageDisplay;
 
 /**
@@ -142,6 +141,44 @@ public class IJ1Helper {
 
 	public boolean isMacintosh() {
 		return IJ.isMacintosh();
+	}
+
+	/**
+	 * Delegator for {@link IJ#getClassLoader()}.
+	 * 
+	 * <p>
+	 * This method allows the {@link LegacyExtensions} class to be loaded
+	 * without loading any of ImageJ 1.x.
+	 * </p>
+	 * 
+	 * @return ImageJ 1.x' current plugin class loader
+	 */
+	public static ClassLoader getClassLoader() {
+		return IJ.getClassLoader();
+	}
+
+	/**
+	 * Delegator for {@link IJ#log(String)}.
+	 * 
+	 * <p>
+	 * This method allows the {@link LegacyExtensions} class to be loaded
+	 * without loading any of ImageJ 1.x.
+	 * </p>
+	 */
+	public static void log(final String message) {
+		IJ.log(message);
+	}
+
+	/**
+	 * Delegator for {@link IJ#error(String)}.
+	 * 
+	 * <p>
+	 * This method allows the {@link LegacyExtensions} class to be loaded
+	 * without loading any of ImageJ 1.x.
+	 * </p>
+	 */
+	public static void error(final String message) {
+		IJ.log(message);
 	}
 
 }
