@@ -310,7 +310,7 @@ public final class DefaultDatasetService extends AbstractService implements
 		}
 	}
 
-	private static class ImgOpenerHack<T extends RealType<T> & NativeType<T>> {
+	protected static class ImgOpenerHack<T extends RealType<T> & NativeType<T>> {
 
 		public ImgPlus<T> open(ImgOpener imageOpener, String source,
 			ImgOptions options) throws ImgIOException
