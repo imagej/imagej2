@@ -41,11 +41,11 @@ import net.imglib2.type.numeric.complex.ComplexDoubleType;
 
 import org.scijava.AbstractContextual;
 
+//TODO - uncomment when we are ready to support
+//@Plugin(type = DataType.class)
 /**
  * @author Barry DeZonia
  */
-//TODO - uncomment when we are ready to support
-//@Plugin(type = DataType.class)
 public class DataType128BitSignedComplexFloat extends AbstractContextual
 	implements DataType<ComplexDoubleType>
 {

@@ -37,7 +37,6 @@ package imagej.data.types;
 
 import java.math.BigDecimal;
 
-
 /**
  * A complex number that stores values in BigDecimal (arbitrary) precision. This
  * class is useful for supporting DataType translations with minimal data loss.
