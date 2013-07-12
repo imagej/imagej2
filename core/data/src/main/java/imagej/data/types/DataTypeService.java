@@ -35,11 +35,11 @@
 
 package imagej.data.types;
 
-import imagej.plugin.SingletonService;
-
 import java.util.List;
 
 import net.imglib2.type.numeric.NumericType;
+
+import org.scijava.plugin.SingletonService;
 
 /**
  * @author Barry DeZonia

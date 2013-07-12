@@ -35,10 +35,10 @@
 
 package imagej.data.types;
 
-import imagej.plugin.SingletonPlugin;
 import net.imglib2.type.numeric.NumericType;
 
 import org.scijava.Contextual;
+import org.scijava.plugin.SingletonPlugin;
 
 /**
  * DataType represents information about pixel types. These types can be

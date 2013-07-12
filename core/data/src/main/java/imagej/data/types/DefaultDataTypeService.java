@@ -35,8 +35,6 @@
 
 package imagej.data.types;
 
-import imagej.plugin.AbstractSingletonService;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -46,6 +44,7 @@ import java.util.Map;
 
 import net.imglib2.type.numeric.NumericType;
 
+import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;
 
