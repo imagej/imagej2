@@ -58,7 +58,12 @@ public class DataType8BitSignedInteger extends AbstractContextual implements
 	}
 
 	@Override
-	public String name() {
+	public String shortName() {
+		return "8-bit int";
+	}
+
+	@Override
+	public String longName() {
 		return "8-bit signed integer";
 	}
 

@@ -137,7 +137,7 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 	}
 
 	public void setDataType(DataType<?> dataType) {
-		typeName = dataType.name();
+		typeName = dataType.longName();
 	}
 
 	public DataType<?> getDataType() {
@@ -251,7 +251,7 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 			getInfo().getMutableInput("typeName", String.class);
 		List<String> choices = new ArrayList<String>();
 		for (DataType<?> dataType : dataTypeService.getInstances()) {
-			choices.add(dataType.name());
+			choices.add(dataType.longName());
 		}
 		input.setChoices(choices);
 		input.setValue(this, choices.get(0));

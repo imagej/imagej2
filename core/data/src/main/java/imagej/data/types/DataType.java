@@ -60,10 +60,15 @@ public interface DataType<T extends NumericType<T>> extends Contextual,
 	/**
 	 * A short name useful for displaying to user.
 	 */
-	String name();
+	String shortName();
 
 	/**
-	 * A longer description that elaborates on the capabilities of the type.
+	 * A long name useful for displaying to user.
+	 */
+	String longName();
+
+	/**
+	 * A fuller description that elaborates on the capabilities of the type.
 	 */
 	String description();
 

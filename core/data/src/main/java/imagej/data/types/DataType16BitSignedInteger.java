@@ -58,7 +58,12 @@ public class DataType16BitSignedInteger extends AbstractContextual implements
 	}
 
 	@Override
-	public String name() {
+	public String shortName() {
+		return "16-bit int";
+	}
+
+	@Override
+	public String longName() {
 		return "16-bit signed integer";
 	}
 

@@ -62,7 +62,12 @@ public class DataType128BitSignedComplexFloat extends AbstractContextual
 	}
 
 	@Override
-	public String name() {
+	public String shortName() {
+		return "128-bit complex";
+	}
+
+	@Override
+	public String longName() {
 		return "128-bit complex";
 	}
 

@@ -58,7 +58,12 @@ public class DataType8BitUnsignedInteger extends AbstractContextual implements
 	}
 
 	@Override
-	public String name() {
+	public String shortName() {
+		return "8-bit uint";
+	}
+
+	@Override
+	public String longName() {
 		return "8-bit unsigned integer";
 	}
 

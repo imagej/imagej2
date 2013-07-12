@@ -56,7 +56,12 @@ public class DataTypeVariableBitSignedInteger extends AbstractContextual impleme
 	}
 
 	@Override
-	public String name() {
+	public String shortName() {
+		return "Unbounded integer";
+	}
+
+	@Override
+	public String longName() {
 		return "Unbounded integer";
 	}
 

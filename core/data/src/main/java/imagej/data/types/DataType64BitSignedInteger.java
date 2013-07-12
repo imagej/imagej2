@@ -58,7 +58,12 @@ public class DataType64BitSignedInteger extends AbstractContextual implements
 	}
 
 	@Override
-	public String name() {
+	public String shortName() {
+		return "64-bit int";
+	}
+
+	@Override
+	public String longName() {
 		return "64-bit signed integer";
 	}
 

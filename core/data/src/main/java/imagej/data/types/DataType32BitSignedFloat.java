@@ -58,7 +58,12 @@ public class DataType32BitSignedFloat extends AbstractContextual implements
 	}
 
 	@Override
-	public String name() {
+	public String shortName() {
+		return "32-bit float";
+	}
+
+	@Override
+	public String longName() {
 		return "32-bit signed float";
 	}
 

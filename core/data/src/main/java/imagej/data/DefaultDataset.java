@@ -41,6 +41,7 @@ import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
+import imagej.data.types.DataTypeService;
 import net.imglib2.Cursor;
 import net.imglib2.Positionable;
 import net.imglib2.RandomAccess;
@@ -65,6 +66,7 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.IntegerType;
+import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.Context;
@@ -79,6 +81,7 @@ import org.scijava.log.LogService;
 public class DefaultDataset extends AbstractData implements Dataset {
 
 	private final LogService log;
+	private final DataTypeService dataTypeService;
 
 	private ImgPlus<? extends RealType<?>> imgPlus;
 	private boolean rgbMerged;
@@ -89,6 +92,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	{
 		super(context);
 		log = context.getService(LogService.class);
+		dataTypeService = context.getService(DataTypeService.class);
 		this.imgPlus = imgPlus;
 		rgbMerged = false;
 		isDirty = false;
@@ -236,19 +240,15 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	@Override
 	public String getTypeLabelShort() {
 		if (isRGBMerged()) return "RGB";
-		final int bitsPerPixel = getType().getBitsPerPixel();
-		final String category =
-			isInteger() ? isSigned() ? "int" : "uint" : "float";
-		return category + bitsPerPixel;
+		NumericType<?> type = getImgPlus().firstElement();
+		return dataTypeService.getTypeByClass(type.getClass()).shortName();
 	}
 
 	@Override
 	public String getTypeLabelLong() {
 		if (isRGBMerged()) return "RGB color";
-		final int bitsPerPixel = getType().getBitsPerPixel();
-		final String category =
-			isInteger() ? isSigned() ? "signed" : "unsigned" : "float";
-		return category + " " + bitsPerPixel + "-bit";
+		NumericType<?> type = getImgPlus().firstElement();
+		return dataTypeService.getTypeByClass(type.getClass()).longName();
 	}
 
 	@Override

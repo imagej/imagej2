@@ -56,7 +56,12 @@ public class DataTypeVariableBitSignedFloat extends AbstractContextual implement
 	}
 
 	@Override
-	public String name() {
+	public String shortName() {
+		return "Unbounded float";
+	}
+
+	@Override
+	public String longName() {
 		return "Unbounded float";
 	}
 

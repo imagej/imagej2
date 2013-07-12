@@ -58,7 +58,12 @@ public class DataType16BitUnsignedInteger extends AbstractContextual implements
 	}
 
 	@Override
-	public String name() {
+	public String shortName() {
+		return "16-bit uint";
+	}
+
+	@Override
+	public String longName() {
 		return "16-bit unsigned integer";
 	}
 

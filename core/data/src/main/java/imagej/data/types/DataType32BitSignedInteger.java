@@ -58,7 +58,12 @@ public class DataType32BitSignedInteger extends AbstractContextual implements
 	}
 
 	@Override
-	public String name() {
+	public String shortName() {
+		return "32-bit int";
+	}
+
+	@Override
+	public String longName() {
 		return "32-bit signed integer";
 	}
 

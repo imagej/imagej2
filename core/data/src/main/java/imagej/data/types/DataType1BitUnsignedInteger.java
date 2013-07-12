@@ -58,7 +58,12 @@ public class DataType1BitUnsignedInteger extends AbstractContextual implements
 	}
 
 	@Override
-	public String name() {
+	public String shortName() {
+		return "1-bit uint";
+	}
+
+	@Override
+	public String longName() {
 		return "1-bit unsigned integer";
 	}
 

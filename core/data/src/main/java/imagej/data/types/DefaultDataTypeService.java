@@ -71,7 +71,7 @@ public class DefaultDataTypeService extends
 		typesByName = new HashMap<String, DataType<?>>();
 		typesByClass = new HashMap<Class<?>, DataType<?>>();
 		for (DataType<?> type : super.getInstances()) {
-			typesByName.put(type.name(), type);
+			typesByName.put(type.longName(), type);
 			typesByClass.put(type.getType().getClass(), type);
 		}
 		sortedInstances = new ArrayList<DataType<?>>();
@@ -80,7 +80,7 @@ public class DefaultDataTypeService extends
 
 			@Override
 			public int compare(DataType<?> o1, DataType<?> o2) {
-				return o1.name().compareTo(o2.name());
+				return o1.longName().compareTo(o2.longName());
 			}
 		});
 		sortedInstances = Collections.unmodifiableList(sortedInstances);

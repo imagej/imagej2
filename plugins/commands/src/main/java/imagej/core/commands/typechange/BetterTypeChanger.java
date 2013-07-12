@@ -125,14 +125,14 @@ public class BetterTypeChanger<U extends RealType<U>, V extends RealType<V> & Na
 			getInfo().getMutableInput("typeName", String.class);
 		List<String> choices = new ArrayList<String>();
 		for (DataType<?> dataType : dataTypeService.getInstances()) {
-			choices.add(dataType.name());
+			choices.add(dataType.longName());
 		}
 		input.setChoices(choices);
 		RealType<?> dataVar = data.getImgPlus().firstElement();
 		@SuppressWarnings("unchecked")
 		DataType<?> type = dataTypeService.getTypeByClass(dataVar.getClass());
 		if (type == null) input.setValue(this, choices.get(0));
-		else input.setValue(this, type.name());
+		else input.setValue(this, type.longName());
 	}
 
 	// TODO - do all the testing outside this method once and call one of three

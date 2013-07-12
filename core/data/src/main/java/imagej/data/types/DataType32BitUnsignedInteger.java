@@ -58,7 +58,12 @@ public class DataType32BitUnsignedInteger extends AbstractContextual implements
 	}
 
 	@Override
-	public String name() {
+	public String shortName() {
+		return "32-bit uint";
+	}
+
+	@Override
+	public String longName() {
 		return "32-bit unsigned integer";
 	}
 
