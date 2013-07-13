@@ -28,8 +28,9 @@
 	</modules>
 
 	<properties>
-		<project.rootdir>${basedir}</project.rootdir>
+		<invoker.skip>${skipITs}</invoker.skip>
 		<miglayout.version>3.7.3.1</miglayout.version>
+		<project.rootdir>${basedir}</project.rootdir>
 	</properties>
 
 	<build>
