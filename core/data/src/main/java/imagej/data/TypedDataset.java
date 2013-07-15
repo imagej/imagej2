@@ -35,8 +35,6 @@
 
 package imagej.data;
 
-import org.scijava.Context;
-
 import net.imglib2.Positionable;
 import net.imglib2.RealPositionable;
 import net.imglib2.display.ColorTable;
@@ -46,6 +44,8 @@ import net.imglib2.type.numeric.ComplexType;
 import net.imglib2.type.numeric.IntegerType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.Context;
 
 // TODO
 // Using this class we should relax Dataset's base type to NumericType
@@ -132,7 +132,7 @@ public class TypedDataset<T> implements Dataset {
 	@SuppressWarnings("rawtypes")
 	public static TypedDataset<RealType<?>> real(Dataset dataset) {
 		Object type = dataset.getImgPlus().firstElement();
-		if (NumericType.class.isAssignableFrom(type.getClass())) {
+		if (RealType.class.isAssignableFrom(type.getClass())) {
 			TypedDataset typedDataset = new TypedDataset(dataset);
 			return (TypedDataset<RealType<?>>) typedDataset;
 		}
@@ -146,7 +146,7 @@ public class TypedDataset<T> implements Dataset {
 	@SuppressWarnings("rawtypes")
 	public static TypedDataset<IntegerType<?>> integer(Dataset dataset) {
 		Object type = dataset.getImgPlus().firstElement();
-		if (NumericType.class.isAssignableFrom(type.getClass())) {
+		if (IntegerType.class.isAssignableFrom(type.getClass())) {
 			TypedDataset typedDataset = new TypedDataset(dataset);
 			return (TypedDataset<IntegerType<?>>) typedDataset;
 		}
@@ -166,7 +166,22 @@ public class TypedDataset<T> implements Dataset {
 		}
 		return null;
 	}
-	
+
+// TODO - once FloatingType is an Imglib type
+//	/**
+//	 * Create a TypedDataset of FloatingType given a Dataset. Returns null if
+//	 * the given Dataset does not have data of FloatingType.
+//	 */
+//	@SuppressWarnings("rawtypes")
+//	public static TypedDataset<FloatingType<?>> floating(Dataset dataset) {
+//		Object type = dataset.getImgPlus().firstElement();
+//		if (FloatingType.class.isAssignableFrom(type.getClass())) {
+//			TypedDataset typedDataset = new TypedDataset(dataset);
+//			return (TypedDataset<FloatingType<?>>) typedDataset;
+//		}
+//		return null;
+//	}
+
 	// -- Dataset methods (implemented by delegation) --
 	
 	@Override
