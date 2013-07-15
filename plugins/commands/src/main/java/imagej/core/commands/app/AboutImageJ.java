@@ -281,7 +281,8 @@ public class AboutImageJ extends ContextCommand {
 
 		final LinkedList<String> stringList = new LinkedList<String>();
 		if (mft != null) {
-			stringList.add("Build: " + mft.getImplementationBuild());
+			final String build = mft.getImplementationBuild();
+			stringList.add("Build: " + (build == null || build.length() < 10 ? build : build.substring(0, 10)));
 			stringList.add("Date: " + mft.getImplementationDate());
 		}
 		stringList.add("Open source image processing software");
