@@ -156,7 +156,7 @@ public class AboutImageJ extends ContextCommand {
 		final File imageFile = getRandomAboutImagePath();
 		final String source = imageFile != null ?
 				imageFile.getAbsolutePath() :
-				"About ImageJ&pixelType=uint8&sizeC=3&sizeX=512&sizeY=512.fake";
+				"About ImageJ&pixelType=uint16&sizeC=3&sizeX=512&sizeY=512.fake";
 
 		final String title = "About " + getAppString();
 
@@ -193,7 +193,11 @@ public class AboutImageJ extends ContextCommand {
 		}
 
 		ds.setName(title);
-		ds.setRGBMerged(true);
+		try {
+			ds.setRGBMerged(true);
+		} catch (final IllegalArgumentException e) {
+			// ignore if we cannot make it an RGB image
+		}
 
 		return ds;
 	}
