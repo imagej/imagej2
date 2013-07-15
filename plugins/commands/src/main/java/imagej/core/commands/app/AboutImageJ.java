@@ -175,9 +175,6 @@ public class AboutImageJ extends ContextCommand {
 			validImage &= (ds.numDimensions() == 3);
 			// Too restrictive? Ran into images where 3rd axis is mislabeled
 			// validImage &= (ds.getAxisIndex(Axes.CHANNEL) == 2);
-			validImage &= (ds.getImgPlus().firstElement().getBitsPerPixel() == 8);
-			validImage &= (ds.isInteger());
-			validImage &= (!ds.isSigned());
 			if (validImage) {
 				loadAttributes(imageFile);
 			}
