@@ -56,8 +56,6 @@ import org.scijava.service.Service;
  */
 public interface LUTService extends Service {
 
-	// CTR TODO: Convert this to an IOPlugin, probably?
-
 	/**
 	 * Gets whether the given file can be parsed as a color table by
 	 * {@link #loadLUT(File)}.
