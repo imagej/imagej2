@@ -60,7 +60,6 @@ import org.scijava.Context;
  * 
  * @author Barry DeZonia
  */
-@SuppressWarnings("unchecked")
 public class TypedDataset<T> implements Dataset {
 
 	// -- fields --
@@ -69,7 +68,8 @@ public class TypedDataset<T> implements Dataset {
 	
 	// -- constructor --
 	
-	// NB - private to disallow incorrectly typed data. to instantiate use static helper methods.
+	// NB - private to disallow incorrectly typed data. to instantiate use static
+	// helper methods.
 	private TypedDataset(Dataset ds) {
 		this.ds = ds;
 	}
@@ -79,6 +79,7 @@ public class TypedDataset<T> implements Dataset {
 	/**
 	 * Returns the internal ImgPlus data in a typed fashion.
 	 */
+	@SuppressWarnings("unchecked")
 	public ImgPlus<T> getData() {
 		return (ImgPlus<T>) ds.getImgPlus();
 	}
@@ -86,8 +87,8 @@ public class TypedDataset<T> implements Dataset {
 	/**
 	 * Returns true if this TypedDataset is based upon the given Dataset.
 	 */
-	public boolean isBasedOn(Dataset ds) {
-		return this.ds == ds;
+	public boolean isBasedOn(Dataset dataset) {
+		return this.ds == dataset;
 	}
 	
 	// TODO
@@ -101,12 +102,10 @@ public class TypedDataset<T> implements Dataset {
 	 * Create a TypedDataset of NumericType given a Dataset. Returns null if
 	 * the given Dataset does not have data of NumericType.
 	 */
-	@SuppressWarnings("rawtypes")
 	public static TypedDataset<NumericType<?>> numeric(Dataset dataset) {
 		Object type = dataset.getImgPlus().firstElement();
 		if (NumericType.class.isAssignableFrom(type.getClass())) {
-			TypedDataset typedDataset = new TypedDataset(dataset);
-			return (TypedDataset<NumericType<?>>) typedDataset;
+			return new TypedDataset<NumericType<?>>(dataset);
 		}
 		return null;
 	}
@@ -115,12 +114,10 @@ public class TypedDataset<T> implements Dataset {
 	 * Create a TypedDataset of ComplexType given a Dataset. Returns null if
 	 * the given Dataset does not have data of ComplexType.
 	 */
-	@SuppressWarnings("rawtypes")
 	public static TypedDataset<ComplexType<?>> complex(Dataset dataset) {
 		Object type = dataset.getImgPlus().firstElement();
 		if (ComplexType.class.isAssignableFrom(type.getClass())) {
-			TypedDataset typedDataset = new TypedDataset(dataset);
-			return (TypedDataset<ComplexType<?>>) typedDataset;
+			return new TypedDataset<ComplexType<?>>(dataset);
 		}
 		return null;
 	}
@@ -129,12 +126,10 @@ public class TypedDataset<T> implements Dataset {
 	 * Create a TypedDataset of RealType given a Dataset. Returns null if
 	 * the given Dataset does not have data of RealType.
 	 */
-	@SuppressWarnings("rawtypes")
 	public static TypedDataset<RealType<?>> real(Dataset dataset) {
 		Object type = dataset.getImgPlus().firstElement();
 		if (RealType.class.isAssignableFrom(type.getClass())) {
-			TypedDataset typedDataset = new TypedDataset(dataset);
-			return (TypedDataset<RealType<?>>) typedDataset;
+			return new TypedDataset<RealType<?>>(dataset);
 		}
 		return null;
 	}
@@ -143,44 +138,40 @@ public class TypedDataset<T> implements Dataset {
 	 * Create a TypedDataset of IntegerType given a Dataset. Returns null if
 	 * the given Dataset does not have data of IntegerType.
 	 */
-	@SuppressWarnings("rawtypes")
 	public static TypedDataset<IntegerType<?>> integer(Dataset dataset) {
 		Object type = dataset.getImgPlus().firstElement();
 		if (IntegerType.class.isAssignableFrom(type.getClass())) {
-			TypedDataset typedDataset = new TypedDataset(dataset);
-			return (TypedDataset<IntegerType<?>>) typedDataset;
+			return new TypedDataset<IntegerType<?>>(dataset);
 		}
 		return null;
 	}
+
+//TODO - once FloatingType is an Imglib type
+//	/**
+//	 * Create a TypedDataset of FloatingType given a Dataset. Returns null if
+//	 * the given Dataset does not have data of FloatingType.
+//	 */
+//	public static TypedDataset<FloatingType<?>> floating(Dataset dataset) {
+//		Object type = dataset.getImgPlus().firstElement();
+//		if (FloatingType.class.isAssignableFrom(type.getClass())) {
+//			return new TypedDataset<FloatingType<?>>(dataset);
+//		}
+//		return null;
+//	}
 
 	/**
 	 * Create a TypedDataset of a given type from a Dataset. Returns null if
 	 * the given Dataset does not have data of the given type.
 	 */
-	@SuppressWarnings("rawtypes")
-	public static <T extends NumericType<T>> TypedDataset<T> asType(Dataset dataset, T type) {
+	public static <T extends NumericType<T>> TypedDataset<T> asType(
+		Dataset dataset, T type)
+	{
 		Object var = dataset.getImgPlus().firstElement();
 		if (var.getClass().isAssignableFrom(type.getClass())) {
-			TypedDataset typedDataset = new TypedDataset(dataset);
-			return (TypedDataset<T>) typedDataset;
+			return new TypedDataset<T>(dataset);
 		}
 		return null;
 	}
-
-// TODO - once FloatingType is an Imglib type
-//	/**
-//	 * Create a TypedDataset of FloatingType given a Dataset. Returns null if
-//	 * the given Dataset does not have data of FloatingType.
-//	 */
-//	@SuppressWarnings("rawtypes")
-//	public static TypedDataset<FloatingType<?>> floating(Dataset dataset) {
-//		Object type = dataset.getImgPlus().firstElement();
-//		if (FloatingType.class.isAssignableFrom(type.getClass())) {
-//			TypedDataset typedDataset = new TypedDataset(dataset);
-//			return (TypedDataset<FloatingType<?>>) typedDataset;
-//		}
-//		return null;
-//	}
 
 	// -- Dataset methods (implemented by delegation) --
 	
@@ -445,6 +436,7 @@ public class TypedDataset<T> implements Dataset {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <U extends RealType<U>> ImgPlus<U> typedImg(U type) {
 		TypedDataset<U> typedDataset = asType(ds, type);
 		if (typedDataset == null) return null;
