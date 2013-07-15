@@ -154,12 +154,15 @@ public class AboutImageJ extends ContextCommand {
 	 */
 	private Dataset createDataset() {
 		final File imageFile = getRandomAboutImagePath();
+		final String source = imageFile != null ?
+				imageFile.getAbsolutePath() :
+				"cellTest&sizeX=512&sizeY=512.fake";
 
 		final String title = "About " + getAppString();
 
 		Dataset ds = null;
 		try {
-			ds = dataSrv.open(imageFile.getAbsolutePath());
+			ds = dataSrv.open(source);
 		}
 		catch (final IOException e) {
 			log.error(e);
@@ -344,6 +347,7 @@ public class AboutImageJ extends ContextCommand {
 	 * from a text file (filename.ext.txt) if possible.
 	 */
 	private void loadAttributes(final File baseFile) {
+		if (baseFile == null) return;
 		final String fileName = baseFile.getAbsolutePath() + ".txt";
 		final File file = new File(fileName);
 		if (file.exists()) {
