@@ -418,7 +418,7 @@ public class FileObject {
 	}
 
 	public void setAction(final FilesCollection files, final Action action) {
-		if (!status.isValid(action)) throw new Error(
+		if (!status.isValid(action) && !(action.equals(Action.REMOVE) && overridesOtherUpdateSite())) throw new Error(
 			"Invalid action requested for file " + filename + "(" + action + ", " +
 				status + ")");
 		if (action == Action.UPLOAD) {
