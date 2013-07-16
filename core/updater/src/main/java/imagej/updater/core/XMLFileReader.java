@@ -180,10 +180,18 @@ public class XMLFileReader extends DefaultHandler {
 			current.addDependency(atts.getValue("filename"), getLong(atts,
 				"timestamp"), overrides != null && overrides.equals("true"));
 		}
-		else if (updateSite == null && currentTag.equals("update-site")) files
-			.addUpdateSite(atts.getValue("name"), atts.getValue("url"), atts
-				.getValue("ssh-host"), atts.getValue("upload-directory"), Long
-				.parseLong(atts.getValue("timestamp")));
+		else if (updateSite == null &&
+				(currentTag.equals("update-site") || currentTag.equals("disabled-update-site"))) {
+			final UpdateSite site = new UpdateSite(atts.getValue("name"),
+					atts.getValue("url"),
+					atts.getValue("ssh-host"),
+					atts.getValue("upload-directory"),
+					null,
+					null,
+					Long.parseLong(atts.getValue("timestamp")));
+			site.setActive(currentTag.equals("update-site"));
+			files.addUpdateSite(site);
+		}
 	}
 
 	@Override
