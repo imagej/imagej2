@@ -150,7 +150,9 @@ public class SitesDialog extends JDialog implements ActionListener {
 							if (value.equals(site.getURL())) return super.stopCellEditing();
 							if (validURL(value)) {
 								site.setURL(value);
+								boolean wasActive = site.isActive();
 								activateUpdateSite(site);
+								if (!wasActive && site.isActive()) tableModel.rowChanged(row);
 							} else {
 								if (site == null || site.getHost() == null || site.getHost().equals("")) {
 									error("URL does not refer to an update site: " + value + "\n"
