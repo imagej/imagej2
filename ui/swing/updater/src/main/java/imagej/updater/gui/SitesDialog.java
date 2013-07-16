@@ -515,6 +515,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 			updaterFrame.filesChanged();
 		} catch (final Exception e) {
 			error("Not a valid URL: " + updateSite.getURL());
+			updateSite.setActive(false);
 			return false;
 		}
 		return true;
