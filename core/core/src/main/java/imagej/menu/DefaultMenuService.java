@@ -39,6 +39,7 @@ import imagej.command.Command;
 import imagej.command.CommandService;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
+import imagej.module.ModuleService;
 import imagej.module.event.ModulesAddedEvent;
 import imagej.module.event.ModulesRemovedEvent;
 import imagej.module.event.ModulesUpdatedEvent;
@@ -143,6 +144,12 @@ public class DefaultMenuService extends AbstractService implements MenuService
 
 	@EventHandler
 	protected void onEvent(final ModulesAddedEvent event) {
+		if (rootMenus == null) {
+			// add *all* known modules, which includes the ones given here
+			rootMenus();
+			return;
+		}
+		// data structure already exists; add *these* modules only
 		addModules(event.getItems());
 	}
 
@@ -162,7 +169,16 @@ public class DefaultMenuService extends AbstractService implements MenuService
 
 	// -- Helper methods --
 
-	private void addModules(final Collection<ModuleInfo> items) {
+	/**
+	 * Adds the given collection of modules to the menu data structure.
+	 * <p>
+	 * The menu data structure is created lazily via {@link #rootMenus()} if it
+	 * does not already exist. Note that this may result in a recursive call to
+	 * this method to populate the menus with the collection of modules currently
+	 * known by the {@link ModuleService}.
+	 * </p>
+	 */
+	private synchronized void addModules(final Collection<ModuleInfo> items) {
 		// categorize modules by menu root
 		final HashMap<String, ArrayList<ModuleInfo>> modulesByMenuRoot =
 			new HashMap<String, ArrayList<ModuleInfo>>();
@@ -193,12 +209,21 @@ public class DefaultMenuService extends AbstractService implements MenuService
 
 	}
 
+	/**
+	 * Lazily creates the {@link #rootMenus} data structure.
+	 * <p>
+	 * Note that the data structure is initially populated with all modules
+	 * available from the {@link ModuleService}, which is accomplished via a call
+	 * to {@link #addModules(Collection)}, which calls {@link #rootMenus()}, which
+	 * can result in a level of recursion. This is intended.
+	 * </p>
+	 */
 	private HashMap<String, ShadowMenu> rootMenus() {
 		if (rootMenus == null) {
 			rootMenus = new HashMap<String, ShadowMenu>();
 
 			final List<ModuleInfo> allModules =
-					getCommandService().getModuleService().getModules();
+				getCommandService().getModuleService().getModules();
 			addModules(allModules);
 		}
 		return rootMenus;
