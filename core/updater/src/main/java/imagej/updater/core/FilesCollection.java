@@ -123,12 +123,13 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	public UpdateSite addUpdateSite(final String name, final String url,
 		final String sshHost, final String uploadDirectory, final long timestamp)
 	{
-		return addUpdateSite(new UpdateSite(name, url, sshHost, uploadDirectory,
-				null, null, timestamp));
+		final UpdateSite site = new UpdateSite(name, url, sshHost, uploadDirectory,
+				null, null, timestamp);
+		site.setActive(true);
+		return addUpdateSite(site);
 	}
 
 	public UpdateSite addUpdateSite(UpdateSite site) {
-		site.active = true;
 		addUpdateSite(site.getName(), site);
 		return site;
 	}
