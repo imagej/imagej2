@@ -91,9 +91,14 @@ public class Checksummer extends AbstractProgressable {
 		public long timestamp;
 		public String checksum;
 
-		StringAndFile(final String path, final File file) {
+		protected StringAndFile(final String path, final File file) {
 			this.path = path;
 			this.file = file;
+		}
+
+		@Override
+		public String toString() {
+			return "{" + path + " - " + file + "}";
 		}
 	}
 
