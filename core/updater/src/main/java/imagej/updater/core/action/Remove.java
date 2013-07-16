@@ -153,7 +153,7 @@ public class Remove implements GroupAction {
 			final Status status = file.getStatus();
 			if (status.isValid(Action.REMOVE) && file.overridesOtherUpdateSite()) unshadowing = true;
 		}
-		return "Mark obsolete" + (unshadowing + " (unshadowing)")
+		return "Mark obsolete" + (unshadowing ? " (unshadowing)" : "")
 				+ " (" + updateSite + ")";
 	}
 
