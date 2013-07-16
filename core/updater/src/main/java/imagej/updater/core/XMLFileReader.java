@@ -186,8 +186,8 @@ public class XMLFileReader extends DefaultHandler {
 					atts.getValue("url"),
 					atts.getValue("ssh-host"),
 					atts.getValue("upload-directory"),
-					null,
-					null,
+					atts.getValue("description"),
+					atts.getValue("maintainer"),
 					Long.parseLong(atts.getValue("timestamp")));
 			site.setActive(currentTag.equals("update-site"));
 			files.addUpdateSite(site);

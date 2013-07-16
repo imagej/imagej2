@@ -91,11 +91,15 @@ public class XMLFileWriter {
 		+ "<!ATTLIST update-site url CDATA #REQUIRED>\n"
 		+ "<!ATTLIST update-site ssh-host CDATA #IMPLIED>\n"
 		+ "<!ATTLIST update-site upload-directory CDATA #IMPLIED>\n"
+		+ "<!ATTLIST update-site description CDATA #IMPLIED>\n"
+		+ "<!ATTLIST update-site maintainer CDATA #IMPLIED>\n"
 		+ "<!ATTLIST update-site timestamp CDATA #REQUIRED>\n"
 		+ "<!ATTLIST disabled-update-site name CDATA #REQUIRED>\n"
 		+ "<!ATTLIST disabled-update-site url CDATA #REQUIRED>\n"
 		+ "<!ATTLIST disabled-update-site ssh-host CDATA #IMPLIED>\n"
 		+ "<!ATTLIST disabled-update-site upload-directory CDATA #IMPLIED>\n"
+		+ "<!ATTLIST disabled-update-site description CDATA #IMPLIED>\n"
+		+ "<!ATTLIST disabled-update-site maintainer CDATA #IMPLIED>\n"
 		+ "<!ATTLIST disabled-update-site timestamp CDATA #REQUIRED>\n"
 		+ "<!ATTLIST plugin update-site CDATA #IMPLIED>\n"
 		+ "<!ATTLIST plugin filename CDATA #REQUIRED>\n"
@@ -157,6 +161,8 @@ public class XMLFileWriter {
 				if (site.getHost() != null) setAttribute(attr, "ssh-host", site.getHost());
 				if (site.getUploadDirectory() != null) setAttribute(attr,
 					"upload-directory", site.getUploadDirectory());
+				if (site.getDescription() != null) setAttribute(attr, "description", site.getDescription());
+				if (site.getMaintainer() != null) setAttribute(attr, "description", site.getMaintainer());
 				setAttribute(attr, "timestamp", "" + site.getTimestamp());
 				writeSimpleTag((site.isActive() ? "" : "disabled-") + "update-site", null, attr);
 			}
