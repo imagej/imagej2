@@ -207,8 +207,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 					case 1:
 						final String name = site.getName();
 						if (name.equals(string)) return;
-						if (files.getUpdateSite(name, true) != null) files.renameUpdateSite(name, string);
-						sites.get(row).setName(string);
+						files.renameUpdateSite(name, string);
 						break;
 					case 2:
 						if (site.getURL().equals(string)) return;
@@ -418,7 +417,6 @@ public class SitesDialog extends JDialog implements ActionListener {
 		for (final FileObject file : remove) {
 			files.remove(file);
 		}
-		files.removeUpdateSite(name);
 		site.setActive(false);
 		updaterFrame.updateFilesTable();
 	}
@@ -512,9 +510,6 @@ public class SitesDialog extends JDialog implements ActionListener {
 	protected boolean activateUpdateSite(final UpdateSite updateSite) {
 		updateSite.setActive(true);
 		try {
-			final UpdateSite existing = files.getUpdateSite(updateSite.getName(), true);
-			if (existing == null) files.addUpdateSite(updateSite);
-			else existing.setActive(true);
 			files.reReadUpdateSite(updateSite.getName(), updaterFrame.getProgress(null));
 			markForUpdate(updateSite.getName(), false);
 			updaterFrame.filesChanged();
