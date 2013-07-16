@@ -150,7 +150,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 							if (value.equals(site.getURL())) return super.stopCellEditing();
 							if (validURL(value)) {
 								site.setURL(value);
-								activateUpdateSite(row);
+								activateUpdateSite(site);
 							} else {
 								if (site == null || site.getHost() == null || site.getHost().equals("")) {
 									error("URL does not refer to an update site: " + value + "\n"
@@ -226,10 +226,10 @@ public class SitesDialog extends JDialog implements ActionListener {
 				}
 				if (site.isActive()) {
 					if (column == 0 || column == 2) {
-						activateUpdateSite(row);
+						activateUpdateSite(site);
 					}
 				} else {
-					deactivateUpdateSite(site.getName());
+					deactivateUpdateSite(site);
 				}
 			}
 
@@ -350,9 +350,9 @@ public class SitesDialog extends JDialog implements ActionListener {
 		final String user = dialog.name;
 		if (user == null) return;
 		final String url = PERSONAL_SITES_URL + user;
-		final int row = sites.size();
-		add(new UpdateSite(makeUniqueSiteName("My Site"), url, "webdav:" + user, "", null, null, 0l));
-		activateUpdateSite(row);
+		final UpdateSite site = new UpdateSite(makeUniqueSiteName("My Site"), url, "webdav:" + user, "", null, null, 0l);
+		add(site);
+		activateUpdateSite(site);
 	}
 
 	private void add(final UpdateSite site) {
@@ -374,21 +374,22 @@ public class SitesDialog extends JDialog implements ActionListener {
 	}
 
 	protected void delete(final int row) {
-		final String name = getUpdateSiteName(row);
+		final UpdateSite site = getUpdateSite(row);
+		final String name = site.getName();
 		if (!showYesNoQuestion("Remove " + name + "?",
 				"Do you really want to remove the site '" + name + "' from the list?\n"
 				+ "URL: " + getUpdateSite(row).getURL()))
 			return;
-		deactivateUpdateSite(name);
+		deactivateUpdateSite(site);
 		sites.remove(row);
 		tableModel.rowChanged(row);
 	}
 
-	private void deactivateUpdateSite(final String name) {
+	private void deactivateUpdateSite(final UpdateSite site) {
 		final List<FileObject> list = new ArrayList<FileObject>();
 		final List<FileObject> remove = new ArrayList<FileObject>();
 		int count = 0;
-		for (final FileObject file : files.forUpdateSite(name))
+		for (final FileObject file : files.forUpdateSite(site.getName()))
 			switch (file.getStatus()) {
 				case NEW:
 				case NOT_INSTALLED:
@@ -403,7 +404,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 		if (count > 0) info("" +
 			count + (count == 1 ? " file is" : " files are") +
 			" installed from the site '" +
-			name +
+			site.getName() +
 			"'\n" +
 			"These files will not be deleted automatically.\n" +
 			"Note: even if marked as 'Local-only', they might be available from other sites.");
@@ -416,6 +417,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 			files.remove(file);
 		}
 		files.removeUpdateSite(name);
+		site.setActive(false);
 		updaterFrame.updateFilesTable();
 	}
 
@@ -505,8 +507,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 		}
 	}
 
-	protected boolean activateUpdateSite(final int row) {
-		final UpdateSite updateSite = getUpdateSite(row);
+	protected boolean activateUpdateSite(final UpdateSite updateSite) {
 		updateSite.setActive(true);
 		try {
 			final UpdateSite existing = files.getUpdateSite(updateSite.getName(), true);
@@ -516,7 +517,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 			markForUpdate(updateSite.getName(), false);
 			updaterFrame.filesChanged();
 		} catch (final Exception e) {
-			error("Not a valid URL: " + getUpdateSite(row).getURL());
+			error("Not a valid URL: " + updateSite.getURL());
 			return false;
 		}
 		return true;
