@@ -118,7 +118,7 @@ public class FilesUploader {
 		if (uploaderService == null) uploaderService = createUploaderService();
 		this.files = files;
 		siteName = updateSite;
-		site = files.getUpdateSite(updateSite);
+		site = files.getUpdateSite(updateSite, false);
 		compressed = Util.XML_COMPRESSED;
 		final String protocol = site.getUploadProtocol();
 		uploader = uploaderService.installUploader(protocol, files,

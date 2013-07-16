@@ -254,7 +254,7 @@ public class UpdaterTest {
 		assertFalse(file.exists());
 
 		// Pretend that db.xml.gz is out-of-date
-		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).setTimestamp(19991224134121l);
+		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE, false).setTimestamp(19991224134121l);
 		files.write();
 
 		files = readDb(files);
@@ -270,7 +270,7 @@ public class UpdaterTest {
 
 		final File webRoot = getWebRoot(files);
 		assertTrue("Recorded remote timestamp", files.getUpdateSite(
-			FilesCollection.DEFAULT_UPDATE_SITE).isLastModified(
+			FilesCollection.DEFAULT_UPDATE_SITE, false).isLastModified(
 			new File(webRoot, "db.xml.gz").lastModified()));
 		assertStatus(Status.INSTALLED, files, filename);
 		assertAction(Action.INSTALLED, files, filename);
@@ -405,7 +405,7 @@ public class UpdaterTest {
 		dependencee.addDependency(files, locallyModified);
 
 		assertTrue(files.prefix(obsoleted).delete());
-		assertTrue(files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).getURL().startsWith("file:"));
+		assertTrue(files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE, false).getURL().startsWith("file:"));
 		files.prefix(".checksums").delete();
 		new Checksummer(files, progress).updateFromLocal();
 		assertStatus(Status.NOT_INSTALLED, obsoleted);
@@ -636,8 +636,8 @@ public class UpdaterTest {
 
 		files = readDb(files);
 		files.clear();
-		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).setURL(webRoot2.toURI().toURL().toString());
-		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).setTimestamp(0);
+		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE, false).setURL(webRoot2.toURI().toURL().toString());
+		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE, false).setTimestamp(0);
 		files.addUpdateSite("Fiji", webRoot.toURI().toURL().toString(), null, null, 0);
 		new XMLFileReader(files).read(FilesCollection.DEFAULT_UPDATE_SITE);
 		new XMLFileReader(files).read("Fiji");
@@ -737,7 +737,7 @@ public class UpdaterTest {
 
 		FilesCollection files2 = new FilesCollection(files.prefix("invalid"));
 		final File webRoot = getWebRoot(files);
-		files2.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).setURL(webRoot.toURI().toURL().toString());
+		files2.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE, false).setURL(webRoot.toURI().toURL().toString());
 		XMLFileDownloader xmlLoader = new XMLFileDownloader(files2);
 		xmlLoader.start();
 		String newChecksum2 = files2.get("jars/hello.jar").current.checksum;
@@ -1086,7 +1086,7 @@ public class UpdaterTest {
 		// make sure that the timestamp of the update site is "new"
 		files = new FilesCollection(ijRoot);
 		files.read();
-		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE).setTimestamp(0);
+		files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE, false).setTimestamp(0);
 		files.write();
 
 		files = readDb(files);

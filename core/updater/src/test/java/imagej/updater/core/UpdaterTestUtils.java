@@ -240,7 +240,7 @@ public class UpdaterTestUtils {
 			System.err.println("Warning: Deleting " + ijRoot
 					+ " deferred to exit");
 		}
-		for (String updateSite : files.getUpdateSiteNames()) {
+		for (String updateSite : files.getUpdateSiteNames(false)) {
 			final File webRoot = getWebRoot(files, updateSite);
 			if (webRoot != null && webRoot.isDirectory()
 					&& !deleteRecursivelyAtLeastOnExit(webRoot)) {
@@ -308,7 +308,7 @@ public class UpdaterTestUtils {
 	}
 
 	public static void useWebRoot(final FilesCollection files, final File webRoot) throws MalformedURLException {
-		final UpdateSite updateSite = files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE);
+		final UpdateSite updateSite = files.getUpdateSite(FilesCollection.DEFAULT_UPDATE_SITE, false);
 		assertNotNull(updateSite);
 
 		updateSite.setURL( webRoot.toURI().toURL().toString());
@@ -321,7 +321,7 @@ public class UpdaterTestUtils {
 	}
 
 	public static File getWebRoot(final FilesCollection files, final String updateSite) {
-		final UpdateSite site = files.getUpdateSite(updateSite);
+		final UpdateSite site = files.getUpdateSite(updateSite, false);
 		if (!DEFAULT_UPDATE_SITE.equals(updateSite)
 				&& (site.getHost() == null || site.getHost().startsWith("file:"))) {
 			return null;

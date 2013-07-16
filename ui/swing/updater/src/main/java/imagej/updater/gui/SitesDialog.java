@@ -140,7 +140,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 						}
 						if (column == 1) {
 							if (value.equals(getUpdateSiteName(row))) return super.stopCellEditing();
-							if (files.getUpdateSite(value) != null) {
+							if (files.getUpdateSite(value, true) != null) {
 								error("Update site '" + value + "' exists already!");
 								return false;
 							}
@@ -205,7 +205,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 					case 1:
 						final String name = site.getName();
 						if (name.equals(string)) return;
-						if (site.isActive()) files.renameUpdateSite(name, string);
+						if (files.getUpdateSite(name, true) != null) files.renameUpdateSite(name, string);
 						sites.get(row).setName(string);
 						break;
 					case 2:
@@ -302,8 +302,8 @@ public class SitesDialog extends JDialog implements ActionListener {
 
 		// add active / upload information
 		final Set<String> names = new HashSet<String>();
-		for (final String name : files.getUpdateSiteNames()) {
-			final UpdateSite site = files.getUpdateSite(name);
+		for (final String name : files.getUpdateSiteNames(true)) {
+			final UpdateSite site = files.getUpdateSite(name, true);
 			Integer index = url2index.get(site.getURL());
 			if (index == null) {
 				url2index.put(site.getURL(), sites.size());
@@ -508,7 +508,9 @@ public class SitesDialog extends JDialog implements ActionListener {
 		final UpdateSite updateSite = getUpdateSite(row);
 		updateSite.setActive(true);
 		try {
-			if (files.getUpdateSite(updateSite.getName()) == null) files.addUpdateSite(updateSite);
+			final UpdateSite existing = files.getUpdateSite(updateSite.getName(), true);
+			if (existing == null) files.addUpdateSite(updateSite);
+			else existing.setActive(true);
 			files.reReadUpdateSite(updateSite.getName(), updaterFrame.getProgress(null));
 			markForUpdate(updateSite.getName(), false);
 			updaterFrame.filesChanged();

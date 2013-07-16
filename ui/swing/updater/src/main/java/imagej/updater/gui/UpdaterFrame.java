@@ -589,7 +589,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	public void addCustomViewOptions() {
 		viewOptions.clearCustomOptions();
 
-		final Collection<String> names = files.getUpdateSiteNames();
+		final Collection<String> names = files.getUpdateSiteNames(false);
 		if (names.size() > 1) for (final String name : names)
 			viewOptions.addCustomOption("View files of the '" + name + "' site",
 				files.forUpdateSite(name));
