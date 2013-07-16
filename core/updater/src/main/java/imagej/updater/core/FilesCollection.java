@@ -184,13 +184,31 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		}
 	}
 
+	/** @deprecated use {@link #getUpdateSite(String, boolean)} instead */
 	public UpdateSite getUpdateSite(final String name) {
-		if (name == null) return null;
-		return updateSites.get(name);
+		return getUpdateSite(name, false);
 	}
 
+	public UpdateSite getUpdateSite(final String name, final boolean evenDisabled) {
+		if (name == null) return null;
+		final UpdateSite site = updateSites.get(name);
+		return evenDisabled || site.isActive() ? site : null;
+	}
+
+	/** @deprecated use {@link #getUpdateSiteNames(boolean)} instead */
 	public Collection<String> getUpdateSiteNames() {
-		return updateSites.keySet();
+		return getUpdateSiteNames(false);
+	}
+
+	public Collection<String> getUpdateSiteNames(final boolean evenDisabled) {
+		if (evenDisabled) return updateSites.keySet();
+		final List<String> result = new ArrayList<String>();
+		final Iterator<java.util.Map.Entry<String, UpdateSite>> it = updateSites.entrySet().iterator();
+		while (it.hasNext()) {
+			java.util.Map.Entry<String, UpdateSite> entry = it.next();
+			if (entry.getValue().isActive()) result.add(entry.getKey());
+		}
+		return result;
 	}
 
 	public Collection<String> getSiteNamesToUpload() {
