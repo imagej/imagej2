@@ -53,6 +53,10 @@ import org.scijava.Context;
 // static helper methods below. Thus we can break ImageJ2's reliance
 // on RealType. And we can support LongType with no data loss by static
 // cast to IntegerType.
+//
+// Note we might not need this whole class. We might just want to get typed
+// ImgPluses from a Dataset and this could be that helper.
+
 /**
  * TypedDataset is a class that allows untyped Datasets to be accessed in
  * a typed fashion. It has a number of static helper methods for constructing
@@ -495,15 +499,13 @@ public class TypedDataset<T> implements Dataset {
 	}
 
 	@Override
-	public Dataset duplicate() {
-		// TODO : do something more?
-		return ds.duplicate();
+	public TypedDataset<T> duplicate() {
+		return new TypedDataset<T>(ds.duplicate());
 	}
 
 	@Override
-	public Dataset duplicateBlank() {
-		// TODO : do something more?
-		return ds.duplicateBlank();
+	public TypedDataset<T> duplicateBlank() {
+		return new TypedDataset<T>(ds.duplicateBlank());
 	}
 
 	@Override
