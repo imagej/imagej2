@@ -67,6 +67,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.scijava.log.LogService;
+import org.scijava.util.FileUtils;
 
 /**
  * This is the command-line interface into the ImageJ Updater.
@@ -336,8 +337,22 @@ public class CommandLine {
 						else
 							log.warn("Skipping obsolete, but modified " + file.filename);
 					}
-				} else if (file.getStatus() != Status.INSTALLED && !file.stageForUpdate(files, force))
+				} else if (file.getStatus() != Status.INSTALLED && !file.stageForUpdate(files, force)) {
 					log.warn("Skipping " + file.filename);
+				}
+				// remove obsolete versions in pristine mode
+				if (pristine) {
+					final File correctVersion = files.prefix(file);
+					final File[] versions = FileUtils.getAllVersions(correctVersion.getParentFile(), correctVersion.getName());
+					if (versions != null) {
+						for (final File version : versions) {
+							if (!version.equals(correctVersion)) {
+								log.info("Deleting obsolete version " + version);
+								if (!version.delete()) log.error("Could not delete " + version + "!");
+							}
+						}
+					}
+				}
 			}
 			Installer installer = new Installer(files, progress);
 			installer.start();
