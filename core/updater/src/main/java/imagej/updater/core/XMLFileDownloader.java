@@ -59,7 +59,7 @@ public class XMLFileDownloader extends AbstractProgressable {
 	private String warnings;
 
 	public XMLFileDownloader(final FilesCollection files) {
-		this(files, files.getUpdateSiteNames());
+		this(files, files.getUpdateSiteNames(false));
 	}
 
 	public XMLFileDownloader(final FilesCollection files,
@@ -81,7 +81,7 @@ public class XMLFileDownloader extends AbstractProgressable {
 		final int current = 0, total = updateSites.size();
 		warnings = "";
 		for (final String name : updateSites) {
-			final UpdateSite updateSite = files.getUpdateSite(name);
+			final UpdateSite updateSite = files.getUpdateSite(name, true);
 			final String title =
 				"Updating from " + (name.equals("") ? "main" : name) + " site: " + updateSite.getURL();
 			addItem(title);

@@ -78,8 +78,9 @@ public class XMLFileWriter {
 	private final String XALAN_INDENT_AMOUNT = "{http://xml.apache.org/xslt}"
 		+ "indent-amount";
 	private final static String dtd = "<!DOCTYPE pluginRecords [\n"
-		+ "<!ELEMENT pluginRecords (update-site*, plugin*)>\n"
+		+ "<!ELEMENT pluginRecords ((update-site | disabled-update-site)*, plugin*)>\n"
 		+ "<!ELEMENT update-site EMPTY>\n"
+		+ "<!ELEMENT disabled-update-site EMPTY>\n"
 		+ "<!ELEMENT plugin (platform*, category*, version?, previous-version*)>\n"
 		+ "<!ELEMENT version (description?, dependency*, link*, author*)>\n"
 		+ "<!ELEMENT previous-version EMPTY>\n"
@@ -90,7 +91,16 @@ public class XMLFileWriter {
 		+ "<!ATTLIST update-site url CDATA #REQUIRED>\n"
 		+ "<!ATTLIST update-site ssh-host CDATA #IMPLIED>\n"
 		+ "<!ATTLIST update-site upload-directory CDATA #IMPLIED>\n"
+		+ "<!ATTLIST update-site description CDATA #IMPLIED>\n"
+		+ "<!ATTLIST update-site maintainer CDATA #IMPLIED>\n"
 		+ "<!ATTLIST update-site timestamp CDATA #REQUIRED>\n"
+		+ "<!ATTLIST disabled-update-site name CDATA #REQUIRED>\n"
+		+ "<!ATTLIST disabled-update-site url CDATA #REQUIRED>\n"
+		+ "<!ATTLIST disabled-update-site ssh-host CDATA #IMPLIED>\n"
+		+ "<!ATTLIST disabled-update-site upload-directory CDATA #IMPLIED>\n"
+		+ "<!ATTLIST disabled-update-site description CDATA #IMPLIED>\n"
+		+ "<!ATTLIST disabled-update-site maintainer CDATA #IMPLIED>\n"
+		+ "<!ATTLIST disabled-update-site timestamp CDATA #REQUIRED>\n"
 		+ "<!ATTLIST plugin update-site CDATA #IMPLIED>\n"
 		+ "<!ATTLIST plugin filename CDATA #REQUIRED>\n"
 		+ "<!ATTLIST plugin executable CDATA #IMPLIED>\n"
@@ -143,16 +153,18 @@ public class XMLFileWriter {
 
 		handler.startElement("", "", "pluginRecords", attr);
 		if (local) {
-			for (final String name : files.getUpdateSiteNames()) {
+			for (final String name : files.getUpdateSiteNames(true)) {
 				attr.clear();
-				final UpdateSite site = files.getUpdateSite(name);
+				final UpdateSite site = files.getUpdateSite(name, true);
 				setAttribute(attr, "name", name);
 				setAttribute(attr, "url", site.getURL());
 				if (site.getHost() != null) setAttribute(attr, "ssh-host", site.getHost());
 				if (site.getUploadDirectory() != null) setAttribute(attr,
 					"upload-directory", site.getUploadDirectory());
+				if (site.getDescription() != null) setAttribute(attr, "description", site.getDescription());
+				if (site.getMaintainer() != null) setAttribute(attr, "description", site.getMaintainer());
 				setAttribute(attr, "timestamp", "" + site.getTimestamp());
-				writeSimpleTag("update-site", null, attr);
+				writeSimpleTag((site.isActive() ? "" : "disabled-") + "update-site", null, attr);
 			}
 		}
 

@@ -120,7 +120,7 @@ public class WebDAVUploader extends AbstractUploader {
 			}
 		}
 
-		UpdateSite site = uploader.getFilesCollection().getUpdateSite(uploader.getSiteName());
+		UpdateSite site = uploader.getFilesCollection().getUpdateSite(uploader.getSiteName(), true);
 		baseURL = site.getURL();
 
 		if (username == null) {

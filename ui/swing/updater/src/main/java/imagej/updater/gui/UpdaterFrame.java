@@ -122,6 +122,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	protected JPanel summaryPanel;
 	protected JPanel rightPanel;
 	protected FileDetails fileDetails;
+	protected JPanel bottomPanel, bottomPanel2;
 	protected JButton apply, cancel, easy, updateSites;
 	protected boolean easyMode;
 
@@ -277,9 +278,8 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		topPanel.setBorder(BorderFactory.createEmptyBorder(20, 15, 5, 15));
 		// ======== End: TOP PANEL (LEFT + RIGHT) ========
 
-		// ======== Start: BOTTOM PANEL ========
-		final JPanel bottomPanel2 = SwingTools.horizontalPanel();
-		final JPanel bottomPanel = SwingTools.horizontalPanel();
+		bottomPanel2 = SwingTools.horizontalPanel();
+		bottomPanel = SwingTools.horizontalPanel();
 		bottomPanel.setBorder(BorderFactory.createEmptyBorder(5, 15, 15, 15));
 		bottomPanel.add(new FileActionButton(new KeepAsIs()));
 		bottomPanel.add(Box.createRigidArea(new Dimension(15, 0)));
@@ -589,7 +589,7 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 	public void addCustomViewOptions() {
 		viewOptions.clearCustomOptions();
 
-		final Collection<String> names = files.getUpdateSiteNames();
+		final Collection<String> names = files.getUpdateSiteNames(false);
 		if (names.size() > 1) for (final String name : names)
 			viewOptions.addCustomOption("View files of the '" + name + "' site",
 				files.forUpdateSite(name));
@@ -668,7 +668,8 @@ public class UpdaterFrame extends JFrame implements TableModelListener,
 		chooseLabel.setVisible(!easyMode);
 		summaryPanel.setVisible(!easyMode);
 		rightPanel.setVisible(!easyMode);
-		updateSites.setVisible(!easyMode);
+		if (easyMode) bottomPanel.add(updateSites, 0);
+		else bottomPanel2.add(updateSites, 0);
 
 		final boolean uploadable = !easyMode && files.hasUploadableSites();
 		upload.setVisible(uploadable);

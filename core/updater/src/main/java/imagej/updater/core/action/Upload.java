@@ -142,8 +142,8 @@ public class Upload implements GroupAction {
 		if (sites.size() > 0 && !sites.contains(updateSite)) return false;
 
 		if (shadowing) {
-			final UpdateSite shadowingSite = files.getUpdateSite(updateSite);
-			final UpdateSite shadowedSite = files.getUpdateSite(file.updateSite);
+			final UpdateSite shadowingSite = files.getUpdateSite(updateSite, false);
+			final UpdateSite shadowedSite = files.getUpdateSite(file.updateSite, false);
 			if (shadowingSite.getRank() < shadowedSite.getRank()) return false;
 		}
 

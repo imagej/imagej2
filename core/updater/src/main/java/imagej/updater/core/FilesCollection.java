@@ -123,12 +123,13 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	public UpdateSite addUpdateSite(final String name, final String url,
 		final String sshHost, final String uploadDirectory, final long timestamp)
 	{
-		return addUpdateSite(new UpdateSite(name, url, sshHost, uploadDirectory,
-				null, null, timestamp));
+		final UpdateSite site = new UpdateSite(name, url, sshHost, uploadDirectory,
+				null, null, timestamp);
+		site.setActive(true);
+		return addUpdateSite(site);
 	}
 
 	public UpdateSite addUpdateSite(UpdateSite site) {
-		site.active = true;
 		addUpdateSite(site.getName(), site);
 		return site;
 	}
@@ -140,9 +141,9 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	}
 
 	public void renameUpdateSite(final String oldName, final String newName) {
-		if (getUpdateSite(newName) != null) throw new RuntimeException(
+		if (getUpdateSite(newName, true) != null) throw new RuntimeException(
 			"Update site " + newName + " exists already!");
-		if (getUpdateSite(oldName) == null) throw new RuntimeException(
+		if (getUpdateSite(oldName, true) == null) throw new RuntimeException(
 			"Update site " + oldName + " does not exist!");
 
 		// handle all files
@@ -184,13 +185,31 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		}
 	}
 
+	/** @deprecated use {@link #getUpdateSite(String, boolean)} instead */
 	public UpdateSite getUpdateSite(final String name) {
-		if (name == null) return null;
-		return updateSites.get(name);
+		return getUpdateSite(name, false);
 	}
 
+	public UpdateSite getUpdateSite(final String name, final boolean evenDisabled) {
+		if (name == null) return null;
+		final UpdateSite site = updateSites.get(name);
+		return evenDisabled || site.isActive() ? site : null;
+	}
+
+	/** @deprecated use {@link #getUpdateSiteNames(boolean)} instead */
 	public Collection<String> getUpdateSiteNames() {
-		return updateSites.keySet();
+		return getUpdateSiteNames(false);
+	}
+
+	public Collection<String> getUpdateSiteNames(final boolean evenDisabled) {
+		if (evenDisabled) return updateSites.keySet();
+		final List<String> result = new ArrayList<String>();
+		final Iterator<java.util.Map.Entry<String, UpdateSite>> it = updateSites.entrySet().iterator();
+		while (it.hasNext()) {
+			java.util.Map.Entry<String, UpdateSite> entry = it.next();
+			if (entry.getValue().isActive()) result.add(entry.getKey());
+		}
+		return result;
 	}
 
 	public Collection<String> getSiteNamesToUpload() {
@@ -201,7 +220,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 			set.add(file.updateSite);
 		// keep the update sites' order
 		final List<String> result = new ArrayList<String>();
-		for (final String name : getUpdateSiteNames())
+		for (final String name : getUpdateSiteNames(false))
 			if (set.contains(name)) result.add(name);
 		if (result.size() != set.size()) throw new RuntimeException(
 			"Unknown update site in " + set.toString() + " (known: " +
@@ -210,8 +229,8 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	}
 
 	public boolean hasUploadableSites() {
-		for (final String name : updateSites.keySet())
-			if (getUpdateSite(name).isUploadable()) return true;
+		for (final UpdateSite site : updateSites.values())
+			if (site.isActive() && site.isUploadable()) return true;
 		return false;
 	}
 
@@ -262,7 +281,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		else {
 			updateSites = new LinkedHashMap<String, UpdateSite>();
 			for (final String name : siteNames) {
-				updateSites.put(name, getUpdateSite(name));
+				updateSites.put(name, getUpdateSite(name, true));
 			}
 		}
 		for (final Map.Entry<String, UpdateSite> entry : updateSites.entrySet()) {
@@ -777,7 +796,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	public String getURL(final FileObject file) {
 		final String siteName = file.updateSite;
 		assert (siteName != null && !siteName.equals(""));
-		final UpdateSite site = getUpdateSite(siteName);
+		final UpdateSite site = getUpdateSite(siteName, false);
 		if (site == null) return null;
 		return site.getURL() + file.filename.replace(" ", "%20") + "-" +
 			file.getTimestamp();
@@ -1081,7 +1100,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	public Collection<String> getProtocols(Iterable<FileObject> selected) {
 		final Set<String> protocols = new LinkedHashSet<String>();
 		for (final FileObject file : selected) {
-			final UpdateSite site = getUpdateSite(file.updateSite);
+			final UpdateSite site = getUpdateSite(file.updateSite, false);
 			if (site != null) {
 				if (site.getHost() == null)
 					protocols.add("unknown(" + file.filename + ")");
