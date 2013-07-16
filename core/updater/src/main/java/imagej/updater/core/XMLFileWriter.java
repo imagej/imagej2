@@ -149,16 +149,16 @@ public class XMLFileWriter {
 
 		handler.startElement("", "", "pluginRecords", attr);
 		if (local) {
-			for (final String name : files.getUpdateSiteNames()) {
+			for (final String name : files.getUpdateSiteNames(true)) {
 				attr.clear();
-				final UpdateSite site = files.getUpdateSite(name);
+				final UpdateSite site = files.getUpdateSite(name, true);
 				setAttribute(attr, "name", name);
 				setAttribute(attr, "url", site.getURL());
 				if (site.getHost() != null) setAttribute(attr, "ssh-host", site.getHost());
 				if (site.getUploadDirectory() != null) setAttribute(attr,
 					"upload-directory", site.getUploadDirectory());
 				setAttribute(attr, "timestamp", "" + site.getTimestamp());
-				writeSimpleTag("update-site", null, attr);
+				writeSimpleTag((site.isActive() ? "" : "disabled-") + "update-site", null, attr);
 			}
 		}
 
