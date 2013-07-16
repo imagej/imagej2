@@ -204,7 +204,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 					case 1:
 						final String name = site.getName();
 						if (name.equals(string)) return;
-						files.renameUpdateSite(name, string);
+						if (site.isActive()) files.renameUpdateSite(name, string);
 						sites.get(row).setName(string);
 						break;
 					case 2:
