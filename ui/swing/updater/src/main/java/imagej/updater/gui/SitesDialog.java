@@ -149,6 +149,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 							final UpdateSite site = getUpdateSite(row);
 							if (value.equals(site.getURL())) return super.stopCellEditing();
 							if (validURL(value)) {
+								site.setURL(value);
 								activateUpdateSite(row);
 							} else {
 								if (site == null || site.getHost() == null || site.getHost().equals("")) {
