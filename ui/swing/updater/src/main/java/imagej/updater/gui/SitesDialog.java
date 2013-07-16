@@ -357,6 +357,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 
 	private void add(final UpdateSite site) {
 		final int row = sites.size();
+		files.addUpdateSite(site);
 		sites.add(site);
 		tableModel.rowsChanged();
 		tableModel.rowChanged(row);
