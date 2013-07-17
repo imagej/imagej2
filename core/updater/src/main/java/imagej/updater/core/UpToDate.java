@@ -71,7 +71,7 @@ public class UpToDate {
 	}
 
 	private final static String KEY = "latestNag";
-	private final static long REMINDER_INTERVAL = 86400 * 7; // one week
+	private final static long REMINDER_INTERVAL = 86400; // 24h
 	private final static long FOUR_O_SEVEN = -111381;
 
 	/**
