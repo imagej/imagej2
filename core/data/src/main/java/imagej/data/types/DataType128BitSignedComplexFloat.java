@@ -68,12 +68,12 @@ public class DataType128BitSignedComplexFloat extends AbstractContextual
 
 	@Override
 	public String longName() {
-		return "128-bit complex";
+		return "128-bit complex float";
 	}
 
 	@Override
 	public String description() {
-		return "A complex floating data type with 64-bit subcomponents";
+		return "A complex floating data type with 64-bit double subcomponents";
 	}
 
 	@Override
