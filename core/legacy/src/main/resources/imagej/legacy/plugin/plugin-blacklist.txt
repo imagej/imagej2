@@ -50,6 +50,8 @@ ij.plugin.Hotkeys("install")               # Plugins > Shortcuts > Create Shortc
 ij.plugin.AboutBox                         # Help > About ImageJ...
 ij.plugin.ImageJ_Updater                   # Help > Update ImageJ...
 ij.plugin.StackReverser                    # Image > Transform > Flip Z and Image > Stack > Tools > Reverse
+imagej.legacy.SwitchToModernMode           # Help > Switch to Modern Mode
+fiji.updater.Updater("update")             # Help > Update Fiji
 ###### PHASE THESE OUT SOON
 #ij.plugin.Converter("8-bit Color")         # Image > Type > 8-bit Color
 #ij.plugin.Converter("RGB Color")           # Image > Type > RGB Color
