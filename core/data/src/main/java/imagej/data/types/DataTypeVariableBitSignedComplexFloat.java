@@ -105,7 +105,7 @@ public class DataTypeVariableBitSignedComplexFloat extends AbstractContextual
 	@Override
 	public int bitCount() {
 		throw new UnsupportedOperationException(
-			"This data type's precision is arbitrary");
+			"This data type's memory use is variable.");
 	}
 
 	@Override
