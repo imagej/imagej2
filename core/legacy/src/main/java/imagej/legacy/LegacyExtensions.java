@@ -415,13 +415,8 @@ public class LegacyExtensions {
 		addExtraPlugins(hacker);
 
 		// make sure that the GenericDialog is disposed in macro mode
-		try {
+		if (hacker.hasMethod("ij.gui.GenericDialog", "public void showDialog()")) {
 			hacker.insertAtTopOfMethod("ij.gui.GenericDialog", "public void showDialog()", "if (macro) dispose();");
-		} catch (IllegalArgumentException e) {
-			// ignore if the headless patcher renamed the method away
-			if (e.getCause() == null || !e.getCause().getClass().getName().endsWith("NotFoundException")) {
-				throw e;
-			}
 		}
 
 		// make sure NonBlockingGenericDialog does not wait in macro mode
