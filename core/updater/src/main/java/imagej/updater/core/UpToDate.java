@@ -118,7 +118,10 @@ public class UpToDate {
 					getLastModified(updateSite.getURL() + Util.XML_COMPRESSED);
 				if (lastModified == FOUR_O_SEVEN) return Result.PROXY_NEEDS_AUTHENTICATION;
 				if (lastModified < 0) return Result.OFFLINE; // assume network is down
-				if (!updateSite.isLastModified(lastModified)) return Result.UPDATEABLE;
+				if (!updateSite.isLastModified(lastModified)) {
+					setLatestNag();
+					return Result.UPDATEABLE;
+				}
 			}
 		}
 		catch (final FileNotFoundException e) {
