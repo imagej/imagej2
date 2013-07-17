@@ -65,6 +65,14 @@ public final class AvailableSites {
 		return result;
 	}
 
+	/**
+	 * Parses the list of known update sites from the ImageJ wiki.
+	 * <p>
+	 * <strong>NB:</strong> This method does <em>not</em> add the sites to the
+	 * given {@link FilesCollection}! Use
+	 * {@link #initializeAndAddSites(FilesCollection)} for that.
+	 * </p>
+	 */
 	public static List<UpdateSite> initializeSites(final FilesCollection files) {
 		final List<UpdateSite> sites = new ArrayList<UpdateSite>();
 		final Map<String, Integer> url2index = new HashMap<String, Integer>();
@@ -118,6 +126,17 @@ public final class AvailableSites {
 		}
 
 		return sites;
+	}
+
+	/**
+	 * Initializes the list of update sites,
+	 * <em>and<em> adds them to the given {@link FilesCollection}.
+	 */
+	public static void initializeAndAddSites(final FilesCollection files) {
+		for (final UpdateSite site : initializeSites(files)) {
+			files.addUpdateSite(site);
+		}
+
 	}
 
 	private static String stripWikiMarkup(final String string) {
