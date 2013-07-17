@@ -234,6 +234,20 @@ public class InterfaceBuilder {
 		define.setAccessible(true);
 		final byte[] byteCode = builder.toByteArray();
 		hexdump(byteCode);
+		/*
+		 * Expect:
+00000000  ca fe ba be 00 00 00 30  00 09 07 00 07 07 00 08  |.......0........|
+00000010  01 00 0a 69 73 43 61 6e  63 65 6c 65 64 01 00 03  |...isCanceled...|
+00000020  28 29 5a 01 00 0f 67 65  74 43 61 6e 63 65 6c 52  |()Z...getCancelR|
+00000030  65 61 73 6f 6e 01 00 14  28 29 4c 6a 61 76 61 2f  |eason...()Ljava/|
+00000040  6c 61 6e 67 2f 53 74 72  69 6e 67 3b 01 00 11 69  |lang/String;...i|
+00000050  6d 61 67 65 6a 2f 43 61  6e 63 65 6c 61 62 6c 65  |magej/Cancelable|
+00000060  01 00 10 6a 61 76 61 2f  6c 61 6e 67 2f 4f 62 6a  |...java/lang/Obj|
+00000070  65 63 74 06 01 00 01 00  02 00 00 00 00 00 02 04  |ect.............|
+00000080  01 00 03 00 04 00 00 04  01 00 05 00 06 00 00 00  |................|
+00000090  00                                                |.|
+00000091
+		 */
 		define.invoke(loader, name, byteCode, 0, byteCode.length);
 	}
 
