@@ -168,9 +168,9 @@ public class CodeHacker {
 		try {
 			getBehavior(fullClass, methodSig).insertAfter(expand(newCode));
 		}
-		catch (final CannotCompileException e) {
-			throw new IllegalArgumentException("Cannot modify method: " + methodSig,
-				e);
+		catch (final Throwable e) {
+			maybeThrow(new IllegalArgumentException("Cannot modify method: "
+					+ methodSig, e));
 		}
 	}
 
@@ -213,9 +213,9 @@ public class CodeHacker {
 				behavior.insertBefore(expand(newCode));
 			}
 		}
-		catch (final CannotCompileException e) {
-			throw new IllegalArgumentException("Cannot modify method: " + methodSig,
-				e);
+		catch (final Throwable e) {
+			maybeThrow(new IllegalArgumentException("Cannot modify method: " + methodSig,
+				e));
 		}
 	}
 
@@ -262,8 +262,9 @@ public class CodeHacker {
 			final CtMethod methodRef = CtNewMethod.make(methodBody, classRef);
 			classRef.addMethod(methodRef);
 		}
-		catch (final CannotCompileException e) {
-			throw new IllegalArgumentException("Cannot add method: " + methodSig, e);
+		catch (final Throwable e) {
+			maybeThrow(new IllegalArgumentException("Cannot add method: "
+					+ methodSig, e));
 		}
 	}
 
@@ -282,10 +283,11 @@ public class CodeHacker {
 		for (final String methodName : new String[] { "mousePressed", "mouseDragged" }) try {
 			final CtMethod method = classRef.getMethod(methodName, "(Ljava/awt/event/MouseEvent;)V");
 			method.instrument(editor);
-		} catch (NotFoundException e) {
+		} catch (final NotFoundException e) {
 			/* ignore */
-		} catch (CannotCompileException e) {
-			throw new IllegalArgumentException("Cannot instrument method: " + methodName, e);
+		} catch (final Throwable e) {
+			maybeThrow(new IllegalArgumentException(
+					"Cannot instrument method: " + methodName, e));
 		}
 	}
 
@@ -311,12 +313,9 @@ public class CodeHacker {
 			if (initializer != null) {
 				addToClassInitializer(fullClass, name + " = " + initializer + ";");
 			}
-		} catch (CannotCompileException e) {
-			throw new IllegalArgumentException("Cannot add field " + name
-					+ " to " + fullClass, e);
-		} catch (NotFoundException e) {
-			throw new IllegalArgumentException("Cannot add field " + name
-					+ " to " + fullClass, e);
+		} catch (final Throwable e) {
+			maybeThrow(new IllegalArgumentException("Cannot add field " + name
+					+ " to " + fullClass, e));
 		}
 	}
 
@@ -332,9 +331,9 @@ public class CodeHacker {
 				method.setModifiers(Modifier.STATIC);
 				classRef.addConstructor(method);
 			}
-		} catch (CannotCompileException e) {
-			throw new IllegalArgumentException("Cannot add " + code
-					+ " to class initializer of " + fullClass, e);
+		} catch (final Throwable e) {
+			maybeThrow(new IllegalArgumentException("Cannot add " + code
+					+ " to class initializer of " + fullClass, e));
 		}
 	}
 
@@ -342,9 +341,11 @@ public class CodeHacker {
 		try {
 			final CtBehavior method = getBehavior(fullClass, methodSig);
 			method.addCatch(src, getClass(exceptionClassName), "$e");
-		} catch (CannotCompileException e) {
-			throw new IllegalArgumentException("Cannot add catch for exception of type'"
-				+ exceptionClassName + " in " + fullClass		+ "'s " + methodSig, e);
+		} catch (final Throwable e) {
+			maybeThrow(new IllegalArgumentException(
+					"Cannot add catch for exception of type'"
+							+ exceptionClassName + " in " + fullClass + "'s "
+							+ methodSig, e));
 		}
 	}
 
@@ -363,9 +364,11 @@ public class CodeHacker {
 					}
 				}
 			});
-		} catch (CannotCompileException e) {
-			throw new IllegalArgumentException("Cannot edit exception handler for type'"
-				+ exceptionClassName + " in " + fullClass		+ "'s " + methodSig, e);
+		} catch (final Throwable e) {
+			maybeThrow(new IllegalArgumentException(
+					"Cannot edit exception handler for type'"
+							+ exceptionClassName + " in " + fullClass + "'s "
+							+ methodSig, e));
 		}
 	}
 
@@ -404,26 +407,25 @@ public class CodeHacker {
 									.getConstructor().getParameterTypes();
 							if (parameterTypes[parameterIndex - 1] != CodeHacker.this
 									.getClass("java.lang.String")) {
-								throw new IllegalArgumentException("Parameter "
+								maybeThrow(new IllegalArgumentException("Parameter "
 										+ parameterIndex + " of "
-										+ expr.getConstructor() + " is not a String!");
+										+ expr.getConstructor() + " is not a String!"));
+								return;
 							}
 							final String replace = replaceParameter(
 									parameterIndex, parameterTypes.length, replacement);
 							expr.replace("$_ = new " + newClassName + replace
 									+ ";");
 						} catch (NotFoundException e) {
-							throw new IllegalArgumentException(
+							maybeThrow(new IllegalArgumentException(
 									"Cannot find the parameters of the constructor of "
-											+ newClassName, e);
+											+ newClassName, e));
 					}
 				}
 			});
-		} catch (IllegalArgumentException e) {
-			// ignore: the method was not found
-		} catch (CannotCompileException e) {
-			throw new IllegalArgumentException("Cannot handle app name in " + fullClass
-					+ "'s " + methodSig, e);
+		} catch (final Throwable e) {
+			maybeThrow(new IllegalArgumentException("Cannot handle app name in " + fullClass
+					+ "'s " + methodSig, e));
 		}
 	}
 
@@ -461,19 +463,27 @@ public class CodeHacker {
 								((ConstructorCall) call).getConstructor().getParameterTypes() :
 								call.getMethod().getParameterTypes();
 						if (parameterTypes.length < parameterIndex) {
-								throw new IllegalArgumentException("Index " + parameterIndex + " is outside of " + call.getMethod() + "'s parameter list!");
+								maybeThrow(new IllegalArgumentException(
+										"Index " + parameterIndex
+												+ " is outside of "
+												+ call.getMethod()
+												+ "'s parameter list!"));
+								return;
 						}
 						if (parameterTypes[parameterIndex - 1] != CodeHacker.this.getClass("java.lang.String")) {
-							throw new IllegalArgumentException("Parameter " + parameterIndex + " of "
-									+ call.getMethod() + " is not a String!");
+								maybeThrow(new IllegalArgumentException(
+										"Parameter " + parameterIndex + " of "
+												+ call.getMethod()
+												+ " is not a String!"));
+								return;
 						}
 						final String replace = replaceParameter(
 								parameterIndex, parameterTypes.length, replacement);
 						call.replace((isSuper ? "" : "$0.") + calledMethodName + replace + ";");
 					} catch (NotFoundException e) {
-						throw new IllegalArgumentException(
+						maybeThrow(new IllegalArgumentException(
 								"Cannot find the parameters of the method "
-										+ calledMethodName, e);
+										+ calledMethodName, e));
 					}
 				}
 
@@ -482,11 +492,9 @@ public class CodeHacker {
 					edit((MethodCall)call);
 				}
 			});
-		} catch (IllegalArgumentException e) {
-			// ignore: the method was not found
-		} catch (CannotCompileException e) {
-			throw new IllegalArgumentException("Cannot handle app name in " + fullClass
-					+ "'s " + methodSig, e);
+		} catch (final Throwable e) {
+			maybeThrow(new IllegalArgumentException("Cannot handle app name in " + fullClass
+					+ "'s " + methodSig, e));
 		}
 	}
 
@@ -529,10 +537,12 @@ public class CodeHacker {
 				return;
 			}
 		}
-		catch (BadBytecode e) {
-				throw new IllegalArgumentException(e);
+		catch (final Throwable e) {
+			maybeThrow(new IllegalArgumentException(e));
+			return;
 		}
-		throw new IllegalArgumentException("Method " + methodSig + " in " + fullClass + " does not return on null");
+		maybeThrow(new IllegalArgumentException("Method " + methodSig + " in "
+				+ fullClass + " does not return on null"));
 	}
 
 	/**
@@ -550,10 +560,9 @@ public class CodeHacker {
 			if (override.contains(method.getName())) try {
 				final CtMethod stub = makeStubMethod(clazz, method);
 				method.setBody(stub, null);
-			} catch (NotFoundException e) {
-				// ignore
-			} catch (CannotCompileException e) {
-				throw new IllegalArgumentException("Cannot instrument method: " + method.getName(), e);
+			} catch (final Throwable e) {
+					maybeThrow(new IllegalArgumentException(
+							"Cannot instrument method: " + method.getName(), e));
 			}
 	}
 
@@ -579,10 +588,10 @@ public class CodeHacker {
 				});
 			letSuperclassMethodsOverride(clazz);
 			addMissingMethods(clazz, originalSuperclass);
-		} catch (NotFoundException e) {
-			throw new IllegalArgumentException("Could not replace superclass of " + fullClass + " with " + fullNewSuperclass, e);
-		} catch (CannotCompileException e) {
-			throw new IllegalArgumentException("Could not replace superclass of " + fullClass + " with " + fullNewSuperclass, e);
+		} catch (final Throwable e) {
+			maybeThrow(new IllegalArgumentException(
+					"Could not replace superclass of " + fullClass + " with "
+							+ fullNewSuperclass, e));
 		}
 	}
 
@@ -598,10 +607,10 @@ public class CodeHacker {
 	public void skipAWTInstantiations(String fullClass) {
 		try {
 			skipAWTInstantiations(getClass(fullClass));
-		} catch (CannotCompileException e) {
-			throw new IllegalArgumentException("Could not skip AWT class instantiations in " + fullClass, e);
-		} catch (NotFoundException e) {
-			throw new IllegalArgumentException("Could not skip AWT class instantiations in " + fullClass, e);
+		} catch (final Throwable e) {
+			maybeThrow(new IllegalArgumentException(
+					"Could not skip AWT class instantiations in " + fullClass,
+					e));
 		}
 	}
 
@@ -624,11 +633,10 @@ public class CodeHacker {
 					}
 				}
 			});
-		} catch (IllegalArgumentException e) {
-			// ignore: the method was not found
-		} catch (CannotCompileException e) {
-			throw new IllegalArgumentException(
-					"Cannot override field access to " + fieldName + " in " + fullClass + "'s " + methodSig, e);
+		} catch (final Throwable e) {
+			maybeThrow(new IllegalArgumentException(
+					"Cannot override field access to " + fieldName + " in "
+							+ fullClass + "'s " + methodSig, e));
 		}
 	}
 
@@ -683,12 +691,10 @@ public class CodeHacker {
 					}
 				}
 			});
-		} catch (IllegalArgumentException e) {
-			// ignore: the method was not found
-		} catch (CannotCompileException e) {
-			throw new IllegalArgumentException(
+		} catch (final Throwable e) {
+			maybeThrow(new IllegalArgumentException(
 					"Cannot handle replace call to " + calledMethodName
-							+ " in " + fullClass + "'s " + methodSig, e);
+							+ " in " + fullClass + "'s " + methodSig, e));
 		}
 	}
 
@@ -927,7 +933,7 @@ public class CodeHacker {
 		final CtClass clazz = getClass(fullName);
 		try {
 			return clazz.getField(fieldName) != null;
-		} catch (NotFoundException e) {
+		} catch (final Throwable e) {
 			return false;
 		}
 	}
@@ -957,7 +963,7 @@ public class CodeHacker {
 	public boolean existsClass(final String fullClass) {
 		try {
 			return pool.get(fullClass) != null;
-		} catch (NotFoundException e) {
+		} catch (final Throwable e) {
 			return false;
 		}
 	}
@@ -1127,8 +1133,10 @@ public class CodeHacker {
 					}
 				}
 			});
-		} catch (CannotCompileException e) {
-			throw new IllegalArgumentException("Could not handle HTTPS in " + methodSig + " in " + fullClass);
+		} catch (final Throwable e) {
+			maybeThrow(new IllegalArgumentException(
+					"Could not handle HTTPS in " + methodSig + " in "
+							+ fullClass));
 		}
 	}
 
