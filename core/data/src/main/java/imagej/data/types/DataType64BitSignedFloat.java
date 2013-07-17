@@ -74,6 +74,11 @@ public class DataType64BitSignedFloat extends AbstractContextual implements
 	}
 
 	@Override
+	public boolean isComplex() {
+		return false;
+	}
+
+	@Override
 	public boolean isFloat() {
 		return true;
 	}

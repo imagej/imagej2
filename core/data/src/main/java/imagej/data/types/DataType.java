@@ -73,6 +73,12 @@ public interface DataType<T extends NumericType<T>> extends Contextual,
 	String description();
 
 	/**
+	 * Returns true if this DataType is a complex number (imaginary component is
+	 * changeable).
+	 */
+	boolean isComplex();
+
+	/**
 	 * Returns true if this DataType represents a floating point number.
 	 */
 	boolean isFloat();

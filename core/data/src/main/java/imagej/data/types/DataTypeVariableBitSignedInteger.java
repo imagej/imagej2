@@ -71,6 +71,11 @@ public class DataTypeVariableBitSignedInteger extends AbstractContextual impleme
 	}
 
 	@Override
+	public boolean isComplex() {
+		return false;
+	}
+
+	@Override
 	public boolean isFloat() {
 		return false;
 	}
