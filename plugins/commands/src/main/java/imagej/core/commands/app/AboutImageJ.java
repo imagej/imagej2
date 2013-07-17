@@ -154,12 +154,15 @@ public class AboutImageJ extends ContextCommand {
 	 */
 	private Dataset createDataset() {
 		final File imageFile = getRandomAboutImagePath();
+		final String source = imageFile != null ?
+				imageFile.getAbsolutePath() :
+				"About ImageJ&pixelType=uint16&sizeC=3&sizeX=512&sizeY=512.fake";
 
 		final String title = "About " + getAppString();
 
 		Dataset ds = null;
 		try {
-			ds = dataSrv.open(imageFile.getAbsolutePath());
+			ds = dataSrv.open(source);
 		}
 		catch (final IOException e) {
 			log.error(e);
@@ -172,9 +175,6 @@ public class AboutImageJ extends ContextCommand {
 			validImage &= (ds.numDimensions() == 3);
 			// Too restrictive? Ran into images where 3rd axis is mislabeled
 			// validImage &= (ds.getAxisIndex(Axes.CHANNEL) == 2);
-			validImage &= (ds.getImgPlus().firstElement().getBitsPerPixel() == 8);
-			validImage &= (ds.isInteger());
-			validImage &= (!ds.isSigned());
 			if (validImage) {
 				loadAttributes(imageFile);
 			}
@@ -193,7 +193,11 @@ public class AboutImageJ extends ContextCommand {
 		}
 
 		ds.setName(title);
-		ds.setRGBMerged(true);
+		try {
+			ds.setRGBMerged(true);
+		} catch (final IllegalArgumentException e) {
+			// ignore if we cannot make it an RGB image
+		}
 
 		return ds;
 	}
@@ -281,7 +285,8 @@ public class AboutImageJ extends ContextCommand {
 
 		final LinkedList<String> stringList = new LinkedList<String>();
 		if (mft != null) {
-			stringList.add("Build: " + mft.getImplementationBuild());
+			final String build = mft.getImplementationBuild();
+			stringList.add("Build: " + (build == null || build.length() < 10 ? build : build.substring(0, 10)));
 			stringList.add("Date: " + mft.getImplementationDate());
 		}
 		stringList.add("Open source image processing software");
@@ -344,6 +349,7 @@ public class AboutImageJ extends ContextCommand {
 	 * from a text file (filename.ext.txt) if possible.
 	 */
 	private void loadAttributes(final File baseFile) {
+		if (baseFile == null) return;
 		final String fileName = baseFile.getAbsolutePath() + ".txt";
 		final File file = new File(fileName);
 		if (file.exists()) {

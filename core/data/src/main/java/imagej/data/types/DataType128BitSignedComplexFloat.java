@@ -41,11 +41,11 @@ import net.imglib2.type.numeric.complex.ComplexDoubleType;
 
 import org.scijava.AbstractContextual;
 
+//TODO - uncomment when we are ready to support
+//@Plugin(type = DataType.class)
 /**
  * @author Barry DeZonia
  */
-//TODO - uncomment when we are ready to support
-//@Plugin(type = DataType.class)
 public class DataType128BitSignedComplexFloat extends AbstractContextual
 	implements DataType<ComplexDoubleType>
 {
@@ -68,12 +68,17 @@ public class DataType128BitSignedComplexFloat extends AbstractContextual
 
 	@Override
 	public String longName() {
-		return "128-bit complex";
+		return "128-bit complex float";
 	}
 
 	@Override
 	public String description() {
-		return "A complex floating data type with 64-bit subcomponents";
+		return "A complex floating data type with 64-bit double subcomponents";
+	}
+
+	@Override
+	public boolean isComplex() {
+		return true;
 	}
 
 	@Override

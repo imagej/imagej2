@@ -97,7 +97,7 @@ public class XMLFileReader extends DefaultHandler {
 	public void read(final String updateSite)
 		throws ParserConfigurationException, IOException, SAXException
 	{
-		final UpdateSite site = files.getUpdateSite(updateSite);
+		final UpdateSite site = files.getUpdateSite(updateSite, false);
 		if (site == null) throw new IOException("Unknown update site: " + site);
 		final URL url = new URL(site.getURL() + Util.XML_COMPRESSED);
 		final URLConnection connection = files.util.openConnection(url);
@@ -180,10 +180,18 @@ public class XMLFileReader extends DefaultHandler {
 			current.addDependency(atts.getValue("filename"), getLong(atts,
 				"timestamp"), overrides != null && overrides.equals("true"));
 		}
-		else if (updateSite == null && currentTag.equals("update-site")) files
-			.addUpdateSite(atts.getValue("name"), atts.getValue("url"), atts
-				.getValue("ssh-host"), atts.getValue("upload-directory"), Long
-				.parseLong(atts.getValue("timestamp")));
+		else if (updateSite == null &&
+				(currentTag.equals("update-site") || currentTag.equals("disabled-update-site"))) {
+			final UpdateSite site = new UpdateSite(atts.getValue("name"),
+					atts.getValue("url"),
+					atts.getValue("ssh-host"),
+					atts.getValue("upload-directory"),
+					atts.getValue("description"),
+					atts.getValue("maintainer"),
+					Long.parseLong(atts.getValue("timestamp")));
+			site.setActive(currentTag.equals("update-site"));
+			files.addUpdateSite(site);
+		}
 	}
 
 	@Override
@@ -211,7 +219,7 @@ public class XMLFileReader extends DefaultHandler {
 			}
 			FileObject file = files.get(current.filename);
 			if (updateSite == null && current.updateSite != null &&
-				files.getUpdateSite(current.updateSite) == null) ; // ignore file with invalid update site
+				files.getUpdateSite(current.updateSite, false) == null) ; // ignore file with invalid update site
 			else if (file == null) {
 				files.add(current);
 				filesFromThisSite.add(current);
@@ -326,7 +334,7 @@ public class XMLFileReader extends DefaultHandler {
 
 	private int getRank(final FilesCollection files, final String updateSite) {
 		if (updateSite == null || files == null) return -1;
-		UpdateSite site = files.getUpdateSite(updateSite);
+		UpdateSite site = files.getUpdateSite(updateSite, false);
 		return site == null ? -1 : site.getRank();
 	}
 }

@@ -39,14 +39,12 @@ import imagej.command.Command;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
-import imagej.data.types.BigComplex;
 import imagej.data.types.DataType;
 import imagej.data.types.DataTypeService;
 import imagej.menu.MenuConstants;
 import imagej.module.DefaultMutableModuleItem;
 import imagej.module.MutableModuleItem;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +53,7 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.complex.ComplexDoubleType;
 
 import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
@@ -198,36 +197,39 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 		boolean isRamp = fillType.equals(RAMP);
 		if (!isMax && !isMin && !isZero && !isRamp) isZero = true;
 
-		BigComplex v = new BigComplex();
+		U val = dataType.createVariable();
 		U min = dataType.createVariable();
 		U max = dataType.createVariable();
 		if (isMax) {
 			dataType.upperBound(max);
-			dataType.cast(max, v);
+			val.set(max);
 		}
 		else if (isMin) {
 			dataType.lowerBound(min);
-			dataType.cast(min, v);
+			val.set(min);
 		}
 		else if (isZero) {
-			v.setReal(BigDecimal.ZERO);
-			v.setImag(BigDecimal.ZERO);
+			val.setZero();
 		}
-		// else fill type == ramp and v still NaN
+		else { // else isRamp
+			dataType.upperBound(max);
+			dataType.lowerBound(min);
+		}
 
-		dataType.lowerBound(min);
-		dataType.upperBound(max);
+		ComplexDoubleType tmp = new ComplexDoubleType();
 
 		while (cursor.hasNext()) {
 			cursor.fwd();
 			if (!isRamp) {
-				dataType.cast(v, cursor.get());
+				cursor.get().set(val);
 			}
 			else { // isRamp
+				// For performance work in real range. This is nearly always safe.
 				pos[0] = cursor.getLongPosition(0);
 				pos[1] = cursor.getLongPosition(1);
-				rampedValue(pos, dims, dataType, min, max, v);
-				dataType.cast(v, cursor.get());
+				rampedValue(pos, dims, dataType, min, max, tmp);
+				cursor.get().setComplexNumber(tmp.getRealDouble(),
+					tmp.getImaginaryDouble());
 			}
 		}
 	}
@@ -260,7 +262,7 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 	// -- Parameter callback methods --
 
 	private void rampedValue(final long[] pos, final long[] dims,
-		final DataType<U> type, U min, U max, BigComplex outValue)
+		final DataType<U> type, U min, U max, ComplexDoubleType outValue)
 	{
 		double origin = min.getRealDouble();
 		double range = max.getRealDouble() - min.getRealDouble();
@@ -278,8 +280,8 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 		}
 
 		if (denominator == 0) {
-			outValue.setReal(BigDecimal.valueOf(origin));
-			outValue.setImag(BigDecimal.valueOf(origin));
+			outValue.setReal(origin);
+			outValue.setImaginary(origin);
 			return;
 		}
 
@@ -287,8 +289,8 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 
 		double val = origin + percent * range;
 
-		outValue.setReal(BigDecimal.valueOf(val));
-		outValue.setImag(BigDecimal.valueOf(val));
+		outValue.setReal(val);
+		outValue.setImaginary(val);
 	}
 
 	private long[] getDims() {

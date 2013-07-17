@@ -39,11 +39,11 @@ import java.math.BigDecimal;
 
 import org.scijava.AbstractContextual;
 
+//TODO - uncomment when we are ready to support
+//@Plugin(type = DataType.class)
 /**
  * @author Barry DeZonia
  */
-//TODO - uncomment when we are ready to support
-//@Plugin(type = DataType.class)
 public class DataTypeVariableBitSignedInteger extends AbstractContextual implements
 	DataType<UnboundedIntegerType>
 {
@@ -68,6 +68,11 @@ public class DataTypeVariableBitSignedInteger extends AbstractContextual impleme
 	@Override
 	public String description() {
 		return "An integer data type whose size is unrestricted";
+	}
+
+	@Override
+	public boolean isComplex() {
+		return false;
 	}
 
 	@Override

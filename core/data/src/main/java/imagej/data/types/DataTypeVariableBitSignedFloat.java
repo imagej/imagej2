@@ -39,11 +39,11 @@ import java.math.BigDecimal;
 
 import org.scijava.AbstractContextual;
 
+//TODO - uncomment when we are ready to support
+//@Plugin(type = DataType.class)
 /**
  * @author Barry DeZonia
  */
-//TODO - uncomment when we are ready to support
-//@Plugin(type = DataType.class)
 public class DataTypeVariableBitSignedFloat extends AbstractContextual implements
 	DataType<UnboundedFloatType>
 {
@@ -68,6 +68,11 @@ public class DataTypeVariableBitSignedFloat extends AbstractContextual implement
 	@Override
 	public String description() {
 		return "A float data type whose size and precision are unrestricted";
+	}
+
+	@Override
+	public boolean isComplex() {
+		return false;
 	}
 
 	@Override

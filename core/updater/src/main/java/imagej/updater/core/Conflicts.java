@@ -307,7 +307,7 @@ public class Conflicts {
 						conflicts.add(dependencyNotUploaded(file,
 								dependency.filename));
 					} else if (dependencyObject.isObsolete()
-							|| dependencyObject.getAction() == Action.REMOVE) {
+							|| (dependencyObject.getAction() == Action.REMOVE && !dependencyObject.overridesOtherUpdateSite())) {
 						conflicts.add(dependencyRemoved(file,
 								dependency.filename));
 					}

@@ -67,6 +67,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.scijava.log.LogService;
+import org.scijava.util.FileUtils;
 
 /**
  * This is the command-line interface into the ImageJ Updater.
@@ -336,8 +337,22 @@ public class CommandLine {
 						else
 							log.warn("Skipping obsolete, but modified " + file.filename);
 					}
-				} else if (file.getStatus() != Status.INSTALLED && !file.stageForUpdate(files, force))
+				} else if (file.getStatus() != Status.INSTALLED && !file.stageForUpdate(files, force)) {
 					log.warn("Skipping " + file.filename);
+				}
+				// remove obsolete versions in pristine mode
+				if (pristine) {
+					final File correctVersion = files.prefix(file);
+					final File[] versions = FileUtils.getAllVersions(correctVersion.getParentFile(), correctVersion.getName());
+					if (versions != null) {
+						for (final File version : versions) {
+							if (!version.equals(correctVersion)) {
+								log.info("Deleting obsolete version " + version);
+								if (!version.delete()) log.error("Could not delete " + version + "!");
+							}
+						}
+					}
+				}
 			}
 			Installer installer = new Installer(files, progress);
 			installer.start();
@@ -429,7 +444,7 @@ public class CommandLine {
 			return;
 		}
 
-		if (updateSite != null && files.getUpdateSite(updateSite) == null) {
+		if (updateSite != null && files.getUpdateSite(updateSite, false) == null) {
 			throw die("Unknown update site: '" + updateSite + "'");
 		}
 
@@ -456,7 +471,7 @@ public class CommandLine {
 		String updateSite = list.get(0);
 
 		ensureChecksummed();
-		if (files.getUpdateSite(updateSite) == null) {
+		if (files.getUpdateSite(updateSite, false) == null) {
 			throw die("Unknown update site '" + updateSite + "'");
 		}
 
@@ -587,8 +602,8 @@ public class CommandLine {
 	public String chooseUploadSite(final String file) {
 		final List<String> names = new ArrayList<String>();
 		final List<String> options = new ArrayList<String>();
-		for (final String name : files.getUpdateSiteNames()) {
-			final UpdateSite updateSite = files.getUpdateSite(name);
+		for (final String name : files.getUpdateSiteNames(false)) {
+			final UpdateSite updateSite = files.getUpdateSite(name, true);
 			if (updateSite.getUploadDirectory() == null ||
 				updateSite.getUploadDirectory().equals("")) continue;
 			names.add(name);
@@ -606,7 +621,7 @@ public class CommandLine {
 	}
 
 	public String getLongUpdateSiteName(final String name) {
-		final UpdateSite site = files.getUpdateSite(name);
+		final UpdateSite site = files.getUpdateSite(name, true);
 		return name + " (" +
 			(site.getHost() == null || site.equals("") ? "" : site.getHost() + ":") +
 			site.getUploadDirectory() + ")";
@@ -615,10 +630,10 @@ public class CommandLine {
 	public void listUpdateSites(Collection<String> args) {
 		ensureChecksummed();
 		if (args == null || args.size() == 0)
-			args = files.getUpdateSiteNames();
+			args = files.getUpdateSiteNames(true);
 		for (final String name : args) {
-			final UpdateSite site = files.getUpdateSite(name);
-			System.out.print(name + ": " + site.getURL());
+			final UpdateSite site = files.getUpdateSite(name, true);
+			System.out.print(name + (site.isActive() ? "" : " (DISABLED)") + ": " + site.getURL());
 			if (site.getUploadDirectory() == null)
 				System.out.println();
 			else
@@ -634,7 +649,7 @@ public class CommandLine {
 
 	public void addOrEditUploadSite(final String name, final String url, final String sshHost, final String uploadDirectory, boolean add) {
 		ensureChecksummed();
-		UpdateSite site = files.getUpdateSite(name);
+		UpdateSite site = files.getUpdateSite(name, true);
 		if (add) {
 			if (site != null)
 				throw die("Site '" + name + "' was already added!");
@@ -646,6 +661,7 @@ public class CommandLine {
 			site.setURL(url);
 			site.setHost(sshHost);
 			site.setUploadDirectory(uploadDirectory);
+			site.setActive(true);
 		}
 		try {
 			files.write();

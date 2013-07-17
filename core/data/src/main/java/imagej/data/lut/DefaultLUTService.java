@@ -177,7 +177,7 @@ public class DefaultLUTService extends AbstractService implements LUTService {
 		try {
 			bufferedStr = new BufferedInputStream(is);
 			bufferedStr.mark(length);
-			if (lut == null && length > 768) {
+			if (length > 768) {
 				// attempt to read NIH Image LUT
 				lut = nihImageBinaryLUT(bufferedStr);
 				bufferedStr.reset();

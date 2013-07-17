@@ -36,14 +36,23 @@
 package imagej.ui.swing.viewer.text;
 
 import imagej.display.TextDisplay;
+import imagej.platform.PlatformService;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.text.TextDisplayPanel;
 
 import java.awt.Dimension;
 import java.awt.Font;
+import java.io.IOException;
+import java.net.URL;
 
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+
+import org.scijava.Context;
+import org.scijava.app.StatusService;
+import org.scijava.log.LogService;
 
 /**
  * This is the display panel for {@link String}s.
@@ -52,7 +61,7 @@ import javax.swing.JScrollPane;
  * @author Curtis Rueden
  */
 public class SwingTextDisplayPanel extends JScrollPane implements
-	TextDisplayPanel
+	TextDisplayPanel, HyperlinkListener
 {
 
 	private final DisplayWindow window;
@@ -69,6 +78,7 @@ public class SwingTextDisplayPanel extends JScrollPane implements
 		textArea.setEditable(false);
 		final Font font = new Font(Font.MONOSPACED, Font.PLAIN, 12);
 		textArea.setFont(font);
+		textArea.addHyperlinkListener(this);
 		setViewportView(textArea);
 		window.setContent(this);
 	}
@@ -120,6 +130,48 @@ public class SwingTextDisplayPanel extends JScrollPane implements
 		final boolean html = text.startsWith("<html>");
 		textArea.setContentType(html ? "text/html" : "text/plain");
 		textArea.setText(text);
+	}
+
+	// -- HyperlinkListener methods --
+
+	@Override
+	public void hyperlinkUpdate(HyperlinkEvent e) {
+		if (e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
+			hyperlinkStatus(e.getURL());
+		}
+		else if (e.getEventType() == HyperlinkEvent.EventType.EXITED) {
+			hyperlinkStatus(null);
+		}
+		else if (e.getEventType() != HyperlinkEvent.EventType.ACTIVATED) {
+			hyperlinkActivate(e.getURL());
+		}
+	}
+
+	// -- Helper methods --
+
+	/** Called when a hyperlink is activated (e.g., clicked). */
+	private void hyperlinkActivate(final URL url) {
+		final Context context = display.getContext();
+		if (context == null) return;
+		final PlatformService platformService =
+			context.getService(PlatformService.class);
+		if (platformService == null) return;
+		try {
+			platformService.open(url);
+		}
+		catch (final IOException exc) {
+			final LogService log = context.getService(LogService.class);
+			if (log != null) log.error(exc);
+		}
+	}
+
+	/** Called to update status bar with hyperlink URL. */
+	private void hyperlinkStatus(final URL url) {
+		final Context context = display.getContext();
+		if (context == null) return;
+		final StatusService statusService = context.getService(StatusService.class);
+		if (url == null) statusService.clearStatus();
+		else statusService.showStatus(url.toString());
 	}
 
 }

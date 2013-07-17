@@ -269,8 +269,8 @@ public class FileTable extends JTable {
 		final FileObject file)
 	{
 		final List<String> list = new ArrayList<String>();
-		for (final String name : files.getUpdateSiteNames()) {
-			final UpdateSite site = files.getUpdateSite(name);
+		for (final String name : files.getUpdateSiteNames(false)) {
+			final UpdateSite site = files.getUpdateSite(name, true);
 			if (site.isUploadable()) list.add(name);
 		}
 		if (list.size() == 0) {

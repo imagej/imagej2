@@ -108,7 +108,7 @@ public class LUTFinder {
 			String prefix = base.toURI().getPath();
 			for (final URL url : FileUtils.listContents(base)) {
 				String string = url.toURI().getPath();
-				if (!string.startsWith(prefix)) continue;
+				if (string == null || !string.startsWith(prefix)) continue;
 				String key = string.substring(prefix.length());
 				if (lutsPattern.matcher(string).matches()) result.put(key, url);
 			}

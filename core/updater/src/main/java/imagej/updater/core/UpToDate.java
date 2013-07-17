@@ -112,8 +112,8 @@ public class UpToDate {
 				plugins.read();
 			}
 			catch (final FileNotFoundException e) { /* ignore */}
-			for (final String name : plugins.getUpdateSiteNames()) {
-				final UpdateSite updateSite = plugins.getUpdateSite(name);
+			for (final String name : plugins.getUpdateSiteNames(false)) {
+				final UpdateSite updateSite = plugins.getUpdateSite(name, true);
 				final long lastModified =
 					getLastModified(updateSite.getURL() + Util.XML_COMPRESSED);
 				if (lastModified == FOUR_O_SEVEN) return Result.PROXY_NEEDS_AUTHENTICATION;

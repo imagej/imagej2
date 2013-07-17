@@ -50,6 +50,7 @@ import java.util.List;
 
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable;
+import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
@@ -250,7 +251,6 @@ public class DefaultSamplerService extends AbstractService implements
 			final int outputPlaneNumber = planeNum(outputDims, outputPos);
 			output.setColorTable(lut, outputPlaneNumber);
 		}
-
 		// TODO - enable this code
 		// List<Overlay> overlays = overlayService.getOverlays(def.getDisplay());
 		// attachOverlays(def.getDisplay(), outputImage, overlays);
@@ -264,6 +264,15 @@ public class DefaultSamplerService extends AbstractService implements
 
 		// keep display color tables in sync
 		updateDisplayColorTables(def, outputImage);
+
+		// Invalidate the cached channel min and max in the output ImgPlus
+		// This may be set to something other than the obvious values
+		// by the autoscale service, I (leek) think.
+		final ImgPlus<? extends RealType<?>> outputImgPlus = output.getImgPlus();
+		for (int channel=0; channel < outputImgPlus.getCompositeChannelCount(); channel++) {
+			outputImgPlus.setChannelMinimum(channel, Double.NaN);
+			outputImgPlus.setChannelMaximum(channel, Double.NaN);
+		}
 
 		// set the display range from input data's view min/max settings
 		setDisplayRanges(def, outputImage);

@@ -144,7 +144,9 @@ public class UpdateSite implements Cloneable, Comparable<UpdateSite> {
 
 	@Override
 	public Object clone() {
-		return new UpdateSite(name, url, host, uploadDirectory, description, maintainer, timestamp);
+		final UpdateSite clone = new UpdateSite(name, url, host, uploadDirectory, description, maintainer, timestamp);
+		clone.setActive(isActive());
+		return clone;
 	}
 
 	public boolean isLastModified(final long lastModified) {

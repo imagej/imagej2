@@ -40,7 +40,6 @@ import java.math.RoundingMode;
 
 import net.imglib2.type.numeric.ComplexType;
 
-
 /**
  * A complex number that stores values in BigDecimal (arbitrary) precision. This
  * class is useful for supporting DataType translations with minimal data loss.

@@ -418,7 +418,7 @@ public class FileObject {
 	}
 
 	public void setAction(final FilesCollection files, final Action action) {
-		if (!status.isValid(action)) throw new Error(
+		if (!status.isValid(action) && !(action.equals(Action.REMOVE) && overridesOtherUpdateSite())) throw new Error(
 			"Invalid action requested for file " + filename + "(" + action + ", " +
 				status + ")");
 		if (action == Action.UPLOAD) {
@@ -488,7 +488,7 @@ public class FileObject {
 		for (final Map.Entry<String, FileObject> entry : overriddenUpdateSites.entrySet()) {
 			final FileObject file = entry.getValue();
 			if (file.isObsolete()) continue;
-			final UpdateSite site = files.getUpdateSite(entry.getKey());
+			final UpdateSite site = files.getUpdateSite(entry.getKey(), true);
 			if (overridingRank < site.getRank()) {
 				overriding = file;
 				overridingRank = site.getRank();
@@ -621,7 +621,7 @@ public class FileObject {
 		}
 		if (updateSite == null) return files.hasUploadableSites();
 		final UpdateSite updateSite =
-			files.getUpdateSite(this.updateSite);
+			files.getUpdateSite(this.updateSite, false);
 		return updateSite != null && updateSite.isUploadable();
 	}
 
