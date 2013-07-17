@@ -141,7 +141,8 @@ public class InterfaceBuilder {
 	private byte[] method(final String name, final String descriptor) throws UnsupportedEncodingException {
 		return concat((short)(Modifier.PUBLIC | Modifier.ABSTRACT),
 			string(name),
-			string(descriptor));
+			string(descriptor),
+			(short)0 /* attribute count */);
 	}
 
 	private byte[] method(final Method method) throws UnsupportedEncodingException {
