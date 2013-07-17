@@ -40,7 +40,6 @@ import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.UpdateSite;
 import imagej.updater.core.UploaderService;
-import imagej.updater.util.AvailableSites;
 import imagej.updater.util.Util;
 import imagej.util.MediaWikiClient;
 
@@ -106,7 +105,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 		updaterFrame = owner;
 		this.files = files;
 
-		sites = AvailableSites.initializeSites(files);
+		sites = new ArrayList<UpdateSite>(files.getUpdateSites(true));
 
 		final Container contentPane = getContentPane();
 		contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.PAGE_AXIS));

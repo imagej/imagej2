@@ -43,6 +43,7 @@ import imagej.updater.core.Installer;
 import imagej.updater.core.UpdaterUI;
 import imagej.updater.core.UploaderService;
 import imagej.updater.gui.ViewOptions.Option;
+import imagej.updater.util.AvailableSites;
 import imagej.updater.util.Progress;
 import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.UpdaterUserInterface;
@@ -101,6 +102,7 @@ public class ImageJUpdater implements UpdaterUI {
 
 		final File imagejRoot = AppUtils.getBaseDirectory();
 		final FilesCollection files = new FilesCollection(imagejRoot);
+		AvailableSites.initializeAndAddSites(files);
 
 		UpdaterUserInterface.set(new SwingUserInterface(log, statusService));
 
