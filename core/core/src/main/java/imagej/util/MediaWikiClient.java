@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.updater.gui;
+package imagej.util;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -62,11 +62,19 @@ import org.xml.sax.SAXException;
  * 
  * @author Johannes Schindelin
  */
-class MediaWikiClient {
+public class MediaWikiClient {
+
+	// TODO: Replace Fiji-specific refs with wiki.imagej.net.
+	private static final String FIJI_WIKI_URL = "http://fiji.sc/";
+
 	private final String baseURL;
 	private final Set<String> postActions = new HashSet<String>(Arrays.asList("login", "changeuploadpassword"));
 	private String currentUser;
 	private Map<String, String> cookies = new LinkedHashMap<String, String>();
+
+	public MediaWikiClient() {
+		this(FIJI_WIKI_URL);
+	}
 
 	public MediaWikiClient(final String baseURL) {
 		if (baseURL.endsWith("/index.php")) this.baseURL = baseURL.substring(0, baseURL.length() - 9);

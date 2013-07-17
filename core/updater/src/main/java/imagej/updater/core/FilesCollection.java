@@ -201,6 +201,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		return getUpdateSiteNames(false);
 	}
 
+	/** Gets the names of known update sites. */
 	public Collection<String> getUpdateSiteNames(final boolean evenDisabled) {
 		if (evenDisabled) return updateSites.keySet();
 		final List<String> result = new ArrayList<String>();
@@ -208,6 +209,16 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 		while (it.hasNext()) {
 			java.util.Map.Entry<String, UpdateSite> entry = it.next();
 			if (entry.getValue().isActive()) result.add(entry.getKey());
+		}
+		return result;
+	}
+
+	/** Gets the list of known update sites. */
+	public Collection<UpdateSite> getUpdateSites(final boolean evenDisabled) {
+		if (evenDisabled) return updateSites.values();
+		final List<UpdateSite> result = new ArrayList<UpdateSite>();
+		for (final UpdateSite site : updateSites.values()) {
+			if (site.isActive()) result.add(site);
 		}
 		return result;
 	}
