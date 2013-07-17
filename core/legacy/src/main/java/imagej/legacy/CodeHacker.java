@@ -925,6 +925,21 @@ public class CodeHacker {
 	}
 
 	/**
+	 * Determines whether the specified class has the specified method.
+	 * 
+	 * @param fullName the class name
+	 * @param methodSig the signature of the method
+	 * @return whether the class has the specified method
+	 */
+	public boolean hasMethod(final String fullClass, final String methodSig) {
+		try {
+			return getBehavior(fullClass, methodSig) != null;
+		} catch (final Throwable e) {
+			return false;
+		}
+	}
+
+	/**
 	 * Determines whether the specified class is known to Javassist.
 	 * 
 	 * @param fullClass
