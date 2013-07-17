@@ -37,11 +37,11 @@ package imagej.data.types;
 
 import org.scijava.AbstractContextual;
 
+//TODO - uncomment when we are ready to support
+//@Plugin(type = DataType.class)
 /**
  * @author Barry DeZonia
  */
-//TODO - uncomment when we are ready to support
-//@Plugin(type = DataType.class)
 public class DataTypeVariableBitSignedComplexFloat extends AbstractContextual
 	implements DataType<BigComplex>
 {
