@@ -626,8 +626,14 @@ public class LegacyExtensions {
 	 *            a directory where additional plugins can be found
 	 */
 	private static void addExtraPlugins(final CodeHacker hacker) {
-		hacker.insertAtTopOfMethod("ij.io.PluginClassLoader", "void init(java.lang.String path)",
-				extraPluginJarsHandler("addJAR(file);"));
+		for (final String methodName : new String[] { "addJAR", "addJar" }) {
+			if (hacker.hasMethod("ij.io.PluginClassLoader", "private void "
+					+ methodName + "(java.io.File file)")) {
+				hacker.insertAtTopOfMethod("ij.io.PluginClassLoader",
+						"void init(java.lang.String path)",
+						extraPluginJarsHandler(methodName + "(file);"));
+			}
+		}
 		hacker.insertAtBottomOfMethod("ij.Menus",
 				"public static synchronized java.lang.String[] getPlugins()",
 				extraPluginJarsHandler("if (jarFiles == null) jarFiles = new java.util.Vector();" +
