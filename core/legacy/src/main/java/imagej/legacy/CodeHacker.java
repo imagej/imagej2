@@ -394,7 +394,7 @@ public class CodeHacker {
 						try {
 							final CtClass[] parameterTypes = expr
 									.getConstructor().getParameterTypes();
-							if (parameterTypes[parameterIndex] != CodeHacker.this
+							if (parameterTypes[parameterIndex - 1] != CodeHacker.this
 									.getClass("java.lang.String")) {
 								throw new IllegalArgumentException("Parameter "
 										+ parameterIndex + " of "
