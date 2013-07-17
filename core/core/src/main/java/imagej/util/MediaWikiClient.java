@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.updater.gui;
+package imagej.util;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -62,7 +62,7 @@ import org.xml.sax.SAXException;
  * 
  * @author Johannes Schindelin
  */
-class MediaWikiClient {
+public class MediaWikiClient {
 	private final String baseURL;
 	private final Set<String> postActions = new HashSet<String>(Arrays.asList("login", "changeuploadpassword"));
 	private String currentUser;

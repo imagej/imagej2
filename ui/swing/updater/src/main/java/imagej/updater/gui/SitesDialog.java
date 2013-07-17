@@ -41,6 +41,7 @@ import imagej.updater.core.FilesCollection;
 import imagej.updater.core.UpdateSite;
 import imagej.updater.core.UploaderService;
 import imagej.updater.util.Util;
+import imagej.util.MediaWikiClient;
 
 import java.awt.Component;
 import java.awt.Container;
