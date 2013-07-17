@@ -151,23 +151,22 @@ public class SitesDialog extends JDialog implements ActionListener {
 								activateUpdateSite(site);
 								if (!wasActive && site.isActive()) tableModel.rowChanged(row);
 							} else {
-								if (site == null || site.getHost() == null || site.getHost().equals("")) {
+								if (site.getHost() == null || site.getHost().equals("")) {
 									error("URL does not refer to an update site: " + value + "\n"
 										+ "If you want to initialize that site, you need to provide upload information first.");
 									return false;
-								} else {
-									if (!showYesNoQuestion("Initialize upload site?",
-											"It appears that the URL\n"
-											+ "\t" + value + "\n"
-											+ "is not (yet) valid. "
-											+ "Do you want to initialize it (host: "
-											+ site.getHost() + "; directory: "
-											+ site.getUploadDirectory() + ")?"))
-										return false;
-									if (!initializeUpdateSite((String)getValueAt(row, 0),
-											value, site.getHost(), site.getUploadDirectory()))
-										return false;
 								}
+								if (!showYesNoQuestion("Initialize upload site?",
+										"It appears that the URL\n"
+										+ "\t" + value + "\n"
+										+ "is not (yet) valid. "
+										+ "Do you want to initialize it (host: "
+										+ site.getHost() + "; directory: "
+										+ site.getUploadDirectory() + ")?"))
+									return false;
+								if (!initializeUpdateSite((String)getValueAt(row, 0),
+										value, site.getHost(), site.getUploadDirectory()))
+									return false;
 							}
 						} else if (column == 3) {
 							final UpdateSite site = getUpdateSite(row);
@@ -330,7 +329,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 
 	private void deactivateUpdateSite(final UpdateSite site) {
 		final List<FileObject> list = new ArrayList<FileObject>();
-		final List<FileObject> remove = new ArrayList<FileObject>();
+		final List<FileObject> toRemove = new ArrayList<FileObject>();
 		int count = 0;
 		for (final FileObject file : files.forUpdateSite(site.getName()))
 			switch (file.getStatus()) {
@@ -338,7 +337,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 				case NOT_INSTALLED:
 				case OBSOLETE_UNINSTALLED:
 					count--;
-					remove.add(file);
+					toRemove.add(file);
 					break;
 				default:
 					count++;
@@ -356,7 +355,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 			// TODO: unshadow
 			file.setStatus(FileObject.Status.LOCAL_ONLY);
 		}
-		for (final FileObject file : remove) {
+		for (final FileObject file : toRemove) {
 			files.remove(file);
 		}
 		site.setActive(false);
@@ -612,13 +611,13 @@ public class SitesDialog extends JDialog implements ActionListener {
 				dispose();
 				return;
 			} else if (e.getSource() == okay) {
-				final String name = userField.getText();
-				if ("".equals(name)) {
+				final String newName = userField.getText();
+				if ("".equals(newName)) {
 					error("Please provide a Fiji Wiki account name!");
 					return;
 				}
-				if (validURL(PERSONAL_SITES_URL + name)) {
-					this.name = name;
+				if (validURL(PERSONAL_SITES_URL + newName)) {
+					name = newName;
 					dispose();
 					return;
 				}
@@ -626,14 +625,14 @@ public class SitesDialog extends JDialog implements ActionListener {
 				// create a Fiji Wiki user if needed
 				final MediaWikiClient wiki = new MediaWikiClient();
 				try {
-					if (!wiki.userExists(name)) {
+					if (!wiki.userExists(newName)) {
 						if (realNameLabel.isEnabled()) {
 							final String realName = realNameField.getText();
 							final String email = emailField.getText();
 							if ("".equals(realName) || "".equals(email)) {
 								error("<html><p width=400>Please provide your name and email address to register an account on the Fiji Wiki!</p></html>");
 							} else {
-								if (wiki.createUser(name, realName, email, "Wants a personal site")) {
+								if (wiki.createUser(newName, realName, email, "Wants a personal site")) {
 									setWikiAccountFieldsEnabled(false);
 									setChangePasswordEnabled(true);
 									info("<html><p width=400>An email with the activation code was sent. " +
@@ -651,7 +650,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 
 					// initialize the personal update site
 					final String password = new String(passwordField.getPassword());
-					if (!wiki.login(name, password)) {
+					if (!wiki.login(newName, password)) {
 						error("Could not log in (incorrect password?)");
 						return;
 					}
@@ -660,7 +659,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 						return;
 					}
 					wiki.logout();
-					this.name = name;
+					this.name = newName;
 					dispose();
 				} catch (IOException e2) {
 					updaterFrame.log.error(e2);
