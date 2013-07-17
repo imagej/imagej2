@@ -122,7 +122,7 @@ public class InterfaceBuilder {
 	}
 
 	private short classRef(final String name) throws UnsupportedEncodingException {
-		return classRef(string(name));
+		return classRef(string(name.replace('.', '/')));
 	}
 
 	private static String typeDescriptor(final Class<?> type) {
@@ -233,7 +233,7 @@ public class InterfaceBuilder {
 		NoSuchMethodException, IllegalArgumentException, IllegalAccessException,
 		InvocationTargetException
 	{
-		final String name = "imagej/Cancelable";
+		final String name = "imagej/Dancelable";
 		final Class<?> i = imagej.Cancelable.class;
 		final InterfaceBuilder builder = new InterfaceBuilder(name, i.getDeclaredMethods());
 		final ClassLoader loader = builder.getClass().getClassLoader();
@@ -256,6 +256,11 @@ public class InterfaceBuilder {
 00000090  00                                                |.|
 00000091
 		 */
+		try {
+java.io.FileOutputStream out = new java.io.FileOutputStream("/tmp/imagej/Dancelable.class");
+out.write(byteCode, 0, byteCode.length);
+out.close();
+		} catch (java.io.IOException e) { e.printStackTrace(); }
 		define.invoke(loader, name.replace('/', '.'), byteCode, 0, byteCode.length);
 	}
 
