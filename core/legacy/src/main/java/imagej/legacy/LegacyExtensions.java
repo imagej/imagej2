@@ -273,7 +273,7 @@ public class LegacyExtensions {
 	 * @param needle the text to find
 	 * @return whether the stack trace contains the text
 	 */
-	private static boolean stackTraceContains(String needle) {
+	public static boolean stackTraceContains(String needle) {
 		final StringWriter writer = new StringWriter();
 		final PrintWriter out = new PrintWriter(writer);
 		new Exception().printStackTrace(out);
@@ -415,13 +415,8 @@ public class LegacyExtensions {
 		addExtraPlugins(hacker);
 
 		// make sure that the GenericDialog is disposed in macro mode
-		try {
+		if (hacker.hasMethod("ij.gui.GenericDialog", "public void showDialog()")) {
 			hacker.insertAtTopOfMethod("ij.gui.GenericDialog", "public void showDialog()", "if (macro) dispose();");
-		} catch (IllegalArgumentException e) {
-			// ignore if the headless patcher renamed the method away
-			if (e.getCause() == null || !e.getCause().getClass().getName().endsWith("NotFoundException")) {
-				throw e;
-			}
 		}
 
 		// make sure NonBlockingGenericDialog does not wait in macro mode
@@ -595,7 +590,9 @@ public class LegacyExtensions {
 		hacker.replaceParameterInCall("ij.ImageJ", "public <init>(java.applet.Applet applet, int mode)", "super", 1, appName);
 		hacker.replaceParameterInNew("ij.ImageJ", "public void run()", "ij.gui.GenericDialog", 1, appName);
 		hacker.replaceParameterInCall("ij.ImageJ", "public void run()", "addMessage", 1, appName);
-		hacker.replaceParameterInNew("ij.plugin.CommandFinder", "public void export()", "ij.text.TextWindow", 1, appName);
+		if (hacker.hasMethod("ij.plugin.CommandFinder", "public void export()")) {
+			hacker.replaceParameterInNew("ij.plugin.CommandFinder", "public void export()", "ij.text.TextWindow", 1, appName);
+		}
 		hacker.replaceParameterInCall("ij.plugin.Hotkeys", "public void removeHotkey()", "addMessage", 1, appName);
 		hacker.replaceParameterInCall("ij.plugin.Hotkeys", "public void removeHotkey()", "showStatus", 1, appName);
 		hacker.replaceParameterInCall("ij.plugin.Options", "public void appearance()", "showMessage", 2, appName);
@@ -629,8 +626,14 @@ public class LegacyExtensions {
 	 *            a directory where additional plugins can be found
 	 */
 	private static void addExtraPlugins(final CodeHacker hacker) {
-		hacker.insertAtTopOfMethod("ij.io.PluginClassLoader", "void init(java.lang.String path)",
-				extraPluginJarsHandler("addJAR(file);"));
+		for (final String methodName : new String[] { "addJAR", "addJar" }) {
+			if (hacker.hasMethod("ij.io.PluginClassLoader", "private void "
+					+ methodName + "(java.io.File file)")) {
+				hacker.insertAtTopOfMethod("ij.io.PluginClassLoader",
+						"void init(java.lang.String path)",
+						extraPluginJarsHandler(methodName + "(file);"));
+			}
+		}
 		hacker.insertAtBottomOfMethod("ij.Menus",
 				"public static synchronized java.lang.String[] getPlugins()",
 				extraPluginJarsHandler("if (jarFiles == null) jarFiles = new java.util.Vector();" +
