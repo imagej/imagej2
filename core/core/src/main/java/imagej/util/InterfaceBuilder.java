@@ -40,7 +40,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A helper to make an interface from an array of functions.
@@ -87,6 +89,7 @@ public class InterfaceBuilder {
 
 	private class ConstantPool {
 		final List<byte[]> elements = new ArrayList<byte[]>();
+		final Map<byte[], Short> map = new HashMap<byte[],Short>();
 
 		private int length() {
 			int result = 2;
@@ -100,9 +103,13 @@ public class InterfaceBuilder {
 	}
 
 	private short constant(final byte[] element) {
-		final short result = (short) constantPool.elements.size();
-		constantPool.elements.add(element);
-		return result;
+		Short s = constantPool.map.get(element);
+		if (s == null) {
+			constantPool.elements.add(element);
+			s = Short.valueOf((short) constantPool.elements.size());
+			constantPool.map.put(element, s);
+		}
+		return s.shortValue();
 	}
 
 	private short string(final String string) throws UnsupportedEncodingException {
@@ -226,7 +233,7 @@ public class InterfaceBuilder {
 		NoSuchMethodException, IllegalArgumentException, IllegalAccessException,
 		InvocationTargetException
 	{
-		final String name = "imagej.$ancelable";
+		final String name = "imagej/Cancelable";
 		final Class<?> i = imagej.Cancelable.class;
 		final InterfaceBuilder builder = new InterfaceBuilder(name, i.getDeclaredMethods());
 		final ClassLoader loader = builder.getClass().getClassLoader();
@@ -249,7 +256,7 @@ public class InterfaceBuilder {
 00000090  00                                                |.|
 00000091
 		 */
-		define.invoke(loader, name, byteCode, 0, byteCode.length);
+		define.invoke(loader, name.replace('/', '.'), byteCode, 0, byteCode.length);
 	}
 
 }
