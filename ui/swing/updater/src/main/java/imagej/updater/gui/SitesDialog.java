@@ -727,7 +727,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 				}
 
 				// create a Fiji Wiki user if needed
-				final MediaWikiClient wiki = new MediaWikiClient(FIJI_WIKI_URL);
+				final MediaWikiClient wiki = new MediaWikiClient();
 				try {
 					if (!wiki.userExists(name)) {
 						if (realNameLabel.isEnabled()) {
