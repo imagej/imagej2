@@ -273,7 +273,7 @@ public class LegacyExtensions {
 	 * @param needle the text to find
 	 * @return whether the stack trace contains the text
 	 */
-	private static boolean stackTraceContains(String needle) {
+	public static boolean stackTraceContains(String needle) {
 		final StringWriter writer = new StringWriter();
 		final PrintWriter out = new PrintWriter(writer);
 		new Exception().printStackTrace(out);
