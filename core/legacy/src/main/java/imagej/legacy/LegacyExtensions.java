@@ -590,7 +590,9 @@ public class LegacyExtensions {
 		hacker.replaceParameterInCall("ij.ImageJ", "public <init>(java.applet.Applet applet, int mode)", "super", 1, appName);
 		hacker.replaceParameterInNew("ij.ImageJ", "public void run()", "ij.gui.GenericDialog", 1, appName);
 		hacker.replaceParameterInCall("ij.ImageJ", "public void run()", "addMessage", 1, appName);
-		hacker.replaceParameterInNew("ij.plugin.CommandFinder", "public void export()", "ij.text.TextWindow", 1, appName);
+		if (hacker.hasMethod("ij.plugin.CommandFinder", "public void export()")) {
+			hacker.replaceParameterInNew("ij.plugin.CommandFinder", "public void export()", "ij.text.TextWindow", 1, appName);
+		}
 		hacker.replaceParameterInCall("ij.plugin.Hotkeys", "public void removeHotkey()", "addMessage", 1, appName);
 		hacker.replaceParameterInCall("ij.plugin.Hotkeys", "public void removeHotkey()", "showStatus", 1, appName);
 		hacker.replaceParameterInCall("ij.plugin.Options", "public void appearance()", "showMessage", 2, appName);
