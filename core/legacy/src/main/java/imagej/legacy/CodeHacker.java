@@ -106,6 +106,7 @@ public class CodeHacker {
 	private final ClassPool pool;
 	protected final ClassLoader classLoader;
 	private final Set<CtClass> handledClasses = new LinkedHashSet<CtClass>();
+	private boolean onlyLogExceptions;
 
 	public CodeHacker(final ClassLoader classLoader, final ClassPool classPool) {
 		this.classLoader = classLoader;
@@ -120,10 +121,17 @@ public class CodeHacker {
 				"public static imagej.legacy.LegacyService getLegacyService()",
 				"return _legacyService;");
 		}
+
+		onlyLogExceptions = !LegacyExtensions.stackTraceContains("junit.");
 	}
 
 	public CodeHacker(ClassLoader classLoader) {
 		this(classLoader, null);
+	}
+
+	private void maybeThrow(final IllegalArgumentException e) {
+		if (onlyLogExceptions) e.printStackTrace();
+		else throw e;
 	}
 
 	/**
