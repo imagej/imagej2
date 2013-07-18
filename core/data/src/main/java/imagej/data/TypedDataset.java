@@ -63,7 +63,7 @@ import org.scijava.Context;
 // hierarchy (i.e. FloatingType<T> rather than FloatingType<T extends
 // ComplexType<T>>). Then these casts only expose FloatingType's methods. So
 // we might be shut out of using basic things like add(), mul(), etc. In other
-// words we can return types that implement Numeric<T> & Floating<T> unless we
+// words we can't return types that implement Numeric<T> & Floating<T> unless we
 // make specific interfaces containing both and add another routine like
 // numericFloat() that checks both types internally. So we have a workaround.
 // But I also think this argues for FloatingType to be derived within the
