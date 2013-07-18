@@ -1,5 +1,4 @@
 /*
- * #%L
  * ImageJ software for multidimensional image processing and analysis.
  * %%
  * Copyright (C) 2009 - 2013 Board of Regents of the University of
@@ -279,6 +278,16 @@ public class HistogramPlot<T extends RealType<T>> extends InteractiveCommand
 		return String.format("%12s:%10.2f", label, num);
 	}
 
+	/*
+	 * 7-18-2013 BDZ
+	 * This code left over from when this plugin was a Swing command. In Swing the
+	 * title would update on every click of the channel button. When converted to
+	 * generic command this ability was lost. SwingInputHarvester does not make a
+	 * link between the Module and the SwingDialog such that the Module could
+	 * reset the title of the dialog when things change. This is a thing to think
+	 * about implementing. Right now the title gets set once and never updates.
+	 * For now I am disabling this code so that it is not misleading.
+	 */
 	private void setTitle(int histNum) {
 		String title;
 		if (histNum == histograms.length - 1) {
@@ -288,7 +297,9 @@ public class HistogramPlot<T extends RealType<T>> extends InteractiveCommand
 			title = "Channel " + histNum + " histogram of ";
 		}
 		title += display.getName();
-		getInfo().setLabel(title); // TODO - not working???
+		/* Disabled
+		getInfo().setLabel(title);
+		*/
 	}
 
 	private void calcBinInfo() {
