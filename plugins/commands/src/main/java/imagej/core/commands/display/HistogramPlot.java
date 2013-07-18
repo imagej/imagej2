@@ -104,25 +104,25 @@ public class HistogramPlot<T extends RealType<T>> extends InteractiveCommand
 	@Parameter(label = "Histogram", initializer = "initBundle")
 	private HistogramBundle bundle;
 
-	@Parameter(visibility = ItemVisibility.MESSAGE)
+	@Parameter(visibility = ItemVisibility.MESSAGE, persist = false)
 	private String pixelsStr;
 
-	@Parameter(visibility = ItemVisibility.MESSAGE)
+	@Parameter(visibility = ItemVisibility.MESSAGE, persist = false)
 	private String minStr;
 
-	@Parameter(visibility = ItemVisibility.MESSAGE)
+	@Parameter(visibility = ItemVisibility.MESSAGE, persist = false)
 	private String maxStr;
 
-	@Parameter(visibility = ItemVisibility.MESSAGE)
+	@Parameter(visibility = ItemVisibility.MESSAGE, persist = false)
 	private String meanStr;
 
-	@Parameter(visibility = ItemVisibility.MESSAGE)
+	@Parameter(visibility = ItemVisibility.MESSAGE, persist = false)
 	private String stdDevStr;
 
-	@Parameter(visibility = ItemVisibility.MESSAGE)
+	@Parameter(visibility = ItemVisibility.MESSAGE, persist = false)
 	private String binsStr;
 
-	@Parameter(visibility = ItemVisibility.MESSAGE)
+	@Parameter(visibility = ItemVisibility.MESSAGE, persist = false)
 	private String binWidthStr;
 
 	@Parameter(label = "Static", callback = "liveClicked")
