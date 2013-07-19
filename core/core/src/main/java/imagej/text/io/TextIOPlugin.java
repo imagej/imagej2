@@ -63,6 +63,7 @@ public class TextIOPlugin extends AbstractIOPlugin<String> {
 	@Override
 	public boolean supportsOpen(final String source) {
 		final TextService textService = getContext().getService(TextService.class);
+		if (textService == null) return false; // no service for opening text files
 		return textService.supports(new File(source));
 	}
 
@@ -70,6 +71,7 @@ public class TextIOPlugin extends AbstractIOPlugin<String> {
 	public String open(final String source) throws IOException {
 		if (source == null) return null;
 		final TextService textService = getContext().getService(TextService.class);
+		if (textService == null) return null; // no service for opening text files
 		return textService.asHTML(new File(source));
 	}
 
