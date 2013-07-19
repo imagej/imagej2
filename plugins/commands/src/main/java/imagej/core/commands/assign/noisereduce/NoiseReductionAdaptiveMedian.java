@@ -86,19 +86,19 @@ public class NoiseReductionAdaptiveMedian<U extends RealType<U>> extends
 	private Dataset input;
 
 	@Parameter(label = "Neighborhood: negative width", min = "0")
-	private final int windowNegWidthSpan = 1;
+	private int windowNegWidthSpan = 1;
 
 	@Parameter(label = "Neighborhood: negative height", min = "0")
-	private final int windowNegHeightSpan = 1;
+	private int windowNegHeightSpan = 1;
 
 	@Parameter(label = "Neighborhood: positive width", min = "0")
-	private final int windowPosWidthSpan = 1;
+	private int windowPosWidthSpan = 1;
 
 	@Parameter(label = "Neighborhood: positive height", min = "0")
-	private final int windowPosHeightSpan = 1;
+	private int windowPosHeightSpan = 1;
 
 	@Parameter(label = "Number of expansions", min = "1")
-	private final int windowExpansions = 1;
+	private int windowExpansions = 1;
 
 	@Parameter(type = ItemIO.OUTPUT)
 	private Dataset output;
