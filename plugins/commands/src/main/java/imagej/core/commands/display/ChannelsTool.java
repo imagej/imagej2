@@ -55,7 +55,7 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Color"),
-	@Menu(label = "Channels Tool...", weight = -5) },
+	@Menu(label = "Channels Tool...", accelerator = "shift ^Z", weight = -5) },
 	iconPath = "/icons/commands/color_wheel.png", headless = true)
 public class ChannelsTool extends ContextCommand implements Previewable {
 
