@@ -7,6 +7,9 @@ import java.io.FileOutputStream;
 
 import org.scijava.util.FileUtils;
 
+// Suppress ugly dock icon on MacOSX
+System.setProperty("apple.awt.UIElement", "true");
+
 // for Sezpoz
 Thread.currentThread().setContextClassLoader(UpdaterTestUtils.class.getClassLoader());
 
