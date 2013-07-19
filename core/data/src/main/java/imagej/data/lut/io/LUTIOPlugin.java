@@ -63,17 +63,22 @@ public class LUTIOPlugin extends AbstractIOPlugin<ColorTable> {
 
 	@Override
 	public boolean supportsOpen(final String source) {
-		final LUTService lutService = getContext().getService(LUTService.class);
+		final LUTService lutService = lutService();
 		if (lutService == null) return false; // no service for opening LUTs
 		return lutService.isLUT(new File(source));
 	}
 
 	@Override
 	public ColorTable open(final String source) throws IOException {
-		if (source == null) return null;
-		final LUTService lutService = getContext().getService(LUTService.class);
+		final LUTService lutService = lutService();
 		if (lutService == null) return null; // no service for opening LUTs
 		return lutService.loadLUT(new File(source));
+	}
+
+	// -- Helper methods --
+
+	private LUTService lutService() {
+		return getContext().getService(LUTService.class);
 	}
 
 }

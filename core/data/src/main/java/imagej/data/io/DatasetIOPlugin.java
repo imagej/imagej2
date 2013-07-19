@@ -62,24 +62,32 @@ public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 
 	@Override
 	public boolean supportsOpen(final String source) {
-		return datasetService().canOpen(source);
+		final DatasetService datasetService = datasetService();
+		if (datasetService == null) return false; // no service for opening datasets
+		return datasetService.canOpen(source);
 	}
 
 	@Override
 	public boolean supportsSave(final String destination) {
-		return datasetService().canSave(destination);
+		final DatasetService datasetService = datasetService();
+		if (datasetService == null) return false; // no service for saving datasets
+		return datasetService.canSave(destination);
 	}
 
 	@Override
 	public Dataset open(final String source) throws IOException {
-		return datasetService().open(source);
+		final DatasetService datasetService = datasetService();
+		if (datasetService == null) return null; // no service for opening datasets
+		return datasetService.open(source);
 	}
 
 	@Override
 	public void save(final Dataset dataset, final String destination)
 		throws IOException
 	{
-		datasetService().save(dataset, destination);
+		final DatasetService datasetService = datasetService();
+		if (datasetService == null) return; // no service for saving datasets
+		datasetService.save(dataset, destination);
 	}
 
 	// -- Helper methods --
