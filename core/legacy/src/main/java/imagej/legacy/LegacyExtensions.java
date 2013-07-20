@@ -517,6 +517,7 @@ public class LegacyExtensions {
 		addEditorExtensionPoints(hacker);
 		insertAppNameHooks(hacker);
 		insertRefreshMenusHook(hacker);
+		handleMacAdapter(hacker);
 	}
 
 	/**
@@ -654,6 +655,18 @@ public class LegacyExtensions {
 				"\tjava.io.File file = (java.io.File)iter.next();\n" +
 				code + "\n" +
 				"}\n";
+	}
+
+	private static void handleMacAdapter(final CodeHacker hacker) {
+		if (hacker.existsClass("com.apple.eawt.ApplicationListener")) {
+			for (final String suffix : new String[] {
+					"About", "OpenFile", "Preferences", "Quit", "OpenApplication", "ReOpenApplication", "PrintFile"
+			}) {
+				hacker.insertAtTopOfMethod("MacAdapter",
+					"public void handle" + suffix + "(com.apple.eawt.ApplicationEvent event)",
+					"if (!$isLegacyMode()) return;");
+			}
+		}
 	}
 
 }

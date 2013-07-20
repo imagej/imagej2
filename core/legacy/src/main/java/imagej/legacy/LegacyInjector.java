@@ -76,15 +76,6 @@ public class LegacyInjector {
 			+ "if (!$isLegacyMode()) return;");
 
 		// override behavior of ij.IJ
-		if (hacker.existsClass("com.apple.eawt.ApplicationListener")) {
-			for (final String suffix : new String[] {
-					"About", "OpenFile", "Preferences", "Quit", "OpenApplication", "ReOpenApplication", "PrintFile"
-			}) {
-				hacker.insertAtTopOfMethod("MacAdapter",
-					"public void handle" + suffix + "(com.apple.eawt.ApplicationEvent event)",
-					"if (!$isLegacyMode()) return;");
-			}
-		}
 		hacker.insertAtBottomOfMethod("ij.IJ",
 			"public static void showProgress(double progress)");
 		hacker.insertAtBottomOfMethod("ij.IJ",
