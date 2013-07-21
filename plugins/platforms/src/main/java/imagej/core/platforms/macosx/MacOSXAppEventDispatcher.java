@@ -40,6 +40,7 @@ import com.apple.eawt.AppEvent.AboutEvent;
 import com.apple.eawt.AppEvent.AppForegroundEvent;
 import com.apple.eawt.AppEvent.AppHiddenEvent;
 import com.apple.eawt.AppEvent.AppReOpenedEvent;
+import com.apple.eawt.AppEvent.OpenFilesEvent;
 import com.apple.eawt.AppEvent.PreferencesEvent;
 import com.apple.eawt.AppEvent.PrintFilesEvent;
 import com.apple.eawt.AppEvent.QuitEvent;
@@ -50,6 +51,7 @@ import com.apple.eawt.AppForegroundListener;
 import com.apple.eawt.AppHiddenListener;
 import com.apple.eawt.AppReOpenedListener;
 import com.apple.eawt.Application;
+import com.apple.eawt.OpenFilesHandler;
 import com.apple.eawt.PreferencesHandler;
 import com.apple.eawt.PrintFilesHandler;
 import com.apple.eawt.QuitHandler;
@@ -60,6 +62,7 @@ import com.apple.eawt.UserSessionListener;
 
 import imagej.platform.event.AppAboutEvent;
 import imagej.platform.event.AppFocusEvent;
+import imagej.platform.event.AppOpenFilesEvent;
 import imagej.platform.event.AppPreferencesEvent;
 import imagej.platform.event.AppPrintEvent;
 import imagej.platform.event.AppQuitEvent;
@@ -79,7 +82,7 @@ import org.scijava.event.EventService;
 public class MacOSXAppEventDispatcher implements AboutHandler,
 	AppForegroundListener, AppHiddenListener, AppReOpenedListener,
 	PreferencesHandler, PrintFilesHandler, QuitHandler, ScreenSleepListener,
-	SystemSleepListener, UserSessionListener
+	SystemSleepListener, UserSessionListener, OpenFilesHandler
 {
 
 	private final EventService eventService;
@@ -97,6 +100,7 @@ public class MacOSXAppEventDispatcher implements AboutHandler,
 		app.setPrintFileHandler(this);
 		app.setQuitHandler(this);
 		app.addAppEventListener(this);
+		app.setOpenFileHandler(this);
 	}
 
 	// -- AboutHandler methods --
@@ -193,6 +197,13 @@ public class MacOSXAppEventDispatcher implements AboutHandler,
 	@Override
 	public void appReOpened(final AppReOpenedEvent e) {
 		eventService.publish(new AppReOpenEvent());
+	}
+
+	// -- OpenFilesHandler methods --
+
+	@Override
+	public void openFiles(final OpenFilesEvent event) {
+		eventService.publish(new AppOpenFilesEvent(event.getFiles()));
 	}
 
 }
