@@ -662,6 +662,9 @@ public class LegacyExtensions {
 		// to load it if we patched the class.
 		if (!hacker.existsClass("com.apple.eawt.ApplicationListener")) return;
 
+		hacker.insertAtTopOfMethod("MacAdapter", "public void run(java.lang.String arg)",
+			"return;");
+
 		for (final String suffix : new String[] {
 				"About", "OpenFile", "Preferences", "Quit", "OpenApplication", "ReOpenApplication", "PrintFile"
 		}) {
