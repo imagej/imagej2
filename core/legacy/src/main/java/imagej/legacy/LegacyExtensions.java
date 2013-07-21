@@ -658,14 +658,16 @@ public class LegacyExtensions {
 	}
 
 	private static void handleMacAdapter(final CodeHacker hacker) {
-		if (hacker.existsClass("com.apple.eawt.ApplicationListener")) {
-			for (final String suffix : new String[] {
-					"About", "OpenFile", "Preferences", "Quit", "OpenApplication", "ReOpenApplication", "PrintFile"
-			}) {
-				hacker.insertAtTopOfMethod("MacAdapter",
-					"public void handle" + suffix + "(com.apple.eawt.ApplicationEvent event)",
-					"if (!$isLegacyMode()) return;");
-			}
+		// Without the ApplicationListener, MacAdapter cannot load, and hence CodeHacker would fail
+		// to load it if we patched the class.
+		if (!hacker.existsClass("com.apple.eawt.ApplicationListener")) return;
+
+		for (final String suffix : new String[] {
+				"About", "OpenFile", "Preferences", "Quit", "OpenApplication", "ReOpenApplication", "PrintFile"
+		}) {
+			hacker.insertAtTopOfMethod("MacAdapter",
+				"public void handle" + suffix + "(com.apple.eawt.ApplicationEvent event)",
+				"if (!$isLegacyMode()) return;");
 		}
 	}
 
