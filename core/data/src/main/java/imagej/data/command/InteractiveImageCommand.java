@@ -49,8 +49,8 @@ import org.scijava.plugin.Parameter;
  * {@link DatasetView} and {@link Dataset} inputs in addition to only
  * {@link Display}s.
  * <p>
- * See the {@code BrightnessContrast} command in {@code ij-commands-display} for
- * an example.
+ * See the {@code BrightnessContrast} and {@code Threshold} commands in
+ * {@code ij-commands} for examples.
  * </p>
  * 
  * @author Curtis Rueden

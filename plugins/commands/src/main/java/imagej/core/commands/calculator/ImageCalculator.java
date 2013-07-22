@@ -36,16 +36,12 @@
 package imagej.core.commands.calculator;
 
 import imagej.command.Command;
-import imagej.command.DynamicCommand;
+import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.operator.CalculatorOp;
 import imagej.data.operator.CalculatorService;
 import imagej.menu.MenuConstants;
-import imagej.module.MutableModuleItem;
-
-import java.util.List;
-
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
@@ -73,7 +69,7 @@ import org.scijava.plugin.Plugin;
 		@Menu(label = "Image Calculator...", weight = 22) }, headless = true,
 	initializer = "initCalculator")
 public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
-	extends DynamicCommand
+	extends ContextCommand
 {
 
 	// -- instance variables that are Parameters --
@@ -94,17 +90,13 @@ public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 	private Dataset output;
 
 	@Parameter(label = "Operation to do between the two input images")
-	private String opName;
+	private CalculatorOp<U, V> op;
 
 	@Parameter(label = "Create new window")
 	private boolean newWindow = true;
 
 	@Parameter(label = "Floating point result")
 	private boolean wantDoubles = false;
-
-	// -- other instance variables --
-
-	private CalculatorOp<U, V> operator;
 
 	// -- public interface --
 
@@ -115,14 +107,11 @@ public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 	@Override
 	@SuppressWarnings("unchecked")
 	public void run() {
-		if (operator == null) {
-			operator = (CalculatorOp<U, V>) calculatorService.getOperator(opName);
-		}
 		Img<DoubleType> img = null;
 		try {
 			final Img<U> img1 = (Img<U>) input1.getImgPlus();
 			final Img<V> img2 = (Img<V>) input2.getImgPlus();
-			img = calculatorService.combine(img1, img2, operator);
+			img = calculatorService.combine(img1, img2, op);
 		}
 		catch (final IllegalArgumentException e) {
 			cancel(e.toString());
@@ -194,7 +183,7 @@ public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 	 * Returns the {@link CalculatorOp} that was used in the image calculation.
 	 */
 	public CalculatorOp<U, V> getOperation() {
-		return operator;
+		return op;
 	}
 
 	// TODO - due to generics is this too difficult to specify for real world use?
@@ -203,7 +192,7 @@ public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 	 * Sets the {@link CalculatorOp} to be used in the image calculation.
 	 */
 	public void setOperation(final CalculatorOp<U, V> operation) {
-		this.operator = operation;
+		op = operation;
 	}
 
 	/**
@@ -242,10 +231,10 @@ public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 	// -- initializer --
 
 	protected void initCalculator() {
-		List<String> opNames = calculatorService.getOperatorNames();
-		final MutableModuleItem<String> opNameInput =
-			getInfo().getMutableInput("opName", String.class);
-		opNameInput.setChoices(opNames);
+		// NB: Ensure the CalculatorService operators are fully initialized.
+		// This is necessary because CalculatorService only initializes its
+		// operators on demand (i.e., lazily).
+		calculatorService.getOperators();
 	}
 
 	// -- private helpers --
