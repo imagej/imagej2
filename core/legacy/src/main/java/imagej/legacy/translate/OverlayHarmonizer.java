@@ -605,14 +605,11 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 		assert roi instanceof PolygonRoi;
 		final PolygonRoi pRoi = (PolygonRoi) roi;
 		final FloatPolygon poly = pRoi.getFloatPolygon();
-		double[] pt;
-		final AngleOverlay angleOverlay = new AngleOverlay(context);
-		pt = new double[] { poly.xpoints[0], poly.ypoints[0] };
-		angleOverlay.setPoint1(pt);
-		pt = new double[] { poly.xpoints[1], poly.ypoints[1] };
-		angleOverlay.setCenter(pt);
-		pt = new double[] { poly.xpoints[2], poly.ypoints[2] };
-		angleOverlay.setPoint2(pt);
+		final double[] end1 = new double[] { poly.xpoints[0], poly.ypoints[0] };
+		final double[] ctr = new double[] { poly.xpoints[1], poly.ypoints[1] };
+		final double[] end2 = new double[] { poly.xpoints[2], poly.ypoints[2] };
+		final AngleOverlay angleOverlay =
+			new AngleOverlay(context, ctr, end1, end2);
 		assignPropertiesToOverlay(angleOverlay, roi);
 		return angleOverlay;
 	}
@@ -658,8 +655,6 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 		return overlay;
 	}
 
-	// TODO - subpixel resolution
-	
 	private PolygonOverlay createPolygonOverlay(final Roi roi)
 	{
 		assert roi instanceof PolygonRoi;
