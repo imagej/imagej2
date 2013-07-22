@@ -135,7 +135,7 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 	private String displayType = RED;
 
 	@Parameter(label = "Method", persist = false)
-	private String methodName;
+	private ThresholdMethod method;
 
 	@Parameter(label = "Auto", callback = "autoThreshold")
 	private Button auto;
@@ -208,10 +208,7 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 	// -- initializers --
 
 	protected void initValues() {
-
 		if (display == null) return;
-
-		setThresholdMethodNames();
 
 		boolean alreadyHadOne = threshSrv.hasThreshold(display);
 		ThresholdOverlay overlay = threshSrv.getThreshold(display);
@@ -267,7 +264,6 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 	// -- callbacks --
 
 	protected void autoThreshold() {
-		ThresholdMethod method = threshSrv.getThresholdMethod(methodName);
 		Histogram1d<T> hist = histogram();
 		long cutoff = method.getThreshold(hist);
 		if (cutoff < 0) {
@@ -400,12 +396,6 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 		}
 	}
 	
-	private void setThresholdMethodNames() {
-		final MutableModuleItem<String> methodNameInput =
-			getInfo().getMutableInput("methodName", String.class);
-		methodNameInput.setChoices(threshSrv.getThresholdMethodNames());
-	}
-
 	// calcs the data range of the whole dataset
 
 	private DataRange calcDataRange() {
