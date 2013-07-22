@@ -68,6 +68,7 @@ import imagej.util.awt.AWTColors;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.geom.PathIterator;
+import java.awt.geom.Rectangle2D.Double;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -417,7 +418,6 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 		return roi;
 	}
 
-	// TODO - subpixel resolution
 	private Roi createAngleRoi(final AngleOverlay overlay) {
 		double[] pt = new double[overlay.numDimensions()];
 		overlay.getPoint1(pt);
@@ -603,16 +603,13 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 	private Overlay createAngleOverlay(final Roi roi)
 	{
 		assert roi instanceof PolygonRoi;
-		PolygonRoi pRoi = (PolygonRoi) roi;
-		FloatPolygon poly = pRoi.getFloatPolygon();
-		double[] pt;
-		AngleOverlay angleOverlay = new AngleOverlay(context);
-		pt = new double[] { poly.xpoints[0], poly.ypoints[0] };
-		angleOverlay.setPoint1(pt);
-		pt = new double[] { poly.xpoints[1], poly.ypoints[1] };
-		angleOverlay.setCenter(pt);
-		pt = new double[] { poly.xpoints[2], poly.ypoints[2] };
-		angleOverlay.setPoint2(pt);
+		final PolygonRoi pRoi = (PolygonRoi) roi;
+		final FloatPolygon poly = pRoi.getFloatPolygon();
+		final double[] end1 = new double[] { poly.xpoints[0], poly.ypoints[0] };
+		final double[] ctr = new double[] { poly.xpoints[1], poly.ypoints[1] };
+		final double[] end2 = new double[] { poly.xpoints[2], poly.ypoints[2] };
+		final AngleOverlay angleOverlay =
+			new AngleOverlay(context, ctr, end1, end2);
 		assignPropertiesToOverlay(angleOverlay, roi);
 		return angleOverlay;
 	}
@@ -632,7 +629,8 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 	{
 		final RectangleOverlay overlay = new RectangleOverlay(context);
 		final RectangleRegionOfInterest region = overlay.getRegionOfInterest();
-		final Rectangle bounds = roi.getBounds();
+		final FloatPolygon poly = roi.getFloatPolygon();
+		final Double bounds = poly.getFloatBounds();
 		region.setOrigin(bounds.x, 0);
 		region.setOrigin(bounds.y, 1);
 		region.setExtent(bounds.width, 0);
@@ -645,7 +643,8 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 	{
 		final EllipseOverlay overlay = new EllipseOverlay(context);
 		final EllipseRegionOfInterest region = overlay.getRegionOfInterest();
-		final Rectangle bounds = roi.getBounds();
+		final FloatPolygon poly = roi.getFloatPolygon();
+		final Double bounds = poly.getFloatBounds();
 		final double radiusX = bounds.width / 2.0;
 		final double radiusY = bounds.height / 2.0;
 		region.setOrigin(bounds.x + radiusX, 0);
@@ -656,20 +655,18 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 		return overlay;
 	}
 
-	// TODO - subpixel resolution
-	
 	private PolygonOverlay createPolygonOverlay(final Roi roi)
 	{
 		assert roi instanceof PolygonRoi;
 		final PolygonRoi polygonRoi = (PolygonRoi) roi;
 		final PolygonOverlay overlay = new PolygonOverlay(context);
 		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
-		final int[] xCoords = polygonRoi.getXCoordinates();
-		final int[] yCoords = polygonRoi.getYCoordinates();
-		final double x0 = polygonRoi.getBounds().x;
-		final double y0 = polygonRoi.getBounds().y;
+		final FloatPolygon poly = polygonRoi.getFloatPolygon();
+		final float[] xCoords = poly.xpoints;
+		final float[] yCoords = poly.ypoints;
 		for (int i = 0; i < xCoords.length; i++) {
-			final double x = xCoords[i] + x0, y = yCoords[i] + y0;
+			final double x = xCoords[i];
+			final double y = yCoords[i];
 			region.addVertex(i, new RealPoint(x, y));
 		}
 		assignPropertiesToOverlay(overlay, roi);
@@ -721,10 +718,11 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 	{
 		assert roi instanceof PointRoi;
 		final PointRoi ptRoi = (PointRoi) roi;
-		List<double[]> points = new ArrayList<double[]>();
-		for (int i = 0; i < ptRoi.getNCoordinates(); i++) {
-			final double x = ptRoi.getXCoordinates()[i] + roi.getBounds().x;
-			final double y = ptRoi.getYCoordinates()[i] + roi.getBounds().y;
+		final FloatPolygon poly = ptRoi.getFloatPolygon();
+		final List<double[]> points = new ArrayList<double[]>();
+		for (int i = 0; i < poly.npoints; i++) {
+			final double x = poly.xpoints[i];
+			final double y = poly.ypoints[i];
 			final double[] pt = new double[]{x,y};
 			points.add(pt);
 		}
@@ -758,7 +756,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 		}
 		final BinaryMaskRegionOfInterest<BitType, Img<BitType>> broi =
 			new BinaryMaskRegionOfInterest<BitType, Img<BitType>>(img);
-		Overlay overlay =
+		final Overlay overlay =
 			new BinaryMaskOverlay<BitType, Img<BitType>>(context, broi);
 		assignPropertiesToOverlay(overlay, roi);
 		return overlay;
@@ -767,11 +765,11 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 	private Overlay createTextOverlay(final Roi roi)
 	{
 		assert roi instanceof TextRoi;
-		TextRoi tRoi = (TextRoi) roi;
-		Rectangle bounds = tRoi.getBounds();
-		double x = bounds.x;
-		double y = bounds.y;
-		TextOverlay overlay = new TextOverlay(context, x, y, tRoi.getText());
+		final TextRoi tRoi = (TextRoi) roi;
+		final Double bounds = tRoi.getFloatBounds();
+		final double x = bounds.x;
+		final double y = bounds.y;
+		final TextOverlay overlay = new TextOverlay(context, x, y, tRoi.getText());
 		switch (tRoi.getJustification()) {
 			case TextRoi.LEFT:
 				overlay.setJustification(Justification.LEFT);
