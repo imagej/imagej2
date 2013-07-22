@@ -70,6 +70,7 @@
 	</dependencies>
 
 	<properties>
+		<ij-legacy.jar>${project.build.directory}/${project.build.finalName}.jar</ij-legacy.jar>
 		<project.rootdir>${basedir}/../..</project.rootdir>
 	</properties>
 
@@ -89,33 +90,64 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<artifactId>maven-invoker-plugin</artifactId>
-				<version>1.8</version>
-				<configuration>
-					<!-- <debug>true</debug> -->
-					<showErrors>true</showErrors>
-					<streamLogs>true</streamLogs>
-					<properties>
-						<ij-legacy.version>${project.version}</ij-legacy.version>
-						<ij-legacy.jar>${project.build.directory}/ij-legacy-${project.version}.jar</ij-legacy.jar>
-						<junit.version>${junit.version}</junit.version>
-					</properties>
-					<projectsDirectory>src/it</projectsDirectory>
-					<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-					<pomIncludes>
-						<pomInclude>*/pom.xml</pomInclude>
-					</pomIncludes>
-					<settingsFile>src/it/settings.xml</settingsFile>
-					<localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-					<postBuildHookScript>verify.bsh</postBuildHookScript>
-				</configuration>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.15</version>
 				<executions>
 					<execution>
-						<id>integration-test</id>
+						<id>code-hacker</id>
 						<goals>
-							<goal>install</goal>
-							<goal>run</goal>
+							<goal>integration-test</goal>
 						</goals>
+						<configuration>
+							<argLine />
+							<includes>
+								<include>**/CodeHackerIT.java</include>
+							</includes>
+							<reportNameSuffix>code-hacker</reportNameSuffix>
+							<summaryFile>target/failsafe-reports/failsafe-summary-code-hacker.xml</summaryFile>
+						</configuration>
+					</execution>
+					<execution>
+						<id>debug</id>
+						<goals>
+							<goal>integration-test</goal>
+						</goals>
+						<configuration>
+							<argLine>-javaagent:${ij-legacy.jar}=debug -Dlegacy.agent.mode=debug</argLine>
+							<includes>
+								<include>**/LegacyJavaAgentIT.java</include>
+							</includes>
+							<reportNameSuffix>debug</reportNameSuffix>
+							<summaryFile>target/failsafe-reports/failsafe-summary-debug.xml</summaryFile>
+						</configuration>
+					</execution>
+					<execution>
+						<id>pre-init</id>
+						<goals>
+							<goal>integration-test</goal>
+						</goals>
+						<configuration>
+							<argLine>-javaagent:${ij-legacy.jar}=init -Dlegacy.agent.mode=init</argLine>
+							<includes>
+								<include>**/LegacyJavaAgentIT.java</include>
+							</includes>
+							<reportNameSuffix>pre-init</reportNameSuffix>
+							<summaryFile>target/failsafe-reports/failsafe-summary-pre-init.xml</summaryFile>
+						</configuration>
+					</execution>
+					<execution>
+						<id>verify</id>
+						<goals>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<summaryFiles>
+								<summaryFile>target/failsafe-reports/failsafe-summary-code-hacker.xml</summaryFile>
+								<summaryFile>target/failsafe-reports/failsafe-summary-debug.xml</summaryFile>
+								<summaryFile>target/failsafe-reports/failsafe-summary-pre-init.xml</summaryFile>
+							</summaryFiles>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
