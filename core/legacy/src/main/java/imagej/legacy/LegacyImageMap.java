@@ -51,6 +51,7 @@ import imagej.ui.UIService;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.image.ImageDisplayViewer;
 
+import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -116,7 +117,8 @@ public class LegacyImageMap extends AbstractContextual {
 	/**
 	 * The list of ImagePlus instances accumulated during the legacy mode.
 	 */
-	private Set<ImagePlus> legacyModeImages = new HashSet<ImagePlus>();
+	private Set<WeakReference<ImagePlus>> legacyModeImages =
+			new HashSet<WeakReference<ImagePlus>>();
 
 	/**
 	 * The {@link ImageTranslator} to use when creating {@link ImagePlus} and
@@ -223,7 +225,9 @@ public class LegacyImageMap extends AbstractContextual {
 					harmonizer.updateDisplay(display, imp);
 				}
 			}
-			for (final ImagePlus imp : legacyModeImages) {
+			for (final WeakReference<ImagePlus> ref : legacyModeImages) {
+				final ImagePlus imp = ref.get();
+				if (imp == null) continue;
 				final ImageWindow window = imp.getWindow();
 				if (window != null && !window.isClosed()) {
 					registerLegacyImage(imp);
@@ -243,7 +247,7 @@ public class LegacyImageMap extends AbstractContextual {
 	 */
 	public ImageDisplay registerLegacyImage(final ImagePlus imp) {
 		if (legacyService.isLegacyMode()) {
-			legacyModeImages.add(imp);
+			legacyModeImages.add(new WeakReference<ImagePlus>(imp));
 			return null;
 		}
 		ImageDisplay display = lookupDisplay(imp);
@@ -286,7 +290,10 @@ public class LegacyImageMap extends AbstractContextual {
 	public Collection<ImagePlus> getImagePlusInstances() {
 		Collection<ImagePlus> result = new HashSet<ImagePlus>();
 		result.addAll(displayTable.keySet());
-		result.addAll(legacyModeImages);
+		for (final WeakReference<ImagePlus> ref : legacyModeImages) {
+			final ImagePlus imp = ref.get();
+			if (imp != null) result.add(imp);
+		}
 		return result;
 	}
 
