@@ -59,7 +59,7 @@ public final class DefaultTextService extends
 {
 
 	@Parameter
-	public PluginService pluginService;
+	private PluginService pluginService;
 
 	// -- TextService methods --
 
