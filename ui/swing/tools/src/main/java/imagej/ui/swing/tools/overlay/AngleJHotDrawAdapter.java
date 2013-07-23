@@ -82,22 +82,12 @@ public class AngleJHotDrawAdapter extends
 	@Override
 	public AngleOverlay createNewOverlay() {
 		final AngleOverlay overlay = new AngleOverlay(getContext());
-		/* no effect
-		overlay.setEndPoint1(new RealPoint(new double[]{6,1}));
-		overlay.setCenterPoint(new RealPoint(new double[]{1,1}));
-		overlay.setEndPoint2(new RealPoint(new double[]{1,6}));
-		*/
 		return overlay;
 	}
 
 	@Override
 	public Figure createDefaultFigure() {
 		final AngleFigure figure = new AngleFigure();
-		/* no effect
-		figure.setEndPoint1(6,1);
-		figure.setCenterPoint(1,1);
-		figure.setEndPoint2(1,6);
-		*/
 		initDefaultSettings(figure);
 		return figure;
 	}
@@ -159,27 +149,22 @@ public class AngleJHotDrawAdapter extends
 
 		public AngleFigure() {
 			// coords have no effect on initial placement in window
-			addNode(new BezierPath.Node(point(6, 1)));
-			addNode(new BezierPath.Node(point(1, 1)));
-			addNode(new BezierPath.Node(point(1, 6)));
-			/* no effect
-			getNode(0).setControlPoint(0, point(6,1));
-			getNode(1).setControlPoint(0, point(1,1));
-			getNode(2).setControlPoint(0, point(1,6));
-			*/
+			addNode(new BezierPath.Node(6, 1));
+			addNode(new BezierPath.Node(1, 1));
+			addNode(new BezierPath.Node(1, 6));
 			setConnectable(false);
 		}
 
 		public void setEndPoint1(final double x, final double y) {
-			setPoint(0, x, y);
+			setPoint(0, point(x, y));
 		}
 
 		public void setCenterPoint(final double x, final double y) {
-			setPoint(1, x, y);
+			setPoint(1, point(x, y));
 		}
 
 		public void setEndPoint2(final double x, final double y) {
-			setPoint(2, x, y);
+			setPoint(2, point(x, y));
 		}
 
 		public Point2D.Double getEndPoint1() {
@@ -194,11 +179,9 @@ public class AngleJHotDrawAdapter extends
 			return getPoint(2);
 		}
 
-		private void setPoint(final int nodeNum, final double x, final double y) {
-			getNode(nodeNum).setTo(new BezierPath.Node(point(x, y)));
-		}
+		// -- helpers --
 
-		private Point2D.Double point(final double x, final double y) {
+		private Point2D.Double point(double x, double y) {
 			return new Point2D.Double(x, y);
 		}
 
