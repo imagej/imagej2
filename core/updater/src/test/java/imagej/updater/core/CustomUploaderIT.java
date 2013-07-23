@@ -53,6 +53,18 @@ import org.junit.Test;
 import org.scijava.util.CheckSezpoz;
 import org.scijava.util.ClassUtils;
 
+/**
+ * Tests the auto-install feature of the updater.
+ * <p>
+ * When an update site has upload information for a protocol that no local
+ * component can handle, we try to install the file
+ * <i>jars/ij-updater-&lt;protocol&gt;-&lt;version&gt;.jar</i> (if it is
+ * installable). This integration test verifies that that functionality is not
+ * broken.
+ * </p>
+ * 
+ * @author Johannes Schindelin
+ */
 public class CustomUploaderIT {
 
 	@Test
