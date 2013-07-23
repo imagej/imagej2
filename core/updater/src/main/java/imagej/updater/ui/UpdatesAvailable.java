@@ -61,10 +61,10 @@ public class UpdatesAvailable implements Command {
 			LATER = "Remind me later";
 
 	@Parameter
-	public CommandService commandService;
+	private CommandService commandService;
 
 	@Parameter
-	public LogService log;
+	private LogService log;
 
 	@Parameter(label = "Do you want to start the Updater now?", choices = { YES,
 		NEVER, LATER })
