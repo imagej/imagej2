@@ -68,7 +68,7 @@ public class UpdatesAvailable implements Command {
 
 	@Parameter(label = "Do you want to start the Updater now?", choices = { YES,
 		NEVER, LATER })
-	public String updateAction = YES;
+	private String updateAction = YES;
 
 	@Override
 	public void run() {
