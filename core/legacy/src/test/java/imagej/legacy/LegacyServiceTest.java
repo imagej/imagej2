@@ -38,13 +38,9 @@ package imagej.legacy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assume.assumeTrue;
-
-import java.awt.GraphicsEnvironment;
-
 import ij.IJ;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.scijava.Context;
 
@@ -69,11 +65,6 @@ public class LegacyServiceTest {
 	}
 
 	private Context context;
-
-	@Before
-	public void cannotRunHeadlesslyYet() {
-		assumeTrue(!GraphicsEnvironment.isHeadless());
-	}
 
 	@After
 	public void disposeContext() {

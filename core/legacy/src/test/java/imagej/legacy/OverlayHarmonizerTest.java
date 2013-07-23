@@ -47,7 +47,6 @@ import imagej.data.overlay.Overlay;
 import imagej.data.overlay.PolygonOverlay;
 import imagej.legacy.translate.OverlayHarmonizer;
 
-import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -60,7 +59,6 @@ import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.logic.BitType;
 
 import org.junit.After;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.scijava.Context;
@@ -90,8 +88,6 @@ public class OverlayHarmonizerTest {
 	@Before
 	public void beforeMethod() {
 		synchronized (DefaultLegacyService.class) {
-			// NB: Ignore results of all tests if in headless mode!
-			Assume.assumeTrue(!GraphicsEnvironment.isHeadless());
 			context = new Context(LegacyService.class);
 		}
 	}
