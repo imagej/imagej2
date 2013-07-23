@@ -37,6 +37,7 @@ package imagej.legacy;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import ij.IJ;
 
@@ -47,12 +48,22 @@ import org.junit.Test;
  * 
  * @author Johannes Schindelin
  */
-public class LegacyJavaAgentTest {
+public class LegacyJavaAgentIT {
 
 	private StackTraceElement[] trace;
 
 	@Test
-	public void testAgent() {
+	public void testAgentInit() {
+		assumeTrue("init".equals(System.getProperty("legacy.agent.mode")));
+		IJ.log("Now ij.IJ is loaded.");
+		final LegacyService legacyService =
+			(LegacyService)IJ.runPlugIn(LegacyService.class.getName(), null);
+		assertTrue(legacyService != null);
+	}
+
+	@Test
+	public void testAgentDebug() {
+		assumeTrue("debug".equals(System.getProperty("legacy.agent.mode")));
 		try {
 			trace = Thread.currentThread().getStackTrace();
 			IJ.log("Now ij.IJ would be loaded.");

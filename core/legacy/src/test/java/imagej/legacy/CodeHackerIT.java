@@ -47,7 +47,7 @@ import org.junit.Test;
  * 
  * @author Johannes Schindelin
  */
-public class CodeHackerTest {
+public class CodeHackerIT {
 
 	@Test
 	public void testExceptionMessage() {

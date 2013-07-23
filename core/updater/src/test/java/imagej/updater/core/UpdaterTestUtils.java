@@ -57,8 +57,12 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.zip.GZIPInputStream;
@@ -524,8 +528,11 @@ public class UpdaterTestUtils {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	protected static File writeJar(final File file, Class<?>... classes) throws FileNotFoundException, IOException {
+	protected static File writeJar(final File file, final Class<?>... classes) throws FileNotFoundException, IOException {
 		file.getParentFile().mkdirs();
+
+		final Map<String, URL> extra = new LinkedHashMap<String, URL>();
+
 		final byte[] buffer = new byte[32768];
 		final JarOutputStream jar = new JarOutputStream(new FileOutputStream(file));
 		for (int i = 0; i < classes.length; i++) {
@@ -541,7 +548,37 @@ public class UpdaterTestUtils {
 			}
 			in.close();
 			jar.closeEntry();
+
+			final String url = classes[i].getResource("/" + path).toString();
+			final String baseURL = url.substring(0, url.length() - path.length());
+			final URL metaInf = new URL(baseURL + "META-INF/");
+			for (final URL url2 : FileUtils.listContents(metaInf)) {
+				final String path2 = url2.toString().substring(baseURL.length());
+				if (!extra.containsKey(path2)) extra.put(path2, url2);
+				else {
+					final URL url3 = extra.get(path2);
+					if (!url2.equals(url3)) {
+						System.err.println("Warning: skipping duplicate " + path2 + "\n(" + url2 + " vs " + url3);
+					}
+				}
+			}
 		}
+
+		for (Entry<String, URL> entry2 : extra.entrySet()) {
+			final String path = entry2.getKey();
+			final JarEntry entry = new JarEntry(path);
+			jar.putNextEntry(entry);
+			final InputStream in = entry2.getValue().openStream();
+			for (;;) {
+				int count = in.read(buffer);
+				if (count < 0)
+					break;
+				jar.write(buffer, 0, count);
+			}
+			in.close();
+			jar.closeEntry();
+		}
+
 		jar.close();
 		return file;
 	}

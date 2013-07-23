@@ -33,7 +33,7 @@
  * #L%
  */
 
-package calvin;
+package imagej.updater.calvin;
 
 import imagej.updater.core.AbstractUploader;
 import imagej.updater.core.Uploadable;

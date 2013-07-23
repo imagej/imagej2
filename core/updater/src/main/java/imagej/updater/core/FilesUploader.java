@@ -101,12 +101,16 @@ public class FilesUploader {
 		Thread.currentThread().setContextClassLoader(thisLoader);
 	}
 
-	@Deprecated
+	/**
+	 * @deprecated use {@link #FilesUploader(UploaderService, files, updateSite, progress)} instead
+	 */
 	public FilesUploader(final FilesCollection files, final String updateSite) {
 		this(createUploaderService(), files, updateSite);
 	}
 
-	@Deprecated
+	/**
+	 * @deprecated use {@link #FilesUploader(UploaderService, files, updateSite, progress)} instead
+	 */
 	public FilesUploader(final UploaderService uploaderService,
 			final FilesCollection files, final String updateSite) {
 		this(uploaderService, files, updateSite, null);
