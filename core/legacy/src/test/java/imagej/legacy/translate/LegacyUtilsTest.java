@@ -78,20 +78,20 @@ public class LegacyUtilsTest {
 		assertEquals(slice, stack.getPixels(1));
 		assertEquals(slice2, secondStack.getPixels(1));
 	}
-	
+
 	/*
 	 * Makes sure calculation of IJ1 channels is correctly invertible
 	 */
 	@Test
 	public void testRasterization() {
-		final long[][] dimsList = {{1,1,1}, {1,2,3}, {2,3,4}, {5,4,3}, {4,2,7}}; 
+		final long[][] dimsList = {{1,1,1}, {1,2,3}, {2,3,4}, {5,4,3}, {4,2,7}};
 		final AxisType[] axes = {Axes.CHANNEL, Axes.SPECTRA, Axes.FREQUENCY};
 		for (long[] dims : dimsList) {
 			// setup
 			long numChannels = 1;
 			for (long dim : dims)
 				numChannels *= dim;
-			
+
 			// test from long index back to long index
 			for (long channel = 0; channel < numChannels; channel++) {
 				long[] channelPositions = new long[dims.length];
@@ -99,7 +99,7 @@ public class LegacyUtilsTest {
 				long ij1Pos = LegacyUtils.calcIJ1ChannelPos(dims, axes, channelPositions);
 				assertEquals(channel, ij1Pos);
 			}
-			
+
 			// test from long[] index back to long[] index
 			long[] channelPositions1 = new long[dims.length];
 			long[] channelPositions2 = new long[dims.length];
