@@ -35,37 +35,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.15</version>
-				<executions>
-					<execution>
-						<id>auto-install-uploader</id>
-						<goals>
-							<goal>integration-test</goal>
-						</goals>
-						<configuration>
-							<includes>
-								<include>**/CustomUploaderIT.java</include>
-							</includes>
-							<reportNameSuffix>auto-install-uploader</reportNameSuffix>
-							<summaryFile>target/failsafe-reports/failsafe-summary-auto-install-uploader.xml</summaryFile>
-						</configuration>
-					</execution>
-					<execution>
-						<id>verify</id>
-						<goals>
-							<goal>verify</goal>
-						</goals>
-						<configuration>
-							<summaryFiles>
-								<summaryFile>target/failsafe-reports/failsafe-summary-auto-install-uploader.xml</summaryFile>
-							</summaryFiles>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
 					<archive>

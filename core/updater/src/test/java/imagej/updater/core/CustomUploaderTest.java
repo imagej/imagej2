@@ -65,7 +65,7 @@ import org.scijava.util.ClassUtils;
  * 
  * @author Johannes Schindelin
  */
-public class CustomUploaderIT {
+public class CustomUploaderTest {
 
 	@Test
 	public void testCustomUploader() throws Exception {
@@ -113,7 +113,7 @@ public class CustomUploaderIT {
 
 	@SuppressWarnings("unused")
 	private static void realTest(final Class<?> clazz) throws Exception {
-		Thread.currentThread().setContextClassLoader(CustomUploaderIT.class.getClassLoader());
+		Thread.currentThread().setContextClassLoader(CustomUploaderTest.class.getClassLoader());
 		FilesCollection files = UpdaterTestUtils.initialize(new String[0]);
 
 		assertFalse(hasHobbes(files));
