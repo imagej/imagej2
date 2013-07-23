@@ -35,6 +35,8 @@
 
 package imagej.legacy;
 
+import java.awt.GraphicsEnvironment;
+
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -66,7 +68,7 @@ public class IJ1Helper {
 
 	public void initialize() {
 		// initialize legacy ImageJ application
-		if (IJ.getInstance() == null) try {
+		if (IJ.getInstance() == null && !GraphicsEnvironment.isHeadless()) try {
 			new ImageJ(ImageJ.NO_SHOW);
 		}
 		catch (final Throwable t) {

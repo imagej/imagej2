@@ -160,11 +160,6 @@ public final class DefaultLegacyService extends AbstractService implements
 	private final IJ1Helper ij1Helper;
 
 	public DefaultLegacyService() {
-		if (GraphicsEnvironment.isHeadless()) {
-			throw new IllegalStateException(
-				"Legacy support not available in headless mode.");
-		}
-
 		ij1Helper = new IJ1Helper(this);
 	}
 
@@ -380,7 +375,7 @@ public final class DefaultLegacyService extends AbstractService implements
 
 		updateLegacyImageJSettings();
 
-		if (!hasIJ1Instance) toggleLegacyMode(false);
+		if (!hasIJ1Instance && !GraphicsEnvironment.isHeadless()) toggleLegacyMode(false);
 	}
 
 	// -- Disposable methods --
