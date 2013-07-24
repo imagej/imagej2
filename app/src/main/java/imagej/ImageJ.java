@@ -70,16 +70,7 @@ import java.util.Collection;
 
 import org.scijava.AbstractGateway;
 import org.scijava.Context;
-import org.scijava.app.App;
-import org.scijava.app.AppService;
-import org.scijava.app.StatusService;
-import org.scijava.event.EventHistory;
-import org.scijava.event.EventService;
-import org.scijava.log.LogService;
-import org.scijava.object.ObjectService;
-import org.scijava.plugin.PluginService;
 import org.scijava.service.Service;
-import org.scijava.thread.ThreadService;
 
 /**
  * Main entry point into ImageJ. This class enables working with ImageJ services
@@ -152,17 +143,13 @@ public class ImageJ extends AbstractGateway {
 	 * @see Context
 	 */
 	public ImageJ(final Context context) {
-		setContext(context);
+		super(ImageJApp.NAME, context);
 	}
 
 	// -- ImageJ methods - services --
 
 	public AnimationService animation() {
 		return get(AnimationService.class);
-	}
-
-	public AppService app() {
-		return get(AppService.class);
 	}
 
 	public AppEventService appEvent() {
@@ -185,14 +172,6 @@ public class ImageJ extends AbstractGateway {
 		return get(DisplayService.class);
 	}
 
-	public EventHistory eventHistory() {
-		return get(EventHistory.class);
-	}
-
-	public EventService event() {
-		return get(EventService.class);
-	}
-
 	public IconService icon() {
 		return get(IconService.class);
 	}
@@ -213,10 +192,6 @@ public class ImageJ extends AbstractGateway {
 		return get(LegacyService.class);
 	}
 
-	public LogService log() {
-		return get(LogService.class);
-	}
-
 	public LUTService lut() {
 		return get(LUTService.class);
 	}
@@ -233,10 +208,6 @@ public class ImageJ extends AbstractGateway {
 		return get(ModuleService.class);
 	}
 
-	public ObjectService object() {
-		return get(ObjectService.class);
-	}
-
 	public OptionsService options() {
 		return get(OptionsService.class);
 	}
@@ -247,10 +218,6 @@ public class ImageJ extends AbstractGateway {
 
 	public PlatformService platform() {
 		return get(PlatformService.class);
-	}
-
-	public PluginService plugin() {
-		return get(PluginService.class);
 	}
 
 	public RecentFileService recentFile() {
@@ -277,14 +244,6 @@ public class ImageJ extends AbstractGateway {
 		return get(StatisticsService.class);
 	}
 
-	public StatusService status() {
-		return get(StatusService.class);
-	}
-
-	public ThreadService thread() {
-		return get(ThreadService.class);
-	}
-
 	public ToolService tool() {
 		return get(ToolService.class);
 	}
@@ -303,28 +262,6 @@ public class ImageJ extends AbstractGateway {
 
 	public WindowService window() {
 		return get(WindowService.class);
-	}
-
-	// -- ImageJ methods - application --
-
-	/** @see org.scijava.app.AppService */
-	public App getApp() {
-		return app().getApp(ImageJApp.NAME);
-	}
-
-	/** @see org.scijava.app.App#getTitle() */
-	public String getTitle() {
-		return getApp().getTitle();
-	}
-
-	/** @see org.scijava.app.App#getVersion() */
-	public String getVersion() {
-		return getApp().getVersion();
-	}
-
-	/** @see org.scijava.app.App#getInfo(boolean) */
-	public String getInfo(boolean mem) {
-		return getApp().getInfo(mem);
 	}
 
 }
