@@ -195,7 +195,7 @@ public class DefaultMinMaxMethod<T extends Type<T> & Comparable<T>> extends
 
 		processingTime = System.currentTimeMillis() - startTime;
 
-		statusService.showStatus("Computing min/max complete.");
+		if (statusService != null) statusService.showStatus("Computing min/max complete.");
 
 		return true;
 	}
