@@ -33,40 +33,31 @@
  * #L%
  */
 
-package imagej.data.autoscale;
+package imagej.data.minmax;
 
-import imagej.data.minmax.MinMaxMethod;
+import net.imglib2.type.Type;
 
-import java.util.List;
-
-import net.imglib2.IterableInterval;
-import net.imglib2.type.numeric.RealType;
-
-import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginService;
+import org.scijava.plugin.SortablePlugin;
 
 /**
- * Computes he data range from the entire set of values in an
- * {@link IterableInterval}.
+ * Abstract superclass for {@link MinMaxMethod} implementations.
+ * Provides a helper method for checking initialization.
  * 
- * @author Barry DeZonia
+ * @author Mark Hiner
  */
-@Plugin(type = AutoscaleMethod.class, name = "Default")
-public class DefaultAutoscaleMethod<T extends RealType<T>> extends AbstractAutoscaleMethod<T> {
+public abstract class AbstractMinMaxMethod <T extends Type<T> & Comparable<T>>
+extends SortablePlugin
+implements MinMaxMethod<T> {
   
-	@Override
-	public DataRange getRange(IterableInterval<T> interval)
-	{
-		@SuppressWarnings("rawtypes")
-    List<MinMaxMethod> lists = getContext().getService(PluginService.class)
-		    .createInstancesOfType(MinMaxMethod.class);
-    @SuppressWarnings("unchecked")
-    MinMaxMethod<T> minmax = lists.get(0);
-    minmax.initialize(interval);
-		minmax.process();
-		double min = minmax.getMin().getRealDouble();
-		double max = minmax.getMax().getRealDouble();
-		return new DataRange(min, max);
-	}
+  protected boolean initialized = false;
 
+  /**
+   * Throws an exception if this MinMaxMethod has not
+   * been initialized.
+   */
+  public void initializeCheck() {
+    if (!initialized) 
+      throw new RuntimeException("MinMaxMethod not initialized." +
+      		" Call MinMaxMethod#initialize() before processing.");
+  }
 }
