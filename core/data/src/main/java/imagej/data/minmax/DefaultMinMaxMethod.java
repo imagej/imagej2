@@ -278,6 +278,7 @@ public class DefaultMinMaxMethod<T extends Type<T> & Comparable<T>> extends
 
 	// Reports the current progress
 	private void report() {
+		if (statusService == null) return; // nothing to report to, please move along
 		progress++;
 		final double percentWork = ((double) progress / imageSize) * MAX_UPDATES;
 
