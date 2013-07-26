@@ -111,7 +111,7 @@ public class SWTUI extends AbstractUserInterface implements Runnable {
 	}
 
 	@Override
-	public File chooseFile(File file, String style) {
+	public File chooseFile(final File file, final String style) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
@@ -120,6 +120,11 @@ public class SWTUI extends AbstractUserInterface implements Runnable {
 		final imagej.display.Display<?> display, final int x, final int y)
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override()
+	public boolean requiresEDT() {
+		return true;
 	}
 
 	// -- Disposable methods --

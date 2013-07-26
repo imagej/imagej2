@@ -63,13 +63,6 @@ public class PivotChoiceWidget extends PivotInputWidget<String> implements
 		return listButton.getSelectedItem().toString();
 	}
 
-	@Override
-	public void refreshWidget() {
-		final Object value = get().getValue();
-		if (value.equals(listButton.getSelectedItem())) return; // no change
-		listButton.setSelectedItem(value);
-	}
-
 	// -- WrapperPlugin methods --
 
 	@Override
@@ -89,8 +82,15 @@ public class PivotChoiceWidget extends PivotInputWidget<String> implements
 
 	@Override
 	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isText() &&
-			model.isMultipleChoice();
+		return super.supports(model) && model.isText() && model.isMultipleChoice();
 	}
 
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		final Object value = get().getValue();
+		if (value.equals(listButton.getSelectedItem())) return; // no change
+		listButton.setSelectedItem(value);
+	}
 }

@@ -35,7 +35,9 @@
 
 package imagej.ui.pivot.widget;
 
-import imagej.widget.AbstractInputWidget;
+import imagej.ui.AbstractUIInputWidget;
+import imagej.ui.UserInterface;
+import imagej.ui.pivot.PivotUI;
 import imagej.widget.WidgetModel;
 
 import org.apache.pivot.wtk.BoxPane;
@@ -46,7 +48,7 @@ import org.apache.pivot.wtk.BoxPane;
  * @author Curtis Rueden
  */
 public abstract class PivotInputWidget<T> extends
-	AbstractInputWidget<T, BoxPane>
+	AbstractUIInputWidget<T, BoxPane>
 {
 
 	private BoxPane uiComponent;
@@ -69,6 +71,13 @@ public abstract class PivotInputWidget<T> extends
 	@Override
 	public Class<BoxPane> getComponentType() {
 		return BoxPane.class;
+	}
+
+	// -- AbstractUIInputWidget methods --
+
+	@Override
+	protected UserInterface ui() {
+		return ui(PivotUI.NAME);
 	}
 
 }

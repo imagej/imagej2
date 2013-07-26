@@ -33,76 +33,31 @@
  * #L%
  */
 
-package imagej.ui.awt.widget;
+package imagej.data.minmax;
 
-import imagej.widget.InputWidget;
-import imagej.widget.ObjectWidget;
-import imagej.widget.WidgetModel;
+import net.imglib2.type.Type;
 
-import java.awt.BorderLayout;
-import java.awt.Choice;
-import java.awt.Panel;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
-import org.scijava.plugin.Plugin;
+import org.scijava.plugin.SortablePlugin;
 
 /**
- * AWT implementation of object selector widget.
+ * Abstract superclass for {@link MinMaxMethod} implementations.
+ * Provides a helper method for checking initialization.
  * 
- * @author Curtis Rueden
+ * @author Mark Hiner
  */
-@Plugin(type = InputWidget.class)
-public class AWTObjectWidget extends AWTInputWidget<Object> implements
-	ItemListener, ObjectWidget<Panel>
-{
+public abstract class AbstractMinMaxMethod <T extends Type<T> & Comparable<T>>
+extends SortablePlugin
+implements MinMaxMethod<T> {
+  
+  protected boolean initialized = false;
 
-	private Choice choice;
-
-	// -- InputWidget methods --
-
-	@Override
-	public Object getValue() {
-		return get().getObjectPool().get(choice.getSelectedIndex());
-	}
-
-	// -- WrapperPlugin methods --
-
-	@Override
-	public void set(final WidgetModel model) {
-		super.set(model);
-
-		choice = new Choice();
-		for (final Object item : model.getObjectPool()) {
-			choice.add(item.toString());
-		}
-		getComponent().add(choice, BorderLayout.CENTER);
-		choice.addItemListener(this);
-
-		refreshWidget();
-	}
-
-	// -- Typed methods --
-
-	@Override
-	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.getObjectPool().size() > 0;
-	}
-
-	// -- ItemListener methods --
-
-	@Override
-	public void itemStateChanged(final ItemEvent e) {
-		updateModel();
-	}
-
-	// -- AbstractUIInputWidget methods ---
-
-	@Override
-	public void doRefresh() {
-		final String value = get().getValue().toString();
-		if (value.equals(choice.getSelectedItem())) return; // no change
-		choice.select(value);
-	}
-
+  /**
+   * Throws an exception if this MinMaxMethod has not
+   * been initialized.
+   */
+  public void initializeCheck() {
+    if (!initialized) 
+      throw new RuntimeException("MinMaxMethod not initialized." +
+      		" Call MinMaxMethod#initialize() before processing.");
+  }
 }

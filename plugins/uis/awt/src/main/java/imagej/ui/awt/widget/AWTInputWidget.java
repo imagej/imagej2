@@ -35,7 +35,9 @@
 
 package imagej.ui.awt.widget;
 
-import imagej.widget.AbstractInputWidget;
+import imagej.ui.AbstractUIInputWidget;
+import imagej.ui.UserInterface;
+import imagej.ui.awt.AWTUI;
 import imagej.widget.WidgetModel;
 
 import java.awt.Panel;
@@ -45,7 +47,8 @@ import java.awt.Panel;
  * 
  * @author Curtis Rueden
  */
-public abstract class AWTInputWidget<T> extends AbstractInputWidget<T, Panel> {
+public abstract class AWTInputWidget<T> extends AbstractUIInputWidget<T, Panel>
+{
 
 	private Panel uiComponent;
 
@@ -67,6 +70,13 @@ public abstract class AWTInputWidget<T> extends AbstractInputWidget<T, Panel> {
 	@Override
 	public Class<Panel> getComponentType() {
 		return Panel.class;
+	}
+
+	// -- AbstractUIInputWidget methods --
+
+	@Override
+	protected UserInterface ui() {
+		return ui(AWTUI.NAME);
 	}
 
 }

@@ -104,21 +104,6 @@ public class SwingColorWidget extends SwingInputWidget<ColorRGB> implements
 		return AWTColors.getColorRGB(color);
 	}
 
-	@Override
-	public void refreshWidget() {
-		final ColorRGB value = (ColorRGB) get().getValue();
-		color = AWTColors.getColor(value);
-
-		final BufferedImage image =
-			new BufferedImage(SWATCH_WIDTH, SWATCH_HEIGHT, BufferedImage.TYPE_INT_RGB);
-		final Graphics g = image.getGraphics();
-		g.setColor(color);
-		g.fillRect(0, 0, image.getWidth(), image.getHeight());
-		g.dispose();
-		final ImageIcon icon = new ImageIcon(image);
-		choose.setIcon(icon);
-	}
-
 	// -- WrapperPlugin methods --
 
 	@Override
@@ -230,4 +215,20 @@ public class SwingColorWidget extends SwingInputWidget<ColorRGB> implements
 		return chooser;
 	}
 
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		final ColorRGB value = (ColorRGB) get().getValue();
+		color = AWTColors.getColor(value);
+
+		final BufferedImage image =
+			new BufferedImage(SWATCH_WIDTH, SWATCH_HEIGHT, BufferedImage.TYPE_INT_RGB);
+		final Graphics g = image.getGraphics();
+		g.setColor(color);
+		g.fillRect(0, 0, image.getWidth(), image.getHeight());
+		g.dispose();
+		final ImageIcon icon = new ImageIcon(image);
+		choose.setIcon(icon);
+	}
 }

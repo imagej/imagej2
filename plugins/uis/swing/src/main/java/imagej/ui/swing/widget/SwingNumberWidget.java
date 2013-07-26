@@ -81,13 +81,6 @@ public class SwingNumberWidget extends SwingInputWidget<Number> implements
 		return (Number) spinner.getValue();
 	}
 
-	@Override
-	public void refreshWidget() {
-		final Object value = get().getValue();
-		if (spinner.getValue().equals(value)) return; // no change
-		spinner.setValue(value);
-	}
-
 	// -- WrapperPlugin methods --
 
 	@Override
@@ -215,4 +208,12 @@ public class SwingNumberWidget extends SwingInputWidget<Number> implements
 		if (scrollBar != null) scrollBar.setValue(getValue().intValue());
 	}
 
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		final Object value = get().getValue();
+		if (spinner.getValue().equals(value)) return; // no change
+		spinner.setValue(value);
+	}
 }

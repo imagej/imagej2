@@ -61,12 +61,6 @@ public class PivotNumberSpinnerWidget extends PivotNumberWidget {
 		return NumberUtils.toNumber(value, get().getItem().getType());
 	}
 
-	@Override
-	public void refreshWidget() {
-		final Number value = (Number) get().getValue();
-		spinner.setSelectedItem(value.intValue());
-	}
-
 	// -- WrapperPlugin methods --
 
 	@Override
@@ -80,15 +74,15 @@ public class PivotNumberSpinnerWidget extends PivotNumberWidget {
 		spinner = new Spinner();
 		spinner.setPreferredWidth(100);
 		try {
-			spinner.setSpinnerData(new NumericSpinnerData(min.intValue(),
-				max.intValue(), stepSize.intValue()));
+			spinner.setSpinnerData(new NumericSpinnerData(min.intValue(), max
+				.intValue(), stepSize.intValue()));
 		}
-		catch (IllegalArgumentException exc) {
+		catch (final IllegalArgumentException exc) {
 			// HACK FIXME: Temporarily avoid case where there are more than
 			// Integer.MAX_VALUE spinner values (which Pivot does not allow).
 			spinner.setSpinnerData(new NumericSpinnerData(0, 100, 1));
 		}
-		catch (NullPointerException exc) {
+		catch (final NullPointerException exc) {
 			// HACK FIXME: Temporarily avoid case where there are more than
 			// Integer.MAX_VALUE spinner values (which Pivot does not allow).
 			spinner.setSpinnerData(new NumericSpinnerData(0, 100, 1));
@@ -98,4 +92,11 @@ public class PivotNumberSpinnerWidget extends PivotNumberWidget {
 		refreshWidget();
 	}
 
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		final Number value = (Number) get().getValue();
+		spinner.setSelectedItem(value.intValue());
+	}
 }

@@ -107,7 +107,7 @@ public class AWTUI extends AbstractUserInterface {
 	}
 
 	@Override
-	public File chooseFile(File file, String style) {
+	public File chooseFile(final File file, final String style) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
@@ -116,6 +116,11 @@ public class AWTUI extends AbstractUserInterface {
 		final int x, final int y)
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override()
+	public boolean requiresEDT() {
+		return true;
 	}
 
 	// -- Disposable methods --

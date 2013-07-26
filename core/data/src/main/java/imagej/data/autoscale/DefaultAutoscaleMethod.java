@@ -35,11 +35,15 @@
 
 package imagej.data.autoscale;
 
+import imagej.data.minmax.MinMaxMethod;
+
+import java.util.List;
+
 import net.imglib2.IterableInterval;
-import net.imglib2.algorithm.stats.ComputeMinMax;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginService;
 
 /**
  * Computes he data range from the entire set of values in an
@@ -49,11 +53,16 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = AutoscaleMethod.class, name = "Default")
 public class DefaultAutoscaleMethod<T extends RealType<T>> extends AbstractAutoscaleMethod<T> {
-
+  
 	@Override
 	public DataRange getRange(IterableInterval<T> interval)
 	{
-		ComputeMinMax<T> minmax = new ComputeMinMax<T>(interval);
+		@SuppressWarnings("rawtypes")
+    List<MinMaxMethod> lists = getContext().getService(PluginService.class)
+		    .createInstancesOfType(MinMaxMethod.class);
+    @SuppressWarnings("unchecked")
+    MinMaxMethod<T> minmax = lists.get(0);
+    minmax.initialize(interval);
 		minmax.process();
 		double min = minmax.getMin().getRealDouble();
 		double max = minmax.getMax().getRealDouble();

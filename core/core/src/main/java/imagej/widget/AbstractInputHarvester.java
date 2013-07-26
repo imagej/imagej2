@@ -45,6 +45,7 @@ import java.util.List;
 
 import org.scijava.AbstractContextual;
 import org.scijava.object.ObjectService;
+import org.scijava.thread.ThreadService;
 
 /**
  * Abstract superclass for {@link InputHarvester}s.
@@ -119,8 +120,9 @@ public abstract class AbstractInputHarvester<P, W> extends AbstractContextual
 		if (resolved) return null; // skip resolved inputs
 
 		final Class<T> type = item.getType();
+		final ThreadService threadService = getContext().getService(ThreadService.class);
 		final WidgetModel model =
-			new WidgetModel(inputPanel, module, item, getObjects(type));
+			new WidgetModel(inputPanel, module, item, getObjects(type), threadService);
 
 		final WidgetService widgetService =
 			getContext().getService(WidgetService.class);

@@ -63,13 +63,6 @@ public class SWTNumberWidget extends SWTInputWidget<Number> implements
 		return slider.getSelection();
 	}
 
-	@Override
-	public void refreshWidget() {
-		final int value = ((Number) get().getValue()).intValue();
-		if (slider.getSelection() == value) return; // no change
-		slider.setSelection(value);
-	}
-
 	// -- WrapperPlugin methods --
 
 	@Override
@@ -81,8 +74,8 @@ public class SWTNumberWidget extends SWTInputWidget<Number> implements
 		final Number stepSize = model.getStepSize();
 
 		slider = new Slider(getComponent(), SWT.HORIZONTAL);
-		slider.setValues(min.intValue(), min.intValue(), max.intValue(),
-			stepSize.intValue(), stepSize.intValue(), 10 * stepSize.intValue());
+		slider.setValues(min.intValue(), min.intValue(), max.intValue(), stepSize
+			.intValue(), stepSize.intValue(), 10 * stepSize.intValue());
 
 		refreshWidget();
 	}
@@ -94,4 +87,12 @@ public class SWTNumberWidget extends SWTInputWidget<Number> implements
 		return super.supports(model) && model.isNumber();
 	}
 
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		final int value = ((Number) get().getValue()).intValue();
+		if (slider.getSelection() == value) return; // no change
+		slider.setSelection(value);
+	}
 }

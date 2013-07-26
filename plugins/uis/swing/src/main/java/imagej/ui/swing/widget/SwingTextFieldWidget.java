@@ -86,13 +86,6 @@ public class SwingTextFieldWidget extends SwingInputWidget<String> implements
 		return textField.getText();
 	}
 
-	@Override
-	public void refreshWidget() {
-		final String text = get().getText();
-		if (textField.getText().equals(text)) return; // no change
-		textField.setText(text);
-	}
-
 	// -- WrapperPlugin methods --
 
 	@Override
@@ -133,4 +126,12 @@ public class SwingTextFieldWidget extends SwingInputWidget<String> implements
 		else Log.warn("Unknown document type: " + doc.getClass().getName());
 	}
 
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		final String text = get().getText();
+		if (textField.getText().equals(text)) return; // no change
+		textField.setText(text);
+	}
 }

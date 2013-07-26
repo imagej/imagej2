@@ -63,19 +63,6 @@ public class SWTChoiceWidget extends SWTInputWidget<String> implements
 		return combo.getItem(combo.getSelectionIndex());
 	}
 
-	@Override
-	public void refreshWidget() {
-		final String value = get().getValue().toString();
-		if (value.equals(getValue())) return; // no change
-		for (int i = 0; i < combo.getItemCount(); i++) {
-			final String item = combo.getItem(i);
-			if (item.equals(value)) {
-				combo.select(i);
-				break;
-			}
-		}
-	}
-
 	// -- WrapperPlugin methods --
 
 	@Override
@@ -94,8 +81,21 @@ public class SWTChoiceWidget extends SWTInputWidget<String> implements
 
 	@Override
 	public boolean supports(final WidgetModel model) {
-		return super.supports(model) && model.isText() &&
-			model.isMultipleChoice();
+		return super.supports(model) && model.isText() && model.isMultipleChoice();
 	}
 
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		final String value = get().getValue().toString();
+		if (value.equals(getValue())) return; // no change
+		for (int i = 0; i < combo.getItemCount(); i++) {
+			final String item = combo.getItem(i);
+			if (item.equals(value)) {
+				combo.select(i);
+				break;
+			}
+		}
+	}
 }

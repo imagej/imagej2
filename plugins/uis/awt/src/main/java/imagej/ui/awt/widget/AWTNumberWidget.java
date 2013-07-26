@@ -73,13 +73,6 @@ public class AWTNumberWidget extends AWTInputWidget<Number> implements
 		return scrollBar.getValue();
 	}
 
-	@Override
-	public void refreshWidget() {
-		final String value = get().getValue().toString();
-		if (textField.getText().equals(value)) return; // no change
-		textField.setText(value);
-	}
-
 	// -- WrapperPlugin methods --
 
 	@Override
@@ -130,4 +123,12 @@ public class AWTNumberWidget extends AWTInputWidget<Number> implements
 		}
 	}
 
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		final String value = get().getValue().toString();
+		if (textField.getText().equals(value)) return; // no change
+		textField.setText(value);
+	}
 }

@@ -99,7 +99,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	}
 
 	@Override
-	public File chooseFile(File file, String style) {
+	public File chooseFile(final File file, final String style) {
 		final JFileChooser chooser = new JFileChooser(file);
 		if (FileWidget.DIRECTORY_STYLE.equals(style)) {
 			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -131,6 +131,11 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 			final Component invoker = (Component) displayViewer.getPanel();
 			popupMenu.show(invoker, x, y);
 		}
+	}
+
+	@Override()
+	public boolean requiresEDT() {
+		return true;
 	}
 
 	// -- Disposable methods --

@@ -45,6 +45,7 @@ import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
+import org.scijava.thread.ThreadService;
 
 /**
  * A command intended to be run interactively.
@@ -105,7 +106,7 @@ public abstract class InteractiveCommand extends DynamicCommand implements
 
 	// -- Internal methods --
 
-	protected void updateInput(ModuleItem<?> item) {
+	protected void updateInput(final ModuleItem<?> item) {
 		final ModuleItem<Display<?>> displayItem = asDisplay(item);
 		if (displayItem != null) updateDisplay(displayItem);
 		else {
@@ -114,8 +115,8 @@ public abstract class InteractiveCommand extends DynamicCommand implements
 		}
 	}
 
-	protected <T> ModuleItem<T>
-		asType(final ModuleItem<?> item, final Class<T> type)
+	protected <T> ModuleItem<T> asType(final ModuleItem<?> item,
+		final Class<T> type)
 	{
 		if (!type.isAssignableFrom(item.getType())) {
 			return null;
@@ -130,7 +131,7 @@ public abstract class InteractiveCommand extends DynamicCommand implements
 		if (oldValue != newValue) {
 			item.setValue(this, newValue);
 			try {
-				item.callback(this);
+				item.callback(InteractiveCommand.this);
 			}
 			catch (final MethodCallException exc) {
 				log.error(exc);
@@ -144,10 +145,21 @@ public abstract class InteractiveCommand extends DynamicCommand implements
 	protected void onEvent(
 		@SuppressWarnings("unused") final DisplayActivatedEvent evt)
 	{
-		for (final String listenerName : listenerNames) {
-			final ModuleItem<?> item = getInfo().getInput(listenerName);
-			updateInput(item);
-		}
+		// NB: Update inputs on a thread *other* than the EDT, to avoid deadlocks.
+		// While updating, many of these inputs may interact with the UI (e.g.
+		// reporting
+		// status) which would require the EDT - thus updateInput() can not
+		// be launched from the EDT.
+		getContext().getService(ThreadService.class).run(new Runnable() {
+
+			@Override
+			public void run() {
+				for (final String listenerName : listenerNames) {
+					final ModuleItem<?> item = getInfo().getInput(listenerName);
+					updateInput(item);
+				}
+			}
+		});
 	}
 
 	// -- Helper methods --

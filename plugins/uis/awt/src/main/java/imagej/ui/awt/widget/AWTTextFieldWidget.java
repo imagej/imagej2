@@ -66,11 +66,6 @@ public class AWTTextFieldWidget extends AWTInputWidget<String> implements
 		return textField.getText();
 	}
 
-	@Override
-	public void refreshWidget() {
-		textField.setText(get().getValue().toString());
-	}
-
 	// -- WrapperPlugin methods --
 
 	@Override
@@ -100,4 +95,10 @@ public class AWTTextFieldWidget extends AWTInputWidget<String> implements
 		updateModel();
 	}
 
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		textField.setText(get().getValue().toString());
+	}
 }

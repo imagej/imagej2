@@ -69,13 +69,6 @@ public class SWTFileWidget extends SWTInputWidget<File> implements
 		return text.isEmpty() ? null : new File(text);
 	}
 
-	@Override
-	public void refreshWidget() {
-		final String text = get().getText();
-		if (text.equals(path.getText())) return; // no change
-		path.setText(text);
-	}
-
 	// -- WrapperPlugin methods --
 
 	@Override
@@ -100,4 +93,12 @@ public class SWTFileWidget extends SWTInputWidget<File> implements
 		return super.supports(model) && model.isType(File.class);
 	}
 
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		final String text = get().getText();
+		if (text.equals(path.getText())) return; // no change
+		path.setText(text);
+	}
 }

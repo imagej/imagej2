@@ -65,12 +65,6 @@ public class SwingMessageWidget extends SwingInputWidget<String> implements
 	}
 
 	@Override
-	public void refreshWidget() {
-		// maybe dialog owner changed message content
-		label.setText(get().getText());
-	}
-
-	@Override
 	public boolean isLabeled() {
 		return false;
 	}
@@ -99,4 +93,11 @@ public class SwingMessageWidget extends SwingInputWidget<String> implements
 		return super.supports(model) && model.isMessage();
 	}
 
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		// maybe dialog owner changed message content
+		label.setText(get().getText());
+	}
 }
