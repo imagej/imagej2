@@ -44,7 +44,7 @@ import org.junit.Test;
  */
 public class TestBigComplex {
 
-	private static final double PRECISION = 0.0000001;
+	private static final double PRECISION = 0.000000000001;
 
 	@Test
 	public void testAtan2() {
