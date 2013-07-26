@@ -245,11 +245,11 @@ public class BigComplex implements ComplexType<BigComplex> {
 		BigDecimal a = r.multiply(r);
 		BigDecimal b = i.multiply(i);
 		BigDecimal sum = a.add(b);
-		return bigSqrt(sum); // TODO test!
+		return bigSqrt(sum);
 	}
 
 	private BigDecimal phase() {
-		return atan2(i, r); // TODO test!
+		return atan2(i, r);
 	}
 
 	private static final BigDecimal SQRT_DIG = new BigDecimal(150);
@@ -263,7 +263,6 @@ public class BigComplex implements ComplexType<BigComplex> {
 	 * @url 
 	 *      http://www.codeproject.com/Tips/257031/Implementing-SqrtRoot-in-BigDecimal
 	 * @param c
-	 * @return
 	 */
 	private static BigDecimal bigSqrt(BigDecimal c) {
 		return sqrtNewtonRaphson(c, BigDecimal.ONE, BigDecimal.ONE.divide(SQRT_PRE));
@@ -277,7 +276,6 @@ public class BigComplex implements ComplexType<BigComplex> {
 	 * @param c
 	 * @param xn
 	 * @param precision
-	 * @return
 	 */
 	private static BigDecimal sqrtNewtonRaphson(BigDecimal c, BigDecimal xn,
 		BigDecimal precision)
