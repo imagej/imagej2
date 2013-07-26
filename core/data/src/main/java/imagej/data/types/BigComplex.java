@@ -245,11 +245,11 @@ public class BigComplex implements ComplexType<BigComplex> {
 		BigDecimal a = r.multiply(r);
 		BigDecimal b = i.multiply(i);
 		BigDecimal sum = a.add(b);
-		return bigSqrt(sum);
+		return bigSqrt(sum); // TODO test!
 	}
 
 	private BigDecimal phase() {
-		return atan2(i, r);
+		return atan2(i, r); // TODO test!
 	}
 
 	private static final BigDecimal SQRT_DIG = new BigDecimal(150);
