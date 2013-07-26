@@ -35,8 +35,6 @@
 
 package imagej.data.types;
 
-import java.math.BigDecimal;
-
 import org.scijava.AbstractContextual;
 
 //TODO - uncomment when we are ready to support
@@ -44,40 +42,44 @@ import org.scijava.AbstractContextual;
 /**
  * @author Barry DeZonia
  */
-public class DataTypeVariableBitSignedFloat extends AbstractContextual implements
-	DataType<UnboundedFloatType>
+public class DataTypeVariableBitSignedComplexFloat extends AbstractContextual
+	implements DataType<BigComplex>
 {
 
-	private UnboundedFloatType type = new UnboundedFloatType();
+	// -- fields --
+
+	private BigComplex type = new BigComplex();
+
+	// -- DataType methods --
 
 	@Override
-	public UnboundedFloatType getType() {
+	public BigComplex getType() {
 		return type;
 	}
 
 	@Override
 	public String shortName() {
-		return "Unbounded float";
+		return "Unbounded complex";
 	}
 
 	@Override
 	public String longName() {
-		return "Unbounded float";
+		return "Unbounded complex float";
 	}
 
 	@Override
 	public String description() {
-		return "A float data type whose size and precision are unrestricted";
+		return "A complex floating data type with BigDecimal subcomponents";
 	}
 
 	@Override
 	public boolean isComplex() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isFloat() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -91,13 +93,13 @@ public class DataTypeVariableBitSignedFloat extends AbstractContextual implement
 	}
 
 	@Override
-	public void lowerBound(UnboundedFloatType dest) {
-		throw new UnsupportedOperationException("This data type is unbounded");
+	public void lowerBound(BigComplex dest) {
+		throw new UnsupportedOperationException("complex numbers are unbounded");
 	}
 
 	@Override
-	public void upperBound(UnboundedFloatType dest) {
-		throw new UnsupportedOperationException("This data type is unbounded");
+	public void upperBound(BigComplex dest) {
+		throw new UnsupportedOperationException("complex numbers are unbounded");
 	}
 
 	@Override
@@ -107,19 +109,14 @@ public class DataTypeVariableBitSignedFloat extends AbstractContextual implement
 	}
 
 	@Override
-	public UnboundedFloatType createVariable() {
-		return new UnboundedFloatType();
+	public BigComplex createVariable() {
+		return type.createVariable();
 	}
 
 	@Override
-	public void cast(UnboundedFloatType val, BigComplex dest) {
-		dest.setReal(val.get());
-		dest.setImag(BigDecimal.ZERO);
-	}
-
-	@Override
-	public void cast(BigComplex val, UnboundedFloatType dest) {
-		dest.set(val.getReal());
+	public void cast(BigComplex val, BigComplex dest) {
+		dest.setReal(val.getReal());
+		dest.setImag(val.getImag());
 	}
 
 }
