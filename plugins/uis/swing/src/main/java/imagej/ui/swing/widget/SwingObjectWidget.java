@@ -73,13 +73,6 @@ public class SwingObjectWidget extends SwingInputWidget<Object> implements
 		return comboBox.getSelectedItem();
 	}
 
-	@Override
-	public void refreshWidget() {
-		final Object value = get().getValue();
-		if (value == comboBox.getSelectedItem()) return; // no change
-		comboBox.setSelectedItem(value);
-	}
-
 	// -- WrapperPlugin methods --
 
 	@Override
@@ -99,6 +92,15 @@ public class SwingObjectWidget extends SwingInputWidget<Object> implements
 	@Override
 	public boolean supports(final WidgetModel model) {
 		return super.supports(model) && model.getObjectPool().size() > 0;
+	}
+
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		final Object value = get().getValue();
+		if (value == comboBox.getSelectedItem()) return; // no change
+		comboBox.setSelectedItem(value);
 	}
 
 }

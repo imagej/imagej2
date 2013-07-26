@@ -35,7 +35,9 @@
 
 package imagej.ui.swing.widget;
 
-import imagej.widget.AbstractInputWidget;
+import imagej.ui.AbstractUIInputWidget;
+import imagej.ui.UserInterface;
+import imagej.ui.swing.sdi.SwingUI;
 import imagej.widget.WidgetModel;
 
 import javax.swing.JComponent;
@@ -49,7 +51,7 @@ import net.miginfocom.swing.MigLayout;
  * @author Curtis Rueden
  */
 public abstract class SwingInputWidget<T> extends
-	AbstractInputWidget<T, JPanel>
+	AbstractUIInputWidget<T, JPanel>
 {
 
 	private JPanel uiComponent;
@@ -75,6 +77,13 @@ public abstract class SwingInputWidget<T> extends
 	@Override
 	public Class<JPanel> getComponentType() {
 		return JPanel.class;
+	}
+
+	// -- AbstractUIInputWidget methods --
+
+	@Override
+	protected UserInterface ui() {
+		return ui(SwingUI.NAME);
 	}
 
 	// -- Helper methods --

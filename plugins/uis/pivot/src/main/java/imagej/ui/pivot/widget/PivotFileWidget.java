@@ -71,13 +71,6 @@ public class PivotFileWidget extends PivotInputWidget<File> implements
 		return text.isEmpty() ? null : new File(text);
 	}
 
-	@Override
-	public void refreshWidget() {
-		final String text = get().getText();
-		if (text.equals(path.getText())) return; // no change
-		path.setText(text);
-	}
-
 	// -- WrapperPlugin methods --
 
 	@Override
@@ -129,4 +122,12 @@ public class PivotFileWidget extends PivotInputWidget<File> implements
 		path.setText(file.getAbsolutePath());
 	}
 
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		final String text = get().getText();
+		if (text.equals(path.getText())) return; // no change
+		path.setText(text);
+	}
 }

@@ -108,7 +108,7 @@ public interface UserInterface extends ImageJPlugin, Contextual, Prioritized,
 
 	/** Gets the system clipboard associated with this UI. */
 	SystemClipboard getSystemClipboard();
-	
+
 	/** Creates a new display window housing the given display. */
 	DisplayWindow createDisplayWindow(Display<?> display);
 
@@ -152,5 +152,8 @@ public interface UserInterface extends ImageJPlugin, Contextual, Prioritized,
 
 	/** Restores the application frame's current location. */
 	void restoreLocation();
+
+	/** Returns true if this UI requires the EDT. */
+	boolean requiresEDT();
 
 }

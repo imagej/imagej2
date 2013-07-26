@@ -67,11 +67,6 @@ public class AWTButtonWidget extends AWTInputWidget<Button> implements
 	}
 
 	@Override
-	public void refreshWidget() {
-		// nothing to do
-	}
-
-	@Override
 	public boolean isLabeled() {
 		return false;
 	}
@@ -100,4 +95,10 @@ public class AWTButtonWidget extends AWTInputWidget<Button> implements
 		return model.isType(Button.class);
 	}
 
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	protected void doRefresh() {
+		// nothing to do
+	}
 }

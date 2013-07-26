@@ -79,14 +79,6 @@ public class SwingChoiceRadioWidget extends SwingInputWidget<String> implements
 		return selectedButton == null ? null : selectedButton.getText();
 	}
 
-	@Override
-	public void refreshWidget() {
-		final Object value = get().getValue();
-		final JRadioButton radioButton = getButton(value);
-		if (radioButton.isSelected()) return; // no change
-		radioButton.setSelected(true);
-	}
-
 	// -- WrapperPlugin methods --
 
 	@Override
@@ -155,4 +147,13 @@ public class SwingChoiceRadioWidget extends SwingInputWidget<String> implements
 		return null;
 	}
 
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		final Object value = get().getValue();
+		final JRadioButton radioButton = getButton(value);
+		if (radioButton.isSelected()) return; // no change
+		radioButton.setSelected(true);
+	}
 }

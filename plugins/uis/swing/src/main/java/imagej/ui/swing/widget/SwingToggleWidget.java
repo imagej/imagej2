@@ -72,12 +72,6 @@ public class SwingToggleWidget extends SwingInputWidget<Boolean> implements
 		return checkBox.isSelected();
 	}
 
-	@Override
-	public void refreshWidget() {
-		final Boolean value = (Boolean) get().getValue();
-		if (value != getValue()) checkBox.setSelected(value != null && value);
-	}
-
 	// -- WrapperPlugin methods --
 
 	@Override
@@ -99,4 +93,11 @@ public class SwingToggleWidget extends SwingInputWidget<Boolean> implements
 		return super.supports(model) && model.isBoolean();
 	}
 
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		final Boolean value = (Boolean) get().getValue();
+		if (value != getValue()) checkBox.setSelected(value != null && value);
+	}
 }

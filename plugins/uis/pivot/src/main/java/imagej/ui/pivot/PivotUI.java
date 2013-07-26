@@ -100,7 +100,7 @@ public class PivotUI extends AbstractUserInterface implements Runnable {
 	}
 
 	@Override
-	public File chooseFile(File file, String style) {
+	public File chooseFile(final File file, final String style) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
@@ -109,6 +109,11 @@ public class PivotUI extends AbstractUserInterface implements Runnable {
 		final int x, final int y)
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override()
+	public boolean requiresEDT() {
+		return true;
 	}
 
 	// -- Disposable methods --
@@ -134,10 +139,10 @@ public class PivotUI extends AbstractUserInterface implements Runnable {
 			// call run() method in a separate thread, blocking until finished
 			getUIService().getThreadService().run(this).get();
 		}
-		catch (ExecutionException exc) {
+		catch (final ExecutionException exc) {
 			if (log != null) log.error(exc);
 		}
-		catch (InterruptedException exc) {
+		catch (final InterruptedException exc) {
 			if (log != null) log.error(exc);
 		}
 		app = getApplicationContext();
@@ -157,17 +162,17 @@ public class PivotUI extends AbstractUserInterface implements Runnable {
 		final LogService log = getContext().getService(LogService.class);
 		try {
 			final Field field =
-					DesktopApplicationContext.class.getDeclaredField("application");
+				DesktopApplicationContext.class.getDeclaredField("application");
 			field.setAccessible(true);
 			return (PivotApplication) field.get(null);
 		}
-		catch (NoSuchFieldException exc) {
+		catch (final NoSuchFieldException exc) {
 			if (log != null) log.error(exc);
 		}
-		catch (IllegalArgumentException exc) {
+		catch (final IllegalArgumentException exc) {
 			if (log != null) log.error(exc);
 		}
-		catch (IllegalAccessException exc) {
+		catch (final IllegalAccessException exc) {
 			if (log != null) log.error(exc);
 		}
 		return null;

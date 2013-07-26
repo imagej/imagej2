@@ -53,6 +53,7 @@ import org.scijava.plugin.Plugin;
 public class PivotButtonWidget extends PivotInputWidget<Button> implements
 	ButtonWidget<BoxPane>
 {
+
 	// private Button button;
 
 	@Override
@@ -61,23 +62,18 @@ public class PivotButtonWidget extends PivotInputWidget<Button> implements
 	}
 
 	@Override
-	public void refreshWidget() {
-		// nothing to do
-	}
-
-	@Override
 	public boolean isLabeled() {
 		return false;
 	}
 
 	// -- WrapperPlugin methods --
-	
+
 	@Override
 	public void set(final WidgetModel model) {
 		super.set(model);
 
 		throw new UnsupportedOperationException("unimplemented feature");
-		
+
 		/* TODO - adapt the following code:
 		button = new Button(model.getWidgetLabel());
 		button.addActionListener(new ActionListener() {
@@ -94,8 +90,15 @@ public class PivotButtonWidget extends PivotInputWidget<Button> implements
 	// -- Typed methods --
 
 	@Override
-	public boolean supports(WidgetModel model) {
+	public boolean supports(final WidgetModel model) {
 		return model.isType(Button.class);
 	}
-	
+
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		// nothing to do
+	}
+
 }

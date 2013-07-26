@@ -62,12 +62,6 @@ public class PivotToggleWidget extends PivotInputWidget<Boolean> implements
 		return checkbox.isSelected();
 	}
 
-	@Override
-	public void refreshWidget() {
-		final Boolean value = (Boolean) get().getValue();
-		if (value != getValue()) checkbox.setSelected(value != null && value);
-	}
-
 	// -- WrapperPlugin methods --
 
 	@Override
@@ -85,6 +79,14 @@ public class PivotToggleWidget extends PivotInputWidget<Boolean> implements
 	@Override
 	public boolean supports(final WidgetModel model) {
 		return super.supports(model) && model.isBoolean();
+	}
+
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		final Boolean value = (Boolean) get().getValue();
+		if (value != getValue()) checkbox.setSelected(value != null && value);
 	}
 
 }

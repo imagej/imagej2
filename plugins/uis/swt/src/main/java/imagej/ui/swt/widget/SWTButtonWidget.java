@@ -53,6 +53,7 @@ import org.scijava.plugin.Plugin;
 public class SWTButtonWidget extends SWTInputWidget<Button> implements
 	ButtonWidget<Composite>
 {
+
 	// private Button button;
 
 	// -- InputWidget methods --
@@ -63,23 +64,18 @@ public class SWTButtonWidget extends SWTInputWidget<Button> implements
 	}
 
 	@Override
-	public void refreshWidget() {
-		// nothing to do
-	}
-
-	@Override
 	public boolean isLabeled() {
 		return false;
 	}
 
 	// -- WrapperPlugin methods --
-	
+
 	@Override
 	public void set(final WidgetModel model) {
 		super.set(model);
 
 		throw new UnsupportedOperationException("unimplemented feature");
-		
+
 		/* TODO - adapt the following code:
 		button = new Button(model.getWidgetLabel());
 		button.addActionListener(new ActionListener() {
@@ -96,8 +92,14 @@ public class SWTButtonWidget extends SWTInputWidget<Button> implements
 	// -- Typed methods --
 
 	@Override
-	public boolean supports(WidgetModel model) {
+	public boolean supports(final WidgetModel model) {
 		return model.isType(Button.class);
 	}
-	
+
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		// nothing to do
+	}
 }

@@ -62,11 +62,6 @@ public class PivotMessageWidget extends PivotInputWidget<String> implements
 	}
 
 	@Override
-	public void refreshWidget() {
-		// NB: No action needed.
-	}
-
-	@Override
 	public boolean isLabeled() {
 		return false;
 	}
@@ -93,6 +88,13 @@ public class PivotMessageWidget extends PivotInputWidget<String> implements
 	@Override
 	public boolean supports(final WidgetModel model) {
 		return super.supports(model) && model.isMessage();
+	}
+
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		// NB: No action needed.
 	}
 
 }

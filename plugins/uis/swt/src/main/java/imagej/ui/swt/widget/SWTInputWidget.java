@@ -35,7 +35,9 @@
 
 package imagej.ui.swt.widget;
 
-import imagej.widget.AbstractInputWidget;
+import imagej.ui.AbstractUIInputWidget;
+import imagej.ui.UserInterface;
+import imagej.ui.swt.SWTUI;
 import imagej.widget.WidgetModel;
 
 import org.eclipse.swt.widgets.Composite;
@@ -46,7 +48,7 @@ import org.eclipse.swt.widgets.Composite;
  * @author Curtis Rueden
  */
 public abstract class SWTInputWidget<T> extends
-	AbstractInputWidget<T, Composite>
+	AbstractUIInputWidget<T, Composite>
 {
 
 	private Composite uiComponent;
@@ -79,6 +81,13 @@ public abstract class SWTInputWidget<T> extends
 	@Override
 	public Class<Composite> getComponentType() {
 		return Composite.class;
+	}
+
+	// -- AbstractUIInputWidget methods --
+
+	@Override
+	protected UserInterface ui() {
+		return ui(SWTUI.NAME);
 	}
 
 }

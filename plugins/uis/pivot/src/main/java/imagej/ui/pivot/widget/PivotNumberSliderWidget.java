@@ -66,13 +66,6 @@ public class PivotNumberSliderWidget extends PivotNumberWidget implements
 		return NumberUtils.toNumber(value, get().getItem().getType());
 	}
 
-	@Override
-	public void refreshWidget() {
-		final Number value = (Number) get().getValue();
-		slider.setValue(value.intValue());
-		label.setText(value.toString());
-	}
-
 	// -- WrapperPlugin methods --
 
 	@Override
@@ -109,4 +102,12 @@ public class PivotNumberSliderWidget extends PivotNumberWidget implements
 		label.setText("" + s.getValue());
 	}
 
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		final Number value = (Number) get().getValue();
+		slider.setValue(value.intValue());
+		label.setText(value.toString());
+	}
 }

@@ -88,16 +88,6 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 	}
 
 	@Override
-	public void refreshWidget() {
-		if (bundle.hasChanges()) {
-			bundle.setHasChanges(false);
-			ChartPanel newChartPanel = makeChartPanel(bundle);
-			JFreeChart chart = newChartPanel.getChart();
-			chartPanel.setChart(chart);
-		}
-	}
-
-	@Override
 	public void set(final WidgetModel model) {
 		super.set(model);
 		bundle = (HistogramBundle) model.getValue();
@@ -107,17 +97,17 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 	}
 
 	@Override
-	public boolean supports(WidgetModel model) {
+	public boolean supports(final WidgetModel model) {
 		return model.isType(HistogramBundle.class);
 	}
 
 	// -- helpers --
 
-	private ChartPanel makeChartPanel(HistogramBundle b) {
-		JFreeChart chart = getChart(null, b);
-		ChartPanel panel = new ChartPanel(chart);
-		int xSize = b.getPreferredSizeX();
-		int ySize = b.getPreferredSizeY();
+	private ChartPanel makeChartPanel(final HistogramBundle b) {
+		final JFreeChart chart = getChart(null, b);
+		final ChartPanel panel = new ChartPanel(chart);
+		final int xSize = b.getPreferredSizeX();
+		final int ySize = b.getPreferredSizeY();
 		panel.setPreferredSize(new java.awt.Dimension(xSize, ySize));
 		return panel;
 	}
@@ -125,13 +115,13 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 	/**
 	 * Returns a JFreeChart containing data from the provided histogram.
 	 */
-	private JFreeChart getChart(String title, HistogramBundle bund) {
+	private JFreeChart getChart(final String title, final HistogramBundle bund) {
 		final XYSeries series = new XYSeries("histo");
-		long total = bund.getHistogram().getBinCount();
+		final long total = bund.getHistogram().getBinCount();
 		for (long i = 0; i < total; i++) {
 			series.add(i, bund.getHistogram().frequency(i));
 		}
-		JFreeChart chart = createChart(title, series);
+		final JFreeChart chart = createChart(title, series);
 		if (bund.getMinBin() != -1) {
 			chart.getXYPlot().addDomainMarker(
 				new ValueMarker(bund.getMinBin(), Color.black, new BasicStroke(1)));
@@ -146,7 +136,7 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 		return chart;
 	}
 
-	private JFreeChart createChart(String title, XYSeries series) {
+	private JFreeChart createChart(final String title, final XYSeries series) {
 		final XYSeriesCollection data = new XYSeriesCollection(series);
 		final JFreeChart chart =
 			ChartFactory.createXYBarChart(title, null, false, null, data,
@@ -192,11 +182,11 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 		plot.getRangeAxis().setLabelPaint(Color.gray);
 		plot.getDomainAxis().setTickLabelPaint(Color.gray);
 		plot.getRangeAxis().setTickLabelPaint(Color.gray);
-		TextTitle title = chart.getTitle();
+		final TextTitle title = chart.getTitle();
 		if (title != null) title.setPaint(Color.black);
 	}
 
-	private boolean displaySlopeLine(HistogramBundle bund) {
+	private boolean displaySlopeLine(final HistogramBundle bund) {
 		// OLD
 		// if (Double.isNaN(bund.getLineIntercept())) return false;
 		// if (Double.isNaN(bund.getLineSlope())) return false;
@@ -214,44 +204,46 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 			private double x1, y1, x2, y2;
 
 			@Override
-			public void removeChangeListener(AnnotationChangeListener listener) {
+			public void removeChangeListener(final AnnotationChangeListener listener)
+			{
 				// ignore
 			}
 
 			@Override
-			public void addChangeListener(AnnotationChangeListener listener) {
+			public void addChangeListener(final AnnotationChangeListener listener) {
 				// ignore
 			}
 
 			@Override
-			public void draw(Graphics2D g2, XYPlot plot, Rectangle2D dataArea,
-				ValueAxis domainAxis, ValueAxis rangeAxis, int rendererIndex,
-				PlotRenderingInfo info)
+			public void draw(final Graphics2D g2, final XYPlot plot,
+				final Rectangle2D dataArea, final ValueAxis domainAxis,
+				final ValueAxis rangeAxis, final int rendererIndex,
+				final PlotRenderingInfo info)
 			{
 				calcLineCoords(dataArea);
 				drawLine(g2);
 			}
 
-			private void drawLine(Graphics2D g2) {
-				Color origColor = g2.getColor();
+			private void drawLine(final Graphics2D g2) {
+				final Color origColor = g2.getColor();
 				g2.setColor(Color.black);
 				g2.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
 				g2.setColor(origColor);
 			}
 
 			@SuppressWarnings("synthetic-access")
-			private void calcLineCoords(Rectangle2D rect) {
+			private void calcLineCoords(final Rectangle2D rect) {
 				// adapted from IJ1's ContrastAdjuster plugin
 				// calc slope line from min/max ranges
-				double x = rect.getMinX();
-				double y = rect.getMinY();
-				double w = rect.getWidth();
-				double h = rect.getHeight();
-				double min = bundle.getTheoreticalMin();
-				double max = bundle.getTheoreticalMax();
-				double defaultMin = bundle.getDataMin();
-				double defaultMax = bundle.getDataMax();
-				double scale = w / (defaultMax - defaultMin);
+				final double x = rect.getMinX();
+				final double y = rect.getMinY();
+				final double w = rect.getWidth();
+				final double h = rect.getHeight();
+				final double min = bundle.getTheoreticalMin();
+				final double max = bundle.getTheoreticalMax();
+				final double defaultMin = bundle.getDataMin();
+				final double defaultMax = bundle.getDataMax();
+				final double scale = w / (defaultMax - defaultMin);
 				double slope = 0.0;
 				if (max != min) slope = h / (max - min);
 				if (min >= defaultMin) {
@@ -310,5 +302,17 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 			}
 			 */
 		};
+	}
+
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		if (bundle.hasChanges()) {
+			bundle.setHasChanges(false);
+			final ChartPanel newChartPanel = makeChartPanel(bundle);
+			final JFreeChart chart = newChartPanel.getChart();
+			chartPanel.setChart(chart);
+		}
 	}
 }

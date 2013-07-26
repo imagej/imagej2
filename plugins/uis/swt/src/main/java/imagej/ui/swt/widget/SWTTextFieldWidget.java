@@ -62,11 +62,6 @@ public class SWTTextFieldWidget extends SWTInputWidget<String> implements
 		return text.getText();
 	}
 
-	@Override
-	public void refreshWidget() {
-		text.setText(get().getValue().toString());
-	}
-
 	// -- WrapperPlugin methods --
 
 	@Override
@@ -88,4 +83,10 @@ public class SWTTextFieldWidget extends SWTInputWidget<String> implements
 			!model.isMultipleChoice() && !model.isMessage();
 	}
 
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		text.setText(get().getValue().toString());
+	}
 }

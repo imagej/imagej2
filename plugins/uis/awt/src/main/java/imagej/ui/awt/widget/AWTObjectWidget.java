@@ -66,13 +66,6 @@ public class AWTObjectWidget extends AWTInputWidget<Object> implements
 		return get().getObjectPool().get(choice.getSelectedIndex());
 	}
 
-	@Override
-	public void refreshWidget() {
-		final String value = get().getValue().toString();
-		if (value.equals(choice.getSelectedItem())) return; // no change
-		choice.select(value);
-	}
-
 	// -- WrapperPlugin methods --
 
 	@Override
@@ -101,6 +94,15 @@ public class AWTObjectWidget extends AWTInputWidget<Object> implements
 	@Override
 	public void itemStateChanged(final ItemEvent e) {
 		updateModel();
+	}
+
+	// -- AbstractUIInputWidget methods ---
+
+	@Override
+	public void doRefresh() {
+		final String value = get().getValue().toString();
+		if (value.equals(choice.getSelectedItem())) return; // no change
+		choice.select(value);
 	}
 
 }

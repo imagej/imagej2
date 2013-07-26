@@ -43,6 +43,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.scijava.ItemVisibility;
+import org.scijava.thread.ThreadService;
 import org.scijava.util.ClassUtils;
 import org.scijava.util.NumberUtils;
 
@@ -57,16 +58,19 @@ public class WidgetModel {
 	private final Module module;
 	private final ModuleItem<?> item;
 	private final List<?> objectPool;
+	private final ThreadService threadService;
 
 	private boolean initialized;
 
 	public WidgetModel(final InputPanel<?, ?> inputPanel, final Module module,
-		final ModuleItem<?> item, final List<?> objectPool)
+		final ModuleItem<?> item, final List<?> objectPool,
+		final ThreadService threadService)
 	{
 		this.inputPanel = inputPanel;
 		this.module = module;
 		this.item = item;
 		this.objectPool = objectPool;
+		this.threadService = threadService;
 	}
 
 	/** Gets the input panel intended to house the widget. */
@@ -138,9 +142,15 @@ public class WidgetModel {
 		if (objectsEqual(item.getValue(module), value)) return; // no change
 		module.setInput(name, value);
 		if (initialized) {
-			callback();
-			inputPanel.refresh();
-			module.preview();
+			threadService.run(new Runnable() {
+
+				@Override
+				public void run() {
+					callback();
+					inputPanel.refresh(); // must be on AWT thread?
+					module.preview();
+				}
+			});
 		}
 	}
 
@@ -151,7 +161,7 @@ public class WidgetModel {
 		}
 		catch (final MethodCallException exc) {
 			// CTR FIXME: Get a context somehow.
-			//log.error(exc);
+			// log.error(exc);
 		}
 	}
 
@@ -321,7 +331,7 @@ public class WidgetModel {
 	}
 
 	/** Ensures the value is on the given list. */
-	private Object ensureValid(Object value, List<?> list) {
+	private Object ensureValid(final Object value, final List<?> list) {
 		for (final Object o : list) {
 			if (o.equals(value)) return value; // value is valid
 		}
