@@ -113,7 +113,7 @@ public class DataType64BitSignedComplexFloat extends AbstractContextual
 
 	@Override
 	public ComplexFloatType createVariable() {
-		return type.createVariable();
+		return new ComplexFloatType();
 	}
 
 	@Override

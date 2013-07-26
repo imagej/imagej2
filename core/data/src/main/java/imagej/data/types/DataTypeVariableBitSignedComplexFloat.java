@@ -110,7 +110,7 @@ public class DataTypeVariableBitSignedComplexFloat extends AbstractContextual
 
 	@Override
 	public BigComplex createVariable() {
-		return type.createVariable();
+		return new BigComplex();
 	}
 
 	@Override
