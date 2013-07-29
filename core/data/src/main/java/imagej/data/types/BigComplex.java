@@ -315,16 +315,17 @@ public class BigComplex implements ComplexType<BigComplex> {
 		BigDecimal xNew, yNew;
 		
 		for (int j = 0; j < ANGLES.length; j++) {
+			BigDecimal twoPowJ = TWO.pow(j);
 			if (ty.compareTo(BigDecimal.ZERO) < 0) {
 				// Rotate counter-clockwise 
-				xNew = tx.subtract(ty.divide(TWO.pow(j)));
-				yNew = ty.add(tx.divide(TWO.pow(j)));
+				xNew = tx.subtract(ty.divide(twoPowJ));
+				yNew = ty.add(tx.divide(twoPowJ));
 				angle = angle.subtract(ANGLES[j]);
 			}
 			else {
 				// Rotate clockwise 
-				xNew = tx.add(ty.divide(TWO.pow(j)));
-				yNew = ty.subtract(tx.divide(TWO.pow(j)));
+				xNew = tx.add(ty.divide(twoPowJ));
+				yNew = ty.subtract(tx.divide(twoPowJ));
 				angle = angle.add(ANGLES[j]);
 			}
 			tx = xNew;
