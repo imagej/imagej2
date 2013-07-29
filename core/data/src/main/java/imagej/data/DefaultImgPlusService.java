@@ -58,11 +58,10 @@ public class DefaultImgPlusService extends AbstractService implements
 {
 
 	// TODO
-	// Using this class we should relax Dataset's base type to Type
+	// Using this class we should relax Dataset's ImgPlus' base type to Type
 	// from RealType. Then those who need more specific access can use the
-	// static helper methods below. Thus we can break ImageJ2's reliance
-	// on RealType. And we can support LongType with no data loss by static
-	// cast to IntegerType.
+	// methods below. Thus we can break ImageJ2's reliance on RealType. And we
+	// can support LongType with no data loss by using integer() below.
 	//
 	// One limitation of this approach: imagine we have a type (like the proposed
 	// FloatingType) that does not derive directly from something in the numeric
@@ -71,16 +70,13 @@ public class DefaultImgPlusService extends AbstractService implements
 	// we might be shut out of using basic things like add(), mul(), etc. In other
 	// words we can't return types that implement Numeric<T> & Floating<T> unless
 	// we make specific interfaces containing both and add another routine like
-	// numericFloat() that checks both types internally. So we have a workaround.
-	// But I also think this argues for FloatingType to be derived within the
-	// numeric hierarchy.
+	// numericFloat() that checks both types internally. So we might have a
+	// workaround (if the type implements the cobined interface). But I also think
+	// this argues for FloatingType to be derived within the numeric hierarchy.
 
 	// -- public static methods --
 
-	/**
-	 * Returns a ImgPlus of a given type from a Dataset. Returns null if the given
-	 * Dataset does not have data of the given type.
-	 */
+	// see Javadoc
 	public <T extends Type<T>> ImgPlus<T> asType(ImgPlus<?> ip, T type) {
 		if (isBackedAs(ip, type.getClass())) {
 			return (ImgPlus<T>) (ImgPlus) ip;
@@ -88,10 +84,7 @@ public class DefaultImgPlusService extends AbstractService implements
 		return null;
 	}
 
-	/**
-	 * Returns a ImgPlus of type Type given a Dataset. Returns null if the given
-	 * Dataset does not have data of Type.
-	 */
+	// see Javadoc
 	public ImgPlus<Type<?>> typed(ImgPlus<?> ip) {
 		if (isBackedAs(ip, Type.class)) {
 			return (ImgPlus<Type<?>>) (ImgPlus) ip;
@@ -99,10 +92,7 @@ public class DefaultImgPlusService extends AbstractService implements
 		return null;
 	}
 
-	/**
-	 * Returns a ImgPlus of type NumericType given a Dataset. Returns null if the
-	 * given Dataset does not have data of NumericType.
-	 */
+	// see Javadoc
 	public ImgPlus<NumericType<?>> numeric(ImgPlus<?> ip) {
 		if (isBackedAs(ip, NumericType.class)) {
 			return (ImgPlus<NumericType<?>>) (ImgPlus) ip;
@@ -110,10 +100,7 @@ public class DefaultImgPlusService extends AbstractService implements
 		return null;
 	}
 
-	/**
-	 * Returns a ImgPlus of type ComplexType given a Dataset. Returns null if the
-	 * given Dataset does not have data of ComplexType.
-	 */
+	// see Javadoc
 	public ImgPlus<ComplexType<?>> complex(ImgPlus<?> ip) {
 		if (isBackedAs(ip, ComplexType.class)) {
 			return (ImgPlus<ComplexType<?>>) (ImgPlus) ip;
@@ -121,10 +108,7 @@ public class DefaultImgPlusService extends AbstractService implements
 		return null;
 	}
 
-	/**
-	 * Returns a ImgPlus of type RealType given a Dataset. Returns null if the
-	 * given Dataset does not have data of RealType.
-	 */
+	// see Javadoc
 	public ImgPlus<RealType<?>> real(ImgPlus<?> ip) {
 		if (isBackedAs(ip, RealType.class)) {
 			return (ImgPlus<RealType<?>>) (ImgPlus) ip;
@@ -132,10 +116,7 @@ public class DefaultImgPlusService extends AbstractService implements
 		return null;
 	}
 
-	/**
-	 * Returns a ImgPlus of type IntegerType given a Dataset. Returns null if the
-	 * given Dataset does not have data of IntegerType.
-	 */
+	// see Javadoc
 	public ImgPlus<IntegerType<?>> integer(ImgPlus<?> ip) {
 		if (isBackedAs(ip, IntegerType.class)) {
 			return (ImgPlus<IntegerType<?>>) (ImgPlus) ip;
@@ -143,11 +124,9 @@ public class DefaultImgPlusService extends AbstractService implements
 		return null;
 	}
 
-//TODO - once FloatingType is an Imglib type
-//	/**
-//	 * Returns a ImgPlus of type FloatingType given a Dataset. Returns null if the
-//	 * given Dataset does not have data of FloatingType.
-//	 */
+// TODO - once FloatingType is an Imglib type
+
+	// see Javadoc
 //	public ImgPlus<FloatingType<?>> floating(ImgPlus<?> ip) {
 //		if (isBackedAs(ip, FloatingType.class)) {
 //			return (ImgPlus<FloatingType<?>>) (ImgPlus) ip;

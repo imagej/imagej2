@@ -50,48 +50,53 @@ import org.scijava.service.Service;
 public interface ImgPlusService extends Service {
 
 	/**
-	 * Returns a ImgPlus of a given type from a Dataset. Returns null if the given
-	 * Dataset does not have data of the given type.
+	 * Given an ImgPlus of unknown type this returns a typed ImgPlus of a given
+	 * type. Returns null if the given ImgPlus does not have data of the given
+	 * type.
 	 */
 	public <T extends Type<T>> ImgPlus<T> asType(ImgPlus<?> ip, T type);
 
 	/**
-	 * Returns a ImgPlus of type Type given a Dataset. Returns null if the given
-	 * Dataset does not have data of Type.
+	 * Given an ImgPlus of unknown type this returns a typed ImgPlus of type Type.
+	 * Returns null if the given ImgPlus does not have data derived from Type.
 	 */
 	public ImgPlus<Type<?>> typed(ImgPlus<?> ip);
 
 	/**
-	 * Returns a ImgPlus of type NumericType given a Dataset. Returns null if the
-	 * given Dataset does not have data of NumericType.
+	 * Given an ImgPlus of unknown type this returns a typed ImgPlus of type
+	 * NumericType. Returns null if the given ImgPlus does not have data derived
+	 * from NumericType.
 	 */
 	public ImgPlus<NumericType<?>> numeric(ImgPlus<?> ip);
 
 	/**
-	 * Returns a ImgPlus of type ComplexType given a Dataset. Returns null if the
-	 * given Dataset does not have data of ComplexType.
+	 * Given an ImgPlus of unknown type this returns a typed ImgPlus of type
+	 * ComplexType. Returns null if the given ImgPlus does not have data derived
+	 * from ComplexType.
 	 */
 	public ImgPlus<ComplexType<?>> complex(ImgPlus<?> ip);
 
 	/**
-	 * Returns a ImgPlus of type RealType given a Dataset. Returns null if the
-	 * given Dataset does not have data of RealType.
+	 * Given an ImgPlus of unknown type this returns a typed ImgPlus of type
+	 * RealType. Returns null if the given ImgPlus does not have data derived from
+	 * RealType.
 	 */
 	public ImgPlus<RealType<?>> real(ImgPlus<?> ip);
 
 	/**
-	 * Returns a ImgPlus of type IntegerType given a Dataset. Returns null if the
-	 * given Dataset does not have data of IntegerType.
+	 * Given an ImgPlus of unknown type this returns a typed ImgPlus of type
+	 * IntegerType. Returns null if the given ImgPlus does not have data derived
+	 * from IntegerType.
 	 */
 	public ImgPlus<IntegerType<?>> integer(ImgPlus<?> ip);
 
 	// TODO - once FloatingType is an Imglib type
 
-	// /**
-	// * Returns a ImgPlus of type FloatingType given a Dataset. Returns null if
-	// the
-	// * given Dataset does not have data of FloatingType.
-	// */
-	// public ImgPlus<FloatingType<?>> floating(ImgPlus<?> ip);
+//	/**
+//	 * Given an ImgPlus of unknown type this returns a typed ImgPlus of type
+//	 * FloatingType. Returns null if the given ImgPlus does not have data derived
+//	 * from FloatingType.
+//	 */
+// 	public ImgPlus<FloatingType<?>> floating(ImgPlus<?> ip);
 
 }
