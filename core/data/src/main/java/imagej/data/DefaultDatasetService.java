@@ -58,9 +58,6 @@ import net.imglib2.img.planar.PlanarImgFactory;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.logic.BitType;
-import net.imglib2.type.numeric.ComplexType;
-import net.imglib2.type.numeric.IntegerType;
-import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.ByteType;
 import net.imglib2.type.numeric.integer.IntType;
@@ -272,50 +269,6 @@ public final class DefaultDatasetService extends AbstractService implements
 		final String name = new File(destination).getName();
 		dataset.setName(name);
 		dataset.setDirty(false);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public ImgPlus<NumericType<?>> getNumeric(Dataset ds) {
-		ImgPlus<?> imgPlus = ds.getImgPlus();
-		Object var = imgPlus.firstElement();
-		if (NumericType.class.isAssignableFrom(var.getClass())) {
-			return (ImgPlus<NumericType<?>>) imgPlus;
-		}
-		return null;
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public ImgPlus<ComplexType<?>> getComplex(Dataset ds) {
-		ImgPlus<?> imgPlus = ds.getImgPlus();
-		Object var = imgPlus.firstElement();
-		if (ComplexType.class.isAssignableFrom(var.getClass())) {
-			return (ImgPlus<ComplexType<?>>) imgPlus;
-		}
-		return null;
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public ImgPlus<RealType<?>> getReal(Dataset ds) {
-		ImgPlus<?> imgPlus = ds.getImgPlus();
-		Object var = imgPlus.firstElement();
-		if (RealType.class.isAssignableFrom(var.getClass())) {
-			return (ImgPlus<RealType<?>>) imgPlus;
-		}
-		return null;
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public ImgPlus<IntegerType<?>> getInteger(Dataset ds) {
-		ImgPlus<?> imgPlus = ds.getImgPlus();
-		Object var = imgPlus.firstElement();
-		if (IntegerType.class.isAssignableFrom(var.getClass())) {
-			return (ImgPlus<IntegerType<?>>) imgPlus;
-		}
-		return null;
 	}
 
 	// -- Helper methods --
