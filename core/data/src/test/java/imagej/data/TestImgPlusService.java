@@ -40,6 +40,7 @@ import static org.junit.Assert.assertNull;
 import net.imglib2.img.ImgPlus;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
+import net.imglib2.type.numeric.IntegerType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.ByteType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -69,10 +70,10 @@ public class TestImgPlusService {
 	}
 
 	@Test
-	public void testUByte() {
+	public void testByte() {
 		ImgPlus<? extends RealType<?>> imgPlus;
-		final ArrayImg<?, ?> imgUByte = ArrayImgs.bytes(5, 5);
-		imgPlus = new ImgPlus(imgUByte);
+		final ArrayImg<?, ?> imgByte = ArrayImgs.bytes(5, 5);
+		imgPlus = new ImgPlus(imgByte);
 
 		assertNotNull(service.typed(imgPlus));
 		assertNotNull(service.complex(imgPlus));
@@ -115,4 +116,24 @@ public class TestImgPlusService {
 		assertNotNull(TypedData.asType(imgPlus, new BooleanType()));
 	}
 	*/
+
+	// How useful is it to have typed ImgPluses using service code? Can we do the
+	// math ops we might want to do?
+
+	private void note() {
+
+		ImgPlus<? extends RealType<?>> imgPlus;
+		final ArrayImg<?, ?> imgLong = ArrayImgs.longs(5, 5);
+		imgPlus = new ImgPlus(imgLong);
+		ImgPlus<IntegerType<?>> typed = service.integer(imgPlus);
+		IntegerType<?> var1 = typed.firstElement();
+		IntegerType<?> var2 = typed.firstElement();
+
+		// won't compile
+		// var1.add(var2);
+
+		// compiles
+		var1.setInteger(1000);
+		var2.setInteger(var1.getIntegerLong() + 4000);
+	}
 }
