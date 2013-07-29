@@ -44,6 +44,8 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.ByteType;
 import net.imglib2.type.numeric.real.FloatType;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.scijava.Context;
 
@@ -52,12 +54,22 @@ import org.scijava.Context;
  */
 public class TestImgPlusService {
 
-	private final Context context = new Context(ImgPlusService.class);
+	private static Context context;
+	private static ImgPlusService service;
+
+	@BeforeClass
+	public static void setupOnce() {
+		context = new Context(ImgPlusService.class);
+		service = context.getService(ImgPlusService.class);
+	}
+
+	@AfterClass
+	public static void teardownOnce() {
+		context.dispose();
+	}
 
 	@Test
 	public void testUByte() {
-		final ImgPlusService service = context.getService(ImgPlusService.class);
-
 		ImgPlus<? extends RealType<?>> imgPlus;
 		final ArrayImg<?, ?> imgUByte = ArrayImgs.bytes(5, 5);
 		imgPlus = new ImgPlus(imgUByte);
@@ -73,10 +85,7 @@ public class TestImgPlusService {
 
 	@Test
 	public void testFloat() {
-		final ImgPlusService service = context.getService(ImgPlusService.class);
-
 		ImgPlus<? extends RealType<?>> imgPlus;
-
 		final ArrayImg<?, ?> imgFloat = ArrayImgs.floats(5, 5);
 		imgPlus = new ImgPlus(imgFloat);
 
@@ -93,8 +102,7 @@ public class TestImgPlusService {
 	@Test
 	public void testBoolean() {
 		ImgPlus<? extends RealType<?>> imgPlus;
-
-		final Img<BooleanType> imgBoolean = null;  // or bit type?
+		final Img<BooleanType> imgBoolean = null;
 		imgPlus = new ImgPlus(imgBoolean);
 
 		assertNull(TypedData.typed(imgPlus));
