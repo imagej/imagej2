@@ -315,7 +315,7 @@ public class BigComplex implements ComplexType<BigComplex> {
 		BigDecimal xNew, yNew;
 		
 		for (int j = 0; j < ANGLES.length; j++) {
-			BigDecimal twoPowJ = TWO.pow(j);
+			BigDecimal twoPowJ = POWERS_OF_TWO[j];
 			if (ty.compareTo(BigDecimal.ZERO) < 0) {
 				// Rotate counter-clockwise 
 				xNew = tx.subtract(ty.divide(twoPowJ));
@@ -408,6 +408,16 @@ public class BigComplex implements ComplexType<BigComplex> {
 				"0.0000000000001136868377216160297393798823227106871573802050"),
 			new BigDecimal(
 				"0.00000000000005684341886080801486968994134502633589467252562") };
+
+	private static BigDecimal[] POWERS_OF_TWO = powersOfTwo();
+
+	private static BigDecimal[] powersOfTwo() {
+		BigDecimal[] powers = new BigDecimal[ANGLES.length];
+		for (int i = 0; i < ANGLES.length; i++) {
+			powers[i] = TWO.pow(i);
+		}
+		return powers;
+	}
 
 	/* useful if we implement sine and cosine
 	private static final BigDecimal[] K_VALUES = new BigDecimal[MAX_ATAN_ITERS];
