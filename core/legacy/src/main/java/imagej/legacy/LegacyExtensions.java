@@ -494,11 +494,11 @@ public class LegacyExtensions {
 				+ "if (convertToGrayscale)"
 				+ "  ij.IJ.run($_, \"8-bit\", \"\");");
 			hacker.replaceCallInMethod("ij.plugin.FolderOpener", "boolean showDialog(ij.ImagePlus imp, java.lang.String[] list)",
-				"ij.gui.GenericDialog", "addCheckbox",
-				"i$0.addCheckbox(\"Convert to 8-bit Grayscale\", convertToGrayscale);"
+				"ij.plugin.FolderOpener$FolderOpenerDialog", "addCheckbox",
+				"$0.addCheckbox(\"Convert to 8-bit Grayscale\", convertToGrayscale);"
 				+ "$0.addCheckbox($1, $2);", 1);
 			hacker.replaceCallInMethod("ij.plugin.FolderOpener", "boolean showDialog(ij.ImagePlus imp, java.lang.String[] list)",
-					"ij.gui.GenericDialog", "getNextBoolean",
+					"ij.plugin.FolderOpener$FolderOpenerDialog", "getNextBoolean",
 					"convertToGrayscale = $0.getNextBoolean();"
 					+ "$_ = $0.getNextBoolean();"
 					+ "if (convertToGrayscale && $_) {"
@@ -517,6 +517,7 @@ public class LegacyExtensions {
 		addEditorExtensionPoints(hacker);
 		insertAppNameHooks(hacker);
 		insertRefreshMenusHook(hacker);
+		overrideStartupMacrosForFiji(hacker);
 	}
 
 	/**
@@ -538,7 +539,7 @@ public class LegacyExtensions {
 			"if (isText($1) && " + LegacyExtensions.class.getName() + ".openInLegacyEditor($1)) return;");
 		hacker.dontReturnOnNull("ij.plugin.frame.Recorder", "void createMacro()");
 		hacker.replaceCallInMethod("ij.plugin.frame.Recorder", "void createMacro()",
-			"ij.plugin.frame.Editor", "runPlugIn",
+			"ij.IJ", "runPlugIn",
 			"$_ = null;");
 		hacker.replaceCallInMethod("ij.plugin.frame.Recorder", "void createMacro()",
 			"ij.plugin.frame.Editor", "createMacro",
@@ -584,20 +585,25 @@ public class LegacyExtensions {
 	 */
 	private static void insertAppNameHooks(final CodeHacker hacker) {
 		final String appName = LegacyExtensions.class.getName() + ".getAppName()";
+		final String replace = ".replace(\"ImageJ\", " + appName + ")";
 		hacker.insertAtTopOfMethod("ij.IJ", "public void error(java.lang.String title, java.lang.String msg)",
 				"if ($1 == null || $1.equals(\"ImageJ\")) $1 = " + appName + ";");
-		hacker.insertAtBottomOfMethod("ij.ImageJ", "public java.lang.String version()", "$_ = $_.replace(\"ImageJ\", " + appName + ");");
-		hacker.replaceParameterInCall("ij.ImageJ", "public <init>(java.applet.Applet applet, int mode)", "super", 1, appName);
-		hacker.replaceParameterInNew("ij.ImageJ", "public void run()", "ij.gui.GenericDialog", 1, appName);
-		hacker.replaceParameterInCall("ij.ImageJ", "public void run()", "addMessage", 1, appName);
+		hacker.insertAtBottomOfMethod("ij.ImageJ", "public java.lang.String version()", "$_ = $_" + replace + ";");
+		hacker.replaceAppNameInCall("ij.ImageJ", "public <init>(java.applet.Applet applet, int mode)", "super", 1, appName);
+		hacker.replaceAppNameInNew("ij.ImageJ", "public void run()", "ij.gui.GenericDialog", 1, appName);
+		hacker.replaceAppNameInCall("ij.ImageJ", "public void run()", "addMessage", 1, appName);
 		if (hacker.hasMethod("ij.plugin.CommandFinder", "public void export()")) {
-			hacker.replaceParameterInNew("ij.plugin.CommandFinder", "public void export()", "ij.text.TextWindow", 1, appName);
+			hacker.replaceAppNameInNew("ij.plugin.CommandFinder", "public void export()", "ij.text.TextWindow", 1, appName);
 		}
-		hacker.replaceParameterInCall("ij.plugin.Hotkeys", "public void removeHotkey()", "addMessage", 1, appName);
-		hacker.replaceParameterInCall("ij.plugin.Hotkeys", "public void removeHotkey()", "showStatus", 1, appName);
-		hacker.replaceParameterInCall("ij.plugin.Options", "public void appearance()", "showMessage", 2, appName);
-		hacker.replaceParameterInCall("ij.gui.YesNoCancelDialog", "public <init>(java.awt.Frame parent, java.lang.String title, java.lang.String msg)", "super", 2, appName);
-		hacker.replaceParameterInCall("ij.gui.Toolbar", "private void showMessage(int toolId)", "showStatus", 1, appName);
+		hacker.replaceAppNameInCall("ij.plugin.Hotkeys", "public void removeHotkey()", "addMessage", 1, appName);
+		hacker.replaceAppNameInCall("ij.plugin.Hotkeys", "public void removeHotkey()", "showStatus", 1, appName);
+		if (hacker.existsClass("ij.plugin.AppearanceOptions")) {
+			hacker.replaceAppNameInCall("ij.plugin.AppearanceOptions", "void showDialog()", "showMessage", 2, appName);
+		} else {
+			hacker.replaceAppNameInCall("ij.plugin.Options", "public void appearance()", "showMessage", 2, appName);
+		}
+		hacker.replaceAppNameInCall("ij.gui.YesNoCancelDialog", "public <init>(java.awt.Frame parent, java.lang.String title, java.lang.String msg)", "super", 2, appName);
+		hacker.replaceAppNameInCall("ij.gui.Toolbar", "private void showMessage(int toolId)", "showStatus", 1, appName);
 	}
 
 	private static void addIconHooks(final CodeHacker hacker) {
@@ -654,6 +660,21 @@ public class LegacyExtensions {
 				"\tjava.io.File file = (java.io.File)iter.next();\n" +
 				code + "\n" +
 				"}\n";
+	}
+
+	private static void overrideStartupMacrosForFiji(CodeHacker hacker) {
+		hacker.replaceCallInMethod("ij.Menus", "void installStartupMacroSet()", "java.io.File", "<init>",
+				"if ($1.endsWith(\"StartupMacros.txt\")) {" +
+				" java.lang.String fijiPath = $1.substring(0, $1.length() - 3) + \"fiji.ijm\";" +
+				" java.io.File fijiFile = new java.io.File(fijiPath);" +
+				" $_ = fijiFile.exists() ? fijiFile : new java.io.File($1);" +
+				"} else $_ = new java.io.File($1);");
+		hacker.replaceCallInMethod("ij.Menus", "void installStartupMacroSet()", "ij.plugin.MacroInstaller", "installFile",
+				"if ($1.endsWith(\"StartupMacros.txt\")) {" +
+				" java.lang.String fijiPath = $1.substring(0, $1.length() - 3) + \"fiji.ijm\";" +
+				" java.io.File fijiFile = new java.io.File(fijiPath);" +
+				" $0.installFile(fijiFile.exists() ? fijiFile.getPath() : $1);" +
+				"} else $0.installFile($1);");
 	}
 
 }
