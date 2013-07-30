@@ -670,31 +670,43 @@ public class CodeHacker {
 			final String calledMethodName, final String newCode, final int onlyNth) {
 		try {
 			final CtBehavior method = getBehavior(fullClass, methodSig);
-			method.instrument(new ExprEditor() {
-				private int count = 0;
-
-				@Override
-				public void edit(MethodCall call) throws CannotCompileException {
-					if (call.getMethodName().equals(calledMethodName)
-							&& call.getClassName().equals(calledClass)) {
-						if ( ++count != onlyNth && onlyNth > 0) return;
-						call.replace(newCode);
-					}
-				}
-
-				@Override
-				public void edit(NewExpr expr) throws CannotCompileException {
-					if ("<init>".equals(calledMethodName)
-							&& expr.getClassName().equals(calledClass)) {
-						if ( ++count != onlyNth && onlyNth > 0) return;
-						expr.replace(newCode);
-					}
-				}
-			});
+			final CallInMethodExprEditor editor = new CallInMethodExprEditor(calledClass, calledMethodName, newCode, onlyNth);
+			method.instrument(editor);
 		} catch (final Throwable e) {
 			maybeThrow(new IllegalArgumentException(
 					"Cannot handle replace call to " + calledMethodName
 							+ " in " + fullClass + "'s " + methodSig, e));
+		}
+	}
+
+	private static class CallInMethodExprEditor extends ExprEditor {
+		private int count = 0;
+		private final String calledClass, calledMethodName, newCode;
+		private final int onlyNth;
+
+		public CallInMethodExprEditor(final String calledClass, final String calledMethodName, final String newCode, final int onlyNth) {
+			this.calledClass = calledClass;
+			this.calledMethodName = calledMethodName;
+			this.newCode = newCode;
+			this.onlyNth = onlyNth;
+		}
+
+		@Override
+		public void edit(MethodCall call) throws CannotCompileException {
+			if (call.getMethodName().equals(calledMethodName)
+					&& call.getClassName().equals(calledClass)) {
+				if ( ++count != onlyNth && onlyNth > 0) return;
+				call.replace(newCode);
+			}
+		}
+
+		@Override
+		public void edit(NewExpr expr) throws CannotCompileException {
+			if ("<init>".equals(calledMethodName)
+					&& expr.getClassName().equals(calledClass)) {
+				if ( ++count != onlyNth && onlyNth > 0) return;
+				expr.replace(newCode);
+			}
 		}
 	}
 
