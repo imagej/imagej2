@@ -295,10 +295,9 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 				updateSites.put(name, getUpdateSite(name, true));
 			}
 		}
-		for (final Map.Entry<String, UpdateSite> entry : updateSites.entrySet()) {
-			final UpdateSite updateSite = entry.getValue();
+		for (final UpdateSite updateSite : getUpdateSites(false)) {
 			if (updateSite.isUploadable()) {
-				final String name = entry.getKey();
+				final String name = updateSite.getName();
 				actions.add(new Upload(name));
 				actions.add(new Remove(name));
 			}
