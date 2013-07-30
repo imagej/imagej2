@@ -352,18 +352,19 @@ public class CodeHacker {
 	public void insertAtTopOfExceptionHandlers(final String fullClass, final String methodSig, final String exceptionClassName, final String src) {
 		try {
 			final CtBehavior method = getBehavior(fullClass, methodSig);
-			method.instrument(new ExprEditor() {
+			new EagerExprEditor() {
 				@Override
 				public void edit(Handler handler) throws CannotCompileException {
 					try {
 						if (handler.getType().getName().equals(exceptionClassName)) {
 							handler.insertBefore(src);
+							markEdited();
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
-			});
+			}.instrument(method);
 		} catch (final Throwable e) {
 			maybeThrow(new IllegalArgumentException(
 					"Cannot edit exception handler for type'"
