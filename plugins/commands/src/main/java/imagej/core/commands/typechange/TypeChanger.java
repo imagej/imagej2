@@ -117,76 +117,14 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 		if (combineChannels && channelCount > 1 &&
 			channelCount <= Integer.MAX_VALUE)
 		{
-			int count = (int) channelCount;
-			BigComplex[] temps = new BigComplex[count];
-			for (int i = 0; i < count; i++) {
-				temps[i] = new BigComplex();
-			}
-			BigComplex combined = new BigComplex();
-			BigComplex divisor = new BigComplex(count, 0);
-			long[] dims = calcDims(data.getDims(), chAxis);
-			AxisType[] axes = calcAxes(data.getAxes(), chAxis);
 			newData =
-				datasetService.create(outType.createVariable(), dims,
-					"Converted Image", axes);
-			long[] span = data.getDims().clone();
-			span[chAxis] = 1;
-			PointSet combinedSpace = new HyperVolumePointSet(span);
-			PointSetIterator iter = combinedSpace.iterator();
-			RandomAccess<U> inAccessor =
-				(RandomAccess<U>) data.getImgPlus().randomAccess();
-			RandomAccess<V> outAccessor =
-				(RandomAccess<V>) newData.getImgPlus().randomAccess();
-			while (iter.hasNext()) {
-				long[] pos = iter.next();
-				inAccessor.setPosition(pos);
-				for (int i = 0; i < count; i++) {
-					inAccessor.setPosition(i, chAxis);
-					inType.cast(inAccessor.get(), temps[i]);
-				}
-				combined.setZero();
-				for (int i = 0; i < count; i++) {
-					combined.add(temps[i]);
-				}
-				int d = 0;
-				for (int i = 0; i < count; i++) {
-					if (i == chAxis) continue;
-					outAccessor.setPosition(pos[i], d++);
-				}
-				// TODO
-				// was:
-				// combined.div(divisor);
-				// outType.cast(combined, outAccessor.get());
-				//
-				// Would love to do a combined.div(divisor) but note that BigComplex can
-				// error out. Divide by 3 and you'll get an exception. We need
-				// BigRationals internally rather than BigDecimals. BigComplex is
-				// broken as a math type (but totally useful as a casting type). For now
-				// work in doubles causing possible precision loss.
-				double real = combined.getRealDouble() / count;
-				double imag = combined.getImaginaryDouble() / count;
-				outAccessor.get().setReal(real);
-				outAccessor.get().setImaginary(imag);
-			}
-			copyMetaDataChannelsCase(data.getImgPlus(), newData.getImgPlus());
+				channelAveragingCase(inType, outType, chAxis, (int) channelCount);
 		}
 		else { // straight 1 for 1 pixel casting
-			newData =
-				datasetService.create(outType.createVariable(), data.getDims(),
-					"Converted Image", data.getAxes());
-			Cursor<U> inCursor = (Cursor<U>) data.getImgPlus().cursor();
-			RandomAccess<V> outAccessor =
-				(RandomAccess<V>) newData.getImgPlus().randomAccess();
-			BigComplex tmp = new BigComplex();
-			while (inCursor.hasNext()) {
-				inCursor.fwd();
-				outAccessor.setPosition(inCursor);
-				cast(inType, inCursor.get(), outType, outAccessor.get(), tmp);
-			}
-			copyMetaDataDefaultCase(data.getImgPlus(), newData.getImgPlus());
+			newData = channelPreservingCase(inType, outType);
 		}
 		data.setImgPlus(newData.getImgPlus());
-		data.setRGBMerged(false);
+		data.setRGBMerged(false); // we never end up with RGB merged data
 	}
 
 	// -- initializers --
@@ -204,6 +142,86 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 		DataType<?> type = dataTypeService.getTypeByClass(dataVar.getClass());
 		if (type == null) input.setValue(this, choices.get(0));
 		else input.setValue(this, type.longName());
+	}
+
+	// -- helpers --
+
+	@SuppressWarnings("unchecked")
+	private Dataset channelAveragingCase(DataType<U> inType, DataType<V> outType,
+		int chAxis, int count)
+	{
+		BigComplex[] temps = new BigComplex[count];
+		for (int i = 0; i < count; i++) {
+			temps[i] = new BigComplex();
+		}
+		BigComplex combined = new BigComplex();
+		BigComplex divisor = new BigComplex(count, 0);
+		long[] dims = calcDims(data.getDims(), chAxis);
+		AxisType[] axes = calcAxes(data.getAxes(), chAxis);
+		Dataset newData =
+			datasetService.create(outType.createVariable(), dims, "Converted Image",
+				axes);
+		long[] span = data.getDims().clone();
+		span[chAxis] = 1;
+		PointSet combinedSpace = new HyperVolumePointSet(span);
+		PointSetIterator iter = combinedSpace.iterator();
+		RandomAccess<U> inAccessor =
+			(RandomAccess<U>) data.getImgPlus().randomAccess();
+		RandomAccess<V> outAccessor =
+			(RandomAccess<V>) newData.getImgPlus().randomAccess();
+		while (iter.hasNext()) {
+			long[] pos = iter.next();
+			inAccessor.setPosition(pos);
+			for (int i = 0; i < count; i++) {
+				inAccessor.setPosition(i, chAxis);
+				inType.cast(inAccessor.get(), temps[i]);
+			}
+			combined.setZero();
+			for (int i = 0; i < count; i++) {
+				combined.add(temps[i]);
+			}
+			int d = 0;
+			for (int i = 0; i < count; i++) {
+				if (i == chAxis) continue;
+				outAccessor.setPosition(pos[i], d++);
+			}
+			// TODO
+			// was:
+			// combined.div(divisor);
+			// outType.cast(combined, outAccessor.get());
+			//
+			// Would love to do a combined.div(divisor) but note that BigComplex can
+			// error out. Divide by 3 and you'll get an exception. We need
+			// BigRationals internally rather than BigDecimals. BigComplex is
+			// broken as a math type (but totally useful as a casting type). For now
+			// work in doubles causing possible precision loss.
+			double real = combined.getRealDouble() / count;
+			double imag = combined.getImaginaryDouble() / count;
+			outAccessor.get().setReal(real);
+			outAccessor.get().setImaginary(imag);
+		}
+		copyMetaDataChannelsCase(data.getImgPlus(), newData.getImgPlus());
+		return newData;
+	}
+
+	@SuppressWarnings("unchecked")
+	private Dataset
+		channelPreservingCase(DataType<U> inType, DataType<V> outType)
+	{
+		Dataset newData =
+			datasetService.create(outType.createVariable(), data.getDims(),
+				"Converted Image", data.getAxes());
+		Cursor<U> inCursor = (Cursor<U>) data.getImgPlus().cursor();
+		RandomAccess<V> outAccessor =
+			(RandomAccess<V>) newData.getImgPlus().randomAccess();
+		BigComplex tmp = new BigComplex();
+		while (inCursor.hasNext()) {
+			inCursor.fwd();
+			outAccessor.setPosition(inCursor);
+			cast(inType, inCursor.get(), outType, outAccessor.get(), tmp);
+		}
+		copyMetaDataDefaultCase(data.getImgPlus(), newData.getImgPlus());
+		return newData;
 	}
 
 	// TODO - do all the testing outside this method once and call one of three
