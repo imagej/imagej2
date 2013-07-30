@@ -76,7 +76,6 @@ import net.miginfocom.swing.MigLayout;
 
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
-import org.scijava.event.EventSubscriber;
 
 /**
  * Swing implementation of image display panel. Contains a label, a graphics
@@ -104,9 +103,6 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 
 	private final Map<AxisType, JLabel> axisLabels =
 		new HashMap<AxisType, JLabel>();
-
-	@SuppressWarnings("unused")
-	private final List<EventSubscriber<?>> subscribers;
 
 	// -- constructors --
 
@@ -146,7 +142,7 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 
 		final EventService eventService =
 			display.getContext().getService(EventService.class);
-		subscribers = eventService.subscribe(this);
+		eventService.subscribe(this);
 	}
 
 	// -- SwingDisplayPanel methods --

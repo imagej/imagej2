@@ -43,7 +43,6 @@ import imagej.ui.UIService;
 import java.awt.BorderLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -52,7 +51,6 @@ import javax.swing.border.BevelBorder;
 
 import org.scijava.app.event.StatusEvent;
 import org.scijava.event.EventHandler;
-import org.scijava.event.EventSubscriber;
 
 /**
  * Swing implementation of {@link StatusBar}.
@@ -66,9 +64,6 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 	private final JLabel statusText;
 	private final JProgressBar progressBar;
 
-	@SuppressWarnings("unused")
-	private final List<EventSubscriber<?>> subscribers;
-
 	public SwingStatusBar(final UIService uiService) {
 		this.uiService = uiService;
 		statusText = new JLabel(uiService.getApp().getInfo(false));
@@ -78,7 +73,7 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 		setLayout(new BorderLayout());
 		add(statusText, BorderLayout.CENTER);
 		add(progressBar, BorderLayout.EAST);
-		subscribers = uiService.getEventService().subscribe(this);
+		uiService.getEventService().subscribe(this);
 		statusText.addMouseListener(this);
 	}
 

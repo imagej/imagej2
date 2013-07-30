@@ -46,7 +46,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.AbstractButton;
@@ -61,7 +60,6 @@ import javax.swing.event.ChangeListener;
 
 import org.scijava.InstantiableException;
 import org.scijava.event.EventHandler;
-import org.scijava.event.EventSubscriber;
 import org.scijava.plugin.PluginInfo;
 
 /**
@@ -85,15 +83,12 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 
-	@SuppressWarnings("unused")
-	private final List<EventSubscriber<?>> subscribers;
-
 	public SwingToolBar(final UIService uiService) {
 		this.uiService = uiService;
 		iconService = uiService.getContext().getService(SwingIconService.class);
 		toolButtons = new HashMap<String, AbstractButton>();
 		populateToolBar();
-		subscribers = uiService.getEventService().subscribe(this);
+		uiService.getEventService().subscribe(this);
 	}
 
 	// -- ToolBar methods --

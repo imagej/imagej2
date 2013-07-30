@@ -40,11 +40,9 @@ import imagej.ui.UIService;
 
 import java.awt.Graphics;
 import java.awt.Label;
-import java.util.List;
 
 import org.scijava.app.event.StatusEvent;
 import org.scijava.event.EventHandler;
-import org.scijava.event.EventSubscriber;
 
 /**
  * AWT implementation of {@link StatusBar}.
@@ -58,12 +56,9 @@ public class AWTStatusBar extends Label implements StatusBar {
 	private int value;
 	private int maximum;
 
-	@SuppressWarnings("unused")
-	private final List<EventSubscriber<?>> subscribers;
-
 	public AWTStatusBar(final UIService uiService) {
 		this.uiService = uiService;
-		subscribers = uiService.getEventService().subscribe(this);
+		uiService.getEventService().subscribe(this);
 	}
 
 	// -- Component methods --
