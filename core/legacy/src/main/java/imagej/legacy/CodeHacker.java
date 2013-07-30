@@ -629,14 +629,15 @@ public class CodeHacker {
 	public void overrideFieldWrite(final String fullClass, final String methodSig, final String fieldName, final String newCode) {
 		try {
 			final CtBehavior method = getBehavior(fullClass, methodSig);
-			method.instrument(new ExprEditor() {
+			new EagerExprEditor() {
 				@Override
 				public void edit(final FieldAccess access) throws CannotCompileException {
 					if (access.getFieldName().equals(access)) {
 						access.replace(newCode);
+						markEdited();
 					}
 				}
-			});
+			}.instrument(method);
 		} catch (final Throwable e) {
 			maybeThrow(new IllegalArgumentException(
 					"Cannot override field access to " + fieldName + " in "
