@@ -538,7 +538,7 @@ public class LegacyExtensions {
 			"if (isText($1) && " + LegacyExtensions.class.getName() + ".openInLegacyEditor($1)) return;");
 		hacker.dontReturnOnNull("ij.plugin.frame.Recorder", "void createMacro()");
 		hacker.replaceCallInMethod("ij.plugin.frame.Recorder", "void createMacro()",
-			"ij.plugin.frame.Editor", "runPlugIn",
+			"ij.IJ", "runPlugIn",
 			"$_ = null;");
 		hacker.replaceCallInMethod("ij.plugin.frame.Recorder", "void createMacro()",
 			"ij.plugin.frame.Editor", "createMacro",
