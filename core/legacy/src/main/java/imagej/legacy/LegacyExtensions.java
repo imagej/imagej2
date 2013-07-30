@@ -585,9 +585,10 @@ public class LegacyExtensions {
 	 */
 	private static void insertAppNameHooks(final CodeHacker hacker) {
 		final String appName = LegacyExtensions.class.getName() + ".getAppName()";
+		final String replace = ".replace(\"ImageJ\", " + appName + ")";
 		hacker.insertAtTopOfMethod("ij.IJ", "public void error(java.lang.String title, java.lang.String msg)",
 				"if ($1 == null || $1.equals(\"ImageJ\")) $1 = " + appName + ";");
-		hacker.insertAtBottomOfMethod("ij.ImageJ", "public java.lang.String version()", "$_ = $_.replace(\"ImageJ\", " + appName + ");");
+		hacker.insertAtBottomOfMethod("ij.ImageJ", "public java.lang.String version()", "$_ = $_" + replace + ";");
 		hacker.replaceParameterInCall("ij.ImageJ", "public <init>(java.applet.Applet applet, int mode)", "super", 1, appName);
 		hacker.replaceParameterInNew("ij.ImageJ", "public void run()", "ij.gui.GenericDialog", 1, appName);
 		hacker.replaceParameterInCall("ij.ImageJ", "public void run()", "addMessage", 1, appName);
@@ -596,7 +597,11 @@ public class LegacyExtensions {
 		}
 		hacker.replaceParameterInCall("ij.plugin.Hotkeys", "public void removeHotkey()", "addMessage", 1, appName);
 		hacker.replaceParameterInCall("ij.plugin.Hotkeys", "public void removeHotkey()", "showStatus", 1, appName);
-		hacker.replaceParameterInCall("ij.plugin.Options", "public void appearance()", "showMessage", 2, appName);
+		if (hacker.existsClass("ij.plugin.AppearanceOptions")) {
+			hacker.replaceParameterInCall("ij.plugin.AppearanceOptions", "void showDialog()", "showMessage", 2, appName);
+		} else {
+			hacker.replaceParameterInCall("ij.plugin.Options", "public void appearance()", "showMessage", 2, appName);
+		}
 		hacker.replaceParameterInCall("ij.gui.YesNoCancelDialog", "public <init>(java.awt.Frame parent, java.lang.String title, java.lang.String msg)", "super", 2, appName);
 		hacker.replaceParameterInCall("ij.gui.Toolbar", "private void showMessage(int toolId)", "showStatus", 1, appName);
 	}
