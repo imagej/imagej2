@@ -66,6 +66,8 @@ public class DefaultAutoscaleMethod<T extends RealType<T>> extends AbstractAutos
 		minmax.process();
 		double min = minmax.getMin().getRealDouble();
 		double max = minmax.getMax().getRealDouble();
+		// NB - never return a display range of zero
+		if (min == max) max += 0.000000000000001;
 		return new DataRange(min, max);
 	}
 
