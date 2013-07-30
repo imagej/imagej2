@@ -35,12 +35,27 @@
 
 package imagej.legacy;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.scijava.AbstractContextual;
+import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+
+import ij.Executer;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.ImageWindow;
+import ij.io.Opener;
 import imagej.data.display.ImageDisplay;
+import imagej.platform.event.AppAboutEvent;
+import imagej.platform.event.AppOpenFilesEvent;
+import imagej.platform.event.AppPreferencesEvent;
+import imagej.platform.event.AppQuitEvent;
+import imagej.platform.event.ApplicationEvent;
 
 /**
  * A helper class to interact with ImageJ 1.x.
@@ -181,4 +196,45 @@ public class IJ1Helper {
 		IJ.log(message);
 	}
 
+	private static class LegacyEventDelegator extends AbstractContextual {
+
+		// -- MacAdapter re-implementations --
+
+		@EventHandler
+		protected void onEvent(final AppAboutEvent event) {
+			if (isLegacyMode(event)) {
+				IJ.run("About ImageJ...");
+			}
+		}
+
+		@EventHandler
+		protected void onEvent(final AppOpenFilesEvent event) {
+			if (isLegacyMode(event)) {
+				final List<File> files = new ArrayList<File>(event.getFiles());
+				for (final File file : files) {
+					new Opener().openAndAddToRecent(file.getAbsolutePath());
+				}
+			}
+		}
+
+		@EventHandler
+		protected void onEvent(final AppQuitEvent event) {
+			if (isLegacyMode(event)) {
+				new Executer("Quit", null); // works with the CommandListener
+			}
+		}
+
+		@EventHandler
+		protected void onEvent(final AppPreferencesEvent event) {
+			if (isLegacyMode(event)) {
+				IJ.error("The ImageJ preferences are in the Edit>Options menu.");
+			}
+		}
+
+		private static boolean isLegacyMode(final ApplicationEvent event) {
+			final LegacyService legacyService = event.getContext().getService(LegacyService.class);
+			return legacyService != null && legacyService.isLegacyMode();
+		}
+
+	}
 }

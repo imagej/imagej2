@@ -39,6 +39,7 @@ import java.awt.GraphicsEnvironment;
 import java.lang.reflect.Field;
 
 import org.scijava.Context;
+import org.scijava.event.EventService;
 import org.scijava.util.ClassUtils;
 
 /**
