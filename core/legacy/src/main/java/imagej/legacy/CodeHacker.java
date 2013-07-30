@@ -672,6 +672,9 @@ public class CodeHacker {
 			final CtBehavior method = getBehavior(fullClass, methodSig);
 			final CallInMethodExprEditor editor = new CallInMethodExprEditor(calledClass, calledMethodName, newCode, onlyNth);
 			method.instrument(editor);
+			if (!editor.replacedCode()) {
+				maybeThrow(new IllegalArgumentException("No code replaced!"));
+			}
 		} catch (final Throwable e) {
 			maybeThrow(new IllegalArgumentException(
 					"Cannot handle replace call to " + calledMethodName
@@ -688,7 +691,7 @@ public class CodeHacker {
 			this.calledClass = calledClass;
 			this.calledMethodName = calledMethodName;
 			this.newCode = newCode;
-			this.onlyNth = onlyNth;
+			this.onlyNth = onlyNth < 0 ? 0 : onlyNth;
 		}
 
 		@Override
@@ -707,6 +710,10 @@ public class CodeHacker {
 				if ( ++count != onlyNth && onlyNth > 0) return;
 				expr.replace(newCode);
 			}
+		}
+
+		public boolean replacedCode() {
+			return count >= onlyNth && count > 0;
 		}
 	}
 
