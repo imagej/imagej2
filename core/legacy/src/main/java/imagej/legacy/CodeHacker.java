@@ -400,7 +400,7 @@ public class CodeHacker {
 			final int parameterIndex, final String replacement) {
 		try {
 			final CtBehavior method = getBehavior(fullClass, methodSig);
-			method.instrument(new ExprEditor() {
+			new EagerExprEditor() {
 				@Override
 				public void edit(NewExpr expr) throws CannotCompileException {
 					if (expr.getClassName().equals(newClassName))
@@ -418,13 +418,14 @@ public class CodeHacker {
 									parameterIndex, parameterTypes.length, replacement);
 							expr.replace("$_ = new " + newClassName + replace
 									+ ";");
+							markEdited();
 						} catch (NotFoundException e) {
 							maybeThrow(new IllegalArgumentException(
 									"Cannot find the parameters of the constructor of "
 											+ newClassName, e));
 					}
 				}
-			});
+			}.instrument(method);
 		} catch (final Throwable e) {
 			maybeThrow(new IllegalArgumentException("Cannot handle app name in " + fullClass
 					+ "'s " + methodSig, e));
