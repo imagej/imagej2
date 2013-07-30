@@ -395,7 +395,7 @@ public class CodeHacker {
 	 *            the code to use instead of the specified parameter
 	 * @throws CannotCompileException
 	 */
-	protected void replaceParameterInNew(final String fullClass,
+	protected void replaceAppNameInNew(final String fullClass,
 			final String methodSig, final String newClassName,
 			final int parameterIndex, final String replacement) {
 		try {
@@ -414,7 +414,7 @@ public class CodeHacker {
 										+ expr.getConstructor() + " is not a String!"));
 								return;
 							}
-							final String replace = replaceParameter(
+							final String replace = replaceAppName(
 									parameterIndex, parameterTypes.length, replacement);
 							expr.replace("$_ = new " + newClassName + replace
 									+ ";");
@@ -452,7 +452,7 @@ public class CodeHacker {
 	 *            the code to use instead of the specified parameter
 	 * @throws CannotCompileException
 	 */
-	protected void replaceParameterInCall(final String fullClass,
+	protected void replaceAppNameInCall(final String fullClass,
 			final String methodSig, final String calledMethodName,
 			final int parameterIndex, final String replacement) {
 		try {
@@ -480,7 +480,7 @@ public class CodeHacker {
 												+ " is not a String!"));
 								return;
 						}
-						final String replace = replaceParameter(
+						final String replace = replaceAppName(
 								parameterIndex, parameterTypes.length, replacement);
 						call.replace((isSuper ? "" : "$0.") + calledMethodName + replace + ";");
 						markEdited();
@@ -502,7 +502,7 @@ public class CodeHacker {
 		}
 	}
 
-	private String replaceParameter(final int parameterIndex, final int parameterCount, final String replacement) {
+	private String replaceAppName(final int parameterIndex, final int parameterCount, final String replacement) {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("(");
 		for (int i = 1; i <= parameterCount; i++) {

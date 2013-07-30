@@ -589,21 +589,21 @@ public class LegacyExtensions {
 		hacker.insertAtTopOfMethod("ij.IJ", "public void error(java.lang.String title, java.lang.String msg)",
 				"if ($1 == null || $1.equals(\"ImageJ\")) $1 = " + appName + ";");
 		hacker.insertAtBottomOfMethod("ij.ImageJ", "public java.lang.String version()", "$_ = $_" + replace + ";");
-		hacker.replaceParameterInCall("ij.ImageJ", "public <init>(java.applet.Applet applet, int mode)", "super", 1, appName);
-		hacker.replaceParameterInNew("ij.ImageJ", "public void run()", "ij.gui.GenericDialog", 1, appName);
-		hacker.replaceParameterInCall("ij.ImageJ", "public void run()", "addMessage", 1, appName);
+		hacker.replaceAppNameInCall("ij.ImageJ", "public <init>(java.applet.Applet applet, int mode)", "super", 1, appName);
+		hacker.replaceAppNameInNew("ij.ImageJ", "public void run()", "ij.gui.GenericDialog", 1, appName);
+		hacker.replaceAppNameInCall("ij.ImageJ", "public void run()", "addMessage", 1, appName);
 		if (hacker.hasMethod("ij.plugin.CommandFinder", "public void export()")) {
-			hacker.replaceParameterInNew("ij.plugin.CommandFinder", "public void export()", "ij.text.TextWindow", 1, appName);
+			hacker.replaceAppNameInNew("ij.plugin.CommandFinder", "public void export()", "ij.text.TextWindow", 1, appName);
 		}
-		hacker.replaceParameterInCall("ij.plugin.Hotkeys", "public void removeHotkey()", "addMessage", 1, appName);
-		hacker.replaceParameterInCall("ij.plugin.Hotkeys", "public void removeHotkey()", "showStatus", 1, appName);
+		hacker.replaceAppNameInCall("ij.plugin.Hotkeys", "public void removeHotkey()", "addMessage", 1, appName);
+		hacker.replaceAppNameInCall("ij.plugin.Hotkeys", "public void removeHotkey()", "showStatus", 1, appName);
 		if (hacker.existsClass("ij.plugin.AppearanceOptions")) {
-			hacker.replaceParameterInCall("ij.plugin.AppearanceOptions", "void showDialog()", "showMessage", 2, appName);
+			hacker.replaceAppNameInCall("ij.plugin.AppearanceOptions", "void showDialog()", "showMessage", 2, appName);
 		} else {
-			hacker.replaceParameterInCall("ij.plugin.Options", "public void appearance()", "showMessage", 2, appName);
+			hacker.replaceAppNameInCall("ij.plugin.Options", "public void appearance()", "showMessage", 2, appName);
 		}
-		hacker.replaceParameterInCall("ij.gui.YesNoCancelDialog", "public <init>(java.awt.Frame parent, java.lang.String title, java.lang.String msg)", "super", 2, appName);
-		hacker.replaceParameterInCall("ij.gui.Toolbar", "private void showMessage(int toolId)", "showStatus", 1, appName);
+		hacker.replaceAppNameInCall("ij.gui.YesNoCancelDialog", "public <init>(java.awt.Frame parent, java.lang.String title, java.lang.String msg)", "super", 2, appName);
+		hacker.replaceAppNameInCall("ij.gui.Toolbar", "private void showMessage(int toolId)", "showStatus", 1, appName);
 	}
 
 	private static void addIconHooks(final CodeHacker hacker) {
