@@ -80,10 +80,13 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 	extends DynamicCommand
 {
 
-	// TODO: expects new type to be RealType and NativeType. The unbounded types
-	// defined in the data types package don't support NativeType.
-
-	// TODO: we should be able to make NewImage also work in a similar fashion.
+	// TODO: expects types to be based on RealType and sometimes NativeType. The
+	// as yet to be used unbounded types defined in the data types package don't
+	// support NativeType. At some point we need to relax these constraints such
+	// that U and V just extend Type<U> and Type<V>. The DatasetService must be
+	// able to make Datasets that have this kind of signature:
+	// ImgPlus<? extends Type<?>>. And the Img opening/saving routines also need
+	// to be able to encode arbitrary types.
 
 	// -- Parameters --
 
@@ -195,6 +198,7 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 			// BigRationals internally rather than BigDecimals. BigComplex is
 			// broken as a math type (but totally useful as a casting type). For now
 			// work in doubles causing possible precision loss.
+			//
 			double real = combined.getRealDouble() / count;
 			double imag = combined.getImaginaryDouble() / count;
 			outAccessor.get().setReal(real);
