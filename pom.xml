@@ -32,6 +32,7 @@
 		<invoker.skip>${skipITs}</invoker.skip>
 		<miglayout.version>3.7.3.1</miglayout.version>
 		<project.rootdir>${basedir}</project.rootdir>
+		<scijava-common.version>1.7.1-SNAPSHOT</scijava-common.version>
 	</properties>
 
 	<build>
