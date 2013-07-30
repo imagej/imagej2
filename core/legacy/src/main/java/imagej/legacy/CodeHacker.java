@@ -457,7 +457,7 @@ public class CodeHacker {
 			final int parameterIndex, final String replacement) {
 		try {
 			final CtBehavior method = getBehavior(fullClass, methodSig);
-			method.instrument(new ExprEditor() {
+			new EagerExprEditor() {
 				@Override
 				public void edit(MethodCall call) throws CannotCompileException {
 					if (call.getMethodName().equals(calledMethodName)) try {
@@ -483,6 +483,7 @@ public class CodeHacker {
 						final String replace = replaceParameter(
 								parameterIndex, parameterTypes.length, replacement);
 						call.replace((isSuper ? "" : "$0.") + calledMethodName + replace + ";");
+						markEdited();
 					} catch (NotFoundException e) {
 						maybeThrow(new IllegalArgumentException(
 								"Cannot find the parameters of the method "
@@ -494,7 +495,7 @@ public class CodeHacker {
 				public void edit(final ConstructorCall call) throws CannotCompileException {
 					edit((MethodCall)call);
 				}
-			});
+			}.instrument(method);
 		} catch (final Throwable e) {
 			maybeThrow(new IllegalArgumentException("Cannot handle app name in " + fullClass
 					+ "'s " + methodSig, e));
