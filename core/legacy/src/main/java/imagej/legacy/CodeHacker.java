@@ -670,61 +670,44 @@ public class CodeHacker {
 			final String calledMethodName, final String newCode, final int onlyNth) {
 		try {
 			final CtBehavior method = getBehavior(fullClass, methodSig);
-			final CallInMethodExprEditor editor = new CallInMethodExprEditor(calledClass, calledMethodName, newCode, onlyNth);
-			method.instrument(editor);
-			if (!editor.replacedCode()) {
-				maybeThrow(new IllegalArgumentException("No code replaced!"));
-			}
+			new EagerExprEditor() {
+				private int counter = 0;
+				private final boolean debug = false;
+
+				@Override
+				public void edit(MethodCall call) throws CannotCompileException {
+					if (debug) {
+						System.err.println("editing call " + call.getClassName() + "#"
+								+ call.getMethodName() + " (wanted " + calledClass
+								+ "#" + calledMethodName + ")");
+					}
+					if (call.getMethodName().equals(calledMethodName)
+							&& call.getClassName().equals(calledClass)) {
+						if (onlyNth > 0 && ++counter != onlyNth) return;
+						call.replace(newCode);
+						markEdited();
+					}
+				}
+
+				@Override
+				public void edit(NewExpr expr) throws CannotCompileException {
+					if (debug) {
+						System.err.println("editing call " + expr.getClassName() + "#"
+								+ "<init>" + " (wanted " + calledClass
+								+ "#" + calledMethodName + ")");
+					}
+					if ("<init>".equals(calledMethodName)
+							&& expr.getClassName().equals(calledClass)) {
+						if (onlyNth > 0 && ++counter != onlyNth) return;
+						expr.replace(newCode);
+						markEdited();
+					}
+				}
+			}.instrument(method);
 		} catch (final Throwable e) {
 			maybeThrow(new IllegalArgumentException(
 					"Cannot handle replace call to " + calledMethodName
 							+ " in " + fullClass + "'s " + methodSig, e));
-		}
-	}
-
-	private static class CallInMethodExprEditor extends ExprEditor {
-		private int count = 0;
-		private final String calledClass, calledMethodName, newCode;
-		private final int onlyNth;
-		private final boolean debug = false;
-
-		public CallInMethodExprEditor(final String calledClass, final String calledMethodName, final String newCode, final int onlyNth) {
-			this.calledClass = calledClass;
-			this.calledMethodName = calledMethodName;
-			this.newCode = newCode;
-			this.onlyNth = onlyNth < 0 ? 0 : onlyNth;
-		}
-
-		@Override
-		public void edit(MethodCall call) throws CannotCompileException {
-			if (debug) {
-				System.err.println("editing call " + call.getClassName() + "#"
-						+ call.getMethodName() + " (wanted " + calledClass
-						+ "#" + calledMethodName + ")");
-			}
-			if (call.getMethodName().equals(calledMethodName)
-					&& call.getClassName().equals(calledClass)) {
-				if ( ++count != onlyNth && onlyNth > 0) return;
-				call.replace(newCode);
-			}
-		}
-
-		@Override
-		public void edit(NewExpr expr) throws CannotCompileException {
-			if (debug) {
-				System.err.println("editing call " + expr.getClassName() + "#"
-						+ "<init>" + " (wanted " + calledClass
-						+ "#" + calledMethodName + ")");
-			}
-			if ("<init>".equals(calledMethodName)
-					&& expr.getClassName().equals(calledClass)) {
-				if ( ++count != onlyNth && onlyNth > 0) return;
-				expr.replace(newCode);
-			}
-		}
-
-		public boolean replacedCode() {
-			return count >= onlyNth && count > 0;
 		}
 	}
 
@@ -1199,6 +1182,31 @@ public class CodeHacker {
 			if (counter < 0) counter += indices.length;
 		}
 		return info.getConstPool().getStringInfo(indices[counter]);
+	}
+
+	/**
+	 * An {@link ExprEditor} that complains when it did not edit anything.
+	 * 
+	 * @author Johannes Schindelin
+	 */
+	private abstract static class EagerExprEditor extends ExprEditor {
+		private int count = 0;
+
+		protected void markEdited() {
+			count++;
+		}
+
+		protected boolean wasSuccessful() {
+			return count > 0;
+		}
+
+		public void instrument(final CtBehavior behavior) throws CannotCompileException {
+			count = 0;
+			behavior.instrument(this);
+			if (!wasSuccessful()) {
+				throw new CannotCompileException("No code replaced!");
+			}
+		}
 	}
 
 	/**
