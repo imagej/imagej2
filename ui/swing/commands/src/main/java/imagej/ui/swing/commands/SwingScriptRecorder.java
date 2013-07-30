@@ -148,7 +148,7 @@ public class SwingScriptRecorder extends ContextCommand {
 	}
 
 	private void startRecording() {
-		eventService.subscribe(this);
+		subscribers = eventService.subscribe(this);
 	}
 
 	private void stopRecording() {
