@@ -517,6 +517,7 @@ public class LegacyExtensions {
 		addEditorExtensionPoints(hacker);
 		insertAppNameHooks(hacker);
 		insertRefreshMenusHook(hacker);
+		overrideStartupMacrosForFiji(hacker);
 	}
 
 	/**
@@ -654,6 +655,21 @@ public class LegacyExtensions {
 				"\tjava.io.File file = (java.io.File)iter.next();\n" +
 				code + "\n" +
 				"}\n";
+	}
+
+	private static void overrideStartupMacrosForFiji(CodeHacker hacker) {
+		hacker.replaceCallInMethod("ij.Menus", "void installStartupMacroSet()", "java.io.File", "<init>",
+				"if ($1.endsWith(\"StartupMacros.txt\")) {" +
+				" java.lang.String fijiPath = $1.substring(0, $1.length() - 3) + \"fiji.ijm\";" +
+				" java.io.File fijiFile = new java.io.File(fijiPath);" +
+				" $_ = fijiFile.exists() ? fijiFile : new java.io.File($1);" +
+				"} else $_ = new java.io.File($1);");
+		hacker.replaceCallInMethod("ij.Menus", "void installStartupMacroSet()", "ij.plugin.MacroInstaller", "installFile",
+				"if ($1.endsWith(\"StartupMacros.txt\")) {" +
+				" java.lang.String fijiPath = $1.substring(0, $1.length() - 3) + \"fiji.ijm\";" +
+				" java.io.File fijiFile = new java.io.File(fijiPath);" +
+				" $0.installFile(fijiFile.exists() ? fijiFile.getPath() : $1);" +
+				"} else $0.installFile($1);");
 	}
 
 }
