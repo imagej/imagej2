@@ -160,19 +160,20 @@ public class LegacyInjector {
 	}
 
 	void setLegacyService(final LegacyService legacyService) {
+		Context context;
+		try {
+			context = legacyService.getContext();
+		} catch (UnsupportedOperationException e) {
+			// DummyLegacyService does not have a context
+			context = null;
+		}
+
 		try {
 			final Class<?> ij = hacker.classLoader.loadClass("ij.IJ");
 			Field field = ij.getDeclaredField("_legacyService");
 			field.setAccessible(true);
 			field.set(null, legacyService);
 
-			Context context;
-			try {
-				context = legacyService.getContext();
-			} catch (UnsupportedOperationException e) {
-				// DummyLegacyService does not have a context
-				context = null;
-			}
 			field = ij.getDeclaredField("_context");
 			field.setAccessible(true);
 			field.set(null, context);
