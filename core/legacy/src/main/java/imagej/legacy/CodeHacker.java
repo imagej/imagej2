@@ -272,11 +272,12 @@ public class CodeHacker {
 	 * Works around a bug where the horizontal scroll wheel of the mighty mouse is mistaken for a popup trigger.
 	 */
 	public void handleMightyMousePressed(final String fullClass) {
-		ExprEditor editor = new ExprEditor() {
+		final ExprEditor editor = new ExprEditor() {
 			@Override
 			public void edit(MethodCall call) throws CannotCompileException {
-				if (call.getMethodName().equals("isPopupTrigger"))
+				if (call.getMethodName().equals("isPopupTrigger")) {
 					call.replace("$_ = $0.isPopupTrigger() && $0.getButton() != 0;");
+				}
 			}
 		};
 		final CtClass classRef = getClass(fullClass);
