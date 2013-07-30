@@ -664,14 +664,6 @@ public class LegacyExtensions {
 
 		hacker.insertAtTopOfMethod("MacAdapter", "public void run(java.lang.String arg)",
 			"return;");
-
-		for (final String suffix : new String[] {
-				"About", "OpenFile", "Preferences", "Quit", "OpenApplication", "ReOpenApplication", "PrintFile"
-		}) {
-			hacker.insertAtTopOfMethod("MacAdapter",
-				"public void handle" + suffix + "(com.apple.eawt.ApplicationEvent event)",
-				"if (!$isLegacyMode()) return;");
-		}
 	}
 
 }

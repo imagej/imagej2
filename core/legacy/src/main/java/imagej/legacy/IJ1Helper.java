@@ -39,9 +39,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.scijava.AbstractContextual;
+import org.scijava.Context;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
+import org.scijava.event.EventUtils;
 
 import ij.Executer;
 import ij.IJ;
@@ -237,4 +238,16 @@ public class IJ1Helper {
 		}
 
 	}
+
+	private static LegacyEventDelegator eventDelegator;
+
+	public static void subscribeEvents(final Context context) {
+		if (context == null) {
+			eventDelegator = null;
+		} else {
+			eventDelegator = new LegacyEventDelegator();
+			eventDelegator.setContext(context);
+		}
+	}
+
 }

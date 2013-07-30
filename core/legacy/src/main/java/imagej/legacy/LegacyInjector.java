@@ -186,6 +186,8 @@ public class LegacyInjector {
 		} catch (IllegalAccessException e) {
 			throw new IllegalArgumentException("Cannot access field in ij.IJ", e);
 		}
+
+		IJ1Helper.subscribeEvents(context);
 	}
 
 }
