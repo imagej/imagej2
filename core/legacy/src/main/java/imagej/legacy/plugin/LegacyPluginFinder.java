@@ -184,6 +184,8 @@ public class LegacyPluginFinder implements PluginFinder {
 		presets.put("className", className);
 		presets.put("arg", arg);
 		final CommandInfo ci = new CommandInfo(LegacyCommand.class);
+		// HACK: Make LegacyCommands a subtype of regular Commands.
+		ci.setPluginType(legacyCommandClass());
 		ci.setMenuPath(menuPath);
 		ci.setPresets(presets);
 
@@ -191,6 +193,16 @@ public class LegacyPluginFinder implements PluginFinder {
 		menuPath.getLeaf().setIconPath(LEGACY_PLUGIN_ICON);
 
 		return ci;
+	}
+
+	/**
+	 * Returns the {@link LegacyCommand} class, but coerced into a
+	 * {@code Class<Command>}. This method is a HACK for overriding the plugin
+	 * type of {@code CommandInfo} objects that describe legacy commands.
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private Class<Command> legacyCommandClass() {
+		return (Class) LegacyCommand.class;
 	}
 
 	/** Creates a table mapping legacy ImageJ command labels to menu paths. */
