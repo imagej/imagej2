@@ -686,6 +686,7 @@ public class CodeHacker {
 		private int count = 0;
 		private final String calledClass, calledMethodName, newCode;
 		private final int onlyNth;
+		private final boolean debug = false;
 
 		public CallInMethodExprEditor(final String calledClass, final String calledMethodName, final String newCode, final int onlyNth) {
 			this.calledClass = calledClass;
@@ -696,6 +697,11 @@ public class CodeHacker {
 
 		@Override
 		public void edit(MethodCall call) throws CannotCompileException {
+			if (debug) {
+				System.err.println("editing call " + call.getClassName() + "#"
+						+ call.getMethodName() + " (wanted " + calledClass
+						+ "#" + calledMethodName + ")");
+			}
 			if (call.getMethodName().equals(calledMethodName)
 					&& call.getClassName().equals(calledClass)) {
 				if ( ++count != onlyNth && onlyNth > 0) return;
@@ -705,6 +711,11 @@ public class CodeHacker {
 
 		@Override
 		public void edit(NewExpr expr) throws CannotCompileException {
+			if (debug) {
+				System.err.println("editing call " + expr.getClassName() + "#"
+						+ "<init>" + " (wanted " + calledClass
+						+ "#" + calledMethodName + ")");
+			}
 			if ("<init>".equals(calledMethodName)
 					&& expr.getClassName().equals(calledClass)) {
 				if ( ++count != onlyNth && onlyNth > 0) return;
