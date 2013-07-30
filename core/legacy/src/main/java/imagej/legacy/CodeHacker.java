@@ -1139,18 +1139,20 @@ public class CodeHacker {
 	public void handleHTTPS(final String fullClass, final String methodSig) {
 		try {
 			final CtBehavior method = getBehavior(fullClass, methodSig);
-			method.instrument(new ExprEditor() {
+			new EagerExprEditor() {
 				@Override
 				public void edit(MethodCall call) throws CannotCompileException {
 					try {
 						if (call.getMethodName().equals("startsWith") &&
-								"http://".equals(getLastConstantArgument(call, 0)))
+								"http://".equals(getLastConstantArgument(call, 0))) {
 							call.replace("$_ = $0.startsWith($1) || $0.startsWith(\"https://\");");
+							markEdited();
+						}
 					} catch (BadBytecode e) {
 						e.printStackTrace();
 					}
 				}
-			});
+			}.instrument(method);
 		} catch (final Throwable e) {
 			maybeThrow(new IllegalArgumentException(
 					"Could not handle HTTPS in " + methodSig + " in "
