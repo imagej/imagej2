@@ -38,9 +38,9 @@ package imagej.ui.swing.viewer.text;
 import imagej.display.Display;
 import imagej.ui.UserInterface;
 import imagej.ui.swing.AbstractSwingUI;
+import imagej.ui.viewer.DisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.text.AbstractTextDisplayViewer;
-import imagej.ui.viewer.text.TextDisplayViewer;
 
 import org.scijava.plugin.Plugin;
 
@@ -49,7 +49,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Lee Kamentsky
  */
-@Plugin(type = TextDisplayViewer.class)
+@Plugin(type = DisplayViewer.class)
 public class SwingTextDisplayViewer extends AbstractTextDisplayViewer {
 
 	@Override

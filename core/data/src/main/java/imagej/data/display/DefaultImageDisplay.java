@@ -44,6 +44,7 @@ import imagej.data.event.DataRestructuredEvent;
 import imagej.data.event.DataUpdatedEvent;
 import imagej.data.lut.LUTService;
 import imagej.display.AbstractDisplay;
+import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.util.RealRect;
@@ -67,7 +68,7 @@ import org.scijava.plugin.Plugin;
  * @author Lee Kamentsky
  * @author Curtis Rueden
  */
-@Plugin(type = ImageDisplay.class)
+@Plugin(type = Display.class)
 public class DefaultImageDisplay extends AbstractDisplay<DataView>
 	implements ImageDisplay
 {

@@ -39,9 +39,9 @@ import imagej.data.table.Table;
 import imagej.display.Display;
 import imagej.ui.UserInterface;
 import imagej.ui.swing.AbstractSwingUI;
+import imagej.ui.viewer.DisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.table.AbstractTableDisplayViewer;
-import imagej.ui.viewer.table.TableDisplayViewer;
 
 import javax.swing.JTable;
 
@@ -53,7 +53,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = TableDisplayViewer.class)
+@Plugin(type = DisplayViewer.class)
 public class SwingTableDisplayViewer extends AbstractTableDisplayViewer {
 
 	@Override
