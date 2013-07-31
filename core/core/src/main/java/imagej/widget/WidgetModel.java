@@ -196,6 +196,30 @@ public class WidgetModel extends AbstractContextual {
 	}
 
 	/**
+	 * Gets the "soft" minimum value for the module input.
+	 * 
+	 * @return The "soft" minimum value, or {@link #getMin()} if none.
+	 * @see ModuleItem#getSoftMinimum()
+	 */
+	public Number getSoftMin() {
+		final Number softMin = toNumber(item.getSoftMinimum());
+		if (softMin != null) return softMin;
+		return getMin();
+	}
+
+	/**
+	 * Gets the "soft" maximum value for the module input.
+	 * 
+	 * @return The "soft" maximum value, or {@link #getMax()} if none.
+	 * @see ModuleItem#getSoftMaximum()
+	 */
+	public Number getSoftMax() {
+		final Number softMax = toNumber(item.getSoftMaximum());
+		if (softMax != null) return softMax;
+		return getMax();
+	}
+
+	/**
 	 * Gets the step size between values for the module input.
 	 * 
 	 * @return The step size, or 1 by default.
