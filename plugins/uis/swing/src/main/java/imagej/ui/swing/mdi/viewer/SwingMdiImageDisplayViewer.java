@@ -40,8 +40,8 @@ import imagej.ui.UserInterface;
 import imagej.ui.swing.mdi.SwingMdiUI;
 import imagej.ui.swing.viewer.image.AbstractSwingImageDisplayViewer;
 import imagej.ui.swing.viewer.image.SwingImageDisplayViewer;
+import imagej.ui.viewer.DisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
-import imagej.ui.viewer.image.ImageDisplayViewer;
 
 import javax.swing.JInternalFrame;
 
@@ -56,7 +56,7 @@ import org.scijava.plugin.Plugin;
  * @author Lee Kamentsky
  * @see SwingImageDisplayViewer
  */
-@Plugin(type = ImageDisplayViewer.class)
+@Plugin(type = DisplayViewer.class)
 public class SwingMdiImageDisplayViewer extends AbstractSwingImageDisplayViewer
 {
 

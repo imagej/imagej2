@@ -69,6 +69,7 @@ import org.scijava.Context;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Plugin;
+import org.scijava.thread.ThreadService;
 
 /**
  * A view into a {@link Dataset}, for use with a {@link ImageDisplay}.
@@ -367,7 +368,6 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 		screenImage = new ARGBScreenImage(width, height);
 
 		initializeView(isComposite());
-
 		updateLUTs();
 		projector.map();
 	}
@@ -415,14 +415,24 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	@EventHandler
 	protected void onEvent(final DatasetTypeChangedEvent event) {
 		if (getData() == event.getObject()) {
-			rebuild();
+			getContext().getService(ThreadService.class).run(new Runnable() {
+				@Override
+				public void run() {
+					rebuild();
+				}
+			});
 		}
 	}
 
 	@EventHandler
 	protected void onEvent(final DatasetRGBChangedEvent event) {
 		if (getData() == event.getObject()) {
-			rebuild();
+			getContext().getService(ThreadService.class).run(new Runnable() {
+				@Override
+				public void run() {
+					rebuild();
+				}
+			});
 		}
 	}
 
@@ -469,24 +479,24 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 		for (int c = 0; c < channelCount; c++) {
 			autoscale(c);
 			final RealLUTConverter converter =
-				new RealLUTConverter(getData().getImgPlus().getChannelMinimum(c),
-					getData().getImgPlus().getChannelMaximum(c), null);
+					new RealLUTConverter(getData().getImgPlus().getChannelMinimum(c),
+						getData().getImgPlus().getChannelMaximum(c), null);
 			converters.add(converter);
 		}
-		
+
 		ImgPlus<?> img = getData().getImgPlus();
-		
+
 		if (AbstractCellImg.class.isAssignableFrom(img.getImg().getClass())) {
-		  projector =
-		      new SourceOptimizedCompositeXYProjector(getData().getImgPlus(), screenImage, converters,
-		          channelDimIndex);
+			projector =
+					new SourceOptimizedCompositeXYProjector(getData().getImgPlus(), screenImage, converters,
+						channelDimIndex);
 		}
 		else {
-      projector =
-          new CompositeXYProjector(getData().getImgPlus(), screenImage, converters,
-              channelDimIndex);
+			projector =
+					new CompositeXYProjector(getData().getImgPlus(), screenImage, converters,
+						channelDimIndex);
 		}
-		
+
 		projector.setComposite(composite);
 	}
 

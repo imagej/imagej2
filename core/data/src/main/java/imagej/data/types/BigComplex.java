@@ -51,6 +51,14 @@ public class BigComplex implements ComplexType<BigComplex> {
 	// TODO - if we implement FloatingType interface then this class will be
 	// tricky to implement. acos, tanh, sin, atanh, etc.
 
+	// TODO - this type is great for use in casting without data loss. However as
+	// a numeric type it is somewhat broken. For instance if you pass 3 as the
+	// divisor to the div() method an exception is thrown because of a repeating
+	// decimal expansion. We might need to change this type so that it uses
+	// BigDecimals but it's internal routines that do things like div(), sin(),
+	// etc. work at a fixed precision (like max 50 decimal places). So it would
+	// possibly lose precision but not at levels that would likely bother people.
+
 	private BigDecimal r, i;
 
 	public BigComplex() {

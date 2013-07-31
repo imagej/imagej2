@@ -44,7 +44,6 @@ import imagej.tool.Tool;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
-import org.scijava.Priority;
 import org.scijava.input.InputModifiers;
 import org.scijava.input.KeyCode;
 import org.scijava.plugin.Attr;
@@ -56,9 +55,8 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Grant Harris
  */
-@Plugin(type = Tool.class, name = "Axis Position Shortcuts",
-	priority = Priority.NORMAL_PRIORITY, attrs = {
-		@Attr(name = Tool.ALWAYS_ACTIVE), @Attr(name = Tool.ACTIVE_IN_APP_FRAME) })
+@Plugin(type = Tool.class, name = "Axis Position Shortcuts", attrs = {
+	@Attr(name = Tool.ALWAYS_ACTIVE), @Attr(name = Tool.ACTIVE_IN_APP_FRAME) })
 public class AxisPositionHandler extends AbstractTool {
 
 	@Override

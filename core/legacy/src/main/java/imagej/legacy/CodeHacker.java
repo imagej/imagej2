@@ -272,11 +272,12 @@ public class CodeHacker {
 	 * Works around a bug where the horizontal scroll wheel of the mighty mouse is mistaken for a popup trigger.
 	 */
 	public void handleMightyMousePressed(final String fullClass) {
-		ExprEditor editor = new ExprEditor() {
+		final ExprEditor editor = new ExprEditor() {
 			@Override
 			public void edit(MethodCall call) throws CannotCompileException {
-				if (call.getMethodName().equals("isPopupTrigger"))
+				if (call.getMethodName().equals("isPopupTrigger")) {
 					call.replace("$_ = $0.isPopupTrigger() && $0.getButton() != 0;");
+				}
 			}
 		};
 		final CtClass classRef = getClass(fullClass);
@@ -352,18 +353,19 @@ public class CodeHacker {
 	public void insertAtTopOfExceptionHandlers(final String fullClass, final String methodSig, final String exceptionClassName, final String src) {
 		try {
 			final CtBehavior method = getBehavior(fullClass, methodSig);
-			method.instrument(new ExprEditor() {
+			new EagerExprEditor() {
 				@Override
 				public void edit(Handler handler) throws CannotCompileException {
 					try {
 						if (handler.getType().getName().equals(exceptionClassName)) {
 							handler.insertBefore(src);
+							markEdited();
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
-			});
+			}.instrument(method);
 		} catch (final Throwable e) {
 			maybeThrow(new IllegalArgumentException(
 					"Cannot edit exception handler for type'"
@@ -393,12 +395,12 @@ public class CodeHacker {
 	 *            the code to use instead of the specified parameter
 	 * @throws CannotCompileException
 	 */
-	protected void replaceParameterInNew(final String fullClass,
+	protected void replaceAppNameInNew(final String fullClass,
 			final String methodSig, final String newClassName,
 			final int parameterIndex, final String replacement) {
 		try {
 			final CtBehavior method = getBehavior(fullClass, methodSig);
-			method.instrument(new ExprEditor() {
+			new EagerExprEditor() {
 				@Override
 				public void edit(NewExpr expr) throws CannotCompileException {
 					if (expr.getClassName().equals(newClassName))
@@ -412,17 +414,18 @@ public class CodeHacker {
 										+ expr.getConstructor() + " is not a String!"));
 								return;
 							}
-							final String replace = replaceParameter(
+							final String replace = replaceAppName(
 									parameterIndex, parameterTypes.length, replacement);
 							expr.replace("$_ = new " + newClassName + replace
 									+ ";");
+							markEdited();
 						} catch (NotFoundException e) {
 							maybeThrow(new IllegalArgumentException(
 									"Cannot find the parameters of the constructor of "
 											+ newClassName, e));
 					}
 				}
-			});
+			}.instrument(method);
 		} catch (final Throwable e) {
 			maybeThrow(new IllegalArgumentException("Cannot handle app name in " + fullClass
 					+ "'s " + methodSig, e));
@@ -449,12 +452,12 @@ public class CodeHacker {
 	 *            the code to use instead of the specified parameter
 	 * @throws CannotCompileException
 	 */
-	protected void replaceParameterInCall(final String fullClass,
+	protected void replaceAppNameInCall(final String fullClass,
 			final String methodSig, final String calledMethodName,
 			final int parameterIndex, final String replacement) {
 		try {
 			final CtBehavior method = getBehavior(fullClass, methodSig);
-			method.instrument(new ExprEditor() {
+			new EagerExprEditor() {
 				@Override
 				public void edit(MethodCall call) throws CannotCompileException {
 					if (call.getMethodName().equals(calledMethodName)) try {
@@ -477,9 +480,10 @@ public class CodeHacker {
 												+ " is not a String!"));
 								return;
 						}
-						final String replace = replaceParameter(
+						final String replace = replaceAppName(
 								parameterIndex, parameterTypes.length, replacement);
 						call.replace((isSuper ? "" : "$0.") + calledMethodName + replace + ";");
+						markEdited();
 					} catch (NotFoundException e) {
 						maybeThrow(new IllegalArgumentException(
 								"Cannot find the parameters of the method "
@@ -491,14 +495,14 @@ public class CodeHacker {
 				public void edit(final ConstructorCall call) throws CannotCompileException {
 					edit((MethodCall)call);
 				}
-			});
+			}.instrument(method);
 		} catch (final Throwable e) {
 			maybeThrow(new IllegalArgumentException("Cannot handle app name in " + fullClass
 					+ "'s " + methodSig, e));
 		}
 	}
 
-	private String replaceParameter(final int parameterIndex, final int parameterCount, final String replacement) {
+	private String replaceAppName(final int parameterIndex, final int parameterCount, final String replacement) {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("(");
 		for (int i = 1; i <= parameterCount; i++) {
@@ -625,14 +629,15 @@ public class CodeHacker {
 	public void overrideFieldWrite(final String fullClass, final String methodSig, final String fieldName, final String newCode) {
 		try {
 			final CtBehavior method = getBehavior(fullClass, methodSig);
-			method.instrument(new ExprEditor() {
+			new EagerExprEditor() {
 				@Override
 				public void edit(final FieldAccess access) throws CannotCompileException {
 					if (access.getFieldName().equals(access)) {
 						access.replace(newCode);
+						markEdited();
 					}
 				}
-			});
+			}.instrument(method);
 		} catch (final Throwable e) {
 			maybeThrow(new IllegalArgumentException(
 					"Cannot override field access to " + fieldName + " in "
@@ -670,27 +675,40 @@ public class CodeHacker {
 			final String calledMethodName, final String newCode, final int onlyNth) {
 		try {
 			final CtBehavior method = getBehavior(fullClass, methodSig);
-			method.instrument(new ExprEditor() {
-				private int count = 0;
+			new EagerExprEditor() {
+				private int counter = 0;
+				private final boolean debug = false;
 
 				@Override
 				public void edit(MethodCall call) throws CannotCompileException {
+					if (debug) {
+						System.err.println("editing call " + call.getClassName() + "#"
+								+ call.getMethodName() + " (wanted " + calledClass
+								+ "#" + calledMethodName + ")");
+					}
 					if (call.getMethodName().equals(calledMethodName)
 							&& call.getClassName().equals(calledClass)) {
-						if ( ++count != onlyNth && onlyNth > 0) return;
+						if (onlyNth > 0 && ++counter != onlyNth) return;
 						call.replace(newCode);
+						markEdited();
 					}
 				}
 
 				@Override
 				public void edit(NewExpr expr) throws CannotCompileException {
+					if (debug) {
+						System.err.println("editing call " + expr.getClassName() + "#"
+								+ "<init>" + " (wanted " + calledClass
+								+ "#" + calledMethodName + ")");
+					}
 					if ("<init>".equals(calledMethodName)
 							&& expr.getClassName().equals(calledClass)) {
-						if ( ++count != onlyNth && onlyNth > 0) return;
+						if (onlyNth > 0 && ++counter != onlyNth) return;
 						expr.replace(newCode);
+						markEdited();
 					}
 				}
-			});
+			}.instrument(method);
 		} catch (final Throwable e) {
 			maybeThrow(new IllegalArgumentException(
 					"Cannot handle replace call to " + calledMethodName
@@ -1121,18 +1139,20 @@ public class CodeHacker {
 	public void handleHTTPS(final String fullClass, final String methodSig) {
 		try {
 			final CtBehavior method = getBehavior(fullClass, methodSig);
-			method.instrument(new ExprEditor() {
+			new EagerExprEditor() {
 				@Override
 				public void edit(MethodCall call) throws CannotCompileException {
 					try {
 						if (call.getMethodName().equals("startsWith") &&
-								"http://".equals(getLastConstantArgument(call, 0)))
+								"http://".equals(getLastConstantArgument(call, 0))) {
 							call.replace("$_ = $0.startsWith($1) || $0.startsWith(\"https://\");");
+							markEdited();
+						}
 					} catch (BadBytecode e) {
 						e.printStackTrace();
 					}
 				}
-			});
+			}.instrument(method);
 		} catch (final Throwable e) {
 			maybeThrow(new IllegalArgumentException(
 					"Could not handle HTTPS in " + methodSig + " in "
@@ -1169,6 +1189,31 @@ public class CodeHacker {
 			if (counter < 0) counter += indices.length;
 		}
 		return info.getConstPool().getStringInfo(indices[counter]);
+	}
+
+	/**
+	 * An {@link ExprEditor} that complains when it did not edit anything.
+	 * 
+	 * @author Johannes Schindelin
+	 */
+	private abstract static class EagerExprEditor extends ExprEditor {
+		private int count = 0;
+
+		protected void markEdited() {
+			count++;
+		}
+
+		protected boolean wasSuccessful() {
+			return count > 0;
+		}
+
+		public void instrument(final CtBehavior behavior) throws CannotCompileException {
+			count = 0;
+			behavior.instrument(this);
+			if (!wasSuccessful()) {
+				throw new CannotCompileException("No code replaced!");
+			}
+		}
 	}
 
 	/**

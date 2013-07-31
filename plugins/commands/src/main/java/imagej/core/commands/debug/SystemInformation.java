@@ -42,6 +42,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -52,7 +53,8 @@ import org.scijava.app.App;
 import org.scijava.app.AppService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.service.Service;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.SciJavaPlugin;
 import org.scijava.util.Manifest;
 
 /**
@@ -84,8 +86,10 @@ public class SystemInformation implements Command {
 	public void run() {
 		final StringBuilder sb = new StringBuilder();
 
+		// dump basic version information (similar to the status bar)
 		sb.append(appService.getApp(ImageJApp.NAME).getInfo(false) + NL);
 
+		// dump information about available SciJava applications
 		final Map<String, App> apps = appService.getApps();
 		for (final String name : apps.keySet()) {
 			final App app = apps.get(name);
@@ -101,13 +105,35 @@ public class SystemInformation implements Command {
 			}
 		}
 
-		sb.append(NL);
-		sb.append("-- Services --" + NL);
-		final List<Service> services = context.getServiceIndex().getAll();
-		for (final Service service : services) {
-			sb.append(service + NL);
+		// compute the set of known plugin types
+		final List<PluginInfo<?>> plugins = context.getPluginIndex().getAll();
+		final HashSet<Class<? extends SciJavaPlugin>> pluginTypeSet =
+			new HashSet<Class<? extends SciJavaPlugin>>();
+		for (final PluginInfo<?> plugin : plugins) {
+			pluginTypeSet.add(plugin.getPluginType());
 		}
 
+		// convert to a list of plugin types, sorted by fully qualified class name
+		final ArrayList<Class<? extends SciJavaPlugin>> pluginTypes =
+			new ArrayList<Class<? extends SciJavaPlugin>>(pluginTypeSet);
+		Collections.sort(pluginTypes, new Comparator<Class<?>>() {
+
+			@Override
+			public int compare(final Class<?> o1, final Class<?> o2) {
+				if (o1 == null && o2 == null) return 0;
+				if (o1 == null) return -1;
+				if (o2 == null) return 1;
+				return o1.getName().compareTo(o2.getName());
+			}
+
+		});
+
+		// dump the list of available plugins, organized by plugin type
+		for (final Class<? extends SciJavaPlugin> pluginType : pluginTypes) {
+			dumpPlugins(sb, pluginType);
+		}
+
+		// dump system properties
 		sb.append(NL);
 		sb.append("-- System properties --" + NL);
 		sb.append(getSystemProperties());
@@ -164,6 +190,30 @@ public class SystemInformation implements Command {
 			}
 		}
 		return sb.toString();
+	}
+
+	// -- Helper methods --
+
+	private <PT extends SciJavaPlugin> void dumpPlugins(final StringBuilder sb,
+		final Class<PT> pluginType)
+	{
+		final List<PluginInfo<PT>> plugins =
+			context.getPluginIndex().getPlugins(pluginType);
+
+		// count the number of plugins whose type matches exactly (not sub-types)
+		int pluginCount = 0;
+		for (final PluginInfo<PT> plugin : plugins) {
+			if (pluginType == plugin.getPluginType()) pluginCount++;
+		}
+		if (pluginCount == 0) return;
+
+		sb.append(NL);
+		sb.append("-- " + pluginCount + " " + pluginType.getName() +
+			" plugins --" + NL);
+		for (final PluginInfo<PT> plugin : plugins) {
+			if (pluginType != plugin.getPluginType()) continue;
+			sb.append(plugin + NL);
+		}
 	}
 
 }

@@ -36,6 +36,7 @@
 package imagej.data.table;
 
 import imagej.display.AbstractDisplay;
+import imagej.display.Display;
 
 import org.scijava.plugin.Plugin;
 
@@ -44,7 +45,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = TableDisplay.class)
+@Plugin(type = Display.class)
 public class DefaultTableDisplay extends AbstractDisplay<Table<?, ?>> implements
 	TableDisplay
 {
