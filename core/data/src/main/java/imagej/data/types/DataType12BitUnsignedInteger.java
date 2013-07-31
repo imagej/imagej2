@@ -120,10 +120,38 @@ public class DataType12BitUnsignedInteger extends AbstractContextual implements
 
 	@Override
 	public void cast(BigComplex val, Unsigned12BitType dest) {
-		long v = val.getReal().longValue();
-		if (v < 0) dest.set((short) 0);
-		else if (v > 0xfff) dest.set((short) 0xfff);
-		else dest.set((short) v);
+		setLong(dest, val.getReal().longValue());
 	}
 
+	@Override
+	public boolean hasDoubleRepresentation() {
+		return true;
+	}
+
+	@Override
+	public boolean hasLongRepresentation() {
+		return true;
+	}
+
+	@Override
+	public double asDouble(Unsigned12BitType val) {
+		return val.get();
+	}
+
+	@Override
+	public long asLong(Unsigned12BitType val) {
+		return val.get();
+	}
+
+	@Override
+	public void setDouble(Unsigned12BitType val, double v) {
+		setLong(val, (long) v);
+	}
+
+	@Override
+	public void setLong(Unsigned12BitType val, long v) {
+		if (v < 0) val.set((short) 0);
+		else if (v > 0xfff) val.set((short) 0xfff);
+		else val.set((short) v);
+	}
 }

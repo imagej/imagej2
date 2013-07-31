@@ -120,10 +120,38 @@ public class DataType16BitUnsignedInteger extends AbstractContextual implements
 
 	@Override
 	public void cast(BigComplex val, UnsignedShortType dest) {
-		long v = val.getReal().longValue();
-		if (v < 0) dest.set(0);
-		else if (v > 0xffff) dest.set(0xffff);
-		else dest.set((int) v);
+		setLong(dest, val.getReal().longValue());
 	}
 
+	@Override
+	public boolean hasDoubleRepresentation() {
+		return true;
+	}
+
+	@Override
+	public boolean hasLongRepresentation() {
+		return true;
+	}
+
+	@Override
+	public double asDouble(UnsignedShortType val) {
+		return val.get();
+	}
+
+	@Override
+	public long asLong(UnsignedShortType val) {
+		return val.get();
+	}
+
+	@Override
+	public void setDouble(UnsignedShortType val, double v) {
+		setLong(val, (long) v);
+	}
+
+	@Override
+	public void setLong(UnsignedShortType val, long v) {
+		if (v < 0) val.set(0);
+		else if (v > 0xffff) val.set(0xffff);
+		else val.set((int) v);
+	}
 }

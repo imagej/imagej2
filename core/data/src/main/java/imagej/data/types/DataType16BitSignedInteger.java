@@ -121,10 +121,39 @@ public class DataType16BitSignedInteger extends AbstractContextual implements
 
 	@Override
 	public void cast(BigComplex val, ShortType dest) {
-		long v = val.getReal().longValue();
-		if (v < Short.MIN_VALUE) dest.set(Short.MIN_VALUE);
-		else if (v > Short.MAX_VALUE) dest.set(Short.MAX_VALUE);
-		else dest.set((short) v);
+		setLong(dest, val.getReal().longValue());
+	}
+
+	@Override
+	public boolean hasDoubleRepresentation() {
+		return true;
+	}
+
+	@Override
+	public boolean hasLongRepresentation() {
+		return true;
+	}
+
+	@Override
+	public double asDouble(ShortType val) {
+		return val.get();
+	}
+
+	@Override
+	public long asLong(ShortType val) {
+		return val.get();
+	}
+
+	@Override
+	public void setDouble(ShortType val, double v) {
+		setLong(val, (long) v);
+	}
+
+	@Override
+	public void setLong(ShortType val, long v) {
+		if (v < Short.MIN_VALUE) val.set(Short.MIN_VALUE);
+		else if (v > Short.MAX_VALUE) val.set(Short.MAX_VALUE);
+		else val.set((short) v);
 	}
 
 }

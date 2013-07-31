@@ -128,4 +128,34 @@ public class DataType128BitSignedComplexFloat extends AbstractContextual
 		dest.setImaginary(val.getImag().doubleValue());
 	}
 
+	@Override
+	public boolean hasDoubleRepresentation() {
+		return false;
+	}
+
+	@Override
+	public boolean hasLongRepresentation() {
+		return false;
+	}
+
+	@Override
+	public double asDouble(ComplexDoubleType val) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public long asLong(ComplexDoubleType val) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setDouble(ComplexDoubleType val, double v) {
+		val.setReal(v);
+		val.setImaginary(0);
+	}
+
+	@Override
+	public void setLong(ComplexDoubleType val, long v) {
+		setDouble(val, v);
+	}
 }

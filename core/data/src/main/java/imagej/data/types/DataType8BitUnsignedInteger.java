@@ -120,10 +120,39 @@ public class DataType8BitUnsignedInteger extends AbstractContextual implements
 
 	@Override
 	public void cast(BigComplex val, UnsignedByteType dest) {
-		long v = val.getReal().longValue();
-		if (v < 0) dest.set(0);
-		else if (v > 255) dest.set(255);
-		else dest.set((short) v);
+		setLong(dest, val.getReal().longValue());
+	}
+
+	@Override
+	public boolean hasDoubleRepresentation() {
+		return true;
+	}
+
+	@Override
+	public boolean hasLongRepresentation() {
+		return true;
+	}
+
+	@Override
+	public double asDouble(UnsignedByteType val) {
+		return val.get();
+	}
+
+	@Override
+	public long asLong(UnsignedByteType val) {
+		return val.get();
+	}
+
+	@Override
+	public void setDouble(UnsignedByteType val, double v) {
+		setLong(val, (long) v);
+	}
+
+	@Override
+	public void setLong(UnsignedByteType val, long v) {
+		if (v < 0) val.set(0);
+		else if (v > 255) val.set(255);
+		else val.set((short) v);
 	}
 
 }
