@@ -39,10 +39,41 @@ package imagej.data.types;
 import net.imglib2.type.numeric.NumericType;
 
 /**
+ * GeneralCast supports data conversion logic between variables of differing
+ * {@link DataType}s.
+ * 
  * @author Barry DeZonia
  */
 public class GeneralCast {
 
+	/**
+	 * Fills an output with a cast from an input given information about their
+	 * DataTypes. This version of cast() can throw IllegalArgumentException if it
+	 * can't find a safe cast. Use the alternate version of cast() that takes a
+	 * temporary working variable for fully safe casting.
+	 * 
+	 * @param inputType The DataType of the input.
+	 * @param input The input variable to cast from.
+	 * @param outputType The DataType of the output
+	 * @param output The output variable to cast into.
+	 */
+	public static <U extends NumericType<U>, V extends NumericType<V>> void cast(
+		DataType<U> inputType, U input, DataType<V> outputType, V output)
+	{
+		cast(inputType, input, outputType, output, null);
+	}
+
+	/**
+	 * Fills an output with a cast from an input given information about their
+	 * DataTypes. This version always succeeds. It requires a temporary working
+	 * variable of type BigComplex to be passed in.
+	 * 
+	 * @param inputType The DataType of the input.
+	 * @param input The input variable to cast from.
+	 * @param outputType The DataType of the output
+	 * @param output The output variable to cast into.
+	 * @param tmp The working variable the method may use internally.
+	 */
 	public static <U extends NumericType<U>, V extends NumericType<V>> void cast(
 		DataType<U> inputType, U input, DataType<V> outputType, V output, BigComplex tmp)
 	{
@@ -73,10 +104,15 @@ public class GeneralCast {
 			double val = inputType.asDouble(input);
 			outputType.setLong(output, (long) val);
 		}
-		else {
-			// fall thru to simplest slowest approach: usually for complex numbers
-			inputType.cast(input, tmp);
-			outputType.cast(tmp, output);
+
+		if (tmp == null) {
+			throw new IllegalArgumentException("Could not find a suitable cast. "
+				+ "Pass a temporary to the alternate version of cast().");
 		}
+
+		// fall thru to simplest slowest approach: usually for complex numbers
+
+		inputType.cast(input, tmp);
+		outputType.cast(tmp, output);
 	}
 }
