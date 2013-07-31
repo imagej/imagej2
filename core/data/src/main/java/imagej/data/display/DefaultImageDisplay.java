@@ -61,6 +61,7 @@ import net.imglib2.meta.AxisType;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Plugin;
+import org.scijava.thread.ThreadService;
 
 /**
  * Default implementation of {@link ImageDisplay}.
@@ -115,7 +116,7 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		}
 
 		// rebuild views
-		for (final DataView view : this) {
+		for (final DataView view : DefaultImageDisplay.this) {
 			view.rebuild();
 		}
 
@@ -626,13 +627,19 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 
 	@EventHandler
 	protected void onEvent(final DataRestructuredEvent event) {
-		for (final DataView view : this) {
-			if (event.getObject() == view.getData()) {
-				rebuild();
-				update();
-				return;
+		getContext().getService(ThreadService.class).run(new Runnable() {
+			@Override
+			public void run() {
+				for (final DataView view : DefaultImageDisplay.this) {
+					if (event.getObject() == view.getData()) {
+						rebuild();
+						update();
+						return;
+					}
+
+				}
 			}
-		}
+		});
 	}
 
 	// TODO - displays should not listen for Data events. Views should listen for

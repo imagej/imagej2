@@ -205,7 +205,7 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 		final ImageDisplayService imageDisplayService =
 			display.getContext().getService(ImageDisplayService.class);
 		final DatasetView view = imageDisplayService.getActiveDatasetView(display);
-		if (view == null) return; // no active dataset
+		if (view == null || view.getProjector() == null) return; // no active dataset
 		view.getProjector().map();
 		displayViewer.getCanvas().update();
 	}
