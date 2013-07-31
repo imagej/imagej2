@@ -132,6 +132,28 @@ public interface ModuleItem<T> extends BasicDetails {
 	T getMaximumValue();
 
 	/**
+	 * Gets the "soft" minimum value (if applicable).
+	 * <p>
+	 * The soft minimum is a hint for use in bounded scenarios, such as rendering
+	 * in a user interface with a slider or scroll bar widget; the parameter value
+	 * will not actually be clamped to the soft bounds, but they may be used in
+	 * certain circumstances where appropriate.
+	 * </p>
+	 */
+	T getSoftMinimum();
+
+	/**
+	 * Gets the "soft" maximum value (if applicable).
+	 * <p>
+	 * The soft maximum is a hint for use in bounded scenarios, such as rendering
+	 * in a user interface with a slider or scroll bar widget; the parameter value
+	 * will not actually be clamped to the soft bounds, but they may be used in
+	 * certain circumstances where appropriate.
+	 * </p>
+	 */
+	T getSoftMaximum();
+
+	/**
 	 * Gets the preferred step size to use when rendering the item in a user
 	 * interface (if applicable).
 	 */

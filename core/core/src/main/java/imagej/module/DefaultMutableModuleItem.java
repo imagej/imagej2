@@ -63,6 +63,8 @@ public class DefaultMutableModuleItem<T> extends AbstractModuleItem<T>
 	private String widgetStyle;
 	private T minimumValue;
 	private T maximumValue;
+	private T softMinimum;
+	private T softMaximum;
 	private Number stepSize;
 	private int columnCount;
 	private final List<T> choices = new ArrayList<T>();
@@ -117,6 +119,8 @@ public class DefaultMutableModuleItem<T> extends AbstractModuleItem<T>
 		widgetStyle = item.getWidgetStyle();
 		minimumValue = item.getMinimumValue();
 		maximumValue = item.getMaximumValue();
+		softMinimum = item.getSoftMinimum();
+		softMaximum = item.getSoftMaximum();
 		stepSize = item.getStepSize();
 		columnCount = item.getColumnCount();
 		final List<T> itemChoices = item.getChoices();
@@ -175,6 +179,16 @@ public class DefaultMutableModuleItem<T> extends AbstractModuleItem<T>
 	@Override
 	public void setMaximumValue(final T maximumValue) {
 		this.maximumValue = maximumValue;
+	}
+
+	@Override
+	public void setSoftMinimum(final T softMinimum) {
+		this.softMinimum = softMinimum;
+	}
+
+	@Override
+	public void setSoftMaximum(final T softMaximum) {
+		this.softMaximum = softMaximum;
 	}
 
 	@Override
@@ -248,6 +262,16 @@ public class DefaultMutableModuleItem<T> extends AbstractModuleItem<T>
 	@Override
 	public T getMaximumValue() {
 		return maximumValue;
+	}
+
+	@Override
+	public T getSoftMinimum() {
+		return softMinimum;
+	}
+
+	@Override
+	public T getSoftMaximum() {
+		return softMaximum;
 	}
 
 	@Override
