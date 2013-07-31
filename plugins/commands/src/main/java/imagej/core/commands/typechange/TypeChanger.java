@@ -246,7 +246,7 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 				return;
 			}
 		}
-		else if (inputType.hasDoubleRepresentation())
+		if (inputType.hasDoubleRepresentation())
 		{
 			if (outputType.hasDoubleRepresentation()) {
 				double val = inputType.asDouble(i);
