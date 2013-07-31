@@ -54,36 +54,20 @@ import org.scijava.plugin.PluginService;
 @Plugin(type = AutoscaleMethod.class, name = "Default")
 public class DefaultAutoscaleMethod<T extends RealType<T>> extends AbstractAutoscaleMethod<T> {
 
-	private double min, max;
-
 	@Override
-	public DataRange getRange(final IterableInterval<T> interval)
+	public DataRange getRange(IterableInterval<T> interval)
 	{
 		@SuppressWarnings("rawtypes")
     List<MinMaxMethod> lists = getContext().getService(PluginService.class)
 		    .createInstancesOfType(MinMaxMethod.class);
     @SuppressWarnings("unchecked")
-		final MinMaxMethod<T> minmax = lists.get(0);
-		Thread thread = new Thread() {
-
-			@Override
-			public void run() {
-				minmax.initialize(interval);
-				minmax.process();
-				min = minmax.getMin().getRealDouble();
-				max = minmax.getMax().getRealDouble();
-				// NB - never return a display range of zero
-				if (min == max) max += 0.000000000000001;
-			}
-		};
-		try {
-			thread.start();
-			thread.join();
-		}
-		catch (Exception e) {
-			//
-		}
+		MinMaxMethod<T> minmax = lists.get(0);
+		minmax.initialize(interval);
+		minmax.process();
+		double min = minmax.getMin().getRealDouble();
+		double max = minmax.getMax().getRealDouble();
+		// NB - never return a display range of zero
+		if (min == max) max += 0.000000000000001;
 		return new DataRange(min, max);
 	}
-
 }
