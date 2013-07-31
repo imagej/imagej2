@@ -55,6 +55,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.SciJavaPlugin;
+import org.scijava.util.ClassUtils;
 import org.scijava.util.Manifest;
 
 /**
@@ -119,11 +120,8 @@ public class SystemInformation implements Command {
 		Collections.sort(pluginTypes, new Comparator<Class<?>>() {
 
 			@Override
-			public int compare(final Class<?> o1, final Class<?> o2) {
-				if (o1 == null && o2 == null) return 0;
-				if (o1 == null) return -1;
-				if (o2 == null) return 1;
-				return o1.getName().compareTo(o2.getName());
+			public int compare(final Class<?> c1, final Class<?> c2) {
+				return ClassUtils.compare(c1, c2);
 			}
 
 		});
