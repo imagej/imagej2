@@ -176,7 +176,7 @@ public class WidgetModel extends AbstractContextual {
 	/**
 	 * Gets the minimum value for the module input.
 	 * 
-	 * @return The minimum value, or null if none, or the type is unordered.
+	 * @return The minimum value, or null if the type is unbounded.
 	 */
 	public Number getMin() {
 		final Class<?> type = item.getType();
@@ -190,7 +190,7 @@ public class WidgetModel extends AbstractContextual {
 	/**
 	 * Gets the maximum value for the module input.
 	 * 
-	 * @return The maximum value, or null if none, or the type is unordered.
+	 * @return The maximum value, or null if the type is unbounded.
 	 */
 	public Number getMax() {
 		final Class<?> type = item.getType();
