@@ -46,7 +46,37 @@ public class GeneralCast {
 	public static <U extends NumericType<U>, V extends NumericType<V>> void cast(
 		DataType<U> inputType, U input, DataType<V> outputType, V output, BigComplex tmp)
 	{
-		inputType.cast(input, tmp);
-		outputType.cast(tmp, output);
+		// Only do general casts when data types are unbounded or are outside
+		// Double or Long precisions. Otherwise use primitives to avoid tons of
+		// Object overhead.
+
+		if (inputType.hasLongRepresentation() && outputType.hasLongRepresentation())
+		{
+			long val = inputType.asLong(input);
+			outputType.setLong(output, val);
+		}
+		else if (inputType.hasDoubleRepresentation() &&
+			outputType.hasDoubleRepresentation())
+		{
+			double val = inputType.asDouble(input);
+			outputType.setDouble(output, val);
+		}
+		else if (inputType.hasLongRepresentation() &&
+			outputType.hasDoubleRepresentation())
+		{
+			long val = inputType.asLong(input);
+			outputType.setDouble(output, val);
+		}
+		else if (inputType.hasDoubleRepresentation() &&
+			outputType.hasLongRepresentation())
+		{
+			double val = inputType.asDouble(input);
+			outputType.setLong(output, (long) val);
+		}
+		else {
+			// fall thru to simplest slowest approach: usually for complex numbers
+			inputType.cast(input, tmp);
+			outputType.cast(tmp, output);
+		}
 	}
 }

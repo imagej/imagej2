@@ -222,45 +222,10 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 		while (inCursor.hasNext()) {
 			inCursor.fwd();
 			outAccessor.setPosition(inCursor);
-			cast(inType, inCursor.get(), outType, outAccessor.get(), tmp);
+			GeneralCast.cast(inType, inCursor.get(), outType, outAccessor.get(), tmp);
 		}
 		copyMetaDataDefaultCase(data.getImgPlus(), newData.getImgPlus());
 		return newData;
-	}
-
-	private void cast(DataType<U> inputType, U i, DataType<V> outputType, V o, BigComplex tmp)
-	{
-		// Only do general casts when data types are unbounded or are outside
-		// Double or Long precisions. Otherwise use primitives to avoid tons of
-		// Object overhead.
-		if (inputType.hasLongRepresentation())
-		{
-			if (outputType.hasLongRepresentation()) {
-				long val = inputType.asLong(i);
-				outputType.setLong(o, val);
-				return;
-			}
-			else if (outputType.hasDoubleRepresentation()) {
-				long val = inputType.asLong(i);
-				outputType.setDouble(o, val);
-				return;
-			}
-		}
-		if (inputType.hasDoubleRepresentation())
-		{
-			if (outputType.hasDoubleRepresentation()) {
-				double val = inputType.asDouble(i);
-				outputType.setDouble(o, val);
-				return;
-			}
-			else if (outputType.hasLongRepresentation()) {
-				double val = inputType.asDouble(i);
-				outputType.setLong(o, (long) val);
-				return;
-			}
-		}
-		// fall thru to simplest slowest approach: usually for complex numbers
-		GeneralCast.cast(inputType, i, outputType, o, tmp);
 	}
 
 	private void copyMetaDataDefaultCase(ImgPlus<?> src, ImgPlus<?> dest) {
