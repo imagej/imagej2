@@ -130,6 +130,42 @@ public interface DataType<T extends NumericType<T>> extends Contextual,
 	 */
 	void cast(BigComplex val, T dest);
 
+	/**
+	 * Returns true if data can be encoded in a double with no precision loss.
+	 */
+	boolean hasDoubleRepresentation();
+
+	/**
+	 * Returns true if data can be encoded in a long with no precision loss.
+	 */
+	boolean hasLongRepresentation();
+
+	/**
+	 * Converts value to a double. If this DataType has no double representation
+	 * throws UnsupportedOperationException.
+	 */
+	double asDouble(T val);
+
+	/**
+	 * Converts value to a long. If this DataType has no long representation
+	 * throws UnsupportedOperationException.
+	 */
+	long asLong(T val);
+
+	/**
+	 * Sets a given value to a given double. It is best to test appropriateness of
+	 * such a call by checking if this DataType has a double representation. All
+	 * DataTypes implement setDouble. No care is taken to avoid precision loss.
+	 */
+	void setDouble(T val, double v);
+
+	/**
+	 * Sets a given value to a given long. It is best to test appropriateness of
+	 * such a call by checking if this DataType has a long representation. All
+	 * DataTypes implement setLong. No care is taken to avoid precision loss.
+	 */
+	void setLong(T val, long v);
+
 // This is here because NumericType has a reliance on float/double which can
 // cause accuracy problems. All other basic ops are supported by NumericType
 // and are not included here.

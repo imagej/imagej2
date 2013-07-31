@@ -35,6 +35,8 @@
 
 package imagej.data.types;
 
+import java.math.BigDecimal;
+
 import org.scijava.AbstractContextual;
 
 //TODO - uncomment when we are ready to support
@@ -119,4 +121,35 @@ public class DataTypeVariableBitSignedComplexFloat extends AbstractContextual
 		dest.setImag(val.getImag());
 	}
 
+	@Override
+	public boolean hasDoubleRepresentation() {
+		return false;
+	}
+
+	@Override
+	public boolean hasLongRepresentation() {
+		return false;
+	}
+
+	@Override
+	public double asDouble(BigComplex val) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public long asLong(BigComplex val) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setDouble(BigComplex val, double v) {
+		val.setReal(BigDecimal.valueOf(v));
+		val.setImag(BigDecimal.ZERO);
+	}
+
+	@Override
+	public void setLong(BigComplex val, long v) {
+		val.setReal(BigDecimal.valueOf(v));
+		val.setImag(BigDecimal.ZERO);
+	}
 }

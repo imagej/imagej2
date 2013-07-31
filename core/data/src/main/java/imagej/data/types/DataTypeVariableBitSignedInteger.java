@@ -36,6 +36,7 @@
 package imagej.data.types;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import org.scijava.AbstractContextual;
 
@@ -122,4 +123,33 @@ public class DataTypeVariableBitSignedInteger extends AbstractContextual impleme
 		dest.set(val.getReal().toBigInteger());
 	}
 
+	@Override
+	public boolean hasDoubleRepresentation() {
+		return false;
+	}
+
+	@Override
+	public boolean hasLongRepresentation() {
+		return false;
+	}
+
+	@Override
+	public double asDouble(UnboundedIntegerType val) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public long asLong(UnboundedIntegerType val) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setDouble(UnboundedIntegerType val, double v) {
+		setLong(val, (long) v);
+	}
+
+	@Override
+	public void setLong(UnboundedIntegerType val, long v) {
+		val.set(BigInteger.valueOf(v));
+	}
 }

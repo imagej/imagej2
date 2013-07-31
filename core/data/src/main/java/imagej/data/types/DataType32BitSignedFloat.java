@@ -124,4 +124,35 @@ public class DataType32BitSignedFloat extends AbstractContextual implements
 		dest.set(val.getReal().floatValue());
 	}
 
+	@Override
+	public boolean hasDoubleRepresentation() {
+		return true;
+	}
+
+	@Override
+	public boolean hasLongRepresentation() {
+		return false;
+	}
+
+	@Override
+	public double asDouble(FloatType val) {
+		return val.get();
+	}
+
+	@Override
+	public long asLong(FloatType val) {
+		// no - data loss possible
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setDouble(FloatType val, double v) {
+		val.setReal(v);
+	}
+
+	@Override
+	public void setLong(FloatType val, long v) {
+		val.setReal(v);
+	}
+
 }

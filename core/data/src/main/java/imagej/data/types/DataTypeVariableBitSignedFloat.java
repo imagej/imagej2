@@ -122,4 +122,33 @@ public class DataTypeVariableBitSignedFloat extends AbstractContextual implement
 		dest.set(val.getReal());
 	}
 
+	@Override
+	public boolean hasDoubleRepresentation() {
+		return false;
+	}
+
+	@Override
+	public boolean hasLongRepresentation() {
+		return false;
+	}
+
+	@Override
+	public double asDouble(UnboundedFloatType val) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public long asLong(UnboundedFloatType val) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setDouble(UnboundedFloatType val, double v) {
+		val.set(BigDecimal.valueOf(v));
+	}
+
+	@Override
+	public void setLong(UnboundedFloatType val, long v) {
+		val.set(BigDecimal.valueOf(v));
+	}
 }

@@ -121,7 +121,37 @@ public class DataType64BitSignedFloat extends AbstractContextual implements
 
 	@Override
 	public void cast(BigComplex val, DoubleType dest) {
-		dest.set(val.getReal().doubleValue());
+		setDouble(dest, val.getReal().doubleValue());
 	}
 
+	@Override
+	public boolean hasDoubleRepresentation() {
+		return true;
+	}
+
+	@Override
+	public boolean hasLongRepresentation() {
+		return false;
+	}
+
+	@Override
+	public double asDouble(DoubleType val) {
+		return val.get();
+	}
+
+	@Override
+	public long asLong(DoubleType val) {
+		// no - data loss possible
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setDouble(DoubleType val, double v) {
+		val.set(v);
+	}
+
+	@Override
+	public void setLong(DoubleType val, long v) {
+		setDouble(val, v);
+	}
 }

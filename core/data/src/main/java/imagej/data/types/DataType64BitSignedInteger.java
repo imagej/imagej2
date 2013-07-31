@@ -121,7 +121,37 @@ public class DataType64BitSignedInteger extends AbstractContextual implements
 
 	@Override
 	public void cast(BigComplex val, LongType dest) {
-		dest.set(val.getReal().longValue());
+		setLong(dest, val.getReal().longValue());
 	}
 
+	@Override
+	public boolean hasDoubleRepresentation() {
+		return false;
+	}
+
+	@Override
+	public boolean hasLongRepresentation() {
+		return true;
+	}
+
+	@Override
+	public double asDouble(LongType val) {
+		// no - data loss possible
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public long asLong(LongType val) {
+		return val.get();
+	}
+
+	@Override
+	public void setDouble(LongType val, double v) {
+		setLong(val, (long) v);
+	}
+
+	@Override
+	public void setLong(LongType val, long v) {
+		val.set(v);
+	}
 }
