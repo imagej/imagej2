@@ -42,6 +42,7 @@ import imagej.data.command.InteractiveImageCommand;
 import imagej.data.display.DatasetView;
 import imagej.data.widget.HistogramBundle;
 import imagej.menu.MenuConstants;
+import imagej.module.MutableModuleItem;
 import imagej.widget.Button;
 import imagej.widget.ChoiceWidget;
 import imagej.widget.NumberWidget;
@@ -104,10 +105,12 @@ public class BrightnessContrast<T extends RealType<T>> extends
 	@Parameter(label = "Histogram")
 	private HistogramBundle bundle;
 
-	@Parameter(label = "Minimum", persist = false, callback = "minMaxChanged")
+	@Parameter(label = "Minimum", persist = false, callback = "minMaxChanged",
+		style = NumberWidget.SCROLL_BAR_STYLE)
 	private double min = Double.NaN;
 
-	@Parameter(label = "Maximum", persist = false, callback = "minMaxChanged")
+	@Parameter(label = "Maximum", persist = false, callback = "minMaxChanged",
+		style = NumberWidget.SCROLL_BAR_STYLE)
 	private double max = Double.NaN;
 
 	@Parameter(callback = "brightnessContrastChanged", persist = false,
@@ -256,6 +259,16 @@ public class BrightnessContrast<T extends RealType<T>> extends
 		DataRange range = autoscaleService.getDefaultRandomAccessRange(img);
 		dataMin = range.getMin();
 		dataMax = range.getMax();
+
+		final MutableModuleItem<Double> minItem =
+			getInfo().getMutableInput("min", Double.class);
+		minItem.setSoftMinimum(dataMin);
+		minItem.setSoftMaximum(dataMax);
+		final MutableModuleItem<Double> maxItem =
+			getInfo().getMutableInput("max", Double.class);
+		maxItem.setSoftMinimum(dataMin);
+		maxItem.setSoftMaximum(dataMax);
+
 		// System.out.println("IN HERE!!!!!!");
 		// System.out.println(" dataMin = " + dataMin);
 		// System.out.println(" dataMax = " + dataMax);
