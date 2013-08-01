@@ -45,29 +45,29 @@ import org.scijava.AbstractContextual;
  * @author Barry DeZonia
  */
 public class DataTypeVariableBitSignedFloat extends AbstractContextual implements
-	DataType<UnboundedFloatType>
+ DataType<PreciseFixedFloatType>
 {
 
-	private UnboundedFloatType type = new UnboundedFloatType();
+	private PreciseFixedFloatType type = new PreciseFixedFloatType();
 
 	@Override
-	public UnboundedFloatType getType() {
+	public PreciseFixedFloatType getType() {
 		return type;
 	}
 
 	@Override
 	public String shortName() {
-		return "Unbounded float";
+		return "Fixed float";
 	}
 
 	@Override
 	public String longName() {
-		return "Unbounded float";
+		return "Fixed point float";
 	}
 
 	@Override
 	public String description() {
-		return "A float data type whose size and precision are unrestricted";
+		return "A float data type whose size is unrestricted and precise to 25 decimal places";
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class DataTypeVariableBitSignedFloat extends AbstractContextual implement
 
 	@Override
 	public boolean isFloat() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -91,12 +91,12 @@ public class DataTypeVariableBitSignedFloat extends AbstractContextual implement
 	}
 
 	@Override
-	public void lowerBound(UnboundedFloatType dest) {
+	public void lowerBound(PreciseFixedFloatType dest) {
 		throw new UnsupportedOperationException("This data type is unbounded");
 	}
 
 	@Override
-	public void upperBound(UnboundedFloatType dest) {
+	public void upperBound(PreciseFixedFloatType dest) {
 		throw new UnsupportedOperationException("This data type is unbounded");
 	}
 
@@ -107,18 +107,18 @@ public class DataTypeVariableBitSignedFloat extends AbstractContextual implement
 	}
 
 	@Override
-	public UnboundedFloatType createVariable() {
-		return new UnboundedFloatType();
+	public PreciseFixedFloatType createVariable() {
+		return new PreciseFixedFloatType();
 	}
 
 	@Override
-	public void cast(UnboundedFloatType val, BigComplex dest) {
+	public void cast(PreciseFixedFloatType val, BigComplex dest) {
 		dest.setReal(val.get());
 		dest.setImag(BigDecimal.ZERO);
 	}
 
 	@Override
-	public void cast(BigComplex val, UnboundedFloatType dest) {
+	public void cast(BigComplex val, PreciseFixedFloatType dest) {
 		dest.set(val.getReal());
 	}
 
@@ -133,22 +133,22 @@ public class DataTypeVariableBitSignedFloat extends AbstractContextual implement
 	}
 
 	@Override
-	public double asDouble(UnboundedFloatType val) {
+	public double asDouble(PreciseFixedFloatType val) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public long asLong(UnboundedFloatType val) {
+	public long asLong(PreciseFixedFloatType val) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void setDouble(UnboundedFloatType val, double v) {
-		val.set(BigDecimal.valueOf(v));
+	public void setDouble(PreciseFixedFloatType val, double v) {
+		val.set(v);
 	}
 
 	@Override
-	public void setLong(UnboundedFloatType val, long v) {
-		val.set(BigDecimal.valueOf(v));
+	public void setLong(PreciseFixedFloatType val, long v) {
+		val.set(v);
 	}
 }
