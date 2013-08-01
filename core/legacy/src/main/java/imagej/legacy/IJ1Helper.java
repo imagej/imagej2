@@ -35,15 +35,6 @@
 
 package imagej.legacy;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.scijava.Context;
-import org.scijava.event.EventHandler;
-import org.scijava.event.EventService;
-import org.scijava.event.EventUtils;
-
 import ij.Executer;
 import ij.IJ;
 import ij.ImageJ;
@@ -57,6 +48,14 @@ import imagej.platform.event.AppOpenFilesEvent;
 import imagej.platform.event.AppPreferencesEvent;
 import imagej.platform.event.AppQuitEvent;
 import imagej.platform.event.ApplicationEvent;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.scijava.AbstractContextual;
+import org.scijava.Context;
+import org.scijava.event.EventHandler;
 
 /**
  * A helper class to interact with ImageJ 1.x.
