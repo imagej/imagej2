@@ -250,20 +250,6 @@ public final class DefaultLegacyService extends AbstractService implements
 		return instance != null;
 	}
 
-	// TODO - make private only???
-
-	@Override
-	public void updateLegacyImageJSettings() {
-		optionsSynchronizer.updateLegacyImageJSettingsFromModernImageJ();
-	}
-
-	// TODO - make private only???
-
-	@Override
-	public void updateModernImageJSettings() {
-		optionsSynchronizer.updateModernImageJSettingsFromLegacyImageJ();
-	}
-
 	@Override
 	public void syncColors() {
 		final DatasetView view = imageDisplayService.getActiveDatasetView();

@@ -189,16 +189,6 @@ public class DummyLegacyService implements LegacyService {
 	}
 
 	@Override
-	public void updateLegacyImageJSettings() {
-		// ignore
-	}
-
-	@Override
-	public void updateModernImageJSettings() {
-		// ignore
-	}
-
-	@Override
 	public void syncColors() {
 		// ignore
 	}
