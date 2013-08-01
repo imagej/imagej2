@@ -111,34 +111,14 @@ public class DefaultDataTypeService extends
 		return (DataType<T>) typesByClass.get(typeClass);
 	}
 
-	/**
-	 * Fills an output with a cast from an input given information about their
-	 * DataTypes. This version of cast() can throw IllegalArgumentException if it
-	 * can't find a safe cast. Use the alternate version of cast() that takes a
-	 * temporary working variable for fully safe casting.
-	 * 
-	 * @param inputType The DataType of the input.
-	 * @param input The input variable to cast from.
-	 * @param outputType The DataType of the output
-	 * @param output The output variable to cast into.
-	 */
+	@Override
 	public <U extends NumericType<U>, V extends NumericType<V>> void cast(
 		DataType<U> inputType, U input, DataType<V> outputType, V output)
 	{
 		cast(inputType, input, outputType, output, null);
 	}
 
-	/**
-	 * Fills an output with a cast from an input given information about their
-	 * DataTypes. This version always succeeds. It requires a temporary working
-	 * variable of type BigComplex to be passed in.
-	 * 
-	 * @param inputType The DataType of the input.
-	 * @param input The input variable to cast from.
-	 * @param outputType The DataType of the output
-	 * @param output The output variable to cast into.
-	 * @param tmp The working variable the method may use internally.
-	 */
+	@Override
 	public <U extends NumericType<U>, V extends NumericType<V>> void cast(
 		DataType<U> inputType, U input, DataType<V> outputType, V output,
 		BigComplex tmp)
