@@ -307,7 +307,11 @@ public final class DefaultLegacyService extends AbstractService implements
 	 * Switch to/from running legacy ImageJ 1.x mode.
 	 */
 	@Override
-	public synchronized void toggleLegacyMode(final boolean wantIJ1) {
+	public void toggleLegacyMode(final boolean wantIJ1) {
+		toggleLegacyMode(wantIJ1, false);
+	}
+
+	public synchronized void toggleLegacyMode(final boolean wantIJ1, final boolean initializing) {
 		if (wantIJ1) legacyIJ1Mode = true;
 
 		SwitchToModernMode.registerMenuItem();
@@ -315,15 +319,17 @@ public final class DefaultLegacyService extends AbstractService implements
 		// TODO: hide/show Brightness/Contrast, Color Picker, Command Launcher, etc
 		// TODO: prevent IJ1 from quitting without IJ2 quitting, too
 
-		final UIService uiService = getContext().getService(UIService.class);
-		if (uiService != null) {
-			// hide/show the IJ2 main window
-			final ApplicationFrame appFrame =
-				uiService.getDefaultUI().getApplicationFrame();
-			if (appFrame == null) {
-				if (!wantIJ1) uiService.showUI();
-			} else {
-				appFrame.setVisible(!wantIJ1);
+		if (!initializing) {
+			final UIService uiService = getContext().getService(UIService.class);
+			if (uiService != null) {
+				// hide/show the IJ2 main window
+				final ApplicationFrame appFrame =
+					uiService.getDefaultUI().getApplicationFrame();
+				if (appFrame == null) {
+					if (!wantIJ1) uiService.showUI();
+				} else {
+					appFrame.setVisible(!wantIJ1);
+				}
 			}
 
 			// TODO: move this into the LegacyImageMap's toggleLegacyMode, passing
@@ -380,7 +386,7 @@ public final class DefaultLegacyService extends AbstractService implements
 
 		updateLegacyImageJSettings();
 
-		if (!hasIJ1Instance) toggleLegacyMode(false);
+		if (!hasIJ1Instance) toggleLegacyMode(false, true);
 	}
 
 	// -- Disposable methods --
