@@ -217,8 +217,7 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 	}
 
 	public void mul(BigInteger v) {
-		BigInteger factor = v.multiply(scale);
-		amount = amount.multiply(factor);
+		amount = amount.multiply(v);
 	}
 
 	public void mul(BigDecimal v) {
