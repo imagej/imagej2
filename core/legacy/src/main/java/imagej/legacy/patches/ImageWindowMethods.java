@@ -62,7 +62,7 @@ public final class ImageWindowMethods {
 		}
 		if (!visible) return;
 		if (legacyService.isLegacyMode() || Utils.isLegacyThread(Thread.currentThread())) {
-			legacyService.legacyImageChanged(obj.getImagePlus());
+			legacyService.getImageMap().registerLegacyImage(obj.getImagePlus());
 		}
 		// TODO - not sure this is correct. Does setVisible(true) imply that it
 		// becomes the current window? This arose in fixing a bug with 3d Project
