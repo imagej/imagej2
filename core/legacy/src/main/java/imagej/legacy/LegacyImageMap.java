@@ -256,6 +256,10 @@ public class LegacyImageMap extends AbstractContextual {
 			display = imageTranslator.createDisplay(imp);
 			addMapping(display, imp);
 		}
+
+		// record resultant ImagePlus as a legacy command output
+		LegacyOutputTracker.addOutput(imp);
+
 		return display;
 	}
 
