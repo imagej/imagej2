@@ -40,6 +40,7 @@ import imagej.util.AppUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
@@ -90,7 +91,7 @@ public class LUTFinder {
 	// -- private helpers --
 
 	private Iterable<URL> getJarURLs() throws IOException {
-		return new IteratorPlus<URL>(getClass().getClassLoader().getResources("luts/"));
+		return new IteratorPlus<URL>(Thread.currentThread().getContextClassLoader().getResources("luts/"));
 	}
 
 	private URL getDirectoryURL() {
@@ -105,16 +106,16 @@ public class LUTFinder {
 
 	private void getLUTs(final Map<String, URL> result, final URL base) {
 		try {
-			String prefix = base.toURI().getPath();
+			String prefix = base.toURI().toString();
 			for (final URL url : FileUtils.listContents(base)) {
-				String string = url.toURI().getPath();
+				String string = url.toURI().toString();
 				if (string == null || !string.startsWith(prefix)) continue;
-				String key = string.substring(prefix.length());
+				String key = new URI(string.substring(prefix.length())).getPath();
 				if (lutsPattern.matcher(string).matches()) result.put(key, url);
 			}
 		}
 		catch (URISyntaxException e) {
-			throw new IllegalArgumentException(e.getMessage());
+			throw new IllegalArgumentException(e);
 		}
 	}
 
