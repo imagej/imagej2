@@ -418,7 +418,9 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			getContext().getService(ThreadService.class).run(new Runnable() {
 				@Override
 				public void run() {
-					rebuild();
+					synchronized (getContext()) {
+						rebuild();
+					}
 				}
 			});
 		}
@@ -430,7 +432,9 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			getContext().getService(ThreadService.class).run(new Runnable() {
 				@Override
 				public void run() {
-					rebuild();
+					synchronized (getContext()) {
+						rebuild();
+					}
 				}
 			});
 		}

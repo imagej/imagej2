@@ -630,13 +630,14 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		getContext().getService(ThreadService.class).run(new Runnable() {
 			@Override
 			public void run() {
-				for (final DataView view : DefaultImageDisplay.this) {
-					if (event.getObject() == view.getData()) {
-						rebuild();
-						update();
-						return;
+				synchronized (getContext()) {
+					for (final DataView view : DefaultImageDisplay.this) {
+						if (event.getObject() == view.getData()) {
+							rebuild();
+							update();
+							return;
+						}
 					}
-
 				}
 			}
 		});
