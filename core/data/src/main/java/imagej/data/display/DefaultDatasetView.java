@@ -158,10 +158,12 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 		double max = imgPlus.getChannelMaximum(c);
 		if (Double.isNaN(min) || Double.isNaN(max)) {
 			// not provided in metadata, so calculate the min/max
-			RandomAccessibleInterval<? extends RealType<?>> interval = channelData(getData(), c);
+			RandomAccessibleInterval<? extends RealType<?>> interval =
+				channelData(getData(), c);
 			interval = xyPlane(interval);
-			AutoscaleService service = getContext().getService(AutoscaleService.class);
-			DataRange result = service.getDefaultRandomAccessRange(interval);
+			final AutoscaleService service =
+				getContext().getService(AutoscaleService.class);
+			final DataRange result = service.getDefaultRandomAccessRange(interval);
 			min = result.getMin();
 			max = result.getMax();
 			// cache min/max in metadata for next time
@@ -293,32 +295,33 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	}
 
 	@Override
-  public RandomAccessibleInterval<? extends RealType<?>> xyPlane() {
-    return xyPlane(getData().getImgPlus());
-  }
-  
+	public RandomAccessibleInterval<? extends RealType<?>> xyPlane() {
+		return xyPlane(getData().getImgPlus());
+	}
+
 	@Override
 	public RandomAccessibleInterval<? extends RealType<?>> xyPlane(
-		RandomAccessibleInterval<? extends RealType<?>> inputInterval)
+		final RandomAccessibleInterval<? extends RealType<?>> inputInterval)
 	{
 		RandomAccessibleInterval<? extends RealType<?>> interval = inputInterval;
 
-    long[] min = new long[interval.numDimensions()];
-    long[] max = new long[interval.numDimensions()];
-    
-    interval.dimensions(max);
-    
-    for (int i=0; i<2; i++) max[i]--;
-    
-    for (int i=2; i<interval.numDimensions(); i++) {
-      min[i] = max[i] = getLongPosition(i);  
-    }
-    
-    interval = Views.interval(interval, min, max);
+		final long[] min = new long[interval.numDimensions()];
+		final long[] max = new long[interval.numDimensions()];
 
-    return interval;
-  }
-  
+		interval.dimensions(max);
+
+		for (int i = 0; i < 2; i++)
+			max[i]--;
+
+		for (int i = 2; i < interval.numDimensions(); i++) {
+			min[i] = max[i] = getLongPosition(i);
+		}
+
+		interval = Views.interval(interval, min, max);
+
+		return interval;
+	}
+
 	// -- DataView methods --
 
 	@Override
@@ -416,6 +419,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	protected void onEvent(final DatasetTypeChangedEvent event) {
 		if (getData() == event.getObject()) {
 			getContext().getService(ThreadService.class).run(new Runnable() {
+
 				@Override
 				public void run() {
 					synchronized (getContext()) {
@@ -430,6 +434,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	protected void onEvent(final DatasetRGBChangedEvent event) {
 		if (getData() == event.getObject()) {
 			getContext().getService(ThreadService.class).run(new Runnable() {
+
 				@Override
 				public void run() {
 					synchronized (getContext()) {
@@ -454,9 +459,9 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			projector.map();
 		}
 	}
-  
+
 	// -- Helper methods --
-  
+
 	private int getChannelDimIndex() {
 		return getData().getAxisIndex(Axes.CHANNEL);
 	}
@@ -483,22 +488,22 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 		for (int c = 0; c < channelCount; c++) {
 			autoscale(c);
 			final RealLUTConverter converter =
-					new RealLUTConverter(getData().getImgPlus().getChannelMinimum(c),
-						getData().getImgPlus().getChannelMaximum(c), null);
+				new RealLUTConverter(getData().getImgPlus().getChannelMinimum(c),
+					getData().getImgPlus().getChannelMaximum(c), null);
 			converters.add(converter);
 		}
 
-		ImgPlus<?> img = getData().getImgPlus();
+		final ImgPlus<?> img = getData().getImgPlus();
 
 		if (AbstractCellImg.class.isAssignableFrom(img.getImg().getClass())) {
 			projector =
-					new SourceOptimizedCompositeXYProjector(getData().getImgPlus(), screenImage, converters,
-						channelDimIndex);
+				new SourceOptimizedCompositeXYProjector(getData().getImgPlus(),
+					screenImage, converters, channelDimIndex);
 		}
 		else {
 			projector =
-					new CompositeXYProjector(getData().getImgPlus(), screenImage, converters,
-						channelDimIndex);
+				new CompositeXYProjector(getData().getImgPlus(), screenImage,
+					converters, channelDimIndex);
 		}
 
 		projector.setComposite(composite);
@@ -533,8 +538,8 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 		return defaultLUTs.get(cPos); // return default channel LUT
 	}
 
-	private RandomAccessibleInterval<? extends RealType<?>> channelData(final Dataset d,
-		final int c)
+	private RandomAccessibleInterval<? extends RealType<?>> channelData(
+		final Dataset d, final int c)
 	{
 		final ImgPlus<? extends RealType<?>> imgPlus = d.getImgPlus();
 		final int chIndex = imgPlus.getAxisIndex(Axes.CHANNEL);

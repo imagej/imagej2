@@ -70,8 +70,8 @@ import org.scijava.thread.ThreadService;
  * @author Curtis Rueden
  */
 @Plugin(type = Display.class)
-public class DefaultImageDisplay extends AbstractDisplay<DataView>
-	implements ImageDisplay
+public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
+	ImageDisplay
 {
 
 	/** Data structure that aggregates dimensional axes from constituent views. */
@@ -136,7 +136,7 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 				pos.put(axis, min(i));
 			}
 		}
-		
+
 		if (getActiveAxis() == null) initActiveAxis();
 	}
 
@@ -285,9 +285,9 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 		for (final DataView view : this) {
 			for (final AxisType axis : getAxes()) {
 				if (Axes.isXY(axis)) continue;
-				int axisNum = view.getData().getAxisIndex(axis);
+				final int axisNum = view.getData().getAxisIndex(axis);
 				if (axisNum < 0) continue;
-				long p = getLongPosition(axis);
+				final long p = getLongPosition(axis);
 				if (p < view.getData().dimension(axisNum)) {
 					view.setPosition(p, axis);
 				}
@@ -433,7 +433,7 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 	}
 
 	@Override
-	public void calibration(float[] cal) {
+	public void calibration(final float[] cal) {
 		combinedInterval.calibration(cal);
 	}
 
@@ -443,12 +443,12 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 	}
 
 	@Override
-	public void setCalibration(double[] cal) {
+	public void setCalibration(final double[] cal) {
 		combinedInterval.setCalibration(cal);
 	}
 
 	@Override
-	public void setCalibration(float[] cal) {
+	public void setCalibration(final float[] cal) {
 		combinedInterval.setCalibration(cal);
 	}
 
@@ -461,16 +461,16 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 
 	@Override
 	public long getLongPosition(final AxisType axis) {
-		int d = getAxisIndex(axis);
+		final int d = getAxisIndex(axis);
 		if (d < 0) {
 			// untracked axes are all at position 0 by default
 			return 0;
 		}
 		final Long value = pos.get(axis);
 		if (value == null) return 0;
-		long min = combinedInterval.min(d);
+		final long min = combinedInterval.min(d);
 		if (value < min) return min;
-		long max = combinedInterval.max(d);
+		final long max = combinedInterval.max(d);
 		if (value > max) return max;
 		return value;
 	}
@@ -628,6 +628,7 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView>
 	@EventHandler
 	protected void onEvent(final DataRestructuredEvent event) {
 		getContext().getService(ThreadService.class).run(new Runnable() {
+
 			@Override
 			public void run() {
 				synchronized (getContext()) {
