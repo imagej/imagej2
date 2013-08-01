@@ -222,7 +222,7 @@ public class LegacyCommand implements Command {
 				}
 
 				// reflect any changes to globals in modern ImageJ options/prefs
-				legacyService.updateModernImageJSettings();
+				legacyService.getOptionsSynchronizer().updateModernImageJSettingsFromLegacyImageJ();
 
 				//reportStackIssues("After IJ1 plugin run");
 			}

@@ -198,6 +198,11 @@ public final class DefaultLegacyService extends AbstractService implements
 	}
 
 	@Override
+	public OptionsSynchronizer getOptionsSynchronizer() {
+		return optionsSynchronizer;
+	}
+
+	@Override
 	public DisplayService getDisplayService() {
 		return displayService;
 	}
@@ -243,20 +248,6 @@ public final class DefaultLegacyService extends AbstractService implements
 	@Override
 	public boolean isInitialized() {
 		return instance != null;
-	}
-
-	// TODO - make private only???
-
-	@Override
-	public void updateLegacyImageJSettings() {
-		optionsSynchronizer.updateLegacyImageJSettingsFromModernImageJ();
-	}
-
-	// TODO - make private only???
-
-	@Override
-	public void updateModernImageJSettings() {
-		optionsSynchronizer.updateModernImageJSettingsFromLegacyImageJ();
 	}
 
 	@Override
@@ -364,7 +355,7 @@ public final class DefaultLegacyService extends AbstractService implements
 		final boolean enableBlacklist = !optsMisc.isDebugMode();
 		addLegacyCommands(enableBlacklist);
 
-		updateLegacyImageJSettings();
+		optionsSynchronizer.updateLegacyImageJSettingsFromModernImageJ();
 
 		if (!hasIJ1Instance && !GraphicsEnvironment.isHeadless()) toggleLegacyMode(false, true);
 	}
@@ -398,7 +389,7 @@ public final class DefaultLegacyService extends AbstractService implements
 			final OptionsMisc opts = (OptionsMisc) event.getOptions();
 			if (opts.isDebugMode() != lastDebugMode) updateMenus(opts);
 		}
-		updateLegacyImageJSettings();
+		optionsSynchronizer.updateModernImageJSettingsFromLegacyImageJ();
 	}
 
 	@EventHandler
