@@ -74,13 +74,23 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 	}
 
 	public PreciseFixedFloatType(long v) {
-		scale = BigInteger.TEN.pow(DECIMAL_PLACES);
+		this();
 		set(v);
 	}
 
 	public PreciseFixedFloatType(double v) {
 		this();
-		setReal(v);
+		set(v);
+	}
+
+	public PreciseFixedFloatType(BigInteger v) {
+		this();
+		set(v);
+	}
+
+	public PreciseFixedFloatType(BigDecimal v) {
+		this();
+		set(v);
 	}
 
 	// -- RealType methods --
@@ -113,7 +123,7 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 
 	@Override
 	public void setReal(float v) {
-		set((double) v);
+		set(v);
 	}
 
 	@Override
@@ -206,6 +216,11 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 		mul(BigDecimal.valueOf(v));
 	}
 
+	public void mul(BigInteger v) {
+		BigInteger factor = v.multiply(scale);
+		amount = amount.multiply(factor);
+	}
+
 	public void mul(BigDecimal v) {
 		BigDecimal integer = new BigDecimal(amount);
 		BigDecimal number = integer.multiply(v);
@@ -239,13 +254,13 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 		amount = BigInteger.valueOf(v).multiply(scale);
 	}
 
+	public void set(BigInteger v) {
+		amount = v.multiply(scale);
+	}
+
 	public void set(BigDecimal v) {
 		BigDecimal scaled = v.multiply(new BigDecimal(scale));
 		amount = scaled.toBigInteger();
-	}
-
-	public void set(BigInteger v) {
-		amount = v.multiply(scale);
 	}
 
 	@Override
