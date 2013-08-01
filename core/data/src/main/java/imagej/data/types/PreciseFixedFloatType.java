@@ -289,7 +289,7 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 
 	@Override
 	public double getMinIncrement() {
-		return 1.0 / DECIMAL_PLACES; // TODO - prone to precision loss
+		return 1.0 / Math.pow(10, DECIMAL_PLACES); // TODO - prone to precision loss
 	}
 
 	@Override
