@@ -86,7 +86,9 @@ public class LUTFinderTest {
 			assertTrue(luts.containsKey("hello world/bang.lut"));
 		} finally {
 			Thread.currentThread().setContextClassLoader(savedLoader);
-			assertTrue(jarFile.delete());
+			if (!jarFile.delete()) {
+				jarFile.deleteOnExit();
+			}
 		}
 	}
 
