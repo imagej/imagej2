@@ -91,6 +91,9 @@ public interface LegacyService extends Service {
 	/** Gets the LegacyImageMap associated with this LegacyService. */
 	LegacyImageMap getImageMap();
 
+	/** Gets the OptionsSynchronizer associated with this LegacyService. */
+	OptionsSynchronizer getOptionsSynchronizer();
+
 	/**
 	 * Runs a legacy command programmatically.
 	 * 

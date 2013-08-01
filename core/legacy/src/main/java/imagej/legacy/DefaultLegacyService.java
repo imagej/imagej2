@@ -198,6 +198,11 @@ public final class DefaultLegacyService extends AbstractService implements
 	}
 
 	@Override
+	public OptionsSynchronizer getOptionsSynchronizer() {
+		return optionsSynchronizer;
+	}
+
+	@Override
 	public DisplayService getDisplayService() {
 		return displayService;
 	}

@@ -169,6 +169,11 @@ public class DummyLegacyService implements LegacyService {
 	}
 
 	@Override
+	public OptionsSynchronizer getOptionsSynchronizer() {
+		throw new UnsupportedOperationException("The DummyLegacyService has no OptionsSynchronizer!");
+	}
+
+	@Override
 	public void runLegacyCommand(String ij1ClassName, String argument) {
 		IJ1Helper.runIJ1PlugIn(ij1ClassName, argument);
 	}
