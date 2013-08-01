@@ -235,17 +235,6 @@ public final class DefaultLegacyService extends AbstractService implements
 	}
 
 	@Override
-	public void legacyImageChanged(final ImagePlus imp) {
-		// CTR FIXME rework static InsideBatchDrawing logic?
-		// BDZ - removal for now. replace if issues arise. Alternative fix outlined
-		// in FunctionsMethods code. This code was for addressing bug #554
-		// if (FunctionsMethods.InsideBatchDrawing > 0) return;
-
-		// create a display if it doesn't exist yet.
-		imageMap.registerLegacyImage(imp);
-	}
-
-	@Override
 	public void syncActiveImage() {
 		final ImageDisplay activeDisplay =
 			imageDisplayService.getActiveImageDisplay();

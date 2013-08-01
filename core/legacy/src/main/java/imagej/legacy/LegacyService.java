@@ -35,7 +35,6 @@
 
 package imagej.legacy;
 
-import ij.ImagePlus;
 import imagej.data.DatasetService;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -100,12 +99,6 @@ public interface LegacyService extends Service {
 	 * @param argument The argument string to pass to the plugin e.g. "copy"
 	 */
 	void runLegacyCommand(String ij1ClassName, String argument);
-
-	/**
-	 * Indicates to the service that the given {@link ImagePlus} has changed as
-	 * part of a legacy command execution.
-	 */
-	void legacyImageChanged(ImagePlus imp);
 
 	/**
 	 * Ensures that the currently active {@link ImagePlus} matches the currently
