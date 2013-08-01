@@ -35,7 +35,6 @@
 
 package imagej.legacy;
 
-import ij.ImagePlus;
 import imagej.command.CommandService;
 import imagej.core.options.OptionsMisc;
 import imagej.data.DatasetService;
@@ -85,12 +84,12 @@ import org.scijava.service.Service;
  * as they occur.
  * </p>
  * <p>
- * It also maintains an image map between legacy ImageJ {@link ImagePlus}
+ * It also maintains an image map between legacy ImageJ {@link ij.ImagePlus}
  * objects and modern ImageJ {@link ImageDisplay}s.
  * </p>
  * <p>
  * In this fashion, when a legacy command is executed on a {@link ImageDisplay},
- * the service transparently translates it into an {@link ImagePlus}, and vice
+ * the service transparently translates it into an {@link ij.ImagePlus}, and vice
  * versa, enabling backward compatibility with legacy commands.
  * </p>
  * 
@@ -383,7 +382,7 @@ public final class DefaultLegacyService extends AbstractService implements
 	// -- Event handlers --
 
 	/**
-	 * Keeps the active legacy {@link ImagePlus} in sync with the active modern
+	 * Keeps the active legacy {@link ij.ImagePlus} in sync with the active modern
 	 * {@link ImageDisplay}.
 	 */
 	@EventHandler
