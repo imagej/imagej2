@@ -369,7 +369,7 @@ public final class DefaultLegacyService extends AbstractService implements
 		final boolean enableBlacklist = !optsMisc.isDebugMode();
 		addLegacyCommands(enableBlacklist);
 
-		updateLegacyImageJSettings();
+		optionsSynchronizer.updateLegacyImageJSettingsFromModernImageJ();
 
 		if (!hasIJ1Instance && !GraphicsEnvironment.isHeadless()) toggleLegacyMode(false, true);
 	}
@@ -403,7 +403,7 @@ public final class DefaultLegacyService extends AbstractService implements
 			final OptionsMisc opts = (OptionsMisc) event.getOptions();
 			if (opts.isDebugMode() != lastDebugMode) updateMenus(opts);
 		}
-		updateLegacyImageJSettings();
+		optionsSynchronizer.updateModernImageJSettingsFromLegacyImageJ();
 	}
 
 	@EventHandler
