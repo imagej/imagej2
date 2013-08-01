@@ -356,10 +356,8 @@ public class LegacyCommand implements Command {
 		}
 
 		private List<ImageDisplay> updateDisplaysFromImagePluses() {
-			// TODO - check the changes flag for each ImagePlus that already has a
-			// ImageDisplay and only harmonize those that have changed. Maybe changes
-			// flag does not track everything (such as metadata changes?) and thus
-			// we might still have to do some minor harmonization. Investigate.
+			// We cannot use the "changes" flag here because ImageJ 1.x might have
+			// consumed it already.
 
 			final ImagePlus[] imps = LegacyOutputTracker.getOutputs();
 			final ImagePlus currImp = WindowManager.getCurrentImage();
