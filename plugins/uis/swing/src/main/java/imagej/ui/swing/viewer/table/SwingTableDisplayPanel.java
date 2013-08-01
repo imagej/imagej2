@@ -40,14 +40,11 @@ import imagej.data.table.TableDisplay;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.table.TableDisplayPanel;
 
-import java.util.List;
-
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import org.scijava.event.EventService;
-import org.scijava.event.EventSubscriber;
 
 /**
  * This is the display panel for {@link Table}s.
@@ -66,9 +63,6 @@ public class SwingTableDisplayPanel extends JScrollPane implements
 	private final JTable table;
 	private final NullTableModel nullModel;
 
-	@SuppressWarnings("unused")
-	private final List<EventSubscriber<?>> subscribers;
-
 	// -- constructor --
 
 	public SwingTableDisplayPanel(final TableDisplay display,
@@ -84,7 +78,7 @@ public class SwingTableDisplayPanel extends JScrollPane implements
 
 		final EventService eventService =
 			display.getContext().getService(EventService.class);
-		subscribers = eventService.subscribe(this);
+		eventService.subscribe(this);
 	}
 
 	// -- TableDisplayPanel methods --

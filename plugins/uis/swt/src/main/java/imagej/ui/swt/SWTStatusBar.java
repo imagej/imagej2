@@ -37,9 +37,6 @@ package imagej.ui.swt;
 
 import imagej.ui.StatusBar;
 import imagej.ui.UIService;
-
-import java.util.List;
-
 import net.miginfocom.swt.MigLayout;
 
 import org.eclipse.swt.widgets.Composite;
@@ -47,7 +44,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.scijava.app.event.StatusEvent;
 import org.scijava.event.EventHandler;
-import org.scijava.event.EventSubscriber;
 
 /**
  * SWT implementation of {@link StatusBar}.
@@ -61,16 +57,13 @@ public class SWTStatusBar extends Composite implements StatusBar {
 	private final Label label;
 	private final ProgressBar progressBar;
 
-	@SuppressWarnings("unused")
-	private final List<EventSubscriber<?>> subscribers;
-
 	public SWTStatusBar(final Composite parent, final UIService uiService) {
 		super(parent, 0);
 		this.uiService = uiService;
 		setLayout(new MigLayout());
 		label = new Label(this, 0);
 		progressBar = new ProgressBar(this, 0);
-		subscribers = uiService.getEventService().subscribe(this);
+		uiService.getEventService().subscribe(this);
 	}
 
 	@Override

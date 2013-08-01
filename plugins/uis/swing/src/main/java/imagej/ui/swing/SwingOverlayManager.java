@@ -101,7 +101,6 @@ import javax.swing.event.ListSelectionListener;
 import org.scijava.Context;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
-import org.scijava.event.EventSubscriber;
 
 // TODO
 //
@@ -160,9 +159,6 @@ public class SwingOverlayManager
 
 	// -- instance variables --
 	
-	/** Maintains the list of event subscribers, to avoid garbage collection. */
-	@SuppressWarnings("unused")
-	private final List<EventSubscriber<?>> subscribers;
 	private final Context context;
 	private final JList jlist;
 	private boolean selecting = false; // flag to prevent event feedback loops
@@ -234,7 +230,7 @@ public class SwingOverlayManager
 		pack();
 		
 		final EventService eventService = context.getService(EventService.class);
-		subscribers = eventService.subscribe(this);
+		eventService.subscribe(this);
 
 		/* NOTE BDZ removed 6-11-12. There should be a default menu bar attached
 		 * to this frame now.
