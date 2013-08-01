@@ -41,13 +41,33 @@ import java.math.BigInteger;
 import net.imglib2.type.numeric.IntegerType;
 
 /**
+ * A BigInteger backed type (unlimited range).
+ * 
  * @author Barry DeZonia
  */
 public class UnboundedIntegerType implements IntegerType<UnboundedIntegerType> {
 
 	// -- fields --
 
-	private BigInteger v = BigInteger.ZERO;
+	private BigInteger v;
+
+	// -- constructors --
+
+	public UnboundedIntegerType() {
+		set(BigInteger.ZERO);
+	}
+
+	public UnboundedIntegerType(UnboundedIntegerType other) {
+		set(other);
+	}
+
+	public UnboundedIntegerType(long val) {
+		set(val);
+	}
+
+	public UnboundedIntegerType(BigInteger val) {
+		set(val);
+	}
 
 	// -- accessors --
 
@@ -55,8 +75,12 @@ public class UnboundedIntegerType implements IntegerType<UnboundedIntegerType> {
 		return v;
 	}
 
+	public void set(long val) {
+		this.v = BigInteger.valueOf(val);
+	}
+
 	public void set(BigInteger val) {
-		v = val;
+		this.v = val;
 	}
 
 	// -- NumericType methods --
@@ -68,34 +92,32 @@ public class UnboundedIntegerType implements IntegerType<UnboundedIntegerType> {
 
 	@Override
 	public UnboundedIntegerType copy() {
-		UnboundedIntegerType copy = new UnboundedIntegerType();
-		copy.v = this.v;
-		return copy;
+		return new UnboundedIntegerType(this);
 	}
 
 	@Override
-	public void set(UnboundedIntegerType c) {
-		this.v = c.v;
+	public void set(UnboundedIntegerType val) {
+		this.v = val.v;
 	}
 
 	@Override
-	public void add(UnboundedIntegerType c) {
-		this.v = v.add(c.v);
+	public void add(UnboundedIntegerType val) {
+		this.v = v.add(val.v);
 	}
 
 	@Override
-	public void sub(UnboundedIntegerType c) {
-		this.v = v.subtract(c.v);
+	public void sub(UnboundedIntegerType val) {
+		this.v = v.subtract(val.v);
 	}
 
 	@Override
-	public void mul(UnboundedIntegerType c) {
-		this.v = v.multiply(c.v);
+	public void mul(UnboundedIntegerType val) {
+		this.v = v.multiply(val.v);
 	}
 
 	@Override
-	public void div(UnboundedIntegerType c) {
-		this.v = v.divide(c.v);
+	public void div(UnboundedIntegerType val) {
+		this.v = v.divide(val.v);
 	}
 
 	@Override
@@ -109,13 +131,21 @@ public class UnboundedIntegerType implements IntegerType<UnboundedIntegerType> {
 	}
 
 	@Override
-	public void mul(float c) {
-		doMul(new BigDecimal(c));
+	public void mul(float val) {
+		doMul(BigDecimal.valueOf(val));
 	}
 
 	@Override
-	public void mul(double c) {
-		doMul(new BigDecimal(c));
+	public void mul(double val) {
+		doMul(BigDecimal.valueOf(val));
+	}
+
+	public void mul(BigInteger val) {
+		this.v = v.multiply(val);
+	}
+
+	public void mul(BigDecimal val) {
+		doMul(val);
 	}
 
 	// -- helpers --
@@ -182,12 +212,12 @@ public class UnboundedIntegerType implements IntegerType<UnboundedIntegerType> {
 
 	@Override
 	public void setReal(float f) {
-		this.v = BigInteger.valueOf((long) f);
+		set((long) f);
 	}
 
 	@Override
 	public void setReal(double f) {
-		this.v = BigInteger.valueOf((long) f);
+		set((long) f);
 	}
 
 	@Override
@@ -246,21 +276,21 @@ public class UnboundedIntegerType implements IntegerType<UnboundedIntegerType> {
 
 	@Override
 	public int getInteger() {
-		return this.v.intValue();
+		return this.v.intValue(); // TODO - narrowing
 	}
 
 	@Override
 	public long getIntegerLong() {
-		return this.v.longValue();
+		return this.v.longValue(); // TODO -- narrowing
 	}
 
 	@Override
 	public void setInteger(int f) {
-		this.v = BigInteger.valueOf(f);
+		set(f);
 	}
 
 	@Override
 	public void setInteger(long f) {
-		this.v = BigInteger.valueOf(f);
+		set(f);
 	}
 }
