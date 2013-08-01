@@ -200,7 +200,12 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 		U val = dataType.createVariable();
 		U min = dataType.createVariable();
 		U max = dataType.createVariable();
-		if (isMax) {
+
+		if (!dataType.isBounded()) {
+			isRamp = false;
+			val.setZero();
+		}
+		else if (isMax) {
 			dataType.upperBound(max);
 			val.set(max);
 		}
