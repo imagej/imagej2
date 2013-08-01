@@ -91,7 +91,7 @@ public class LUTFinder {
 	// -- private helpers --
 
 	private Iterable<URL> getJarURLs() throws IOException {
-		return new IteratorPlus<URL>(getClass().getClassLoader().getResources("luts/"));
+		return new IteratorPlus<URL>(Thread.currentThread().getContextClassLoader().getResources("luts/"));
 	}
 
 	private URL getDirectoryURL() {
