@@ -35,14 +35,28 @@
 
 package imagej.legacy;
 
-import java.awt.GraphicsEnvironment;
-
+import ij.Executer;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.ImageWindow;
+import ij.io.Opener;
 import imagej.data.display.ImageDisplay;
+import imagej.platform.event.AppAboutEvent;
+import imagej.platform.event.AppOpenFilesEvent;
+import imagej.platform.event.AppPreferencesEvent;
+import imagej.platform.event.AppQuitEvent;
+import imagej.platform.event.ApplicationEvent;
+
+import java.awt.GraphicsEnvironment;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.scijava.AbstractContextual;
+import org.scijava.Context;
+import org.scijava.event.EventHandler;
 
 /**
  * A helper class to interact with ImageJ 1.x.
@@ -181,6 +195,59 @@ public class IJ1Helper {
 	 */
 	public static void error(final String message) {
 		IJ.log(message);
+	}
+
+	private static class LegacyEventDelegator extends AbstractContextual {
+
+		// -- MacAdapter re-implementations --
+
+		@EventHandler
+		protected void onEvent(final AppAboutEvent event) {
+			if (isLegacyMode(event)) {
+				IJ.run("About ImageJ...");
+			}
+		}
+
+		@EventHandler
+		protected void onEvent(final AppOpenFilesEvent event) {
+			if (isLegacyMode(event)) {
+				final List<File> files = new ArrayList<File>(event.getFiles());
+				for (final File file : files) {
+					new Opener().openAndAddToRecent(file.getAbsolutePath());
+				}
+			}
+		}
+
+		@EventHandler
+		protected void onEvent(final AppQuitEvent event) {
+			if (isLegacyMode(event)) {
+				new Executer("Quit", null); // works with the CommandListener
+			}
+		}
+
+		@EventHandler
+		protected void onEvent(final AppPreferencesEvent event) {
+			if (isLegacyMode(event)) {
+				IJ.error("The ImageJ preferences are in the Edit>Options menu.");
+			}
+		}
+
+		private static boolean isLegacyMode(final ApplicationEvent event) {
+			final LegacyService legacyService = event.getContext().getService(LegacyService.class);
+			return legacyService != null && legacyService.isLegacyMode();
+		}
+
+	}
+
+	private static LegacyEventDelegator eventDelegator;
+
+	public static void subscribeEvents(final Context context) {
+		if (context == null) {
+			eventDelegator = null;
+		} else {
+			eventDelegator = new LegacyEventDelegator();
+			eventDelegator.setContext(context);
+		}
 	}
 
 }

@@ -39,6 +39,7 @@ import java.awt.GraphicsEnvironment;
 import java.lang.reflect.Field;
 
 import org.scijava.Context;
+import org.scijava.event.EventService;
 import org.scijava.util.ClassUtils;
 
 /**
@@ -76,15 +77,6 @@ public class LegacyInjector {
 			+ "if (!$isLegacyMode()) return;");
 
 		// override behavior of ij.IJ
-		if (hacker.existsClass("com.apple.eawt.ApplicationListener")) {
-			for (final String suffix : new String[] {
-					"About", "OpenFile", "Preferences", "Quit", "OpenApplication", "ReOpenApplication", "PrintFile"
-			}) {
-				hacker.insertAtTopOfMethod("MacAdapter",
-					"public void handle" + suffix + "(com.apple.eawt.ApplicationEvent event)",
-					"if (!$isLegacyMode()) return;");
-			}
-		}
 		hacker.insertAtBottomOfMethod("ij.IJ",
 			"public static void showProgress(double progress)");
 		hacker.insertAtBottomOfMethod("ij.IJ",
@@ -168,19 +160,20 @@ public class LegacyInjector {
 	}
 
 	void setLegacyService(final LegacyService legacyService) {
+		Context context;
+		try {
+			context = legacyService.getContext();
+		} catch (UnsupportedOperationException e) {
+			// DummyLegacyService does not have a context
+			context = null;
+		}
+
 		try {
 			final Class<?> ij = hacker.classLoader.loadClass("ij.IJ");
 			Field field = ij.getDeclaredField("_legacyService");
 			field.setAccessible(true);
 			field.set(null, legacyService);
 
-			Context context;
-			try {
-				context = legacyService.getContext();
-			} catch (UnsupportedOperationException e) {
-				// DummyLegacyService does not have a context
-				context = null;
-			}
 			field = ij.getDeclaredField("_context");
 			field.setAccessible(true);
 			field.set(null, context);
@@ -193,6 +186,8 @@ public class LegacyInjector {
 		} catch (IllegalAccessException e) {
 			throw new IllegalArgumentException("Cannot access field in ij.IJ", e);
 		}
+
+		IJ1Helper.subscribeEvents(context);
 	}
 
 }

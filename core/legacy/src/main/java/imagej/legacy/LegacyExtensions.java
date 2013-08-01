@@ -518,6 +518,7 @@ public class LegacyExtensions {
 		insertAppNameHooks(hacker);
 		insertRefreshMenusHook(hacker);
 		overrideStartupMacrosForFiji(hacker);
+		handleMacAdapter(hacker);
 	}
 
 	/**
@@ -675,6 +676,15 @@ public class LegacyExtensions {
 				" java.io.File fijiFile = new java.io.File(fijiPath);" +
 				" $0.installFile(fijiFile.exists() ? fijiFile.getPath() : $1);" +
 				"} else $0.installFile($1);");
+	}
+
+	private static void handleMacAdapter(final CodeHacker hacker) {
+		// Without the ApplicationListener, MacAdapter cannot load, and hence CodeHacker would fail
+		// to load it if we patched the class.
+		if (!hacker.existsClass("com.apple.eawt.ApplicationListener")) return;
+
+		hacker.insertAtTopOfMethod("MacAdapter", "public void run(java.lang.String arg)",
+			"return;");
 	}
 
 }
