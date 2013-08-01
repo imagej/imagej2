@@ -198,6 +198,17 @@ public class IJ1Helper {
 	}
 
 	/**
+	 * Delegator for {@link IJ#runPlugIn(String, String)}.
+	 * <p>
+	 * This method allows the {@link DummyLegacyService} class to be loaded
+	 * without loading any of ImageJ 1.x.
+	 * </p>
+	 */
+	public static void runIJ1PlugIn(final String className, final String arg) {
+		IJ.runPlugIn(className, arg);
+	}
+
+	/**
 	 * Replacement for ImageJ 1.x' MacAdapter.
 	 * <p>
 	 * ImageJ 1.x has a MacAdapter plugin that intercepts MacOSX-specific events
