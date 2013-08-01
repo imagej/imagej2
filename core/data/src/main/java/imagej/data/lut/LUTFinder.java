@@ -115,7 +115,7 @@ public class LUTFinder {
 			}
 		}
 		catch (URISyntaxException e) {
-			throw new IllegalArgumentException(e.getMessage());
+			throw new IllegalArgumentException(e);
 		}
 	}
 
