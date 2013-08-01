@@ -43,7 +43,6 @@ import imagej.data.display.ColorTables;
 import imagej.data.types.BigComplex;
 import imagej.data.types.DataType;
 import imagej.data.types.DataTypeService;
-import imagej.data.types.GeneralCast;
 import imagej.menu.MenuConstants;
 import imagej.module.MutableModuleItem;
 
@@ -222,7 +221,8 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 		while (inCursor.hasNext()) {
 			inCursor.fwd();
 			outAccessor.setPosition(inCursor);
-			GeneralCast.cast(inType, inCursor.get(), outType, outAccessor.get(), tmp);
+			dataTypeService.cast(inType, inCursor.get(), outType, outAccessor.get(),
+				tmp);
 		}
 		copyMetaDataDefaultCase(data.getImgPlus(), newData.getImgPlus());
 		return newData;
