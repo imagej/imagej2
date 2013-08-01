@@ -35,7 +35,6 @@
 
 package imagej.legacy;
 
-import ij.ImagePlus;
 import imagej.command.CommandService;
 import imagej.core.options.OptionsMisc;
 import imagej.data.DatasetService;
@@ -85,12 +84,12 @@ import org.scijava.service.Service;
  * as they occur.
  * </p>
  * <p>
- * It also maintains an image map between legacy ImageJ {@link ImagePlus}
+ * It also maintains an image map between legacy ImageJ {@link ij.ImagePlus}
  * objects and modern ImageJ {@link ImageDisplay}s.
  * </p>
  * <p>
  * In this fashion, when a legacy command is executed on a {@link ImageDisplay},
- * the service transparently translates it into an {@link ImagePlus}, and vice
+ * the service transparently translates it into an {@link ij.ImagePlus}, and vice
  * versa, enabling backward compatibility with legacy commands.
  * </p>
  * 
@@ -232,20 +231,6 @@ public final class DefaultLegacyService extends AbstractService implements
 		inputMap.put("className", ij1ClassName);
 		inputMap.put("arg", arg);
 		commandService.run(LegacyCommand.class, inputMap);
-	}
-
-	@Override
-	public void legacyImageChanged(final ImagePlus imp) {
-		// CTR FIXME rework static InsideBatchDrawing logic?
-		// BDZ - removal for now. replace if issues arise. Alternative fix outlined
-		// in FunctionsMethods code. This code was for addressing bug #554
-		// if (FunctionsMethods.InsideBatchDrawing > 0) return;
-
-		// create a display if it doesn't exist yet.
-		imageMap.registerLegacyImage(imp);
-
-		// record resultant ImagePlus as a legacy command output
-		LegacyOutputTracker.addOutput(imp);
 	}
 
 	@Override
@@ -397,7 +382,7 @@ public final class DefaultLegacyService extends AbstractService implements
 	// -- Event handlers --
 
 	/**
-	 * Keeps the active legacy {@link ImagePlus} in sync with the active modern
+	 * Keeps the active legacy {@link ij.ImagePlus} in sync with the active modern
 	 * {@link ImageDisplay}.
 	 */
 	@EventHandler

@@ -35,8 +35,6 @@
 
 package imagej.legacy;
 
-import ij.IJ;
-import ij.ImagePlus;
 import imagej.data.DatasetService;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
@@ -172,12 +170,7 @@ public class DummyLegacyService implements LegacyService {
 
 	@Override
 	public void runLegacyCommand(String ij1ClassName, String argument) {
-		IJ.run(ij1ClassName, argument);
-	}
-
-	@Override
-	public void legacyImageChanged(ImagePlus imp) {
-		// ignore
+		IJ1Helper.runIJ1PlugIn(ij1ClassName, argument);
 	}
 
 	@Override

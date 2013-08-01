@@ -63,7 +63,7 @@ public final class ImagePlusMethods {
 			if (!Utils.isLegacyThread(Thread.currentThread())) return;
 			legacyService.getLogService().debug("ImagePlus.updateAndDraw(): " + obj);
 		}
-		legacyService.legacyImageChanged(obj);
+		legacyService.getImageMap().registerLegacyImage(obj);
 		// TODO - add here too?
 		//WindowManager.setCurrentWindow(obj.getWindow());
 	}
@@ -76,7 +76,7 @@ public final class ImagePlusMethods {
 			if (!Utils.isLegacyThread(Thread.currentThread())) return;
 			legacyService.getLogService().debug("ImagePlus.repaintWindow(): " + obj);
 		}
-		legacyService.legacyImageChanged(obj);
+		legacyService.getImageMap().registerLegacyImage(obj);
 		// TODO - add here too?
 		//WindowManager.setCurrentWindow(obj.getWindow());
 	}
@@ -90,7 +90,7 @@ public final class ImagePlusMethods {
 			if (!Utils.isLegacyThread(Thread.currentThread())) return;
 			legacyService.getLogService().debug("ImagePlus.show(): " + obj);
 		}
-		legacyService.legacyImageChanged(obj);
+		legacyService.getImageMap().registerLegacyImage(obj);
 		WindowManager.setCurrentWindow(obj.getWindow());
 	}
 
