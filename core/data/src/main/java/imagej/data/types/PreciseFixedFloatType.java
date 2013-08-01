@@ -297,4 +297,8 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 		return 1024; // TODO - a WAG : nothing makes sense here. Use DataType.
 	}
 
+	@Override
+	public String toString() {
+		return get().toString();
+	}
 }

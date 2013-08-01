@@ -293,4 +293,9 @@ public class UnboundedIntegerType implements IntegerType<UnboundedIntegerType> {
 	public void setInteger(long f) {
 		set(f);
 	}
+
+	@Override
+	public String toString() {
+		return get().toString();
+	}
 }
