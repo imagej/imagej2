@@ -197,6 +197,20 @@ public class IJ1Helper {
 		IJ.log(message);
 	}
 
+	/**
+	 * Replacement for ImageJ 1.x' MacAdapter.
+	 * <p>
+	 * ImageJ 1.x has a MacAdapter plugin that intercepts MacOSX-specific events
+	 * and handles them. The way it does it is deprecated now, however, and
+	 * unfortunately incompatible with the way ImageJ 2's platform service does
+	 * it.
+	 * </p>
+	 * <p>
+	 * This class implements the same functionality as the MacAdapter, but in a
+	 * way that is compatible with ImageJ 2's platform service.
+	 * </p>
+	 * @author Johannes Schindelin
+	 */
 	private static class LegacyEventDelegator extends AbstractContextual {
 
 		// -- MacAdapter re-implementations --
