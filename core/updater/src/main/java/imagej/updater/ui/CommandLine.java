@@ -65,6 +65,7 @@ import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -142,7 +143,13 @@ public class CommandLine {
 	public void diff(final List<String> list) {
 		ensureChecksummed();
 		final Diff diff = new Diff(System.out, files.util);
-		final Mode mode = Mode.CLASS_FILE_DIFF;
+
+		Mode mode = Mode.CLASS_FILE_DIFF;
+		while (list.size() > 0 && list.get(0).startsWith("--")) {
+			final String option = list.remove(0);
+			mode = Mode.valueOf(option.substring(2).replace('-', '_').toUpperCase());
+		}
+
 		for (final FileObject file : files.filter(new FileFilter(list))) try {
 			final String filename = file.getLocalFilename(false);
 			final URL remote = new URL(files.getURL(file));
@@ -748,9 +755,17 @@ public class CommandLine {
 	}
 
 	public void usage() {
+		final StringBuilder diffOptions = new StringBuilder();
+		diffOptions.append("[ ");
+		for (final Mode mode : Mode.values()) {
+			if (diffOptions.length() > 2) diffOptions.append(" | ");
+			diffOptions.append("--" + mode.toString().toLowerCase().replace(' ', '-'));
+		}
+		diffOptions.append(" ]");
+
 		throw die("Usage: imagej.updater.ui.CommandLine <command>\n"
 			+ "\n" + "Commands:\n"
-			+ "\tdiff [<files>]\n"
+			+ "\tdiff " + diffOptions + " [<files>]\n"
 			+ "\tlist [<files>]\n"
 			+ "\tlist-uptodate [<files>]\n"
 			+ "\tlist-not-uptodate [<files>]\n"
