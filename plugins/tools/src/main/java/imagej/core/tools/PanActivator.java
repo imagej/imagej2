@@ -42,6 +42,7 @@ import imagej.tool.Tool;
 import imagej.tool.ToolService;
 
 import org.scijava.plugin.Attr;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -56,14 +57,15 @@ public class PanActivator extends AbstractTool {
 	/** Key used to activate pan tool. */
 	private static final char KEY = ' ';
 
+	@Parameter
+	private ToolService toolService;
+
 	/** Previously active tool, from before pan key was held. */
 	private Tool priorTool;
 
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {
 		if (evt.getCharacter() != KEY) return;
-		final ToolService toolService =
-			getContext().getService(ToolService.class);
 		final Tool activeTool = toolService.getActiveTool();
 		final Tool panTool = toolService.getTool("Pan");
 		if (activeTool == panTool) return;
@@ -74,8 +76,6 @@ public class PanActivator extends AbstractTool {
 	@Override
 	public void onKeyUp(final KyReleasedEvent evt) {
 		if (evt.getCharacter() != KEY) return;
-		final ToolService toolService =
-			getContext().getService(ToolService.class);
 		toolService.setActiveTool(priorTool);
 	}
 

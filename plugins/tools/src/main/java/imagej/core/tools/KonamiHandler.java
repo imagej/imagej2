@@ -43,6 +43,7 @@ import imagej.tool.Tool;
 import org.scijava.Priority;
 import org.scijava.input.KeyCode;
 import org.scijava.plugin.Attr;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.thread.ThreadService;
 
@@ -65,6 +66,12 @@ public class KonamiHandler extends AbstractTool implements Runnable {
 
 	private static final String COMMAND = "imagej.core.commands.app.EasterEgg";
 
+	@Parameter
+	private ThreadService threadService;
+
+	@Parameter
+	private CommandService commandService;
+
 	private int index = 0;
 
 	@Override
@@ -74,11 +81,7 @@ public class KonamiHandler extends AbstractTool implements Runnable {
 			if (index > CODE.length - 2) evt.consume();
 			if (index == CODE.length) {
 				index = 0;
-				final ThreadService threadService =
-					getContext().getService(ThreadService.class);
 				threadService.run(this);
-				final CommandService commandService =
-					getContext().getService(CommandService.class);
 				commandService.run(COMMAND);
 			}
 		}

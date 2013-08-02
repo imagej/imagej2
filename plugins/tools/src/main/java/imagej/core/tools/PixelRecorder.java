@@ -60,6 +60,7 @@ import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.Context;
+import org.scijava.plugin.Parameter;
 
 /**
  * Gathers pixel information (location, channel values) of pixel associated
@@ -74,6 +75,9 @@ public class PixelRecorder {
 
 	// -- instance variables --
 
+	@Parameter
+	private ImageDisplayService imageDisplayService;
+
 	private long cx = 0;
 	private long cy = 0;
 	private Dataset dataset = null;
@@ -85,7 +89,9 @@ public class PixelRecorder {
 	// -- public interface --
 
 	/** Constructor */
-	public PixelRecorder(boolean recordColor) {
+	public PixelRecorder(final Context context, final boolean recordColor) {
+		context.inject(this);
+
 		this.recordColor = recordColor;
 		channels = new ChannelCollection();
 	}
@@ -97,10 +103,6 @@ public class PixelRecorder {
 	 * methods to get info about the event.
 	 */
 	public boolean record(final MsEvent evt) {
-		final Context context = evt.getContext();
-		final ImageDisplayService imageDisplayService =
-			context.getService(ImageDisplayService.class);
-
 		final Display<?> display = evt.getDisplay();
 		if (!(display instanceof ImageDisplay)) return false;
 		final ImageDisplay imageDisplay = (ImageDisplay) display;

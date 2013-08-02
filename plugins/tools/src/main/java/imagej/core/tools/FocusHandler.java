@@ -44,6 +44,7 @@ import imagej.ui.UserInterface;
 
 import org.scijava.input.KeyCode;
 import org.scijava.plugin.Attr;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -55,10 +56,12 @@ import org.scijava.plugin.Plugin;
 	name = Tool.ALWAYS_ACTIVE) })
 public class FocusHandler extends AbstractTool {
 
+	@Parameter(required = false)
+	private UIService uiService;
+
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {
 		if (evt.getCode() != KeyCode.ENTER) return;
-		final UIService uiService = evt.getContext().getService(UIService.class);
 		if (uiService == null) return;
 		final UserInterface ui = uiService.getDefaultUI();
 		if (ui == null) return;

@@ -51,6 +51,7 @@ import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 
 import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -63,13 +64,25 @@ import org.scijava.plugin.Plugin;
 	priority = FloodFillTool.PRIORITY)
 public class FloodFillTool extends AbstractTool {
 
-	// -- instance variables --
-
 	public static final double PRIORITY = -304;
 
 	enum Connectivity {
 		EIGHT, FOUR
 	}
+
+	// -- instance variables --
+
+	@Parameter
+	private CommandService commandService;
+
+	@Parameter
+	private RenderingService renderingService;
+
+	@Parameter
+	private OptionsService optionsService;
+
+	@Parameter(required = false)
+	private EventService eventService;
 
 	private Connectivity connectivity = Connectivity.EIGHT;
 
@@ -88,8 +101,6 @@ public class FloodFillTool extends AbstractTool {
 	/** Implements the configuration of this tool. */
 	@Override
 	public void configure() {
-		final CommandService commandService =
-			getContext().getService(CommandService.class);
 		commandService.run(FloodFillToolConfig.class, "tool", this);
 	}
 
@@ -99,17 +110,16 @@ public class FloodFillTool extends AbstractTool {
 		if (evt.getButton() == MsButtonEvent.LEFT_BUTTON) {
 			final ImageDisplay imageDisplay = (ImageDisplay) evt.getDisplay();
 			if (imageDisplay != null) {
-				final PixelRecorder recorder = new PixelRecorder(false);
+				final PixelRecorder recorder = new PixelRecorder(getContext(), false);
 				if (recorder.record(evt)) {
 					final DrawingTool drawingTool =
-							initDrawingTool(
-								recorder.wasAltKeyDown(), recorder.getDataset(),
-								evt.getContext().getService(RenderingService.class));
+						initDrawingTool(recorder.wasAltKeyDown(), recorder.getDataset());
 					final long[] currPos = getCurrPosition(imageDisplay);
 					floodFill(recorder.getCX(), recorder.getCY(), currPos, connectivity, drawingTool);
 					Dataset dataset = drawingTool.getDataset();
-					EventService srv = getContext().getService(EventService.class);
-					if (srv != null) srv.publish(new DatasetUpdatedEvent(dataset, false));
+					if (eventService != null) {
+						eventService.publish(new DatasetUpdatedEvent(dataset, false));
+					}
 				}
 				recorder.releaseDataset();
 			}
@@ -120,9 +130,7 @@ public class FloodFillTool extends AbstractTool {
 	// -- private helpers --
 
 	/** Returns an initialized DrawingTool. */
-	private DrawingTool initDrawingTool(boolean altKeyDown, final Dataset ds,
-		RenderingService renderingService)
-	{
+	private DrawingTool initDrawingTool(boolean altKeyDown, final Dataset ds) {
 		final OptionsChannels opts = getChannelOptions();
 		ChannelCollection fillValues;
 		if (altKeyDown)
@@ -152,8 +160,7 @@ public class FloodFillTool extends AbstractTool {
 
 	/** Returns an OptionsColor instance */
 	private OptionsChannels getChannelOptions() {
-		final OptionsService oSrv = getContext().getService(OptionsService.class);
-		return oSrv.getOptions(OptionsChannels.class);
+		return optionsService.getOptions(OptionsChannels.class);
 	}
 
 	/** Actually does the flood fill. */
