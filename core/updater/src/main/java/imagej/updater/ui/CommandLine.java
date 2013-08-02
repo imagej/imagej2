@@ -37,6 +37,8 @@ package imagej.updater.ui;
 
 import imagej.updater.core.Conflicts;
 import imagej.updater.core.Conflicts.Conflict;
+import imagej.updater.core.Diff;
+import imagej.updater.core.Diff.Mode;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
@@ -59,7 +61,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Authenticator;
+import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -132,6 +136,20 @@ public class CommandLine {
 			if (!file.isUpdateablePlatform(files)) return false;
 			if (fileNames != null && !fileNames.contains(file.getFilename(true))) return false;
 			return file.getStatus() != Status.OBSOLETE_UNINSTALLED;
+		}
+	}
+
+	public void diff(final List<String> list) {
+		ensureChecksummed();
+		final Diff diff = new Diff(System.out, files.util);
+		final Mode mode = Mode.CLASS_FILE_DIFF;
+		for (final FileObject file : files.filter(new FileFilter(list))) try {
+			final String filename = file.getLocalFilename(false);
+			final URL remote = new URL(files.getURL(file));
+			final URL local = files.prefix(filename).toURI().toURL();
+			diff.showDiff(filename, remote, local, mode);
+		} catch (final IOException e) {
+			log.error(e);
 		}
 	}
 
@@ -731,7 +749,9 @@ public class CommandLine {
 
 	public void usage() {
 		throw die("Usage: imagej.updater.ui.CommandLine <command>\n"
-			+ "\n" + "Commands:\n" + "\tlist [<files>]\n"
+			+ "\n" + "Commands:\n"
+			+ "\tdiff [<files>]\n"
+			+ "\tlist [<files>]\n"
 			+ "\tlist-uptodate [<files>]\n"
 			+ "\tlist-not-uptodate [<files>]\n"
 			+ "\tlist-updateable [<files>]\n"
@@ -804,7 +824,8 @@ public class CommandLine {
 		}
 
 		final String command = args[0];
-		if (command.equals("list")) instance.list(makeList(args, 1));
+		if (command.equals("diff")) instance.diff(makeList(args, 1));
+		else if (command.equals("list")) instance.list(makeList(args, 1));
 		else if (command.equals("list-current")) instance.listCurrent(
 			makeList(args, 1));
 		else if (command.equals("list-uptodate")) instance.listUptodate(
