@@ -49,6 +49,7 @@ import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 
 import org.scijava.app.StatusService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.thread.ThreadService;
 
@@ -69,6 +70,12 @@ public class DefaultMinMaxMethod<T extends Type<T> & Comparable<T>> extends
 
 	// -- Fields --
 
+	@Parameter
+	private ThreadService threadService;
+
+	@Parameter(required = false)
+	private StatusService statusService;
+
 	// Number of positions processed
 	private long progress = -1l;
 	// Limit how many times to send status updates
@@ -77,8 +84,6 @@ public class DefaultMinMaxMethod<T extends Type<T> & Comparable<T>> extends
 	private int reported = -1;
 
 	private long imageSize;
-	private StatusService statusService;
-	private ThreadService threadService;
 	private IterableInterval<T> image;
 	private T min;
 	private T max;
@@ -270,8 +275,6 @@ public class DefaultMinMaxMethod<T extends Type<T> & Comparable<T>> extends
 	// -- Helper Methods --
 
 	private void init() {
-		statusService = getContext().getService(StatusService.class);
-		threadService = getContext().getService(ThreadService.class);
 		setNumThreads();
 		initialized = true;
 	}

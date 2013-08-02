@@ -60,6 +60,7 @@ import net.imglib2.meta.AxisType;
 
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.thread.ThreadService;
 
@@ -76,6 +77,21 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 	/** Data structure that aggregates dimensional axes from constituent views. */
 	private final CombinedInterval combinedInterval = new CombinedInterval();
+
+	@Parameter
+	private ThreadService threadService;
+
+	@Parameter
+	private DisplayService displayService;
+
+	@Parameter(required = false)
+	private EventService eventService;
+
+	@Parameter(required = false)
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter(required = false)
+	private LUTService lutService;
 
 	private AxisType activeAxis = null;
 
@@ -160,8 +176,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 		activeAxis = axis;
 
 		// notify interested parties of the change
-		final EventService eventService =
-			getContext().getService(EventService.class);
 		if (eventService != null) {
 			eventService.publish(new AxisActivatedEvent(this, activeAxis));
 		}
@@ -212,8 +226,9 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 	@Override
 	public boolean canDisplay(final Class<?> c) {
-		return Data.class.isAssignableFrom(c) ||
-			ColorTable.class.isAssignableFrom(c) || super.canDisplay(c);
+		return (imageDisplayService != null && Data.class.isAssignableFrom(c)) ||
+			(lutService != null && ColorTable.class.isAssignableFrom(c)) ||
+			super.canDisplay(c);
 	}
 
 	@Override
@@ -231,18 +246,11 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 		else if (o instanceof ColorTable) {
 			// object is a LUT, which we can wrap in a dataset
 			final ColorTable colorTable = (ColorTable) o;
-			final LUTService lutService = getContext().getService(LUTService.class);
-			if (lutService == null) {
-				throw new IllegalStateException(
-					"A LUTService is required to display color tables");
-			}
 			data = lutService.createDataset(null, colorTable);
 		}
 
 		if (data != null) {
 			// wrap data object in a data view
-			final ImageDisplayService imageDisplayService =
-				getContext().getService(ImageDisplayService.class);
 			if (imageDisplayService == null) {
 				throw new IllegalStateException(
 					"An ImageDisplayService is required to display Data objects");
@@ -494,8 +502,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 		// notify interested parties of the change
 		// NB: DataView.setPosition is called only in update method.
-		final EventService eventService =
-			getContext().getService(EventService.class);
 		if (eventService != null) {
 			// NB: BDZ changed from publish() to publishLater(). This fixes bug #1234.
 			// We may want to change order of events to allow publish() instead.
@@ -627,7 +633,7 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 	@EventHandler
 	protected void onEvent(final DataRestructuredEvent event) {
-		getContext().getService(ThreadService.class).run(new Runnable() {
+		threadService.run(new Runnable() {
 
 			@Override
 			public void run() {
@@ -689,8 +695,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 	 * @return the name with stuff added to make it unique
 	 */
 	private String createName(final String proposedName) {
-		final DisplayService displayService =
-			getContext().getService(DisplayService.class);
 		String theName = proposedName;
 		int n = 0;
 		while (!displayService.isUniqueName(theName)) {

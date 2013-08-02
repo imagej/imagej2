@@ -60,6 +60,7 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.roi.RegionOfInterest;
 
 import org.scijava.Context;
+import org.scijava.plugin.Parameter;
 
 /**
  * Abstract superclass of {@link Overlay} implementations.
@@ -70,6 +71,9 @@ import org.scijava.Context;
 public abstract class AbstractOverlay extends AbstractData implements Overlay {
 
 	private static final long serialVersionUID = 1L;
+
+	@Parameter(required = false)
+	private OverlayService overlayService;
 
 	private List<AxisType> axes = new ArrayList<AxisType>();
 	private List<Double> cal = new ArrayList<Double>();
@@ -90,8 +94,6 @@ public abstract class AbstractOverlay extends AbstractData implements Overlay {
 	
 	public AbstractOverlay(final Context context) {
 		super(context);
-		final OverlayService overlayService =
-			context == null ? null : context.getService(OverlayService.class);
 		if (overlayService == null) applySettings(new OverlaySettings());
 		else applySettings(overlayService.getDefaultSettings());
 		axes.add(Axes.X);

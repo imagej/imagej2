@@ -44,6 +44,7 @@ import java.io.IOException;
 
 import net.imglib2.display.ColorTable;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -54,6 +55,9 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = IOPlugin.class)
 public class LUTIOPlugin extends AbstractIOPlugin<ColorTable> {
 
+	@Parameter(required = false)
+	private LUTService lutService;
+
 	// -- IOPlugin methods --
 
 	@Override
@@ -63,22 +67,14 @@ public class LUTIOPlugin extends AbstractIOPlugin<ColorTable> {
 
 	@Override
 	public boolean supportsOpen(final String source) {
-		final LUTService lutService = lutService();
 		if (lutService == null) return false; // no service for opening LUTs
 		return lutService.isLUT(new File(source));
 	}
 
 	@Override
 	public ColorTable open(final String source) throws IOException {
-		final LUTService lutService = lutService();
 		if (lutService == null) return null; // no service for opening LUTs
 		return lutService.loadLUT(new File(source));
-	}
-
-	// -- Helper methods --
-
-	private LUTService lutService() {
-		return getContext().getService(LUTService.class);
 	}
 
 }

@@ -225,10 +225,8 @@ public final class DefaultDatasetService extends AbstractService implements
 		try {
 			@SuppressWarnings("rawtypes")
 			final ImgPlus imgPlus = open(imageOpener, source, options);
-			final DatasetService datasetService =
-				getContext().getService(DatasetService.class);
 			@SuppressWarnings("unchecked")
-			final Dataset dataset = datasetService.create(imgPlus);
+			final Dataset dataset = create(imgPlus);
 			return dataset;
 		}
 		catch (final ImgIOException exc) {

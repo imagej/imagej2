@@ -43,6 +43,7 @@ import imagej.plugin.AbstractPreprocessorPlugin;
 import imagej.plugin.PreprocessorPlugin;
 
 import org.scijava.Priority;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -67,14 +68,19 @@ import org.scijava.plugin.Plugin;
 	priority = Priority.VERY_HIGH_PRIORITY)
 public class ActiveImagePreprocessor extends AbstractPreprocessorPlugin {
 
+	@Parameter(required = false)
+	private ModuleService moduleService;
+
+	@Parameter(required = false)
+	private ImageDisplayService imageDisplayService;
+
 	// -- ModuleProcessor methods --
 
 	@Override
 	public void process(final Module module) {
-		final ImageDisplayService displayService =
-			getContext().getService(ImageDisplayService.class);
-		if (displayService == null) return;
-		final ImageDisplay activeDisplay = displayService.getActiveImageDisplay();
+		if (imageDisplayService == null) return;
+		final ImageDisplay activeDisplay =
+			imageDisplayService.getActiveImageDisplay();
 		if (activeDisplay == null) return;
 
 		// assign active display to single ImageDisplay input
@@ -87,7 +93,7 @@ public class ActiveImagePreprocessor extends AbstractPreprocessorPlugin {
 		// assign active dataset view to single DatasetView input
 		final String datasetViewInput = getSingleInput(module, DatasetView.class);
 		final DatasetView activeDatasetView =
-			displayService.getActiveDatasetView();
+			imageDisplayService.getActiveDatasetView();
 		if (datasetViewInput != null && activeDatasetView != null) {
 			module.setInput(datasetViewInput, activeDatasetView);
 			module.setResolved(datasetViewInput, true);
@@ -103,7 +109,7 @@ public class ActiveImagePreprocessor extends AbstractPreprocessorPlugin {
 
 		// assign active dataset to single Dataset input
 		final String datasetInput = getSingleInput(module, Dataset.class);
-		final Dataset activeDataset = displayService.getActiveDataset();
+		final Dataset activeDataset = imageDisplayService.getActiveDataset();
 		if (datasetInput != null && activeDataset != null) {
 			module.setInput(datasetInput, activeDataset);
 			module.setResolved(datasetInput, true);
@@ -113,8 +119,6 @@ public class ActiveImagePreprocessor extends AbstractPreprocessorPlugin {
 	// -- Helper methods --
 
 	private String getSingleInput(final Module module, final Class<?> type) {
-		final ModuleService moduleService =
-			getContext().getService(ModuleService.class);
 		if (moduleService == null) return null;
 		final ModuleItem<?> item = moduleService.getSingleInput(module, type);
 		if (item == null || !item.isAutoFill()) return null;
