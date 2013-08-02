@@ -376,7 +376,7 @@ public class CommandLine {
 		String updateSite = null;
 		while (list.size() > 0 && list.get(0).startsWith("-")) {
 			final String option = list.remove(0);
-			if ("--update-site".equals(option)) {
+			if ("--update-site".equals(option) || "--site".equals(option)) {
 				if (list.size() < 1) {
 					throw die("Missing name for --update-site");
 				}
@@ -743,7 +743,7 @@ public class CommandLine {
 			+ "\tupdate [<files>]\n"
 			+ "\tupdate-force [<files>]\n"
 			+ "\tupdate-force-pristine [<files>]\n"
-			+ "\tupload [--update-site <name>] [--force-shadow] [<files>]\n"
+			+ "\tupload [--[update-]site <name>] [--force-shadow] [<files>]\n"
 			+ "\tupload-complete-site [--simulate] [--force] [--force-shadow] <name>\n"
 			+ "\tlist-update-sites [<nick>...]\n"
 			+ "\tadd-update-site <nick> <url> [<host> <upload-directory>]\n"
