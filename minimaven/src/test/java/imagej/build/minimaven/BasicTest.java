@@ -38,6 +38,7 @@ package imagej.build.minimaven;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import imagej.test.TestUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -76,7 +77,7 @@ public class BasicTest {
 	@Test
 	public void testCopyToImageJApp() throws Exception {
 		final File tmp = writeExampleProject();
-		final File ijDir = FileUtils.createTemporaryDirectory("ImageJ.app-", "");
+		final File ijDir = TestUtils.createTemporaryDirectory("ImageJ.app-");
 		final File jarsDir = new File(ijDir, "jars");
 		assertTrue(jarsDir.mkdir());
 		final File oldVersion = new File(jarsDir, "blub-0.0.5.jar");
@@ -97,7 +98,7 @@ public class BasicTest {
 	}
 
 	private File writeExampleProject() throws IOException {
-		final File tmp = FileUtils.createTemporaryDirectory("minimaven-", "");
+		final File tmp = TestUtils.createTemporaryDirectory("minimaven-");
 		writeFile(new File(tmp, "src/main/resources/version.txt"),
 				"1.0.0\n");
 		writeFile(
