@@ -436,7 +436,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		count = arguments.size() - count;
 
 		if (count > 0) {
-			env.err.println("Compiling " + count + " files in " + directory);
+			env.err.println("Compiling " + count + " file" + (count > 1 ? "s" : "") + " in " + directory);
 			if (env.verbose) {
 				env.err.println(arguments.toString());
 				env.err.println("using the class path: " + classPath);
