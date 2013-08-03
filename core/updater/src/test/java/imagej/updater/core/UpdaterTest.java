@@ -60,6 +60,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import imagej.test.TestUtils;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.Conflicts.Resolution;
 import imagej.updater.core.FileObject.Action;
@@ -612,7 +613,7 @@ public class UpdaterTest {
 				+ "</pluginRecords>";
 		final File webRoot = getWebRoot(files);
 		writeGZippedFile(webRoot, "db.xml.gz", db);
-		File webRoot2 = FileUtils.createTemporaryDirectory("testUpdaterWebRoot2", "");
+		File webRoot2 = TestUtils.createTemporaryDirectory("testUpdaterWebRoot2");
 		final String db2 = "<pluginRecords>"
 				+ " <plugin filename=\"ImageJ-linux64\">"
 				+ "  <version checksum=\"c\" timestamp=\"3\" filesize=\"10\" />"
@@ -1165,7 +1166,7 @@ public class UpdaterTest {
 		// upload to secondary
 		writeFile(files, "jars/overridden.jar");
 		files = readDb(files);
-		File webRoot2 = FileUtils.createTemporaryDirectory("testUpdaterWebRoot2", "");
+		File webRoot2 = TestUtils.createTemporaryDirectory("testUpdaterWebRoot2");
 		files.addUpdateSite("Second", webRoot2.toURI().toURL().toString(), "file:localhost", webRoot2.getAbsolutePath() + "/", 0l);
 		files.get("jars/overridden.jar").stageForUpload(files, "Second");
 		upload(files, "Second");
