@@ -41,6 +41,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import imagej.test.TestUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,7 +73,7 @@ public class ExtraPluginDirsTest {
 
 	@Before
 	public void makeTmpDir() throws IOException {
-		tmpDir = FileUtils.createTemporaryDirectory("legacy-", "");
+		tmpDir = TestUtils.createTemporaryDirectory("legacy-");
 	}
 
 	@Test

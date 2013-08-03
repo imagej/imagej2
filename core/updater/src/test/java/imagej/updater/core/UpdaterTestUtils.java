@@ -35,6 +35,8 @@
 
 package imagej.updater.core;
 
+import static imagej.test.TestUtils.createTemporaryDirectory;
+import static imagej.test.TestUtils.getCallingClass;
 import static imagej.updater.core.FilesCollection.DEFAULT_UPDATE_SITE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -131,7 +133,7 @@ public class UpdaterTestUtils {
 	}
 
 	public static File addUpdateSite(final FilesCollection files, final String name) throws Exception {
-		final File directory = FileUtils.createTemporaryDirectory("update-site-" + name, "");
+		final File directory = createTemporaryDirectory("update-site-" + name, getCallingClass(UpdaterTestUtils.class));
 		final String url = directory.toURI().toURL().toString().replace('\\', '/');
 		final String sshHost = "file:localhost";
 		final String uploadDirectory = directory.getAbsolutePath();
@@ -144,7 +146,7 @@ public class UpdaterTestUtils {
 	}
 
 	protected static File makeIJRoot(final File webRoot) throws IOException {
-		final File ijRoot = FileUtils.createTemporaryDirectory("testUpdaterIJRoot", "");
+		final File ijRoot = createTemporaryDirectory("testUpdaterIJRoot", getCallingClass(UpdaterTestUtils.class));
 		initDb(ijRoot, webRoot);
 		return ijRoot;
 	}
@@ -167,8 +169,9 @@ public class UpdaterTestUtils {
 	public static FilesCollection initialize(File ijRoot, File webRoot, final String... fileNames)
 			throws Exception
 		{
-		if (ijRoot == null) ijRoot = FileUtils.createTemporaryDirectory("testUpdaterIJRoot", "");
-		if (webRoot == null) webRoot = FileUtils.createTemporaryDirectory("testUpdaterWebRoot", "");
+		final Class<?> forClass = getCallingClass(UpdaterTestUtils.class);
+		if (ijRoot == null) ijRoot = createTemporaryDirectory("testUpdaterIJRoot", forClass);
+		if (webRoot == null) webRoot = createTemporaryDirectory("testUpdaterWebRoot", forClass);
 
 		final File localDb = new File(ijRoot, "db.xml.gz");
 		final File remoteDb = new File(webRoot, "db.xml.gz");
@@ -742,4 +745,5 @@ public class UpdaterTestUtils {
 		}
 
 	};
+
 }

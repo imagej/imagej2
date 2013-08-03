@@ -38,6 +38,8 @@ package imagej.script.java;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
+import imagej.test.TestUtils;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -171,7 +173,7 @@ public class JavaEngineTest {
 	}
 
 	private File makeProject(final String mainClass, final String... args) throws IOException {
-		final File dir = FileUtils.createTemporaryDirectory("java-", "");
+		final File dir = TestUtils.createTemporaryDirectory("java-");
 
 		final FileWriter pom = new FileWriter(new File(dir, "pom.xml"));
 		pom.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"

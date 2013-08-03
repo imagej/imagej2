@@ -107,6 +107,7 @@ public class JavaEngine extends AbstractScriptEngine {
 	@SuppressWarnings({ "unchecked" })
 	@Override
 	public Object eval(Reader reader) throws ScriptException {
+		File temporaryDirectory = null;
 		final Writer writer = getContext().getErrorWriter();
 		final PrintStream err;
 		if (writer == null) {
@@ -133,6 +134,7 @@ public class JavaEngine extends AbstractScriptEngine {
 			File file = path == null ? null : new File(path);
 			if (file == null || !file.exists()) try {
 				project = writeTemporaryProject(env, reader);
+				temporaryDirectory = project.getDirectory();
 				mainClass = project.getMainClass();
 			} catch (Exception e) {
 				throw new ScriptException(e);
@@ -189,8 +191,12 @@ public class JavaEngine extends AbstractScriptEngine {
 			if (err != null) err.close();
 			if (e instanceof ScriptException) throw (ScriptException)e;
 			throw new ScriptException(e);
+		} finally {
+			if (err != null) err.close();
+			if (temporaryDirectory != null && !FileUtils.deleteRecursively(temporaryDirectory)) {
+				temporaryDirectory.deleteOnExit();
+			}
 		}
-		if (err != null) err.close();
 		return null;
 	}
 

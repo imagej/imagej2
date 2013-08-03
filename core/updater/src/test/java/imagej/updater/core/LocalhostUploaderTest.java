@@ -36,6 +36,7 @@
 package imagej.updater.core;
 
 import static org.scijava.util.FileUtils.deleteRecursively;
+import imagej.test.TestUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +44,6 @@ import java.net.MalformedURLException;
 
 import org.junit.After;
 import org.junit.Test;
-import org.scijava.util.FileUtils;
 
 /**
  * A conditional JUnit test for uploading via file: protocol.
@@ -68,7 +68,7 @@ public class LocalhostUploaderTest extends AbstractUploaderTestBase {
 
 	@Test
 	public void testLocalhostUpload() throws Exception {
-		tmp = FileUtils.createTemporaryDirectory("localhost-upload", "");
+		tmp = TestUtils.createTemporaryDirectory("localhost-upload");
 		test(new FileDeleter(), "file:localhost", tmp.getAbsolutePath());
 	}
 
