@@ -53,6 +53,22 @@ public class TestUtils {
 	 * Makes a temporary directory for use with unit tests.
 	 * <p>
 	 * When the unit test runs in a Maven context, the temporary directory will be
+	 * created in the <i>target/</i> directory corresponding to the calling class
+	 * instead of <i>/tmp/</i>.
+	 * </p>
+	 * 
+	 * @param prefix the prefix for the directory's name
+	 * @return the reference to the newly-created temporary directory
+	 * @throws IOException
+	 */
+	public static File createTemporaryDirectory(final String prefix) throws IOException {
+		return createTemporaryDirectory(prefix, getCallingClass(null));
+	}
+
+	/**
+	 * Makes a temporary directory for use with unit tests.
+	 * <p>
+	 * When the unit test runs in a Maven context, the temporary directory will be
 	 * created in the corresponding <i>target/</i> directory instead of
 	 * <i>/tmp/</i>.
 	 * </p>
