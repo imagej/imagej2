@@ -79,4 +79,40 @@ public class TestUtils {
 		return FileUtils.createTemporaryDirectory(prefix, "");
 	}
 
+	/**
+	 * Returns the class of the caller (excluding the specified class).
+	 * <p>
+	 * Sometimes it is convenient to determine the caller's context, e.g. to
+	 * determine whether running in a maven-surefire-plugin context (in which case
+	 * the location of the caller's class would end in
+	 * <i>target/test-classes/</i>).
+	 * </p>
+	 * 
+	 * @param excluding the class to exclude (or null)
+	 * @return the class of the caller
+	 */
+	public static Class<?> getCallingClass(final Class<?> excluding) {
+		final String thisClassName = TestUtils.class.getName();
+		final String thisClassName2 = excluding == null ? null : excluding.getName();
+		final Thread currentThread = Thread.currentThread();
+		for (final StackTraceElement element : currentThread.getStackTrace()) {
+			final String thatClassName = element.getClassName();
+			if (thatClassName == null || thatClassName.equals(thisClassName) ||
+				thatClassName.equals(thisClassName2) ||
+				thatClassName.startsWith("java.lang.")) {
+				continue;
+			}
+			final ClassLoader loader = currentThread.getContextClassLoader();
+			try {
+				return loader.loadClass(element.getClassName());
+			}
+			catch (ClassNotFoundException e) {
+				throw new UnsupportedOperationException("Could not load " +
+					element.getClassName() + " with the current context class loader (" +
+					loader + ")!");
+			}
+		}
+		throw new UnsupportedOperationException("No calling class outside " + thisClassName + " found!");
+	}
+
 }
