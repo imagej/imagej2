@@ -37,6 +37,9 @@ package imagej.updater.ui;
 
 import imagej.updater.core.Conflicts;
 import imagej.updater.core.Conflicts.Conflict;
+import imagej.updater.core.Conflicts.Resolution;
+import imagej.updater.core.Diff;
+import imagej.updater.core.Diff.Mode;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
@@ -60,6 +63,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -132,6 +136,26 @@ public class CommandLine {
 			if (!file.isUpdateablePlatform(files)) return false;
 			if (fileNames != null && !fileNames.contains(file.getFilename(true))) return false;
 			return file.getStatus() != Status.OBSOLETE_UNINSTALLED;
+		}
+	}
+
+	public void diff(final List<String> list) {
+		ensureChecksummed();
+		final Diff diff = new Diff(System.out, files.util);
+
+		Mode mode = Mode.CLASS_FILE_DIFF;
+		while (list.size() > 0 && list.get(0).startsWith("--")) {
+			final String option = list.remove(0);
+			mode = Mode.valueOf(option.substring(2).replace('-', '_').toUpperCase());
+		}
+
+		for (final FileObject file : files.filter(new FileFilter(list))) try {
+			final String filename = file.getLocalFilename(false);
+			final URL remote = new URL(files.getURL(file));
+			final URL local = files.prefix(filename).toURI().toURL();
+			diff.showDiff(filename, remote, local, mode);
+		} catch (final IOException e) {
+			log.error(e);
 		}
 	}
 
@@ -354,6 +378,7 @@ public class CommandLine {
 					}
 				}
 			}
+			resolveConflicts(false);
 			Installer installer = new Installer(files, progress);
 			installer.start();
 			installer.moveUpdatedIntoPlace();
@@ -376,7 +401,7 @@ public class CommandLine {
 		String updateSite = null;
 		while (list.size() > 0 && list.get(0).startsWith("-")) {
 			final String option = list.remove(0);
-			if ("--update-site".equals(option)) {
+			if ("--update-site".equals(option) || "--site".equals(option)) {
 				if (list.size() < 1) {
 					throw die("Missing name for --update-site");
 				}
@@ -575,6 +600,7 @@ public class CommandLine {
 	}
 
 	private void upload(final String updateSite) {
+		resolveConflicts(true);
 		FilesUploader uploader = null;
 		try {
 			uploader = new FilesUploader(null, files, updateSite, progress);
@@ -596,6 +622,56 @@ public class CommandLine {
 			}
 			if (uploader != null)
 				uploader.logout();
+		}
+	}
+
+	private void resolveConflicts(boolean forUpload) {
+		Console console = System.console();
+		final Conflicts conflicts = new Conflicts(files);
+		for (;;) {
+			final Iterable<Conflict> list =
+					conflicts.getConflicts(forUpload);
+			if (!Conflicts.needsFeedback(list)) {
+				for (final Conflict conflict : list) {
+					final String filename = conflict.getFilename();
+					log.info((filename != null ? filename + ": " : "") + conflict.getConflict());
+				}
+				return;
+			}
+			if (console == null) {
+				final StringBuilder builder = new StringBuilder();
+				for (final Conflict conflict : list) {
+					final String filename = conflict.getFilename();
+					builder.append((filename != null ? filename + ": " : "") + conflict.getConflict());
+				}
+				throw die("There are conflicts:\n" + builder);
+			}
+			for (final Conflict conflict : list) {
+				final String filename = conflict.getFilename();
+				if (filename != null) console.printf("File '%s':\n", filename);
+				console.printf("%s\n", conflict.getConflict());
+				if (conflict.getResolutions().length == 0) continue;
+				console.printf("\nResolutions:\n");
+				final Resolution[] resolutions = conflict.getResolutions();
+				for (int i = 0; i < resolutions.length; i++) {
+					console.printf("% 3d %s\n", i + 1, resolutions[i].getDescription());
+				}
+				for (;;) {
+					final String answer = console.readLine("\nResolution? ");
+					if (answer == null || answer.toLowerCase().startsWith("x")) throw die("Aborted");
+					try {
+						int index = Integer.parseInt(answer);
+						if (index > 0 && index <= resolutions.length) {
+							resolutions[index - 1].resolve();
+							break;
+						}
+						console.printf("Invalid choice: %d (must be between 1 and %d)",
+							index, resolutions.length);
+					} catch (NumberFormatException e) {
+						console.printf("Invalid answer: %s\n", answer);
+					}
+				}
+			}
 		}
 	}
 
@@ -730,8 +806,18 @@ public class CommandLine {
 	}
 
 	public void usage() {
+		final StringBuilder diffOptions = new StringBuilder();
+		diffOptions.append("[ ");
+		for (final Mode mode : Mode.values()) {
+			if (diffOptions.length() > 2) diffOptions.append(" | ");
+			diffOptions.append("--" + mode.toString().toLowerCase().replace(' ', '-'));
+		}
+		diffOptions.append(" ]");
+
 		throw die("Usage: imagej.updater.ui.CommandLine <command>\n"
-			+ "\n" + "Commands:\n" + "\tlist [<files>]\n"
+			+ "\n" + "Commands:\n"
+			+ "\tdiff " + diffOptions + " [<files>]\n"
+			+ "\tlist [<files>]\n"
 			+ "\tlist-uptodate [<files>]\n"
 			+ "\tlist-not-uptodate [<files>]\n"
 			+ "\tlist-updateable [<files>]\n"
@@ -743,7 +829,7 @@ public class CommandLine {
 			+ "\tupdate [<files>]\n"
 			+ "\tupdate-force [<files>]\n"
 			+ "\tupdate-force-pristine [<files>]\n"
-			+ "\tupload [--update-site <name>] [--force-shadow] [<files>]\n"
+			+ "\tupload [--[update-]site <name>] [--force-shadow] [<files>]\n"
 			+ "\tupload-complete-site [--simulate] [--force] [--force-shadow] <name>\n"
 			+ "\tlist-update-sites [<nick>...]\n"
 			+ "\tadd-update-site <nick> <url> [<host> <upload-directory>]\n"
@@ -804,7 +890,8 @@ public class CommandLine {
 		}
 
 		final String command = args[0];
-		if (command.equals("list")) instance.list(makeList(args, 1));
+		if (command.equals("diff")) instance.diff(makeList(args, 1));
+		else if (command.equals("list")) instance.list(makeList(args, 1));
 		else if (command.equals("list-current")) instance.listCurrent(
 			makeList(args, 1));
 		else if (command.equals("list-uptodate")) instance.listUptodate(
