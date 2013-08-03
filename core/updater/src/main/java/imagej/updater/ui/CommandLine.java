@@ -37,6 +37,7 @@ package imagej.updater.ui;
 
 import imagej.updater.core.Conflicts;
 import imagej.updater.core.Conflicts.Conflict;
+import imagej.updater.core.Conflicts.Resolution;
 import imagej.updater.core.Diff;
 import imagej.updater.core.Diff.Mode;
 import imagej.updater.core.FileObject;
@@ -598,6 +599,7 @@ public class CommandLine {
 	}
 
 	private void upload(final String updateSite) {
+		resolveUploadConflicts();
 		FilesUploader uploader = null;
 		try {
 			uploader = new FilesUploader(null, files, updateSite, progress);
@@ -619,6 +621,56 @@ public class CommandLine {
 			}
 			if (uploader != null)
 				uploader.logout();
+		}
+	}
+
+	private void resolveUploadConflicts() {
+		Console console = System.console();
+		final Conflicts conflicts = new Conflicts(files);
+		for (;;) {
+			final Iterable<Conflict> list =
+					conflicts.getConflicts(true);
+			if (!Conflicts.needsFeedback(list)) {
+				for (final Conflict conflict : list) {
+					final String filename = conflict.getFilename();
+					log.info((filename != null ? filename + ": " : "") + conflict.getConflict());
+				}
+				return;
+			}
+			if (console == null) {
+				final StringBuilder builder = new StringBuilder();
+				for (final Conflict conflict : list) {
+					final String filename = conflict.getFilename();
+					builder.append((filename != null ? filename + ": " : "") + conflict.getConflict());
+				}
+				throw die("There are conflicts:\n" + builder);
+			}
+			for (final Conflict conflict : list) {
+				final String filename = conflict.getFilename();
+				if (filename != null) console.printf("File '%s':\n", filename);
+				console.printf("%s\n", conflict.getConflict());
+				if (conflict.getResolutions().length == 0) continue;
+				console.printf("\nResolutions:\n");
+				final Resolution[] resolutions = conflict.getResolutions();
+				for (int i = 0; i < resolutions.length; i++) {
+					console.printf("% 3d %s\n", i + 1, resolutions[i].getDescription());
+				}
+				for (;;) {
+					final String answer = console.readLine("\nResolution? ");
+					if (answer == null || answer.toLowerCase().startsWith("x")) throw die("Aborted");
+					try {
+						int index = Integer.parseInt(answer);
+						if (index > 0 && index <= resolutions.length) {
+							resolutions[index - 1].resolve();
+							break;
+						}
+						console.printf("Invalid choice: %d (must be between 1 and %d)",
+							index, resolutions.length);
+					} catch (NumberFormatException e) {
+						console.printf("Invalid answer: %s\n", answer);
+					}
+				}
+			}
 		}
 	}
 
