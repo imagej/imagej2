@@ -189,8 +189,9 @@ public class JavaEngine extends AbstractScriptEngine {
 			if (err != null) err.close();
 			if (e instanceof ScriptException) throw (ScriptException)e;
 			throw new ScriptException(e);
+		} finally {
+			if (err != null) err.close();
 		}
-		if (err != null) err.close();
 		return null;
 	}
 
