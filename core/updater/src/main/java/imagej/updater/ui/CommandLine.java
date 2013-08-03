@@ -378,6 +378,7 @@ public class CommandLine {
 					}
 				}
 			}
+			resolveConflicts(false);
 			Installer installer = new Installer(files, progress);
 			installer.start();
 			installer.moveUpdatedIntoPlace();
@@ -599,7 +600,7 @@ public class CommandLine {
 	}
 
 	private void upload(final String updateSite) {
-		resolveUploadConflicts();
+		resolveConflicts(true);
 		FilesUploader uploader = null;
 		try {
 			uploader = new FilesUploader(null, files, updateSite, progress);
@@ -624,12 +625,12 @@ public class CommandLine {
 		}
 	}
 
-	private void resolveUploadConflicts() {
+	private void resolveConflicts(boolean forUpload) {
 		Console console = System.console();
 		final Conflicts conflicts = new Conflicts(files);
 		for (;;) {
 			final Iterable<Conflict> list =
-					conflicts.getConflicts(true);
+					conflicts.getConflicts(forUpload);
 			if (!Conflicts.needsFeedback(list)) {
 				for (final Conflict conflict : list) {
 					final String filename = conflict.getFilename();
