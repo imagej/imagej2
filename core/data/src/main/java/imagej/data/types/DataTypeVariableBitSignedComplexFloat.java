@@ -35,8 +35,6 @@
 
 package imagej.data.types;
 
-import java.math.BigDecimal;
-
 import org.scijava.AbstractContextual;
 
 //TODO - uncomment when we are ready to support
@@ -62,12 +60,12 @@ public class DataTypeVariableBitSignedComplexFloat extends AbstractContextual
 
 	@Override
 	public String shortName() {
-		return "Fixed complex";
+		return "Unbounded complex";
 	}
 
 	@Override
 	public String longName() {
-		return "Fixed point complex float";
+		return "Unbounded complex float";
 	}
 
 	@Override
@@ -151,12 +149,12 @@ public class DataTypeVariableBitSignedComplexFloat extends AbstractContextual
 	@Override
 	public void setDouble(PreciseFixedComplexFloatType val, double v) {
 		val.setReal(v);
-		val.setImag(BigDecimal.ZERO);
+		val.setImag(0);
 	}
 
 	@Override
 	public void setLong(PreciseFixedComplexFloatType val, long v) {
 		val.setReal(v);
-		val.setImag(BigDecimal.ZERO);
+		val.setImag(0);
 	}
 }

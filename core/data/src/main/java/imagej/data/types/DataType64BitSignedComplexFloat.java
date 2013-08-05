@@ -154,6 +154,7 @@ public class DataType64BitSignedComplexFloat extends AbstractContextual
 
 	@Override
 	public void setLong(ComplexFloatType val, long v) {
-		setDouble(val, v);
+		val.setReal(v);
+		val.setImaginary(0);
 	}
 }
