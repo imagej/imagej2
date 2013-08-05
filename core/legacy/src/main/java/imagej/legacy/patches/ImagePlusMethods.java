@@ -80,7 +80,11 @@ public final class ImagePlusMethods {
 			if (!Utils.isLegacyThread(Thread.currentThread())) return;
 			legacyService.getLogService().debug("ImagePlus.repaintWindow(): " + obj);
 		}
-		legacyService.getImageMap().registerLegacyImage(obj);
+		try {
+			legacyService.getImageMap().registerLegacyImage(obj);
+		} catch (UnsupportedOperationException e) {
+			// ignore: the dummy legacy service does not have an image map
+		}
 		// TODO - add here too?
 		//WindowManager.setCurrentWindow(obj.getWindow());
 	}
@@ -94,7 +98,11 @@ public final class ImagePlusMethods {
 			if (!Utils.isLegacyThread(Thread.currentThread())) return;
 			legacyService.getLogService().debug("ImagePlus.show(): " + obj);
 		}
-		legacyService.getImageMap().registerLegacyImage(obj);
+		try {
+			legacyService.getImageMap().registerLegacyImage(obj);
+		} catch (UnsupportedOperationException e) {
+			// ignore: the dummy legacy service does not have an image map
+		}
 		WindowManager.setCurrentWindow(obj.getWindow());
 	}
 
