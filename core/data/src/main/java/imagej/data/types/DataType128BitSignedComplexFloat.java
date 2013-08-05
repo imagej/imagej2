@@ -35,8 +35,6 @@
 
 package imagej.data.types;
 
-import java.math.BigDecimal;
-
 import net.imglib2.type.numeric.complex.ComplexDoubleType;
 
 import org.scijava.AbstractContextual;
@@ -118,8 +116,8 @@ public class DataType128BitSignedComplexFloat extends AbstractContextual
 
 	@Override
 	public void cast(ComplexDoubleType val, BigComplex dest) {
-		dest.setReal(BigDecimal.valueOf(val.getRealDouble()));
-		dest.setImag(BigDecimal.valueOf(val.getImaginaryDouble()));
+		dest.setReal(val.getRealDouble());
+		dest.setImag(val.getImaginaryDouble());
 	}
 
 	@Override
@@ -156,6 +154,7 @@ public class DataType128BitSignedComplexFloat extends AbstractContextual
 
 	@Override
 	public void setLong(ComplexDoubleType val, long v) {
-		setDouble(val, v);
+		val.setReal(v);
+		val.setImaginary(0);
 	}
 }
