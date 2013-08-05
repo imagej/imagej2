@@ -42,34 +42,34 @@ import org.junit.Test;
 /**
  * @author Barry DeZonia
  */
-public class TestBigComplex {
+public class TestPreciseFixedComplexFloatType {
 
 	private static final double PRECISION = 0.0000000000001;
 
 	@Test
 	public void testAtan2() {
-		BigComplex val;
+		PreciseFixedComplexFloatType val;
 
 		// the 90s
 
-		val = new BigComplex(1, 0);
+		val = new PreciseFixedComplexFloatType(1, 0);
 		assertEquals(0, val.getPhaseDouble(), PRECISION);
-		val = new BigComplex(0, 1);
+		val = new PreciseFixedComplexFloatType(0, 1);
 		assertEquals(Math.PI / 2, val.getPhaseDouble(), PRECISION);
-		val = new BigComplex(-1, 0);
+		val = new PreciseFixedComplexFloatType(-1, 0);
 		assertEquals(Math.PI, val.getPhaseDouble(), PRECISION);
-		val = new BigComplex(0, -1);
+		val = new PreciseFixedComplexFloatType(0, -1);
 		assertEquals(3 * Math.PI / 2, val.getPhaseDouble(), PRECISION);
 
 		// the 45s
 
-		val = new BigComplex(1, 1);
+		val = new PreciseFixedComplexFloatType(1, 1);
 		assertEquals(Math.PI / 4, val.getPhaseDouble(), PRECISION);
-		val = new BigComplex(-1, 1);
+		val = new PreciseFixedComplexFloatType(-1, 1);
 		assertEquals(3 * Math.PI / 4, val.getPhaseDouble(), PRECISION);
-		val = new BigComplex(-1, -1);
+		val = new PreciseFixedComplexFloatType(-1, -1);
 		assertEquals(5 * Math.PI / 4, val.getPhaseDouble(), PRECISION);
-		val = new BigComplex(1, -1);
+		val = new PreciseFixedComplexFloatType(1, -1);
 		assertEquals(7 * Math.PI / 4, val.getPhaseDouble(), PRECISION);
 
 		// the 30s
@@ -77,63 +77,63 @@ public class TestBigComplex {
 		double half = 0.5;
 		double root3over2 = Math.sqrt(3) / 2;
 
-		val = new BigComplex(half, root3over2);
+		val = new PreciseFixedComplexFloatType(half, root3over2);
 		assertEquals(2 * Math.PI / 6, val.getPhaseDouble(), PRECISION);
-		val = new BigComplex(-half, root3over2);
+		val = new PreciseFixedComplexFloatType(-half, root3over2);
 		assertEquals(4 * Math.PI / 6, val.getPhaseDouble(), PRECISION);
-		val = new BigComplex(half, -root3over2);
+		val = new PreciseFixedComplexFloatType(half, -root3over2);
 		assertEquals(10 * Math.PI / 6, val.getPhaseDouble(), PRECISION);
-		val = new BigComplex(-half, -root3over2);
+		val = new PreciseFixedComplexFloatType(-half, -root3over2);
 		assertEquals(8 * Math.PI / 6, val.getPhaseDouble(), PRECISION);
 
-		val = new BigComplex(root3over2, half);
+		val = new PreciseFixedComplexFloatType(root3over2, half);
 		assertEquals(Math.PI / 6, val.getPhaseDouble(), PRECISION);
-		val = new BigComplex(-root3over2, half);
+		val = new PreciseFixedComplexFloatType(-root3over2, half);
 		assertEquals(5 * Math.PI / 6, val.getPhaseDouble(), PRECISION);
-		val = new BigComplex(root3over2, -half);
+		val = new PreciseFixedComplexFloatType(root3over2, -half);
 		assertEquals(11 * Math.PI / 6, val.getPhaseDouble(), PRECISION);
-		val = new BigComplex(-root3over2, -half);
+		val = new PreciseFixedComplexFloatType(-root3over2, -half);
 		assertEquals(7 * Math.PI / 6, val.getPhaseDouble(), PRECISION);
 	}
 
 	@Test
 	public void testSqrt() {
-		BigComplex val;
+		PreciseFixedComplexFloatType val;
 
-		val = new BigComplex(1, 0);
+		val = new PreciseFixedComplexFloatType(1, 0);
 		assertEquals(1, val.getPowerDouble(), PRECISION);
 
-		val = new BigComplex(2, 0);
+		val = new PreciseFixedComplexFloatType(2, 0);
 		assertEquals(2, val.getPowerDouble(), PRECISION);
 
-		val = new BigComplex(3, 0);
+		val = new PreciseFixedComplexFloatType(3, 0);
 		assertEquals(3, val.getPowerDouble(), PRECISION);
 
-		val = new BigComplex(4, 0);
+		val = new PreciseFixedComplexFloatType(4, 0);
 		assertEquals(4, val.getPowerDouble(), PRECISION);
 
-		val = new BigComplex(0, 1);
+		val = new PreciseFixedComplexFloatType(0, 1);
 		assertEquals(1, val.getPowerDouble(), PRECISION);
 
-		val = new BigComplex(0, 2);
+		val = new PreciseFixedComplexFloatType(0, 2);
 		assertEquals(2, val.getPowerDouble(), PRECISION);
 
-		val = new BigComplex(0, 3);
+		val = new PreciseFixedComplexFloatType(0, 3);
 		assertEquals(3, val.getPowerDouble(), PRECISION);
 
-		val = new BigComplex(0, 4);
+		val = new PreciseFixedComplexFloatType(0, 4);
 		assertEquals(4, val.getPowerDouble(), PRECISION);
 
-		val = new BigComplex(1, 1);
+		val = new PreciseFixedComplexFloatType(1, 1);
 		assertEquals(Math.sqrt(2), val.getPowerDouble(), PRECISION);
 
-		val = new BigComplex(2, 2);
+		val = new PreciseFixedComplexFloatType(2, 2);
 		assertEquals(2 * Math.sqrt(2), val.getPowerDouble(), PRECISION);
 
-		val = new BigComplex(3, 3);
+		val = new PreciseFixedComplexFloatType(3, 3);
 		assertEquals(3 * Math.sqrt(2), val.getPowerDouble(), PRECISION);
 
-		val = new BigComplex(4, 4);
+		val = new PreciseFixedComplexFloatType(4, 4);
 		assertEquals(4 * Math.sqrt(2), val.getPowerDouble(), PRECISION);
 	}
 }
