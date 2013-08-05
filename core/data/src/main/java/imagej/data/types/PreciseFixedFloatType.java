@@ -433,7 +433,7 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 		PreciseFixedFloatType ty = y.copy();
 		PreciseFixedFloatType angle = new PreciseFixedFloatType(0);
 		if (tx.compareTo(ZERO) < 0) {
-			angle = PI;
+			angle.set(PI);
 			tx.negate();
 			ty.negate();
 		}
