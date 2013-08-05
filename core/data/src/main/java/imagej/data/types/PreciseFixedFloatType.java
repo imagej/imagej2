@@ -37,6 +37,7 @@ package imagej.data.types;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 
 import net.imglib2.type.numeric.RealType;
 
@@ -103,6 +104,7 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 	public BigDecimal get() {
 		BigDecimal numer = new BigDecimal(amount);
 		BigDecimal denom = new BigDecimal(scale);
+		// NB - since denom power of ten we don't need precision limited division
 		return numer.divide(denom);
 	}
 
@@ -191,14 +193,21 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 
 	public void pow(int power) {
 		if (power < 0) {
-			throw new IllegalArgumentException("negative powers not yet supported");
+			BigDecimal factor = get();
+			BigDecimal total = BigDecimal.ONE;
+			for (int i = 1; i < (-power); i++) {
+				total = total.divide(factor, DECIMAL_PLACES, RoundingMode.HALF_UP);
+			}
+			amount = total.multiply(new BigDecimal(scale)).toBigInteger();
 		}
 		else if (power == 0) {
 			amount = scale; // value = ONE
 		}
 		else { // power > 0
+			BigInteger factor = amount;
+			// if power == 1 we are done so skip that case in for loop
 			for (int p = 1; p < power; p++) {
-				amount = amount.multiply(amount);
+				amount = amount.multiply(factor);
 			}
 		}
 	}
@@ -348,10 +357,17 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 	private static final PreciseFixedFloatType ZERO = new PreciseFixedFloatType();
 	private static final PreciseFixedFloatType ONE = new PreciseFixedFloatType(1);
 	private static final PreciseFixedFloatType TWO = new PreciseFixedFloatType(2);
-	private static final int DIGITS = 25;
 	// NB - PI limited to 50 decimal places of precision so narrowing possible
 	private static final PreciseFixedFloatType PI = new PreciseFixedFloatType(
 		"3.14159265358979323846264338327950288419716939937510");
+	private static PreciseFixedFloatType[] ANGLES;
+	private static PreciseFixedFloatType[] POWERS_OF_TWO;
+	private static PreciseFixedFloatType SQRT_PRE;
+	static {
+		ANGLES = angles(); // must precede powersOfTwo() call
+		POWERS_OF_TWO = powersOfTwo();
+		SQRT_PRE = sqrtPrecision();
+	}
 
 	/**
 	 * Uses Newton Raphson to compute the square root of a BigDecimal.
@@ -363,8 +379,6 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 	 */
 	public static PreciseFixedFloatType sqrt(PreciseFixedFloatType c) {
 		PreciseFixedFloatType precision = new PreciseFixedFloatType();
-		PreciseFixedFloatType SQRT_PRE = new PreciseFixedFloatType(10);
-		SQRT_PRE.pow(DIGITS);
 		precision.div(ONE, SQRT_PRE);
 		return sqrtNewtonRaphson(c, ONE, precision);
 	}
@@ -478,8 +492,8 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 	// angles requires more processing time. It takes 3 or 4 angles to increase
 	// precision by one place.
 
-	private static final PreciseFixedFloatType[] ANGLES =
-		new PreciseFixedFloatType[] {
+	private static PreciseFixedFloatType[] angles() {
+		return new PreciseFixedFloatType[] {
 			// taken from wolfram alpha: entry i = atan(2^(-(i))
 			new PreciseFixedFloatType(
 				"0.7853981633974483096156608458198757210492923498437764"),
@@ -571,17 +585,22 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 				"0.0000000000001136868377216160297393798823227106871573802050"),
 			new PreciseFixedFloatType(
 				"0.00000000000005684341886080801486968994134502633589467252562") };
-
-	private static PreciseFixedFloatType[] POWERS_OF_TWO = powersOfTwo();
+	}
 
 	private static PreciseFixedFloatType[] powersOfTwo() {
 		PreciseFixedFloatType[] powers = new PreciseFixedFloatType[ANGLES.length];
+		PreciseFixedFloatType term = new PreciseFixedFloatType(1);
 		for (int i = 0; i < ANGLES.length; i++) {
-			PreciseFixedFloatType term = new PreciseFixedFloatType(2);
-			term.pow(i);
-			powers[i] = term;
+			powers[i] = term.copy();
+			term.mul(TWO);
 		}
 		return powers;
+	}
+
+	private static PreciseFixedFloatType sqrtPrecision() {
+		PreciseFixedFloatType prec = new PreciseFixedFloatType(10);
+		prec.pow(DECIMAL_PLACES);
+		return prec;
 	}
 
 	/* useful if we implement sine and cosine
