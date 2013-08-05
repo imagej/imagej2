@@ -157,7 +157,7 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 			temps[i] = new BigComplex();
 		}
 		BigComplex combined = new BigComplex();
-		BigComplex divisor = new BigComplex(count, 0);
+		long divisor = count;
 		long[] dims = calcDims(data.getDims(), chAxis);
 		AxisType[] axes = calcAxes(data.getAxes(), chAxis);
 		Dataset newData =
@@ -187,21 +187,8 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 				if (i == chAxis) continue;
 				outAccessor.setPosition(pos[i], d++);
 			}
-			// TODO
-			// was:
-			// combined.div(divisor);
-			// outType.cast(combined, outAccessor.get());
-			//
-			// Would love to do a combined.div(divisor) but note that BigComplex can
-			// error out. Divide by 3 and you'll get an exception. We need
-			// BigRationals internally rather than BigDecimals. BigComplex is
-			// broken as a math type (but totally useful as a casting type). For now
-			// work in doubles causing possible precision loss.
-			//
-			double real = combined.getRealDouble() / count;
-			double imag = combined.getImaginaryDouble() / count;
-			outAccessor.get().setReal(real);
-			outAccessor.get().setImaginary(imag);
+			combined.div(divisor);
+			outType.cast(combined, outAccessor.get());
 		}
 		copyMetaDataChannelsCase(data.getImgPlus(), newData.getImgPlus());
 		return newData;
