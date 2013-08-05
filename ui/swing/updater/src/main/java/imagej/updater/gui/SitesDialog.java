@@ -540,7 +540,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 					"<p width=400>For security reasons, personal update sites are associated with a Fiji Wiki account. " +
 					"Please provide the account name of your Fiji Wiki account.</p>" +
 					"<p width=400>If your personal udate site was not yet initialized, you can initialize it in this dialog.</p>" +
-					"<p width=400>If you do not have a Fiji Wiki account</p></html>"), "span 2");
+					"<p width=400>You can register a Fiji Wiki account here if  you do not have one yet.</p></html>"), "span 2");
 			userLabel = new JLabel("Fiji Wiki account");
 			add(userLabel);
 			userField = new JTextField();
