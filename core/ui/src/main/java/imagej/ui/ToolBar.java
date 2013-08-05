@@ -35,8 +35,6 @@
 
 package imagej.ui;
 
-import imagej.tool.ToolService;
-
 /**
  * Common interface for tool bars, which are button bars with selectable tools,
  * similar to ImageJ 1.x.
@@ -44,7 +42,5 @@ import imagej.tool.ToolService;
  * @author Curtis Rueden
  */
 public interface ToolBar {
-
-	ToolService getToolService();
-
+	// NB: Marker interface.
 }

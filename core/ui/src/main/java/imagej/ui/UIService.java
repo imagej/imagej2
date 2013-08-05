@@ -35,15 +35,7 @@
 
 package imagej.ui;
 
-import imagej.command.CommandService;
-import imagej.data.display.ImageDisplayService;
 import imagej.display.Display;
-import imagej.display.DisplayService;
-import imagej.menu.MenuService;
-import imagej.options.OptionsService;
-import imagej.platform.AppEventService;
-import imagej.platform.PlatformService;
-import imagej.tool.ToolService;
 import imagej.ui.viewer.DisplayViewer;
 import imagej.widget.FileWidget;
 
@@ -53,12 +45,8 @@ import java.util.List;
 import org.scijava.app.App;
 import org.scijava.app.StatusService;
 import org.scijava.app.event.StatusEvent;
-import org.scijava.event.EventService;
-import org.scijava.log.LogService;
 import org.scijava.plugin.PluginInfo;
-import org.scijava.plugin.PluginService;
 import org.scijava.service.Service;
-import org.scijava.thread.ThreadService;
 
 /**
  * Interface for service that handles ImageJ user interfaces.
@@ -73,32 +61,6 @@ public interface UIService extends Service {
 	String UI_PROPERTY = "ij.ui";
 
 	App getApp();
-
-	LogService getLog();
-
-	ThreadService getThreadService();
-
-	EventService getEventService();
-
-	StatusService getStatusService();
-
-	PlatformService getPlatformService();
-
-	PluginService getPluginService();
-
-	CommandService getCommandService();
-
-	DisplayService getDisplayService();
-
-	MenuService getMenuService();
-
-	ToolService getToolService();
-
-	OptionsService getOptionsService();
-
-	AppEventService getAppEventService();
-
-	ImageDisplayService getImageDisplayService();
 
 	/**
 	 * Adds the given UI to those managed by the service.

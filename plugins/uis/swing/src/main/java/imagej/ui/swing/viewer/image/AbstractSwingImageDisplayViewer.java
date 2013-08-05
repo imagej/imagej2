@@ -44,6 +44,8 @@ import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.image.AbstractImageDisplayViewer;
 
 import org.scijava.event.EventHandler;
+import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
 
 /**
  * A Swing image display viewer, which displays 2D planes in grayscale or
@@ -61,6 +63,9 @@ public abstract class AbstractSwingImageDisplayViewer extends
 
 	protected AWTInputEventDispatcher dispatcher;
 
+	@Parameter
+	private EventService eventService;
+
 	private JHotDrawImageCanvas imgCanvas;
 	private SwingDisplayPanel imgPanel;
 
@@ -77,7 +82,7 @@ public abstract class AbstractSwingImageDisplayViewer extends
 	public void view(final DisplayWindow w, final Display<?> d) {
 		super.view(w, d);
 
-		dispatcher = new AWTInputEventDispatcher(getDisplay(), getEventService());
+		dispatcher = new AWTInputEventDispatcher(getDisplay(), eventService);
 
 		// broadcast input events (keyboard and mouse)
 		imgCanvas = new JHotDrawImageCanvas(this);
@@ -85,7 +90,7 @@ public abstract class AbstractSwingImageDisplayViewer extends
 
 		// broadcast drag-and-drop events
 		final AWTDropTargetEventDispatcher dropDispatcher =
-			new AWTDropTargetEventDispatcher(getDisplay(), getEventService());
+			new AWTDropTargetEventDispatcher(getDisplay(), eventService);
 		imgCanvas.addEventDispatcher(dropDispatcher);
 
 		imgPanel = new SwingDisplayPanel(this, getWindow());

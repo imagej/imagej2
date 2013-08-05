@@ -35,7 +35,9 @@
 
 package imagej.ui;
 
+import imagej.command.CommandService;
 import imagej.display.Display;
+import imagej.display.DisplayService;
 import imagej.ui.viewer.DisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.updater.core.UpToDate;
@@ -46,11 +48,12 @@ import java.util.List;
 
 import org.scijava.app.App;
 import org.scijava.app.StatusService;
-import org.scijava.event.EventService;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.plugin.SortablePlugin;
+import org.scijava.thread.ThreadService;
 
 /**
  * Abstract superclass for {@link UserInterface} implementations.
@@ -64,15 +67,31 @@ public abstract class AbstractUserInterface extends SortablePlugin
 	private static final String LAST_X = "lastXLocation";
 	private static final String LAST_Y = "lastYLocation";
 
+	@Parameter
+	private CommandService commandService;
+
+	@Parameter
+	private DisplayService displayService;
+
+	@Parameter
+	private LogService log;
+
+	@Parameter
+	private PluginService pluginService;
+
+	@Parameter
+	private StatusService statusService;
+
+	@Parameter
+	private ThreadService threadService;
+
+	@Parameter
+	private UIService uiService;
+
 	/** Whether the UI is currently being displayed. */
 	private boolean visible = false;
 
 	// -- UserInterface methods --
-
-	@Override
-	public UIService getUIService() {
-		return getContext().getService(UIService.class);
-	}
 
 	@Override
 	public void show() {
@@ -99,7 +118,7 @@ public abstract class AbstractUserInterface extends SortablePlugin
 			display = (Display<?>) o;
 		}
 		else {
-			display = getUIService().getDisplayService().createDisplay(name, o);
+			display = displayService.createDisplay(name, o);
 		}
 		if (!isVisible()) {
 			// NB: If this UI is invisible, the display will not be automatically
@@ -111,9 +130,7 @@ public abstract class AbstractUserInterface extends SortablePlugin
 	@Override
 	public void show(final Display<?> display) {
 		final List<PluginInfo<DisplayViewer<?>>> viewers =
-			getUIService().getViewerPlugins();
-		final LogService log = getUIService().getLog();
-		final PluginService pluginService = getUIService().getPluginService();
+			uiService.getViewerPlugins();
 
 		DisplayViewer<?> displayViewer = null;
 		for (final PluginInfo<DisplayViewer<?>> info : viewers) {
@@ -132,13 +149,13 @@ public abstract class AbstractUserInterface extends SortablePlugin
 		}
 
 		final DisplayViewer<?> finalViewer = displayViewer;
-		getUIService().getThreadService().queue(new Runnable() {
+		threadService.queue(new Runnable() {
 			@Override
 			public void run() {
 				final DisplayWindow displayWindow = createDisplayWindow(display);
 				finalViewer.view(displayWindow, display);
 				displayWindow.setTitle(display.getName());
-				getUIService().addDisplayViewer(finalViewer);
+				uiService.addDisplayViewer(finalViewer);
 				displayWindow.showDisplay(true);
 				display.update();
 			}
@@ -197,16 +214,8 @@ public abstract class AbstractUserInterface extends SortablePlugin
 
 	// -- Helper methods --
 
-	protected EventService getEventService() {
-		return getUIService().getEventService();
-	}
-
-	protected StatusService getStatusService() {
-		return getUIService().getStatusService();
-	}
-
 	protected App getApp() {
-		return getUIService().getApp();
+		return uiService.getApp();
 	}
 
 	/** Shows the readme, if this is the first time ImageJ has run. */
@@ -216,7 +225,7 @@ public abstract class AbstractUserInterface extends SortablePlugin
 		final String firstRun = Prefs.get(getClass(), prefFirstRun);
 		if (firstRun != null) return;
 		Prefs.put(getClass(), prefFirstRun, false);
-		getUIService().getCommandService().run(ShowReadme.class);
+		commandService.run(ShowReadme.class);
 	}
 
 	/** Tests whether updates are available */
@@ -233,7 +242,7 @@ public abstract class AbstractUserInterface extends SortablePlugin
 				case DEVELOPER:
 					return;
 				case UPDATEABLE:
-					getUIService().getCommandService().run(UpdatesAvailable.class);
+					commandService.run(UpdatesAvailable.class);
 					break;
 				case PROXY_NEEDS_AUTHENTICATION:
 					throw new RuntimeException(
@@ -241,15 +250,15 @@ public abstract class AbstractUserInterface extends SortablePlugin
 				case READ_ONLY:
 					final String message =
 						"Your ImageJ installation cannot be updated because it is read-only";
-					getUIService().getLog().warn(message);
-					getStatusService().showStatus(message);
+					log.warn(message);
+					statusService.showStatus(message);
 					break;
 				default:
-					getUIService().getLog().error("Unhandled UpToDate case: " + result);
+					log.error("Unhandled UpToDate case: " + result);
 			}
 		}
 		catch (final Exception e) {
-			getUIService().getLog().error(e);
+			log.error(e);
 			return;
 		}
 	}

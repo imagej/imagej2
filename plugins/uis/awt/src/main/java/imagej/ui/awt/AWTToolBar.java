@@ -55,7 +55,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.scijava.Context;
 import org.scijava.InstantiableException;
+import org.scijava.app.StatusService;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.PluginInfo;
 
 /**
@@ -65,42 +69,46 @@ import org.scijava.plugin.PluginInfo;
  */
 public class AWTToolBar extends Panel implements ToolBar {
 
-	protected final UIService uiService;
-
 	private final Map<String, Button> toolButtons;
 
-	public AWTToolBar(final UIService uiService) {
-		this.uiService = uiService;
+	@Parameter
+	private StatusService statusService;
+
+	@Parameter
+	private ToolService toolService;
+
+	@Parameter
+	private UIService uiService;
+
+	@Parameter
+	private LogService log;
+
+	public AWTToolBar(final Context context) {
+		context.inject(this);
+
 		toolButtons = new HashMap<String, Button>();
 		setLayout(new FlowLayout());
 		populateToolBar();
-	}
-
-	// -- ToolBar methods --
-
-	@Override
-	public ToolService getToolService() {
-		return uiService.getToolService();
 	}
 
 	// -- Helper methods --
 
 	private void populateToolBar() {
 		Tool lastTool = null;
-		for (final Tool tool : getToolService().getTools()) {
+		for (final Tool tool : toolService.getTools()) {
 			try {
 				final Button button = createButton(tool);
 				toolButtons.put(tool.getInfo().getName(), button);
 				add(button);
 
 				// add a separator between tools where applicable
-				if (getToolService().isSeparatorNeeded(tool, lastTool)) {
+				if (toolService.isSeparatorNeeded(tool, lastTool)) {
 					add(new Label(" "));
 				}
 				lastTool = tool;
 			}
 			catch (final InstantiableException e) {
-				uiService.getLog().warn("Invalid tool: " + tool.getInfo(), e);
+				log.warn("Invalid tool: " + tool.getInfo(), e);
 			}
 		}
 	}
@@ -131,7 +139,7 @@ public class AWTToolBar extends Panel implements ToolBar {
 		if (iconURL == null) {
 			if (label != null && !label.isEmpty()) button.setLabel(label);
 			else button.setLabel(name);
-			uiService.getLog().warn("Invalid icon for tool: " + tool);
+			log.warn("Invalid icon for tool: " + tool);
 		}
 
 		// display description on mouseover
@@ -139,12 +147,12 @@ public class AWTToolBar extends Panel implements ToolBar {
 
 			@Override
 			public void mouseEntered(final MouseEvent evt) {
-				uiService.getStatusService().showStatus(tool.getDescription());
+				statusService.showStatus(tool.getDescription());
 			}
 
 			@Override
 			public void mouseExited(final MouseEvent evt) {
-				uiService.getStatusService().clearStatus();
+				statusService.clearStatus();
 			}
 
 			@Override
@@ -160,7 +168,7 @@ public class AWTToolBar extends Panel implements ToolBar {
 
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				getToolService().setActiveTool(tool);
+				toolService.setActiveTool(tool);
 			}
 		});
 

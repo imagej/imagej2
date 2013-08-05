@@ -53,6 +53,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.scijava.Priority;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -66,6 +67,9 @@ import org.scijava.plugin.Plugin;
 public class SWTInputHarvester extends
 	AbstractInputHarvesterPlugin<Composite, Composite>
 {
+
+	@Parameter
+	private UIService uiService;
 
 	// -- InputHarvester methods --
 
@@ -118,7 +122,6 @@ public class SWTInputHarvester extends
 	// -- Helper methods --
 
 	private Display getDisplay() {
-		final UIService uiService = getContext().getService(UIService.class);
 		final UserInterface ui = uiService.getDefaultUI();
 		if (!(ui instanceof SWTUI)) {
 			throw new IllegalStateException("Invalid UI: " + ui.getClass().getName());

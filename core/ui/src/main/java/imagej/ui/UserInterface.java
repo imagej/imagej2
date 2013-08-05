@@ -65,9 +65,6 @@ public interface UserInterface extends ImageJPlugin, Contextual, Prioritized,
 	Disposable
 {
 
-	/** Gets the service responsible for managing this UI. */
-	UIService getUIService();
-
 	/**
 	 * Shows the UI.
 	 * <p>

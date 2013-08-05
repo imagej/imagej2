@@ -41,6 +41,8 @@ import imagej.plugin.PreprocessorPlugin;
 import imagej.widget.AbstractInputHarvester;
 import imagej.widget.InputHarvester;
 
+import org.scijava.plugin.Parameter;
+
 /**
  * AbstractInputHarvesterPlugin is an {@link InputHarvester} that implements the
  * {@link PreprocessorPlugin} interface. It is intended to be extended by
@@ -60,6 +62,9 @@ public abstract class AbstractInputHarvesterPlugin<P, W> extends
 	AbstractInputHarvester<P, W> implements PreprocessorPlugin
 {
 
+	@Parameter(required = false)
+	private UIService uiService;
+
 	private boolean canceled;
 	private String cancelReason;
 
@@ -67,7 +72,6 @@ public abstract class AbstractInputHarvesterPlugin<P, W> extends
 
 	@Override
 	public void process(final Module module) {
-		final UIService uiService = getContext().getService(UIService.class);
 		if (uiService == null) return; // no UI service means no input harvesting!
 
 		// verify that the default UI is the correct one

@@ -39,6 +39,7 @@ import imagej.display.Display;
 
 import java.util.List;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -51,34 +52,31 @@ import org.scijava.plugin.Plugin;
 public class ListDragAndDropHandler extends AbstractDragAndDropHandler<List<?>>
 {
 
+	@Parameter(required = false)
+	private DragAndDropService dragAndDropService;
+
 	// -- DragAndDropHandler methods --
 
 	@Override
 	public boolean supports(final List<?> list, final Display<?> display) {
+		if (dragAndDropService == null) return false;
 		if (!super.supports(list, display)) return false;
-
-		final DragAndDropService dndService =
-			getContext().getService(DragAndDropService.class);
-		if (dndService == null) return false;
 
 		// empty lists are trivially compatible
 		if (list.size() == 0) return true;
 
 		// the list is deemed compatible if at least one item is compatible
 		for (final Object item : list) {
-			if (dndService.supports(item, display)) return true;
+			if (dragAndDropService.supports(item, display)) return true;
 		}
 		return false;
 	}
 
 	@Override
 	public boolean drop(final List<?> list, final Display<?> display) {
+		if (dragAndDropService == null) return false;
 		check(list, display);
 		if (list == null) return true; // trivial case
-
-		final DragAndDropService dndService =
-			getContext().getService(DragAndDropService.class);
-		if (dndService == null) return false;
 
 		// dropping an empty list trivially succeeds
 		if (list.size() == 0) return true;
@@ -86,8 +84,8 @@ public class ListDragAndDropHandler extends AbstractDragAndDropHandler<List<?>>
 		// use the drag-and-drop service to handle each item separately
 		boolean success = false;
 		for (final Object item : list) {
-			if (dndService.supports(item, display)) {
-				final boolean result = dndService.drop(item, display);
+			if (dragAndDropService.supports(item, display)) {
+				final boolean result = dragAndDropService.drop(item, display);
 				if (result) success = true;
 			}
 		}

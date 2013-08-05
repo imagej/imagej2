@@ -38,9 +38,11 @@ package imagej.ui.swing;
 import imagej.display.Display;
 import imagej.menu.MenuService;
 import imagej.menu.ShadowMenu;
+import imagej.platform.AppEventService;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.ui.AbstractUserInterface;
 import imagej.ui.SystemClipboard;
+import imagej.ui.UIService;
 import imagej.ui.common.awt.AWTClipboard;
 import imagej.ui.common.awt.AWTDropTargetEventDispatcher;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
@@ -61,6 +63,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JPopupMenu;
 import javax.swing.WindowConstants;
 
+import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
+
 /**
  * Abstract superclass for Swing-based user interfaces.
  * 
@@ -70,6 +75,18 @@ import javax.swing.WindowConstants;
  * @author Grant Harris
  */
 public abstract class AbstractSwingUI extends AbstractUserInterface {
+
+	@Parameter
+	private AppEventService appEventService;
+
+	@Parameter
+	private EventService eventService;
+
+	@Parameter
+	private MenuService menuService;
+
+	@Parameter
+	private UIService uiService;
 
 	private SwingApplicationFrame appFrame;
 	private SwingToolBar toolBar;
@@ -119,14 +136,12 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	public void showContextMenu(final String menuRoot, final Display<?> display,
 		final int x, final int y)
 	{
-		final MenuService menuService = getUIService().getMenuService();
 		final ShadowMenu shadowMenu = menuService.getMenu(menuRoot);
 
 		final JPopupMenu popupMenu = new JPopupMenu();
 		new SwingJPopupMenuCreator().createMenus(shadowMenu, popupMenu);
 
-		final DisplayViewer<?> displayViewer =
-			getUIService().getDisplayViewer(display);
+		final DisplayViewer<?> displayViewer = uiService.getDisplayViewer(display);
 		if (displayViewer != null) {
 			final Component invoker = (Component) displayViewer.getPanel();
 			popupMenu.show(invoker, x, y);
@@ -154,8 +169,9 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 		appFrame = new SwingApplicationFrame(getApp().getTitle());
 		if (menuBar != null) appFrame.setJMenuBar(menuBar);
 
-		toolBar = new SwingToolBar(getUIService());
-		statusBar = new SwingStatusBar(getUIService());
+		toolBar = new SwingToolBar(getContext());
+		statusBar = new SwingStatusBar(getContext());
+
 		systemClipboard = new AWTClipboard();
 
 		setupAppFrame();
@@ -169,7 +185,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 
 			@Override
 			public void windowClosing(final WindowEvent evt) {
-				getUIService().getAppEventService().quit();
+				appEventService.quit();
 			}
 
 		});
@@ -179,17 +195,17 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 
 		// listen for input events on all components of the app frame
 		final AWTInputEventDispatcher inputDispatcher =
-			new AWTInputEventDispatcher(null, getEventService());
+			new AWTInputEventDispatcher(null, eventService);
 		appFrame.addEventDispatcher(inputDispatcher);
 
 		// listen for window events on the app frame
 		final AWTWindowEventDispatcher windowDispatcher =
-			new AWTWindowEventDispatcher(getEventService());
+			new AWTWindowEventDispatcher(eventService);
 		windowDispatcher.register(appFrame);
 
 		// listen for drag and drop events
 		final AWTDropTargetEventDispatcher dropTargetDispatcher =
-			new AWTDropTargetEventDispatcher(null, getEventService());
+			new AWTDropTargetEventDispatcher(null, eventService);
 		dropTargetDispatcher.register(toolBar);
 		dropTargetDispatcher.register(statusBar);
 		dropTargetDispatcher.register(appFrame);
@@ -202,12 +218,11 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	 * Creates a {@link JMenuBar} from the master {@link ShadowMenu} structure.
 	 */
 	protected JMenuBar createMenus() {
-		final MenuService menuService = getUIService().getMenuService();
 		final JMenuBar menuBar =
 			menuService.createMenus(new SwingJMenuBarCreator(), new JMenuBar());
 		final AppMenusCreatedEvent appMenusCreatedEvent =
 			new AppMenusCreatedEvent(menuBar);
-		getEventService().publish(appMenusCreatedEvent);
+		eventService.publish(appMenusCreatedEvent);
 		if (appMenusCreatedEvent.isConsumed()) {
 			// something else (e.g., MacOSXPlatform) handled the menus
 			return null;

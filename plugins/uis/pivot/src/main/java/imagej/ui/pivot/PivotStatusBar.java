@@ -41,8 +41,10 @@ import imagej.ui.UIService;
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.Meter;
+import org.scijava.Context;
 import org.scijava.app.event.StatusEvent;
 import org.scijava.event.EventHandler;
+import org.scijava.plugin.Parameter;
 
 /**
  * Status bar with text area and progress bar, similar to ImageJ 1.x.
@@ -51,18 +53,19 @@ import org.scijava.event.EventHandler;
  */
 public final class PivotStatusBar extends BoxPane implements StatusBar {
 
-	private final UIService uiService;
+	@Parameter
+	private UIService uiService;
 
 	private final Label label;
 	private final Meter meter;
 
-	public PivotStatusBar(final UIService uiService) {
-		this.uiService = uiService;
+	public PivotStatusBar(final Context context) {
+		context.inject(this);
+
 		label = new Label();
 		add(label);
 		meter = new Meter();
 		add(meter);
-		uiService.getEventService().subscribe(this);
 	}
 
 	// -- StatusBar methods --

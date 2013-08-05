@@ -54,6 +54,7 @@ import net.miginfocom.swt.MigLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -66,7 +67,14 @@ public class SWTUI extends AbstractUserInterface implements Runnable {
 
 	public static final String NAME = "swt";
 
+	@Parameter
 	private EventService eventService;
+
+	@Parameter
+	private MenuService menuService;
+
+	@Parameter
+	private UIService uiService;
 
 	private SWTApplicationFrame shell;
 	private SWTToolBar toolBar;
@@ -148,16 +156,15 @@ public class SWTUI extends AbstractUserInterface implements Runnable {
 
 	@Override
 	protected void createUI() {
-		final UIService uiService = getUIService();
-		eventService = uiService.getEventService();
-
 		swtDisplay = new Display();
 
 		shell = new SWTApplicationFrame(swtDisplay);
 		shell.setLayout(new MigLayout("wrap 1"));
 		shell.setText(uiService.getApp().getTitle());
-		toolBar = new SWTToolBar(uiService, swtDisplay, shell);
-		statusBar = new SWTStatusBar(shell, uiService);
+
+		toolBar = new SWTToolBar(swtDisplay, shell, getContext());
+		statusBar = new SWTStatusBar(shell, getContext());
+
 		createMenus();
 
 		super.createUI();
@@ -169,7 +176,6 @@ public class SWTUI extends AbstractUserInterface implements Runnable {
 	}
 
 	protected void createMenus() {
-		final MenuService menuService = getUIService().getMenuService();
 		final Menu menuBar =
 			menuService.createMenus(new SWTMenuCreator(), new Menu(shell));
 		shell.setMenuBar(menuBar); // TODO - is this necessary?

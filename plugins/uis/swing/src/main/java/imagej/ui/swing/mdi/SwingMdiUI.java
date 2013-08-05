@@ -54,6 +54,7 @@ import javax.swing.JScrollPane;
 
 import org.scijava.Priority;
 import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -67,6 +68,9 @@ import org.scijava.plugin.Plugin;
 public class SwingMdiUI extends AbstractSwingUI {
 
 	public static final String NAME = "swing-mdi";
+
+	@Parameter
+	private EventService eventService;
 
 	private JMDIDesktopPane desktopPane;
 
@@ -88,7 +92,6 @@ public class SwingMdiUI extends AbstractSwingUI {
 			.addEventDispatcher(new InternalFrameEventDispatcher(display));
 
 		// broadcast drag-and-drop events
-		final EventService eventService = getUIService().getEventService();
 		new AWTDropTargetEventDispatcher(display, eventService);
 
 		return displayWindow;

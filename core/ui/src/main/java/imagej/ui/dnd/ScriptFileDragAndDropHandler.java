@@ -40,6 +40,7 @@ import imagej.script.ScriptService;
 
 import java.io.File;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -52,16 +53,16 @@ public class ScriptFileDragAndDropHandler extends
 	AbstractDragAndDropHandler<File>
 {
 
+	@Parameter(required = false)
+	private ScriptService scriptService;
+
 	// -- DragAndDropHandler methods --
 
 	@Override
 	public boolean drop(final File file, final Display<?> display) {
+		if (scriptService == null) return false;
 		check(file, display);
 		if (file == null) return true; // trivial case
-
-		final ScriptService scriptService =
-			getContext().getService(ScriptService.class);
-		if (scriptService == null) return false;
 
 		// TODO: Use the script service to open the file in the script editor.
 		// We may also want to be context sensitive about which type of display
@@ -78,12 +79,10 @@ public class ScriptFileDragAndDropHandler extends
 
 	@Override
 	public boolean supports(final File file) {
+		if (scriptService == null) return false;
 		if (!super.supports(file)) return false;
 
 		// verify that the file is a script
-		final ScriptService scriptService =
-			getContext().getService(ScriptService.class);
-		if (scriptService == null) return false;
 		return scriptService.canHandleFile(file);
 	}
 

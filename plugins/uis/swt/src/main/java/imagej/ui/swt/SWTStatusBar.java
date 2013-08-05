@@ -42,8 +42,10 @@ import net.miginfocom.swt.MigLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
+import org.scijava.Context;
 import org.scijava.app.event.StatusEvent;
 import org.scijava.event.EventHandler;
+import org.scijava.plugin.Parameter;
 
 /**
  * SWT implementation of {@link StatusBar}.
@@ -52,18 +54,19 @@ import org.scijava.event.EventHandler;
  */
 public class SWTStatusBar extends Composite implements StatusBar {
 
-	private final UIService uiService;
-
 	private final Label label;
 	private final ProgressBar progressBar;
 
-	public SWTStatusBar(final Composite parent, final UIService uiService) {
+	@Parameter
+	private UIService uiService;
+
+	public SWTStatusBar(final Composite parent, final Context context) {
 		super(parent, 0);
-		this.uiService = uiService;
+		context.inject(this);
+
 		setLayout(new MigLayout());
 		label = new Label(this, 0);
 		progressBar = new ProgressBar(this, 0);
-		uiService.getEventService().subscribe(this);
 	}
 
 	@Override

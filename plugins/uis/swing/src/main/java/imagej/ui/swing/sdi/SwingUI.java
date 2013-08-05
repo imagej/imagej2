@@ -52,6 +52,7 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 
 import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -63,9 +64,12 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = UserInterface.class, name = SwingUI.NAME)
 public class SwingUI extends AbstractSwingUI {
 
-	// -- UserInterface methods --
-
 	public static final String NAME = "swing";
+
+	@Parameter
+	private EventService eventService;
+
+	// -- UserInterface methods --
 
 	@Override
 	public SwingDisplayWindow createDisplayWindow(final Display<?> display) {
@@ -78,7 +82,6 @@ public class SwingUI extends AbstractSwingUI {
 		new AWTWindowEventDispatcher(display).register(displayWindow);
 
 		// broadcast drag-and-drop events
-		final EventService eventService = getUIService().getEventService();
 		new AWTDropTargetEventDispatcher(display, eventService);
 
 		return displayWindow;

@@ -41,6 +41,7 @@ import imagej.widget.InputWidget;
 import java.lang.reflect.InvocationTargetException;
 
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.thread.ThreadService;
 
 /**
@@ -64,20 +65,25 @@ import org.scijava.thread.ThreadService;
 public abstract class AbstractUIInputWidget<T, W> extends AbstractInputWidget<T, W> {
 
 	// -- Fields --
-	
+
+	@Parameter
+	private ThreadService threadService;
+
+	@Parameter
 	private UIService uiService;
-	
+
+	@Parameter
+	private LogService log;
+
 	// -- InputWidget methods --
 	
 	@Override
 	public void refreshWidget() {
-	  LogService log = getContext().getService(LogService.class);
 
 	  // If this widget requires the EDT, ensure its refresh action takes place
 	  // on the EDT.
 		if (ui().requiresEDT()) {
 			try {
-				ThreadService threadService = getContext().getService(ThreadService.class);
 				threadService.invoke(new Runnable() {
 					@Override
 					public void run() {
@@ -114,7 +120,6 @@ public abstract class AbstractUIInputWidget<T, W> extends AbstractInputWidget<T,
 	 * @return the UserInterface matching the provided String
 	 */
 	protected UserInterface ui(String uiName) {
-		if (uiService == null) uiService = getContext().getService(UIService.class);
 		
 		return uiService.getUI(uiName);
 	}
