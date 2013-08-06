@@ -67,25 +67,4 @@ public class OptionsLineWidth extends OptionsPlugin {
 		this.lineWidth = lineWidth;
 	}
 
-	// TODO - remove this debugging code
-
-	@Override
-	public void load() {
-		// TODO Auto-generated method stub
-		super.load();
-		// System.out.println("Just loaded from "+this+" and field value = "+lineWidth);
-	}
-
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		super.run();
-		// System.out.println("Just run from "+this+" and field value = "+lineWidth);
-	}
-
-	@Override
-	public void save() {
-		// System.out.println("About to save from "+this+" and field value = "+lineWidth);
-		super.save();
-	}
 }
