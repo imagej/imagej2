@@ -281,7 +281,7 @@ public class BigComplex implements ComplexType<BigComplex> {
 	
 	public void div(BigComplex a, BigComplex b) {
 		BigDecimal t1 = b.r.multiply(b.r);
-		BigDecimal t2 = b.r.multiply(b.r);
+		BigDecimal t2 = b.i.multiply(b.i);
 		BigDecimal denom = t1.add(t2);
 		t1 = a.r.multiply(b.r);
 		t2 = a.i.multiply(b.i);
@@ -345,6 +345,10 @@ public class BigComplex implements ComplexType<BigComplex> {
 		return modulus().doubleValue();
 	}
 
+	public BigDecimal getPower() {
+		return modulus();
+	}
+
 	@Override
 	public float getPhaseFloat() {
 		return phase().floatValue();
@@ -353,6 +357,10 @@ public class BigComplex implements ComplexType<BigComplex> {
 	@Override
 	public double getPhaseDouble() {
 		return phase().doubleValue();
+	}
+
+	public BigDecimal getPhase() {
+		return phase();
 	}
 
 	// -- helpers --

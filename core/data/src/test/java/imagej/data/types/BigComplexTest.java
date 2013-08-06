@@ -47,7 +47,55 @@ public class BigComplexTest {
 	private static final double PRECISION = 0.0000000000001;
 
 	@Test
-	public void testAtan2() {
+	public void testAdd() {
+		BigComplex a = new BigComplex();
+		BigComplex b = new BigComplex();
+
+		a.setComplexNumber(5, 10);
+		b.setComplexNumber(-3, 2);
+		a.add(b);
+		assertEquals(2, a.getRealDouble(), 0);
+		assertEquals(12, a.getImaginaryDouble(), 0);
+	}
+
+	@Test
+	public void testSub() {
+		BigComplex a = new BigComplex();
+		BigComplex b = new BigComplex();
+
+		a.setComplexNumber(5, 10);
+		b.setComplexNumber(-3, 2);
+		a.sub(b);
+		assertEquals(8, a.getRealDouble(), 0);
+		assertEquals(8, a.getImaginaryDouble(), 0);
+	}
+
+	@Test
+	public void testMul() {
+		BigComplex a = new BigComplex();
+		BigComplex b = new BigComplex();
+
+		a.setComplexNumber(5, 0);
+		b.setComplexNumber(-3, 0);
+		a.mul(b);
+		assertEquals(-15, a.getRealDouble(), 0);
+		assertEquals(0, a.getImaginaryDouble(), 0);
+	}
+
+	@Test
+	public void testDiv() {
+		BigComplex a = new BigComplex();
+		BigComplex b = new BigComplex();
+
+		a.setComplexNumber(5, 0);
+		b.setComplexNumber(-2, 0);
+		a.div(b);
+		assertEquals(-2.5, a.getRealDouble(), 0);
+		assertEquals(0, a.getImaginaryDouble(), 0);
+	}
+
+	@Test
+	public void testPhase() {
 		BigComplex val;
 
 		// the 90s
@@ -97,7 +145,7 @@ public class BigComplexTest {
 	}
 
 	@Test
-	public void testSqrt() {
+	public void testPower() {
 		BigComplex val;
 
 		val = new BigComplex(1, 0);
