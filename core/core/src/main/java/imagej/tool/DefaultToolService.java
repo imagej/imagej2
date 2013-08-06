@@ -86,9 +86,9 @@ public class DefaultToolService extends AbstractSingletonService<Tool>
 	private StatusService statusService;
 
 	private Map<String, Tool> alwaysActiveTools;
-	private Map<String, Tool> tools;
-
 	private List<Tool> alwaysActiveToolList;
+
+	private Map<String, Tool> tools;
 	private List<Tool> toolList;
 
 	private Tool activeTool;
@@ -96,28 +96,18 @@ public class DefaultToolService extends AbstractSingletonService<Tool>
 	// -- ToolService methods --
 
 	@Override
-	public EventService getEventService() {
-		return eventService;
-	}
-
-	@Override
-	public StatusService getStatusService() {
-		return statusService;
-	}
-
-	@Override
 	public Tool getTool(final String name) {
-		final Tool alwaysActiveTool = alwaysActiveTools.get(name);
+		final Tool alwaysActiveTool = alwaysActiveTools().get(name);
 		if (alwaysActiveTool != null) return alwaysActiveTool;
-		return tools.get(name);
+		return tools().get(name);
 	}
 
 	@Override
 	public <T extends Tool> T getTool(final Class<T> toolClass) {
-		for (final Tool tool : alwaysActiveToolList) {
+		for (final Tool tool : alwaysActiveToolList()) {
 			if (toolClass.isInstance(tool)) return toolClass.cast(tool);
 		}
-		for (final Tool tool : toolList) {
+		for (final Tool tool : toolList()) {
 			if (toolClass.isInstance(tool)) return toolClass.cast(tool);
 		}
 		return null;
@@ -125,22 +115,22 @@ public class DefaultToolService extends AbstractSingletonService<Tool>
 
 	@Override
 	public List<Tool> getTools() {
-		return toolList;
+		return toolList();
 	}
 
 	@Override
 	public List<Tool> getAlwaysActiveTools() {
-		return alwaysActiveToolList;
+		return alwaysActiveToolList();
 	}
 
 	@Override
 	public Tool getActiveTool() {
-		return activeTool;
+		return activeTool();
 	}
 
 	@Override
 	public void setActiveTool(final Tool activeTool) {
-		if (this.activeTool == activeTool) return; // nothing to do
+		if (activeTool() == activeTool) return; // nothing to do
 		assert this.activeTool != null;
 		if (activeTool == null) {
 			throw new IllegalArgumentException("Active tool cannot be null");
@@ -173,7 +163,7 @@ public class DefaultToolService extends AbstractSingletonService<Tool>
 		final String fy = f.format(y);
 		final String fw = f.format(w);
 		final String fh = f.format(h);
-		getStatusService().showStatus(
+		statusService.showStatus(
 			"x=" + fx + ", y=" + fy + ", w=" + fw + ", h=" + fh);
 	}
 
@@ -205,7 +195,7 @@ public class DefaultToolService extends AbstractSingletonService<Tool>
 		final String fy = f.format(y2);
 		final String fa = f.format(angle);
 		final String fl = f.format(length);
-		getStatusService().showStatus(
+		statusService.showStatus(
 			"x=" + fx + ", y=" + fy + ", angle=" + fa + ", length=" + fl);
 	}
 
@@ -219,7 +209,7 @@ public class DefaultToolService extends AbstractSingletonService<Tool>
 		final DecimalFormat f = new DecimalFormat("0.##");
 		final String fx = f.format(x);
 		final String fy = f.format(y);
-		getStatusService().showStatus("x=" + fx + ", y=" + fy);
+		statusService.showStatus("x=" + fx + ", y=" + fy);
 	}
 
 	@Override
@@ -232,19 +222,6 @@ public class DefaultToolService extends AbstractSingletonService<Tool>
 	@Override
 	public Class<Tool> getPluginType() {
 		return Tool.class;
-	}
-
-	// -- Service methods --
-
-	@Override
-	public void initialize() {
-		buildDataStructures();
-		activeTool = new DummyTool();
-
-		final Tool rectangleTool = getTool("Rectangle");
-		if (rectangleTool != null) {
-			setActiveTool(rectangleTool);
-		}
 	}
 
 	// -- Event handlers --
@@ -339,8 +316,33 @@ public class DefaultToolService extends AbstractSingletonService<Tool>
 
 	// -- Helper methods --
 
+	private Map<String, Tool> alwaysActiveTools() {
+		if (alwaysActiveTools == null) buildDataStructures();
+		return alwaysActiveTools;
+	}
+
+	private List<Tool> alwaysActiveToolList() {
+		if (alwaysActiveToolList == null) buildDataStructures();
+		return alwaysActiveToolList;
+	}
+
+	private Map<String, Tool> tools() {
+		if (tools == null) buildDataStructures();
+		return tools;
+	}
+
+	private List<Tool> toolList() {
+		if (toolList == null) buildDataStructures();
+		return toolList;
+	}
+
+	private Tool activeTool() {
+		if (activeTool == null) buildDataStructures();
+		return activeTool;
+	}
+
 	private void buildDataStructures() {
-		// create tool instances
+		// build lists of available tools
 		alwaysActiveTools = new HashMap<String, Tool>();
 		alwaysActiveToolList = new ArrayList<Tool>();
 		tools = new HashMap<String, Tool>();
@@ -354,6 +356,13 @@ public class DefaultToolService extends AbstractSingletonService<Tool>
 				tools.put(tool.getInfo().getName(), tool);
 				toolList.add(tool);
 			}
+		}
+
+		// set the initially active tool (to the Rectangle tool, if available)
+		activeTool = new DummyTool();
+		final Tool rectangleTool = getTool("Rectangle");
+		if (rectangleTool != null) {
+			setActiveTool(rectangleTool);
 		}
 	}
 
