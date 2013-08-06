@@ -51,6 +51,10 @@ import net.imglib2.type.numeric.ComplexType;
  */
 public class BigComplex implements ComplexType<BigComplex> {
 
+	// TODO - use FloatingType rather than ComplexType but not yet merged to
+	// Imglib. Once merged then implement the exponential and trig methods to a
+	// fixed number of decimal places.
+
 	// -- constants --
 
 	private static final int DIGITS = 50;

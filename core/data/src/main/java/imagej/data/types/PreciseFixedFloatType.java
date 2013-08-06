@@ -49,8 +49,11 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 
 	// TODO - use FloatingType rather than RealType but not yet merged to Imglib.
 	// Once merged then implement the exponential and trig methods to a fixed
-	// number of decimal places. Can take example code from BigComplex and then
-	// dumb that class down to only be used for castings.
+	// number of decimal places.
+
+	// Note that right now using BigComplex is a better choice for accuracy. This
+	// class eventually needs to allow user to configure the scale. After that
+	// and after writing accurate numerics we can move away from BigComplex.
 
 	// -- constants --
 
@@ -408,13 +411,15 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 		PreciseFixedFloatType currentPrecision = new PreciseFixedFloatType();
 		currentPrecision.sub(currentSquare, c);
 		currentPrecision.abs();
-		// BDZ hack added here to avoid stack overflow
+		// BDZ hack added here to avoid stack overflow.
 		if (xn.compareTo(xn1) == 0) {
 			// no longer converging
 			// The original BigDecimal version I relied on did division to double
 			// the decimal places of precision. My division can't do that. And since
-			// I'm integer based truncation error may be interfering.
-			return xn; // might be inaccurate
+			// I'm using integer based division truncation error may be interfering.
+			// So we need to fix the numerics or just use BigComplex. For now use
+			// BigComplex.
+			return xn; // TODO - might be inaccurate
 		}
 		else if (currentPrecision.compareTo(precision) > 0) {
 			return sqrtNewtonRaphson(c, xn1, precision);
