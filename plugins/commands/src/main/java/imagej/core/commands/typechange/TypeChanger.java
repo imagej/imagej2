@@ -157,7 +157,7 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 			temps[i] = new BigComplex();
 		}
 		BigComplex combined = new BigComplex();
-		long divisor = count;
+		BigComplex divisor = new BigComplex(count, 0);
 		long[] dims = calcDims(data.getDims(), chAxis);
 		AxisType[] axes = calcAxes(data.getAxes(), chAxis);
 		Dataset newData =
