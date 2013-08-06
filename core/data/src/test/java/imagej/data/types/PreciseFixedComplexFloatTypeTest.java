@@ -42,7 +42,7 @@ import org.junit.Test;
 /**
  * @author Barry DeZonia
  */
-public class TestPreciseFixedComplexFloatType {
+public class PreciseFixedComplexFloatTypeTest {
 
 	private static final double PRECISION = 0.0000000000001;
 

@@ -37,7 +37,6 @@ package imagej.data.types;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 
 import net.imglib2.type.numeric.RealType;
 
@@ -193,21 +192,19 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 
 	public void pow(int power) {
 		if (power < 0) {
-			BigDecimal factor = get();
-			BigDecimal total = BigDecimal.ONE;
-			for (int i = 1; i < (-power); i++) {
-				total = total.divide(factor, DECIMAL_PLACES, RoundingMode.HALF_UP);
+			PreciseFixedFloatType factor = new PreciseFixedFloatType(this);
+			for (int i = 0; i < (-power) + 1; i++) {
+				div(this, factor);
 			}
-			amount = total.multiply(new BigDecimal(scale)).toBigInteger();
 		}
 		else if (power == 0) {
 			amount = scale; // value = ONE
 		}
 		else { // power > 0
-			BigInteger factor = amount;
+			PreciseFixedFloatType factor = new PreciseFixedFloatType(this);
 			// if power == 1 we are done so skip that case in for loop
 			for (int p = 1; p < power; p++) {
-				amount = amount.multiply(factor);
+				mul(this, factor);
 			}
 		}
 	}
@@ -236,7 +233,7 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 	}
 
 	public void mul(PreciseFixedFloatType a, PreciseFixedFloatType b) {
-		amount = a.amount.multiply(b.amount);
+		amount = a.amount.multiply(b.amount).divide(scale);
 	}
 
 	@Override
@@ -245,7 +242,7 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 	}
 
 	public void div(PreciseFixedFloatType a, PreciseFixedFloatType b) {
-		amount = a.amount.divide(b.amount);
+		amount = a.amount.multiply(scale).divide(b.amount);
 	}
 
 	@Override
@@ -295,14 +292,11 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 	}
 
 	public void set(double v) {
-		BigDecimal d = BigDecimal.valueOf(v);
-		BigDecimal factor = new BigDecimal(scale);
-		BigDecimal number = d.multiply(factor);
-		amount = number.toBigInteger();
+		set(BigDecimal.valueOf(v));
 	}
 
 	public void set(long v) {
-		amount = BigInteger.valueOf(v).multiply(scale);
+		set(BigInteger.valueOf(v));
 	}
 
 	public void set(BigInteger v) {
@@ -397,30 +391,35 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 		PreciseFixedFloatType c, PreciseFixedFloatType xn,
 		PreciseFixedFloatType precision)
 	{
-		PreciseFixedFloatType negC = c.copy();
+		PreciseFixedFloatType negC = new PreciseFixedFloatType(c);
 		negC.negate();
-		PreciseFixedFloatType fx = new PreciseFixedFloatType();
-		PreciseFixedFloatType fpx = new PreciseFixedFloatType();
-		PreciseFixedFloatType xn1 = new PreciseFixedFloatType();
-		PreciseFixedFloatType currentPrecision = new PreciseFixedFloatType();
-		PreciseFixedFloatType currentSquare = new PreciseFixedFloatType();
-		xn.add(negC);
-		fx.set(xn);
+		PreciseFixedFloatType fx = new PreciseFixedFloatType(xn);
 		fx.pow(2);
 		fx.add(negC);
+		PreciseFixedFloatType fpx = new PreciseFixedFloatType();
 		fpx.mul(xn, TWO);
+		PreciseFixedFloatType xn1 = new PreciseFixedFloatType();
 		xn1.div(fx, fpx);
 		PreciseFixedFloatType negXn1 = new PreciseFixedFloatType(xn1);
 		negXn1.negate();
 		xn1.add(xn, negXn1);
-		currentSquare.set(xn1);
+		PreciseFixedFloatType currentSquare = new PreciseFixedFloatType(xn1);
 		currentSquare.pow(2);
+		PreciseFixedFloatType currentPrecision = new PreciseFixedFloatType();
 		currentPrecision.sub(currentSquare, c);
 		currentPrecision.abs();
-		if (currentPrecision.compareTo(precision) < 0) {
-			return xn1;
+		// BDZ hack added here to avoid stack overflow
+		if (xn.compareTo(xn1) == 0) {
+			// no longer converging
+			// The original BigDecimal version I relied on did division to double
+			// the decimal places of precision. My division can't do that. And since
+			// I'm integer based truncation error may be interfering.
+			return xn; // might be inaccurate
 		}
-		return sqrtNewtonRaphson(c, xn1, precision);
+		else if (currentPrecision.compareTo(precision) > 0) {
+			return sqrtNewtonRaphson(c, xn1, precision);
+		}
+		return xn1;
 	}
 
 	// this code taken from: http://en.wikipedia.org/wiki/Cordic
@@ -599,7 +598,7 @@ public class PreciseFixedFloatType implements RealType<PreciseFixedFloatType> {
 
 	private static PreciseFixedFloatType sqrtPrecision() {
 		PreciseFixedFloatType prec = new PreciseFixedFloatType(10);
-		prec.pow(DECIMAL_PLACES);
+		prec.pow(DECIMAL_PLACES - 1);
 		return prec;
 	}
 
