@@ -35,6 +35,8 @@
 
 package imagej.data.types;
 
+import java.math.BigDecimal;
+
 import org.scijava.AbstractContextual;
 
 //TODO - uncomment when we are ready to support
@@ -112,7 +114,7 @@ public class DataTypeVariableBitSignedFloat extends AbstractContextual implement
 	@Override
 	public void cast(PreciseFixedFloatType val, BigComplex dest) {
 		dest.setReal(val.get());
-		dest.setImag(0);
+		dest.setImag(BigDecimal.ZERO);
 	}
 
 	@Override

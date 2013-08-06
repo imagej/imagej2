@@ -35,6 +35,8 @@
 
 package imagej.data.types;
 
+import java.math.BigDecimal;
+
 import net.imglib2.type.numeric.integer.Unsigned12BitType;
 
 import org.scijava.AbstractContextual;
@@ -113,7 +115,7 @@ public class DataType12BitUnsignedInteger extends AbstractContextual implements
 	@Override
 	public void cast(Unsigned12BitType val, BigComplex dest) {
 		dest.setReal(val.get());
-		dest.setImag(0);
+		dest.setImag(BigDecimal.ZERO);
 	}
 
 	@Override
