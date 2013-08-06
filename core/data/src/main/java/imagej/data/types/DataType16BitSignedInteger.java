@@ -35,8 +35,6 @@
 
 package imagej.data.types;
 
-import java.math.BigDecimal;
-
 import net.imglib2.type.numeric.integer.ShortType;
 
 import org.scijava.AbstractContextual;
@@ -115,8 +113,8 @@ public class DataType16BitSignedInteger extends AbstractContextual implements
 
 	@Override
 	public void cast(ShortType val, BigComplex dest) {
-		dest.setReal(BigDecimal.valueOf(val.get()));
-		dest.setImag(BigDecimal.ZERO);
+		dest.setReal(val.get());
+		dest.setImag(0);
 	}
 
 	@Override

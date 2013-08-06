@@ -35,8 +35,6 @@
 
 package imagej.data.types;
 
-import java.math.BigDecimal;
-
 import net.imglib2.type.logic.BitType;
 
 import org.scijava.AbstractContextual;
@@ -114,8 +112,8 @@ public class DataType1BitUnsignedInteger extends AbstractContextual implements
 
 	@Override
 	public void cast(BitType val, BigComplex dest) {
-		dest.setReal(val.get() ? BigDecimal.ONE : BigDecimal.ZERO);
-		dest.setImag(BigDecimal.ZERO);
+		dest.setReal(val.get() ? 1 : 0);
+		dest.setImag(0);
 	}
 
 	@Override
