@@ -115,6 +115,12 @@ public class BigComplex implements ComplexType<BigComplex> {
 
 	// -- setters --
 
+	@Override
+	public void set(BigComplex other) {
+		this.r = other.r;
+		this.i = other.i;
+	}
+
 	public void set(long r, long i) {
 		setReal(r);
 		setImag(i);
@@ -142,6 +148,11 @@ public class BigComplex implements ComplexType<BigComplex> {
 
 	public void setReal(long r) {
 		this.r = BigDecimal.valueOf(r);
+	}
+
+	@Override
+	public void setReal(float f) {
+		r = BigDecimal.valueOf(f);
 	}
 
 	@Override
@@ -182,9 +193,30 @@ public class BigComplex implements ComplexType<BigComplex> {
 	}
 
 	@Override
-	public void set(BigComplex other) {
-		this.r = other.r;
-		this.i = other.i;
+	public void setImaginary(float f) {
+		i = BigDecimal.valueOf(f);
+	}
+
+	@Override
+	public void setImaginary(double f) {
+		i = BigDecimal.valueOf(f);
+	}
+
+	@Override
+	public void setComplexNumber(float r, float i) {
+		setReal(r);
+		setImag(i);
+	}
+
+	@Override
+	public void setComplexNumber(double r, double i) {
+		setReal(r);
+		setImag(i);
+	}
+
+	public void setComplexNumber(BigDecimal r, BigDecimal i) {
+		setReal(r);
+		setImag(i);
 	}
 
 	// -- ComplexType methods --
@@ -301,38 +333,6 @@ public class BigComplex implements ComplexType<BigComplex> {
 	@Override
 	public float getImaginaryFloat() {
 		return i.floatValue();
-	}
-
-	@Override
-	public void setReal(float f) {
-		r = BigDecimal.valueOf(f);
-	}
-
-	@Override
-	public void setImaginary(float f) {
-		i = BigDecimal.valueOf(f);
-	}
-
-	@Override
-	public void setImaginary(double f) {
-		i = BigDecimal.valueOf(f);
-	}
-
-	@Override
-	public void setComplexNumber(float r, float i) {
-		setReal(r);
-		setImaginary(i);
-	}
-
-	@Override
-	public void setComplexNumber(double r, double i) {
-		setReal(r);
-		setImaginary(i);
-	}
-
-	public void setComplexNumber(BigDecimal r, BigDecimal i) {
-		setReal(r);
-		setImag(i);
 	}
 
 	@Override
