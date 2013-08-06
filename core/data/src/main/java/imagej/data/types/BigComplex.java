@@ -60,9 +60,11 @@ public class BigComplex implements ComplexType<BigComplex> {
 	private static final int DIGITS = 50;
 	private static final BigDecimal TWO = new BigDecimal(2);
 	private static final BigDecimal SQRT_PRE = new BigDecimal(10).pow(DIGITS);
-	// NB - PI limited to 50 decimal places of precision so narrowing possible
+	// NB - E & PI limited to 50 decimal places of precision so narrowing possible
 	private static final BigDecimal PI = new BigDecimal(
 		"3.14159265358979323846264338327950288419716939937510");
+	private static final BigDecimal E = new BigDecimal(
+		"2.71828182845904523536028747135266249775724709369995");
 
 	// -- static variables and initialization --
 
@@ -80,144 +82,246 @@ public class BigComplex implements ComplexType<BigComplex> {
 
 	// -- constructors --
 
+	/**
+	 * Default constructor: value = (0,0).
+	 */
 	public BigComplex() {
 		setZero();
 	}
 
+	/**
+	 * Constructor from longs.
+	 */
 	public BigComplex(long r, long i) {
 		setReal(r);
 		setImag(i);
 	}
 
+	/**
+	 * Constructor from doubles.
+	 */
 	public BigComplex(double r, double i) {
 		setReal(r);
 		setImag(i);
 	}
 
+	/**
+	 * Constructor from BigIntegers.
+	 */
 	public BigComplex(BigInteger r, BigInteger i) {
 		setReal(r);
 		setImag(i);
 	}
 
+	/**
+	 * Constructor from BigDecimals.
+	 */
 	public BigComplex(BigDecimal r, BigDecimal i) {
 		setReal(r);
 		setImag(i);
 	}
 
+	/**
+	 * Constructor from Strings. The strings must represent numbers that
+	 * BigDecimal can parse.
+	 */
 	public BigComplex(String r, String i) {
 		setReal(r);
 		setImag(i);
 	}
 
+	/**
+	 * Gets real component of this complex number as a BigDecimal.
+	 */
 	public BigDecimal getReal() {
 		return r;
 	}
 
+	/**
+	 * Gets imaginary component of this complex number as a BigDecimal.
+	 */
 	public BigDecimal getImag() {
 		return i;
 	}
 
 	// -- setters --
 
+	/**
+	 * Sets the real and imaginary components of this BigComplex to match those of
+	 * another.
+	 */
 	@Override
 	public void set(BigComplex other) {
 		this.r = other.r;
 		this.i = other.i;
 	}
 
+	/**
+	 * Sets the real and imaginary components of this BigComplex to given long
+	 * values.
+	 */
 	public void set(long r, long i) {
 		setReal(r);
 		setImag(i);
 	}
 
+	/**
+	 * Sets the real and imaginary components of this BigComplex to given double
+	 * values.
+	 */
 	public void set(double r, double i) {
 		setReal(r);
 		setImag(i);
 	}
 
+	/**
+	 * Sets the real and imaginary components of this BigComplex to given
+	 * BigInteger values.
+	 */
 	public void set(BigInteger r, BigInteger i) {
 		setReal(r);
 		setImag(i);
 	}
 
+	/**
+	 * Sets the real and imaginary components of this BigComplex to given
+	 * BigDecimal values.
+	 */
 	public void set(BigDecimal r, BigDecimal i) {
 		setReal(r);
 		setImag(i);
 	}
 
+	/**
+	 * Sets the real and imaginary components of this BigComplex to given String
+	 * values. The strings must represent numbers that BigDecimal can parse.
+	 */
 	public void set(String r, String i) {
 		setReal(r);
 		setImag(i);
 	}
 
+	/**
+	 * Sets the real component of this BigComplex to given long value.
+	 */
 	public void setReal(long r) {
 		this.r = BigDecimal.valueOf(r);
 	}
 
+	/**
+	 * Sets the real component of this BigComplex to given float value.
+	 */
 	@Override
 	public void setReal(float f) {
 		r = BigDecimal.valueOf(f);
 	}
 
+	/**
+	 * Sets the real component of this BigComplex to given double value.
+	 */
 	@Override
 	public void setReal(double r) {
 		this.r = BigDecimal.valueOf(r);
 	}
 
+	/**
+	 * Sets the real component of this BigComplex to given BigInteger value.
+	 */
 	public void setReal(BigInteger r) {
 		this.r = new BigDecimal(r);
 	}
 
+	/**
+	 * Sets the real component of this BigComplex to given BigDecimal value.
+	 */
 	public void setReal(BigDecimal r) {
 		this.r = r;
 	}
 
+	/**
+	 * Sets the real component of this BigComplex to given String value. The
+	 * string must represent a number that BigDecimal can parse.
+	 */
 	public void setReal(String r) {
 		this.r = new BigDecimal(r);
 	}
 
+	/**
+	 * Sets the imaginary component of this BigComplex to given long value.
+	 */
 	public void setImag(long i) {
 		this.i = BigDecimal.valueOf(i);
 	}
 
+	/**
+	 * Sets the imaginary component of this BigComplex to given double value.
+	 */
 	public void setImag(double i) {
 		this.i = BigDecimal.valueOf(i);
 	}
 
+	/**
+	 * Sets the imaginary component of this BigComplex to given BigInteger value.
+	 */
 	public void setImag(BigInteger i) {
 		this.i = new BigDecimal(i);
 	}
 
+	/**
+	 * Sets the imaginary component of this BigComplex to given BigDecimal value.
+	 */
 	public void setImag(BigDecimal i) {
 		this.i = i;
 	}
 
+	/**
+	 * Sets the imaginary component of this BigComplex to given String value. The
+	 * string must represent a number that BigDecimal can parse.
+	 */
 	public void setImag(String i) {
 		this.i = new BigDecimal(i);
 	}
 
+	/**
+	 * Sets the imaginary component of this BigComplex to given float value.
+	 */
 	@Override
 	public void setImaginary(float f) {
 		i = BigDecimal.valueOf(f);
 	}
 
+	/**
+	 * Sets the imaginary component of this BigComplex to given double value.
+	 */
 	@Override
 	public void setImaginary(double f) {
 		i = BigDecimal.valueOf(f);
 	}
 
+	/**
+	 * Sets the real and imaginary components of this BigComplex to given float
+	 * values.
+	 */
 	@Override
 	public void setComplexNumber(float r, float i) {
 		setReal(r);
 		setImag(i);
 	}
 
+	/**
+	 * Sets the real and imaginary components of this BigComplex to given double
+	 * values.
+	 */
 	@Override
 	public void setComplexNumber(double r, double i) {
 		setReal(r);
 		setImag(i);
 	}
 
+	/**
+	 * Sets the real and imaginary components of this BigComplex to given
+	 * BigDecimal values.
+	 */
 	public void setComplexNumber(BigDecimal r, BigDecimal i) {
 		setReal(r);
 		setImag(i);
@@ -225,48 +329,75 @@ public class BigComplex implements ComplexType<BigComplex> {
 
 	// -- ComplexType methods --
 
+	/**
+	 * Sets this BigComplex to the zero value.
+	 */
 	@Override
 	public void setZero() {
 		r = BigDecimal.ZERO;
 		i = BigDecimal.ZERO;
 	}
 
+	/**
+	 * Sets this BigComplex to the unity value.
+	 */
 	@Override
 	public void setOne() {
 		r = BigDecimal.ONE;
 		i = BigDecimal.ZERO;
 	}
 
+	/**
+	 * Creates a new BigComplex initialized to (0,0).
+	 */
 	@Override
 	public BigComplex createVariable() {
 		return new BigComplex();
 	}
 
+	/**
+	 * Creates a new BigComplex whose values are taken from this BigComplex.
+	 */
 	@Override
 	public BigComplex copy() {
 		return new BigComplex(r, i);
 	}
 
+	/**
+	 * Set self to the result of addition between two BigComplex values.
+	 */
 	public void add(BigComplex a, BigComplex b) {
 		r = a.r.add(b.r);
 		i = a.i.add(b.i);
 	}
 
+	/**
+	 * Adds another BigComplex value to self.
+	 */
 	@Override
 	public void add(BigComplex other) {
 		add(this, other);
 	}
 
+	/**
+	 * Set self to the result of subtraction between two BigComplex values.
+	 */
 	public void sub(BigComplex a, BigComplex b) {
 		r = a.r.subtract(b.r);
 		i = a.i.subtract(b.i);
 	}
 
+	/**
+	 * Subtracts another BigComplex value from self.
+	 */
 	@Override
 	public void sub(BigComplex other) {
 		sub(this, other);
 	}
 
+	/**
+	 * Set self to the result of multiplication between two BigComplex values.
+	 */
 	public void mul(BigComplex a, BigComplex b) {
 		BigDecimal t1 = a.r.multiply(b.r);
 		BigDecimal t2 = a.i.multiply(b.i);
@@ -278,11 +409,18 @@ public class BigComplex implements ComplexType<BigComplex> {
 		i = sum2;
 	}
 
+	/**
+	 * Multiplies another BigComplex value with self.
+	 */
 	@Override
 	public void mul(BigComplex other) {
 		mul(this, other);
 	}
 	
+	/**
+	 * Set self to the result of division between two BigComplex values. Precision
+	 * loss is possible.
+	 */
 	public void div(BigComplex a, BigComplex b) {
 		BigDecimal t1 = b.r.multiply(b.r);
 		BigDecimal t2 = b.i.multiply(b.i);
@@ -297,21 +435,33 @@ public class BigComplex implements ComplexType<BigComplex> {
 		i = sum2.divide(denom, DIGITS, RoundingMode.HALF_UP);
 	}
 
+	/**
+	 * Divides self by another BigComplex value. Precision loss is possible.
+	 */
 	@Override
 	public void div(BigComplex other) {
 		div(this, other);
 	}
 
+	/**
+	 * Multiplies self by a scalar (float) constant.
+	 */
 	@Override
 	public void mul(float c) {
 		mul(new BigComplex(BigDecimal.valueOf(c), BigDecimal.ZERO));
 	}
 
+	/**
+	 * Multiplies self by a scalar (double) constant.
+	 */
 	@Override
 	public void mul(double c) {
 		mul(new BigComplex(BigDecimal.valueOf(c), BigDecimal.ZERO));
 	}
 
+	/**
+	 * Does complex conjugation on self.
+	 */
 	@Override
 	public void complexConjugate() {
 		i = i.negate();
@@ -319,53 +469,223 @@ public class BigComplex implements ComplexType<BigComplex> {
 
 	// -- narrowing methods --
 
+	/**
+	 * Gets real component as a double (narrowing possible).
+	 */
 	@Override
 	public double getRealDouble() {
 		return r.doubleValue();
 	}
 
+	/**
+	 * Gets real component as a float (narrowing possible).
+	 */
 	@Override
 	public float getRealFloat() {
 		return r.floatValue();
 	}
 
+	/**
+	 * Gets imaginary component as a double (narrowing possible).
+	 */
 	@Override
 	public double getImaginaryDouble() {
 		return i.doubleValue();
 	}
 
+	/**
+	 * Gets imaginary component as a float (narrowing possible).
+	 */
 	@Override
 	public float getImaginaryFloat() {
 		return i.floatValue();
 	}
 
+	/**
+	 * Gets magnitude as a float (narrowing possible).
+	 */
 	@Override
 	public float getPowerFloat() {
 		return modulus().floatValue();
 	}
 
+	/**
+	 * Gets magnitude as a double (narrowing possible).
+	 */
 	@Override
 	public double getPowerDouble() {
 		return modulus().doubleValue();
 	}
 
+	/**
+	 * Gets magnitude as a BigDecimal.
+	 */
 	public BigDecimal getPower() {
 		return modulus();
 	}
 
+	/**
+	 * Gets phase as a float (narrowing possible).
+	 */
 	@Override
 	public float getPhaseFloat() {
 		return phase().floatValue();
 	}
 
+	/**
+	 * Gets phase as a double (narrowing possible).
+	 */
 	@Override
 	public double getPhaseDouble() {
 		return phase().doubleValue();
 	}
 
+	/**
+	 * Gets phase as a BigDecimal.
+	 */
 	public BigDecimal getPhase() {
 		return phase();
 	}
+
+	/**
+	 * Fills self with the representation of pi for the given type.
+	 */
+	public void PI() {
+		setReal(PI);
+		setImag(BigDecimal.ZERO);
+	}
+
+	/**
+	 * Fills self with the representation of e for the given type.
+	 */
+	public void E() {
+		setReal(E);
+		setImag(BigDecimal.ZERO);
+	}
+
+// TODO - implement these. Can pull code out of OPS since methods already exist.
+// There is also a ComplexMath class on the floating-types branch of Imglib that
+// shows how to do these.
+//
+//	/**
+//	 * Fills self with result of raising e to the power of the passed as an input.
+//	 */
+//	public void exp(BigComplex input) {
+//		throw new IllegalArgumentException("TODO");
+//	}
+//
+//	/**
+//	 * Fills self with result of taking the sqrt of the passed in input.
+//	 */
+//	public void sqrt(BigComplex input) {
+//		throw new IllegalArgumentException("TODO");
+//	}
+//
+//	/**
+//	 * Fills self with result of taking the log of the passed in input.
+//	 */
+//	public void log(BigComplex input) {
+//		throw new IllegalArgumentException("TODO");
+//	}
+//
+//	/**
+//	 * Fills self with result of raising the passed in input to the given power.
+//	 */
+//	public void pow(BigComplex input, BigComplex power) {
+//		throw new IllegalArgumentException("TODO");
+//	}
+//
+//	/**
+//	 * Fills self with result of taking the log (of provided base) of the passed
+//	 * in input.
+//	 */
+//	public void logBase(BigComplex input, BigComplex base) {
+//		throw new IllegalArgumentException("TODO");
+//	}
+//
+//	/**
+//	 * Fills self with result of taking the sin of the passed in input.
+//	 */
+//	public void sin(BigComplex input) {
+//		throw new IllegalArgumentException("TODO");
+//	}
+//
+//	/**
+//	 * Fills self with result of taking the cos of the passed in input.
+//	 */
+//	public void cos(BigComplex input) {
+//		throw new IllegalArgumentException("TODO");
+//	}
+//
+//	/**
+//	 * Fills self with result of taking the tan of the passed in input.
+//	 */
+//	public void tan(BigComplex input) {
+//		throw new IllegalArgumentException("TODO");
+//	}
+//
+//	/**
+//	 * Fills self with result of taking the asin of the passed in input.
+//	 */
+//	public void asin(BigComplex input) {
+//		throw new IllegalArgumentException("TODO");
+//	}
+//
+//	/**
+//	 * Fills self with result of taking the acos of the passed in input.
+//	 */
+//	public void acos(BigComplex input) {
+//		throw new IllegalArgumentException("TODO");
+//	}
+//
+//	/**
+//	 * Fills self with result of taking the atan of the passed in input.
+//	 */
+//	public void atan(BigComplex input) {
+//		throw new IllegalArgumentException("TODO");
+//	}
+//
+//	/**
+//	 * Fills self with result of taking the sinh of the passed in input.
+//	 */
+//	public void sinh(BigComplex input) {
+//		throw new IllegalArgumentException("TODO");
+//	}
+//
+//	/**
+//	 * Fills self with result of taking the cosh of the passed in input.
+//	 */
+//	public void cosh(BigComplex input) {
+//		throw new IllegalArgumentException("TODO");
+//	}
+//
+//	/**
+//	 * Fills self with result of taking the tanh of the passed in input.
+//	 */
+//	public void tanh(BigComplex input) {
+//		throw new IllegalArgumentException("TODO");
+//	}
+//
+//	/**
+//	 * Fills self with result of taking the asinh of the passed in input.
+//	 */
+//	public void asinh(BigComplex input) {
+//		throw new IllegalArgumentException("TODO");
+//	}
+//
+//	/**
+//	 * Fills self with result of taking the acosh of the passed in input.
+//	 */
+//	public void acosh(BigComplex input) {
+//		throw new IllegalArgumentException("TODO");
+//	}
+//
+//	/**
+//	 * Fills self with result of taking the atanh of the passed in input.
+//	 */
+//	public void atanh(BigComplex input) {
+//		throw new IllegalArgumentException("TODO");
+//	}
 
 	// -- helpers --
 
