@@ -161,11 +161,11 @@ public final class DefaultUIService extends AbstractService implements
 	@Override
 	public void addUI(final String name, final UserInterface ui) {
 		// add to UI list
-		uiList.add(ui);
+		uiList().add(ui);
 
 		// add to UI map
-		uiMap.put(ui.getClass().getName(), ui);
-		if (name != null && !name.isEmpty()) uiMap.put(name, ui);
+		uiMap().put(ui.getClass().getName(), ui);
+		if (name != null && !name.isEmpty()) uiMap().put(name, ui);
 	}
 
 	@Override
@@ -179,7 +179,7 @@ public final class DefaultUIService extends AbstractService implements
 
 	@Override
 	public void showUI(final String name) {
-		final UserInterface ui = uiMap.get(name);
+		final UserInterface ui = uiMap().get(name);
 		if (ui == null) {
 			throw new IllegalArgumentException("No such user interface: " + name);
 		}
@@ -203,7 +203,7 @@ public final class DefaultUIService extends AbstractService implements
 
 	@Override
 	public boolean isVisible(final String name) {
-		final UserInterface ui = uiMap.get(name);
+		final UserInterface ui = uiMap().get(name);
 		if (ui == null) {
 			throw new IllegalArgumentException("No such user interface: " + name);
 		}
@@ -212,7 +212,9 @@ public final class DefaultUIService extends AbstractService implements
 
 	@Override
 	public UserInterface getDefaultUI() {
-		return defaultUI;
+		if (defaultUI != null) return defaultUI;
+		if (uiList().isEmpty()) return null;
+		return uiList().get(0);
 	}
 
 	@Override
@@ -227,18 +229,18 @@ public final class DefaultUIService extends AbstractService implements
 
 	@Override
 	public UserInterface getUI(final String name) {
-		return uiMap.get(name);
+		return uiMap().get(name);
 	}
 
 	@Override
 	public List<UserInterface> getAvailableUIs() {
-		return Collections.unmodifiableList(uiList);
+		return Collections.unmodifiableList(uiList());
 	}
 
 	@Override
 	public List<UserInterface> getVisibleUIs() {
 		final ArrayList<UserInterface> uis = new ArrayList<UserInterface>();
-		for (final UserInterface ui : uiList) {
+		for (final UserInterface ui : uiList()) {
 			if (ui.isVisible()) uis.add(ui);
 		}
 		return uis;
@@ -269,12 +271,12 @@ public final class DefaultUIService extends AbstractService implements
 
 	@Override
 	public void addDisplayViewer(final DisplayViewer<?> viewer) {
-		displayViewers.add(viewer);
+		displayViewers().add(viewer);
 	}
 
 	@Override
 	public DisplayViewer<?> getDisplayViewer(final Display<?> display) {
-		for (final DisplayViewer<?> displayViewer : displayViewers) {
+		for (final DisplayViewer<?> displayViewer : displayViewers()) {
 			if (displayViewer.getDisplay() == display) return displayViewer;
 		}
 		log.warn("No viewer found for display: '" + display.getName() + "'");
@@ -348,17 +350,6 @@ public final class DefaultUIService extends AbstractService implements
 		return statusService.getStatusMessage(ImageJApp.NAME, statusEvent);
 	}
 
-	// -- Service methods --
-
-	@Override
-	public void initialize() {
-		displayViewers = new ArrayList<DisplayViewer<?>>();
-		uiList = new ArrayList<UserInterface>();
-		uiMap = new HashMap<String, UserInterface>();
-
-		discoverUIs();
-	}
-
 	// -- Disposable methods --
 
 	@Override
@@ -366,7 +357,7 @@ public final class DefaultUIService extends AbstractService implements
 		// dispose active display viewers
 		// NB - copy list to avoid ConcurrentModificationExceptions
 		List<DisplayViewer<?>> viewers = new ArrayList<DisplayViewer<?>>();
-		viewers.addAll(displayViewers);
+		viewers.addAll(displayViewers());
 		for (final DisplayViewer<?> viewer : viewers) {
 			viewer.dispose();
 		}
@@ -403,7 +394,7 @@ public final class DefaultUIService extends AbstractService implements
 		final DisplayViewer<?> displayViewer = getDisplayViewer(display);
 		if (displayViewer != null) {
 			displayViewer.onDisplayDeletedEvent(e);
-			displayViewers.remove(displayViewer);
+			displayViewers().remove(displayViewer);
 		}
 	}
 
@@ -455,8 +446,27 @@ public final class DefaultUIService extends AbstractService implements
 
 	// -- Helper methods --
 
+	private List<DisplayViewer<?>> displayViewers() {
+		if (displayViewers == null) discoverUIs();
+		return displayViewers;
+	}
+
+	private List<UserInterface> uiList() {
+		if (uiList == null) discoverUIs();
+		return uiList;
+	}
+
+	private Map<String, UserInterface> uiMap() {
+		if (uiMap == null) discoverUIs();
+		return uiMap;
+	}
+
 	/** Discovers available user interfaces. */
 	private void discoverUIs() {
+		displayViewers = new ArrayList<DisplayViewer<?>>();
+		uiList = new ArrayList<UserInterface>();
+		uiMap = new HashMap<String, UserInterface>();
+
 		final List<PluginInfo<UserInterface>> infos =
 			pluginService.getPluginsOfType(UserInterface.class);
 		for (final PluginInfo<UserInterface> info : infos) {
@@ -474,10 +484,6 @@ public final class DefaultUIService extends AbstractService implements
 		if (ui != null) {
 			// set the default UI to the one provided by the system property
 			setDefaultUI(ui);
-		}
-		else if (uiList.size() > 0) {
-			// set the default UI to the one with the highest priority
-			setDefaultUI(uiList.get(0));
 		}
 	}
 
