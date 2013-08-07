@@ -55,9 +55,11 @@ public class DebugPostprocessor extends AbstractPostprocessorPlugin {
 	@Parameter(required = false)
 	private LogService log;
 
+	// -- ModuleProcessor methods --
+
 	@Override
 	public void process(final Module module) {
-		if (log == null) return;
+		if (log == null || !log.isDebug()) return;
 
 		// dump input values to log
 		log.debug("INPUTS:");

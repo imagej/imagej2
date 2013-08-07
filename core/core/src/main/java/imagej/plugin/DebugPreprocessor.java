@@ -57,7 +57,7 @@ public class DebugPreprocessor extends AbstractPreprocessorPlugin {
 
 	@Override
 	public void process(final Module module) {
-		if (log == null) return;
+		if (log == null || !log.isDebug()) return;
 
 		log.debug("Executing module: " + module.getDelegateObject());
 	}
