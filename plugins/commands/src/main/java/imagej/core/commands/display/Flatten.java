@@ -56,38 +56,37 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Overlay"),
+		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Overlay"),
 	@Menu(label = "Flatten", weight = 4) })
 public class Flatten extends ContextCommand {
 
 	// -- Parameters --
-	
-	@Parameter(required=true)
+
+	@Parameter
 	private UIService uiService;
 
-	@Parameter(required=true)
+	@Parameter
 	private ImageDisplay display;
-	
-	@Parameter(type=ItemIO.OUTPUT)
+
+	@Parameter(type = ItemIO.OUTPUT)
 	private Dataset dataset;
 
 	// -- accessors --
-	
-	public void setDisplay(ImageDisplay disp) {
+
+	public void setDisplay(final ImageDisplay disp) {
 		display = disp;
 	}
 
 	public ImageDisplay getDisplay() {
 		return display;
 	}
-	
+
 	public Dataset getOutput() {
 		return dataset;
 	}
-	
+
 	// -- run() method --
-	
+
 	@Override
 	public void run() {
 		final ImageDisplayViewer viewer =
