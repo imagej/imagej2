@@ -45,6 +45,7 @@ import java.util.List;
 import org.scijava.AbstractContextual;
 import org.scijava.Context;
 import org.scijava.ItemVisibility;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.thread.ThreadService;
 import org.scijava.util.ClassUtils;
@@ -64,6 +65,9 @@ public class WidgetModel extends AbstractContextual {
 
 	@Parameter
 	private ThreadService threadService;
+
+	@Parameter(required = false)
+	private LogService log;
 
 	private boolean initialized;
 
@@ -164,8 +168,7 @@ public class WidgetModel extends AbstractContextual {
 			item.callback(module);
 		}
 		catch (final MethodCallException exc) {
-			// CTR FIXME: Get a context somehow.
-			// log.error(exc);
+			if (log != null) log.error(exc);
 		}
 	}
 
