@@ -39,12 +39,10 @@ import imagej.Cancelable;
 import imagej.module.DefaultMutableModule;
 
 import java.lang.reflect.Field;
-import java.util.List;
 
 import org.scijava.Context;
 import org.scijava.Contextual;
-import org.scijava.event.EventSubscriber;
-import org.scijava.event.EventUtils;
+import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
 import org.scijava.util.ClassUtils;
 
@@ -123,7 +121,8 @@ public abstract class DynamicCommand extends DefaultMutableModule implements
 
 		// NB: Subscribe to all events handled by this object.
 		// This greatly simplifies event handling for subclasses.
-		EventUtils.subscribe(context, this);
+		final EventService eventService = context.getService(EventService.class);
+		if (eventService != null) eventService.subscribe(this);
 	}
 
 	// -- Cancelable methods --
