@@ -51,7 +51,8 @@ import org.scijava.AbstractContextual;
 import org.scijava.plugin.Parameter;
 
 /**
- * TODO
+ * A figure view that links an ImageJ {@link OverlayView} to a JHotDraw
+ * {@link Figure}.
  * 
  * @author Curtis Rueden
  * @author Lee Kamentsky
