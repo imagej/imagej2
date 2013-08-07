@@ -50,7 +50,6 @@ import org.scijava.event.EventService;
 import org.scijava.plugin.PTService;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
-import org.scijava.service.Service;
 
 /**
  * Interface for service that keeps track of available commands.
@@ -111,14 +110,6 @@ public interface CommandService extends PTService<Command> {
 	 * </p>
 	 */
 	List<CommandInfo> getCommandsOfClass(String className);
-
-	/**
-	 * Populates any {@link Service} parameters for the given command instance,
-	 * using services from this one's application context.
-	 * 
-	 * @return The {@link CommandInfo} associated with the given command.
-	 */
-	<C extends Command> CommandInfo populateServices(final C command);
 
 	/**
 	 * Executes the first command of the given class name.

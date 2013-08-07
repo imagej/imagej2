@@ -36,10 +36,8 @@
 package imagej.command;
 
 import imagej.Cancelable;
-import imagej.plugin.ServicePreprocessor;
 
 import org.scijava.AbstractContextual;
-import org.scijava.Context;
 
 /**
  * A command that knows its context. Its service parameters are automatically
@@ -58,7 +56,7 @@ import org.scijava.Context;
  * <p>
  * Note that {@code FindEdges} also has two other inputs, an
  * {@code ImageDisplayService} and an {@code OverlayService}, which get
- * automatically populated by the {@link ServicePreprocessor}.
+ * automatically populated when the application context is injected.
  * </p>
  * <p>
  * Here is the same command execution via direct Java calls:
@@ -91,16 +89,6 @@ public abstract class ContextCommand extends AbstractContextual implements
 
 	/** Reason for cancelation, or null if not canceled. */
 	private String cancelReason;
-
-	// -- Contextual methods --
-
-	@Override
-	public void setContext(final Context context) {
-		super.setContext(context);
-
-		// populate service parameters
-		CommandUtils.populateServices(context, this);
-	}
 
 	// -- Cancelable methods --
 
