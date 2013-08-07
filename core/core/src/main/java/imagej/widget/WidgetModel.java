@@ -42,7 +42,10 @@ import imagej.module.ModuleItem;
 import java.util.Arrays;
 import java.util.List;
 
+import org.scijava.AbstractContextual;
+import org.scijava.Context;
 import org.scijava.ItemVisibility;
+import org.scijava.plugin.Parameter;
 import org.scijava.thread.ThreadService;
 import org.scijava.util.ClassUtils;
 import org.scijava.util.NumberUtils;
@@ -52,25 +55,26 @@ import org.scijava.util.NumberUtils;
  * 
  * @author Curtis Rueden
  */
-public class WidgetModel {
+public class WidgetModel extends AbstractContextual {
 
 	private final InputPanel<?, ?> inputPanel;
 	private final Module module;
 	private final ModuleItem<?> item;
 	private final List<?> objectPool;
-	private final ThreadService threadService;
+
+	@Parameter
+	private ThreadService threadService;
 
 	private boolean initialized;
 
-	public WidgetModel(final InputPanel<?, ?> inputPanel, final Module module,
-		final ModuleItem<?> item, final List<?> objectPool,
-		final ThreadService threadService)
+	public WidgetModel(final Context context, final InputPanel<?, ?> inputPanel,
+		final Module module, final ModuleItem<?> item, final List<?> objectPool)
 	{
+		setContext(context);
 		this.inputPanel = inputPanel;
 		this.module = module;
 		this.item = item;
 		this.objectPool = objectPool;
-		this.threadService = threadService;
 	}
 
 	/** Gets the input panel intended to house the widget. */

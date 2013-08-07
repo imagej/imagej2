@@ -69,13 +69,16 @@ public abstract class InteractiveCommand extends DynamicCommand implements
 {
 
 	@Parameter
-	protected DisplayService displayService;
+	private DisplayService displayService;
 
 	@Parameter
-	protected EventService eventService;
+	private EventService eventService;
 
 	@Parameter
-	protected LogService log;
+	private ThreadService threadService;
+
+	@Parameter
+	private LogService log;
 
 	/** List of names of inputs to keep in sync when the active display changes. */
 	private final String[] listenerNames;
@@ -139,6 +142,10 @@ public abstract class InteractiveCommand extends DynamicCommand implements
 		}
 	}
 
+	protected LogService log() {
+		return log;
+	}
+
 	// -- Event handlers --
 
 	@EventHandler
@@ -150,7 +157,7 @@ public abstract class InteractiveCommand extends DynamicCommand implements
 		// reporting
 		// status) which would require the EDT - thus updateInput() can not
 		// be launched from the EDT.
-		getContext().getService(ThreadService.class).run(new Runnable() {
+		threadService.run(new Runnable() {
 
 			@Override
 			public void run() {

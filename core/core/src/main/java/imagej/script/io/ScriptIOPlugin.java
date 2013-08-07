@@ -41,6 +41,7 @@ import imagej.script.ScriptService;
 
 import java.io.IOException;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -52,6 +53,9 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = IOPlugin.class)
 public class ScriptIOPlugin extends AbstractIOPlugin<String> {
 
+	@Parameter(required = false)
+	private ScriptService scriptService;
+
 	// -- IOPlugin methods --
 
 	@Override
@@ -61,15 +65,13 @@ public class ScriptIOPlugin extends AbstractIOPlugin<String> {
 
 	@Override
 	public boolean supportsOpen(final String source) {
-		final ScriptService scriptService =
-			getContext().getService(ScriptService.class);
+		if (scriptService == null) return false; // no service for opening scripts
 		return scriptService.canHandleFile(source);
 	}
 
 	@Override
 	public String open(final String source) throws IOException {
-		final ScriptService scriptService =
-			getContext().getService(ScriptService.class);
+		if (scriptService == null) return null; // no service for opening scripts
 		// TODO: Use the script service to open the file in the script editor.
 		return null;
 	}

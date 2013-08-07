@@ -41,6 +41,7 @@ import java.util.Map;
 
 import org.scijava.Priority;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -51,9 +52,11 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = PostprocessorPlugin.class, priority = Priority.FIRST_PRIORITY)
 public class DebugPostprocessor extends AbstractPostprocessorPlugin {
 
+	@Parameter(required = false)
+	private LogService log;
+
 	@Override
 	public void process(final Module module) {
-		final LogService log = getContext().getService(LogService.class);
 		if (log == null) return;
 
 		// dump input values to log

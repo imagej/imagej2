@@ -275,7 +275,7 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 			return;
 		}
 		else if (method.getMessage() != null) {
-			log.warn(method.getMessage());
+			log().warn(method.getMessage());
 		}
 		double maxRange = hist.max();
 		// TODO : what is best increment? To avoid roundoff errs use a teeny inc

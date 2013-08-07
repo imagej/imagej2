@@ -42,6 +42,7 @@ import imagej.text.TextService;
 import java.io.File;
 import java.io.IOException;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -53,6 +54,9 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = IOPlugin.class)
 public class TextIOPlugin extends AbstractIOPlugin<String> {
 
+	@Parameter(required = false)
+	private TextService textService;
+
 	// -- IOPlugin methods --
 
 	@Override
@@ -62,22 +66,14 @@ public class TextIOPlugin extends AbstractIOPlugin<String> {
 
 	@Override
 	public boolean supportsOpen(final String source) {
-		final TextService textService = textService();
 		if (textService == null) return false; // no service for opening text files
 		return textService.supports(new File(source));
 	}
 
 	@Override
 	public String open(final String source) throws IOException {
-		final TextService textService = textService();
 		if (textService == null) return null; // no service for opening text files
 		return textService.asHTML(new File(source));
-	}
-
-	// -- Helper methods --
-
-	private TextService textService() {
-		return getContext().getService(TextService.class);
 	}
 
 }
