@@ -80,6 +80,12 @@ public class BigComplexTest {
 		a.mul(b);
 		assertEquals(-15, a.getRealDouble(), 0);
 		assertEquals(0, a.getImaginaryDouble(), 0);
+		
+		a.setComplexNumber(4, 3);
+		b.setComplexNumber(9, 1);
+		a.mul(b);
+		assertEquals(33, a.getRealDouble(), 0);
+		assertEquals(31, a.getImaginaryDouble(), 0);
 	}
 
 	@Test
@@ -92,6 +98,12 @@ public class BigComplexTest {
 		a.div(b);
 		assertEquals(-2.5, a.getRealDouble(), 0);
 		assertEquals(0, a.getImaginaryDouble(), 0);
+
+		a.setComplexNumber(4, 3);
+		b.setComplexNumber(9, 1);
+		a.div(b);
+		assertEquals(39 / 82.0, a.getRealDouble(), 0);
+		assertEquals(23 / 82.0, a.getImaginaryDouble(), 0);
 	}
 
 	@Test
@@ -142,6 +154,10 @@ public class BigComplexTest {
 		assertEquals(11 * Math.PI / 6, val.getPhaseDouble(), PRECISION);
 		val = new BigComplex(-root3over2, -half);
 		assertEquals(7 * Math.PI / 6, val.getPhaseDouble(), PRECISION);
+
+		val = new BigComplex(7, -3);
+		assertEquals(2 * Math.PI - Math.atan(3.0 / 7), val.getPhaseDouble(),
+			PRECISION);
 	}
 
 	@Test
@@ -183,5 +199,8 @@ public class BigComplexTest {
 
 		val = new BigComplex(4, 4);
 		assertEquals(4 * Math.sqrt(2), val.getPowerDouble(), PRECISION);
+
+		val = new BigComplex(7, -3);
+		assertEquals(Math.sqrt(58), val.getPowerDouble(), PRECISION);
 	}
 }
