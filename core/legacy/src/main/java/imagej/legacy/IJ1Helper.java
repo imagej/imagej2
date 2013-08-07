@@ -72,14 +72,16 @@ import org.scijava.plugin.Parameter;
 
 /**
  * A helper class to interact with ImageJ 1.x.
- * 
- * The DefaultLegacyService needs to patch ImageJ 1.x' classes before they
- * are loaded. Unfortunately, this is tricky: if the DefaultLegacyService
- * already uses those classes, it is a matter of luck whether we can get
- * the patches in before those classes are loaded.
- * 
- * Therefore, we put as much interaction with ImageJ 1.x as possible into
- * this class and keep a reference to it in the DefaultLegacyService.
+ * <p>
+ * The DefaultLegacyService needs to patch ImageJ 1.x's classes before they are
+ * loaded. Unfortunately, this is tricky: if the DefaultLegacyService already
+ * uses those classes, it is a matter of luck whether we can get the patches in
+ * before those classes are loaded.
+ * </p>
+ * <p>
+ * Therefore, we put as much interaction with ImageJ 1.x as possible into this
+ * class and keep a reference to it in the DefaultLegacyService.
+ * </p>
  * 
  * @author Johannes Schindelin
  */

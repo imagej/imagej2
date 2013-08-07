@@ -379,14 +379,15 @@ public final class DefaultLegacyService extends AbstractService implements
 
 	/**
 	 * Makes sure that the ImageJ 1.x classes are patched.
-	 * 
-	 * We absolutely require that the LegacyInjector did its job before we use
-	 * the ImageJ 1.x classes.
-	 * 
-	 * Just loading the {@link DefaultLegacyService} class is not enough; it
-	 * will not necessarily get initialized. So we provide this method just to
-	 * force class initialization (and thereby the LegacyInjector to patch
-	 * ImageJ 1.x).
+	 * <p>
+	 * We absolutely require that the LegacyInjector did its job before we use the
+	 * ImageJ 1.x classes.
+	 * </p>
+	 * <p>
+	 * Just loading the {@link DefaultLegacyService} class is not enough; it will
+	 * not necessarily get initialized. So we provide this method just to force
+	 * class initialization (and thereby the LegacyInjector to patch ImageJ 1.x).
+	 * </p>
 	 */
 	public static void preinit() {
 		if (legacyInjector == null) {
