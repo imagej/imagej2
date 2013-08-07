@@ -55,6 +55,11 @@ public class BigComplex implements ComplexType<BigComplex> {
 	// Imglib. Once merged then implement the exponential and trig methods to a
 	// fixed number of decimal places.
 
+	// TODO - make decimal place accuracy a setting. This is easily possible. It
+	// can have an upper limit determined by the number of leading zeroes present
+	// in the last entry of the ANGLES table. Also limit cannot exceed our
+	// representation of E and PI. The lower limit can be 1.
+
 	// -- constants --
 
 	private static final int DIGITS = 50;
@@ -695,6 +700,10 @@ public class BigComplex implements ComplexType<BigComplex> {
 		BigDecimal sum = a.add(b);
 		return bigSqrt(sum);
 	}
+
+	// TODO - although javadoc specifies 50 decimal places of accuracy this calc
+	// is limited by the accuracy of the numbers in the ANGLES table. As of 8-7-13
+	// that is 17 decimal places.
 
 	private BigDecimal phase() {
 		return atan2(i, r);
