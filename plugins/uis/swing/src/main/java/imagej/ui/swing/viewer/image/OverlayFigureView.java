@@ -78,28 +78,28 @@ public class OverlayFigureView extends AbstractContextual implements FigureView
 	/**
 	 * Constructor to use to discover the figure to use for an overlay
 	 * 
-	 * @param display - hook to this display
+	 * @param displayViewer - hook to this display viewer
 	 * @param overlayView - represent this overlay
 	 */
-	public OverlayFigureView(final SwingImageDisplayViewer display,
+	public OverlayFigureView(final SwingImageDisplayViewer displayViewer,
 		final OverlayView overlayView)
 	{
-		this(display, overlayView, null);
+		this(displayViewer, overlayView, null);
 	}
 
 	/**
 	 * Constructor to use if the figure already exists, for instance if it was
 	 * created using the CreationTool
 	 * 
-	 * @param display - hook to this display
+	 * @param displayViewer - hook to this display viewer
 	 * @param overlayView - represent this overlay
 	 * @param figure - draw using this figure
 	 */
-	public OverlayFigureView(final SwingImageDisplayViewer display,
+	public OverlayFigureView(final SwingImageDisplayViewer displayViewer,
 		final OverlayView overlayView, final Figure figure)
 	{
-		setContext(display.getDisplay().getContext());
-		this.displayViewer = display;
+		setContext(displayViewer.getDisplay().getContext());
+		this.displayViewer = displayViewer;
 		this.overlayView = overlayView;
 
 		adapter = jHotDrawService.getAdapter(overlayView.getData(), figure);
@@ -107,7 +107,7 @@ public class OverlayFigureView extends AbstractContextual implements FigureView
 			this.figure = adapter.createDefaultFigure();
 			adapter.updateFigure(overlayView, this.figure);
 
-			final JHotDrawImageCanvas canvas = display.getCanvas();
+			final JHotDrawImageCanvas canvas = displayViewer.getCanvas();
 			final Drawing drawing = canvas.getDrawing();
 			drawing.add(this.figure);
 		}
