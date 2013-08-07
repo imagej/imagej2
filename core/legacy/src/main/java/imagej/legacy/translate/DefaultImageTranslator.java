@@ -42,6 +42,9 @@ import imagej.data.display.ImageDisplayService;
 import imagej.legacy.LegacyService;
 import net.imglib2.meta.AxisType;
 
+import org.scijava.AbstractContextual;
+import org.scijava.plugin.Parameter;
+
 /**
  * The default {@link ImageTranslator} between legacy and modern ImageJ image
  * structures. It delegates to the appropriate more specific translators based
@@ -50,22 +53,24 @@ import net.imglib2.meta.AxisType;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public class DefaultImageTranslator implements ImageTranslator {
-
-	private final LegacyService legSrv;
+public class DefaultImageTranslator extends AbstractContextual implements
+	ImageTranslator
+{
 
 	private final DisplayCreator colorDisplayCreator;
 	private final DisplayCreator grayDisplayCreator;
 	private final ImagePlusCreator colorImagePlusCreator;
 	private final ImagePlusCreator grayImagePlusCreator;
 
-	public DefaultImageTranslator(LegacyService legSrv) {
-		this.legSrv = legSrv;
-		colorDisplayCreator = new ColorDisplayCreator(legSrv);
-		grayDisplayCreator = new GrayDisplayCreator(legSrv);
-		colorImagePlusCreator =
-			new ColorImagePlusCreator(legSrv.getImageDisplayService());
-		grayImagePlusCreator = new GrayImagePlusCreator(legSrv);
+	@Parameter
+	private ImageDisplayService imageDisplayService;
+
+	public DefaultImageTranslator(final LegacyService legacyService) {
+		setContext(legacyService.getContext());
+		colorDisplayCreator = new ColorDisplayCreator(legacyService);
+		grayDisplayCreator = new GrayDisplayCreator(legacyService);
+		colorImagePlusCreator = new ColorImagePlusCreator(imageDisplayService);
+		grayImagePlusCreator = new GrayImagePlusCreator(legacyService);
 	}
 
 	/**
@@ -100,10 +105,6 @@ public class DefaultImageTranslator implements ImageTranslator {
 	 */
 	@Override
 	public ImagePlus createLegacyImage(final ImageDisplay display) {
-
-		final ImageDisplayService imageDisplayService =
-			legSrv.getImageDisplayService();
-
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
 
 		if (ds.isRGBMerged()) {

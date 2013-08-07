@@ -52,7 +52,7 @@ public class ImageJMethods {
 		final LegacyService legacyService,
 		@SuppressWarnings("unused") final ImageJ obj)
 	{
-		legacyService.getLogService().debug("getLocationOnScreen");
+		legacyService.log().debug("getLocationOnScreen");
 		// TODO: Return coordinates of modern ImageJ window.
 		return new Point(0, 0);
 	}

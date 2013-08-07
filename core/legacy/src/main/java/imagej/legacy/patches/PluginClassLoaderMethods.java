@@ -63,7 +63,7 @@ public final class PluginClassLoaderMethods {
 	}
 
 	private static LogService getLogService(final LegacyService legacyService) {
-		return legacyService != null ? legacyService.getLogService() : new StderrLogService();
+		return legacyService != null ? legacyService.log() : new StderrLogService();
 	}
 
 	private static Method addURLMethod;
@@ -105,14 +105,14 @@ public final class PluginClassLoaderMethods {
 		try {
 			addURL(legacyService, obj, jar.toURI().toURL());
 		} catch (IllegalArgumentException e) {
-			legacyService.getLogService().error(e);
+			legacyService.log().error(e);
 		} catch (MalformedURLException e) {
-			legacyService.getLogService().error(e);
+			legacyService.log().error(e);
 		} catch (IllegalAccessException e) {
-			legacyService.getLogService().error(e);
+			legacyService.log().error(e);
 		} catch (InvocationTargetException e) {
-			legacyService.getLogService().error(e);
-			legacyService.getLogService().error(e.getCause());
+			legacyService.log().error(e);
+			legacyService.log().error(e.getCause());
 		}
 	}
 }

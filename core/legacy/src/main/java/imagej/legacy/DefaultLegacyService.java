@@ -146,6 +146,9 @@ public final class DefaultLegacyService extends AbstractService implements
 	@Parameter
 	private StatusService statusService;
 
+	@Parameter(required = false)
+	private UIService uiService;
+
 	private boolean lastDebugMode;
 	private static DefaultLegacyService instance;
 
@@ -156,11 +159,7 @@ public final class DefaultLegacyService extends AbstractService implements
 	private OptionsSynchronizer optionsSynchronizer;
 
 	/** Keep references to ImageJ 1.x separate */
-	private final IJ1Helper ij1Helper;
-
-	public DefaultLegacyService() {
-		ij1Helper = new IJ1Helper(this);
-	}
+	private IJ1Helper ij1Helper;
 
 	/** Legacy ImageJ 1.x mode: stop synchronizing */
 	private boolean legacyIJ1Mode;
@@ -168,28 +167,13 @@ public final class DefaultLegacyService extends AbstractService implements
 	// -- LegacyService methods --
 
 	@Override
-	public EventService getEventService() {
-		return eventService;
-	}
-
-	@Override
-	public PluginService getPluginService() {
-		return pluginService;
-	}
-
-	@Override
-	public OptionsService getOptionsService() {
-		return optionsService;
-	}
-
-	@Override
-	public ImageDisplayService getImageDisplayService() {
-		return imageDisplayService;
-	}
-
-	@Override
-	public LogService getLogService() {
+	public LogService log() {
 		return log;
+	}
+
+	@Override
+	public StatusService status() {
+		return statusService;
 	}
 
 	@Override
@@ -200,31 +184,6 @@ public final class DefaultLegacyService extends AbstractService implements
 	@Override
 	public OptionsSynchronizer getOptionsSynchronizer() {
 		return optionsSynchronizer;
-	}
-
-	@Override
-	public DisplayService getDisplayService() {
-		return displayService;
-	}
-
-	@Override
-	public DatasetService getDatasetService() {
-		return datasetService;
-	}
-
-	@Override
-	public OverlayService getOverlayService() {
-		return overlayService;
-	}
-
-	@Override
-	public ThresholdService getThresholdService() {
-		return thresholdService;
-	}
-
-	@Override
-	public StatusService getStatusService() {
-		return statusService;
 	}
 
 	@Override
@@ -291,7 +250,6 @@ public final class DefaultLegacyService extends AbstractService implements
 		// TODO: prevent IJ1 from quitting without IJ2 quitting, too
 
 		if (!initializing) {
-			final UIService uiService = getContext().getService(UIService.class);
 			if (uiService != null) {
 				// hide/show the IJ2 main window
 				final ApplicationFrame appFrame =
@@ -333,6 +291,7 @@ public final class DefaultLegacyService extends AbstractService implements
 	public void initialize() {
 		checkInstance();
 
+		ij1Helper = new IJ1Helper(this);
 		boolean hasIJ1Instance = ij1Helper.hasInstance();
 
 		// as long as we're starting up, we're in legacy mode

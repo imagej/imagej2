@@ -35,18 +35,11 @@
 
 package imagej.legacy;
 
-import imagej.data.DatasetService;
+import ij.ImagePlus;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayService;
-import imagej.data.threshold.ThresholdService;
-import imagej.display.DisplayService;
-import imagej.options.OptionsService;
 
 import org.scijava.app.StatusService;
-import org.scijava.event.EventService;
 import org.scijava.log.LogService;
-import org.scijava.plugin.PluginService;
 import org.scijava.service.Service;
 
 /**
@@ -54,39 +47,14 @@ import org.scijava.service.Service;
  * 
  * @author Barry DeZonia
  * @author Curtis Rueden
- *
  */
 public interface LegacyService extends Service {
 
-	/** Gets the EventService associated with this LegacyService. */
-	EventService getEventService();
-
-	/** Gets the PluginService associated with this LegacyService. */
-	PluginService getPluginService();
-
-	/** Gets the OptionsService associated with this LegacyService. */
-	OptionsService getOptionsService();
-
-	/** Gets the ImageDisplayService associated with this LegacyService. */
-	ImageDisplayService getImageDisplayService();
-
-	/** Gets the DisplayService associated with this LegacyService. */
-	DisplayService getDisplayService();
-
-	/** Gets the ImageDisplayService associated with this LegacyService. */
-	DatasetService getDatasetService();
-
-	/** Gets the OverlayService associated with this LegacyService. */
-	OverlayService getOverlayService();
-
-	/** Gets the ThresholdService associated with this LegacyService. */
-	ThresholdService getThresholdService();
-
 	/** Gets the LogService associated with this LegacyService. */
-	LogService getLogService();
+	LogService log();
 
 	/** Gets the StatusService associated with this LegacyService. */
-	StatusService getStatusService();
+	StatusService status();
 
 	/** Gets the LegacyImageMap associated with this LegacyService. */
 	LegacyImageMap getImageMap();

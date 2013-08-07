@@ -56,17 +56,21 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
 
+import org.scijava.AbstractContextual;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+
 /**
  * Creates {@link ImagePlus}es from {@link ImageDisplay}s containing gray data.
  * 
  * @author Barry DeZonia
  */
-public class GrayImagePlusCreator implements ImagePlusCreator {
+public class GrayImagePlusCreator extends AbstractContextual implements
+	ImagePlusCreator
+{
 
 	// -- instance variables --
 
-	private final LegacyService legSrv;
-	
 	private final GrayPixelHarmonizer pixelHarmonizer;
 	private final ColorTableHarmonizer colorTableHarmonizer;
 	private final MetadataHarmonizer metadataHarmonizer;
@@ -74,23 +78,26 @@ public class GrayImagePlusCreator implements ImagePlusCreator {
 	private final PositionHarmonizer positionHarmonizer;
 	private final NameHarmonizer nameHarmonizer;
 
+	@Parameter
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter
+	private LogService log;
+
 	// -- public interface --
 
-	public GrayImagePlusCreator(LegacyService legSrv) {
-		this.legSrv = legSrv;
+	public GrayImagePlusCreator(LegacyService legacyService) {
+		setContext(legacyService.getContext());
 		pixelHarmonizer = new GrayPixelHarmonizer();
-		colorTableHarmonizer =
-			new ColorTableHarmonizer(legSrv.getImageDisplayService());
+		colorTableHarmonizer = new ColorTableHarmonizer(imageDisplayService);
 		metadataHarmonizer = new MetadataHarmonizer();
-		planeHarmonizer = new PlaneHarmonizer(legSrv.getLogService());
+		planeHarmonizer = new PlaneHarmonizer(log);
 		positionHarmonizer = new PositionHarmonizer();
 		nameHarmonizer = new NameHarmonizer();
 	}
 	
 	@Override
 	public ImagePlus createLegacyImage(final ImageDisplay display) {
-		final ImageDisplayService imageDisplayService =
-			legSrv.getImageDisplayService();
 		final Dataset dataset = imageDisplayService.getActiveDataset(display);
 		Img<?> img = dataset.getImgPlus().getImg();
 		ImagePlus imp;

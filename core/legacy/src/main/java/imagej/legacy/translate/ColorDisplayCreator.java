@@ -39,20 +39,24 @@ import ij.ImagePlus;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.display.DisplayService;
 import imagej.legacy.LegacyService;
 import net.imglib2.meta.AxisType;
+
+import org.scijava.AbstractContextual;
+import org.scijava.plugin.Parameter;
 
 /**
  * Creates {@link ImageDisplay}s from {@link ImagePlus}es containing color data.
  * 
  * @author Barry DeZonia
  */
-public class ColorDisplayCreator implements DisplayCreator {
+public class ColorDisplayCreator extends AbstractContextual implements
+	DisplayCreator
+{
 
 	// -- instance variables --
-
-	private final LegacyService legSrv;
 
 	private final ColorPixelHarmonizer pixelHarmonizer;
 	private final ColorTableHarmonizer colorTableHarmonizer;
@@ -62,20 +66,28 @@ public class ColorDisplayCreator implements DisplayCreator {
 	private final PositionHarmonizer positionHarmonizer;
 	private final NameHarmonizer nameHarmonizer;
 	
+	@Parameter
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter
+	private DisplayService displayService;
+
+	@Parameter
+	private DatasetService datasetService;
+
 	// NB - OverlayHarmonizer required because IJ1 plugins can hatch displays
 	// while avoiding the Harmonizer. Not required in the Display->ImagePlus
 	// direction as Harmonizer always catches that case.
 
 	// -- constructor --
 
-	public ColorDisplayCreator(final LegacyService legSrv) {
-		this.legSrv = legSrv;
+	public ColorDisplayCreator(final LegacyService legacyService) {
+		setContext(legacyService.getContext());
 		pixelHarmonizer = new ColorPixelHarmonizer();
-		colorTableHarmonizer =
-			new ColorTableHarmonizer(legSrv.getImageDisplayService());
+		colorTableHarmonizer = new ColorTableHarmonizer(imageDisplayService);
 		metadataHarmonizer = new MetadataHarmonizer();
 		compositeHarmonizer = new CompositeHarmonizer();
-		overlayHarmonizer = new OverlayHarmonizer(legSrv);
+		overlayHarmonizer = new OverlayHarmonizer(legacyService);
 		positionHarmonizer = new PositionHarmonizer();
 		nameHarmonizer = new NameHarmonizer();
 	}
@@ -95,8 +107,6 @@ public class ColorDisplayCreator implements DisplayCreator {
 		pixelHarmonizer.updateDataset(ds, imp);
 		metadataHarmonizer.updateDataset(ds, imp);
 		compositeHarmonizer.updateDataset(ds, imp);
-
-		final DisplayService displayService = legSrv.getDisplayService();
 
 		// CTR FIXME - add imageDisplayService.createImageDisplay method?
 		// returns null if it cannot find an ImageDisplay-compatible display?
@@ -148,8 +158,6 @@ public class ColorDisplayCreator implements DisplayCreator {
 		final int bitsPerPixel = 8;
 		final boolean signed = false;
 		final boolean floating = false;
-
-		final DatasetService datasetService = legSrv.getDatasetService();
 
 		final Dataset ds =
 			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);

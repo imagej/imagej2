@@ -41,8 +41,6 @@ import imagej.legacy.LegacyService;
 import java.io.BufferedWriter;
 import java.util.Date;
 
-import org.scijava.app.StatusService;
-
 /**
  * Overrides {@link IJ} methods.
  * 
@@ -67,27 +65,21 @@ public class IJMethods {
 		showProgress(final LegacyService legacyService, final int currentIndex, final int finalIndex)
 	{
 		if (legacyService.isLegacyMode()) return;
-		legacyService.getLogService().debug("showProgress: " + currentIndex + "/" + finalIndex);
+		legacyService.log().debug("showProgress: " + currentIndex + "/" + finalIndex);
 		// report progress through global event mechanism
-		final StatusService statusService = legacyService.getStatusService();
-		// legacyService.getContext().getService(StatusService.class);
-		if (statusService == null) return;
-		statusService.showProgress(currentIndex, finalIndex);
+		legacyService.status().showProgress(currentIndex, finalIndex);
 	}
 
 	/** Appends {@link IJ#showStatus(String)}. */
 	public static void showStatus(final LegacyService legacyService, final String s) {
 		if (legacyService.isLegacyMode()) return;
-		legacyService.getLogService().debug("showStatus: " + s);
+		legacyService.log().debug("showStatus: " + s);
 		if (!legacyService.isInitialized()) {
 			// suppress ImageJ1 bootup messages
 			return;
 		}
 		// report status through global event mechanism
-		final StatusService statusService = legacyService.getStatusService();
-		// legacyService.getContext().getService(StatusService.class);
-		if (statusService == null) return;
-		statusService.showStatus(s);
+		legacyService.status().showStatus(s);
 	}
 
 	// if the ij.log.file property is set, log every message to the file pointed to

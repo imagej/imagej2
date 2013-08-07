@@ -43,6 +43,7 @@ import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.display.DisplayService;
 import imagej.legacy.LegacyImageMap;
 import imagej.legacy.LegacyOutputTracker;
 import imagej.legacy.LegacyService;
@@ -91,6 +92,9 @@ public class LegacyCommand implements Command {
 
 	@Parameter
 	private ImageDisplayService imageDisplayService;
+
+	@Parameter
+	private DisplayService displayService;
 
 	@Parameter
 	private LegacyService legacyService;
@@ -173,9 +177,9 @@ public class LegacyCommand implements Command {
 
 		@Override
 		public void run() {
-			
-			ResultsTableHarmonizer rtHarmonizer =
-				new ResultsTableHarmonizer(legacyService.getDisplayService());
+
+			final ResultsTableHarmonizer rtHarmonizer =
+				new ResultsTableHarmonizer(displayService);
 
 			rtHarmonizer.setLegacyImageJResultsTable();
 
