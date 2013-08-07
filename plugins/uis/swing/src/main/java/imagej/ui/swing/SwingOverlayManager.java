@@ -250,19 +250,6 @@ public class SwingOverlayManager
 		
 		eventService.subscribe(this);
 
-		/* NOTE BDZ removed 6-11-12. There should be a default menu bar attached
-		 * to this frame now.
-		 *
-		// FIXME - temp hack - made this class (which is not a display) make sure
-		// menu bar available when it is running. Ugly cast in place to create the
-		// menu bar. A better approach would be to make a new event tied to a menu
-		// bar listener of some sort. This code could emit that "need a menu bar"
-		// event here. Filing as ticket.
-		
-		final UIService uiService = context.getService(UIService.class);
-		((AbstractSwingUI)uiService.getUI()).createMenuBar(this, false);
-		*/
-		
 		populateOverlayList();
 	}
 
