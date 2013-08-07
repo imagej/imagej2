@@ -42,8 +42,6 @@ import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
 import imagej.display.Display;
-import imagej.tool.AbstractTool;
-import imagej.tool.ToolService;
 import imagej.util.ColorRGB;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
@@ -55,6 +53,8 @@ import java.awt.Shape;
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.decoration.ArrowTip;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.SortablePlugin;
 
 /**
  * An abstract class that gives default behavior for the {@link JHotDrawAdapter}
@@ -63,7 +63,7 @@ import org.jhotdraw.draw.decoration.ArrowTip;
  * @author Lee Kamentsky
  */
 public abstract class AbstractJHotDrawAdapter<O extends Overlay, F extends Figure>
-	extends AbstractTool implements JHotDrawAdapter<F>
+	extends SortablePlugin implements JHotDrawAdapter<F>
 {
 
 	// NB: The line styles here are taken from
@@ -75,6 +75,9 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay, F extends Figur
 	protected static final double[] DASH_LINE_STYLE = { 4, 4 };
 	protected static final double[] DOT_LINE_STYLE = { 1, 2 };
 	protected static final double[] DOT_DASH_LINE_STYLE = { 6, 2, 1, 2 };
+
+	@Parameter
+	private OverlayService overlayService;
 
 	/**
 	 * Mouse position in <em>data</em> coordinates of the last mouse press
@@ -181,8 +184,6 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay, F extends Figur
 	// -- Internal methods --
 
 	protected void initDefaultSettings(final F figure) {
-		final OverlayService overlayService =
-			getContext().getService(OverlayService.class);
 		final OverlaySettings settings = overlayService.getDefaultSettings();
 		figure.set(AttributeKeys.STROKE_WIDTH, getDefaultLineWidth(settings));
 		figure.set(AttributeKeys.FILL_COLOR, getDefaultFillColor(settings));
@@ -231,11 +232,5 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay, F extends Figur
 	 * Convert a figure into an AWT Shape.
 	 */
 	public abstract Shape toShape(final F figure);
-
-	// -- Internal methods --
-
-	protected ToolService getToolService() {
-		return getContext().getService(ToolService.class);
-	}
 
 }

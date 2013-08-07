@@ -97,12 +97,12 @@ import org.jhotdraw.draw.DrawingEditor;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.event.FigureSelectionEvent;
 import org.jhotdraw.draw.event.FigureSelectionListener;
-import org.scijava.Context;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.event.EventSubscriber;
 import org.scijava.input.MouseCursor;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.thread.ThreadService;
 
 /**
@@ -117,7 +117,6 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 {
 
 	private final SwingImageDisplayViewer displayViewer;
-	private final LogService log;
 
 	private final Drawing drawing;
 	private final DefaultDrawingView drawingView;
@@ -130,9 +129,30 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 
 	private final List<EventSubscriber<?>> subscribers;
 
+	@Parameter
+	private ToolService toolService;
+
+	@Parameter
+	private EventService eventService;
+
+	@Parameter
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter
+	private DatasetService datasetService;
+
+	@Parameter
+	private ThreadService threadService;
+
+	@Parameter
+	private JHotDrawService jHotDrawService;
+
+	@Parameter
+	private LogService log;
+
 	public JHotDrawImageCanvas(final SwingImageDisplayViewer displayViewer) {
+		displayViewer.getDisplay().getContext().inject(this);
 		this.displayViewer = displayViewer;
-		log = getDisplay().getContext().getService(LogService.class);
 
 		drawing = new DefaultDrawing(); // or QuadTreeDrawing?
 
@@ -171,11 +191,8 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 		scrollPane.getHorizontalScrollBar().addAdjustmentListener(this);
 		scrollPane.getVerticalScrollBar().addAdjustmentListener(this);
 
-		final Context context = getDisplay().getContext();
-		final ToolService toolService = context.getService(ToolService.class);
 		final Tool activeTool = toolService.getActiveTool();
 		activateTool(activeTool);
-		final EventService eventService = context.getService(EventService.class);
 		subscribers = eventService.subscribe(this);
 
 		drawingView.addFigureSelectionListener(this);
@@ -212,8 +229,6 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 	public Dataset capture() {
 		final ImageDisplay display = getDisplay();
 		if (display == null) return null;
-		final ImageDisplayService imageDisplayService =
-			display.getContext().getService(ImageDisplayService.class);
 		final DatasetView datasetView =
 			imageDisplayService.getActiveDatasetView(display);
 		if (datasetView == null) return null;
@@ -236,8 +251,6 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 		}
 
 		// create a dataset that has view data with overlay info on top
-		final DatasetService datasetService =
-			display.getContext().getService(DatasetService.class);
 		final Dataset dataset =
 			datasetService.create(new long[] { w, h, 3 }, "Captured view",
 				new AxisType[] { Axes.X, Axes.Y, Axes.CHANNEL }, 8, false, false);
@@ -354,8 +367,6 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 	protected void onEvent(final DisplayDeletedEvent event) {
 		if (event.getObject() != getDisplay()) return; // not this canvas's display
 
-		final EventService eventService =
-				event.getContext().getService(EventService.class);
 		eventService.unsubscribe(subscribers);
 	}
 
@@ -472,8 +483,6 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 		final ImageCanvas canvas = getDisplay().getCanvas();
 
 		// threading sanity check
-		final ThreadService threadService =
-			getDisplay().getContext().getService(ThreadService.class);
 		if (!threadService.isDispatchThread()) {
 			throw new IllegalStateException("Cannot sync viewport from thread: " +
 				Thread.currentThread().getName());
@@ -558,8 +567,6 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 	}
 
 	private void activateTool(final Tool tool) {
-		final JHotDrawService jHotDrawService =
-			getDisplay().getContext().getService(JHotDrawService.class);
 		final JHotDrawAdapter<?> adapter = jHotDrawService.getAdapter(tool);
 		if (adapter != null) {
 			final JHotDrawTool creationTool = adapter.getCreationTool(getDisplay());

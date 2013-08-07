@@ -50,6 +50,7 @@ import org.jhotdraw.draw.ImageFigure;
 import org.scijava.AbstractContextual;
 import org.scijava.event.EventHandler;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 
 /**
  * A figure view that links an ImageJ {@link DatasetView} to a JHotDraw
@@ -63,6 +64,9 @@ public class DatasetFigureView extends AbstractContextual implements FigureView
 
 	private final DatasetView datasetView;
 	private final ImageFigure figure;
+
+	@Parameter
+	private LogService log;
 
 	public DatasetFigureView(final SwingImageDisplayViewer displayViewer,
 		final DatasetView datasetView)
@@ -91,7 +95,6 @@ public class DatasetFigureView extends AbstractContextual implements FigureView
 
 	@Override
 	public void update() {
-		final LogService log = getContext().getService(LogService.class);
 		log.debug("Updating image figure: " + this);
 		final Image image = datasetView.getScreenImage().image();
 		final BufferedImage bufImage = AWTImageTools.makeBuffered(image);

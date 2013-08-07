@@ -57,7 +57,6 @@ import imagej.data.overlay.CompositeOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.options.OptionsService;
 import imagej.platform.PlatformService;
-import imagej.ui.UIService;
 import imagej.util.Prefs;
 
 import java.awt.BorderLayout;
@@ -101,6 +100,7 @@ import javax.swing.event.ListSelectionListener;
 import org.scijava.Context;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
 
 // TODO
 //
@@ -161,14 +161,32 @@ public class SwingOverlayManager
 	
 	private final Context context;
 	private final JList jlist;
-	private boolean selecting = false; // flag to prevent event feedback loops
-	private JPopupMenu popupMenu = null;
 	private final JCheckBox showAllCheckBox;
 	private final JCheckBox editModeCheckBox;
+
+	@Parameter
+	private OverlayService overlayService;
+
+	@Parameter
+	private EventService eventService;
+
+	@Parameter
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter
+	private CommandService commandService;
+
+	@Parameter
+	private PlatformService platformService;
+
+	@Parameter
+	private OptionsService optionsService;
+
+	private boolean selecting = false; // flag to prevent event feedback loops
+	private JPopupMenu popupMenu = null;
 	private boolean shiftDown = false;
 	private boolean altDown = false;
-	private final OverlayService ovrSrv;
-	
+
 	// -- constructor --
 	
 	/**
@@ -176,8 +194,9 @@ public class SwingOverlayManager
 	 */
 	public SwingOverlayManager(final Context context) {
 		this.context = context;
-		this.ovrSrv = context.getService(OverlayService.class);
-		jlist = new JList(new OverlayListModel(ovrSrv.getOverlayInfo()));
+		context.inject(this);
+
+		jlist = new JList(new OverlayListModel(overlayService.getOverlayInfo()));
 		//jlist.setCellRenderer(new OverlayRenderer());
 
 		final JScrollPane listScroller = new JScrollPane(jlist);
@@ -229,7 +248,6 @@ public class SwingOverlayManager
 		
 		pack();
 		
-		final EventService eventService = context.getService(EventService.class);
 		eventService.subscribe(this);
 
 		/* NOTE BDZ removed 6-11-12. There should be a default menu bar attached
@@ -339,11 +357,11 @@ public class SwingOverlayManager
 	*/
 	private void populateOverlayList() {
 		// Populate the list with all overlays
-		for (final Overlay overlay : ovrSrv.getOverlays()) {
+		for (final Overlay overlay : overlayService.getOverlays()) {
 			boolean found = false;
-			int totOverlays = ovrSrv.getOverlayInfo().getOverlayInfoCount();
+			int totOverlays = overlayService.getOverlayInfo().getOverlayInfoCount();
 			for (int i = 0; i < totOverlays; i++) {
-				OverlayInfo info = ovrSrv.getOverlayInfo().getOverlayInfo(i);
+				OverlayInfo info = overlayService.getOverlayInfo().getOverlayInfo(i);
 				if (overlay == info.getOverlay()) {
 					found = true;
 					break;
@@ -351,7 +369,7 @@ public class SwingOverlayManager
 			}
 			if (!found) {
 				OverlayInfo info = new OverlayInfo(overlay);
-				ovrSrv.getOverlayInfo().addOverlayInfo(info);
+				overlayService.getOverlayInfo().addOverlayInfo(info);
 			}
 		}
 		jlist.updateUI();
@@ -397,7 +415,7 @@ public class SwingOverlayManager
 	@EventHandler
 	protected void onEvent(final OverlayCreatedEvent event) {
 		//System.out.println("\tCREATED: " + event.toString());
-		ovrSrv.getOverlayInfo().addOverlay(event.getObject());
+		overlayService.getOverlayInfo().addOverlay(event.getObject());
 		jlist.updateUI();
 	}
 
@@ -405,8 +423,8 @@ public class SwingOverlayManager
 	protected void onEvent(final OverlayDeletedEvent event) {
 		//System.out.println("\tDELETED: " + event.toString());
 		Overlay overlay = event.getObject();
-		ovrSrv.getOverlayInfo().deleteOverlay(overlay);
-		int[] newSelectedIndices = ovrSrv.getOverlayInfo().selectedIndices();
+		overlayService.getOverlayInfo().deleteOverlay(overlay);
+		int[] newSelectedIndices = overlayService.getOverlayInfo().selectedIndices();
 		jlist.setSelectedIndices(newSelectedIndices);
 		jlist.updateUI();
 	}
@@ -427,8 +445,8 @@ public class SwingOverlayManager
 		selecting = true;
 		// Select or deselect the corresponding overlay in the list
 		final Overlay overlay = (Overlay) event.getView().getData();
-		final int overlayIndex = ovrSrv.getOverlayInfo().findIndex(overlay);
-		final OverlayInfo overlayInfo = ovrSrv.getOverlayInfo().getOverlayInfo(overlayIndex);
+		final int overlayIndex = overlayService.getOverlayInfo().findIndex(overlay);
+		final OverlayInfo overlayInfo = overlayService.getOverlayInfo().getOverlayInfo(overlayIndex);
 		overlayInfo.setSelected(event.isSelected());
 		/* old way
 		if (event.isSelected()) {
@@ -448,7 +466,7 @@ public class SwingOverlayManager
 			}
 		}
 		*/
-		int[] selections = ovrSrv.getOverlayInfo().selectedIndices();
+		int[] selections = overlayService.getOverlayInfo().selectedIndices();
 		jlist.setSelectedIndices(selections);
 		selecting = false;
 	}
@@ -487,8 +505,8 @@ public class SwingOverlayManager
 	
 	/* no longer supported
 	private void add() {
-		final ImageDisplayService ids = context.getService(ImageDisplayService.class);
-		final ImageDisplay activeDisplay = ids.getActiveImageDisplay();
+		final ImageDisplay activeDisplay =
+			imageDisplayService.getActiveImageDisplay();
 		if (activeDisplay == null) return;
 		final List<DataView> views = activeDisplay;
 		boolean additions = false;
@@ -510,34 +528,34 @@ public class SwingOverlayManager
 	}
 	
 	private void delete() {
-		if (ovrSrv.getOverlayInfo().getOverlayInfoCount() == 0) return;
+		if (overlayService.getOverlayInfo().getOverlayInfoCount() == 0) return;
 		List<Overlay> overlaysToDelete = new LinkedList<Overlay>();
-		final int[] selectedIndices = ovrSrv.getOverlayInfo().selectedIndices();
+		final int[] selectedIndices = overlayService.getOverlayInfo().selectedIndices();
 		if (selectedIndices.length == 0) {
 			final int result =
 				JOptionPane.showConfirmDialog(
 					this, "Delete all overlays?", "Delete All", JOptionPane.YES_NO_OPTION);
 			if (result != JOptionPane.YES_OPTION) return;
-			for (int i = 0; i < ovrSrv.getOverlayInfo().getOverlayInfoCount(); i++) {
-				overlaysToDelete.add(ovrSrv.getOverlayInfo().getOverlayInfo(i).getOverlay());
+			for (int i = 0; i < overlayService.getOverlayInfo().getOverlayInfoCount(); i++) {
+				overlaysToDelete.add(overlayService.getOverlayInfo().getOverlayInfo(i).getOverlay());
 			}
 		}
 		else {
 			for (int i = 0; i < selectedIndices.length; i++) {
 				int index = selectedIndices[i];
-				overlaysToDelete.add(ovrSrv.getOverlayInfo().getOverlayInfo(index).getOverlay());
+				overlaysToDelete.add(overlayService.getOverlayInfo().getOverlayInfo(index).getOverlay());
 			}
 		}
 		for (Overlay overlay : overlaysToDelete) {
 			// NB - removeOverlay() can indirectly change our infoList contents.
 			// Thus we first collect overlays from the infoList and then delete
 			// them all afterwards to avoid interactions.
-			ovrSrv.removeOverlay(overlay);
+			overlayService.removeOverlay(overlay);
 		}
 	}
 	
 	private void deselect() {
-		ovrSrv.getOverlayInfo().deselectAll();
+		overlayService.getOverlayInfo().deselectAll();
 		jlist.clearSelection();
 	}
 	
@@ -547,7 +565,7 @@ public class SwingOverlayManager
 	 * of division (it is not a deep division).
 	 */
 	private void divide() {
-		List<Overlay> overlays = ovrSrv.getOverlayInfo().selectedOverlays();
+		List<Overlay> overlays = overlayService.getOverlayInfo().selectedOverlays();
 		int i = 0;
 		while (i < overlays.size()) {
 			Overlay o = overlays.get(i);
@@ -562,43 +580,40 @@ public class SwingOverlayManager
 			return;
 		}
 		for (Overlay o : overlays) {
-			ovrSrv.divideCompositeOverlay((CompositeOverlay) o);
+			overlayService.divideCompositeOverlay((CompositeOverlay) o);
 		}
 	}
 	
 	private void draw() {
 		ChannelCollection channels = getChannels();
-		List<Overlay> selected = ovrSrv.getOverlayInfo().selectedOverlays();
+		List<Overlay> selected = overlayService.getOverlayInfo().selectedOverlays();
 		for (Overlay o : selected) {
-			ImageDisplay disp = ovrSrv.getFirstDisplay(o);
-			ovrSrv.drawOverlay(o, disp, channels);
+			ImageDisplay disp = overlayService.getFirstDisplay(o);
+			overlayService.drawOverlay(o, disp, channels);
 		}
 	}
 
 	private void fill() {
 		ChannelCollection channels = getChannels();
-		List<Overlay> selected = ovrSrv.getOverlayInfo().selectedOverlays();
+		List<Overlay> selected = overlayService.getOverlayInfo().selectedOverlays();
 		for (Overlay o : selected) {
-			ImageDisplay disp = ovrSrv.getFirstDisplay(o);
-			ovrSrv.fillOverlay(o, disp, channels);
+			ImageDisplay disp = overlayService.getFirstDisplay(o);
+			overlayService.fillOverlay(o, disp, channels);
 		}
 	}
 	
 	private void flatten() {
-		final ImageDisplayService ids = context.getService(ImageDisplayService.class);
-		final ImageDisplay imageDisplay = ids.getActiveImageDisplay();
+		final ImageDisplay imageDisplay =
+			imageDisplayService.getActiveImageDisplay();
 		if (imageDisplay == null) return;
-		final UIService uiService = context.getService(UIService.class);
-		final CommandService cs = context.getService(CommandService.class);
-		cs.run(Flatten.class, "uiService", uiService, "display", imageDisplay);
+		commandService.run(Flatten.class, "display", imageDisplay);
 	}
 	
 	private void help() {
-		final PlatformService ps = context.getService(PlatformService.class);
 		try {
 			final URL url =
 					new URL("http://wiki.imagej.net/ImageJ2/Documentation/Image/Overlay/OverlayManager");
-			ps.open(url);
+			platformService.open(url);
 		} catch (IOException e) {
 			// do nothing
 		}
@@ -633,7 +648,7 @@ public class SwingOverlayManager
 	}
 	
 	private void properties() {
-		int[] selected = ovrSrv.getOverlayInfo().selectedIndices();
+		int[] selected = overlayService.getOverlayInfo().selectedIndices();
 		if (selected.length == 0) {
 			JOptionPane.showMessageDialog(this, "This command requires one or more selections");
 			return;
@@ -647,7 +662,7 @@ public class SwingOverlayManager
 	}
 	
 	private void rename() {
-		final int[] selectedIndices = ovrSrv.getOverlayInfo().selectedIndices();
+		final int[] selectedIndices = overlayService.getOverlayInfo().selectedIndices();
 		if (selectedIndices.length < 1) {
 			JOptionPane.showMessageDialog(this, "Must select an overlay to rename");
 			return;
@@ -656,7 +671,7 @@ public class SwingOverlayManager
 			JOptionPane.showMessageDialog(this, "Cannot rename multiple overlays simultaneously");
 			return;
 		}
-		final OverlayInfo info = ovrSrv.getOverlayInfo().getOverlayInfo(selectedIndices[0]);
+		final OverlayInfo info = overlayService.getOverlayInfo().getOverlayInfo(selectedIndices[0]);
 		if (info == null) return;
 		// TODO - UI agnostic way here
 		final String name = JOptionPane.showInputDialog(this, "Enter new name for overlay");
@@ -710,18 +725,17 @@ public class SwingOverlayManager
 	}
 	
 	private void sort() {
-		ovrSrv.getOverlayInfo().sort();
-		int[] newSelections = ovrSrv.getOverlayInfo().selectedIndices();
+		overlayService.getOverlayInfo().sort();
+		int[] newSelections = overlayService.getOverlayInfo().selectedIndices();
 		jlist.setSelectedIndices(newSelections);
 		jlist.updateUI();
 	}
 	
 	private void specify() {
-		final ImageDisplayService ids = context.getService(ImageDisplayService.class);
-		final ImageDisplay imageDisplay = ids.getActiveImageDisplay();
+		final ImageDisplay imageDisplay =
+			imageDisplayService.getActiveImageDisplay();
 		if (imageDisplay == null) return;
-		final CommandService cs = context.getService(CommandService.class);
-		cs.run(SelectionSpecify.class, "context", context, "display", imageDisplay);
+		commandService.run(SelectionSpecify.class, "display", imageDisplay);
 	}
 	
 	/*
@@ -834,14 +848,12 @@ public class SwingOverlayManager
 				public void valueChanged(final ListSelectionEvent listSelectionEvent) {
 					if (selecting) return;
 					selecting = true;
-					final ImageDisplayService imageDisplayService =
-						context.getService(ImageDisplayService.class);
 					final ImageDisplay display =
 						imageDisplayService.getActiveImageDisplay();
 					if (display == null) return;
 					final JList list = (JList) listSelectionEvent.getSource();
 					final Object[] selectionValues = list.getSelectedValues();
-					ovrSrv.getOverlayInfo().deselectAll();
+					overlayService.getOverlayInfo().deselectAll();
 					for (final Object overlayInfoObj : selectionValues) {
 						final OverlayInfo overlayInfo = (OverlayInfo) overlayInfoObj;
 						overlayInfo.setSelected(true);
@@ -1130,8 +1142,8 @@ public class SwingOverlayManager
 	// TODO - assumes first selected overlay view is the only one. bad?
 	@SuppressWarnings("unused")
 	private Overlay getActiveOverlay() {
-		final ImageDisplayService ids = context.getService(ImageDisplayService.class);
-		final ImageDisplay activeDisplay = ids.getActiveImageDisplay();
+		final ImageDisplay activeDisplay =
+			imageDisplayService.getActiveImageDisplay();
 		if (activeDisplay == null) return null;
 		final List<DataView> views = activeDisplay;
 		for (DataView view : views) {
@@ -1143,24 +1155,21 @@ public class SwingOverlayManager
 	
 	private void runPropertiesPlugin() {
 		final Map<String, Object> inputMap = new HashMap<String, Object>();
-		inputMap.put("overlays", ovrSrv.getOverlayInfo().selectedOverlays());
-		final CommandService commandService = context.getService(CommandService.class);
+		inputMap.put("overlays", overlayService.getOverlayInfo().selectedOverlays());
 		commandService.run(SelectedManagerOverlayProperties.class, inputMap);
 	}
 
 	private ChannelCollection getChannels() {
-		final OptionsService oSrv = context.getService(OptionsService.class);
-		OptionsChannels opts = oSrv.getOptions(OptionsChannels.class);
+		OptionsChannels opts = optionsService.getOptions(OptionsChannels.class);
 		if (altDown) return opts.getBgValues();
 		return opts.getFgValues();
 	}
 	
 	private void makeCompositeOverlay(CompositeOverlay.Operation op) {
-		ImageDisplayService ids = context.getService(ImageDisplayService.class);
-		ImageDisplay imageDisplay = ids.getActiveImageDisplay();
+		ImageDisplay imageDisplay = imageDisplayService.getActiveImageDisplay();
 		if (imageDisplay == null) return;
-		List<Overlay> overlays = ovrSrv.getOverlayInfo().selectedOverlays();
-		if (overlays.size() == 0) overlays = ovrSrv.getOverlays(imageDisplay);
+		List<Overlay> overlays = overlayService.getOverlayInfo().selectedOverlays();
+		if (overlays.size() == 0) overlays = overlayService.getOverlays(imageDisplay);
 		if (overlays.size() < 2) {
 			JOptionPane.showMessageDialog(this,
 					"This command only works with 2 or more overlays");

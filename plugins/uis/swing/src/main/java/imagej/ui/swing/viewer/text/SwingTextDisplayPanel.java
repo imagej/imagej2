@@ -50,9 +50,9 @@ import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
-import org.scijava.Context;
 import org.scijava.app.StatusService;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 
 /**
  * This is the display panel for {@link String}s.
@@ -68,9 +68,19 @@ public class SwingTextDisplayPanel extends JScrollPane implements
 	private final TextDisplay display;
 	private final JEditorPane textArea;
 
+	@Parameter
+	private StatusService statusService;
+
+	@Parameter(required = false)
+	private PlatformService platformService;
+
+	@Parameter(required = false)
+	private LogService log;
+
 	public SwingTextDisplayPanel(final TextDisplay display,
 		final DisplayWindow window)
 	{
+		display.getContext().inject(this);
 		this.display = display;
 		this.window = window;
 		textArea = new JEditorPane();
@@ -151,25 +161,17 @@ public class SwingTextDisplayPanel extends JScrollPane implements
 
 	/** Called when a hyperlink is activated (e.g., clicked). */
 	private void hyperlinkActivate(final URL url) {
-		final Context context = display.getContext();
-		if (context == null) return;
-		final PlatformService platformService =
-			context.getService(PlatformService.class);
 		if (platformService == null) return;
 		try {
 			platformService.open(url);
 		}
 		catch (final IOException exc) {
-			final LogService log = context.getService(LogService.class);
 			if (log != null) log.error(exc);
 		}
 	}
 
 	/** Called to update status bar with hyperlink URL. */
 	private void hyperlinkStatus(final URL url) {
-		final Context context = display.getContext();
-		if (context == null) return;
-		final StatusService statusService = context.getService(StatusService.class);
 		if (url == null) statusService.clearStatus();
 		else statusService.showStatus(url.toString());
 	}

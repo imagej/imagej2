@@ -72,6 +72,9 @@ public class SwingMdiUI extends AbstractSwingUI {
 	@Parameter
 	private EventService eventService;
 
+	@Parameter
+	private UIService uiService;
+
 	private JMDIDesktopPane desktopPane;
 
 	private JScrollPane scrollPane;
@@ -101,8 +104,7 @@ public class SwingMdiUI extends AbstractSwingUI {
 	public SwingMdiDialogPrompt dialogPrompt(final String message,
 		final String title, final MessageType msg, final OptionType option)
 	{
-		final UserInterface ui =
-			getContext().getService(UIService.class).getDefaultUI();
+		final UserInterface ui = uiService.getDefaultUI();
 		return new SwingMdiDialogPrompt(ui, message, title, msg, option);
 	}
 

@@ -76,6 +76,7 @@ import net.miginfocom.swing.MigLayout;
 
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
 
 /**
  * Swing implementation of image display panel. Contains a label, a graphics
@@ -104,14 +105,21 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 	private final Map<AxisType, JLabel> axisLabels =
 		new HashMap<AxisType, JLabel>();
 
+	@Parameter
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter
+	private EventService eventService;
+
 	// -- constructors --
 
 	public SwingDisplayPanel(final SwingImageDisplayViewer displayViewer,
 		final DisplayWindow window)
 	{
 		this.displayViewer = displayViewer;
-		this.display = displayViewer.getDisplay();
 		this.window = window;
+
+		display = displayViewer.getDisplay();
 
 		imageLabel = new JLabel(" ");
 		final int prefHeight = imageLabel.getPreferredSize().height;
@@ -140,9 +148,7 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 
 		window.setContent(this);
 
-		final EventService eventService =
-			display.getContext().getService(EventService.class);
-		eventService.subscribe(this);
+		display.getContext().inject(this);
 	}
 
 	// -- SwingDisplayPanel methods --
@@ -198,8 +204,6 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 
 	@Override
 	public void redraw() {
-		final ImageDisplayService imageDisplayService =
-			display.getContext().getService(ImageDisplayService.class);
 		final DatasetView view = imageDisplayService.getActiveDatasetView(display);
 		if (view == null || view.getProjector() == null) return; // no active dataset
 		view.getProjector().map();
@@ -213,8 +217,6 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 		if (event.getDisplay() != getDisplay()) return;
 		final AxisType axis = event.getAxis();
 		updateAxis(axis);
-		final EventService eventService =
-				display.getContext().getService(EventService.class);
 		eventService.publish(new DelayedPositionEvent(display, axis));
 	}
 
@@ -283,8 +285,6 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 	}
 
 	private void updateColorBar(final int c) {
-		final ImageDisplayService imageDisplayService =
-			display.getContext().getService(ImageDisplayService.class);
 		final DatasetView view = imageDisplayService.getActiveDatasetView(display);
 		if (view == null) return; // no active dataset
 		List<ColorTable> colorTables = view.getColorTables();

@@ -48,6 +48,7 @@ import java.util.ArrayList;
 
 import org.scijava.Context;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 
 /**
  * AWT implementation of {@link DragAndDropData}.
@@ -57,6 +58,9 @@ import org.scijava.log.LogService;
 public class AWTDragAndDropData extends AbstractDragAndDropData {
 
 	private final Transferable t;
+
+	@Parameter(required = false)
+	private LogService log;
 
 	public AWTDragAndDropData(final Context context, final Transferable t) {
 		setContext(context);
@@ -87,7 +91,6 @@ public class AWTDragAndDropData extends AbstractDragAndDropData {
 						mimeType, exc);
 				}
 				catch (final IOException exc) {
-					final LogService log = getContext().getService(LogService.class);
 					if (log != null) log.error("Drag-and-drop error", exc);
 				}
 				catch (final InvalidDnDOperationException exc) {

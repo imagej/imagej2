@@ -40,6 +40,7 @@ import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.RectangleOverlay;
 import imagej.tool.Tool;
+import imagej.tool.ToolService;
 import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
@@ -53,6 +54,7 @@ import java.awt.geom.Rectangle2D;
 
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.RectangleFigure;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -72,6 +74,9 @@ public class RectangleJHotDrawAdapter extends
 		assert roi instanceof RectangleOverlay;
 		return (RectangleOverlay) roi;
 	}
+
+	@Parameter
+	private ToolService toolService;
 
 	// -- JHotDrawAdapter methods --
 
@@ -129,7 +134,7 @@ public class RectangleJHotDrawAdapter extends
 		overlay.setExtent(w, 0);
 		overlay.setExtent(h, 1);
 		overlay.update();
-		getToolService().reportRectangle(x, y, w, h);
+		toolService.reportRectangle(x, y, w, h);
 	}
 
 	@Override
@@ -139,7 +144,7 @@ public class RectangleJHotDrawAdapter extends
 
 	@Override
 	public void report(final RealCoords p1, final RealCoords p2) {
-		getToolService().reportRectangle(p1, p2);
+		toolService.reportRectangle(p1, p2);
 	}
 
 	@Override

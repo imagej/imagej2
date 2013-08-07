@@ -47,7 +47,8 @@ import org.jhotdraw.draw.Drawing;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.event.FigureAdapter;
 import org.jhotdraw.draw.event.FigureEvent;
-import org.scijava.Context;
+import org.scijava.AbstractContextual;
+import org.scijava.plugin.Parameter;
 
 /**
  * TODO
@@ -55,7 +56,8 @@ import org.scijava.Context;
  * @author Curtis Rueden
  * @author Lee Kamentsky
  */
-public class OverlayFigureView implements FigureView {
+public class OverlayFigureView extends AbstractContextual implements FigureView
+{
 
 	private final SwingImageDisplayViewer displayViewer;
 	private final OverlayView overlayView;
@@ -64,6 +66,9 @@ public class OverlayFigureView implements FigureView {
 	private final Figure figure;
 
 	private final JHotDrawAdapter adapter;
+
+	@Parameter
+	private JHotDrawService jHotDrawService;
 
 	private boolean updatingFigure = false;
 
@@ -92,11 +97,10 @@ public class OverlayFigureView implements FigureView {
 	public OverlayFigureView(final SwingImageDisplayViewer display,
 		final OverlayView overlayView, final Figure figure)
 	{
+		setContext(display.getDisplay().getContext());
 		this.displayViewer = display;
 		this.overlayView = overlayView;
-		final Context context = display.getDisplay().getContext();
-		final JHotDrawService jHotDrawService =
-			context.getService(JHotDrawService.class);
+
 		adapter = jHotDrawService.getAdapter(overlayView.getData(), figure);
 		if (figure == null) {
 			this.figure = adapter.createDefaultFigure();
