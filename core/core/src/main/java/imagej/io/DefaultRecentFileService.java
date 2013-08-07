@@ -213,8 +213,10 @@ public final class DefaultRecentFileService extends AbstractService implements
 
 		// use the same icon as File > Open
 		final CommandInfo fileOpen = commandService.getCommand(commandClassName);
-		final String iconPath = fileOpen.getIconPath();
-		info.setIconPath(iconPath);
+		if (fileOpen != null) {
+			final String iconPath = fileOpen.getIconPath();
+			info.setIconPath(iconPath);
+		}
 
 		return info;
 	}
