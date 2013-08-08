@@ -187,8 +187,7 @@ public class CommandModule extends AbstractModule implements Cancelable,
 
 	@Override
 	public void setContext(final Context context) {
-		if (!(command instanceof Contextual)) return; // ignore context injection
-		((Contextual) command).setContext(context);
+		context.inject(command);
 	}
 
 	// -- Helper methods --
