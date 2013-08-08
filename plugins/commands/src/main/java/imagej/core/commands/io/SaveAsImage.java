@@ -104,7 +104,7 @@ public class SaveAsImage extends ContextCommand {
 		}
 		catch (final IOException exc) {
 			log.error(exc);
-			uiService.showDialog(exc.getMessage(), "IJ2: Save Error",
+			uiService.showDialog(exc.getMessage(), "Error Saving Image",
 				DialogPrompt.MessageType.ERROR_MESSAGE);
 			return;
 		}
