@@ -536,7 +536,9 @@ public class SitesDialog extends JDialog implements ActionListener {
 		public PersonalSiteDialog() {
 			super(SitesDialog.this, "Add Personal Site");
 			setLayout(new MigLayout("wrap 2"));
-			add(new JLabel("<html><h2>Personal update site setup</h2>" +
+			add(new JLabel("<html>" +
+					"<style type='text/css'>p { text-indent: 10px; }</style>" +
+					"<h2>Personal update site setup</h2>" +
 					"<p width=400>For security reasons, personal update sites are associated with a Fiji Wiki account. " +
 					"Please provide the account name of your Fiji Wiki account.</p>" +
 					"<p width=400>If your personal udate site was not yet initialized, you can initialize it in this dialog.</p>" +
