@@ -274,7 +274,8 @@ public class BrightnessContrast<T extends RealType<T>> extends
 		}
 		bundle.setDataMinMax(dataMin, dataMax);
 		// bundle.setLineSlopeIntercept(1, 0);
-		log.debug("computeDataMinMax: dataMin=" + dataMin + ", dataMax=" + dataMax);
+		log().debug(
+			"computeDataMinMax: dataMin=" + dataMin + ", dataMax=" + dataMax);
 		// force a widget refresh to see new Hist (and also fill min and max fields)
 		// NOPE. HistBundle is unchanged. Only internals are. So no
 		// refresh called. Note that I changed InteractiveCommand::update() to
@@ -297,7 +298,7 @@ public class BrightnessContrast<T extends RealType<T>> extends
 		// use only first channel, for now
 		initialMin = view.getChannelMin(0);
 		initialMax = view.getChannelMax(0);
-		log.debug("computeInitialMinMax: initialMin=" + initialMin +
+		log().debug("computeInitialMinMax: initialMin=" + initialMin +
 			", initialMax=" + initialMax);
 	}
 
@@ -328,7 +329,7 @@ public class BrightnessContrast<T extends RealType<T>> extends
 		bundle.setTheoreticalMinMax(min, max);
 		// bundle.setLineSlopeIntercept(m, b);
 
-		log.debug("computeMinMax: bUnit=" + bUnit + ", cUnit=" + cUnit + ", b=" +
+		log().debug("computeMinMax: bUnit=" + bUnit + ", cUnit=" + cUnit + ", b=" +
 			b + ", m=" + m + ", minUnit=" + minUnit + ", maxUnit=" + maxUnit +
 			", min=" + min + ", max=" + max);
 	}
@@ -361,7 +362,7 @@ public class BrightnessContrast<T extends RealType<T>> extends
 		bundle.setTheoreticalMinMax(min, max);
 		// bundle.setLineSlopeIntercept(m, b);
 
-		log.debug("computeBrightnessContrast: minUnit=" + minUnit + ", maxUnit=" +
+		log().debug("computeBrightnessContrast: minUnit=" + minUnit + ", maxUnit=" +
 			maxUnit + ", m=" + m + ", b=" + b + ", bUnit=" + bUnit + ", cUnit=" +
 			cUnit + ", brightness=" + brightness + ", contrast=" + contrast);
 	}

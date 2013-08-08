@@ -40,6 +40,7 @@ import imagej.data.display.OverlayView;
 import imagej.data.overlay.LineOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.tool.Tool;
+import imagej.tool.ToolService;
 import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
@@ -53,6 +54,7 @@ import java.awt.geom.Point2D;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.LineFigure;
 import org.jhotdraw.geom.BezierPath.Node;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -66,6 +68,9 @@ import org.scijava.plugin.Plugin;
 public class LineJHotDrawAdapter extends
 	AbstractJHotDrawAdapter<LineOverlay, LineFigure>
 {
+
+	@Parameter
+	private ToolService toolService;
 
 	// -- JHotDrawAdapter methods --
 
@@ -125,7 +130,7 @@ public class LineJHotDrawAdapter extends
 		lineOverlay.setLineEnd(x2, 0);
 		lineOverlay.setLineEnd(y2, 1);
 		lineOverlay.update();
-		getToolService().reportLine(x1, y1, x2, y2);
+		toolService.reportLine(x1, y1, x2, y2);
 	}
 
 	@Override
@@ -135,7 +140,7 @@ public class LineJHotDrawAdapter extends
 
 	@Override
 	public void report(final RealCoords p1, final RealCoords p2) {
-		getToolService().reportLine(p1, p2);
+		toolService.reportLine(p1, p2);
 	}
 
 	@Override

@@ -44,8 +44,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
-import org.scijava.event.EventService;
-
 /**
  * This is the display panel for {@link Table}s.
  * 
@@ -75,10 +73,6 @@ public class SwingTableDisplayPanel extends JScrollPane implements
 		table.setAutoCreateRowSorter(true);
 		setViewportView(table);
 		window.setContent(this);
-
-		final EventService eventService =
-			display.getContext().getService(EventService.class);
-		eventService.subscribe(this);
 	}
 
 	// -- TableDisplayPanel methods --
@@ -131,18 +125,6 @@ public class SwingTableDisplayPanel extends JScrollPane implements
 		table.setModel(model);
 		// table.repaint();
 	}
-
-	// -- Event Handlers
-
-	/*
-	@EventHandler
-	protected void onEvent(DisplayUpdatedEvent evt) {
-		if (evt.getDisplay() != display) return;
-		System.out.println("JTable.getModel().getRowCount() == " +
-			table.getModel().getRowCount());
-		redraw();
-	}
-	*/
 
 	// -- Helper methods --
 

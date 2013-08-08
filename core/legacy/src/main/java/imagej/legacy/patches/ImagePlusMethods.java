@@ -61,7 +61,7 @@ public final class ImagePlusMethods {
 		if (obj.getWindow() == null) return;
 		if (!legacyService.isLegacyMode()) {
 			if (!Utils.isLegacyThread(Thread.currentThread())) return;
-			legacyService.getLogService().debug("ImagePlus.updateAndDraw(): " + obj);
+			legacyService.log().debug("ImagePlus.updateAndDraw(): " + obj);
 		}
 		try {
 			legacyService.getImageMap().registerLegacyImage(obj);
@@ -78,7 +78,7 @@ public final class ImagePlusMethods {
 		if (obj.getWindow() == null) return;
 		if (!legacyService.isLegacyMode()) {
 			if (!Utils.isLegacyThread(Thread.currentThread())) return;
-			legacyService.getLogService().debug("ImagePlus.repaintWindow(): " + obj);
+			legacyService.log().debug("ImagePlus.repaintWindow(): " + obj);
 		}
 		try {
 			legacyService.getImageMap().registerLegacyImage(obj);
@@ -96,7 +96,7 @@ public final class ImagePlusMethods {
 		if (obj == null) return;
 		if (!legacyService.isLegacyMode()) {
 			if (!Utils.isLegacyThread(Thread.currentThread())) return;
-			legacyService.getLogService().debug("ImagePlus.show(): " + obj);
+			legacyService.log().debug("ImagePlus.show(): " + obj);
 		}
 		try {
 			legacyService.getImageMap().registerLegacyImage(obj);
@@ -111,7 +111,7 @@ public final class ImagePlusMethods {
 		if (legacyService.isLegacyMode()) return;
 		if (obj == null) return;
 		if (!legacyService.isLegacyMode() && !Utils.isLegacyThread(Thread.currentThread())) return;
-		legacyService.getLogService().debug("ImagePlus.hide(): " + obj);
+		legacyService.log().debug("ImagePlus.hide(): " + obj);
 		LegacyOutputTracker.removeOutput(obj);
 		// Original method
 		//LegacyOutputTracker.getClosedImps().add(obj);

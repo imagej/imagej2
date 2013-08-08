@@ -47,6 +47,7 @@ import net.imglib2.type.numeric.RealType;
 
 import org.scijava.Context;
 import org.scijava.app.StatusService;
+import org.scijava.plugin.Parameter;
 
 /**
  * TODO
@@ -63,7 +64,8 @@ public class Reducer<U extends RealType<U>,V extends RealType<V>>
 	
 	private final ImgPlus<U> input;
 
-	private final StatusService statusService; 
+	@Parameter(required = false)
+	private StatusService statusService;
 	
 	// -- public interface --
 
@@ -72,10 +74,10 @@ public class Reducer<U extends RealType<U>,V extends RealType<V>>
 		PointSet neighborhood)
 	{
 		this.context = context;
+		context.inject(this);
 		this.input = input;
 		this.inputFunction = func;
 		this.neighborhood = neighborhood;
-		this.statusService = context.getService(StatusService.class);
 	}
 
 	// NOTE - because the neighborhood could be a spherical neighborhood that

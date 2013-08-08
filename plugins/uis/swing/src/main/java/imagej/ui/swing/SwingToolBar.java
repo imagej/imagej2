@@ -58,8 +58,12 @@ import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.scijava.Context;
 import org.scijava.InstantiableException;
+import org.scijava.app.StatusService;
 import org.scijava.event.EventHandler;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.PluginInfo;
 
 /**
@@ -75,33 +79,35 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 	protected static final Border INACTIVE_BORDER = new BevelBorder(
 		BevelBorder.RAISED);
 
-	protected final UIService uiService;
-	
-	private final SwingIconService iconService;
-
 	private final Map<String, AbstractButton> toolButtons;
 
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 
-	public SwingToolBar(final UIService uiService) {
-		this.uiService = uiService;
-		iconService = uiService.getContext().getService(SwingIconService.class);
+	@Parameter
+	private SwingIconService iconService;
+
+	@Parameter
+	private StatusService statusService;
+
+	@Parameter
+	private ToolService toolService;
+
+	@Parameter
+	private UIService uiService;
+	
+	@Parameter
+	private LogService log;
+
+	public SwingToolBar(final Context context) {
+		context.inject(this);
+
 		toolButtons = new HashMap<String, AbstractButton>();
 		populateToolBar();
-		uiService.getEventService().subscribe(this);
-	}
-
-	// -- ToolBar methods --
-
-	@Override
-	public ToolService getToolService() {
-		return uiService.getToolService();
 	}
 
 	// -- Helper methods --
 
 	private void populateToolBar() {
-		final ToolService toolService = getToolService();
 		final Tool activeTool = toolService.getActiveTool();
 		Tool lastTool = null;
 		for (final Tool tool : toolService.getTools()) {
@@ -110,13 +116,13 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 				toolButtons.put(tool.getInfo().getName(), button);
 				iconService.registerButton(tool, button);
 				// add a separator between tools where applicable
-				if (getToolService().isSeparatorNeeded(tool, lastTool)) addSeparator();
+				if (toolService.isSeparatorNeeded(tool, lastTool)) addSeparator();
 				lastTool = tool;
 
 				add(button);
 			}
 			catch (final InstantiableException e) {
-				uiService.getLog().warn("Invalid tool: " + tool.getInfo(), e);
+				log.warn("Invalid tool: " + tool.getInfo(), e);
 			}
 		}
 		
@@ -137,10 +143,10 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 		// set icon
 		if (iconURL == null) {
 			button.setText(name);
-			uiService.getLog().warn("Invalid icon for tool: " + tool);
+			log.warn("Invalid icon for tool: " + tool);
 		}
 		else {
-			uiService.getLog().debug("Loading icon from " + iconURL.toString());
+			log.debug("Loading icon from " + iconURL.toString());
 			button.setIcon(new ImageIcon(iconURL, label));
 		}
 
@@ -156,12 +162,12 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 
 			@Override
 			public void mouseEntered(final MouseEvent evt) {
-				uiService.getStatusService().showStatus(tool.getDescription());
+				statusService.showStatus(tool.getDescription());
 			}
 
 			@Override
 			public void mouseExited(final MouseEvent evt) {
-				uiService.getStatusService().clearStatus();
+				statusService.clearStatus();
 			}
 
 			@Override
@@ -184,7 +190,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 				if (selected == isActive) return;
 				isActive = selected;
 				if (isActive) {
-					getToolService().setActiveTool(tool);
+					toolService.setActiveTool(tool);
 				}
 			}
 		});
@@ -209,7 +215,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 		if (button == null) return; // not on toolbar
 		button.setSelected(true);
 		button.setBorder(ACTIVE_BORDER);
-		uiService.getLog().debug("Selected " + name + " button.");
+		log.debug("Selected " + name + " button.");
 	}
 
 	@EventHandler
@@ -221,7 +227,7 @@ public class SwingToolBar extends JToolBar implements ToolBar {
 		final AbstractButton button = toolButtons.get(name);
 		if (button == null) return; // not on toolbar
 		button.setBorder(INACTIVE_BORDER);
-		uiService.getLog().debug("Deactivated " + name + " button.");
+		log.debug("Deactivated " + name + " button.");
 	}
 
 }

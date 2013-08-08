@@ -38,6 +38,7 @@ package imagej.core.tools;
 import imagej.command.CommandService;
 import imagej.tool.Tool;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -51,14 +52,15 @@ public class PencilTool extends AbstractLineTool {
 
 	public static final double PRIORITY = -301;
 
+	@Parameter
+	private CommandService commandService;
+
 	public PencilTool() {
 		setLineWidth(1);
 	}
 
 	@Override
 	public void configure() {
-		final CommandService commandService =
-			getContext().getService(CommandService.class);
 		commandService.run(PencilToolConfig.class, "tool", this);
 	}
 

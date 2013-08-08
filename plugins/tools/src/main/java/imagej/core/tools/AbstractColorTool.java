@@ -57,6 +57,7 @@ import imagej.util.ColorRGB;
 
 import org.scijava.app.StatusService;
 import org.scijava.event.EventHandler;
+import org.scijava.plugin.Parameter;
 
 /**
  * TODO
@@ -73,9 +74,26 @@ public abstract class AbstractColorTool extends AbstractTool implements
 
 	// -- instance variables --
 
+	@Parameter
+	private StatusService statusService;
+
+	@Parameter
+	private CommandService commandService;
+
+	@Parameter
+	private OptionsService optionsService;
+
+	@Parameter
+	private DisplayService displayService;
+
+	@Parameter(required = false)
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter(required = false)
+	private IconService iconService;
+
 	private IconDrawer drawer;
-	private final PixelRecorder recorder = new PixelRecorder(true);
-	private StatusService statusService = null;
+	private PixelRecorder recorder;
 
 	// -- abstract methods --
 
@@ -95,9 +113,6 @@ public abstract class AbstractColorTool extends AbstractTool implements
 
 	@Override
 	public void configure() {
-		final CommandService commandService =
-			getContext().getService(CommandService.class);
-
 		commandService.run(OptionsChannels.class);
 	}
 
@@ -105,14 +120,16 @@ public abstract class AbstractColorTool extends AbstractTool implements
 	public void onMouseClick(final MsClickedEvent evt) {
 		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
 
+		if (recorder == null) {
+			recorder = new PixelRecorder(getContext(), true);
+		}
+
 		// if click did not happen within the bounds of an ImageDisplay then
 		// just consume event and return
 		if (!recorder.record(evt)) {
 			evt.consume();
 			return;
 		}
-
-		statusService = getContext().getService(StatusService.class);
 
 		final OptionsChannels options = getOptions();
 
@@ -148,18 +165,14 @@ public abstract class AbstractColorTool extends AbstractTool implements
 
 	@Override
 	public void drawIcon() {
-		final ImageDisplayService dispSrv =
-			getContext().getService(ImageDisplayService.class);
 		final DatasetView view =
-			dispSrv == null ? null : dispSrv.getActiveDatasetView();
+			imageDisplayService == null ? null : imageDisplayService
+				.getActiveDatasetView();
 		ColorRGB color = getEmptyColor();
 		if (view != null) {
-			final OptionsService oSrv = getContext().getService(OptionsService.class);
-			if (oSrv != null) {
-				final OptionsChannels options = oSrv.getOptions(OptionsChannels.class);
-				final ChannelCollection channels = getChannels(options);
-				color = view.getColor(channels);
-			}
+			final OptionsChannels options = getOptions();
+			final ChannelCollection channels = getChannels(options);
+			color = view.getColor(channels);
 		}
 		draw(color);
 	}
@@ -173,8 +186,7 @@ public abstract class AbstractColorTool extends AbstractTool implements
 
 	@EventHandler
 	protected void onEvent(final DisplayDeletedEvent evt) {
-		final DisplayService srv = getContext().getService(DisplayService.class);
-		if (srv.getActiveDisplay() == null) drawIcon();
+		if (displayService.getActiveDisplay() == null) drawIcon();
 	}
 
 	@EventHandler
@@ -184,9 +196,7 @@ public abstract class AbstractColorTool extends AbstractTool implements
 
 	@EventHandler
 	protected void onEvent(final AxisPositionEvent evt) {
-		final DisplayService dispSrv =
-			getContext().getService(DisplayService.class);
-		final Display<?> activeDisplay = dispSrv.getActiveDisplay();
+		final Display<?> activeDisplay = displayService.getActiveDisplay();
 		if (evt.getDisplay() == activeDisplay) drawIcon();
 	}
 
@@ -213,8 +223,7 @@ public abstract class AbstractColorTool extends AbstractTool implements
 	}
 
 	private IconDrawer acquireDrawer() {
-		final IconService service = getContext().getService(IconService.class);
-		return service == null ? null : service.acquireDrawer(this);
+		return iconService == null ? null : iconService.acquireDrawer(this);
 	}
 
 	private String valuesString(final ChannelCollection chans) {
@@ -243,10 +252,7 @@ public abstract class AbstractColorTool extends AbstractTool implements
 	}
 
 	private OptionsChannels getOptions() {
-		final OptionsService service =
-			getContext().getService(OptionsService.class);
-
-		return service.getOptions(OptionsChannels.class);
+		return optionsService.getOptions(OptionsChannels.class);
 	}
 
 }

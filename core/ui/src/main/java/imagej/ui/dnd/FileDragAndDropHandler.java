@@ -44,6 +44,7 @@ import java.io.IOException;
 
 import org.scijava.Priority;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -57,31 +58,31 @@ public class FileDragAndDropHandler extends
 	AbstractDragAndDropHandler<File>
 {
 
+	@Parameter(required = false)
+	private IOService ioService;
+
+	@Parameter(required = false)
+	private DisplayService displayService;
+
+	@Parameter(required = false)
+	private LogService log;
+
 	// -- DragAndDropHandler methods --
 
 	@Override
 	public boolean supports(final File file) {
+		if (ioService == null || displayService == null) return false;
 		if (!super.supports(file)) return false;
 
 		// verify that the file can be opened somehow
-		final IOService ioService = getContext().getService(IOService.class);
-		if (ioService == null) return false;
 		return ioService.getOpener(file.getAbsolutePath()) != null;
 	}
 
 	@Override
 	public boolean drop(final File file, final Display<?> display) {
+		if (ioService == null || displayService == null) return false;
 		check(file, display);
 		if (file == null) return true; // trivial case
-
-		final IOService ioService = getContext().getService(IOService.class);
-		if (ioService == null) return false;
-
-		final DisplayService displayService =
-			getContext().getService(DisplayService.class);
-		if (displayService == null) return false;
-
-		final LogService log = getContext().getService(LogService.class);
 
 		// load the data
 		final String filename = file.getAbsolutePath();

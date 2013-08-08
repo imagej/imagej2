@@ -51,6 +51,7 @@ import java.awt.Shape;
 
 import org.jhotdraw.draw.Figure;
 import org.scijava.Priority;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -60,6 +61,12 @@ import org.scijava.plugin.Plugin;
 public class ThresholdJHotDrawAdapter extends
 	AbstractJHotDrawAdapter<ThresholdOverlay, ThresholdFigure>
 {
+
+	@Parameter
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter
+	private ThresholdService thresholdService;
 
 	// -- JHotDrawAdapter methods --
 
@@ -76,8 +83,6 @@ public class ThresholdJHotDrawAdapter extends
 
 	@Override
 	public Overlay createNewOverlay() {
-		ImageDisplayService imageDisplayService = getImageDisplayService();
-		ThresholdService thresholdService = getThresholdService();
 		ImageDisplay display = imageDisplayService.getActiveImageDisplay();
 		if (display == null) return null;
 		return thresholdService.getThreshold(display);
@@ -85,8 +90,6 @@ public class ThresholdJHotDrawAdapter extends
 
 	@Override
 	public Figure createDefaultFigure() {
-		ImageDisplayService imageDisplayService = getImageDisplayService();
-		ThresholdService thresholdService = getThresholdService();
 		ImageDisplay display = imageDisplayService.getActiveImageDisplay();
 		if (display == null) return null;
 		Dataset dataset = imageDisplayService.getActiveDataset();
@@ -105,13 +108,4 @@ public class ThresholdJHotDrawAdapter extends
 		throw new UnsupportedOperationException("to be implemented"); // TODO
 	}
 
-	// -- helpers --
-
-	private ImageDisplayService getImageDisplayService() {
-		return getContext().getService(ImageDisplayService.class);
-	}
-
-	private ThresholdService getThresholdService() {
-		return getContext().getService(ThresholdService.class);
-	}
 }

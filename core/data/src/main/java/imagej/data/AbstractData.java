@@ -50,6 +50,7 @@ import org.scijava.AbstractContextual;
 import org.scijava.Context;
 import org.scijava.event.EventService;
 import org.scijava.event.SciJavaEvent;
+import org.scijava.plugin.Parameter;
 
 /**
  * Base implementation of {@link Data}.
@@ -67,13 +68,16 @@ public abstract class AbstractData extends AbstractContextual implements Data,
 
 	private int refs = 0;
 
+	@Parameter(required = false)
+	private EventService eventService;
+
 	// default constructor for use by serialization code
 	//   (see AbstractOverlay::duplicate())
 	public AbstractData() {
 	}
 	
 	public AbstractData(final Context context) {
-		setContext(context);
+		if (context != null) setContext(context);
 	}
 
 	// -- AbstractData methods --
@@ -210,11 +214,7 @@ public abstract class AbstractData extends AbstractContextual implements Data,
 	// -- Internal methods --
 
 	protected void publish(final SciJavaEvent event) {
-		final Context context = getContext();
-		if (context == null) return;
-		final EventService eventService = context.getService(EventService.class);
-		if (eventService == null) return;
-		eventService.publish(event);
+		if (eventService != null) eventService.publish(event);
 	}
 
 }

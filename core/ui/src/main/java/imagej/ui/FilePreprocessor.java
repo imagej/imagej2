@@ -43,6 +43,7 @@ import imagej.plugin.PreprocessorPlugin;
 import java.io.File;
 
 import org.scijava.Priority;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -56,6 +57,9 @@ import org.scijava.plugin.Plugin;
 	priority = Priority.VERY_LOW_PRIORITY + 1)
 public class FilePreprocessor extends AbstractPreprocessorPlugin {
 
+	@Parameter
+	private UIService uiService;
+
 	// -- ModuleProcessor methods --
 
 	@Override
@@ -67,7 +71,6 @@ public class FilePreprocessor extends AbstractPreprocessorPlugin {
 		final String style = fileInput.getWidgetStyle();
 
 		// show file chooser dialog box
-		final UIService uiService = getContext().getService(UIService.class);
 		final File result = uiService.chooseFile(file, style);
 		if (result == null) {
 			canceled = true;

@@ -68,6 +68,7 @@ import net.imglib2.view.Views;
 import org.scijava.Context;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.thread.ThreadService;
 
@@ -81,6 +82,15 @@ import org.scijava.thread.ThreadService;
 @Plugin(type = DataView.class)
 public class DefaultDatasetView extends AbstractDataView implements DatasetView
 {
+
+	@Parameter
+	private AutoscaleService autoscaleService;
+
+	@Parameter
+	private ThreadService threadService;
+
+	@Parameter(required = false)
+	private EventService eventService;
 
 	/** The dimensional index representing channels, for compositing. */
 	private int channelDimIndex;
@@ -161,9 +171,8 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			RandomAccessibleInterval<? extends RealType<?>> interval =
 				channelData(getData(), c);
 			interval = xyPlane(interval);
-			final AutoscaleService service =
-				getContext().getService(AutoscaleService.class);
-			final DataRange result = service.getDefaultRandomAccessRange(interval);
+			final DataRange result =
+				autoscaleService.getDefaultRandomAccessRange(interval);
 			min = result.getMin();
 			max = result.getMax();
 			// cache min/max in metadata for next time
@@ -418,7 +427,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	@EventHandler
 	protected void onEvent(final DatasetTypeChangedEvent event) {
 		if (getData() == event.getObject()) {
-			getContext().getService(ThreadService.class).run(new Runnable() {
+			threadService.run(new Runnable() {
 
 				@Override
 				public void run() {
@@ -433,7 +442,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	@EventHandler
 	protected void onEvent(final DatasetRGBChangedEvent event) {
 		if (getData() == event.getObject()) {
-			getContext().getService(ThreadService.class).run(new Runnable() {
+			threadService.run(new Runnable() {
 
 				@Override
 				public void run() {
@@ -520,9 +529,8 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 
 		final Context context = getContext();
 		if (context == null) return;
-		final EventService evtSrv = context.getService(EventService.class);
-		if (evtSrv == null) return;
-		evtSrv.publishLater(new LUTsChangedEvent(this));
+		if (eventService == null) return;
+		eventService.publishLater(new LUTsChangedEvent(this));
 	}
 
 	private ColorTable getCurrentLUT(final int cPos) {

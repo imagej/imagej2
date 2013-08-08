@@ -198,8 +198,7 @@ public final class DefaultDisplayService extends AbstractService implements
 
 	@Override
 	public boolean isUniqueName(final String name) {
-		final List<Display<?>> displays = getDisplays();
-		for (final Display<?> display : displays) {
+		for (final Display<?> display : getDisplays()) {
 			if (name.equalsIgnoreCase(display.getName())) {
 				return false;
 			}

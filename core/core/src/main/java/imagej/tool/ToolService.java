@@ -39,8 +39,6 @@ import imagej.util.RealCoords;
 
 import java.util.List;
 
-import org.scijava.app.StatusService;
-import org.scijava.event.EventService;
 import org.scijava.plugin.SingletonService;
 
 /**
@@ -50,10 +48,6 @@ import org.scijava.plugin.SingletonService;
  * @author Curtis Rueden
  */
 public interface ToolService extends SingletonService<Tool> {
-
-	EventService getEventService();
-
-	StatusService getStatusService();
 
 	Tool getTool(String name);
 

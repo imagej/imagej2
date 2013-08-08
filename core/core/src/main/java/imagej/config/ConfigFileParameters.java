@@ -51,7 +51,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.scijava.util.Log;
+import org.scijava.log.LogService;
+import org.scijava.log.StderrLogService;
 import org.scijava.util.POM;
 
 /**
@@ -86,6 +87,9 @@ public class ConfigFileParameters {
 	}
 
 	// -- private instance variables --
+
+	// TODO: Use the application context's LogService.
+	private final LogService log = new StderrLogService();
 
 	private final Map<String, String> dataMap;
 	private final File configFile;
@@ -130,7 +134,7 @@ public class ConfigFileParameters {
 			val = Integer.parseInt(memVal);
 		}
 		catch (final NumberFormatException e) {
-			Log.warn("Launcher configuration file " + configFile + " has key " +
+			log.warn("Launcher configuration file " + configFile + " has key " +
 				MEMORY_KEY + " that is not in an integer format");
 		}
 		if (val < MINIMUM_MEMORY) val = MINIMUM_MEMORY;
@@ -146,7 +150,7 @@ public class ConfigFileParameters {
 		Integer memory = numMegabytes;
 		if (memory < MINIMUM_MEMORY) {
 			memory = MINIMUM_MEMORY;
-			Log.warn("Max Java heap size can be no smaller than " + MINIMUM_MEMORY +
+			log.warn("Max Java heap size can be no smaller than " + MINIMUM_MEMORY +
 				" megabytes.");
 		}
 		dataMap.put(MEMORY_KEY, memory.toString());
@@ -244,7 +248,7 @@ public class ConfigFileParameters {
 			return true;
 		}
 		catch (final Exception e) {
-			Log.warn("Couldd not load legacy launcher config file " + file);
+			log.warn("Couldd not load legacy launcher config file " + file);
 			return false;
 		}
 	}
@@ -278,7 +282,7 @@ public class ConfigFileParameters {
 			return true;
 		}
 		catch (final IOException e) {
-			Log.warn("Could not load launcher config file " + file);
+			log.warn("Could not load launcher config file " + file);
 			return false;
 		}
 	}
@@ -307,7 +311,7 @@ public class ConfigFileParameters {
 			out.close();
 		}
 		catch (final IOException e) {
-			Log.warn("Could not save launcher config file values to " + file);
+			log.warn("Could not save launcher config file values to " + file);
 		}
 	}
 

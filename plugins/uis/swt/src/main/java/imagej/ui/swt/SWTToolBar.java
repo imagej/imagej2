@@ -55,7 +55,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.scijava.Context;
 import org.scijava.InstantiableException;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.PluginInfo;
 
 /**
@@ -65,26 +68,29 @@ import org.scijava.plugin.PluginInfo;
  */
 public class SWTToolBar extends Composite implements ToolBar {
 
-	private final UIService uiService;
 	private final Display display;
-	private final ToolService toolService;
 	private final Map<String, Button> toolButtons;
 
-	public SWTToolBar(final UIService uiService, final Display display, final Composite parent) {
+	@Parameter
+	private ToolService toolService;
+
+	@Parameter
+	private UIService uiService;
+
+	@Parameter
+	private LogService log;
+
+	public SWTToolBar(final Display display, final Composite parent,
+		final Context context)
+	{
 		super(parent, 0);
+		context.inject(this);
+
 		this.display = display;
-		this.uiService = uiService;
-		toolService = uiService.getToolService();
 		toolButtons = new HashMap<String, Button>();
 		setLayout(new MigLayout());
+		// CTR FIXME
 		populateToolBar();
-	}
-
-	// -- ToolBar methods --
-
-	@Override
-	public ToolService getToolService() {
-		return toolService;
 	}
 
 	// -- Helper methods --
@@ -98,7 +104,7 @@ public class SWTToolBar extends Composite implements ToolBar {
 				toolButtons.put(info.getName(), button);
 			}
 			catch (final InstantiableException e) {
-				uiService.getLog().warn("Invalid tool: " + info, e);
+				log.warn("Invalid tool: " + info, e);
 			}
 		}
 	}
@@ -113,13 +119,13 @@ public class SWTToolBar extends Composite implements ToolBar {
 		if (iconImage != null) button.setImage(iconImage);
 		if (iconURL == null) {
 			button.setText(name);
-			uiService.getLog().warn("Invalid icon for tool: " + tool);
+			log.warn("Invalid icon for tool: " + tool);
 		}
 
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				getToolService().setActiveTool(tool);
+				toolService.setActiveTool(tool);
 			}
 		});
 

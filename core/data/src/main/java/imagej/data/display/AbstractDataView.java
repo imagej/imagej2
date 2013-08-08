@@ -49,9 +49,9 @@ import net.imglib2.Localizable;
 import net.imglib2.meta.AxisType;
 
 import org.scijava.AbstractContextual;
-import org.scijava.Context;
 import org.scijava.event.EventService;
 import org.scijava.event.SciJavaEvent;
+import org.scijava.plugin.Parameter;
 
 /**
  * Abstract superclass for {@link DataView}s.
@@ -61,6 +61,9 @@ import org.scijava.event.SciJavaEvent;
 public abstract class AbstractDataView extends AbstractContextual implements
 	DataView
 {
+
+	@Parameter(required = false)
+	private EventService eventService;
 
 	/**
 	 * View's position along each applicable dimensional axis.
@@ -297,14 +300,7 @@ public abstract class AbstractDataView extends AbstractContextual implements
 
 	// -- Helper methods --
 
-	protected EventService getEventService() {
-		final Context context = data.getContext();
-		if (context == null) return null;
-		return context.getService(EventService.class);
-	}
-
 	protected void publish(final SciJavaEvent event) {
-		final EventService eventService = getEventService();
 		if (eventService == null) return;
 		eventService.publish(event);
 	}

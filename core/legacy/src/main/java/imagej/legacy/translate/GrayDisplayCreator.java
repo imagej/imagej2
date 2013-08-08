@@ -41,6 +41,7 @@ import ij.process.ImageProcessor;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.display.DisplayService;
 import imagej.legacy.LegacyService;
 import net.imglib2.RandomAccess;
@@ -48,17 +49,21 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 
+import org.scijava.AbstractContextual;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+
 /**
  * Creates {@link ImageDisplay}s containing gray data values from
  * {@link ImagePlus}es.
  * 
  * @author Barry DeZonia
  */
-public class GrayDisplayCreator implements DisplayCreator {
+public class GrayDisplayCreator extends AbstractContextual implements
+	DisplayCreator
+{
 
 	// -- instance variables --
-
-	private final LegacyService legSrv;
 
 	private final GrayPixelHarmonizer pixelHarmonizer;
 	private final ColorTableHarmonizer colorTableHarmonizer;
@@ -69,21 +74,33 @@ public class GrayDisplayCreator implements DisplayCreator {
 	private final PositionHarmonizer positionHarmonizer;
 	private final NameHarmonizer nameHarmonizer;
 
+	@Parameter
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter
+	private DisplayService displayService;
+
+	@Parameter
+	private DatasetService datasetService;
+
+	@Parameter
+	private LogService log;
+
 	// NB - OverlayHarmonizer required because IJ1 plugins can hatch displays
 	// while avoiding the Harmonizer. Not required in the Display->ImagePlus
 	// direction as Harmonizer always catches that case.
 
 	// -- constructor --
 
-	public GrayDisplayCreator(final LegacyService legSrv) {
-		this.legSrv = legSrv;
+	public GrayDisplayCreator(final LegacyService legacyService) {
+		setContext(legacyService.getContext());
 		pixelHarmonizer = new GrayPixelHarmonizer();
 		colorTableHarmonizer =
-			new ColorTableHarmonizer(legSrv.getImageDisplayService());
+			new ColorTableHarmonizer(imageDisplayService);
 		metadataHarmonizer = new MetadataHarmonizer();
 		compositeHarmonizer = new CompositeHarmonizer();
-		planeHarmonizer = new PlaneHarmonizer(legSrv.getLogService());
-		overlayHarmonizer = new OverlayHarmonizer(legSrv);
+		planeHarmonizer = new PlaneHarmonizer(log);
+		overlayHarmonizer = new OverlayHarmonizer(legacyService);
 		positionHarmonizer = new PositionHarmonizer();
 		nameHarmonizer = new NameHarmonizer();
 	}
@@ -114,8 +131,6 @@ public class GrayDisplayCreator implements DisplayCreator {
 		setDatasetGrayDataFromColorImp(ds, imp);
 		metadataHarmonizer.updateDataset(ds, imp);
 		compositeHarmonizer.updateDataset(ds, imp);
-
-		final DisplayService displayService = legSrv.getDisplayService();
 
 		// CTR FIXME
 		final ImageDisplay display =
@@ -149,8 +164,6 @@ public class GrayDisplayCreator implements DisplayCreator {
 		}
 		metadataHarmonizer.updateDataset(ds, imp);
 		compositeHarmonizer.updateDataset(ds, imp);
-
-		final DisplayService displayService = legSrv.getDisplayService();
 
 		// CTR FIXME
 		final ImageDisplay display =
@@ -195,8 +208,6 @@ public class GrayDisplayCreator implements DisplayCreator {
 		final int bitsPerPixel = 8;
 		final boolean signed = false;
 		final boolean floating = false;
-
-		final DatasetService datasetService = legSrv.getDatasetService();
 
 		final Dataset ds =
 			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
@@ -277,7 +288,6 @@ public class GrayDisplayCreator implements DisplayCreator {
 		final int bitsPerPixel = imp.getBitDepth();
 		final boolean signed = isSigned(imp);
 		final boolean floating = isFloating(imp);
-		final DatasetService datasetService = legSrv.getDatasetService();
 		final Dataset ds =
 			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
 
@@ -309,8 +319,6 @@ public class GrayDisplayCreator implements DisplayCreator {
 		final int bitsPerPixel = imp.getBitDepth();
 		final boolean signed = isSigned(imp);
 		final boolean floating = isFloating(imp);
-
-		final DatasetService datasetService = legSrv.getDatasetService();
 
 		final Dataset ds =
 			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);

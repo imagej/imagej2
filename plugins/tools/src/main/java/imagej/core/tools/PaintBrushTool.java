@@ -38,6 +38,7 @@ package imagej.core.tools;
 import imagej.command.CommandService;
 import imagej.tool.Tool;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -52,14 +53,15 @@ public class PaintBrushTool extends AbstractLineTool {
 
 	public static final double PRIORITY = -300;
 
+	@Parameter
+	private CommandService commandService;
+
 	public PaintBrushTool() {
 		setLineWidth(10);
 	}
 
 	@Override
 	public void configure() {
-		final CommandService commandService =
-			getContext().getService(CommandService.class);
 		commandService.run(PaintBrushToolConfig.class, "tool", this);
 	}
 

@@ -40,6 +40,7 @@ import imagej.data.display.OverlayView;
 import imagej.data.overlay.EllipseOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.tool.Tool;
+import imagej.tool.ToolService;
 import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
@@ -54,6 +55,7 @@ import java.awt.geom.Rectangle2D;
 
 import org.jhotdraw.draw.EllipseFigure;
 import org.jhotdraw.draw.Figure;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -77,6 +79,9 @@ public class EllipseJHotDrawAdapter extends
 		assert figure instanceof EllipseFigure;
 		return (EllipseFigure) figure;
 	}
+
+	@Parameter
+	private ToolService toolService;
 
 	// -- JHotDrawAdapter methods --
 
@@ -133,7 +138,7 @@ public class EllipseJHotDrawAdapter extends
 		overlay.setRadius(w / 2, 0);
 		overlay.setRadius(h / 2, 1);
 		overlay.update();
-		getToolService().reportRectangle(x, y, w, h);
+		toolService.reportRectangle(x, y, w, h);
 	}
 
 	@Override
@@ -143,7 +148,7 @@ public class EllipseJHotDrawAdapter extends
 
 	@Override
 	public void report(final RealCoords p1, final RealCoords p2) {
-		getToolService().reportRectangle(p1, p2);
+		toolService.reportRectangle(p1, p2);
 	}
 
 	@Override

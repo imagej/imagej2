@@ -49,6 +49,8 @@ import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;
 
 /**
+ * TODO
+ * 
  * @author Barry DeZonia
  */
 @Plugin(type = Service.class)
@@ -85,7 +87,7 @@ public class DefaultDataTypeService extends
 		sortedInstances = Collections.unmodifiableList(sortedInstances);
 	}
 
-	// -- DataTypeSerivce methods --
+	// -- DataTypeService methods --
 
 	@Override
 	public List<DataType<?>> getInstances() {

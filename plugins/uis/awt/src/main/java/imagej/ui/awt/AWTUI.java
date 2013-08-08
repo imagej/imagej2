@@ -37,6 +37,7 @@ package imagej.ui.awt;
 
 import imagej.display.Display;
 import imagej.menu.MenuService;
+import imagej.platform.AppEventService;
 import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.ui.AbstractUserInterface;
 import imagej.ui.ApplicationFrame;
@@ -55,6 +56,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 
+import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -66,6 +69,15 @@ import org.scijava.plugin.Plugin;
 public class AWTUI extends AbstractUserInterface {
 
 	public static final String NAME = "awt";
+
+	@Parameter
+	private AppEventService appEventService;
+
+	@Parameter
+	private EventService eventService;
+
+	@Parameter
+	private MenuService menuService;
 
 	private AWTApplicationFrame frame;
 	private AWTToolBar toolBar;
@@ -135,9 +147,12 @@ public class AWTUI extends AbstractUserInterface {
 	@Override
 	protected void createUI() {
 		frame = new AWTApplicationFrame(getApp().getTitle());
-		toolBar = new AWTToolBar(getUIService());
-		statusBar = new AWTStatusBar(getUIService());
+
+		toolBar = new AWTToolBar(getContext());
+		statusBar = new AWTStatusBar(getContext());
+
 		systemClipboard = new AWTClipboard();
+
 		createMenus();
 
 		frame.setLayout(new BorderLayout());
@@ -145,7 +160,7 @@ public class AWTUI extends AbstractUserInterface {
 
 			@Override
 			public void windowClosing(final WindowEvent e) {
-				getUIService().getAppEventService().quit();
+				appEventService.quit();
 			}
 		});
 
@@ -159,11 +174,10 @@ public class AWTUI extends AbstractUserInterface {
 	}
 
 	protected void createMenus() {
-		final MenuService menuService = getUIService().getMenuService();
 		final MenuBar menuBar =
 			menuService.createMenus(new AWTMenuBarCreator(), new MenuBar());
 		frame.setMenuBar(menuBar);
-		getUIService().getEventService().publish(new AppMenusCreatedEvent(menuBar));
+		eventService.publish(new AppMenusCreatedEvent(menuBar));
 	}
 
 }

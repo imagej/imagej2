@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.SortablePlugin;
 
 /**
@@ -62,6 +63,12 @@ public abstract class AbstractDisplay<T> extends SortablePlugin implements
 
 	/** List of objects being displayed. */
 	private final ArrayList<T> objects;
+
+	@Parameter(required = false)
+	private EventService eventService;
+
+	@Parameter(required = false)
+	private DisplayService displayService;
 
 	/** Flag set when display needs to be fully rebuilt. */
 	private boolean structureChanged;
@@ -128,8 +135,6 @@ public abstract class AbstractDisplay<T> extends SortablePlugin implements
 
 	@Override
 	public void update() {
-		final EventService eventService =
-			getContext().getService(EventService.class);
 		if (eventService != null && !isClosed) {
 			eventService.publish(new DisplayUpdatedEvent(this, structureChanged
 				? DisplayUpdateLevel.REBUILD : DisplayUpdateLevel.UPDATE));
@@ -140,14 +145,10 @@ public abstract class AbstractDisplay<T> extends SortablePlugin implements
 	@Override
 	public void close() {
 		if (isClosed) return;
-		final DisplayService displayService =
-			getContext().getService(DisplayService.class);
 		if (displayService != null && displayService.getActiveDisplay() == this) {
 			displayService.setActiveDisplay(null);
 		}
 
-		final EventService eventService =
-			getContext().getService(EventService.class);
 		if (eventService != null) {
 			eventService.publish(new DisplayDeletedEvent(this));
 		}

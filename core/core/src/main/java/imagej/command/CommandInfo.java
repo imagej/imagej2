@@ -53,12 +53,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.scijava.ItemVisibility;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
+import org.scijava.service.Service;
 import org.scijava.util.ClassUtils;
 import org.scijava.util.StringMaker;
 
@@ -417,6 +419,11 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo,
 
 		for (final Field f : fields) {
 			f.setAccessible(true); // expose private fields
+
+			// NB: Skip types handled by the application framework itself.
+			// I.e., these parameters get injected by Context#inject(Object).
+			if (Service.class.isAssignableFrom(f.getType())) continue;
+			if (Context.class.isAssignableFrom(f.getType())) continue;
 
 			final Parameter param = f.getAnnotation(Parameter.class);
 

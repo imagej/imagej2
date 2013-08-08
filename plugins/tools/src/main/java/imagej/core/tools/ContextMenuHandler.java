@@ -45,6 +45,7 @@ import imagej.tool.Tool;
 import imagej.ui.UIService;
 
 import org.scijava.plugin.Attr;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -56,6 +57,9 @@ import org.scijava.plugin.Plugin;
 	menuRoot = Plugin.CONTEXT_MENU_ROOT, attrs = { @Attr(
 		name = Tool.ALWAYS_ACTIVE) })
 public class ContextMenuHandler extends AbstractTool {
+
+	@Parameter
+	private UIService uiService;
 
 	@Override
 	public void onMouseDown(final MsPressedEvent evt) {
@@ -77,7 +81,6 @@ public class ContextMenuHandler extends AbstractTool {
 	private void doPopupMenu(final MsButtonEvent evt) {
 		if (!evt.isPopupTrigger()) return;
 
-		final UIService uiService = getContext().getService(UIService.class);
 		final String menuRoot = getInfo().getMenuRoot();
 		final Display<?> display = evt.getDisplay();
 		uiService.showContextMenu(menuRoot, display, evt.getX(), evt.getY());

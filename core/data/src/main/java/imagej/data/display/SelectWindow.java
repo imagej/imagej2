@@ -51,6 +51,9 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Command.class, label = "Select Window...")
 public class SelectWindow implements Command {
 
+	@Parameter
+	private DisplayService displayService;
+
 	@Parameter(autoFill = false)
 	private Display<?> display;
 
@@ -58,8 +61,6 @@ public class SelectWindow implements Command {
 
 	@Override
 	public void run() {
-		final DisplayService displayService = 
-			display.getContext().getService(DisplayService.class);
 		displayService.setActiveDisplay(display);
 	}
 

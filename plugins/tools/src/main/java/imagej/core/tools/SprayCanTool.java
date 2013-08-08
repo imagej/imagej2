@@ -60,8 +60,8 @@ import java.util.Random;
 
 import net.imglib2.meta.Axes;
 
-import org.scijava.Context;
 import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -75,6 +75,21 @@ import org.scijava.plugin.Plugin;
 public class SprayCanTool extends AbstractTool {
 
 	public static final double PRIORITY = -303;
+
+	@Parameter
+	private CommandService commandService;
+
+	@Parameter
+	private OptionsService optionsService;
+
+	@Parameter
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter
+	private RenderingService renderingService;
+
+	@Parameter(required = false)
+	private EventService eventService;
 
 	private DrawingTool drawingTool;
 	private int width=100, rate=6, dotSize=1;
@@ -100,8 +115,9 @@ public class SprayCanTool extends AbstractTool {
 		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
 		if (drawingTool != null) {
 			Dataset dataset = drawingTool.getDataset();
-			EventService srv = getContext().getService(EventService.class);
-			if (srv != null) srv.publish(new DatasetUpdatedEvent(dataset, false));
+			if (eventService != null) {
+				eventService.publish(new DatasetUpdatedEvent(dataset, false));
+			}
 			drawingTool = null;
 		}
 		evt.consume();
@@ -117,8 +133,6 @@ public class SprayCanTool extends AbstractTool {
 
 	@Override
 	public void configure() {
-		final CommandService commandService =
-			getContext().getService(CommandService.class);
 		commandService.run(SprayCanToolConfig.class, "tool", this);
 	}
 
@@ -176,14 +190,10 @@ public class SprayCanTool extends AbstractTool {
 	private void initDrawingTool(final MsPressedEvent evt) {
 
 		// lookup display info where mouse down event happened
-		final Context context = getContext();
-		final ImageDisplayService imageDisplayService =
-			context.getService(ImageDisplayService.class);
 		final ImageDisplay imageDisplay = (ImageDisplay) evt.getDisplay();
 		if (imageDisplay == null) return;
 
-		final OptionsService oSrv = context.getService(OptionsService.class);
-		OptionsChannels options = oSrv.getOptions(OptionsChannels.class);
+		OptionsChannels options = optionsService.getOptions(OptionsChannels.class);
 
 		ChannelCollection channels;
 		if (evt.getModifiers().isAltDown() || evt.getModifiers().isAltGrDown())
@@ -195,7 +205,7 @@ public class SprayCanTool extends AbstractTool {
 		final Dataset dataset = imageDisplayService.getActiveDataset(imageDisplay);
 
 		// allocate drawing tool
-		drawingTool = new DrawingTool(dataset, evt.getContext().getService(RenderingService.class));
+		drawingTool = new DrawingTool(dataset, renderingService);
 		drawingTool.setChannels(channels);
 
 		// set the position of tool to current display's position

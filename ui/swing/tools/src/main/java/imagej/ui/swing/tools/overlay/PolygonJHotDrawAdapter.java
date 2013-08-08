@@ -58,6 +58,7 @@ import org.jhotdraw.draw.BezierFigure;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.geom.BezierPath.Node;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -76,6 +77,9 @@ public class PolygonJHotDrawAdapter extends
 		assert overlay instanceof PolygonOverlay;
 		return (PolygonOverlay) overlay;
 	}
+
+	@Parameter(required = false)
+	private LogService log;
 
 	// -- JHotDrawAdapter methods --
 
@@ -111,7 +115,6 @@ public class PolygonJHotDrawAdapter extends
 		final PolygonOverlay poverlay = downcastOverlay(view.getData());
 		final PolygonRegionOfInterest roi = poverlay.getRegionOfInterest();
 		final int nodeCount = figure.getNodeCount();
-		final LogService log = getContext().getService(LogService.class);
 		while (roi.getVertexCount() > nodeCount) {
 			roi.removeVertex(nodeCount);
 			if (log != null) log.debug("Removed node from overlay.");

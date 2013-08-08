@@ -43,6 +43,7 @@ import imagej.io.IOPlugin;
 import java.io.IOException;
 
 import org.scijava.Priority;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -53,6 +54,9 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = IOPlugin.class, priority = Priority.LOW_PRIORITY)
 public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 
+	@Parameter(required = false)
+	private DatasetService datasetService;
+
 	// -- IOPlugin methods --
 
 	@Override
@@ -62,21 +66,18 @@ public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 
 	@Override
 	public boolean supportsOpen(final String source) {
-		final DatasetService datasetService = datasetService();
 		if (datasetService == null) return false; // no service for opening datasets
 		return datasetService.canOpen(source);
 	}
 
 	@Override
 	public boolean supportsSave(final String destination) {
-		final DatasetService datasetService = datasetService();
 		if (datasetService == null) return false; // no service for saving datasets
 		return datasetService.canSave(destination);
 	}
 
 	@Override
 	public Dataset open(final String source) throws IOException {
-		final DatasetService datasetService = datasetService();
 		if (datasetService == null) return null; // no service for opening datasets
 		return datasetService.open(source);
 	}
@@ -85,15 +86,8 @@ public class DatasetIOPlugin extends AbstractIOPlugin<Dataset> {
 	public void save(final Dataset dataset, final String destination)
 		throws IOException
 	{
-		final DatasetService datasetService = datasetService();
 		if (datasetService == null) return; // no service for saving datasets
 		datasetService.save(dataset, destination);
-	}
-
-	// -- Helper methods --
-
-	private DatasetService datasetService() {
-		return getContext().getService(DatasetService.class);
 	}
 
 }

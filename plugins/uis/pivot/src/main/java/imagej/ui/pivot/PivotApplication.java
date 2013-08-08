@@ -47,6 +47,7 @@ import org.apache.pivot.wtk.Display;
 import org.apache.pivot.wtk.Orientation;
 import org.scijava.AbstractContextual;
 import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
 
 /**
  * Pivot {@link Application} implementation for ImageJ.
@@ -55,6 +56,15 @@ import org.scijava.event.EventService;
  */
 public class PivotApplication extends AbstractContextual implements Application
 {
+
+	@Parameter
+	private EventService eventService;
+
+	@Parameter
+	private MenuService menuService;
+
+	@Parameter
+	private UIService uiService;
 
 	private Display display;
 
@@ -67,13 +77,10 @@ public class PivotApplication extends AbstractContextual implements Application
 	// -- PivotApplication methods --
 
 	public void initialize() {
-		final UIService uiService = getContext().getService(UIService.class);
-		final EventService eventService = uiService.getEventService();
-		final MenuService menuService = uiService.getMenuService();
-
 		frame = new PivotApplicationFrame();
-		toolBar = new PivotToolBar(uiService);
-		statusBar = new PivotStatusBar(uiService);
+
+		toolBar = new PivotToolBar(getContext());
+		statusBar = new PivotStatusBar(getContext());
 
 		contentPane = new BoxPane();
 		contentPane.setOrientation(Orientation.VERTICAL);

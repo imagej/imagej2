@@ -46,6 +46,7 @@ import java.io.IOException;
 import net.imglib2.display.ColorTable;
 
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -58,6 +59,15 @@ import org.scijava.plugin.Plugin;
 public class LUTFileDragAndDropHandler extends AbstractDragAndDropHandler<File>
 {
 
+	@Parameter(required = false)
+	private LUTService lutService;
+
+	@Parameter(required = false)
+	private DisplayService displayService;
+
+	@Parameter(required = false)
+	private LogService log;
+
 	// -- DragAndDropHandler methods --
 
 	@Override
@@ -65,7 +75,6 @@ public class LUTFileDragAndDropHandler extends AbstractDragAndDropHandler<File>
 		if (!super.supports(file)) return false;
 
 		// verify that the file contains a color table
-		final LUTService lutService = getContext().getService(LUTService.class);
 		if (lutService == null) return false;
 		return lutService.isLUT(file);
 	}
@@ -77,22 +86,18 @@ public class LUTFileDragAndDropHandler extends AbstractDragAndDropHandler<File>
 
 	@Override
 	public boolean drop(final File file, final Display<?> display) {
+		if (lutService == null || displayService == null) return false;
 		check(file, display);
 		if (file == null) return true; // trivial case
-
-		final LUTService lutService = getContext().getService(LUTService.class);
-		if (lutService == null) return false;
 
 		final ImageDisplay imageDisplay = (ImageDisplay) display;
 
 		// load color table
-		final ColorTable colorTable = loadLUT(file, lutService);
+		final ColorTable colorTable = loadLUT(file);
 		if (colorTable == null) return false;
 
 		if (display == null) {
 			// create a new display for the LUT
-			final DisplayService displayService =
-				getContext().getService(DisplayService.class);
 			displayService.createDisplay(getBaseName(file), colorTable);
 		}
 		else {
@@ -111,8 +116,7 @@ public class LUTFileDragAndDropHandler extends AbstractDragAndDropHandler<File>
 
 	// -- Helper methods --
 
-	private ColorTable loadLUT(final File file, final LUTService lutService) {
-		final LogService log = getContext().getService(LogService.class);
+	private ColorTable loadLUT(final File file) {
 
 		final ColorTable colorTable;
 		try {

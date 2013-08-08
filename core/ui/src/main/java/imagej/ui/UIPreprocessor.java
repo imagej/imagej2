@@ -41,6 +41,7 @@ import imagej.plugin.AbstractPreprocessorPlugin;
 import imagej.plugin.PreprocessorPlugin;
 
 import org.scijava.Priority;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -52,11 +53,13 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_HIGH_PRIORITY)
 public class UIPreprocessor extends AbstractPreprocessorPlugin {
 
+	@Parameter(required = false)
+	private UIService uiService;
+
 	// -- ModuleProcessor methods --
 
 	@Override
 	public void process(final Module module) {
-		final UIService uiService = getContext().getService(UIService.class);
 		if (uiService == null) return; // no UI service available
 
 		final UserInterface ui = uiService.getDefaultUI();

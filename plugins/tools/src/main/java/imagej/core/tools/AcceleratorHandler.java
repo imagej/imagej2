@@ -47,6 +47,7 @@ import org.scijava.input.Accelerator;
 import org.scijava.input.InputModifiers;
 import org.scijava.input.KeyCode;
 import org.scijava.plugin.Attr;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -74,15 +75,16 @@ import org.scijava.plugin.Plugin;
 		@Attr(name = Tool.ALWAYS_ACTIVE), @Attr(name = Tool.ACTIVE_IN_APP_FRAME) })
 public class AcceleratorHandler extends AbstractTool {
 
+	@Parameter
+	private ModuleService moduleService;
+
+	@Parameter
+	private CommandService commandService;
+
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {
 		final Accelerator acc = evt.getAccelerator();
 		if (acc.getKeyCode() == KeyCode.UNDEFINED) return;
-
-		final ModuleService moduleService =
-			getContext().getService(ModuleService.class);
-		final CommandService commandService =
-			getContext().getService(CommandService.class);
 
 		ModuleInfo moduleInfo = null;
 

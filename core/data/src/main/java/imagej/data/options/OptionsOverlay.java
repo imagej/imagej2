@@ -75,9 +75,6 @@ public class OptionsOverlay extends OptionsPlugin {
 
 	// -- Parameters  --
 
-	@Parameter
-	private OverlayService overlayService;
-
 	@Parameter(label = "Line color")
 	private ColorRGB lineColor = Colors.YELLOW;
 
@@ -113,7 +110,14 @@ public class OptionsOverlay extends OptionsPlugin {
 
 	@Override
 	public void run() {
-		updateSettings(overlayService.getDefaultSettings());
+		// NB: OverlayService is not an @Parameter here, to defer accessing it
+		// until run() is actually called. Otherwise, there is a circular
+		// dependency between the OverlayService and the OptionsService.
+		final OverlayService overlayService =
+			getContext().getService(OverlayService.class);
+		if (overlayService != null) {
+			updateSettings(overlayService.getDefaultSettings());
+		}
 		super.run();
 	}
 

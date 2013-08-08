@@ -40,6 +40,7 @@ import imagej.legacy.LegacyService;
 
 import org.scijava.Priority;
 import org.scijava.app.App;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -57,6 +58,9 @@ public class LegacyImageJApp extends ImageJApp {
 	// NB: This app uses the same name as ImageJApp, but with a higher priority,
 	// so that it takes precedence in the AppService.
 
+	@Parameter(required = false)
+	private LegacyService legacyService;
+
 	@Override
 	public String getArtifactId() {
 		return "ij-legacy";
@@ -64,8 +68,6 @@ public class LegacyImageJApp extends ImageJApp {
 
 	@Override
 	public String getVersion() {
-		final LegacyService legacyService =
-			getContext().getService(LegacyService.class);
 		if (legacyService == null) return super.getVersion();
 		return super.getVersion() + " (" + legacyService.getLegacyVersion() + ")";
 	}

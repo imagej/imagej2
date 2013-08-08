@@ -48,7 +48,7 @@ import net.imglib2.img.Img;
 import net.imglib2.img.cell.AbstractCellImg;
 
 import org.scijava.event.EventHandler;
-import org.scijava.event.EventService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.SortablePlugin;
 
 /**
@@ -62,6 +62,9 @@ import org.scijava.plugin.SortablePlugin;
 public abstract class AbstractDisplayViewer<T> extends SortablePlugin implements
 	DisplayViewer<T>
 {
+
+	@Parameter(required = false)
+	private ImageDisplayService imageDisplayService;
 
 	private Display<T> display;
 	private DisplayWindow window;
@@ -126,23 +129,15 @@ public abstract class AbstractDisplayViewer<T> extends SortablePlugin implements
 
 	// -- Internal AbstractDisplayViewer methods --
 
-	/** Convenience method to obtain the appropriate {@link EventService}. */
-	protected EventService getEventService() {
-		return getContext().getService(EventService.class);
-	}
-
 	protected void updateTitle() {
 		String trailer = "";
-		if (display instanceof ImageDisplay) {
-			ImageDisplayService srv =
-				getContext().getService(ImageDisplayService.class);
-			if (srv != null) {
-				Dataset ds = srv.getActiveDataset((ImageDisplay) display);
-				if (ds != null) {
-					Img<?> img = ds.getImgPlus().getImg();
-					if (AbstractCellImg.class.isAssignableFrom(img.getClass())) {
-						trailer = " (V)";
-					}
+		if (display instanceof ImageDisplay && imageDisplayService != null) {
+			final ImageDisplay imageDisplay = (ImageDisplay) display;
+			final Dataset ds = imageDisplayService.getActiveDataset(imageDisplay);
+			if (ds != null) {
+				final Img<?> img = ds.getImgPlus().getImg();
+				if (AbstractCellImg.class.isAssignableFrom(img.getClass())) {
+					trailer = " (V)";
 				}
 			}
 		}

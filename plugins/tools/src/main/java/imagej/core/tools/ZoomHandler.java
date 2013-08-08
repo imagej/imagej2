@@ -44,6 +44,7 @@ import imagej.tool.Tool;
 
 import org.scijava.input.KeyCode;
 import org.scijava.plugin.Attr;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -57,6 +58,9 @@ import org.scijava.plugin.Plugin;
 	@Attr(name = Tool.ALWAYS_ACTIVE), @Attr(name = Tool.ACTIVE_IN_APP_FRAME) })
 public class ZoomHandler extends AbstractTool {
 
+	@Parameter
+	private CommandService commandService;
+
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {
 		final Display<?> display = evt.getDisplay();
@@ -67,8 +71,7 @@ public class ZoomHandler extends AbstractTool {
 
 		if (keyCode == KeyCode.EQUALS || keyChar == '=')
 		{
-			CommandService cSrv = evt.getContext().getService(CommandService.class);
-			cSrv.run("imagej.core.commands.zoom.ZoomIn");
+			commandService.run("imagej.core.commands.zoom.ZoomIn");
 			evt.consume();
 		}
 	}

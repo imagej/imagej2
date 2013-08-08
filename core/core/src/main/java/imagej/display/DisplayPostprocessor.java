@@ -47,6 +47,7 @@ import java.util.Map;
 
 import org.scijava.Priority;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -60,29 +61,32 @@ import org.scijava.plugin.Plugin;
 	priority = Priority.VERY_LOW_PRIORITY)
 public class DisplayPostprocessor extends AbstractPostprocessorPlugin {
 
+	@Parameter(required = false)
+	private DisplayService displayService;
+
+	@Parameter(required = false)
+	private LogService log;
+
 	@Override
 	public void process(final Module module) {
-		final DisplayService displayService =
-			getContext().getService(DisplayService.class);
 		if (displayService == null) return;
 
 		for (final ModuleItem<?> outputItem : module.getInfo().outputs()) {
 			final Object value = outputItem.getValue(module);
 			final String name = defaultName(outputItem);
-			handleOutput(displayService, name, value);
+			handleOutput(name, value);
 		}
 	}
+
+	// -- Helper methods --
 
 	/**
 	 * Displays output objects.
 	 * 
-	 * @param displayService The service used to create displays.
 	 * @param defaultName The default name for the display, if not already set.
 	 * @param output The object to display.
 	 */
-	public void handleOutput(final DisplayService displayService,
-		final String defaultName, final Object output)
-	{
+	private void handleOutput(final String defaultName, final Object output) {
 		if (output == null) {
 			// ignore null outputs
 			return;
@@ -139,7 +143,7 @@ public class DisplayPostprocessor extends AbstractPostprocessorPlugin {
 			for (final Object key : map.keySet()) {
 				final String itemName = key.toString();
 				final Object itemValue = map.get(key);
-				handleOutput(displayService, itemName, itemValue);
+				handleOutput(itemName, itemValue);
 			}
 			return;
 		}
@@ -148,20 +152,17 @@ public class DisplayPostprocessor extends AbstractPostprocessorPlugin {
 			// handle each item of the collection separately
 			final Collection<?> collection = (Collection<?>) output;
 			for (final Object item : collection) {
-				handleOutput(displayService, defaultName, item);
+				handleOutput(defaultName, item);
 			}
 			return;
 		}
 
 		// no available displays for this type of output
-		final LogService log = getContext().getService(LogService.class);
 		if (log != null) {
 			final String valueClass = output.getClass().getName();
 			log.warn("Ignoring unsupported output: " + valueClass);
 		}
 	}
-
-	// -- Helper methods --
 
 	private boolean addToExisting(final Object output) {
 		// TODO - find a general way to decide this

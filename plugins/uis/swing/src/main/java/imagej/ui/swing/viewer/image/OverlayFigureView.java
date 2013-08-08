@@ -47,15 +47,18 @@ import org.jhotdraw.draw.Drawing;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.event.FigureAdapter;
 import org.jhotdraw.draw.event.FigureEvent;
-import org.scijava.Context;
+import org.scijava.AbstractContextual;
+import org.scijava.plugin.Parameter;
 
 /**
- * TODO
+ * A figure view that links an ImageJ {@link OverlayView} to a JHotDraw
+ * {@link Figure}.
  * 
  * @author Curtis Rueden
  * @author Lee Kamentsky
  */
-public class OverlayFigureView implements FigureView {
+public class OverlayFigureView extends AbstractContextual implements FigureView
+{
 
 	private final SwingImageDisplayViewer displayViewer;
 	private final OverlayView overlayView;
@@ -65,6 +68,9 @@ public class OverlayFigureView implements FigureView {
 
 	private final JHotDrawAdapter adapter;
 
+	@Parameter
+	private JHotDrawService jHotDrawService;
+
 	private boolean updatingFigure = false;
 
 	private boolean updatingOverlay = false;
@@ -72,37 +78,36 @@ public class OverlayFigureView implements FigureView {
 	/**
 	 * Constructor to use to discover the figure to use for an overlay
 	 * 
-	 * @param display - hook to this display
+	 * @param displayViewer - hook to this display viewer
 	 * @param overlayView - represent this overlay
 	 */
-	public OverlayFigureView(final SwingImageDisplayViewer display,
+	public OverlayFigureView(final SwingImageDisplayViewer displayViewer,
 		final OverlayView overlayView)
 	{
-		this(display, overlayView, null);
+		this(displayViewer, overlayView, null);
 	}
 
 	/**
 	 * Constructor to use if the figure already exists, for instance if it was
 	 * created using the CreationTool
 	 * 
-	 * @param display - hook to this display
+	 * @param displayViewer - hook to this display viewer
 	 * @param overlayView - represent this overlay
 	 * @param figure - draw using this figure
 	 */
-	public OverlayFigureView(final SwingImageDisplayViewer display,
+	public OverlayFigureView(final SwingImageDisplayViewer displayViewer,
 		final OverlayView overlayView, final Figure figure)
 	{
-		this.displayViewer = display;
+		setContext(displayViewer.getDisplay().getContext());
+		this.displayViewer = displayViewer;
 		this.overlayView = overlayView;
-		final Context context = display.getDisplay().getContext();
-		final JHotDrawService jHotDrawService =
-			context.getService(JHotDrawService.class);
+
 		adapter = jHotDrawService.getAdapter(overlayView.getData(), figure);
 		if (figure == null) {
 			this.figure = adapter.createDefaultFigure();
 			adapter.updateFigure(overlayView, this.figure);
 
-			final JHotDrawImageCanvas canvas = display.getCanvas();
+			final JHotDrawImageCanvas canvas = displayViewer.getCanvas();
 			final Drawing drawing = canvas.getDrawing();
 			drawing.add(this.figure);
 		}

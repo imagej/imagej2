@@ -89,8 +89,9 @@ import net.imglib2.roi.RectangleRegionOfInterest;
 import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.logic.BitType;
 
-import org.scijava.Context;
+import org.scijava.AbstractContextual;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 
 /**
  * OverlayTranslator translates regions of interest back and forth between
@@ -100,20 +101,21 @@ import org.scijava.log.LogService;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public class OverlayHarmonizer implements DisplayHarmonizer
+public class OverlayHarmonizer extends AbstractContextual implements
+	DisplayHarmonizer
 {
 
-	private final Context context;
-	private final LogService log;
-	private final OverlayService overlayService;
-	private final ThresholdService threshService;
+	@Parameter
+	private OverlayService overlayService;
 
-	public OverlayHarmonizer(LegacyService legSrv)
-	{
-		this.context = legSrv.getContext();
-		this.log = legSrv.getLogService();
-		this.overlayService = legSrv.getOverlayService();
-		this.threshService = legSrv.getThresholdService();
+	@Parameter
+	private ThresholdService thresholdService;
+
+	@Parameter
+	private LogService log;
+
+	public OverlayHarmonizer(final LegacyService legacyService) {
+		setContext(legacyService.getContext());
 	}
 
 	/**
@@ -123,9 +125,6 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 	 */
 	@Override
 	public void updateDisplay(final ImageDisplay display, final ImagePlus imp) {
-		//if (overlayService == null) {
-		//	System.out.println("Trying to use NULL OverlayService!");
-		//}
 		final List<Overlay> overlaysToRemove = overlayService.getOverlays(display);
 		for (final Overlay overlay : overlaysToRemove) {
 			overlayService.removeOverlay(display, overlay);
@@ -220,20 +219,20 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 		double threshMin = proc.getMinThreshold();
 		double threshMax = proc.getMaxThreshold();
 		if (threshMin == ImageProcessor.NO_THRESHOLD) {
-			if (threshService.hasThreshold(display)) {
-				threshService.removeThreshold(display);
+			if (thresholdService.hasThreshold(display)) {
+				thresholdService.removeThreshold(display);
 			}
 		}
 		else { // an IJ1 thresh exists
-			ThresholdOverlay thresh = threshService.getThreshold(display);
+			ThresholdOverlay thresh = thresholdService.getThreshold(display);
 			thresh.setRange(threshMin, threshMax);
 		}
 	}
 
 	private void setLegacyThreshold(ImageDisplay display, ImagePlus imp) {
 		ImageProcessor proc = imp.getProcessor();
-		if (threshService.hasThreshold(display)) {
-			ThresholdOverlay thresh = threshService.getThreshold(display);
+		if (thresholdService.hasThreshold(display)) {
+			ThresholdOverlay thresh = thresholdService.getThreshold(display);
 			double min = thresh.getRangeMin();
 			double max = thresh.getRangeMax();
 			proc.setThreshold(min, max, ImageProcessor.NO_LUT_UPDATE);
@@ -609,7 +608,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 		final double[] ctr = new double[] { poly.xpoints[1], poly.ypoints[1] };
 		final double[] end2 = new double[] { poly.xpoints[2], poly.ypoints[2] };
 		final AngleOverlay angleOverlay =
-			new AngleOverlay(context, ctr, end1, end2);
+			new AngleOverlay(getContext(), ctr, end1, end2);
 		assignPropertiesToOverlay(angleOverlay, roi);
 		return angleOverlay;
 	}
@@ -619,7 +618,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 		assert roi instanceof Line;
 		final Line line = (Line) roi;
 		final LineOverlay lineOverlay =
-			new LineOverlay(context, new double[] { line.x1d, line.y1d },
+			new LineOverlay(getContext(), new double[] { line.x1d, line.y1d },
 				new double[] { line.x2d, line.y2d });
 		assignPropertiesToOverlay(lineOverlay, roi);
 		return lineOverlay;
@@ -627,7 +626,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 
 	private RectangleOverlay createRectangleOverlay(final Roi roi)
 	{
-		final RectangleOverlay overlay = new RectangleOverlay(context);
+		final RectangleOverlay overlay = new RectangleOverlay(getContext());
 		final RectangleRegionOfInterest region = overlay.getRegionOfInterest();
 		final FloatPolygon poly = roi.getFloatPolygon();
 		final Double bounds = poly.getFloatBounds();
@@ -641,7 +640,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 
 	private EllipseOverlay createEllipseOverlay(final Roi roi)
 	{
-		final EllipseOverlay overlay = new EllipseOverlay(context);
+		final EllipseOverlay overlay = new EllipseOverlay(getContext());
 		final EllipseRegionOfInterest region = overlay.getRegionOfInterest();
 		final FloatPolygon poly = roi.getFloatPolygon();
 		final Double bounds = poly.getFloatBounds();
@@ -659,7 +658,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 	{
 		assert roi instanceof PolygonRoi;
 		final PolygonRoi polygonRoi = (PolygonRoi) roi;
-		final PolygonOverlay overlay = new PolygonOverlay(context);
+		final PolygonOverlay overlay = new PolygonOverlay(getContext());
 		final PolygonRegionOfInterest region = overlay.getRegionOfInterest();
 		final FloatPolygon poly = polygonRoi.getFloatPolygon();
 		final float[] xCoords = poly.xpoints;
@@ -678,7 +677,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 		assert roi instanceof ShapeRoi;
 		final ShapeRoi polygonRoi = (ShapeRoi) roi;
 		final Rectangle bounds = polygonRoi.getBounds();
-		final GeneralPathOverlay overlay = new GeneralPathOverlay(context);
+		final GeneralPathOverlay overlay = new GeneralPathOverlay(getContext());
 		final GeneralPathRegionOfInterest region = overlay.getRegionOfInterest();
 		region.reset();
 		final double[] coords = new double[6];
@@ -726,7 +725,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 			final double[] pt = new double[]{x,y};
 			points.add(pt);
 		}
-		final PointOverlay overlay = new PointOverlay(context, points);
+		final PointOverlay overlay = new PointOverlay(getContext(), points);
 		assignPropertiesToOverlay(overlay, roi);
 		return overlay;
 	}
@@ -757,7 +756,7 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 		final BinaryMaskRegionOfInterest<BitType, Img<BitType>> broi =
 			new BinaryMaskRegionOfInterest<BitType, Img<BitType>>(img);
 		final Overlay overlay =
-			new BinaryMaskOverlay<BitType, Img<BitType>>(context, broi);
+			new BinaryMaskOverlay<BitType, Img<BitType>>(getContext(), broi);
 		assignPropertiesToOverlay(overlay, roi);
 		return overlay;
 	}
@@ -769,7 +768,8 @@ public class OverlayHarmonizer implements DisplayHarmonizer
 		final Double bounds = tRoi.getFloatBounds();
 		final double x = bounds.x;
 		final double y = bounds.y;
-		final TextOverlay overlay = new TextOverlay(context, x, y, tRoi.getText());
+		final TextOverlay overlay =
+			new TextOverlay(getContext(), x, y, tRoi.getText());
 		switch (tRoi.getJustification()) {
 			case TextRoi.LEFT:
 				overlay.setJustification(Justification.LEFT);

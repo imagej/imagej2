@@ -52,6 +52,7 @@ import org.scijava.Context;
 import org.scijava.event.EventService;
 import org.scijava.input.MouseCursor;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 
 /**
  * The DefaultImageCanvas maintains a viewport, a zoom scale and a center
@@ -141,6 +142,12 @@ public class DefaultImageCanvas implements ImageCanvas {
 	/** The standard zoom levels for the canvas. */
 	private final double[] zoomLevels;
 
+	@Parameter(required = false)
+	private LogService log;
+
+	@Parameter(required = false)
+	private EventService eventService;
+
 	/** Initial scale factor, for resetting zoom. */
 	private double initialScale = 1;
 
@@ -178,7 +185,6 @@ public class DefaultImageCanvas implements ImageCanvas {
 	public void setViewportSize(final int width, final int height) {
 		viewportSize.x = width;
 		viewportSize.y = height;
-		final EventService eventService = getEventService();
 		if (eventService != null) {
 			eventService.publish(new ViewportResizeEvent(this));
 		}
@@ -214,7 +220,6 @@ public class DefaultImageCanvas implements ImageCanvas {
 	@Override
 	public void setCursor(final MouseCursor cursor) {
 		mouseCursor = cursor;
-		final EventService eventService = getEventService();
 		if (eventService != null) eventService.publish(new MouseCursorEvent(this));
 	}
 
@@ -414,25 +419,10 @@ public class DefaultImageCanvas implements ImageCanvas {
 	private void publishPanZoomEvent() {
 		final Context context = getDisplay().getContext();
 		if (context == null) return;
-		final EventService eventService = getEventService();
 		if (eventService != null) eventService.publish(new PanZoomEvent(this));
 	}
 
 	// -- Helper methods --
-
-	/** Gets the log to which messages should be sent. */
-	private LogService getLog() {
-		final Context context = display.getContext();
-		if (context == null) return null;
-		return context.getService(LogService.class);
-	}
-
-	/** Gets the service to which events should be published. */
-	private EventService getEventService() {
-		final Context context = display.getContext();
-		if (context == null) return null;
-		return context.getService(EventService.class);
-	}
 
 	/**
 	 * Gets the coordinate of the left edge of the viewport in <em>data</em>
@@ -454,7 +444,6 @@ public class DefaultImageCanvas implements ImageCanvas {
 	/** Checks whether the given scale is out of bounds. */
 	private boolean scaleOutOfBounds(final double desiredScale) {
 		if (desiredScale <= 0) {
-			final LogService log = getLog();
 			if (log != null) log.warn("**** BAD SCALE: " + desiredScale + " ****");
 			return true;
 		}

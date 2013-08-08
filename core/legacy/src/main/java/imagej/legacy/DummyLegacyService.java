@@ -35,33 +35,25 @@
 
 package imagej.legacy;
 
-import imagej.data.DatasetService;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayService;
-import imagej.data.threshold.ThresholdService;
-import imagej.display.DisplayService;
-import imagej.options.OptionsService;
-
 import org.scijava.Context;
 import org.scijava.Prioritized;
 import org.scijava.app.StatusService;
-import org.scijava.event.EventService;
 import org.scijava.log.LogService;
 import org.scijava.log.StderrLogService;
-import org.scijava.plugin.PluginService;
 
 /**
  * A dummy LegacyService.
- * 
+ * <p>
  * Before the ImageJ {@link Context} has started up, we still would like to be
  * able to use legacy ImageJ 1.x. For that to work *even if* ImageJ 1.x has been
  * patched using the {@link LegacyInjector}, we need to set the LegacyService to
  * a valid instance.
- * 
+ * </p>
+ * <p>
  * This LegacyService does not do anything, though, except waiting to be
  * replaced by a <b>real</b> LegacyService when an ImageJ {@link Context}
  * initializes it.
- * 
+ * </p>
  * 
  * @author Johannes Schindelin
  */
@@ -114,53 +106,13 @@ public class DummyLegacyService implements LegacyService {
 	}
 
 	@Override
-	public EventService getEventService() {
-		throw new UnsupportedOperationException("The DummyLegacyService has no EventService!");
-	}
-
-	@Override
-	public PluginService getPluginService() {
-		throw new UnsupportedOperationException("The DummyLegacyService has no PluginService!");
-	}
-
-	@Override
-	public OptionsService getOptionsService() {
-		throw new UnsupportedOperationException("The DummyLegacyService has no OptionService!");
-	}
-
-	@Override
-	public ImageDisplayService getImageDisplayService() {
-		throw new UnsupportedOperationException("The DummyLegacyService has no ImageDisplayService!");
-	}
-
-	@Override
-	public DisplayService getDisplayService() {
-		throw new UnsupportedOperationException("The DummyLegacyService has no DisplayService!");
-	}
-
-	@Override
-	public DatasetService getDatasetService() {
-		throw new UnsupportedOperationException("The DummyLegacyService has no DatasetService!");
-	}
-
-	@Override
-	public OverlayService getOverlayService() {
-		throw new UnsupportedOperationException("The DummyLegacyService has no OverlayService!");
-	}
-
-	@Override
-	public ThresholdService getThresholdService() {
-		throw new UnsupportedOperationException("The DummyLegacyService has no ThresholdService!");
-	}
-
-	@Override
-	public StatusService getStatusService() {
-		throw new UnsupportedOperationException("The DummyLegacyService has no StatusService!");
-	}
-
-	@Override
-	public LogService getLogService() {
+	public LogService log() {
 		return log;
+	}
+
+	@Override
+	public StatusService status() {
+		throw new UnsupportedOperationException("The DummyLegacyService has no StatusService!");
 	}
 
 	@Override

@@ -50,7 +50,9 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.pivot.wtk.DesktopApplicationContext;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.thread.ThreadService;
 
 /**
  * Apache Pivot-based user interface for ImageJ.
@@ -61,6 +63,12 @@ import org.scijava.plugin.Plugin;
 public class PivotUI extends AbstractUserInterface implements Runnable {
 
 	public static final String NAME = "pivot";
+
+	@Parameter
+	private ThreadService threadService;
+
+	@Parameter(required = false)
+	private LogService log;
 
 	/** The Pivot application context. */
 	private PivotApplication app;
@@ -134,10 +142,9 @@ public class PivotUI extends AbstractUserInterface implements Runnable {
 
 	@Override
 	protected void createUI() {
-		final LogService log = getContext().getService(LogService.class);
 		try {
 			// call run() method in a separate thread, blocking until finished
-			getUIService().getThreadService().run(this).get();
+			threadService.run(this).get();
 		}
 		catch (final ExecutionException exc) {
 			if (log != null) log.error(exc);
@@ -159,7 +166,6 @@ public class PivotUI extends AbstractUserInterface implements Runnable {
 	 * way past accessibility restrictions to grab it anyway...
 	 */
 	private PivotApplication getApplicationContext() {
-		final LogService log = getContext().getService(LogService.class);
 		try {
 			final Field field =
 				DesktopApplicationContext.class.getDeclaredField("application");

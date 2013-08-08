@@ -50,17 +50,19 @@ import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
 
+import org.scijava.AbstractContextual;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+
 /**
  * Provides methods for synchronizing data between an {@link ImageDisplay} and
  * an {@link ImagePlus}.
  * 
  * @author Barry DeZonia
  */
-public class Harmonizer {
+public class Harmonizer extends AbstractContextual {
 
 	// -- instance variables --
-
-	private final LegacyService legSrv;
 
 	private final ImageTranslator imageTranslator;
 	private final Map<ImagePlus, Integer> bitDepthMap;
@@ -75,20 +77,27 @@ public class Harmonizer {
 	private final PositionHarmonizer positionHarmonizer;
 	private final NameHarmonizer nameHarmonizer;
 
+	@Parameter
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter
+	private LogService log;
+
 	// -- constructor --
 
-	public Harmonizer(final LegacyService legSrv, final ImageTranslator trans) {
-		this.legSrv = legSrv;
+	public Harmonizer(final LegacyService legacyService,
+		final ImageTranslator trans)
+	{
+		setContext(legacyService.getContext());
 		imageTranslator = trans;
 		bitDepthMap = new HashMap<ImagePlus, Integer>();
 		grayPixelHarmonizer = new GrayPixelHarmonizer();
 		colorPixelHarmonizer = new ColorPixelHarmonizer();
-		colorTableHarmonizer =
-			new ColorTableHarmonizer(legSrv.getImageDisplayService());
+		colorTableHarmonizer = new ColorTableHarmonizer(imageDisplayService);
 		metadataHarmonizer = new MetadataHarmonizer();
 		compositeHarmonizer = new CompositeHarmonizer();
-		planeHarmonizer = new PlaneHarmonizer(legSrv.getLogService());
-		overlayHarmonizer = new OverlayHarmonizer(legSrv);
+		planeHarmonizer = new PlaneHarmonizer(log);
+		overlayHarmonizer = new OverlayHarmonizer(legacyService);
 		positionHarmonizer = new PositionHarmonizer();
 		nameHarmonizer = new NameHarmonizer();
 	}
@@ -103,8 +112,6 @@ public class Harmonizer {
 	public void
 		updateLegacyImage(final ImageDisplay display, final ImagePlus imp)
 	{
-		final ImageDisplayService imageDisplayService =
-			legSrv.getImageDisplayService();
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
 		/*
 		boolean binaryTypeChange = false;
@@ -169,8 +176,6 @@ public class Harmonizer {
 		// virtual stacks.
 		saveCurrentSlice(imp);
 
-		final ImageDisplayService imageDisplayService =
-			legSrv.getImageDisplayService();
 		final Dataset ds = imageDisplayService.getActiveDataset(display);
 
 		// did type of ImagePlus change?
@@ -388,8 +393,7 @@ public class Harmonizer {
 		//		imageTranslator.createDisplay(impCopy, ds.getAxes());
 		final ImageDisplay tmpDisplay = 
 			imageTranslator.createDisplay(imp, ds.getAxes());
-		ImageDisplayService idSrv = legSrv.getImageDisplayService();
-		final Dataset tmpDs = idSrv.getActiveDataset(tmpDisplay);
+		final Dataset tmpDs = imageDisplayService.getActiveDataset(tmpDisplay);
 		ds.setImgPlus(tmpDs.getImgPlus());
 		ds.setRGBMerged(tmpDs.isRGBMerged());
 		tmpDisplay.close();

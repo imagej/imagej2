@@ -40,7 +40,6 @@ import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
 import imagej.plugin.PostprocessorPlugin;
 import imagej.plugin.PreprocessorPlugin;
-import imagej.plugin.ServicePreprocessor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -156,18 +155,6 @@ public class DefaultCommandService extends AbstractPTService<Command> implements
 			pluginService.getPluginsOfClass(className);
 		final List<CommandInfo> commands = getCommandsUnknown(downcast(plugins));
 		return commands;
-	}
-
-	@Override
-	public <C extends Command> CommandInfo populateServices(final C command) {
-		@SuppressWarnings("unchecked")
-		final Class<C> c = (Class<C>) command.getClass();
-		final CommandInfo info = getCommand(c);
-		final CommandModule module = new CommandModule(info, command);
-		final ServicePreprocessor servicePreprocessor = new ServicePreprocessor();
-		servicePreprocessor.setContext(getContext());
-		servicePreprocessor.process(module);
-		return info;
 	}
 
 	@Override

@@ -71,6 +71,7 @@ import net.imglib2.type.numeric.RealType;
 
 import org.scijava.Context;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 
 /**
  * Default implementation of {@link Dataset}.
@@ -80,8 +81,11 @@ import org.scijava.log.LogService;
  */
 public class DefaultDataset extends AbstractData implements Dataset {
 
-	private final LogService log;
-	private final DataTypeService dataTypeService;
+	@Parameter
+	private LogService log;
+
+	@Parameter
+	private DataTypeService dataTypeService;
 
 	private ImgPlus<? extends RealType<?>> imgPlus;
 	private boolean rgbMerged;
@@ -91,8 +95,6 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		final ImgPlus<? extends RealType<?>> imgPlus)
 	{
 		super(context);
-		log = context.getService(LogService.class);
-		dataTypeService = context.getService(DataTypeService.class);
 		this.imgPlus = imgPlus;
 		rgbMerged = false;
 		isDirty = false;

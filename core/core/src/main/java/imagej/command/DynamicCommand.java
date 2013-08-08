@@ -39,12 +39,9 @@ import imagej.Cancelable;
 import imagej.module.DefaultMutableModule;
 
 import java.lang.reflect.Field;
-import java.util.List;
 
 import org.scijava.Context;
 import org.scijava.Contextual;
-import org.scijava.event.EventSubscriber;
-import org.scijava.event.EventUtils;
 import org.scijava.plugin.Parameter;
 import org.scijava.util.ClassUtils;
 
@@ -110,20 +107,21 @@ public abstract class DynamicCommand extends DefaultMutableModule implements
 
 	@Override
 	public void setContext(final Context context) {
-		if (this.context != null) {
+		if (this.context == null) {
+			this.context = context;
+		}
+		else if (this.context != context) {
 			throw new IllegalStateException("Context already set");
 		}
-		this.context = context;
 
-		// populate service parameters
-		final CommandInfo commandInfo =
-			CommandUtils.populateServices(context, this);
+		// inject context and service parameters, and subscribe to events
+		context.inject(this);
 
+		// create associated dynamic metadata
+		final CommandService commandService =
+			context.getService(CommandService.class);
+		final CommandInfo commandInfo = commandService.getCommand(getClass());
 		info = new DynamicCommandInfo(commandInfo, getClass());
-
-		// NB: Subscribe to all events handled by this object.
-		// This greatly simplifies event handling for subclasses.
-		EventUtils.subscribe(context, this);
 	}
 
 	// -- Cancelable methods --

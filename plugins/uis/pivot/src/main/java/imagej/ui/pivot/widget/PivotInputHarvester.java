@@ -48,6 +48,7 @@ import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Dialog;
 import org.apache.pivot.wtk.TablePane;
 import org.scijava.Priority;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -61,6 +62,9 @@ import org.scijava.plugin.Plugin;
 public class PivotInputHarvester extends
 	AbstractInputHarvesterPlugin<TablePane, BoxPane>
 {
+
+	@Parameter
+	private UIService uiService;
 
 	// -- InputHarvester methods --
 
@@ -91,7 +95,6 @@ public class PivotInputHarvester extends
 	// -- Helper methods --
 
 	private PivotUI getPivotUI() {
-		final UIService uiService = getContext().getService(UIService.class);
 		final UserInterface ui = uiService.getUI(getUI());
 		return (PivotUI) ui;
 	}

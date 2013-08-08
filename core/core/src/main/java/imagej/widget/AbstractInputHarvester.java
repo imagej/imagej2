@@ -45,7 +45,7 @@ import java.util.List;
 
 import org.scijava.AbstractContextual;
 import org.scijava.object.ObjectService;
-import org.scijava.thread.ThreadService;
+import org.scijava.plugin.Parameter;
 
 /**
  * Abstract superclass for {@link InputHarvester}s.
@@ -61,6 +61,12 @@ import org.scijava.thread.ThreadService;
 public abstract class AbstractInputHarvester<P, W> extends AbstractContextual
 	implements InputHarvester<P, W>
 {
+
+	@Parameter
+	private WidgetService widgetService;
+
+	@Parameter
+	private ObjectService objectService;
 
 	// -- InputHarvester methods --
 
@@ -120,12 +126,9 @@ public abstract class AbstractInputHarvester<P, W> extends AbstractContextual
 		if (resolved) return null; // skip resolved inputs
 
 		final Class<T> type = item.getType();
-		final ThreadService threadService = getContext().getService(ThreadService.class);
 		final WidgetModel model =
-			new WidgetModel(inputPanel, module, item, getObjects(type), threadService);
+			new WidgetModel(getContext(), inputPanel, module, item, getObjects(type));
 
-		final WidgetService widgetService =
-			getContext().getService(WidgetService.class);
 		final InputWidget<?, ?> widget = widgetService.create(model);
 		if (widget != null) {
 			// FIXME: This cast is NOT safe! Multiple UIs in the
@@ -147,8 +150,6 @@ public abstract class AbstractInputHarvester<P, W> extends AbstractContextual
 
 	/** Asks the object service for valid choices */
 	private <T> List<T> getObjects(final Class<T> type) {
-		final ObjectService objectService =
-			getContext().getService(ObjectService.class);
 		return objectService.getObjects(type);
 	}
 

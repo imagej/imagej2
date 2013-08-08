@@ -58,7 +58,7 @@ public final class ImageWindowMethods {
 	/** Replaces {@link ImageWindow#setVisible(boolean)}. */
 	public static void setVisible(final LegacyService legacyService, final ImageWindow obj, final boolean visible) {
 		if (!legacyService.isLegacyMode()) {
-			legacyService.getLogService().debug("ImageWindow.setVisible(" + visible + "): " + obj);
+			legacyService.log().debug("ImageWindow.setVisible(" + visible + "): " + obj);
 		}
 		if (!visible) return;
 		if (legacyService.isLegacyMode() || Utils.isLegacyThread(Thread.currentThread())) {

@@ -42,6 +42,7 @@ import imagej.plugin.AbstractPreprocessorPlugin;
 import imagej.plugin.PreprocessorPlugin;
 
 import org.scijava.Priority;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -60,17 +61,17 @@ import org.scijava.plugin.Plugin;
 	priority = Priority.VERY_HIGH_PRIORITY)
 public class ActiveDisplayPreprocessor extends AbstractPreprocessorPlugin {
 
+	@Parameter(required = false)
+	private DisplayService displayService;
+
+	@Parameter(required = false)
+	private ModuleService moduleService;
+
 	// -- ModuleProcessor methods --
 
 	@Override
 	public void process(final Module module) {
-		final DisplayService displayService =
-			getContext().getService(DisplayService.class);
-		if (displayService == null) return;
-
-		final ModuleService moduleService =
-			getContext().getService(ModuleService.class);
-		if (moduleService == null) return;
+		if (displayService == null || moduleService == null) return;
 
 		final ModuleItem<?> displayInput =
 			moduleService.getSingleInput(module, Display.class);

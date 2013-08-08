@@ -45,6 +45,7 @@ import net.imglib2.meta.Axes;
 
 import org.scijava.app.StatusService;
 import org.scijava.plugin.Attr;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -56,7 +57,13 @@ import org.scijava.plugin.Plugin;
 	name = Tool.ALWAYS_ACTIVE) })
 public class PixelProbe extends AbstractTool {
 
-	private final PixelRecorder recorder = new PixelRecorder(false);
+	@Parameter
+	private StatusService statusService;
+
+	@Parameter
+	private ImageDisplayService imageDisplayService;
+
+	private PixelRecorder recorder;
 
 	// -- Tool methods --
 
@@ -64,12 +71,8 @@ public class PixelProbe extends AbstractTool {
 	
 	@Override
 	public void onMouseMove(final MsMovedEvent evt) {
-		final StatusService statusService =
-				evt.getContext().getService(StatusService.class);
-		final ImageDisplayService dispService =
-				evt.getContext().getService(ImageDisplayService.class);
-		final ImageDisplay disp = dispService.getActiveImageDisplay();
-		if ((disp == null) || !recorder.record(evt)) {
+		final ImageDisplay disp = imageDisplayService.getActiveImageDisplay();
+		if (disp == null || !recorder().record(evt)) {
 			statusService.clearStatus();
 			return;
 		}
@@ -78,9 +81,9 @@ public class PixelProbe extends AbstractTool {
 		final double xcal = disp.calibration(xAxis);
 		final double ycal = disp.calibration(yAxis);
 		final int channelIndex = disp.getAxisIndex(Axes.CHANNEL);
-		final long cx = recorder.getCX();
-		final long cy = recorder.getCY();
-		ChannelCollection values = recorder.getValues();
+		final long cx = recorder().getCX();
+		final long cy = recorder().getCY();
+		ChannelCollection values = recorder().getValues();
 		StringBuilder builder = new StringBuilder();
 		builder.append("x=");
 		if (!Double.isNaN(xcal) && xcal != 1.0) {
@@ -98,8 +101,8 @@ public class PixelProbe extends AbstractTool {
 			builder.append(cy);
 		builder.append(", value=");
 		// single channel image
-		if ((channelIndex == -1) ||
-				(recorder.getDataset().dimension(channelIndex) == 1))
+		if (channelIndex == -1 ||
+				recorder().getDataset().dimension(channelIndex) == 1)
 		{
 			String valueStr = valueString(values.getChannelValue(0));
 			builder.append(valueStr);
@@ -116,16 +119,21 @@ public class PixelProbe extends AbstractTool {
 			}
 			builder.append(")");
 		}
-		recorder.releaseDataset();
+		recorder().releaseDataset();
 		statusService.showStatus(builder.toString());
 	}
 	
 	// -- helpers --
 	
 	private String valueString(double value) {
-		if (recorder.getDataset().isInteger())
+		if (recorder().getDataset().isInteger())
 			return String.format("%d",(long)value);
 		return String.format("%f", value);
+	}
+
+	private PixelRecorder recorder() {
+		if (recorder == null) recorder = new PixelRecorder(getContext(), false);
+		return recorder;
 	}
 
 }

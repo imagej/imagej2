@@ -42,6 +42,7 @@ import java.util.List;
 import net.imglib2.IterableInterval;
 import net.imglib2.type.numeric.RealType;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 
@@ -54,12 +55,15 @@ import org.scijava.plugin.PluginService;
 @Plugin(type = AutoscaleMethod.class, name = "Default")
 public class DefaultAutoscaleMethod<T extends RealType<T>> extends AbstractAutoscaleMethod<T> {
 
+	@Parameter
+	private PluginService pluginService;
+
 	@Override
 	public DataRange getRange(IterableInterval<T> interval)
 	{
 		@SuppressWarnings("rawtypes")
-    List<MinMaxMethod> lists = getContext().getService(PluginService.class)
-		    .createInstancesOfType(MinMaxMethod.class);
+		List<MinMaxMethod> lists =
+			pluginService.createInstancesOfType(MinMaxMethod.class);
     @SuppressWarnings("unchecked")
 		MinMaxMethod<T> minmax = lists.get(0);
 		minmax.initialize(interval);

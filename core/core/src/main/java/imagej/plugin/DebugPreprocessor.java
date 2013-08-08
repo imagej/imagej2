@@ -39,6 +39,7 @@ import imagej.module.Module;
 
 import org.scijava.Priority;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -49,12 +50,14 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = PreprocessorPlugin.class, priority = Priority.FIRST_PRIORITY)
 public class DebugPreprocessor extends AbstractPreprocessorPlugin {
 
+	@Parameter(required = false)
+	private LogService log;
+
 	// -- ModuleProcessor methods --
 
 	@Override
 	public void process(final Module module) {
-		final LogService log = getContext().getService(LogService.class);
-		if (log == null) return;
+		if (log == null || !log.isDebug()) return;
 
 		log.debug("Executing module: " + module.getDelegateObject());
 	}

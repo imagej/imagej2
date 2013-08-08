@@ -36,6 +36,7 @@
 package imagej.ui.swing;
 
 import imagej.core.options.OptionsMemoryAndThreads;
+import imagej.options.OptionsService;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.StatusBar;
 import imagej.ui.UIService;
@@ -49,8 +50,11 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.border.BevelBorder;
 
+import org.scijava.Context;
+import org.scijava.app.StatusService;
 import org.scijava.app.event.StatusEvent;
 import org.scijava.event.EventHandler;
+import org.scijava.plugin.Parameter;
 
 /**
  * Swing implementation of {@link StatusBar}.
@@ -59,13 +63,21 @@ import org.scijava.event.EventHandler;
  */
 public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 
-	private final UIService uiService;
-
 	private final JLabel statusText;
 	private final JProgressBar progressBar;
 
-	public SwingStatusBar(final UIService uiService) {
-		this.uiService = uiService;
+	@Parameter
+	private OptionsService optionsService;
+
+	@Parameter
+	private StatusService statusService;
+
+	@Parameter
+	private UIService uiService;
+
+	public SwingStatusBar(final Context context) {
+		context.inject(this);
+
 		statusText = new JLabel(uiService.getApp().getInfo(false));
 		statusText.setBorder(new BevelBorder(BevelBorder.LOWERED));
 		progressBar = new JProgressBar();
@@ -73,7 +85,6 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 		setLayout(new BorderLayout());
 		add(statusText, BorderLayout.CENTER);
 		add(progressBar, BorderLayout.EAST);
-		uiService.getEventService().subscribe(this);
 		statusText.addMouseListener(this);
 	}
 
@@ -125,9 +136,9 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 	@Override
 	public void mousePressed(final MouseEvent e) {
 		final OptionsMemoryAndThreads options =
-			uiService.getOptionsService().getOptions(OptionsMemoryAndThreads.class);
+			optionsService.getOptions(OptionsMemoryAndThreads.class);
 		if (options.isRunGcOnClick()) System.gc();
-		uiService.getStatusService().showStatus(uiService.getApp().getInfo(true));
+		statusService.showStatus(uiService.getApp().getInfo(true));
 	}
 
 	@Override

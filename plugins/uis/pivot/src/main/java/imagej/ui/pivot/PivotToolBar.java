@@ -35,11 +35,10 @@
 
 package imagej.ui.pivot;
 
-import imagej.tool.ToolService;
 import imagej.ui.ToolBar;
-import imagej.ui.UIService;
 
 import org.apache.pivot.wtk.BoxPane;
+import org.scijava.Context;
 
 /**
  * Pivot implementation of {@link ToolBar}.
@@ -48,18 +47,10 @@ import org.apache.pivot.wtk.BoxPane;
  */
 public class PivotToolBar extends BoxPane implements ToolBar {
 
-	private final ToolService toolService;
+	public PivotToolBar(final Context context) {
+		context.inject(this);
 
-	public PivotToolBar(final UIService uiService) {
-		toolService = uiService.getToolService();
 		populateToolBar();
-	}
-
-	// -- ToolBar methods --
-
-	@Override
-	public ToolService getToolService() {
-		return toolService;
 	}
 
 	// -- Helper methods --

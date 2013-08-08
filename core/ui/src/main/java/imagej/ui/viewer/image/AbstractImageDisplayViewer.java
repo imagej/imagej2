@@ -58,6 +58,7 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
 import org.scijava.event.EventHandler;
+import org.scijava.plugin.Parameter;
 
 /**
  * The AbstractImageDisplayViewer implements the UI-independent elements of an
@@ -74,6 +75,15 @@ public abstract class AbstractImageDisplayViewer extends
 	protected enum ZoomScaleOption {
 		OPTIONS_PERCENT_SCALE, OPTIONS_FRACTIONAL_SCALE
 	}
+
+	@Parameter
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter
+	private ToolService toolService;
+
+	@Parameter
+	private OptionsService optionsService;
 
 	private ImageDisplay display;
 
@@ -121,8 +131,6 @@ public abstract class AbstractImageDisplayViewer extends
 	 *         {@link ZoomScaleOption#OPTIONS_FRACTIONAL_SCALE}
 	 */
 	protected ZoomScaleOption getZoomScaleOption() {
-		final OptionsService optionsService =
-			getContext().getService(OptionsService.class);
 		return optionsService.getOptions(OptionsAppearance.class)
 			.isDisplayFractionalScales() ? ZoomScaleOption.OPTIONS_FRACTIONAL_SCALE
 			: ZoomScaleOption.OPTIONS_PERCENT_SCALE;
@@ -281,10 +289,8 @@ public abstract class AbstractImageDisplayViewer extends
 
 	private boolean isMyDataset(final Dataset ds) {
 		if (ds == null) return false;
-		final ImageDisplayService service =
-			getContext().getService(ImageDisplayService.class);
 		final ImageDisplay disp = getDisplay();
-		return service.getActiveDataset(disp) == ds;
+		return imageDisplayService.getActiveDataset(disp) == ds;
 	}
 
 	// -- Event handlers --
@@ -292,7 +298,6 @@ public abstract class AbstractImageDisplayViewer extends
 	@EventHandler
 	protected void onEvent(final WinActivatedEvent event) {
 		if (event.getDisplay() != getDisplay()) return;
-		final ToolService toolService = getContext().getService(ToolService.class);
 		final ImageDisplay d = getDisplay();
 		if (d == null) return;
 		d.getCanvas().setCursor(toolService.getActiveTool().getCursor());

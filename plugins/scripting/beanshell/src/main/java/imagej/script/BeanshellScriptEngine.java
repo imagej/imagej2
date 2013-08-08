@@ -48,7 +48,8 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
-import org.scijava.util.Log;
+import org.scijava.log.LogService;
+import org.scijava.log.StderrLogService;
 
 /**
  * TODO
@@ -59,6 +60,9 @@ public class BeanshellScriptEngine extends AbstractScriptEngine
 {
 
 	protected final Interpreter interpreter;
+
+	// TODO: Use the application context's LogService.
+	protected final LogService log = new StderrLogService();
 
 	public BeanshellScriptEngine() {
 		interpreter = new Interpreter();
@@ -91,8 +95,9 @@ public class BeanshellScriptEngine extends AbstractScriptEngine
 	protected void setup() {
 		final ScriptContext context = getContext();
 		final Reader reader = context.getReader();
-		if (reader != null) Log
-			.warn("Beanshell does not support redirecting the input");
+		if (reader != null) {
+			log.warn("Beanshell does not support redirecting the input");
+		}
 		final Writer writer = context.getWriter();
 		if (writer != null) interpreter.setOut(new PrintStream(
 			new WriterOutputStream(writer)));

@@ -40,6 +40,7 @@ import imagej.module.Module;
 
 import org.scijava.Priority;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -53,6 +54,9 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = PreprocessorPlugin.class, priority = Priority.HIGH_PRIORITY)
 public class InitPreprocessor extends AbstractPreprocessorPlugin {
 
+	@Parameter(required = false)
+	private LogService log;
+
 	// -- ModuleProcessor methods --
 
 	@Override
@@ -64,7 +68,6 @@ public class InitPreprocessor extends AbstractPreprocessorPlugin {
 			canceled = true;
 			final String moduleClass = module.getInfo().getDelegateClassName();
 			cancelReason = "The module \"" + moduleClass + "\" failed to initialize.";
-			final LogService log = getContext().getService(LogService.class);
 			if (log != null) log.error(exc);
 		}
 	}

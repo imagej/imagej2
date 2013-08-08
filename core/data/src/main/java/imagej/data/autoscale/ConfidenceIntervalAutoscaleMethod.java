@@ -40,6 +40,7 @@ import net.imglib2.histogram.Histogram1d;
 import net.imglib2.histogram.Real1dBinMapper;
 import net.imglib2.type.numeric.RealType;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -56,6 +57,9 @@ public class ConfidenceIntervalAutoscaleMethod<T extends RealType<T>> extends
 	// -- instance variables --
 
 	private double lowerTail, upperTail;
+
+	@Parameter
+	private AutoscaleService autoscaleService;
 
 	// -- ConfidenceIntervalAutoscaleMethod methods --
 
@@ -125,8 +129,7 @@ public class ConfidenceIntervalAutoscaleMethod<T extends RealType<T>> extends
 	@Override
 	public DataRange getRange(IterableInterval<T> interval) {
 		// pass one through data
-		AutoscaleService service = getContext().getService(AutoscaleService.class);
-		DataRange range = service.getDefaultIntervalRange(interval);
+		DataRange range = autoscaleService.getDefaultIntervalRange(interval);
 		// pass two through data
 		Real1dBinMapper<T> mapper =
 			new Real1dBinMapper<T>(range.getMin(), range.getMax(), 1000, false);

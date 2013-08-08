@@ -52,6 +52,7 @@ import org.scijava.Context;
 import org.scijava.app.StatusService;
 import org.scijava.event.EventService;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 
 /**
  * Helper class for executing a {@link Module}, including pre- and
@@ -71,6 +72,15 @@ public class ModuleRunner extends AbstractContextual implements
 	private final Module module;
 	private final List<? extends ModulePreprocessor> pre;
 	private final List<? extends ModulePostprocessor> post;
+
+	@Parameter(required = false)
+	private EventService es;
+
+	@Parameter(required = false)
+	private StatusService ss;
+
+	@Parameter(required = false)
+	private LogService log;
 
 	public ModuleRunner(final Context context, final Module module,
 		final List<? extends ModulePreprocessor> pre,
@@ -97,8 +107,6 @@ public class ModuleRunner extends AbstractContextual implements
 	public ModulePreprocessor preProcess() {
 		if (pre == null) return null; // no preprocessors
 
-		final EventService es = getContext().getService(EventService.class);
-
 		for (final ModulePreprocessor p : pre) {
 			p.process(module);
 			if (es != null) es.publish(new ModulePreprocessEvent(module, p));
@@ -110,7 +118,6 @@ public class ModuleRunner extends AbstractContextual implements
 	/** Feeds the module through the {@link ModulePostprocessor}s. */
 	public void postProcess() {
 		if (post == null) return; // no postprocessors
-		final EventService es = getContext().getService(EventService.class);
 
 		for (final ModulePostprocessor p : post) {
 			p.process(module);
@@ -126,12 +133,10 @@ public class ModuleRunner extends AbstractContextual implements
 			run();
 		}
 		catch (final RuntimeException exc) {
-			final LogService log = getContext().getService(LogService.class);
 			if (log != null) log.error("Module threw exception", exc);
 			throw exc;
 		}
 		catch (final Error err) {
-			final LogService log = getContext().getService(LogService.class);
 			if (log != null) log.error("Module threw error", err);
 			throw err;
 		}
@@ -148,8 +153,6 @@ public class ModuleRunner extends AbstractContextual implements
 	public void run() {
 		if (module == null) return;
 
-		final EventService es = getContext().getService(EventService.class);
-		final StatusService ss = getContext().getService(StatusService.class);
 		final String title = module.getInfo().getTitle();
 
 		// announce start of execution process
@@ -160,7 +163,7 @@ public class ModuleRunner extends AbstractContextual implements
 		final ModulePreprocessor canceler = preProcess();
 		if (canceler != null) {
 			// module execution was canceled by preprocessor
-			cancel(es, ss, title, canceler.getCancelReason());
+			cancel(title, canceler.getCancelReason());
 			return;
 		}
 
@@ -171,7 +174,7 @@ public class ModuleRunner extends AbstractContextual implements
 			final Cancelable cancelable = (Cancelable) module;
 			if (cancelable.isCanceled()) {
 				// module execution was canceled by the module itself
-				cancel(es, ss, title, cancelable.getCancelReason());
+				cancel(title, cancelable.getCancelReason());
 				return;
 			}
 		}
@@ -187,9 +190,7 @@ public class ModuleRunner extends AbstractContextual implements
 
 	// -- Helper methods --
 
-	private void cancel(final EventService es, final StatusService ss,
-		final String title, final String reason)
-	{
+	private void cancel(final String title, final String reason) {
 		if (ss != null) ss.showStatus("Canceling command: " + title);
 		module.cancel();
 		if (es != null) es.publish(new ModuleCanceledEvent(module, reason));

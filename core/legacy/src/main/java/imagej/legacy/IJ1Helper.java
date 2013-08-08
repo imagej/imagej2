@@ -50,7 +50,6 @@ import imagej.platform.event.AppAboutEvent;
 import imagej.platform.event.AppOpenFilesEvent;
 import imagej.platform.event.AppPreferencesEvent;
 import imagej.platform.event.AppQuitEvent;
-import imagej.platform.event.ApplicationEvent;
 
 import java.awt.Button;
 import java.awt.Checkbox;
@@ -68,26 +67,34 @@ import java.util.Vector;
 import org.scijava.AbstractContextual;
 import org.scijava.Context;
 import org.scijava.event.EventHandler;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 
 /**
  * A helper class to interact with ImageJ 1.x.
- * 
- * The DefaultLegacyService needs to patch ImageJ 1.x' classes before they
- * are loaded. Unfortunately, this is tricky: if the DefaultLegacyService
- * already uses those classes, it is a matter of luck whether we can get
- * the patches in before those classes are loaded.
- * 
- * Therefore, we put as much interaction with ImageJ 1.x as possible into
- * this class and keep a reference to it in the DefaultLegacyService.
+ * <p>
+ * The DefaultLegacyService needs to patch ImageJ 1.x's classes before they are
+ * loaded. Unfortunately, this is tricky: if the DefaultLegacyService already
+ * uses those classes, it is a matter of luck whether we can get the patches in
+ * before those classes are loaded.
+ * </p>
+ * <p>
+ * Therefore, we put as much interaction with ImageJ 1.x as possible into this
+ * class and keep a reference to it in the DefaultLegacyService.
+ * </p>
  * 
  * @author Johannes Schindelin
  */
-public class IJ1Helper {
+public class IJ1Helper extends AbstractContextual {
 
 	/** A reference to the legacy service, just in case we need it */
 	private final DefaultLegacyService legacyService;
 
+	@Parameter
+	private LogService log;
+
 	public IJ1Helper(final DefaultLegacyService legacyService) {
+		setContext(legacyService.getContext());
 		this.legacyService = legacyService;
 	}
 
@@ -97,7 +104,7 @@ public class IJ1Helper {
 			new ImageJ(ImageJ.NO_SHOW);
 		}
 		catch (final Throwable t) {
-			legacyService.getLogService().warn("Failed to instantiate IJ1.", t);
+			log.warn("Failed to instantiate IJ1.", t);
 		} else {
 			final LegacyImageMap imageMap = legacyService.getImageMap();
 			for (int i = 1; i <= WindowManager.getImageCount(); i++) {
@@ -468,18 +475,22 @@ public class IJ1Helper {
 	 */
 	private static class LegacyEventDelegator extends AbstractContextual {
 
+		@Parameter(required = false)
+		private LegacyService legacyService;
+
 		// -- MacAdapter re-implementations --
 
 		@EventHandler
-		protected void onEvent(final AppAboutEvent event) {
-			if (isLegacyMode(event)) {
+		private void onEvent(@SuppressWarnings("unused") final AppAboutEvent event)
+		{
+			if (isLegacyMode()) {
 				IJ.run("About ImageJ...");
 			}
 		}
 
 		@EventHandler
-		protected void onEvent(final AppOpenFilesEvent event) {
-			if (isLegacyMode(event)) {
+		private void onEvent(final AppOpenFilesEvent event) {
+			if (isLegacyMode()) {
 				final List<File> files = new ArrayList<File>(event.getFiles());
 				for (final File file : files) {
 					new Opener().openAndAddToRecent(file.getAbsolutePath());
@@ -488,21 +499,22 @@ public class IJ1Helper {
 		}
 
 		@EventHandler
-		protected void onEvent(final AppQuitEvent event) {
-			if (isLegacyMode(event)) {
+		private void onEvent(@SuppressWarnings("unused") final AppQuitEvent event) {
+			if (isLegacyMode()) {
 				new Executer("Quit", null); // works with the CommandListener
 			}
 		}
 
 		@EventHandler
-		protected void onEvent(final AppPreferencesEvent event) {
-			if (isLegacyMode(event)) {
+		private void onEvent(
+			@SuppressWarnings("unused") final AppPreferencesEvent event)
+		{
+			if (isLegacyMode()) {
 				IJ.error("The ImageJ preferences are in the Edit>Options menu.");
 			}
 		}
 
-		private static boolean isLegacyMode(final ApplicationEvent event) {
-			final LegacyService legacyService = event.getContext().getService(LegacyService.class);
+		private boolean isLegacyMode() {
 			return legacyService != null && legacyService.isLegacyMode();
 		}
 

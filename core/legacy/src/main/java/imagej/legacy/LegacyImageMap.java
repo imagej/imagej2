@@ -62,6 +62,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.scijava.AbstractContextual;
 import org.scijava.event.EventHandler;
+import org.scijava.plugin.Parameter;
 
 /**
  * An image map between legacy ImageJ {@link ImagePlus} objects and modern
@@ -131,6 +132,12 @@ public class LegacyImageMap extends AbstractContextual {
 	 */
 	private final DefaultLegacyService legacyService;
 
+	@Parameter
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter
+	private UIService uiService;
+
 	// -- Constructor --
 
 	public LegacyImageMap(final DefaultLegacyService legacyService) {
@@ -186,12 +193,8 @@ public class LegacyImageMap extends AbstractContextual {
 			new Harmonizer(legacyService, imageTranslator);
 		if (toggle) {
 			// make sure that all ImageDisplays have a corresponding ImagePlus
-			final ImageDisplayService imageDisplayService =
-					legacyService.getImageDisplayService();
 			final List<ImageDisplay> imageDisplays =
 					imageDisplayService.getImageDisplays();
-			final UIService uiService =
-					imageDisplayService.getContext().getService(UIService.class);
 			// TODO: this is almost exactly what LegacyCommand does, so it is
 			// pretty obvious that it is misplaced in there.
 			for (final ImageDisplay display : imageDisplays) {
@@ -201,7 +204,7 @@ public class LegacyImageMap extends AbstractContextual {
 					if (LegacyUtils.dimensionsIJ1Compatible(ds)) {
 						imp = registerDisplay(display);
 						final ImageDisplayViewer viewer =
-								(ImageDisplayViewer)uiService.getDisplayViewer(display);
+								(ImageDisplayViewer) uiService.getDisplayViewer(display);
 						if (viewer != null) {
 							final DisplayWindow window = viewer.getWindow();
 							if (window != null) window.showDisplay(!toggle);

@@ -47,8 +47,8 @@ import javax.swing.text.AbstractDocument;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 
+import org.scijava.log.LogService;
 import org.scijava.plugin.Plugin;
-import org.scijava.util.Log;
 
 /**
  * Swing implementation of text field widget.
@@ -59,6 +59,8 @@ import org.scijava.util.Log;
 public class SwingTextFieldWidget extends SwingInputWidget<String> implements
 	DocumentListener, TextFieldWidget<JPanel>
 {
+
+	private LogService log;
 
 	private JTextField textField;
 
@@ -91,6 +93,7 @@ public class SwingTextFieldWidget extends SwingInputWidget<String> implements
 	@Override
 	public void set(final WidgetModel model) {
 		super.set(model);
+		log = model.getContext().getService(LogService.class);
 
 		final int columns = model.getItem().getColumnCount();
 		textField = new JTextField("", columns);
@@ -123,7 +126,9 @@ public class SwingTextFieldWidget extends SwingInputWidget<String> implements
 			final DocumentFilter docFilter = new DocumentSizeFilter(maxChars);
 			((AbstractDocument) doc).setDocumentFilter(docFilter);
 		}
-		else Log.warn("Unknown document type: " + doc.getClass().getName());
+		else if (log != null) {
+			log.warn("Unknown document type: " + doc.getClass().getName());
+		}
 	}
 
 	// -- AbstractUIInputWidget methods ---

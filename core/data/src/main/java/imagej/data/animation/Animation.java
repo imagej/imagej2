@@ -40,6 +40,7 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 
 /**
  * The Animation class takes care of running an animation along an axis.
@@ -51,8 +52,10 @@ import org.scijava.log.LogService;
  */
 public class Animation implements Runnable {
 
+	@Parameter
+	private LogService log;
+
 	private final ImageDisplay display;
-	private final LogService log;
 
 	private boolean active;
 	private Thread thread;
@@ -70,7 +73,7 @@ public class Animation implements Runnable {
 	/** Creates an animation for the given {@link ImageDisplay}. */
 	public Animation(final ImageDisplay display) {
 		this.display = display;
-		log = display.getContext().getService(LogService.class);
+		display.getContext().inject(this);
 
 		// assign default animation options
 		if (display.numDimensions() > 2) {
