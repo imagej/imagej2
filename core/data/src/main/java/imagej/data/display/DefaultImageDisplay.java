@@ -81,7 +81,7 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 	@Parameter
 	private ThreadService threadService;
 
-	@Parameter
+	@Parameter(required = false)
 	private DisplayService displayService;
 
 	@Parameter(required = false)
@@ -690,11 +690,16 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 	/**
 	 * Creates a name for the display based on the given name, accounting for
 	 * collisions with other image displays.
+	 * <p>
+	 * NB: If no {@link DisplayService} is available in this display's application
+	 * context, the proposed name will be used without any collision checking.
+	 * </p>
 	 * 
-	 * @param proposedName
+	 * @param proposedName desired name prefix
 	 * @return the name with stuff added to make it unique
 	 */
 	private String createName(final String proposedName) {
+		if (displayService == null) return proposedName; // no way to check
 		String theName = proposedName;
 		int n = 0;
 		while (!displayService.isUniqueName(theName)) {
