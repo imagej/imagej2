@@ -85,7 +85,7 @@ public class SaveAsImage extends ContextCommand {
 	@Parameter(type = ItemIO.BOTH)
 	private Display<?> display;
 
-	public void initOutputFile() {
+	protected void initOutputFile() {
 		outputFile = new File(dataset.getImgPlus().getSource());
 	}
 
