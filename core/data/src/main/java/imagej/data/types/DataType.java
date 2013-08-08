@@ -107,8 +107,8 @@ public interface DataType<T extends NumericType<T>> extends Contextual,
 	void upperBound(T dest);
 
 	/**
-	 * Number of bits of information encoded by the type. If this DataType is not
-	 * fully bounded an UnsupportedOperationException is thrown.
+	 * Number of bits of information required to represent data in the type. If
+	 * this DataType is of variable size returns -1.
 	 */
 	int bitCount();
 

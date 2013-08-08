@@ -102,8 +102,7 @@ public class DataTypeVariableBitSignedFloat extends AbstractContextual implement
 
 	@Override
 	public int bitCount() {
-		throw new UnsupportedOperationException(
-			"This data type's memory use is variable.");
+		return -1;
 	}
 
 	@Override
