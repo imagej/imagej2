@@ -113,7 +113,7 @@ public class TestBinaryMaskOverlay {
 	}
 
 	@Test
-	public void testReadExternal() {
+	public void testReadExternal() throws IOException, ClassNotFoundException {
 		final Context context = new Context();
 		final LogService log = context.getService(LogService.class);
 		final Random r = new Random(54321);
@@ -126,40 +126,30 @@ public class TestBinaryMaskOverlay {
 			}
 			final BinaryMaskOverlay overlay = makeOverlay(context, imgArray);
 			final ColorRGB colorIn =
-				new ColorRGB(r.nextInt(256), r.nextInt(256), r.nextInt(256));
+					new ColorRGB(r.nextInt(256), r.nextInt(256), r.nextInt(256));
 			overlay.setFillColor(colorIn);
 			overlay.setAlpha(r.nextInt(256));
 			final ByteArrayOutputStream os = new ByteArrayOutputStream();
-			try {
-				final ObjectOutputStream out = new ObjectOutputStream(os);
-				out.writeObject(overlay);
-				final byte[] buffer = os.toByteArray();
-				final ObjectInputStream in =
+			final ObjectOutputStream out = new ObjectOutputStream(os);
+			out.writeObject(overlay);
+			final byte[] buffer = os.toByteArray();
+			final ObjectInputStream in =
 					new ObjectInputStream(new ByteArrayInputStream(buffer));
-				final Object o = in.readObject();
-				assertEquals(0, in.available());
-				assertTrue(o instanceof BinaryMaskOverlay);
-				final BinaryMaskOverlay overlayOut = (BinaryMaskOverlay) o;
-				assertEquals(overlayOut.getAlpha(), overlay.getAlpha());
-				final ColorRGB fillOut = overlayOut.getFillColor();
-				assertEquals(colorIn, fillOut);
-				final RealRandomAccess<BitType> ra =
+			final Object o = in.readObject();
+			assertEquals(0, in.available());
+			assertTrue(o instanceof BinaryMaskOverlay);
+			final BinaryMaskOverlay overlayOut = (BinaryMaskOverlay) o;
+			assertEquals(overlayOut.getAlpha(), overlay.getAlpha());
+			final ColorRGB fillOut = overlayOut.getFillColor();
+			assertEquals(colorIn, fillOut);
+			final RealRandomAccess<BitType> ra =
 					overlayOut.getRegionOfInterest().realRandomAccess();
-				for (int i = 0; i < 5; i++) {
-					ra.setPosition(i, 0);
-					for (int j = 0; j < 5; j++) {
-						ra.setPosition(j, 1);
-						assertEquals(imgArray[i][j], ra.get().get());
-					}
+			for (int i = 0; i < 5; i++) {
+				ra.setPosition(i, 0);
+				for (int j = 0; j < 5; j++) {
+					ra.setPosition(j, 1);
+					assertEquals(imgArray[i][j], ra.get().get());
 				}
-			}
-			catch (final IOException e) {
-				log.error(e);
-				throw new AssertionError(e.getMessage());
-			}
-			catch (final ClassNotFoundException e) {
-				log.error(e);
-				throw new AssertionError(e.getMessage());
 			}
 		}
 	}
