@@ -332,6 +332,15 @@ public class BigComplex implements ComplexType<BigComplex> {
 		setImag(i);
 	}
 
+	/**
+	 * Sets the real and imaginary components of this BigComplex to given String
+	 * values. The strings must represent numbers that BigDecimal can parse.
+	 */
+	public void setComplexNumber(String r, String i) {
+		setReal(r);
+		setImag(i);
+	}
+
 	// -- ComplexType methods --
 
 	/**
