@@ -45,12 +45,9 @@ import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.Result;
 import imagej.ui.UIService;
 import imagej.widget.FileWidget;
-import io.scif.img.ImgSaver;
 
 import java.io.File;
 import java.io.IOException;
-
-import net.imglib2.img.ImgPlus;
 
 import org.scijava.ItemIO;
 import org.scijava.log.LogService;
@@ -102,25 +99,7 @@ public class SaveAsImage extends ContextCommand {
 					DialogPrompt.OptionType.YES_NO_OPTION);
 			if (result != DialogPrompt.Result.YES_OPTION) return; // abort
 		}
-
-		// FIXME: Hacky stuff for XYZCT hysterical raisins.
-		// Remove once SCIFIO's ImgSaver is fully N-dimensional.
-		final ImgSaver imageSaver = new ImgSaver();
-		imageSaver.setContext(getContext());
 		try {
-			@SuppressWarnings("rawtypes")
-			final ImgPlus img = dataset.getImgPlus();
-			if (imageSaver.isCompressible(img)) {
-				final Result result =
-					uiService.showDialog("Your image contains axes other than XYZCT.\n"
-						+ "When saving, these may be compressed to the "
-						+ "Channel axis (or the save process may simply fail).\n"
-						+ "Would you like to continue?", "Save",
-						DialogPrompt.MessageType.WARNING_MESSAGE,
-						DialogPrompt.OptionType.YES_NO_OPTION);
-				if (result != DialogPrompt.Result.YES_OPTION) return; // abort
-			}
-
 			datasetService.save(dataset, outputFile.getAbsolutePath());
 		}
 		catch (final IOException exc) {
