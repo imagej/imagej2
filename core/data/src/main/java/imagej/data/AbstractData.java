@@ -77,7 +77,7 @@ public abstract class AbstractData extends AbstractContextual implements Data,
 	}
 	
 	public AbstractData(final Context context) {
-		setContext(context);
+		if (context != null) setContext(context);
 	}
 
 	// -- AbstractData methods --
