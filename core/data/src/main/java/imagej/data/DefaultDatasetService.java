@@ -37,6 +37,7 @@ package imagej.data;
 
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
+import imagej.data.types.DataTypeService;
 import io.scif.FormatException;
 import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
@@ -96,6 +97,11 @@ public final class DefaultDatasetService extends AbstractService implements
 
 	@Parameter
 	private FormatService formatService;
+
+	// NB: The create(ImgPlus) method instantiates a
+	// DefaultDataset, which requires a DataTypeService.
+	@Parameter
+	private DataTypeService dataTypeService;
 
 	// -- DatasetService methods --
 
