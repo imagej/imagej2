@@ -87,7 +87,7 @@ public class DefaultDataTypeService extends
 		sortedInstances = Collections.unmodifiableList(sortedInstances);
 	}
 
-	// -- DataTypeSerivce methods --
+	// -- DataTypeService methods --
 
 	@Override
 	public List<DataType<?>> getInstances() {
