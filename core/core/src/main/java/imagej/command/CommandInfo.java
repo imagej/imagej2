@@ -304,7 +304,7 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo,
 	public Module createModule() throws ModuleException {
 		// if the command implements Module, return a new instance directly
 		try {
-			final Class<?> commandClass = info.loadClass();
+			final Class<?> commandClass = loadClass();
 			if (Module.class.isAssignableFrom(commandClass)) {
 				return (Module) commandClass.newInstance();
 			}
