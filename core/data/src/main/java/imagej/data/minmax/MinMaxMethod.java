@@ -35,16 +35,16 @@
 
 package imagej.data.minmax;
 
-import org.scijava.Contextual;
-import org.scijava.Prioritized;
-import org.scijava.plugin.HasPluginInfo;
-import org.scijava.plugin.SingletonPlugin;
-
 import imagej.plugin.ImageJPlugin;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.type.Type;
+
+import org.scijava.Contextual;
+import org.scijava.Prioritized;
+import org.scijava.plugin.HasPluginInfo;
+import org.scijava.plugin.SingletonPlugin;
 
 /**
  * The MinMaxMethod is used to find the minimum
