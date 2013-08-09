@@ -75,9 +75,10 @@ import org.scijava.util.StringMaker;
  * @author Curtis Rueden
  * @author Johannes Schindelin
  * @author Grant Harris
- * @see ModuleInfo
- * @see CommandModule
- * @see Command
+ * @see ModuleInfo - The interface which provides many methods for interrogating
+ *      structural details of a {@link Module}.
+ * @see CommandModule - An adapter class that bridges the gap between ImageJ
+ *      commands and the rich {@link Module} interface.
  */
 public class CommandInfo extends PluginInfo<Command> implements ModuleInfo,
 	Identifiable
@@ -88,9 +89,6 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo,
 
 	/** List of items with fixed, preset values. */
 	private Map<String, Object> presets;
-
-	/** Factory used to create a module associated with the associated command. */
-	private CommandModuleFactory factory;
 
 	/**
 	 * Flag indicating whether the command parameters have been parsed. Parsing
@@ -115,8 +113,7 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo,
 	private final List<ModuleItem<?>> inputList = new ArrayList<ModuleItem<?>>();
 
 	/** Ordered list of output items. */
-	private final List<ModuleItem<?>> outputList =
-		new ArrayList<ModuleItem<?>>();
+	private final List<ModuleItem<?>> outputList = new ArrayList<ModuleItem<?>>();
 
 	// -- Constructors --
 
@@ -180,7 +177,6 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo,
 		super(className, commandClass, Command.class, annotation, null);
 		this.info = info;
 		setPresets(null);
-		setCommandModuleFactory(null);
 	}
 
 	// -- CommandInfo methods --
@@ -200,27 +196,16 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo,
 		return presets;
 	}
 
-	/** Sets the factory used to construct {@link CommandModule} instances. */
-	public void setCommandModuleFactory(final CommandModuleFactory factory) {
-		if (factory == null) {
-			this.factory = new DefaultCommandModuleFactory();
-		}
-		else {
-			this.factory = factory;
-		}
-	}
-
-	/** Gets the factory used to construct {@link CommandModule} instances. */
-	public CommandModuleFactory getCommandModuleFactory() {
-		return factory;
-	}
-
 	/**
 	 * Instantiates the module described by this module info, around the specified
 	 * existing command instance.
 	 */
 	public Module createModule(final Command commandInstance) {
-		return factory.createModule(this, commandInstance);
+		// if the command implements Module, return the instance directly
+		if (commandInstance instanceof Module) return (Module) commandInstance;
+
+		// command does not implement Module; wrap it in a CommandModule instance
+		return new CommandModule(this, commandInstance);
 	}
 
 	// -- PluginInfo methods --
@@ -317,7 +302,25 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo,
 
 	@Override
 	public Module createModule() throws ModuleException {
-		return factory.createModule(this);
+		// if the command implements Module, return a new instance directly
+		try {
+			final Class<?> commandClass = info.loadClass();
+			if (Module.class.isAssignableFrom(commandClass)) {
+				return (Module) commandClass.newInstance();
+			}
+		}
+		catch (final InstantiableException e) {
+			throw new ModuleException(e);
+		}
+		catch (final InstantiationException e) {
+			throw new ModuleException(e);
+		}
+		catch (final IllegalAccessException e) {
+			throw new ModuleException(e);
+		}
+
+		// command does not implement Module; wrap it in a CommandModule instance
+		return new CommandModule(this);
 	}
 
 	@Override
