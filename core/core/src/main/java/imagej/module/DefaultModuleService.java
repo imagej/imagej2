@@ -51,6 +51,7 @@ import org.scijava.Priority;
 import org.scijava.event.EventService;
 import org.scijava.input.Accelerator;
 import org.scijava.log.LogService;
+import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
@@ -75,6 +76,9 @@ public class DefaultModuleService extends AbstractService implements
 
 	@Parameter
 	private EventService eventService;
+
+	@Parameter
+	private ObjectService objectService;
 
 	@Parameter
 	private ThreadService threadService;
@@ -134,6 +138,9 @@ public class DefaultModuleService extends AbstractService implements
 
 	@Override
 	public Module createModule(final ModuleInfo info) {
+		final Module existing = getRegisteredModuleInstance(info);
+		if (existing != null) return existing;
+
 		try {
 			final Module module = info.createModule();
 			getContext().inject(module);
@@ -236,6 +243,39 @@ public class DefaultModuleService extends AbstractService implements
 	}
 
 	// -- Helper methods --
+
+	/**
+	 * Checks the {@link ObjectService} for a single registered {@link Module}
+	 * instance of the given {@link ModuleInfo}. In this way, if you want to
+	 * repeatedly reuse the same module instance instead of creating a new one
+	 * with each execution, you can register it with the {@link ObjectService} and
+	 * it will be automatically returned by the {@link #createModule(ModuleInfo)}
+	 * method (and hence automatically used whenever a {@link #run} method with
+	 * {@link ModuleInfo} argument is called).
+	 */
+	private Module getRegisteredModuleInstance(final ModuleInfo info) {
+		final Class<?> type = ClassUtils.loadClass(info.getDelegateClassName());
+		if (type == null || !Module.class.isAssignableFrom(type)) return null;
+
+		// the module metadata's delegate class extends Module, so there is hope
+		@SuppressWarnings("unchecked")
+		final Class<? extends Module> moduleType = (Class<? extends Module>) type;
+
+		// ask the object service for an instance of the delegate type
+		final List<? extends Module> objects = objectService.getObjects(moduleType);
+		if (objects == null || objects.isEmpty()) {
+			// the object service has no such instances
+			return null;
+		}
+		if (objects.size() > 1) {
+			// there are multiple instances; it's not clear which one to use
+			log.warn("Ignoring multiple candidate module instances for class: " +
+				type.getName());
+			return null;
+		}
+		// found exactly one instance; return it!
+		return objects.get(0);
+	}
 
 	/** Converts the given list of name/value pairs into an input map. */
 	private Map<String, Object> createMap(final Object[] values) {
