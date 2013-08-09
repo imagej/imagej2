@@ -75,9 +75,10 @@ import org.scijava.util.StringMaker;
  * @author Curtis Rueden
  * @author Johannes Schindelin
  * @author Grant Harris
- * @see ModuleInfo
- * @see CommandModule
- * @see Command
+ * @see ModuleInfo - The interface which provides many methods for interrogating
+ *      structural details of a {@link Module}.
+ * @see CommandModule - An adapter class that bridges the gap between ImageJ
+ *      commands and the rich {@link Module} interface.
  */
 public class CommandInfo extends PluginInfo<Command> implements ModuleInfo,
 	Identifiable
