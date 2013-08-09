@@ -95,21 +95,14 @@ public class TestBinaryMaskOverlay {
 	}
 
 	@Test
-	public void testWriteExternal() {
+	public void testWriteExternal() throws IOException {
 		final Context context = new Context();
 		final LogService log = context.getService(LogService.class);
 		final BinaryMaskOverlay overlay =
 			makeOverlay(context, new boolean[][] { { true } });
 		final ByteArrayOutputStream os = new ByteArrayOutputStream();
-		try {
-			final ObjectOutputStream out = new ObjectOutputStream(os);
-			out.writeObject(overlay);
-		}
-		catch (final IOException e) {
-			log.error(e);
-			throw new AssertionError(e.getMessage());
-		}
-
+		final ObjectOutputStream out = new ObjectOutputStream(os);
+		out.writeObject(overlay);
 	}
 
 	@Test
