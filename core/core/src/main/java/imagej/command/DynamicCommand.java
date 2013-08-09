@@ -57,7 +57,12 @@ public abstract class DynamicCommand extends DefaultMutableModule implements
 	Cancelable, Command, Contextual
 {
 
+	@Parameter
 	private Context context;
+
+	@Parameter
+	private CommandService commandService;
+
 	private DynamicCommandInfo info;
 
 	/** Reason for cancelation, or null if not canceled. */
@@ -67,33 +72,38 @@ public abstract class DynamicCommand extends DefaultMutableModule implements
 
 	@Override
 	public DynamicCommandInfo getInfo() {
+		if (info == null) {
+			// NB: Create dynamic metadata lazily.
+			final CommandInfo commandInfo = commandService.getCommand(getClass());
+			info = new DynamicCommandInfo(commandInfo, getClass());
+		}
 		return info;
 	}
 
 	@Override
 	public Object getInput(final String name) {
-		final Field field = info.getInputField(name);
+		final Field field = getInfo().getInputField(name);
 		if (field == null) return super.getInput(name);
 		return ClassUtils.getValue(field, this);
 	}
 
 	@Override
 	public Object getOutput(final String name) {
-		final Field field = info.getOutputField(name);
+		final Field field = getInfo().getOutputField(name);
 		if (field == null) return super.getInput(name);
 		return ClassUtils.getValue(field, this);
 	}
 
 	@Override
 	public void setInput(final String name, final Object value) {
-		final Field field = info.getInputField(name);
+		final Field field = getInfo().getInputField(name);
 		if (field == null) super.setInput(name, value);
 		else ClassUtils.setValue(field, this, value);
 	}
 
 	@Override
 	public void setOutput(final String name, final Object value) {
-		final Field field = info.getOutputField(name);
+		final Field field = getInfo().getOutputField(name);
 		if (field == null) super.setOutput(name, value);
 		else ClassUtils.setValue(field, this, value);
 	}
@@ -107,21 +117,7 @@ public abstract class DynamicCommand extends DefaultMutableModule implements
 
 	@Override
 	public void setContext(final Context context) {
-		if (this.context == null) {
-			this.context = context;
-		}
-		else if (this.context != context) {
-			throw new IllegalStateException("Context already set");
-		}
-
-		// inject context and service parameters, and subscribe to events
 		context.inject(this);
-
-		// create associated dynamic metadata
-		final CommandService commandService =
-			context.getService(CommandService.class);
-		final CommandInfo commandInfo = commandService.getCommand(getClass());
-		info = new DynamicCommandInfo(commandInfo, getClass());
 	}
 
 	// -- Cancelable methods --

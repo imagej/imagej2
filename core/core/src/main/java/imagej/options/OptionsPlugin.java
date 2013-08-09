@@ -111,6 +111,10 @@ public class OptionsPlugin extends DynamicCommand implements SingletonPlugin {
 	@Override
 	public void setContext(final Context context) {
 		super.setContext(context);
+		// CTR CHECK: Does anything use context.inject
+		// on these guys instead of setContext?
+		// I bet there is a bug that load() never
+		// happens anymore...
 		load();
 	}
 
