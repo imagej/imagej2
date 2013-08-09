@@ -40,6 +40,7 @@ import org.scijava.Prioritized;
 import org.scijava.plugin.HasPluginInfo;
 import org.scijava.plugin.SingletonPlugin;
 
+import imagej.plugin.ImageJPlugin;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
@@ -56,8 +57,9 @@ import net.imglib2.type.Type;
  * @author Mark Hiner
  *
  */
-public interface MinMaxMethod<T extends Type<T> & Comparable<T>> extends Contextual, Prioritized,
-HasPluginInfo, SingletonPlugin {
+public interface MinMaxMethod<T extends Type<T> & Comparable<T>> extends
+	ImageJPlugin, Contextual, Prioritized, HasPluginInfo, SingletonPlugin
+{
 
   /**
    * Sets the provided Img as the target interval for computation,

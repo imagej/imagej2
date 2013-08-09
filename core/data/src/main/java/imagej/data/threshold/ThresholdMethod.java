@@ -35,6 +35,7 @@
 
 package imagej.data.threshold;
 
+import imagej.plugin.ImageJPlugin;
 import net.imglib2.histogram.Histogram1d;
 
 import org.scijava.Contextual;
@@ -48,7 +49,7 @@ import org.scijava.plugin.SingletonPlugin;
  * 
  * @author Barry DeZonia
  */
-public interface ThresholdMethod extends Contextual, Prioritized,
+public interface ThresholdMethod extends ImageJPlugin, Contextual, Prioritized,
 	HasPluginInfo, SingletonPlugin
 {
 

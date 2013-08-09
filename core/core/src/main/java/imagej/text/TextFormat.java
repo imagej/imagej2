@@ -35,6 +35,8 @@
 
 package imagej.text;
 
+import imagej.plugin.ImageJPlugin;
+
 import java.io.File;
 import java.util.List;
 
@@ -56,7 +58,7 @@ import org.scijava.plugin.Plugin;
  * @see Plugin
  * @see TextService
  */
-public interface TextFormat extends HandlerPlugin<File> {
+public interface TextFormat extends ImageJPlugin, HandlerPlugin<File> {
 
 	/** Gets the list of filename extensions for text in this format. */
 	List<String> getExtensions();
