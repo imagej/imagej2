@@ -47,7 +47,10 @@ import org.scijava.plugin.PluginService;
  * {@link CommandModule}.
  * <p>
  * Commands discoverable at runtime must implement this interface and be
- * annotated with @{@link Plugin}.
+ * annotated with @{@link Plugin} with attribute {@link Plugin#type()} =
+ * {@link Command}.class. While it possible to create a command merely by
+ * implementing this interface, it is encouraged to instead extend
+ * {@link ContextCommand}, for convenience.
  * </p>
  * 
  * @author Curtis Rueden
