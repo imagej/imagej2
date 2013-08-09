@@ -247,8 +247,8 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 				new DefaultMutableModuleItem<Long>(this, axisType.getLabel(), Long.class);
 			// NB - persist all values for now
 			//if (!axisType.isXY()) axisItem.setPersisted(false);
-			axisItem.setValue(this, 0L);
-			axisItem.setMinimumValue(0L);
+			axisItem.setValue(this, 1L);
+			axisItem.setMinimumValue(1L);
 			addInput(axisItem);
 		}
 	}
