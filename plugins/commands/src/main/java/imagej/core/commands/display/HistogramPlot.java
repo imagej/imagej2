@@ -49,12 +49,14 @@ import imagej.ui.UIService;
 import imagej.widget.Button;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
+import net.imglib2.histogram.DiscreteFrequencyDistribution;
 import net.imglib2.histogram.Histogram1d;
 import net.imglib2.histogram.Real1dBinMapper;
 import net.imglib2.meta.Axes;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.integer.LongType;
 
 import org.scijava.ItemVisibility;
 import org.scijava.event.EventHandler;
@@ -227,11 +229,49 @@ public class HistogramPlot<T extends RealType<T>> extends InteractiveCommand
 	}
 
 	protected void logClicked() {
-		// TODO
-		// In IJ1 this command displays additional data on the chart. The data
-		// series is displayed on a log scale in back and the linear scale in
-		// front.
-		uiService.showDialog("To be implemented");
+		long maxCount = max(bundle.getHistogram(0).dfd());
+		double max = Math.log(maxCount);
+		if (bundle.getHistogramCount() == 1) {
+			Real1dBinMapper<T> mapper =
+				new Real1dBinMapper<T>(dataMin, dataMax, binCount, false);
+			Histogram1d<T> hist = new Histogram1d<T>(mapper);
+			long[] binPos = new long[1];
+			for (int i = 0; i < binCount; i++) {
+				binPos[0] = i;
+				long count = bundle.getHistogram(0).dfd().frequency(binPos);
+				long value = (long) (maxCount * Math.log(count) / max);
+				setBinValue(hist.dfd(), binPos, value);
+			}
+			bundle.setHistogram(1, hist);
+		}
+		else { // count == 2
+			bundle.setHistogram(1, null);
+		}
+	}
+
+	private long max(DiscreteFrequencyDistribution dfd) {
+		long max = -1;
+		Cursor<LongType> cursor = dfd.cursor();
+		while (cursor.hasNext()) {
+			LongType val = cursor.next();
+			if (val.get() > max) max = val.get();
+		}
+		return max;
+	}
+
+	// TODO - this should be a capability of DFDs. Right now horribly slow.
+
+	private void setBinValue(DiscreteFrequencyDistribution dfd, long[] binPos,
+		long value)
+	{
+		// reset to zero
+		while (dfd.frequency(binPos) > 0) {
+			dfd.decrement(binPos);
+		}
+		// set to new value
+		for (long i = 0; i < value; i++) {
+			dfd.increment(binPos);
+		}
 	}
 
 	// -- EventHandlers --
@@ -252,7 +292,7 @@ public class HistogramPlot<T extends RealType<T>> extends InteractiveCommand
 		int h = histNumber;
 		if (h >= histograms.length) h = histograms.length - 1;
 		currHistNum = h;
-		bundle.setHistogram(histograms[h]);
+		bundle.setHistogram(0, histograms[h]);
 		setTitle(h);
 		setValues(h);
 		// TODO - refresh the ui panel? I think Live will not work unless we do.
