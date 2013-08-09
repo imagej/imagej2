@@ -47,10 +47,18 @@ public final class Main {
 	}
 
 	/**
-	 * Launches a new instance of ImageJ.
+	 * Launches a new instance of ImageJ, displaying the default user interface.
+	 * <p>
+	 * This method is provided merely for convenience. If you do not want to
+	 * display a user interface, construct the ImageJ instance directly instead:
+	 * </p>
+	 * {@code
+	 * final ImageJ ij = new ImageJ();<br/>
+	 * ij.console().processArgs(args); // if you want to pass any arguments
+	 * }
 	 * 
 	 * @param args The arguments to pass to the new ImageJ instance.
-	 * @return The context of the newly launched ImageJ instance.
+	 * @return The newly launched ImageJ instance.
 	 */
 	public static ImageJ launch(final String... args) {
 		final ImageJ ij = new ImageJ();

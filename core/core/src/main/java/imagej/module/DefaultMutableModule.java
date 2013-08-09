@@ -36,7 +36,7 @@
 package imagej.module;
 
 /**
- * Default {@link Module} implementation, intended for subclassing.
+ * Default {@link MutableModule} implementation, intended for subclassing.
  * 
  * @author Curtis Rueden
  */

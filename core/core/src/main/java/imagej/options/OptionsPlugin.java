@@ -42,6 +42,7 @@ import imagej.options.event.OptionsEvent;
 import org.scijava.Context;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
+import org.scijava.plugin.SingletonPlugin;
 
 // TODO - outline for how to address issues with options (initializing, aggregating into 1 dialog)
 
@@ -74,7 +75,7 @@ import org.scijava.plugin.Parameter;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public class OptionsPlugin extends DynamicCommand {
+public class OptionsPlugin extends DynamicCommand implements SingletonPlugin {
 
 	// -- Parameters --
 

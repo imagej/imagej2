@@ -64,7 +64,7 @@ public class OptionsReset implements Command {
 
 	@Override
 	public void run() {
-		final List<OptionsPlugin> optionsPlugins = optionsService.getOptions();
+		final List<OptionsPlugin> optionsPlugins = optionsService.getInstances();
 		for (final OptionsPlugin plugin : optionsPlugins) {
 			Prefs.clear(plugin.getClass());
 		}
