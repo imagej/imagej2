@@ -50,7 +50,8 @@ import org.scijava.plugin.PluginService;
  * annotated with @{@link Plugin} with attribute {@link Plugin#type()} =
  * {@link Command}.class. While it possible to create a command merely by
  * implementing this interface, it is encouraged to instead extend
- * {@link ContextCommand}, for convenience.
+ * {@link ContextCommand} (or in some cases {@link ModuleCommand},
+ * {@link DynamicCommand} or {@link InteractiveCommand}) for convenience.
  * </p>
  * 
  * @author Curtis Rueden

@@ -40,10 +40,11 @@ import imagej.Cancelable;
 import org.scijava.AbstractContextual;
 
 /**
- * A command that knows its context. Its service parameters are automatically
- * populated when {@link #setContext} is called, to make it easier to use via
- * Java API calls (i.e., without invoking it via {@link CommandService#run}).
- * This improves compile-time safety of downstream code that calls the command.
+ * An ImageJ command that knows its context. Its service parameters are
+ * automatically populated when {@link #setContext} is called, to make it easier
+ * to use via Java API calls (i.e., without invoking it via
+ * {@link CommandService#run}). This improves compile-time safety of downstream
+ * code that calls the command.
  * <p>
  * Here is an example command execution using {@link CommandService#run}:
  * </p>
