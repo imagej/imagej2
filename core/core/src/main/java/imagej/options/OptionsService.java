@@ -35,12 +35,7 @@
 
 package imagej.options;
 
-import imagej.command.CommandInfo;
-
-import java.util.List;
-import java.util.Map;
-
-import org.scijava.plugin.PTService;
+import org.scijava.plugin.SingletonService;
 
 /**
  * Interface for the options handling service.
@@ -49,49 +44,9 @@ import org.scijava.plugin.PTService;
  * @author Barry DeZonia
  * @see OptionsPlugin
  */
-public interface OptionsService extends PTService<OptionsPlugin> {
+public interface OptionsService extends SingletonService<OptionsPlugin> {
 
-	/** Gets a list of all available options. */
-	List<OptionsPlugin> getOptions();
-
-	/** Gets options associated with the given options plugin, or null if none. */
+	/** Gets the options plugin of the given class, or null if none. */
 	<O extends OptionsPlugin> O getOptions(Class<O> optionsClass);
-
-	/** Gets options associated with the given options plugin, or null if none. */
-	OptionsPlugin getOptions(String className);
-
-	/** Gets the option with the given name, from the specified options plugin. */
-	<O extends OptionsPlugin> Object
-		getOption(Class<O> optionsClass, String name);
-
-	/** Gets the option with the given name, from the specified options plugin. */
-	Object getOption(String className, String name);
-
-	/** Gets a map of all options from the given options plugin. */
-	<O extends OptionsPlugin> Map<String, Object> getOptionsMap(
-		Class<O> optionsClass);
-
-	/** Gets a map of all options from the given options plugin. */
-	Map<String, Object> getOptionsMap(String className);
-
-	/**
-	 * Sets the option with the given name, from the specified options plugin, to
-	 * the given value.
-	 */
-	<O extends OptionsPlugin> void setOption(Class<O> optionsClass, String name,
-		Object value);
-
-	/**
-	 * Sets the option with the given name, from the specified options plugin, to
-	 * the given value.
-	 */
-	void setOption(String className, String name, Object value);
-
-	/**
-	 * Sets the option with the given name, from the specified options plugin, to
-	 * the given value.
-	 */
-	<O extends OptionsPlugin> void setOption(CommandInfo info, String name,
-		Object value);
 
 }

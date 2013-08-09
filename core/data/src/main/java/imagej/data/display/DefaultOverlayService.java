@@ -241,6 +241,12 @@ public final class DefaultOverlayService extends AbstractService implements
 
 	@Override
 	public OverlaySettings getDefaultSettings() {
+		if (defaultSettings == null) {
+			defaultSettings = new OverlaySettings();
+			final OptionsOverlay overlayOptions =
+					optionsService.getOptions(OptionsOverlay.class);
+			overlayOptions.updateSettings(defaultSettings);
+		}
 		return defaultSettings;
 	}
 
@@ -297,6 +303,9 @@ public final class DefaultOverlayService extends AbstractService implements
 	
 	@Override
 	public OverlayInfoList getOverlayInfo() {
+		if (overlayInfo == null) {
+			overlayInfo = new OverlayInfoList();
+		}
 		return overlayInfo;
 	}
 
@@ -322,17 +331,6 @@ public final class DefaultOverlayService extends AbstractService implements
 		
 		// delete the composite overlay
 		removeOverlay(overlay);
-	}
-
-	// -- Service methods --
-
-	@Override
-	public void initialize() {
-		defaultSettings = new OverlaySettings();
-		final OptionsOverlay overlayOptions =
-			optionsService.getOptions(OptionsOverlay.class);
-		overlayOptions.updateSettings(defaultSettings);
-		overlayInfo = new OverlayInfoList();
 	}
 
 	// -- helpers --

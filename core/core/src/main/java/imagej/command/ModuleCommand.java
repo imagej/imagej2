@@ -35,30 +35,76 @@
 
 package imagej.command;
 
+import imagej.Cancelable;
+import imagej.module.AbstractModule;
 import imagej.module.Module;
-import imagej.plugin.ImageJPlugin;
 
-import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginService;
+import org.scijava.Context;
+import org.scijava.Contextual;
+import org.scijava.plugin.Parameter;
 
 /**
- * {@code Command} is a plugin that is executable. A {@code Command} can be
- * executed as a {@link Module} by wrapping it in an instance of
- * {@link CommandModule}.
- * <p>
- * Commands discoverable at runtime must implement this interface and be
- * annotated with @{@link Plugin} with attribute {@link Plugin#type()} =
- * {@link Command}.class. While it possible to create a command merely by
- * implementing this interface, it is encouraged to instead extend
- * {@link ContextCommand} (or in some cases {@link ModuleCommand},
- * {@link DynamicCommand} or {@link InteractiveCommand}) for convenience.
- * </p>
+ * An ImageJ command which implements {@link Module} directly (rather than using
+ * the {@link CommandModule} adapter class). This is useful for commands which
+ * want to inspect and manipulate their own inputs and outputs programmatically.
  * 
  * @author Curtis Rueden
- * @see Plugin
- * @see PluginService
  */
-public interface Command extends ImageJPlugin, Runnable {
-	// Command is a plugin that extends Runnable,
-	// discoverable via the plugin discovery mechanism.
+public abstract class ModuleCommand extends AbstractModule implements
+	Cancelable, Command, Contextual
+{
+
+	@Parameter
+	private Context context;
+
+	@Parameter
+	private CommandService commandService;
+
+	private CommandInfo info;
+
+	/** Reason for cancelation, or null if not canceled. */
+	private String cancelReason;
+
+	// -- Module methods --
+
+	@Override
+	public CommandInfo getInfo() {
+		if (info == null) {
+			// NB: Obtain metadata lazily.
+			info = commandService.getCommand(getClass());
+		}
+		return info;
+	}
+
+	// -- Contextual methods --
+
+	@Override
+	public Context getContext() {
+		return context;
+	}
+
+	@Override
+	public void setContext(final Context context) {
+		context.inject(this);
+	}
+
+	// -- Cancelable methods --
+
+	@Override
+	public boolean isCanceled() {
+		return cancelReason != null;
+	}
+
+	@Override
+	public String getCancelReason() {
+		return cancelReason;
+	}
+
+	// -- Internal methods --
+
+	/** Cancels the command execution, with the given reason for doing so. */
+	protected void cancel(final String reason) {
+		cancelReason = reason;
+	}
+
 }

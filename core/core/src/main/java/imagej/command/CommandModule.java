@@ -37,6 +37,7 @@ package imagej.command;
 
 import imagej.Cancelable;
 import imagej.module.AbstractModule;
+import imagej.module.MethodCallException;
 import imagej.module.Module;
 import imagej.module.ModuleException;
 import imagej.module.ModuleInfo;
@@ -46,6 +47,7 @@ import java.util.Map;
 import org.scijava.Context;
 import org.scijava.Contextual;
 import org.scijava.InstantiableException;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.util.ClassUtils;
 
@@ -84,6 +86,9 @@ public class CommandModule extends AbstractModule implements Cancelable,
 
 	/** The command instance handled by this module. */
 	private final Command command;
+
+	@Parameter
+	private Context context;
 
 	/** Creates a command module for the given {@link PluginInfo}. */
 	public CommandModule(final CommandInfo info) throws ModuleException {
@@ -134,6 +139,13 @@ public class CommandModule extends AbstractModule implements Cancelable,
 		if (!(command instanceof Previewable)) return; // nothing to cancel
 		final Previewable previewPlugin = (Previewable) command;
 		previewPlugin.cancel();
+	}
+
+	@Override
+	public void initialize() throws MethodCallException {
+		// NB: Inject the context into the command before initializing.
+		getContext().inject(command);
+		super.initialize();
 	}
 
 	@Override
@@ -202,13 +214,12 @@ public class CommandModule extends AbstractModule implements Cancelable,
 
 	@Override
 	public Context getContext() {
-		if (!(command instanceof Contextual)) return null;
-		return ((Contextual) command).getContext();
+		return context;
 	}
 
 	@Override
 	public void setContext(final Context context) {
-		context.inject(command);
+		context.inject(this);
 	}
 
 	// -- Helper methods --
