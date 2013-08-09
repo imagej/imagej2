@@ -96,8 +96,7 @@ public class TestBinaryMaskOverlay {
 
 	@Test
 	public void testWriteExternal() throws IOException {
-		final Context context = new Context();
-		final LogService log = context.getService(LogService.class);
+		final Context context = new Context(true);
 		final BinaryMaskOverlay overlay =
 			makeOverlay(context, new boolean[][] { { true } });
 		final ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -107,8 +106,7 @@ public class TestBinaryMaskOverlay {
 
 	@Test
 	public void testReadExternal() throws IOException, ClassNotFoundException {
-		final Context context = new Context();
-		final LogService log = context.getService(LogService.class);
+		final Context context = new Context(true);
 		final Random r = new Random(54321);
 		for (int iter = 0; iter < 100; iter++) {
 			final boolean[][] imgArray = new boolean[5][5];
@@ -149,7 +147,7 @@ public class TestBinaryMaskOverlay {
 
 	@Test
 	public void testBinaryMaskOverlay() {
-		final Context context = new Context();
+		final Context context = new Context(true);
 		makeOverlay(context, new boolean[][] { { true } });
 	}
 
