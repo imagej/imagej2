@@ -120,7 +120,8 @@ public class OptionsChannels extends OptionsPlugin {
 
 	public void setLastFgColor(final ColorRGB c, boolean notifyIJ1) {
 		lastFgColor = c;
-		save(); // must do in case interested parties need persisted info
+		// CTR FIXME: Find another way to take care of this.
+//		save(); // must do in case interested parties need persisted info
 		// make sure IJ1 knows about this change if possible
 		if (notifyIJ1) eventService.publish(new OptionsEvent(this));
 	}
@@ -131,7 +132,8 @@ public class OptionsChannels extends OptionsPlugin {
 	
 	public void setLastBgColor(final ColorRGB c, boolean notifyIJ1) {
 		lastBgColor = c;
-		save(); // must do in case interested parties need persisted info
+		// CTR FIXME: Find another way to take care of this.
+//		save(); // must do in case interested parties need persisted info
 		// make sure IJ1 knows about this change if possible
 		if (notifyIJ1) eventService.publish(new OptionsEvent(this));
 	}
