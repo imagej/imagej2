@@ -37,7 +37,9 @@ package imagej.command;
 
 import imagej.Cancelable;
 import imagej.module.AbstractModule;
+import imagej.module.Module;
 import imagej.module.ModuleException;
+import imagej.module.ModuleInfo;
 
 import java.util.Map;
 
@@ -48,11 +50,30 @@ import org.scijava.plugin.PluginInfo;
 import org.scijava.util.ClassUtils;
 
 /**
- * Module class for working with a {@link Command} instance.
+ * Module adapter class for working with a {@link Command} instance.
+ * <p>
+ * The {@link Module} interface describes an encapsulated piece of functionality
+ * with inputs and outputs.
+ * </p>
+ * <p>
+ * Conceptually, an ImageJ command is such a piece of functionality. However,
+ * the {@link Command} interface is intended to be as simple to implement as
+ * possible; the only required method is {@link Command#run()}, which is
+ * inherited from {@link Runnable}. The command's inputs and outputs are
+ * indicated using @{@link Parameter} annotations.
+ * </p>
+ * <p>
+ * To bridge the gap, this class adapts an ImageJ {@link Command} instance into
+ * an object that fully implements the {@link Module} interface.
+ * </p>
  * 
  * @author Curtis Rueden
  * @author Johannes Schindelin
  * @author Grant Harris
+ * @see CommandInfo - An adapter class that bridges the gap between ImageJ
+ *      commands and the rich {@link ModuleInfo} interface.
+ * @see Module - The interface which provides many methods for interrogating an
+ *      encapsulated piece of functionality with inputs and outputs.
  */
 public class CommandModule extends AbstractModule implements Cancelable,
 	Contextual
