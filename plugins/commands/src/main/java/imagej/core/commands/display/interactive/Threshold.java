@@ -486,7 +486,7 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 
 	private void updateBundle(double min, double max) {
 		long binCount = histogram().getBinCount();
-		histBundle.setHistogram(histogram());
+		histBundle.setHistogram(0, histogram());
 		histBundle.setMinBin(calcBin(binCount, min));
 		histBundle.setMaxBin(calcBin(binCount, max));
 	}

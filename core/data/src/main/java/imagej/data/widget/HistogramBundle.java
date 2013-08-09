@@ -35,10 +35,14 @@
 
 package imagej.data.widget;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.imglib2.histogram.Histogram1d;
 
 /**
- * HistogramBundles marry a {@link Histogram1d} with rendering information.
+ * HistogramBundles marry a list of {@link Histogram1d}s with addtional
+ * rendering information.
  * 
  * @author Barry DeZonia
  */
@@ -46,7 +50,7 @@ public class HistogramBundle {
 
 	// -- fields --
 
-	private Histogram1d<?> histogram;
+	private List<Histogram1d<?>> histograms;
 	private long binMin = -1;
 	private long binMax = -1;
 	private double theoryMin = Double.NaN;
@@ -62,7 +66,13 @@ public class HistogramBundle {
 	// -- constructors --
 
 	public HistogramBundle(Histogram1d<?> hist) {
-		this.histogram = hist;
+		histograms = new ArrayList<Histogram1d<?>>();
+		histograms.add(hist);
+		hasChanges = true;
+	}
+
+	public HistogramBundle(List<Histogram1d<?>> histList) {
+		histograms = histList;
 		hasChanges = true;
 	}
 
@@ -89,18 +99,50 @@ public class HistogramBundle {
 	// -- accessors --
 
 	/**
+	 * Returns the total number of histograms contained in this bundle.
+	 */
+	public int getHistogramCount() {
+		return histograms.size();
+	}
+
+	/**
 	 * Sets the histogram of interest for this HistogramBundle.
 	 */
-	public void setHistogram(Histogram1d<?> hist) {
-		hasChanges |= hist != this.histogram;
-		this.histogram = hist;
+	public void setHistogram(int index, Histogram1d<?> hist) {
+		if (index < 0) {
+			throw new IllegalArgumentException("index number less than 0");
+		}
+		else if (index > histograms.size()) {
+			throw new IllegalArgumentException("index number more than 1 beyond end");
+		}
+		else if (index == histograms.size()) {
+			if (hist == null) return;
+			hasChanges = true;
+			histograms.add(hist);
+		}
+		else { // 0 <= index <= size()-1
+			if (hist == null) {
+				hasChanges = true;
+				histograms.remove(index);
+			}
+			else {
+				hasChanges |= hist != getHistogram(index);
+				histograms.set(index, hist);
+			}
+		}
 	}
 
 	/**
 	 * Gets the histogram of interest for this HistogramBundle.
 	 */
-	public Histogram1d<?> getHistogram() {
-		return histogram;
+	public Histogram1d<?> getHistogram(int index) {
+		if (index < 0) {
+			throw new IllegalArgumentException("index number less than 0");
+		}
+		else if (index > histograms.size()) {
+			throw new IllegalArgumentException("index number beyond end");
+		}
+		return histograms.get(index);
 	}
 
 	/**

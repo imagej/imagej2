@@ -270,7 +270,7 @@ public class BrightnessContrast<T extends RealType<T>> extends
 			bundle = new HistogramBundle(histogram);
 		}
 		else {
-			bundle.setHistogram(histogram);
+			bundle.setHistogram(0, histogram);
 		}
 		bundle.setDataMinMax(dataMin, dataMax);
 		// bundle.setLineSlopeIntercept(1, 0);

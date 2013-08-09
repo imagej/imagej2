@@ -44,6 +44,8 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 
@@ -116,10 +118,14 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 	 * Returns a JFreeChart containing data from the provided histogram.
 	 */
 	private JFreeChart getChart(final String title, final HistogramBundle bund) {
-		final XYSeries series = new XYSeries("histo");
-		final long total = bund.getHistogram().getBinCount();
-		for (long i = 0; i < total; i++) {
-			series.add(i, bund.getHistogram().frequency(i));
+		List<XYSeries> series = new ArrayList<XYSeries>();
+		for (int h = 0; h < bund.getHistogramCount(); h++) {
+			final XYSeries xys = new XYSeries("histo" + h);
+			final long total = bund.getHistogram(h).getBinCount();
+			for (long i = 0; i < total; i++) {
+				xys.add(i, bund.getHistogram(h).frequency(i));
+			}
+			series.add(xys);
 		}
 		final JFreeChart chart = createChart(title, series);
 		if (bund.getMinBin() != -1) {
@@ -136,8 +142,13 @@ public class SwingHistogramWidget extends SwingInputWidget<HistogramBundle>
 		return chart;
 	}
 
-	private JFreeChart createChart(final String title, final XYSeries series) {
-		final XYSeriesCollection data = new XYSeriesCollection(series);
+	private JFreeChart
+		createChart(final String title, final List<XYSeries> series)
+	{
+		final XYSeriesCollection data = new XYSeriesCollection();
+		for (XYSeries xys : series) {
+			data.addSeries(xys);
+		}
 		final JFreeChart chart =
 			ChartFactory.createXYBarChart(title, null, false, null, data,
 				PlotOrientation.VERTICAL, false, true, false);
