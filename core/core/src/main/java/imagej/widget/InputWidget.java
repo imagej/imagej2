@@ -36,6 +36,7 @@
 package imagej.widget;
 
 import imagej.module.ModuleItem;
+import imagej.plugin.ImageJPlugin;
 
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.WrapperPlugin;
@@ -60,8 +61,8 @@ import org.scijava.plugin.WrapperPlugin;
  * @see InputHarvester
  * @see InputPanel
  */
-public interface InputWidget<T, W> extends WrapperPlugin<WidgetModel>,
-	UIComponent<W>
+public interface InputWidget<T, W> extends ImageJPlugin,
+	WrapperPlugin<WidgetModel>, UIComponent<W>
 {
 
 	/** Updates the model to reflect the latest widget state. */

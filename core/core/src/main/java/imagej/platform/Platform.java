@@ -35,6 +35,8 @@
 
 package imagej.platform;
 
+import imagej.plugin.ImageJPlugin;
+
 import java.io.IOException;
 import java.net.URL;
 
@@ -57,7 +59,7 @@ import org.scijava.plugin.SingletonPlugin;
  * @see Plugin
  * @see PlatformService
  */
-public interface Platform extends SingletonPlugin, Disposable {
+public interface Platform extends ImageJPlugin, SingletonPlugin, Disposable {
 
 	/** Java Runtime Environment vendor to match. */
 	String javaVendor();

@@ -35,6 +35,7 @@
 
 package imagej.data.types;
 
+import imagej.plugin.ImageJPlugin;
 import net.imglib2.type.numeric.NumericType;
 
 import org.scijava.Contextual;
@@ -46,8 +47,8 @@ import org.scijava.plugin.SingletonPlugin;
  * 
  * @author Barry DeZonia
  */
-public interface DataType<T extends NumericType<T>> extends Contextual,
-	SingletonPlugin
+public interface DataType<T extends NumericType<T>> extends ImageJPlugin,
+	Contextual, SingletonPlugin
 {
 
 	// TODO - this class also tries to fix limitations in the Imglib type system

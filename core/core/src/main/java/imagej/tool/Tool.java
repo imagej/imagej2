@@ -43,6 +43,7 @@ import imagej.display.event.input.MsMovedEvent;
 import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
+import imagej.plugin.ImageJPlugin;
 
 import org.scijava.Contextual;
 import org.scijava.Prioritized;
@@ -73,8 +74,8 @@ import org.scijava.plugin.SingletonPlugin;
  * @see Plugin
  * @see ToolService
  */
-public interface Tool extends SingletonPlugin, Contextual, Prioritized,
-	HasPluginInfo
+public interface Tool extends ImageJPlugin, Contextual, Prioritized,
+	HasPluginInfo, SingletonPlugin
 {
 
 	/**

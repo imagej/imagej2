@@ -35,29 +35,30 @@
 
 package imagej.data.minmax;
 
-import org.scijava.Contextual;
-import org.scijava.Prioritized;
-import org.scijava.plugin.HasPluginInfo;
-import org.scijava.plugin.SingletonPlugin;
-
+import imagej.plugin.ImageJPlugin;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.type.Type;
 
+import org.scijava.Contextual;
+import org.scijava.Prioritized;
+import org.scijava.plugin.HasPluginInfo;
+import org.scijava.plugin.SingletonPlugin;
+
 /**
- * The MinMaxMethod is used to find the minimum
- * and maximum values of an interval.
+ * The MinMaxMethod is used to find the minimum and maximum values of an
+ * interval.
  * <p>
- * NB: An {@link #initialize()} method must be called
- * before performaning any other operations.
+ * NB: An {@link #initialize} method must be called before performing any other
+ * operations.
  * </p>
  * 
  * @author Mark Hiner
- *
  */
-public interface MinMaxMethod<T extends Type<T> & Comparable<T>> extends Contextual, Prioritized,
-HasPluginInfo, SingletonPlugin {
+public interface MinMaxMethod<T extends Type<T> & Comparable<T>> extends
+	ImageJPlugin, Contextual, Prioritized, HasPluginInfo, SingletonPlugin
+{
 
   /**
    * Sets the provided Img as the target interval for computation,
