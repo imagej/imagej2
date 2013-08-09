@@ -230,6 +230,8 @@ public class HistogramPlot<T extends RealType<T>> extends InteractiveCommand
 
 	protected void logClicked() {
 		long maxCount = max(bundle.getHistogram(0).dfd());
+		// TODO - replace prev line with
+		// long maxCount = bundle.getHistogram(0).dfd().modeCount();
 		double max = Math.log(maxCount);
 		if (bundle.getHistogramCount() == 1) {
 			Real1dBinMapper<T> mapper =
@@ -241,6 +243,8 @@ public class HistogramPlot<T extends RealType<T>> extends InteractiveCommand
 				long count = bundle.getHistogram(0).dfd().frequency(binPos);
 				long value = (long) (maxCount * Math.log(count) / max);
 				setBinValue(hist.dfd(), binPos, value);
+				// TODO - replace prev line with
+				// hist.dfd().setFrequency(binPos, value);
 			}
 			bundle.setHistogram(1, hist);
 		}
@@ -248,6 +252,8 @@ public class HistogramPlot<T extends RealType<T>> extends InteractiveCommand
 			bundle.setHistogram(1, null);
 		}
 	}
+
+	// TODO - this should be a capability of DFDs.
 
 	private long max(DiscreteFrequencyDistribution dfd) {
 		long max = -1;
