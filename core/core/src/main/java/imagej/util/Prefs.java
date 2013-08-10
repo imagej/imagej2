@@ -58,6 +58,13 @@ import java.util.prefs.Preferences;
  */
 public final class Prefs {
 
+	// CTR START HERE
+	// Convert this to PrefsService in imagej.prefs package
+	// Then use it from ModuleService and OptionsService
+	// Go through all places that use Prefs
+	// Remove hardcoded loadValue and saveValue implementations from
+	// AbstractModuleItem; instead, move these to PrefsService.
+
 	private Prefs() {
 		// prevent instantiation of utility class
 	}
