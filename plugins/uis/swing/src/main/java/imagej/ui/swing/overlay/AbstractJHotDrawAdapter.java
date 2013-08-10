@@ -93,6 +93,11 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay, F extends Figur
 	 */
 	private RealCoords drag;
 
+	// -- AbstractJHotDrawAdapter methods --
+
+	/** Converts a figure into an AWT Shape. */
+	public abstract Shape toShape(final F figure);
+
 	// -- JHotDrawAdapter methods --
 
 	@Override
@@ -228,9 +233,5 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay, F extends Figur
 		return canvas.panelToDataCoords(new IntCoords(x, y));
 	}
 
-	/**
-	 * Convert a figure into an AWT Shape.
-	 */
-	public abstract Shape toShape(final F figure);
 
 }
