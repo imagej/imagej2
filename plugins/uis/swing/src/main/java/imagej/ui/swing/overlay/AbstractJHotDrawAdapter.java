@@ -50,6 +50,7 @@ import imagej.util.awt.AWTColors;
 import java.awt.Color;
 import java.awt.Shape;
 
+import org.jhotdraw.draw.AttributeKey;
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.decoration.ArrowTip;
@@ -105,11 +106,11 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay, F extends Figur
 		final Overlay overlay = view.getData();
 		final ColorRGB lineColor = overlay.getLineColor();
 		if (overlay.getLineStyle() != Overlay.LineStyle.NONE) {
-			figure.set(AttributeKeys.STROKE_COLOR, AWTColors.getColor(lineColor));
+			set(figure, AttributeKeys.STROKE_COLOR, AWTColors.getColor(lineColor));
 
 			// FIXME - is this next line dangerous for drawing attributes? width could
 			// conceivably need to always stay 0.
-			figure.set(AttributeKeys.STROKE_WIDTH, overlay.getLineWidth());
+			set(figure, AttributeKeys.STROKE_WIDTH, overlay.getLineWidth());
 			double[] dash_pattern;
 			switch (overlay.getLineStyle()) {
 				case SOLID:
@@ -128,28 +129,28 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay, F extends Figur
 					throw new UnsupportedOperationException("Unsupported line style: " +
 						overlay.getLineStyle());
 			}
-			figure.set(AttributeKeys.STROKE_DASHES, dash_pattern);
+			set(figure, AttributeKeys.STROKE_DASHES, dash_pattern);
 		}
 		else {
 			// Render a "NONE" line style as alpha = transparent.
-			figure.set(AttributeKeys.STROKE_COLOR, new Color(0, 0, 0, 0));
+			set(figure, AttributeKeys.STROKE_COLOR, new Color(0, 0, 0, 0));
 		}
 		final ColorRGB fillColor = overlay.getFillColor();
 		final int alpha = overlay.getAlpha();
-		figure.set(AttributeKeys.FILL_COLOR, AWTColors.getColor(fillColor, alpha));
+		set(figure, AttributeKeys.FILL_COLOR, AWTColors.getColor(fillColor, alpha));
 		switch (overlay.getLineStartArrowStyle()) {
 			case ARROW:
-				figure.set(AttributeKeys.START_DECORATION, new ArrowTip());
+				set(figure, AttributeKeys.START_DECORATION, new ArrowTip());
 				break;
 			case NONE:
-				figure.set(AttributeKeys.START_DECORATION, null);
+				set(figure, AttributeKeys.START_DECORATION, null);
 		}
 		switch (overlay.getLineEndArrowStyle()) {
 			case ARROW:
-				figure.set(AttributeKeys.END_DECORATION, new ArrowTip());
+				set(figure, AttributeKeys.END_DECORATION, new ArrowTip());
 				break;
 			case NONE:
-				figure.set(AttributeKeys.END_DECORATION, null);
+				set(figure, AttributeKeys.END_DECORATION, null);
 				break;
 		}
 	}
@@ -190,11 +191,11 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay, F extends Figur
 
 	protected void initDefaultSettings(final F figure) {
 		final OverlaySettings settings = overlayService.getDefaultSettings();
-		figure.set(AttributeKeys.STROKE_WIDTH, getDefaultLineWidth(settings));
-		figure.set(AttributeKeys.FILL_COLOR, getDefaultFillColor(settings));
-		figure.set(AttributeKeys.STROKE_COLOR, getDefaultStrokeColor(settings));
+		set(figure, AttributeKeys.STROKE_WIDTH, getDefaultLineWidth(settings));
+		set(figure, AttributeKeys.FILL_COLOR, getDefaultFillColor(settings));
+		set(figure, AttributeKeys.STROKE_COLOR, getDefaultStrokeColor(settings));
 		// Avoid IllegalArgumentException: miter limit < 1 on the EDT
-		figure.set(AttributeKeys.IS_STROKE_MITER_LIMIT_FACTOR, false);
+		set(figure, AttributeKeys.IS_STROKE_MITER_LIMIT_FACTOR, false);
 	}
 
 	// -- Helper methods --
@@ -233,5 +234,12 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay, F extends Figur
 		return canvas.panelToDataCoords(new IntCoords(x, y));
 	}
 
+	private <T> void set(final F fig, final AttributeKey<T> key, final T value) {
+		if (value.equals(fig.get(key))) {
+			// NB: Do not trigger an attribute change event if value already matches.
+			return;
+		}
+		fig.set(key, value);
+	}
 
 }
