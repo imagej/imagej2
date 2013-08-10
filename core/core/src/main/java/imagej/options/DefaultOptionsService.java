@@ -78,6 +78,14 @@ public class DefaultOptionsService extends
 		return objects == null || objects.isEmpty() ? null : objects.get(0);
 	}
 
+	@Override
+	public void reset() {
+		final List<OptionsPlugin> optionsPlugins = getInstances();
+		for (final OptionsPlugin plugin : optionsPlugins) {
+			plugin.reset();
+		}
+	}
+
 	// -- SingletonService methods --
 
 	@Override
