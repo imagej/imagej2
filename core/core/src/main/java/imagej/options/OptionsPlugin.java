@@ -106,18 +106,6 @@ public class OptionsPlugin extends DynamicCommand implements SingletonPlugin {
 		eventService.publish(new OptionsEvent(this));
 	}
 
-	// -- Contextual methods --
-
-	@Override
-	public void setContext(final Context context) {
-		super.setContext(context);
-		// CTR CHECK: Does anything use context.inject
-		// on these guys instead of setContext?
-		// I bet there is a bug that load() never
-		// happens anymore...
-		load();
-	}
-
 	// -- Helper methods --
 
 	private <T> void loadInput(final ModuleItem<T> input) {

@@ -35,6 +35,8 @@
 
 package imagej.options;
 
+import imagej.command.CommandService;
+
 import java.util.List;
 
 import org.scijava.log.LogService;
@@ -63,6 +65,10 @@ public class DefaultOptionsService extends
 	@Parameter
 	private ObjectService objectService;
 
+	// NB: Required by DynamicCommand, the OptionsPlugin superclass.
+	@Parameter
+	private CommandService commandService;
+
 	// -- OptionsService methods --
 
 	@Override
@@ -70,6 +76,20 @@ public class DefaultOptionsService extends
 		getInstances(); // NB: Force instantiation of singletons.
 		final List<O> objects = objectService.getObjects(optionsClass);
 		return objects == null || objects.isEmpty() ? null : objects.get(0);
+	}
+
+	// -- SingletonService methods --
+
+	@Override
+	public List<OptionsPlugin> getInstances() {
+		final List<OptionsPlugin> instances = super.getInstances();
+
+		// load previous values from persistent storage
+		for (final OptionsPlugin options : instances) {
+			options.load();
+		}
+
+		return instances;
 	}
 
 	// -- PTService methods --
