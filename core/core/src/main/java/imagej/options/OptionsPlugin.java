@@ -38,8 +38,8 @@ package imagej.options;
 import imagej.command.DynamicCommand;
 import imagej.module.ModuleItem;
 import imagej.options.event.OptionsEvent;
+import imagej.util.Prefs;
 
-import org.scijava.Context;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.SingletonPlugin;
@@ -98,24 +98,17 @@ public class OptionsPlugin extends DynamicCommand implements SingletonPlugin {
 		}
 	}
 
+	/** Clears option values from persistent storage. */
+	public void reset() {
+		Prefs.clear(getClass());
+	}
+
 	// -- Runnable methods --
 
 	@Override
 	public void run() {
 		save();
 		eventService.publish(new OptionsEvent(this));
-	}
-
-	// -- Contextual methods --
-
-	@Override
-	public void setContext(final Context context) {
-		super.setContext(context);
-		// CTR CHECK: Does anything use context.inject
-		// on these guys instead of setContext?
-		// I bet there is a bug that load() never
-		// happens anymore...
-		load();
 	}
 
 	// -- Helper methods --

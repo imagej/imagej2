@@ -49,4 +49,11 @@ public interface OptionsService extends SingletonService<OptionsPlugin> {
 	/** Gets the options plugin of the given class, or null if none. */
 	<O extends OptionsPlugin> O getOptions(Class<O> optionsClass);
 
+	/**
+	 * Clears all option values from persistent storage.
+	 * 
+	 * @see OptionsPlugin#reset()
+	 */
+	void reset();
+
 }
