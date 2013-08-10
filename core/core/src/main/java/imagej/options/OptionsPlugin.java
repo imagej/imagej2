@@ -38,8 +38,8 @@ package imagej.options;
 import imagej.command.DynamicCommand;
 import imagej.module.ModuleItem;
 import imagej.options.event.OptionsEvent;
+import imagej.util.Prefs;
 
-import org.scijava.Context;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.SingletonPlugin;
@@ -96,6 +96,11 @@ public class OptionsPlugin extends DynamicCommand implements SingletonPlugin {
 		for (final ModuleItem<?> input : getInfo().inputs()) {
 			saveInput(input);
 		}
+	}
+
+	/** Clears option values from persistent storage. */
+	public void reset() {
+		Prefs.clear(getClass());
 	}
 
 	// -- Runnable methods --

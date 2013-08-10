@@ -39,7 +39,6 @@ import imagej.command.Command;
 import imagej.menu.MenuConstants;
 import imagej.options.OptionsPlugin;
 import imagej.options.OptionsService;
-import imagej.util.Prefs;
 
 import java.util.List;
 
@@ -66,7 +65,7 @@ public class OptionsReset implements Command {
 	public void run() {
 		final List<OptionsPlugin> optionsPlugins = optionsService.getInstances();
 		for (final OptionsPlugin plugin : optionsPlugins) {
-			Prefs.clear(plugin.getClass());
+			plugin.reset();
 		}
 	}
 
