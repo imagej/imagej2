@@ -135,8 +135,14 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 		return fillType;
 	}
 
+	// TODO - extend to support types unknown to the DataTypeService?
+
 	public void setDataType(DataType<?> dataType) {
-		typeName = dataType.longName();
+		String tname = dataType.longName();
+		if (dataTypeService.getTypeByName(tname) == null) {
+			throw new IllegalArgumentException("unknown data type [" + tname + "]");
+		}
+		typeName = tname;
 	}
 
 	public DataType<?> getDataType() {
@@ -147,7 +153,11 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 		if (MIN.toString().equalsIgnoreCase(fillType)) this.fillType = MIN;
 		else if (MAX.toString().equalsIgnoreCase(fillType)) this.fillType = MAX;
 		else if (RAMP.toString().equalsIgnoreCase(fillType)) this.fillType = RAMP;
-		else this.fillType = ZERO;
+		else if (ZERO.toString().equalsIgnoreCase(fillType)) this.fillType = ZERO;
+		else {
+			throw new IllegalArgumentException("please specify fill type as one of " +
+				MIN + ", " + MAX + ", " + RAMP + ", or " + ZERO);
+		}
 	}
 
 	public long getDimension(final AxisType axisType) {
@@ -158,6 +168,13 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 	}
 
 	public void setDimension(final AxisType axisType, final long size) {
+		final long min;
+		if (axisType.isXY()) min = 1;
+		else min = 0;
+		if (size < min) {
+			throw new IllegalArgumentException("axis " + axisType +
+				" dimension must be >= " + min);
+		}
 		for (int i = 0; i < defaultAxes.length; i++) {
 			if (defaultAxes[i].equals(axisType)) dimensions[i] = size;
 		}
@@ -173,21 +190,24 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 	@Override
 	public void run() {
 		// FIXME: Migrate this logic into a service.
-		setDimensions();
+		fillProvidedDimensions();
 		if ((name == null) || (name.trim().length() == 0)) name = DEFAULT_NAME;
 		// create the dataset
-		final long[] dims = getDims();
-		final AxisType[] axes = getAxes();
+		final long[] dims = getActualDims();
+		final AxisType[] axes = getActualAxes();
 		if (badSpecification(dims, axes)) {
 			dataset = null;
 			return;
 		}
+		@SuppressWarnings("unchecked")
 		DataType<U> dataType = (DataType<U>) getDataType();
 		U variable = dataType.createVariable();
 		dataset = datasetService.create(variable, dims, name, axes);
 
-		// fill in the diagonal gradient
+		// initialize the image data
+		
 		final long[] pos = new long[2];
+		@SuppressWarnings("unchecked")
 		final Cursor<U> cursor =
 			(Cursor<U>) dataset.getImgPlus().localizingCursor();
 
@@ -247,8 +267,11 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 				new DefaultMutableModuleItem<Long>(this, axisType.getLabel(), Long.class);
 			// NB - persist all values for now
 			//if (!axisType.isXY()) axisItem.setPersisted(false);
-			axisItem.setValue(this, 1L);
-			axisItem.setMinimumValue(1L);
+			final long min;
+			if (axisType.isXY()) min = 1;
+			else min = 0;
+			axisItem.setValue(this, min);
+			axisItem.setMinimumValue(min);
 			addInput(axisItem);
 		}
 	}
@@ -298,7 +321,7 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 		outValue.setImaginary(val);
 	}
 
-	private long[] getDims() {
+	private long[] getActualDims() {
 		int numSpecified = 0;
 		for (int i = 0; i < dimensions.length; i++) {
 			long dim = dimensions[i];
@@ -313,7 +336,7 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 		return dims;
 	}
 
-	private AxisType[] getAxes() {
+	private AxisType[] getActualAxes() {
 		int numSpecified = 0;
 		for (int i = 0; i < dimensions.length; i++) {
 			long dim = dimensions[i];
@@ -331,7 +354,7 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 	}
 
 	// error conditions:
-	// no X dim, no Y dim, any dim size <= 1 (unless X or Y)
+	// no X dim, no Y dim, any dim size <= 1 (or <= 0 for X or Y)
 	
 	private boolean badSpecification(long[] dims, AxisType[] axes) {
 		boolean hasX = false;
@@ -354,7 +377,7 @@ public class NewImage<U extends RealType<U> & NativeType<U>> extends
 		return false;
 	}
 
-	private void setDimensions() {
+	private void fillProvidedDimensions() {
 		for (int i = 0; i < defaultAxes.length; i++) {
 			AxisType axisType = defaultAxes[i];
 			Object input = getInput(axisType.getLabel());
