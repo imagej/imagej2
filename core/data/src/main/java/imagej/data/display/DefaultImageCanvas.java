@@ -48,7 +48,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.scijava.Context;
 import org.scijava.event.EventService;
 import org.scijava.input.MouseCursor;
 import org.scijava.log.LogService;
@@ -417,8 +416,6 @@ public class DefaultImageCanvas implements ImageCanvas {
 	// -- Helper methods --
 
 	private void publishPanZoomEvent() {
-		final Context context = getDisplay().getContext();
-		if (context == null) return;
 		if (eventService != null) eventService.publish(new PanZoomEvent(this));
 	}
 
