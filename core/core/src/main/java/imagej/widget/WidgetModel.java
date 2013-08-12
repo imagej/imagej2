@@ -176,29 +176,47 @@ public class WidgetModel extends AbstractContextual {
 	/**
 	 * Gets the minimum value for the module input.
 	 * 
-	 * @return The minimum value, or null if none, or the type is unordered.
+	 * @return The minimum value, or null if the type is unbounded.
 	 */
 	public Number getMin() {
-		final Class<?> type = item.getType();
-		final Class<?> saneType = ClassUtils.getNonprimitiveType(type);
-		final Object itemMin = item.getMinimumValue();
-		final Number min = NumberUtils.toNumber(itemMin, saneType);
+		final Number min = toNumber(item.getMinimumValue());
 		if (min != null) return min;
-		return NumberUtils.getMinimumNumber(type);
+		return NumberUtils.getMinimumNumber(item.getType());
 	}
 
 	/**
 	 * Gets the maximum value for the module input.
 	 * 
-	 * @return The maximum value, or null if none, or the type is unordered.
+	 * @return The maximum value, or null if the type is unbounded.
 	 */
 	public Number getMax() {
-		final Class<?> type = item.getType();
-		final Class<?> saneType = ClassUtils.getNonprimitiveType(type);
-		final Object itemMax = item.getMaximumValue();
-		final Number max = NumberUtils.toNumber(itemMax, saneType);
+		final Number max = toNumber(item.getMaximumValue());
 		if (max != null) return max;
-		return NumberUtils.getMaximumNumber(type);
+		return NumberUtils.getMaximumNumber(item.getType());
+	}
+
+	/**
+	 * Gets the "soft" minimum value for the module input.
+	 * 
+	 * @return The "soft" minimum value, or {@link #getMin()} if none.
+	 * @see ModuleItem#getSoftMinimum()
+	 */
+	public Number getSoftMin() {
+		final Number softMin = toNumber(item.getSoftMinimum());
+		if (softMin != null) return softMin;
+		return getMin();
+	}
+
+	/**
+	 * Gets the "soft" maximum value for the module input.
+	 * 
+	 * @return The "soft" maximum value, or {@link #getMax()} if none.
+	 * @see ModuleItem#getSoftMaximum()
+	 */
+	public Number getSoftMax() {
+		final Number softMax = toNumber(item.getSoftMaximum());
+		if (softMax != null) return softMax;
+		return getMax();
 	}
 
 	/**
@@ -207,12 +225,9 @@ public class WidgetModel extends AbstractContextual {
 	 * @return The step size, or 1 by default.
 	 */
 	public Number getStepSize() {
-		final Class<?> type = item.getType();
-		final Class<?> saneType = ClassUtils.getNonprimitiveType(type);
-		final Object itemStep = item.getStepSize();
-		final Number stepSize = NumberUtils.toNumber(itemStep, saneType);
+		final Number stepSize = toNumber(item.getStepSize());
 		if (stepSize != null) return stepSize;
-		return NumberUtils.toNumber("1", type);
+		return NumberUtils.toNumber("1", item.getType());
 	}
 
 	/**
@@ -344,6 +359,13 @@ public class WidgetModel extends AbstractContextual {
 		// CTR TODO: Mutating the model in a getter is dirty. Find a better way?
 		setValue(validValue);
 		return validValue;
+	}
+
+	/** Converts the given object to a number matching the input type. */
+	private Number toNumber(final Object value) {
+		final Class<?> type = item.getType();
+		final Class<?> saneType = ClassUtils.getNonprimitiveType(type);
+		return NumberUtils.toNumber(value, saneType);
 	}
 
 }

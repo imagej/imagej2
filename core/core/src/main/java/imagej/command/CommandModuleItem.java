@@ -154,6 +154,18 @@ public class CommandModuleItem<T> extends AbstractModuleItem<T> {
 	}
 
 	@Override
+	public T getSoftMinimum() {
+		// NB: Return hard minimum by default.
+		return getMinimumValue();
+	}
+
+	@Override
+	public T getSoftMaximum() {
+		// NB: Return hard maximum by default.
+		return getMaximumValue();
+	}
+
+	@Override
 	public Number getStepSize() {
 		final Class<T> saneType = ClassUtils.getNonprimitiveType(getType());
 		return NumberUtils.toNumber(getParameter().stepSize(), saneType);

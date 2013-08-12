@@ -89,22 +89,25 @@ public class SwingNumberWidget extends SwingInputWidget<Number> implements
 
 		final Number min = model.getMin();
 		final Number max = model.getMax();
+		final Number softMin = model.getSoftMin();
+		final Number softMax = model.getSoftMax();
 		final Number stepSize = model.getStepSize();
 
 		// add optional widgets, if specified
 		final String style = model.getItem().getWidgetStyle();
 		if (NumberWidget.SCROLL_BAR_STYLE.equals(style)) {
 			scrollBar =
-				new JScrollBar(Adjustable.HORIZONTAL, min.intValue(), 1,
-					min.intValue(), max.intValue() + 1);
+				new JScrollBar(Adjustable.HORIZONTAL, softMin.intValue(), 1, softMin
+					.intValue(), softMax.intValue() + 1);
 			scrollBar.setUnitIncrement(stepSize.intValue());
 			setToolTip(scrollBar);
 			getComponent().add(scrollBar);
 			scrollBar.addAdjustmentListener(this);
 		}
 		else if (NumberWidget.SLIDER_STYLE.equals(style)) {
-			slider = new JSlider(min.intValue(), max.intValue(), min.intValue());
-			slider.setMajorTickSpacing((max.intValue() - min.intValue()) / 4);
+			slider =
+				new JSlider(softMin.intValue(), softMax.intValue(), softMin.intValue());
+			slider.setMajorTickSpacing((softMax.intValue() - softMin.intValue()) / 4);
 			slider.setMinorTickSpacing(stepSize.intValue());
 			slider.setPaintLabels(true);
 			slider.setPaintTicks(true);
@@ -204,8 +207,24 @@ public class SwingNumberWidget extends SwingInputWidget<Number> implements
 
 	/** Sets slider values to match the spinner. */
 	private void syncSliders() {
-		if (slider != null) slider.setValue(getValue().intValue());
-		if (scrollBar != null) scrollBar.setValue(getValue().intValue());
+		if (slider != null) {
+			// clamp value within slider bounds
+			int value = getValue().intValue();
+			if (value < slider.getMinimum()) value = slider.getMinimum();
+			else if (value > slider.getMaximum()) value = slider.getMaximum();
+			slider.removeChangeListener(this);
+			slider.setValue(value);
+			slider.addChangeListener(this);
+		}
+		if (scrollBar != null) {
+			// clamp value within scroll bar bounds
+			int value = getValue().intValue();
+			if (value < scrollBar.getMinimum()) value = scrollBar.getMinimum();
+			else if (value > scrollBar.getMaximum()) value = scrollBar.getMaximum();
+			scrollBar.removeAdjustmentListener(this);
+			scrollBar.setValue(getValue().intValue());
+			scrollBar.addAdjustmentListener(this);
+		}
 	}
 
 	// -- AbstractUIInputWidget methods ---

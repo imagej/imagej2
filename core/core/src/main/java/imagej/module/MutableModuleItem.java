@@ -68,6 +68,10 @@ public interface MutableModuleItem<T> extends ModuleItem<T> {
 
 	void setMaximumValue(T maximumValue);
 
+	void setSoftMinimum(T softMinimum);
+
+	void setSoftMaximum(T softMaximum);
+
 	void setStepSize(Number stepSize);
 
 	void setColumnCount(int columnCount);
