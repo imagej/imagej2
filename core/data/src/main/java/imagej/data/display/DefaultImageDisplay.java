@@ -95,7 +95,7 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 	private AxisType activeAxis = null;
 
-	final private ImageCanvas canvas;
+	private ImageCanvas canvas;
 
 	// NB - older comment - see 12-7-11 note
 	// If pos is a HashMap rather than a ConcurrentHashMap,
@@ -111,7 +111,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 	public DefaultImageDisplay() {
 		super(DataView.class);
-		canvas = new DefaultImageCanvas(this);
 	}
 
 	// -- AbstractDisplay methods --
@@ -207,6 +206,7 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 	@Override
 	public ImageCanvas getCanvas() {
+		if (canvas == null) canvas = new DefaultImageCanvas(this);
 		return canvas;
 	}
 
