@@ -244,8 +244,6 @@ public final class DefaultLegacyService extends AbstractService implements
 	public synchronized void toggleLegacyMode(final boolean wantIJ1, final boolean initializing) {
 		if (wantIJ1) legacyIJ1Mode = true;
 
-		SwitchToModernMode.registerMenuItem();
-
 		// TODO: hide/show Brightness/Contrast, Color Picker, Command Launcher, etc
 		// TODO: prevent IJ1 from quitting without IJ2 quitting, too
 
@@ -307,6 +305,8 @@ public final class DefaultLegacyService extends AbstractService implements
 		}
 
 		ij1Helper.initialize();
+
+		SwitchToModernMode.registerMenuItem();
 
 		// discover legacy plugins
 		final OptionsMisc optsMisc = optionsService.getOptions(OptionsMisc.class);
