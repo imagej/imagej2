@@ -157,7 +157,9 @@ public class DefaultImageCanvas implements ImageCanvas {
 	private RealCoords panCenter;
 
 	public DefaultImageCanvas(final ImageDisplay display) {
+		display.getContext().inject(this);
 		this.display = display;
+
 		mouseCursor = MouseCursor.DEFAULT;
 		viewportSize = new IntCoords(100, 100);
 		zoomLevels = validatedZoomLevels(defaultZooms);
