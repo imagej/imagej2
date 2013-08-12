@@ -49,6 +49,7 @@ import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.thread.ThreadService;
 import org.scijava.util.ClassUtils;
+import org.scijava.util.MiscUtils;
 import org.scijava.util.NumberUtils;
 
 /**
@@ -147,7 +148,7 @@ public class WidgetModel extends AbstractContextual {
 	/** Sets the current value of the module input. */
 	public void setValue(final Object value) {
 		final String name = item.getName();
-		if (objectsEqual(item.getValue(module), value)) return; // no change
+		if (MiscUtils.equal(item.getValue(module), value)) return; // no change
 		module.setInput(name, value);
 		if (initialized) {
 			threadService.run(new Runnable() {
@@ -311,11 +312,6 @@ public class WidgetModel extends AbstractContextual {
 	}
 
 	// -- Helper methods --
-
-	private boolean objectsEqual(final Object obj1, final Object obj2) {
-		if (obj1 == null) return obj2 == null;
-		return obj1.equals(obj2);
-	}
 
 	/**
 	 * For multiple choice widgets, ensure the value is a valid choice.
