@@ -56,6 +56,7 @@ import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.decoration.ArrowTip;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.SortablePlugin;
+import org.scijava.util.MiscUtils;
 
 /**
  * An abstract class that gives default behavior for the {@link JHotDrawAdapter}
@@ -235,7 +236,7 @@ public abstract class AbstractJHotDrawAdapter<O extends Overlay, F extends Figur
 	}
 
 	private <T> void set(final F fig, final AttributeKey<T> key, final T value) {
-		if (value.equals(fig.get(key))) {
+		if (MiscUtils.equal(value, fig.get(key))) {
 			// NB: Do not trigger an attribute change event if value already matches.
 			return;
 		}
