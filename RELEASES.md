@@ -110,9 +110,15 @@ The following steps perform a release of ImageJ itself:
 
 #### Use the latest version of ImageJ 1.x
 
-Verify that the pom-scijava version used by ImageJ references the
-latest available version of ImageJ 1.x. If not, [tell Jenkins to
-update `imagej1.version` in
+Verify that the [pom-scijava version used by
+ImageJ](https://github.com/imagej/imagej/blob/master/pom.xml#L8)
+references the [latest available version of ImageJ
+1.x](http://maven.imagej.net/content/repositories/releases/net/imagej/ij/)
+(see the [pom-scijava
+history](https://github.com/scijava/scijava-common/commits/master/pom-scijava/pom.xml)
+to cross-reference the versions).
+
+If not, [tell Jenkins to update `imagej1.version` in
 pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
 Otherwise, uploading a new release to the update site will downgrade
 all ImageJ2 and Fiji users to an obsolete ImageJ 1.x version.
