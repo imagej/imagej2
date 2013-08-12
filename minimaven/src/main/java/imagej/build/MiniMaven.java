@@ -112,7 +112,7 @@ public class MiniMaven {
 			"true".equals(getSystemProperty("minimaven.verbose", "false")),
 			"true".equals(getSystemProperty("minimaven.debug", "false")));
 		final MavenProject root = env.parse(new File("pom.xml"), null);
-		final String artifactId = getSystemProperty("artifactId", root.getArtifactId().equals("pom-ij-base") ? "ij-app" : root.getArtifactId());
+		final String artifactId = getSystemProperty("artifactId", root.getArtifactId().equals("pom-ij-base") || root.getArtifactId().equals("pom-imagej") ? "ij-app" : root.getArtifactId());
 
 		MavenProject pom = findPOM(root, artifactId);
 		if (pom == null) {

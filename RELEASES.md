@@ -158,7 +158,7 @@ And specify the newly pushed `temp` tag.
 
 - Where `2.0.0-beta-7` is the new release version.
 - The `--tag` argument is necessary since the default
-  SCM release tag would be `pom-ij-base-2.0.0-beta-7`.
+  SCM release tag would be `pom-imagej-2.0.0-beta-7`.
 - The `--dev-version` argument is required to set the new
   development version back to `2.0.0-SNAPSHOT` afterwards.
   Once ImageJ2 is out of beta, it will no longer be necessary.
