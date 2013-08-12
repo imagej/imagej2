@@ -108,6 +108,13 @@ public class OptionsPlugin extends DynamicCommand implements SingletonPlugin {
 	@Override
 	public void run() {
 		save();
+
+		// NB: Clear "resolved" status of all inputs.
+		// Otherwise, no inputs are harvested on next run.
+		for (final ModuleItem<?> input : getInfo().inputs()) {
+			setResolved(input.getName(), false);
+		}
+
 		eventService.publish(new OptionsEvent(this));
 	}
 
