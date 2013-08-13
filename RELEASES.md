@@ -179,7 +179,7 @@ pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
 
 1. [Create a blog post](http://developer.imagej.net/node/add/blog) on the
    ImageJ web site. It should be modeled after a [previous blog
-   entry](http://developer.imagej.net/2012/07/13/imagej-v200-beta3).
+   entry](http://developer.imagej.net/2013/06/12/imagej-v200-beta-7).
 
 2. Rename the artifact `app/target/imagej-XYZ-application.zip` to delete the
    `-application` suffix. Add it as an attachment to the post.
