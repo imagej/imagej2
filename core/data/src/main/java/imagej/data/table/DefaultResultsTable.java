@@ -36,7 +36,7 @@
 package imagej.data.table;
 
 import net.imglib2.img.Img;
-import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.real.DoubleType;

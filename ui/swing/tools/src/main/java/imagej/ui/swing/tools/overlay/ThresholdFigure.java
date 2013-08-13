@@ -94,7 +94,7 @@ public class ThresholdFigure extends AbstractAttributedFigure implements
 		tmpPos[0] = pt.x;
 		tmpPos[1] = pt.y;
 		for (int i = 2; i < tmpPos.length; i++) {
-			AxisType axisType = dataset.axis(i);
+			AxisType axisType = dataset.axis(i).type();
 			tmpPos[i] = display.getLongPosition(axisType);
 		}
 		return overlay.getRegionOfInterest().contains(tmpPos);
@@ -208,7 +208,7 @@ public class ThresholdFigure extends AbstractAttributedFigure implements
 		pt2[0] = dataset.dimension(0) - 1;
 		pt2[1] = dataset.dimension(1) - 1;
 		for (int i = 2; i < pt1.length; i++) {
-			AxisType axisType = dataset.axis(i);
+			AxisType axisType = dataset.getImgPlus().axis(i).type();
 			pt1[i] = pt2[i] = display.getLongPosition(axisType);
 		}
 		return new HyperVolumePointSet(pt1, pt2);

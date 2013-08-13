@@ -55,7 +55,7 @@ public class DelayedPositionEvent extends ImageDisplayEvent {
 
 	public DelayedPositionEvent(final ImageDisplay display, final AxisType axis) {
 		super(display);
-		if (display.getAxisIndex(axis) < 0) {
+		if (display.dimensionIndex(axis) < 0) {
 			throw new IllegalArgumentException("Invalid axis: " + axis);
 		}
 		this.axis = axis;

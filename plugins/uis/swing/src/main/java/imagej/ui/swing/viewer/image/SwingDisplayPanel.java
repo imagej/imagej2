@@ -235,7 +235,7 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 
 		// remove obsolete sliders
 		for (final AxisType axis : axisSliders.keySet()) {
-			if (display.getAxisIndex(axis) >= 0) continue; // axis still active
+			if (display.dimensionIndex(axis) >= 0) continue; // axis still active
 			sliderPanel.remove(axisSliders.get(axis));
 			sliderPanel.remove(axisLabels.get(axis));
 			axisSliders.remove(axis);
@@ -245,7 +245,7 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 		// configure sliders to match axes and extents
 		for (int i = 0; i < axes.length; i++) {
 			final AxisType axis = axes[i];
-			if (Axes.isXY(axis)) continue; // skip spatial axes
+			if (axis.isXY()) continue; // skip spatial axes
 			final int min = (int) extents.min(i);
 			final int max = (int) extents.max(i) + 1;
 			final int value = (int) display.getLongPosition(axis);

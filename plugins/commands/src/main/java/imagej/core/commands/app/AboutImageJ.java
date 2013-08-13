@@ -174,7 +174,7 @@ public class AboutImageJ extends ContextCommand {
 			boolean validImage = true;
 			validImage &= (ds.numDimensions() == 3);
 			// Too restrictive? Ran into images where 3rd axis is mislabeled
-			// validImage &= (ds.getAxisIndex(Axes.CHANNEL) == 2);
+			// validImage &= (ds.dimensionIndex(Axes.CHANNEL) == 2);
 			if (validImage) {
 				loadAttributes(imageFile);
 			}

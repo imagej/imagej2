@@ -165,7 +165,7 @@ public class AxisSubrange {
 		final String definition, final boolean originOne)
 	{
 		this();
-		final int axisIndex = display.getAxisIndex(axis);
+		final int axisIndex = display.dimensionIndex(axis);
 		long min, max;
 		if (originOne) {
 			min = 1;

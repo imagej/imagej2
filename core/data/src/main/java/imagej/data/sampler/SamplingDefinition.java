@@ -150,7 +150,7 @@ public class SamplingDefinition {
 		final double[] cal = new double[outputAxes.length];
 		int a = 0;
 		for (int i = 0; i < outputAxes.length; i++) {
-			final int axisIndex = display.getAxisIndex(outputAxes[i]);
+			final int axisIndex = display.dimensionIndex(outputAxes[i]);
 			if (axisIndex >= 0) cal[a++] = display.calibration(i);
 		}
 		return cal;
@@ -171,7 +171,7 @@ public class SamplingDefinition {
 			return false;
 		}
 		final Data data = display.getActiveView().getData();
-		final int axisIndex = data.getAxisIndex(axis);
+		final int axisIndex = data.dimensionIndex(axis);
 		if (axisIndex < 0) {
 			err = "Undefined axis " + axis + " for display " + display.getName();
 			return false;
@@ -212,7 +212,7 @@ public class SamplingDefinition {
 		final AxisType[] axes = data.getAxes();
 		for (final AxisType axis : axes) {
 			if ((axis == uAxis) || (axis == vAxis)) {
-				final int axisIndex = display.getAxisIndex(axis);
+				final int axisIndex = display.dimensionIndex(axis);
 				final long size = display.getExtents().dimension(axisIndex);
 				final AxisSubrange subrange = new AxisSubrange(0, size - 1);
 				definition.constrain(axis, subrange);
@@ -259,7 +259,7 @@ public class SamplingDefinition {
 		final AxisType[] axes = data.getAxes();
 		for (final AxisType axis : axes) {
 			if ((axis == uAxis) || (axis == vAxis) || (axis == Axes.CHANNEL)) {
-				final int axisIndex = display.getAxisIndex(axis);
+				final int axisIndex = display.dimensionIndex(axis);
 				final long size = display.getExtents().dimension(axisIndex);
 				final AxisSubrange subrange = new AxisSubrange(0, size - 1);
 				definition.constrain(axis, subrange);

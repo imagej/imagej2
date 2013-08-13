@@ -180,8 +180,8 @@ public class EquationDataValues<T extends RealType<T>> extends ContextCommand {
 		final DatasetView view = imgDispService.getActiveDatasetView(disp);
 		
 		// check dimensions of Dataset
-		final int xIndex = dataset.getAxisIndex(Axes.X);
-		final int yIndex = dataset.getAxisIndex(Axes.Y);
+		final int xIndex = dataset.dimensionIndex(Axes.X);
+		final int yIndex = dataset.dimensionIndex(Axes.Y);
 		if ((xIndex < 0) || (yIndex < 0))
 			return "display does not have XY planes";
 		

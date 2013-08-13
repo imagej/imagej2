@@ -218,7 +218,7 @@ public class SprayCanTool extends AbstractTool {
 		drawingTool.setPosition(currPos);
 
 		// restrict to a single channel if a multichannel image
-		int chanIndex = imageDisplay.getAxisIndex(Axes.CHANNEL);
+		int chanIndex = imageDisplay.dimensionIndex(Axes.CHANNEL);
 		if (chanIndex >= 0) {
 			long currChanPos = currPos[chanIndex];
 			drawingTool.setPreferredChannel(currChanPos);

@@ -120,10 +120,10 @@ public class LegacyUtils {
 	 * Returns true if the number of planes is greater than Integer.MAX_VALUE.
 	 */
 	public static boolean dimensionsIJ1Compatible(final Dataset ds) {
-		final int xIndex = ds.getAxisIndex(Axes.X);
-		final int yIndex = ds.getAxisIndex(Axes.Y);
-		final int zIndex = ds.getAxisIndex(Axes.Z);
-		final int tIndex = ds.getAxisIndex(Axes.TIME);
+		final int xIndex = ds.dimensionIndex(Axes.X);
+		final int yIndex = ds.dimensionIndex(Axes.Y);
+		final int zIndex = ds.dimensionIndex(Axes.Z);
+		final int tIndex = ds.dimensionIndex(Axes.TIME);
 
 		final long[] dims = ds.getDims();
 
@@ -234,7 +234,7 @@ public class LegacyUtils {
 		if (!ds.isInteger()) return false;
 		if (ds.isSigned()) return false;
 		if (ds.getType().getBitsPerPixel() != 8) return false;
-		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
+		final int cIndex = ds.dimensionIndex(Axes.CHANNEL);
 		if (cIndex < 0) return false;
 		if (ds.getImgPlus().dimension(cIndex) % 3 != 0) return false;
 		return true;
@@ -254,11 +254,11 @@ public class LegacyUtils {
 		final AxisType[] axes = dataset.getAxes();
 
 		// get axis indices
-		final int xIndex = dataset.getAxisIndex(Axes.X);
-		final int yIndex = dataset.getAxisIndex(Axes.Y);
-		final int cIndex = dataset.getAxisIndex(Axes.CHANNEL);
-		final int zIndex = dataset.getAxisIndex(Axes.Z);
-		final int tIndex = dataset.getAxisIndex(Axes.TIME);
+		final int xIndex = dataset.dimensionIndex(Axes.X);
+		final int yIndex = dataset.dimensionIndex(Axes.Y);
+		final int cIndex = dataset.dimensionIndex(Axes.CHANNEL);
+		final int zIndex = dataset.dimensionIndex(Axes.Z);
+		final int tIndex = dataset.dimensionIndex(Axes.TIME);
 
 		final long xCount = xIndex < 0 ? 1 : dims[xIndex];
 		final long yCount = yIndex < 0 ? 1 : dims[yIndex];

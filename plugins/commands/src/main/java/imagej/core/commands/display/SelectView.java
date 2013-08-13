@@ -44,7 +44,6 @@ import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.RectangleOverlay;
 import imagej.menu.MenuConstants;
-import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.roi.RegionOfInterest;
 
@@ -124,7 +123,7 @@ public class SelectView extends ContextCommand {
 	private boolean viewIsInCurrentDisplayedPlane(ImageDisplay disp, DataView view) {
 		AxisType[] axes = disp.getAxes();
 		for (AxisType axis : axes) {
-			if (Axes.isXY(axis)) continue;
+			if (axis.isXY()) continue;
 			if (disp.getLongPosition(axis) != view.getLongPosition(axis)) return false;
 		}
 		return true;
@@ -145,9 +144,9 @@ public class SelectView extends ContextCommand {
 		Overlay newOverlay = makeOverlay(disp);
 		DataView dataView = imgDispService.createDataView(newOverlay);
 		for (int i = 0; i < disp.numDimensions(); i++) {
-			final AxisType axis = disp.axis(i);
-			if (Axes.isXY(axis)) continue;
-			if (dataView.getData().getAxisIndex(axis) < 0) {
+			final AxisType axis = disp.axis(i).type();
+			if (axis.isXY()) continue;
+			if (dataView.getData().dimensionIndex(axis) < 0) {
 				dataView.setPosition(disp.getLongPosition(axis), axis);
 			}
 		}

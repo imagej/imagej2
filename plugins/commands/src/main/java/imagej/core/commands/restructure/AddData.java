@@ -43,9 +43,9 @@ import imagej.module.MutableModuleItem;
 
 import java.util.ArrayList;
 
-import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
@@ -142,7 +142,7 @@ public class AddData extends DynamicCommand {
 			compositeStatus(dataset, dstImgPlus, axis);
 		dstImgPlus.setCompositeChannelCount(compositeChannelCount);
 		RestructureUtils.allocateColorTables(dstImgPlus);
-		if (Axes.isXY(axis)) {
+		if (axis.isXY()) {
 			RestructureUtils.copyColorTables(dataset.getImgPlus(), dstImgPlus);
 		}
 		else {
@@ -184,7 +184,7 @@ public class AddData extends DynamicCommand {
 		}
 
 		// setup some working variables
-		final int axisIndex = dataset.getAxisIndex(axis);
+		final int axisIndex = dataset.dimensionIndex(axis);
 		final long axisSize = dataset.getImgPlus().dimension(axisIndex);
 
 		// axis not present in Dataset
@@ -219,7 +219,7 @@ public class AddData extends DynamicCommand {
 			final AxisType modifiedAxis)
 	{
 		final long[] dimensions = dataset.getDims();
-		final int axisIndex = dataset.getAxisIndex(modifiedAxis);
+		final int axisIndex = dataset.dimensionIndex(modifiedAxis);
 		final long axisSize = dimensions[axisIndex];
 		final long numBeforeInsert = position - 1; // one-based position
 		final long numInInsertion = quantity;
@@ -244,7 +244,7 @@ public class AddData extends DynamicCommand {
 
 		// calc working data
 		final int currComposCount = dataset.getCompositeChannelCount();
-		final int origAxisPos = origData.getAxisIndex(Axes.CHANNEL);
+		final int origAxisPos = origData.dimensionIndex(Axes.CHANNEL);
 		final long numOrigChannels = origData.getImgPlus().dimension(origAxisPos);
 		final long numNewChannels = dstImgPlus.dimension(origAxisPos);
 
@@ -281,7 +281,7 @@ public class AddData extends DynamicCommand {
 			final long[] origPlanePos, final long[] newPlanePos)
 		{
 			final AxisType axis = Axes.get(axisName);
-			final int axisIndex = dataset.getAxisIndex(axis);
+			final int axisIndex = dataset.dimensionIndex(axis);
 			for (int i = 0; i < origPlanePos.length; i++) {
 				if (i != axisIndex - 2) {
 					newPlanePos[i] = origPlanePos[i];
@@ -342,7 +342,7 @@ public class AddData extends DynamicCommand {
 
 	private long currDimLen() {
 		final AxisType axis = getAxis();
-		final int axisIndex = getDataset().getAxisIndex(axis);
+		final int axisIndex = getDataset().dimensionIndex(axis);
 		return getDataset().getImgPlus().dimension(axisIndex);
 	}
 

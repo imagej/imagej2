@@ -42,6 +42,7 @@ import net.imglib2.Positionable;
 import net.imglib2.RealPositionable;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 
 /**
  * A combined interval is an aggregation of other {@link CalibratedInterval}s,
@@ -64,6 +65,10 @@ import net.imglib2.meta.AxisType;
 public class CombinedInterval extends ArrayList<CalibratedInterval> implements
 	CalibratedInterval
 {
+
+	// TEMP: The ideas of this class have now largely been implemented as
+	// net.imglib2.meta.CombinedRealInterval. This class will go away in
+	// favor of that new implementation.
 
 	/**
 	 * List of axis mappings from combined interval into constituent intervals.
@@ -98,7 +103,7 @@ public class CombinedInterval extends ArrayList<CalibratedInterval> implements
 		indices.clear();
 		for (final CalibratedInterval interval : this) {
 			for (int d = 0; d < interval.numDimensions(); d++) {
-				final AxisType axis = interval.axis(d);
+				final AxisType axis = interval.axis(d).type();
 				if (!indices.containsKey(axis)) {
 					// new axis; add to mappings
 					final DimensionMapping mapping = new DimensionMapping();
@@ -130,7 +135,9 @@ public class CombinedInterval extends ArrayList<CalibratedInterval> implements
 	@Override
 	public AxisType[] getAxes() {
 		final AxisType[] axes = new AxisType[numDimensions()];
-		axes(axes);
+		for (int i = 0; i < axes.length; i++) {
+			axes[i] = axis(i).type();
+		}
 		return axes;
 	}
 
@@ -158,28 +165,6 @@ public class CombinedInterval extends ArrayList<CalibratedInterval> implements
 	}
 
 	// -- CalibratedSpace methods --
-
-	@Override
-	public int getAxisIndex(final AxisType axis) {
-		return indices.containsKey(axis) ? indices.get(axis) : -1;
-	}
-
-	@Override
-	public AxisType axis(final int d) {
-		final DimensionMapping mapping = mappings.get(d);
-		return mapping.interval.axis(mapping.index);
-	}
-
-	@Override
-	public void axes(final AxisType[] axes) {
-		for (int i = 0; i < axes.length; i++)
-			axes[i] = axis(i);
-	}
-
-	@Override
-	public void setAxis(final AxisType axis, final int d) {
-		throw new UnsupportedOperationException();
-	}
 
 	@Override
 	public double calibration(final int d) {
@@ -211,6 +196,46 @@ public class CombinedInterval extends ArrayList<CalibratedInterval> implements
 
 	@Override
 	public void setCalibration(float[] cal) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public String unit(int d) {
+		// NB: Naive, but will be obsolete shortly anyway.
+		final DimensionMapping mapping = mappings.get(d);
+		return mapping.interval.unit(d);
+	}
+
+	@Override
+	public void setUnit(String unit, int d) {
+		// NB: Naive, but will be obsolete shortly anyway.
+		final DimensionMapping mapping = mappings.get(d);
+		mapping.interval.setUnit(unit, d);
+	}
+
+	// -- TypedSpace methods --
+
+	@Override
+	public int dimensionIndex(final AxisType axis) {
+		return indices.containsKey(axis) ? indices.get(axis) : -1;
+	}
+
+	// -- AnnotatedSpace methods --
+
+	@Override
+	public CalibratedAxis axis(final int d) {
+		final DimensionMapping mapping = mappings.get(d);
+		return mapping.interval.axis(mapping.index);
+	}
+
+	@Override
+	public void axes(final CalibratedAxis[] axes) {
+		for (int i = 0; i < axes.length; i++)
+			axes[i] = axis(i);
+	}
+
+	@Override
+	public void setAxis(final CalibratedAxis axis, final int d) {
 		throw new UnsupportedOperationException();
 	}
 

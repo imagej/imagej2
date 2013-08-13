@@ -40,6 +40,7 @@ import imagej.data.overlay.Overlay;
 import net.imglib2.Interval;
 import net.imglib2.RealInterval;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.CalibratedSpace;
 import net.imglib2.meta.Named;
 
@@ -56,7 +57,9 @@ import net.imglib2.meta.Named;
  * @see Data
  * @see ImageDisplay
  */
-public interface CalibratedInterval extends CalibratedSpace, Interval, Named {
+public interface CalibratedInterval extends CalibratedSpace<CalibratedAxis>,
+	Interval, Named
+{
 
 	/** Gets the dimensional axes of the space. */
 	AxisType[] getAxes();

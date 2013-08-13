@@ -91,7 +91,7 @@ public class SplitChannelsContextMonitor extends AbstractService {
 			setContextAppropriate(false);
 			return;
 		}
-		final int channelIndex = dataset.getAxisIndex(Axes.CHANNEL);
+		final int channelIndex = dataset.dimensionIndex(Axes.CHANNEL);
 		if (channelIndex < 0) {
 			setContextAppropriate(false);
 			return;

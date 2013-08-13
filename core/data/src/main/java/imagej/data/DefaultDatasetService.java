@@ -54,9 +54,9 @@ import java.util.List;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.img.planar.PlanarImgFactory;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
@@ -217,13 +217,13 @@ public final class DefaultDatasetService extends AbstractService implements
 	@Override
 	public Dataset open(final String source) throws IOException {
 		final ImgOpener imageOpener = new ImgOpener(getContext());
-		/* Restore this when NativeType can be eliminated from this class decl.
+		// Restore this when NativeType can be eliminated from this class decl.
 		// TODO BDZ 7-17-12 Lowering reliance on NativeType. This cast is safe but
 		// necessary in the short term to get code to compile. But
 		// imageOpener.openImg() is being modified to have no reference to
 		// NativeType. Later, when that has been accomplished remove this cast.
-		final ImgPlus<T> imgPlus = (ImgPlus<T>) imageOpener.openImg(source);
-		*/
+		//final ImgPlus<T> imgPlus = (ImgPlus<T>) imageOpener.openImg(source);
+		//
 		final ImgOptions options = new ImgOptions();
 		options.setIndex(0);
 		options.setCheckMode(CheckMode.DEEP);

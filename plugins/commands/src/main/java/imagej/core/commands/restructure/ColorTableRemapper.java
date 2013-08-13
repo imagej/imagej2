@@ -36,7 +36,7 @@
 package imagej.core.commands.restructure;
 
 import net.imglib2.display.ColorTable;
-import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.ImgPlus;
 
 /**
  * Class responsible for simple remapping of color tables from one indexing

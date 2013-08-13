@@ -52,8 +52,8 @@ import java.util.List;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
@@ -190,8 +190,8 @@ public class CropImage extends ContextCommand {
 		maxX = (long) (bounds.x + bounds.width - 1);
 		maxY = (long) (bounds.y + bounds.height - 1);
 
-		xIndex = dataset.getAxisIndex(Axes.X);
-		yIndex = dataset.getAxisIndex(Axes.Y);
+		xIndex = dataset.dimensionIndex(Axes.X);
+		yIndex = dataset.dimensionIndex(Axes.Y);
 
 		final long[] newDimensions = new long[inputImage.numDimensions()];
 		inputImage.dimensions(newDimensions);

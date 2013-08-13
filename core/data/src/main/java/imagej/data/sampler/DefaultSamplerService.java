@@ -50,9 +50,9 @@ import java.util.List;
 
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.plugin.Parameter;
@@ -200,7 +200,7 @@ public class DefaultSamplerService extends AbstractService implements
 		}
 		output.getImgPlus().initializeColorTables((int)numPlanes);
 		if (origDs.isRGBMerged()) {
-			final int chanAxis = output.getAxisIndex(Axes.CHANNEL);
+			final int chanAxis = output.dimensionIndex(Axes.CHANNEL);
 			if (chanAxis >= 0) {
 				if (output.dimension(chanAxis) == 3) {
 					output.setRGBMerged(true);
@@ -298,7 +298,7 @@ public class DefaultSamplerService extends AbstractService implements
 		final Dataset output)
 	{
 		if (input.getCompositeChannelCount() == 1) return;
-		final int index = output.getAxisIndex(Axes.CHANNEL);
+		final int index = output.dimensionIndex(Axes.CHANNEL);
 		final long numChannels = (index < 0) ? 1 : output.dimension(index);
 		output.setCompositeChannelCount((int) numChannels);
 		// outside viewers need to know composite channel count changed
@@ -317,7 +317,7 @@ public class DefaultSamplerService extends AbstractService implements
 		final DatasetView inView = imgDispService.getActiveDatasetView(input);
 		final DatasetView outView = imgDispService.getActiveDatasetView(output);
 		final List<ColorTable> inputColorTables = inView.getColorTables();
-		final int inputChanAxis = input.getAxisIndex(Axes.CHANNEL); 
+		final int inputChanAxis = input.dimensionIndex(Axes.CHANNEL); 
 		final List<List<Long>> inputRanges = def.getInputRanges();
 		for (int i = 0; i < inputColorTables.size(); i++) {
 			int outIndex = outputColorTableNumber(inputRanges, i, inputChanAxis);
@@ -326,8 +326,8 @@ public class DefaultSamplerService extends AbstractService implements
 			}
 		}
 		/*
-		final int chAxisIn = input.getAxisIndex(Axes.CHANNEL);
-		final int chAxisOut = output.getAxisIndex(Axes.CHANNEL);
+		final int chAxisIn = input.dimensionIndex(Axes.CHANNEL);
+		final int chAxisOut = output.dimensionIndex(Axes.CHANNEL);
 		if (chAxisIn < 0 || chAxisOut < 0) {
 			return;
 		}
@@ -402,7 +402,7 @@ public class DefaultSamplerService extends AbstractService implements
 	private long calcNumPlanes(long[] dims, AxisType[] axes) {
 		long num = 1;
 		for (int i = 0; i < dims.length; i++) {
-			if (Axes.isXY(axes[i])) continue;
+			if (axes[i].isXY()) continue;
 			num *= dims[i];
 		}
 		return num;
@@ -412,7 +412,7 @@ public class DefaultSamplerService extends AbstractService implements
 		final ImageDisplay input = def.getDisplay();
 		final DatasetView inView = imgDispService.getActiveDatasetView(input);
 		final DatasetView outView = imgDispService.getActiveDatasetView(output);
-		final int inputChanAxis = input.getAxisIndex(Axes.CHANNEL);
+		final int inputChanAxis = input.dimensionIndex(Axes.CHANNEL);
 		final List<List<Long>> inputRanges = def.getInputRanges();
 		for (int i = 0; i < inView.getChannelCount(); i++) {
 			int outIndex = outputColorTableNumber(inputRanges, i, inputChanAxis);

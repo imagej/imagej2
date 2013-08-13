@@ -43,6 +43,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.DefaultCalibratedAxis;
 import net.imglib2.roi.RectangleRegionOfInterest;
 
 import org.scijava.Context;
@@ -66,8 +67,8 @@ public class PointOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> 
 	
 	public PointOverlay(final Context context) {
 		super(context, new RectangleRegionOfInterest(new double[2], new double[2]));
-		this.setAxis(Axes.X, 0);
-		this.setAxis(Axes.Y, 1);
+		this.setAxis(new DefaultCalibratedAxis(Axes.X), 0);
+		this.setAxis(new DefaultCalibratedAxis(Axes.Y), 1);
 	}
 
 	public PointOverlay(final Context context, final List<double[]> pts) {

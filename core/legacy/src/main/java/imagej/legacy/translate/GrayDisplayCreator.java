@@ -226,11 +226,11 @@ public class GrayDisplayCreator extends AbstractContextual implements
 	private void setDatasetGrayDataFromColorImp(final Dataset ds,
 		final ImagePlus imp)
 	{
-		final int xIndex = ds.getAxisIndex(Axes.X);
-		final int yIndex = ds.getAxisIndex(Axes.Y);
-		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
-		final int zIndex = ds.getAxisIndex(Axes.Z);
-		final int tIndex = ds.getAxisIndex(Axes.TIME);
+		final int xIndex = ds.dimensionIndex(Axes.X);
+		final int yIndex = ds.dimensionIndex(Axes.Y);
+		final int cIndex = ds.dimensionIndex(Axes.CHANNEL);
+		final int zIndex = ds.dimensionIndex(Axes.Z);
+		final int tIndex = ds.dimensionIndex(Axes.TIME);
 		final int x = imp.getWidth();
 		final int y = imp.getHeight();
 		final int c = imp.getNChannels();

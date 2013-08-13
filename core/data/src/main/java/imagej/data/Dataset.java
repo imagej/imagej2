@@ -35,8 +35,8 @@
 
 package imagej.data;
 
-import net.imglib2.img.ImgPlus;
-import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.meta.Metadata;
 import net.imglib2.type.numeric.RealType;
 
@@ -156,7 +156,7 @@ public interface Dataset extends Data, Metadata {
 	double getBytesOfInfo();
 
 	// TODO - move into Imglib
-	void setAxes(AxisType[] axes);
+	void setAxes(final CalibratedAxis[] axes);
 
 	// -- Data methods --
 

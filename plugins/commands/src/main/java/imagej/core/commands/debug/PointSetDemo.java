@@ -45,7 +45,7 @@ import imagej.widget.Button;
 import java.net.URL;
 
 import net.imglib2.RandomAccess;
-import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.ops.pointset.TextSpecifiedPointSet;
 import net.imglib2.type.numeric.RealType;

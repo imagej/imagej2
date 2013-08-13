@@ -43,9 +43,9 @@ import imagej.module.MutableModuleItem;
 
 import java.util.ArrayList;
 
-import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
@@ -152,7 +152,7 @@ public class AddAxis extends DynamicCommand {
 		}
 
 		// axis already present in Dataset
-		final int axisIndex = dataset.getAxisIndex(axis);
+		final int axisIndex = dataset.dimensionIndex(axis);
 		if (axisIndex >= 0) {
 			cancel("Axis "+axis.getLabel()+" already present in dataset.");
 			return true;
@@ -238,8 +238,8 @@ public class AddAxis extends DynamicCommand {
 			getInfo().getMutableInput(AXIS_NAME, String.class);
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (final AxisType axis : Axes.values()) {
-			if (Axes.isXY(axis)) continue;
-			if (getDataset().getAxisIndex(axis) < 0) choices.add(axis.getLabel());
+			if (axis.isXY()) continue;
+			if (getDataset().dimensionIndex(axis) < 0) choices.add(axis.getLabel());
 		}
 		axisNameItem.setChoices(choices);
 	}

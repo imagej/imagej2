@@ -57,6 +57,7 @@ import net.imglib2.RealPositionable;
 import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
@@ -137,15 +138,15 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 		// remove obsolete axes
 		for (final AxisType axis : pos.keySet()) {
-			if (getAxisIndex(axis) < 0) {
+			if (dimensionIndex(axis) < 0) {
 				pos.remove(axis);
 			}
 		}
 
 		// initialize position of new axes
 		for (int i = 0; i < numDimensions(); i++) {
-			final AxisType axis = axis(i);
-			if (Axes.isXY(axis)) continue; // do not track position of planar axes
+			final AxisType axis = axis(i).type();
+			if (axis.isXY()) continue; // do not track position of planar axes
 			if (!pos.containsKey(axis)) {
 				// start at minimum value
 				pos.put(axis, min(i));
@@ -169,7 +170,7 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 	@Override
 	public void setActiveAxis(final AxisType axis) {
-		if (getAxisIndex(axis) < 0) {
+		if (dimensionIndex(axis) < 0) {
 			throw new IllegalArgumentException("Unknown axis: " + axis);
 		}
 		activeAxis = axis;
@@ -183,10 +184,10 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 	@Override
 	public boolean isVisible(final DataView view) {
 		for (int i = 0; i < numDimensions(); i++) {
-			final AxisType axis = axis(i);
+			final AxisType axis = axis(i).type();
 			if (axis.isXY()) continue;
 			final long value = getLongPosition(axis);
-			final int index = view.getData().getAxisIndex(axis);
+			final int index = view.getData().dimensionIndex(axis);
 			if (index < 0) {
 				// verify that the display's position matches the view's value
 				if (value != view.getLongPosition(axis)) return false;
@@ -213,8 +214,8 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 	@Override
 	public RealRect getPlaneExtents() {
 		final Extents extents = getExtents();
-		final int xAxis = getAxisIndex(Axes.X);
-		final int yAxis = getAxisIndex(Axes.Y);
+		final int xAxis = dimensionIndex(Axes.X);
+		final int yAxis = dimensionIndex(Axes.Y);
 		final double xMin = extents.realMin(xAxis);
 		final double yMin = extents.realMin(yAxis);
 		final double width = extents.realMax(xAxis) - extents.realMin(xAxis);
@@ -292,8 +293,8 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 		combinedInterval.update();
 		for (final DataView view : this) {
 			for (final AxisType axis : getAxes()) {
-				if (Axes.isXY(axis)) continue;
-				final int axisNum = view.getData().getAxisIndex(axis);
+				if (axis.isXY()) continue;
+				final int axisNum = view.getData().dimensionIndex(axis);
 				if (axisNum < 0) continue;
 				final long p = getLongPosition(axis);
 				if (p < view.getData().dimension(axisNum)) {
@@ -411,22 +412,22 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 	// -- CalibratedSpace methods --
 
 	@Override
-	public int getAxisIndex(final AxisType axis) {
-		return combinedInterval.getAxisIndex(axis);
+	public int dimensionIndex(final AxisType axis) {
+		return combinedInterval.dimensionIndex(axis);
 	}
 
 	@Override
-	public AxisType axis(final int d) {
+	public CalibratedAxis axis(final int d) {
 		return combinedInterval.axis(d);
 	}
 
 	@Override
-	public void axes(final AxisType[] axes) {
+	public void axes(final CalibratedAxis[] axes) {
 		combinedInterval.axes(axes);
 	}
 
 	@Override
-	public void setAxis(final AxisType axis, final int d) {
+	public void setAxis(final CalibratedAxis axis, final int d) {
 		combinedInterval.setAxis(axis, d);
 	}
 
@@ -460,6 +461,16 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 		combinedInterval.setCalibration(cal);
 	}
 
+	@Override
+	public String unit(int d) {
+		return combinedInterval.unit(d);
+	}
+
+	@Override
+	public void setUnit(String unit, int d) {
+		combinedInterval.setUnit(unit, d);
+	}
+
 	// -- PositionableByAxis methods --
 
 	@Override
@@ -469,7 +480,7 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 	@Override
 	public long getLongPosition(final AxisType axis) {
-		final int d = getAxisIndex(axis);
+		final int d = dimensionIndex(axis);
 		if (d < 0) {
 			// untracked axes are all at position 0 by default
 			return 0;
@@ -485,7 +496,7 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 	@Override
 	public void setPosition(final long position, final AxisType axis) {
-		final int axisIndex = getAxisIndex(axis);
+		final int axisIndex = dimensionIndex(axis);
 		if (axisIndex < 0) {
 			throw new IllegalArgumentException("Invalid axis: " + axis);
 		}
@@ -525,12 +536,12 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 	@Override
 	public int getIntPosition(final int d) {
-		return getIntPosition(axis(d));
+		return getIntPosition(axis(d).type());
 	}
 
 	@Override
 	public long getLongPosition(final int d) {
-		return getLongPosition(axis(d));
+		return getLongPosition(axis(d).type());
 	}
 
 	// -- RealLocalizable methods --
@@ -617,12 +628,12 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 	@Override
 	public void setPosition(final int position, final int d) {
-		setPosition(position, axis(d));
+		setPosition(position, axis(d).type());
 	}
 
 	@Override
 	public void setPosition(final long position, final int d) {
-		setPosition(position, axis(d));
+		setPosition(position, axis(d).type());
 	}
 
 	// -- Event handlers --

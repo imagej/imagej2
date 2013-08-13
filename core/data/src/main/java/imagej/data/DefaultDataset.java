@@ -49,7 +49,6 @@ import net.imglib2.RealPositionable;
 import net.imglib2.display.ColorTable;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.img.NativeImgFactory;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgFactory;
@@ -63,6 +62,8 @@ import net.imglib2.img.basictypeaccess.array.LongArray;
 import net.imglib2.img.basictypeaccess.array.ShortArray;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.IntegerType;
@@ -354,38 +355,37 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	// -- CalibratedSpace methods --
 
 	@Override
-	public int getAxisIndex(final AxisType axis) {
-		return imgPlus.getAxisIndex(axis);
+	public int dimensionIndex(final AxisType axis) {
+		return imgPlus.dimensionIndex(axis);
 	}
 
 	@Override
-	public AxisType axis(final int d) {
+	public CalibratedAxis axis(final int d) {
 		return imgPlus.axis(d);
 	}
 
 	@Override
-	public void axes(final AxisType[] axes) {
+	public void axes(final CalibratedAxis[] axes) {
 		imgPlus.axes(axes);
 	}
 
 	@Override
-	public void setAxes(final AxisType[] axes) {
+	public void setAxes(final CalibratedAxis[] axes) {
 		if (axes.length != numDimensions())
 			throw new IllegalArgumentException(
 				"number of axes must match dimensionality of dataset");
 		boolean changes = false;
 		for (int i = 0; i < axes.length; i++) {
-			AxisType axis = axes[i];
-			if (!imgPlus.axis(i).equals(axis)) {
+			if (!imgPlus.axis(i).equals(axes[i])) {
 				changes = true;
-				imgPlus.setAxis(axis, i);
+				imgPlus.setAxis(axes[i], i);
 			}
 		}
 		if (changes) rebuild();
 	}
 
 	@Override
-	public void setAxis(final AxisType axis, final int d) {
+	public void setAxis(final CalibratedAxis axis, final int d) {
 		if (imgPlus.axis(d).equals(axis)) return;
 		imgPlus.setAxis(axis, d);
 		update(true); // TODO : false instead of true?
@@ -745,8 +745,8 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		if (isSigned()) return false;
 		if (!isInteger()) return false;
 		if (getType().getBitsPerPixel() != 8) return false;
-		if (imgPlus.getAxisIndex(Axes.CHANNEL) < 0) return false;
-		if (imgPlus.dimension(getAxisIndex(Axes.CHANNEL)) != 3) return false;
+		if (imgPlus.dimensionIndex(Axes.CHANNEL) < 0) return false;
+		if (imgPlus.dimension(dimensionIndex(Axes.CHANNEL)) != 3) return false;
 		return true;
 	}
 }

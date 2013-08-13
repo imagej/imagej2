@@ -66,7 +66,7 @@ public interface DataTypeService extends SingletonService<DataType<?>> {
 	 * Returns the DataType whose internal type class matches the given typeClass.
 	 * Returns null if not found.
 	 */
-	<T extends NumericType<T>> DataType<T> getTypeByClass(Class<T> typeClass);
+	DataType<?> getTypeByClass(Class<?> typeClass);
 
 	/**
 	 * Fills an output with a cast from an input given information about their

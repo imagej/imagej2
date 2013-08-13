@@ -40,8 +40,9 @@ import imagej.data.event.DatasetRestructuredEvent;
 import imagej.display.Displayable;
 import imagej.util.ColorRGB;
 import imagej.util.Colors;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.ops.condition.Condition;
 import net.imglib2.ops.condition.FunctionGreaterCondition;
 import net.imglib2.ops.condition.FunctionLessCondition;
@@ -347,22 +348,22 @@ public class ThresholdOverlay extends AbstractOverlay
 	}
 
 	@Override
-	public int getAxisIndex(AxisType axis) {
-		return dataset.getAxisIndex(axis);
+	public int dimensionIndex(AxisType axis) {
+		return dataset.dimensionIndex(axis);
 	}
 
 	@Override
-	public AxisType axis(int d) {
+	public CalibratedAxis axis(int d) {
 		return dataset.axis(d);
 	}
 
 	@Override
-	public void axes(AxisType[] axes) {
+	public void axes(CalibratedAxis[] axes) {
 		dataset.axes(axes);
 	}
 
 	@Override
-	public void setAxis(AxisType axis, int d) {
+	public void setAxis(CalibratedAxis axis, int d) {
 		dataset.setAxis(axis, d);
 	}
 

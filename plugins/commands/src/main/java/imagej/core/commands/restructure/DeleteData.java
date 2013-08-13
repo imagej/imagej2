@@ -43,9 +43,9 @@ import imagej.module.MutableModuleItem;
 
 import java.util.ArrayList;
 
-import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
@@ -144,11 +144,11 @@ public class DeleteData extends DynamicCommand {
 		fillNewImgPlus(dataset.getImgPlus(), dstImgPlus, axis);
 		dstImgPlus.setCompositeChannelCount(compositeChannelCount);
 		RestructureUtils.allocateColorTables(dstImgPlus);
-		if (Axes.isXY(axis)) {
+		if (axis.isXY()) {
 			RestructureUtils.copyColorTables(dataset.getImgPlus(), dstImgPlus);
 		}
 		else {
-			int d = dataset.getAxisIndex(axis);
+			int d = dataset.dimensionIndex(axis);
 			final ColorTableRemapper remapper =
 				new ColorTableRemapper(new RemapAlgorithm(dataset.getDims(), d));
 			remapper.remapColorTables(dataset.getImgPlus(), dstImgPlus);
@@ -185,7 +185,7 @@ public class DeleteData extends DynamicCommand {
 		}
 
 		// setup some working variables
-		final int axisIndex = dataset.getAxisIndex(axis);
+		final int axisIndex = dataset.dimensionIndex(axis);
 		final long axisSize = dataset.getImgPlus().dimension(axisIndex);
 
 		// axis not present in Dataset
@@ -225,7 +225,7 @@ public class DeleteData extends DynamicCommand {
 		final AxisType modifiedAxis)
 	{
 		final long[] dimensions = dataset.getDims();
-		final int axisIndex = dataset.getAxisIndex(modifiedAxis);
+		final int axisIndex = dataset.dimensionIndex(modifiedAxis);
 		final long axisSize = dimensions[axisIndex];
 		final long numBeforeCut = position - 1; // one based position
 		long numInCut = quantity;
@@ -242,7 +242,7 @@ public class DeleteData extends DynamicCommand {
 		final ImgPlus<?> output, final AxisType axis)
 	{
 		if (axis == Axes.CHANNEL) {
-			final int axisIndex = output.getAxisIndex(Axes.CHANNEL);
+			final int axisIndex = output.dimensionIndex(Axes.CHANNEL);
 			final long numChannels = output.dimension(axisIndex);
 			if (numChannels < compositeCount) return (int) numChannels;
 		}
@@ -352,7 +352,7 @@ public class DeleteData extends DynamicCommand {
 
 	private long currDimLen() {
 		final AxisType axis = Axes.get(getAxisName());
-		final int axisIndex = getDataset().getAxisIndex(axis);
+		final int axisIndex = getDataset().dimensionIndex(axis);
 		return getDataset().getImgPlus().dimension(axisIndex);
 	}
 

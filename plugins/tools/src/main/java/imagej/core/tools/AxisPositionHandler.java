@@ -134,9 +134,9 @@ public class AxisPositionHandler extends AbstractTool {
 		else if (mods.isCtrlDown() || mods.isMetaDown()) axis = Axes.Z;
 		else axis = Axes.CHANNEL;
 
-		if (display.getAxisIndex(axis) < 0) {
+		if (display.dimensionIndex(axis) < 0) {
 			// preferred axis does not exist; return first available axis instead
-			return display.axis(2);
+			return display.axis(2).type();
 		}
 		return axis;
 	}

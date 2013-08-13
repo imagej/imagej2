@@ -101,9 +101,9 @@ public class MergedRgbVirtualStack extends VirtualStack {
 		if (sz > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException("Dataset has too many planes");
 		}
-		xAxis = ds.getAxisIndex(Axes.X);
-		yAxis = ds.getAxisIndex(Axes.Y);
-		cAxis = ds.getAxisIndex(Axes.CHANNEL);
+		xAxis = ds.dimensionIndex(Axes.X);
+		yAxis = ds.dimensionIndex(Axes.Y);
+		cAxis = ds.dimensionIndex(Axes.CHANNEL);
 		if (xAxis == -1 || yAxis == -1 || cAxis == -1) {
 			throw new IllegalArgumentException("Dataset does not have correct axes");
 		}

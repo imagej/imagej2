@@ -109,9 +109,9 @@ public class FillDataValues<T extends RealType<T>>
 		final long maxX = (long) (bounds.x + bounds.width - 1);
 		final long maxY = (long) (bounds.y + bounds.height - 1);
 		final long[] pos = new long[dataset.numDimensions()];
-		final int xIndex = dataset.getAxisIndex(Axes.X);
-		final int yIndex = dataset.getAxisIndex(Axes.Y);
-		final int chIndex = dataset.getAxisIndex(Axes.CHANNEL);
+		final int xIndex = dataset.dimensionIndex(Axes.X);
+		final int yIndex = dataset.dimensionIndex(Axes.Y);
+		final int chIndex = dataset.dimensionIndex(Axes.CHANNEL);
 		final ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
 		final Cursor<? extends RealType<?>> cursor = imgPlus.localizingCursor();
 		while (cursor.hasNext()) {

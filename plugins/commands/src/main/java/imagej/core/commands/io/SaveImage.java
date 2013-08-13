@@ -44,7 +44,7 @@ import imagej.menu.MenuConstants;
 import java.io.File;
 import java.util.HashMap;
 
-import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.ImgPlus;
 
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;

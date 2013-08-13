@@ -201,7 +201,7 @@ public class AutoContrast extends ContextCommand {
 	}
 
 	private long getNumChannels(final Dataset dataset) {
-		int chIdx = dataset.getAxisIndex(Axes.CHANNEL);
+		int chIdx = dataset.dimensionIndex(Axes.CHANNEL);
 		if (chIdx == -1) return 1;
 		return dataset.dimension(chIdx);
 	}

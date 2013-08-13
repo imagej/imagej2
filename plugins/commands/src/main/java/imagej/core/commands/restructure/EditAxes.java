@@ -45,6 +45,7 @@ import java.util.ArrayList;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 
 import org.scijava.ItemIO;
 import org.scijava.log.LogService;
@@ -116,7 +117,7 @@ public class EditAxes extends DynamicCommand {
 		}
 		double[] newCal = getNewCalibration(dataset,desiredAxes);
 		dataset.setCalibration(newCal);
-		dataset.setAxes(desiredAxes);
+		dataset.setAxes(axisOrder(desiredAxes));
 	}
 
 	// -- Initializers --
@@ -132,7 +133,7 @@ public class EditAxes extends DynamicCommand {
 				new DefaultMutableModuleItem<String>(this, name(i), String.class);
 			axisItem.setChoices(choices);
 			axisItem.setPersisted(false);
-			axisItem.setValue(this, dataset.axis(i).getLabel());
+			axisItem.setValue(this, dataset.axis(i).toString());
 			addInput(axisItem);
 		}
 	}
@@ -180,12 +181,24 @@ public class EditAxes extends DynamicCommand {
 		double[] newCal = new double[newAxes.length];
 		int a = 0;
 		for (AxisType axis : newAxes) {
-			int index = origDs.getAxisIndex(axis);
+			int index = origDs.dimensionIndex(axis);
 			if (index < 0)
 				newCal[a++] = Double.NaN;
 			else
 				newCal[a++] = origDs.calibration(index);
 		}
 		return newCal;
+	}
+
+	private CalibratedAxis[] axisOrder(AxisType[] order) {
+		CalibratedAxis[] axisOrder = new CalibratedAxis[order.length];
+		for (int i = 0; i < order.length; i++) {
+			for (int j = 0; j < order.length; j++) {
+				if (dataset.axis(j).type().equals(order[i])) {
+					axisOrder[i] = dataset.axis(j);
+				}
+			}
+		}
+		return axisOrder;
 	}
 }

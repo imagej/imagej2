@@ -44,9 +44,9 @@ import imagej.module.MutableModuleItem;
 
 import java.util.ArrayList;
 
-import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
@@ -192,7 +192,7 @@ public class DeleteAxis extends DynamicCommand {
 		}
 
 		// axis not already present in Dataset
-		axisIndex = dataset.getAxisIndex(axis);
+		axisIndex = dataset.dimensionIndex(axis);
 		if (axisIndex < 0) {
 			cancel("Axis " + axis.getLabel()+" is not present in input dataset.");
 			return true;
@@ -230,7 +230,7 @@ public class DeleteAxis extends DynamicCommand {
 		final long[] origDims = ds.getDims();
 		if (axis.isXY()) {
 			final long[] newDims = origDims;
-			newDims[ds.getAxisIndex(axis)] = 1;
+			newDims[ds.dimensionIndex(axis)] = 1;
 			return newDims;
 		}
 		final AxisType[] origAxes = ds.getAxes();
@@ -269,7 +269,7 @@ public class DeleteAxis extends DynamicCommand {
 	private int
 		compositeStatus(final int compositeCount, final ImgPlus<?> output)
 	{
-		if (output.getAxisIndex(Axes.CHANNEL) < 0) return 1;
+		if (output.dimensionIndex(Axes.CHANNEL) < 0) return 1;
 		return compositeCount;
 
 	}
@@ -316,7 +316,7 @@ public class DeleteAxis extends DynamicCommand {
 
 	private void initPosition() {
 		final long max = getDataset().dimension(0);
-		final AxisType axis = getDataset().axis(0);
+		final AxisType axis = getDataset().axis(0).type();
 		final long value = display.getLongPosition(axis) + 1;
 		initPositionRange(1, max);
 		setPosition(value);
@@ -343,7 +343,7 @@ public class DeleteAxis extends DynamicCommand {
 
 	private long currDimLen() {
 		final AxisType axis = getAxis();
-		final int index = getDataset().getAxisIndex(axis);
+		final int index = getDataset().dimensionIndex(axis);
 		return getDataset().getImgPlus().dimension(index);
 	}
 
