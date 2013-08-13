@@ -76,7 +76,7 @@ public class MacOSXPlatform extends AbstractPlatform {
 	private static final boolean SCREEN_MENU = true;
 
 	@SuppressWarnings("unused")
-	private MacOSXAppEventDispatcher appEventDispatcher;
+	private Object appEventDispatcher;
 
 	private JMenuBar menuBar;
 
