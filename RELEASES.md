@@ -27,14 +27,9 @@ pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
 ImgLib2 provides the core data model and image processing.
 
     cd imglib
-    release-version.sh --tag=imglib2-2.0.0-beta-7 --dev-version=2.0.0-SNAPSHOT 2.0.0-beta-7
+    release-version.sh 2.0.0-beta-7
 
 - Where `2.0.0-beta-7` is the new release version.
-- The `--tag` argument is necessary since the default
-  SCM release tag would be `pom-imglib-2.0.0-beta-7`.
-- The `--dev-version` argument is required to set the new
-  development version back to `2.0.0-SNAPSHOT` afterwards.
-  Once ImgLib2 is out of beta, it will no longer be necessary.
 
 Optionally, after performing the release, [tell Jenkins to update
 `imglib2.version` in
@@ -44,7 +39,7 @@ pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
 
 SCIFIO provides core I/O functionality.
 
-    cd scifio/scifio
+    cd scifio
     release-version.sh 0.1.0
 
 - Where `0.1.0` is the new release version.
@@ -59,13 +54,12 @@ CppTasks Parallel is used by the NAR plugin.
 We deploy unofficial release builds for use with the ImageJ launcher.
 
     cd cpptasks-parellel
-    release-version.sh --thirdparty=imagej 1.1.1-scijava-1
+    release-version.sh 1.1.1-scijava-1
     git push scijava cpptasks-parallel-1.1.1-scijava-1
 
 - Where `1.1.1-scijava-1` is the new release version.
 - The `-scijava-X` qualifier indicates an unofficial release.
-- Note that due to the `--thirdparty` argument,
-  `release:prepare` will be called in interactive mode.
+- Note that `release:prepare` will be called in interactive mode.
 
 ## [NAR-MAVEN-PLUGIN](https://github.com/scijava/maven-nar-plugin)
 
@@ -73,13 +67,12 @@ The NAR plugin is used to build the ImageJ launcher.
 We deploy unofficial release builds.
 
     cd maven-nar-plugin
-    release-version.sh --thirdparty=imagej 3.0.0-scijava-1
+    release-version.sh 3.0.0-scijava-1
     git push scijava nar-maven-plugin-3.0.0-scijava-1
 
 - Where `3.0.0-scijava-1` is the new release version.
 - The `-scijava-X` qualifier indicates an unofficial release.
-- Note that due to the `--thirdparty` argument,
-  `release:prepare` will be called in interactive mode.
+- Note that `release:prepare` will be called in interactive mode.
 
 Optionally, after performing the release, [tell Jenkins to update
 `nar.version` in
@@ -90,7 +83,7 @@ pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
 The ImageJ launcher is a native launcher for ImageJ.
 
     cd imagej-launcher
-    release-version.sh --skip-deploy 2.0.0
+    release-version.sh 2.0.0
 
 - Where `2.0.0` is the new release version.
 
@@ -126,15 +119,12 @@ all ImageJ2 and Fiji users to an obsolete ImageJ 1.x version.
 #### Tag a release candidate
 
     cd imagej
-    release-version.sh --skip-push --skip-deploy --tag=temp --dev-version=2.0.0-SNAPSHOT 2.0.0-beta-7
+    release-version.sh --skip-push --skip-deploy --tag=temp 2.0.0-beta-7
     git push origin temp
 
 - Where `2.0.0-beta-7` is the new release version.
 - The `--tag=temp` argument creates a temporary tag named `temp`,
   from which we will build the release candidate in the next step.
-- The `--dev-version` argument is required to set the new
-  development version back to `2.0.0-SNAPSHOT` afterwards.
-  Once ImageJ2 is out of beta, it will no longer be necessary.
 
 #### Build the release candidate
 
@@ -154,14 +144,9 @@ And specify the newly pushed `temp` tag.
 #### Tag, build and deploy the actual release
 
     cd imagej
-    release-version.sh --tag=imagej-2.0.0-beta-7 --dev-version=2.0.0-SNAPSHOT 2.0.0-beta-7
+    release-version.sh 2.0.0-beta-7
 
 - Where `2.0.0-beta-7` is the new release version.
-- The `--tag` argument is necessary since the default
-  SCM release tag would be `pom-imagej-2.0.0-beta-7`.
-- The `--dev-version` argument is required to set the new
-  development version back to `2.0.0-SNAPSHOT` afterwards.
-  Once ImageJ2 is out of beta, it will no longer be necessary.
 
 #### Update pom-scijava
 
