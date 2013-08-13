@@ -274,6 +274,10 @@ public final class DefaultLegacyService extends AbstractService implements
 		// hide/show IJ1 main window
 		ij1Helper.setVisible(wantIJ1);
 
+		if (wantIJ1 && !initializing) {
+			optionsSynchronizer.updateLegacyImageJSettingsFromModernImageJ();
+		}
+
 		if (!wantIJ1) legacyIJ1Mode = false;
 		imageMap.toggleLegacyMode(wantIJ1);
 	}
@@ -313,8 +317,6 @@ public final class DefaultLegacyService extends AbstractService implements
 		lastDebugMode = optsMisc.isDebugMode();
 		final boolean enableBlacklist = !optsMisc.isDebugMode();
 		addLegacyCommands(enableBlacklist);
-
-		optionsSynchronizer.updateLegacyImageJSettingsFromModernImageJ();
 
 		if (!hasIJ1Instance && !GraphicsEnvironment.isHeadless()) toggleLegacyMode(false, true);
 	}
