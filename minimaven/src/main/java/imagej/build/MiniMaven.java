@@ -94,7 +94,7 @@ public class MiniMaven {
 				final String value;
 				if (equals < 0) value = "true";
 				else value = option.substring(equals + 1);
-				System.setProperty(option.substring(2), value);
+				System.setProperty(option.substring(2, equals < 0 ? option.length() : equals), value);
 			}
 			else {
 				usage();

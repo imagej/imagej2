@@ -953,7 +953,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 					return null;
 			}
 			else {
-				if (!quiet && !dependency.optional)
+				if (!quiet && !dependency.optional && !"system".equals(dependency.scope))
 					env.err.println("Skipping artifact " + dependency.getGAV() + " (for " + coordinate.getGAV() + "): not found");
 				if (!downloadAutomatically && env.downloadAutomatically)
 					return null;
