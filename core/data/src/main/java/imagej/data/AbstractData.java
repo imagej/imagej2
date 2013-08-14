@@ -48,6 +48,7 @@ import java.util.List;
 
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
+import net.imglib2.meta.DefaultCalibratedAxis;
 
 import org.scijava.AbstractContextual;
 import org.scijava.Context;
@@ -280,7 +281,15 @@ public abstract class AbstractData extends AbstractContextual implements Data,
 			out.writeUTF(BOGUS_NAME);
 		else
 			out.writeUTF(name);
-		out.writeObject(axes);
+		int numAxes = axes.size();
+		out.writeInt(numAxes);
+		for (int i = 0; i < numAxes; i++) {
+			CalibratedAxis axis = axes.get(i);
+			out.writeObject(axis.type());
+			out.writeDouble(axis.calibration());
+			if (axis.unit() == null) out.writeUTF(BOGUS_NAME);
+			else out.writeUTF(axis.unit());
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -301,7 +310,18 @@ public abstract class AbstractData extends AbstractContextual implements Data,
 		name = in.readUTF();
 		if (name.equals(BOGUS_NAME))
 			name = null;
-		axes = (List<CalibratedAxis>) in.readObject();
+		axes = new ArrayList<CalibratedAxis>();
+		int numAxes = in.readInt();
+		for (int i = 0; i < numAxes; i++) {
+			AxisType type = (AxisType) in.readObject();
+			double cal = in.readDouble();
+			String unitString = in.readUTF();
+			String unit;
+			if (unitString.equals(BOGUS_NAME)) unit = null;
+			else unit = unitString;
+			CalibratedAxis axis = new DefaultCalibratedAxis(type, unit, cal);
+			axes.add(axis);
+		}
 	}
 
 	// -- Internal methods --
