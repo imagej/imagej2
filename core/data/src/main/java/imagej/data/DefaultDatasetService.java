@@ -230,7 +230,7 @@ public final class DefaultDatasetService extends AbstractService implements
 		options.setComputeMinMax(false);
 		try {
 			@SuppressWarnings("rawtypes")
-			final ImgPlus imgPlus = open(imageOpener, source, options);
+			final ImgPlus imgPlus = imageOpener.openImg(source, options);
 			@SuppressWarnings("unchecked")
 			final Dataset dataset = create(imgPlus);
 			return dataset;
@@ -289,39 +289,6 @@ public final class DefaultDatasetService extends AbstractService implements
 		final ImgPlus img) throws ImgIOException, IncompatibleTypeException
 	{
 		imageSaver.saveImg(destination, img);
-	}
-
-	// FIXME HACK: Workaround for javac bug with ImgOpener's <T> parameter.
-	// There is probably a much less convoluted way to do this, but at least
-	// with this approach, we avoid propagating the T parameter any further.
-	// Ultimately, SCIFIO's ImgOpener needs to be changed to not return a
-	// generically typed object when there is no way for it to infer the T
-	// from the calling code.
-
-	@SuppressWarnings("rawtypes")
-	private static ImgPlus open(ImgOpener imageOpener, String source,
-		ImgOptions options) throws ImgIOException
-	{
-		try {
-			return ImgOpenerHack.class.newInstance().open(imageOpener, source,
-				options);
-		}
-		catch (InstantiationException exc) {
-			throw new IllegalStateException(exc);
-		}
-		catch (IllegalAccessException exc) {
-			throw new IllegalStateException(exc);
-		}
-	}
-
-	protected static class ImgOpenerHack<T extends RealType<T> & NativeType<T>> {
-
-		public ImgPlus<T> open(ImgOpener imageOpener, String source,
-			ImgOptions options) throws ImgIOException
-		{
-			return imageOpener.openImg(source, options);
-		}
-
 	}
 
 }
