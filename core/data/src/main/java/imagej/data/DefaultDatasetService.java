@@ -43,6 +43,7 @@ import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
 import io.scif.img.ImgOptions;
 import io.scif.img.ImgOptions.CheckMode;
+import io.scif.img.ImgOptions.ImgMode;
 import io.scif.img.ImgSaver;
 import io.scif.services.FormatService;
 
@@ -224,10 +225,11 @@ public final class DefaultDatasetService extends AbstractService implements
 		// NativeType. Later, when that has been accomplished remove this cast.
 		//final ImgPlus<T> imgPlus = (ImgPlus<T>) imageOpener.openImg(source);
 		//
-		final ImgOptions options = new ImgOptions();
-		options.setIndex(0);
-		options.setCheckMode(CheckMode.DEEP);
-		options.setComputeMinMax(false);
+		final ImgOptions options = 
+				new ImgOptions().setIndex(0)
+												.setCheckMode(CheckMode.DEEP)
+												.setComputeMinMax(false)
+												.setImgModes(ImgMode.PLANAR);
 		try {
 			@SuppressWarnings("rawtypes")
 			final ImgPlus imgPlus = imageOpener.openImg(source, options);
