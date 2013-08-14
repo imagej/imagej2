@@ -258,8 +258,7 @@ public final class DefaultDatasetService extends AbstractService implements
 		@SuppressWarnings("rawtypes")
 		final ImgPlus img = dataset.getImgPlus();
 
-		final ImgSaver imageSaver = new ImgSaver();
-		imageSaver.setContext(getContext());
+		final ImgSaver imageSaver = new ImgSaver(getContext());
 		try {
 			save(imageSaver, destination, img);
 		}
