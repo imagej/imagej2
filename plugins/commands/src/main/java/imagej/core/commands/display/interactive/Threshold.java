@@ -53,6 +53,7 @@ import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 import imagej.util.Colors;
 import imagej.widget.Button;
+import imagej.widget.NumberWidget;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.histogram.Histogram1d;
@@ -157,10 +158,12 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 	@Parameter(label = "Nan Background", persist = false)
 	private boolean nanBackground;
 
-	@Parameter(label = "Minimum", callback = "rangeChanged", persist = false)
+	@Parameter(label = "Minimum", callback = "rangeChanged", persist = false,
+		style = NumberWidget.SCROLL_BAR_STYLE)
 	private double minimum;
 
-	@Parameter(label = "Maximum", callback = "rangeChanged", persist = false)
+	@Parameter(label = "Maximum", callback = "rangeChanged", persist = false,
+		style = NumberWidget.SCROLL_BAR_STYLE)
 	private double maximum;
 
 	@Parameter(type = ItemIO.BOTH)
