@@ -51,9 +51,9 @@ import java.util.List;
 
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.ops.pointset.PointSetIterator;
@@ -109,11 +109,11 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 	@SuppressWarnings("unchecked")
 	@Override
 	public void run() {
+		Class<?> typeClass = data.getImgPlus().firstElement().getClass();
 		DataType<U> inType =
-			dataTypeService.getTypeByClass(data.getImgPlus().firstElement()
-				.getClass());
+			(DataType<U>) dataTypeService.getTypeByClass(typeClass);
 		DataType<V> outType = (DataType<V>) dataTypeService.getTypeByName(typeName);
-		int chAxis = data.getAxisIndex(Axes.CHANNEL);
+		int chAxis = data.dimensionIndex(Axes.CHANNEL);
 		long channelCount = (chAxis < 0) ? 1 : data.dimension(chAxis);
 		Dataset newData;
 		if (combineChannels && channelCount > 1 &&
@@ -139,8 +139,7 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 			choices.add(dataType.longName());
 		}
 		input.setChoices(choices);
-		RealType<?> dataVar = data.getImgPlus().firstElement();
-		@SuppressWarnings("unchecked")
+		RealType<?> dataVar = (RealType<?>) data.getImgPlus().firstElement();
 		DataType<?> type = dataTypeService.getTypeByClass(dataVar.getClass());
 		if (type == null) input.setValue(this, choices.get(0));
 		else input.setValue(this, type.longName());
@@ -194,7 +193,6 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 		return newData;
 	}
 
-	@SuppressWarnings("unchecked")
 	private Dataset
 		channelPreservingCase(DataType<U> inType, DataType<V> outType)
 	{
@@ -235,7 +233,7 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 		}
 		
 		// channel min/maxes
-		int chAxis = src.getAxisIndex(Axes.CHANNEL);
+		int chAxis = src.dimensionIndex(Axes.CHANNEL);
 		int channels;
 		if (chAxis < 0) channels = 1;
 		else channels = (int) src.dimension(chAxis);
@@ -249,7 +247,7 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 
 	private void copyMetaDataChannelsCase(ImgPlus<?> src, ImgPlus<?> dest) {
 
-		int chAxis = src.getAxisIndex(Axes.CHANNEL);
+		int chAxis = src.dimensionIndex(Axes.CHANNEL);
 
 		// dims and axes already correct
 

@@ -82,11 +82,11 @@ public class ColorPixelHarmonizer implements DataHarmonizer {
 	 */
 	@Override
 	public void updateDataset(final Dataset ds, final ImagePlus imp) {
-		final int xIndex = ds.getAxisIndex(Axes.X);
-		final int yIndex = ds.getAxisIndex(Axes.Y);
-		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
-		final int zIndex = ds.getAxisIndex(Axes.Z);
-		final int tIndex = ds.getAxisIndex(Axes.TIME);
+		final int xIndex = ds.dimensionIndex(Axes.X);
+		final int yIndex = ds.dimensionIndex(Axes.Y);
+		final int cIndex = ds.dimensionIndex(Axes.CHANNEL);
+		final int zIndex = ds.dimensionIndex(Axes.Z);
+		final int tIndex = ds.dimensionIndex(Axes.TIME);
 		final int xSize = imp.getWidth();
 		final int ySize = imp.getHeight();
 		final int cSize = imp.getNChannels();
@@ -151,11 +151,11 @@ public class ColorPixelHarmonizer implements DataHarmonizer {
 	 */
 	@Override
 	public void updateLegacyImage(final Dataset ds, final ImagePlus imp) {
-		final int xIndex = ds.getAxisIndex(Axes.X);
-		final int yIndex = ds.getAxisIndex(Axes.Y);
-		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
-		final int zIndex = ds.getAxisIndex(Axes.Z);
-		final int tIndex = ds.getAxisIndex(Axes.TIME);
+		final int xIndex = ds.dimensionIndex(Axes.X);
+		final int yIndex = ds.dimensionIndex(Axes.Y);
+		final int cIndex = ds.dimensionIndex(Axes.CHANNEL);
+		final int zIndex = ds.dimensionIndex(Axes.Z);
+		final int tIndex = ds.dimensionIndex(Axes.TIME);
 		final int xSize = imp.getWidth();
 		final int ySize = imp.getHeight();
 		final int cSize = imp.getNChannels();

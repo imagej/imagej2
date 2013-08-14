@@ -45,9 +45,9 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import net.imglib2.RandomAccess;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
@@ -107,7 +107,7 @@ public class ReorderData extends DynamicCommand {
 	 * @param fromPosition The index within the current axis order
 	 */
 	public void setNewAxisIndex(int index, int fromPosition) {
-		AxisType axis = dataset.axis(fromPosition);
+		AxisType axis = dataset.axis(fromPosition).type();
 		setInput(name(index), axis.getLabel());
 	}
 
@@ -118,7 +118,7 @@ public class ReorderData extends DynamicCommand {
 	public int getNewAxisIndex(int index) {
 		String axisName = (String) getInput(name(index));
 		for (int i = 0; i < dataset.numDimensions(); i++) {
-			if (axisName.equals(dataset.axis(i).getLabel())) return i;
+			if (axisName.equals(dataset.axis(i).toString())) return i;
 		}
 		throw new IllegalArgumentException("axis "+index+" not found");
 	}

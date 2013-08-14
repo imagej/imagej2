@@ -101,7 +101,7 @@ public class PositionHarmonizer implements DisplayHarmonizer {
 	}
 	
 	private void fillIndex(ImageDisplay disp, AxisType axis, long[] workspace) {
-		final int index = disp.getAxisIndex(axis);
+		final int index = disp.dimensionIndex(axis);
 		if (index != -1) workspace[index] = disp.getLongPosition(index); 
 	}
 }

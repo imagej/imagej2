@@ -183,7 +183,7 @@ public class AnimationOptions extends DynamicCommand {
 		final AxisType[] axes = getDisplay().getAxes();
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (final AxisType axis : axes) {
-			if (Axes.isXY(axis)) continue;
+			if (axis.isXY()) continue;
 			choices.add(axis.getLabel());
 		}
 		axisNameItem.setChoices(choices);
@@ -241,7 +241,7 @@ public class AnimationOptions extends DynamicCommand {
 
 	/** Gets the length of the selected axis. */
 	private long getAxisLength() {
-		final int axisIndex = getDisplay().getAxisIndex(getAxis());
+		final int axisIndex = getDisplay().dimensionIndex(getAxis());
 		if (axisIndex < 0) return -1;
 		return getDisplay().getExtents().dimension(axisIndex);
 	}

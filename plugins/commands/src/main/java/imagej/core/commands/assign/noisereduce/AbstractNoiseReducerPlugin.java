@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.concurrent.Future;
 
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.ops.function.Function;
 import net.imglib2.ops.function.real.RealImageFunction;
 import net.imglib2.ops.pointset.PointSet;

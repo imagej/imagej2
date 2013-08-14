@@ -53,11 +53,11 @@ public class MetadataHarmonizer implements DataHarmonizer {
 	public void updateDataset(final Dataset ds, final ImagePlus imp) {
 		ds.setName(imp.getTitle());
 		// copy calibration info where possible
-		final int xIndex = ds.getAxisIndex(Axes.X);
-		final int yIndex = ds.getAxisIndex(Axes.Y);
-		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
-		final int zIndex = ds.getAxisIndex(Axes.Z);
-		final int tIndex = ds.getAxisIndex(Axes.TIME);
+		final int xIndex = ds.dimensionIndex(Axes.X);
+		final int yIndex = ds.dimensionIndex(Axes.Y);
+		final int cIndex = ds.dimensionIndex(Axes.CHANNEL);
+		final int zIndex = ds.dimensionIndex(Axes.Z);
+		final int tIndex = ds.dimensionIndex(Axes.TIME);
 		final Calibration cal = imp.getCalibration();
 		if (xIndex >= 0) ds.setCalibration(cal.pixelWidth, xIndex);
 		if (yIndex >= 0) ds.setCalibration(cal.pixelHeight, yIndex);
@@ -74,11 +74,11 @@ public class MetadataHarmonizer implements DataHarmonizer {
 		imp.setTitle(ds.getName());
 		// copy calibration info where possible
 		final Calibration cal = imp.getCalibration();
-		final int xIndex = ds.getAxisIndex(Axes.X);
-		final int yIndex = ds.getAxisIndex(Axes.Y);
-		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
-		final int zIndex = ds.getAxisIndex(Axes.Z);
-		final int tIndex = ds.getAxisIndex(Axes.TIME);
+		final int xIndex = ds.dimensionIndex(Axes.X);
+		final int yIndex = ds.dimensionIndex(Axes.Y);
+		final int cIndex = ds.dimensionIndex(Axes.CHANNEL);
+		final int zIndex = ds.dimensionIndex(Axes.Z);
+		final int tIndex = ds.dimensionIndex(Axes.TIME);
 		if (xIndex >= 0) cal.pixelWidth = ds.calibration(xIndex);
 		if (yIndex >= 0) cal.pixelHeight = ds.calibration(yIndex);
 		if (cIndex >= 0) {

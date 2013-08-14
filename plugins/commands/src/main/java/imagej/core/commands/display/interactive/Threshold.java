@@ -58,8 +58,8 @@ import net.imglib2.IterableInterval;
 import net.imglib2.histogram.Histogram1d;
 import net.imglib2.histogram.Real1dBinMapper;
 import net.imglib2.img.Img;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
@@ -427,7 +427,7 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 				max[d] = ds.dimension(d) - 1;
 			}
 			else { // viewed data only
-				AxisType axisType = ds.axis(d);
+				AxisType axisType = ds.axis(d).type();
 				long pos = display.getLongPosition(axisType);
 				min[d] = pos;
 				max[d] = pos;

@@ -119,7 +119,7 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 		final InputIteratorFactory<long[]> factory =
 				new PointInputIteratorFactory();
 		boolean rgb = dataset.isRGBMerged();
-		int chIndex = dataset.getAxisIndex(Axes.CHANNEL);
+		int chIndex = dataset.dimensionIndex(Axes.CHANNEL);
 		if (rgb) {
 			origin[chIndex] = 0;
 		}
@@ -162,8 +162,8 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 	private void setRegion(Dataset ds, Overlay overlay) {
 
 		// check dimensions of Dataset
-		final int xIndex = ds.getAxisIndex(Axes.X);
-		final int yIndex = ds.getAxisIndex(Axes.Y);
+		final int xIndex = ds.dimensionIndex(Axes.X);
+		final int yIndex = ds.dimensionIndex(Axes.Y);
 		if ((xIndex < 0) || (yIndex < 0))
 			throw new IllegalArgumentException(
 				"display does not have XY planes");
@@ -198,8 +198,8 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 	private void setRegion(Dataset ds, Overlay overlay, Position planePos) {
 
 		// check dimensions of Dataset
-		final int xIndex = ds.getAxisIndex(Axes.X);
-		final int yIndex = ds.getAxisIndex(Axes.Y);
+		final int xIndex = ds.dimensionIndex(Axes.X);
+		final int yIndex = ds.dimensionIndex(Axes.Y);
 		if ((xIndex < 0) || (yIndex < 0))
 			throw new IllegalArgumentException(
 				"display does not have XY planes");

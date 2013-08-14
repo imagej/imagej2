@@ -123,9 +123,9 @@ public class PixelRecorder {
 		final Img<? extends RealType<?>> image = dataset.getImgPlus();
 		final RandomAccess<? extends RealType<?>> randomAccess =
 			image.randomAccess();
-		final int xAxis = dataset.getAxisIndex(Axes.X);
-		final int yAxis = dataset.getAxisIndex(Axes.Y);
-		final int chanAxis = dataset.getAxisIndex(Axes.CHANNEL);
+		final int xAxis = dataset.dimensionIndex(Axes.X);
+		final int yAxis = dataset.dimensionIndex(Axes.Y);
+		final int chanAxis = dataset.dimensionIndex(Axes.CHANNEL);
 
 		final RealCoords coords = canvas.panelToDataCoords(mousePos);
 		cx = coords.getLongX();

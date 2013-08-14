@@ -58,10 +58,10 @@ import net.imglib2.display.ARGBScreenImage;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.CompositeXYProjector;
 import net.imglib2.display.RealLUTConverter;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.img.cell.AbstractCellImg;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
 
@@ -390,8 +390,8 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	public long getLongPosition(final AxisType axis) {
 		if (!isInitialized()) return 0;
 
-		if (Axes.isXY(axis)) return 0;
-		final int dim = getData().getAxisIndex(axis);
+		if (axis.isXY()) return 0;
+		final int dim = getData().dimensionIndex(axis);
 		if (dim < 0) return 0;
 		// It is possible that projector is out of sync with data or view. Choose a
 		// sensible default value to avoid exceptions.
@@ -403,8 +403,8 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	public void setPosition(final long position, final AxisType axis) {
 		if (!isInitialized()) return;
 
-		if (Axes.isXY(axis)) return;
-		final int dim = getData().getAxisIndex(axis);
+		if (axis.isXY()) return;
+		final int dim = getData().dimensionIndex(axis);
 		if (dim < 0) return;
 		final long currentValue = projector.getLongPosition(dim);
 		if (position == currentValue) {
@@ -472,7 +472,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	// -- Helper methods --
 
 	private int getChannelDimIndex() {
-		return getData().getAxisIndex(Axes.CHANNEL);
+		return getData().dimensionIndex(Axes.CHANNEL);
 	}
 
 	private boolean isComposite() {
@@ -550,7 +550,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 		final Dataset d, final int c)
 	{
 		final ImgPlus<? extends RealType<?>> imgPlus = d.getImgPlus();
-		final int chIndex = imgPlus.getAxisIndex(Axes.CHANNEL);
+		final int chIndex = imgPlus.dimensionIndex(Axes.CHANNEL);
 		if (chIndex < 0) {
 			return imgPlus;
 		}

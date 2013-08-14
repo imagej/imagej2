@@ -151,7 +151,7 @@ public class ConvertToMask extends ContextCommand {
 		output.setAlpha(alpha);
 		output.setFillColor(color);
 		for (int i = 0; i < numDims; i++) {
-			output.setAxis(ds.axis(i), i);
+			output.setAxis(ds.getImgPlus().axis(i), i);
 		}
 	}
 

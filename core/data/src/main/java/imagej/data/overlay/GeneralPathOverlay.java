@@ -40,6 +40,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.DefaultCalibratedAxis;
 import net.imglib2.roi.GeneralPathRegionOfInterest;
 import net.imglib2.roi.GeneralPathSegmentHandler;
 
@@ -62,8 +63,8 @@ public class GeneralPathOverlay extends
 
 	public GeneralPathOverlay(final Context context) {
 		super(context, new GeneralPathRegionOfInterest());
-		setAxis(Axes.X, Axes.X.ordinal());
-		setAxis(Axes.Y, Axes.Y.ordinal());
+		this.setAxis(new DefaultCalibratedAxis(Axes.X), 0);
+		this.setAxis(new DefaultCalibratedAxis(Axes.Y), 1);
 	}
 
 	private static final long serialVersionUID = 1L;

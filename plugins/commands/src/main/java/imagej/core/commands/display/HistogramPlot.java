@@ -390,7 +390,7 @@ public class HistogramPlot<T extends RealType<T>> extends InteractiveCommand
 	@SuppressWarnings("unchecked")
 	private void allocateDataStructures() {
 		// initialize data structures
-		int chIndex = dataset.getAxisIndex(Axes.CHANNEL);
+		int chIndex = dataset.dimensionIndex(Axes.CHANNEL);
 		channels = (chIndex < 0) ? 1 : dataset.dimension(chIndex);
 		histograms = new Histogram1d[(int) channels + 1]; // +1 for chan compos
 		Real1dBinMapper<T> mapper =
@@ -411,7 +411,7 @@ public class HistogramPlot<T extends RealType<T>> extends InteractiveCommand
 
 	private void computeStats() {
 		// calc stats - 2nd pass thru data
-		int chIndex = dataset.getAxisIndex(Axes.CHANNEL);
+		int chIndex = dataset.dimensionIndex(Axes.CHANNEL);
 		int composH = histograms.length - 1;
 		RandomAccess<? extends RealType<?>> accessor =
 			dataset.getImgPlus().randomAccess();

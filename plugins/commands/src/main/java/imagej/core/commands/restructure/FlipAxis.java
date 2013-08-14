@@ -154,7 +154,7 @@ public class FlipAxis extends DynamicCommand {
 		if (dataset == null) return "Dataset is null.";
 		axisType = getAxis();
 		if (axisType == null) return "Axis is null.";
-		d = dataset.getAxisIndex(axisType);
+		d = dataset.dimensionIndex(axisType);
 		if (d < 0) return axisType + " axis is not present in dataset.";
 		if (dataset.dimension(d) == 1) return axisType + " axis is a single plane.";
 		return null;

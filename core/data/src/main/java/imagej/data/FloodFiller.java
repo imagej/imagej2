@@ -71,7 +71,7 @@ public class FloodFiller {
 	 */
 	public FloodFiller(final DrawingTool tool) {
 		this.tool = tool;
-		this.channelAxis = tool.getDataset().getAxisIndex(Axes.CHANNEL);
+		this.channelAxis = tool.getDataset().dimensionIndex(Axes.CHANNEL);
 		this.uAxis = -1;
 		this.vAxis = -1;
 		this.uStack = new StackOfLongs();

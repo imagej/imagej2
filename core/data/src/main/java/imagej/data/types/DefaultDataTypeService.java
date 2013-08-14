@@ -105,12 +105,10 @@ public class DefaultDataTypeService extends
 		return typesByName.get(typeName);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends NumericType<T>> DataType<T> getTypeByClass(
-		Class<T> typeClass)
+	public DataType<?> getTypeByClass(Class<?> typeClass)
 	{
-		return (DataType<T>) typesByClass.get(typeClass);
+		return typesByClass.get(typeClass);
 	}
 
 	@Override

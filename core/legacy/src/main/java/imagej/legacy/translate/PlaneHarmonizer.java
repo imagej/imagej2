@@ -70,9 +70,9 @@ public class PlaneHarmonizer implements DataHarmonizer {
 		final int zCount = imp.getNSlices();
 		final int tCount = imp.getNFrames();
 
-		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
-		final int zIndex = ds.getAxisIndex(Axes.Z);
-		final int tIndex = ds.getAxisIndex(Axes.TIME);
+		final int cIndex = ds.dimensionIndex(Axes.CHANNEL);
+		final int zIndex = ds.dimensionIndex(Axes.Z);
+		final int tIndex = ds.dimensionIndex(Axes.TIME);
 
 		final ImageStack stack = imp.getStack();
 

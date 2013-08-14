@@ -56,6 +56,11 @@
 			<version>${imglib2.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>${imglib2.groupId}</groupId>
+			<artifactId>imglib2-meta</artifactId>
+			<version>${imglib2.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.github.sbridges.object-inspector</groupId>
 			<artifactId>object-inspector</artifactId>
 			<version>0.1</version>

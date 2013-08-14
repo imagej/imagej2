@@ -214,7 +214,7 @@ public class DuplicateImage extends DynamicCommand {
 	// -- private helpers --
 
 	private String fullRangeString(final ImageDisplay disp, final AxisType axis) {
-		final int axisIndex = disp.getAxisIndex(axis);
+		final int axisIndex = disp.dimensionIndex(axis);
 		return "1-" + disp.dimension(axisIndex);
 	}
 

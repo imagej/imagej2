@@ -54,7 +54,7 @@ public abstract class AxisEvent extends ImageDisplayEvent {
 
 	public AxisEvent(final ImageDisplay display, final AxisType axis) {
 		super(display);
-		if (display.getAxisIndex(axis) < 0) {
+		if (display.dimensionIndex(axis) < 0) {
 			throw new IllegalArgumentException("Invalid axis: " + axis);
 		}
 		this.axis = axis;

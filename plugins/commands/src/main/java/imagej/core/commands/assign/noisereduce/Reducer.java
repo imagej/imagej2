@@ -37,7 +37,7 @@ package imagej.core.commands.assign.noisereduce;
 
 import imagej.data.Dataset;
 import imagej.data.DefaultDataset;
-import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.ops.function.Function;
 import net.imglib2.ops.img.SerialImageAssignment;
 import net.imglib2.ops.input.PointSetInputIterator;

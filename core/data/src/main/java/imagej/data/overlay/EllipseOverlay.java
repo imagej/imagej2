@@ -40,6 +40,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.DefaultCalibratedAxis;
 import net.imglib2.roi.EllipseRegionOfInterest;
 
 import org.scijava.Context;
@@ -64,8 +65,8 @@ public class EllipseOverlay extends
 	
 	public EllipseOverlay(final Context context) {
 		super(context, new EllipseRegionOfInterest(2));
-		setAxis(Axes.X, Axes.X.ordinal());
-		setAxis(Axes.Y, Axes.Y.ordinal());
+		this.setAxis(new DefaultCalibratedAxis(Axes.X), 0);
+		this.setAxis(new DefaultCalibratedAxis(Axes.Y), 1);
 	}
 
 	

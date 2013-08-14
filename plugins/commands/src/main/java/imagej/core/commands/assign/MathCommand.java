@@ -194,7 +194,7 @@ public abstract class MathCommand<I extends ComplexType<I>, O extends ComplexTyp
 		final long[] origin = planeOrigin.clone();
 		final long[] offsets = planeSpan.clone();
 		if (ds.isRGBMerged()) {
-			int chIndex = ds.getAxisIndex(Axes.CHANNEL);
+			int chIndex = ds.dimensionIndex(Axes.CHANNEL);
 			origin[chIndex] = 0;
 			offsets[chIndex] = 3;
 		}

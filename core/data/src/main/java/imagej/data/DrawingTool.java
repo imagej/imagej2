@@ -477,7 +477,7 @@ public class DrawingTool {
 	// -- private helpers --
 
 	private void initAxisVariables() {
-		channelAxis = dataset.getAxisIndex(Axes.CHANNEL);
+		channelAxis = dataset.dimensionIndex(Axes.CHANNEL);
 		uAxis = -1;
 		vAxis = -1;
 		for (int i = 0; i < dataset.numDimensions(); i++) {

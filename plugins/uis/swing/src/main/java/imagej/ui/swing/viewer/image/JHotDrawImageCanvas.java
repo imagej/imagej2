@@ -399,10 +399,10 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 
 		final OverlayView overlay = event.getView();
 		for (int i = 0; i < display.numDimensions(); i++) {
-			final AxisType axis = display.axis(i);
-			if (Axes.isXY(axis)) continue;
-			if (overlay.getData().getAxisIndex(axis) < 0) {
-				overlay.setPosition(display.getLongPosition(axis), axis);
+			final AxisType axisType = display.axis(i).type();
+			if (axisType.isXY()) continue;
+			if (overlay.getData().dimensionIndex(axisType) < 0) {
+				overlay.setPosition(display.getLongPosition(axisType), axisType);
 			}
 		}
 		if (drawingView.getSelectedFigures().contains(event.getFigure())) {

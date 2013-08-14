@@ -40,6 +40,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.DefaultCalibratedAxis;
 import net.imglib2.roi.RectangleRegionOfInterest;
 
 import org.scijava.Context;
@@ -65,8 +66,8 @@ public class RectangleOverlay extends
 	public RectangleOverlay(final Context context) {
 		super(context, new RectangleRegionOfInterest(new double[] { 0, 0 },
 			new double[] { 0, 0 }));
-		setAxis(Axes.X, Axes.X.ordinal());
-		setAxis(Axes.Y, Axes.Y.ordinal());
+		this.setAxis(new DefaultCalibratedAxis(Axes.X), 0);
+		this.setAxis(new DefaultCalibratedAxis(Axes.Y), 1);
 	}
 
 	@Override

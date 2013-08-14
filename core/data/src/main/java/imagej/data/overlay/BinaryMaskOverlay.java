@@ -55,6 +55,7 @@ import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.basictypeaccess.array.BitArray;
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.DefaultCalibratedAxis;
 import net.imglib2.roi.BinaryMaskRegionOfInterest;
 import net.imglib2.sampler.special.ConstantRandomAccessible;
 import net.imglib2.type.logic.BitType;
@@ -223,8 +224,8 @@ public class BinaryMaskOverlay<U extends BitType, V extends Img<U>> extends Abst
 		newRoi.move(getRegionOfInterest().getOrigin());
 		BinaryMaskOverlay<U,V> overlay = new BinaryMaskOverlay<U,V>(getContext(), newRoi);
 		overlay.setAlpha(getAlpha());
-		overlay.setAxis(Axes.X, Axes.X.ordinal());
-		overlay.setAxis(Axes.Y, Axes.Y.ordinal());
+		overlay.setAxis(new DefaultCalibratedAxis(Axes.X), Axes.X.ordinal());
+		overlay.setAxis(new DefaultCalibratedAxis(Axes.Y), Axes.Y.ordinal());
 		overlay.setFillColor(getFillColor());
 		overlay.setLineColor(getLineColor());
 		overlay.setLineEndArrowStyle(getLineEndArrowStyle());

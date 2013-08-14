@@ -144,15 +144,15 @@ public abstract class AbstractImageDisplayViewer extends
 		final DataView view = getDisplay().getActiveView();
 		final Dataset dataset = getDataset(view);
 
-		final int xIndex = dataset.getAxisIndex(Axes.X);
-		final int yIndex = dataset.getAxisIndex(Axes.Y);
+		final int xIndex = dataset.dimensionIndex(Axes.X);
+		final int yIndex = dataset.dimensionIndex(Axes.Y);
 		final long[] dims = dataset.getDims();
 		final AxisType[] axes = dataset.getAxes();
 		final Position pos = view.getPlanePosition();
 
 		final StringBuilder sb = new StringBuilder();
 		for (int i = 0, p = -1; i < dims.length; i++) {
-			if (Axes.isXY(axes[i])) continue;
+			if (axes[i].isXY()) continue;
 			p++;
 			if (dims[i] == 1) continue;
 			sb.append(axes[i]);

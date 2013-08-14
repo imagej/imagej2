@@ -77,19 +77,19 @@ public class Animation implements Runnable {
 
 		// assign default animation options
 		if (display.numDimensions() > 2) {
-			if (display.getAxisIndex(Axes.TIME) >= 0) {
+			if (display.dimensionIndex(Axes.TIME) >= 0) {
 				// animation over time is preferred by default
 				axis = Axes.TIME;
 			}
-			else if (display.getAxisIndex(Axes.Z) >= 0) {
+			else if (display.dimensionIndex(Axes.Z) >= 0) {
 				// failing that, animation over Z is OK
 				axis = Axes.Z;
 			}
 			else {
 				// no preferred animation axes; use first non-spatial axis
-				axis = display.axis(2);
+				axis = display.axis(2).type();
 			}
-			final int axisIndex = display.getAxisIndex(axis);
+			final int axisIndex = display.dimensionIndex(axis);
 			last = display.getExtents().dimension(axisIndex) - 1;
 		}
 	}

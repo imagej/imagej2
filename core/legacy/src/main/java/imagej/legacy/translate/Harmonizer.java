@@ -46,7 +46,7 @@ import imagej.legacy.LegacyService;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
 
@@ -294,11 +294,11 @@ public class Harmonizer extends AbstractContextual {
 		final long[] newDims = ds.getDims();
 		final double[] cal = new double[newDims.length];
 		ds.calibration(cal);
-		final int xIndex = ds.getAxisIndex(Axes.X);
-		final int yIndex = ds.getAxisIndex(Axes.Y);
-		final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
-		final int zIndex = ds.getAxisIndex(Axes.Z);
-		final int tIndex = ds.getAxisIndex(Axes.TIME);
+		final int xIndex = ds.dimensionIndex(Axes.X);
+		final int yIndex = ds.dimensionIndex(Axes.Y);
+		final int cIndex = ds.dimensionIndex(Axes.CHANNEL);
+		final int zIndex = ds.dimensionIndex(Axes.Z);
+		final int tIndex = ds.dimensionIndex(Axes.TIME);
 		if (xIndex >= 0) newDims[xIndex] = imp.getWidth();
 		if (yIndex >= 0) newDims[yIndex] = imp.getHeight();
 		if (cIndex >= 0) {
@@ -325,10 +325,10 @@ public class Harmonizer extends AbstractContextual {
 	 * compatible dimensionality.
 	 */
 	private boolean dimensionsCompatible(final Dataset ds, final ImagePlus imp) {
-		final int xIndex = ds.getAxisIndex(Axes.X);
-		final int yIndex = ds.getAxisIndex(Axes.Y);
-		final int zIndex = ds.getAxisIndex(Axes.Z);
-		final int tIndex = ds.getAxisIndex(Axes.TIME);
+		final int xIndex = ds.dimensionIndex(Axes.X);
+		final int yIndex = ds.dimensionIndex(Axes.Y);
+		final int zIndex = ds.dimensionIndex(Axes.Z);
+		final int tIndex = ds.dimensionIndex(Axes.TIME);
 
 		final long[] dimensions = ds.getDims();
 
@@ -343,7 +343,7 @@ public class Harmonizer extends AbstractContextual {
 		if (t != imp.getNFrames()) return false;
 		// channel case a little different
 		if (imp.getType() == ImagePlus.COLOR_RGB) {
-			final int cIndex = ds.getAxisIndex(Axes.CHANNEL);
+			final int cIndex = ds.dimensionIndex(Axes.CHANNEL);
 			if (cIndex < 0) return false;
 			final long c = dimensions[cIndex];
 			if (c != imp.getNChannels() * 3) return false;

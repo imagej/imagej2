@@ -41,7 +41,7 @@ import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
-import net.imglib2.img.ImgPlus;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.meta.AxisType;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSetIterator;
@@ -65,7 +65,7 @@ public class RestructureUtils {
 		final long delta)
 	{
 		final long[] dimensions = ds.getDims();
-		final int axisIndex = ds.getAxisIndex(oneToModify);
+		final int axisIndex = ds.dimensionIndex(oneToModify);
 		dimensions[axisIndex] += delta;
 		return dimensions;
 	}
@@ -85,7 +85,7 @@ public class RestructureUtils {
 		final String name = ds.getName();
 		final double[] calibration = new double[axes.length];
 		for (int i = 0; i < axes.length; i++) {
-			final int index = ds.getAxisIndex(axes[i]);
+			final int index = ds.dimensionIndex(axes[i]);
 			if (index >= 0) calibration[i] = ds.calibration(index);
 			else calibration[i] = Double.NaN;
 		}
@@ -200,7 +200,7 @@ public class RestructureUtils {
 	{
 		final long[] span = new long[imgPlus.numDimensions()];
 		imgPlus.dimensions(span);
-		final int axisIndex = imgPlus.getAxisIndex(axis);
+		final int axisIndex = imgPlus.dimensionIndex(axis);
 		span[axisIndex] = numElements;
 		return span;
 	}
@@ -215,7 +215,7 @@ public class RestructureUtils {
 		final long startPos)
 	{
 		final long[] origin = new long[imgPlus.numDimensions()];
-		final int axisIndex = imgPlus.getAxisIndex(axis);
+		final int axisIndex = imgPlus.dimensionIndex(axis);
 		origin[axisIndex] = startPos;
 		return origin;
 	}
