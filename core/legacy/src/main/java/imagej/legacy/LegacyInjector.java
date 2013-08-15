@@ -92,7 +92,11 @@ public class LegacyInjector {
 				"if (\"" + LegacyService.class.getName() + "\".equals($1))"
 				+ " return getLegacyService();"
 				+ "if (\"" + Context.class.getName() + "\".equals($1))"
-				+ " return getContext();");
+				+ " return getContext();"
+				+ "if (\"ij.IJ.init\".equals($1)) {"
+				+ " ij.IJ.init();"
+				+ " return null;"
+				+ "}");
 		hacker.insertAtTopOfMethod("ij.IJ", "public static void log(java.lang.String message)");
 		hacker.insertAtTopOfMethod("ij.IJ",
 			"static java.lang.Object runUserPlugIn(java.lang.String commandName, java.lang.String className, java.lang.String arg, boolean createNewLoader)",
