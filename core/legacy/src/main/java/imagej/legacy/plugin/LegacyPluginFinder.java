@@ -110,9 +110,7 @@ public class LegacyPluginFinder implements PluginFinder {
 
 	@Override
 	public Map<String, Throwable> findPlugins(final List<PluginInfo<?>> plugins) {
-		final ij.ImageJ ij = IJ.getInstance();
-		if (ij == null) return null; // no IJ1, so no IJ1 plugins
-		final Map<String, MenuPath> menuTable = parseMenus(ij);
+		final Map<String, MenuPath> menuTable = parseMenus(IJ.getInstance());
 		final Hashtable<?, ?> commands = Menus.getCommands();
 		final int startSize = plugins.size();
 		for (final Object key : commands.keySet()) {
@@ -157,8 +155,7 @@ public class LegacyPluginFinder implements PluginFinder {
 		// NB: Check whether menu path is already taken by a modern ImageJ command.
 		// This allows transparent override of legacy commands.
 		final MenuPath menuPath = menuTable.get(key);
-		if (menuPath == null) return null;
-		final boolean overridden = appMenu.getMenu(menuPath) != null;
+		final boolean overridden = menuPath != null && appMenu.getMenu(menuPath) != null;
 
 		if (log.isDebug()) {
 			// output discovery info for this legacy command
@@ -168,8 +165,9 @@ public class LegacyPluginFinder implements PluginFinder {
 			else if (overridden) status = "[OVERRIDDEN] ";
 			else status = "";
 			log.debug("- " + status + ij1PluginString + " [menu = " +
-				menuPath.getMenuString() + ", weight = " +
-				menuPath.getLeaf().getWeight() + "]");
+				(menuPath == null ? "" :
+					menuPath.getMenuString() + ", weight = " +
+					menuPath.getLeaf().getWeight()) + "]");
 		}
 		if (blacklisted && overridden) {
 			log.warn("Overridden plugin " + ij1PluginString + " is blacklisted");
@@ -186,11 +184,11 @@ public class LegacyPluginFinder implements PluginFinder {
 		final CommandInfo ci = new CommandInfo(LegacyCommand.class);
 		// HACK: Make LegacyCommands a subtype of regular Commands.
 		ci.setPluginType(legacyCommandClass());
-		ci.setMenuPath(menuPath);
+		if (menuPath != null) ci.setMenuPath(menuPath);
 		ci.setPresets(presets);
 
 		// flag legacy command with special icon
-		menuPath.getLeaf().setIconPath(LEGACY_PLUGIN_ICON);
+		if (menuPath != null) menuPath.getLeaf().setIconPath(LEGACY_PLUGIN_ICON);
 
 		return ci;
 	}
@@ -208,6 +206,7 @@ public class LegacyPluginFinder implements PluginFinder {
 	/** Creates a table mapping legacy ImageJ command labels to menu paths. */
 	private Map<String, MenuPath> parseMenus(final ij.ImageJ ij) {
 		final Map<String, MenuPath> menuTable = new HashMap<String, MenuPath>();
+		if (ij == null) return menuTable;
 		final MenuBar menubar = ij.getMenuBar();
 		final int menuCount = menubar.getMenuCount();
 		for (int i = 0; i < menuCount; i++) {
