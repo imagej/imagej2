@@ -313,9 +313,7 @@ public final class DefaultLegacyService extends AbstractService implements
 		SwitchToModernMode.registerMenuItem();
 
 		// discover legacy plugins
-		final OptionsMisc optsMisc = optionsService.getOptions(OptionsMisc.class);
-		lastDebugMode = optsMisc.isDebugMode();
-		final boolean enableBlacklist = !optsMisc.isDebugMode();
+		final boolean enableBlacklist = true;
 		addLegacyCommands(enableBlacklist);
 
 		if (!hasIJ1Instance && !GraphicsEnvironment.isHeadless()) toggleLegacyMode(false, true);
