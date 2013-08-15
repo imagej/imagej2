@@ -42,6 +42,7 @@ import imagej.text.TextService;
 import java.io.File;
 import java.io.IOException;
 
+import org.scijava.Priority;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -51,7 +52,7 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  * @see TextService
  */
-@Plugin(type = IOPlugin.class)
+@Plugin(type = IOPlugin.class, priority = Priority.LOW_PRIORITY - 1)
 public class TextIOPlugin extends AbstractIOPlugin<String> {
 
 	@Parameter(required = false)
