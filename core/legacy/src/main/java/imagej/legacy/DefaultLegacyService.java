@@ -244,8 +244,6 @@ public final class DefaultLegacyService extends AbstractService implements
 	public synchronized void toggleLegacyMode(final boolean wantIJ1, final boolean initializing) {
 		if (wantIJ1) legacyIJ1Mode = true;
 
-		SwitchToModernMode.registerMenuItem();
-
 		// TODO: hide/show Brightness/Contrast, Color Picker, Command Launcher, etc
 		// TODO: prevent IJ1 from quitting without IJ2 quitting, too
 
@@ -275,6 +273,10 @@ public final class DefaultLegacyService extends AbstractService implements
 
 		// hide/show IJ1 main window
 		ij1Helper.setVisible(wantIJ1);
+
+		if (wantIJ1 && !initializing) {
+			optionsSynchronizer.updateLegacyImageJSettingsFromModernImageJ();
+		}
 
 		if (!wantIJ1) legacyIJ1Mode = false;
 		imageMap.toggleLegacyMode(wantIJ1);
@@ -308,13 +310,11 @@ public final class DefaultLegacyService extends AbstractService implements
 
 		ij1Helper.initialize();
 
-		// discover legacy plugins
-		final OptionsMisc optsMisc = optionsService.getOptions(OptionsMisc.class);
-		lastDebugMode = optsMisc.isDebugMode();
-		final boolean enableBlacklist = !optsMisc.isDebugMode();
-		addLegacyCommands(enableBlacklist);
+		SwitchToModernMode.registerMenuItem();
 
-		optionsSynchronizer.updateLegacyImageJSettingsFromModernImageJ();
+		// discover legacy plugins
+		final boolean enableBlacklist = true;
+		addLegacyCommands(enableBlacklist);
 
 		if (!hasIJ1Instance && !GraphicsEnvironment.isHeadless()) toggleLegacyMode(false, true);
 	}
