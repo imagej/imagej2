@@ -100,8 +100,12 @@ public class IJ1Helper extends AbstractContextual {
 
 	public void initialize() {
 		// initialize legacy ImageJ application
-		if (IJ.getInstance() == null && !GraphicsEnvironment.isHeadless()) try {
-			new ImageJ(ImageJ.NO_SHOW);
+		if (IJ.getInstance() == null) try {
+			if (GraphicsEnvironment.isHeadless()) {
+				IJ.runPlugIn("ij.IJ.init", null);
+			} else {
+				new ImageJ(ImageJ.NO_SHOW);
+			}
 		}
 		catch (final Throwable t) {
 			log.warn("Failed to instantiate IJ1.", t);
