@@ -37,6 +37,7 @@ package imagej.data.lut;
 
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
+import imagej.service.IJService;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,8 +46,6 @@ import java.net.URL;
 
 import net.imglib2.display.ColorTable;
 
-import org.scijava.service.Service;
-
 /**
  * The LUTService loads {@link ColorTable}s (i.e., <b>L</b>ook-<b>U</b>p
  * <b>T</b>ables or LUTs) from various data sources.
@@ -54,7 +53,7 @@ import org.scijava.service.Service;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public interface LUTService extends Service {
+public interface LUTService extends IJService {
 
 	/**
 	 * Gets whether the given file can be parsed as a color table by

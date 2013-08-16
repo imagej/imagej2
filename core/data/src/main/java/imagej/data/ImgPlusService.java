@@ -35,6 +35,7 @@
 
 package imagej.data;
 
+import imagej.service.IJService;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.ComplexType;
@@ -42,12 +43,10 @@ import net.imglib2.type.numeric.IntegerType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.RealType;
 
-import org.scijava.service.Service;
-
 /**
  * @author Barry DeZonia
  */
-public interface ImgPlusService extends Service {
+public interface ImgPlusService extends IJService {
 
 	/**
 	 * Given an ImgPlus of unknown type this returns a typed ImgPlus of a given

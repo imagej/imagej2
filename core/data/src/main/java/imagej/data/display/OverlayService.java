@@ -39,19 +39,19 @@ import imagej.data.ChannelCollection;
 import imagej.data.overlay.CompositeOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
+import imagej.service.IJService;
 import imagej.util.RealRect;
 
 import java.util.List;
 
 import org.scijava.object.ObjectService;
-import org.scijava.service.Service;
 
 /**
  * Interface for service that works with {@link Overlay}s.
  * 
  * @author Curtis Rueden
  */
-public interface OverlayService extends Service {
+public interface OverlayService extends IJService {
 
 	ObjectService getObjectService();
 

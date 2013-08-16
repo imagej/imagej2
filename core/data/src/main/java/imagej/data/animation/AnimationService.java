@@ -36,16 +36,16 @@
 package imagej.data.animation;
 
 import imagej.data.display.ImageDisplay;
+import imagej.service.IJService;
 
 import org.scijava.event.EventService;
-import org.scijava.service.Service;
 
 /**
  * Interface for service that works with {@link Animation}s.
  * 
  * @author Curtis Rueden
  */
-public interface AnimationService extends Service {
+public interface AnimationService extends IJService {
 
 	EventService getEventService();
 

@@ -36,15 +36,14 @@
 package imagej.data.display;
 
 import imagej.data.Dataset;
-
-import org.scijava.service.Service;
+import imagej.service.IJService;
 
 /**
  * An interface for supporting the capturing of screen data to a Dataset.
  * 
  * @author Barry DeZonia
  */
-public interface ScreenCaptureService extends Service {
+public interface ScreenCaptureService extends IJService {
 	Dataset captureScreen();
 	Dataset captureScreenRegion(int x, int y, int width, int height);
 }

@@ -33,26 +33,16 @@
  * #L%
  */
 
-package imagej.updater.core;
+package imagej.service;
 
-import imagej.service.IJService;
-import imagej.updater.util.Progress;
+import org.scijava.service.Service;
 
 /**
- * Interface for service that manages available ImageJ upload mechanisms.
+ * Marker interface for all ImageJ {@link Service}s.
  * 
- * @author Johannes Schindelin
+ * @author Mark Hiner
+ *
  */
-public interface UploaderService extends IJService {
+public interface IJService extends Service {
 
-	// CTR TODO: Extend SingletonService<Uploader>.
-
-	/** TODO. */
-	boolean hasUploader(String protocol);
-
-	/** TODO. */
-	Uploader getUploader(String protocol) throws IllegalArgumentException;
-
-	/** TODO. */
-	Uploader installUploader(String protocol, FilesCollection files, final Progress progress);
 }

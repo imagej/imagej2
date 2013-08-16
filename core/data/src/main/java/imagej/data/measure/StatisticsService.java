@@ -36,9 +36,8 @@
 package imagej.data.measure;
 
 import imagej.data.Dataset;
+import imagej.service.IJService;
 import net.imglib2.ops.pointset.PointSet;
-
-import org.scijava.service.Service;
 
 // TODO - make MeasurementService smarter. Compute values without always
 // revisiting the pixels. This current impl goes over pixels once for each
@@ -61,7 +60,7 @@ import org.scijava.service.Service;
  * 
  * @author Barry DeZonia
  */
-public interface StatisticsService extends Service {
+public interface StatisticsService extends IJService {
 
 	// -- StatisticsService methods --
 

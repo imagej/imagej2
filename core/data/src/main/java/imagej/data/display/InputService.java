@@ -37,11 +37,11 @@ package imagej.data.display;
 
 import imagej.display.Display;
 import imagej.display.event.input.MsButtonEvent;
+import imagej.service.IJService;
 
 import org.scijava.event.EventService;
 import org.scijava.input.InputModifiers;
 import org.scijava.input.KeyCode;
-import org.scijava.service.Service;
 
 /**
  * Interface for service that tracks the current status of input devices
@@ -50,7 +50,7 @@ import org.scijava.service.Service;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public interface InputService extends Service {
+public interface InputService extends IJService {
 
 	EventService getEventService();
 

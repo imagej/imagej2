@@ -37,11 +37,11 @@ package imagej.data.display;
 
 import imagej.menu.MenuService;
 import imagej.module.ModuleService;
+import imagej.service.IJService;
 
 import java.util.List;
 
 import org.scijava.event.EventService;
-import org.scijava.service.Service;
 
 /**
  * Interface for service that keeps track of open windows, including management
@@ -49,7 +49,7 @@ import org.scijava.service.Service;
  * 
  * @author Grant Harris
  */
-public interface WindowService extends Service {
+public interface WindowService extends IJService {
 
 	int MAX_FILES_SHOWN = 10;
 

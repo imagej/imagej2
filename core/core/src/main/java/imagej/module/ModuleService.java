@@ -35,13 +35,14 @@
 
 package imagej.module;
 
+import imagej.service.IJService;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
 import org.scijava.input.Accelerator;
-import org.scijava.service.Service;
 
 /**
  * Interface for service that tracks and executes available modules.
@@ -68,7 +69,7 @@ import org.scijava.service.Service;
  * @see Module
  * @see org.scijava.plugin.PluginService
  */
-public interface ModuleService extends Service {
+public interface ModuleService extends IJService {
 
 	/** Gets the index of available modules. */
 	ModuleIndex getIndex();

@@ -35,9 +35,9 @@
 
 package imagej.io;
 
-import java.util.List;
+import imagej.service.IJService;
 
-import org.scijava.service.Service;
+import java.util.List;
 
 /**
  * Interface for service that manags the Recently Used Files menu.
@@ -45,7 +45,7 @@ import org.scijava.service.Service;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-public interface RecentFileService extends Service {
+public interface RecentFileService extends IJService {
 
 	int MAX_FILES_SHOWN = 10;
 

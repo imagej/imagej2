@@ -35,6 +35,8 @@
 
 package imagej.script;
 
+import imagej.service.IJService;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -48,7 +50,6 @@ import javax.script.ScriptException;
 
 import org.scijava.log.LogService;
 import org.scijava.plugin.PluginService;
-import org.scijava.service.Service;
 
 /**
  * A service discovering all available script languages and convenience methods
@@ -56,7 +57,7 @@ import org.scijava.service.Service;
  * 
  * @author Johannes Schindelin
  */
-public interface ScriptService extends Service {
+public interface ScriptService extends IJService {
 
 	// CTR TODO: Extend SingletonService<ScriptEngineFactory>.
 

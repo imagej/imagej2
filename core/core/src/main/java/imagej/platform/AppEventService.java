@@ -36,17 +36,16 @@
 package imagej.platform;
 
 import imagej.command.Command;
+import imagej.service.IJService;
 
 import java.util.List;
-
-import org.scijava.service.Service;
 
 /**
  * Interface for service that handles application-level events.
  * 
  * @author Curtis Rueden
  */
-public interface AppEventService extends Service {
+public interface AppEventService extends IJService {
 
 	/** Displays an About ImageJ dialog. */
 	void about();

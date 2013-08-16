@@ -39,16 +39,16 @@ import imagej.command.Command;
 import imagej.command.CommandService;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
+import imagej.service.IJService;
 
 import org.scijava.event.EventService;
-import org.scijava.service.Service;
 
 /**
  * Interface for service that tracks the application's menu structure.
  * 
  * @author Curtis Rueden
  */
-public interface MenuService extends Service {
+public interface MenuService extends IJService {
 
 	EventService getEventService();
 

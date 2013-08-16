@@ -36,25 +36,25 @@
 package imagej.data;
 
 import imagej.data.display.ImageDisplay;
+import imagej.service.IJService;
 
 import java.io.IOException;
 import java.util.List;
 
 import net.imglib2.img.ImgFactory;
-import net.imglib2.meta.ImgPlus;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.object.ObjectService;
-import org.scijava.service.Service;
 
 /**
  * Interface for service that works with {@link Dataset}s.
  * 
  * @author Curtis Rueden
  */
-public interface DatasetService extends Service {
+public interface DatasetService extends IJService {
 
 	ObjectService getObjectService();
 
