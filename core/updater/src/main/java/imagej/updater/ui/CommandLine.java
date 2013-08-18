@@ -502,6 +502,7 @@ public class CommandLine {
 
 		int removeCount = 0, uploadCount = 0, warningCount = 0;
 		for (final FileObject file : files) {
+			if (!file.isUpdateablePlatform(files)) continue;
 			final String name = file.filename;
 			handleLauncherForUpload(file);
 			switch (file.getStatus()) {
