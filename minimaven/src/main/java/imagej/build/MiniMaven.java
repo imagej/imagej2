@@ -96,7 +96,7 @@ public class MiniMaven {
 				else value = option.substring(equals + 1);
 				System.setProperty(option.substring(2, equals < 0 ? option.length() : equals), value);
 			}
-			if (option.equals("-U")) {
+			else if (option.equals("-U")) {
 				System.setProperty("minimaven.updateinterval", "0");
 			}
 			else {
