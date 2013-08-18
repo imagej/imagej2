@@ -488,6 +488,11 @@ public class CommandLine {
 				forceShadow = true;
 			} else if ("--simulate".equals(option)) {
 				simulate = true;
+			} else if ("--platforms".equals(option)) {
+				if (list.size() == 0) {
+					throw die("Need a comma-separated list of platforms with --platform");
+				}
+				files.util.setUpdateablePlatforms(list.remove(0).split(","));
 			} else {
 				throw die("Unknown option: " + option);
 			}
@@ -502,6 +507,7 @@ public class CommandLine {
 
 		int removeCount = 0, uploadCount = 0, warningCount = 0;
 		for (final FileObject file : files) {
+			if (!file.isUpdateablePlatform(files)) continue;
 			final String name = file.filename;
 			handleLauncherForUpload(file);
 			switch (file.getStatus()) {

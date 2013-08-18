@@ -150,7 +150,6 @@ public class Remove implements GroupAction {
 	public String getLabel(FilesCollection files, Iterable<FileObject> selected) {
 		boolean unshadowing = false;
 		for (final FileObject file : selected) {
-			final Status status = file.getStatus();
 			if (file.overridesOtherUpdateSite()) unshadowing = true;
 		}
 		return "Mark obsolete" + (unshadowing ? " (unshadowing)" : "")
