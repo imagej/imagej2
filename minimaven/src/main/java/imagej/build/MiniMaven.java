@@ -100,6 +100,7 @@ public class MiniMaven {
 				System.setProperty("minimaven.updateinterval", "0");
 			}
 			else {
+				System.err.println("Unknown command: " + option);
 				usage();
 			}
 		}
