@@ -19,7 +19,7 @@ collaborative development process, including version control, unit testing,
 automated builds via a continuous integration system, a bug tracker and more.
 
 We are collaborating closely with related projects including
-[Fiji](http://fiji.sc/), [SCIFIO](http://loci.wisc.edu/software/scifio) and
+[Fiji](http://fiji.sc/), [SCIFIO](http://scif.io/) and
 [OME](http://openmicroscopy.org/), and are striving to deliver a coherent
 software stack reusable throughout the life sciences community and beyond. For
 more details, see the [SciJava web site](http://scijava.org/).
