@@ -36,7 +36,6 @@
 package imagej.legacy;
 
 import imagej.command.CommandService;
-import imagej.core.options.OptionsMisc;
 import imagej.data.DatasetService;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
