@@ -836,7 +836,7 @@ public class CommandLine {
 			+ "\tupdate-force [<files>]\n"
 			+ "\tupdate-force-pristine [<files>]\n"
 			+ "\tupload [--[update-]site <name>] [--force-shadow] [<files>]\n"
-			+ "\tupload-complete-site [--simulate] [--force] [--force-shadow] <name>\n"
+			+ "\tupload-complete-site [--simulate] [--force] [--force-shadow] [--platforms <platform>[,<platform>...]] <name>\n"
 			+ "\tlist-update-sites [<nick>...]\n"
 			+ "\tadd-update-site <nick> <url> [<host> <upload-directory>]\n"
 			+ "\tedit-update-site <nick> <url> [<host> <upload-directory>]");
