@@ -149,7 +149,6 @@ public final class DefaultLegacyService extends AbstractService implements
 	@Parameter(required = false)
 	private UIService uiService;
 
-	private boolean lastDebugMode;
 	private static DefaultLegacyService instance;
 
 	/** Mapping between modern and legacy image data structures. */
@@ -343,11 +342,7 @@ public final class DefaultLegacyService extends AbstractService implements
 	}
 
 	@EventHandler
-	protected void onEvent(final OptionsEvent event) {
-		if (event.getOptions().getClass() == OptionsMisc.class) {
-			final OptionsMisc opts = (OptionsMisc) event.getOptions();
-			if (opts.isDebugMode() != lastDebugMode) updateMenus(opts);
-		}
+	protected void onEvent(@SuppressWarnings("unused") final OptionsEvent event) {
 		optionsSynchronizer.updateModernImageJSettingsFromLegacyImageJ();
 	}
 
@@ -423,11 +418,10 @@ public final class DefaultLegacyService extends AbstractService implements
 		return optionsService.getOptions(OptionsChannels.class);
 	}
 
-	private void updateMenus(final OptionsMisc optsMisc) {
+	@SuppressWarnings("unused")
+	private void updateMenus(final boolean enableBlacklist) {
 		pluginService.reloadPlugins();
-		final boolean enableBlacklist = !optsMisc.isDebugMode();
 		addLegacyCommands(enableBlacklist);
-		lastDebugMode = optsMisc.isDebugMode();
 	}
 
 	private void addLegacyCommands(final boolean enableBlacklist) {
