@@ -661,7 +661,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 
 	private static String getTargetDirectory(final File source) {
 		if (isImageJ1Plugin(source)) return "plugins";
-		if (source.getName().startsWith("scifio-4.4.") && source.getAbsolutePath().contains("loci")) {
+		if ((source.getName().startsWith("scifio-4.4.") || source.getName().startsWith("jai_imageio-4.4.")) && source.getAbsolutePath().contains("loci")) {
 			return "jars/bio-formats";
 		}
 		return "jars";
