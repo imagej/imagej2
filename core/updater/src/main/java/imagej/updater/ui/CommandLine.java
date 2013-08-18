@@ -488,6 +488,11 @@ public class CommandLine {
 				forceShadow = true;
 			} else if ("--simulate".equals(option)) {
 				simulate = true;
+			} else if ("--platforms".equals(option)) {
+				if (list.size() == 0) {
+					throw die("Need a comma-separated list of platforms with --platform");
+				}
+				files.util.setUpdateablePlatforms(list.remove(0).split(","));
 			} else {
 				throw die("Unknown option: " + option);
 			}
