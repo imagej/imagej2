@@ -42,12 +42,15 @@ import static imagej.updater.core.UpdaterTestUtils.cleanup;
 import static imagej.updater.core.UpdaterTestUtils.initialize;
 import static imagej.updater.core.UpdaterTestUtils.main;
 import static imagej.updater.core.UpdaterTestUtils.writeFile;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.scijava.util.FileUtils.deleteRecursively;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.StderrProgress;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Test;
@@ -139,5 +142,38 @@ public class CommandLineUpdaterTest {
 		final File onSecondSite = new File(tmp, path + "-" + files.get(path).current.timestamp);
 		assertTrue("File exists: " + onSecondSite, onSecondSite.exists());
 	}
-}
 
+	@Test
+	public void testUploadCompleteSiteWithPlatforms() throws Exception {
+		final String macro = "macros/macro.ijm";
+		final String linux32 = "lib/linux32/libtest.so";
+		files = initialize(macro, linux32);
+
+		assertPlatforms(files.get(linux32), "linux32");
+
+		File ijRoot = files.prefix("");
+		final String win64 = "lib/win64/test.dll";
+		assertTrue(new File(ijRoot, linux32).delete());
+		writeFile(new File(ijRoot, win64), "Dummy");
+		writeFile(new File(ijRoot, macro), "New version");
+		files = main(files, "upload-complete-site", "--platforms", "win64", FilesCollection.DEFAULT_UPDATE_SITE);
+
+		assertStatus(Status.NOT_INSTALLED, files, linux32);
+		assertStatus(Status.INSTALLED, files, win64);
+		assertStatus(Status.INSTALLED, files, macro);
+
+		files = main(files, "upload-complete-site", "--platforms", "all", FilesCollection.DEFAULT_UPDATE_SITE);
+		assertStatus(Status.OBSOLETE_UNINSTALLED, files, linux32);
+	}
+
+	private void assertPlatforms(final FileObject file, final String... platforms) {
+		final Set<String> filePlatforms = new HashSet<String>();
+		for (final String platform : file.getPlatforms()) filePlatforms.add(platform);
+		assertEquals(platforms.length, filePlatforms.size());
+		for (final String platform : platforms) {
+			assertTrue(file.getFilename(true) + "'s platforms should contain " + platform
+				+ " (" + filePlatforms + ")", filePlatforms.contains(platform));
+		}
+	}
+
+}
