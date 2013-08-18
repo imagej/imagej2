@@ -321,6 +321,20 @@ public class Util {
 		return updateablePlatforms.contains(platform);
 	}
 
+	public void setUpdateablePlatforms(final String... platforms) {
+		updateablePlatforms.clear();
+		for (String platform : platforms) {
+			if (platform == null) continue;
+			platform = platform.trim();
+			if ("all".equals(platform)) {
+				updateablePlatforms.add(this.platform);
+				updateablePlatforms.addAll(Arrays.asList(this.platforms));
+			} else {
+				updateablePlatforms.add(platform);
+			}
+		}
+	}
+
 	public boolean isMacOSX() {
 		return platform.equals("macosx");
 	}
