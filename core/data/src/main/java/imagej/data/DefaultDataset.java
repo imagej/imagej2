@@ -327,6 +327,14 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		final ImgPlus<? extends RealType<?>> newImgPlus =
 			wrapAsImgPlus(newImg, other.getAxes(), calib);
 
+		// make sure we grab color tables too
+		// TODO - disable this option? It's a question of what we think data is.
+		int count = other.getColorTableCount();
+		newImgPlus.initializeColorTables(count);
+		for (int i = 0; i < count; i++) {
+			newImgPlus.setColorTable(other.getColorTable(i), i);
+		}
+
 		// set my instance vars to the new values
 		setRGBMerged(other.isRGBMerged());
 		setImgPlus(newImgPlus);
