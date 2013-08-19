@@ -359,7 +359,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	}
 
 	@Override
-	public void rebuild() {
+	public synchronized void rebuild() {
 		// NB: Make sure any calls to updateLUTs are ignored. If they happen before
 		// the converters are correctly defined (in setupProjector) an exception
 		// can get thrown. Basically if you add a channel to an image the converter
