@@ -176,7 +176,9 @@ public class CropImage extends ContextCommand {
 	{
 		setup(ds, bounds);
 		copyPixels();
-		return ImgPlus.wrap(outputImage, ds);
+		ImgPlus<? extends RealType<?>> newImgPlus = ImgPlus.wrap(outputImage, ds);
+		copyColorTables(ds, newImgPlus);
+		return newImgPlus;
 	}
 
 	/**
@@ -228,6 +230,14 @@ public class CropImage extends ContextCommand {
 			final double value = inputAccessor.get().getRealDouble();
 
 			outputCursor.get().setReal(value);
+		}
+	}
+
+	private void copyColorTables(Dataset input, ImgPlus<?> output) {
+		int count = input.getColorTableCount();
+		output.initializeColorTables(count);
+		for (int i = 0; i < count; i++) {
+			output.setColorTable(input.getColorTable(i), i);
 		}
 	}
 
