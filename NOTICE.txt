@@ -13,6 +13,13 @@ Or to display them as a tree:
 As of this writing, the full list is as follows:
 
 ===============================================================================
+Apache Commons Lang - http://commons.apache.org/proper/commons-lang/
+
+License: Apache 2.0
+
+org.apache.commons:commons-lang3:jar:3.1
+
+===============================================================================
 Beanshell - http://www.beanshell.org/
 
 License: Sun Public License or LGPL 3+
@@ -69,6 +76,13 @@ JSch - http://www.jcraft.com/jsch/
 License: 3-clause BSD
 
 Artifact: com.jcraft:jsch:0.1.42
+
+===============================================================================
+MarkdownJ - http://markdownj.org/
+
+License: 3-clause BSD
+
+org.markdownj:markdownj:jar:0.3.0-1.0.2b4
 
 ===============================================================================
 MigLayout - http://www.miglayout.com/
