@@ -116,6 +116,10 @@ License: 2-clause BSD
 Artifacts:
 org.scijava:scijava-common:1.7.0
 
+Dependencies:
+net.java.sezpoz:sezpoz:1.9-imagej
+org.bushe:eventbus:1.4
+
 ===============================================================================
 SezPoz - http://sezpoz.java.net/
 
