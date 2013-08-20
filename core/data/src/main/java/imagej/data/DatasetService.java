@@ -36,7 +36,7 @@
 package imagej.data;
 
 import imagej.data.display.ImageDisplay;
-import imagej.service.IJService;
+import imagej.service.ImageJService;
 
 import java.io.IOException;
 import java.util.List;
@@ -54,7 +54,7 @@ import org.scijava.object.ObjectService;
  * 
  * @author Curtis Rueden
  */
-public interface DatasetService extends IJService {
+public interface DatasetService extends ImageJService {
 
 	ObjectService getObjectService();
 

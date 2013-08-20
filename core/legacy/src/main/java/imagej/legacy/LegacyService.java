@@ -37,7 +37,7 @@ package imagej.legacy;
 
 import ij.ImagePlus;
 import imagej.data.display.ImageDisplay;
-import imagej.service.IJService;
+import imagej.service.ImageJService;
 
 import org.scijava.app.StatusService;
 import org.scijava.log.LogService;
@@ -48,7 +48,7 @@ import org.scijava.log.LogService;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public interface LegacyService extends IJService { 
+public interface LegacyService extends ImageJService { 
 	/** Gets the LogService associated with this LegacyService. */
 	LogService log();
 

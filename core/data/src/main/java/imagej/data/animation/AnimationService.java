@@ -36,7 +36,7 @@
 package imagej.data.animation;
 
 import imagej.data.display.ImageDisplay;
-import imagej.service.IJService;
+import imagej.service.ImageJService;
 
 import org.scijava.event.EventService;
 
@@ -45,7 +45,7 @@ import org.scijava.event.EventService;
  * 
  * @author Curtis Rueden
  */
-public interface AnimationService extends IJService {
+public interface AnimationService extends ImageJService {
 
 	EventService getEventService();
 

@@ -36,14 +36,14 @@
 package imagej.data.sampler;
 
 import imagej.data.display.ImageDisplay;
-import imagej.service.IJService;
+import imagej.service.ImageJService;
 
 /**
  * Interface for sampler operations which manipulate {@link ImageDisplay} data.
  * 
  * @author Barry DeZonia
  */
-public interface SamplerService extends IJService {
+public interface SamplerService extends ImageJService {
 
 	/**
 	 * Creates an output ImageDisplay containing data from an input

@@ -36,7 +36,7 @@
 package imagej.platform;
 
 import imagej.command.Command;
-import imagej.service.IJService;
+import imagej.service.ImageJService;
 
 import java.util.List;
 
@@ -45,7 +45,7 @@ import java.util.List;
  * 
  * @author Curtis Rueden
  */
-public interface AppEventService extends IJService {
+public interface AppEventService extends ImageJService {
 
 	/** Displays an About ImageJ dialog. */
 	void about();

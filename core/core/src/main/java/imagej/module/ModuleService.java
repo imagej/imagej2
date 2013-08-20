@@ -35,7 +35,7 @@
 
 package imagej.module;
 
-import imagej.service.IJService;
+import imagej.service.ImageJService;
 
 import java.util.Collection;
 import java.util.List;
@@ -69,7 +69,7 @@ import org.scijava.input.Accelerator;
  * @see Module
  * @see org.scijava.plugin.PluginService
  */
-public interface ModuleService extends IJService {
+public interface ModuleService extends ImageJService {
 
 	/** Gets the index of available modules. */
 	ModuleIndex getIndex();

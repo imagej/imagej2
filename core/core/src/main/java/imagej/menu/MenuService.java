@@ -39,7 +39,7 @@ import imagej.command.Command;
 import imagej.command.CommandService;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
-import imagej.service.IJService;
+import imagej.service.ImageJService;
 
 import org.scijava.event.EventService;
 
@@ -48,7 +48,7 @@ import org.scijava.event.EventService;
  * 
  * @author Curtis Rueden
  */
-public interface MenuService extends IJService {
+public interface MenuService extends ImageJService {
 
 	EventService getEventService();
 

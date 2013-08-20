@@ -43,6 +43,6 @@ import org.scijava.service.Service;
  * @author Mark Hiner
  *
  */
-public interface IJService extends Service {
+public interface ImageJService extends Service {
 
 }

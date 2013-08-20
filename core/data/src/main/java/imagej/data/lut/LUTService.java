@@ -37,7 +37,7 @@ package imagej.data.lut;
 
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
-import imagej.service.IJService;
+import imagej.service.ImageJService;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,7 +53,7 @@ import net.imglib2.display.ColorTable;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public interface LUTService extends IJService {
+public interface LUTService extends ImageJService {
 
 	/**
 	 * Gets whether the given file can be parsed as a color table by

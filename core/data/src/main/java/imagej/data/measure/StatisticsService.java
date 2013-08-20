@@ -36,7 +36,7 @@
 package imagej.data.measure;
 
 import imagej.data.Dataset;
-import imagej.service.IJService;
+import imagej.service.ImageJService;
 import net.imglib2.ops.pointset.PointSet;
 
 // TODO - make MeasurementService smarter. Compute values without always
@@ -60,7 +60,7 @@ import net.imglib2.ops.pointset.PointSet;
  * 
  * @author Barry DeZonia
  */
-public interface StatisticsService extends IJService {
+public interface StatisticsService extends ImageJService {
 
 	// -- StatisticsService methods --
 

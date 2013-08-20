@@ -36,7 +36,7 @@
 package imagej.ui;
 
 import imagej.display.Display;
-import imagej.service.IJService;
+import imagej.service.ImageJService;
 import imagej.ui.viewer.DisplayViewer;
 import imagej.widget.FileWidget;
 
@@ -53,7 +53,7 @@ import org.scijava.plugin.PluginInfo;
  * 
  * @author Curtis Rueden
  */
-public interface UIService extends IJService {
+public interface UIService extends ImageJService {
 
 	// CTR TODO: Extend SingletonService<UserInterface>.
 

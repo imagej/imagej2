@@ -35,7 +35,7 @@
 
 package imagej.display;
 
-import imagej.service.IJService;
+import imagej.service.ImageJService;
 
 import java.util.List;
 
@@ -51,7 +51,7 @@ import org.scijava.plugin.PluginService;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public interface DisplayService extends IJService {
+public interface DisplayService extends ImageJService {
 
 	EventService getEventService();
 

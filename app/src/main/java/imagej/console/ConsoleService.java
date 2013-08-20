@@ -35,7 +35,7 @@
 
 package imagej.console;
 
-import imagej.service.IJService;
+import imagej.service.ImageJService;
 
 /**
  * Interface for service that manages interaction with the console.
@@ -46,7 +46,7 @@ import imagej.service.IJService;
  * 
  * @author Curtis Rueden
  */
-public interface ConsoleService extends IJService {
+public interface ConsoleService extends ImageJService {
 
 	// CTR TODO: Move to ij-core and extend HandlerService<ConsoleArgument>.
 	// This will be a new type of plugin that handles command line arguments.

@@ -35,7 +35,7 @@
 
 package imagej.io;
 
-import imagej.service.IJService;
+import imagej.service.ImageJService;
 
 import java.util.List;
 
@@ -45,7 +45,7 @@ import java.util.List;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-public interface RecentFileService extends IJService {
+public interface RecentFileService extends ImageJService {
 
 	int MAX_FILES_SHOWN = 10;
 

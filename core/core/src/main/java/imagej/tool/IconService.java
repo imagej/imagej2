@@ -35,14 +35,14 @@
 
 package imagej.tool;
 
-import imagej.service.IJService;
+import imagej.service.ImageJService;
 
 /**
  * TODO
  * 
  * @author Barry DeZonia
  */
-public interface IconService extends IJService {
+public interface IconService extends ImageJService {
 
 	IconDrawer acquireDrawer(Tool t);
 

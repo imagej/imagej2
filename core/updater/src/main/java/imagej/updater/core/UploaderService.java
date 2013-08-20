@@ -35,7 +35,7 @@
 
 package imagej.updater.core;
 
-import imagej.service.IJService;
+import imagej.service.ImageJService;
 import imagej.updater.util.Progress;
 
 /**
@@ -43,7 +43,7 @@ import imagej.updater.util.Progress;
  * 
  * @author Johannes Schindelin
  */
-public interface UploaderService extends IJService {
+public interface UploaderService extends ImageJService {
 
 	// CTR TODO: Extend SingletonService<Uploader>.
 

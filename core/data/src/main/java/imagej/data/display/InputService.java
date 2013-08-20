@@ -37,7 +37,7 @@ package imagej.data.display;
 
 import imagej.display.Display;
 import imagej.display.event.input.MsButtonEvent;
-import imagej.service.IJService;
+import imagej.service.ImageJService;
 
 import org.scijava.event.EventService;
 import org.scijava.input.InputModifiers;
@@ -50,7 +50,7 @@ import org.scijava.input.KeyCode;
  * @author Barry DeZonia
  * @author Curtis Rueden
  */
-public interface InputService extends IJService {
+public interface InputService extends ImageJService {
 
 	EventService getEventService();
 

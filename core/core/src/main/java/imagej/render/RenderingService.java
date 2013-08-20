@@ -35,14 +35,14 @@
 
 package imagej.render;
 
-import imagej.service.IJService;
+import imagej.service.ImageJService;
 
 /**
  * Interface for service that performs text rendering.
  * 
  * @author Barry DeZonia
  */
-public interface RenderingService extends IJService {
+public interface RenderingService extends ImageJService {
 
 	TextRenderer getTextRenderer();
 

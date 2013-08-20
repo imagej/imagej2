@@ -37,7 +37,7 @@ package imagej.data.display;
 
 import imagej.menu.MenuService;
 import imagej.module.ModuleService;
-import imagej.service.IJService;
+import imagej.service.ImageJService;
 
 import java.util.List;
 
@@ -49,7 +49,7 @@ import org.scijava.event.EventService;
  * 
  * @author Grant Harris
  */
-public interface WindowService extends IJService {
+public interface WindowService extends ImageJService {
 
 	int MAX_FILES_SHOWN = 10;
 

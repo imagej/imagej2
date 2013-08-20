@@ -39,7 +39,7 @@ import imagej.data.ChannelCollection;
 import imagej.data.overlay.CompositeOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
-import imagej.service.IJService;
+import imagej.service.ImageJService;
 import imagej.util.RealRect;
 
 import java.util.List;
@@ -51,7 +51,7 @@ import org.scijava.object.ObjectService;
  * 
  * @author Curtis Rueden
  */
-public interface OverlayService extends IJService {
+public interface OverlayService extends ImageJService {
 
 	ObjectService getObjectService();
 

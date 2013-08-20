@@ -38,7 +38,7 @@ package imagej.data.display;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.display.DisplayService;
-import imagej.service.IJService;
+import imagej.service.ImageJService;
 
 import java.util.List;
 
@@ -52,7 +52,7 @@ import org.scijava.plugin.PluginService;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public interface ImageDisplayService extends IJService {
+public interface ImageDisplayService extends ImageJService {
 
 	EventService getEventService();
 

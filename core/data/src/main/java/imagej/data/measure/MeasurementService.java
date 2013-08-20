@@ -36,7 +36,7 @@
 package imagej.data.measure;
 
 import imagej.data.Dataset;
-import imagej.service.IJService;
+import imagej.service.ImageJService;
 
 import java.util.List;
 
@@ -58,7 +58,7 @@ import net.imglib2.type.numeric.RealType;
  * 
  * @author Barry DeZonia
  */
-public interface MeasurementService extends IJService {
+public interface MeasurementService extends ImageJService {
 
 	/**
 	 * Measures the value of a {@link Function} given an input region
