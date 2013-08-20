@@ -63,7 +63,7 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
-	@Menu(label = "Save As...", weight = 21) })
+	@Menu(label = "Save As...", weight = 21, accelerator = "shift ^S") })
 public class SaveAsImage extends ContextCommand {
 
 	@Parameter
