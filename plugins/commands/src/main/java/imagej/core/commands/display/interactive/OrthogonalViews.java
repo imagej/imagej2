@@ -49,14 +49,10 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(type = Command.class, iconPath = "/icons/commands/bricks.png",
-	menu = {
-		@Menu(label = MenuConstants.IMAGE_LABEL,
-			weight = MenuConstants.IMAGE_WEIGHT,
-			mnemonic = MenuConstants.IMAGE_MNEMONIC),
-		@Menu(label = "Stacks"),
-		@Menu(label = "Orthogonal Views", weight = 5,
-			accelerator = "control shift H") })
+@Plugin(type = Command.class, iconPath = "/icons/commands/bricks.png", menu = {
+	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
+		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Stacks"),
+	@Menu(label = "Orthogonal Views", weight = 5, accelerator = "shift ^H") })
 public class OrthogonalViews extends UnimplementedCommand {
 
 	// -- Parameters --

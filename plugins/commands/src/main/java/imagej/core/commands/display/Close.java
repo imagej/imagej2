@@ -50,12 +50,10 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Command.class,
-	menu = {
-		@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
-			mnemonic = MenuConstants.FILE_MNEMONIC),
-		@Menu(label = "Close", weight = 16, mnemonic = 'c',
-			accelerator = "control W") })
+@Plugin(type = Command.class, menu = {
+	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
+		mnemonic = MenuConstants.FILE_MNEMONIC),
+	@Menu(label = "Close", weight = 16, mnemonic = 'c', accelerator = "^W") })
 public class Close extends ContextCommand {
 
 	// -- Parameters --

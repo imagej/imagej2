@@ -67,10 +67,9 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Adjust"),
-	@Menu(label = "Auto-Contrast", accelerator = "control shift alt L",
-		weight = 0) }, headless = true)
+		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Adjust"),
+	@Menu(label = "Auto-Contrast", accelerator = "shift alt ^L", weight = 0) },
+	headless = true)
 public class AutoContrast extends ContextCommand {
 
 	private static final int BINS = 256;

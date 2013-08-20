@@ -83,10 +83,8 @@ import org.scijava.plugin.Plugin;
  * @author Grant Harris
  * @author Barry DeZonia
  */
-@Plugin(type = Command.class, menu = {
-	@Menu(label = "Analyze"),
-	@Menu(label = "Histogram Plot", accelerator = "control shift alt H",
-		weight = 0) })
+@Plugin(type = Command.class, menu = { @Menu(label = "Analyze"),
+	@Menu(label = "Histogram Plot", accelerator = "shift alt ^H", weight = 0) })
 public class HistogramPlot<T extends RealType<T>> extends InteractiveCommand
 {
 

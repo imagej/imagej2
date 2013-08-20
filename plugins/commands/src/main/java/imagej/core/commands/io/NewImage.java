@@ -67,14 +67,11 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  */
 @Plugin(type = Command.class, label = "New Image...",
-	iconPath = "/icons/commands/picture.png",
-	initializer = "init",
-	menu = {
+	iconPath = "/icons/commands/picture.png", initializer = "init", menu = {
 		@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 			mnemonic = MenuConstants.FILE_MNEMONIC),
 		@Menu(label = "New", mnemonic = 'n'),
-		@Menu(label = "Image...", weight = 0, mnemonic = 'i',
-			accelerator = "control N") })
+		@Menu(label = "Image...", weight = 0, mnemonic = 'i', accelerator = "^N") })
 public class NewImage<U extends RealType<U> & NativeType<U>> extends
 	DynamicCommand
 {

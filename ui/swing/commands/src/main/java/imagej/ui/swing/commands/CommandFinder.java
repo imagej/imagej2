@@ -58,7 +58,7 @@ import org.scijava.plugin.Plugin;
 	@Menu(label = MenuConstants.PLUGINS_LABEL,
 		weight = MenuConstants.PLUGINS_WEIGHT,
 		mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Utilities"),
-	@Menu(label = "Find Commands...", accelerator = "control L") })
+	@Menu(label = "Find Commands...", accelerator = "^L") })
 public class CommandFinder extends ContextCommand {
 
 	@Parameter

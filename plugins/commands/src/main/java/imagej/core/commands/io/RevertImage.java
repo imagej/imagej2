@@ -60,8 +60,7 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
-	@Menu(label = "Revert", weight = 20, mnemonic = 'v',
-		accelerator = "control R") })
+	@Menu(label = "Revert", weight = 20, mnemonic = 'v', accelerator = "^R") })
 public class RevertImage extends ContextCommand {
 
 	@Parameter

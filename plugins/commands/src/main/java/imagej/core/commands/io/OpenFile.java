@@ -59,11 +59,9 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = Command.class, iconPath = "/icons/commands/folder_picture.png",
 	menu = {
-		@Menu(label = MenuConstants.FILE_LABEL,
-			weight = MenuConstants.FILE_WEIGHT,
+		@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 			mnemonic = MenuConstants.FILE_MNEMONIC),
-		@Menu(label = "Open...", weight = 1, mnemonic = 'o',
-			accelerator = "control O") })
+		@Menu(label = "Open...", weight = 1, mnemonic = 'o', accelerator = "^O") })
 public class OpenFile extends ContextCommand {
 
 	@Parameter

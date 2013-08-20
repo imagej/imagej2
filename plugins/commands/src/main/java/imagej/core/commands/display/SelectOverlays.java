@@ -57,7 +57,7 @@ import org.scijava.plugin.Plugin;
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Selection", mnemonic = 's'),
 	@Menu(label = "Select Overlays", mnemonic = 's', weight = 1,
-		accelerator = "control a") }, headless = true)
+		accelerator = "^A") }, headless = true)
 public class SelectOverlays extends ContextCommand {
 
 	@Parameter(type = ItemIO.BOTH)

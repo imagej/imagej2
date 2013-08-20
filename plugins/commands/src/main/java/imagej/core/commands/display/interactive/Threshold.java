@@ -115,7 +115,7 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Adjust"),
-	@Menu(label = "Threshold...", accelerator = "control shift T") },
+	@Menu(label = "Threshold...", accelerator = "shift ^T") },
 	initializer = "initValues")
 public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 

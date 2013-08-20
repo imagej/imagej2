@@ -65,13 +65,15 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-@Plugin(type = Command.class, menu = {
-	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Adjust"),
-	@Menu(label = "Brightness/Contrast...", accelerator = "control shift C",
-		weight = 0) }, iconPath = "/icons/commands/contrast.png", headless = true,
-	initializer = "initValues")
+@Plugin(type = Command.class,
+	menu = {
+		@Menu(label = MenuConstants.IMAGE_LABEL,
+			weight = MenuConstants.IMAGE_WEIGHT,
+			mnemonic = MenuConstants.IMAGE_MNEMONIC),
+		@Menu(label = "Adjust"),
+		@Menu(label = "Brightness/Contrast...", accelerator = "shift ^C",
+			weight = 0) }, iconPath = "/icons/commands/contrast.png",
+	headless = true, initializer = "initValues")
 public class BrightnessContrast<T extends RealType<T>> extends
 	InteractiveImageCommand
 {

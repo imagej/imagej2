@@ -58,10 +58,8 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
-	@Menu(label = "Fill", weight = 28, accelerator = "control F") },
-	headless = true)
-public class FillDataValues<T extends RealType<T>>
-	extends ContextCommand
+	@Menu(label = "Fill", weight = 28, accelerator = "^F") }, headless = true)
+public class FillDataValues<T extends RealType<T>>	extends ContextCommand
 {
 	// -- Parameters --
 
