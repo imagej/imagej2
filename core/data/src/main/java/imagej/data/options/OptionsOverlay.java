@@ -139,10 +139,13 @@ public class OptionsOverlay extends OptionsPlugin {
 	}
 
 	public void setLineWidth(final double width) {
-		this.lineWidth = width;
+		if (width < 0.1) this.lineWidth = 0.1;
+		else this.lineWidth = width;
 	}
 
 	public double getLineWidth() {
+		// Be defensive here. I have come across cases where lineWidth is 0.
+		if (lineWidth < 0.1) return 0.1;
 		return lineWidth;
 	}
 
