@@ -182,6 +182,7 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 		drawingEditor = new DefaultDrawingEditor();
 		drawingEditor.add(drawingView);
 		toolDelegator = new ToolDelegator();
+		toolDelegator.setSelection(false);
 		drawingEditor.setTool(toolDelegator);
 
 		scrollPane = new JScrollPane(drawingView);
@@ -571,9 +572,11 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 		if (adapter != null) {
 			final JHotDrawTool creationTool = adapter.getCreationTool(getDisplay());
 			toolDelegator.setCreationTool(creationTool);
+			toolDelegator.setSelection(true);
 		}
 		else {
 			toolDelegator.setCreationTool(null);
+			toolDelegator.setSelection(false);
 		}
 	}
 

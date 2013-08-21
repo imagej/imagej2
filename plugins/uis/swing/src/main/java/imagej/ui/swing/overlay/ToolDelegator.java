@@ -59,18 +59,25 @@ public class ToolDelegator extends AbstractTool {
 
 	protected JHotDrawTool selectionTool, creationTool, activeTool;
 
+	private boolean selection;
+
 	public ToolDelegator() {
 		selectionTool = new IJDelegationSelectionTool();
 		for (final Object listener : listenerList.getListenerList()) {
 			if (listener instanceof ToolListener) {
 				selectionTool.addToolListener((ToolListener) listener);
 			}
-			else if (listener instanceof UndoableEditListener) {
+			if (listener instanceof UndoableEditListener) {
 				selectionTool.addUndoableEditListener((UndoableEditListener) listener);
 			}
 		}
 		selectionTool.setInputMap(getInputMap());
 		selectionTool.setActionMap(getActionMap());
+		selection = false;
+	}
+
+	public void setSelection(boolean val) {
+		selection = val;
 	}
 
 	public void setCreationTool(final JHotDrawTool creationTool) {
@@ -238,7 +245,8 @@ public class ToolDelegator extends AbstractTool {
 				(view.findFigure(anchor) != null && view.findFigure(anchor)
 					.isSelectable()))
 			{
-				tool = selectionTool;
+				if (selection) tool = selectionTool;
+				else tool = null;
 			}
 		}
 
