@@ -392,10 +392,10 @@ public class DefaultSamplerService extends AbstractService implements
 	private boolean overlayWithinBounds(final Overlay overlay,
 		final RealRect bounds)
 	{
-		if (overlay.min(0) < bounds.x) return false;
-		if (overlay.min(1) < bounds.y) return false;
-		if (overlay.max(0) > bounds.x + bounds.width) return false;
-		if (overlay.max(1) > bounds.y + bounds.height) return false;
+		if (overlay.realMin(0) < bounds.x) return false;
+		if (overlay.realMin(1) < bounds.y) return false;
+		if (overlay.realMax(0) > bounds.x + bounds.width) return false;
+		if (overlay.realMax(1) > bounds.y + bounds.height) return false;
 		return true;
 	}
 

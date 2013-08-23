@@ -64,6 +64,7 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.ImgPlus;
+import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.IntegerType;
@@ -95,7 +96,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	public DefaultDataset(final Context context,
 		final ImgPlus<? extends RealType<?>> imgPlus)
 	{
-		super(context);
+		super(context, imgPlus);
 		this.imgPlus = imgPlus;
 		rgbMerged = false;
 		isDirty = false;
@@ -325,7 +326,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		final double[] calib = new double[other.getDims().length];
 		other.calibration(calib);
 		final ImgPlus<? extends RealType<?>> newImgPlus =
-			wrapAsImgPlus(newImg, other.getAxes(), calib);
+			wrapAsImgPlus(newImg, SpaceUtils.getAxisTypes(other), calib);
 
 		// make sure we grab color tables too
 		// TODO - disable this option? It's a question of what we think data is.
@@ -353,11 +354,11 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		publish(new DatasetRestructuredEvent(this));
 	}
 
-	// -- CalibratedInterval methods --
-
 	@Override
-	public boolean isDiscrete() {
-		return true;
+	public long[] getDims() {
+		final long[] dims = new long[numDimensions()];
+		dimensions(dims);
+		return dims;
 	}
 
 	// -- CalibratedSpace methods --

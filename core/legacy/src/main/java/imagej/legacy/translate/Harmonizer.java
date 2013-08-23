@@ -46,8 +46,9 @@ import imagej.legacy.LegacyService;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.imglib2.meta.ImgPlus;
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.ImgPlus;
+import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.AbstractContextual;
@@ -349,7 +350,8 @@ public class Harmonizer extends AbstractContextual {
 			if (c != imp.getNChannels() * 3) return false;
 		}
 		else { // not color data
-			final long c = LegacyUtils.ij1ChannelCount(dimensions, ds.getAxes());
+			final long c =
+				LegacyUtils.ij1ChannelCount(dimensions, SpaceUtils.getAxisTypes(ds));
 			if (c != imp.getNChannels()) return false;
 		}
 
@@ -392,7 +394,7 @@ public class Harmonizer extends AbstractContextual {
 		//final ImageDisplay tmpDisplay =
 		//		imageTranslator.createDisplay(impCopy, ds.getAxes());
 		final ImageDisplay tmpDisplay = 
-			imageTranslator.createDisplay(imp, ds.getAxes());
+			imageTranslator.createDisplay(imp, SpaceUtils.getAxisTypes(ds));
 		final Dataset tmpDs = imageDisplayService.getActiveDataset(tmpDisplay);
 		ds.setImgPlus(tmpDs.getImgPlus());
 		ds.setRGBMerged(tmpDs.isRGBMerged());

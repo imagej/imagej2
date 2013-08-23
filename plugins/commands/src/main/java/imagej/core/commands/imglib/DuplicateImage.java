@@ -49,6 +49,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.SpaceUtils;
 
 import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
@@ -197,7 +198,7 @@ public class DuplicateImage extends DynamicCommand {
 
 	protected void initializer() {
 		definitions = new HashMap<AxisType, AxisSubrange>();
-		theAxes = inputDisplay.getAxes();
+		theAxes = SpaceUtils.getAxisTypes(inputDisplay);
 		for (final AxisType axis : theAxes) {
 			final DefaultMutableModuleItem<String> axisItem =
 				new DefaultMutableModuleItem<String>(this, name(axis), String.class);

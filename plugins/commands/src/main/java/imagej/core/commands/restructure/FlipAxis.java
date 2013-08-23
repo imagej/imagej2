@@ -50,6 +50,7 @@ import net.imglib2.display.ColorTable;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
@@ -125,7 +126,7 @@ public class FlipAxis extends DynamicCommand {
 		// allow API users to override dialog value
 		if (axisType != null) return axisType;
 		String name = (String) getInput(AXIS);
-		AxisType[] axes = dataset.getAxes();
+		AxisType[] axes = SpaceUtils.getAxisTypes(dataset);
 		for (int i = 0; i < axes.length; i++) {
 			if (axes[i].getLabel().equals(name)) return axes[i];
 		}
@@ -135,7 +136,7 @@ public class FlipAxis extends DynamicCommand {
 	// -- initializers --
 
 	protected void initAxes() {
-		AxisType[] axes = dataset.getAxes();
+		AxisType[] axes = SpaceUtils.getAxisTypes(dataset);
 		ArrayList<String> choices = new ArrayList<String>();
 		for (AxisType a : axes) {
 			choices.add(a.getLabel());
@@ -248,7 +249,7 @@ public class FlipAxis extends DynamicCommand {
 
 	private long numPlanes(Dataset ds) {
 		long tot = 1;
-		AxisType[] axes = ds.getAxes();
+		AxisType[] axes = SpaceUtils.getAxisTypes(ds);
 		for (int i = 0; i < axes.length; i++) {
 			if (axes[i].equals(Axes.X)) continue;
 			if (axes[i].equals(Axes.Y)) continue;

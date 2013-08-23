@@ -35,12 +35,14 @@
 
 package imagej.data.display;
 
-import imagej.data.CalibratedInterval;
 import imagej.data.Data;
 import imagej.data.PositionableByAxis;
 import imagej.display.Display;
 import imagej.util.RealRect;
+import net.imglib2.Interval;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
+import net.imglib2.meta.CalibratedRealInterval;
 
 /**
  * An image display is a {@link Display} for visualizing {@link Data} objects.
@@ -50,8 +52,8 @@ import net.imglib2.meta.AxisType;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public interface ImageDisplay extends Display<DataView>, CalibratedInterval,
-	PositionableByAxis
+public interface ImageDisplay extends Display<DataView>,
+	CalibratedRealInterval<CalibratedAxis>, PositionableByAxis, Interval
 {
 
 	/** Gets the view currently designated as active. */
@@ -78,5 +80,7 @@ public interface ImageDisplay extends Display<DataView>, CalibratedInterval,
 	 * plane.
 	 */
 	RealRect getPlaneExtents();
+
+	long[] getDims();
 
 }

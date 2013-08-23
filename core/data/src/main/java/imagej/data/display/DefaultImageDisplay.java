@@ -35,9 +35,7 @@
 
 package imagej.data.display;
 
-import imagej.data.CombinedInterval;
 import imagej.data.Data;
-import imagej.data.Extents;
 import imagej.data.display.event.AxisActivatedEvent;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.event.DataRestructuredEvent;
@@ -58,6 +56,9 @@ import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
+import net.imglib2.meta.CalibratedRealInterval;
+import net.imglib2.meta.CombinedCalibratedRealInterval;
+import net.imglib2.meta.SpaceUtils;
 
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
@@ -77,7 +78,9 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 {
 
 	/** Data structure that aggregates dimensional axes from constituent views. */
-	private final CombinedInterval combinedInterval = new CombinedInterval();
+	// private final CombinedInterval combinedInterval = new CombinedInterval();
+	private final CombinedCalibratedRealInterval<CalibratedAxis, CalibratedRealInterval<CalibratedAxis>> combinedInterval =
+		new CombinedCalibratedRealInterval<CalibratedAxis, CalibratedRealInterval<CalibratedAxis>>();
 
 	@Parameter
 	private ThreadService threadService;
@@ -127,9 +130,11 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 			combinedInterval.add(view.getData());
 		}
 		combinedInterval.update();
+		/* BDZ removed Aug 15 2013
 		if (!combinedInterval.isDiscrete()) {
 			throw new IllegalStateException("Invalid combination of views");
 		}
+		*/
 
 		// rebuild views
 		for (final DataView view : DefaultImageDisplay.this) {
@@ -213,13 +218,12 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 	@Override
 	public RealRect getPlaneExtents() {
-		final Extents extents = getExtents();
 		final int xAxis = dimensionIndex(Axes.X);
 		final int yAxis = dimensionIndex(Axes.Y);
-		final double xMin = extents.realMin(xAxis);
-		final double yMin = extents.realMin(yAxis);
-		final double width = extents.realMax(xAxis) - extents.realMin(xAxis);
-		final double height = extents.realMax(yAxis) - extents.realMin(yAxis);
+		final double xMin = realMin(xAxis);
+		final double yMin = realMin(yAxis);
+		final double width = realMax(xAxis) - realMin(xAxis);
+		final double height = realMax(yAxis) - realMin(yAxis);
 		return new RealRect(xMin, yMin, width, height);
 	}
 
@@ -292,12 +296,14 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 		// TODO - is this a performance issue?
 		combinedInterval.update();
 		for (final DataView view : this) {
-			for (final AxisType axis : getAxes()) {
+			for (final AxisType axis : SpaceUtils.getAxisTypes(this)) {
 				if (axis.isXY()) continue;
 				final int axisNum = view.getData().dimensionIndex(axis);
 				if (axisNum < 0) continue;
 				final long p = getLongPosition(axis);
-				if (p < view.getData().dimension(axisNum)) {
+				Data data = view.getData();
+				double size = data.realMax(axisNum) - data.realMin(axisNum);
+				if (p < size) {
 					view.setPosition(p, axis);
 				}
 			}
@@ -309,65 +315,62 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 	// -- CalibratedInterval methods --
 
 	@Override
-	public AxisType[] getAxes() {
-		return combinedInterval.getAxes();
-	}
-
-	@Override
-	public boolean isDiscrete() {
-		return combinedInterval.isDiscrete();
-	}
-
-	@Override
-	public Extents getExtents() {
-		return combinedInterval.getExtents();
-	}
-
-	@Override
 	public long[] getDims() {
-		return combinedInterval.getDims();
+		long[] dims = new long[numDimensions()];
+		dimensions(dims);
+		return dims;
 	}
 
 	// -- Interval methods --
 
 	@Override
 	public long min(final int d) {
-		return combinedInterval.min(d);
+		return (long) Math.floor(combinedInterval.realMin(d));
 	}
 
 	@Override
 	public void min(final long[] min) {
-		combinedInterval.min(min);
+		for (int i = 0; i < min.length; i++) {
+			min[i] = min(i);
+		}
 	}
 
 	@Override
 	public void min(final Positionable min) {
-		combinedInterval.min(min);
+		for (int i = 0; i < min.numDimensions(); i++) {
+			min.setPosition(min(i), i);
+		}
 	}
 
 	@Override
 	public long max(final int d) {
-		return combinedInterval.max(d);
+		return (long) Math.ceil(combinedInterval.realMax(d));
 	}
 
 	@Override
 	public void max(final long[] max) {
-		combinedInterval.max(max);
+		for (int i = 0; i < max.length; i++) {
+			max[i] = max(i);
+		}
 	}
 
 	@Override
 	public void max(final Positionable max) {
-		combinedInterval.max(max);
+		for (int i = 0; i < max.numDimensions(); i++) {
+			max.setPosition(max(i), i);
+		}
 	}
 
 	@Override
 	public void dimensions(final long[] dimensions) {
-		combinedInterval.dimensions(dimensions);
+		for (int i = 0; i < dimensions.length; i++) {
+			dimensions[i] = dimension(i);
+		}
 	}
 
 	@Override
 	public long dimension(final int d) {
-		return combinedInterval.dimension(d);
+		return max(d) - min(d) + 1;
 	}
 
 	// -- RealInterval methods --
@@ -438,12 +441,16 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 	@Override
 	public void calibration(final double[] cal) {
-		combinedInterval.calibration(cal);
+		for (int i = 0; i < cal.length; i++) {
+			cal[i] = calibration(i);
+		}
 	}
 
 	@Override
 	public void calibration(final float[] cal) {
-		combinedInterval.calibration(cal);
+		for (int i = 0; i < cal.length; i++) {
+			cal[i] = (float) calibration(i);
+		}
 	}
 
 	@Override
@@ -453,12 +460,16 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 	@Override
 	public void setCalibration(final double[] cal) {
-		combinedInterval.setCalibration(cal);
+		for (int i = 0; i < cal.length; i++) {
+			setCalibration(cal[i], i);
+		}
 	}
 
 	@Override
 	public void setCalibration(final float[] cal) {
-		combinedInterval.setCalibration(cal);
+		for (int i = 0; i < cal.length; i++) {
+			setCalibration(cal[i], i);
+		}
 	}
 
 	@Override
@@ -487,9 +498,9 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 		}
 		final Long value = pos.get(axis);
 		if (value == null) return 0;
-		final long min = combinedInterval.min(d);
+		final long min = min(d);
 		if (value < min) return min;
-		final long max = combinedInterval.max(d);
+		final long max = max(d);
 		if (value > max) return max;
 		return value;
 	}
@@ -722,7 +733,7 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 	private void initActiveAxis() {
 		if (activeAxis == null) {
-			final AxisType[] axes = getAxes();
+			final AxisType[] axes = SpaceUtils.getAxisTypes(this);
 			for (final AxisType axis : axes) {
 				if (axis == Axes.X) continue;
 				if (axis == Axes.Y) continue;

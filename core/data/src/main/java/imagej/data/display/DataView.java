@@ -89,6 +89,9 @@ public interface DataView extends PositionableByAxis, ImageJPlugin, Contextual {
 	/** Gets the {@link Data} represented by this view. */
 	Data getData();
 
+	// TODO: Evaluate this method's purpose. To change with display refactor in
+	// the future.
+
 	/** Gets the N-dimensional plane position of this view. */
 	Position getPlanePosition();
 

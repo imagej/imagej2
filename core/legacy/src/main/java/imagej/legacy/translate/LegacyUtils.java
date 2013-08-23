@@ -43,6 +43,7 @@ import imagej.data.Dataset;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -132,7 +133,8 @@ public class LegacyUtils {
 		final long zCount = zIndex < 0 ? 1 : dims[zIndex];
 		final long tCount = tIndex < 0 ? 1 : dims[tIndex];
 
-		final long cCount = LegacyUtils.ij1ChannelCount(dims, ds.getAxes());
+		final long cCount =
+			LegacyUtils.ij1ChannelCount(dims, SpaceUtils.getAxisTypes(ds));
 		final long ij1ChannelCount = ds.isRGBMerged() ? (cCount / 3) : cCount;
 
 		// check width exists
@@ -251,7 +253,7 @@ public class LegacyUtils {
 	{
 		final long[] dims = dataset.getDims();
 
-		final AxisType[] axes = dataset.getAxes();
+		final AxisType[] axes = SpaceUtils.getAxisTypes(dataset);
 
 		// get axis indices
 		final int xIndex = dataset.dimensionIndex(Axes.X);
@@ -308,7 +310,7 @@ public class LegacyUtils {
 	 */
 	static boolean datasetIsIJ1Compatible(final Dataset ds) {
 		if (ds == null) return true;
-		final AxisType[] axes = ds.getAxes();
+		final AxisType[] axes = SpaceUtils.getAxisTypes(ds);
 		if (LegacyUtils.hasNonIJ1Axes(axes)) return false;
 		return ij1StorageCompatible(ds) && ij1TypeCompatible(ds);
 	}

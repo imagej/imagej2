@@ -39,7 +39,6 @@ import imagej.data.ChannelCollection;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.DrawingTool;
-import imagej.data.Extents;
 import imagej.data.Position;
 import imagej.data.options.OptionsOverlay;
 import imagej.data.overlay.CompositeOverlay;
@@ -200,11 +199,10 @@ public final class DefaultOverlayService extends AbstractService implements
 		for (final DataView view : display) {
 			if (!view.isSelected()) continue;
 			final Data data = view.getData();
-			final Extents e = data.getExtents();
-			final double min0 = e.realMin(0);
-			final double max0 = e.realMax(0);
-			final double min1 = e.realMin(1);
-			final double max1 = e.realMax(1);
+			final double min0 = data.realMin(0);
+			final double max0 = data.realMax(0);
+			final double min1 = data.realMin(1);
+			final double max1 = data.realMax(1);
 			if (min0 < xMin) xMin = min0;
 			if (max0 > xMax) xMax = max0;
 			if (min1 < yMin) yMin = min1;
@@ -212,11 +210,10 @@ public final class DefaultOverlayService extends AbstractService implements
 		}
 
 		// get total XY extents of the display
-		final Extents totalExtents = display.getExtents();
-		final double totalMinX = totalExtents.min(0);
-		final double totalMaxX = totalExtents.max(0);
-		final double totalMinY = totalExtents.min(1);
-		final double totalMaxY = totalExtents.max(1);
+		final double totalMinX = display.realMin(0);
+		final double totalMaxX = display.realMax(0);
+		final double totalMinY = display.realMin(1);
+		final double totalMaxY = display.realMax(1);
 
 		// use entire XY extents if values are out of bounds
 		if (xMin < totalMinX || xMin > totalMaxX) xMin = totalMinX;

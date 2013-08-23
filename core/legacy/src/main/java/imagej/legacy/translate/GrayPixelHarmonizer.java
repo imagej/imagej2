@@ -42,6 +42,7 @@ import imagej.data.Dataset;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.ShortType;
@@ -96,7 +97,7 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 		final RandomAccess<? extends RealType<?>> accessor =
 			ds.getImgPlus().randomAccess();
 		final long[] dims = ds.getDims();
-		final AxisType[] axes = ds.getAxes();
+		final AxisType[] axes = SpaceUtils.getAxisTypes(ds);
 		final int xIndex = ds.dimensionIndex(Axes.X);
 		final int yIndex = ds.dimensionIndex(Axes.Y);
 		final int zIndex = ds.dimensionIndex(Axes.Z);
@@ -169,7 +170,7 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 		final RandomAccess<? extends RealType<?>> accessor =
 			ds.getImgPlus().randomAccess();
 		final long[] dims = ds.getDims();
-		final AxisType[] axes = ds.getAxes();
+		final AxisType[] axes = SpaceUtils.getAxisTypes(ds);
 		final int xIndex = ds.dimensionIndex(Axes.X);
 		final int yIndex = ds.dimensionIndex(Axes.Y);
 		final int zIndex = ds.dimensionIndex(Axes.Z);

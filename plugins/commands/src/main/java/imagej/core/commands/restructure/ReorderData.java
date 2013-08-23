@@ -48,6 +48,7 @@ import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.ImgPlus;
+import net.imglib2.meta.SpaceUtils;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
@@ -148,7 +149,7 @@ public class ReorderData extends DynamicCommand {
 	// -- Initializers --
 
 	protected void initAxes() {
-		final AxisType[] axes = dataset.getAxes();
+		final AxisType[] axes = SpaceUtils.getAxisTypes(dataset);
 
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (int i = 0; i < axes.length; i++) {
@@ -226,7 +227,7 @@ public class ReorderData extends DynamicCommand {
 	 * actually permute positions.
 	 */
 	private void setupPermutationVars() {
-		final AxisType[] currAxes = dataset.getAxes();
+		final AxisType[] currAxes = SpaceUtils.getAxisTypes(dataset);
 		final AxisType[] permutedAxes = getPermutedAxes(currAxes);
 		permutationAxisIndices = new int[currAxes.length];
 		for (int i = 0; i < currAxes.length; i++) {
@@ -248,7 +249,7 @@ public class ReorderData extends DynamicCommand {
 		final HyperVolumePointSet volume = new HyperVolumePointSet(inputSpan);
 		final PointSetIterator iter = volume.iterator();
 		final long[] origDims = dataset.getDims();
-		final AxisType[] origAxes = dataset.getAxes();
+		final AxisType[] origAxes = SpaceUtils.getAxisTypes(dataset);
 		final long[] newDims = getNewDims(origDims);
 		final AxisType[] newAxes = getNewAxes(origAxes);
 		final ImgPlus<? extends RealType<?>> newImgPlus =

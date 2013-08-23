@@ -47,6 +47,7 @@ import java.util.ArrayList;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.SpaceUtils;
 
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
@@ -180,7 +181,7 @@ public class AnimationOptions extends DynamicCommand {
 	protected void initAxisName() {
 		final MutableModuleItem<String> axisNameItem =
 			getInfo().getMutableInput("axisName", String.class);
-		final AxisType[] axes = getDisplay().getAxes();
+		final AxisType[] axes = SpaceUtils.getAxisTypes(getDisplay());
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (final AxisType axis : axes) {
 			if (axis.isXY()) continue;
@@ -243,7 +244,7 @@ public class AnimationOptions extends DynamicCommand {
 	private long getAxisLength() {
 		final int axisIndex = getDisplay().dimensionIndex(getAxis());
 		if (axisIndex < 0) return -1;
-		return getDisplay().getExtents().dimension(axisIndex);
+		return getDisplay().dimension(axisIndex);
 	}
 
 	private Animation getAnimation() {
