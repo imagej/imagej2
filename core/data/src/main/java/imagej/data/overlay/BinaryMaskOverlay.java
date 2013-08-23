@@ -84,6 +84,7 @@ public class BinaryMaskOverlay<U extends BitType, V extends Img<U>> extends Abst
 	// It is currently present only so that TestBinaryMaskOverlay code passes
 	// when deserializing. It points to a larger issue, though, which is that
 	// Externalizable objects may need a noargs constructor to work properly.
+	// See ticket #1991.
 
 	public BinaryMaskOverlay() {
 		super(null, null);

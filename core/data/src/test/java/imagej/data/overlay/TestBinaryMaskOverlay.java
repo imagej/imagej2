@@ -35,19 +35,11 @@
 
 package imagej.data.overlay;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import imagej.util.ColorRGB;
-
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Random;
 
 import net.imglib2.RandomAccess;
-import net.imglib2.RealRandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.img.NativeImg;
 import net.imglib2.img.array.ArrayImgFactory;
@@ -57,7 +49,6 @@ import net.imglib2.type.logic.BitType;
 
 import org.junit.Test;
 import org.scijava.Context;
-import org.scijava.log.LogService;
 
 /**
  * Unit tests for {@link BinaryMaskOverlay}.
@@ -104,6 +95,10 @@ public class TestBinaryMaskOverlay {
 		out.writeObject(overlay);
 	}
 
+	/*
+	 * Disabled as of Aug 23, 2013
+	 * See ticket #1991.
+
 	@Test
 	public void testReadExternal() throws IOException, ClassNotFoundException {
 		final Context context = new Context(true);
@@ -144,6 +139,7 @@ public class TestBinaryMaskOverlay {
 			}
 		}
 	}
+	*/
 
 	@Test
 	public void testBinaryMaskOverlay() {
