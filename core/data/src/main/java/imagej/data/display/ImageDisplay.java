@@ -79,4 +79,6 @@ public interface ImageDisplay extends Display<DataView>, CalibratedInterval,
 	 */
 	RealRect getPlaneExtents();
 
+	long[] getDims();
+
 }
