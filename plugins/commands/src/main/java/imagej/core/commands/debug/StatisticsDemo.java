@@ -42,6 +42,7 @@ import imagej.data.display.OverlayService;
 import imagej.data.measure.StatisticsService;
 import imagej.data.overlay.Overlay;
 import imagej.widget.Button;
+import net.imglib2.meta.IntervalUtils;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.ops.pointset.RoiPointSet;
@@ -108,7 +109,7 @@ public class StatisticsDemo implements Command {
 		if (overlay != null) {
 			return new RoiPointSet(overlay.getRegionOfInterest());
 		}
-		long[] dims = display.getDims();
+		long[] dims = IntervalUtils.getDims(display);
 		long[] pt1 = new long[dims.length];
 		long[] pt2 = pt1.clone();
 		// current plane only

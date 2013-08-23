@@ -54,6 +54,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.IntervalUtils;
 import net.imglib2.ops.function.Function;
 import net.imglib2.ops.function.real.RealAdaptiveMedianFunction;
 import net.imglib2.ops.function.real.RealArithmeticMeanFunction;
@@ -184,7 +185,7 @@ public class MeasurementDemo implements Command {
 			points = new RoiPointSet(overlay.getRegionOfInterest());
 		}
 		else {
-			long[] dims = display.getDims();
+			long[] dims = IntervalUtils.getDims(display);
 			// 1st plane only
 			for (int i = 2; i < dims.length; i++) {
 				dims[i] = 1;

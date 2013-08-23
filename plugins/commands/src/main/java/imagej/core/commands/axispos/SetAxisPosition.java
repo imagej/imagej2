@@ -78,7 +78,7 @@ public class SetAxisPosition extends DynamicCommand {
 		final AxisType axis = display.getActiveAxis();
 		if (axis == null) return;
 		int dim = display.dimensionIndex(axis);
-		Long value = display.getDims()[dim];
+		Long value = display.dimension(dim);
 		positionItem.setMaximumValue(value);
 	}
 	

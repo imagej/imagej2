@@ -39,6 +39,7 @@ import ij.ImagePlus;
 import imagej.data.display.ImageDisplay;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.IntervalUtils;
 import net.imglib2.meta.SpaceUtils;
 
 /**
@@ -55,7 +56,7 @@ public class PositionHarmonizer implements DisplayHarmonizer {
 	 */
 	@Override
 	public void updateDisplay(ImageDisplay disp, ImagePlus imp) {
-		final long[] dimensions = disp.getDims();
+		final long[] dimensions = IntervalUtils.getDims(disp);
 		final AxisType[] axes = SpaceUtils.getAxisTypes(disp);
 		final long[] workspace = new long[dimensions.length];
 		fillModernIJPosition(disp, imp, dimensions, axes, workspace);
@@ -82,7 +83,7 @@ public class PositionHarmonizer implements DisplayHarmonizer {
 	// -- helpers --
 	
 	private long calcIJ1ChannelPos(ImageDisplay disp) {
-		final long[] dims = disp.getDims();
+		final long[] dims = IntervalUtils.getDims(disp);
 		final AxisType[] axes = SpaceUtils.getAxisTypes(disp);
 		final long[] pos = new long[axes.length];
 		for (int i = 0; i < axes.length; i++)

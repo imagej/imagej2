@@ -81,6 +81,4 @@ public interface ImageDisplay extends Display<DataView>,
 	 */
 	RealRect getPlaneExtents();
 
-	long[] getDims();
-
 }
