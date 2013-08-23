@@ -41,6 +41,7 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.Overlay;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.IntervalUtils;
 import net.imglib2.ops.condition.Condition;
 import net.imglib2.ops.condition.UVInsideRoiCondition;
 import net.imglib2.ops.function.complex.ComplexImageFunction;
@@ -171,7 +172,7 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 		LongRect rect = findXYRegion(ds, overlay, xIndex, yIndex);
 		
 		// calc origin and span values
-		long[] dims = ds.getDims();
+		long[] dims = IntervalUtils.getDims(ds);
 		origin = new long[ds.numDimensions()];
 		span = new long[ds.numDimensions()];
 		for (int i = 0; i < ds.numDimensions(); i++) {
@@ -233,7 +234,7 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 	private LongRect findXYRegion(Dataset ds, Overlay overlay, int xIndex, int yIndex) {
 
 		// calc XY outline boundary
-		final long[] dims = ds.getDims();
+		final long[] dims = IntervalUtils.getDims(ds);
 		final LongRect rect = new LongRect();
 		if (overlay == null) {
 			rect.x = 0;

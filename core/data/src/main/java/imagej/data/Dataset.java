@@ -176,6 +176,4 @@ public interface Dataset extends Data, Metadata, Interval {
 	 */
 	@Override
 	void rebuild();
-
-	long[] getDims();
 }

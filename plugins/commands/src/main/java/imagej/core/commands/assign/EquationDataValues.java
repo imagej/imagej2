@@ -52,6 +52,7 @@ import java.net.URL;
 
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.IntervalUtils;
 import net.imglib2.ops.condition.UVInsideRoiCondition;
 import net.imglib2.ops.function.Function;
 import net.imglib2.ops.img.ImageAssignment;
@@ -186,7 +187,7 @@ public class EquationDataValues<T extends RealType<T>> extends ContextCommand {
 			return "display does not have XY planes";
 		
 		// calc XY outline boundary
-		final long[] dims = dataset.getDims();
+		final long[] dims = IntervalUtils.getDims(dataset);
 		final long x,y,w,h;
 		if (overlay == null) {
 			x = 0;

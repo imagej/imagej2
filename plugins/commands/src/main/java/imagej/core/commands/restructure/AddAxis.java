@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.ImgPlus;
+import net.imglib2.meta.IntervalUtils;
 import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.numeric.RealType;
 
@@ -188,7 +189,7 @@ public class AddAxis extends DynamicCommand {
 	private long[]
 		getNewDimensions(final Dataset ds, final long lastDimensionSize)
 	{
-		final long[] origDims = ds.getDims();
+		final long[] origDims = IntervalUtils.getDims(ds);
 		final long[] newDims = new long[origDims.length + 1];
 		for (int i = 0; i < origDims.length; i++)
 			newDims[i] = origDims[i];

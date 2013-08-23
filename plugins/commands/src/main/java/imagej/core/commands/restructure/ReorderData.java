@@ -48,6 +48,7 @@ import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.ImgPlus;
+import net.imglib2.meta.IntervalUtils;
 import net.imglib2.meta.SpaceUtils;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSetIterator;
@@ -248,7 +249,7 @@ public class ReorderData extends DynamicCommand {
 		dataset.getImgPlus().dimensions(inputSpan);
 		final HyperVolumePointSet volume = new HyperVolumePointSet(inputSpan);
 		final PointSetIterator iter = volume.iterator();
-		final long[] origDims = dataset.getDims();
+		final long[] origDims = IntervalUtils.getDims(dataset);
 		final AxisType[] origAxes = SpaceUtils.getAxisTypes(dataset);
 		final long[] newDims = getNewDims(origDims);
 		final AxisType[] newAxes = getNewAxes(origAxes);

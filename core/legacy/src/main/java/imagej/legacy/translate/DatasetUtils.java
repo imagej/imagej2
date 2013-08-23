@@ -36,6 +36,7 @@
 package imagej.legacy.translate;
 
 import imagej.data.Dataset;
+import net.imglib2.meta.IntervalUtils;
 
 /**
  * @author Barry DeZonia
@@ -59,7 +60,7 @@ public class DatasetUtils {
 	 * @param ds The Dataset to modify
 	 */
 	public static void initColorTables(final Dataset ds) {
-		final long[] dims = ds.getDims();
+		final long[] dims = IntervalUtils.getDims(ds);
 		final long numPlanes = planeCount(dims);
 		if (numPlanes > Integer.MAX_VALUE) throw new IllegalArgumentException(
 			"color table count cannot exceed " + Integer.MAX_VALUE);

@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.ImgPlus;
+import net.imglib2.meta.IntervalUtils;
 import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.numeric.RealType;
 
@@ -151,7 +152,8 @@ public class DeleteData extends DynamicCommand {
 		else {
 			int d = dataset.dimensionIndex(axis);
 			final ColorTableRemapper remapper =
-				new ColorTableRemapper(new RemapAlgorithm(dataset.getDims(), d));
+				new ColorTableRemapper(new RemapAlgorithm(IntervalUtils
+					.getDims(dataset), d));
 			remapper.remapColorTables(dataset.getImgPlus(), dstImgPlus);
 		}
 		// TODO - metadata, etc.?
@@ -225,7 +227,7 @@ public class DeleteData extends DynamicCommand {
 		final ImgPlus<? extends RealType<?>> dstImgPlus,
 		final AxisType modifiedAxis)
 	{
-		final long[] dimensions = dataset.getDims();
+		final long[] dimensions = IntervalUtils.getDims(dataset);
 		final int axisIndex = dataset.dimensionIndex(modifiedAxis);
 		final long axisSize = dimensions[axisIndex];
 		final long numBeforeCut = position - 1; // one based position

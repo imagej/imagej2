@@ -64,6 +64,7 @@ import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.ImgPlus;
+import net.imglib2.meta.IntervalUtils;
 import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
@@ -317,13 +318,13 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		final ImgFactory factory = getImgPlus().factory();
 		@SuppressWarnings("unchecked")
 		final Img<? extends RealType<?>> newImg =
-			factory.create(other.getDims(), other.getType());
+			factory.create(IntervalUtils.getDims(other), other.getType());
 
 		// copy the data into the new img
 		copyDataValues(other.getImgPlus(), newImg);
 
 		// create new imgplus to contain data using the current name
-		final double[] calib = new double[other.getDims().length];
+		final double[] calib = new double[other.numDimensions()];
 		other.calibration(calib);
 		final ImgPlus<? extends RealType<?>> newImgPlus =
 			wrapAsImgPlus(newImg, SpaceUtils.getAxisTypes(other), calib);
@@ -352,13 +353,6 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	public void rebuild() {
 		setDirty(true);
 		publish(new DatasetRestructuredEvent(this));
-	}
-
-	@Override
-	public long[] getDims() {
-		final long[] dims = new long[numDimensions()];
-		dimensions(dims);
-		return dims;
 	}
 
 	// -- CalibratedSpace methods --
@@ -611,7 +605,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	@Override
 	public double getBytesOfInfo() {
 		final double bitsPerPix = getType().getBitsPerPixel();
-		final long[] dims = getDims();
+		final long[] dims = IntervalUtils.getDims(this);
 		long pixCount = 1;
 		for (final long dimSize : dims)
 			pixCount *= dimSize;

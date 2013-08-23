@@ -46,8 +46,9 @@ import imagej.data.display.OverlayService;
 import imagej.menu.MenuConstants;
 import imagej.util.RealRect;
 import net.imglib2.RandomAccess;
-import net.imglib2.meta.ImgPlus;
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.ImgPlus;
+import net.imglib2.meta.IntervalUtils;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
@@ -100,7 +101,7 @@ public class FlipHorizontally extends ContextCommand {
 
 	private void flipPixels(final Dataset input, final RealRect selection) {
 
-		final long[] dims = input.getDims();
+		final long[] dims = IntervalUtils.getDims(input);
 		final int xAxis = input.dimensionIndex(Axes.X);
 		final int yAxis = input.dimensionIndex(Axes.Y);
 		if ((xAxis < 0) || (yAxis < 0)) throw new IllegalArgumentException(

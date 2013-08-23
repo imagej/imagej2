@@ -43,6 +43,7 @@ import imagej.data.Dataset;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.IntervalUtils;
 import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.numeric.RealType;
 
@@ -126,7 +127,7 @@ public class LegacyUtils {
 		final int zIndex = ds.dimensionIndex(Axes.Z);
 		final int tIndex = ds.dimensionIndex(Axes.TIME);
 
-		final long[] dims = ds.getDims();
+		final long[] dims = IntervalUtils.getDims(ds);
 
 		final long xCount = xIndex < 0 ? 1 : dims[xIndex];
 		final long yCount = yIndex < 0 ? 1 : dims[yIndex];
@@ -251,7 +252,7 @@ public class LegacyUtils {
 	static void getImagePlusDims(final Dataset dataset,
 		final int[] outputIndices, final int[] outputDims)
 	{
-		final long[] dims = dataset.getDims();
+		final long[] dims = IntervalUtils.getDims(dataset);
 
 		final AxisType[] axes = SpaceUtils.getAxisTypes(dataset);
 

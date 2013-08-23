@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.ImgPlus;
+import net.imglib2.meta.IntervalUtils;
 import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.numeric.RealType;
 
@@ -142,7 +143,7 @@ public class DeleteAxis extends DynamicCommand {
 			RestructureUtils.copyColorTables(dataset.getImgPlus(), dstImgPlus);
 		}
 		else {
-			final long[] origDims = dataset.getDims();
+			final long[] origDims = IntervalUtils.getDims(dataset);
 			final long[] origPlaneDims = new long[origDims.length - 2];
 			for (int i = 0; i < origPlaneDims.length; i++)
 				origPlaneDims[i] = origDims[i + 2];
@@ -228,7 +229,7 @@ public class DeleteAxis extends DynamicCommand {
 	 * user specified axis.
 	 */
 	private long[] getNewDimensions(final Dataset ds, final AxisType axis) {
-		final long[] origDims = ds.getDims();
+		final long[] origDims = IntervalUtils.getDims(ds);
 		if (axis.isXY()) {
 			final long[] newDims = origDims;
 			newDims[ds.dimensionIndex(axis)] = 1;

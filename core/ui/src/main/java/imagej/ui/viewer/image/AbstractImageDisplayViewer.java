@@ -56,6 +56,7 @@ import imagej.ui.viewer.DisplayWindow;
 import imagej.util.UnitUtils;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.IntervalUtils;
 import net.imglib2.meta.SpaceUtils;
 
 import org.scijava.event.EventHandler;
@@ -147,7 +148,7 @@ public abstract class AbstractImageDisplayViewer extends
 
 		final int xIndex = dataset.dimensionIndex(Axes.X);
 		final int yIndex = dataset.dimensionIndex(Axes.Y);
-		final long[] dims = dataset.getDims();
+		final long[] dims = IntervalUtils.getDims(dataset);
 		final AxisType[] axes = SpaceUtils.getAxisTypes(dataset);
 		final Position pos = view.getPlanePosition();
 
