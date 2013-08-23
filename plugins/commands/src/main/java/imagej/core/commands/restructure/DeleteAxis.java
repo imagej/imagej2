@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.ImgPlus;
+import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
@@ -213,7 +214,7 @@ public class DeleteAxis extends DynamicCommand {
 	 * specified axis
 	 */
 	private AxisType[] getNewAxes(final Dataset ds, final AxisType axis) {
-		final AxisType[] origAxes = ds.getAxes();
+		final AxisType[] origAxes = SpaceUtils.getAxisTypes(ds);
 		if (axis.isXY()) return origAxes;
 		final AxisType[] newAxes = new AxisType[origAxes.length - 1];
 		int index = 0;
@@ -233,7 +234,7 @@ public class DeleteAxis extends DynamicCommand {
 			newDims[ds.dimensionIndex(axis)] = 1;
 			return newDims;
 		}
-		final AxisType[] origAxes = ds.getAxes();
+		final AxisType[] origAxes = SpaceUtils.getAxisTypes(ds);
 		final long[] newDims = new long[origAxes.length - 1];
 		int index = 0;
 		for (int i = 0; i < origAxes.length; i++) {
@@ -305,7 +306,7 @@ public class DeleteAxis extends DynamicCommand {
 	private void initAxisName() {
 		final MutableModuleItem<String> axisNameItem =
 			getInfo().getMutableInput(AXIS_NAME, String.class);
-		final AxisType[] axes = getDataset().getAxes();
+		final AxisType[] axes = SpaceUtils.getAxisTypes(getDataset());
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (final AxisType a : axes) {
 			// if (Axes.isXY(a)) continue;

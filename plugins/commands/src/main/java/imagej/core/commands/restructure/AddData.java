@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.ImgPlus;
+import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
@@ -132,7 +133,7 @@ public class AddData extends DynamicCommand {
 	public void run() {
 		final AxisType axis = Axes.get(axisName);
 		if (inputBad(axis)) return;
-		final AxisType[] axes = dataset.getAxes();
+		final AxisType[] axes = SpaceUtils.getAxisTypes(dataset);
 		final long[] newDimensions =
 			RestructureUtils.getDimensions(dataset, axis, quantity);
 		final ImgPlus<? extends RealType<?>> dstImgPlus =
@@ -297,7 +298,7 @@ public class AddData extends DynamicCommand {
 	private void initAxisName() {
 		final MutableModuleItem<String> axisNameItem =
 			getInfo().getMutableInput(AXIS_NAME, String.class);
-		final AxisType[] axes = getDataset().getAxes();
+		final AxisType[] axes = SpaceUtils.getAxisTypes(getDataset());
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (final AxisType a : axes) {
 			choices.add(a.getLabel());

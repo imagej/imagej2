@@ -46,6 +46,7 @@ import java.util.Map;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.SpaceUtils;
 
 /**
  * SamplingDefinitions define regions of space and are used by the
@@ -83,7 +84,7 @@ public class SamplingDefinition {
 
 	/** Returns the axes that are present in the input data. */
 	public AxisType[] getInputAxes() {
-		return display.getAxes();
+		return SpaceUtils.getAxisTypes(display);
 	}
 
 	/**
@@ -95,7 +96,7 @@ public class SamplingDefinition {
 	 * [1,2,3]]
 	 */
 	public List<List<Long>> getInputRanges() {
-		final AxisType[] axes = display.getAxes();
+		final AxisType[] axes = SpaceUtils.getAxisTypes(display);
 		final List<List<Long>> axesDefs = new ArrayList<List<Long>>();
 		for (final AxisType axis : axes) {
 			final AxisSubrange subrange = axisSubranges.get(axis);
@@ -209,7 +210,7 @@ public class SamplingDefinition {
 	{
 		final SamplingDefinition definition = new SamplingDefinition(display);
 		final Data data = display.getActiveView().getData();
-		final AxisType[] axes = data.getAxes();
+		final AxisType[] axes = SpaceUtils.getAxisTypes(data);
 		for (final AxisType axis : axes) {
 			if ((axis == uAxis) || (axis == vAxis)) {
 				final int axisIndex = display.dimensionIndex(axis);
@@ -256,7 +257,7 @@ public class SamplingDefinition {
 		}
 		final SamplingDefinition definition = new SamplingDefinition(display);
 		final Data data = display.getActiveView().getData();
-		final AxisType[] axes = data.getAxes();
+		final AxisType[] axes = SpaceUtils.getAxisTypes(data);
 		for (final AxisType axis : axes) {
 			if ((axis == uAxis) || (axis == vAxis) || (axis == Axes.CHANNEL)) {
 				final int axisIndex = display.dimensionIndex(axis);
@@ -295,7 +296,7 @@ public class SamplingDefinition {
 	 */
 	public static SamplingDefinition sampleAllPlanes(final ImageDisplay display) {
 		final SamplingDefinition definition = new SamplingDefinition(display);
-		final AxisType[] axes = display.getAxes();
+		final AxisType[] axes = SpaceUtils.getAxisTypes(display);
 		for (int i = 0; i < axes.length; i++) {
 			final AxisType axis = axes[i];
 			final long size = display.dimension(i);

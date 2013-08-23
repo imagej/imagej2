@@ -42,6 +42,7 @@ import imagej.data.Dataset;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.IntervalIndexer;
 
@@ -85,7 +86,7 @@ public class MergedRgbVirtualStack extends VirtualStack {
 			throw new IllegalArgumentException("Dataset is not merged color");
 		}
 		long[] dims = ds.getDims();
-		AxisType[] axes = ds.getAxes();
+		AxisType[] axes = SpaceUtils.getAxisTypes(ds);
 		planeDims = new long[dims.length - 3];
 		planePos = new long[dims.length - 3];
 		int pDims = 0;

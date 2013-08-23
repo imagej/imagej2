@@ -44,6 +44,7 @@ import imagej.data.operator.CalculatorService;
 import imagej.menu.MenuConstants;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
+import net.imglib2.meta.SpaceUtils;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
@@ -137,8 +138,8 @@ public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 			}
 			// TODO : HACK - this next line works but always creates a PlanarImg
 			output =
-				datasetService.create(span, "Result of operation", input1.getAxes(),
-					bits, signed, floating);
+				datasetService.create(span, "Result of operation", SpaceUtils
+					.getAxisTypes(input1), bits, signed, floating);
 			copyDataInto(output.getImgPlus(), img, span);
 			output.update(); // TODO - probably unnecessary
 		}
