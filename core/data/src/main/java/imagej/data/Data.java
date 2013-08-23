@@ -36,6 +36,7 @@
 package imagej.data;
 
 import imagej.data.overlay.Overlay;
+import net.imglib2.meta.Named;
 
 import org.scijava.Contextual;
 
@@ -46,7 +47,7 @@ import org.scijava.Contextual;
  * 
  * @author Curtis Rueden
  */
-public interface Data extends CalibratedInterval, Contextual {
+public interface Data extends CalibratedInterval, Contextual, Named {
 
 	/**
 	 * Informs interested parties that the data object has undergone a
