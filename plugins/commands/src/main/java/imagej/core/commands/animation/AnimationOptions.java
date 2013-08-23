@@ -244,7 +244,7 @@ public class AnimationOptions extends DynamicCommand {
 	private long getAxisLength() {
 		final int axisIndex = getDisplay().dimensionIndex(getAxis());
 		if (axisIndex < 0) return -1;
-		return getDisplay().getExtents().dimension(axisIndex);
+		return getDisplay().dimension(axisIndex);
 	}
 
 	private Animation getAnimation() {

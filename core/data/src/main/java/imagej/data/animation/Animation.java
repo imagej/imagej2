@@ -90,7 +90,7 @@ public class Animation implements Runnable {
 				axis = display.axis(2).type();
 			}
 			final int axisIndex = display.dimensionIndex(axis);
-			last = display.getExtents().dimension(axisIndex) - 1;
+			last = display.dimension(axisIndex) - 1;
 		}
 	}
 

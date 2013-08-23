@@ -55,12 +55,12 @@ public abstract class AbstractROIOverlay<R extends RegionOfInterest> extends
 	// default constructor for use by serialization code
 	//   (see AbstractOverlay::duplicate())
 	protected AbstractROIOverlay(R roi) {
-		super();
+		super(roi);
 		this.roi = roi;
 	}
 	
 	protected AbstractROIOverlay(final Context context, final R roi) {
-		super(context);
+		super(context, roi);
 		this.roi = roi;
 	}
 

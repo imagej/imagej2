@@ -113,7 +113,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	@Override
 	public int getChannelCount() {
 		if (channelDimIndex < 0) return 1;
-		return (int) getData().getExtents().dimension(channelDimIndex);
+		return (int) getData().dimension(channelDimIndex);
 	}
 
 	@Override

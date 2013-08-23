@@ -111,7 +111,7 @@ public class SetActiveAxis extends DynamicCommand {
 		if (axis != null) {
 			display.setActiveAxis(axis);
 			int axisIndex = display.dimensionIndex(axis);
-			long last = display.getExtents().dimension(axisIndex) - 1;
+			long last = display.dimension(axisIndex) - 1;
 			Animation a = animationService.getAnimation(display);
 			boolean active = a.isActive();
 			if (active) a.stop();

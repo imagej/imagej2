@@ -128,8 +128,9 @@ public class ConvertToMask extends ContextCommand {
 		 * First pass - find minima and maxima so we can use a shrunken image in some cases.
 		 */
 		for (int i = 0; i < numDims; i++) {
-			min[i] = thresh.min(i);
-			dimensions[i] = thresh.dimension(i);
+			min[i] = (long) Math.floor(thresh.realMin(i));
+			dimensions[i] =
+				(long) Math.floor(thresh.realMax(i) - thresh.realMin(i) + 1);
 		}
 		final ArrayImg<BitType, BitArray> arrayMask =
 			new ArrayImgFactory<BitType>().createBitInstance(dimensions, 1);

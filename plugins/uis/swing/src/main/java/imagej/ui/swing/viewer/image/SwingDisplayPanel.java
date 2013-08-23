@@ -35,7 +35,6 @@
 
 package imagej.ui.swing.viewer.image;
 
-import imagej.data.Extents;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
@@ -232,7 +231,6 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 
 	private void createSliders() {
 		final AxisType[] axes = SpaceUtils.getAxisTypes(display);
-		final Extents extents = display.getExtents();
 
 		// remove obsolete sliders
 		for (final AxisType axis : axisSliders.keySet()) {
@@ -247,8 +245,8 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 		for (int i = 0; i < axes.length; i++) {
 			final AxisType axis = axes[i];
 			if (axis.isXY()) continue; // skip spatial axes
-			final int min = (int) extents.min(i);
-			final int max = (int) extents.max(i) + 1;
+			final int min = (int) display.min(i);
+			final int max = (int) display.max(i) + 1;
 			final int value = (int) display.getLongPosition(axis);
 
 			final JScrollBar axisSlider = axisSliders.get(axis);

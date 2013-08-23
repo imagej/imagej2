@@ -178,13 +178,14 @@ public class SamplingDefinition {
 			return false;
 		}
 		final List<Long> indices = subrange.getIndices();
-		if (indices.get(0) >= data.dimension(axisIndex)) {
+		double dimension = data.realMax(axisIndex) - data.realMin(axisIndex);
+		if (indices.get(0) >= dimension) {
 			err =
 				"Axis range fully beyond dimensions of display " + display.getName() +
 					" for axis " + axis;
 			return false;
 		}
-		if (indices.get(indices.size()-1) >= data.dimension(axisIndex)) {
+		if (indices.get(indices.size() - 1) >= dimension) {
 			err =
 				"Axis range partially beyond dimensions of display " + display.getName() +
 					" for axis " + axis;
@@ -214,7 +215,7 @@ public class SamplingDefinition {
 		for (final AxisType axis : axes) {
 			if ((axis == uAxis) || (axis == vAxis)) {
 				final int axisIndex = display.dimensionIndex(axis);
-				final long size = display.getExtents().dimension(axisIndex);
+				final long size = display.dimension(axisIndex);
 				final AxisSubrange subrange = new AxisSubrange(0, size - 1);
 				definition.constrain(axis, subrange);
 			}
@@ -261,7 +262,7 @@ public class SamplingDefinition {
 		for (final AxisType axis : axes) {
 			if ((axis == uAxis) || (axis == vAxis) || (axis == Axes.CHANNEL)) {
 				final int axisIndex = display.dimensionIndex(axis);
-				final long size = display.getExtents().dimension(axisIndex);
+				final long size = display.dimension(axisIndex);
 				final AxisSubrange subrange = new AxisSubrange(0, size - 1);
 				definition.constrain(axis, subrange);
 			}

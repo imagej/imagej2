@@ -51,7 +51,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 
-import net.imglib2.Positionable;
+import net.imglib2.RealInterval;
 import net.imglib2.RealPositionable;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.DefaultCalibratedAxis;
@@ -83,12 +83,12 @@ public abstract class AbstractOverlay extends AbstractData implements Overlay {
 
 	// default constructor for use by serialization code
 	//   (see AbstractOverlay::duplicate())
-	public AbstractOverlay() {
-		super();
+	public AbstractOverlay(RealInterval interval) {
+		super(interval);
 	}
 	
-	public AbstractOverlay(final Context context) {
-		super(context);
+	public AbstractOverlay(final Context context, RealInterval interval) {
+		super(context, interval);
 		if (overlayService == null) applySettings(new OverlaySettings());
 		else applySettings(overlayService.getDefaultSettings());
 		setAxis(new DefaultCalibratedAxis(Axes.X, null, 1), 0);
@@ -220,64 +220,11 @@ public abstract class AbstractOverlay extends AbstractData implements Overlay {
 		publish(new OverlayRestructuredEvent(this));
 	}
 
-	// -- CalibratedInterval methods --
-
-	@Override
-	public boolean isDiscrete() {
-		return false;
-	}
-
 	// -- EuclideanSpace methods --
 
 	@Override
 	public int numDimensions() {
 		return 2;
-	}
-
-	// -- Interval methods --
-
-	@Override
-	public long min(final int d) {
-		return (long) Math.ceil(realMin(d));
-	}
-
-	@Override
-	public void min(final long[] min) {
-		for (int i = 0; i < min.length; i++)
-			min[i] = min(i);
-	}
-
-	@Override
-	public void min(final Positionable min) {
-		for (int i = 0; i < min.numDimensions(); i++)
-			min.setPosition(min(i), i);
-	}
-
-	@Override
-	public long max(final int d) {
-		return (long) Math.floor(realMax(d));
-	}
-
-	@Override
-	public void max(final long[] max) {
-		for (int i = 0; i < max.length; i++)
-			max[i] = max(i);
-	}
-
-	@Override
-	public void max(final Positionable max) {
-		for (int i = 0; i < max.numDimensions(); i++)
-			max.setPosition(max(i), i);
-	}
-
-	@Override
-	public void dimensions(final long[] dimensions) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public long dimension(final int d) {
-		throw new UnsupportedOperationException();
 	}
 
 	// -- RealInterval methods --

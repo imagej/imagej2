@@ -97,7 +97,13 @@ public class ThresholdOverlay extends AbstractOverlay
 	 */
 	public ThresholdOverlay(Context context, Dataset dataset)
 	{
+		// TODO FIXME
+		// This blows up
+		// super(context, dataset);
+		// and this does not blow up
+		super(dataset);
 		setContext(context);
+
 		this.dataset = dataset;
 		this.figure = null;
 		init(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
@@ -343,11 +349,6 @@ public class ThresholdOverlay extends AbstractOverlay
 	}
 
 	@Override
-	public boolean isDiscrete() {
-		return true;
-	}
-
-	@Override
 	public int dimensionIndex(AxisType axis) {
 		return dataset.dimensionIndex(axis);
 	}
@@ -387,33 +388,13 @@ public class ThresholdOverlay extends AbstractOverlay
 	}
 
 	@Override
-	public long min(int d) {
+	public double realMin(int d) {
 		return pointsWithin.min(d);
 	}
 
 	@Override
-	public long max(int d) {
-		return pointsWithin.max(d);
-	}
-
-	@Override
-	public double realMin(int d) {
-		return min(d);
-	}
-
-	@Override
 	public double realMax(int d) {
-		return max(d);
-	}
-
-	@Override
-	public void dimensions(long[] dimensions) {
-		pointsWithin.dimensions(dimensions);
-	}
-
-	@Override
-	public long dimension(int d) {
-		return pointsWithin.dimension(d);
+		return pointsWithin.max(d);
 	}
 
 	@Override
