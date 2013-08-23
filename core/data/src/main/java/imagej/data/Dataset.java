@@ -176,4 +176,5 @@ public interface Dataset extends Data, Metadata {
 	@Override
 	void rebuild();
 
+	long[] getDims();
 }

@@ -353,6 +353,13 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		return true;
 	}
 
+	@Override
+	public long[] getDims() {
+		final long[] dims = new long[numDimensions()];
+		dimensions(dims);
+		return dims;
+ }
+
 	// -- CalibratedSpace methods --
 
 	@Override
