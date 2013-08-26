@@ -227,9 +227,8 @@ public class DeleteData extends DynamicCommand {
 		final ImgPlus<? extends RealType<?>> dstImgPlus,
 		final AxisType modifiedAxis)
 	{
-		final long[] dimensions = IntervalUtils.getDims(dataset);
 		final int axisIndex = dataset.dimensionIndex(modifiedAxis);
-		final long axisSize = dimensions[axisIndex];
+		final long axisSize = dataset.dimension(axisIndex);
 		final long numBeforeCut = position - 1; // one based position
 		long numInCut = quantity;
 		if (numBeforeCut + numInCut > axisSize) numInCut = axisSize - numBeforeCut;
