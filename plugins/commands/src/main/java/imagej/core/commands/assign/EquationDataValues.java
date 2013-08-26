@@ -186,13 +186,12 @@ public class EquationDataValues<T extends RealType<T>> extends ContextCommand {
 			return "display does not have XY planes";
 		
 		// calc XY outline boundary
-		final long[] dims = dataset.getDims();
 		final long x,y,w,h;
 		if (overlay == null) {
 			x = 0;
 			y = 0;
-			w = dims[xIndex];
-			h = dims[yIndex];
+			w = dataset.dimension(xIndex);
+			h = dataset.dimension(yIndex);
 		}
 		else {
 			x = (long)overlay.realMin(0);
@@ -202,11 +201,11 @@ public class EquationDataValues<T extends RealType<T>> extends ContextCommand {
 		}
 
 		// calc origin and span values
-		origin = new long[dims.length];
-		span = new long[dims.length];
+		origin = new long[dataset.numDimensions()];
+		span = new long[dataset.numDimensions()];
 		Position pos = view.getPlanePosition();
 		int p = 0;
-		for (int i = 0; i < dims.length; i++) {
+		for (int i = 0; i < dataset.numDimensions(); i++) {
 			if (i == xIndex) {
 				origin[xIndex] = x;
 				span[xIndex] = w;
@@ -217,7 +216,7 @@ public class EquationDataValues<T extends RealType<T>> extends ContextCommand {
 			}
 			else if (allPlanes) {
 				origin[i] = 0;
-				span[i] = dims[i];
+				span[i] = dataset.dimension(i);
 			}
 			else {
 				origin[i] = pos.getLongPosition(p++);

@@ -48,6 +48,7 @@ import java.util.Map;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.ImgPlus;
+import net.imglib2.meta.IntervalUtils;
 import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.numeric.RealType;
 
@@ -331,7 +332,7 @@ public class Harmonizer extends AbstractContextual {
 		final int zIndex = ds.dimensionIndex(Axes.Z);
 		final int tIndex = ds.dimensionIndex(Axes.TIME);
 
-		final long[] dimensions = ds.getDims();
+		final long[] dimensions = IntervalUtils.getDims(ds);
 
 		final long x = (xIndex < 0) ? 1 : dimensions[xIndex];
 		final long y = (yIndex < 0) ? 1 : dimensions[yIndex];

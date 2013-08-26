@@ -62,6 +62,7 @@ import net.imglib2.img.cell.AbstractCellImg;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.ImgPlus;
+import net.imglib2.meta.IntervalUtils;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
 
@@ -555,7 +556,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			return imgPlus;
 		}
 		final long[] mn = new long[d.numDimensions()];
-		final long[] mx = d.getDims();
+		final long[] mx = IntervalUtils.getDims(d);
 		for (int i = 0; i < mx.length; i++) {
 			mx[i]--;
 		}

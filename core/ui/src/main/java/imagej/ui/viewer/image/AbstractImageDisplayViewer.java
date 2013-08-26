@@ -56,7 +56,6 @@ import imagej.ui.viewer.DisplayWindow;
 import imagej.util.UnitUtils;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import net.imglib2.meta.SpaceUtils;
 
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
@@ -147,26 +146,26 @@ public abstract class AbstractImageDisplayViewer extends
 
 		final int xIndex = dataset.dimensionIndex(Axes.X);
 		final int yIndex = dataset.dimensionIndex(Axes.Y);
-		final long[] dims = dataset.getDims();
-		final AxisType[] axes = SpaceUtils.getAxisTypes(dataset);
 		final Position pos = view.getPlanePosition();
 
 		final StringBuilder sb = new StringBuilder();
-		for (int i = 0, p = -1; i < dims.length; i++) {
-			if (axes[i].isXY()) continue;
+		for (int i = 0, p = -1; i < dataset.numDimensions(); i++) {
+			long dim = dataset.dimension(i);
+			final AxisType axis = dataset.axis(i).type();
+			if (axis.isXY()) continue;
 			p++;
-			if (dims[i] == 1) continue;
-			sb.append(axes[i]);
+			if (dim == 1) continue;
+			sb.append(axis);
 			sb.append(": ");
 			sb.append(pos.getLongPosition(p) + 1);
 			sb.append("/");
-			sb.append(dims[i]);
+			sb.append(dim);
 			sb.append("; ");
 		}
 
-		sb.append(dims[xIndex]);
+		sb.append(dataset.dimension(xIndex));
 		sb.append("x");
-		sb.append(dims[yIndex]);
+		sb.append(dataset.dimension(yIndex));
 		sb.append("; ");
 
 		sb.append(dataset.getTypeLabelLong());

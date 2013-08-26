@@ -219,9 +219,8 @@ public class AddData extends DynamicCommand {
 			final ImgPlus<? extends RealType<?>> dstImgPlus,
 			final AxisType modifiedAxis)
 	{
-		final long[] dimensions = dataset.getDims();
 		final int axisIndex = dataset.dimensionIndex(modifiedAxis);
-		final long axisSize = dimensions[axisIndex];
+		final long axisSize = dataset.dimension(axisIndex);
 		final long numBeforeInsert = position - 1; // one-based position
 		final long numInInsertion = quantity;
 		final long numAfterInsertion = axisSize - numBeforeInsert;

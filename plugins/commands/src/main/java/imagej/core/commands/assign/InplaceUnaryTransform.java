@@ -171,7 +171,6 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 		LongRect rect = findXYRegion(ds, overlay, xIndex, yIndex);
 		
 		// calc origin and span values
-		long[] dims = ds.getDims();
 		origin = new long[ds.numDimensions()];
 		span = new long[ds.numDimensions()];
 		for (int i = 0; i < ds.numDimensions(); i++) {
@@ -185,7 +184,7 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 			}
 			else {
 				origin[i] = 0;
-				span[i] = dims[i];
+				span[i] = ds.dimension(i);
 			}
 		}
 		
@@ -233,13 +232,12 @@ public class InplaceUnaryTransform<I extends ComplexType<I>, O extends ComplexTy
 	private LongRect findXYRegion(Dataset ds, Overlay overlay, int xIndex, int yIndex) {
 
 		// calc XY outline boundary
-		final long[] dims = ds.getDims();
 		final LongRect rect = new LongRect();
 		if (overlay == null) {
 			rect.x = 0;
 			rect.y = 0;
-			rect.w = dims[xIndex];
-			rect.h = dims[yIndex];
+			rect.w = ds.dimension(xIndex);
+			rect.h = ds.dimension(yIndex);
 		}
 		else {
 			rect.x = (long) overlay.realMin(0);

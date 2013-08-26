@@ -142,10 +142,9 @@ public class DeleteAxis extends DynamicCommand {
 			RestructureUtils.copyColorTables(dataset.getImgPlus(), dstImgPlus);
 		}
 		else {
-			final long[] origDims = dataset.getDims();
-			final long[] origPlaneDims = new long[origDims.length - 2];
-			for (int i = 0; i < origPlaneDims.length; i++)
-				origPlaneDims[i] = origDims[i + 2];
+			final long[] origPlaneDims = new long[dataset.numDimensions() - 2];
+			for (int d = 0; d < origPlaneDims.length; d++)
+				origPlaneDims[d] = dataset.dimension(d + 2);
 			final ColorTableRemapper remapper =
 				new ColorTableRemapper(new RemapAlgorithm(origPlaneDims));
 			remapper.remapColorTables(dataset.getImgPlus(), dstImgPlus);
@@ -228,18 +227,20 @@ public class DeleteAxis extends DynamicCommand {
 	 * user specified axis.
 	 */
 	private long[] getNewDimensions(final Dataset ds, final AxisType axis) {
-		final long[] origDims = ds.getDims();
 		if (axis.isXY()) {
-			final long[] newDims = origDims;
-			newDims[ds.dimensionIndex(axis)] = 1;
+			final long[] newDims = new long[ds.numDimensions()];
+			final int dimIndex = ds.dimensionIndex(axis);
+			for (int d = 0; d < newDims.length; d++) {
+				newDims[d] = d == dimIndex ? 1 : ds.dimension(d);
+			}
 			return newDims;
 		}
 		final AxisType[] origAxes = SpaceUtils.getAxisTypes(ds);
-		final long[] newDims = new long[origAxes.length - 1];
+		final long[] newDims = new long[ds.numDimensions() - 1];
 		int index = 0;
-		for (int i = 0; i < origAxes.length; i++) {
-			final AxisType a = origAxes[i];
-			if (a != axis) newDims[index++] = origDims[i];
+		for (int d = 0; d < origAxes.length; d++) {
+			final AxisType a = ds.axis(d).type();
+			if (a != axis) newDims[index++] = ds.dimension(d);
 		}
 		return newDims;
 	}

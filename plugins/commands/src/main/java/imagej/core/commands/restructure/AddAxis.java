@@ -188,10 +188,9 @@ public class AddAxis extends DynamicCommand {
 	private long[]
 		getNewDimensions(final Dataset ds, final long lastDimensionSize)
 	{
-		final long[] origDims = ds.getDims();
-		final long[] newDims = new long[origDims.length + 1];
-		for (int i = 0; i < origDims.length; i++)
-			newDims[i] = origDims[i];
+		final long[] newDims = new long[ds.numDimensions() + 1];
+		for (int d = 0; d < ds.numDimensions(); d++)
+			newDims[d] = ds.dimension(d);
 		newDims[newDims.length - 1] = lastDimensionSize;
 		return newDims;
 	}

@@ -85,10 +85,9 @@ public class MergedRgbVirtualStack extends VirtualStack {
 		if (!ds.isRGBMerged()) {
 			throw new IllegalArgumentException("Dataset is not merged color");
 		}
-		long[] dims = ds.getDims();
 		AxisType[] axes = SpaceUtils.getAxisTypes(ds);
-		planeDims = new long[dims.length - 3];
-		planePos = new long[dims.length - 3];
+		planeDims = new long[ds.numDimensions() - 3];
+		planePos = new long[ds.numDimensions() - 3];
 		int pDims = 0;
 		long sz = 1;
 		for (int i = 0; i < axes.length; i++) {
@@ -96,8 +95,8 @@ public class MergedRgbVirtualStack extends VirtualStack {
 			if (at.equals(Axes.X)) continue;
 			if (at.equals(Axes.Y)) continue;
 			if (at.equals(Axes.CHANNEL)) continue;
-			sz *= dims[i];
-			planeDims[pDims++] = dims[i];
+			sz *= ds.dimension(i);
+			planeDims[pDims++] = ds.dimension(i);
 		}
 		if (sz > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException("Dataset has too many planes");
@@ -108,17 +107,17 @@ public class MergedRgbVirtualStack extends VirtualStack {
 		if (xAxis == -1 || yAxis == -1 || cAxis == -1) {
 			throw new IllegalArgumentException("Dataset does not have correct axes");
 		}
-		if (dims[xAxis] * dims[yAxis] > Integer.MAX_VALUE) {
+		if (ds.dimension(xAxis) * ds.dimension(yAxis) > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException("XY dims too large");
 		}
 		this.ds = ds;
-		this.w = (int) dims[xAxis];
-		this.h = (int) dims[yAxis];
+		this.w = (int) ds.dimension(xAxis);
+		this.h = (int) ds.dimension(yAxis);
 		this.plane = new int[w * h];
 		this.accessor = ds.getImgPlus().randomAccess();
 		this.processor = new ColorProcessor(w, h, plane);
 		this.size = (int) sz;
-		this.pos = new long[dims.length];
+		this.pos = new long[ds.numDimensions()];
 	}
 
 	public Dataset getDataset() {

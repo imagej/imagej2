@@ -54,6 +54,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.IntervalUtils;
 import net.imglib2.ops.function.Function;
 import net.imglib2.ops.function.real.RealAdaptiveMedianFunction;
 import net.imglib2.ops.function.real.RealArithmeticMeanFunction;
@@ -184,7 +185,7 @@ public class MeasurementDemo implements Command {
 			points = new RoiPointSet(overlay.getRegionOfInterest());
 		}
 		else {
-			long[] dims = display.getDims();
+			long[] dims = IntervalUtils.getDims(display);
 			// 1st plane only
 			for (int i = 2; i < dims.length; i++) {
 				dims[i] = 1;
@@ -244,7 +245,7 @@ public class MeasurementDemo implements Command {
 		RealImageFunction<?, DoubleType> imgFunc = mSrv.imgFunction(ds, output);
 		RealArithmeticMeanFunction<DoubleType> meanFunc =
 				new RealArithmeticMeanFunction<DoubleType>(imgFunc);
-		PointSet region = new HyperVolumePointSet(ds.getDims());
+		PointSet region = new HyperVolumePointSet(IntervalUtils.getDims(ds));
 		mSrv.measure(meanFunc, region, output);
 		System.out.println("arithmetic mean is " + output.getRealDouble());
 	}
@@ -261,7 +262,7 @@ public class MeasurementDemo implements Command {
 						(Img<UnsignedByteType>)ds.getImgPlus(), oobFactory, output);
 		RealMaxFunction<DoubleType> maxFunc =
 				new RealMaxFunction<DoubleType>(imgFuncWithOOB);
-		PointSet region = new HyperVolumePointSet(ds.getDims());
+		PointSet region = new HyperVolumePointSet(IntervalUtils.getDims(ds));
 		mSrv.measure(maxFunc,region, output);
 		System.out.println("max is " + output.getRealDouble());
 	}
@@ -310,7 +311,7 @@ public class MeasurementDemo implements Command {
 		outputList.add(new DoubleType());
 		outputList.add(new DoubleType());
 		outputList.add(new DoubleType());
-		PointSet region = new HyperVolumePointSet(ds.getDims());
+		PointSet region = new HyperVolumePointSet(IntervalUtils.getDims(ds));
 		mSrv.measure(funcList, region, outputList);
 		System.out.println("mean = "+outputList.get(0).getRealDouble());
 		System.out.println("min = "+outputList.get(1).getRealDouble());
@@ -324,7 +325,7 @@ public class MeasurementDemo implements Command {
 		RealImageFunction<?, DoubleType> imgFunc = mSrv.imgFunction(ds, output);
 		BasicStatsFunction<DoubleType> statFunc =
 				new BasicStatsFunction<DoubleType>(imgFunc, new DoubleType());
-		PointSet region = new HyperVolumePointSet(ds.getDims());
+		PointSet region = new HyperVolumePointSet(IntervalUtils.getDims(ds));
 		BasicStats stats = new BasicStats();
 		mSrv.measure(statFunc, region, stats);
 		System.out.println("mean = "+stats.getXBar());
@@ -337,7 +338,7 @@ public class MeasurementDemo implements Command {
 		IntType output = new IntType();
 		RealImageFunction<?, IntType> imgFunc = mSrv.imgFunction(ds, output);
 		CustomFunction func = new CustomFunction(imgFunc);
-		PointSet region = new HyperVolumePointSet(ds.getDims());
+		PointSet region = new HyperVolumePointSet(IntervalUtils.getDims(ds));
 		mSrv.measure(func, region, output);
 		System.out.println("total 7's = "+output.get());
 	}

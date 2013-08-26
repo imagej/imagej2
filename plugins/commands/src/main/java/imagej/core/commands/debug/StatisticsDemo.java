@@ -108,15 +108,14 @@ public class StatisticsDemo implements Command {
 		if (overlay != null) {
 			return new RoiPointSet(overlay.getRegionOfInterest());
 		}
-		long[] dims = display.getDims();
-		long[] pt1 = new long[dims.length];
-		long[] pt2 = pt1.clone();
+		long[] pt1 = new long[display.numDimensions()];
+		long[] pt2 = new long[display.numDimensions()];
 		// current plane only
 		pt1[0] = 0;
 		pt1[1] = 0;
-		pt2[0] = dims[0] - 1;
-		pt2[1] = dims[1] - 1;
-		for (int i = 2; i < dims.length; i++) {
+		pt2[0] = display.dimension(0) - 1;
+		pt2[1] = display.dimension(1) - 1;
+		for (int i = 2; i < display.numDimensions(); i++) {
 			pt1[i] = pt2[i] = display.getLongPosition(i);
 		}
 		return new HyperVolumePointSet(pt1, pt2);

@@ -57,6 +57,7 @@ import java.util.zip.ZipEntry;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.IntervalUtils;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -100,7 +101,7 @@ public class LegacyTestUtils {
 
 	public static void testSame(final Dataset ds, final ImagePlus imp) {
 
-		final long[] dimensions = ds.getDims();
+		final long[] dimensions = IntervalUtils.getDims(ds);
 
 		final int xIndex = ds.dimensionIndex(Axes.X);
 		final int yIndex = ds.dimensionIndex(Axes.Y);
@@ -148,7 +149,7 @@ public class LegacyTestUtils {
 
 	public static void testColorSame(final Dataset ds, final ImagePlus imp) {
 
-		final long[] dimensions = ds.getDims();
+		final long[] dimensions = IntervalUtils.getDims(ds);
 
 		final int xIndex = ds.dimensionIndex(Axes.X);
 		final int yIndex = ds.dimensionIndex(Axes.Y);

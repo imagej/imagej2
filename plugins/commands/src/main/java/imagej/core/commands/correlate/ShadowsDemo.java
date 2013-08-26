@@ -172,13 +172,12 @@ public class ShadowsDemo extends ContextCommand {
 	private boolean unsupportedImage(ImageDisplay disp) {
 		final Dataset input = imgDispService.getActiveDataset(disp);
 		final AxisType[] axes = SpaceUtils.getAxisTypes(input);
-		final long[] dims = input.getDims();
 		for (int i = 0; i < axes.length; i++) {
 			final AxisType axis = axes[i];
 			if (axis == Axes.X) continue;
 			if (axis == Axes.Y) continue;
 			if (axis == Axes.CHANNEL && input.isRGBMerged()) continue;
-			if (dims[i] != 1) return true;
+			if (input.dimension(i) != 1) return true;
 		}
 		return false;
 	}

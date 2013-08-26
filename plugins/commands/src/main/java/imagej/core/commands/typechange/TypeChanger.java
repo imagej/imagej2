@@ -54,6 +54,7 @@ import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.ImgPlus;
+import net.imglib2.meta.IntervalUtils;
 import net.imglib2.meta.SpaceUtils;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
@@ -158,12 +159,12 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 		}
 		BigComplex combined = new BigComplex();
 		BigComplex divisor = new BigComplex(count, 0);
-		long[] dims = calcDims(data.getDims(), chAxis);
+		long[] dims = calcDims(IntervalUtils.getDims(data), chAxis);
 		AxisType[] axes = calcAxes(SpaceUtils.getAxisTypes(data), chAxis);
 		Dataset newData =
 			datasetService.create(outType.createVariable(), dims, "Converted Image",
 				axes);
-		long[] span = data.getDims().clone();
+		long[] span = IntervalUtils.getDims(data).clone();
 		span[chAxis] = 1;
 		PointSet combinedSpace = new HyperVolumePointSet(span);
 		PointSetIterator iter = combinedSpace.iterator();
@@ -198,8 +199,8 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 		channelPreservingCase(DataType<U> inType, DataType<V> outType)
 	{
 		Dataset newData =
-			datasetService.create(outType.createVariable(), data.getDims(),
-				"Converted Image", SpaceUtils.getAxisTypes(data));
+			datasetService.create(outType.createVariable(), IntervalUtils
+				.getDims(data), "Converted Image", SpaceUtils.getAxisTypes(data));
 		Cursor<U> inCursor = (Cursor<U>) data.getImgPlus().cursor();
 		RandomAccess<V> outAccessor =
 			(RandomAccess<V>) newData.getImgPlus().randomAccess();

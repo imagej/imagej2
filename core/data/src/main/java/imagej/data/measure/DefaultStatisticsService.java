@@ -37,6 +37,7 @@ package imagej.data.measure;
 
 import imagej.data.Dataset;
 import net.imglib2.img.Img;
+import net.imglib2.meta.IntervalUtils;
 import net.imglib2.ops.function.Function;
 import net.imglib2.ops.function.real.RealAlphaTrimmedMeanFunction;
 import net.imglib2.ops.function.real.RealArithmeticMeanFunction;
@@ -435,7 +436,7 @@ public class DefaultStatisticsService extends AbstractService implements
 
 	@Override
 	public PointSet allOf(final Dataset ds) {
-		return new HyperVolumePointSet(ds.getDims());
+		return new HyperVolumePointSet(IntervalUtils.getDims(ds));
 	}
 
 	// -- private helpers --

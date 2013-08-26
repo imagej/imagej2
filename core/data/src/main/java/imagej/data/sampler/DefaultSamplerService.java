@@ -53,6 +53,7 @@ import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.ImgPlus;
+import net.imglib2.meta.IntervalUtils;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.plugin.Parameter;
@@ -222,8 +223,8 @@ public class DefaultSamplerService extends AbstractService implements
 		// TODO - remove evil casts
 		final Dataset input = (Dataset) def.getDisplay().getActiveView().getData();
 		final Dataset output = (Dataset) outputImage.getActiveView().getData();
-		final long[] inputDims = input.getDims();
-		final long[] outputDims = output.getDims();
+		final long[] inputDims = IntervalUtils.getDims(input);
+		final long[] outputDims = IntervalUtils.getDims(output);
 		final RandomAccess<? extends RealType<?>> inputAccessor =
 			input.getImgPlus().randomAccess();
 		final RandomAccess<? extends RealType<?>> outputAccessor =

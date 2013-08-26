@@ -76,10 +76,9 @@ public class PlaneHarmonizer implements DataHarmonizer {
 
 		final ImageStack stack = imp.getStack();
 
-		final long[] fullDims = ds.getDims();
-		final long[] planeDims = new long[fullDims.length - 2];
+		final long[] planeDims = new long[ds.numDimensions() - 2];
 		for (int i = 0; i < planeDims.length; i++)
-			planeDims[i] = fullDims[i + 2];
+			planeDims[i] = ds.dimension(i + 2);
 		final Position planePos = new Extents(planeDims).createPosition();
 
 		// copy planes by reference
@@ -132,10 +131,9 @@ public class PlaneHarmonizer implements DataHarmonizer {
 
 		final ImageStack stack = imp.getStack();
 
-		final long[] fullDims = ds.getDims();
-		final long[] planeDims = new long[fullDims.length - 2];
+		final long[] planeDims = new long[ds.numDimensions() - 2];
 		for (int i = 0; i < planeDims.length; i++)
-			planeDims[i] = fullDims[i + 2];
+			planeDims[i] = ds.dimension(i + 2);
 		final Extents extents = new Extents(planeDims);
 		final Position planePos = extents.createPosition();
 

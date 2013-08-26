@@ -312,15 +312,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 		super.update();
 	}
 
-	// -- CalibratedInterval methods --
-
-	@Override
-	public long[] getDims() {
-		long[] dims = new long[numDimensions()];
-		dimensions(dims);
-		return dims;
-	}
-
 	// -- Interval methods --
 
 	@Override

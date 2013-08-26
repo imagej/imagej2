@@ -99,9 +99,8 @@ public class CopyToSystem extends ContextCommand {
 				imageDisplayService.getActiveDatasetView(display);
 		if (view == null) return null;
 		final Overlay overlay = overlayService.getActiveOverlay(display);
-		final long[] dims = display.getDims();
-		final int imageWidth = (int) dims[0];
-		final int imageHeight = (int) dims[1];
+		final int imageWidth = (int) display.dimension(0);
+		final int imageHeight = (int) display.dimension(1);
 		final int[] argbPixels = view.getScreenImage().getData();
 		final int x, y, w, h;
 		if (overlay == null) { // no active overlay

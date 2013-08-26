@@ -46,8 +46,8 @@ import imagej.data.display.OverlayService;
 import imagej.menu.MenuConstants;
 import imagej.util.RealRect;
 import net.imglib2.RandomAccess;
-import net.imglib2.meta.ImgPlus;
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
@@ -100,7 +100,6 @@ public class FlipHorizontally extends ContextCommand {
 
 	private void flipPixels(final Dataset input, final RealRect selection) {
 
-		final long[] dims = input.getDims();
 		final int xAxis = input.dimensionIndex(Axes.X);
 		final int yAxis = input.dimensionIndex(Axes.Y);
 		if ((xAxis < 0) || (yAxis < 0)) throw new IllegalArgumentException(
@@ -108,8 +107,8 @@ public class FlipHorizontally extends ContextCommand {
 
 		long oX = 0;
 		long oY = 0;
-		long width = dims[xAxis];
-		long height = dims[yAxis];
+		long width = input.dimension(xAxis);
+		long height = input.dimension(yAxis);
 
 		if ((selection.width >= 1) && (selection.height >= 1)) {
 			oX = (long) selection.x;
@@ -118,17 +117,17 @@ public class FlipHorizontally extends ContextCommand {
 			height = (long) selection.height;
 		}
 
-		final long[] planeDims = new long[dims.length - 2];
+		final long[] planeDims = new long[input.numDimensions() - 2];
 		int d = 0;
-		for (int i = 0; i < dims.length; i++) {
+		for (int i = 0; i < input.numDimensions(); i++) {
 			if (i == xAxis) continue;
 			if (i == yAxis) continue;
-			planeDims[d++] = dims[i];
+			planeDims[d++] = input.dimension(i);
 		}
 
 		final Position planePos = new Extents(planeDims).createPosition();
 
-		if (dims.length == 2) { // a single plane
+		if (input.numDimensions() == 2) { // a single plane
 			flipPlane(input, xAxis, yAxis, new long[] {}, oX, oY, width, height);
 		}
 		else { // has multiple planes
