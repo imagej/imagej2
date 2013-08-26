@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.ImgPlus;
-import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
@@ -173,10 +172,9 @@ public class AddAxis extends DynamicCommand {
 	 * additional axis appended.
 	 */
 	private AxisType[] getNewAxes(final Dataset ds, final AxisType axis) {
-		final AxisType[] origAxes = SpaceUtils.getAxisTypes(ds);
-		final AxisType[] newAxes = new AxisType[origAxes.length + 1];
-		for (int i = 0; i < origAxes.length; i++)
-			newAxes[i] = origAxes[i];
+		final AxisType[] newAxes = new AxisType[ds.numDimensions() + 1];
+		for (int i = 0; i < ds.numDimensions(); i++)
+			newAxes[i] = ds.axis(i).type();
 		newAxes[newAxes.length - 1] = axis;
 		return newAxes;
 	}
