@@ -150,18 +150,16 @@ public class ReorderData extends DynamicCommand {
 	// -- Initializers --
 
 	protected void initAxes() {
-		final AxisType[] axes = SpaceUtils.getAxisTypes(dataset);
-
 		final ArrayList<String> choices = new ArrayList<String>();
-		for (int i = 0; i < axes.length; i++) {
-			choices.add(axes[i].getLabel());
+		for (int i = 0; i < dataset.numDimensions(); i++) {
+			choices.add(dataset.axis(i).type().getLabel());
 		}
-		for (int i = 0; i < axes.length; i++) {
+		for (int i = 0; i < dataset.numDimensions(); i++) {
 			final DefaultMutableModuleItem<String> axisItem =
 				new DefaultMutableModuleItem<String>(this, name(i), String.class);
 			axisItem.setChoices(choices);
 			axisItem.setPersisted(false);
-			axisItem.setValue(this, axes[i].getLabel());
+			axisItem.setValue(this, dataset.axis(i).type().getLabel());
 			addInput(axisItem);
 		}
 	}
