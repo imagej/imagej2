@@ -47,7 +47,6 @@ import java.util.ArrayList;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import net.imglib2.meta.SpaceUtils;
 
 import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
@@ -127,11 +126,11 @@ public class SetActiveAxis extends DynamicCommand {
 	protected void initAxisName() {
 		final MutableModuleItem<String> axisNameItem =
 			getInfo().getMutableInput(AXIS_NAME, String.class);
-		final AxisType[] axes = SpaceUtils.getAxisTypes(display);
 		final ArrayList<String> choices = new ArrayList<String>();
-		for (final AxisType a : axes) {
-			if (a.isXY()) continue;
-			choices.add(a.getLabel());
+		for (int d = 0; d < display.numDimensions(); d++) {
+			AxisType axisType = display.axis(d).type();
+			if (axisType.isXY()) continue;
+			choices.add(axisType.getLabel());
 		}
 		axisNameItem.setChoices(choices);
 	}
