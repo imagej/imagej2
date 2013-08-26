@@ -48,7 +48,6 @@ import java.util.Map;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.ImgPlus;
-import net.imglib2.meta.IntervalUtils;
 import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.numeric.RealType;
 
@@ -332,12 +331,10 @@ public class Harmonizer extends AbstractContextual {
 		final int zIndex = ds.dimensionIndex(Axes.Z);
 		final int tIndex = ds.dimensionIndex(Axes.TIME);
 
-		final long[] dimensions = IntervalUtils.getDims(ds);
-
-		final long x = (xIndex < 0) ? 1 : dimensions[xIndex];
-		final long y = (yIndex < 0) ? 1 : dimensions[yIndex];
-		final long z = (zIndex < 0) ? 1 : dimensions[zIndex];
-		final long t = (tIndex < 0) ? 1 : dimensions[tIndex];
+		final long x = (xIndex < 0) ? 1 : ds.dimension(xIndex);
+		final long y = (yIndex < 0) ? 1 : ds.dimension(yIndex);
+		final long z = (zIndex < 0) ? 1 : ds.dimension(zIndex);
+		final long t = (tIndex < 0) ? 1 : ds.dimension(tIndex);
 
 		if (x != imp.getWidth()) return false;
 		if (y != imp.getHeight()) return false;
@@ -347,12 +344,11 @@ public class Harmonizer extends AbstractContextual {
 		if (imp.getType() == ImagePlus.COLOR_RGB) {
 			final int cIndex = ds.dimensionIndex(Axes.CHANNEL);
 			if (cIndex < 0) return false;
-			final long c = dimensions[cIndex];
+			final long c = ds.dimension(cIndex);
 			if (c != imp.getNChannels() * 3) return false;
 		}
 		else { // not color data
-			final long c =
-				LegacyUtils.ij1ChannelCount(dimensions, SpaceUtils.getAxisTypes(ds));
+			final long c = LegacyUtils.ij1ChannelCount(ds);
 			if (c != imp.getNChannels()) return false;
 		}
 
