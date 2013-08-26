@@ -45,7 +45,6 @@ import imagej.data.overlay.Overlay;
 import imagej.data.overlay.RectangleOverlay;
 import imagej.menu.MenuConstants;
 import net.imglib2.meta.AxisType;
-import net.imglib2.meta.SpaceUtils;
 import net.imglib2.roi.RegionOfInterest;
 
 import org.scijava.Context;
@@ -122,10 +121,12 @@ public class SelectView extends ContextCommand {
 	// -- private helpers --
 	
 	private boolean viewIsInCurrentDisplayedPlane(ImageDisplay disp, DataView view) {
-		AxisType[] axes = SpaceUtils.getAxisTypes(disp);
-		for (AxisType axis : axes) {
-			if (axis.isXY()) continue;
-			if (disp.getLongPosition(axis) != view.getLongPosition(axis)) return false;
+		for (int d = 0; d < disp.numDimensions(); d++) {
+			AxisType axisType = disp.axis(d).type();
+			if (axisType.isXY()) continue;
+			if (disp.getLongPosition(axisType) != view.getLongPosition(axisType)) {
+				return false;
+			}
 		}
 		return true;
 	}
