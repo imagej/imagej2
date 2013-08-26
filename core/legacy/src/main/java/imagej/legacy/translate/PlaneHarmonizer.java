@@ -41,7 +41,6 @@ import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
 import net.imglib2.meta.Axes;
-import net.imglib2.meta.IntervalUtils;
 
 import org.scijava.log.LogService;
 
@@ -77,10 +76,9 @@ public class PlaneHarmonizer implements DataHarmonizer {
 
 		final ImageStack stack = imp.getStack();
 
-		final long[] fullDims = IntervalUtils.getDims(ds);
-		final long[] planeDims = new long[fullDims.length - 2];
+		final long[] planeDims = new long[ds.numDimensions() - 2];
 		for (int i = 0; i < planeDims.length; i++)
-			planeDims[i] = fullDims[i + 2];
+			planeDims[i] = ds.dimension(i + 2);
 		final Position planePos = new Extents(planeDims).createPosition();
 
 		// copy planes by reference
@@ -133,10 +131,9 @@ public class PlaneHarmonizer implements DataHarmonizer {
 
 		final ImageStack stack = imp.getStack();
 
-		final long[] fullDims = IntervalUtils.getDims(ds);
-		final long[] planeDims = new long[fullDims.length - 2];
+		final long[] planeDims = new long[ds.numDimensions() - 2];
 		for (int i = 0; i < planeDims.length; i++)
-			planeDims[i] = fullDims[i + 2];
+			planeDims[i] = ds.dimension(i + 2);
 		final Extents extents = new Extents(planeDims);
 		final Position planePos = extents.createPosition();
 
