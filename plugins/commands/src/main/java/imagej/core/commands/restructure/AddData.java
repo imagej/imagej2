@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.ImgPlus;
-import net.imglib2.meta.IntervalUtils;
 import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.numeric.RealType;
 
@@ -220,9 +219,8 @@ public class AddData extends DynamicCommand {
 			final ImgPlus<? extends RealType<?>> dstImgPlus,
 			final AxisType modifiedAxis)
 	{
-		final long[] dimensions = IntervalUtils.getDims(dataset);
 		final int axisIndex = dataset.dimensionIndex(modifiedAxis);
-		final long axisSize = dimensions[axisIndex];
+		final long axisSize = dataset.dimension(axisIndex);
 		final long numBeforeInsert = position - 1; // one-based position
 		final long numInInsertion = quantity;
 		final long numAfterInsertion = axisSize - numBeforeInsert;
