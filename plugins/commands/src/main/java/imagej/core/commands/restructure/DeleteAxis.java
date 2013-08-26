@@ -235,10 +235,9 @@ public class DeleteAxis extends DynamicCommand {
 			}
 			return newDims;
 		}
-		final AxisType[] origAxes = SpaceUtils.getAxisTypes(ds);
 		final long[] newDims = new long[ds.numDimensions() - 1];
 		int index = 0;
-		for (int d = 0; d < origAxes.length; d++) {
+		for (int d = 0; d < ds.numDimensions(); d++) {
 			final AxisType a = ds.axis(d).type();
 			if (a != axis) newDims[index++] = ds.dimension(d);
 		}
@@ -307,11 +306,12 @@ public class DeleteAxis extends DynamicCommand {
 	private void initAxisName() {
 		final MutableModuleItem<String> axisNameItem =
 			getInfo().getMutableInput(AXIS_NAME, String.class);
-		final AxisType[] axes = SpaceUtils.getAxisTypes(getDataset());
+		Dataset ds = getDataset();
 		final ArrayList<String> choices = new ArrayList<String>();
-		for (final AxisType a : axes) {
-			// if (Axes.isXY(a)) continue;
-			choices.add(a.getLabel());
+		for (int i = 0; i < ds.numDimensions(); i++) {
+			AxisType axisType = ds.axis(i).type();
+			// if (axisType.isXY()) continue;
+			choices.add(axisType.getLabel());
 		}
 		axisNameItem.setChoices(choices);
 	}
