@@ -45,7 +45,6 @@ import imagej.data.overlay.Overlay;
 import imagej.menu.MenuConstants;
 import imagej.ui.UserInterface;
 import imagej.util.ARGBPlane;
-import net.imglib2.meta.IntervalUtils;
 
 import org.scijava.app.StatusService;
 import org.scijava.plugin.Menu;
@@ -100,9 +99,8 @@ public class CopyToSystem extends ContextCommand {
 				imageDisplayService.getActiveDatasetView(display);
 		if (view == null) return null;
 		final Overlay overlay = overlayService.getActiveOverlay(display);
-		final long[] dims = IntervalUtils.getDims(display);
-		final int imageWidth = (int) dims[0];
-		final int imageHeight = (int) dims[1];
+		final int imageWidth = (int) display.dimension(0);
+		final int imageHeight = (int) display.dimension(1);
 		final int[] argbPixels = view.getScreenImage().getData();
 		final int x, y, w, h;
 		if (overlay == null) { // no active overlay
