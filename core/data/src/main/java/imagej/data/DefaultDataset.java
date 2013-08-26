@@ -605,10 +605,10 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	@Override
 	public double getBytesOfInfo() {
 		final double bitsPerPix = getType().getBitsPerPixel();
-		final long[] dims = IntervalUtils.getDims(this);
 		long pixCount = 1;
-		for (final long dimSize : dims)
-			pixCount *= dimSize;
+		for (int d = 0; d < numDimensions(); d++) {
+			pixCount *= dimension(d);
+		}
 		final double totBits = bitsPerPix * pixCount;
 		return totBits / 8;
 	}
