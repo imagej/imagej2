@@ -96,10 +96,10 @@ public class SamplingDefinition {
 	 * [1,2,3]]
 	 */
 	public List<List<Long>> getInputRanges() {
-		final AxisType[] axes = SpaceUtils.getAxisTypes(display);
 		final List<List<Long>> axesDefs = new ArrayList<List<Long>>();
-		for (final AxisType axis : axes) {
-			final AxisSubrange subrange = axisSubranges.get(axis);
+		for (int i = 0; i < display.numDimensions(); i++) {
+			final AxisType axisType = display.axis(i).type();
+			final AxisSubrange subrange = axisSubranges.get(axisType);
 			final List<Long> axisValues = subrange.getIndices();
 			axesDefs.add(axisValues);
 		}
@@ -211,18 +211,18 @@ public class SamplingDefinition {
 	{
 		final SamplingDefinition definition = new SamplingDefinition(display);
 		final Data data = display.getActiveView().getData();
-		final AxisType[] axes = SpaceUtils.getAxisTypes(data);
-		for (final AxisType axis : axes) {
-			if ((axis == uAxis) || (axis == vAxis)) {
-				final int axisIndex = display.dimensionIndex(axis);
+		for (int i = 0; i < data.numDimensions(); i++) {
+			AxisType axisType = data.axis(i).type();
+			if ((axisType == uAxis) || (axisType == vAxis)) {
+				final int axisIndex = display.dimensionIndex(axisType);
 				final long size = display.dimension(axisIndex);
 				final AxisSubrange subrange = new AxisSubrange(0, size - 1);
-				definition.constrain(axis, subrange);
+				definition.constrain(axisType, subrange);
 			}
 			else { // other axis
-				final long pos = display.getLongPosition(axis);
+				final long pos = display.getLongPosition(axisType);
 				final AxisSubrange subrange = new AxisSubrange(pos);
-				definition.constrain(axis, subrange);
+				definition.constrain(axisType, subrange);
 			}
 		}
 		return definition;
@@ -258,18 +258,20 @@ public class SamplingDefinition {
 		}
 		final SamplingDefinition definition = new SamplingDefinition(display);
 		final Data data = display.getActiveView().getData();
-		final AxisType[] axes = SpaceUtils.getAxisTypes(data);
-		for (final AxisType axis : axes) {
-			if ((axis == uAxis) || (axis == vAxis) || (axis == Axes.CHANNEL)) {
-				final int axisIndex = display.dimensionIndex(axis);
+		for (int i = 0; i < data.numDimensions(); i++) {
+			AxisType axisType = data.axis(i).type();
+			if ((axisType == uAxis) || (axisType == vAxis) ||
+				(axisType == Axes.CHANNEL))
+			{
+				final int axisIndex = display.dimensionIndex(axisType);
 				final long size = display.dimension(axisIndex);
 				final AxisSubrange subrange = new AxisSubrange(0, size - 1);
-				definition.constrain(axis, subrange);
+				definition.constrain(axisType, subrange);
 			}
 			else { // other axis
-				final long pos = display.getLongPosition(axis);
+				final long pos = display.getLongPosition(axisType);
 				final AxisSubrange subrange = new AxisSubrange(pos);
-				definition.constrain(axis, subrange);
+				definition.constrain(axisType, subrange);
 			}
 		}
 		return definition;
@@ -297,12 +299,11 @@ public class SamplingDefinition {
 	 */
 	public static SamplingDefinition sampleAllPlanes(final ImageDisplay display) {
 		final SamplingDefinition definition = new SamplingDefinition(display);
-		final AxisType[] axes = SpaceUtils.getAxisTypes(display);
-		for (int i = 0; i < axes.length; i++) {
-			final AxisType axis = axes[i];
+		for (int i = 0; i < display.numDimensions(); i++) {
+			final AxisType axisType = display.axis(i).type();
 			final long size = display.dimension(i);
 			final AxisSubrange subrange = new AxisSubrange(0, size - 1);
-			definition.constrain(axis, subrange);
+			definition.constrain(axisType, subrange);
 		}
 		return definition;
 	}

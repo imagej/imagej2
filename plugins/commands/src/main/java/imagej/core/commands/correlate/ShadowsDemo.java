@@ -48,7 +48,6 @@ import imagej.menu.MenuConstants;
 import imagej.util.RealRect;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import net.imglib2.meta.SpaceUtils;
 
 import org.scijava.app.StatusService;
 import org.scijava.event.EventHandler;
@@ -171,9 +170,8 @@ public class ShadowsDemo extends ContextCommand {
 	 */
 	private boolean unsupportedImage(ImageDisplay disp) {
 		final Dataset input = imgDispService.getActiveDataset(disp);
-		final AxisType[] axes = SpaceUtils.getAxisTypes(input);
-		for (int i = 0; i < axes.length; i++) {
-			final AxisType axis = axes[i];
+		for (int i = 0; i < input.numDimensions(); i++) {
+			final AxisType axis = input.axis(i).type();
 			if (axis == Axes.X) continue;
 			if (axis == Axes.Y) continue;
 			if (axis == Axes.CHANNEL && input.isRGBMerged()) continue;

@@ -71,7 +71,6 @@ import javax.swing.border.LineBorder;
 import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import net.imglib2.meta.SpaceUtils;
 import net.miginfocom.swing.MigLayout;
 
 import org.scijava.event.EventHandler;
@@ -230,8 +229,6 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 	// -- Helper methods --
 
 	private void createSliders() {
-		final AxisType[] axes = SpaceUtils.getAxisTypes(display);
-
 		// remove obsolete sliders
 		for (final AxisType axis : axisSliders.keySet()) {
 			if (display.dimensionIndex(axis) >= 0) continue; // axis still active
@@ -242,8 +239,8 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 		}
 
 		// configure sliders to match axes and extents
-		for (int i = 0; i < axes.length; i++) {
-			final AxisType axis = axes[i];
+		for (int i = 0; i < display.numDimensions(); i++) {
+			final AxisType axis = display.axis(i).type();
 			if (axis.isXY()) continue; // skip spatial axes
 			final int min = (int) display.min(i);
 			final int max = (int) display.max(i) + 1;

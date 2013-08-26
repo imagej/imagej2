@@ -297,10 +297,11 @@ public class AddData extends DynamicCommand {
 	private void initAxisName() {
 		final MutableModuleItem<String> axisNameItem =
 			getInfo().getMutableInput(AXIS_NAME, String.class);
-		final AxisType[] axes = SpaceUtils.getAxisTypes(getDataset());
+		final Dataset ds = getDataset();
 		final ArrayList<String> choices = new ArrayList<String>();
-		for (final AxisType a : axes) {
-			choices.add(a.getLabel());
+		for (int i = 0; i < ds.numDimensions(); i++) {
+			AxisType axisType = ds.axis(i).type();
+			choices.add(axisType.getLabel());
 		}
 		axisNameItem.setChoices(choices);
 	}

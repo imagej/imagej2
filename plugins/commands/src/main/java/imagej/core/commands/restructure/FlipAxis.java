@@ -50,7 +50,6 @@ import net.imglib2.display.ColorTable;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
@@ -126,9 +125,9 @@ public class FlipAxis extends DynamicCommand {
 		// allow API users to override dialog value
 		if (axisType != null) return axisType;
 		String name = (String) getInput(AXIS);
-		AxisType[] axes = SpaceUtils.getAxisTypes(dataset);
-		for (int i = 0; i < axes.length; i++) {
-			if (axes[i].getLabel().equals(name)) return axes[i];
+		for (int i = 0; i < dataset.numDimensions(); i++) {
+			AxisType type = dataset.axis(i).type();
+			if (type.getLabel().equals(name)) return type;
 		}
 		return null;
 	}
@@ -136,16 +135,16 @@ public class FlipAxis extends DynamicCommand {
 	// -- initializers --
 
 	protected void initAxes() {
-		AxisType[] axes = SpaceUtils.getAxisTypes(dataset);
 		ArrayList<String> choices = new ArrayList<String>();
-		for (AxisType a : axes) {
-			choices.add(a.getLabel());
+		for (int i = 0; i < dataset.numDimensions(); i++) {
+			AxisType type = dataset.axis(i).type();
+			choices.add(type.getLabel());
 		}
 		final DefaultMutableModuleItem<String> axisItem =
 			new DefaultMutableModuleItem<String>(this, AXIS, String.class);
 		axisItem.setChoices(choices);
 		axisItem.setPersisted(false);
-		axisItem.setValue(this, axes[0].getLabel());
+		axisItem.setValue(this, dataset.axis(0).type().getLabel());
 		addInput(axisItem);
 	}
 
@@ -249,10 +248,8 @@ public class FlipAxis extends DynamicCommand {
 
 	private long numPlanes(Dataset ds) {
 		long tot = 1;
-		AxisType[] axes = SpaceUtils.getAxisTypes(ds);
-		for (int i = 0; i < axes.length; i++) {
-			if (axes[i].equals(Axes.X)) continue;
-			if (axes[i].equals(Axes.Y)) continue;
+		for (int i = 0; i < ds.numDimensions(); i++) {
+			if (ds.axis(i).type().isXY()) continue;
 			tot *= ds.dimension(i);
 		}
 		return tot;

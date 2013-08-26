@@ -44,7 +44,6 @@ import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.IntervalUtils;
-import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -84,13 +83,14 @@ public class LegacyUtils {
 	 * Returns true if any of the given Axes cannot be represented in an legacy
 	 * ImageJ ImagePlus.
 	 */
-	static boolean hasNonIJ1Axes(final AxisType[] axes) {
-		for (final AxisType axis : axes) {
-			if (axis == Axes.X) continue;
-			if (axis == Axes.Y) continue;
-			if (axis == Axes.CHANNEL) continue;
-			if (axis == Axes.Z) continue;
-			if (axis == Axes.TIME) continue;
+	static boolean hasNonIJ1Axes(Dataset ds) {
+		for (int i = 0; i < ds.numDimensions(); i++) {
+			AxisType axisType = ds.axis(i).type();
+			if (axisType == Axes.X) continue;
+			if (axisType == Axes.Y) continue;
+			if (axisType == Axes.CHANNEL) continue;
+			if (axisType == Axes.Z) continue;
+			if (axisType == Axes.TIME) continue;
 			return true;
 		}
 		return false;
@@ -101,15 +101,16 @@ public class LegacyUtils {
 	 * the axes of a modern ImageJ Dataset. Incompatible modern axes are encoded
 	 * as extra channels in the legacy ImageJ image.
 	 */
-	static long ij1ChannelCount(final long[] dims, final AxisType[] axes) {
+	static long ij1ChannelCount(Dataset ds) {
 		long cCount = 1;
 		int axisIndex = 0;
-		for (final AxisType axis : axes) {
-			final long axisSize = dims[axisIndex++];
-			if (axis == Axes.X) continue;
-			if (axis == Axes.Y) continue;
-			if (axis == Axes.Z) continue;
-			if (axis == Axes.TIME) continue;
+		for (int i = 0; i < ds.numDimensions(); i++) {
+			AxisType axisType = ds.axis(i).type();
+			final long axisSize = ds.dimension(axisIndex++);
+			if (axisType == Axes.X) continue;
+			if (axisType == Axes.Y) continue;
+			if (axisType == Axes.Z) continue;
+			if (axisType == Axes.TIME) continue;
 			cCount *= axisSize;
 		}
 		return cCount;
@@ -134,8 +135,7 @@ public class LegacyUtils {
 		final long zCount = zIndex < 0 ? 1 : dims[zIndex];
 		final long tCount = tIndex < 0 ? 1 : dims[tIndex];
 
-		final long cCount =
-			LegacyUtils.ij1ChannelCount(dims, SpaceUtils.getAxisTypes(ds));
+		final long cCount = LegacyUtils.ij1ChannelCount(ds);
 		final long ij1ChannelCount = ds.isRGBMerged() ? (cCount / 3) : cCount;
 
 		// check width exists
@@ -252,10 +252,6 @@ public class LegacyUtils {
 	static void getImagePlusDims(final Dataset dataset,
 		final int[] outputIndices, final int[] outputDims)
 	{
-		final long[] dims = IntervalUtils.getDims(dataset);
-
-		final AxisType[] axes = SpaceUtils.getAxisTypes(dataset);
-
 		// get axis indices
 		final int xIndex = dataset.dimensionIndex(Axes.X);
 		final int yIndex = dataset.dimensionIndex(Axes.Y);
@@ -263,11 +259,11 @@ public class LegacyUtils {
 		final int zIndex = dataset.dimensionIndex(Axes.Z);
 		final int tIndex = dataset.dimensionIndex(Axes.TIME);
 
-		final long xCount = xIndex < 0 ? 1 : dims[xIndex];
-		final long yCount = yIndex < 0 ? 1 : dims[yIndex];
-		final long zCount = zIndex < 0 ? 1 : dims[zIndex];
-		final long tCount = tIndex < 0 ? 1 : dims[tIndex];
-		final long cCount = ij1ChannelCount(dims, axes);
+		final long xCount = xIndex < 0 ? 1 : dataset.dimension(xIndex);
+		final long yCount = yIndex < 0 ? 1 : dataset.dimension(yIndex);
+		final long zCount = zIndex < 0 ? 1 : dataset.dimension(zIndex);
+		final long tCount = tIndex < 0 ? 1 : dataset.dimension(tIndex);
+		final long cCount = ij1ChannelCount(dataset);
 
 		// NB - cIndex tells what dimension is channel in Dataset. For a
 		// Dataset that encodes other axes as channels this info is not so
@@ -311,8 +307,7 @@ public class LegacyUtils {
 	 */
 	static boolean datasetIsIJ1Compatible(final Dataset ds) {
 		if (ds == null) return true;
-		final AxisType[] axes = SpaceUtils.getAxisTypes(ds);
-		if (LegacyUtils.hasNonIJ1Axes(axes)) return false;
+		if (LegacyUtils.hasNonIJ1Axes(ds)) return false;
 		return ij1StorageCompatible(ds) && ij1TypeCompatible(ds);
 	}
 

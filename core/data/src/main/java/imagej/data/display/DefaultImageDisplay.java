@@ -58,7 +58,6 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.CalibratedRealInterval;
 import net.imglib2.meta.CombinedCalibratedRealInterval;
-import net.imglib2.meta.SpaceUtils;
 
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
@@ -296,7 +295,8 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 		// TODO - is this a performance issue?
 		combinedInterval.update();
 		for (final DataView view : this) {
-			for (final AxisType axis : SpaceUtils.getAxisTypes(this)) {
+			for (int i = 0; i < numDimensions(); i++) {
+				AxisType axis = axis(i).type();
 				if (axis.isXY()) continue;
 				final int axisNum = view.getData().dimensionIndex(axis);
 				if (axisNum < 0) continue;
@@ -724,11 +724,10 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 
 	private void initActiveAxis() {
 		if (activeAxis == null) {
-			final AxisType[] axes = SpaceUtils.getAxisTypes(this);
-			for (final AxisType axis : axes) {
-				if (axis == Axes.X) continue;
-				if (axis == Axes.Y) continue;
-				setActiveAxis(axis);
+			for (int i = 0; i < numDimensions(); i++) {
+				AxisType axisType = axis(i).type();
+				if (axisType.isXY()) continue;
+				setActiveAxis(axisType);
 				return;
 			}
 		}
