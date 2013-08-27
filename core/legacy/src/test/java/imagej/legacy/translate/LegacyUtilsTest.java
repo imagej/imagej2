@@ -42,8 +42,11 @@ import ij.ImageStack;
 import ij.process.ByteProcessor;
 import imagej.data.Extents;
 import imagej.data.Position;
+import net.imglib2.Interval;
+import net.imglib2.Positionable;
 import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
+import net.imglib2.meta.DefaultCalibratedAxis;
+import net.imglib2.meta.DefaultCalibratedRealInterval;
 
 import org.junit.Test;
 
@@ -84,36 +87,105 @@ public class LegacyUtilsTest {
 	 */
 	@Test
 	public void testRasterization() {
-		final long[][] dimsList = {{1,1,1}, {1,2,3}, {2,3,4}, {5,4,3}, {4,2,7}};
-		final AxisType[] axes = {Axes.CHANNEL, Axes.SPECTRA, Axes.FREQUENCY};
-		for (long[] dims : dimsList) {
+		final double[][] dimsList =
+			{ { 1, 1, 1 }, { 1, 2, 3 }, { 2, 3, 4 }, { 5, 4, 3 }, { 4, 2, 7 } };
+		for (double[] dims : dimsList) {
+			MyInterval interval = new MyInterval(dims);
+			interval.setAxis(new DefaultCalibratedAxis(Axes.CHANNEL), 0);
+			interval.setAxis(new DefaultCalibratedAxis(Axes.SPECTRA), 1);
+			interval.setAxis(new DefaultCalibratedAxis(Axes.FREQUENCY), 2);
 			// setup
 			long numChannels = 1;
-			for (long dim : dims)
+			for (double dim : dims)
 				numChannels *= dim;
 
 			// test from long index back to long index
 			for (long channel = 0; channel < numChannels; channel++) {
 				long[] channelPositions = new long[dims.length];
-				LegacyUtils.fillChannelIndices(dims, axes, channel, channelPositions);
-				long ij1Pos = LegacyUtils.calcIJ1ChannelPos(dims, axes, channelPositions);
+				LegacyUtils.fillChannelIndices(interval, channel, channelPositions);
+				long ij1Pos = LegacyUtils.calcIJ1ChannelPos(interval, channelPositions);
 				assertEquals(channel, ij1Pos);
 			}
 
 			// test from long[] index back to long[] index
 			long[] channelPositions1 = new long[dims.length];
 			long[] channelPositions2 = new long[dims.length];
-			Extents extents = new Extents(dims);
+			long[] longDims = new long[dims.length];
+			for (int i = 0; i < dims.length; i++) {
+				longDims[i] = (long) dims[i];
+			}
+			Extents extents = new Extents(longDims);
 			Position pos = extents.createPosition();
 			while (pos.hasNext()) {
 				pos.fwd();
 				pos.localize(channelPositions1);
-				long ij1Channel = LegacyUtils.calcIJ1ChannelPos(dims, axes, channelPositions1);
-				LegacyUtils.fillChannelIndices(dims, axes, ij1Channel, channelPositions2);
+				long ij1Channel =
+					LegacyUtils.calcIJ1ChannelPos(interval, channelPositions1);
+				LegacyUtils.fillChannelIndices(interval, ij1Channel, channelPositions2);
 				for (int i = 0; i < channelPositions1.length; i++)
 					assertEquals(channelPositions1[i], channelPositions2[i]);
 			}
 		}
+	}
+
+	private class MyInterval extends DefaultCalibratedRealInterval implements
+		Interval
+	{
+
+		MyInterval(double[] extents) {
+			super(extents);
+		}
+
+		@Override
+		public void dimensions(long[] dimensions) {
+			for (int i = 0; i < dimensions.length; i++) {
+				dimensions[i] = dimension(i);
+			}
+		}
+
+		@Override
+		public long dimension(int d) {
+			return max(d) - min(d) + 1;
+		}
+
+		@Override
+		public long min(int d) {
+			return (long) Math.floor(realMin(d));
+		}
+
+		@Override
+		public void min(long[] min) {
+			for (int i = 0; i < min.length; i++) {
+				min[i] = min(i);
+			}
+		}
+
+		@Override
+		public void min(Positionable min) {
+			for (int i = 0; i < min.numDimensions(); i++) {
+				min.setPosition(min(i), i);
+			}
+		}
+
+		@Override
+		public long max(int d) {
+			return (long) Math.floor(realMax(d));
+		}
+
+		@Override
+		public void max(long[] max) {
+			for (int i = 0; i < max.length; i++) {
+				max[i] = max(i);
+			}
+		}
+
+		@Override
+		public void max(Positionable max) {
+			for (int i = 0; i < max.numDimensions(); i++) {
+				max.setPosition(max(i), i);
+			}
+		}
+
 	}
 
 }

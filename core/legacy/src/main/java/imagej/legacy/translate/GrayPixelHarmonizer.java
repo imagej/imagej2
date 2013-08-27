@@ -41,9 +41,6 @@ import ij.process.ImageProcessor;
 import imagej.data.Dataset;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
-import net.imglib2.meta.IntervalUtils;
-import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.ShortType;
@@ -97,8 +94,6 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 		final boolean signed16BitData = type instanceof ShortType;
 		final RandomAccess<? extends RealType<?>> accessor =
 			ds.getImgPlus().randomAccess();
-		final long[] dims = IntervalUtils.getDims(ds);
-		final AxisType[] axes = SpaceUtils.getAxisTypes(ds);
 		final int xIndex = ds.dimensionIndex(Axes.X);
 		final int yIndex = ds.dimensionIndex(Axes.Y);
 		final int zIndex = ds.dimensionIndex(Axes.Z);
@@ -110,14 +105,14 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 		final int cSize = imp.getNChannels();
 		final ImageStack stack = imp.getStack();
 		int planeNum = 1;
-		final long[] pos = new long[dims.length];
+		final long[] pos = new long[ds.numDimensions()];
 		int slice = imp.getCurrentSlice();
 		for (int t = 0; t < tSize; t++) {
 			if (tIndex >= 0) pos[tIndex] = t;
 			for (int z = 0; z < zSize; z++) {
 				if (zIndex >= 0) pos[zIndex] = z;
 				for (int c = 0; c < cSize; c++) {
-					LegacyUtils.fillChannelIndices(dims, axes, c, pos);
+					LegacyUtils.fillChannelIndices(ds, c, pos);
 					ImageProcessor proc = stack.getProcessor(planeNum++);
 					// TEMP HACK THAT FIXES VIRT STACK PROB BUT SLOW
 					// imp.setPosition(planeNum - 1);
@@ -170,8 +165,6 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 		final boolean bitData = type instanceof BitType;
 		final RandomAccess<? extends RealType<?>> accessor =
 			ds.getImgPlus().randomAccess();
-		final long[] dims = IntervalUtils.getDims(ds);
-		final AxisType[] axes = SpaceUtils.getAxisTypes(ds);
 		final int xIndex = ds.dimensionIndex(Axes.X);
 		final int yIndex = ds.dimensionIndex(Axes.Y);
 		final int zIndex = ds.dimensionIndex(Axes.Z);
@@ -183,14 +176,14 @@ public class GrayPixelHarmonizer implements DataHarmonizer {
 		final int cSize = imp.getNChannels();
 		final ImageStack stack = imp.getStack();
 		int planeNum = 1;
-		final long[] pos = new long[dims.length];
+		final long[] pos = new long[ds.numDimensions()];
 		int slice = imp.getCurrentSlice();
 		for (int t = 0; t < tSize; t++) {
 			if (tIndex >= 0) pos[tIndex] = t;
 			for (int z = 0; z < zSize; z++) {
 				if (zIndex >= 0) pos[zIndex] = z;
 				for (int c = 0; c < cSize; c++) {
-					LegacyUtils.fillChannelIndices(dims, axes, c, pos);
+					LegacyUtils.fillChannelIndices(ds, c, pos);
 					final ImageProcessor proc = stack.getProcessor(planeNum++);
 					// TEMP HACK THAT FIXES VIRT STACK PROB BUT SLOW
 					// imp.setPosition(planeNum - 1);

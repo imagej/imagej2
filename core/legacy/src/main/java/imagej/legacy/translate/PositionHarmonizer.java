@@ -39,8 +39,6 @@ import ij.ImagePlus;
 import imagej.data.display.ImageDisplay;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
-import net.imglib2.meta.IntervalUtils;
-import net.imglib2.meta.SpaceUtils;
 
 /**
  * This class is responsible for harmonizing slider position values (and active
@@ -56,11 +54,9 @@ public class PositionHarmonizer implements DisplayHarmonizer {
 	 */
 	@Override
 	public void updateDisplay(ImageDisplay disp, ImagePlus imp) {
-		final long[] dimensions = IntervalUtils.getDims(disp);
-		final AxisType[] axes = SpaceUtils.getAxisTypes(disp);
-		final long[] workspace = new long[dimensions.length];
-		fillModernIJPosition(disp, imp, dimensions, axes, workspace);
-		for (int i = 0; i < axes.length; i++) {
+		final long[] workspace = new long[disp.numDimensions()];
+		fillModernIJPosition(disp, imp, workspace);
+		for (int i = 0; i < disp.numDimensions(); i++) {
 			final long pos = workspace[i];
 			disp.setPosition(pos, i);
 		}
@@ -83,23 +79,20 @@ public class PositionHarmonizer implements DisplayHarmonizer {
 	// -- helpers --
 	
 	private long calcIJ1ChannelPos(ImageDisplay disp) {
-		final long[] dims = IntervalUtils.getDims(disp);
-		final AxisType[] axes = SpaceUtils.getAxisTypes(disp);
-		final long[] pos = new long[axes.length];
-		for (int i = 0; i < axes.length; i++)
+		final long[] pos = new long[disp.numDimensions()];
+		for (int i = 0; i < pos.length; i++)
 			pos[i] = disp.getLongPosition(i);
-		return LegacyUtils.calcIJ1ChannelPos(dims, axes, pos);
+		return LegacyUtils.calcIJ1ChannelPos(disp, pos);
 	}
 	
 	private void fillModernIJPosition(ImageDisplay disp, ImagePlus imp,
-		long[] dimensions, AxisType[] axes, long[] workspace)
+		long[] workspace)
 	{
 		fillIndex(disp, Axes.X, workspace);
 		fillIndex(disp, Axes.Y, workspace);
 		fillIndex(disp, Axes.Z, workspace);
 		fillIndex(disp, Axes.TIME, workspace);
-		LegacyUtils.fillChannelIndices(
-			dimensions, axes, imp.getChannel()-1, workspace);
+		LegacyUtils.fillChannelIndices(disp, imp.getChannel() - 1, workspace);
 	}
 	
 	private void fillIndex(ImageDisplay disp, AxisType axis, long[] workspace) {

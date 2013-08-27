@@ -40,10 +40,12 @@ import ij.WindowManager;
 import ij.gui.ImageWindow;
 import ij.macro.Interpreter;
 import imagej.data.Dataset;
+import net.imglib2.Interval;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.IntervalUtils;
+import net.imglib2.meta.TypedRealInterval;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -319,42 +321,45 @@ public class LegacyUtils {
 	 * When coming back from legacy ImageJ need to rasterize the single legacy
 	 * channel position back into (CHANNEL,SPECTRA) pairs.
 	 * 
-	 * @param dims - the dimensions of the modern ImageJ Dataset
-	 * @param axes - the axes labels that match the Dataset dimensions
+	 * @param interval - the object that has dimensions and axes
 	 * @param ij1Channel - the channel value in legacy ImageJ (to be decoded for
 	 *          modern ImageJ)
 	 * @param pos - the position array to fill with rasterized values
 	 */
-	static void fillChannelIndices(final long[] dims, final AxisType[] axes,
-		final long ij1Channel, final long[] pos)
+	static
+ <T extends Interval & TypedRealInterval<?>>
+		void
+		fillChannelIndices(final T interval, final long ij1Channel, final long[] pos)
 	{
 		long workingIndex = ij1Channel;
-		for (int i = 0; i < dims.length; i++) {
-			final AxisType axis = axes[i];
+		for (int i = 0; i < interval.numDimensions(); i++) {
+			final AxisType axis = interval.axis(i).type();
 			// skip axes we don't encode as channels
 			if (axis == Axes.X) continue;
 			if (axis == Axes.Y) continue;
 			if (axis == Axes.Z) continue;
 			if (axis == Axes.TIME) continue;
 			// calc index of encoded channels
-			final long subIndex = workingIndex % dims[i];
+			final long subIndex = workingIndex % interval.dimension(i);
 			pos[i] = subIndex;
-			workingIndex = workingIndex / dims[i];
+			workingIndex = workingIndex / interval.dimension(i);
 		}
 	}
 	
-	static long calcIJ1ChannelPos(long[] dims, AxisType[] axes, long[] pos) {
+	static <T extends Interval & TypedRealInterval<?>> long
+		calcIJ1ChannelPos(T interval, long[] pos)
+	{
 		long multiplier = 1;
 		long ij1Pos = 0;
-		for (int i = 0; i < axes.length; i++) {
-			AxisType axis = axes[i];
+		for (int i = 0; i < interval.numDimensions(); i++) {
+			AxisType axis = interval.axis(i).type();
 			// skip axes we don't encode as channels
 			if (axis == Axes.X) continue;
 			if (axis == Axes.Y) continue;
 			if (axis == Axes.Z) continue;
 			if (axis == Axes.TIME) continue;
 			ij1Pos += multiplier * pos[i];
-			multiplier *= dims[i];
+			multiplier *= interval.dimension(i);
 		}
 		return ij1Pos;
 	}
