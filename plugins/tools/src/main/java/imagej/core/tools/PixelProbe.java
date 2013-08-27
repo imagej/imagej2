@@ -92,6 +92,10 @@ public class PixelProbe extends AbstractTool {
 		}
 		else
 			builder.append(cx);
+		if (disp.axis(0).unit() != null) {
+			builder.append(" ");
+			builder.append(disp.axis(0).unit());
+		}
 		builder.append(", y=");
 		if (!Double.isNaN(ycal) && ycal != 1.0) {
 			String calibratedVal = String.format("%.2f", (ycal * cy));
@@ -99,6 +103,10 @@ public class PixelProbe extends AbstractTool {
 		}
 		else
 			builder.append(cy);
+		if (disp.axis(1).unit() != null) {
+			builder.append(" ");
+			builder.append(disp.axis(1).unit());
+		}
 		builder.append(", value=");
 		// single channel image
 		if (channelIndex == -1 ||
