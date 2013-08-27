@@ -59,12 +59,24 @@ public class MetadataHarmonizer implements DataHarmonizer {
 		final int zIndex = ds.dimensionIndex(Axes.Z);
 		final int tIndex = ds.dimensionIndex(Axes.TIME);
 		final Calibration cal = imp.getCalibration();
-		if (xIndex >= 0) ds.setCalibration(cal.pixelWidth, xIndex);
-		if (yIndex >= 0) ds.setCalibration(cal.pixelHeight, yIndex);
+		if (xIndex >= 0) {
+			ds.setCalibration(cal.pixelWidth, xIndex);
+			ds.setUnit(cal.getXUnit(), xIndex);
+		}
+		if (yIndex >= 0) {
+			ds.setCalibration(cal.pixelHeight, yIndex);
+			ds.setUnit(cal.getYUnit(), yIndex);
+		}
 		// TODO - remove this next line?
 		if (cIndex >= 0) ds.setCalibration(1, cIndex);
-		if (zIndex >= 0) ds.setCalibration(cal.pixelDepth, zIndex);
-		if (tIndex >= 0) ds.setCalibration(cal.frameInterval, tIndex);
+		if (zIndex >= 0) {
+			ds.setCalibration(cal.pixelDepth, zIndex);
+			ds.setUnit(cal.getZUnit(), zIndex);
+		}
+		if (tIndex >= 0) {
+			ds.setCalibration(cal.frameInterval, tIndex);
+			ds.setUnit(cal.getTimeUnit(), tIndex);
+		}
 		// no need to ds.update() - these calls should track that themselves
 	}
 
@@ -79,12 +91,24 @@ public class MetadataHarmonizer implements DataHarmonizer {
 		final int cIndex = ds.dimensionIndex(Axes.CHANNEL);
 		final int zIndex = ds.dimensionIndex(Axes.Z);
 		final int tIndex = ds.dimensionIndex(Axes.TIME);
-		if (xIndex >= 0) cal.pixelWidth = ds.calibration(xIndex);
-		if (yIndex >= 0) cal.pixelHeight = ds.calibration(yIndex);
+		if (xIndex >= 0) {
+			cal.pixelWidth = ds.calibration(xIndex);
+			cal.setXUnit(ds.unit(xIndex));
+		}
+		if (yIndex >= 0) {
+			cal.pixelHeight = ds.calibration(yIndex);
+			cal.setYUnit(ds.unit(yIndex));
+		}
 		if (cIndex >= 0) {
 			// nothing to set on IJ1 side
 		}
-		if (zIndex >= 0) cal.pixelDepth = ds.calibration(zIndex);
-		if (tIndex >= 0) cal.frameInterval = ds.calibration(tIndex);
+		if (zIndex >= 0) {
+			cal.pixelDepth = ds.calibration(zIndex);
+			cal.setZUnit(ds.unit(zIndex));
+		}
+		if (tIndex >= 0) {
+			cal.frameInterval = ds.calibration(tIndex);
+			cal.setTimeUnit(ds.unit(tIndex));
+		}
 	}
 }
