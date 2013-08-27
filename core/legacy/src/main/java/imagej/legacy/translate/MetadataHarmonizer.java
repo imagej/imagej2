@@ -67,8 +67,10 @@ public class MetadataHarmonizer implements DataHarmonizer {
 			ds.setCalibration(cal.pixelHeight, yIndex);
 			ds.setUnit(cal.getYUnit(), yIndex);
 		}
-		// TODO - remove this next line?
-		if (cIndex >= 0) ds.setCalibration(1, cIndex);
+		if (cIndex >= 0) {
+			// OLD and likely bad
+			// ds.setCalibration(1, cIndex);
+		}
 		if (zIndex >= 0) {
 			ds.setCalibration(cal.pixelDepth, zIndex);
 			ds.setUnit(cal.getZUnit(), zIndex);
