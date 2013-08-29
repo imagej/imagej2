@@ -150,32 +150,17 @@ public class ShowInfo implements Command {
 	}
 
 	private String widthString() {
-		double cal = ds.axis(0).calibration();
-		if (Double.isNaN(cal) || cal == 1) {
-			return "Width: " + ds.dimension(0) + '\n';
-		}
-		return "Width: " + (cal * ds.dimension(0)) + " (" + ds.dimension(0) + ")" +
-			'\n';
+		return dimString(0, "Width: ");
 	}
 
 	private String heightString() {
-		double cal = ds.axis(1).calibration();
-		if (Double.isNaN(cal) || cal == 1) {
-			return "Height: " + ds.dimension(1) + '\n';
-		}
-		return "Height: " + (cal * ds.dimension(1)) + " (" + ds.dimension(1) + ")" +
-			'\n';
+		return dimString(1, "Height: ");
 	}
 
 	private String depthString() {
 		int zIndex = ds.dimensionIndex(Axes.Z);
 		if (zIndex < 0) return null;
-		double cal = ds.axis(zIndex).calibration();
-		if (Double.isNaN(cal) || cal == 1) {
-			return "Depth: " + ds.dimension(zIndex) + '\n';
-		}
-		return "Depth: " + (cal * ds.dimension(zIndex)) + " (" +
-			ds.dimension(zIndex) + ")" + '\n';
+		return dimString(zIndex, "Depth: ");
 	}
 
 	private String resolutionString() {
@@ -272,4 +257,23 @@ public class ShowInfo implements Command {
 		// "Rectangle x =, y=, w=, h= on separate lines
 		return null;
 	}
+
+	private String dimString(int axisIndex, String label) {
+		double cal = ds.axis(axisIndex).calibration();
+		long size = ds.dimension(axisIndex);
+		String unit = ds.unit(axisIndex);
+		String tmp = label;
+		if (Double.isNaN(cal) || cal == 1) {
+			tmp += size;
+			if (unit != null) tmp += " " + unit;
+		}
+		else {
+			tmp += cal * size;
+			if (unit != null) tmp += " " + unit;
+			tmp += " (" + size + ")";
+		}
+		tmp += "\n";
+		return tmp;
+	}
+
 }
