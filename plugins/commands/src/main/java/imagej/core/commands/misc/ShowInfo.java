@@ -98,7 +98,6 @@ public class ShowInfo implements Command {
 		StringBuilder builder = new StringBuilder();
 		for (String s : strings) {
 			builder.append(s);
-			builder.append('\n');
 		}
 		return builder.toString();
 	}
@@ -119,6 +118,8 @@ public class ShowInfo implements Command {
 		s = resolutionString();
 		if (s != null) strings.add(s);
 		s = pixelVoxelSizeString();
+		if (s != null) strings.add(s);
+		s = originString();
 		if (s != null) strings.add(s);
 		s = typeString();
 		if (s != null) strings.add(s);
@@ -145,23 +146,25 @@ public class ShowInfo implements Command {
 	}
 
 	private String titleString() {
-		return "Title: " + ds.getName();
+		return "Title: " + ds.getName() + '\n';
 	}
 
 	private String widthString() {
 		double cal = ds.axis(0).calibration();
 		if (Double.isNaN(cal) || cal == 1) {
-			return "Width: " + ds.dimension(0);
+			return "Width: " + ds.dimension(0) + '\n';
 		}
-		return "Width: " + (cal * ds.dimension(0)) + " (" + ds.dimension(0) + ")";
+		return "Width: " + (cal * ds.dimension(0)) + " (" + ds.dimension(0) + ")" +
+			'\n';
 	}
 
 	private String heightString() {
 		double cal = ds.axis(1).calibration();
 		if (Double.isNaN(cal) || cal == 1) {
-			return "Height: " + ds.dimension(1);
+			return "Height: " + ds.dimension(1) + '\n';
 		}
-		return "Height: " + (cal * ds.dimension(1)) + " (" + ds.dimension(1) + ")";
+		return "Height: " + (cal * ds.dimension(1)) + " (" + ds.dimension(1) + ")" +
+			'\n';
 	}
 
 	private String depthString() {
@@ -169,10 +172,10 @@ public class ShowInfo implements Command {
 		if (zIndex < 0) return null;
 		double cal = ds.axis(zIndex).calibration();
 		if (Double.isNaN(cal) || cal == 1) {
-			return "Depth: " + ds.dimension(zIndex);
+			return "Depth: " + ds.dimension(zIndex) + '\n';
 		}
 		return "Depth: " + (cal * ds.dimension(zIndex)) + " (" +
-			ds.dimension(zIndex) + ")";
+			ds.dimension(zIndex) + ")" + '\n';
 	}
 
 	private String resolutionString() {
@@ -190,17 +193,24 @@ public class ShowInfo implements Command {
 		double ySize = (Double.isNaN(yCal) ? 1 : yCal);
 		double zSize = (Double.isNaN(zCal) ? 1 : zCal);
 		if (zIndex < 0) { // no z axis
-			return "Pixel size: " + xSize + " x " + ySize;
+			return "Pixel size: " + xSize + " x " + ySize + '\n';
 		}
 		// z axis present
-		return "Voxel size: " + xSize + " x " + ySize + " x " + zSize;
+		return "Voxel size: " + xSize + " x " + ySize + " x " + zSize + '\n';
+	}
+
+	private String originString() {
+		// TODO
+		// In IJ1 the origin of the calibrated space is reported. IJ2 does not yet
+		// support a nonzero origin.
+		return null;
 	}
 
 	private String typeString() {
 		Object dataObj = ds.getImgPlus().firstElement();
 		DataType<?> type = typeService.getTypeByClass(dataObj.getClass());
-		if (type == null) return "Type: unknown";
-		return "Type: " + type.longName();
+		if (type == null) return "Type: unknown" + '\n';
+		return "Type: " + type.longName() + '\n';
 	}
 
 	private String displayRangesString() {
@@ -212,8 +222,7 @@ public class ShowInfo implements Command {
 			// TODO: dislike this casting
 			double min = ((DatasetView) disp.getActiveView()).getChannelMin(c);
 			double max = ((DatasetView) disp.getActiveView()).getChannelMax(c);
-			tmp += "Display range channel " + c + ": " + min + "-" + max;
-			if (c != numChan - 1) tmp += '\n';
+			tmp += "Display range channel " + c + ": " + min + "-" + max + '\n';
 		}
 		return tmp;
 	}
@@ -226,8 +235,7 @@ public class ShowInfo implements Command {
 			long dim = disp.dimension(i + 2);
 			long pos = position.getLongPosition(i) + 1;
 			String label = disp.axis(i + 2).type().toString();
-			tmp += "View position " + label + ": " + pos + "/" + dim;
-			if (i != position.numDimensions() - 1) tmp += '\n';
+			tmp += "View position " + label + ": " + pos + "/" + dim + '\n';
 		}
 		return tmp;
 	}
@@ -235,15 +243,16 @@ public class ShowInfo implements Command {
 	private String compositeString() {
 		// TODO: dislike this casting
 		ColorMode mode = ((DatasetView) disp.getActiveView()).getColorMode();
-		return "Composite mode: " + mode;
+		return "Composite mode: " + mode + '\n';
 	}
 
 	private String thresholdString() {
 		if (thresholdService.hasThreshold(disp)) {
 			ThresholdOverlay thresh = thresholdService.getThreshold(disp);
-			return "Threshold: " + thresh.getRangeMin() + "-" + thresh.getRangeMax();
+			return "Threshold: " + thresh.getRangeMin() + "-" + thresh.getRangeMax() +
+				'\n';
 		}
-		return "Threshold: none";
+		return "Threshold: none" + '\n';
 	}
 
 	private String calibrationString() {
@@ -254,7 +263,7 @@ public class ShowInfo implements Command {
 	}
 
 	private String sourceString() {
-		return "Source: " + ds.getSource();
+		return "Source: " + ds.getSource() + '\n';
 	}
 
 	private String selectionString() {
