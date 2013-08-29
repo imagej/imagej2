@@ -60,10 +60,8 @@ import org.scijava.plugin.Plugin;
 // TODO: add callbacks as appropriate to keep input valid
 
 /**
- * Changes the values of the axes. For example they can go from [x,y,z] to
- * [c,t,frequency]. This is a convenience plugin that allows axis types to be
- * reassigned. Useful if imported data has the wrong axis designations. Pixel
- * data is NOT rearranged. Calibration values are maintained where possible.
+ * Changes the types and calibrations of the existing axes of a {@link Dataset}.
+ * Only axis metadata is changed. Pixel data is NOT rearranged.
  * 
  * @author Barry DeZonia
  */
