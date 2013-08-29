@@ -63,6 +63,8 @@ public class UIPreprocessor extends AbstractPreprocessorPlugin {
 		if (uiService == null) return; // no UI service available
 
 		final UserInterface ui = uiService.getDefaultUI();
+		if (ui == null) return; // no default UI
+
 		for (final ModuleItem<?> input : module.getInfo().inputs()) {
 			if (!input.isAutoFill()) continue; // cannot auto-fill this input
 			final Class<?> type = input.getType();
