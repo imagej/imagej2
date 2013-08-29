@@ -85,12 +85,24 @@ public class RestructureUtils {
 			factory.create(dimensions, ds.getType());
 		final String name = ds.getName();
 		final double[] calibration = new double[axes.length];
+		final String[] units = new String[axes.length];
 		for (int i = 0; i < axes.length; i++) {
 			final int index = ds.dimensionIndex(axes[i]);
-			if (index >= 0) calibration[i] = ds.calibration(index);
-			else calibration[i] = Double.NaN;
+			if (index >= 0) {
+				calibration[i] = ds.calibration(index);
+				units[i] = ds.unit(i);
+			}
+			else {
+				calibration[i] = Double.NaN;
+				units[i] = null;
+			}
 		}
-		return new ImgPlus(img, name, axes, calibration);
+		ImgPlus<? extends RealType<?>> imgPlus =
+			new ImgPlus(img, name, axes, calibration);
+		for (int i = 0; i < units.length; i++) {
+			imgPlus.setUnit(units[i], i);
+		}
+		return imgPlus;
 	}
 
 	/**
