@@ -71,7 +71,7 @@ import org.scijava.plugin.Plugin;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Axes", mnemonic = 'a'), @Menu(label = "Edit Axes...") },
-	headless = true, initializer = "initAxes")
+	headless = true, initializer = "initFields")
 public class EditAxes extends DynamicCommand {
 
 	// -- Parameters --
@@ -93,12 +93,12 @@ public class EditAxes extends DynamicCommand {
 	}
 
 	public AxisType getAxisMapping(int axisNum) {
-		String axisName = (String) getInput(name(axisNum));
+		String axisName = (String) getInput(axisName(axisNum));
 		return Axes.get(axisName);
 	}
 	
 	public void setAxisMapping(int axisNum, AxisType axis) {
-		String axisName = name(axisNum);
+		String axisName = axisName(axisNum);
 		setInput(axisName, axis.getLabel());
 	}
 	
@@ -115,14 +115,25 @@ public class EditAxes extends DynamicCommand {
 			// error already logged
 			return;
 		}
-		double[] newCal = getNewCalibration(dataset,desiredAxes);
-		dataset.setCalibration(newCal);
-		dataset.setAxes(axisOrder(desiredAxes));
+		for (int i = 0; i < dataset.numDimensions(); i++) {
+			CalibratedAxis axis = dataset.axis(i);
+			String axisName = (String) getInput(axisName(i));
+			AxisType type = Axes.get(axisName);
+			String unit = (String) getInput(unitName(i));
+			double cal = (Double) getInput(scaleName(i));
+			axis.setType(type);
+			// TODO : at this point Dataset may have two Z axes for instance. If a
+			// prob we need to set them all at once. See if an axis label change fires
+			// some update events.
+			if (unit.length() == 0) axis.setUnit(null);
+			else axis.setUnit(unit);
+			axis.setCalibration(cal);
+		}
 	}
 
 	// -- Initializers --
 
-	protected void initAxes() {
+	protected void initFields() {
 		ArrayList<String> choices = new ArrayList<String>();
 		AxisType[] axes = Axes.values();
 		for (AxisType axis : axes) {
@@ -130,18 +141,37 @@ public class EditAxes extends DynamicCommand {
 		}
 		for (int i = 0; i < dataset.numDimensions(); i++) {
 			final DefaultMutableModuleItem<String> axisItem =
-				new DefaultMutableModuleItem<String>(this, name(i), String.class);
+				new DefaultMutableModuleItem<String>(this, axisName(i), String.class);
 			axisItem.setChoices(choices);
 			axisItem.setPersisted(false);
-			axisItem.setValue(this, dataset.axis(i).toString());
+			axisItem.setValue(this, dataset.axis(i).type().toString());
 			addInput(axisItem);
+			final DefaultMutableModuleItem<String> unitItem =
+				new DefaultMutableModuleItem<String>(this, unitName(i), String.class);
+			unitItem.setPersisted(false);
+			unitItem.setValue(this, dataset.axis(i).unit());
+			addInput(unitItem);
+			final DefaultMutableModuleItem<Double> scaleItem =
+				new DefaultMutableModuleItem<Double>(this, scaleName(i), Double.class);
+			scaleItem.setMinimumValue(0.000000000001);
+			scaleItem.setPersisted(false);
+			scaleItem.setValue(this, dataset.axis(i).calibration());
+			addInput(scaleItem);
 		}
 	}
 
 	// -- Helper methods --
 
-	private String name(final int i) {
+	private String axisName(final int i) {
 		return "Axis #" + i;
+	}
+
+	private String unitName(final int i) {
+		return "Unit #" + i;
+	}
+
+	private String scaleName(final int i) {
+		return "Scale #" + i;
 	}
 
 	/**
@@ -172,24 +202,9 @@ public class EditAxes extends DynamicCommand {
 		return false;
 	}
 
-	/**
-	 * Copies already existing calibration values into new calibration when
-	 * possible. If new axis is not present in original Dataset sets that
-	 * calibration value to NaN.
-	 */
-	double[] getNewCalibration(Dataset origDs, AxisType[] newAxes) {
-		double[] newCal = new double[newAxes.length];
-		int a = 0;
-		for (AxisType axis : newAxes) {
-			int index = origDs.dimensionIndex(axis);
-			if (index < 0)
-				newCal[a++] = Double.NaN;
-			else
-				newCal[a++] = origDs.calibration(index);
-		}
-		return newCal;
-	}
-
+	/* 
+	 * Save in case we need to set axes' types all at once
+	 * 
 	private CalibratedAxis[] axisOrder(AxisType[] order) {
 		CalibratedAxis[] axisOrder = new CalibratedAxis[order.length];
 		for (int i = 0; i < order.length; i++) {
@@ -201,4 +216,5 @@ public class EditAxes extends DynamicCommand {
 		}
 		return axisOrder;
 	}
+	*/
 }
