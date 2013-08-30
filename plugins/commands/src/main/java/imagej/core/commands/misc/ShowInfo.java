@@ -67,10 +67,6 @@ import org.scijava.plugin.Plugin;
 	headless = true)
 public class ShowInfo implements Command {
 
-	// -- constants --
-
-	private static final int DECIMAL_PLACES = 4;
-
 	// -- Parameters --
 
 	@Parameter
@@ -86,7 +82,13 @@ public class ShowInfo implements Command {
 	private Dataset ds;
 
 	@Parameter(type = ItemIO.OUTPUT)
-	String info;
+	private String info;
+
+	// -- ShowInfo methods --
+	
+	public String getInfo() {
+		return info;
+	}
 
 	// -- Command methods --
 
