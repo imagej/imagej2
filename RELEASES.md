@@ -103,13 +103,12 @@ The following steps perform a release of ImageJ itself:
 
 #### Use the latest version of ImageJ 1.x
 
-Verify that the [pom-scijava version used by
-ImageJ](https://github.com/imagej/imagej/blob/master/pom.xml#L8)
-references the [latest available version of ImageJ
-1.x](http://maven.imagej.net/content/repositories/releases/net/imagej/ij/)
-(see the [pom-scijava
-history](https://github.com/scijava/scijava-common/commits/master/pom-scijava/pom.xml)
-to cross-reference the versions).
+Verify that the pom-scijava version used by ImageJ references the
+[latest available version of ImageJ
+1.x](http://maven.imagej.net/content/repositories/releases/net/imagej/ij/):
+
+    cd imagej
+    sj-version.sh | grep imagej1.version
 
 If not, [tell Jenkins to update `imagej1.version` in
 pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
