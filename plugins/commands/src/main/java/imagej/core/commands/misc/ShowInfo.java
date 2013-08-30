@@ -67,6 +67,10 @@ import org.scijava.plugin.Plugin;
 	headless = true)
 public class ShowInfo implements Command {
 
+	// -- constants --
+
+	private static final int DECIMAL_PLACES = 4;
+
 	// -- Parameters --
 
 	@Parameter
@@ -178,10 +182,11 @@ public class ShowInfo implements Command {
 		double ySize = (Double.isNaN(yCal) ? 1 : yCal);
 		double zSize = (Double.isNaN(zCal) ? 1 : zCal);
 		if (zIndex < 0) { // no z axis
-			return "Pixel size: " + xSize + " x " + ySize + '\n';
+			return "Pixel size: " + dToS(xSize) + " x " + dToS(ySize) + '\n';
 		}
 		// z axis present
-		return "Voxel size: " + xSize + " x " + ySize + " x " + zSize + '\n';
+		return "Voxel size: " + dToS(xSize) + " x " + dToS(ySize) + " x " +
+			dToS(zSize) + '\n';
 	}
 
 	private String originString() {
@@ -248,7 +253,9 @@ public class ShowInfo implements Command {
 	}
 
 	private String sourceString() {
-		return "Source: " + ds.getSource() + '\n';
+		String source = ds.getSource();
+		if (source == null) return null;
+		return "Source: " + source + '\n';
 	}
 
 	private String selectionString() {
@@ -268,7 +275,7 @@ public class ShowInfo implements Command {
 			if (unit != null) tmp += " " + unit;
 		}
 		else {
-			tmp += cal * size;
+			tmp += dToS(cal * size);
 			if (unit != null) tmp += " " + unit;
 			tmp += " (" + size + ")";
 		}
@@ -276,4 +283,7 @@ public class ShowInfo implements Command {
 		return tmp;
 	}
 
+	private String dToS(double num) {
+		return String.format("%1.4f", num);
+	}
 }
