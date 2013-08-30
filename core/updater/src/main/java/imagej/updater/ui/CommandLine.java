@@ -704,9 +704,16 @@ public class CommandLine {
 
 	public String getLongUpdateSiteName(final String name) {
 		final UpdateSite site = files.getUpdateSite(name, true);
-		return name + " (" +
-			(site.getHost() == null || site.equals("") ? "" : site.getHost() + ":") +
-			site.getUploadDirectory() + ")";
+		String host = site.getHost();
+		if (host == null || host.equals("")) host = "";
+		else {
+			if (host.startsWith("webdav:")) {
+				int colon = host.indexOf(':', 8);
+				if (colon > 0) host = host.substring(0, colon) + ":<password>";
+			}
+			host += ":";
+		}
+		return name + " (" + host + site.getUploadDirectory() + ")";
 	}
 
 	public void listUpdateSites(Collection<String> args) {
