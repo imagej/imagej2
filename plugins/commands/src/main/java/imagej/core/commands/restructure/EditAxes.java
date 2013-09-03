@@ -123,7 +123,7 @@ public class EditAxes extends DynamicCommand {
 			// TODO : at this point Dataset may have two Z axes for instance. If a
 			// prob we need to set them all at once. See if an axis label change fires
 			// some update events.
-			if (unit.length() == 0) axis.setUnit(null);
+			if (unit == null || unit.length() == 0) axis.setUnit(null);
 			else axis.setUnit(unit);
 			axis.setCalibration(cal);
 		}
