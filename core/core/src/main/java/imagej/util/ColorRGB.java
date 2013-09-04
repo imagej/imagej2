@@ -58,12 +58,29 @@ public class ColorRGB implements Serializable {
 		this.blue = blue;
 	}
 
-	/** Parses a color from a string of the form "r,g,b". */
-	public ColorRGB(final String value) {
-		final String[] tokens = value.split(",");
-		red = parse(tokens, 0);
-		green = parse(tokens, 1);
-		blue = parse(tokens, 2);
+	/**
+	 * Parses a color from the given string. The following formats are supported:
+	 * <ol>
+	 * <li>HTML color codes starting with hash ({@code #}), as handled by
+	 * {@link #fromHTMLColor(String)}.</li>
+	 * <li>Color presets, as handled by {@link Colors#getColor(String)}.</li>
+	 * <li>Integer triples of the form {@code r,g,b}, with each element in the
+	 * range {@code [0, 255]}.</li>
+	 * </ol>
+	 */
+	public ColorRGB(final String s) {
+		final ColorRGB result = fromHTMLColor(s);
+		if (result != null) {
+			red = result.red;
+			green = result.green;
+			blue = result.blue;
+		}
+		else {
+			final String[] tokens = s.split(",");
+			red = parse(tokens, 0);
+			green = parse(tokens, 1);
+			blue = parse(tokens, 2);
+		}
 	}
 
 	public int getRed() {
