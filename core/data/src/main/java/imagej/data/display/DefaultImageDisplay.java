@@ -302,7 +302,7 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 				if (axisNum < 0) continue;
 				final long p = getLongPosition(axis);
 				Data data = view.getData();
-				double size = data.realMax(axisNum) - data.realMin(axisNum);
+				double size = data.realMax(axisNum) - data.realMin(axisNum) + 1;
 				if (p < size) {
 					view.setPosition(p, axis);
 				}
