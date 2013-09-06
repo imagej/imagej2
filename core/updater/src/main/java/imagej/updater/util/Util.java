@@ -35,6 +35,7 @@
 
 package imagej.updater.util;
 
+import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -348,6 +349,14 @@ public class Util {
 	}
 
 	public static void useSystemProxies() {
+		/*
+		 * Avoid those pesky
+		 * "GConf-WARNING **: Client failed to connect to the D-BUS daemon"
+		 * messages in headless mode (e.g. Jenkins).
+		 */
+		final String osName = System.getProperty("os.name", "<unknown>");
+		if (osName.equals("Linux") && GraphicsEnvironment.isHeadless()) return;
+
 		System.setProperty("java.net.useSystemProxies", "true");
 	}
 
