@@ -156,7 +156,7 @@ pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
 #### Upload artifacts to the ImageJ update site
 
 - Unpack the [application
-  ZIP](http://jenkins.imagej.net/job/ImageJ-release-build/lastSuccessfulBuild/artifact/app/target/)
+  ZIP](http://maven.imagej.net/content/repositories/releases/net/imagej/ij-app/)
 - Add upload information for the ''ImageJ'' update site:
 
   ```
