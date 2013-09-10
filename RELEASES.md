@@ -168,6 +168,12 @@ pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
   ```
   ./ImageJ-linux64 --update upload-complete-site --simulate ImageJ
   ```
+- If the upload will render files obsolete that Fiji still relies on, upload them
+  to the Fiji site using the ```--force-shadow``` option:
+
+  ```
+  ./ImageJ-linux64 --update upload --force-shadow --site Fiji <file>...
+  ```
 - When everything is alright, upload it for real:
 
   ```
