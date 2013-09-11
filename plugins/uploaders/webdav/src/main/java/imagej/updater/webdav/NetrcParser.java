@@ -60,6 +60,17 @@ public class NetrcParser {
 	}
 
 	private static URL getDefaultNetrc() {
+		final String path = System.getProperty("webdav.netrc");
+		if (path != null) {
+			final File file = new File(path);
+			try {
+				return file.isFile() ? file.toURI().toURL() : null;
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+
 		final String home = System.getProperty("user.home");
 		if (home == null) return null;
 		final File homeDirectory = new File(home);
