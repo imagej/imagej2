@@ -42,6 +42,7 @@ import imagej.updater.core.Uploadable;
 import imagej.updater.core.Uploader;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
+import imagej.updater.webdav.NetrcParser.Credentials;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -122,6 +123,22 @@ public class WebDAVUploader extends AbstractUploader {
 
 		UpdateSite site = uploader.getFilesCollection().getUpdateSite(uploader.getSiteName(), true);
 		baseURL = site.getURL();
+
+		if (username == null || password == null) {
+			int colon = baseURL.indexOf("://");
+			if (colon > 0) try {
+				int slash = baseURL.indexOf('/', colon + 3);
+				final String hostname = baseURL.substring(colon + 3, slash < 0 ? baseURL.length() : slash);
+				final NetrcParser netrcParser = new NetrcParser();
+				final Credentials credentials = netrcParser.getCredentials(hostname, username);
+				if (credentials != null) {
+					username = credentials.getUsername();
+					password = credentials.getPassword();
+				}
+			} catch (final IOException e) {
+				log.warn(e);
+			}
+		}
 
 		if (username == null) {
 			uploader.getDefaultUsername();
