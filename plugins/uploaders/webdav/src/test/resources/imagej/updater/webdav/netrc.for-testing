@@ -1,0 +1,12 @@
+machine rocketman login gordon password flash
+machine
+123
+login hello login world
+password pass
+machine third
+	password x123
+	login login
+# machine 123 login second password 2
+machine 123
+login second
+password 3
