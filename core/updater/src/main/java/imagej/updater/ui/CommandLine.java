@@ -945,6 +945,7 @@ public class CommandLine {
 
 		@Override
 		protected PasswordAuthentication getPasswordAuthentication() {
+			if (console == null) throw new RuntimeException("Need a console for user interaction!");
 			final String user =
 				console.readLine("                                  \rProxy User: ");
 			final char[] password = console.readPassword("Proxy Password: ");
@@ -972,6 +973,9 @@ public class CommandLine {
 
 		@Override
 		public boolean promptYesNo(final String title, final String message) {
+			if (console == null) {
+				throw new RuntimeException("Prompt requires interactive operation!");
+			}
 			System.err.print(title + ": " + message);
 			final String line = console.readLine();
 			return line.startsWith("y") || line.startsWith("Y");
@@ -983,11 +987,17 @@ public class CommandLine {
 		}
 
 		public String getUsername(final String prompt) {
+			if (console == null) {
+				throw new RuntimeException("Username prompt requires interactive operation!");
+			}
 			showPrompt(prompt);
 			return console.readLine();
 		}
 
 		public int askChoice(final String[] options) {
+			if (console == null) {
+				throw new RuntimeException("Prompt requires interactive operation!");
+			}
 			for (int i = 0; i < options.length; i++)
 				System.err.println("" + (i + 1) + ": " + options[i]);
 			for (;;) {
@@ -1045,6 +1055,9 @@ public class CommandLine {
 		public int optionDialog(final String message, final String title,
 			final Object[] options, final int def)
 		{
+			if (console == null) {
+				throw new RuntimeException("Prompt requires interactive operation!");
+			}
 			for (int i = 0; i < options.length; i++)
 				System.err.println("" + (i + 1) + ") " + options[i]);
 			for (;;) {
@@ -1082,6 +1095,9 @@ public class CommandLine {
 
 		@Override
 		public String getString(final String title) {
+			if (console == null) {
+				throw new RuntimeException("Prompt requires interactive operation!");
+			}
 			System.out.print(title + ": ");
 			return console.readLine();
 		}
