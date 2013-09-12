@@ -519,6 +519,13 @@ public class IJ1Helper extends AbstractContextual {
 		}
 
 		private boolean isLegacyMode() {
+			// We call setContext() indirectly from DefaultLegacyService#initialize,
+			// therefore legacyService might still be null at this point even if the
+			// context knows a legacy service now.
+			if (legacyService == null) {
+				final Context context = getContext();
+				if (context != null) legacyService = context.getService(LegacyService.class);
+			}
 			return legacyService != null && legacyService.isLegacyMode();
 		}
 
