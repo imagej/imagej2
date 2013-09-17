@@ -164,21 +164,21 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	@Override
 	public void autoscale(final int c) {
 		// get the channel min/max from metadata
-		final ImgPlus<? extends RealType<?>> imgPlus = getData().getImgPlus();
-		double min = imgPlus.getChannelMinimum(c);
-		double max = imgPlus.getChannelMaximum(c);
+		final Dataset data = getData();
+		double min = data.getChannelMinimum(c);
+		double max = data.getChannelMaximum(c);
 		if (Double.isNaN(min) || Double.isNaN(max)) {
 			// not provided in metadata, so calculate the min/max
 			RandomAccessibleInterval<? extends RealType<?>> interval =
-				channelData(getData(), c);
+				channelData(data, c);
 			interval = xyPlane(interval);
 			final DataRange result =
 				autoscaleService.getDefaultRandomAccessRange(interval);
 			min = result.getMin();
 			max = result.getMax();
 			// cache min/max in metadata for next time
-			imgPlus.setChannelMinimum(c, min);
-			imgPlus.setChannelMaximum(c, max);
+			data.setChannelMinimum(c, min);
+			data.setChannelMaximum(c, max);
 		}
 		setChannelRange(c, min, max);
 	}
