@@ -74,8 +74,8 @@ public abstract class AbstractInputHarvesterPlugin<P, W> extends
 	public void process(final Module module) {
 		if (uiService == null) return; // no UI service means no input harvesting!
 
-		// verify that the default UI is the correct one
-		if (!uiService.isDefaultUI(getUI())) return;
+		// do not harvest if the UI is inactive!
+		if (!uiService.isVisible(getUI())) return;
 
 		// proceed with input harvesting
 		try {
