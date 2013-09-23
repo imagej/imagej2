@@ -48,7 +48,9 @@ import imagej.data.display.WindowService;
 import imagej.data.lut.LUTService;
 import imagej.data.measure.MeasurementService;
 import imagej.data.measure.StatisticsService;
+import imagej.data.operator.CalculatorService;
 import imagej.data.sampler.SamplerService;
+import imagej.data.threshold.ThresholdService;
 import imagej.display.DisplayService;
 import imagej.io.IOService;
 import imagej.io.RecentFileService;
@@ -156,6 +158,10 @@ public class ImageJ extends AbstractGateway {
 		return get(AppEventService.class);
 	}
 
+	public CalculatorService calculator() {
+		return get(CalculatorService.class);
+	}
+
 	public CommandService command() {
 		return get(CommandService.class);
 	}
@@ -242,6 +248,10 @@ public class ImageJ extends AbstractGateway {
 
 	public StatisticsService statistics() {
 		return get(StatisticsService.class);
+	}
+
+	public ThresholdService threshold() {
+		return get(ThresholdService.class);
 	}
 
 	public ToolService tool() {
