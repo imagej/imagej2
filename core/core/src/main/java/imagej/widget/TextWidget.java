@@ -36,10 +36,31 @@
 package imagej.widget;
 
 /**
- * Widget interface for text fields.
+ * Widget interface for text fields and areas.
  * 
  * @author Curtis Rueden
  */
 public interface TextWidget<U> extends InputWidget<String, U> {
-	// NB: No changes to interface.
+
+	/**
+	 * Widget style for text fields.
+	 * 
+	 * @see org.scijava.plugin.Parameter#style()
+	 */
+	String FIELD_STYLE = "text field";
+
+	/**
+	 * Widget style for text areas.
+	 * 
+	 * @see org.scijava.plugin.Parameter#style()
+	 */
+	String AREA_STYLE = "text area";
+
+	/**
+	 * Widget style for password fields.
+	 * 
+	 * @see org.scijava.plugin.Parameter#style()
+	 */
+	String PASSWORD_STYLE = "password";
+
 }

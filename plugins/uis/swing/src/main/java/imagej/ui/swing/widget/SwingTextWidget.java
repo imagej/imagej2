@@ -40,12 +40,15 @@ import imagej.widget.TextWidget;
 import imagej.widget.WidgetModel;
 
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
+import javax.swing.text.JTextComponent;
 
 import org.scijava.log.LogService;
 import org.scijava.plugin.Plugin;
@@ -62,7 +65,7 @@ public class SwingTextWidget extends SwingInputWidget<String> implements
 
 	private LogService log;
 
-	private JTextField textField;
+	private JTextComponent textComponent;
 
 	// -- DocumentListener methods --
 
@@ -85,7 +88,7 @@ public class SwingTextWidget extends SwingInputWidget<String> implements
 
 	@Override
 	public String getValue() {
-		return textField.getText();
+		return textComponent.getText();
 	}
 
 	// -- WrapperPlugin methods --
@@ -96,11 +99,22 @@ public class SwingTextWidget extends SwingInputWidget<String> implements
 		log = model.getContext().getService(LogService.class);
 
 		final int columns = model.getItem().getColumnCount();
-		textField = new JTextField("", columns);
-		setToolTip(textField);
-		getComponent().add(textField);
+
+		// construct text widget of the appropriate style, if specified
+		final String style = model.getItem().getWidgetStyle();
+		if (TextWidget.AREA_STYLE.equals(style)) {
+			textComponent = new JTextArea("", 5, columns);
+		}
+		else if (TextWidget.PASSWORD_STYLE.equals(style)) {
+			textComponent = new JPasswordField("", columns);
+		}
+		else {
+			textComponent = new JTextField("", columns);
+		}
+		setToolTip(textComponent);
+		getComponent().add(textComponent);
 		limitLength();
-		textField.getDocument().addDocumentListener(this);
+		textComponent.getDocument().addDocumentListener(this);
 
 		refreshWidget();
 	}
@@ -121,7 +135,7 @@ public class SwingTextWidget extends SwingInputWidget<String> implements
 
 		// limit text field to a single character
 		final int maxChars = 1;
-		final Document doc = textField.getDocument();
+		final Document doc = textComponent.getDocument();
 		if (doc instanceof AbstractDocument) {
 			final DocumentFilter docFilter = new DocumentSizeFilter(maxChars);
 			((AbstractDocument) doc).setDocumentFilter(docFilter);
@@ -136,7 +150,8 @@ public class SwingTextWidget extends SwingInputWidget<String> implements
 	@Override
 	public void doRefresh() {
 		final String text = get().getText();
-		if (textField.getText().equals(text)) return; // no change
-		textField.setText(text);
+		if (textComponent.getText().equals(text)) return; // no change
+		textComponent.setText(text);
 	}
+
 }
