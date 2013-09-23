@@ -36,7 +36,7 @@
 package imagej.ui.swing.widget;
 
 import imagej.widget.InputWidget;
-import imagej.widget.TextFieldWidget;
+import imagej.widget.TextWidget;
 import imagej.widget.WidgetModel;
 
 import javax.swing.JPanel;
@@ -56,8 +56,8 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class SwingTextFieldWidget extends SwingInputWidget<String> implements
-	DocumentListener, TextFieldWidget<JPanel>
+public class SwingTextWidget extends SwingInputWidget<String> implements
+	DocumentListener, TextWidget<JPanel>
 {
 
 	private LogService log;

@@ -33,37 +33,33 @@
  * #L%
  */
 
-package imagej.ui.awt.widget;
+package imagej.ui.pivot.widget;
 
 import imagej.widget.InputWidget;
-import imagej.widget.TextFieldWidget;
+import imagej.widget.TextWidget;
 import imagej.widget.WidgetModel;
 
-import java.awt.BorderLayout;
-import java.awt.Panel;
-import java.awt.TextField;
-import java.awt.event.TextEvent;
-import java.awt.event.TextListener;
-
+import org.apache.pivot.wtk.BoxPane;
+import org.apache.pivot.wtk.TextInput;
 import org.scijava.plugin.Plugin;
 
 /**
- * AWT implementation of text field widget.
+ * Pivot implementation of text field widget.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class AWTTextFieldWidget extends AWTInputWidget<String> implements
-	TextFieldWidget<Panel>, TextListener
+public class PivotTextWidget extends PivotInputWidget<String> implements
+	TextWidget<BoxPane>
 {
 
-	private TextField textField;
+	private TextInput textInput;
 
 	// -- InputWidget methods --
 
 	@Override
 	public String getValue() {
-		return textField.getText();
+		return textInput.getText();
 	}
 
 	// -- WrapperPlugin methods --
@@ -72,10 +68,8 @@ public class AWTTextFieldWidget extends AWTInputWidget<String> implements
 	public void set(final WidgetModel model) {
 		super.set(model);
 
-		final int columns = model.getItem().getColumnCount();
-		textField = new TextField("", columns);
-		textField.addTextListener(this);
-		getComponent().add(textField, BorderLayout.CENTER);
+		textInput = new TextInput();
+		getComponent().add(textInput);
 
 		refreshWidget();
 	}
@@ -88,17 +82,13 @@ public class AWTTextFieldWidget extends AWTInputWidget<String> implements
 			!model.isMultipleChoice() && !model.isMessage();
 	}
 
-	// -- TextListener methods --
-
-	@Override
-	public void textValueChanged(final TextEvent e) {
-		updateModel();
-	}
-
 	// -- AbstractUIInputWidget methods ---
 
 	@Override
 	public void doRefresh() {
-		textField.setText(get().getValue().toString());
+		final String text = get().getText();
+		if (textInput.getText().equals(text)) return; // no change
+		textInput.setText(text);
 	}
+
 }

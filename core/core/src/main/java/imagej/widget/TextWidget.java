@@ -40,6 +40,6 @@ package imagej.widget;
  * 
  * @author Curtis Rueden
  */
-public interface TextFieldWidget<U> extends InputWidget<String, U> {
+public interface TextWidget<U> extends InputWidget<String, U> {
 	// NB: No changes to interface.
 }

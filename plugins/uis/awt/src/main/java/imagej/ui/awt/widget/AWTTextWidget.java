@@ -33,33 +33,37 @@
  * #L%
  */
 
-package imagej.ui.pivot.widget;
+package imagej.ui.awt.widget;
 
 import imagej.widget.InputWidget;
-import imagej.widget.TextFieldWidget;
+import imagej.widget.TextWidget;
 import imagej.widget.WidgetModel;
 
-import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.TextInput;
+import java.awt.BorderLayout;
+import java.awt.Panel;
+import java.awt.TextField;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
+
 import org.scijava.plugin.Plugin;
 
 /**
- * Pivot implementation of text field widget.
+ * AWT implementation of text field widget.
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = InputWidget.class)
-public class PivotTextFieldWidget extends PivotInputWidget<String> implements
-	TextFieldWidget<BoxPane>
+public class AWTTextWidget extends AWTInputWidget<String> implements
+	TextWidget<Panel>, TextListener
 {
 
-	private TextInput textInput;
+	private TextField textField;
 
 	// -- InputWidget methods --
 
 	@Override
 	public String getValue() {
-		return textInput.getText();
+		return textField.getText();
 	}
 
 	// -- WrapperPlugin methods --
@@ -68,8 +72,10 @@ public class PivotTextFieldWidget extends PivotInputWidget<String> implements
 	public void set(final WidgetModel model) {
 		super.set(model);
 
-		textInput = new TextInput();
-		getComponent().add(textInput);
+		final int columns = model.getItem().getColumnCount();
+		textField = new TextField("", columns);
+		textField.addTextListener(this);
+		getComponent().add(textField, BorderLayout.CENTER);
 
 		refreshWidget();
 	}
@@ -82,13 +88,17 @@ public class PivotTextFieldWidget extends PivotInputWidget<String> implements
 			!model.isMultipleChoice() && !model.isMessage();
 	}
 
+	// -- TextListener methods --
+
+	@Override
+	public void textValueChanged(final TextEvent e) {
+		updateModel();
+	}
+
 	// -- AbstractUIInputWidget methods ---
 
 	@Override
 	public void doRefresh() {
-		final String text = get().getText();
-		if (textInput.getText().equals(text)) return; // no change
-		textInput.setText(text);
+		textField.setText(get().getValue().toString());
 	}
-
 }
