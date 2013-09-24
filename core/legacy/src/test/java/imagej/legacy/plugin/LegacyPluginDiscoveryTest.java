@@ -68,6 +68,9 @@ public class LegacyPluginDiscoveryTest {
 	 */
 	@Test
 	public void testLegacyPluginDiscovery() {
+		// discovery should work even when running headless!
+		System.setProperty("java.awt.headless", "true");
+
 		// create an ImageJ application context with a legacy service
 		final Context context =
 			new Context(LegacyService.class, PluginService.class,
