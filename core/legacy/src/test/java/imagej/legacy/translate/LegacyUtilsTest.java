@@ -42,6 +42,7 @@ import ij.ImageStack;
 import ij.process.ByteProcessor;
 import imagej.data.Extents;
 import imagej.data.Position;
+import io.scif.img.axes.SCIFIOAxes;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
@@ -85,7 +86,8 @@ public class LegacyUtilsTest {
 	@Test
 	public void testRasterization() {
 		final long[][] dimsList = {{1,1,1}, {1,2,3}, {2,3,4}, {5,4,3}, {4,2,7}};
-		final AxisType[] axes = {Axes.CHANNEL, Axes.SPECTRA, Axes.FREQUENCY};
+		final AxisType[] axes =
+			{ Axes.CHANNEL, SCIFIOAxes.SPECTRA, SCIFIOAxes.FREQUENCY };
 		for (long[] dims : dimsList) {
 			// setup
 			long numChannels = 1;

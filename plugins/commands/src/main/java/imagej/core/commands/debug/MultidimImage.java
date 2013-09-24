@@ -42,6 +42,7 @@ import imagej.data.DatasetService;
 import imagej.data.DrawingTool;
 import imagej.render.RenderingService;
 import imagej.render.TextRenderer.TextJustification;
+import io.scif.img.axes.SCIFIOAxes;
 
 import java.util.Arrays;
 import java.util.List;
@@ -76,8 +77,8 @@ public class MultidimImage implements Command {
 		final long[] dims = new long[] { 90, 35, 4, 5, 6, 7 };
 		final String name = "Multidimensional Example";
 		final AxisType[] axes =
-			new AxisType[] { Axes.X, Axes.Y, Axes.CHANNEL, Axes.FREQUENCY, Axes.Z,
-				Axes.TIME };
+			new AxisType[] { Axes.X, Axes.Y, Axes.CHANNEL, SCIFIOAxes.FREQUENCY,
+				Axes.Z, Axes.TIME };
 		final int bitsPerPixel = 8;
 		final boolean signed = false;
 		final boolean floating = false;

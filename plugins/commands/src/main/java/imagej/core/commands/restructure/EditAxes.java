@@ -133,7 +133,7 @@ public class EditAxes extends DynamicCommand {
 
 	protected void initFields() {
 		ArrayList<String> choices = new ArrayList<String>();
-		AxisType[] axes = Axes.values();
+		AxisType[] axes = Axes.knownTypes();
 		for (AxisType axis : axes) {
 			choices.add(axis.getLabel());
 		}

@@ -225,8 +225,8 @@ public class BinaryMaskOverlay<U extends BitType, V extends Img<U>> extends Abst
 		newRoi.move(getRegionOfInterest().getOrigin());
 		BinaryMaskOverlay<U,V> overlay = new BinaryMaskOverlay<U,V>(getContext(), newRoi);
 		overlay.setAlpha(getAlpha());
-		overlay.setAxis(new DefaultCalibratedAxis(Axes.X), Axes.X.ordinal());
-		overlay.setAxis(new DefaultCalibratedAxis(Axes.Y), Axes.Y.ordinal());
+		overlay.setAxis(new DefaultCalibratedAxis(Axes.X), 0);
+		overlay.setAxis(new DefaultCalibratedAxis(Axes.Y), 1);
 		overlay.setFillColor(getFillColor());
 		overlay.setLineColor(getLineColor());
 		overlay.setLineEndArrowStyle(getLineEndArrowStyle());

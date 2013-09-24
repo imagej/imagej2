@@ -235,7 +235,7 @@ public class AddAxis extends DynamicCommand {
 		final MutableModuleItem<String> axisNameItem =
 			getInfo().getMutableInput(AXIS_NAME, String.class);
 		final ArrayList<String> choices = new ArrayList<String>();
-		for (final AxisType axis : Axes.values()) {
+		for (final AxisType axis : Axes.knownTypes()) {
 			if (axis.isXY()) continue;
 			if (getDataset().dimensionIndex(axis) < 0) choices.add(axis.getLabel());
 		}
