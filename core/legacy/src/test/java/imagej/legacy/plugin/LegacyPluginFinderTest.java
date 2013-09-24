@@ -35,13 +35,19 @@
 
 package imagej.legacy.plugin;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 import ij.ImageJ;
+import imagej.command.CommandInfo;
+import imagej.command.CommandService;
 import imagej.legacy.DefaultLegacyService;
 import imagej.legacy.LegacyService;
 import imagej.menu.ShadowMenu;
+import imagej.module.ModuleInfo;
+import imagej.module.ModuleService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,7 +92,8 @@ public class LegacyPluginFinderTest {
 	public void testLegacyPluginDiscovery() {
 		// create an ImageJ application context with a legacy service
 		final Context context =
-			new Context(LegacyService.class, PluginService.class);
+			new Context(LegacyService.class, PluginService.class,
+				ModuleService.class, CommandService.class);
 		final PluginService pluginService = context.getService(PluginService.class);
 
 		// skip test if legacy service not available
@@ -98,13 +105,42 @@ public class LegacyPluginFinderTest {
 			pluginService.getPluginsOfType(LegacyCommand.class);
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		final List<PluginInfo<?>> plugins = (List) typedPlugins;
-		assertPlugins(plugins, 320);
+		final HashMap<String, PluginInfo<?>> pluginMap =
+			assertPlugins(plugins, 320);
+
+		// verify the same plugins are available as modules
+		final ModuleService moduleService = context.getService(ModuleService.class);
+		final List<ModuleInfo> modules = moduleService.getModules();
+		int moduleCount = 0;
+		for (final ModuleInfo info : modules) {
+			if (info.getDelegateClassName().equals(
+				"imagej.legacy.plugin.LegacyCommand"))
+			{
+				moduleCount++;
+				final String key = info.getMenuPath().getLeaf().getName();
+				final PluginInfo<?> plugin = pluginMap.get(key);
+				assertNotNull("No plugin for module: " + info, plugin);
+			}
+		}
+		assertEquals(plugins.size(), moduleCount);
+
+		// verify the same plugins are available as commands
+		final CommandService commandService =
+			context.getService(CommandService.class);
+		final List<CommandInfo> commands =
+			commandService.getCommandsOfType(LegacyCommand.class);
+		assertEquals(plugins.size(), commands.size());
+		for (final CommandInfo info : commands) {
+			final String key = info.getMenuPath().getLeaf().getName();
+			final PluginInfo<?> plugin = pluginMap.get(key);
+			assertNotNull("No plugin for command: " + info, plugin);
+		}
 	}
 
 	// -- Helper methods --
 
-	private void assertPlugins(final List<PluginInfo<?>> plugins,
-		final int minCount)
+	private HashMap<String, PluginInfo<?>> assertPlugins(
+		final List<PluginInfo<?>> plugins, final int minCount)
 	{
 		assertTrue(plugins.size() >= minCount);
 
@@ -441,6 +477,8 @@ public class LegacyPluginFinderTest {
 			assertTrue("Plugin not found: " + expectedPlugin, found);
 		}
 		assertFalse(pluginMap.containsKey("Bogus Plugin"));
+
+		return pluginMap;
 	}
 
 }
