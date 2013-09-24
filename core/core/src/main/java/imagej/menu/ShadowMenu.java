@@ -113,6 +113,11 @@ public class ShadowMenu extends AbstractContextual implements
 	@Parameter(required = false)
 	private LogService log;
 
+	/** Constructs an empty root menu node. */
+	public ShadowMenu() {
+		this(null, null, -1, null);
+	}
+
 	/** Constructs a root menu node populated with the given modules. */
 	public ShadowMenu(final Context context,
 		final Collection<? extends ModuleInfo> modules)
@@ -124,7 +129,7 @@ public class ShadowMenu extends AbstractContextual implements
 	private ShadowMenu(final Context context, final ModuleInfo moduleInfo,
 		final int menuDepth, final ShadowMenu parent)
 	{
-		setContext(context);
+		if (context != null) setContext(context);
 		if (moduleInfo == null) {
 			this.moduleInfo = null;
 			menuEntry = null;
