@@ -87,6 +87,8 @@ public class ImageJ extends AbstractGateway {
 
 	/** Creates a new ImageJ application context with all available services. */
 	public ImageJ() {
+		// TODO: Consider whether to restrict available services
+		// to SciJava, SCIFIO and ImageJ by default.
 		this(new Context());
 	}
 
