@@ -40,6 +40,8 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.measure.Calibration;
 import imagej.data.Dataset;
+import imagej.data.display.ColorMode;
+import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.legacy.LegacyService;
@@ -113,7 +115,7 @@ public class GrayImagePlusCreator extends AbstractContextual implements
 			pixelHarmonizer.updateLegacyImage(dataset, imp);
 		}
 		metadataHarmonizer.updateLegacyImage(dataset, imp);
-		if (shouldBeComposite(dataset, imp)) {
+		if (shouldBeComposite(display, dataset, imp)) {
 			imp = makeCompositeImage(imp);
 		}
 		colorTableHarmonizer.updateLegacyImage(display, imp);
@@ -221,12 +223,14 @@ public class GrayImagePlusCreator extends AbstractContextual implements
 		return makeImagePlus(ds, planeMaker, false);
 	}
 
-	// TODO - is this logic correct? Specifically is testing compChanCnt
-	// sufficient?
-	private boolean shouldBeComposite(final Dataset ds, final ImagePlus imp) {
-		if (ds.getCompositeChannelCount() == 1) return false;
+	private boolean shouldBeComposite(ImageDisplay display, Dataset ds,
+		ImagePlus imp)
+	{
 		final int channels = imp.getNChannels();
 		if (channels < 2 || channels > 7) return false;
+		DatasetView view = imageDisplayService.getActiveDatasetView(display);
+		if (view != null && view.getColorMode() == ColorMode.COMPOSITE) return true;
+		if (ds.getCompositeChannelCount() == 1) return false;
 		return true;
 	}
 
