@@ -257,7 +257,7 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 	 * is. This is needed for color synchronization with legacy ImageJ.
 	 */
 	@Override
-	public ColorRGB getColor(final ChannelCollection channels) {
+	public synchronized ColorRGB getColor(final ChannelCollection channels) {
 		if (!isInitialized()) return null;
 
 		final int r, g, b;
