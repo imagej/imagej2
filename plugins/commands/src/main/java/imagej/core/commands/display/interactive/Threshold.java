@@ -135,7 +135,7 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 		callback = "displayTypeChanged", persist = false)
 	private String displayType = RED;
 
-	@Parameter(label = "Method", persist = false)
+	@Parameter(label = "Method", callback = "autoThreshold", persist = false)
 	private ThresholdMethod method;
 
 	@Parameter(label = "Auto", callback = "autoThreshold")
