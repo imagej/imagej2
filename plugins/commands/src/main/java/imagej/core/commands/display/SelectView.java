@@ -108,6 +108,7 @@ public class SelectView extends ContextCommand {
 		//   everything. so create one that does.
 		DataView dataView = makeOverlayView(display);
 		display.add(dataView);
+		dataView.setSelected(true);
 	}
 
 	public ImageDisplay getDisplay() {
