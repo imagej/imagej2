@@ -185,7 +185,7 @@ public class SamplingDefinition {
 					" for axis " + axis;
 			return false;
 		}
-		if (indices.get(indices.size() - 1) >= dimension) {
+		if (indices.get(indices.size() - 1) > dimension) {
 			err =
 				"Axis range partially beyond dimensions of display " + display.getName() +
 					" for axis " + axis;
