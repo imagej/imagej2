@@ -25,6 +25,9 @@
 
 	<properties>
 		<project.rootdir>${basedir}/..</project.rootdir>
+		<scifio.version>0.6.3-SNAPSHOT</scifio.version>
+		<imglib2.version>2.0.0-SNAPSHOT</imglib2.version>
+		<scijava-common.version>2.1.1-SNAPSHOT</scijava-common.version>
 	</properties>
 
 	<!-- NB: for project parent, in case of partial checkout -->
