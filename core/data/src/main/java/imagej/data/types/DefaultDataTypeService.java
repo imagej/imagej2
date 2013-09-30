@@ -112,6 +112,21 @@ public class DefaultDataTypeService extends
 	}
 
 	@Override
+	public DataType<?> getTypeByAttributes(int bitCount, boolean bounded,
+		boolean complex, boolean floating, boolean signed)
+	{
+		for (DataType<?> dataType : sortedInstances) {
+			if (bitCount != dataType.bitCount()) continue;
+			if (bounded != dataType.isBounded()) continue;
+			if (complex != dataType.isComplex()) continue;
+			if (floating != dataType.isFloat()) continue;
+			if (signed != dataType.isSigned()) continue;
+			return dataType;
+		}
+		return null;
+	}
+
+	@Override
 	public <U extends NumericType<U>, V extends NumericType<V>> void cast(
 		DataType<U> inputType, U input, DataType<V> outputType, V output)
 	{

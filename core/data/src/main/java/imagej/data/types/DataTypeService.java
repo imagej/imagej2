@@ -69,6 +69,14 @@ public interface DataTypeService extends SingletonService<DataType<?>> {
 	DataType<?> getTypeByClass(Class<?> typeClass);
 
 	/**
+	 * Returns the DataType whose internal type class matches the given
+	 * specifications exactly. If a type is unbounded it is expected that bitCount
+	 * will be specified as -1.
+	 */
+	DataType<?> getTypeByAttributes(int bitCount, boolean bounded, boolean complex,
+		boolean floating, boolean signed);
+
+	/**
 	 * Fills an output with a cast from an input given information about their
 	 * DataTypes. This version of cast() can throw IllegalArgumentException if it
 	 * can't find a safe cast. Use the alternate version of cast() that takes a
