@@ -208,9 +208,10 @@ public class GrayDisplayCreator extends AbstractContextual implements
 		final int bitsPerPixel = 8;
 		final boolean signed = false;
 		final boolean floating = false;
-
+		final boolean virtual = imp.getStack().isVirtual();
 		final Dataset ds =
-			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
+			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating,
+				virtual);
 
 		DatasetUtils.initColorTables(ds);
 
@@ -288,8 +289,10 @@ public class GrayDisplayCreator extends AbstractContextual implements
 		final int bitsPerPixel = imp.getBitDepth();
 		final boolean signed = isSigned(imp);
 		final boolean floating = isFloating(imp);
+		final boolean virtual = imp.getStack().isVirtual();
 		final Dataset ds =
-			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
+			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating,
+				virtual);
 
 		DatasetUtils.initColorTables(ds);
 
@@ -320,8 +323,11 @@ public class GrayDisplayCreator extends AbstractContextual implements
 		final boolean signed = isSigned(imp);
 		final boolean floating = isFloating(imp);
 
+		final boolean virtual = imp.getStack().isVirtual();
+
 		final Dataset ds =
-			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
+			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating,
+				virtual);
 
 		DatasetUtils.initColorTables(ds);
 

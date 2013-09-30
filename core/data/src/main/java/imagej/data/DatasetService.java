@@ -89,6 +89,24 @@ public interface DatasetService extends ImageJService {
 	/**
 	 * Creates a new dataset.
 	 * 
+	 * @param dims The dataset's dimensional extents.
+	 * @param name The dataset's name.
+	 * @param axes The dataset's dimensional axis labels.
+	 * @param bitsPerPixel The dataset's bit depth. Currently supported bit depths
+	 *          include 1, 8, 12, 16, 32 and 64.
+	 * @param signed Whether the dataset's pixels can have negative values.
+	 * @param floating Whether the dataset's pixels can have non-integer values.
+	 * @param virtual Whether to store in a virtual data structure or not.
+	 * @return The newly created dataset.
+	 * @throws IllegalArgumentException If the combination of bitsPerPixel, signed
+	 *           and floating parameters do not form a valid data type.
+	 */
+	Dataset create(long[] dims, String name, AxisType[] axes, int bitsPerPixel,
+		boolean signed, boolean floating, boolean virtual);
+
+	/**
+	 * Creates a new dataset.
+	 * 
 	 * @param <T> The type of the dataset.
 	 * @param type The type of the dataset.
 	 * @param dims The dataset's dimensional extents.
@@ -98,6 +116,20 @@ public interface DatasetService extends ImageJService {
 	 */
 	<T extends RealType<T> & NativeType<T>> Dataset create(T type, long[] dims,
 		String name, AxisType[] axes);
+
+	/**
+	 * Creates a new dataset.
+	 * 
+	 * @param <T> The type of the dataset.
+	 * @param type The type of the dataset.
+	 * @param dims The dataset's dimensional extents.
+	 * @param name The dataset's name.
+	 * @param axes The dataset's dimensional axis labels.
+	 * @param virtual If true make a virtual dataset.
+	 * @return The newly created dataset.
+	 */
+	<T extends RealType<T> & NativeType<T>> Dataset create(T type, long[] dims,
+		String name, AxisType[] axes, boolean virtual);
 
 	/**
 	 * Creates a new dataset using the provided {@link ImgFactory}.

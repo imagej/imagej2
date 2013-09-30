@@ -55,6 +55,7 @@ import java.util.List;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
+import net.imglib2.img.cell.CellImgFactory;
 import net.imglib2.img.planar.PlanarImgFactory;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.ImgPlus;
@@ -135,36 +136,44 @@ public final class DefaultDatasetService extends AbstractService implements
 		final AxisType[] axes, final int bitsPerPixel, final boolean signed,
 		final boolean floating)
 	{
+		return create(dims, name, axes, bitsPerPixel, signed, floating, false);
+	}
+
+	@Override
+	public Dataset create(final long[] dims, final String name,
+		final AxisType[] axes, final int bitsPerPixel, final boolean signed,
+		final boolean floating, boolean virtual)
+	{
 		if (bitsPerPixel == 1) {
 			if (signed || floating) invalidParams(bitsPerPixel, signed, floating);
-			return create(new BitType(), dims, name, axes);
+			return create(new BitType(), dims, name, axes, virtual);
 		}
 		if (bitsPerPixel == 8) {
 			if (floating) invalidParams(bitsPerPixel, signed, floating);
-			if (signed) return create(new ByteType(), dims, name, axes);
-			return create(new UnsignedByteType(), dims, name, axes);
+			if (signed) return create(new ByteType(), dims, name, axes, virtual);
+			return create(new UnsignedByteType(), dims, name, axes, virtual);
 		}
 		if (bitsPerPixel == 12) {
 			if (signed || floating) invalidParams(bitsPerPixel, signed, floating);
-			return create(new Unsigned12BitType(), dims, name, axes);
+			return create(new Unsigned12BitType(), dims, name, axes, virtual);
 		}
 		if (bitsPerPixel == 16) {
 			if (floating) invalidParams(bitsPerPixel, signed, floating);
-			if (signed) return create(new ShortType(), dims, name, axes);
-			return create(new UnsignedShortType(), dims, name, axes);
+			if (signed) return create(new ShortType(), dims, name, axes, virtual);
+			return create(new UnsignedShortType(), dims, name, axes, virtual);
 		}
 		if (bitsPerPixel == 32) {
 			if (floating) {
 				if (!signed) invalidParams(bitsPerPixel, signed, floating);
-				return create(new FloatType(), dims, name, axes);
+				return create(new FloatType(), dims, name, axes, virtual);
 			}
-			if (signed) return create(new IntType(), dims, name, axes);
-			return create(new UnsignedIntType(), dims, name, axes);
+			if (signed) return create(new IntType(), dims, name, axes, virtual);
+			return create(new UnsignedIntType(), dims, name, axes, virtual);
 		}
 		if (bitsPerPixel == 64) {
 			if (!signed) invalidParams(bitsPerPixel, signed, floating);
-			if (floating) return create(new DoubleType(), dims, name, axes);
-			return create(new LongType(), dims, name, axes);
+			if (floating) return create(new DoubleType(), dims, name, axes, virtual);
+			return create(new LongType(), dims, name, axes, virtual);
 		}
 		invalidParams(bitsPerPixel, signed, floating);
 		return null;
@@ -174,7 +183,17 @@ public final class DefaultDatasetService extends AbstractService implements
 	public <T extends RealType<T> & NativeType<T>> Dataset create(
 		final T type, final long[] dims, final String name, final AxisType[] axes)
 	{
-		final PlanarImgFactory<T> imgFactory = new PlanarImgFactory<T>();
+		return create(type, dims, name, axes, false);
+	}
+
+	@Override
+	public <T extends RealType<T> & NativeType<T>> Dataset create(final T type,
+		final long[] dims, final String name, final AxisType[] axes,
+		final boolean virtual)
+	{
+		final ImgFactory<T> imgFactory;
+		if (virtual) imgFactory = new CellImgFactory<T>();
+		else imgFactory = new PlanarImgFactory<T>();
 		return create(imgFactory, type, dims, name, axes);
 	}
 
