@@ -179,13 +179,13 @@ public class SamplingDefinition {
 		}
 		final List<Long> indices = subrange.getIndices();
 		double dimension = data.realMax(axisIndex) - data.realMin(axisIndex);
-		if (indices.get(0) >= dimension) {
+		if (indices.get(0) > dimension) {
 			err =
 				"Axis range fully beyond dimensions of display " + display.getName() +
 					" for axis " + axis;
 			return false;
 		}
-		if (indices.get(indices.size() - 1) >= dimension) {
+		if (indices.get(indices.size() - 1) > dimension) {
 			err =
 				"Axis range partially beyond dimensions of display " + display.getName() +
 					" for axis " + axis;
