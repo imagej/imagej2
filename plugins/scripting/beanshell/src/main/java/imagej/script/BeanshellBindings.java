@@ -167,7 +167,7 @@ public class BeanshellBindings implements Bindings {
 				}
 			});
 		}
-		return null;
+		return result;
 	}
 
 }
