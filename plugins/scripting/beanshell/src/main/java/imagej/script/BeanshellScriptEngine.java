@@ -51,7 +51,7 @@ import bsh.Interpreter;
 
 
 /**
- * TODO
+ * Beanshell support for ImageJ
  * 
  * @author Johannes Schindelin
  */

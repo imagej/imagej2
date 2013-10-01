@@ -49,7 +49,7 @@ import java.util.Set;
 import javax.script.Bindings;
 
 /**
- * TODO
+ * Local variables for Beanshell interpreters.
  * 
  * @author Johannes Schindelin
  */
