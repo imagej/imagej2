@@ -35,8 +35,6 @@
 
 package imagej.script;
 
-import bsh.EvalError;
-import bsh.Interpreter;
 import imagej.util.LineOutputStream;
 
 import java.io.IOException;
@@ -47,6 +45,9 @@ import java.io.Writer;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
+
+import bsh.EvalError;
+import bsh.Interpreter;
 
 
 /**
