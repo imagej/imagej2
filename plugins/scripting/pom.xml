@@ -16,6 +16,7 @@
 
 	<modules>
 		<module>beanshell</module>
+		<module>clojure</module>
 		<module>java</module>
 		<module>jruby</module>
 		<module>jython</module>
