@@ -43,6 +43,9 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
+import org.scijava.log.LogService;
+import org.scijava.log.StderrLogService;
+
 /**
  * This class implements dummy versions for ScriptEngine's methods that are not
  * needed by ImageJ's scripting interface
@@ -64,6 +67,21 @@ public abstract class AbstractScriptEngine implements ScriptEngine {
 	protected Bindings engineScopeBindings;
 
 	protected ScriptContext scriptContext = new AbstractScriptContext();
+
+	private LogService log;
+
+	// log service
+
+	public synchronized LogService log() {
+		if (log == null) {
+			log = new StderrLogService();
+		}
+		return log;
+	}
+
+	public void setLogService(final LogService log) {
+		if (log != null) this.log = log;
+	}
 
 	// Bindings
 
