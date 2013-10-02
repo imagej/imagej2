@@ -46,6 +46,7 @@ import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.ui.swing.overlay.IJCreationTool;
 import imagej.ui.swing.overlay.JHotDrawAdapter;
 import imagej.ui.swing.overlay.JHotDrawTool;
+import imagej.ui.swing.tools.SwingPolygonTool;
 
 import java.awt.Shape;
 
@@ -55,7 +56,10 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
+ * JHotDraw adapter for threshold overlays.
+ * 
  * @author Barry DeZonia
+ * @see SwingPolygonTool
  */
 @Plugin(type = JHotDrawAdapter.class, priority = Priority.HIGH_PRIORITY)
 public class ThresholdJHotDrawAdapter extends

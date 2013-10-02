@@ -43,6 +43,8 @@ import org.scijava.AbstractContextual;
 import org.scijava.plugin.Plugin;
 
 /**
+ * {@link DataType} definition for 64-bit floats.
+ * 
  * @author Barry DeZonia
  */
 @Plugin(type = DataType.class)

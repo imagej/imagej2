@@ -41,7 +41,7 @@ import java.math.BigInteger;
 import net.imglib2.type.numeric.IntegerType;
 
 /**
- * A BigInteger backed type (unlimited range).
+ * A BigInteger backed integral type (unlimited range).
  * 
  * @author Barry DeZonia
  */

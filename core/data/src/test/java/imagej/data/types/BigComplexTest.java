@@ -40,6 +40,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**
+ * Test code for the {@link BigComplex} type.
+ * 
  * @author Barry DeZonia
  */
 public class BigComplexTest {

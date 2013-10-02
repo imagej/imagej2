@@ -41,6 +41,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
+ * Test code for the {@link PreciseFixedFloatType} type.
+ * 
  * @author Barry DeZonia
  */
 public class PreciseFixedFloatTypeTest {

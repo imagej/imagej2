@@ -40,6 +40,9 @@ import java.math.BigDecimal;
 import net.imglib2.type.numeric.ComplexType;
 
 /**
+ * A fixed point complex float type. Its real and imaginary components are
+ * {@link PreciseFixedFloatType}s.
+ * 
  * @author Barry DeZonia
  */
 public class PreciseFixedComplexFloatType implements

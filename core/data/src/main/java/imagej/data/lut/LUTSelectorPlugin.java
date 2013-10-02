@@ -55,6 +55,10 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
+ * LUTSelectorPlugin is a {@link Command} that allows one to choose to apply a
+ * {@link ColorTable} to an {@link ImageDisplay}. The applicable ColorTables are
+ * discovered at runtime.
+ * 
  * @author Barry DeZonia
  */
 @Plugin(type = Command.class, label = "LUT Selector", initializer = "init",

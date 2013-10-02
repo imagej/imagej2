@@ -49,7 +49,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;
 
 /**
- * TODO
+ * The default implementation of the {@link DataTypeService}.
  * 
  * @author Barry DeZonia
  */

@@ -49,6 +49,10 @@ import org.scijava.plugin.Plugin;
 // do inside modern ImageJ).
 
 /**
+ * This is a placeholder command for as yet unfinished Benchmark command. The
+ * associated legacy command does not work in ImageJ2 and will need to be
+ * rewritten.
+ * 
  * @author Barry DeZonia
  */
 @Plugin(type = Command.class, iconPath = "/icons/commands/bricks.png",

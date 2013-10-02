@@ -58,6 +58,9 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
+ * Returns a multiline string containing metadata information about a given
+ * {@link ImageDisplay}.
+ * 
  * @author Barry DeZonia
  */
 @Plugin(type = Command.class, menu = {

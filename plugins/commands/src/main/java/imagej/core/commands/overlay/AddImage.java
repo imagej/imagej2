@@ -49,6 +49,10 @@ import org.scijava.plugin.Plugin;
 // draw over an image nondestructively at a location with an specified opacity.
 
 /**
+ * This is a placeholder command for as yet unfinished Add Image command. The
+ * associated legacy command does not work in ImageJ2 and will need to be
+ * rewritten.
+ * 
  * @author Barry DeZonia
  */
 @Plugin(type = Command.class, iconPath = "/icons/commands/bricks.png",

@@ -44,6 +44,8 @@ import org.scijava.Context;
 // across the legacy layer somewhat intact.
 
 /**
+ * Represents an {@link Overlay} that contains a string of text.
+ * 
  * @author Barry DeZonia
  */
 public class TextOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> {

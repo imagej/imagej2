@@ -37,6 +37,9 @@ package imagej.data.autoscale;
 
 
 /**
+ * DataRange allows one to construct a real interval between two real values.
+ * One can query measures like min, max, or extent.
+ * 
  * @author Barry DeZonia
  */
 public class DataRange {

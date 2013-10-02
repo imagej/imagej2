@@ -46,6 +46,9 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
+ * DeleteThreshold is a {@link Command} that allows one to remove an existing
+ * threshold overlay from an {@link ImageDisplay}.
+ * 
  * @author Barry DeZonia
  */
 @Plugin(type = Command.class, menu = {

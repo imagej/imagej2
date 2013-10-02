@@ -51,6 +51,8 @@ import org.junit.Test;
 import org.scijava.Context;
 
 /**
+ * Test code for the {@link ImgPlusService}.
+ * 
  * @author Barry DeZonia
  */
 public class TestImgPlusService {

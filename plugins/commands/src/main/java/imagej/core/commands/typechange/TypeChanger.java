@@ -67,6 +67,13 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
+ * TypeChanger changes the type of the data in a {@link Dataset}. The
+ * {@link DataType} of the data is chosen from the types discovered at runtime
+ * by the {@link DataTypeService}. Channels can be combined in the process if
+ * desired. Combination is done via channel averaging. After conversion data
+ * values are preserved as much as possible but do get clamped to the new data
+ * type's valid range.
+ * 
  * @author Barry DeZonia
  */
 @Plugin(type = Command.class,

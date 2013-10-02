@@ -39,6 +39,8 @@ import imagej.data.Dataset;
 import net.imglib2.Dimensions;
 
 /**
+ * Utility methods applicable to {@link Dataset}s.
+ * 
  * @author Barry DeZonia
  */
 public class DatasetUtils {

@@ -44,6 +44,9 @@ import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.RealType;
 
 /**
+ * ImgPlusService is an {@link ImageJService} that allows one to cast weakly
+ * typed {@link ImgPlus}es to more strongly typed versions.
+ * 
  * @author Barry DeZonia
  */
 public interface ImgPlusService extends ImageJService {

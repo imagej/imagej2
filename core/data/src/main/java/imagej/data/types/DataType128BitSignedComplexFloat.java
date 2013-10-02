@@ -42,6 +42,8 @@ import org.scijava.AbstractContextual;
 //TODO - uncomment when we are ready to support
 //@Plugin(type = DataType.class)
 /**
+ * {@link DataType} definition for 128-bit complex float numbers.
+ * 
  * @author Barry DeZonia
  */
 public class DataType128BitSignedComplexFloat extends AbstractContextual

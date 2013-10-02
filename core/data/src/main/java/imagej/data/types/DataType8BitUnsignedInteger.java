@@ -43,6 +43,8 @@ import org.scijava.AbstractContextual;
 import org.scijava.plugin.Plugin;
 
 /**
+ * {@link DataType} definition for 8-bit unsigned integers.
+ * 
  * @author Barry DeZonia
  */
 @Plugin(type = DataType.class)

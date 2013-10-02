@@ -110,6 +110,10 @@ import org.scijava.plugin.Plugin;
 //     Maybe handle dataset updated events to recalc hist as needed.
 
 /**
+ * Threshold is the {@link Command} that allows one to interactively create and
+ * manipulate {@link ThresholdOverlay}s for a {@link ImageDisplay}. It uses
+ * autodiscovered {@link ThresholdMethod}s.
+ * 
  * @author Barry DeZonia
  */
 @Plugin(type = Command.class, menu = {

@@ -43,6 +43,8 @@ import org.scijava.AbstractContextual;
 //TODO - uncomment when we are ready to support
 //@Plugin(type = DataType.class)
 /**
+ * {@link DataType} definition for variable bit signed integers.
+ * 
  * @author Barry DeZonia
  */
 public class DataTypeVariableBitSignedInteger extends AbstractContextual implements

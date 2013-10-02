@@ -47,6 +47,10 @@ import org.scijava.plugin.Plugin;
 // a pure modern ImageJ form.
 
 /**
+ * This is a placeholder command for as yet unfinished Create Shortcut command.
+ * The associated legacy command does not work in ImageJ2 and will need to be
+ * rewritten.
+ * 
  * @author Barry DeZonia
  */
 @Plugin(type = Command.class, iconPath = "/icons/commands/bricks.png",

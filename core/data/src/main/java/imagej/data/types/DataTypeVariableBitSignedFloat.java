@@ -42,6 +42,8 @@ import org.scijava.AbstractContextual;
 //TODO - uncomment when we are ready to support
 //@Plugin(type = DataType.class)
 /**
+ * {@link DataType} definition for variable bit floats.
+ * 
  * @author Barry DeZonia
  */
 public class DataTypeVariableBitSignedFloat extends AbstractContextual implements

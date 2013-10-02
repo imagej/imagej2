@@ -42,7 +42,8 @@ import net.imglib2.type.numeric.NumericType;
 import org.scijava.plugin.SingletonService;
 
 /**
- * TODO
+ * Service interface that supports runtime discovery of and conversion between
+ * {@link DataType}s.
  * 
  * @author Barry DeZonia
  */
