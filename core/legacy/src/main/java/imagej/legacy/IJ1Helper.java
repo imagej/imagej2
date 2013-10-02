@@ -60,6 +60,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
 import java.awt.Panel;
 import java.awt.TextArea;
+import java.awt.event.FocusEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -453,6 +454,10 @@ public class IJ1Helper extends AbstractContextual {
 		public void enableYesNoCancel() {}
 		@SuppressWarnings("unused")
 		public void enableYesNoCancel(String yesLabel, String noLabel) {}
+		@SuppressWarnings("unused")
+		public void focusGained(FocusEvent e) {}
+		@SuppressWarnings("unused")
+		public void focusLost(FocusEvent e) {}
 		public Button[] getButtons() { return null; }
 		public Vector<?> getCheckboxes() { return null; }
 		public Vector<?> getChoices() { return null; }
