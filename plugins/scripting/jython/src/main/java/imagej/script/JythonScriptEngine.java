@@ -35,10 +35,6 @@
 
 package imagej.script;
 
-import imagej.util.LineOutputStream;
-
-import java.io.IOException;
-import java.io.PrintStream;
 import java.io.Reader;
 import java.io.Writer;
 
@@ -46,23 +42,22 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
-import bsh.EvalError;
-import bsh.Interpreter;
-
+import org.python.core.Py;
+import org.python.util.PythonInterpreter;
 
 /**
- * Beanshell support for ImageJ
+ * A Python interpreter based on Jython.
  * 
  * @author Johannes Schindelin
  */
-public class BeanshellScriptEngine extends AbstractScriptEngine
+public class JythonScriptEngine extends AbstractScriptEngine
 {
 
-	protected final Interpreter interpreter;
+	protected final PythonInterpreter interpreter;
 
-	public BeanshellScriptEngine() {
-		interpreter = new Interpreter();
-		engineScopeBindings = new BeanshellBindings(interpreter);
+	public JythonScriptEngine() {
+		interpreter = new PythonInterpreter();
+		engineScopeBindings = new JythonBindings(interpreter);
 	}
 
 	@Override
@@ -71,7 +66,7 @@ public class BeanshellScriptEngine extends AbstractScriptEngine
 		try {
 			return interpreter.eval(script);
 		}
-		catch (final EvalError e) {
+		catch (final Exception e) {
 			throw new ScriptException(e);
 		}
 	}
@@ -80,10 +75,10 @@ public class BeanshellScriptEngine extends AbstractScriptEngine
 	public Object eval(final Reader reader) throws ScriptException {
 		setup();
 		try {
-			final String filename = (String) get(ScriptEngine.FILENAME);
-			return interpreter.eval(reader, interpreter.getNameSpace(), filename);
+			final String filename = getString(ScriptEngine.FILENAME);
+			return Py.runCode(interpreter.compile(reader, filename), null, interpreter.getLocals());
 		}
-		catch (final EvalError e) {
+		catch (final Exception e) {
 			throw new ScriptException(e);
 		}
 	}
@@ -92,29 +87,20 @@ public class BeanshellScriptEngine extends AbstractScriptEngine
 		final ScriptContext context = getContext();
 		final Reader reader = context.getReader();
 		if (reader != null) {
-			log().warn("Beanshell does not support redirecting the input");
+			interpreter.setIn(reader);
 		}
 		final Writer writer = context.getWriter();
-		if (writer != null) interpreter.setOut(new PrintStream(
-			new WriterOutputStream(writer)));
+		if (writer != null) {
+			interpreter.setOut(writer);
+		}
 		final Writer errorWriter = context.getErrorWriter();
-		if (errorWriter != null) interpreter.setErr(new PrintStream(
-			new WriterOutputStream(errorWriter)));
+		if (errorWriter != null) {
+			interpreter.setErr(errorWriter);
+		}
 	}
 
-	private static class WriterOutputStream extends LineOutputStream {
-
-		private Writer writer;
-
-		public WriterOutputStream(final Writer writer) {
-			this.writer = writer;
-		}
-
-		@Override
-		public void println(String line) throws IOException {
-			writer.write(line);
-			writer.write('\n');
-		}
-
+	private String getString(final String key) {
+		Object result = get(key);
+		return result == null ? null : result.toString();
 	}
 }

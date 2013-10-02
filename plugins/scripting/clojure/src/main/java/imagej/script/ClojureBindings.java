@@ -35,37 +35,34 @@
 
 package imagej.script;
 
-import bsh.Interpreter;
-import bsh.NameSpace;
-import bsh.UtilEvalError;
-
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.script.Bindings;
+import javax.script.ScriptEngine;
+
+import clojure.lang.RT;
+import clojure.lang.Symbol;
+import clojure.lang.Var;
 
 /**
- * Local variables for Beanshell interpreters.
+ * A {@link Bindings} wrapper around Clojure's local variables.
  * 
  * @author Johannes Schindelin
  */
-public class BeanshellBindings implements Bindings {
+public class ClojureBindings implements Bindings {
 
-	protected final Interpreter interpreter;
-	protected final NameSpace nameSpace;
-
-	public BeanshellBindings(final Interpreter interpreter) {
-		this.interpreter = interpreter;
-		nameSpace = interpreter.getNameSpace();
+	public ClojureBindings() {
+		final Var nameSpace = RT.var("clojure.core", "*ns*");
+		Var.pushThreadBindings(RT.map(nameSpace, nameSpace.get()));
+		RT.var("clojure.core", "in-ns").invoke(Symbol.intern("user"));
+		RT.var("clojure.core", "refer").invoke(Symbol.intern("clojure.core"));
 	}
 
 	@Override
 	public int size() {
-		return nameSpace.getVariableNames().length;
+		return Var.getThreadBindings().count();
 	}
 
 	@Override
@@ -80,27 +77,47 @@ public class BeanshellBindings implements Bindings {
 
 	@Override
 	public boolean containsValue(Object value) {
-		for (final Object value2 : values()) {
-			if (value.equals(value2)) return true;
-		}
-		return false;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Object get(Object key) {
+	public Object get(Object keyObject) {
+		String key = (String)keyObject;
+		int dot = key.lastIndexOf('.');
+		final String nameSpace;
+		if (dot < 0) {
+			nameSpace = "user";
+		} else {
+			nameSpace = key.substring(0, dot);
+			key = key.substring(dot + 1);
+		}
 		try {
-			return nameSpace.get((String)key, interpreter);
-		} catch (UtilEvalError e) {
+			return RT.var(nameSpace, key).get();
+		} catch (Error e) {
 			return null;
 		}
 	}
 
+	private Object get(final String nameSpace, final String key) {
+		return RT.var(nameSpace, key);
+	}
+
 	@Override
 	public Object put(String key, Object value) {
-		final Object result = get(key);
+		int dot = key.lastIndexOf('.');
+		final String nameSpace;
+		if (dot < 0) {
+			nameSpace = "user";
+		} else {
+			nameSpace = key.substring(0, dot);
+			key = key.substring(dot + 1);
+		}
+		final Object result = get(nameSpace, key);
 		try {
-			nameSpace.setVariable(key, value, false);
-		} catch (UtilEvalError e) {
+			final Var var = RT.var(nameSpace, key, null);
+			var.setDynamic();
+			Var.pushThreadBindings(RT.map(var, value));
+		} catch (Error e) {
 			// ignore
 		}
 		return result;
@@ -108,9 +125,7 @@ public class BeanshellBindings implements Bindings {
 
 	@Override
 	public Object remove(Object key) {
-		final Object result = get(key);
-		nameSpace.unsetVariable((String)key);
-		return result;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -122,52 +137,22 @@ public class BeanshellBindings implements Bindings {
 
 	@Override
 	public void clear() {
-		nameSpace.clear();
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Set<String> keySet() {
-		final Set<String> result = new HashSet<String>();
-		for (final String name : nameSpace.getVariableNames()) {
-			result.add(name);
-		}
-		return result;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Collection<Object> values() {
-		final List<Object> result = new ArrayList<Object>();
-		for (final String name : nameSpace.getVariableNames()) try {
-			result.add(nameSpace.get(name, interpreter));
-		} catch (UtilEvalError exc) {
-			// ignore for now
-		}
-		return result;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Set<Entry<String, Object>> entrySet() {
-		final Set<Entry<String, Object>> result = new HashSet<Entry<String, Object>>();
-		for (final String name : nameSpace.getVariableNames()) {
-			result.add(new Entry<String, Object>() {
-
-				@Override
-				public String getKey() {
-					return name;
-				}
-
-				@Override
-				public Object getValue() {
-					return get(name);
-				}
-
-				@Override
-				public Object setValue(Object value) {
-					throw new UnsupportedOperationException();
-				}
-			});
-		}
-		return result;
+		throw new UnsupportedOperationException();
 	}
 
 }

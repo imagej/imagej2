@@ -35,86 +35,50 @@
 
 package imagej.script;
 
-import imagej.util.LineOutputStream;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.StringReader;
 
+import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
-import javax.script.ScriptException;
+import javax.script.ScriptEngineFactory;
 
-import bsh.EvalError;
-import bsh.Interpreter;
-
+import org.junit.Test;
+import org.scijava.Context;
 
 /**
- * Beanshell support for ImageJ
+ * Jython unit tests.
  * 
  * @author Johannes Schindelin
  */
-public class BeanshellScriptEngine extends AbstractScriptEngine
-{
+public class JythonTest {
 
-	protected final Interpreter interpreter;
+	@Test
+	public void testBasic() throws Exception {
+		final Context context = new Context(ScriptService.class);
+		final ScriptService scriptService = context.getService(ScriptService.class);
 
-	public BeanshellScriptEngine() {
-		interpreter = new Interpreter();
-		engineScopeBindings = new BeanshellBindings(interpreter);
+		String script = "1 + 2";
+		Object result = scriptService.eval("add.py", new StringReader(script));
+		assertEquals("3", result.toString());
 	}
 
-	@Override
-	public Object eval(final String script) throws ScriptException {
-		setup();
-		try {
-			return interpreter.eval(script);
-		}
-		catch (final EvalError e) {
-			throw new ScriptException(e);
-		}
-	}
+	@Test
+	public void testLocals() throws Exception {
+		final Context context = new Context(ScriptService.class);
+		final ScriptService scriptService = context.getService(ScriptService.class);
 
-	@Override
-	public Object eval(final Reader reader) throws ScriptException {
-		setup();
-		try {
-			final String filename = (String) get(ScriptEngine.FILENAME);
-			return interpreter.eval(reader, interpreter.getNameSpace(), filename);
-		}
-		catch (final EvalError e) {
-			throw new ScriptException(e);
-		}
-	}
+		final ScriptEngineFactory factory = scriptService.getByFileExtension("py");
+		final ScriptEngine engine = factory.getScriptEngine();
+		assertEquals(JythonScriptEngine.class, engine.getClass());
+		engine.put("hello", 17);
+		assertEquals("17", engine.eval("hello").toString());
+		assertEquals("17", engine.get("hello").toString());
 
-	protected void setup() {
-		final ScriptContext context = getContext();
-		final Reader reader = context.getReader();
-		if (reader != null) {
-			log().warn("Beanshell does not support redirecting the input");
-		}
-		final Writer writer = context.getWriter();
-		if (writer != null) interpreter.setOut(new PrintStream(
-			new WriterOutputStream(writer)));
-		final Writer errorWriter = context.getErrorWriter();
-		if (errorWriter != null) interpreter.setErr(new PrintStream(
-			new WriterOutputStream(errorWriter)));
-	}
-
-	private static class WriterOutputStream extends LineOutputStream {
-
-		private Writer writer;
-
-		public WriterOutputStream(final Writer writer) {
-			this.writer = writer;
-		}
-
-		@Override
-		public void println(String line) throws IOException {
-			writer.write(line);
-			writer.write('\n');
-		}
-
+		Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
+		bindings.clear();
+		assertNull(engine.get("hello"));
 	}
 }

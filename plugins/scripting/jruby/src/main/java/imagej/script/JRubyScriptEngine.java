@@ -35,9 +35,6 @@
 
 package imagej.script;
 
-import imagej.util.LineOutputStream;
-
-import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.io.Writer;
@@ -46,32 +43,32 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
-import bsh.EvalError;
-import bsh.Interpreter;
-
+import org.jruby.Ruby;
+import org.jruby.RubyInstanceConfig;
+import org.jruby.embed.io.ReaderInputStream;
+import org.jruby.embed.io.WriterOutputStream;
 
 /**
- * Beanshell support for ImageJ
+ * A Ruby interpreter based on JRuby.
  * 
  * @author Johannes Schindelin
  */
-public class BeanshellScriptEngine extends AbstractScriptEngine
+public class JRubyScriptEngine extends AbstractScriptEngine
 {
+	private Ruby interpreter;
 
-	protected final Interpreter interpreter;
-
-	public BeanshellScriptEngine() {
-		interpreter = new Interpreter();
-		engineScopeBindings = new BeanshellBindings(interpreter);
+	public JRubyScriptEngine() {
+		interpreter = Ruby.newInstance();
+		engineScopeBindings = new JRubyBindings(interpreter);
 	}
 
 	@Override
 	public Object eval(final String script) throws ScriptException {
 		setup();
 		try {
-			return interpreter.eval(script);
+			return interpreter.evalScriptlet(script);
 		}
-		catch (final EvalError e) {
+		catch (final Exception e) {
 			throw new ScriptException(e);
 		}
 	}
@@ -80,41 +77,34 @@ public class BeanshellScriptEngine extends AbstractScriptEngine
 	public Object eval(final Reader reader) throws ScriptException {
 		setup();
 		try {
-			final String filename = (String) get(ScriptEngine.FILENAME);
-			return interpreter.eval(reader, interpreter.getNameSpace(), filename);
+			final String filename = getString(ScriptEngine.FILENAME);
+			interpreter.runFromMain(new ReaderInputStream(reader), filename == null ? "*none*" : filename);
+			return this;
 		}
-		catch (final EvalError e) {
+		catch (final Exception e) {
 			throw new ScriptException(e);
 		}
 	}
 
 	protected void setup() {
+		final RubyInstanceConfig config = interpreter.getInstanceConfig();
 		final ScriptContext context = getContext();
 		final Reader reader = context.getReader();
 		if (reader != null) {
-			log().warn("Beanshell does not support redirecting the input");
+			config.setInput(new ReaderInputStream(reader));
 		}
 		final Writer writer = context.getWriter();
-		if (writer != null) interpreter.setOut(new PrintStream(
-			new WriterOutputStream(writer)));
+		if (writer != null) {
+			config.setOutput(new PrintStream(new WriterOutputStream(writer)));
+		}
 		final Writer errorWriter = context.getErrorWriter();
-		if (errorWriter != null) interpreter.setErr(new PrintStream(
-			new WriterOutputStream(errorWriter)));
+		if (errorWriter != null) {
+			config.setError(new PrintStream(new WriterOutputStream(errorWriter)));
+		}
 	}
 
-	private static class WriterOutputStream extends LineOutputStream {
-
-		private Writer writer;
-
-		public WriterOutputStream(final Writer writer) {
-			this.writer = writer;
-		}
-
-		@Override
-		public void println(String line) throws IOException {
-			writer.write(line);
-			writer.write('\n');
-		}
-
+	private String getString(final String key) {
+		Object result = get(key);
+		return result == null ? null : result.toString();
 	}
 }

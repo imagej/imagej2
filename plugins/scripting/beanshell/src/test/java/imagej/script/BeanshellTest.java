@@ -44,7 +44,7 @@ import org.scijava.Context;
 import org.scijava.service.ServiceHelper;
 
 /**
- * TODO
+ * Unit tests for the Beanshell support.
  * 
  * @author Johannes Schindelin
  */

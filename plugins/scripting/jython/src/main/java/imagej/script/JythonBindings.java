@@ -35,10 +35,6 @@
 
 package imagej.script;
 
-import bsh.Interpreter;
-import bsh.NameSpace;
-import bsh.UtilEvalError;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -48,24 +44,25 @@ import java.util.Set;
 
 import javax.script.Bindings;
 
+import org.python.core.PyStringMap;
+import org.python.util.PythonInterpreter;
+
 /**
- * Local variables for Beanshell interpreters.
+ * A {@link Bindings} wrapper around Jython's local variables.
  * 
  * @author Johannes Schindelin
  */
-public class BeanshellBindings implements Bindings {
+public class JythonBindings implements Bindings {
 
-	protected final Interpreter interpreter;
-	protected final NameSpace nameSpace;
+	protected final PythonInterpreter interpreter;
 
-	public BeanshellBindings(final Interpreter interpreter) {
+	public JythonBindings(final PythonInterpreter interpreter) {
 		this.interpreter = interpreter;
-		nameSpace = interpreter.getNameSpace();
 	}
 
 	@Override
 	public int size() {
-		return nameSpace.getVariableNames().length;
+		return interpreter.getLocals().__len__();
 	}
 
 	@Override
@@ -89,8 +86,8 @@ public class BeanshellBindings implements Bindings {
 	@Override
 	public Object get(Object key) {
 		try {
-			return nameSpace.get((String)key, interpreter);
-		} catch (UtilEvalError e) {
+			return interpreter.get((String)key);
+		} catch (Error e) {
 			return null;
 		}
 	}
@@ -99,8 +96,8 @@ public class BeanshellBindings implements Bindings {
 	public Object put(String key, Object value) {
 		final Object result = get(key);
 		try {
-			nameSpace.setVariable(key, value, false);
-		} catch (UtilEvalError e) {
+			interpreter.set(key, value);
+		} catch (Error e) {
 			// ignore
 		}
 		return result;
@@ -109,7 +106,7 @@ public class BeanshellBindings implements Bindings {
 	@Override
 	public Object remove(Object key) {
 		final Object result = get(key);
-		nameSpace.unsetVariable((String)key);
+		if (result != null) interpreter.getLocals().__delitem__((String)key);
 		return result;
 	}
 
@@ -120,16 +117,20 @@ public class BeanshellBindings implements Bindings {
 		}
 	}
 
+	private PyStringMap dict() {
+		return (PyStringMap)interpreter.getLocals();
+	}
+
 	@Override
 	public void clear() {
-		nameSpace.clear();
+		dict().clear();
 	}
 
 	@Override
 	public Set<String> keySet() {
 		final Set<String> result = new HashSet<String>();
-		for (final String name : nameSpace.getVariableNames()) {
-			result.add(name);
+		for (final Object name : dict().keys()) {
+			result.add(name.toString());
 		}
 		return result;
 	}
@@ -137,9 +138,9 @@ public class BeanshellBindings implements Bindings {
 	@Override
 	public Collection<Object> values() {
 		final List<Object> result = new ArrayList<Object>();
-		for (final String name : nameSpace.getVariableNames()) try {
-			result.add(nameSpace.get(name, interpreter));
-		} catch (UtilEvalError exc) {
+		for (final Object name : dict().keys()) try {
+			result.add(get(name));
+		} catch (Error exc) {
 			// ignore for now
 		}
 		return result;
@@ -148,12 +149,12 @@ public class BeanshellBindings implements Bindings {
 	@Override
 	public Set<Entry<String, Object>> entrySet() {
 		final Set<Entry<String, Object>> result = new HashSet<Entry<String, Object>>();
-		for (final String name : nameSpace.getVariableNames()) {
+		for (final Object name : dict().keys()) {
 			result.add(new Entry<String, Object>() {
 
 				@Override
 				public String getKey() {
-					return name;
+					return name.toString();
 				}
 
 				@Override

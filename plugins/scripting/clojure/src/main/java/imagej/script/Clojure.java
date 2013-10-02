@@ -35,86 +35,30 @@
 
 package imagej.script;
 
-import imagej.util.LineOutputStream;
+import java.util.Arrays;
+import java.util.List;
 
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.Reader;
-import java.io.Writer;
-
-import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
-import javax.script.ScriptException;
 
-import bsh.EvalError;
-import bsh.Interpreter;
-
+import org.scijava.plugin.Plugin;
 
 /**
- * Beanshell support for ImageJ
+ * An adapter of the Clojure interpreter to ImageJ's scripting interfaces
  * 
  * @author Johannes Schindelin
+ * @see ScriptEngine
  */
-public class BeanshellScriptEngine extends AbstractScriptEngine
-{
+@Plugin(type = ScriptLanguage.class)
+public class Clojure extends AbstractScriptEngineFactory {
 
-	protected final Interpreter interpreter;
-
-	public BeanshellScriptEngine() {
-		interpreter = new Interpreter();
-		engineScopeBindings = new BeanshellBindings(interpreter);
+	@Override
+	public List<String> getExtensions() {
+		return Arrays.asList("clj");
 	}
 
 	@Override
-	public Object eval(final String script) throws ScriptException {
-		setup();
-		try {
-			return interpreter.eval(script);
-		}
-		catch (final EvalError e) {
-			throw new ScriptException(e);
-		}
+	public ScriptEngine getScriptEngine() {
+		return new ClojureScriptEngine();
 	}
 
-	@Override
-	public Object eval(final Reader reader) throws ScriptException {
-		setup();
-		try {
-			final String filename = (String) get(ScriptEngine.FILENAME);
-			return interpreter.eval(reader, interpreter.getNameSpace(), filename);
-		}
-		catch (final EvalError e) {
-			throw new ScriptException(e);
-		}
-	}
-
-	protected void setup() {
-		final ScriptContext context = getContext();
-		final Reader reader = context.getReader();
-		if (reader != null) {
-			log().warn("Beanshell does not support redirecting the input");
-		}
-		final Writer writer = context.getWriter();
-		if (writer != null) interpreter.setOut(new PrintStream(
-			new WriterOutputStream(writer)));
-		final Writer errorWriter = context.getErrorWriter();
-		if (errorWriter != null) interpreter.setErr(new PrintStream(
-			new WriterOutputStream(errorWriter)));
-	}
-
-	private static class WriterOutputStream extends LineOutputStream {
-
-		private Writer writer;
-
-		public WriterOutputStream(final Writer writer) {
-			this.writer = writer;
-		}
-
-		@Override
-		public void println(String line) throws IOException {
-			writer.write(line);
-			writer.write('\n');
-		}
-
-	}
 }
