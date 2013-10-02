@@ -49,7 +49,6 @@ import javax.script.ScriptException;
 import bsh.EvalError;
 import bsh.Interpreter;
 
-
 /**
  * Beanshell support for ImageJ
  * 
