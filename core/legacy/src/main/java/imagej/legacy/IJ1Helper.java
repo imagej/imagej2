@@ -53,6 +53,7 @@ import imagej.platform.event.AppQuitEvent;
 
 import java.awt.Button;
 import java.awt.Checkbox;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
@@ -424,6 +425,8 @@ public class IJ1Helper extends AbstractContextual {
 		public void addMessage(String text) {}
 		@SuppressWarnings("unused")
 		public void addMessage(String text, Font font) {}
+		@SuppressWarnings("unused")
+		public void addMessage(String text, Font font, Color color) {}
 		@SuppressWarnings("unused")
 		public void addPanel(Panel panel) {}
 		@SuppressWarnings("unused")
