@@ -289,8 +289,9 @@ public class IJ1Helper extends AbstractContextual {
 		protected List<String> choices;
 		protected List<Integer> choiceIndices;
 		protected String textArea1, textArea2;
+		protected List<String> radioButtons;
 
-		protected int numberfieldIndex = 0, stringfieldIndex = 0, checkboxIndex = 0, choiceIndex = 0, textAreaIndex = 0;
+		protected int numberfieldIndex = 0, stringfieldIndex = 0, checkboxIndex = 0, choiceIndex = 0, textAreaIndex = 0, radioButtonIndex = 0;
 		protected boolean invalidNumber;
 		protected String errorMessage;
 
@@ -302,6 +303,7 @@ public class IJ1Helper extends AbstractContextual {
 			checkboxes = new ArrayList<Boolean>();
 			choices = new ArrayList<String>();
 			choiceIndices = new ArrayList<Integer>();
+			radioButtons = new ArrayList<String>();
 		}
 
 		public void addCheckbox(String label, boolean defaultValue) {
@@ -390,6 +392,17 @@ public class IJ1Helper extends AbstractContextual {
 				return textArea2;
 			}
 			return null;
+		}
+
+		/** Adds a radio button group. */
+		@SuppressWarnings("unused")
+		public void addRadioButtonGroup(String label, String[] items, int rows, int columns, String defaultItem) {
+			radioButtons.add(getMacroParameter(label, defaultItem));
+		}
+
+		/** Returns the selected item in the next radio button group. */
+		public String getNextRadioButton() {
+			return radioButtons.get(radioButtonIndex++);
 		}
 
 		public boolean invalidNumber() {
