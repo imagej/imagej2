@@ -4,6 +4,7 @@
 .settings
 target
 *.swp
+*.releaseBackup
 /.idea
 *.iml
 /app/ImageJ.app/
