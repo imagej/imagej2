@@ -180,7 +180,7 @@ sub process($) {
     }
   }
 
-  if ($data[$i] !~ /^ \* [^\s]/) {
+  if ($data[$i] !~ /^ \* [^\s@]/) {
     print "$file: malformed class comment at line #$i\n";
     return MALFORMED_CLASS_COMMENT;
   }
