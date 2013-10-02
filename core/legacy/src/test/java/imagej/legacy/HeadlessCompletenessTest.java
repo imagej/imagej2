@@ -41,6 +41,7 @@ import imagej.legacy.IJ1Helper.LegacyGenericDialog;
 import java.util.HashMap;
 import java.util.Map;
 
+import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
@@ -56,7 +57,8 @@ public class HeadlessCompletenessTest {
 
 	@Test
 	public void missingGenericDialogMethods() throws Exception {
-		final ClassPool pool = ClassPool.getDefault();
+		final ClassPool pool = new ClassPool();
+		pool.appendClassPath(new ClassClassPath(getClass()));
 		final String originalName = "ij.gui.GenericDialog";
 		final CtClass original = pool.get(originalName);
 		final String headlessName = LegacyGenericDialog.class.getName();
