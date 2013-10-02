@@ -60,6 +60,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
 import java.awt.Panel;
 import java.awt.TextArea;
+import java.awt.event.FocusEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -289,8 +290,9 @@ public class IJ1Helper extends AbstractContextual {
 		protected List<String> choices;
 		protected List<Integer> choiceIndices;
 		protected String textArea1, textArea2;
+		protected List<String> radioButtons;
 
-		protected int numberfieldIndex = 0, stringfieldIndex = 0, checkboxIndex = 0, choiceIndex = 0, textAreaIndex = 0;
+		protected int numberfieldIndex = 0, stringfieldIndex = 0, checkboxIndex = 0, choiceIndex = 0, textAreaIndex = 0, radioButtonIndex = 0;
 		protected boolean invalidNumber;
 		protected String errorMessage;
 
@@ -302,6 +304,7 @@ public class IJ1Helper extends AbstractContextual {
 			checkboxes = new ArrayList<Boolean>();
 			choices = new ArrayList<String>();
 			choiceIndices = new ArrayList<Integer>();
+			radioButtons = new ArrayList<String>();
 		}
 
 		public void addCheckbox(String label, boolean defaultValue) {
@@ -392,6 +395,17 @@ public class IJ1Helper extends AbstractContextual {
 			return null;
 		}
 
+		/** Adds a radio button group. */
+		@SuppressWarnings("unused")
+		public void addRadioButtonGroup(String label, String[] items, int rows, int columns, String defaultItem) {
+			radioButtons.add(getMacroParameter(label, defaultItem));
+		}
+
+		/** Returns the selected item in the next radio button group. */
+		public String getNextRadioButton() {
+			return radioButtons.get(radioButtonIndex++);
+		}
+
 		public boolean invalidNumber() {
 			boolean wasInvalid = invalidNumber;
 			invalidNumber = false;
@@ -440,6 +454,10 @@ public class IJ1Helper extends AbstractContextual {
 		public void enableYesNoCancel() {}
 		@SuppressWarnings("unused")
 		public void enableYesNoCancel(String yesLabel, String noLabel) {}
+		@SuppressWarnings("unused")
+		public void focusGained(FocusEvent e) {}
+		@SuppressWarnings("unused")
+		public void focusLost(FocusEvent e) {}
 		public Button[] getButtons() { return null; }
 		public Vector<?> getCheckboxes() { return null; }
 		public Vector<?> getChoices() { return null; }
@@ -464,6 +482,8 @@ public class IJ1Helper extends AbstractContextual {
 		@SuppressWarnings("unused")
 		public void setOKLabel(String label) {}
 		protected void setup() {}
+		public void accessTextFields() {}
+		public void showHelp() {}
 	}
 
 	/**
