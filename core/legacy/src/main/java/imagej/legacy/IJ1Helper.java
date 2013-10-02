@@ -482,6 +482,8 @@ public class IJ1Helper extends AbstractContextual {
 		@SuppressWarnings("unused")
 		public void setOKLabel(String label) {}
 		protected void setup() {}
+		public void accessTextFields() {}
+		public void showHelp() {}
 	}
 
 	/**
