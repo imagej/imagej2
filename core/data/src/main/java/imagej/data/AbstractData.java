@@ -47,6 +47,7 @@ import java.io.ObjectOutput;
 
 import net.imglib2.RealInterval;
 import net.imglib2.meta.AbstractCalibratedRealInterval;
+import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.DefaultCalibratedAxis;
@@ -174,7 +175,7 @@ public abstract class AbstractData extends
 		out.writeInt(numAxes);
 		for (int i = 0; i < numAxes; i++) {
 			CalibratedAxis axis = axis(i);
-			out.writeObject(axis.type());
+			out.writeUTF(axis.type().getLabel());
 			out.writeDouble(axis.calibration());
 			if (axis.unit() == null) out.writeUTF(BOGUS_NAME);
 			else out.writeUTF(axis.unit());
@@ -190,7 +191,7 @@ public abstract class AbstractData extends
 			name = null;
 		int numAxes = in.readInt();
 		for (int i = 0; i < numAxes; i++) {
-			AxisType type = (AxisType) in.readObject();
+			AxisType type = Axes.get(in.readUTF());
 			double cal = in.readDouble();
 			String unitString = in.readUTF();
 			String unit;
