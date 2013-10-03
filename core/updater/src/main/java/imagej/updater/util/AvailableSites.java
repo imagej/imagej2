@@ -68,8 +68,9 @@ public final class AvailableSites {
 		final String text = wiki.getPageSource(SITE_LIST_PAGE_TITLE);
 
 		final int start = text.indexOf("\n{| class=\"wikitable\"\n");
-		final int end = text.indexOf("\n|}\n", start);
-		if (start < 0 || end < 0) {
+		int end = text.indexOf("\n|}\n", start);
+		if (end < 0) end = text.length();
+		if (start < 0) {
 			throw new IOException("Could not find table");
 		}
 		final String[] table = text.substring(start + 1, end).split("\n\\|-");
