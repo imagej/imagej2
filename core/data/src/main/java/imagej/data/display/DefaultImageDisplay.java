@@ -406,6 +406,11 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 	// -- CalibratedSpace methods --
 
 	@Override
+	public double averageScale(final int d) {
+		return combinedInterval.averageScale(d);
+	}
+
+	@Override
 	public int dimensionIndex(final AxisType axis) {
 		return combinedInterval.dimensionIndex(axis);
 	}

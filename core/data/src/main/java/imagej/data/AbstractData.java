@@ -45,10 +45,10 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import net.imglib2.RealInterval;
+import net.imglib2.meta.AbstractCalibratedRealInterval;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.DefaultCalibratedAxis;
-import net.imglib2.meta.DefaultCalibratedRealInterval;
 
 import org.scijava.Context;
 import org.scijava.event.EventService;
@@ -63,8 +63,9 @@ import org.scijava.plugin.Parameter;
  * @see Dataset
  * @see Overlay
  */
-public abstract class AbstractData extends DefaultCalibratedRealInterval
-	implements Data, Comparable<Data>, Externalizable
+public abstract class AbstractData extends
+	AbstractCalibratedRealInterval<CalibratedAxis> implements Data,
+	Comparable<Data>, Externalizable
 {
 
 	@Parameter
