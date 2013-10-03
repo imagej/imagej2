@@ -70,7 +70,7 @@ public final class AvailableSites {
 		final int start = text.indexOf("\n{| class=\"wikitable\"\n");
 		final int end = text.indexOf("\n|}\n", start);
 		if (start < 0 || end < 0) {
-			throw new Error("Could not find table");
+			throw new IOException("Could not find table");
 		}
 		final String[] table = text.substring(start + 1, end).split("\n\\|-");
 
@@ -86,15 +86,15 @@ public final class AvailableSites {
 
 		// Sanity checks
 		final Iterator<UpdateSite> iter = result.values().iterator();
-		if (!iter.hasNext()) throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
+		if (!iter.hasNext()) throw new IOException("Invalid page: " + SITE_LIST_PAGE_TITLE);
 		UpdateSite site = iter.next();
 		if (!site.getName().equals("ImageJ") || !site.getURL().equals("http://update.imagej.net/")) {
-			throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
+			throw new IOException("Invalid page: " + SITE_LIST_PAGE_TITLE);
 		}
-		if (!iter.hasNext()) throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
+		if (!iter.hasNext()) throw new IOException("Invalid page: " + SITE_LIST_PAGE_TITLE);
 		site = iter.next();
 		if (!site.getName().equals("Fiji") || !site.getURL().equals("http://fiji.sc/update/")) {
-			throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
+			throw new IOException("Invalid page: " + SITE_LIST_PAGE_TITLE);
 		}
 
 		return result;
