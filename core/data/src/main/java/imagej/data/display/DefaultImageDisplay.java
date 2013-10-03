@@ -129,11 +129,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 			combinedInterval.add(view.getData());
 		}
 		combinedInterval.update();
-		/* BDZ removed Aug 15 2013
-		if (!combinedInterval.isDiscrete()) {
-			throw new IllegalStateException("Invalid combination of views");
-		}
-		*/
 
 		// rebuild views
 		for (final DataView view : DefaultImageDisplay.this) {
