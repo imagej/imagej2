@@ -148,26 +148,6 @@ public class PointOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> 
 		calcRegion();
 	}
 
-	/*
-	@Override
-	public Overlay duplicate() {
-		PointOverlay overlay = new PointOverlay(getContext());
-		RealLocalizable origPt = getPoint();
-		overlay.setPoint(origPt);
-		overlay.setAlpha(getAlpha());
-		overlay.setAxis(Axes.X, Axes.X.ordinal());
-		overlay.setAxis(Axes.Y, Axes.Y.ordinal());
-		overlay.setFillColor(getFillColor());
-		overlay.setLineColor(getLineColor());
-		overlay.setLineEndArrowStyle(getLineEndArrowStyle());
-		overlay.setLineStartArrowStyle(getLineStartArrowStyle());
-		overlay.setLineStyle(getLineStyle());
-		overlay.setLineWidth(getLineWidth());
-		overlay.setName(getName());
-		return overlay;
-	}
-	*/
-
 	@Override
 	public void move(double[] deltas) {
 		getRegionOfInterest().move(deltas);

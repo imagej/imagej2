@@ -91,34 +91,7 @@ public class RectangleOverlay extends
 		roi.setExtent(in.readDouble(), 0);
 		roi.setExtent(in.readDouble(), 1);
 	}
-	
-	/*
-	@Override
-	public Overlay duplicate() {
-		RectangleOverlay overlay = new RectangleOverlay(getContext());
-		RegionOfInterest origRoi = getRegionOfInterest();
-		double[] origin = new double[origRoi.numDimensions()];
-		double[] extent = new double[origRoi.numDimensions()];
-		for (int i = 0; i < origin.length; i++) {
-			origin[i] = origRoi.realMin(i);
-			extent[i] = origRoi.realMax(i) - origin[i];
-		}
-		overlay.getRegionOfInterest().setOrigin(origin);
-		overlay.getRegionOfInterest().setExtent(extent);
-		overlay.setAlpha(getAlpha());
-		overlay.setAxis(Axes.X, Axes.X.ordinal());
-		overlay.setAxis(Axes.Y, Axes.Y.ordinal());
-		overlay.setFillColor(getFillColor());
-		overlay.setLineColor(getLineColor());
-		overlay.setLineEndArrowStyle(getLineEndArrowStyle());
-		overlay.setLineStartArrowStyle(getLineStartArrowStyle());
-		overlay.setLineStyle(getLineStyle());
-		overlay.setLineWidth(getLineWidth());
-		overlay.setName(getName());
-		return overlay;
-	}
-	*/
-	
+
 	@Override
 	public void move(double[] deltas) {
 		getRegionOfInterest().move(deltas);
@@ -131,7 +104,7 @@ public class RectangleOverlay extends
 	public void setExtent(double val, int dim) {
 		getRegionOfInterest().setExtent(val, dim);
 	}
-	
+
 	public double getOrigin(int dim) {
 		return getRegionOfInterest().getOrigin(dim);
 	}

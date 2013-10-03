@@ -206,17 +206,6 @@ public class BinaryMaskOverlay<U extends BitType, V extends Img<U>> extends Abst
 		getRegionOfInterest().move(maskOrigin);
 	}
 
-	/* (non-Javadoc)
-	 * @see imagej.data.roi.AbstractOverlay#getRegionOfInterest()
-	 */
-	//@Override
-	//public BinaryMaskRegionOfInterest<? extends BitType, ? extends Img<BitType>>
-	//	getRegionOfInterest()
-	//{
-	//	return roi;
-	//}
-
-
 	@Override
 	public Overlay duplicate() {
 		@SuppressWarnings("unchecked")

@@ -99,32 +99,6 @@ public class PolygonOverlay extends
 		}
 	}
 
-	/*
-	@Override
-	public Overlay duplicate() {
-		PolygonOverlay overlay = new PolygonOverlay(getContext());
-		PolygonRegionOfInterest origRoi = getRegionOfInterest();
-		int numVert = origRoi.getVertexCount();
-		PolygonRegionOfInterest newRoi = overlay.getRegionOfInterest();
-		for (int i = 0; i < numVert; i++) {
-			RealLocalizable v = origRoi.getVertex(i);
-			RealPoint p = new RealPoint(v.getDoublePosition(0), v.getDoublePosition(1));
-			newRoi.addVertex(i, p);
-		}
-		overlay.setAlpha(getAlpha());
-		overlay.setAxis(Axes.X, Axes.X.ordinal());
-		overlay.setAxis(Axes.Y, Axes.Y.ordinal());
-		overlay.setFillColor(getFillColor());
-		overlay.setLineColor(getLineColor());
-		overlay.setLineEndArrowStyle(getLineEndArrowStyle());
-		overlay.setLineStartArrowStyle(getLineStartArrowStyle());
-		overlay.setLineStyle(getLineStyle());
-		overlay.setLineWidth(getLineWidth());
-		overlay.setName(getName());
-		return overlay;
-	}
-	*/
-
 	@Override
 	public void move(double[] deltas) {
 		getRegionOfInterest().move(deltas);
