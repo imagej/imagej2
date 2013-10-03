@@ -389,7 +389,7 @@ public class DefaultDataset extends AbstractData implements Dataset {
 
 	@Override
 	public void setAxis(final CalibratedAxis axis, final int d) {
-		if (imgPlus.axis(d).equals(axis)) return;
+		if (axis.equals(imgPlus.axis(d))) return;
 		imgPlus.setAxis(axis, d);
 		update(true); // TODO : false instead of true?
 		// Maybe we need more levels of discrimination with update(bool)
