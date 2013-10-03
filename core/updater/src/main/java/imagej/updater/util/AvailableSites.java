@@ -76,11 +76,28 @@ public final class AvailableSites {
 		final String[] table = text.substring(start + 1, end).split("\n\\|-");
 
 		final Map<String, UpdateSite> result = new LinkedHashMap<String, UpdateSite>();
+		int nameColumn = -1;
+		int urlColumn = -1;
+		int descriptionColumn = -1;
+		int maintainerColumn = -1;
 		for (final String row : table) {
 			if (row.matches("(?s)(\\{\\||[\\|!](style=\"vertical-align|colspan=\"4\")).*")) continue;
 			final String[] columns = row.split("\n[\\|!]");
-			if (columns.length == 5 && !columns[1].endsWith("|'''Name'''")) {
-				final UpdateSite info = new UpdateSite(stripWikiMarkup(columns[1]), stripWikiMarkup(columns[2]), null, null, stripWikiMarkup(columns[3]), stripWikiMarkup(columns[4]), 0l);
+			if (columns.length > 1 && columns[1].endsWith("|'''Name'''")) {
+				nameColumn = urlColumn = descriptionColumn = maintainerColumn = -1;
+				int i = 0;
+				for (final String column : columns) {
+					if (column.endsWith("|'''Name'''")) nameColumn = i;
+					else if (column.endsWith("|'''Site'''")) urlColumn = i;
+					else if (column.endsWith("|'''URL'''")) urlColumn = i;
+					else if (column.endsWith("|'''Description'''")) descriptionColumn = i;
+					else if (column.endsWith("|'''Maintainer'''")) maintainerColumn = i;
+					i++;
+				}
+			} else if (nameColumn >= 0 && urlColumn >= 0 && columns.length > nameColumn && columns.length > urlColumn) {
+				final UpdateSite info = new UpdateSite(stripWikiMarkup(columns, nameColumn), stripWikiMarkup(columns, urlColumn),
+						null, null,
+						stripWikiMarkup(columns, descriptionColumn), stripWikiMarkup(columns, maintainerColumn), 0l);
 				result.put(info.getURL(), info);
 			}
 		}
@@ -175,7 +192,9 @@ public final class AvailableSites {
 
 	}
 
-	private static String stripWikiMarkup(final String string) {
+	private static String stripWikiMarkup(final String[] columns, int index) {
+		if (index < 0 || index >= columns.length) return null;
+		final String string = columns[index];
 		return string.replaceAll("'''", "").replaceAll("\\[\\[([^\\|\\]]*\\|)?([^\\]]*)\\]\\]", "$2").replaceAll("\\[[^\\[][^ ]*([^\\]]*)\\]", "$1");
 	}
 
