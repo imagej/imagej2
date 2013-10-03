@@ -37,6 +37,7 @@ package imagej.data;
 
 import imagej.data.event.DataCreatedEvent;
 import imagej.data.event.DataDeletedEvent;
+import imagej.data.overlay.AbstractOverlay;
 import imagej.data.overlay.Overlay;
 
 import java.io.Externalizable;
@@ -78,12 +79,16 @@ public abstract class AbstractData extends
 	@Parameter(required = false)
 	private EventService eventService;
 
-	// default constructor for use by serialization code
-	//   (see AbstractOverlay::duplicate())
+	/**
+	 * Default constructor for use by serialization code.
+	 * 
+	 * @see AbstractOverlay#duplicate()
+	 */
 	public AbstractData(RealInterval interval) {
 		super(interval);
 	}
 	
+	/** TODO */
 	public AbstractData(final Context context, RealInterval interval) {
 		super(interval);
 		if (context != null) setContext(context);
