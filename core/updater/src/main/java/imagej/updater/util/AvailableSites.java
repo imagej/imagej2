@@ -68,33 +68,51 @@ public final class AvailableSites {
 		final String text = wiki.getPageSource(SITE_LIST_PAGE_TITLE);
 
 		final int start = text.indexOf("\n{| class=\"wikitable\"\n");
-		final int end = text.indexOf("\n|}\n", start);
-		if (start < 0 || end < 0) {
-			throw new Error("Could not find table");
+		int end = text.indexOf("\n|}\n", start);
+		if (end < 0) end = text.length();
+		if (start < 0) {
+			throw new IOException("Could not find table");
 		}
 		final String[] table = text.substring(start + 1, end).split("\n\\|-");
 
 		final Map<String, UpdateSite> result = new LinkedHashMap<String, UpdateSite>();
+		int nameColumn = -1;
+		int urlColumn = -1;
+		int descriptionColumn = -1;
+		int maintainerColumn = -1;
 		for (final String row : table) {
 			if (row.matches("(?s)(\\{\\||[\\|!](style=\"vertical-align|colspan=\"4\")).*")) continue;
 			final String[] columns = row.split("\n[\\|!]");
-			if (columns.length == 5 && !columns[1].endsWith("|'''Name'''")) {
-				final UpdateSite info = new UpdateSite(stripWikiMarkup(columns[1]), stripWikiMarkup(columns[2]), null, null, stripWikiMarkup(columns[3]), stripWikiMarkup(columns[4]), 0l);
+			if (columns.length > 1 && columns[1].endsWith("|'''Name'''")) {
+				nameColumn = urlColumn = descriptionColumn = maintainerColumn = -1;
+				int i = 0;
+				for (final String column : columns) {
+					if (column.endsWith("|'''Name'''")) nameColumn = i;
+					else if (column.endsWith("|'''Site'''")) urlColumn = i;
+					else if (column.endsWith("|'''URL'''")) urlColumn = i;
+					else if (column.endsWith("|'''Description'''")) descriptionColumn = i;
+					else if (column.endsWith("|'''Maintainer'''")) maintainerColumn = i;
+					i++;
+				}
+			} else if (nameColumn >= 0 && urlColumn >= 0 && columns.length > nameColumn && columns.length > urlColumn) {
+				final UpdateSite info = new UpdateSite(stripWikiMarkup(columns, nameColumn), stripWikiMarkup(columns, urlColumn),
+						null, null,
+						stripWikiMarkup(columns, descriptionColumn), stripWikiMarkup(columns, maintainerColumn), 0l);
 				result.put(info.getURL(), info);
 			}
 		}
 
 		// Sanity checks
 		final Iterator<UpdateSite> iter = result.values().iterator();
-		if (!iter.hasNext()) throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
+		if (!iter.hasNext()) throw new IOException("Invalid page: " + SITE_LIST_PAGE_TITLE);
 		UpdateSite site = iter.next();
 		if (!site.getName().equals("ImageJ") || !site.getURL().equals("http://update.imagej.net/")) {
-			throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
+			throw new IOException("Invalid page: " + SITE_LIST_PAGE_TITLE);
 		}
-		if (!iter.hasNext()) throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
+		if (!iter.hasNext()) throw new IOException("Invalid page: " + SITE_LIST_PAGE_TITLE);
 		site = iter.next();
 		if (!site.getName().equals("Fiji") || !site.getURL().equals("http://fiji.sc/update/")) {
-			throw new Error("Invalid page: " + SITE_LIST_PAGE_TITLE);
+			throw new IOException("Invalid page: " + SITE_LIST_PAGE_TITLE);
 		}
 
 		return result;
@@ -174,7 +192,9 @@ public final class AvailableSites {
 
 	}
 
-	private static String stripWikiMarkup(final String string) {
+	private static String stripWikiMarkup(final String[] columns, int index) {
+		if (index < 0 || index >= columns.length) return null;
+		final String string = columns[index];
 		return string.replaceAll("'''", "").replaceAll("\\[\\[([^\\|\\]]*\\|)?([^\\]]*)\\]\\]", "$2").replaceAll("\\[[^\\[][^ ]*([^\\]]*)\\]", "$1");
 	}
 
