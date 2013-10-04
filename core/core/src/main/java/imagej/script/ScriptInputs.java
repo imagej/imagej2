@@ -63,9 +63,11 @@ public class ScriptInputs extends AbstractModule {
 
 	final private Info info = new Info();
 	final private Context context;
+	final String title;
 
-	public ScriptInputs(final Context context) {
+	public ScriptInputs(final Context context, final String title) {
 		this.context = context;
+		this.title = title;
 	}
 
 	@Override
@@ -149,7 +151,7 @@ public class ScriptInputs extends AbstractModule {
 
 		@Override
 		public String getTitle() {
-			return "TODO: title";
+			return title != null ? title : "Script Inputs";
 		}
 
 		@Override

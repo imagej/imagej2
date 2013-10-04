@@ -143,7 +143,7 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 		}
 		final ScriptEngine engine = language.getScriptEngine();
 		initialize(engine, file.getPath(), null, null);
-		final Reader reader = parseInputs(engine, new FileReader(file));
+		final Reader reader = parseInputs(engine, file.getPath(), new FileReader(file));
 		return engine.eval(reader);
 	}
 
@@ -158,7 +158,7 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 		}
 		final ScriptEngine engine = language.getScriptEngine();
 		initialize(engine, filename, null, null);
-		return engine.eval(parseInputs(engine, reader));
+		return engine.eval(parseInputs(engine, filename, reader));
 	}
 
 	@Override
@@ -202,11 +202,11 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 	 * @return a reader
 	 * @throws ScriptException
 	 */
-	private Reader parseInputs(final ScriptEngine engine, final Reader reader) throws ScriptException {
+	private Reader parseInputs(final ScriptEngine engine, final String title, final Reader reader) throws ScriptException {
 		final BufferedReader buffered = new BufferedReader(reader, 16384);
 		try {
 			buffered.mark(16384);
-			final ScriptInputs inputs = new ScriptInputs(getContext());
+			final ScriptInputs inputs = new ScriptInputs(getContext(), title);
 			for (;;) {
 				final String line = buffered.readLine();
 				if (line == null)
