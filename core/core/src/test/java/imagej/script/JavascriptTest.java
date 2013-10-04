@@ -52,8 +52,7 @@ public class JavascriptTest {
 
 	@Test
 	public void testBasic() throws Exception {
-		final Context context = new Context();
-		new ServiceHelper(context).createExactService(DefaultScriptService.class);
+		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
 		new ServiceHelper(context).createExactService(DummyService.class);
 
