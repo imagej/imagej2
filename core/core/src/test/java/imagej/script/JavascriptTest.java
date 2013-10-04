@@ -67,4 +67,18 @@ public class JavascriptTest {
 		assertEquals(1234, dummy.value);
 	}
 
+	@Test
+	public void testParameters() throws Exception {
+		final Context context = new Context(ScriptService.class);
+		final ScriptService scriptService = context.getService(ScriptService.class);
+		new ServiceHelper(context).createExactService(DummyService.class);
+
+		String script =
+				"// @DummyService d\n" +
+				"d.value = 4321;\n";
+		scriptService.eval("hello.js", new StringReader(script));
+
+		final DummyService dummy = context.getService(DummyService.class);
+		assertEquals(4321, dummy.value);
+	}
 }
