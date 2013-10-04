@@ -36,7 +36,9 @@
 package imagej.script;
 
 import imagej.command.CommandInfo;
+import imagej.command.CommandService;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -45,7 +47,10 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
 
+import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
@@ -72,6 +77,9 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 
 	@Parameter
 	private PluginService pluginService;
+
+	@Parameter
+	private CommandService commandService;
 
 	@Parameter
 	private LogService log;
@@ -135,7 +143,8 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 		}
 		final ScriptEngine engine = language.getScriptEngine();
 		initialize(engine, file.getPath(), null, null);
-		return engine.eval(new FileReader(file));
+		final Reader reader = parseInputs(engine, new FileReader(file));
+		return engine.eval(reader);
 	}
 
 	@Override
@@ -149,7 +158,7 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 		}
 		final ScriptEngine engine = language.getScriptEngine();
 		initialize(engine, filename, null, null);
-		return engine.eval(reader);
+		return engine.eval(parseInputs(engine, reader));
 	}
 
 	@Override
@@ -165,6 +174,72 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 	@Override
 	public boolean isCompiledLanguage(ScriptEngineFactory language) {
 		return false;
+	}
+
+	/**
+	 * Parses input parameters in scripts.
+	 * <p>
+	 * ImageJ's scripting framework supports specifying @{@link Parameter}-style
+	 * parameters in a preamble. The idea is to specify the input parameters in
+	 * this way:
+	 * 
+	 * <pre>
+	 * <code>
+	 * // &#x40;UIService ui
+	 * // &#x40;double degrees
+	 * </code>
+	 * </pre>
+	 * 
+	 * i.e. in the form <code>&#x40;&lt;type&gt; &lt;name&gt;</code>. These
+	 * input parameters will be parsed and filled just like @{@link Parameter}
+	 * -annotated fields in {@link Command}s.
+	 * </p>
+	 * 
+	 * @param engine
+	 *            the script engine whose {@link Bindings} need to be set
+	 * @param reader
+	 *            the script
+	 * @return a reader
+	 * @throws ScriptException
+	 */
+	private Reader parseInputs(final ScriptEngine engine, final Reader reader) throws ScriptException {
+		final BufferedReader buffered = new BufferedReader(reader, 16384);
+		try {
+			buffered.mark(16384);
+			final ScriptInputs inputs = new ScriptInputs(getContext());
+			for (;;) {
+				final String line = buffered.readLine();
+				if (line == null)
+					break;
+
+					// scan for lines containing an '@' stopping at the first line
+					// containing at least one alpha-numerical character but no '@'.
+				int at = line.indexOf('@');
+				if (at < 0) {
+					if (line.matches(".*[A-Za-z0-9].*")) break;
+					continue;
+				}
+				inputs.parseInput(line.substring(at + 1));
+			}
+			if (inputs.hasInputs()) {
+				commandService = getContext().getService(CommandService.class);
+				try {
+					commandService.run(inputs).get();
+				} catch (InterruptedException e) {
+					throw new ScriptException(e);
+				} catch (ExecutionException e) {
+					throw new ScriptException(e);
+				}
+				for (final Entry<String, Object> entry : inputs.getInputs().entrySet()) {
+					engine.put(entry.getKey(), entry.getValue());
+				}
+			}
+			buffered.reset();
+			return buffered;
+		} catch (IOException e) {
+			log.warn("Could not parse input parameters", e);
+			return reader;
+		}
 	}
 
 	public void reloadScriptLanguages() {
