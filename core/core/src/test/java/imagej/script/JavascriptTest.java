@@ -44,7 +44,7 @@ import org.scijava.Context;
 import org.scijava.service.ServiceHelper;
 
 /**
- * TODO
+ * Verifies that the Javascript support works as expected.
  * 
  * @author Johannes Schindelin
  */
