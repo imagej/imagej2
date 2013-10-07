@@ -47,31 +47,40 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 
 /**
- * Computes he data range from the entire set of values in an
+ * Computes a data range from the entire set of values in an
  * {@link IterableInterval}.
  * 
  * @author Barry DeZonia
  */
 @Plugin(type = AutoscaleMethod.class, name = "Default")
-public class DefaultAutoscaleMethod<T extends RealType<T>> extends AbstractAutoscaleMethod<T> {
+public class DefaultAutoscaleMethod<T extends RealType<T>> extends
+	AbstractAutoscaleMethod<T>
+{
 
 	@Parameter
 	private PluginService pluginService;
 
 	@Override
-	public DataRange getRange(IterableInterval<T> interval)
+	public DataRange getRange(final IterableInterval<T> interval)
 	{
 		@SuppressWarnings("rawtypes")
-		List<MinMaxMethod> lists =
+		final List<MinMaxMethod> methods =
 			pluginService.createInstancesOfType(MinMaxMethod.class);
     @SuppressWarnings("unchecked")
-		MinMaxMethod<T> minmax = lists.get(0);
+		final MinMaxMethod<T> minmax = methods.get(0);
 		minmax.initialize(interval);
 		minmax.process();
 		double min = minmax.getMin().getRealDouble();
 		double max = minmax.getMax().getRealDouble();
+
 		// NB - never return a display range of zero
-		if (min == max) max += 0.000000000000001;
+		if (min == max) {
+			final T theType = interval.firstElement();
+			min = theType.getMinValue();
+			max = theType.getMaxValue();
+		}
+
 		return new DataRange(min, max);
 	}
+
 }
