@@ -50,7 +50,7 @@ import net.imglib2.meta.AbstractCalibratedRealInterval;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
-import net.imglib2.meta.DefaultCalibratedAxis;
+import net.imglib2.meta.axis.DefaultLinearAxis;
 
 import org.scijava.Context;
 import org.scijava.event.EventService;
@@ -197,7 +197,7 @@ public abstract class AbstractData extends
 			String unit;
 			if (unitString.equals(BOGUS_NAME)) unit = null;
 			else unit = unitString;
-			CalibratedAxis axis = new DefaultCalibratedAxis(type, unit, cal);
+			CalibratedAxis axis = new DefaultLinearAxis(type, unit, cal);
 			setAxis(axis, i);
 		}
 	}

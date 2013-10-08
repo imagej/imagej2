@@ -42,7 +42,7 @@ import java.io.ObjectOutput;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.meta.Axes;
-import net.imglib2.meta.DefaultCalibratedAxis;
+import net.imglib2.meta.axis.DefaultLinearAxis;
 import net.imglib2.roi.PolygonRegionOfInterest;
 
 import org.scijava.Context;
@@ -63,8 +63,8 @@ public class PolygonOverlay extends
 	
 	public PolygonOverlay(final Context context) {
 		super(context, new PolygonRegionOfInterest());
-		this.setAxis(new DefaultCalibratedAxis(Axes.X), 0);
-		this.setAxis(new DefaultCalibratedAxis(Axes.Y), 1);
+		this.setAxis(new DefaultLinearAxis(Axes.X), 0);
+		this.setAxis(new DefaultLinearAxis(Axes.Y), 1);
 	}
 
 	private static final long serialVersionUID = 1L;
