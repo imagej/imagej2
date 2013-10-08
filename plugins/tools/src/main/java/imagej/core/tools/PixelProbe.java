@@ -78,16 +78,15 @@ public class PixelProbe extends AbstractTool {
 		}
 		final int xAxis = disp.dimensionIndex(Axes.X);
 		final int yAxis = disp.dimensionIndex(Axes.Y);
-		final double xcal = disp.calibration(xAxis);
-		final double ycal = disp.calibration(yAxis);
 		final int channelIndex = disp.dimensionIndex(Axes.CHANNEL);
 		final long cx = recorder().getCX();
 		final long cy = recorder().getCY();
 		ChannelCollection values = recorder().getValues();
 		StringBuilder builder = new StringBuilder();
 		builder.append("x=");
-		if (!Double.isNaN(xcal) && xcal != 1.0) {
-			String calibratedVal = String.format("%.2f", (xcal * cx));
+		final double xValue = disp.axis(xAxis).calibratedValue(cx);
+		if (!Double.isNaN(xValue) && xValue != cx) {
+			String calibratedVal = String.format("%.2f", xValue);
 			builder.append(calibratedVal);
 		}
 		else
@@ -97,8 +96,9 @@ public class PixelProbe extends AbstractTool {
 			builder.append(disp.axis(0).unit());
 		}
 		builder.append(", y=");
-		if (!Double.isNaN(ycal) && ycal != 1.0) {
-			String calibratedVal = String.format("%.2f", (ycal * cy));
+		final double yValue = disp.axis(yAxis).calibratedValue(cy);
+		if (!Double.isNaN(yValue) && yValue != cy) {
+			String calibratedVal = String.format("%.2f", yValue);
 			builder.append(calibratedVal);
 		}
 		else
