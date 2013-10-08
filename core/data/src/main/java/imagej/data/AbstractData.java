@@ -176,7 +176,8 @@ public abstract class AbstractData extends
 		for (int i = 0; i < numAxes; i++) {
 			CalibratedAxis axis = axis(i);
 			out.writeUTF(axis.type().getLabel());
-			out.writeDouble(axis.calibration());
+			// FIXME: Serialize axes properly!
+			out.writeDouble(averageScale(i));
 			if (axis.unit() == null) out.writeUTF(BOGUS_NAME);
 			else out.writeUTF(axis.unit());
 		}
