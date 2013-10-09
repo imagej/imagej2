@@ -41,6 +41,7 @@ import imagej.data.Position;
 import imagej.data.display.ColorMode;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.threshold.ThresholdService;
 import imagej.data.types.DataType;
@@ -74,6 +75,9 @@ public class ShowInfo implements Command {
 
 	@Parameter
 	private ThresholdService thresholdService;
+
+	@Parameter
+	private ImageDisplayService imageDisplayService;
 
 	@Parameter
 	private ImageDisplay disp;
@@ -209,14 +213,16 @@ public class ShowInfo implements Command {
 		int chAxis = disp.dimensionIndex(Axes.CHANNEL);
 		if (chAxis < 0) return null;
 		long numChan = disp.dimension(chAxis);
-		String tmp = "";
+		final StringBuilder builder = new StringBuilder();
 		for (int c = 0; c < numChan; c++) {
-			// TODO: dislike this casting
-			double min = ((DatasetView) disp.getActiveView()).getChannelMin(c);
-			double max = ((DatasetView) disp.getActiveView()).getChannelMax(c);
-			tmp += "Display range channel " + c + ": " + min + "-" + max + '\n';
+			final DatasetView datasetView =
+				imageDisplayService.getActiveDatasetView(disp);
+			final double min = datasetView.getChannelMin(c);
+			final double max = datasetView.getChannelMax(c);
+			builder.append("Display range channel " + c + ": " + min + "-" + max +
+				"\n");
 		}
-		return tmp;
+		return builder.toString();
 	}
 
 	private String currSliceString() {
