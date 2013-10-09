@@ -170,10 +170,12 @@ public class ShowInfo implements Command {
 	}
 
 	private String originString() {
-		// TODO
-		// In IJ1 the origin of the calibrated space is reported. IJ2 does not yet
-		// support a nonzero origin.
-		return null;
+		final StringBuilder builder = new StringBuilder("Axis origins:\n");
+		for (int d = 0; d < ds.numDimensions(); d++) {
+			builder.append(ds.axis(d).type() + ": " +
+				dToS(ds.axis(d).calibratedValue(0)) + "\n");
+		}
+		return builder.toString();
 	}
 
 	private String typeString() {
