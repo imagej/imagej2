@@ -938,8 +938,10 @@ public class TextEditor extends JFrame implements ActionListener,
 		else if (source == gitGrep) {
 			String searchTerm = getTextArea().getSelectedText();
 			File searchRoot = getEditorPane().file;
-			if (searchRoot == null)
+			if (searchRoot == null) {
 				error("File was not yet saved; no location known!");
+				return;
+			}
 			searchRoot = searchRoot.getParentFile();
 
 			commandService.run(GitGrep.class, "editor", this, "searchTerm", searchTerm, "searchRoot", searchRoot);
