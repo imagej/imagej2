@@ -630,7 +630,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		for (int i = 0; i < root.getItemCount(); i++) {
 			JMenuItem item = root.getItem(i);
 			if ((item instanceof JMenu) &&
-					menuLabel.equals(item.getLabel()))
+					menuLabel.equals(item.getText()))
 				return getMenu((JMenu)item, rest, createIfNecessary);
 		}
 		if (!createIfNecessary)
@@ -1033,7 +1033,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		for (int i = 0; i < tabbed.getTabCount(); i++)
 			getEditorPane(i).getBookmarks(i, bookmarks);
 		BookmarkDialog dialog = new BookmarkDialog(this, bookmarks);
-		dialog.show();
+		dialog.setVisible(true);
 	}
 
 	public boolean reload() {
@@ -1190,11 +1190,11 @@ public class TextEditor extends JFrame implements ActionListener,
 		public void toggleErrors() {
 			showingErrors = !showingErrors;
 			if (showingErrors) {
-				toggleErrors.setLabel("Show Output");
+				toggleErrors.setText("Show Output");
 				scroll.setViewportView(errorScreen);
 			}
 			else {
-				toggleErrors.setLabel("Show Errors");
+				toggleErrors.setText("Show Errors");
 				scroll.setViewportView(screen);
 			}
 		}
@@ -1704,9 +1704,9 @@ public class TextEditor extends JFrame implements ActionListener,
 			JMenuItem item = tabSizeMenu.getItem(i);
 			if (item == chooseTabSize) {
 				item.setSelected(!defaultSize);
-				item.setLabel("Other" + (defaultSize ? "" : " (" + tabSize + ")") + "...");
+				item.setText("Other" + (defaultSize ? "" : " (" + tabSize + ")") + "...");
 			}
-			else if (tabSize == Integer.parseInt(item.getLabel())) {
+			else if (tabSize == Integer.parseInt(item.getText())) {
 				item.setSelected(true);
 				defaultSize = true;
 			}
@@ -1717,10 +1717,10 @@ public class TextEditor extends JFrame implements ActionListener,
 			JMenuItem item = fontSizeMenu.getItem(i);
 			if (item == chooseFontSize) {
 				item.setSelected(!defaultSize);
-				item.setLabel("Other" + (defaultSize ? "" : " (" + fontSize + ")") + "...");
+				item.setText("Other" + (defaultSize ? "" : " (" + fontSize + ")") + "...");
 				continue;
 			}
-			String label = item.getLabel();
+			String label = item.getText();
 			if (label.endsWith(" pt"))
 				label = label.substring(0, label.length() - 3);
 			if (fontSize == Integer.parseInt(label)) {
@@ -1765,7 +1765,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		if (index < tabsMenu.getItemCount()) {
 			JMenuItem item = tabsMenu.getItem(index);
 			if (item != null)
-				item.setLabel(title);
+				item.setText(title);
 		}
 	}
 
