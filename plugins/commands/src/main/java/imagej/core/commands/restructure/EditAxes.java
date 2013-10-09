@@ -39,15 +39,19 @@ import imagej.command.Command;
 import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.menu.MenuConstants;
-import imagej.module.DefaultMutableModuleItem;
+import imagej.module.MutableModuleItem;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
+import net.imglib2.meta.axis.VariableAxis;
 
 import org.scijava.ItemIO;
+import org.scijava.ItemVisibility;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
@@ -64,6 +68,7 @@ import org.scijava.plugin.Plugin;
  * Only axis metadata is changed. Pixel data is NOT rearranged.
  * 
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
 @Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
@@ -80,7 +85,7 @@ public class EditAxes extends DynamicCommand {
 	@Parameter(type = ItemIO.BOTH)
 	private Dataset dataset;
 
-	// -- AssignAxes methods --
+	// -- EditAxes methods --
 
 	public Dataset getDataset() {
 		return dataset;
@@ -90,126 +95,162 @@ public class EditAxes extends DynamicCommand {
 		this.dataset = dataset;
 	}
 
-	public AxisType getAxisMapping(int axisNum) {
-		String axisName = (String) getInput(axisName(axisNum));
-		return Axes.get(axisName);
+	public AxisType getAxisType(final int d) {
+		final String value = typeInput(d).getValue(this);
+		return value == null || value.isEmpty() ? null : Axes.get(value);
 	}
-	
-	public void setAxisMapping(int axisNum, AxisType axis) {
-		String axisName = axisName(axisNum);
-		setInput(axisName, axis.getLabel());
+
+	public void setAxisType(final int d, final AxisType axisType) {
+		typeInput(d).setValue(this, axisType.toString());
 	}
-	
+
+	public String getUnit(final int d) {
+		final String value = unitInput(d).getValue(this);
+		return value == null || value.isEmpty() ? null : value;
+	}
+
+	public void setUnit(final int d, final String unit) {
+		unitInput(d).setValue(this, unit);
+	}
+
+	public double getVar(final int d, final String var) {
+		return varInput(d, var).getValue(this);
+	}
+
+	public void setVar(final int d, final String var, final double value) {
+		varInput(d, var).setValue(this, value);
+	}
+
 	// -- Runnable methods --
 
-	/** Runs the plugin and assigns axes as specified by user. */
+	/** Assigns axis attributes to the axes of the input dataset. */
 	@Override
 	public void run() {
-		AxisType[] desiredAxes = getAxes();
-		if (inputBad(desiredAxes)) {
-			// error already logged
-			return;
-		}
-		for (int i = 0; i < dataset.numDimensions(); i++) {
-			CalibratedAxis axis = dataset.axis(i);
-			String axisName = (String) getInput(axisName(i));
-			AxisType type = Axes.get(axisName);
-			String unit = (String) getInput(unitName(i));
-			double cal = (Double) getInput(scaleName(i));
-			axis.setType(type);
-			// TODO : at this point Dataset may have two Z axes for instance. If a
-			// prob we need to set them all at once. See if an axis label change fires
-			// some update events.
-			if (unit == null || unit.length() == 0) axis.setUnit(null);
-			else axis.setUnit(unit);
-			axis.setCalibration(cal);
+		checkAxisTypes();
+		if (isCanceled()) return;
+
+		for (int d = 0; d < dataset.numDimensions(); d++) {
+			final CalibratedAxis axis = dataset.axis(d);
+			axis.setType(getAxisType(d));
+			axis.setUnit(getUnit(d));
+			if (!(axis instanceof VariableAxis)) continue; // nothing else to do
+			final VariableAxis varAxis = (VariableAxis) axis;
+			for (final String var : vars(varAxis)) {
+				varAxis.set(var, getVar(d, var));
+			}
 		}
 	}
 
 	// -- Initializers --
 
 	protected void initFields() {
-		ArrayList<String> choices = new ArrayList<String>();
-		AxisType[] axes = Axes.knownTypes();
-		for (AxisType axis : axes) {
+		final ArrayList<String> choices = new ArrayList<String>();
+		final AxisType[] axes = Axes.knownTypes();
+		for (final AxisType axis : axes) {
 			choices.add(axis.getLabel());
 		}
-		for (int i = 0; i < dataset.numDimensions(); i++) {
-			final DefaultMutableModuleItem<String> axisItem =
-				new DefaultMutableModuleItem<String>(this, axisName(i), String.class);
-			axisItem.setChoices(choices);
+
+		for (int d = 0; d < dataset.numDimensions(); d++) {
+			final CalibratedAxis axis = dataset.axis(d);
+
+			// add message for visually grouping related items per axis
+			final MutableModuleItem<String> axisItem =
+				addInput("axis" + d, String.class);
 			axisItem.setPersisted(false);
-			axisItem.setValue(this, dataset.axis(i).type().toString());
-			addInput(axisItem);
-			final DefaultMutableModuleItem<String> unitItem =
-				new DefaultMutableModuleItem<String>(this, unitName(i), String.class);
+			axisItem.setVisibility(ItemVisibility.MESSAGE);
+			axisItem.setValue(this, "-- Axis #" + (d + 1) + " --");
+
+			// add axis type selector
+			final MutableModuleItem<String> typeItem =
+				addInput(typeName(d), String.class);
+			typeItem.setPersisted(false);
+			typeItem.setLabel("Type");
+			typeItem.setChoices(choices);
+			typeItem.setValue(this, axis.type().toString());
+
+			// add unit text field
+			final MutableModuleItem<String> unitItem =
+				addInput(unitName(d), String.class);
 			unitItem.setPersisted(false);
-			unitItem.setValue(this, dataset.axis(i).unit());
-			addInput(unitItem);
-			final DefaultMutableModuleItem<Double> scaleItem =
-				new DefaultMutableModuleItem<Double>(this, scaleName(i), Double.class);
-			scaleItem.setMinimumValue(0.000000000001);
-			scaleItem.setPersisted(false);
-			scaleItem.setValue(this, dataset.axis(i).calibration());
-			addInput(scaleItem);
+			unitItem.setLabel("Unit");
+			unitItem.setValue(this, axis.unit());
+
+			final boolean isVariable = axis instanceof VariableAxis;
+			final String equation =
+				isVariable ? axis.generalEquation() : axis.particularEquation();
+
+			// add equation message
+			final MutableModuleItem<String> equationItem =
+				addInput("equation" + d, String.class);
+			equationItem.setPersisted(false);
+			equationItem.setVisibility(ItemVisibility.MESSAGE);
+			equationItem.setValue(this, equation);
+
+			if (!isVariable) {
+				// NB: No known way to provide control over the axis calibration.
+				continue;
+			}
+
+			// add variables
+			final VariableAxis varAxis = (VariableAxis) axis;
+			for (final String var : vars(varAxis)) {
+				final MutableModuleItem<Double> varItem =
+					addInput(varName(d, var), Double.class);
+				varItem.setPersisted(false);
+				varItem.setLabel(var);
+				varItem.setValue(this, varAxis.get(var));
+			}
 		}
 	}
 
 	// -- Helper methods --
 
-	private String axisName(final int i) {
-		return "Axis #" + i;
+	private String typeName(final int d) {
+		return "type" + d;
 	}
 
-	private String unitName(final int i) {
-		return "Unit #" + i;
+	private String unitName(final int d) {
+		return "unit" + d;
 	}
 
-	private String scaleName(final int i) {
-		return "Scale #" + i;
+	private String varName(final int d, final String var) {
+		return "var" + d + ":" + var;
 	}
 
-	/**
-	 * Gets the names of the axes in the order the user specified.
-	 */
-	private AxisType[] getAxes() {
-		AxisType[] axes = new AxisType[dataset.getImgPlus().numDimensions()];
-		for (int i = 0; i < axes.length; i++) {
-			axes[i] = getAxisMapping(i);
-		}
-		return axes;
+	@SuppressWarnings("unchecked")
+	private MutableModuleItem<String> typeInput(final int d) {
+		return (MutableModuleItem<String>) getInfo().getInput(typeName(d));
 	}
 
-	/**
-	 * Returns true if user input is invalid. Basically this is a test that the
-	 * user did not repeat any axis when specifying the axis ordering.
-	 */
-	private boolean inputBad(AxisType[] axes) {
-		for (int i = 0; i < axes.length; i++) {
-			for (int j = i+1; j < axes.length; j++) {
-				if (axes[i].equals(axes[j])) {
-					log.error("At least one axis designation is repeated:"
-							+ " axis designations must be mututally exclusive");
-					return true;
+	@SuppressWarnings("unchecked")
+	private MutableModuleItem<String> unitInput(final int d) {
+		return (MutableModuleItem<String>) getInfo().getInput(unitName(d));
+	}
+
+	@SuppressWarnings("unchecked")
+	private MutableModuleItem<Double> varInput(final int d, final String var) {
+		return (MutableModuleItem<Double>) getInfo().getInput(varName(d, var));
+	}
+
+	/** Checks that the specified axis ordering does not repeat any axis types. */
+	private void checkAxisTypes() {
+		for (int i = 0; i < dataset.numDimensions(); i++) {
+			final AxisType axisType = getAxisType(i);
+			for (int j = i + 1; j < dataset.numDimensions(); j++) {
+				if (axisType == getAxisType(j)) {
+					cancel("Axes #" + (i + 1) + " and #" + (j + 1) + " are both " +
+						axisType + ". Axis designations must be mutually exclusive");
+					return;
 				}
 			}
 		}
-		return false;
 	}
 
-	/* 
-	 * Save in case we need to set axes' types all at once
-	 * 
-	private CalibratedAxis[] axisOrder(AxisType[] order) {
-		CalibratedAxis[] axisOrder = new CalibratedAxis[order.length];
-		for (int i = 0; i < order.length; i++) {
-			for (int j = 0; j < order.length; j++) {
-				if (dataset.axis(j).type().equals(order[i])) {
-					axisOrder[i] = dataset.axis(j);
-				}
-			}
-		}
-		return axisOrder;
+	/** Gets a sorted list of variables associated with the given axis. */
+	private List<String> vars(final VariableAxis varAxis) {
+		final ArrayList<String> vars = new ArrayList<String>(varAxis.vars());
+		Collections.sort(vars);
+		return vars;
 	}
-	*/
+
 }
