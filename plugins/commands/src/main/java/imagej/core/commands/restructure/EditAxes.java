@@ -105,9 +105,6 @@ public class EditAxes extends DynamicCommand {
 	/** Runs the plugin and assigns axes as specified by user. */
 	@Override
 	public void run() {
-		if (dataset == null) {
-			log.error("EditAxes plugin error: given a null dataset as input");
-		}
 		AxisType[] desiredAxes = getAxes();
 		if (inputBad(desiredAxes)) {
 			// error already logged
