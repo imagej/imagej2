@@ -47,10 +47,6 @@ import imagej.data.threshold.ThresholdService;
 import imagej.data.types.DataType;
 import imagej.data.types.DataTypeService;
 import imagej.menu.MenuConstants;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import net.imglib2.meta.Axes;
 
 import org.scijava.ItemIO;
@@ -104,50 +100,28 @@ public class ShowInfo implements Command {
 	// -- helpers --
 
 	private String infoString() {
-		List<String> strings = strings();
-		StringBuilder builder = new StringBuilder();
-		for (String s : strings) {
-			builder.append(s);
-		}
+		final StringBuilder builder = new StringBuilder();
+		add(textString(), builder);
+		add(titleString(), builder);
+		add(widthString(), builder);
+		add(heightString(), builder);
+		add(depthString(), builder);
+		add(resolutionString(), builder);
+		add(pixelVoxelSizeString(), builder);
+		add(originString(), builder);
+		add(typeString(), builder);
+		add(displayRangesString(), builder);
+		add(currSliceString(), builder);
+		add(compositeString(), builder);
+		add(thresholdString(), builder);
+		add(calibrationString(), builder);
+		add(sourceString(), builder);
+		add(selectionString(), builder);
 		return builder.toString();
 	}
 
-	private List<String> strings() {
-		ArrayList<String> strings = new ArrayList<String>();
-		String s;
-		s = textString();
-		if (s != null) strings.add(s);
-		s = titleString();
-		if (s != null) strings.add(s);
-		s = widthString();
-		if (s != null) strings.add(s);
-		s = heightString();
-		if (s != null) strings.add(s);
-		s = depthString();
-		if (s != null) strings.add(s);
-		s = resolutionString();
-		if (s != null) strings.add(s);
-		s = pixelVoxelSizeString();
-		if (s != null) strings.add(s);
-		s = originString();
-		if (s != null) strings.add(s);
-		s = typeString();
-		if (s != null) strings.add(s);
-		s = displayRangesString();
-		if (s != null) strings.add(s);
-		s = currSliceString();
-		if (s != null) strings.add(s);
-		s = compositeString();
-		if (s != null) strings.add(s);
-		s = thresholdString();
-		if (s != null) strings.add(s);
-		s = calibrationString();
-		if (s != null) strings.add(s);
-		s = sourceString();
-		if (s != null) strings.add(s);
-		s = selectionString();
-		if (s != null) strings.add(s);
-		return strings;
+	private void add(final String s, final StringBuilder builder) {
+		if (s != null) builder.append(s);
 	}
 
 	private String textString() {
