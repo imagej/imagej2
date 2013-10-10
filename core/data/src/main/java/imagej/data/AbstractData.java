@@ -37,6 +37,7 @@ package imagej.data;
 
 import imagej.data.event.DataCreatedEvent;
 import imagej.data.event.DataDeletedEvent;
+import imagej.data.overlay.AbstractOverlay;
 import imagej.data.overlay.Overlay;
 
 import java.io.Externalizable;
@@ -45,10 +46,11 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import net.imglib2.RealInterval;
+import net.imglib2.meta.AbstractCalibratedRealInterval;
+import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
-import net.imglib2.meta.DefaultCalibratedAxis;
-import net.imglib2.meta.DefaultCalibratedRealInterval;
+import net.imglib2.meta.axis.DefaultLinearAxis;
 
 import org.scijava.Context;
 import org.scijava.event.EventService;
@@ -63,8 +65,9 @@ import org.scijava.plugin.Parameter;
  * @see Dataset
  * @see Overlay
  */
-public abstract class AbstractData extends DefaultCalibratedRealInterval
-	implements Data, Comparable<Data>, Externalizable
+public abstract class AbstractData extends
+	AbstractCalibratedRealInterval<CalibratedAxis> implements Data,
+	Comparable<Data>, Externalizable
 {
 
 	@Parameter
@@ -77,12 +80,16 @@ public abstract class AbstractData extends DefaultCalibratedRealInterval
 	@Parameter(required = false)
 	private EventService eventService;
 
-	// default constructor for use by serialization code
-	//   (see AbstractOverlay::duplicate())
+	/**
+	 * Default constructor for use by serialization code.
+	 * 
+	 * @see AbstractOverlay#duplicate()
+	 */
 	public AbstractData(RealInterval interval) {
 		super(interval);
 	}
 	
+	/** TODO */
 	public AbstractData(final Context context, RealInterval interval) {
 		super(interval);
 		if (context != null) setContext(context);
@@ -168,8 +175,9 @@ public abstract class AbstractData extends DefaultCalibratedRealInterval
 		out.writeInt(numAxes);
 		for (int i = 0; i < numAxes; i++) {
 			CalibratedAxis axis = axis(i);
-			out.writeObject(axis.type());
-			out.writeDouble(axis.calibration());
+			out.writeUTF(axis.type().getLabel());
+			// FIXME: Serialize axes properly!
+			out.writeDouble(averageScale(i));
 			if (axis.unit() == null) out.writeUTF(BOGUS_NAME);
 			else out.writeUTF(axis.unit());
 		}
@@ -184,13 +192,13 @@ public abstract class AbstractData extends DefaultCalibratedRealInterval
 			name = null;
 		int numAxes = in.readInt();
 		for (int i = 0; i < numAxes; i++) {
-			AxisType type = (AxisType) in.readObject();
+			AxisType type = Axes.get(in.readUTF());
 			double cal = in.readDouble();
 			String unitString = in.readUTF();
 			String unit;
 			if (unitString.equals(BOGUS_NAME)) unit = null;
 			else unit = unitString;
-			CalibratedAxis axis = new DefaultCalibratedAxis(type, unit, cal);
+			CalibratedAxis axis = new DefaultLinearAxis(type, unit, cal);
 			setAxis(axis, i);
 		}
 	}

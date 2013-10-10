@@ -41,15 +41,12 @@ import imagej.data.Position;
 import imagej.data.display.ColorMode;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.threshold.ThresholdService;
 import imagej.data.types.DataType;
 import imagej.data.types.DataTypeService;
 import imagej.menu.MenuConstants;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import net.imglib2.meta.Axes;
 
 import org.scijava.ItemIO;
@@ -79,6 +76,9 @@ public class ShowInfo implements Command {
 	private ThresholdService thresholdService;
 
 	@Parameter
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter
 	private ImageDisplay disp;
 
 	@Parameter
@@ -103,50 +103,28 @@ public class ShowInfo implements Command {
 	// -- helpers --
 
 	private String infoString() {
-		List<String> strings = strings();
-		StringBuilder builder = new StringBuilder();
-		for (String s : strings) {
-			builder.append(s);
-		}
+		final StringBuilder builder = new StringBuilder();
+		add(textString(), builder);
+		add(titleString(), builder);
+		add(widthString(), builder);
+		add(heightString(), builder);
+		add(depthString(), builder);
+		add(resolutionString(), builder);
+		add(pixelVoxelSizeString(), builder);
+		add(originString(), builder);
+		add(typeString(), builder);
+		add(displayRangesString(), builder);
+		add(currSliceString(), builder);
+		add(compositeString(), builder);
+		add(thresholdString(), builder);
+		add(calibrationString(), builder);
+		add(sourceString(), builder);
+		add(selectionString(), builder);
 		return builder.toString();
 	}
 
-	private List<String> strings() {
-		ArrayList<String> strings = new ArrayList<String>();
-		String s;
-		s = textString();
-		if (s != null) strings.add(s);
-		s = titleString();
-		if (s != null) strings.add(s);
-		s = widthString();
-		if (s != null) strings.add(s);
-		s = heightString();
-		if (s != null) strings.add(s);
-		s = depthString();
-		if (s != null) strings.add(s);
-		s = resolutionString();
-		if (s != null) strings.add(s);
-		s = pixelVoxelSizeString();
-		if (s != null) strings.add(s);
-		s = originString();
-		if (s != null) strings.add(s);
-		s = typeString();
-		if (s != null) strings.add(s);
-		s = displayRangesString();
-		if (s != null) strings.add(s);
-		s = currSliceString();
-		if (s != null) strings.add(s);
-		s = compositeString();
-		if (s != null) strings.add(s);
-		s = thresholdString();
-		if (s != null) strings.add(s);
-		s = calibrationString();
-		if (s != null) strings.add(s);
-		s = sourceString();
-		if (s != null) strings.add(s);
-		s = selectionString();
-		if (s != null) strings.add(s);
-		return strings;
+	private void add(final String s, final StringBuilder builder) {
+		if (s != null) builder.append(s);
 	}
 
 	private String textString() {
@@ -195,10 +173,12 @@ public class ShowInfo implements Command {
 	}
 
 	private String originString() {
-		// TODO
-		// In IJ1 the origin of the calibrated space is reported. IJ2 does not yet
-		// support a nonzero origin.
-		return null;
+		final StringBuilder builder = new StringBuilder("Axis origins:\n");
+		for (int d = 0; d < ds.numDimensions(); d++) {
+			builder.append(ds.axis(d).type() + ": " +
+				dToS(ds.axis(d).calibratedValue(0)) + "\n");
+		}
+		return builder.toString();
 	}
 
 	private String typeString() {
@@ -212,14 +192,16 @@ public class ShowInfo implements Command {
 		int chAxis = disp.dimensionIndex(Axes.CHANNEL);
 		if (chAxis < 0) return null;
 		long numChan = disp.dimension(chAxis);
-		String tmp = "";
+		final StringBuilder builder = new StringBuilder();
 		for (int c = 0; c < numChan; c++) {
-			// TODO: dislike this casting
-			double min = ((DatasetView) disp.getActiveView()).getChannelMin(c);
-			double max = ((DatasetView) disp.getActiveView()).getChannelMax(c);
-			tmp += "Display range channel " + c + ": " + min + "-" + max + '\n';
+			final DatasetView datasetView =
+				imageDisplayService.getActiveDatasetView(disp);
+			final double min = datasetView.getChannelMin(c);
+			final double max = datasetView.getChannelMax(c);
+			builder.append("Display range channel " + c + ": " + min + "-" + max +
+				"\n");
 		}
-		return tmp;
+		return builder.toString();
 	}
 
 	private String currSliceString() {

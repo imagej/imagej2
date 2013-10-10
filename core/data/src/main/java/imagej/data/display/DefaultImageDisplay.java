@@ -129,11 +129,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 			combinedInterval.add(view.getData());
 		}
 		combinedInterval.update();
-		/* BDZ removed Aug 15 2013
-		if (!combinedInterval.isDiscrete()) {
-			throw new IllegalStateException("Invalid combination of views");
-		}
-		*/
 
 		// rebuild views
 		for (final DataView view : DefaultImageDisplay.this) {
@@ -406,23 +401,8 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 	// -- CalibratedSpace methods --
 
 	@Override
-	public int dimensionIndex(final AxisType axis) {
-		return combinedInterval.dimensionIndex(axis);
-	}
-
-	@Override
-	public CalibratedAxis axis(final int d) {
-		return combinedInterval.axis(d);
-	}
-
-	@Override
-	public void axes(final CalibratedAxis[] axes) {
-		combinedInterval.axes(axes);
-	}
-
-	@Override
-	public void setAxis(final CalibratedAxis axis, final int d) {
-		combinedInterval.setAxis(axis, d);
+	public double averageScale(final int d) {
+		return combinedInterval.averageScale(d);
 	}
 
 	@Override
@@ -471,6 +451,30 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 	@Override
 	public void setUnit(String unit, int d) {
 		combinedInterval.setUnit(unit, d);
+	}
+
+	// -- TypedSpace methods --
+
+	@Override
+	public int dimensionIndex(final AxisType axis) {
+		return combinedInterval.dimensionIndex(axis);
+	}
+
+	// -- AnnotatedSpace methods --
+
+	@Override
+	public CalibratedAxis axis(final int d) {
+		return combinedInterval.axis(d);
+	}
+
+	@Override
+	public void axes(final CalibratedAxis[] axes) {
+		combinedInterval.axes(axes);
+	}
+
+	@Override
+	public void setAxis(final CalibratedAxis axis, final int d) {
+		combinedInterval.setAxis(axis, d);
 	}
 
 	// -- PositionableByAxis methods --
