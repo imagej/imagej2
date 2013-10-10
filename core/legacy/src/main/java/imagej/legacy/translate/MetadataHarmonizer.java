@@ -61,11 +61,11 @@ public class MetadataHarmonizer implements DataHarmonizer {
 		final Calibration cal = imp.getCalibration();
 		if (xIndex >= 0) {
 			ds.setCalibration(cal.pixelWidth, xIndex);
-			ds.setUnit(cal.getXUnit(), xIndex);
+			ds.axis(xIndex).setUnit(cal.getXUnit());
 		}
 		if (yIndex >= 0) {
 			ds.setCalibration(cal.pixelHeight, yIndex);
-			ds.setUnit(cal.getYUnit(), yIndex);
+			ds.axis(yIndex).setUnit(cal.getYUnit());
 		}
 		if (cIndex >= 0) {
 			// OLD and likely bad
@@ -73,11 +73,11 @@ public class MetadataHarmonizer implements DataHarmonizer {
 		}
 		if (zIndex >= 0) {
 			ds.setCalibration(cal.pixelDepth, zIndex);
-			ds.setUnit(cal.getZUnit(), zIndex);
+			ds.axis(zIndex).setUnit(cal.getZUnit());
 		}
 		if (tIndex >= 0) {
 			ds.setCalibration(cal.frameInterval, tIndex);
-			ds.setUnit(cal.getTimeUnit(), tIndex);
+			ds.axis(tIndex).setUnit(cal.getTimeUnit());
 		}
 		// no need to ds.update() - these calls should track that themselves
 	}
@@ -95,22 +95,22 @@ public class MetadataHarmonizer implements DataHarmonizer {
 		final int tIndex = ds.dimensionIndex(Axes.TIME);
 		if (xIndex >= 0) {
 			cal.pixelWidth = ds.calibration(xIndex);
-			cal.setXUnit(ds.unit(xIndex));
+			cal.setXUnit(ds.axis(xIndex).unit());
 		}
 		if (yIndex >= 0) {
 			cal.pixelHeight = ds.calibration(yIndex);
-			cal.setYUnit(ds.unit(yIndex));
+			cal.setYUnit(ds.axis(yIndex).unit());
 		}
 		if (cIndex >= 0) {
 			// nothing to set on IJ1 side
 		}
 		if (zIndex >= 0) {
 			cal.pixelDepth = ds.calibration(zIndex);
-			cal.setZUnit(ds.unit(zIndex));
+			cal.setZUnit(ds.axis(zIndex).unit());
 		}
 		if (tIndex >= 0) {
 			cal.frameInterval = ds.calibration(tIndex);
-			cal.setTimeUnit(ds.unit(tIndex));
+			cal.setTimeUnit(ds.axis(tIndex).unit());
 		}
 	}
 }
