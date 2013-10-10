@@ -37,6 +37,7 @@ package imagej.legacy;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import ij.ImagePlus;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
@@ -57,7 +58,9 @@ import java.util.zip.ZipEntry;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.IntervalUtils;
+import net.imglib2.meta.axis.LinearAxis;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -92,11 +95,11 @@ public class LegacyTestUtils {
 		final Calibration cal = imp.getCalibration();
 
 		assertEquals(ds.getName(), imp.getTitle());
-		assertEquals(ds.calibration(xIndex), cal.pixelWidth, 0);
-		assertEquals(ds.calibration(yIndex), cal.pixelHeight, 0);
-		assertEquals(ds.calibration(cIndex), 1, 0);
-		assertEquals(ds.calibration(zIndex), cal.pixelDepth, 0);
-		assertEquals(ds.calibration(tIndex), cal.frameInterval, 0);
+		assertCalibrationCompatible(ds, xIndex, cal.xOrigin, cal.pixelWidth);
+		assertCalibrationCompatible(ds, yIndex, cal.yOrigin, cal.pixelHeight);
+		assertCalibrationCompatible(ds, cIndex, 0, 1);
+		assertCalibrationCompatible(ds, zIndex, cal.zOrigin, cal.pixelDepth);
+		assertCalibrationCompatible(ds, tIndex, 0, cal.frameInterval);
 	}
 
 	public static void testSame(final Dataset ds, final ImagePlus imp) {
@@ -206,6 +209,17 @@ public class LegacyTestUtils {
 		}
 
 		testMetadataSame(ds, imp);
+	}
+
+	private static void assertCalibrationCompatible(Dataset ds, int axisIndex,
+		double origin, double scale)
+	{
+		CalibratedAxis axis = ds.axis(axisIndex);
+		if (axis instanceof LinearAxis) {
+			assertEquals(scale, ((LinearAxis) axis).scale(), 0);
+			assertEquals(origin, ((LinearAxis) axis).origin(), 0);
+		}
+		else assertTrue(true);
 	}
 
 	/**
