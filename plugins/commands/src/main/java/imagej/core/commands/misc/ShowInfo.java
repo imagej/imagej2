@@ -48,6 +48,8 @@ import imagej.data.types.DataType;
 import imagej.data.types.DataTypeService;
 import imagej.menu.MenuConstants;
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.CalibratedAxis;
+import net.imglib2.meta.axis.LinearAxis;
 
 import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
@@ -157,14 +159,24 @@ public class ShowInfo implements Command {
 	}
 
 	private String pixelVoxelSizeString() {
-		int zIndex = ds.dimensionIndex(Axes.Z);
-		double xCal = ds.calibration(0);
-		double yCal = ds.calibration(1);
-		double zCal = (zIndex < 0) ? Double.NaN : ds.calibration(zIndex);
-		double xSize = (Double.isNaN(xCal) ? 1 : xCal);
-		double ySize = (Double.isNaN(yCal) ? 1 : yCal);
-		double zSize = (Double.isNaN(zCal) ? 1 : zCal);
-		if (zIndex < 0) { // no z axis
+		final int xIndex = ds.dimensionIndex(Axes.X);
+		final int yIndex = ds.dimensionIndex(Axes.Y);
+		final int zIndex = ds.dimensionIndex(Axes.Z);
+		final CalibratedAxis xAxis = xIndex < 0 ? null : ds.axis(xIndex);
+		final CalibratedAxis yAxis = yIndex < 0 ? null : ds.axis(yIndex);
+		final CalibratedAxis zAxis = zIndex < 0 ? null : ds.axis(zIndex);
+		if (xAxis == null) return null;
+		if (yAxis == null) return null;
+		if (!(xAxis instanceof LinearAxis)) return null;
+		if (!(yAxis instanceof LinearAxis)) return null;
+		if (zAxis != null && !(zAxis instanceof LinearAxis)) return null;
+		final double xCal = xAxis.averageScale(0, 1);
+		final double yCal = yAxis.averageScale(0, 1);
+		final double zCal = (zAxis == null) ? Double.NaN : zAxis.averageScale(0, 1);
+		final double xSize = (Double.isNaN(xCal) ? 1 : xCal);
+		final double ySize = (Double.isNaN(yCal) ? 1 : yCal);
+		final double zSize = (Double.isNaN(zCal) ? 1 : zCal);
+		if (zAxis == null) { // no z axis
 			return "Pixel size: " + dToS(xSize) + " x " + dToS(ySize) + '\n';
 		}
 		// z axis present
@@ -233,10 +245,15 @@ public class ShowInfo implements Command {
 	}
 
 	private String calibrationString() {
-		// TODO
-		// In IJ1 this shows the calibration function equation if it has been set.
-		// IJ2's axes don't yet support such a concept.
-		return null;
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < ds.numDimensions(); i++) {
+			CalibratedAxis axis = ds.axis(i);
+			builder.append(axis.type());
+			builder.append(" axis equation: ");
+			builder.append(axis.particularEquation());
+			builder.append('\n');
+		}
+		return builder.toString();
 	}
 
 	private String sourceString() {
@@ -253,9 +270,11 @@ public class ShowInfo implements Command {
 	}
 
 	private String dimString(int axisIndex, String label) {
-		double cal = ds.axis(axisIndex).calibration();
+		CalibratedAxis axis = ds.axis(axisIndex);
+		if (!(axis instanceof LinearAxis)) return label + "varies nonlinearly";
+		double cal = axis.averageScale(0, 1);
 		long size = ds.dimension(axisIndex);
-		String unit = ds.axis(axisIndex).unit();
+		String unit = axis.unit();
 		String tmp = label;
 		if (Double.isNaN(cal) || cal == 1) {
 			tmp += size;
