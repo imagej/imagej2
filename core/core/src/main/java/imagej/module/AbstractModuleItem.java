@@ -42,6 +42,7 @@ import java.util.List;
 import org.scijava.ItemIO;
 import org.scijava.ItemVisibility;
 import org.scijava.util.ClassUtils;
+import org.scijava.util.ConversionUtils;
 import org.scijava.util.NumberUtils;
 import org.scijava.util.StringMaker;
 
@@ -148,7 +149,7 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 		// if persisted value has never been set before return null
 		if (sValue == null) return null;
 
-		return ClassUtils.convert(sValue, getType());
+		return ConversionUtils.convert(sValue, getType());
 	}
 
 	@Override
@@ -158,7 +159,7 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 		final String sValue = value == null ? "" : value.toString();
 
 		// do not persist if object cannot be converted back from a string
-		if (!ClassUtils.canConvert(sValue, getType())) return;
+		if (!ConversionUtils.canConvert(sValue, getType())) return;
 
 		final String persistKey = getPersistKey();
 		if (persistKey == null || persistKey.isEmpty()) {

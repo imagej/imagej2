@@ -49,6 +49,7 @@ import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.thread.ThreadService;
 import org.scijava.util.ClassUtils;
+import org.scijava.util.ConversionUtils;
 import org.scijava.util.MiscUtils;
 import org.scijava.util.NumberUtils;
 
@@ -364,7 +365,7 @@ public class WidgetModel extends AbstractContextual {
 	/** Converts the given object to a number matching the input type. */
 	private Number toNumber(final Object value) {
 		final Class<?> type = item.getType();
-		final Class<?> saneType = ClassUtils.getNonprimitiveType(type);
+		final Class<?> saneType = ConversionUtils.getNonprimitiveType(type);
 		return NumberUtils.toNumber(value, saneType);
 	}
 

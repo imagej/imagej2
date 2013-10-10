@@ -58,6 +58,7 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 import org.scijava.thread.ThreadService;
 import org.scijava.util.ClassUtils;
+import org.scijava.util.ConversionUtils;
 
 /**
  * Default service for keeping track of and executing available modules.
@@ -317,7 +318,7 @@ public class DefaultModuleService extends AbstractService implements
 			}
 			final Object value = inputMap.get(name);
 			final Class<?> type = input.getType();
-			final Object converted = ClassUtils.convert(value, type);
+			final Object converted = ConversionUtils.convert(value, type);
 			if (value != null && converted == null) {
 				log.error("For input " + name + ": incompatible object " +
 					value.getClass().getName() + " for type " + type.getName());

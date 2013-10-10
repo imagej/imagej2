@@ -47,7 +47,7 @@ import java.util.Map;
 
 import org.scijava.AbstractUIDetails;
 import org.scijava.event.EventService;
-import org.scijava.util.ClassUtils;
+import org.scijava.util.ConversionUtils;
 
 /**
  * Abstract superclass of {@link ModuleInfo} implementation.
@@ -187,7 +187,8 @@ public abstract class AbstractModuleInfo extends AbstractUIDetails implements
 	{
 		final Class<?> itemType = item.getType();
 		// if (!type.isAssignableFrom(itemType)) {
-		if (!ClassUtils.canCast(type, ClassUtils.getNonprimitiveType(itemType))) {
+		final Class<?> saneItemType = ConversionUtils.getNonprimitiveType(itemType);
+		if (!ConversionUtils.canCast(type, saneItemType)) {
 			throw new IllegalArgumentException("Type " + type.getName() +
 				" is incompatible with item of type " + itemType.getName());
 		}

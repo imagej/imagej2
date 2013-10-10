@@ -102,15 +102,17 @@ public class FilesUploader {
 	}
 
 	/**
-	 * @deprecated use {@link #FilesUploader(UploaderService, files, updateSite, progress)} instead
+	 * @deprecated use {@link #FilesUploader(UploaderService, FilesCollection, String, Progress)} instead
 	 */
+	@Deprecated
 	public FilesUploader(final FilesCollection files, final String updateSite) {
 		this(createUploaderService(), files, updateSite);
 	}
 
 	/**
-	 * @deprecated use {@link #FilesUploader(UploaderService, files, updateSite, progress)} instead
+	 * @deprecated use {@link #FilesUploader(UploaderService, FilesCollection, String, Progress)} instead
 	 */
+	@Deprecated
 	public FilesUploader(final UploaderService uploaderService,
 			final FilesCollection files, final String updateSite) {
 		this(uploaderService, files, updateSite, null);

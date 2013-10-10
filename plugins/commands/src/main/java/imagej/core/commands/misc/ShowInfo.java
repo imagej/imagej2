@@ -255,7 +255,7 @@ public class ShowInfo implements Command {
 	private String dimString(int axisIndex, String label) {
 		double cal = ds.axis(axisIndex).calibration();
 		long size = ds.dimension(axisIndex);
-		String unit = ds.unit(axisIndex);
+		String unit = ds.axis(axisIndex).unit();
 		String tmp = label;
 		if (Double.isNaN(cal) || cal == 1) {
 			tmp += size;
