@@ -46,7 +46,7 @@ import java.util.List;
 import org.scijava.ItemIO;
 import org.scijava.ItemVisibility;
 import org.scijava.plugin.Parameter;
-import org.scijava.util.ClassUtils;
+import org.scijava.util.ConversionUtils;
 import org.scijava.util.NumberUtils;
 
 /**
@@ -143,19 +143,19 @@ public class CommandModuleItem<T> extends AbstractModuleItem<T> {
 
 	@Override
 	public T getMinimumValue() {
-		final Class<T> saneType = ClassUtils.getNonprimitiveType(getType());
-		return ClassUtils.convert(getParameter().min(), saneType);
+		final Class<T> saneType = ConversionUtils.getNonprimitiveType(getType());
+		return ConversionUtils.convert(getParameter().min(), saneType);
 	}
 
 	@Override
 	public T getMaximumValue() {
-		final Class<T> saneType = ClassUtils.getNonprimitiveType(getType());
-		return ClassUtils.convert(getParameter().max(), saneType);
+		final Class<T> saneType = ConversionUtils.getNonprimitiveType(getType());
+		return ConversionUtils.convert(getParameter().max(), saneType);
 	}
 
 	@Override
 	public Number getStepSize() {
-		final Class<T> saneType = ClassUtils.getNonprimitiveType(getType());
+		final Class<T> saneType = ConversionUtils.getNonprimitiveType(getType());
 		return NumberUtils.toNumber(getParameter().stepSize(), saneType);
 	}
 
@@ -168,7 +168,7 @@ public class CommandModuleItem<T> extends AbstractModuleItem<T> {
 	public List<T> getChoices() {
 		final ArrayList<T> choices = new ArrayList<T>();
 		for (final String choice : getParameter().choices()) {
-			choices.add(ClassUtils.convert(choice, getType()));
+			choices.add(ConversionUtils.convert(choice, getType()));
 		}
 		return choices;
 	}
