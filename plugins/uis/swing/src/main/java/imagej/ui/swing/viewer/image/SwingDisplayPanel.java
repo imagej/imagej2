@@ -244,6 +244,10 @@ public class SwingDisplayPanel extends JPanel implements ImageDisplayPanel {
 			if (axis.isXY()) continue; // skip spatial axes
 			final int min = (int) display.min(i);
 			final int max = (int) display.max(i) + 1;
+			// TODO this may not be the best place to prune length 1 axes.
+			// Probably should happen when generating an ImgPlus or in SCIFIO
+			// Metadata itself.
+			if (max - min <= 1) continue; // skip length 1 axes
 			final int value = (int) display.getLongPosition(axis);
 
 			final JScrollBar axisSlider = axisSliders.get(axis);
