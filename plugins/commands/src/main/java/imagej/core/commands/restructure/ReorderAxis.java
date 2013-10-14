@@ -120,8 +120,7 @@ public class ReorderAxis extends DynamicCommand {
 	 * Sets the axis to be change by referring to its position.
 	 */
 	public void setAxis(int d) {
-		axisNum = d;
-		channelsCase = dataset.axis(axisNum).type().equals(Axes.CHANNEL);
+		internalSetAxis(d);
 	}
 
 	/**
@@ -192,7 +191,7 @@ public class ReorderAxis extends DynamicCommand {
 			new DefaultMutableModuleItem<String>(this, AXIS, String.class);
 		axisItem.setChoices(choices);
 		axisItem.setPersisted(false);
-		setAxis(defaultAxis(dataset));
+		internalSetAxis(defaultAxis(dataset));
 		axisItem.setValue(this, dataset.axis(axisNum).type().getLabel());
 		axisItem.setCallback("axisChanged");
 		addInput(axisItem);
@@ -203,7 +202,7 @@ public class ReorderAxis extends DynamicCommand {
 		String axisVal = (String) getInput(AXIS);
 		for (int i = 0; i < choices.size(); i++) {
 			if (axisVal.equals(choices.get(i))) {
-				setAxis(i);
+				internalSetAxis(i);
 				break;
 			}
 		}
@@ -211,6 +210,14 @@ public class ReorderAxis extends DynamicCommand {
 	}
 
 	// -- helpers --
+
+	// NB - provide a method that tries to avoid breakage if setAxis(int d) is
+	// overridden in a derived class.
+
+	private void internalSetAxis(int d) {
+		axisNum = d;
+		channelsCase = dataset.axis(axisNum).type().equals(Axes.CHANNEL);
+	}
 
 	private int defaultAxis(Dataset ds) {
 		// try for first nonspatial
