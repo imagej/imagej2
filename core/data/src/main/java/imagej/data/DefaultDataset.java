@@ -398,44 +398,6 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		// Maybe we need more levels of discrimination with update(bool)
 	}
 
-	@Deprecated
-	@Override
-	public double calibration(final int d) {
-		return imgPlus.calibration(d);
-	}
-
-	@Deprecated
-	@Override
-	public void calibration(final double[] cal) {
-		imgPlus.calibration(cal);
-	}
-
-	@Deprecated
-	@Override
-	public void calibration(float[] cal) {
-		imgPlus.calibration(cal);
-	}
-
-	@Deprecated
-	@Override
-	public void setCalibration(final double cal, final int d) {
-		if (imgPlus.calibration(d) == cal) return;
-		imgPlus.setCalibration(cal, d);
-		update(true);
-	}
-
-	@Deprecated
-	@Override
-	public void setCalibration(double[] cal) {
-		imgPlus.setCalibration(cal);
-	}
-
-	@Deprecated
-	@Override
-	public void setCalibration(float[] cal) {
-		imgPlus.setCalibration(cal);
-	}
-
 	// -- EuclideanSpace methods --
 
 	@Override

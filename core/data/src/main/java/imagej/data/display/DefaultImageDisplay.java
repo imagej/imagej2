@@ -405,54 +405,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 		return combinedInterval.averageScale(d);
 	}
 
-	@Override
-	public double calibration(final int d) {
-		return combinedInterval.calibration(d);
-	}
-
-	@Override
-	public void calibration(final double[] cal) {
-		for (int i = 0; i < cal.length; i++) {
-			cal[i] = calibration(i);
-		}
-	}
-
-	@Override
-	public void calibration(final float[] cal) {
-		for (int i = 0; i < cal.length; i++) {
-			cal[i] = (float) calibration(i);
-		}
-	}
-
-	@Override
-	public void setCalibration(final double cal, final int d) {
-		combinedInterval.setCalibration(cal, d);
-	}
-
-	@Override
-	public void setCalibration(final double[] cal) {
-		for (int i = 0; i < cal.length; i++) {
-			setCalibration(cal[i], i);
-		}
-	}
-
-	@Override
-	public void setCalibration(final float[] cal) {
-		for (int i = 0; i < cal.length; i++) {
-			setCalibration(cal[i], i);
-		}
-	}
-
-	@Override
-	public String unit(int d) {
-		return combinedInterval.unit(d);
-	}
-
-	@Override
-	public void setUnit(String unit, int d) {
-		combinedInterval.setUnit(unit, d);
-	}
-
 	// -- TypedSpace methods --
 
 	@Override
