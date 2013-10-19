@@ -35,18 +35,12 @@
 
 package imagej.console;
 
-import imagej.command.CommandInfo;
-import imagej.command.CommandService;
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.display.DisplayService;
-
-import java.io.IOException;
+import java.util.LinkedList;
 
 import org.scijava.log.LogService;
+import org.scijava.plugin.AbstractHandlerService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
@@ -55,73 +49,50 @@ import org.scijava.service.Service;
  * @author Curtis Rueden
  */
 @Plugin(type = Service.class)
-public class DefaultConsoleService extends AbstractService implements
+public class DefaultConsoleService extends
+	AbstractHandlerService<LinkedList<String>, ConsoleArgument> implements
 	ConsoleService
 {
 
 	@Parameter
 	private LogService log;
 
-	@Parameter
-	private CommandService commandService;
-
-	@Parameter
-	private DatasetService datasetService;
-
-	@Parameter
-	private DisplayService displayService;
-
 	// -- ConsoleService methods --
 
 	@Override
 	public void processArgs(final String... args) {
-		// TODO: Implement handling of more command line arguments.
 		log.debug("Received command line arguments:");
-		for (int i = 0; i < args.length; i++) {
-			final String arg = args[i];
+		final LinkedList<String> argList = new LinkedList<String>();
+		for (final String arg : args) {
 			log.debug("\t" + arg);
-			if (arg.equals("--open")) {
-				open(args[i + 1]);
+			argList.add(arg);
+		}
+
+		while (!argList.isEmpty()) {
+			final ConsoleArgument handler = getHandler(argList);
+			if (handler == null) {
+				// ignore invalid command line argument
+				final String arg = argList.removeFirst();
+				log.warn("Ignoring invalid argument: " + arg);
+				continue;
 			}
-			else if (arg.equals("--run")) {
-				if (!run(args[i + 1])) {
-					run(args[i + 1], args.length < i + 3 ? null : args[i + 2]);
-				}
-			}
+			handler.handle(argList);
 		}
 	}
 
-	// -- Helper methods --
+	// -- PTService methods --
 
-	/** Implements the "--open" command line argument. */
-	private void open(final String source) {
-		try {
-			final Dataset dataset = datasetService.open(source);
-			displayService.createDisplay(dataset.getName(), dataset);
-		}
-		catch (final IOException exc) {
-			log.error("Error loading dataset '" + source + "'", exc);
-		}
+	@Override
+	public Class<ConsoleArgument> getPluginType() {
+		return ConsoleArgument.class;
 	}
 
-	/** Implements the "--run" command line argument. */
-	private boolean run(final String className) {
-		return commandService.run(className) != null;
-	}
+	// -- Typed methods --
 
-	/** Implements the "--run <label> <optionString>" legacy handling */
-	private boolean run(String menuLabel, final String optionString) {
-		final String label = menuLabel.replace('_', ' ');
-		CommandInfo info = null;
-		for (final CommandInfo info2 : commandService.getCommands()) {
-			if (label.equals(info2.getTitle())) {
-				info = info2;
-				break;
-			}
-		}
-		if (info == null) return false;
-		// TODO: parse the optionString a la ImageJ1
-		return commandService.run(info) != null;
+	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Class<LinkedList<String>> getType() {
+		return (Class) LinkedList.class;
 	}
 
 }

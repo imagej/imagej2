@@ -33,47 +33,29 @@
  * #L%
  */
 
-package imagej;
+package imagej.console;
+
+import java.util.LinkedList;
+
+import org.scijava.plugin.HandlerPlugin;
+import org.scijava.plugin.Plugin;
 
 /**
- * Launches ImageJ.
+ * A plugin which extends ImageJ's command line argument handling.
+ * <p>
+ * Console argument plugins discoverable at runtime must implement this
+ * interface and be annotated with @{@link Plugin} with attribute
+ * {@link Plugin#type()} = {@link ConsoleArgument}.class. While it possible to
+ * create an console argument plugin merely by implementing this interface, it
+ * is encouraged to instead extend {@link AbstractConsoleArgument}, for
+ * convenience.
+ * </p>
  * 
  * @author Curtis Rueden
  */
-public final class Main {
+public interface ConsoleArgument extends HandlerPlugin<LinkedList<String>> {
 
-	private Main() {
-		// prevent instantiation of utility class
-	}
-
-	/**
-	 * Launches a new instance of ImageJ, displaying the default user interface.
-	 * <p>
-	 * This method is provided merely for convenience. If you do not want to
-	 * display a user interface, construct the ImageJ instance directly instead:
-	 * </p>
-	 * {@code
-	 * final ImageJ ij = new ImageJ();<br/>
-	 * ij.console().processArgs(args); // if you want to pass any arguments
-	 * }
-	 * 
-	 * @param args The arguments to pass to the new ImageJ instance.
-	 * @return The newly launched ImageJ instance.
-	 */
-	public static ImageJ launch(final String... args) {
-		final ImageJ ij = new ImageJ();
-
-		// display the user interface
-		ij.ui().showUI();
-
-		// parse command line arguments
-		ij.console().processArgs(args);
-
-		return ij;
-	}
-
-	public static void main(final String... args) {
-		launch(args);
-	}
+	/** Handles the <em>front</em> of the given list of arguments. */
+	void handle(final LinkedList<String> args);
 
 }

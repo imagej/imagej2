@@ -33,47 +33,60 @@
  * #L%
  */
 
-package imagej;
+package imagej.ui.console;
+
+import imagej.console.AbstractConsoleArgument;
+import imagej.console.ConsoleArgument;
+import imagej.io.IOService;
+import imagej.ui.UIService;
+
+import java.io.IOException;
+import java.util.LinkedList;
+
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
- * Launches ImageJ.
+ * Handles the {@code --open} command line argument.
  * 
  * @author Curtis Rueden
  */
-public final class Main {
+@Plugin(type = ConsoleArgument.class)
+public class OpenArgument extends AbstractConsoleArgument {
 
-	private Main() {
-		// prevent instantiation of utility class
+	@Parameter
+	private IOService ioService;
+
+	@Parameter
+	private UIService uiService;
+
+	@Parameter
+	private LogService log;
+
+	// -- ConsoleArgument methods --
+
+	@Override
+	public void handle(final LinkedList<String> args) {
+		if (!supports(args)) return;
+
+		args.removeFirst(); // --open
+		final String source = args.removeFirst();
+
+		try {
+			final Object o = ioService.open(source);
+			uiService.show(o);
+		}
+		catch (IOException exc) {
+			log.error(exc);
+		}
 	}
 
-	/**
-	 * Launches a new instance of ImageJ, displaying the default user interface.
-	 * <p>
-	 * This method is provided merely for convenience. If you do not want to
-	 * display a user interface, construct the ImageJ instance directly instead:
-	 * </p>
-	 * {@code
-	 * final ImageJ ij = new ImageJ();<br/>
-	 * ij.console().processArgs(args); // if you want to pass any arguments
-	 * }
-	 * 
-	 * @param args The arguments to pass to the new ImageJ instance.
-	 * @return The newly launched ImageJ instance.
-	 */
-	public static ImageJ launch(final String... args) {
-		final ImageJ ij = new ImageJ();
+	// -- Typed methods --
 
-		// display the user interface
-		ij.ui().showUI();
-
-		// parse command line arguments
-		ij.console().processArgs(args);
-
-		return ij;
-	}
-
-	public static void main(final String... args) {
-		launch(args);
+	@Override
+	public boolean supports(final LinkedList<String> args) {
+		return args != null && args.size() >= 2 && args.getFirst().equals("--open");
 	}
 
 }
