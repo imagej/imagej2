@@ -212,7 +212,7 @@ public class BuildEnvironment {
 		if (!localPOMCache.containsKey(key))
 			localPOMCache.put(key, pom);
 
-		if (pom.packaging.equals("jar") && !directory.getPath().startsWith(mavenRepository.getPath())) {
+		if (pom.isJAR() && !directory.getPath().startsWith(mavenRepository.getPath())) {
 			pom.buildFromSource = true;
 			pom.target = new File(directory, "target/classes");
 		}
