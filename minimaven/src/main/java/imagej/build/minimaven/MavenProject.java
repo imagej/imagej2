@@ -574,6 +574,14 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 		return packaging;
 	}
 
+	/**
+	 * True iff artifact is a JAR file (i.e., {@link #getPackaging()}
+	 * is "jar" or "bundle").
+	 */
+	public boolean isJAR() {
+		return "jar".equals(getPackaging()) || "bundle".equals(getPackaging());
+	}
+
 	public File getTarget() {
 		if (!buildFromSource)
 			return target;
@@ -604,7 +612,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 	private String getManifestClassPath() throws IOException, ParserConfigurationException, SAXException {
 		StringBuilder builder = new StringBuilder();
 		for (MavenProject pom : getDependencies(true, env.downloadAutomatically, "test", "provided")) {
-			if (!"jar".equals(pom.getPackaging())) continue;
+			if (!pom.isJAR()) continue;
 			builder.append(" ").append(pom.getArtifactId() + "-" + pom.coordinate.version + ".jar");
 		}
 		if (builder.length() == 0) return null;
@@ -969,7 +977,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 			}
 			if (result.parent == null)
 				result.parent = getRoot();
-			if (result.packaging.equals("jar") && !new File(path, dependency.getJarName()).exists()) {
+			if (result.isJAR() && !new File(path, dependency.getJarName()).exists()) {
 				if (downloadAutomatically)
 					download(dependency, quiet);
 				else {
