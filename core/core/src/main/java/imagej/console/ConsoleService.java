@@ -35,7 +35,9 @@
 
 package imagej.console;
 
-import imagej.service.ImageJService;
+import java.util.LinkedList;
+
+import org.scijava.plugin.HandlerService;
 
 /**
  * Interface for service that manages interaction with the console.
@@ -46,11 +48,9 @@ import imagej.service.ImageJService;
  * 
  * @author Curtis Rueden
  */
-public interface ConsoleService extends ImageJService {
-
-	// CTR TODO: Move to ij-core and extend HandlerService<ConsoleArgument>.
-	// This will be a new type of plugin that handles command line arguments.
-	// In this way, command line flags can be made extensible.
+public interface ConsoleService extends
+	HandlerService<LinkedList<String>, ConsoleArgument>
+{
 
 	/**
 	 * Handles arguments to ImageJ coming from an external source such as the

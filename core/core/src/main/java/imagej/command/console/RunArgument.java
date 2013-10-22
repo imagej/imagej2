@@ -33,47 +33,71 @@
  * #L%
  */
 
-package imagej;
+package imagej.command.console;
+
+import imagej.command.CommandInfo;
+import imagej.command.CommandService;
+import imagej.console.AbstractConsoleArgument;
+import imagej.console.ConsoleArgument;
+
+import java.util.LinkedList;
+
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
- * Launches ImageJ.
+ * Handles the {@code --run} command line argument.
  * 
  * @author Curtis Rueden
  */
-public final class Main {
+@Plugin(type = ConsoleArgument.class)
+public class RunArgument extends AbstractConsoleArgument {
 
-	private Main() {
-		// prevent instantiation of utility class
+	@Parameter
+	private CommandService commandService;
+
+	// -- ConsoleArgument methods --
+
+	@Override
+	public void handle(final LinkedList<String> args) {
+		if (!supports(args)) return;
+
+		args.removeFirst(); // --run
+		final String arg = args.removeFirst(); // className or menuLabel
+
+		if (run(arg)) return; // command execution successful
+
+		final String optionString = args.removeFirst();
+		run(arg, optionString);
 	}
 
-	/**
-	 * Launches a new instance of ImageJ, displaying the default user interface.
-	 * <p>
-	 * This method is provided merely for convenience. If you do not want to
-	 * display a user interface, construct the ImageJ instance directly instead:
-	 * </p>
-	 * {@code
-	 * final ImageJ ij = new ImageJ();<br/>
-	 * ij.console().processArgs(args); // if you want to pass any arguments
-	 * }
-	 * 
-	 * @param args The arguments to pass to the new ImageJ instance.
-	 * @return The newly launched ImageJ instance.
-	 */
-	public static ImageJ launch(final String... args) {
-		final ImageJ ij = new ImageJ();
+	// -- Typed methods --
 
-		// display the user interface
-		ij.ui().showUI();
-
-		// parse command line arguments
-		ij.console().processArgs(args);
-
-		return ij;
+	@Override
+	public boolean supports(final LinkedList<String> args) {
+		return args != null && args.size() >= 2 && args.getFirst().equals("--run");
 	}
 
-	public static void main(final String... args) {
-		launch(args);
+	// -- Helper methods --
+
+	/** Implements the {@code --run} command line argument. */
+	private boolean run(final String className) {
+		return commandService.run(className) != null;
+	}
+
+	/** Implements the {@code --run <label> <optionString>} legacy handling. */
+	private boolean run(final String menuLabel, final String optionString) {
+		final String label = menuLabel.replace('_', ' ');
+		CommandInfo info = null;
+		for (final CommandInfo ci : commandService.getCommands()) {
+			if (label.equals(ci.getTitle())) {
+				info = ci;
+				break;
+			}
+		}
+		if (info == null) return false;
+		// TODO: parse the optionString a la ImageJ1
+		return commandService.run(info) != null;
 	}
 
 }

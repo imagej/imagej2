@@ -33,47 +33,27 @@
  * #L%
  */
 
-package imagej;
+package imagej.console;
+
+import java.util.LinkedList;
+
+import org.scijava.plugin.SortablePlugin;
 
 /**
- * Launches ImageJ.
+ * Abstract superclass of {@link ConsoleArgument} implementations.
  * 
  * @author Curtis Rueden
  */
-public final class Main {
+public abstract class AbstractConsoleArgument extends SortablePlugin implements
+	ConsoleArgument
+{
 
-	private Main() {
-		// prevent instantiation of utility class
-	}
+	// -- Typed methods --
 
-	/**
-	 * Launches a new instance of ImageJ, displaying the default user interface.
-	 * <p>
-	 * This method is provided merely for convenience. If you do not want to
-	 * display a user interface, construct the ImageJ instance directly instead:
-	 * </p>
-	 * {@code
-	 * final ImageJ ij = new ImageJ();<br/>
-	 * ij.console().processArgs(args); // if you want to pass any arguments
-	 * }
-	 * 
-	 * @param args The arguments to pass to the new ImageJ instance.
-	 * @return The newly launched ImageJ instance.
-	 */
-	public static ImageJ launch(final String... args) {
-		final ImageJ ij = new ImageJ();
-
-		// display the user interface
-		ij.ui().showUI();
-
-		// parse command line arguments
-		ij.console().processArgs(args);
-
-		return ij;
-	}
-
-	public static void main(final String... args) {
-		launch(args);
+	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Class<LinkedList<String>> getType() {
+		return (Class) String.class;
 	}
 
 }

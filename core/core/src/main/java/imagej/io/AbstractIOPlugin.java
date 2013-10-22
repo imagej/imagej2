@@ -78,7 +78,7 @@ public abstract class AbstractIOPlugin<D> extends SortablePlugin implements
 	// -- Typed methods --
 
 	@Override
-	public boolean supports(String descriptor) {
+	public boolean supports(final String descriptor) {
 		return supportsOpen(descriptor) || supportsSave(descriptor);
 	}
 
