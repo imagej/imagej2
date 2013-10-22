@@ -396,7 +396,7 @@ public class CommandLine {
 
 	public void upload(final List<String> list) {
 		if (list == null) throw die("Which files do you mean to upload?");
-		boolean forceUpdateSite = false, forceShadow = false;
+		boolean forceUpdateSite = false, forceShadow = false, simulate = false;
 		String updateSite = null;
 		while (list.size() > 0 && list.get(0).startsWith("-")) {
 			final String option = list.remove(0);
@@ -406,6 +406,8 @@ public class CommandLine {
 				}
 				updateSite = list.remove(0);
 				forceUpdateSite = true;
+			} else if ("--simulate".equals(option)) {
+				simulate = true;
 			} else if ("--force-shadow".equals(option)) {
 				forceShadow = true;
 			} else {
@@ -459,6 +461,7 @@ public class CommandLine {
 				log.info("Removing file '" + name + "'");
 				file.setAction(files, Action.REMOVE);
 			} else {
+				if (simulate) log.info("Would upload '" + name + "'");
 				file.setAction(files, Action.UPLOAD);
 			}
 			count++;
@@ -470,6 +473,17 @@ public class CommandLine {
 
 		if (updateSite != null && files.getUpdateSite(updateSite, false) == null) {
 			throw die("Unknown update site: '" + updateSite + "'");
+		}
+
+		if (simulate) {
+			final Iterable<Conflict> conflicts = new Conflicts(files).getConflicts(true);
+			if (Conflicts.needsFeedback(conflicts)) {
+				log.error("Unresolved upload conflicts!\n\n"
+					+ Util.join("\n", conflicts));
+			} else {
+				log.info("Would upload/remove " + count + " to/from " + getLongUpdateSiteName(updateSite));
+			}
+			return;
 		}
 
 		log.info("Uploading to " + getLongUpdateSiteName(updateSite));
@@ -841,7 +855,7 @@ public class CommandLine {
 			+ "\tupdate [<files>]\n"
 			+ "\tupdate-force [<files>]\n"
 			+ "\tupdate-force-pristine [<files>]\n"
-			+ "\tupload [--[update-]site <name>] [--force-shadow] [<files>]\n"
+			+ "\tupload [--simulate] [--[update-]site <name>] [--force-shadow] [<files>]\n"
 			+ "\tupload-complete-site [--simulate] [--force] [--force-shadow] [--platforms <platform>[,<platform>...]] <name>\n"
 			+ "\tlist-update-sites [<nick>...]\n"
 			+ "\tadd-update-site <nick> <url> [<host> <upload-directory>]\n"
