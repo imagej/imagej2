@@ -96,26 +96,30 @@ public class CommandLine {
 		this(AppUtils.getBaseDirectory(), 80);
 	}
 
-	public CommandLine(final File ijDir, final int columnCount)
-	{
+	public CommandLine(final File ijDir, final int columnCount) {
 		this(ijDir, columnCount, null);
 	}
 
-	public CommandLine(final File ijDir, final int columnCount, final Progress progress)
-	{
-		this.progress = progress == null ? new StderrProgress(columnCount) : progress;
+	public CommandLine(final File ijDir, final int columnCount,
+			final Progress progress) {
+		this.progress = progress == null ? new StderrProgress(columnCount)
+				: progress;
 		files = new FilesCollection(log, ijDir);
 	}
 
 	private void ensureChecksummed() {
-		if (checksummed) return;
+		if (checksummed) {
+			return;
+		}
 		String warnings;
 		try {
 			warnings = files.downloadIndexAndChecksum(progress);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw die("Received exception: " + e.getMessage());
 		}
-		if (!warnings.equals("")) System.err.println(warnings);
+		if (!warnings.equals("")) {
+			log.warn(warnings);
+		}
 		checksummed = true;
 	}
 
@@ -133,8 +137,13 @@ public class CommandLine {
 
 		@Override
 		public boolean matches(final FileObject file) {
-			if (!file.isUpdateablePlatform(files)) return false;
-			if (fileNames != null && !fileNames.contains(file.getFilename(true))) return false;
+			if (!file.isUpdateablePlatform(files)) {
+				return false;
+			}
+			if (fileNames != null
+					&& !fileNames.contains(file.getFilename(true))) {
+				return false;
+			}
 			return file.getStatus() != Status.OBSOLETE_UNINSTALLED;
 		}
 	}
@@ -146,17 +155,19 @@ public class CommandLine {
 		Mode mode = Mode.CLASS_FILE_DIFF;
 		while (list.size() > 0 && list.get(0).startsWith("--")) {
 			final String option = list.remove(0);
-			mode = Mode.valueOf(option.substring(2).replace('-', '_').toUpperCase());
+			mode = Mode.valueOf(option.substring(2).replace('-', '_')
+					.toUpperCase());
 		}
 
-		for (final FileObject file : files.filter(new FileFilter(list))) try {
-			final String filename = file.getLocalFilename(false);
-			final URL remote = new URL(files.getURL(file));
-			final URL local = files.prefix(filename).toURI().toURL();
-			diff.showDiff(filename, remote, local, mode);
-		} catch (final IOException e) {
-			log.error(e);
-		}
+		for (final FileObject file : files.filter(new FileFilter(list)))
+			try {
+				final String filename = file.getLocalFilename(false);
+				final URL remote = new URL(files.getURL(file));
+				final URL local = files.prefix(filename).toURI().toURL();
+				diff.showDiff(filename, remote, local, mode);
+			} catch (final IOException e) {
+				log.error(e);
+			}
 	}
 
 	public void listCurrent(final List<String> list) {
@@ -167,12 +178,16 @@ public class CommandLine {
 
 	public void list(final List<String> list, Filter filter) {
 		ensureChecksummed();
-		if (filter == null) filter = new FileFilter(list);
-		else filter = files.and(new FileFilter(list), filter);
+		if (filter == null) {
+			filter = new FileFilter(list);
+		} else {
+			filter = files.and(new FileFilter(list), filter);
+		}
 		files.sort();
-		for (final FileObject file : files.filter(filter))
-			System.out.println(file.filename + "\t(" + file.getStatus() + ")\t" +
-				file.getTimestamp());
+		for (final FileObject file : files.filter(filter)) {
+			System.out.println(file.filename + "\t(" + file.getStatus() + ")\t"
+					+ file.getTimestamp());
+		}
 	}
 
 	public void list(final List<String> list) {
@@ -184,8 +199,9 @@ public class CommandLine {
 	}
 
 	public void listNotUptodate(final List<String> list) {
-		list(list, files.not(files.oneOf(new Status[] { Status.OBSOLETE,
-			Status.INSTALLED, Status.LOCAL_ONLY })));
+		list(list,
+				files.not(files.oneOf(new Status[] { Status.OBSOLETE,
+						Status.INSTALLED, Status.LOCAL_ONLY })));
 	}
 
 	public void listUpdateable(final List<String> list) {
@@ -207,7 +223,7 @@ public class CommandLine {
 	}
 
 	public void show(final List<String> list) {
-		for (String filename : list) {
+		for (final String filename : list) {
 			show(filename);
 		}
 	}
@@ -216,7 +232,7 @@ public class CommandLine {
 		ensureChecksummed();
 		final FileObject file = files.get(filename);
 		if (file == null) {
-			System.err.println("\nERROR: File not found: " + filename);
+			log.error("File not found: " + filename);
 		} else {
 			show(file);
 		}
@@ -224,7 +240,9 @@ public class CommandLine {
 
 	public void show(final FileObject file) {
 		ensureChecksummed();
-		if (dependencyMap == null) dependencyMap = files.getDependencies(files, false);
+		if (dependencyMap == null) {
+			dependencyMap = files.getDependencies(files, false);
+		}
 
 		System.out.println();
 		System.out.println("File: " + file.getFilename(true));
@@ -241,15 +259,23 @@ public class CommandLine {
 			System.out.println("Removed from update site");
 		} else {
 			System.out.println("URL: " + files.getURL(file));
-			System.out.println("checksum: " + file.current.checksum + ", timestamp: " + file.current.timestamp);
+			System.out.println("checksum: " + file.current.checksum
+					+ ", timestamp: " + file.current.timestamp);
 		}
-		if (file.localChecksum != null && (file.current == null || !file.localChecksum.equals(file.current.checksum))) {
-			System.out.println("Local checksum: " + file.localChecksum
-					+ " (" + (file.hasPreviousVersion(file.localChecksum) ? "" : "NOT a ") + "previous version)");
+		if (file.localChecksum != null
+				&& (file.current == null || !file.localChecksum
+						.equals(file.current.checksum))) {
+			System.out.println("Local checksum: "
+					+ file.localChecksum
+					+ " ("
+					+ (file.hasPreviousVersion(file.localChecksum) ? ""
+							: "NOT a ") + "previous version)");
 		}
 		final StringBuilder builder = new StringBuilder();
-		for (final FileObject dependency : file.getFileDependencies(files, false)) {
-			if (builder.length() > 0) builder.append(", ");
+		for (final FileObject dependency : file.getFileDependencies(files,
+				false)) {
+			if (builder.length() > 0)
+				builder.append(", ");
 			builder.append(dependency.getFilename(true));
 		}
 		if (builder.length() > 0) {
@@ -259,17 +285,20 @@ public class CommandLine {
 		if (dependencees != null && !dependencees.isEmpty()) {
 			builder.setLength(0);
 			for (final FileObject dependencee : dependencees) {
-				if (builder.length() > 0) builder.append(", ");
+				if (builder.length() > 0)
+					builder.append(", ");
 				builder.append(dependencee.getFilename(true));
 			}
 			if (builder.length() > 0) {
-				System.out.println("Have '" + file.getFilename(true) + "' as dependency: " + builder.toString());
+				System.out.println("Have '" + file.getFilename(true)
+						+ "' as dependency: " + builder.toString());
 			}
 		}
 	}
 
 	private FilesCollection getDependencees(final FileObject file) {
-		if (dependencyMap == null) dependencyMap = files.getDependencies(files, false);
+		if (dependencyMap == null)
+			dependencyMap = files.getDependencies(files, false);
 		return dependencyMap.get(file);
 	}
 
@@ -306,29 +335,29 @@ public class CommandLine {
 		ensureChecksummed();
 		try {
 			new Downloader(progress, files.util).start(new OneFile(file));
-			if (file.executable && !files.util.platform.startsWith("win")) try {
-				Runtime.getRuntime()
-					.exec(
-						new String[] { "chmod", "0755",
-							files.prefix(file.filename).getPath() });
+			if (file.executable && !files.util.platform.startsWith("win")) {
+				try {
+					Runtime.getRuntime().exec(
+							new String[] { "chmod", "0755",
+									files.prefix(file.filename).getPath() });
+				} catch (final Exception e) {
+					e.printStackTrace();
+					throw die("Could not mark " + file.filename
+							+ " as executable");
+				}
 			}
-			catch (final Exception e) {
-				e.printStackTrace();
-				throw die("Could not mark " + file.filename +
-					" as executable");
-			}
-			System.err.println("Installed " + file.filename);
-		}
-		catch (final IOException e) {
-			System.err.println("IO error downloading " + file.filename + ": " +
-				e.getMessage());
+			log.info("Installed " + file.filename);
+		} catch (final IOException e) {
+			log.error("IO error downloading " + file.filename, e);
 		}
 	}
 
 	public void delete(final FileObject file) {
-		if (new File(file.filename).delete()) System.err.println("Deleted " +
-			file.filename);
-		else System.err.println("Failed to delete " + file.filename);
+		if (new File(file.filename).delete()) {
+			log.info("Deleted " + file.filename);
+		} else {
+			log.error("Failed to delete " + file.filename);
+		}
 	}
 
 	public void update(final List<String> list) {
@@ -340,8 +369,7 @@ public class CommandLine {
 	}
 
 	public void update(final List<String> list, final boolean force,
-		final boolean pristine)
-	{
+			final boolean pristine) {
 		ensureChecksummed();
 		try {
 			for (final FileObject file : files.filter(new FileFilter(list))) {
@@ -352,52 +380,62 @@ public class CommandLine {
 					if (file.getStatus() == Status.OBSOLETE) {
 						log.info("Removing " + file.filename);
 						file.stageForUninstall(files);
-					}
-					else if (file.getStatus() == Status.OBSOLETE_MODIFIED) {
+					} else if (file.getStatus() == Status.OBSOLETE_MODIFIED) {
 						if (force || pristine) {
 							file.stageForUninstall(files);
 							log.info("Removing " + file.filename);
+						} else {
+							log.warn("Skipping obsolete, but modified "
+									+ file.filename);
 						}
-						else
-							log.warn("Skipping obsolete, but modified " + file.filename);
 					}
-				} else if (file.getStatus() != Status.INSTALLED && !file.stageForUpdate(files, force)) {
+				} else if (file.getStatus() != Status.INSTALLED
+						&& !file.stageForUpdate(files, force)) {
 					log.warn("Skipping " + file.filename);
 				}
 				// remove obsolete versions in pristine mode
 				if (pristine) {
 					final File correctVersion = files.prefix(file);
-					final File[] versions = FileUtils.getAllVersions(correctVersion.getParentFile(), correctVersion.getName());
+					final File[] versions = FileUtils.getAllVersions(
+							correctVersion.getParentFile(),
+							correctVersion.getName());
 					if (versions != null) {
 						for (final File version : versions) {
 							if (!version.equals(correctVersion)) {
 								log.info("Deleting obsolete version " + version);
-								if (!version.delete()) log.error("Could not delete " + version + "!");
+								if (!version.delete()) {
+									log.error("Could not delete " + version
+											+ "!");
+								}
 							}
 						}
 					}
 				}
 			}
 			resolveConflicts(false);
-			Installer installer = new Installer(files, progress);
+			final Installer installer = new Installer(files, progress);
 			installer.start();
 			installer.moveUpdatedIntoPlace();
 			files.write();
-		}
-		catch (final Exception e) {
+		} catch (final Exception e) {
 			if (e.getMessage().indexOf("conflicts") >= 0) {
 				log.error("Could not update due to conflicts:");
-				for (Conflict conflict : new Conflicts(files).getConflicts(false))
-					log.error(conflict.getFilename() + ": " + conflict.getConflict());
-			}
-			else
+				for (final Conflict conflict : new Conflicts(files)
+						.getConflicts(false)) {
+					log.error(conflict.getFilename() + ": "
+							+ conflict.getConflict());
+				}
+			} else {
 				log.error("Error updating", e);
+			}
 		}
 	}
 
 	public void upload(final List<String> list) {
-		if (list == null) throw die("Which files do you mean to upload?");
-		boolean forceUpdateSite = false, forceShadow = false;
+		if (list == null) {
+			throw die("Which files do you mean to upload?");
+		}
+		boolean forceUpdateSite = false, forceShadow = false, simulate = false, forgetMissingDeps = false;
 		String updateSite = null;
 		while (list.size() > 0 && list.get(0).startsWith("-")) {
 			final String option = list.remove(0);
@@ -407,13 +445,19 @@ public class CommandLine {
 				}
 				updateSite = list.remove(0);
 				forceUpdateSite = true;
+			} else if ("--simulate".equals(option)) {
+				simulate = true;
 			} else if ("--force-shadow".equals(option)) {
 				forceShadow = true;
+			} else if ("--forget-missing-dependencies".equals(option)) {
+				forgetMissingDeps = true;
 			} else {
 				throw die("Unknown option: " + option);
 			}
 		}
-		if (list.size() == 0) throw die("Which files do you mean to upload?");
+		if (list.size() == 0) {
+			throw die("Which files do you mean to upload?");
+		}
 		if (forceShadow && updateSite == null) {
 			throw die("Need an explicit update site with --force-shadow");
 		}
@@ -422,32 +466,35 @@ public class CommandLine {
 		int count = 0;
 		for (final String name : list) {
 			final FileObject file = files.get(name);
-			if (file == null) throw die("No file '" + name + "' found!");
+			if (file == null) {
+				throw die("No file '" + name + "' found!");
+			}
 			if (file.getStatus() == Status.INSTALLED) {
 				if (forceShadow && !updateSite.equals(file.updateSite)) {
 					// TODO: add overridden update site
 					file.updateSite = updateSite;
 					file.setStatus(Status.MODIFIED);
-					System.err.println("Uploading (force-shadow) '" + name
+					log.info("Uploading (force-shadow) '" + name
 							+ "' to site '" + updateSite + "'");
 				} else {
-					System.err.println("Skipping up-to-date " + name);
+					log.info("Skipping up-to-date " + name);
 					continue;
 				}
 			}
 			handleLauncherForUpload(file);
 			if (updateSite == null) {
 				updateSite = file.updateSite;
-				if (updateSite == null) updateSite =
-					file.updateSite = chooseUploadSite(name);
-				if (updateSite == null) throw die("Canceled");
-			}
-			else if (file.updateSite == null) {
-				System.err.println("Uploading new file '" + name + "' to  site '" +
-					updateSite + "'");
+				if (updateSite == null) {
+					updateSite = file.updateSite = chooseUploadSite(name);
+				}
+				if (updateSite == null) {
+					throw die("Canceled");
+				}
+			} else if (file.updateSite == null) {
+				log.info("Uploading new file '" + name + "' to  site '"
+						+ updateSite + "'");
 				file.updateSite = updateSite;
-			}
-			else if (!file.updateSite.equals(updateSite)) {
+			} else if (!file.updateSite.equals(updateSite)) {
 				if (forceUpdateSite) {
 					file.updateSite = updateSite;
 				} else {
@@ -456,29 +503,67 @@ public class CommandLine {
 							+ name + " to " + file.updateSite + ")");
 				}
 			}
-			if (file.getStatus() == Status.NOT_INSTALLED || file.getStatus() == Status.NEW) {
-				System.err.println("Removing file '" + name + "'");
+			if (file.getStatus() == Status.NOT_INSTALLED
+					|| file.getStatus() == Status.NEW) {
+				log.info("Removing file '" + name + "'");
 				file.setAction(files, Action.REMOVE);
 			} else {
+				if (simulate) {
+					log.info("Would upload '" + name + "'");
+				}
 				file.setAction(files, Action.UPLOAD);
 			}
 			count++;
 		}
 		if (count == 0) {
-			System.err.println("Nothing to upload");
+			log.info("Nothing to upload");
 			return;
 		}
 
-		if (updateSite != null && files.getUpdateSite(updateSite, false) == null) {
+		if (updateSite != null
+				&& files.getUpdateSite(updateSite, false) == null) {
 			throw die("Unknown update site: '" + updateSite + "'");
 		}
 
-		System.err.println("Uploading to " + getLongUpdateSiteName(updateSite));
+		if (forgetMissingDeps) {
+			for (final Conflict conflict : new Conflicts(files)
+					.getConflicts(true)) {
+				final String message = conflict.getConflict();
+				if (!message.startsWith("Depends on ")
+						|| !message.endsWith(" which is about to be removed.")) {
+					continue;
+				}
+				log.info("Breaking dependency: " + conflict);
+				for (final Resolution resolution : conflict.getResolutions()) {
+					if (resolution.getDescription().startsWith("Break")) {
+						resolution.resolve();
+						break;
+					}
+				}
+			}
+		}
+
+		if (simulate) {
+			final Iterable<Conflict> conflicts = new Conflicts(files)
+					.getConflicts(true);
+			if (Conflicts.needsFeedback(conflicts)) {
+				log.error("Unresolved upload conflicts!\n\n"
+						+ Util.join("\n", conflicts));
+			} else {
+				log.info("Would upload/remove " + count + " to/from "
+						+ getLongUpdateSiteName(updateSite));
+			}
+			return;
+		}
+
+		log.info("Uploading to " + getLongUpdateSiteName(updateSite));
 		upload(updateSite);
 	}
 
 	public void uploadCompleteSite(final List<String> list) {
-		if (list == null) throw die("Which files do you mean to upload?");
+		if (list == null) {
+			throw die("Which files do you mean to upload?");
+		}
 		boolean ignoreWarnings = false, forceShadow = false, simulate = false;
 		while (list.size() > 0 && list.get(0).startsWith("-")) {
 			final String option = list.remove(0);
@@ -497,8 +582,10 @@ public class CommandLine {
 				throw die("Unknown option: " + option);
 			}
 		}
-		if (list.size() != 1) throw die("Which files do you mean to upload?");
-		String updateSite = list.get(0);
+		if (list.size() != 1) {
+			throw die("Which files do you mean to upload?");
+		}
+		final String updateSite = list.get(0);
 
 		ensureChecksummed();
 		if (files.getUpdateSite(updateSite, false) == null) {
@@ -507,7 +594,9 @@ public class CommandLine {
 
 		int removeCount = 0, uploadCount = 0, warningCount = 0;
 		for (final FileObject file : files) {
-			if (!file.isUpdateablePlatform(files)) continue;
+			if (!file.isUpdateablePlatform(files)) {
+				continue;
+			}
 			final String name = file.filename;
 			handleLauncherForUpload(file);
 			switch (file.getStatus()) {
@@ -516,22 +605,26 @@ public class CommandLine {
 				if (forceShadow) {
 					file.updateSite = updateSite;
 					file.setAction(files, Action.UPLOAD);
-					if (simulate) System.err.println("Would upload " + file.filename);
+					if (simulate) {
+						log.info("Would upload " + file.filename);
+					}
 					uploadCount++;
 				} else if (ignoreWarnings && updateSite.equals(file.updateSite)) {
 					file.setAction(files, Action.UPLOAD);
-					if (simulate) System.err.println("Would re-upload " + file.filename);
+					if (simulate) {
+						log.info("Would re-upload " + file.filename);
+					}
 					uploadCount++;
 
 				} else {
-					System.err.println("Warning: obsolete '" + name + "' still installed!");
+					log.warn("Obsolete '" + name + "' still installed!");
 					warningCount++;
 				}
 				break;
 			case UPDATEABLE:
 			case MODIFIED:
 				if (!forceShadow && !updateSite.equals(file.updateSite)) {
-					System.err.println("Warning: '" + name + "' of update site '"
+					log.warn("'" + name + "' of update site '"
 							+ file.updateSite + "' is not up-to-date!");
 					warningCount++;
 					continue;
@@ -540,15 +633,25 @@ public class CommandLine {
 			case LOCAL_ONLY:
 				file.updateSite = updateSite;
 				file.setAction(files, Action.UPLOAD);
-				if (simulate) System.err.println("Would upload new " + (file.getStatus() == Status.LOCAL_ONLY ? "" : "version of ") + file.getLocalFilename(true));
+				if (simulate) {
+					log.info("Would upload new "
+							+ (file.getStatus() == Status.LOCAL_ONLY ? ""
+									: "version of ")
+							+ file.getLocalFilename(true));
+				}
 				uploadCount++;
 				break;
 			case NEW:
 			case NOT_INSTALLED:
 				// special: keep tools-1.4.2.jar, needed for ImageJ 1.x
-				if ("ImageJ".equals(updateSite) && file.getFilename(true).equals("jars/tools.jar")) break;
+				if ("ImageJ".equals(updateSite)
+						&& file.getFilename(true).equals("jars/tools.jar")) {
+					break;
+				}
 				file.setAction(files, Action.REMOVE);
-				if (simulate) System.err.println("Would mark " + file.filename + " obsolete");
+				if (simulate) {
+					log.info("Would mark " + file.filename + " obsolete");
+				}
 				removeCount++;
 				break;
 			case INSTALLED:
@@ -560,9 +663,13 @@ public class CommandLine {
 
 		// remove all obsolete dependencies of the same upload site
 		for (final FileObject file : files.forUpdateSite(updateSite)) {
-			if (!file.willBeUpToDate()) continue;
-			for (final FileObject dependency : file.getFileDependencies(files, false)) {
-				if (dependency.willNotBeInstalled() && updateSite.equals(dependency.updateSite)) {
+			if (!file.willBeUpToDate()) {
+				continue;
+			}
+			for (final FileObject dependency : file.getFileDependencies(files,
+					false)) {
+				if (dependency.willNotBeInstalled()
+						&& updateSite.equals(dependency.updateSite)) {
 					file.removeDependency(dependency.getFilename(false));
 				}
 			}
@@ -573,34 +680,39 @@ public class CommandLine {
 		}
 
 		if (removeCount == 0 && uploadCount == 0) {
-			System.err.println("Nothing to upload");
+			log.info("Nothing to upload");
 			return;
 		}
 
 		if (simulate) {
-			final Iterable<Conflict> conflicts = new Conflicts(files).getConflicts(true);
+			final Iterable<Conflict> conflicts = new Conflicts(files)
+					.getConflicts(true);
 			if (Conflicts.needsFeedback(conflicts)) {
-				System.err.println("Unresolved upload conflicts!\n\n"
-					+ Util.join("\n", conflicts));
+				log.error("Unresolved upload conflicts!\n\n"
+						+ Util.join("\n", conflicts));
 			} else {
-				System.err.println("Would upload " + uploadCount + " (removing " + removeCount
-					+ ") to " + getLongUpdateSiteName(updateSite));
+				log.info("Would upload " + uploadCount + " (removing "
+						+ removeCount + ") to "
+						+ getLongUpdateSiteName(updateSite));
 			}
 			return;
 		}
 
-		System.err.println("Uploading " + uploadCount + " (removing " + removeCount
+		log.info("Uploading " + uploadCount + " (removing " + removeCount
 				+ ") to " + getLongUpdateSiteName(updateSite));
 		upload(updateSite);
 	}
 
 	private void handleLauncherForUpload(final FileObject file) {
-		if (file.getStatus() == Status.LOCAL_ONLY && files.util.isLauncher(file.filename)) {
+		if (file.getStatus() == Status.LOCAL_ONLY
+				&& files.util.isLauncher(file.filename)) {
 			file.executable = true;
 			file.addPlatform(Util.platformForLauncher(file.filename));
 			for (final String fileName : new String[] { "jars/ij-launcher.jar" }) {
 				final FileObject dependency = files.get(fileName);
-				if (dependency != null) file.addDependency(files, dependency);
+				if (dependency != null) {
+					file.addDependency(files, dependency);
+				}
 			}
 		}
 	}
@@ -614,15 +726,16 @@ public class CommandLine {
 				throw die("Login failed!");
 			uploader.upload(progress);
 			files.write();
-		}
-		catch (final Throwable e) {
+		} catch (final Throwable e) {
 			final String message = e.getMessage();
 			if (message != null && message.indexOf("conflicts") >= 0) {
 				log.error("Could not upload due to conflicts:");
-				for (Conflict conflict : new Conflicts(files).getConflicts(true))
-					log.error(conflict.getFilename() + ": " + conflict.getConflict());
-			}
-			else {
+				for (final Conflict conflict : new Conflicts(files)
+						.getConflicts(true)) {
+					log.error(conflict.getFilename() + ": "
+							+ conflict.getConflict());
+				}
+			} else {
 				e.printStackTrace();
 				throw die("Error during upload: " + e);
 			}
@@ -631,16 +744,16 @@ public class CommandLine {
 		}
 	}
 
-	private void resolveConflicts(boolean forUpload) {
-		Console console = System.console();
+	private void resolveConflicts(final boolean forUpload) {
+		final Console console = System.console();
 		final Conflicts conflicts = new Conflicts(files);
 		for (;;) {
-			final Iterable<Conflict> list =
-					conflicts.getConflicts(forUpload);
+			final Iterable<Conflict> list = conflicts.getConflicts(forUpload);
 			if (!Conflicts.needsFeedback(list)) {
 				for (final Conflict conflict : list) {
 					final String filename = conflict.getFilename();
-					log.info((filename != null ? filename + ": " : "") + conflict.getConflict());
+					log.info((filename != null ? filename + ": " : "")
+							+ conflict.getConflict());
 				}
 				return;
 			}
@@ -648,32 +761,41 @@ public class CommandLine {
 				final StringBuilder builder = new StringBuilder();
 				for (final Conflict conflict : list) {
 					final String filename = conflict.getFilename();
-					builder.append((filename != null ? filename + ": " : "") + conflict.getConflict());
+					builder.append((filename != null ? filename + ": " : "")
+							+ conflict.getConflict());
 				}
 				throw die("There are conflicts:\n" + builder);
 			}
 			for (final Conflict conflict : list) {
 				final String filename = conflict.getFilename();
-				if (filename != null) console.printf("File '%s':\n", filename);
+				if (filename != null) {
+					console.printf("File '%s':\n", filename);
+				}
 				console.printf("%s\n", conflict.getConflict());
-				if (conflict.getResolutions().length == 0) continue;
+				if (conflict.getResolutions().length == 0) {
+					continue;
+				}
 				console.printf("\nResolutions:\n");
 				final Resolution[] resolutions = conflict.getResolutions();
 				for (int i = 0; i < resolutions.length; i++) {
-					console.printf("% 3d %s\n", i + 1, resolutions[i].getDescription());
+					console.printf("% 3d %s\n", i + 1,
+							resolutions[i].getDescription());
 				}
 				for (;;) {
 					final String answer = console.readLine("\nResolution? ");
-					if (answer == null || answer.toLowerCase().startsWith("x")) throw die("Aborted");
+					if (answer == null || answer.toLowerCase().startsWith("x")) {
+						throw die("Aborted");
+					}
 					try {
-						int index = Integer.parseInt(answer);
+						final int index = Integer.parseInt(answer);
 						if (index > 0 && index <= resolutions.length) {
 							resolutions[index - 1].resolve();
 							break;
 						}
-						console.printf("Invalid choice: %d (must be between 1 and %d)",
-							index, resolutions.length);
-					} catch (NumberFormatException e) {
+						console.printf(
+								"Invalid choice: %d (must be between 1 and %d)",
+								index, resolutions.length);
+					} catch (final NumberFormatException e) {
 						console.printf("Invalid answer: %s\n", answer);
 					}
 				}
@@ -686,30 +808,34 @@ public class CommandLine {
 		final List<String> options = new ArrayList<String>();
 		for (final String name : files.getUpdateSiteNames(false)) {
 			final UpdateSite updateSite = files.getUpdateSite(name, true);
-			if (updateSite.getUploadDirectory() == null ||
-				updateSite.getUploadDirectory().equals("")) continue;
+			if (updateSite.getUploadDirectory() == null
+					|| updateSite.getUploadDirectory().equals("")) {
+				continue;
+			}
 			names.add(name);
 			options.add(getLongUpdateSiteName(name));
 		}
 		if (names.size() == 0) {
-			System.err.println("No uploadable sites found");
+			log.error("No uploadable sites found");
 			return null;
 		}
 		final String message = "Choose upload site for file '" + file + "'";
-		final int index =
-			UpdaterUserInterface.get().optionDialog(message, message,
-				options.toArray(new String[options.size()]), 0);
+		final int index = UpdaterUserInterface.get().optionDialog(message,
+				message, options.toArray(new String[options.size()]), 0);
 		return index < 0 ? null : names.get(index);
 	}
 
 	public String getLongUpdateSiteName(final String name) {
 		final UpdateSite site = files.getUpdateSite(name, true);
 		String host = site.getHost();
-		if (host == null || host.equals("")) host = "";
-		else {
+		if (host == null || host.equals("")) {
+			host = "";
+		} else {
 			if (host.startsWith("webdav:")) {
-				int colon = host.indexOf(':', 8);
-				if (colon > 0) host = host.substring(0, colon) + ":<password>";
+				final int colon = host.indexOf(':', 8);
+				if (colon > 0) {
+					host = host.substring(0, colon) + ":<password>";
+				}
 			}
 			host += ":";
 		}
@@ -722,29 +848,36 @@ public class CommandLine {
 			args = files.getUpdateSiteNames(true);
 		for (final String name : args) {
 			final UpdateSite site = files.getUpdateSite(name, true);
-			System.out.print(name + (site.isActive() ? "" : " (DISABLED)") + ": " + site.getURL());
+			System.out.print(name + (site.isActive() ? "" : " (DISABLED)")
+					+ ": " + site.getURL());
 			if (site.getUploadDirectory() == null)
 				System.out.println();
 			else
-				System.out.println(" (upload host: " + site.getHost() + ", upload directory: " + site.getUploadDirectory() + ")");
+				System.out.println(" (upload host: " + site.getHost()
+						+ ", upload directory: " + site.getUploadDirectory()
+						+ ")");
 		}
 	}
 
-	public void addOrEditUploadSite(final List<String> args, boolean add) {
+	public void addOrEditUploadSite(final List<String> args, final boolean add) {
 		if (args.size() != 2 && args.size() != 4)
-			throw die("Usage: " + (add ? "add" : "edit") + "-update-site <name> <url> [<host> <upload-directory>]");
-		addOrEditUploadSite(args.get(0), args.get(1), args.size() > 2 ? args.get(2) : null, args.size() > 3 ? args.get(3) : null, add);
+			throw die("Usage: " + (add ? "add" : "edit")
+					+ "-update-site <name> <url> [<host> <upload-directory>]");
+		addOrEditUploadSite(args.get(0), args.get(1),
+				args.size() > 2 ? args.get(2) : null,
+				args.size() > 3 ? args.get(3) : null, add);
 	}
 
-	public void addOrEditUploadSite(final String name, final String url, final String sshHost, final String uploadDirectory, boolean add) {
+	public void addOrEditUploadSite(final String name, final String url,
+			final String sshHost, final String uploadDirectory,
+			final boolean add) {
 		ensureChecksummed();
-		UpdateSite site = files.getUpdateSite(name, true);
+		final UpdateSite site = files.getUpdateSite(name, true);
 		if (add) {
 			if (site != null)
 				throw die("Site '" + name + "' was already added!");
 			files.addUpdateSite(name, url, sshHost, uploadDirectory, 0l);
-		}
-		else {
+		} else {
 			if (site == null)
 				throw die("Site '" + name + "' was not yet added!");
 			site.setURL(url);
@@ -754,7 +887,7 @@ public class CommandLine {
 		}
 		try {
 			files.write();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			UpdaterUserInterface.get().handleException(e);
 			throw die("Could not write local file database");
 		}
@@ -774,7 +907,7 @@ public class CommandLine {
 		}
 		try {
 			files.write();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			UpdaterUserInterface.get().handleException(e);
 			throw die("Could not write local file database");
 		}
@@ -784,10 +917,9 @@ public class CommandLine {
 	public static CommandLine getInstance() {
 		try {
 			return new CommandLine();
-		}
-		catch (final Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
-			System.err.println("Could not parse db.xml.gz: " + e.getMessage());
+			log.error("Could not parse db.xml.gz: " + e.getMessage());
 			throw new RuntimeException(e);
 		}
 	}
@@ -812,7 +944,7 @@ public class CommandLine {
 	 */
 	private RuntimeException die(final String message) {
 		if (standalone) {
-			System.err.println(message);
+			log.error(message);
 			System.exit(1);
 		}
 		return new RuntimeException(message);
@@ -822,53 +954,58 @@ public class CommandLine {
 		final StringBuilder diffOptions = new StringBuilder();
 		diffOptions.append("[ ");
 		for (final Mode mode : Mode.values()) {
-			if (diffOptions.length() > 2) diffOptions.append(" | ");
-			diffOptions.append("--" + mode.toString().toLowerCase().replace(' ', '-'));
+			if (diffOptions.length() > 2) {
+				diffOptions.append(" | ");
+			}
+			diffOptions.append("--"
+					+ mode.toString().toLowerCase().replace(' ', '-'));
 		}
 		diffOptions.append(" ]");
 
 		throw die("Usage: imagej.updater.ui.CommandLine <command>\n"
-			+ "\n" + "Commands:\n"
-			+ "\tdiff " + diffOptions + " [<files>]\n"
-			+ "\tlist [<files>]\n"
-			+ "\tlist-uptodate [<files>]\n"
-			+ "\tlist-not-uptodate [<files>]\n"
-			+ "\tlist-updateable [<files>]\n"
-			+ "\tlist-modified [<files>]\n"
-			+ "\tlist-current [<files>]\n"
-			+ "\tlist-local-only [<files>]\n"
-			+ "\tlist-from-site <name>\n"
-			+ "\tshow [<files>]\n"
-			+ "\tupdate [<files>]\n"
-			+ "\tupdate-force [<files>]\n"
-			+ "\tupdate-force-pristine [<files>]\n"
-			+ "\tupload [--[update-]site <name>] [--force-shadow] [<files>]\n"
-			+ "\tupload-complete-site [--simulate] [--force] [--force-shadow] [--platforms <platform>[,<platform>...]] <name>\n"
-			+ "\tlist-update-sites [<nick>...]\n"
-			+ "\tadd-update-site <nick> <url> [<host> <upload-directory>]\n"
-			+ "\tedit-update-site <nick> <url> [<host> <upload-directory>]");
+				+ "\n"
+				+ "Commands:\n"
+				+ "\tdiff "
+				+ diffOptions
+				+ " [<files>]\n"
+				+ "\tlist [<files>]\n"
+				+ "\tlist-uptodate [<files>]\n"
+				+ "\tlist-not-uptodate [<files>]\n"
+				+ "\tlist-updateable [<files>]\n"
+				+ "\tlist-modified [<files>]\n"
+				+ "\tlist-current [<files>]\n"
+				+ "\tlist-local-only [<files>]\n"
+				+ "\tlist-from-site <name>\n"
+				+ "\tshow [<files>]\n"
+				+ "\tupdate [<files>]\n"
+				+ "\tupdate-force [<files>]\n"
+				+ "\tupdate-force-pristine [<files>]\n"
+				+ "\tupload [--simulate] [--[update-]site <name>] [--force-shadow] [--forget-missing-dependencies] [<files>]\n"
+				+ "\tupload-complete-site [--simulate] [--force] [--force-shadow] [--platforms <platform>[,<platform>...]] <name>\n"
+				+ "\tlist-update-sites [<nick>...]\n"
+				+ "\tadd-update-site <nick> <url> [<host> <upload-directory>]\n"
+				+ "\tedit-update-site <nick> <url> [<host> <upload-directory>]");
 	}
 
 	public static void main(final String... args) {
 		try {
 			main(AppUtils.getBaseDirectory(), 80, null, true, args);
-		}
-		catch (final RuntimeException e) {
-			System.err.println(e.getMessage());
+		} catch (final RuntimeException e) {
+			log.error(e);
 			System.exit(1);
-		}
-		catch (final Exception e) {
-			e.printStackTrace();
-			System.err.println("Could not parse db.xml.gz: " + e.getMessage());
+		} catch (final Exception e) {
+			log.error("Could not parse db.xml.gz", e);
 			System.exit(1);
 		}
 	}
 
-	public static void main(final File ijDir, final int columnCount, final String... args) {
+	public static void main(final File ijDir, final int columnCount,
+			final String... args) {
 		main(ijDir, columnCount, null, args);
 	}
 
-	public static void main(final File ijDir, final int columnCount, final Progress progress, final String... args) {
+	public static void main(final File ijDir, final int columnCount,
+			final Progress progress, final String... args) {
 		main(ijDir, columnCount, progress, false, args);
 	}
 
@@ -880,22 +1017,25 @@ public class CommandLine {
 			final int colon = http_proxy.indexOf(':', 7);
 			final int slash = http_proxy.indexOf('/', 7);
 			int port = 80;
-			if (colon < 0) http_proxy =
-				slash < 0 ? http_proxy.substring(7) : http_proxy.substring(7, slash);
-			else {
-				port =
-					Integer.parseInt(slash < 0 ? http_proxy.substring(colon + 1)
-						: http_proxy.substring(colon + 1, slash));
+			if (colon < 0) {
+				http_proxy = slash < 0 ? http_proxy.substring(7) : http_proxy
+						.substring(7, slash);
+			} else {
+				port = Integer.parseInt(slash < 0 ? http_proxy
+						.substring(colon + 1) : http_proxy.substring(colon + 1,
+						slash));
 				http_proxy = http_proxy.substring(7, colon);
 			}
 			System.setProperty("http.proxyHost", http_proxy);
 			System.setProperty("http.proxyPort", "" + port);
+		} else {
+			Util.useSystemProxies();
 		}
-		else Util.useSystemProxies();
 		Authenticator.setDefault(new ProxyAuthenticator());
 		setUserInterface();
 
-		final CommandLine instance = new CommandLine(ijDir, columnCount, progress);
+		final CommandLine instance = new CommandLine(ijDir, columnCount,
+				progress);
 		instance.standalone = standalone;
 
 		if (args.length == 0) {
@@ -903,40 +1043,47 @@ public class CommandLine {
 		}
 
 		final String command = args[0];
-		if (command.equals("diff")) instance.diff(makeList(args, 1));
-		else if (command.equals("list")) instance.list(makeList(args, 1));
-		else if (command.equals("list-current")) instance.listCurrent(
-			makeList(args, 1));
-		else if (command.equals("list-uptodate")) instance.listUptodate(
-			makeList(args, 1));
-		else if (command.equals("list-not-uptodate")) instance
-			.listNotUptodate(makeList(args, 1));
-		else if (command.equals("list-updateable")) instance.listUpdateable(
-			makeList(args, 1));
-		else if (command.equals("list-modified")) instance.listModified(
-			makeList(args, 1));
-		else if (command.equals("list-local-only")) instance.listLocalOnly(
-				makeList(args, 1));
-		else if (command.equals("list-from-site"))
+		if (command.equals("diff")) {
+			instance.diff(makeList(args, 1));
+		} else if (command.equals("list")) {
+			instance.list(makeList(args, 1));
+		} else if (command.equals("list-current")) {
+			instance.listCurrent(makeList(args, 1));
+		} else if (command.equals("list-uptodate")) {
+			instance.listUptodate(makeList(args, 1));
+		} else if (command.equals("list-not-uptodate")) {
+			instance.listNotUptodate(makeList(args, 1));
+		} else if (command.equals("list-updateable")) {
+			instance.listUpdateable(makeList(args, 1));
+		} else if (command.equals("list-modified")) {
+			instance.listModified(makeList(args, 1));
+		} else if (command.equals("list-local-only")) {
+			instance.listLocalOnly(makeList(args, 1));
+		} else if (command.equals("list-from-site")) {
 			instance.listFromSite(makeList(args, 1));
-		else if (command.equals("show")) instance.show(makeList(args, 1));
-		else if (command.equals("update")) instance.update(makeList(args, 1));
-		else if (command.equals("update-force")) instance.update(
-			makeList(args, 1), true);
-		else if (command.equals("update-force-pristine")) instance.update(
-			makeList(args, 1), true, true);
-		else if (command.equals("upload")) instance.upload(makeList(args, 1));
-		else if (command.equals("upload-complete-site"))
+		} else if (command.equals("show")) {
+			instance.show(makeList(args, 1));
+		} else if (command.equals("update")) {
+			instance.update(makeList(args, 1));
+		} else if (command.equals("update-force")) {
+			instance.update(makeList(args, 1), true);
+		} else if (command.equals("update-force-pristine")) {
+			instance.update(makeList(args, 1), true, true);
+		} else if (command.equals("upload")) {
+			instance.upload(makeList(args, 1));
+		} else if (command.equals("upload-complete-site")) {
 			instance.uploadCompleteSite(makeList(args, 1));
-		else if (command.equals("list-update-sites"))
+		} else if (command.equals("list-update-sites")) {
 			instance.listUpdateSites(makeList(args, 1));
-		else if (command.equals("add-update-site"))
+		} else if (command.equals("add-update-site")) {
 			instance.addOrEditUploadSite(makeList(args, 1), true);
-		else if (command.equals("edit-update-site"))
+		} else if (command.equals("edit-update-site")) {
 			instance.addOrEditUploadSite(makeList(args, 1), false);
-		else if (command.equals("remove-update-site"))
+		} else if (command.equals("remove-update-site")) {
 			instance.removeUploadSite(makeList(args, 1));
-		else instance.usage();
+		} else {
+			instance.usage();
+		}
 	}
 
 	protected static class ProxyAuthenticator extends Authenticator {
@@ -945,9 +1092,12 @@ public class CommandLine {
 
 		@Override
 		protected PasswordAuthentication getPasswordAuthentication() {
-			if (console == null) throw new RuntimeException("Need a console for user interaction!");
-			final String user =
-				console.readLine("                                  \rProxy User: ");
+			if (console == null) {
+				throw new RuntimeException(
+						"Need a console for user interaction!");
+			}
+			final String user = console
+					.readLine("                                  \rProxy User: ");
 			final char[] password = console.readPassword("Proxy Password: ");
 			return new PasswordAuthentication(user, password);
 		}
@@ -965,7 +1115,8 @@ public class CommandLine {
 		@Override
 		public String getPassword(final String message) {
 			if (console == null) {
-				throw new RuntimeException("Password prompt requires interactive operation!");
+				throw new RuntimeException(
+						"Password prompt requires interactive operation!");
 			}
 			System.out.print(message + ": ");
 			return new String(console.readPassword());
@@ -974,7 +1125,8 @@ public class CommandLine {
 		@Override
 		public boolean promptYesNo(final String title, final String message) {
 			if (console == null) {
-				throw new RuntimeException("Prompt requires interactive operation!");
+				throw new RuntimeException(
+						"Prompt requires interactive operation!");
 			}
 			System.err.print(title + ": " + message);
 			final String line = console.readLine();
@@ -982,13 +1134,16 @@ public class CommandLine {
 		}
 
 		public void showPrompt(String prompt) {
-			if (!prompt.endsWith(": ")) prompt += ": ";
+			if (!prompt.endsWith(": ")) {
+				prompt += ": ";
+			}
 			System.err.print(prompt);
 		}
 
 		public String getUsername(final String prompt) {
 			if (console == null) {
-				throw new RuntimeException("Username prompt requires interactive operation!");
+				throw new RuntimeException(
+						"Username prompt requires interactive operation!");
 			}
 			showPrompt(prompt);
 			return console.readLine();
@@ -996,18 +1151,21 @@ public class CommandLine {
 
 		public int askChoice(final String[] options) {
 			if (console == null) {
-				throw new RuntimeException("Prompt requires interactive operation!");
+				throw new RuntimeException(
+						"Prompt requires interactive operation!");
 			}
 			for (int i = 0; i < options.length; i++)
 				System.err.println("" + (i + 1) + ": " + options[i]);
 			for (;;) {
 				System.err.print("Choice? ");
 				final String answer = console.readLine();
-				if (answer.equals("")) return -1;
+				if (answer.equals("")) {
+					return -1;
+				}
 				try {
 					return Integer.parseInt(answer) - 1;
+				} catch (final Exception e) { /* ignore */
 				}
-				catch (final Exception e) { /* ignore */}
 			}
 		}
 
@@ -1053,23 +1211,26 @@ public class CommandLine {
 
 		@Override
 		public int optionDialog(final String message, final String title,
-			final Object[] options, final int def)
-		{
+				final Object[] options, final int def) {
 			if (console == null) {
-				throw new RuntimeException("Prompt requires interactive operation!");
+				throw new RuntimeException(
+						"Prompt requires interactive operation!");
 			}
 			for (int i = 0; i < options.length; i++)
 				System.err.println("" + (i + 1) + ") " + options[i]);
 			for (;;) {
-				System.out.print("Your choice (default: " + def + ": " + options[def] +
-					")? ");
+				System.out.print("Your choice (default: " + def + ": "
+						+ options[def] + ")? ");
 				final String line = console.readLine();
-				if (line.equals("")) return def;
+				if (line.equals("")) {
+					return def;
+				}
 				try {
 					final int option = Integer.parseInt(line);
-					if (option > 0 && option <= options.length) return option - 1;
-				}
-				catch (final NumberFormatException e) {
+					if (option > 0 && option <= options.length) {
+						return option - 1;
+					}
+				} catch (final NumberFormatException e) {
 					// ignore
 				}
 			}
@@ -1086,7 +1247,8 @@ public class CommandLine {
 		}
 
 		@Override
-		public void savePreferences() { /* do nothing */}
+		public void savePreferences() { /* do nothing */
+		}
 
 		@Override
 		public void openURL(final String url) throws IOException {
@@ -1096,7 +1258,8 @@ public class CommandLine {
 		@Override
 		public String getString(final String title) {
 			if (console == null) {
-				throw new RuntimeException("Prompt requires interactive operation!");
+				throw new RuntimeException(
+						"Prompt requires interactive operation!");
 			}
 			System.out.print(title + ": ");
 			return console.readLine();
