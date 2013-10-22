@@ -396,7 +396,7 @@ public class CommandLine {
 
 	public void upload(final List<String> list) {
 		if (list == null) throw die("Which files do you mean to upload?");
-		boolean forceUpdateSite = false, forceShadow = false, simulate = false;
+		boolean forceUpdateSite = false, forceShadow = false, simulate = false, forgetMissingDeps = false;
 		String updateSite = null;
 		while (list.size() > 0 && list.get(0).startsWith("-")) {
 			final String option = list.remove(0);
@@ -410,6 +410,8 @@ public class CommandLine {
 				simulate = true;
 			} else if ("--force-shadow".equals(option)) {
 				forceShadow = true;
+			} else if ("--forget-missing-dependencies".equals(option)) {
+				forgetMissingDeps = true;
 			} else {
 				throw die("Unknown option: " + option);
 			}
@@ -473,6 +475,22 @@ public class CommandLine {
 
 		if (updateSite != null && files.getUpdateSite(updateSite, false) == null) {
 			throw die("Unknown update site: '" + updateSite + "'");
+		}
+
+		if (forgetMissingDeps) {
+			for (final Conflict conflict : new Conflicts(files).getConflicts(true)) {
+				final String message = conflict.getConflict();
+				if (!message.startsWith("Depends on ") || !message.endsWith(" which is about to be removed.")) {
+					continue;
+				}
+				log.info("Breaking dependency: " + conflict);
+				for (final Resolution resolution : conflict.getResolutions()) {
+					if (resolution.getDescription().startsWith("Break")) {
+						resolution.resolve();
+						break;
+					}
+				}
+			}
 		}
 
 		if (simulate) {
@@ -855,7 +873,7 @@ public class CommandLine {
 			+ "\tupdate [<files>]\n"
 			+ "\tupdate-force [<files>]\n"
 			+ "\tupdate-force-pristine [<files>]\n"
-			+ "\tupload [--simulate] [--[update-]site <name>] [--force-shadow] [<files>]\n"
+			+ "\tupload [--simulate] [--[update-]site <name>] [--force-shadow] [--forget-missing-dependencies] [<files>]\n"
 			+ "\tupload-complete-site [--simulate] [--force] [--force-shadow] [--platforms <platform>[,<platform>...]] <name>\n"
 			+ "\tlist-update-sites [<nick>...]\n"
 			+ "\tadd-update-site <nick> <url> [<host> <upload-directory>]\n"
