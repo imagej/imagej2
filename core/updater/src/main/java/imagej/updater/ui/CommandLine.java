@@ -115,7 +115,7 @@ public class CommandLine {
 		} catch (Exception e) {
 			throw die("Received exception: " + e.getMessage());
 		}
-		if (!warnings.equals("")) System.err.println(warnings);
+		if (!warnings.equals("")) log.warn(warnings);
 		checksummed = true;
 	}
 
@@ -216,7 +216,7 @@ public class CommandLine {
 		ensureChecksummed();
 		final FileObject file = files.get(filename);
 		if (file == null) {
-			System.err.println("\nERROR: File not found: " + filename);
+			log.error("File not found: " + filename);
 		} else {
 			show(file);
 		}
@@ -317,18 +317,17 @@ public class CommandLine {
 				throw die("Could not mark " + file.filename +
 					" as executable");
 			}
-			System.err.println("Installed " + file.filename);
+			log.info("Installed " + file.filename);
 		}
 		catch (final IOException e) {
-			System.err.println("IO error downloading " + file.filename + ": " +
-				e.getMessage());
+			log.error("IO error downloading " + file.filename, e);
 		}
 	}
 
 	public void delete(final FileObject file) {
-		if (new File(file.filename).delete()) System.err.println("Deleted " +
+		if (new File(file.filename).delete()) log.info("Deleted " +
 			file.filename);
-		else System.err.println("Failed to delete " + file.filename);
+		else log.error("Failed to delete " + file.filename);
 	}
 
 	public void update(final List<String> list) {
@@ -428,10 +427,10 @@ public class CommandLine {
 					// TODO: add overridden update site
 					file.updateSite = updateSite;
 					file.setStatus(Status.MODIFIED);
-					System.err.println("Uploading (force-shadow) '" + name
+					log.info("Uploading (force-shadow) '" + name
 							+ "' to site '" + updateSite + "'");
 				} else {
-					System.err.println("Skipping up-to-date " + name);
+					log.info("Skipping up-to-date " + name);
 					continue;
 				}
 			}
@@ -443,7 +442,7 @@ public class CommandLine {
 				if (updateSite == null) throw die("Canceled");
 			}
 			else if (file.updateSite == null) {
-				System.err.println("Uploading new file '" + name + "' to  site '" +
+				log.info("Uploading new file '" + name + "' to  site '" +
 					updateSite + "'");
 				file.updateSite = updateSite;
 			}
@@ -457,7 +456,7 @@ public class CommandLine {
 				}
 			}
 			if (file.getStatus() == Status.NOT_INSTALLED || file.getStatus() == Status.NEW) {
-				System.err.println("Removing file '" + name + "'");
+				log.info("Removing file '" + name + "'");
 				file.setAction(files, Action.REMOVE);
 			} else {
 				file.setAction(files, Action.UPLOAD);
@@ -465,7 +464,7 @@ public class CommandLine {
 			count++;
 		}
 		if (count == 0) {
-			System.err.println("Nothing to upload");
+			log.info("Nothing to upload");
 			return;
 		}
 
@@ -473,7 +472,7 @@ public class CommandLine {
 			throw die("Unknown update site: '" + updateSite + "'");
 		}
 
-		System.err.println("Uploading to " + getLongUpdateSiteName(updateSite));
+		log.info("Uploading to " + getLongUpdateSiteName(updateSite));
 		upload(updateSite);
 	}
 
@@ -516,22 +515,22 @@ public class CommandLine {
 				if (forceShadow) {
 					file.updateSite = updateSite;
 					file.setAction(files, Action.UPLOAD);
-					if (simulate) System.err.println("Would upload " + file.filename);
+					if (simulate) log.info("Would upload " + file.filename);
 					uploadCount++;
 				} else if (ignoreWarnings && updateSite.equals(file.updateSite)) {
 					file.setAction(files, Action.UPLOAD);
-					if (simulate) System.err.println("Would re-upload " + file.filename);
+					if (simulate) log.info("Would re-upload " + file.filename);
 					uploadCount++;
 
 				} else {
-					System.err.println("Warning: obsolete '" + name + "' still installed!");
+					log.warn("Obsolete '" + name + "' still installed!");
 					warningCount++;
 				}
 				break;
 			case UPDATEABLE:
 			case MODIFIED:
 				if (!forceShadow && !updateSite.equals(file.updateSite)) {
-					System.err.println("Warning: '" + name + "' of update site '"
+					log.warn("'" + name + "' of update site '"
 							+ file.updateSite + "' is not up-to-date!");
 					warningCount++;
 					continue;
@@ -540,7 +539,7 @@ public class CommandLine {
 			case LOCAL_ONLY:
 				file.updateSite = updateSite;
 				file.setAction(files, Action.UPLOAD);
-				if (simulate) System.err.println("Would upload new " + (file.getStatus() == Status.LOCAL_ONLY ? "" : "version of ") + file.getLocalFilename(true));
+				if (simulate) log.info("Would upload new " + (file.getStatus() == Status.LOCAL_ONLY ? "" : "version of ") + file.getLocalFilename(true));
 				uploadCount++;
 				break;
 			case NEW:
@@ -548,7 +547,7 @@ public class CommandLine {
 				// special: keep tools-1.4.2.jar, needed for ImageJ 1.x
 				if ("ImageJ".equals(updateSite) && file.getFilename(true).equals("jars/tools.jar")) break;
 				file.setAction(files, Action.REMOVE);
-				if (simulate) System.err.println("Would mark " + file.filename + " obsolete");
+				if (simulate) log.info("Would mark " + file.filename + " obsolete");
 				removeCount++;
 				break;
 			case INSTALLED:
@@ -573,23 +572,23 @@ public class CommandLine {
 		}
 
 		if (removeCount == 0 && uploadCount == 0) {
-			System.err.println("Nothing to upload");
+			log.info("Nothing to upload");
 			return;
 		}
 
 		if (simulate) {
 			final Iterable<Conflict> conflicts = new Conflicts(files).getConflicts(true);
 			if (Conflicts.needsFeedback(conflicts)) {
-				System.err.println("Unresolved upload conflicts!\n\n"
+				log.error("Unresolved upload conflicts!\n\n"
 					+ Util.join("\n", conflicts));
 			} else {
-				System.err.println("Would upload " + uploadCount + " (removing " + removeCount
+				log.info("Would upload " + uploadCount + " (removing " + removeCount
 					+ ") to " + getLongUpdateSiteName(updateSite));
 			}
 			return;
 		}
 
-		System.err.println("Uploading " + uploadCount + " (removing " + removeCount
+		log.info("Uploading " + uploadCount + " (removing " + removeCount
 				+ ") to " + getLongUpdateSiteName(updateSite));
 		upload(updateSite);
 	}
@@ -692,7 +691,7 @@ public class CommandLine {
 			options.add(getLongUpdateSiteName(name));
 		}
 		if (names.size() == 0) {
-			System.err.println("No uploadable sites found");
+			log.error("No uploadable sites found");
 			return null;
 		}
 		final String message = "Choose upload site for file '" + file + "'";
@@ -787,7 +786,7 @@ public class CommandLine {
 		}
 		catch (final Exception e) {
 			e.printStackTrace();
-			System.err.println("Could not parse db.xml.gz: " + e.getMessage());
+			log.error("Could not parse db.xml.gz: " + e.getMessage());
 			throw new RuntimeException(e);
 		}
 	}
@@ -812,7 +811,7 @@ public class CommandLine {
 	 */
 	private RuntimeException die(final String message) {
 		if (standalone) {
-			System.err.println(message);
+			log.error(message);
 			System.exit(1);
 		}
 		return new RuntimeException(message);
@@ -854,12 +853,11 @@ public class CommandLine {
 			main(AppUtils.getBaseDirectory(), 80, null, true, args);
 		}
 		catch (final RuntimeException e) {
-			System.err.println(e.getMessage());
+			log.error(e);
 			System.exit(1);
 		}
 		catch (final Exception e) {
-			e.printStackTrace();
-			System.err.println("Could not parse db.xml.gz: " + e.getMessage());
+			log.error("Could not parse db.xml.gz", e);
 			System.exit(1);
 		}
 	}
