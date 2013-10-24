@@ -44,7 +44,7 @@ import imagej.util.Colors;
 import org.scijava.plugin.Plugin;
 
 /**
- * TODO
+ * The tool that displays the current background color.
  * 
  * @author Barry DeZonia
  */

@@ -60,7 +60,8 @@ import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
 
 /**
- * TODO
+ * Abstract superclass for the {@link BgColorTool} and {@link FgColorTool}
+ * classes.
  * 
  * @author Barry DeZonia
  */

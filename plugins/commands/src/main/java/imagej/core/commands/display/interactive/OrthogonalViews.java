@@ -45,7 +45,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * TODO
+ * Place holder for the future implementation of the Orthogonal Views command.
  * 
  * @author Barry DeZonia
  */

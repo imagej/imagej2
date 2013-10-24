@@ -39,7 +39,7 @@ import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
 
 /**
- * TODO
+ * A rectangular neighborhood of specifiable size.
  * 
  * @author Barry DeZonia
  */

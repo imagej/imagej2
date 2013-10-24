@@ -60,7 +60,7 @@ import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 
 /**
- * TODO
+ * Abstract super class for noise reduction plugin implementations.
  * 
  * @author Barry DeZonia
  */

@@ -47,7 +47,8 @@ import org.scijava.plugin.Menu;
 import org.scijava.plugin.Plugin;
 
 /**
- * TODO
+ * Reduces noise in an image by replacing each pixel with the calculated
+ * arithmetic mean of neighboring values.
  * 
  * @author Barry DeZonia
  */

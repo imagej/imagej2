@@ -36,7 +36,7 @@
 package imagej.tool;
 
 /**
- * TODO
+ * Tools that would like to define how they are drawn implement this interface.
  * 
  * @author Barry DeZonia
  */

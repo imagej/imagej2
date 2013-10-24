@@ -41,7 +41,7 @@ import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
 
 /**
- * TODO
+ * A circular neighborhood of specifiable radius.
  * 
  * @author Barry DeZonia
  */

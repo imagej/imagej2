@@ -48,7 +48,8 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * TODO
+ * Reduces noise in an image by replacing each pixel with the calculated alpha
+ * trimmed mean of neighboring values.
  * 
  * @author Barry DeZonia
  */

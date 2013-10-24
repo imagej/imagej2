@@ -39,8 +39,8 @@ package imagej.data.threshold;
 //   Relicensed BSD 2-12-13
 
 /**
- * TODO
- *
+ * Utility methods used by the various {@link ThresholdMethod}s.
+ * 
  * @author Barry DeZonia
  * @author Gabriel Landini
  */

@@ -49,7 +49,7 @@ import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 /**
- * TODO
+ * Swing class implementation of the {@link DisplayWindow} interface.
  * 
  * @author Grant Harris
  * @author Barry DeZonia

@@ -39,6 +39,7 @@ import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.EllipseOverlay;
+import imagej.data.overlay.Overlay;
 import imagej.data.overlay.RectangleOverlay;
 import imagej.menu.MenuConstants;
 
@@ -57,7 +58,8 @@ import org.scijava.plugin.Plugin;
 // selected ROI rather than hatch a new one (which we might not want).
 
 /**
- * TODO
+ * Adds a user specified {@link Overlay} to an {@link ImageDisplay}.
+ * Specification is by dialog rather than by gui manipulation.
  * 
  * @author Barry DeZonia
  */

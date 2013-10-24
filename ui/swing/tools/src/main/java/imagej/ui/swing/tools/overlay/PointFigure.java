@@ -54,7 +54,7 @@ import org.jhotdraw.draw.handle.Handle;
 import org.jhotdraw.geom.Geom;
 
 /**
- * TODO
+ * Implementation of a point as a JHotDraw figure.
  * 
  * @author Johannes Schindelin
  * @author Barry DeZonia

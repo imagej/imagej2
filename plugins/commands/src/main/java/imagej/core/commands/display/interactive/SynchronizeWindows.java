@@ -45,7 +45,8 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * TODO
+ * Place holder for the future implementation of the Synchronize Windows
+ * command.
  * 
  * @author Barry DeZonia
  */

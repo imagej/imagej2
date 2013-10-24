@@ -43,7 +43,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * TODO
+ * Plugin for specifying a circular neighborhood.
  * 
  * @author Barry DeZonia
  */

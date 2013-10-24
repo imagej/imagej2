@@ -38,7 +38,8 @@ package imagej.tool;
 import imagej.util.ColorRGB;
 
 /**
- * TODO
+ * {@link CustomDrawnTool}s use {@link IconDrawer}s to draw their icon on
+ * screen.
  * 
  * @author Barry DeZonia
  */
