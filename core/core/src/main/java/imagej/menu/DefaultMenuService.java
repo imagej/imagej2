@@ -70,22 +70,15 @@ public class DefaultMenuService extends AbstractService implements MenuService
 	private EventService eventService;
 
 	@Parameter
+	private ModuleService moduleService;
+
+	@Parameter
 	private CommandService commandService;
 
 	/** Menu tree structures. There is one structure per menu root. */
 	private HashMap<String, ShadowMenu> rootMenus;
 
 	// -- MenuService methods --
-
-	@Override
-	public EventService getEventService() {
-		return eventService;
-	}
-
-	@Override
-	public CommandService getCommandService() {
-		return commandService;
-	}
 
 	@Override
 	public ShadowMenu getMenu() {
@@ -222,8 +215,7 @@ public class DefaultMenuService extends AbstractService implements MenuService
 		if (rootMenus == null) {
 			rootMenus = new HashMap<String, ShadowMenu>();
 
-			final List<ModuleInfo> allModules =
-				getCommandService().getModuleService().getModules();
+			final List<ModuleInfo> allModules = moduleService.getModules();
 			addModules(allModules);
 		}
 		return rootMenus;

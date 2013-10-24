@@ -50,10 +50,6 @@ import org.scijava.event.EventService;
  */
 public interface MenuService extends ImageJService {
 
-	EventService getEventService();
-
-	CommandService getCommandService();
-
 	/** Gets the root node of the application menu structure. */
 	ShadowMenu getMenu();
 
