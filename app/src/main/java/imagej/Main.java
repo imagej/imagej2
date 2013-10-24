@@ -63,11 +63,11 @@ public final class Main {
 	public static ImageJ launch(final String... args) {
 		final ImageJ ij = new ImageJ();
 
-		// display the user interface
-		ij.ui().showUI();
-
 		// parse command line arguments
 		ij.console().processArgs(args);
+
+		// display the user interface
+		ij.ui().showUI();
 
 		return ij;
 	}
