@@ -42,10 +42,9 @@ import imagej.display.event.DisplayUpdatedEvent;
 import imagej.plugin.ImageJPlugin;
 import imagej.ui.UserInterface;
 
-import org.scijava.Contextual;
 import org.scijava.Disposable;
-import org.scijava.Prioritized;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.RichPlugin;
 
 /**
  * A display viewer is a UI widget that shows a display to a user.
@@ -61,9 +60,7 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  * @see Plugin
  */
-public interface DisplayViewer<T> extends ImageJPlugin, Contextual,
-	Prioritized, Disposable
-{
+public interface DisplayViewer<T> extends ImageJPlugin, RichPlugin, Disposable {
 
 	/** Returns true if this display viewer can be used with the given UI. */
 	boolean isCompatible(final UserInterface ui);

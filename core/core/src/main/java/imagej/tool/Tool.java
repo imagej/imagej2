@@ -45,11 +45,9 @@ import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
 import imagej.plugin.ImageJPlugin;
 
-import org.scijava.Contextual;
-import org.scijava.Prioritized;
 import org.scijava.input.MouseCursor;
-import org.scijava.plugin.HasPluginInfo;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.RichPlugin;
 import org.scijava.plugin.SingletonPlugin;
 
 /**
@@ -74,9 +72,7 @@ import org.scijava.plugin.SingletonPlugin;
  * @see Plugin
  * @see ToolService
  */
-public interface Tool extends ImageJPlugin, Contextual, Prioritized,
-	HasPluginInfo, SingletonPlugin
-{
+public interface Tool extends ImageJPlugin, RichPlugin, SingletonPlugin {
 
 	/**
 	 * When true, tool has no button but rather is active all the time.

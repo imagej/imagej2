@@ -48,8 +48,8 @@ import net.imglib2.img.Img;
 import net.imglib2.img.cell.AbstractCellImg;
 
 import org.scijava.event.EventHandler;
+import org.scijava.plugin.AbstractRichPlugin;
 import org.scijava.plugin.Parameter;
-import org.scijava.plugin.SortablePlugin;
 
 /**
  * The AbstractDisplayViewer provides some basic generic implementations for a
@@ -59,8 +59,8 @@ import org.scijava.plugin.SortablePlugin;
  * @author Lee Kamentsky
  * @author Curtis Rueden
  */
-public abstract class AbstractDisplayViewer<T> extends SortablePlugin implements
-	DisplayViewer<T>
+public abstract class AbstractDisplayViewer<T> extends AbstractRichPlugin
+	implements DisplayViewer<T>
 {
 
 	@Parameter(required = false)

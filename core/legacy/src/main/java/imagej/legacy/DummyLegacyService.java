@@ -40,6 +40,7 @@ import org.scijava.Prioritized;
 import org.scijava.app.StatusService;
 import org.scijava.log.LogService;
 import org.scijava.log.StderrLogService;
+import org.scijava.plugin.PluginInfo;
 
 /**
  * A dummy LegacyService.
@@ -98,6 +99,16 @@ public class DummyLegacyService implements LegacyService {
 	@Override
 	public int compareTo(Prioritized o) {
 		return Double.compare(0, -o.getPriority());
+	}
+
+	@Override
+	public PluginInfo<?> getInfo() {
+		return null;
+	}
+
+	@Override
+	public void setInfo(PluginInfo<?> info) {
+		// ignore
 	}
 
 	@Override

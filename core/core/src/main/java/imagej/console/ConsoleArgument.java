@@ -35,6 +35,8 @@
 
 package imagej.console;
 
+import imagej.plugin.ImageJPlugin;
+
 import java.util.LinkedList;
 
 import org.scijava.plugin.HandlerPlugin;
@@ -53,7 +55,9 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-public interface ConsoleArgument extends HandlerPlugin<LinkedList<String>> {
+public interface ConsoleArgument extends ImageJPlugin,
+	HandlerPlugin<LinkedList<String>>
+{
 
 	/** Handles the <em>front</em> of the given list of arguments. */
 	void handle(final LinkedList<String> args);

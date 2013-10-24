@@ -35,15 +35,15 @@
 
 package imagej.data.threshold;
 
-import org.scijava.plugin.SortablePlugin;
+import org.scijava.plugin.AbstractRichPlugin;
 
 /**
  * Abstract base class for {@link ThresholdMethod} plugins.
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractThresholdMethod extends SortablePlugin implements
-	ThresholdMethod
+public abstract class AbstractThresholdMethod extends AbstractRichPlugin
+	implements ThresholdMethod
 {
 	// NB: No implementation needed.
 }

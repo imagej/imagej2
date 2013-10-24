@@ -190,6 +190,10 @@ public final class DefaultUIService extends AbstractService implements
 	public void showUI(final UserInterface ui) {
 		log.info("Launching user interface: " + ui.getClass().getName());
 		ui.show();
+		// NB: Also show all the current displays.
+		for (final Display<?> display : displayService.getDisplays()) {
+			ui.show(display);
+		}
 	}
 
 	@Override

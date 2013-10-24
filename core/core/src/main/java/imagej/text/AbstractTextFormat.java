@@ -37,7 +37,7 @@ package imagej.text;
 
 import java.io.File;
 
-import org.scijava.plugin.SortablePlugin;
+import org.scijava.plugin.AbstractHandlerPlugin;
 import org.scijava.util.FileUtils;
 
 /**
@@ -45,8 +45,8 @@ import org.scijava.util.FileUtils;
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractTextFormat extends SortablePlugin implements
-	TextFormat
+public abstract class AbstractTextFormat extends AbstractHandlerPlugin<File>
+	implements TextFormat
 {
 
 	// -- Typed methods --

@@ -54,8 +54,8 @@ import org.jhotdraw.draw.AttributeKey;
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.decoration.ArrowTip;
+import org.scijava.plugin.AbstractRichPlugin;
 import org.scijava.plugin.Parameter;
-import org.scijava.plugin.SortablePlugin;
 import org.scijava.util.MiscUtils;
 
 /**
@@ -65,7 +65,7 @@ import org.scijava.util.MiscUtils;
  * @author Lee Kamentsky
  */
 public abstract class AbstractJHotDrawAdapter<O extends Overlay, F extends Figure>
-	extends SortablePlugin implements JHotDrawAdapter<F>
+	extends AbstractRichPlugin implements JHotDrawAdapter<F>
 {
 
 	// NB: The line styles here are taken from

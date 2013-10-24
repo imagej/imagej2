@@ -40,10 +40,8 @@ import net.imglib2.ops.operation.real.binary.RealBinaryOperation;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
-import org.scijava.Contextual;
-import org.scijava.Prioritized;
-import org.scijava.plugin.HasPluginInfo;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.RichPlugin;
 import org.scijava.plugin.SingletonPlugin;
 
 /**
@@ -60,8 +58,8 @@ import org.scijava.plugin.SingletonPlugin;
  * @see Plugin
  */
 public interface CalculatorOp<I1 extends RealType<I1>, I2 extends RealType<I2>>
-	extends RealBinaryOperation<I1, I2, DoubleType>, ImageJPlugin, Contextual,
-	Prioritized, HasPluginInfo, SingletonPlugin
+	extends RealBinaryOperation<I1, I2, DoubleType>, ImageJPlugin, RichPlugin,
+	SingletonPlugin
 {
 	// NB: No implementation needed.
 }

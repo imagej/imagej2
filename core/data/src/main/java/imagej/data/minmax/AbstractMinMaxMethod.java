@@ -37,7 +37,7 @@ package imagej.data.minmax;
 
 import net.imglib2.type.Type;
 
-import org.scijava.plugin.SortablePlugin;
+import org.scijava.plugin.AbstractRichPlugin;
 
 /**
  * Abstract superclass for {@link MinMaxMethod} implementations.
@@ -45,9 +45,9 @@ import org.scijava.plugin.SortablePlugin;
  * 
  * @author Mark Hiner
  */
-public abstract class AbstractMinMaxMethod <T extends Type<T> & Comparable<T>>
-extends SortablePlugin
-implements MinMaxMethod<T> {
+public abstract class AbstractMinMaxMethod<T extends Type<T> & Comparable<T>>
+	extends AbstractRichPlugin implements MinMaxMethod<T>
+{
   
   protected boolean initialized = false;
 

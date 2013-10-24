@@ -37,15 +37,15 @@ package imagej.console;
 
 import java.util.LinkedList;
 
-import org.scijava.plugin.SortablePlugin;
+import org.scijava.plugin.AbstractHandlerPlugin;
 
 /**
  * Abstract superclass of {@link ConsoleArgument} implementations.
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractConsoleArgument extends SortablePlugin implements
-	ConsoleArgument
+public abstract class AbstractConsoleArgument extends
+	AbstractHandlerPlugin<LinkedList<String>> implements ConsoleArgument
 {
 
 	// -- Typed methods --

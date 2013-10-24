@@ -38,7 +38,6 @@ package imagej.data.threshold;
 import net.imglib2.histogram.Histogram1d;
 
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.SortablePlugin;
 
 //NB - this plugin adapted from Gabriel Landini's code of his AutoThreshold
 //plugin found in Fiji (version 1.14).
@@ -50,9 +49,7 @@ import org.scijava.plugin.SortablePlugin;
  * @author Gabriel Landini
  */
 @Plugin(type = ThresholdMethod.class, name = "Huang")
-public class HuangThresholdMethod extends SortablePlugin implements
-	ThresholdMethod
-{
+public class HuangThresholdMethod extends AbstractThresholdMethod {
 
 	@Override
 	public long getThreshold(Histogram1d<?> hist) {

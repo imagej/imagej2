@@ -39,9 +39,7 @@ import imagej.plugin.ImageJPlugin;
 import net.imglib2.IterableInterval;
 import net.imglib2.type.numeric.RealType;
 
-import org.scijava.Contextual;
-import org.scijava.Prioritized;
-import org.scijava.plugin.HasPluginInfo;
+import org.scijava.plugin.RichPlugin;
 import org.scijava.plugin.SingletonPlugin;
 
 /**
@@ -50,7 +48,7 @@ import org.scijava.plugin.SingletonPlugin;
  * @author Barry DeZonia
  */
 public interface AutoscaleMethod<T extends RealType<T>> extends ImageJPlugin,
-	Contextual, Prioritized, HasPluginInfo, SingletonPlugin
+	RichPlugin, SingletonPlugin
 {
 	
 	/**

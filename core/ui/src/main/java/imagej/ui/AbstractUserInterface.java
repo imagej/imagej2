@@ -49,10 +49,10 @@ import java.util.List;
 import org.scijava.app.App;
 import org.scijava.app.StatusService;
 import org.scijava.log.LogService;
+import org.scijava.plugin.AbstractRichPlugin;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
-import org.scijava.plugin.SortablePlugin;
 import org.scijava.thread.ThreadService;
 
 /**
@@ -60,7 +60,7 @@ import org.scijava.thread.ThreadService;
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractUserInterface extends SortablePlugin
+public abstract class AbstractUserInterface extends AbstractRichPlugin
 	implements UserInterface
 {
 

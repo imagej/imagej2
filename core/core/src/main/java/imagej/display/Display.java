@@ -39,9 +39,8 @@ import imagej.plugin.ImageJPlugin;
 
 import java.util.List;
 
-import org.scijava.Contextual;
-import org.scijava.Prioritized;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.RichPlugin;
 
 /**
  * A display is a particular type of {@link ImageJPlugin} intended to collect
@@ -62,9 +61,7 @@ import org.scijava.plugin.Plugin;
  * @see Plugin
  * @see DisplayService
  */
-public interface Display<T> extends List<T>, ImageJPlugin, Contextual,
-	Prioritized
-{
+public interface Display<T> extends List<T>, ImageJPlugin, RichPlugin {
 
 	/**
 	 * Tests whether the display is capable of visualizing objects of the given

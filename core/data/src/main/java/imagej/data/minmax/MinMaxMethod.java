@@ -41,9 +41,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.type.Type;
 
-import org.scijava.Contextual;
-import org.scijava.Prioritized;
-import org.scijava.plugin.HasPluginInfo;
+import org.scijava.plugin.RichPlugin;
 import org.scijava.plugin.SingletonPlugin;
 
 /**
@@ -57,7 +55,7 @@ import org.scijava.plugin.SingletonPlugin;
  * @author Mark Hiner
  */
 public interface MinMaxMethod<T extends Type<T> & Comparable<T>> extends
-	ImageJPlugin, Contextual, Prioritized, HasPluginInfo, SingletonPlugin
+	ImageJPlugin, RichPlugin, SingletonPlugin
 {
 
   /**

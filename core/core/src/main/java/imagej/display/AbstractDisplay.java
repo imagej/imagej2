@@ -46,15 +46,15 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.scijava.event.EventService;
+import org.scijava.plugin.AbstractRichPlugin;
 import org.scijava.plugin.Parameter;
-import org.scijava.plugin.SortablePlugin;
 
 /**
  * Abstract superclass of {@link Display} implementations.
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractDisplay<T> extends SortablePlugin implements
+public abstract class AbstractDisplay<T> extends AbstractRichPlugin implements
 	Display<T>
 {
 
