@@ -37,8 +37,8 @@ package imagej.ui.console;
 
 import imagej.console.AbstractConsoleArgument;
 import imagej.console.ConsoleArgument;
+import imagej.display.DisplayService;
 import imagej.io.IOService;
-import imagej.ui.UIService;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -59,7 +59,7 @@ public class OpenArgument extends AbstractConsoleArgument {
 	private IOService ioService;
 
 	@Parameter
-	private UIService uiService;
+	private DisplayService displayService;
 
 	@Parameter
 	private LogService log;
@@ -75,7 +75,7 @@ public class OpenArgument extends AbstractConsoleArgument {
 
 		try {
 			final Object o = ioService.open(source);
-			uiService.show(o);
+			displayService.createDisplay(o);
 		}
 		catch (IOException exc) {
 			log.error(exc);
