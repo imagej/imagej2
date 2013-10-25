@@ -283,7 +283,6 @@ public final class DefaultUIService extends AbstractService implements
 		for (final DisplayViewer<?> displayViewer : displayViewers()) {
 			if (displayViewer.getDisplay() == display) return displayViewer;
 		}
-		log.warn("No viewer found for display: '" + display.getName() + "'");
 		return null;
 	}
 
