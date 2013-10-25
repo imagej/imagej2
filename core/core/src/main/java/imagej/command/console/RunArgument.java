@@ -49,6 +49,7 @@ import org.scijava.plugin.Plugin;
  * Handles the {@code --run} command line argument.
  * 
  * @author Curtis Rueden
+ * @author Johannes Schindelin
  */
 @Plugin(type = ConsoleArgument.class)
 public class RunArgument extends AbstractConsoleArgument {
@@ -63,12 +64,10 @@ public class RunArgument extends AbstractConsoleArgument {
 		if (!supports(args)) return;
 
 		args.removeFirst(); // --run
-		final String arg = args.removeFirst(); // className or menuLabel
+		final String commandToRun = args.removeFirst();
+		final String optionString = args.isEmpty() ? "" : args.removeFirst();
 
-		if (run(arg)) return; // command execution successful
-
-		final String optionString = args.removeFirst();
-		run(arg, optionString);
+		run(commandToRun, optionString);
 	}
 
 	// -- Typed methods --
@@ -81,23 +80,21 @@ public class RunArgument extends AbstractConsoleArgument {
 	// -- Helper methods --
 
 	/** Implements the {@code --run} command line argument. */
-	private boolean run(final String className) {
-		return commandService.run(className) != null;
-	}
-
-	/** Implements the {@code --run <label> <optionString>} legacy handling. */
-	private boolean run(final String menuLabel, final String optionString) {
-		final String label = menuLabel.replace('_', ' ');
-		CommandInfo info = null;
-		for (final CommandInfo ci : commandService.getCommands()) {
-			if (label.equals(ci.getTitle())) {
-				info = ci;
-				break;
+	private void run(final String commandToRun, final String optionString) {
+		CommandInfo info = commandService.getCommand(commandToRun);
+		if (info == null) {
+			// command was not a class name; search for command by title instead
+			final String label = commandToRun.replace('_', ' ');
+			for (final CommandInfo ci : commandService.getCommands()) {
+				if (label.equals(ci.getTitle())) {
+					info = ci;
+					break;
+				}
 			}
 		}
-		if (info == null) return false;
+		if (info == null) return;
 		// TODO: parse the optionString a la ImageJ1
-		return commandService.run(info) != null;
+		commandService.run(info);
 	}
 
 }
