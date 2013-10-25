@@ -129,6 +129,11 @@ public abstract class AbstractUserInterface extends AbstractRichPlugin
 
 	@Override
 	public void show(final Display<?> display) {
+		if (uiService.getDisplayViewer(display) != null) {
+			// display is already being shown
+			return;
+		}
+
 		final List<PluginInfo<DisplayViewer<?>>> viewers =
 			uiService.getViewerPlugins();
 
