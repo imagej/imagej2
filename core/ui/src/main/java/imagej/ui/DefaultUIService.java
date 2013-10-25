@@ -141,6 +141,9 @@ public final class DefaultUIService extends AbstractService implements
 	/** Map of available user interfaces, keyed off their names. */
 	private Map<String, UserInterface> uiMap;
 
+	/** Whether lazy initialization is complete. */
+	private boolean initialized;
+
 	/** The default user interface to use, if one is not explicitly specified. */
 	private UserInterface defaultUI;
 
@@ -160,12 +163,8 @@ public final class DefaultUIService extends AbstractService implements
 
 	@Override
 	public void addUI(final String name, final UserInterface ui) {
-		// add to UI list
-		uiList().add(ui);
-
-		// add to UI map
-		uiMap().put(ui.getClass().getName(), ui);
-		if (name != null && !name.isEmpty()) uiMap().put(name, ui);
+		if (!initialized) discoverUIs();
+		addUserInterface(name, ui);
 	}
 
 	@Override
@@ -359,7 +358,7 @@ public final class DefaultUIService extends AbstractService implements
 	public void dispose() {
 		// dispose active display viewers
 		// NB - copy list to avoid ConcurrentModificationExceptions
-		List<DisplayViewer<?>> viewers = new ArrayList<DisplayViewer<?>>();
+		final List<DisplayViewer<?>> viewers = new ArrayList<DisplayViewer<?>>();
 		viewers.addAll(displayViewers());
 		for (final DisplayViewer<?> viewer : viewers) {
 			viewer.dispose();
@@ -450,22 +449,24 @@ public final class DefaultUIService extends AbstractService implements
 	// -- Helper methods --
 
 	private List<DisplayViewer<?>> displayViewers() {
-		if (displayViewers == null) discoverUIs();
+		if (!initialized) discoverUIs();
 		return displayViewers;
 	}
 
 	private List<UserInterface> uiList() {
-		if (uiList == null) discoverUIs();
+		if (!initialized) discoverUIs();
 		return uiList;
 	}
 
 	private Map<String, UserInterface> uiMap() {
-		if (uiMap == null) discoverUIs();
+		if (!initialized) discoverUIs();
 		return uiMap;
 	}
 
 	/** Discovers available user interfaces. */
-	private void discoverUIs() {
+	private synchronized void discoverUIs() {
+		if (initialized) return;
+
 		displayViewers = new ArrayList<DisplayViewer<?>>();
 		uiList = new ArrayList<UserInterface>();
 		uiMap = new HashMap<String, UserInterface>();
@@ -477,7 +478,7 @@ public final class DefaultUIService extends AbstractService implements
 			final UserInterface ui = pluginService.createInstance(info);
 			if (ui == null) continue;
 			log.info("Discovered user interface: " + ui.getClass().getName());
-			addUI(info.getName(), ui);
+			addUserInterface(info.getName(), ui);
 		}
 
 		// check system property for explicit UI preference
@@ -488,6 +489,17 @@ public final class DefaultUIService extends AbstractService implements
 			// set the default UI to the one provided by the system property
 			setDefaultUI(ui);
 		}
+
+		initialized = true;
+	}
+
+	private void addUserInterface(final String name, final UserInterface ui) {
+		// add to UI list
+		uiList.add(ui);
+
+		// add to UI map
+		uiMap.put(ui.getClass().getName(), ui);
+		if (name != null && !name.isEmpty()) uiMap.put(name, ui);
 	}
 
 }
