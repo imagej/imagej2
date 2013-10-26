@@ -52,6 +52,7 @@ import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.meta.IntervalUtils;
 import net.imglib2.type.numeric.RealType;
@@ -186,13 +187,13 @@ public class DefaultSamplerService extends AbstractService implements
 		final long[] dims = def.getOutputDims();
 		final String name = origDisp.getName();
 		final AxisType[] axes = def.getOutputAxes();
-		final double[] cal = def.getOutputCalibration(axes);
+		final CalibratedAxis[] calibAxes = def.getOutputCalibratedAxes();
 		final int bitsPerPixel = origDs.getType().getBitsPerPixel();
 		final boolean signed = origDs.isSigned();
 		final boolean floating = !origDs.isInteger();
 		final Dataset output =
 			datasetService.create(dims, name, axes, bitsPerPixel, signed, floating);
-		output.setCalibration(cal);
+		output.setAxes(calibAxes);
 		long numPlanes = calcNumPlanes(dims, axes);
 		if (numPlanes > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException(
@@ -403,7 +404,8 @@ public class DefaultSamplerService extends AbstractService implements
 	private long calcNumPlanes(long[] dims, AxisType[] axes) {
 		long num = 1;
 		for (int i = 0; i < dims.length; i++) {
-			if (axes[i].isXY()) continue;
+			AxisType type = axes[i];
+			if (type == Axes.X || type == Axes.Y) continue;
 			num *= dims[i];
 		}
 		return num;

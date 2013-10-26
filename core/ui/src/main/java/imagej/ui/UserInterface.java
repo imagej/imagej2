@@ -42,10 +42,9 @@ import imagej.widget.FileWidget;
 
 import java.io.File;
 
-import org.scijava.Contextual;
 import org.scijava.Disposable;
-import org.scijava.Prioritized;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.RichPlugin;
 
 /**
  * An end-user ImageJ application user interface.
@@ -61,9 +60,7 @@ import org.scijava.plugin.Plugin;
  * @see Plugin
  * @see UIService
  */
-public interface UserInterface extends ImageJPlugin, Contextual, Prioritized,
-	Disposable
-{
+public interface UserInterface extends ImageJPlugin, RichPlugin, Disposable {
 
 	/**
 	 * Shows the UI.

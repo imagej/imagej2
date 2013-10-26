@@ -91,9 +91,10 @@ public class QuitProgram extends ContextCommand {
 		if (statusService != null) {
 			statusService.showStatus("Quitting...");
 		}
+		final OptionsMisc opts = optionsService.getOptions(OptionsMisc.class);
+		final boolean exitWhenQuitting = opts.isExitWhenQuitting();
 		getContext().dispose();
-		OptionsMisc opts = optionsService.getOptions(OptionsMisc.class);
-		if (opts.isExitWhenQuitting()) System.exit(0);
+		if (exitWhenQuitting) System.exit(0);
 	}
 
 	private boolean promptForQuit() {

@@ -630,7 +630,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		for (int i = 0; i < root.getItemCount(); i++) {
 			JMenuItem item = root.getItem(i);
 			if ((item instanceof JMenu) &&
-					menuLabel.equals(item.getLabel()))
+					menuLabel.equals(item.getText()))
 				return getMenu((JMenu)item, rest, createIfNecessary);
 		}
 		if (!createIfNecessary)
@@ -664,6 +664,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			JMenuItem item = new JMenuItem(label);
 			menu.add(item);
 			item.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					loadTemplate(templateURL);
 				}
@@ -766,12 +767,14 @@ public class TextEditor extends JFrame implements ActionListener,
 		}
 
 		SwingUtilities.invokeLater(new Thread() {
+			@Override
 			public void run() {
 				grabFocus(laterCount - 1);
 			}
 		});
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent ae) {
 		final Object source = ae.getSource();
 		if (source == newFile)
@@ -785,6 +788,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			}, false);
 			if (file != null)
 				new Thread() {
+					@Override
 					public void run() {
 						open(file);
 					}
@@ -807,12 +811,14 @@ public class TextEditor extends JFrame implements ActionListener,
 			runText(true);
 		else if (source == nextError)
 			new Thread() {
+				@Override
 				public void run() {
 					nextError(true);
 				}
 			}.start();
 		else if (source == previousError)
 			new Thread() {
+				@Override
 				public void run() {
 					nextError(false);
 				}
@@ -932,8 +938,10 @@ public class TextEditor extends JFrame implements ActionListener,
 		else if (source == gitGrep) {
 			String searchTerm = getTextArea().getSelectedText();
 			File searchRoot = getEditorPane().file;
-			if (searchRoot == null)
+			if (searchRoot == null) {
 				error("File was not yet saved; no location known!");
+				return;
+			}
 			searchRoot = searchRoot.getParentFile();
 
 			commandService.run(GitGrep.class, "editor", this, "searchTerm", searchTerm, "searchRoot", searchRoot);
@@ -971,6 +979,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		return false;
 	}
 
+	@Override
 	public void stateChanged(ChangeEvent e) {
 		int index = tabbed.getSelectedIndex();
 		if (index < 0) {
@@ -982,6 +991,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		setTitle();
 		editorPane.checkForOutsideChanges();
 		SwingUtilities.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				editorPane.setLanguageByFileName(editorPane.getFileName());
 				toggleWhiteSpaceLabeling.setSelected(((RSyntaxTextArea)editorPane).isWhitespaceVisible());
@@ -1033,7 +1043,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		for (int i = 0; i < tabbed.getTabCount(); i++)
 			getEditorPane(i).getBookmarks(i, bookmarks);
 		BookmarkDialog dialog = new BookmarkDialog(this, bookmarks);
-		dialog.show();
+		dialog.setVisible(true);
 	}
 
 	public boolean reload() {
@@ -1104,6 +1114,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			bc.fill = GridBagConstraints.NONE;
 			runit = new JButton("Run");
 			runit.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent ae) { runText(); }
 			});
 			bottom.add(runit, bc);
@@ -1112,6 +1123,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			killit = new JButton("Kill");
 			killit.setEnabled(false);
 			killit.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent ae) {
 					kill();
 				}
@@ -1129,6 +1141,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			bc.anchor = GridBagConstraints.NORTHEAST;
 			toggleErrors = new JButton("Show Errors");
 			toggleErrors.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					toggleErrors();
 				}
@@ -1141,6 +1154,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			bc.anchor = GridBagConstraints.NORTHEAST;
 			JButton clear = new JButton("Clear");
 			clear.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent ae) {
 					if (showingErrors)
 						errorScreen.setText("");
@@ -1178,6 +1192,7 @@ public class TextEditor extends JFrame implements ActionListener,
 
 		private void restore() {
 			SwingUtilities.invokeLater(new Runnable() {
+				@Override
 				public void run() {
 					editorPane.setEditable(true);
 					runit.setEnabled(true);
@@ -1190,11 +1205,11 @@ public class TextEditor extends JFrame implements ActionListener,
 		public void toggleErrors() {
 			showingErrors = !showingErrors;
 			if (showingErrors) {
-				toggleErrors.setLabel("Show Output");
+				toggleErrors.setText("Show Output");
 				scroll.setViewportView(errorScreen);
 			}
 			else {
-				toggleErrors.setLabel("Show Errors");
+				toggleErrors.setText("Show Errors");
 				scroll.setViewportView(screen);
 			}
 		}
@@ -1243,6 +1258,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			// The Executer creates a Thread that
 			// does the reading from PipedInputStream
 			this.executer = new TextEditor.Executer(output, errors) {
+				@Override
 				public void execute() {
 					try {
 						interpreter.eval(new InputStreamReader(pi));
@@ -1308,6 +1324,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			final long now = System.currentTimeMillis();
 			new Thread() {
 				{ setPriority(Thread.NORM_PRIORITY); }
+				@Override
 				public void run() {
 					while (System.currentTimeMillis() - now < 3000)
 						try {
@@ -1704,9 +1721,9 @@ public class TextEditor extends JFrame implements ActionListener,
 			JMenuItem item = tabSizeMenu.getItem(i);
 			if (item == chooseTabSize) {
 				item.setSelected(!defaultSize);
-				item.setLabel("Other" + (defaultSize ? "" : " (" + tabSize + ")") + "...");
+				item.setText("Other" + (defaultSize ? "" : " (" + tabSize + ")") + "...");
 			}
-			else if (tabSize == Integer.parseInt(item.getLabel())) {
+			else if (tabSize == Integer.parseInt(item.getText())) {
 				item.setSelected(true);
 				defaultSize = true;
 			}
@@ -1717,10 +1734,10 @@ public class TextEditor extends JFrame implements ActionListener,
 			JMenuItem item = fontSizeMenu.getItem(i);
 			if (item == chooseFontSize) {
 				item.setSelected(!defaultSize);
-				item.setLabel("Other" + (defaultSize ? "" : " (" + fontSize + ")") + "...");
+				item.setText("Other" + (defaultSize ? "" : " (" + fontSize + ")") + "...");
 				continue;
 			}
-			String label = item.getLabel();
+			String label = item.getText();
 			if (label.endsWith(" pt"))
 				label = label.substring(0, label.length() - 3);
 			if (fontSize == Integer.parseInt(label)) {
@@ -1748,6 +1765,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		final String title = (fileChanged ? "*" : "") + fileName
 			+ (executingTasks.isEmpty() ? "" : " (Running)");
 		SwingUtilities.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				setTitle(title); // to the main window
 				int index = tabbed.getSelectedIndex();
@@ -1759,13 +1777,14 @@ public class TextEditor extends JFrame implements ActionListener,
 		});
 	}
 
+	@Override
 	public synchronized void setTitle(String title) {
 		super.setTitle(title);
 		int index = tabsMenuTabsStart + tabbed.getSelectedIndex();
 		if (index < tabsMenu.getItemCount()) {
 			JMenuItem item = tabsMenu.getItem(index);
 			if (item != null)
-				item.setLabel(title);
+				item.setText(title);
 		}
 	}
 
@@ -1791,6 +1810,7 @@ public class TextEditor extends JFrame implements ActionListener,
 					setPriority(Thread.NORM_PRIORITY);
 					start();
 				}
+				@Override
 				public void run() {
 					try {
 						execute();
@@ -2096,6 +2116,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		if (!editorPaneContainsFile(getEditorPane(), file))
 			switchTo(file);
 		SwingUtilities.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					gotoLine(lineNumber);

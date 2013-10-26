@@ -63,7 +63,8 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * TODO
+ * Creates an {@link Overlay} representing the thresholded pixels of a
+ * {@link Dataset}.
  * 
  * @author Lee Kamentsky
  * @author Barry DeZonia

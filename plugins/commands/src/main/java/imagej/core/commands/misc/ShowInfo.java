@@ -41,16 +41,15 @@ import imagej.data.Position;
 import imagej.data.display.ColorMode;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ImageDisplayService;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.threshold.ThresholdService;
 import imagej.data.types.DataType;
 import imagej.data.types.DataTypeService;
 import imagej.menu.MenuConstants;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.CalibratedAxis;
+import net.imglib2.meta.axis.LinearAxis;
 
 import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
@@ -79,6 +78,9 @@ public class ShowInfo implements Command {
 	private ThresholdService thresholdService;
 
 	@Parameter
+	private ImageDisplayService imageDisplayService;
+
+	@Parameter
 	private ImageDisplay disp;
 
 	@Parameter
@@ -103,50 +105,28 @@ public class ShowInfo implements Command {
 	// -- helpers --
 
 	private String infoString() {
-		List<String> strings = strings();
-		StringBuilder builder = new StringBuilder();
-		for (String s : strings) {
-			builder.append(s);
-		}
+		final StringBuilder builder = new StringBuilder();
+		add(textString(), builder);
+		add(titleString(), builder);
+		add(widthString(), builder);
+		add(heightString(), builder);
+		add(depthString(), builder);
+		add(resolutionString(), builder);
+		add(pixelVoxelSizeString(), builder);
+		add(originString(), builder);
+		add(typeString(), builder);
+		add(displayRangesString(), builder);
+		add(currSliceString(), builder);
+		add(compositeString(), builder);
+		add(thresholdString(), builder);
+		add(calibrationString(), builder);
+		add(sourceString(), builder);
+		add(selectionString(), builder);
 		return builder.toString();
 	}
 
-	private List<String> strings() {
-		ArrayList<String> strings = new ArrayList<String>();
-		String s;
-		s = textString();
-		if (s != null) strings.add(s);
-		s = titleString();
-		if (s != null) strings.add(s);
-		s = widthString();
-		if (s != null) strings.add(s);
-		s = heightString();
-		if (s != null) strings.add(s);
-		s = depthString();
-		if (s != null) strings.add(s);
-		s = resolutionString();
-		if (s != null) strings.add(s);
-		s = pixelVoxelSizeString();
-		if (s != null) strings.add(s);
-		s = originString();
-		if (s != null) strings.add(s);
-		s = typeString();
-		if (s != null) strings.add(s);
-		s = displayRangesString();
-		if (s != null) strings.add(s);
-		s = currSliceString();
-		if (s != null) strings.add(s);
-		s = compositeString();
-		if (s != null) strings.add(s);
-		s = thresholdString();
-		if (s != null) strings.add(s);
-		s = calibrationString();
-		if (s != null) strings.add(s);
-		s = sourceString();
-		if (s != null) strings.add(s);
-		s = selectionString();
-		if (s != null) strings.add(s);
-		return strings;
+	private void add(final String s, final StringBuilder builder) {
+		if (s != null) builder.append(s);
 	}
 
 	private String textString() {
@@ -179,14 +159,24 @@ public class ShowInfo implements Command {
 	}
 
 	private String pixelVoxelSizeString() {
-		int zIndex = ds.dimensionIndex(Axes.Z);
-		double xCal = ds.calibration(0);
-		double yCal = ds.calibration(1);
-		double zCal = (zIndex < 0) ? Double.NaN : ds.calibration(zIndex);
-		double xSize = (Double.isNaN(xCal) ? 1 : xCal);
-		double ySize = (Double.isNaN(yCal) ? 1 : yCal);
-		double zSize = (Double.isNaN(zCal) ? 1 : zCal);
-		if (zIndex < 0) { // no z axis
+		final int xIndex = ds.dimensionIndex(Axes.X);
+		final int yIndex = ds.dimensionIndex(Axes.Y);
+		final int zIndex = ds.dimensionIndex(Axes.Z);
+		final CalibratedAxis xAxis = xIndex < 0 ? null : ds.axis(xIndex);
+		final CalibratedAxis yAxis = yIndex < 0 ? null : ds.axis(yIndex);
+		final CalibratedAxis zAxis = zIndex < 0 ? null : ds.axis(zIndex);
+		if (xAxis == null) return null;
+		if (yAxis == null) return null;
+		if (!(xAxis instanceof LinearAxis)) return null;
+		if (!(yAxis instanceof LinearAxis)) return null;
+		if (zAxis != null && !(zAxis instanceof LinearAxis)) return null;
+		final double xCal = xAxis.averageScale(0, 1);
+		final double yCal = yAxis.averageScale(0, 1);
+		final double zCal = (zAxis == null) ? Double.NaN : zAxis.averageScale(0, 1);
+		final double xSize = (Double.isNaN(xCal) ? 1 : xCal);
+		final double ySize = (Double.isNaN(yCal) ? 1 : yCal);
+		final double zSize = (Double.isNaN(zCal) ? 1 : zCal);
+		if (zAxis == null) { // no z axis
 			return "Pixel size: " + dToS(xSize) + " x " + dToS(ySize) + '\n';
 		}
 		// z axis present
@@ -195,10 +185,12 @@ public class ShowInfo implements Command {
 	}
 
 	private String originString() {
-		// TODO
-		// In IJ1 the origin of the calibrated space is reported. IJ2 does not yet
-		// support a nonzero origin.
-		return null;
+		final StringBuilder builder = new StringBuilder("Axis origins:\n");
+		for (int d = 0; d < ds.numDimensions(); d++) {
+			builder.append(ds.axis(d).type() + ": " +
+				dToS(ds.axis(d).calibratedValue(0)) + "\n");
+		}
+		return builder.toString();
 	}
 
 	private String typeString() {
@@ -212,14 +204,16 @@ public class ShowInfo implements Command {
 		int chAxis = disp.dimensionIndex(Axes.CHANNEL);
 		if (chAxis < 0) return null;
 		long numChan = disp.dimension(chAxis);
-		String tmp = "";
+		final StringBuilder builder = new StringBuilder();
 		for (int c = 0; c < numChan; c++) {
-			// TODO: dislike this casting
-			double min = ((DatasetView) disp.getActiveView()).getChannelMin(c);
-			double max = ((DatasetView) disp.getActiveView()).getChannelMax(c);
-			tmp += "Display range channel " + c + ": " + min + "-" + max + '\n';
+			final DatasetView datasetView =
+				imageDisplayService.getActiveDatasetView(disp);
+			final double min = datasetView.getChannelMin(c);
+			final double max = datasetView.getChannelMax(c);
+			builder.append("Display range channel " + c + ": " + min + "-" + max +
+				"\n");
 		}
-		return tmp;
+		return builder.toString();
 	}
 
 	private String currSliceString() {
@@ -251,10 +245,15 @@ public class ShowInfo implements Command {
 	}
 
 	private String calibrationString() {
-		// TODO
-		// In IJ1 this shows the calibration function equation if it has been set.
-		// IJ2's axes don't yet support such a concept.
-		return null;
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < ds.numDimensions(); i++) {
+			CalibratedAxis axis = ds.axis(i);
+			builder.append(axis.type());
+			builder.append(" axis equation: ");
+			builder.append(axis.particularEquation());
+			builder.append('\n');
+		}
+		return builder.toString();
 	}
 
 	private String sourceString() {
@@ -271,9 +270,11 @@ public class ShowInfo implements Command {
 	}
 
 	private String dimString(int axisIndex, String label) {
-		double cal = ds.axis(axisIndex).calibration();
+		CalibratedAxis axis = ds.axis(axisIndex);
+		if (!(axis instanceof LinearAxis)) return label + "varies nonlinearly";
+		double cal = axis.averageScale(0, 1);
 		long size = ds.dimension(axisIndex);
-		String unit = ds.unit(axisIndex);
+		String unit = axis.unit();
 		String tmp = label;
 		if (Double.isNaN(cal) || cal == 1) {
 			tmp += size;

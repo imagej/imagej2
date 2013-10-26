@@ -55,7 +55,8 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * TODO
+ * Loads the current {@link ImageDisplay}'s color table into a
+ * {@link ResultsTable}.
  * 
  * @author Barry DeZonia
  */

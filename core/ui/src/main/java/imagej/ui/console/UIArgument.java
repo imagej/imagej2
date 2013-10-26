@@ -33,17 +33,56 @@
  * #L%
  */
 
-package imagej.data.threshold;
+package imagej.ui.console;
 
-import org.scijava.plugin.AbstractRichPlugin;
+import imagej.console.AbstractConsoleArgument;
+import imagej.console.ConsoleArgument;
+import imagej.ui.UIService;
+import imagej.ui.UserInterface;
+
+import java.util.LinkedList;
+
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
- * Abstract base class for {@link ThresholdMethod} plugins.
+ * Handles the {@code --ui} command line argument.
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractThresholdMethod extends AbstractRichPlugin
-	implements ThresholdMethod
-{
-	// NB: No implementation needed.
+@Plugin(type = ConsoleArgument.class)
+public class UIArgument extends AbstractConsoleArgument {
+
+	@Parameter
+	private UIService uiService;
+
+	@Parameter
+	private LogService log;
+
+	// -- ConsoleArgument methods --
+
+	@Override
+	public void handle(final LinkedList<String> args) {
+		if (!supports(args)) return;
+
+		args.removeFirst(); // --ui
+		final String uiName = args.removeFirst();
+
+			final UserInterface ui = uiService.getUI(uiName);
+			if (ui == null) {
+				log.error("No such UI: " + uiName);
+			}
+			else {
+				uiService.setDefaultUI(ui);
+			}
+	}
+
+	// -- Typed methods --
+
+	@Override
+	public boolean supports(final LinkedList<String> args) {
+		return args != null && args.size() >= 2 && args.getFirst().equals("--ui");
+	}
+
 }

@@ -129,11 +129,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 			combinedInterval.add(view.getData());
 		}
 		combinedInterval.update();
-		/* BDZ removed Aug 15 2013
-		if (!combinedInterval.isDiscrete()) {
-			throw new IllegalStateException("Invalid combination of views");
-		}
-		*/
 
 		// rebuild views
 		for (final DataView view : DefaultImageDisplay.this) {
@@ -406,9 +401,18 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 	// -- CalibratedSpace methods --
 
 	@Override
+	public double averageScale(final int d) {
+		return combinedInterval.averageScale(d);
+	}
+
+	// -- TypedSpace methods --
+
+	@Override
 	public int dimensionIndex(final AxisType axis) {
 		return combinedInterval.dimensionIndex(axis);
 	}
+
+	// -- AnnotatedSpace methods --
 
 	@Override
 	public CalibratedAxis axis(final int d) {
@@ -423,54 +427,6 @@ public class DefaultImageDisplay extends AbstractDisplay<DataView> implements
 	@Override
 	public void setAxis(final CalibratedAxis axis, final int d) {
 		combinedInterval.setAxis(axis, d);
-	}
-
-	@Override
-	public double calibration(final int d) {
-		return combinedInterval.calibration(d);
-	}
-
-	@Override
-	public void calibration(final double[] cal) {
-		for (int i = 0; i < cal.length; i++) {
-			cal[i] = calibration(i);
-		}
-	}
-
-	@Override
-	public void calibration(final float[] cal) {
-		for (int i = 0; i < cal.length; i++) {
-			cal[i] = (float) calibration(i);
-		}
-	}
-
-	@Override
-	public void setCalibration(final double cal, final int d) {
-		combinedInterval.setCalibration(cal, d);
-	}
-
-	@Override
-	public void setCalibration(final double[] cal) {
-		for (int i = 0; i < cal.length; i++) {
-			setCalibration(cal[i], i);
-		}
-	}
-
-	@Override
-	public void setCalibration(final float[] cal) {
-		for (int i = 0; i < cal.length; i++) {
-			setCalibration(cal[i], i);
-		}
-	}
-
-	@Override
-	public String unit(int d) {
-		return combinedInterval.unit(d);
-	}
-
-	@Override
-	public void setUnit(String unit, int d) {
-		combinedInterval.setUnit(unit, d);
 	}
 
 	// -- PositionableByAxis methods --

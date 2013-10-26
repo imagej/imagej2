@@ -186,6 +186,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	}
 
 	/** @deprecated use {@link #getUpdateSite(String, boolean)} instead */
+	@Deprecated
 	public UpdateSite getUpdateSite(final String name) {
 		return getUpdateSite(name, false);
 	}
@@ -197,6 +198,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	}
 
 	/** @deprecated use {@link #getUpdateSiteNames(boolean)} instead */
+	@Deprecated
 	public Collection<String> getUpdateSiteNames() {
 		return getUpdateSiteNames(false);
 	}

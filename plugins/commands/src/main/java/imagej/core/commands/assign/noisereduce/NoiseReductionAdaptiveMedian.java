@@ -62,7 +62,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * TODO
+ * Reduces noise in an image by applying an adaptive median algorithm.
  * 
  * @author Barry DeZonia
  */

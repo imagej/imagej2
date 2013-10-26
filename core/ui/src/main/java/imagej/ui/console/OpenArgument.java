@@ -33,95 +33,60 @@
  * #L%
  */
 
-package imagej.console;
+package imagej.ui.console;
 
-import imagej.command.CommandInfo;
-import imagej.command.CommandService;
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
+import imagej.console.AbstractConsoleArgument;
+import imagej.console.ConsoleArgument;
 import imagej.display.DisplayService;
+import imagej.io.IOService;
 
 import java.io.IOException;
+import java.util.LinkedList;
 
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.service.AbstractService;
-import org.scijava.service.Service;
 
 /**
- * Default service for managing interaction with the console.
+ * Handles the {@code --open} command line argument.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Service.class)
-public class DefaultConsoleService extends AbstractService implements
-	ConsoleService
-{
+@Plugin(type = ConsoleArgument.class)
+public class OpenArgument extends AbstractConsoleArgument {
 
 	@Parameter
-	private LogService log;
-
-	@Parameter
-	private CommandService commandService;
-
-	@Parameter
-	private DatasetService datasetService;
+	private IOService ioService;
 
 	@Parameter
 	private DisplayService displayService;
 
-	// -- ConsoleService methods --
+	@Parameter
+	private LogService log;
+
+	// -- ConsoleArgument methods --
 
 	@Override
-	public void processArgs(final String... args) {
-		// TODO: Implement handling of more command line arguments.
-		log.debug("Received command line arguments:");
-		for (int i = 0; i < args.length; i++) {
-			final String arg = args[i];
-			log.debug("\t" + arg);
-			if (arg.equals("--open")) {
-				open(args[i + 1]);
-			}
-			else if (arg.equals("--run")) {
-				if (!run(args[i + 1])) {
-					run(args[i + 1], args.length < i + 3 ? null : args[i + 2]);
-				}
-			}
-		}
-	}
+	public void handle(final LinkedList<String> args) {
+		if (!supports(args)) return;
 
-	// -- Helper methods --
+		args.removeFirst(); // --open
+		final String source = args.removeFirst();
 
-	/** Implements the "--open" command line argument. */
-	private void open(final String source) {
 		try {
-			final Dataset dataset = datasetService.open(source);
-			displayService.createDisplay(dataset.getName(), dataset);
+			final Object o = ioService.open(source);
+			displayService.createDisplay(o);
 		}
-		catch (final IOException exc) {
-			log.error("Error loading dataset '" + source + "'", exc);
+		catch (IOException exc) {
+			log.error(exc);
 		}
 	}
 
-	/** Implements the "--run" command line argument. */
-	private boolean run(final String className) {
-		return commandService.run(className) != null;
-	}
+	// -- Typed methods --
 
-	/** Implements the "--run <label> <optionString>" legacy handling */
-	private boolean run(String menuLabel, final String optionString) {
-		final String label = menuLabel.replace('_', ' ');
-		CommandInfo info = null;
-		for (final CommandInfo info2 : commandService.getCommands()) {
-			if (label.equals(info2.getTitle())) {
-				info = info2;
-				break;
-			}
-		}
-		if (info == null) return false;
-		// TODO: parse the optionString a la ImageJ1
-		return commandService.run(info) != null;
+	@Override
+	public boolean supports(final LinkedList<String> args) {
+		return args != null && args.size() >= 2 && args.getFirst().equals("--open");
 	}
 
 }

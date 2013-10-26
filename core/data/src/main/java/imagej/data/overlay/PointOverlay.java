@@ -43,7 +43,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.imglib2.meta.Axes;
-import net.imglib2.meta.DefaultCalibratedAxis;
+import net.imglib2.meta.axis.DefaultLinearAxis;
 import net.imglib2.roi.RectangleRegionOfInterest;
 
 import org.scijava.Context;
@@ -67,8 +67,8 @@ public class PointOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> 
 	
 	public PointOverlay(final Context context) {
 		super(context, new RectangleRegionOfInterest(new double[2], new double[2]));
-		this.setAxis(new DefaultCalibratedAxis(Axes.X), 0);
-		this.setAxis(new DefaultCalibratedAxis(Axes.Y), 1);
+		this.setAxis(new DefaultLinearAxis(Axes.X), 0);
+		this.setAxis(new DefaultLinearAxis(Axes.Y), 1);
 	}
 
 	public PointOverlay(final Context context, final List<double[]> pts) {
@@ -147,26 +147,6 @@ public class PointOverlay extends AbstractROIOverlay<RectangleRegionOfInterest> 
 		}
 		calcRegion();
 	}
-
-	/*
-	@Override
-	public Overlay duplicate() {
-		PointOverlay overlay = new PointOverlay(getContext());
-		RealLocalizable origPt = getPoint();
-		overlay.setPoint(origPt);
-		overlay.setAlpha(getAlpha());
-		overlay.setAxis(Axes.X, Axes.X.ordinal());
-		overlay.setAxis(Axes.Y, Axes.Y.ordinal());
-		overlay.setFillColor(getFillColor());
-		overlay.setLineColor(getLineColor());
-		overlay.setLineEndArrowStyle(getLineEndArrowStyle());
-		overlay.setLineStartArrowStyle(getLineStartArrowStyle());
-		overlay.setLineStyle(getLineStyle());
-		overlay.setLineWidth(getLineWidth());
-		overlay.setName(getName());
-		return overlay;
-	}
-	*/
 
 	@Override
 	public void move(double[] deltas) {

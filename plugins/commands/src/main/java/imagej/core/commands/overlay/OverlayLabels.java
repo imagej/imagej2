@@ -43,7 +43,7 @@ import org.scijava.plugin.Menu;
 import org.scijava.plugin.Plugin;
 
 /**
- * TODO
+ * Place holder for the future implementation of the Overlay Labels command.
  * 
  * @author Barry DeZonia
  */

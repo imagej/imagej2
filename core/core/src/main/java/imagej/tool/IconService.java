@@ -38,7 +38,8 @@ package imagej.tool;
 import imagej.service.ImageJService;
 
 /**
- * TODO
+ * {@link IconService} allows a {@link Tool} to obtain the {@link IconDrawer}.
+ * Using this it can render its custom icon if desired.
  * 
  * @author Barry DeZonia
  */

@@ -54,7 +54,7 @@ import java.io.ObjectOutputStream;
 import net.imglib2.RealInterval;
 import net.imglib2.RealPositionable;
 import net.imglib2.meta.Axes;
-import net.imglib2.meta.DefaultCalibratedAxis;
+import net.imglib2.meta.axis.DefaultLinearAxis;
 import net.imglib2.roi.RegionOfInterest;
 
 import org.scijava.Context;
@@ -91,8 +91,8 @@ public abstract class AbstractOverlay extends AbstractData implements Overlay {
 		super(context, interval);
 		if (overlayService == null) applySettings(new OverlaySettings());
 		else applySettings(overlayService.getDefaultSettings());
-		setAxis(new DefaultCalibratedAxis(Axes.X, null, 1), 0);
-		setAxis(new DefaultCalibratedAxis(Axes.Y, null, 1), 1);
+		setAxis(new DefaultLinearAxis(Axes.X, null, 1), 0);
+		setAxis(new DefaultLinearAxis(Axes.Y, null, 1), 1);
 	}
 
 	// -- AbstractData methods --

@@ -96,9 +96,11 @@ public class SwingNumberWidget extends SwingInputWidget<Number> implements
 		// add optional widgets, if specified
 		final String style = model.getItem().getWidgetStyle();
 		if (NumberWidget.SCROLL_BAR_STYLE.equals(style)) {
+			int smx = softMax.intValue();
+			if (smx < Integer.MAX_VALUE) smx++;
 			scrollBar =
 				new JScrollBar(Adjustable.HORIZONTAL, softMin.intValue(), 1, softMin
-					.intValue(), softMax.intValue() + 1);
+					.intValue(), smx);
 			scrollBar.setUnitIncrement(stepSize.intValue());
 			setToolTip(scrollBar);
 			getComponent().add(scrollBar);

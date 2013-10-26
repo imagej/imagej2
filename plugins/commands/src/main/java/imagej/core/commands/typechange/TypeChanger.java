@@ -148,7 +148,7 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 			choices.add(dataType.longName());
 		}
 		input.setChoices(choices);
-		RealType<?> dataVar = (RealType<?>) data.getImgPlus().firstElement();
+		RealType<?> dataVar = data.getImgPlus().firstElement();
 		DataType<?> type = dataTypeService.getTypeByClass(dataVar.getClass());
 		if (type == null) input.setValue(this, choices.get(0));
 		else input.setValue(this, type.longName());
@@ -229,11 +229,6 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 		// name
 		dest.setName(src.getName());
 
-		// calibrations
-		double[] cal = new double[src.numDimensions()];
-		src.calibration(cal);
-		dest.setCalibration(cal);
-
 		// color tables
 		int tableCount = src.getColorTableCount();
 		dest.initializeColorTables(tableCount);
@@ -252,6 +247,11 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 			dest.setChannelMinimum(i, min);
 			dest.setChannelMaximum(i, max);
 		}
+
+		// dimensional axes
+		for (int d = 0; d < src.numDimensions(); d++) {
+			dest.setAxis(src.axis(d).copy(), d);
+		}
 	}
 
 	private void copyMetaDataChannelsCase(ImgPlus<?> src, ImgPlus<?> dest) {
@@ -262,11 +262,6 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 
 		// name
 		dest.setName(src.getName());
-
-		// calibrations
-		double[] cal = new double[src.numDimensions()];
-		src.calibration(cal);
-		dest.setCalibration(calcCalibration(cal, chAxis));
 
 		// color tables
 		// ACK what is best here?
@@ -288,6 +283,13 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 		}
 		dest.setChannelMinimum(0, min);
 		dest.setChannelMaximum(0, max);
+
+		// dimensional axes
+		int dDest = 0;
+		for (int dSrc = 0; dSrc < src.numDimensions(); dSrc++) {
+			if (dSrc == chAxis) continue;
+			dest.setAxis(src.axis(dSrc).copy(), dDest++);
+		}
 	}
 
 	private long[] calcDims(long[] dims, int chAxis) {
@@ -308,16 +310,6 @@ public class TypeChanger<U extends RealType<U>, V extends RealType<V> & NativeTy
 			outputAxes[d++] = axes[i];
 		}
 		return outputAxes;
-	}
-
-	private double[] calcCalibration(double[] cal, int chAxis) {
-		double[] outputCal = new double[cal.length - 1];
-		int d = 0;
-		for (int i = 0; i < cal.length; i++) {
-			if (i == chAxis) continue;
-			outputCal[d++] = cal[i];
-		}
-		return outputCal;
 	}
 
 	private long calcTableCount(ImgPlus<?> src, int chAxis) {

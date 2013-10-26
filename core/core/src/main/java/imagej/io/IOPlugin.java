@@ -40,7 +40,6 @@ import imagej.plugin.ImageJPlugin;
 import java.io.IOException;
 
 import org.scijava.plugin.HandlerPlugin;
-import org.scijava.plugin.HasPluginInfo;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -57,9 +56,7 @@ import org.scijava.plugin.Plugin;
  * @see Plugin
  * @see IOService
  */
-public interface IOPlugin<D> extends ImageJPlugin, HasPluginInfo,
-	HandlerPlugin<String>
-{
+public interface IOPlugin<D> extends ImageJPlugin, HandlerPlugin<String> {
 
 	/** The type of data opened and/or saved by the plugin. */
 	Class<D> getDataType();

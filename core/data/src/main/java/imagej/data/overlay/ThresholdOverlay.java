@@ -368,20 +368,6 @@ public class ThresholdOverlay extends AbstractOverlay
 		dataset.setAxis(axis, d);
 	}
 
-	// TODO these two calibration methods are inconsistent. Decide what is best.
-
-	@Override
-	public double calibration(int d) {
-		return dataset.calibration(d);
-	}
-
-	@Override
-	public void setCalibration(double cal, int d) {
-		if (cal == 1 && (d == 0 || d == 1)) return;
-		throw new IllegalArgumentException(
-			"Cannot set calibration of a ThresholdOverlay");
-	}
-
 	@Override
 	public int numDimensions() {
 		return pointsWithin.numDimensions();

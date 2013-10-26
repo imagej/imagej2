@@ -33,17 +33,33 @@
  * #L%
  */
 
-package imagej.data.threshold;
+package imagej.console;
 
-import org.scijava.plugin.AbstractRichPlugin;
+import imagej.plugin.ImageJPlugin;
+
+import java.util.LinkedList;
+
+import org.scijava.plugin.HandlerPlugin;
+import org.scijava.plugin.Plugin;
 
 /**
- * Abstract base class for {@link ThresholdMethod} plugins.
+ * A plugin which extends ImageJ's command line argument handling.
+ * <p>
+ * Console argument plugins discoverable at runtime must implement this
+ * interface and be annotated with @{@link Plugin} with attribute
+ * {@link Plugin#type()} = {@link ConsoleArgument}.class. While it possible to
+ * create an console argument plugin merely by implementing this interface, it
+ * is encouraged to instead extend {@link AbstractConsoleArgument}, for
+ * convenience.
+ * </p>
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractThresholdMethod extends AbstractRichPlugin
-	implements ThresholdMethod
+public interface ConsoleArgument extends ImageJPlugin,
+	HandlerPlugin<LinkedList<String>>
 {
-	// NB: No implementation needed.
+
+	/** Handles the <em>front</em> of the given list of arguments. */
+	void handle(final LinkedList<String> args);
+
 }

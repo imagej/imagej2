@@ -46,6 +46,7 @@ import java.util.Map;
 
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.SpaceUtils;
 
 /**
@@ -72,19 +73,36 @@ public class SamplingDefinition {
 
 	// -- public interface --
 
-	/** Returns the input ImageDisplay of the SamplingDefinition. */
+	/**
+	 * Returns the input ImageDisplay of the SamplingDefinition.
+	 */
 	public ImageDisplay getDisplay() {
 		return display;
 	}
 
-	/** Returns the current value of the error string of the SamplingDefinition. */
+	/**
+	 * Returns the current value of the error string of the SamplingDefinition.
+	 */
 	public String getError() {
 		return err;
 	}
 
-	/** Returns the axes that are present in the input data. */
+	/**
+	 * Returns the {@link AxisType}s that are present in the input data.
+	 */
 	public AxisType[] getInputAxes() {
 		return SpaceUtils.getAxisTypes(display);
+	}
+
+	/**
+	 * Returns the set of {@link CalibratedAxis}'s that are present in the input
+	 * data.
+	 */
+	public CalibratedAxis[] getInputCalibratedAxes() {
+		CalibratedAxis[] calibratedAxes =
+			new CalibratedAxis[display.numDimensions()];
+		display.axes(calibratedAxes);
+		return calibratedAxes;
 	}
 
 	/**
@@ -107,8 +125,8 @@ public class SamplingDefinition {
 	}
 
 	/**
-	 * Returns the axes that will be present in the output data. Those input axes
-	 * whose size is 1 are automatically collapsed.
+	 * Returns the set of {@link AxisType}s that will be present in the output
+	 * data. Those input axes whose size is 1 are automatically collapsed.
 	 */
 	public AxisType[] getOutputAxes() {
 		final AxisType[] inputAxes = getInputAxes();
@@ -121,6 +139,25 @@ public class SamplingDefinition {
 		int d = 0;
 		for (int i = 0; i < inputRanges.size(); i++) {
 			if (inputRanges.get(i).size() > 1) outputAxes[d++] = inputAxes[i];
+		}
+		return outputAxes;
+	}
+
+	/**
+	 * Returns the set of {@link CalibratedAxis}'s that will be present in the
+	 * output data. Those input axes whose size is 1 are automatically collapsed.
+	 */
+	public CalibratedAxis[] getOutputCalibratedAxes() {
+		final CalibratedAxis[] inputAxes = getInputCalibratedAxes();
+		final List<List<Long>> inputRanges = getInputRanges();
+		int dimCount = 0;
+		for (int i = 0; i < inputRanges.size(); i++) {
+			if (inputRanges.get(i).size() > 1) dimCount++;
+		}
+		final CalibratedAxis[] outputAxes = new CalibratedAxis[dimCount];
+		int d = 0;
+		for (int i = 0; i < inputRanges.size(); i++) {
+			if (inputRanges.get(i).size() > 1) outputAxes[d++] = inputAxes[i].copy();
 		}
 		return outputAxes;
 	}
@@ -144,15 +181,22 @@ public class SamplingDefinition {
 		return outputDims;
 	}
 
+	// NB - This code assumes linear calibrations. Deprecating and avoiding
+	// elsewhere.
 	/**
 	 * Returns the calibration values that will be present in the output data.
+	 * This method assumes all calibrations are linear and should be avoided. Use
+	 * getOutputCalibratedAxes() for access to calibration information.
+	 * 
+	 * @deprecated
 	 */
+	@Deprecated
 	public double[] getOutputCalibration(final AxisType[] outputAxes) {
 		final double[] cal = new double[outputAxes.length];
 		int a = 0;
 		for (int i = 0; i < outputAxes.length; i++) {
 			final int axisIndex = display.dimensionIndex(outputAxes[i]);
-			if (axisIndex >= 0) cal[a++] = display.calibration(i);
+			if (axisIndex >= 0) cal[a++] = display.axis(axisIndex).averageScale(0, 1);
 		}
 		return cal;
 	}
@@ -187,8 +231,8 @@ public class SamplingDefinition {
 		}
 		if (indices.get(indices.size() - 1) > dimension) {
 			err =
-				"Axis range partially beyond dimensions of display " + display.getName() +
-					" for axis " + axis;
+				"Axis range partially beyond dimensions of display " +
+					display.getName() + " for axis " + axis;
 			return false;
 		}
 		axisSubranges.put(axis, subrange);

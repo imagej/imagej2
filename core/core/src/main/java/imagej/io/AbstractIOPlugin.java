@@ -37,15 +37,15 @@ package imagej.io;
 
 import java.io.IOException;
 
-import org.scijava.plugin.SortablePlugin;
+import org.scijava.plugin.AbstractHandlerPlugin;
 
 /**
  * Abstract base class for {@link IOPlugin}s.
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractIOPlugin<D> extends SortablePlugin implements
-	IOPlugin<D>
+public abstract class AbstractIOPlugin<D> extends AbstractHandlerPlugin<String>
+	implements IOPlugin<D>
 {
 
 	// -- IOPlugin methods --
@@ -78,7 +78,7 @@ public abstract class AbstractIOPlugin<D> extends SortablePlugin implements
 	// -- Typed methods --
 
 	@Override
-	public boolean supports(String descriptor) {
+	public boolean supports(final String descriptor) {
 		return supportsOpen(descriptor) || supportsSave(descriptor);
 	}
 

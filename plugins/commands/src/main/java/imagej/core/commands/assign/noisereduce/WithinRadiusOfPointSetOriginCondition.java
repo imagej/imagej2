@@ -41,7 +41,8 @@ import net.imglib2.ops.pointset.PointSet;
 // TODO - move to Imglib
 
 /**
- * TODO
+ * A {@link Condition} that returns true when a long[] point is within a given
+ * radius of the origin of a given {@link PointSet}.
  * 
  * @author Barry DeZonia
  */

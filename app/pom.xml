@@ -455,6 +455,35 @@
 				</plugins>
 			</build>
 		</profile>
+
+		<!-- The jdb profile launches imagej.Main in the jdb debugger.
+		     Launch it using: mvn -P jdb exec:exec -->
+		<profile>
+			<id>jdb</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<configuration>
+							<executable>jdb</executable>
+							<arguments>
+								<argument>-classpath</argument>
+								<classpath />
+								<argument>imagej.Main</argument>
+							</arguments>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 
 </project>

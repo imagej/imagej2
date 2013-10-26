@@ -382,14 +382,20 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 
 		if (imp instanceof CompositeImage) {
 			final CompositeImage ci = (CompositeImage) imp;
-			final LUT[] luts = ci.getLuts();
-			if (channelCount != luts.length) {
-				throw new IllegalArgumentException("Channel mismatch: " +
-					channelCount + " vs. " + luts.length);
-			}
 			for (int c = 0; c < channelCount; c++) {
-				min[c] = luts[c].min;
-				max[c] = luts[c].max;
+				// some image modes return null for this call
+				final ImageProcessor ip = ci.getProcessor(c + 1);
+				if (ip != null) {
+					// use the data min max when possible
+					min[c] = ip.getMin();
+					max[c] = ip.getMax();
+				}
+				else { // ip == null
+					// use best estimate we last had
+					LUT[] luts = ci.getLuts();
+					min[c] = luts[c].min;
+					max[c] = luts[c].max;
+				}
 			}
 		}
 		else {

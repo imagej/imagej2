@@ -51,7 +51,7 @@ import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
 /**
- * TODO
+ * Swing implementation of the {@link IconService}.
  * 
  * @author Barry DeZonia
  */

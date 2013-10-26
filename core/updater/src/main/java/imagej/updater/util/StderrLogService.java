@@ -38,6 +38,7 @@ package imagej.updater.util;
 import org.scijava.Context;
 import org.scijava.Prioritized;
 import org.scijava.log.LogService;
+import org.scijava.plugin.PluginInfo;
 
 /**
  * Deprecated; do not use.
@@ -59,6 +60,8 @@ public class StderrLogService implements LogService {
 	@Override public double getPriority() { return 0; }
 	@Override public void setPriority(double priority) { }
 	@Override public int compareTo(Prioritized o) { return 0; }
+	@Override public PluginInfo<?> getInfo() { return null; }
+	@Override public void setInfo(PluginInfo<?> info) { }
 	@Override public void debug(Object msg) { System.err.println(msg); }
 	@Override public void debug(Throwable t) { t.printStackTrace(); }
 	@Override public void debug(Object msg, Throwable t) { debug(msg); debug(t); }

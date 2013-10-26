@@ -38,7 +38,8 @@ package imagej.core.commands.assign.noisereduce;
 import net.imglib2.ops.pointset.PointSet;
 
 /**
- * TODO
+ * A Neighborhood ties together a set of points ({@link PointSet}) and a text
+ * description.
  * 
  * @author Barry DeZonia
  */

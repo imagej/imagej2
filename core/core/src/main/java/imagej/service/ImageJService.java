@@ -41,8 +41,7 @@ import org.scijava.service.Service;
  * Marker interface for all ImageJ {@link Service}s.
  * 
  * @author Mark Hiner
- *
  */
 public interface ImageJService extends Service {
-
+	// NB: Marker interface.
 }

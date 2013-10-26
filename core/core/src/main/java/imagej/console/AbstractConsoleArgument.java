@@ -33,17 +33,27 @@
  * #L%
  */
 
-package imagej.data.threshold;
+package imagej.console;
 
-import org.scijava.plugin.AbstractRichPlugin;
+import java.util.LinkedList;
+
+import org.scijava.plugin.AbstractHandlerPlugin;
 
 /**
- * Abstract base class for {@link ThresholdMethod} plugins.
+ * Abstract superclass of {@link ConsoleArgument} implementations.
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractThresholdMethod extends AbstractRichPlugin
-	implements ThresholdMethod
+public abstract class AbstractConsoleArgument extends
+	AbstractHandlerPlugin<LinkedList<String>> implements ConsoleArgument
 {
-	// NB: No implementation needed.
+
+	// -- Typed methods --
+
+	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Class<LinkedList<String>> getType() {
+		return (Class) String.class;
+	}
+
 }

@@ -40,7 +40,7 @@ import imagej.module.ModuleItem;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
-import org.scijava.util.ClassUtils;
+import org.scijava.util.ConversionUtils;
 
 /**
  * A preprocessor for loading populated input values from persistent storage.
@@ -84,9 +84,11 @@ public class LoadInputsPreprocessor extends AbstractPreprocessorPlugin {
 	private <T> T getBestValue(final Object prefValue,
 		final Object defaultValue, final Class<T> type)
 	{
-		if (prefValue != null) return ClassUtils.convert(prefValue, type);
-		if (defaultValue != null) return ClassUtils.convert(defaultValue, type);
-		return ClassUtils.getNullValue(type);
+		if (prefValue != null) return ConversionUtils.convert(prefValue, type);
+		if (defaultValue != null) {
+			return ConversionUtils.convert(defaultValue, type);
+		}
+		return ConversionUtils.getNullValue(type);
 	}
 
 }

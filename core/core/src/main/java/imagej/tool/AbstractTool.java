@@ -45,7 +45,7 @@ import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
 
 import org.scijava.input.MouseCursor;
-import org.scijava.plugin.SortablePlugin;
+import org.scijava.plugin.AbstractRichPlugin;
 
 /**
  * Abstract base class for ImageJ tools.
@@ -53,7 +53,7 @@ import org.scijava.plugin.SortablePlugin;
  * @author Curtis Rueden
  * @author Grant Harris
  */
-public abstract class AbstractTool extends SortablePlugin implements Tool {
+public abstract class AbstractTool extends AbstractRichPlugin implements Tool {
 
 	@Override
 	public MouseCursor getCursor() {

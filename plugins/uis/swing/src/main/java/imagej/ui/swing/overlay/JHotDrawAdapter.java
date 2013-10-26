@@ -44,9 +44,8 @@ import imagej.tool.Tool;
 import imagej.util.RealCoords;
 
 import org.jhotdraw.draw.Figure;
-import org.scijava.Contextual;
-import org.scijava.Prioritized;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.RichPlugin;
 
 /**
  * Interface for JHotDraw-based adapters, which maintain a bidirectional link
@@ -63,7 +62,7 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  */
 public interface JHotDrawAdapter<F extends Figure> extends ImageJPlugin,
-	Contextual, Prioritized
+	RichPlugin
 {
 
 	/**

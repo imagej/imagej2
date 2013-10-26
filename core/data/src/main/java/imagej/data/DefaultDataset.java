@@ -65,7 +65,6 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.meta.IntervalUtils;
-import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.IntegerType;
@@ -324,10 +323,14 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		copyDataValues(other.getImgPlus(), newImg);
 
 		// create new imgplus to contain data using the current name
-		final double[] calib = new double[other.numDimensions()];
-		other.calibration(calib);
+		CalibratedAxis[] calibAxes = new CalibratedAxis[other.numDimensions()];
+		other.axes(calibAxes);
+		CalibratedAxis[] calibAxesCopy = new CalibratedAxis[calibAxes.length];
+		for (int i = 0; i < calibAxes.length; i++) {
+			calibAxesCopy[i] = calibAxes[i].copy();
+		}
 		final ImgPlus<? extends RealType<?>> newImgPlus =
-			wrapAsImgPlus(newImg, SpaceUtils.getAxisTypes(other), calib);
+			wrapAsImgPlus(newImg, calibAxesCopy);
 
 		// make sure we grab color tables too
 		// TODO - disable this option? It's a question of what we think data is.
@@ -389,42 +392,10 @@ public class DefaultDataset extends AbstractData implements Dataset {
 
 	@Override
 	public void setAxis(final CalibratedAxis axis, final int d) {
-		if (imgPlus.axis(d).equals(axis)) return;
+		if (axis.equals(imgPlus.axis(d))) return;
 		imgPlus.setAxis(axis, d);
 		update(true); // TODO : false instead of true?
 		// Maybe we need more levels of discrimination with update(bool)
-	}
-
-	@Override
-	public double calibration(final int d) {
-		return imgPlus.calibration(d);
-	}
-
-	@Override
-	public void calibration(final double[] cal) {
-		imgPlus.calibration(cal);
-	}
-
-	@Override
-	public void calibration(float[] cal) {
-		imgPlus.calibration(cal);
-	}
-
-	@Override
-	public void setCalibration(final double cal, final int d) {
-		if (imgPlus.calibration(d) == cal) return;
-		imgPlus.setCalibration(cal, d);
-		update(true);
-	}
-
-	@Override
-	public void setCalibration(double[] cal) {
-		imgPlus.setCalibration(cal);
-	}
-
-	@Override
-	public void setCalibration(float[] cal) {
-		imgPlus.setCalibration(cal);
 	}
 
 	// -- EuclideanSpace methods --
@@ -733,10 +704,10 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		return new ImgPlus<T>(blankImg, img);
 	}
 
-	private <T extends RealType<?>> ImgPlus<T> wrapAsImgPlus(
-		final Img<T> newImg, final AxisType[] axes, final double[] calib)
+	private <T extends RealType<?>> ImgPlus<T> wrapAsImgPlus(final Img<T> newImg,
+		final CalibratedAxis... calibAxes)
 	{
-		return new ImgPlus<T>(newImg, getName(), axes, calib);
+		return new ImgPlus<T>(newImg, getName(), calibAxes);
 	}
 
 	private void update(boolean metadataOnly) {

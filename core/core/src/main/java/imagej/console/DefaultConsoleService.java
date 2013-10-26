@@ -33,17 +33,66 @@
  * #L%
  */
 
-package imagej.data.threshold;
+package imagej.console;
 
-import org.scijava.plugin.AbstractRichPlugin;
+import java.util.LinkedList;
+
+import org.scijava.log.LogService;
+import org.scijava.plugin.AbstractHandlerService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.Service;
 
 /**
- * Abstract base class for {@link ThresholdMethod} plugins.
+ * Default service for managing interaction with the console.
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractThresholdMethod extends AbstractRichPlugin
-	implements ThresholdMethod
+@Plugin(type = Service.class)
+public class DefaultConsoleService extends
+	AbstractHandlerService<LinkedList<String>, ConsoleArgument> implements
+	ConsoleService
 {
-	// NB: No implementation needed.
+
+	@Parameter
+	private LogService log;
+
+	// -- ConsoleService methods --
+
+	@Override
+	public void processArgs(final String... args) {
+		log.debug("Received command line arguments:");
+		final LinkedList<String> argList = new LinkedList<String>();
+		for (final String arg : args) {
+			log.debug("\t" + arg);
+			argList.add(arg);
+		}
+
+		while (!argList.isEmpty()) {
+			final ConsoleArgument handler = getHandler(argList);
+			if (handler == null) {
+				// ignore invalid command line argument
+				final String arg = argList.removeFirst();
+				log.warn("Ignoring invalid argument: " + arg);
+				continue;
+			}
+			handler.handle(argList);
+		}
+	}
+
+	// -- PTService methods --
+
+	@Override
+	public Class<ConsoleArgument> getPluginType() {
+		return ConsoleArgument.class;
+	}
+
+	// -- Typed methods --
+
+	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Class<LinkedList<String>> getType() {
+		return (Class) LinkedList.class;
+	}
+
 }

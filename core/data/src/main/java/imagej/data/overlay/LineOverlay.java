@@ -40,7 +40,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import net.imglib2.meta.Axes;
-import net.imglib2.meta.DefaultCalibratedAxis;
+import net.imglib2.meta.axis.DefaultLinearAxis;
 import net.imglib2.roi.LineRegionOfInterest;
 
 import org.scijava.Context;
@@ -62,8 +62,8 @@ public class LineOverlay extends AbstractROIOverlay<LineRegionOfInterest> {
 	
 	public LineOverlay(final Context context) {
 		super(context, new LineRegionOfInterest(new double[2], new double[2]));
-		this.setAxis(new DefaultCalibratedAxis(Axes.X), 0);
-		this.setAxis(new DefaultCalibratedAxis(Axes.Y), 1);
+		this.setAxis(new DefaultLinearAxis(Axes.X), 0);
+		this.setAxis(new DefaultLinearAxis(Axes.Y), 1);
 	}
 
 	public LineOverlay(final Context context, final double[] ptStart,
@@ -71,8 +71,8 @@ public class LineOverlay extends AbstractROIOverlay<LineRegionOfInterest> {
 	{
 		super(context, new LineRegionOfInterest(ptStart,ptEnd));
 		assert ptStart.length == ptEnd.length;
-		this.setAxis(new DefaultCalibratedAxis(Axes.X), 0);
-		this.setAxis(new DefaultCalibratedAxis(Axes.Y), 1);
+		this.setAxis(new DefaultLinearAxis(Axes.X), 0);
+		this.setAxis(new DefaultLinearAxis(Axes.Y), 1);
 	}
 
 	public void getLineStart(double[] pt) {

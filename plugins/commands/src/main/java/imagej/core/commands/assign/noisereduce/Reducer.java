@@ -50,7 +50,8 @@ import org.scijava.app.StatusService;
 import org.scijava.plugin.Parameter;
 
 /**
- * TODO
+ * Reduces noise in an {@link ImgPlus} using a given reduction func across a
+ * given neighborhood.
  * 
  * @author Barry DeZonia
  */

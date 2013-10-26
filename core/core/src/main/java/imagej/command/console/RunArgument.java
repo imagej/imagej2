@@ -33,17 +33,68 @@
  * #L%
  */
 
-package imagej.data.threshold;
+package imagej.command.console;
 
-import org.scijava.plugin.AbstractRichPlugin;
+import imagej.command.CommandInfo;
+import imagej.command.CommandService;
+import imagej.console.AbstractConsoleArgument;
+import imagej.console.ConsoleArgument;
+
+import java.util.LinkedList;
+
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
- * Abstract base class for {@link ThresholdMethod} plugins.
+ * Handles the {@code --run} command line argument.
  * 
  * @author Curtis Rueden
+ * @author Johannes Schindelin
  */
-public abstract class AbstractThresholdMethod extends AbstractRichPlugin
-	implements ThresholdMethod
-{
-	// NB: No implementation needed.
+@Plugin(type = ConsoleArgument.class)
+public class RunArgument extends AbstractConsoleArgument {
+
+	@Parameter
+	private CommandService commandService;
+
+	// -- ConsoleArgument methods --
+
+	@Override
+	public void handle(final LinkedList<String> args) {
+		if (!supports(args)) return;
+
+		args.removeFirst(); // --run
+		final String commandToRun = args.removeFirst();
+		final String optionString = args.isEmpty() ? "" : args.removeFirst();
+
+		run(commandToRun, optionString);
+	}
+
+	// -- Typed methods --
+
+	@Override
+	public boolean supports(final LinkedList<String> args) {
+		return args != null && args.size() >= 2 && args.getFirst().equals("--run");
+	}
+
+	// -- Helper methods --
+
+	/** Implements the {@code --run} command line argument. */
+	private void run(final String commandToRun, final String optionString) {
+		CommandInfo info = commandService.getCommand(commandToRun);
+		if (info == null) {
+			// command was not a class name; search for command by title instead
+			final String label = commandToRun.replace('_', ' ');
+			for (final CommandInfo ci : commandService.getCommands()) {
+				if (label.equals(ci.getTitle())) {
+					info = ci;
+					break;
+				}
+			}
+		}
+		if (info == null) return;
+		// TODO: parse the optionString a la ImageJ1
+		commandService.run(info);
+	}
+
 }

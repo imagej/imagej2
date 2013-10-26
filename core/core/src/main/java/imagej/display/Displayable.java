@@ -36,13 +36,16 @@
 package imagej.display;
 
 /**
- * TODO
+ * An interface used by classes that can draw on demand. Typically used by
+ * things like the Overlay classes.
  * 
  * @author Barry DeZonia
  */
 public interface Displayable {
 
-	/** TODO */
+	/**
+	 * Render self when called.
+	 */
 	void draw();
 
 }

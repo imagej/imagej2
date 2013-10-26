@@ -57,7 +57,7 @@ import org.jhotdraw.draw.AbstractAttributedFigure;
 import org.jhotdraw.draw.AttributeKeys;
 
 /**
- * TODO
+ * Implementation of JHotDraw Figure that can display a {@link ThresholdOverlay}
  * 
  * @author Barry DeZonia
  */

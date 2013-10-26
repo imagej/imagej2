@@ -42,8 +42,10 @@ import net.imglib2.display.ColorTable;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.meta.IntervalUtils;
+import net.imglib2.meta.axis.DefaultLinearAxis;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
@@ -72,37 +74,39 @@ public class RestructureUtils {
 	}
 
 	/**
-	 * Creates a new ImgPlus with specified dimensions and axes. Uses same factory
-	 * as input Dataset. Maintains type, name, and calibration values. All data
-	 * values are initialized to 0.
+	 * Creates a new {@link ImgPlus} with specified dimensions and axes. Uses the
+	 * same factory as the input {@link Dataset}. Maintains metadata including
+	 * axis types, dataset name, and axis calibrations. All data values are
+	 * initialized to 0.
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static ImgPlus<? extends RealType<?>> createNewImgPlus(
-		final Dataset ds, final long[] dimensions, final AxisType[] axes)
+		final Dataset ds, final long[] dimensions, final AxisType[] axisTypes)
 	{
-		final ImgFactory factory = ds.getImgPlus().factory();
-		final Img<? extends RealType<?>> img =
-			factory.create(dimensions, ds.getType());
-		final String name = ds.getName();
-		final double[] calibration = new double[axes.length];
-		final String[] units = new String[axes.length];
-		for (int i = 0; i < axes.length; i++) {
-			final int index = ds.dimensionIndex(axes[i]);
-			if (index >= 0) {
-				calibration[i] = ds.calibration(index);
-				units[i] = ds.unit(i);
-			}
-			else {
-				calibration[i] = Double.NaN;
-				units[i] = null;
-			}
+		return createNewImgPlus(ds.getImgPlus(), dimensions, axisTypes);
+	}
+
+	/**
+	 * Creates a new {@link ImgPlus} with specified dimensions and axes. Uses the
+	 * same factory as the input image. Maintains metadata including axis types,
+	 * dataset name, and axis calibrations. All data values are initialized to 0.
+	 */
+	public static <T> ImgPlus<T> createNewImgPlus(final ImgPlus<T> imgPlus,
+		final long[] dimensions, final AxisType[] axisTypes)
+	{
+		final ImgFactory<T> factory = imgPlus.factory();
+		final Img<T> newImg = factory.create(dimensions, imgPlus.firstElement());
+		final String name = imgPlus.getName();
+
+		// propagate axes
+		final CalibratedAxis[] newAxes = new CalibratedAxis[dimensions.length];
+		for (int d = 0; d < newImg.numDimensions(); d++) {
+			final int axisIndex = imgPlus.dimensionIndex(axisTypes[d]);
+			if (axisIndex < 0) newAxes[d] = new DefaultLinearAxis(axisTypes[d]);
+			else newAxes[d] = imgPlus.axis(axisIndex).copy();
 		}
-		ImgPlus<? extends RealType<?>> imgPlus =
-			new ImgPlus(img, name, axes, calibration);
-		for (int i = 0; i < units.length; i++) {
-			imgPlus.setUnit(units[i], i);
-		}
-		return imgPlus;
+
+		// create ImgPlus
+		return new ImgPlus<T>(newImg, name, newAxes);
 	}
 
 	/**
