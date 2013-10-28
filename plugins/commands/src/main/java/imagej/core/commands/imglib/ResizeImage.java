@@ -112,6 +112,7 @@ public class ResizeImage extends DynamicCommand {
 	 * Sets the name of the current interpolation mode. Given mode name must be
 	 * one of the values listed by getModes().
 	 */
+	@SuppressWarnings("unchecked")
 	public void setMode(String mode) {
 		boolean found = false;
 		for (String s : modes) {
@@ -170,6 +171,7 @@ public class ResizeImage extends DynamicCommand {
 	// -- Command methods --
 
 	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void run() {
 		ImgPlus<? extends RealType<?>> origImgPlus = dataset.getImgPlus();
 		int numDims = origImgPlus.numDimensions();
@@ -303,12 +305,14 @@ public class ResizeImage extends DynamicCommand {
 		return item.getValue(this);
 	}
 
+	@SuppressWarnings("unchecked")
 	private ModuleItem<Long> getItem(int index) {
 		String name = DIMENSION + index;
 		DynamicCommandInfo info = getInfo();
 		return ((ModuleItem<Long>) info.getInput(name));
 	}
 
+	@SuppressWarnings("unchecked")
 	private boolean constrain() {
 		if (xIndex < 0) return false;
 		if (yIndex < 0) return false;
