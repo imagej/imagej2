@@ -46,7 +46,7 @@ import javax.script.ScriptEngine;
  * 
  * @author Johannes Schindelin
  */
-public abstract class AbstractScriptEngineFactory implements
+public abstract class AbstractScriptLanguage implements
 	ScriptLanguage
 {
 

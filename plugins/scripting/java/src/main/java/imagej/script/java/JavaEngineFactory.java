@@ -35,7 +35,7 @@
 
 package imagej.script.java;
 
-import imagej.script.AbstractScriptEngineFactory;
+import imagej.script.AbstractScriptLanguage;
 import imagej.script.ScriptLanguage;
 
 import java.util.Arrays;
@@ -51,7 +51,7 @@ import org.scijava.plugin.Plugin;
  * @author Johannes Schindelin
  */
 @Plugin(type = ScriptLanguage.class)
-public class JavaEngineFactory extends AbstractScriptEngineFactory {
+public class JavaEngineFactory extends AbstractScriptLanguage {
 
 	@Override
 	public List<String> getExtensions() {

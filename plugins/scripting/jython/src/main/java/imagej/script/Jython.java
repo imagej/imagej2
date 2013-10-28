@@ -49,7 +49,7 @@ import org.scijava.plugin.Plugin;
  * @see ScriptEngine
  */
 @Plugin(type = ScriptLanguage.class)
-public class Jython extends AbstractScriptEngineFactory {
+public class Jython extends AbstractScriptLanguage {
 
 	@Override
 	public List<String> getExtensions() {

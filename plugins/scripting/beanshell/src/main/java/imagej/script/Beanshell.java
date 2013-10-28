@@ -49,7 +49,7 @@ import org.scijava.plugin.Plugin;
  * @see ScriptEngine
  */
 @Plugin(type = ScriptLanguage.class)
-public class Beanshell extends AbstractScriptEngineFactory {
+public class Beanshell extends AbstractScriptLanguage {
 
 	@Override
 	public List<String> getExtensions() {

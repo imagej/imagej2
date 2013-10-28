@@ -49,7 +49,7 @@ import org.scijava.plugin.Plugin;
  * @see ScriptEngine
  */
 @Plugin(type = ScriptLanguage.class)
-public class Clojure extends AbstractScriptEngineFactory {
+public class Clojure extends AbstractScriptLanguage {
 
 	@Override
 	public List<String> getExtensions() {
