@@ -52,7 +52,7 @@ import javax.script.ScriptEngineFactory;
  */
 public abstract class AbstractScriptLanguage implements ScriptLanguage {
 
-	// (Possibly) unsupported operations
+	// -- (Possibly) unsupported operations --
 
 	@Override
 	public String getMethodCallSyntax(final String object, final String method,
@@ -71,7 +71,7 @@ public abstract class AbstractScriptLanguage implements ScriptLanguage {
 		throw new UnsupportedOperationException();
 	}
 
-	// Default implementations
+	// -- Default implementations --
 
 	@Override
 	public List<String> getExtensions() {
@@ -128,6 +128,8 @@ public abstract class AbstractScriptLanguage implements ScriptLanguage {
 	public String getEngineVersion() {
 		return "0.0";
 	}
+
+	// -- Helper methods --
 
 	private String inferNameFromClassName() {
 		final String className = getClass().getName().replace('_', ' ');
