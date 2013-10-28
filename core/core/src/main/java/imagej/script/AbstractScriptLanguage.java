@@ -129,7 +129,7 @@ public abstract class AbstractScriptLanguage implements ScriptLanguage {
 		return "0.0";
 	}
 
-	protected String inferNameFromClassName() {
+	private String inferNameFromClassName() {
 		final String className = getClass().getName().replace('_', ' ');
 		final int dot = className.lastIndexOf('.');
 		return className.substring(dot + 1);
