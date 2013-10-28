@@ -39,16 +39,18 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
 
 /**
- * This class implements dummy versions for ScriptEngineFactory's methods that
- * are not needed by ImageJ's scripting interface
+ * Abstract superclass for {@link ScriptLanguage} implementations.
+ * <p>
+ * This class implements dummy versions of {@link ScriptEngineFactory}'s methods
+ * that are not needed by ImageJ's scripting interface.
+ * </p>
  * 
  * @author Johannes Schindelin
  */
-public abstract class AbstractScriptLanguage implements
-	ScriptLanguage
-{
+public abstract class AbstractScriptLanguage implements ScriptLanguage {
 
 	// Abstract methods
 
