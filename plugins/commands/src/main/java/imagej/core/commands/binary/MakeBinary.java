@@ -134,6 +134,13 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 
 	// -- accessors --
 
+	/**
+	 * Sets the threshold method to use for pixel discrimination. The method is
+	 * given as the name of a {@link ThresholdMethod} currently registered with
+	 * the {@link ThresholdService}.
+	 * 
+	 * @param thresholdMethod The name of the threshold method to use.
+	 */
 	public void setThresholdMethod(String thresholdMethod) {
 		if (threshSrv.getThresholdMethod(thresholdMethod) == null) {
 			throw new IllegalArgumentException(
@@ -142,10 +149,22 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 		method = thresholdMethod;
 	}
 
+	/**
+	 * Gets the threshold method used for pixel discrimination. The method is the
+	 * name of a {@link ThresholdMethod} currently registered with the
+	 * {@link ThresholdService}.
+	 */
 	public String thresholdMethod() {
 		return method;
 	}
 
+	/**
+	 * Sets which pixels are considered part of the mask. Those either inside or
+	 * outside the threshold range. Use the constants MakeBinary.INSIDE or
+	 * MakeBinary.OUTSIDE.
+	 * 
+	 * @param insideOrOutside One of the values INSIDE or OUTSIDE.
+	 */
 	public void setMaskPixels(String insideOrOutside) {
 		if (insideOrOutside.equals(INSIDE)) maskPixels = INSIDE;
 		else if (insideOrOutside.equals(OUTSIDE)) maskPixels = OUTSIDE;
@@ -153,10 +172,21 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 			"Unknown mask pixel specification: " + insideOrOutside);
 	}
 
+	/**
+	 * Gets which pixels are considered part of the mask. Either inside or outside
+	 * the threshold range. Returns one of the constants MakeBinary.INSIDE or
+	 * MakeBinary.OUTSIDE.
+	 */
 	public String maskPixels() {
 		return maskPixels;
 	}
 
+	/**
+	 * Sets the color of the mask pixels. Either black or white. Use the constants
+	 * MakeBinary.BLACK or MakeBinary.WHITE.
+	 * 
+	 * @param blackOrWhite One of the values BLACK or WHITE.
+	 */
 	public void setMaskColor(String blackOrWhite) {
 		if (blackOrWhite.equals(BLACK)) maskColor = BLACK;
 		else if (blackOrWhite.equals(WHITE)) maskColor = WHITE;
@@ -164,14 +194,26 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 			"Unknown mask color specification: " + blackOrWhite);
 	}
 
+	/**
+	 * Gets the color of the mask pixels. Either black or white. One of the
+	 * constants MakeBinary.BLACK or MakeBinary.WHITE.
+	 */
 	public String maskColor() {
 		return maskColor;
 	}
 
+	/**
+	 * Set whether to threshold each plane separately or to threshold the whole
+	 * image at once.
+	 */
 	public void setThresholdEachPlane(boolean val) {
 		thresholdEachPlane = val;
 	}
 
+	/**
+	 * Gets whether to threshold each plane separately or to threshold the whole
+	 * image at once.
+	 */
 	public boolean thresholdEachPlane() {
 		return thresholdEachPlane;
 	}
