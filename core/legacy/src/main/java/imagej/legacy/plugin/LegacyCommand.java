@@ -125,6 +125,8 @@ public class LegacyCommand implements Command {
 			return;
 		}
 
+		// System.out.println("Launching legacy thread");
+
 		final LegacyCommandThread thread = new LegacyCommandThread();
 
 		// enforce the desired order of thread execution
@@ -135,6 +137,8 @@ public class LegacyCommand implements Command {
 		catch (final Exception e) {
 			// will have been handled earlier
 		}
+
+		// System.out.println("Done with legacy thread");
 	}
 
 	// -- helper methods --
@@ -260,7 +264,7 @@ public class LegacyCommand implements Command {
 					if (whitelisted(thread)) continue;
 					if (thread.isAlive()) {
 						// System.out.println(thread.getName() + " thread is alive");
-						// reportThreadInfo(thread, currentThreads, threadsToIgnore);
+						// reportThreadInfo(thread, currentThreads, null);
 						allDead = false;
 						break;
 					}
@@ -309,8 +313,12 @@ public class LegacyCommand implements Command {
 
 			// threads that load images from web can sleep a long time waiting after
 			// their data has already been loaded
-			if (threadName.contains("Image Fetcher") &&
-				thread.getState() == Thread.State.TIMED_WAITING)
+			// if (threadName.contains("Image Fetcher") &&
+			// NB BDZ - 10-29-13 at some point the "Image Fetcher" string disappeared.
+			// Like Timer threads we will ignore Timed Waiting threads as they too
+			// wait on another running thread. Not sure how safe this is but it
+			// seems necessary.
+			if (thread.getState() == Thread.State.TIMED_WAITING)
 			{
 				return true;
 			}
@@ -420,10 +428,11 @@ public class LegacyCommand implements Command {
 			System.out.println("  interrupted "+thread.isInterrupted());
 			System.out.println("  Other threads");
 			for (final Thread t : allThreads) {
-				if (threadsToIgnore.contains(t)) continue;
+				if (threadsToIgnore != null && threadsToIgnore.contains(t)) continue;
 				if (whitelisted(t)) continue;
 				if (t.isAlive()) {
-					System.out.println("    id = "+t.getId()+ " name = "+thread.getName());
+					System.out
+						.println("    id = " + t.getId() + " name = " + t.getName());
 					System.out.println("      priority = "+t.getPriority());
 					System.out.println("      interrupted = "+t.isInterrupted());
 					System.out.println("      state = "+t.getState());
