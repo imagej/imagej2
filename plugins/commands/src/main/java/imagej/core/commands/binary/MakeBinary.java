@@ -287,46 +287,8 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 		return AbstractCellImg.class.isAssignableFrom(img.getClass());
 	}
 
-	private void assignColorTables(Dataset ds) {
-		ColorTable8 table = maskColor.equals(WHITE) ? white() : black();
-		long planeCount = planeCount(ds);
-		if (planeCount > Integer.MAX_VALUE) {
-			// TODO: for now just set all color tables. Later: throw exception?
-			planeCount = Integer.MAX_VALUE;
-		}
-		ds.initializeColorTables((int) planeCount);
-		for (int i = 0; i < planeCount; i++) {
-			ds.setColorTable(table, i);
-		}
-	}
-
-	private ColorTable8 white() {
-		return makeTable(0, 255);
-	}
-
-	private ColorTable8 black() {
-		return makeTable(255, 0);
-	}
-
-	private ColorTable8 makeTable(int first, int rest) {
-		byte[] r = new byte[256];
-		byte[] g = new byte[256];
-		byte[] b = new byte[256];
-		byte n;
-		n = (byte) rest;
-		fill(r, n);
-		fill(g, n);
-		fill(b, n);
-		n = (byte) first;
-		r[0] = n;
-		g[0] = n;
-		b[0] = n;
-		return new ColorTable8(r, g, b);
-	}
-
-	private void fill(byte[] bytes, byte val) {
-		for (int i = 0; i < bytes.length; i++)
-			bytes[i] = val;
+	private DataRange calcDataRange(Dataset ds) {
+		return autoscaleSrv.getDefaultIntervalRange(ds.getImgPlus());
 	}
 
 	private long planeCount(Dataset ds) {
@@ -337,6 +299,17 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 			count *= ds.dimension(d);
 		}
 		return count;
+	}
+
+	long[] planeSpace(Dataset ds) {
+		long[] planeSpace = new long[ds.numDimensions() - 2];
+		int i = 0;
+		for (int d = 0; d < ds.numDimensions(); d++) {
+			AxisType type = ds.axis(d).type();
+			if (type == Axes.X || type == Axes.Y) continue;
+			planeSpace[i++] = ds.dimension(d);
+		}
+		return planeSpace;
 	}
 
 	private Histogram1d<T> buildHistogram(Dataset ds, long[] planePos,
@@ -400,10 +373,6 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 		return new Histogram1d<T>(binMapper);
 	}
 
-	private DataRange calcDataRange(Dataset ds) {
-		return autoscaleSrv.getDefaultIntervalRange(ds.getImgPlus());
-	}
-
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private double cutoff(Histogram1d<T> hist, ThresholdMethod thresholdMethod,
 		boolean testLess, DoubleType val)
@@ -432,17 +401,6 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 		}
 	}
 
-	long[] planeSpace(Dataset ds) {
-		long[] planeSpace = new long[ds.numDimensions() - 2];
-		int i = 0;
-		for (int d = 0; d < ds.numDimensions(); d++) {
-			AxisType type = ds.axis(d).type();
-			if (type == Axes.X || type == Axes.Y) continue;
-			planeSpace[i++] = ds.dimension(d);
-		}
-		return planeSpace;
-	}
-
 	private PointSet planeData(Dataset ds, long[] planePos) {
 		long[] pt1 = new long[ds.numDimensions()];
 		long[] pt2 = new long[ds.numDimensions()];
@@ -464,5 +422,47 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 
 	private PointSet fullData(long[] dims) {
 		return new HyperVolumePointSet(dims);
+	}
+
+	private void assignColorTables(Dataset ds) {
+		ColorTable8 table = maskColor.equals(WHITE) ? white() : black();
+		long planeCount = planeCount(ds);
+		if (planeCount > Integer.MAX_VALUE) {
+			// TODO: for now just set all color tables. Later: throw exception?
+			planeCount = Integer.MAX_VALUE;
+		}
+		ds.initializeColorTables((int) planeCount);
+		for (int i = 0; i < planeCount; i++) {
+			ds.setColorTable(table, i);
+		}
+	}
+
+	private ColorTable8 white() {
+		return makeTable(0, 255);
+	}
+
+	private ColorTable8 black() {
+		return makeTable(255, 0);
+	}
+
+	private ColorTable8 makeTable(int first, int rest) {
+		byte[] r = new byte[256];
+		byte[] g = new byte[256];
+		byte[] b = new byte[256];
+		byte n;
+		n = (byte) rest;
+		fill(r, n);
+		fill(g, n);
+		fill(b, n);
+		n = (byte) first;
+		r[0] = n;
+		g[0] = n;
+		b[0] = n;
+		return new ColorTable8(r, g, b);
+	}
+
+	private void fill(byte[] bytes, byte val) {
+		for (int i = 0; i < bytes.length; i++)
+			bytes[i] = val;
 	}
 }
