@@ -362,12 +362,13 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 		return autoscaleSrv.getDefaultIntervalRange(ds.getImgPlus());
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private double cutoff(Histogram1d<T> hist, ThresholdMethod thresholdMethod,
 		boolean testLess, DoubleType val)
 	{
 		long threshIndex = thresholdMethod.getThreshold(hist);
-		if (testLess) hist.getUpperBound(threshIndex, (T) val);
-		else hist.getLowerBound(threshIndex, (T) val);
+		if (testLess) hist.getUpperBound(threshIndex, (T) (RealType) val);
+		else hist.getLowerBound(threshIndex, (T) (RealType) val);
 		return val.getRealDouble();
 	}
 
