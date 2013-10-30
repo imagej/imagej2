@@ -106,7 +106,7 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 	public static final String BLACK = "Black";
 	public static final String DEFAULT_METHOD = "Default";
 	
-		// -- Parameters --
+	// -- Parameters --
 
 	@Parameter(type = ItemIO.BOTH)
 	private Dataset dataset;
@@ -278,6 +278,7 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 		dataset.setAxes(axes);
 		assignColorTables(dataset);
 	}
+
 	// -- initializer --
 
 	@SuppressWarnings({ "unused", "unchecked" })
