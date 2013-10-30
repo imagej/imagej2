@@ -120,6 +120,12 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 	@Parameter(label = "Mask color", choices = { WHITE, BLACK })
 	private String maskColor = WHITE;
 
+	@Parameter(label = "Fill mask foreground")
+	private boolean fillFg = true;
+
+	@Parameter(label = "Fill mask background")
+	private boolean fillBg = true;
+
 	@Parameter(label = "Threshold each plane")
 	private boolean thresholdEachPlane = false;
 
@@ -219,6 +225,40 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 	 */
 	public boolean thresholdEachPlane() {
 		return thresholdEachPlane;
+	}
+
+	/**
+	 * Sets whether to fill foreground pixels of binary mask or not to the given
+	 * specified value.
+	 * 
+	 * @param val The specified value.
+	 */
+	public void setFillMaskForeground(boolean val) {
+		fillFg = val;
+	}
+
+	/**
+	 * Gets whether to fill foreground pixels of binary mask or not.
+	 */
+	public boolean fillMaskForeground() {
+		return fillFg;
+	}
+
+	/**
+	 * Sets whether to fill background pixels of binary mask or not to the given
+	 * specified value.
+	 * 
+	 * @param val The specified value.
+	 */
+	public void setFillMaskBackground(boolean val) {
+		fillBg = val;
+	}
+
+	/**
+	 * Gets whether to fill background pixels of binary mask or not.
+	 */
+	public boolean fillMaskBackground() {
+		return fillBg;
 	}
 
 	// -- Command methods --
@@ -380,21 +420,19 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 		// TODO - size of histogram affects speed of all autothresh methods
 		// What is the best way to determine size?
 		// Do we want some power of two as size? For now yes.
-		final int MaxBinCount = 16384;
-		for (int binCount = 256; binCount <= MaxBinCount; binCount *= 2) {
+		final int maxBinCount = 16384;
+		for (int binCount = 256; binCount <= maxBinCount; binCount *= 2) {
 			if (range <= binCount) {
 				binMapper =
 					new Real1dBinMapper<T>(dataRange.getMin(), dataRange.getMax(),
-						binCount,
-						false);
+						binCount, false);
 				break;
 			}
 		}
 		if (binMapper == null) {
 			binMapper =
 				new Real1dBinMapper<T>(dataRange.getMin(), dataRange.getMax(),
-					MaxBinCount,
-					false);
+					maxBinCount, false);
 		}
 		return new Histogram1d<T>(binMapper);
 	}
@@ -427,8 +465,16 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 			partOfMask = dataAccessor.get().getRealDouble() >= cutoffVal;
 		}
 		if (partOfMask) {
-			maskAccessor.setPosition(pos);
-			maskAccessor.get().set(true);
+			if (fillFg) {
+				maskAccessor.setPosition(pos);
+				maskAccessor.get().set(true);
+			}
+		}
+		else { // not part of mask
+			if (fillBg) {
+				maskAccessor.setPosition(pos);
+				maskAccessor.get().set(false);
+			}
 		}
 	}
 
