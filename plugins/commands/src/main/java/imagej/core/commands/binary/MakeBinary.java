@@ -336,16 +336,20 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 	{
 		long[] min = new long[ds.numDimensions()];
 		long[] max = min.clone();
-		max[0] = ds.dimension(0) - 1;
-		max[1] = ds.dimension(1) - 1;
-		for (int d = 2; d < ds.numDimensions(); d++) {
-			if (planePos == null) {
+		int xIndex = ds.dimensionIndex(Axes.X);
+		int yIndex = ds.dimensionIndex(Axes.Y);
+		// TODO - figure out what to do when no X axis or no Y axis present
+		int i = 0;
+		for (int d = 0; d < ds.numDimensions(); d++) {
+			if (planePos == null || d == xIndex || d == yIndex) {
 				min[d] = 0;
 				max[d] = ds.dimension(d) - 1;
 			}
-			else { // plane only
-				min[d] = planePos[d - 2];
-				max[d] = planePos[d - 2];
+			else {
+				// it's a plane dimension from within planePos
+				min[d] = planePos[i];
+				max[d] = planePos[i];
+				i++;
 			}
 		}
 		@SuppressWarnings("unchecked")
