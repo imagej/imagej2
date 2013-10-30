@@ -226,6 +226,8 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void run() {
+		// avoid lots of work if we already are binary
+		if (dataset.getImgPlus().firstElement().getBitsPerPixel() == 1) return;
 		long[] dims = IntervalUtils.getDims(dataset);
 		CalibratedAxis[] axes = new CalibratedAxis[dims.length];
 		dataset.axes(axes);
@@ -245,7 +247,8 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 		Histogram1d<T> histogram = null;
 		boolean testLess = maskPixels.equals(INSIDE);
 		DoubleType val = new DoubleType();
-		// TODO - use Views instead of PointSets?
+		// TODO - use Views and Cursors instead of PointSets and RandomAccess?
+		// Better performance? Especially for CellImgs?
 		if (thresholdEachPlane && planeCount(dataset) > 1) {
 			// threshold each plane separately
 			long[] planeSpace = planeSpace(dataset);
