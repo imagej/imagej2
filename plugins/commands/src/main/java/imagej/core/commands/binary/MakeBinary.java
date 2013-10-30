@@ -46,6 +46,9 @@ import imagej.data.threshold.ThresholdMethod;
 import imagej.data.threshold.ThresholdService;
 import imagej.menu.MenuConstants;
 import imagej.module.MutableModuleItem;
+
+import java.util.Arrays;
+
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable8;
@@ -242,6 +245,7 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 		Histogram1d<T> histogram = null;
 		boolean testLess = maskPixels.equals(INSIDE);
 		DoubleType val = new DoubleType();
+		// TODO - use Views instead of PointSets?
 		if (thresholdEachPlane && planeCount(dataset) > 1) {
 			// threshold each plane separately
 			long[] planeSpace = planeSpace(dataset);
@@ -282,14 +286,20 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 
 	// -- helpers --
 
+	// returns true if a given dataset is stored in a CellImg structure
+
 	private boolean isVirtual(Dataset ds) {
 		final Img<?> img = ds.getImgPlus().getImg();
 		return AbstractCellImg.class.isAssignableFrom(img.getClass());
 	}
 
+	// gets the range of the pixel values in a dataset
+
 	private DataRange calcDataRange(Dataset ds) {
 		return autoscaleSrv.getDefaultIntervalRange(ds.getImgPlus());
 	}
+
+	// returns the number of planes in a dataset
 
 	private long planeCount(Dataset ds) {
 		long count = 1;
@@ -301,6 +311,9 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 		return count;
 	}
 
+	// returns the dimensions of the space that contains the planes of a dataset.
+	// this is the dataset dims minus the X and Y axes.
+
 	long[] planeSpace(Dataset ds) {
 		long[] planeSpace = new long[ds.numDimensions() - 2];
 		int i = 0;
@@ -311,6 +324,9 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 		}
 		return planeSpace;
 	}
+
+	// calculates the histogram of a portion of the dataset. if planePos is null
+	// the region is the entire dataset. Otherwise it is the single plane.
 
 	private Histogram1d<T> buildHistogram(Dataset ds, long[] planePos,
 		DataRange minMax, Histogram1d<T> existingHist)
@@ -345,6 +361,8 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 		return histogram;
 	}
 
+	// allocates a histogram after determining a good size
+
 	private Histogram1d<T> allocateHistogram(boolean dataIsIntegral,
 		DataRange dataRange)
 	{
@@ -373,6 +391,8 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 		return new Histogram1d<T>(binMapper);
 	}
 
+	// determines the data value that delineates the threshold point
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private double cutoff(Histogram1d<T> hist, ThresholdMethod thresholdMethod,
 		boolean testLess, DoubleType val)
@@ -382,6 +402,9 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 		else hist.getLowerBound(threshIndex, (T) (RealType) val);
 		return val.getRealDouble();
 	}
+
+	// updates the mask pixel values for which the data values are on the correct
+	// side of the cutoff value.
 
 	private void updateMask(long[] pos, boolean testLess, double cutoffVal,
 		RandomAccess<? extends RealType<?>> dataAccessor,
@@ -400,6 +423,8 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 			maskAccessor.get().set(true);
 		}
 	}
+
+	// returns a PointSet that represents the points in a plane of a dataset
 
 	private PointSet planeData(Dataset ds, long[] planePos) {
 		long[] pt1 = new long[ds.numDimensions()];
@@ -420,9 +445,13 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 		return new HyperVolumePointSet(pt1, pt2);
 	}
 
+	// returns a PointSet that represents all the points in a dataset
+
 	private PointSet fullData(long[] dims) {
 		return new HyperVolumePointSet(dims);
 	}
+
+	// sets each dataset plane's color table
 
 	private void assignColorTables(Dataset ds) {
 		ColorTable8 table = maskColor.equals(WHITE) ? white() : black();
@@ -437,13 +466,20 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 		}
 	}
 
+	// A color table where 0 pixels are black and all others are white
+
 	private ColorTable8 white() {
 		return makeTable(0, 255);
 	}
 
+	// A color table where 0 pixels are white and all others are black
+
 	private ColorTable8 black() {
 		return makeTable(255, 0);
 	}
+
+	// fills the first value of a CoplorTable with given value and sets the rest
+	// values with the other given value.
 
 	private ColorTable8 makeTable(int first, int rest) {
 		byte[] r = new byte[256];
@@ -451,9 +487,9 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 		byte[] b = new byte[256];
 		byte n;
 		n = (byte) rest;
-		fill(r, n);
-		fill(g, n);
-		fill(b, n);
+		Arrays.fill(r, n);
+		Arrays.fill(g, n);
+		Arrays.fill(b, n);
 		n = (byte) first;
 		r[0] = n;
 		g[0] = n;
@@ -461,8 +497,4 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 		return new ColorTable8(r, g, b);
 	}
 
-	private void fill(byte[] bytes, byte val) {
-		for (int i = 0; i < bytes.length; i++)
-			bytes[i] = val;
-	}
 }
