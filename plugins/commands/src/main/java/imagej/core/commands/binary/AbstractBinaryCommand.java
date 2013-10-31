@@ -62,7 +62,7 @@ public abstract class AbstractBinaryCommand extends ContextCommand {
 	private Dataset dataset;
 
 	@Parameter(label = "Neighbors", choices = { FOUR, EIGHT })
-	private String neighbors = EIGHT;
+	private String neighbors = FOUR;
 
 	// -- abstract methods --
 
