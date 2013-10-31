@@ -36,7 +36,7 @@
 package imagej.core.commands.binary;
 
 import imagej.command.Command;
-import imagej.command.DynamicCommand;
+import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.autoscale.AutoscaleService;
@@ -45,7 +45,6 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.threshold.ThresholdMethod;
 import imagej.data.threshold.ThresholdService;
 import imagej.menu.MenuConstants;
-import imagej.module.MutableModuleItem;
 
 import java.util.Arrays;
 
@@ -86,13 +85,9 @@ import org.scijava.plugin.Plugin;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Binary", mnemonic = 'b'), @Menu(label = "Make Binary") },
 	headless = true)
-public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
+public class MakeBinary<T extends RealType<T>> extends ContextCommand {
 
-	// TODO - this is a DynamicCommand so that thresh methods can be discovered
-	// at runtime. That is all. I don't think this will interfere with headless
-	// operation. One just sets the method parameter to one that exists (which can
-	// be enumerated if needed from the AutothresholdService). So this should
-	// allow a headless hook. We will need to test this.
+	// TODO - is the following approach even necessary?
 
 	// NB - to simplify headless operation this plugin uses primitives for its
 	// @Parameter fields. Using enums might be safer but complicates headless
@@ -112,7 +107,7 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 	private Dataset dataset;
 
 	@Parameter(label = "Threshold method")
-	private String method = DEFAULT_METHOD;
+	private ThresholdMethod method = null; // TODO: Not String: scriptable?
 
 	@Parameter(label = "Mask pixels", choices = { INSIDE, OUTSIDE })
 	private String maskPixels = INSIDE;
@@ -144,26 +139,18 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 	// -- accessors --
 
 	/**
-	 * Sets the threshold method to use for pixel discrimination. The method is
-	 * given as the name of a {@link ThresholdMethod} currently registered with
-	 * the {@link ThresholdService}.
+	 * Sets the threshold method to use for pixel discrimination.
 	 * 
 	 * @param thresholdMethod The name of the threshold method to use.
 	 */
-	public void setThresholdMethod(String thresholdMethod) {
-		if (threshSrv.getThresholdMethod(thresholdMethod) == null) {
-			throw new IllegalArgumentException(
-				"Unknown threshold method specification: " + thresholdMethod);
-		}
+	public void setThresholdMethod(ThresholdMethod thresholdMethod) {
 		method = thresholdMethod;
 	}
 
 	/**
-	 * Gets the threshold method used for pixel discrimination. The method is the
-	 * name of a {@link ThresholdMethod} currently registered with the
-	 * {@link ThresholdService}.
+	 * Gets the threshold method used for pixel discrimination.
 	 */
-	public String thresholdMethod() {
+	public ThresholdMethod thresholdMethod() {
 		return method;
 	}
 
@@ -283,7 +270,6 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 		RandomAccess<? extends RealType<?>> dataAccessor =
 			dataset.getImgPlus().randomAccess();
 		DataRange minMax = calcDataRange(dataset);
-		ThresholdMethod thresholdMethod = threshSrv.getThresholdMethod(method);
 		Histogram1d<T> histogram = null;
 		boolean testLess = maskPixels.equals(INSIDE);
 		DoubleType val = new DoubleType();
@@ -296,7 +282,7 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 			while (pIter.hasNext()) {
 				long[] planePos = pIter.next();
 				histogram = buildHistogram(dataset, planePos, minMax, histogram);
-				double cutoffVal = cutoff(histogram, thresholdMethod, testLess, val);
+				double cutoffVal = cutoff(histogram, method, testLess, val);
 				PointSet planeData = planeData(dataset, planePos);
 				PointSetIterator iter = planeData.iterator();
 				while (iter.hasNext()) {
@@ -307,7 +293,7 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 		}
 		else { // threshold entire dataset once
 			histogram = buildHistogram(dataset, null, minMax, null);
-			double cutoffVal = cutoff(histogram, thresholdMethod, testLess, val);
+			double cutoffVal = cutoff(histogram, method, testLess, val);
 			PointSet fullData = fullData(dims);
 			PointSetIterator iter = fullData.iterator();
 			while (iter.hasNext()) {
@@ -321,11 +307,9 @@ public class MakeBinary<T extends RealType<T>> extends DynamicCommand {
 
 	// -- initializer --
 
-	@SuppressWarnings({ "unused", "unchecked" })
+	@SuppressWarnings("unused")
 	private void init() {
-		MutableModuleItem<String> item =
-			(MutableModuleItem<String>) getInfo().getInput("method");
-		item.setChoices(threshSrv.getThresholdMethodNames());
+		method = threshSrv.getThresholdMethod("Default");
 	}
 
 	// -- helpers --
