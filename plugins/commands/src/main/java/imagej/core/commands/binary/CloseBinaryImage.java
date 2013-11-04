@@ -58,7 +58,7 @@ import org.scijava.plugin.Plugin;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Binary", mnemonic = 'b'), @Menu(label = "Close") },
 	headless = true)
-public class CloseBinaryImage extends AbstractBinaryCommand {
+public class CloseBinaryImage extends AbstractMorphOpsCommand {
 
 	@Override
 	protected void updateDataset(Dataset ds) {

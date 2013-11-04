@@ -57,7 +57,7 @@ import org.scijava.plugin.Plugin;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Binary", mnemonic = 'b'), @Menu(label = "Erode") },
 	headless = true)
-public class ErodeBinaryImage extends AbstractBinaryCommand {
+public class ErodeBinaryImage extends AbstractMorphOpsCommand {
 
 	@Override
 	protected void updateDataset(Dataset ds) {
