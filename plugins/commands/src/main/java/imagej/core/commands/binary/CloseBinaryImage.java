@@ -65,7 +65,7 @@ public class CloseBinaryImage extends AbstractBinaryCommand {
 		Erode opErode = new Erode(getConnectedType(), 1);
 		Dilate<Img<BitType>> opDilate =
 			new Dilate<Img<BitType>>(getConnectedType(), 1);
-		Dataset copy = ds.duplicate();
+		Dataset copy = ds.duplicateBlank();
 		Img<BitType> copyData = (Img<BitType>) copy.getImgPlus();
 		Img<BitType> origData = (Img<BitType>) ds.getImgPlus();
 		opDilate.compute(origData, copyData);
