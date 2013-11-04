@@ -35,26 +35,51 @@
 
 package imagej.core.commands.binary;
 
-import imagej.command.ContextCommand;
+import imagej.command.Command;
+import imagej.data.Dataset;
+import imagej.menu.MenuConstants;
+import net.imglib2.type.numeric.RealType;
 
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
- * Abstract super class for binarization commands like Create Mask and Make
- * Binary.
+ * Creates a new binary mask {@link Dataset} from an existing Dataset using the
+ * default thresholding method.
  * 
  * @author Barry DeZonia
  */
-public abstract class AbstractBinaryCommand extends ContextCommand {
+@Plugin(type = Command.class, menu = {
+	@Menu(label = MenuConstants.PROCESS_LABEL,
+		weight = MenuConstants.PROCESS_WEIGHT,
+		mnemonic = MenuConstants.PROCESS_MNEMONIC),
+	@Menu(label = "Binary", mnemonic = 'b'), @Menu(label = "Create Mask...") },
+	headless = true)
+public class CreateMask<T extends RealType<T>> extends AbstractBinaryCommand {
 
-	@Parameter(label = "Mask pixels", choices = { Binarize.INSIDE,
-		Binarize.OUTSIDE })
-	protected String maskPixels = Binarize.INSIDE;
+	@Parameter
+	private Dataset dataset;
 
-	@Parameter(label = "Mask color", choices = { Binarize.WHITE, Binarize.BLACK })
-	protected String maskColor = Binarize.WHITE;
+	@Parameter(type = ItemIO.OUTPUT)
+	private Dataset output;
 
-	@Parameter(label = "Threshold each plane")
-	protected boolean threshEachPlane = false;
+	@Override
+	public void run() {
+		Binarize<T> binarizeOp = new Binarize<T>();
+		binarizeOp.setContext(getContext());
+		binarizeOp.setChangeInput(false);
+		binarizeOp.setFillMaskBackground(true);
+		binarizeOp.setFillMaskForeground(true);
+		binarizeOp.setInputData(dataset);
+		binarizeOp.setInputMask(null);
+		binarizeOp.setMaskColor(maskColor);
+		binarizeOp.setMaskPixels(maskPixels);
+		binarizeOp.setThresholdEachPlane(threshEachPlane);
+		binarizeOp.setDefaultThresholdMethod();
+		binarizeOp.run();
+		output = binarizeOp.outputMask();
+	}
 
 }
