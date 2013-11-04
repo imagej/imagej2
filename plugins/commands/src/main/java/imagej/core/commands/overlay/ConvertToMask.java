@@ -74,7 +74,7 @@ import org.scijava.plugin.Plugin;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Binary", mnemonic = 'b'),
-	@Menu(label = "Make Mask Overlay...", weight = 1) }, headless = true)
+	@Menu(label = "Make Mask Overlay...") }, headless = true)
 public class ConvertToMask extends ContextCommand {
 
 	// -- Parameters --
