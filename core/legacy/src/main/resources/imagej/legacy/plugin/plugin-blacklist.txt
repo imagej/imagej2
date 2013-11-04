@@ -38,6 +38,9 @@ ij.plugin.Zoom("in")                       # Image > Zoom > In
 ij.plugin.Zoom("out")                      # Image > Zoom > Out
 ij.plugin.Zoom("set")                      # Image > Zoom > Set...
 ij.plugin.Zoom("max")                      # Image > Zoom command (hidden command)
+ij.plugin.filter.Binary("close")           # Process > Binary > Close-
+ij.plugin.Thresholder("mask")              # Process > Binary > Convert To Mask
+ij.plugin.Thresholder                      # Process > Binary > Make Binary
 ij.plugin.filter.ImageMath("abs")          # Process > Math > Abs
 ij.plugin.filter.ImageMath("exp")          # Process > Math > Exp
 ij.plugin.filter.ImageMath("log")          # Process > Math > Log
