@@ -72,7 +72,7 @@ import org.scijava.plugin.Plugin;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Adjust"),
 	@Menu(label = "Resize") }, initializer = "init", headless = true)
-public class ResizeImage extends DynamicCommand {
+public class ResizeImage<T extends RealType<T>> extends DynamicCommand {
 
 	// -- constants --
 
@@ -171,7 +171,7 @@ public class ResizeImage extends DynamicCommand {
 	// -- Command methods --
 
 	@Override
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	public void run() {
 		ImgPlus<? extends RealType<?>> origImgPlus = dataset.getImgPlus();
 		int numDims = origImgPlus.numDimensions();
@@ -191,9 +191,8 @@ public class ResizeImage extends DynamicCommand {
 		if (dataset.getCompositeChannelCount() == numChannels(dataset)) {
 			newDs.setCompositeChannelCount(numChannels(newDs));
 		}
-		Resample<?, Img<? extends RealType<?>>> resampleOp =
-			new Resample(resampleMode());
-		resampleOp.compute(origImgPlus, newDs.getImgPlus());
+		Resample<T> resampleOp = new Resample<T>(resampleMode());
+		resampleOp.compute((Img<T>) origImgPlus, (Img<T>) newDs.getImgPlus());
 		dataset.setImgPlus(newDs.getImgPlus());
 	}
 

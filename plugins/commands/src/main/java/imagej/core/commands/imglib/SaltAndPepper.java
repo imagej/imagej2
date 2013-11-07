@@ -174,9 +174,10 @@ public class SaltAndPepper extends ContextCommand {
 				autoscaleService.getDefaultIntervalRange(inputImage);
 			pepperValue = range.getMin();
 			saltValue = range.getMax();
+			RealType<?> t = inputImage.firstElement();
 			@SuppressWarnings({"unchecked","rawtypes"})
 			final ComputeMinMax<? extends RealType<?>> cmm =
-					new ComputeMinMax(inputImage);
+				new ComputeMinMax(inputImage, t.createVariable(), t.createVariable());
 				cmm.process();
 				pepperValue = cmm.getMin().getRealDouble();
 				saltValue = cmm.getMax().getRealDouble();
