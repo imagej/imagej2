@@ -167,9 +167,22 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 	}
 
 	@Override
+	public void initialize(final ScriptEngine engine, final String fileName,
+		final Writer writer, final Writer errorWriter)
+	{
+		engine.put(ScriptEngine.FILENAME, fileName);
+		engine.put(CONTEXT, getContext());
+		final ScriptContext context = engine.getContext();
+		if (writer != null) context.setWriter(writer);
+		if (writer != null) context.setErrorWriter(errorWriter);
+	}
+
+	@Override
 	public boolean isCompiledLanguage(ScriptEngineFactory language) {
 		return false;
 	}
+
+	// -- Helper methods --
 
 	/**
 	 * Parses input parameters in scripts.
@@ -256,17 +269,6 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 		for (final ScriptEngineFactory factory : manager.getEngineFactories()) {
 			scriptLanguageIndex.add(factory, true);
 		}
-	}
-
-	@Override
-	public void initialize(final ScriptEngine engine, final String fileName,
-		final Writer writer, final Writer errorWriter)
-	{
-		engine.put(ScriptEngine.FILENAME, fileName);
-		engine.put(CONTEXT, getContext());
-		final ScriptContext context = engine.getContext();
-		if (writer != null) context.setWriter(writer);
-		if (writer != null) context.setErrorWriter(errorWriter);
 	}
 
 }
