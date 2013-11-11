@@ -67,8 +67,7 @@ import org.scijava.service.Service;
 import org.scijava.util.FileUtils;
 
 /**
- * A service discovering all available script languages and convenience methods
- * to interact with them
+ * Default service for working with scripting languages.
  * 
  * @author Johannes Schindelin
  */

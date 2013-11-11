@@ -49,8 +49,9 @@ import javax.script.ScriptException;
 import org.scijava.plugin.SingletonService;
 
 /**
- * A service discovering all available script languages and convenience methods
- * to interact with them
+ * Interface for service that works with scripting languages. This service
+ * discovers available scripting languages, and provides convenience methods to
+ * interact with them.
  * 
  * @author Johannes Schindelin
  */
