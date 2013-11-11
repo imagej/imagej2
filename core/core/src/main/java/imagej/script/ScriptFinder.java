@@ -75,6 +75,8 @@ public class ScriptFinder extends AbstractContextual {
 
 	private int scriptCount;
 
+	// -- ScriptFinder methods --
+
 	/**
 	 * Discovers the scripts.
 	 * 
@@ -131,6 +133,8 @@ public class ScriptFinder extends AbstractContextual {
 			}
 		}
 	}
+
+	// -- Helper methods --
 
 	private MenuPath
 		subMenuPath(final MenuPath menuPath, final String subMenuName)
