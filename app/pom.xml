@@ -60,6 +60,12 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-scripting-javascript</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-scripting-jruby</artifactId>
 			<version>${project.version}</version>
 			<scope>runtime</scope>
