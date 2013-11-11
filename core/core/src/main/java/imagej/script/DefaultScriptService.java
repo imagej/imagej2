@@ -262,11 +262,7 @@ public class DefaultScriptService extends
 
 	private void reloadScriptLanguages() {
 		scriptLanguageIndex.clear();
-		for (final PluginInfo<ScriptLanguage> item :
-			pluginService.getPluginsOfType(ScriptLanguage.class))
-		{
-			final ScriptEngineFactory language = pluginService.createInstance(item);
-			if (language == null) continue;
+		for (final ScriptLanguage language : getInstances()) {
 			scriptLanguageIndex.add(language, false);
 		}
 
