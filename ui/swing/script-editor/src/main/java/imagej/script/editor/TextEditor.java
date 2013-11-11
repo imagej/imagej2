@@ -358,10 +358,6 @@ public class TextEditor extends JFrame implements ActionListener,
 		for (final ScriptLanguage language : list) {
 			String name = language == null ? "None" : language.getLanguageName();
 
-			if (name.equals("ECMAScript")) {
-				name = "Javascript";
-			}
-
 			JRadioButtonMenuItem item = new JRadioButtonMenuItem(name);
 			if (language == null) {
 				noneLanguageItem = item;
