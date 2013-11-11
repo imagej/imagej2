@@ -55,14 +55,14 @@ public abstract class AbstractScriptLanguage implements ScriptLanguage {
 	// -- (Possibly) unsupported operations --
 
 	@Override
-	public String getMethodCallSyntax(final String object, final String method,
+	public String getMethodCallSyntax(final String obj, final String m,
 		final String... args)
 	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public String getOutputStatement(final String arg0) {
+	public String getOutputStatement(final String toDisplay) {
 		throw new UnsupportedOperationException();
 	}
 
