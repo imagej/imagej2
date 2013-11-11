@@ -46,7 +46,7 @@ import javax.script.ScriptEngine;
 import org.scijava.plugin.Plugin;
 
 /**
- * An adapter of the Clojure interpreter to ImageJ's scripting interfaces
+ * An adapter of the Clojure interpreter to ImageJ's scripting interfaces.
  * 
  * @author Johannes Schindelin
  * @see ScriptEngine
