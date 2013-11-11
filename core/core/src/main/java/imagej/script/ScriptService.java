@@ -80,22 +80,31 @@ public interface ScriptService extends SingletonService<ScriptLanguage> {
 	 */
 	List<ScriptEngineFactory> getLanguages();
 
+	/** TODO */
 	ScriptEngineFactory getByFileExtension(final String fileExtension);
 
+	/** TODO */
 	ScriptEngineFactory getByName(final String name);
 
+	/** TODO */
 	Object eval(final File file) throws FileNotFoundException,
 		ScriptException;
 
+	/** TODO */
 	Object eval(final String filename, final Reader reader)
 			throws IOException, ScriptException;
 
+	/** TODO */
 	boolean canHandleFile(final File file);
+
+	/** TODO */
 	boolean canHandleFile(final String fileName);
 
+	/** TODO */
 	void initialize(final ScriptEngine engine, final String fileName,
 			final Writer writer, final Writer errorWriter);
 
+	/** TODO */
 	boolean isCompiledLanguage(ScriptEngineFactory currentLanguage);
 
 }
