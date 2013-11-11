@@ -46,61 +46,56 @@ import javax.script.ScriptEngineFactory;
 import org.scijava.util.FileUtils;
 
 /**
- * Data structure for managing registered script languages.
+ * Data structure for managing registered scripting languages.
  * 
  * @author Johannes Schindelin
+ * @author Curtis Rueden
  */
-public class ScriptLanguageIndex extends HashSet<ScriptEngineFactory> {
+public class ScriptLanguageIndex extends HashSet<ScriptLanguage> {
 
 	private static final long serialVersionUID = 1L;
 
-	private final Map<String, ScriptEngineFactory> byFileExtension =
-		new HashMap<String, ScriptEngineFactory>();
+	private final Map<String, ScriptLanguage> byFileExtension =
+		new HashMap<String, ScriptLanguage>();
 
-	private final Map<String, ScriptEngineFactory> byName =
-		new HashMap<String, ScriptEngineFactory>();
+	private final Map<String, ScriptLanguage> byName =
+		new HashMap<String, ScriptLanguage>();
 
-	@Override
-	public boolean add(final ScriptEngineFactory language) {
-		return add(language, false);
-	}
-
-	public boolean add(final ScriptEngineFactory language, final boolean gently) {
-		for (final String fileExtension : language.getExtensions()) {
-			if ("".equals(fileExtension)) continue;
-			if (byFileExtension.containsKey(fileExtension)) {
-				if (gently) continue;
-				final String previous =
-					byFileExtension.get(fileExtension).getEngineName();
-				throw new IllegalArgumentException(
-					"Duplicate script languages for file extension " + fileExtension +
-						": " + language.getEngineName() + " vs " + previous);
-			}
-			byFileExtension.put(fileExtension, language);
-		}
-
-		final String name = language.getLanguageName();
-		if (byName.containsKey(name)) {
+	public boolean add(final ScriptEngineFactory factory, final boolean gently) {
+		final String duplicateName = checkDuplicate(factory);
+		if (duplicateName != null) {
 			if (gently) return false;
-			final String previous = byName.get(name).getEngineName();
-			throw new IllegalArgumentException(
-				"Duplicate script languages for name " + name + ": " +
-					language.getEngineName() + " vs " + previous);
+			throw new IllegalArgumentException("Duplicate script language '" +
+				duplicateName + "': existing=" +
+				byName.get(duplicateName).getClass().getName() + ", new=" +
+				factory.getClass().getName());
 		}
-		byName.put(name, language);
+
+		final ScriptLanguage language = wrap(factory);
+
+		// add language names
+		for (final String name : language.getNames()) {
+			byName.put(name, language);
+		}
+
+		// add file extensions
+		for (final String extension : language.getExtensions()) {
+			if ("".equals(extension)) continue;
+			byFileExtension.put(extension, language);
+		}
 
 		return super.add(language);
 	}
 
-	public ScriptEngineFactory getByFileExtension(final String fileExtension) {
+	public ScriptLanguage getByFileExtension(final String fileExtension) {
 		return byFileExtension.get(fileExtension);
 	}
 
-	public ScriptEngineFactory getByName(final String name) {
+	public ScriptLanguage getByName(final String name) {
 		return byName.get(name);
 	}
 
-	public String[] getFileExtensions(final ScriptEngineFactory language) {
+	public String[] getFileExtensions(final ScriptLanguage language) {
 		final List<String> extensions = language.getExtensions();
 		return extensions.toArray(new String[extensions.size()]);
 	}
@@ -115,6 +110,29 @@ public class ScriptLanguageIndex extends HashSet<ScriptEngineFactory> {
 		final String fileExtension = FileUtils.getExtension(fileName);
 		if ("".equals(fileExtension)) return false;
 		return byFileExtension.containsKey(fileExtension);
+	}
+
+	// -- Collection methods --
+
+	@Override
+	public boolean add(final ScriptLanguage language) {
+		return add(language, false);
+	}
+
+	// -- Helper methods --
+
+	private String checkDuplicate(final ScriptEngineFactory factory) {
+		for (final String name : factory.getNames()) {
+			if (byName.containsKey(name)) {
+				return name;
+			}
+		}
+		return null;
+	}
+
+	private ScriptLanguage wrap(final ScriptEngineFactory factory) {
+		if (factory instanceof ScriptLanguage) return (ScriptLanguage) factory;
+		return new AdaptedScriptLanguage(factory);
 	}
 
 }
