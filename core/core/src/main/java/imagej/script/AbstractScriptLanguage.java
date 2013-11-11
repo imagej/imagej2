@@ -132,9 +132,14 @@ public abstract class AbstractScriptLanguage implements ScriptLanguage {
 	// -- Helper methods --
 
 	private String inferNameFromClassName() {
-		final String className = getClass().getName().replace('_', ' ');
-		final int dot = className.lastIndexOf('.');
-		return className.substring(dot + 1);
+		String className = getClass().getSimpleName();
+		if (className.endsWith("ScriptLanguage")) {
+			// strip off "ScriptLanguage" suffix
+			className = className.substring(0, className.length() - 14);
+		}
+		// replace underscores with spaces
+		className = className.replace('_', ' ');
+		return className;
 	}
 
 }
