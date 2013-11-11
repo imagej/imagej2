@@ -68,12 +68,12 @@ public class ScriptFinder extends AbstractContextual {
 	@Parameter
 	private LogService log;
 
+	private int scriptCount;
+
 	public ScriptFinder(final ScriptService scriptService) {
 		this.scriptService = scriptService;
 		setContext(scriptService.getContext());
 	}
-
-	private int scriptCount;
 
 	// -- ScriptFinder methods --
 
