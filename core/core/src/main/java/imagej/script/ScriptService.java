@@ -58,9 +58,9 @@ import org.scijava.plugin.SingletonService;
 public interface ScriptService extends SingletonService<ScriptLanguage> {
 
 	/**
-	 * The script service puts the current ImageJ context into the engine's bindings
-	 * using this key. That way, scripts can access the context by accessing the global
-	 * variable of that name.
+	 * The script service puts the current ImageJ context into the engine's
+	 * bindings using this key. That way, scripts can access the context by
+	 * accessing the global variable of that name.
 	 */
 	final static String CONTEXT = "IJ";
 
@@ -88,12 +88,11 @@ public interface ScriptService extends SingletonService<ScriptLanguage> {
 	ScriptEngineFactory getByName(final String name);
 
 	/** TODO */
-	Object eval(final File file) throws FileNotFoundException,
-		ScriptException;
+	Object eval(final File file) throws FileNotFoundException, ScriptException;
 
 	/** TODO */
-	Object eval(final String filename, final Reader reader)
-			throws IOException, ScriptException;
+	Object eval(final String filename, final Reader reader) throws IOException,
+		ScriptException;
 
 	/** TODO */
 	boolean canHandleFile(final File file);
@@ -103,10 +102,9 @@ public interface ScriptService extends SingletonService<ScriptLanguage> {
 
 	/** TODO */
 	void initialize(final ScriptEngine engine, final String fileName,
-			final Writer writer, final Writer errorWriter);
+		final Writer writer, final Writer errorWriter);
 
 	/** TODO */
 	boolean isCompiledLanguage(ScriptEngineFactory currentLanguage);
 
 }
-
