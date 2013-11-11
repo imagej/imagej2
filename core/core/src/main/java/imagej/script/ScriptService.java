@@ -66,6 +66,18 @@ public interface ScriptService extends SingletonService<ScriptLanguage> {
 	/** Gets the index of available script languages. */
 	ScriptLanguageIndex getIndex();
 
+	/**
+	 * Gets the available scripting languages, including
+	 * {@link ScriptEngineFactory} instances available from the Java scripting
+	 * framework itself.
+	 * <p>
+	 * This method is similar to {@link #getInstances()}, except that
+	 * {@link #getInstances()} only returns {@link ScriptLanguage} instances. A
+	 * {@link ScriptLanguage} is an ImageJ plugin that implements
+	 * {@link ScriptEngineFactory} but also provides additional functionality on
+	 * top.
+	 * </p>
+	 */
 	List<ScriptEngineFactory> getLanguages();
 
 	ScriptEngineFactory getByFileExtension(final String fileExtension);
