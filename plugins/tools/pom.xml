@@ -11,8 +11,7 @@
 	<artifactId>ij-tools</artifactId>
 
 	<name>ImageJ Plugins: Tools</name>
-	<description>The basic built-in tools for ImageJ. These tools take the form of toolbar icons accessible through the user interface.</description>
-
+	<description>Built-in UI-independent tools for ImageJ. These tools take the form of toolbar icons accessible through the user interface.</description>
 
 	<dependencies>
 		<dependency>

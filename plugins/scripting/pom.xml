@@ -11,8 +11,8 @@
 	<artifactId>pom-ij-scripting</artifactId>
 	<packaging>pom</packaging>
 
-	<name>ImageJ Plugins: Scripting Languages</name>
-	<description>Script interpreters for ImageJ.</description>
+	<name>ImageJ POM: Scripting Languages</name>
+	<description>Built-in script interpreters for ImageJ.</description>
 
 	<modules>
 		<module>beanshell</module>

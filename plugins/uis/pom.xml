@@ -12,7 +12,7 @@
 	<packaging>pom</packaging>
 
 	<name>ImageJ POM: UIs</name>
-	<description>A collection of built-in user interfaces for ImageJ.</description>
+	<description>Built-in user interfaces for ImageJ.</description>
 
 	<modules>
 		<module>awt</module>
