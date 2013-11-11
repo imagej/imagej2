@@ -112,7 +112,7 @@ public class ScriptFinder extends AbstractContextual {
 		// TODO: sort?
 		final boolean isTopLevel = menuPath == null;
 		final MenuPath path = isTopLevel ? new MenuPath("Plugins") : menuPath;
-		for (final File file : fileList)
+		for (final File file : fileList) {
 			if (file.isDirectory()) {
 				if (isTopLevel && file.getName().equals(SPECIAL_SUBDIRECTORY)) {
 					discoverScripts(plugins, file, new MenuPath());
@@ -129,6 +129,7 @@ public class ScriptFinder extends AbstractContextual {
 				plugins.add(createEntry(file, subMenuPath(path, file.getName())));
 				scriptCount++;
 			}
+		}
 	}
 
 	private MenuPath
