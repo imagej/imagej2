@@ -98,7 +98,6 @@ public class DefaultScriptService extends
 		final ArrayList<CommandInfo> plugins = new ArrayList<CommandInfo>();
 		new ScriptFinder(this).findPlugins(plugins);
 		pluginService.addPlugins(plugins);
-
 	}
 
 	// -- ScriptService methods --
