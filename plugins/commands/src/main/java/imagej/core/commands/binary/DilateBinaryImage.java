@@ -61,7 +61,7 @@ public class DilateBinaryImage extends AbstractMorphOpsCommand {
 
 	@Override
 	protected void updateDataset(Dataset ds) {
-		Dilate<Img<BitType>> op = new Dilate<Img<BitType>>(getConnectedType(), 1);
+		Dilate op = new Dilate(getConnectedType(), 1);
 		Dataset copy = ds.duplicate();
 		Img<BitType> copyData = (Img<BitType>) copy.getImgPlus();
 		Img<BitType> resultData = (Img<BitType>) ds.getImgPlus();
