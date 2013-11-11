@@ -35,11 +35,8 @@
 
 package imagej.core.scripting.jruby;
 
-import imagej.script.AbstractScriptLanguage;
+import imagej.script.AdaptedScriptLanguage;
 import imagej.script.ScriptLanguage;
-
-import java.util.Arrays;
-import java.util.List;
 
 import javax.script.ScriptEngine;
 
@@ -52,15 +49,15 @@ import org.scijava.plugin.Plugin;
  * @see ScriptEngine
  */
 @Plugin(type = ScriptLanguage.class)
-public class JRubyScriptLanguage extends AbstractScriptLanguage {
+public class JRubyScriptLanguage extends AdaptedScriptLanguage {
 
-	@Override
-	public List<String> getExtensions() {
-		return Arrays.asList("rb");
+	public JRubyScriptLanguage() {
+		super("jruby");
 	}
 
 	@Override
 	public ScriptEngine getScriptEngine() {
+		// TODO: Consider adapting the wrapped ScriptEngineFactory's ScriptEngine.
 		return new JRubyScriptEngine();
 	}
 
