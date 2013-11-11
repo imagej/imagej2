@@ -46,6 +46,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
+import org.scijava.plugin.Plugin;
 import org.scijava.plugin.SingletonService;
 
 /**
@@ -68,15 +69,13 @@ public interface ScriptService extends SingletonService<ScriptLanguage> {
 	ScriptLanguageIndex getIndex();
 
 	/**
-	 * Gets the available scripting languages, including
+	 * Gets the available scripting languages, including wrapped
 	 * {@link ScriptEngineFactory} instances available from the Java scripting
 	 * framework itself.
 	 * <p>
 	 * This method is similar to {@link #getInstances()}, except that
-	 * {@link #getInstances()} only returns {@link ScriptLanguage} instances. A
-	 * {@link ScriptLanguage} is an ImageJ plugin that implements
-	 * {@link ScriptEngineFactory} but also provides additional functionality on
-	 * top.
+	 * {@link #getInstances()} only returns {@link ScriptLanguage} subclasses
+	 * annotated with @{@link Plugin}.
 	 * </p>
 	 */
 	List<ScriptEngineFactory> getLanguages();
