@@ -138,13 +138,15 @@ public class DefaultScriptService extends
 		}
 		final ScriptEngine engine = language.getScriptEngine();
 		initialize(engine, file.getPath(), null, null);
-		final Reader reader = parseInputs(engine, file.getPath(), new FileReader(file));
+		final Reader reader =
+			parseInputs(engine, file.getPath(), new FileReader(file));
 		return engine.eval(reader);
 	}
 
 	@Override
 	public Object eval(final String filename, final Reader reader)
-			throws IOException, ScriptException {
+		throws IOException, ScriptException
+	{
 		final String fileExtension = FileUtils.getExtension(filename);
 		final ScriptEngineFactory language = getByFileExtension(fileExtension);
 		if (language == null) {
@@ -178,7 +180,7 @@ public class DefaultScriptService extends
 	}
 
 	@Override
-	public boolean isCompiledLanguage(ScriptEngineFactory language) {
+	public boolean isCompiledLanguage(final ScriptEngineFactory language) {
 		return false;
 	}
 
@@ -205,31 +207,30 @@ public class DefaultScriptService extends
 	 * </code>
 	 * </pre>
 	 * 
-	 * i.e. in the form <code>&#x40;&lt;type&gt; &lt;name&gt;</code>. These
-	 * input parameters will be parsed and filled just like @{@link Parameter}
+	 * i.e. in the form <code>&#x40;&lt;type&gt; &lt;name&gt;</code>. These input
+	 * parameters will be parsed and filled just like @{@link Parameter}
 	 * -annotated fields in {@link Command}s.
 	 * </p>
 	 * 
-	 * @param engine
-	 *            the script engine whose {@link Bindings} need to be set
-	 * @param reader
-	 *            the script
+	 * @param engine the script engine whose {@link Bindings} need to be set
+	 * @param reader the script
 	 * @return a reader
 	 * @throws ScriptException
 	 */
-	private Reader parseInputs(final ScriptEngine engine, final String title, final Reader reader) throws ScriptException {
+	private Reader parseInputs(final ScriptEngine engine, final String title,
+		final Reader reader) throws ScriptException
+	{
 		final BufferedReader buffered = new BufferedReader(reader, 16384);
 		try {
 			buffered.mark(16384);
 			final ScriptInputs inputs = new ScriptInputs(getContext(), title);
 			for (;;) {
 				final String line = buffered.readLine();
-				if (line == null)
-					break;
+				if (line == null) break;
 
-					// scan for lines containing an '@' stopping at the first line
-					// containing at least one alpha-numerical character but no '@'.
-				int at = line.indexOf('@');
+				// scan for lines containing an '@' stopping at the first line
+				// containing at least one alpha-numerical character but no '@'.
+				final int at = line.indexOf('@');
 				if (at < 0) {
 					if (line.matches(".*[A-Za-z0-9].*")) break;
 					continue;
@@ -240,18 +241,22 @@ public class DefaultScriptService extends
 				commandService = getContext().getService(CommandService.class);
 				try {
 					commandService.run(inputs).get();
-				} catch (InterruptedException e) {
-					throw new ScriptException(e);
-				} catch (ExecutionException e) {
+				}
+				catch (final InterruptedException e) {
 					throw new ScriptException(e);
 				}
-				for (final Entry<String, Object> entry : inputs.getInputs().entrySet()) {
+				catch (final ExecutionException e) {
+					throw new ScriptException(e);
+				}
+				for (final Entry<String, Object> entry : inputs.getInputs().entrySet())
+				{
 					engine.put(entry.getKey(), entry.getValue());
 				}
 			}
 			buffered.reset();
 			return buffered;
-		} catch (IOException e) {
+		}
+		catch (final IOException e) {
 			log.warn("Could not parse input parameters", e);
 			return reader;
 		}
