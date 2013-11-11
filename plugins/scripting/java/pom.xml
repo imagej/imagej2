@@ -53,8 +53,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.build</packageName>
-							<mainClass>imagej.build.MiniMaven</mainClass>
+							<packageName>imagej.core.scripting.java</packageName>
 						</manifest>
 					</archive>
 				</configuration>
