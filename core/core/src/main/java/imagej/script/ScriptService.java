@@ -48,8 +48,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
-import org.scijava.log.LogService;
-import org.scijava.plugin.PluginService;
 
 /**
  * A service discovering all available script languages and convenience methods
@@ -67,10 +65,6 @@ public interface ScriptService extends ImageJService {
 	 * variable of that name.
 	 */
 	final static String CONTEXT = "IJ";
-
-	PluginService getPluginService();
-
-	LogService getLogService();
 
 	/** Gets the index of available script languages. */
 	ScriptLanguageIndex getIndex();

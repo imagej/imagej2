@@ -42,9 +42,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.scijava.AbstractContextual;
 import org.scijava.MenuEntry;
 import org.scijava.MenuPath;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 
 /**
  * Discovers scripts.
@@ -54,7 +56,7 @@ import org.scijava.log.LogService;
  * 
  * @author Johannes Schindelin
  */
-public class ScriptFinder {
+public class ScriptFinder extends AbstractContextual {
 
 	private static final String SCRIPT_PLUGIN_CLASS = ScriptPlugin.class
 		.getName();
@@ -62,11 +64,13 @@ public class ScriptFinder {
 	private static final String SPECIAL_SUBDIRECTORY = "Scripts";
 
 	private final ScriptService scriptService;
-	private final LogService log;
+
+	@Parameter
+	private LogService log;
 
 	public ScriptFinder(final ScriptService scriptService) {
 		this.scriptService = scriptService;
-		log = scriptService.getLogService();
+		setContext(scriptService.getContext());
 	}
 
 	private int scriptCount;

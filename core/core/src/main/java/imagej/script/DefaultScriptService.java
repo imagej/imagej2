@@ -105,11 +105,6 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 		return pluginService;
 	}
 
-	@Override
-	public LogService getLogService() {
-		return log;
-	}
-
 	/** Gets the index of available script languages. */
 	@Override
 	public ScriptLanguageIndex getIndex() {

@@ -43,6 +43,7 @@ import java.io.FileReader;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.FileUtils;
@@ -57,10 +58,13 @@ import org.scijava.util.FileUtils;
 public class ScriptPlugin implements Command {
 
 	@Parameter
-	protected ScriptService scriptService;
+	private ScriptService scriptService;
 
 	@Parameter
-	protected File file;
+	private LogService log;
+
+	@Parameter
+	private File file;
 
 	@Override
 	public void run() {
@@ -75,10 +79,10 @@ public class ScriptPlugin implements Command {
 			}
 		}
 		catch (final ScriptException e) {
-			scriptService.getLogService().error(e.getCause());
+			log.error(e.getCause());
 		}
 		catch (final Throwable e) {
-			scriptService.getLogService().error(e);
+			log.error(e);
 		}
 	}
 

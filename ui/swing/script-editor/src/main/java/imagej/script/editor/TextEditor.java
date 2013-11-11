@@ -117,7 +117,9 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.modes.JavaScriptTokenMaker;
 import org.fife.ui.rsyntaxtextarea.modes.JavaTokenMaker;
+import org.scijava.Context;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.util.FileUtils;
 
 /**
@@ -172,21 +174,23 @@ public class TextEditor extends JFrame implements ActionListener,
 	protected Position compileStartPosition;
 	protected ErrorHandler errorHandler;
 
-	protected final LogService log;
-	protected final PlatformService platformService;
-	protected final IOService ioService;
-	protected final CommandService commandService;
-	protected final ScriptService scriptService;
+	@Parameter
+	protected LogService log;
+	@Parameter
+	protected PlatformService platformService;
+	@Parameter
+	protected IOService ioService;
+	@Parameter
+	protected CommandService commandService;
+	@Parameter
+	protected ScriptService scriptService;
+
 	protected Map<ScriptEngineFactory, JRadioButtonMenuItem> languageMenuItems;
 	protected JRadioButtonMenuItem noneLanguageItem;
 
-	public TextEditor(ScriptService scriptService, PlatformService platformService, IOService ioService, CommandService commandService) {
+	public TextEditor(final Context context) {
 		super("Script Editor");
-		this.scriptService = scriptService;
-		log = scriptService.getLogService();
-		this.platformService = platformService;
-		this.ioService = ioService;
-		this.commandService = commandService;
+		context.inject(this);
 
 		// Initialize menu
 		int ctrl = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
