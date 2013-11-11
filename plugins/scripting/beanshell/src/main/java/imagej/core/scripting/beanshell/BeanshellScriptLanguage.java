@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.scripting.java;
+package imagej.core.scripting.beanshell;
 
 import imagej.script.AbstractScriptLanguage;
 import imagej.script.ScriptLanguage;
@@ -46,36 +46,22 @@ import javax.script.ScriptEngine;
 import org.scijava.plugin.Plugin;
 
 /**
- * TODO
+ * An adapter of the Beanshell interpreter to ImageJ's scripting interfaces
  * 
  * @author Johannes Schindelin
+ * @see ScriptEngine
  */
 @Plugin(type = ScriptLanguage.class)
-public class JavaEngineFactory extends AbstractScriptLanguage {
+public class BeanshellScriptLanguage extends AbstractScriptLanguage {
 
 	@Override
 	public List<String> getExtensions() {
-		return Arrays.asList("java", "xml");
-	}
-
-	@Override
-	public String getEngineName() {
-		return "MiniMaven";
-	}
-
-	@Override
-	public String getLanguageName() {
-		return "Java";
-	}
-
-	@Override
-	public List<String> getMimeTypes() {
-		return Arrays.asList("application/x-java");
+		return Arrays.asList("bsh", "bs");
 	}
 
 	@Override
 	public ScriptEngine getScriptEngine() {
-		return new JavaEngine();
+		return new BeanshellScriptEngine();
 	}
 
 }

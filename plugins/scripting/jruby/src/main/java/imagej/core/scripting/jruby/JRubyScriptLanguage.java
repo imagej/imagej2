@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.scripting.beanshell;
+package imagej.core.scripting.jruby;
 
 import imagej.script.AbstractScriptLanguage;
 import imagej.script.ScriptLanguage;
@@ -46,22 +46,22 @@ import javax.script.ScriptEngine;
 import org.scijava.plugin.Plugin;
 
 /**
- * An adapter of the Beanshell interpreter to ImageJ's scripting interfaces
+ * An adapter of the JRuby interpreter to ImageJ's scripting interfaces
  * 
  * @author Johannes Schindelin
  * @see ScriptEngine
  */
 @Plugin(type = ScriptLanguage.class)
-public class Beanshell extends AbstractScriptLanguage {
+public class JRubyScriptLanguage extends AbstractScriptLanguage {
 
 	@Override
 	public List<String> getExtensions() {
-		return Arrays.asList("bsh", "bs");
+		return Arrays.asList("rb");
 	}
 
 	@Override
 	public ScriptEngine getScriptEngine() {
-		return new BeanshellScriptEngine();
+		return new JRubyScriptEngine();
 	}
 
 }

@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.scripting.jython;
+package imagej.core.scripting.clojure;
 
 import imagej.script.AbstractScriptLanguage;
 import imagej.script.ScriptLanguage;
@@ -46,22 +46,22 @@ import javax.script.ScriptEngine;
 import org.scijava.plugin.Plugin;
 
 /**
- * An adapter of the Jython interpreter to ImageJ's scripting interfaces
+ * An adapter of the Clojure interpreter to ImageJ's scripting interfaces
  * 
  * @author Johannes Schindelin
  * @see ScriptEngine
  */
 @Plugin(type = ScriptLanguage.class)
-public class Jython extends AbstractScriptLanguage {
+public class ClojureScriptLanguage extends AbstractScriptLanguage {
 
 	@Override
 	public List<String> getExtensions() {
-		return Arrays.asList("py");
+		return Arrays.asList("clj");
 	}
 
 	@Override
 	public ScriptEngine getScriptEngine() {
-		return new JythonScriptEngine();
+		return new ClojureScriptEngine();
 	}
 
 }

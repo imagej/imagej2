@@ -37,7 +37,7 @@ package imagej.core.scripting.java;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
-import imagej.core.scripting.java.JavaEngineFactory;
+import imagej.core.scripting.java.JavaScriptLanguage;
 import imagej.test.TestUtils;
 
 import java.io.File;
@@ -135,7 +135,7 @@ public class JavaEngineTest {
 				"\t}\n" +
 				"}";
 
-		ScriptEngine miniMaven = new JavaEngineFactory().getScriptEngine();
+		ScriptEngine miniMaven = new JavaScriptLanguage().getScriptEngine();
 		boolean result = false;
 		try {
 			miniMaven.eval(source);
@@ -163,7 +163,7 @@ public class JavaEngineTest {
 	}
 
 	private ScriptEngine evalJava(final File file) throws ScriptException {
-		ScriptEngine miniMaven = new JavaEngineFactory().getScriptEngine();
+		ScriptEngine miniMaven = new JavaScriptLanguage().getScriptEngine();
 		miniMaven.put(ScriptEngine.FILENAME, file.getPath());
 		final ScriptContext context = miniMaven.getContext();
 		context.setWriter(new OutputStreamWriter(System.out));

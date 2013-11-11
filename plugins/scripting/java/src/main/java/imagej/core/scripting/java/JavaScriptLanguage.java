@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.scripting.jruby;
+package imagej.core.scripting.java;
 
 import imagej.script.AbstractScriptLanguage;
 import imagej.script.ScriptLanguage;
@@ -46,22 +46,36 @@ import javax.script.ScriptEngine;
 import org.scijava.plugin.Plugin;
 
 /**
- * An adapter of the JRuby interpreter to ImageJ's scripting interfaces
+ * TODO
  * 
  * @author Johannes Schindelin
- * @see ScriptEngine
  */
 @Plugin(type = ScriptLanguage.class)
-public class JRuby extends AbstractScriptLanguage {
+public class JavaScriptLanguage extends AbstractScriptLanguage {
 
 	@Override
 	public List<String> getExtensions() {
-		return Arrays.asList("rb");
+		return Arrays.asList("java", "xml");
+	}
+
+	@Override
+	public String getEngineName() {
+		return "MiniMaven";
+	}
+
+	@Override
+	public String getLanguageName() {
+		return "Java";
+	}
+
+	@Override
+	public List<String> getMimeTypes() {
+		return Arrays.asList("application/x-java");
 	}
 
 	@Override
 	public ScriptEngine getScriptEngine() {
-		return new JRubyScriptEngine();
+		return new JavaEngine();
 	}
 
 }
