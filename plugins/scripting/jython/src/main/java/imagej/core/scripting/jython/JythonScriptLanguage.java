@@ -56,6 +56,12 @@ public class JythonScriptLanguage extends AdaptedScriptLanguage {
 	}
 
 	@Override
+	public String getLanguageName() {
+		// NB: Must override, or else the name is "python" in small case.
+		return "Python";
+	}
+
+	@Override
 	public ScriptEngine getScriptEngine() {
 		// TODO: Consider adapting the wrapped ScriptEngineFactory's ScriptEngine.
 		return new JythonScriptEngine();
