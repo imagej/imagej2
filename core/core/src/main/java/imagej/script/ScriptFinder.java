@@ -76,7 +76,7 @@ public class ScriptFinder extends AbstractContextual {
 	private int scriptCount;
 
 	/**
-	 * Discover the scripts
+	 * Discovers the scripts.
 	 * 
 	 * @param plugins The collection to which the discovered scripts are added
 	 */
@@ -95,7 +95,7 @@ public class ScriptFinder extends AbstractContextual {
 	}
 
 	/**
-	 * Look through a directory, discovering and adding scripts
+	 * Looks through a directory, discovering and adding scripts.
 	 * 
 	 * @param plugins The collection to which the discovered scripts are added
 	 * @param directory The directory in which to look for scripts recursively
