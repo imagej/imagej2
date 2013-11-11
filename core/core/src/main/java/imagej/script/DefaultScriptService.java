@@ -237,7 +237,7 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 		}
 	}
 
-	public void reloadScriptLanguages() {
+	private void reloadScriptLanguages() {
 		scriptLanguageIndex.clear();
 		for (final PluginInfo<ScriptLanguage> item :
 			pluginService.getPluginsOfType(ScriptLanguage.class))
