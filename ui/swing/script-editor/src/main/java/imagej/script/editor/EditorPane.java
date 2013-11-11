@@ -35,6 +35,8 @@
 
 package imagej.script.editor;
 
+import imagej.script.ScriptLanguage;
+
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -83,7 +85,7 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 	String fallBackBaseName;
 	File file, gitDirectory;
 	long fileLastModified;
-	ScriptEngineFactory currentLanguage;
+	ScriptLanguage currentLanguage;
 	Gutter gutter;
 	IconGroup iconGroup;
 	int modifyCount;
@@ -340,7 +342,7 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 		setLanguage(frame.scriptService.getByFileExtension(FileUtils.getExtension(name)));
 	}
 
-	protected void setLanguage(ScriptEngineFactory language) {
+	protected void setLanguage(ScriptLanguage language) {
 		String languageName;
 		String defaultExtension;
 		if (language == null) {

@@ -78,13 +78,13 @@ public interface ScriptService extends SingletonService<ScriptLanguage> {
 	 * annotated with @{@link Plugin}.
 	 * </p>
 	 */
-	List<ScriptEngineFactory> getLanguages();
+	List<ScriptLanguage> getLanguages();
 
 	/** TODO */
-	ScriptEngineFactory getByFileExtension(final String fileExtension);
+	ScriptLanguage getByFileExtension(final String fileExtension);
 
 	/** TODO */
-	ScriptEngineFactory getByName(final String name);
+	ScriptLanguage getByName(final String name);
 
 	/** TODO */
 	Object eval(final File file) throws FileNotFoundException, ScriptException;
@@ -104,6 +104,6 @@ public interface ScriptService extends SingletonService<ScriptLanguage> {
 		final Writer writer, final Writer errorWriter);
 
 	/** TODO */
-	boolean isCompiledLanguage(ScriptEngineFactory currentLanguage);
+	boolean isCompiledLanguage(ScriptLanguage currentLanguage);
 
 }

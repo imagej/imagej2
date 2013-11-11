@@ -38,6 +38,7 @@ package imagej.script.editor;
 import imagej.command.CommandService;
 import imagej.io.IOService;
 import imagej.platform.PlatformService;
+import imagej.script.ScriptLanguage;
 import imagej.script.ScriptService;
 import imagej.script.editor.command.ChooseFontSize;
 import imagej.script.editor.command.ChooseTabSize;
@@ -352,9 +353,9 @@ public class TextEditor extends JFrame implements ActionListener,
 		JMenu languages = new JMenu("Language");
 		languages.setMnemonic(KeyEvent.VK_L);
 		ButtonGroup group = new ButtonGroup();
-		List<ScriptEngineFactory> list = scriptService.getLanguages();
+		List<ScriptLanguage> list = scriptService.getLanguages();
 		list.add(null);
-		for (final ScriptEngineFactory language : list) {
+		for (final ScriptLanguage language : list) {
 			String name = language == null ? "None" : language.getLanguageName();
 
 			if (name.equals("ECMAScript")) {
@@ -562,7 +563,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		return tab == null ? null : tab.editorPane;
 	}
 
-	public ScriptEngineFactory getCurrentLanguage() {
+	public ScriptLanguage getCurrentLanguage() {
 		return getEditorPane().currentLanguage;
 	}
 
@@ -691,7 +692,7 @@ public class TextEditor extends JFrame implements ActionListener,
 
 			int dot = url.lastIndexOf('.');
 			if (dot > 0) {
-				ScriptEngineFactory language = scriptService.getByFileExtension(url.substring(dot));
+				ScriptLanguage language = scriptService.getByFileExtension(url.substring(dot));
 				if (language != null)
 					setLanguage(language);
 			}
@@ -1245,7 +1246,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		}
 
 		/** Invoke in the context of the event dispatch thread. */
-		private void execute(final ScriptEngineFactory language,
+		private void execute(final ScriptLanguage language,
 				final boolean selectionOnly) throws IOException {
 			prepare();
 			final JTextAreaWriter output =
@@ -1484,7 +1485,7 @@ public class TextEditor extends JFrame implements ActionListener,
 
 	public boolean makeJar(boolean includeSources) {
 		File file = getEditorPane().file;
-		ScriptEngineFactory currentLanguage = getCurrentLanguage();
+		ScriptLanguage currentLanguage = getCurrentLanguage();
 		if ((file == null || scriptService.isCompiledLanguage(currentLanguage))
 				&& !handleUnsavedChanges(true))
 			return false;
@@ -1528,7 +1529,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		List<String> names = new ArrayList<String>();
 		File tmpDir = null, file = getEditorPane().file;
 		String sourceName = null;
-		ScriptEngineFactory currentLanguage = getCurrentLanguage();
+		ScriptLanguage currentLanguage = getCurrentLanguage();
 		if (currentLanguage == null || !(currentLanguage.getLanguageName().equals("Java")))
 			sourceName = file.getName();
 		if (currentLanguage != null) try {
@@ -1665,12 +1666,12 @@ public class TextEditor extends JFrame implements ActionListener,
 		directory.delete();
 	}
 
-	void setLanguage(ScriptEngineFactory language) {
+	void setLanguage(ScriptLanguage language) {
 		getEditorPane().setLanguage(language);
 		updateTabAndFontSize(true);
 	}
 
-	void updateLanguageMenu(ScriptEngineFactory language) {
+	void updateLanguageMenu(ScriptLanguage language) {
 		JMenuItem item = languageMenuItems.get(language);
 		if (item == null)
 			item = noneLanguageItem;
@@ -1949,7 +1950,7 @@ public class TextEditor extends JFrame implements ActionListener,
 	}
 
 	public void runText(final boolean selectionOnly) {
-		final ScriptEngineFactory currentLanguage = getCurrentLanguage();
+		final ScriptLanguage currentLanguage = getCurrentLanguage();
 		if (scriptService.isCompiledLanguage(currentLanguage)) {
 			if (selectionOnly) {
 				error("Cannot run selection of compiled language!");

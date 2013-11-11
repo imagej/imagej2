@@ -112,17 +112,17 @@ public class DefaultScriptService extends
 	}
 
 	@Override
-	public List<ScriptEngineFactory> getLanguages() {
-		return new ArrayList<ScriptEngineFactory>(scriptLanguageIndex);
+	public List<ScriptLanguage> getLanguages() {
+		return new ArrayList<ScriptLanguage>(scriptLanguageIndex);
 	}
 
 	@Override
-	public ScriptEngineFactory getByFileExtension(final String fileExtension) {
+	public ScriptLanguage getByFileExtension(final String fileExtension) {
 		return scriptLanguageIndex.getByFileExtension(fileExtension);
 	}
 
 	@Override
-	public ScriptEngineFactory getByName(final String name) {
+	public ScriptLanguage getByName(final String name) {
 		return scriptLanguageIndex.getByName(name);
 	}
 
@@ -131,7 +131,7 @@ public class DefaultScriptService extends
 		ScriptException
 	{
 		final String fileExtension = FileUtils.getExtension(file);
-		final ScriptEngineFactory language = getByFileExtension(fileExtension);
+		final ScriptLanguage language = getByFileExtension(fileExtension);
 		if (language == null) {
 			throw new UnsupportedOperationException(
 				"Could not determine language for file extension " + fileExtension);
@@ -148,7 +148,7 @@ public class DefaultScriptService extends
 		throws IOException, ScriptException
 	{
 		final String fileExtension = FileUtils.getExtension(filename);
-		final ScriptEngineFactory language = getByFileExtension(fileExtension);
+		final ScriptLanguage language = getByFileExtension(fileExtension);
 		if (language == null) {
 			throw new UnsupportedOperationException(
 				"Could not determine language for file extension " + fileExtension);
@@ -180,7 +180,7 @@ public class DefaultScriptService extends
 	}
 
 	@Override
-	public boolean isCompiledLanguage(final ScriptEngineFactory language) {
+	public boolean isCompiledLanguage(final ScriptLanguage language) {
 		return false;
 	}
 
