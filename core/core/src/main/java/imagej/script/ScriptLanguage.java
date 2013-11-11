@@ -40,6 +40,7 @@ import imagej.plugin.ImageJPlugin;
 import javax.script.ScriptEngineFactory;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.SingletonPlugin;
 
 /**
  * The base interface for script language adapters.
@@ -53,6 +54,8 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Johannes Schindelin
  */
-public interface ScriptLanguage extends ScriptEngineFactory, ImageJPlugin {
+public interface ScriptLanguage extends ScriptEngineFactory, SingletonPlugin,
+	ImageJPlugin
+{
 	// just so we can annotate the factories with @Plugin...
 }

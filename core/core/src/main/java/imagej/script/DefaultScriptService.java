@@ -35,6 +35,7 @@
 
 package imagej.script;
 
+import imagej.command.Command;
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
 
@@ -58,11 +59,11 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.scijava.log.LogService;
+import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 import org.scijava.util.FileUtils;
 
@@ -73,7 +74,9 @@ import org.scijava.util.FileUtils;
  * @author Johannes Schindelin
  */
 @Plugin(type = Service.class)
-public class DefaultScriptService extends AbstractService implements ScriptService {
+public class DefaultScriptService extends
+	AbstractSingletonService<ScriptLanguage> implements ScriptService
+{
 
 	@Parameter
 	private PluginService pluginService;
@@ -180,6 +183,13 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 	@Override
 	public boolean isCompiledLanguage(ScriptEngineFactory language) {
 		return false;
+	}
+
+	// -- PTService methods --
+
+	@Override
+	public Class<ScriptLanguage> getPluginType() {
+		return ScriptLanguage.class;
 	}
 
 	// -- Helper methods --
