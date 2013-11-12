@@ -65,7 +65,7 @@ public class ScriptLanguageIndex extends HashSet<ScriptLanguage> {
 		final String duplicateName = checkDuplicate(factory);
 		if (duplicateName != null) {
 			if (gently) return false;
-			throw new IllegalArgumentException("Duplicate script language '" +
+			throw new IllegalArgumentException("Duplicate scripting language '" +
 				duplicateName + "': existing=" +
 				byName.get(duplicateName).getClass().getName() + ", new=" +
 				factory.getClass().getName());

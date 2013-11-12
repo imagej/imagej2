@@ -65,7 +65,7 @@ public interface ScriptService extends SingletonService<ScriptLanguage> {
 	 */
 	final static String CONTEXT = "IJ";
 
-	/** Gets the index of available script languages. */
+	/** Gets the index of available scripting languages. */
 	ScriptLanguageIndex getIndex();
 
 	/**

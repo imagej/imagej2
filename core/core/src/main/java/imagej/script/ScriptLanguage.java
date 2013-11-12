@@ -43,13 +43,13 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.SingletonPlugin;
 
 /**
- * The base interface for script language adapters.
+ * The base interface for scripting language adapters.
  * <p>
  * Script languages discoverable at runtime must implement this interface and be
  * annotated with @{@link Plugin} with attribute {@link Plugin#type()} =
- * {@link ScriptLanguage}.class. While it possible to create a script language
- * adapter merely by implementing this interface, it is encouraged to instead
- * extend {@link AbstractScriptLanguage}, for convenience.
+ * {@link ScriptLanguage}.class. While it possible to create a scripting
+ * language adapter merely by implementing this interface, it is encouraged to
+ * instead extend {@link AbstractScriptLanguage}, for convenience.
  * </p>
  * 
  * @author Johannes Schindelin

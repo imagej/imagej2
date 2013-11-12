@@ -85,7 +85,7 @@ public class DefaultScriptService extends
 	@Parameter
 	private LogService log;
 
-	/** Index of registered script languages. */
+	/** Index of registered scripting languages. */
 	private final ScriptLanguageIndex scriptLanguageIndex =
 		new ScriptLanguageIndex();
 
@@ -105,7 +105,7 @@ public class DefaultScriptService extends
 		return pluginService;
 	}
 
-	/** Gets the index of available script languages. */
+	/** Gets the index of available scripting languages. */
 	@Override
 	public ScriptLanguageIndex getIndex() {
 		return scriptLanguageIndex;
