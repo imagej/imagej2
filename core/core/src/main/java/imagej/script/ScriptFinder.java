@@ -60,7 +60,7 @@ public class ScriptFinder extends AbstractContextual {
 
 	private static final String SCRIPT_PLUGIN_CLASS = ScriptPlugin.class
 		.getName();
-	private static final String SCRIPT_PLUGIN_ICON = "/icons/script_code.png";
+	private static final String SCRIPT_ICON = "/icons/script_code.png";
 	private static final String SPECIAL_SUBDIRECTORY = "Scripts";
 
 	private final ScriptService scriptService;
@@ -154,7 +154,7 @@ public class ScriptFinder extends AbstractContextual {
 		pe.setPresets(presets);
 
 		// flag script with special icon
-		menuPath.getLeaf().setIconPath(SCRIPT_PLUGIN_ICON);
+		menuPath.getLeaf().setIconPath(SCRIPT_ICON);
 
 		return pe;
 	}
