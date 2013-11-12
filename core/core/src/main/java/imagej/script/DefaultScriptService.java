@@ -36,8 +36,8 @@
 package imagej.script;
 
 import imagej.command.Command;
-import imagej.command.CommandInfo;
 import imagej.command.CommandService;
+import imagej.module.ModuleService;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
@@ -62,7 +63,6 @@ import org.scijava.log.LogService;
 import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginService;
 import org.scijava.service.Service;
 import org.scijava.util.FileUtils;
 
@@ -70,6 +70,7 @@ import org.scijava.util.FileUtils;
  * Default service for working with scripting languages.
  * 
  * @author Johannes Schindelin
+ * @author Curtis Rueden
  */
 @Plugin(type = Service.class)
 public class DefaultScriptService extends
@@ -77,7 +78,7 @@ public class DefaultScriptService extends
 {
 
 	@Parameter
-	private PluginService pluginService;
+	private ModuleService moduleService;
 
 	@Parameter
 	private CommandService commandService;
@@ -88,6 +89,10 @@ public class DefaultScriptService extends
 	/** Index of registered scripting languages. */
 	private final ScriptLanguageIndex scriptLanguageIndex =
 		new ScriptLanguageIndex();
+
+	/** Index of available scripts, by script <em>name</em> (i.e., file path). */
+	private final HashMap<String, ScriptInfo> scripts =
+		new HashMap<String, ScriptInfo>();
 
 	// -- ScriptService methods --
 
@@ -182,10 +187,7 @@ public class DefaultScriptService extends
 	@Override
 	public void initialize() {
 		reloadLanguages();
-
-		final ArrayList<CommandInfo> plugins = new ArrayList<CommandInfo>();
-		new ScriptFinder(this).findPlugins(plugins);
-		pluginService.addPlugins(plugins);
+		reloadScripts();
 	}
 
 	// -- Helper methods --
@@ -275,6 +277,22 @@ public class DefaultScriptService extends
 		for (final ScriptEngineFactory factory : manager.getEngineFactories()) {
 			scriptLanguageIndex.add(factory, true);
 		}
+	}
+
+	private void reloadScripts() {
+		// remove previously discovered scripts
+		moduleService.removeModules(scripts.values());
+		scripts.clear();
+
+		// discover available scripts
+		final ArrayList<ScriptInfo> scriptList = new ArrayList<ScriptInfo>();
+		new ScriptFinder(this).findScripts(scriptList);
+
+		// add newly discovered scripts
+		for (ScriptInfo info : scriptList) {
+			scripts.put(info.getPath(), info);
+		}
+		moduleService.addModules(scriptList);
 	}
 
 }

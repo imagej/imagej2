@@ -35,12 +35,8 @@
 
 package imagej.script;
 
-import imagej.command.CommandInfo;
-
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.scijava.AbstractContextual;
 import org.scijava.MenuEntry;
@@ -58,8 +54,6 @@ import org.scijava.plugin.Parameter;
  */
 public class ScriptFinder extends AbstractContextual {
 
-	private static final String SCRIPT_PLUGIN_CLASS = ScriptPlugin.class
-		.getName();
 	private static final String SCRIPT_ICON = "/icons/script_code.png";
 	private static final String SPECIAL_SUBDIRECTORY = "Scripts";
 
@@ -82,7 +76,7 @@ public class ScriptFinder extends AbstractContextual {
 	 * 
 	 * @param scripts The collection to which the discovered scripts are added
 	 */
-	public void findScripts(final List<CommandInfo> scripts) {
+	public void findScripts(final List<ScriptInfo> scripts) {
 		final String path = System.getProperty("plugins.dir");
 		if (path == null) return;
 
@@ -105,7 +99,7 @@ public class ScriptFinder extends AbstractContextual {
 	 *          except for the subdirectory <i>Scripts/</i> whose entries will be
 	 *          pulled into the top-level menu structure.
 	 */
-	private void discoverScripts(final List<CommandInfo> scripts,
+	private void discoverScripts(final List<ScriptInfo> scripts,
 		final File directory, final MenuPath menuPath)
 	{
 		final File[] fileList = directory.listFiles();
@@ -144,14 +138,12 @@ public class ScriptFinder extends AbstractContextual {
 		return result;
 	}
 
-	private CommandInfo createEntry(final File scriptPath,
+	private ScriptInfo createEntry(final File scriptPath,
 		final MenuPath menuPath)
 	{
-		final Map<String, Object> presets = new HashMap<String, Object>();
-		presets.put("file", scriptPath);
-		final CommandInfo info = new CommandInfo(SCRIPT_PLUGIN_CLASS);
+		final ScriptInfo info =
+			new ScriptInfo(scriptPath.getAbsolutePath(), getContext());
 		info.setMenuPath(menuPath);
-		info.setPresets(presets);
 
 		// flag script with special icon
 		menuPath.getLeaf().setIconPath(SCRIPT_ICON);
