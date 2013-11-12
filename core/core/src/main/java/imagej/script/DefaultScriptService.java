@@ -89,15 +89,6 @@ public class DefaultScriptService extends
 	private final ScriptLanguageIndex scriptLanguageIndex =
 		new ScriptLanguageIndex();
 
-	@Override
-	public void initialize() {
-		reloadScriptLanguages();
-
-		final ArrayList<CommandInfo> plugins = new ArrayList<CommandInfo>();
-		new ScriptFinder(this).findPlugins(plugins);
-		pluginService.addPlugins(plugins);
-	}
-
 	// -- ScriptService methods --
 
 	/** Gets the index of available scripting languages. */
@@ -184,6 +175,17 @@ public class DefaultScriptService extends
 	@Override
 	public Class<ScriptLanguage> getPluginType() {
 		return ScriptLanguage.class;
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		reloadScriptLanguages();
+
+		final ArrayList<CommandInfo> plugins = new ArrayList<CommandInfo>();
+		new ScriptFinder(this).findPlugins(plugins);
+		pluginService.addPlugins(plugins);
 	}
 
 	// -- Helper methods --
