@@ -33,52 +33,19 @@
  * #L%
  */
 
-package imagej.script;
+package imagej.core.scripting.javascript;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.StringReader;
-
-import org.junit.Test;
 import org.scijava.Context;
-import org.scijava.service.ServiceHelper;
+import org.scijava.service.AbstractService;
 
 /**
- * Verifies that the Javascript support works as expected.
+ * Helper service for {@link JavaScriptTest#testContext()}.
  * 
  * @author Johannes Schindelin
  */
-public class JavascriptTest {
+public class DummyService extends AbstractService {
 
-	@Test
-	public void testBasic() throws Exception {
-		final Context context = new Context(ScriptService.class);
-		final ScriptService scriptService = context.getService(ScriptService.class);
-		new ServiceHelper(context).createExactService(DummyService.class);
+	public Context context;
+	public int value;
 
-		String script =
-			"dummy = IJ.getService('imagej.script.DummyService');\n" +
-			"dummy.context = IJ;\n" +
-			"dummy.value = 1234;\n";
-		scriptService.eval("hello.js", new StringReader(script));
-
-		final DummyService dummy = context.getService(DummyService.class);
-		assertEquals(context, dummy.context);
-		assertEquals(1234, dummy.value);
-	}
-
-	@Test
-	public void testParameters() throws Exception {
-		final Context context = new Context(ScriptService.class);
-		final ScriptService scriptService = context.getService(ScriptService.class);
-		new ServiceHelper(context).createExactService(DummyService.class);
-
-		String script =
-				"// @DummyService d\n" +
-				"d.value = 4321;\n";
-		scriptService.eval("hello.js", new StringReader(script));
-
-		final DummyService dummy = context.getService(DummyService.class);
-		assertEquals(4321, dummy.value);
-	}
 }

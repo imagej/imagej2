@@ -37,7 +37,6 @@ package imagej.core.scripting.beanshell;
 
 import static org.junit.Assert.assertEquals;
 import imagej.script.DefaultScriptService;
-import imagej.script.DummyService;
 import imagej.script.ScriptService;
 
 import java.io.StringReader;
@@ -54,14 +53,14 @@ import org.scijava.service.ServiceHelper;
 public class BeanshellTest {
 
 	@Test
-	public void testBasic() throws Exception {
+	public void testContext() throws Exception {
 		final Context context = new Context();
 		new ServiceHelper(context).createExactService(DefaultScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
 		new ServiceHelper(context).createExactService(DummyService.class);
 
 		String script =
-			"dummy = IJ.getService(imagej.script.DummyService.class);\n" +
+			"dummy = IJ.getService(" + DummyService.class.getName() + ".class);\n" +
 			"dummy.context = IJ;\n" +
 			"dummy.value = 1234;\n";
 		scriptService.eval("hello.bsh", new StringReader(script));

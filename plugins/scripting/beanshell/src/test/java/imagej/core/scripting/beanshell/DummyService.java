@@ -39,13 +39,13 @@ import org.scijava.Context;
 import org.scijava.service.AbstractService;
 
 /**
- * TODO
+ * Helper service for {@link BeanshellTest#testContext()}.
  * 
  * @author Johannes Schindelin
  */
 public class DummyService extends AbstractService {
 
-		public Context context;
-		public int value;
+	public Context context;
+	public int value;
 
 }

@@ -49,12 +49,13 @@ import javax.script.ScriptEngineFactory;
 
 import org.junit.Test;
 import org.scijava.Context;
+import org.scijava.service.ServiceHelper;
 
 /**
  * JavaScript unit tests.
  * 
- * @author Curtis Rueden
  * @author Johannes Schindelin
+ * @author Curtis Rueden
  */
 public class JavaScriptTest {
 
@@ -85,4 +86,37 @@ public class JavaScriptTest {
 		bindings.clear();
 		assertNull(engine.get("$hello"));
 	}
+
+	@Test
+	public void testContext() throws Exception {
+		final Context context = new Context(ScriptService.class);
+		final ScriptService scriptService = context.getService(ScriptService.class);
+		new ServiceHelper(context).createExactService(DummyService.class);
+
+		String script =
+			"dummy = IJ.getService('" + DummyService.class.getName() + "');\n" +
+			"dummy.context = IJ;\n" +
+			"dummy.value = 1234;\n";
+		scriptService.eval("hello.js", new StringReader(script));
+
+		final DummyService dummy = context.getService(DummyService.class);
+		assertEquals(context, dummy.context);
+		assertEquals(1234, dummy.value);
+	}
+
+	@Test
+	public void testParameters() throws Exception {
+		final Context context = new Context(ScriptService.class);
+		final ScriptService scriptService = context.getService(ScriptService.class);
+		new ServiceHelper(context).createExactService(DummyService.class);
+
+		String script =
+				"// @DummyService d\n" +
+				"d.value = 4321;\n";
+		scriptService.eval("hello.js", new StringReader(script));
+
+		final DummyService dummy = context.getService(DummyService.class);
+		assertEquals(4321, dummy.value);
+	}
+
 }
