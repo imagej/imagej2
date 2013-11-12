@@ -37,7 +37,6 @@ package imagej.script;
 
 import imagej.module.AbstractModule;
 import imagej.module.Module;
-import imagej.module.ModuleItem;
 
 import java.io.File;
 
@@ -47,7 +46,6 @@ import org.scijava.Context;
 import org.scijava.Contextual;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
-import org.scijava.service.Service;
 
 /**
  * A {@link Module} which executes a script.
