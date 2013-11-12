@@ -55,10 +55,6 @@ import org.scijava.util.ConversionUtils;
  * By default, {@link ModuleItem}s are stored in {@link HashMap}s and
  * {@link ArrayList}s, internally.
  * </p>
- * <p>
- * By default, {@link ModuleItem}s are stored in {@link HashMap}s and
- * {@link ArrayList}s, internally.
- * </p>
  * 
  * @author Curtis Rueden
  */
