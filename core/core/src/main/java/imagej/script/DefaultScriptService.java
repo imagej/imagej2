@@ -181,7 +181,7 @@ public class DefaultScriptService extends
 
 	@Override
 	public void initialize() {
-		reloadScriptLanguages();
+		reloadLanguages();
 
 		final ArrayList<CommandInfo> plugins = new ArrayList<CommandInfo>();
 		new ScriptFinder(this).findPlugins(plugins);
@@ -259,8 +259,11 @@ public class DefaultScriptService extends
 		}
 	}
 
-	private void reloadScriptLanguages() {
+	private void reloadLanguages() {
+		// remove previously discovered scripting languages
 		scriptLanguageIndex.clear();
+
+		// add ScriptLanguage plugins
 		for (final ScriptLanguage language : getInstances()) {
 			scriptLanguageIndex.add(language, false);
 		}
