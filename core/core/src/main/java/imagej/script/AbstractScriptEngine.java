@@ -49,7 +49,7 @@ import org.scijava.log.StderrLogService;
 
 /**
  * This class implements dummy versions for ScriptEngine's methods that are not
- * needed by ImageJ's scripting interface
+ * needed by ImageJ's scripting interface.
  * 
  * @author Johannes Schindelin
  */

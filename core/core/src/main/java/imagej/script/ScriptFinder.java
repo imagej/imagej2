@@ -99,11 +99,11 @@ public class ScriptFinder extends AbstractContextual {
 	/**
 	 * Looks through a directory, discovering and adding scripts.
 	 * 
-	 * @param plugins The collection to which the discovered scripts are added
-	 * @param directory The directory in which to look for scripts recursively
+	 * @param plugins The collection to which the discovered scripts are added.
+	 * @param directory The directory in which to look for scripts recursively.
 	 * @param menuPath The menuPath. If <i>null</i>, it defaults to Plugins>,
 	 *          except for the subdirectory <i>Scripts/</i> whose entries will be
-	 *          pulled into the top-level menu structure
+	 *          pulled into the top-level menu structure.
 	 */
 	private void discoverScripts(final List<CommandInfo> plugins,
 		final File directory, MenuPath menuPath)
