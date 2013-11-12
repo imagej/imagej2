@@ -35,14 +35,26 @@
 
 package imagej.script;
 
+import imagej.command.Command;
 import imagej.module.AbstractModuleInfo;
 import imagej.module.DefaultMutableModuleItem;
 import imagej.module.Module;
 import imagej.module.ModuleException;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.script.ScriptException;
+
 import org.scijava.Context;
 import org.scijava.Contextual;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
+import org.scijava.service.Service;
 
 /**
  * Metadata about a script module.
@@ -57,9 +69,21 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	@Parameter
 	private Context context;
 
+	@Parameter
+	private LogService log;
+
 	public ScriptInfo(final String path, final Context context) {
 		this.path = path;
 		setContext(context);
+		try {
+			parseInputs();
+		}
+		catch (final ScriptException exc) {
+			log.error(exc);
+		}
+		catch (final IOException exc) {
+			log.error(exc);
+		}
 	}
 
 	// -- ScriptInfo methods --
@@ -101,6 +125,96 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	@Override
 	public void setContext(final Context context) {
 		context.inject(this);
+	}
+
+	// -- Helper methods --
+
+	/**
+	 * Parses input parameters in scripts.
+	 * <p>
+	 * ImageJ's scripting framework supports specifying @{@link Parameter}-style
+	 * parameters in a preamble. The idea is to specify the input parameters in
+	 * this way:
+	 * 
+	 * <pre>
+	 * <code>
+	 * // &#x40;UIService ui
+	 * // &#x40;double degrees
+	 * </code>
+	 * </pre>
+	 * 
+	 * i.e. in the form <code>&#x40;&lt;type&gt; &lt;name&gt;</code>. These input
+	 * parameters will be parsed and filled just like @{@link Parameter}
+	 * -annotated fields in {@link Command}s.
+	 * </p>
+	 * 
+	 * @throws ScriptException If a parameter annotation is malformed.
+	 * @throws IOException If there is a problem reading the script file.
+	 */
+	private void parseInputs() throws ScriptException, IOException {
+		final FileReader fileReader = new FileReader(getPath());
+		final BufferedReader in = new BufferedReader(fileReader, 16384);
+		while (true) {
+			final String line = in.readLine();
+			if (line == null) break;
+
+			// scan for lines containing an '@' stopping at the first line
+			// containing at least one alpha-numerical character but no '@'.
+			final int at = line.indexOf('@');
+			if (at < 0) {
+				if (line.matches(".*[A-Za-z0-9].*")) break;
+				continue;
+			}
+			parseInput(line.substring(at + 1));
+		}
+		in.close();
+	}
+
+	private <T> void parseInput(final String line) throws ScriptException {
+		final String[] parts = line.trim().split("[ \t\n]+");
+		if (parts.length != 2) {
+			throw new ScriptException("Expected 'type name': " + line);
+		}
+		addInput(parts[1], parseType(parts[0]));
+	}
+
+	private Map<String, Class<?>> typeMap;
+
+	private synchronized Class<?> parseType(final String string)
+		throws ScriptException
+	{
+		if (typeMap == null) {
+			typeMap = new HashMap<String, Class<?>>();
+			typeMap.put("byte", Byte.TYPE);
+			typeMap.put("short", Short.TYPE);
+			typeMap.put("int", Integer.TYPE);
+			typeMap.put("long", Long.TYPE);
+			typeMap.put("float", Float.TYPE);
+			typeMap.put("double", Double.TYPE);
+			typeMap.put("String", String.class);
+			typeMap.put("File", File.class);
+
+			for (final Service service : context.getServiceIndex()) {
+				final Class<?> clazz = service.getClass();
+				final String className = clazz.getName();
+				typeMap.put(className, clazz);
+				final int dot = className.lastIndexOf('.');
+				if (dot > 0) typeMap.put(className.substring(dot + 1), clazz);
+			}
+		}
+		final Class<?> type = typeMap.get(string);
+		if (type == null) {
+			try {
+				final Class<?> clazz =
+					Thread.currentThread().getContextClassLoader().loadClass(string);
+				typeMap.put(string, clazz);
+				return clazz;
+			}
+			catch (final ClassNotFoundException e) {
+				throw new ScriptException("Unknown type: " + string);
+			}
+		}
+		return type;
 	}
 
 }
