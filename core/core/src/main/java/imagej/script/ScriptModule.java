@@ -37,15 +37,18 @@ package imagej.script;
 
 import imagej.module.AbstractModule;
 import imagej.module.Module;
+import imagej.module.ModuleItem;
 
-import java.io.File;
+import java.io.FileReader;
 
+import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 import org.scijava.Context;
 import org.scijava.Contextual;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
+import org.scijava.util.FileUtils;
 
 /**
  * A {@link Module} which executes a script.
@@ -86,9 +89,17 @@ public class ScriptModule extends AbstractModule implements Contextual {
 		final String fileExtension = FileUtils.getExtension(path);
 		final ScriptLanguage language =
 			scriptService.getByFileExtension(fileExtension);
+		final ScriptEngine engine = language.getScriptEngine();
+
+		// populate bindings with the input values
+		for (final ModuleItem<?> item : info.inputs()) {
+			final String name = item.getName();
+			engine.put(name, getInput(name));
+		}
+
+		// execute script!
 		try {
-			final Object result =
-				language.getScriptEngine().eval(new FileReader(path));
+			final Object result = engine.eval(new FileReader(path));
 			if (result != null) {
 				System.out.println(result.toString());
 			}
