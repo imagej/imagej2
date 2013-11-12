@@ -100,11 +100,6 @@ public class DefaultScriptService extends
 
 	// -- ScriptService methods --
 
-	@Override
-	public PluginService getPluginService() {
-		return pluginService;
-	}
-
 	/** Gets the index of available scripting languages. */
 	@Override
 	public ScriptLanguageIndex getIndex() {
