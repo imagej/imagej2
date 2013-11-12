@@ -80,27 +80,6 @@ public class ScriptModule extends AbstractModule implements Contextual {
 		return info;
 	}
 
-	@Override
-	public void initialize() {
-		for (final ModuleItem<?> item : info.inputs()) {
-			final Class<?> type = item.getType();
-			final Object value;
-			if (Context.class.isAssignableFrom(type)) {
-				value = context;
-			}
-			else if (Service.class.isAssignableFrom(type)) {
-				@SuppressWarnings("unchecked")
-				final Class<? extends Service> serviceType =
-					(Class<? extends Service>) type;
-				value = context.getService(serviceType);
-			}
-			else continue;
-			final String name = item.getName();
-			setInput(name, value);
-			setResolved(name, true);
-		}
-	}
-
 	// -- Runnable methods --
 
 	@Override
