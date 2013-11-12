@@ -33,29 +33,34 @@
  * #L%
  */
 
-package imagej.script;
+package imagej.core.commands.script;
 
 import imagej.command.Command;
+import imagej.command.ContextCommand;
+import imagej.menu.MenuConstants;
+import imagej.script.ScriptService;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileNotFoundException;
 
-import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
 import org.scijava.log.LogService;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.util.FileUtils;
 
 /**
- * Executes a script, using the file extension to choose the appropriate engine.
+ * Executes the script in the given file.
  * 
- * @author Johannes Schindelin
- * @author Grant Harris
+ * @author Curtis Rueden
  */
-@Plugin(type = Command.class, menuPath = "Plugins>Script>Run Script")
-public class ScriptPlugin implements Command {
+@Plugin(type = Command.class, menu = {
+	@Menu(label = MenuConstants.PLUGINS_LABEL,
+		weight = MenuConstants.PLUGINS_WEIGHT,
+		mnemonic = MenuConstants.PLUGINS_MNEMONIC),
+	@Menu(label = "Run Script...", mnemonic = 's') }, headless = true)
+public class RunScript extends ContextCommand {
 
 	@Parameter
 	private ScriptService scriptService;
@@ -64,25 +69,18 @@ public class ScriptPlugin implements Command {
 	private LogService log;
 
 	@Parameter
-	private File file;
+	private File script;
 
 	@Override
 	public void run() {
-		final String fileExtension = FileUtils.getExtension(file);
-		final ScriptEngineFactory factory =
-			scriptService.getByFileExtension(fileExtension);
 		try {
-			final Object result =
-				factory.getScriptEngine().eval(new FileReader(file));
-			if (result != null) {
-				System.out.println(result.toString());
-			}
+			scriptService.eval(script);
 		}
-		catch (final ScriptException e) {
-			log.error(e.getCause());
+		catch (final FileNotFoundException exc) {
+			log.error(exc);
 		}
-		catch (final Throwable e) {
-			log.error(e);
+		catch (final ScriptException exc) {
+			log.error(exc);
 		}
 	}
 
