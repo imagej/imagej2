@@ -80,9 +80,9 @@ public class ScriptFinder extends AbstractContextual {
 	/**
 	 * Discovers the scripts.
 	 * 
-	 * @param plugins The collection to which the discovered scripts are added
+	 * @param scripts The collection to which the discovered scripts are added
 	 */
-	public void findPlugins(final List<CommandInfo> plugins) {
+	public void findScripts(final List<CommandInfo> scripts) {
 		final String path = System.getProperty("plugins.dir");
 		if (path == null) return;
 
@@ -92,21 +92,21 @@ public class ScriptFinder extends AbstractContextual {
 			if (pluginsDir.isDirectory()) directory = pluginsDir;
 		}
 		scriptCount = 0;
-		discoverScripts(plugins, directory, null);
+		discoverScripts(scripts, directory, null);
 		log.info("Found " + scriptCount + " scripts");
 	}
 
 	/**
 	 * Looks through a directory, discovering and adding scripts.
 	 * 
-	 * @param plugins The collection to which the discovered scripts are added.
+	 * @param scripts The collection to which the discovered scripts are added.
 	 * @param directory The directory in which to look for scripts recursively.
 	 * @param menuPath The menuPath. If <i>null</i>, it defaults to Plugins>,
 	 *          except for the subdirectory <i>Scripts/</i> whose entries will be
 	 *          pulled into the top-level menu structure.
 	 */
-	private void discoverScripts(final List<CommandInfo> plugins,
-		final File directory, MenuPath menuPath)
+	private void discoverScripts(final List<CommandInfo> scripts,
+		final File directory, final MenuPath menuPath)
 	{
 		final File[] fileList = directory.listFiles();
 		if (fileList == null) return; // directory does not exist
@@ -117,10 +117,10 @@ public class ScriptFinder extends AbstractContextual {
 		for (final File file : fileList) {
 			if (file.isDirectory()) {
 				if (isTopLevel && file.getName().equals(SPECIAL_SUBDIRECTORY)) {
-					discoverScripts(plugins, file, new MenuPath());
+					discoverScripts(scripts, file, new MenuPath());
 				}
 				else {
-					discoverScripts(plugins, file, subMenuPath(path, file.getName()
+					discoverScripts(scripts, file, subMenuPath(path, file.getName()
 						.replace('_', ' ')));
 				}
 			}
@@ -128,7 +128,7 @@ public class ScriptFinder extends AbstractContextual {
 				String name = file.getName().replace('_', ' ');
 				final int dot = name.lastIndexOf('.');
 				if (dot > 0) name = name.substring(0, dot);
-				plugins.add(createEntry(file, subMenuPath(path, file.getName())));
+				scripts.add(createEntry(file, subMenuPath(path, file.getName())));
 				scriptCount++;
 			}
 		}
@@ -149,14 +149,14 @@ public class ScriptFinder extends AbstractContextual {
 	{
 		final Map<String, Object> presets = new HashMap<String, Object>();
 		presets.put("file", scriptPath);
-		final CommandInfo pe = new CommandInfo(SCRIPT_PLUGIN_CLASS);
-		pe.setMenuPath(menuPath);
-		pe.setPresets(presets);
+		final CommandInfo info = new CommandInfo(SCRIPT_PLUGIN_CLASS);
+		info.setMenuPath(menuPath);
+		info.setPresets(presets);
 
 		// flag script with special icon
 		menuPath.getLeaf().setIconPath(SCRIPT_ICON);
 
-		return pe;
+		return info;
 	}
 
 }
