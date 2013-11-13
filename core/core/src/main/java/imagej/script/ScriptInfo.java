@@ -57,7 +57,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.service.Service;
 
 /**
- * Metadata about a script module.
+ * Metadata about a script.
  * 
  * @author Curtis Rueden
  * @author Johannes Schindelin
@@ -130,17 +130,15 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	// -- Helper methods --
 
 	/**
-	 * Parses input parameters in scripts.
+	 * Parses the script's input parameters.
 	 * <p>
 	 * ImageJ's scripting framework supports specifying @{@link Parameter}-style
 	 * parameters in a preamble. The idea is to specify the input parameters in
 	 * this way:
 	 * 
 	 * <pre>
-	 * <code>
-	 * // &#x40;UIService ui
-	 * // &#x40;double degrees
-	 * </code>
+	 * // @UIService ui
+	 * // @double degrees
 	 * </pre>
 	 * 
 	 * i.e. in the form <code>&#x40;&lt;type&gt; &lt;name&gt;</code>. These input
