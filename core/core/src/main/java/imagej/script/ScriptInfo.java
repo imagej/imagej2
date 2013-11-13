@@ -72,6 +72,8 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	@Parameter
 	private LogService log;
 
+	private Map<String, Class<?>> typeMap;
+
 	public ScriptInfo(final String path, final Context context) {
 		this.path = path;
 		setContext(context);
@@ -175,8 +177,6 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 		}
 		addInput(parts[1], parseType(parts[0]));
 	}
-
-	private Map<String, Class<?>> typeMap;
 
 	private synchronized Class<?> parseType(final String string)
 		throws ScriptException
