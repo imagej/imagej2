@@ -72,6 +72,13 @@ public class AdaptedScriptLanguage implements ScriptLanguage {
 		this(findFactory(factoryName));
 	}
 
+	// -- ScriptLanguage methods --
+
+	@Override
+	public boolean isCompiledLanguage() {
+		return false;
+	}
+
 	// -- ScriptEngineFactory methods --
 
 	@Override

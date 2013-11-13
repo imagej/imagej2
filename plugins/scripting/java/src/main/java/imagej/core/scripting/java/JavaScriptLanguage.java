@@ -53,6 +53,15 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = ScriptLanguage.class)
 public class JavaScriptLanguage extends AbstractScriptLanguage {
 
+	// -- ScriptLanguage methods --
+
+	@Override
+	public boolean isCompiledLanguage() {
+		return true;
+	}
+
+	// -- ScriptEngineFactory methods --
+
 	@Override
 	public List<String> getExtensions() {
 		return Arrays.asList("java", "xml");

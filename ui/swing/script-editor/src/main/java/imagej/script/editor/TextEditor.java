@@ -1482,9 +1482,11 @@ public class TextEditor extends JFrame implements ActionListener,
 	public boolean makeJar(boolean includeSources) {
 		File file = getEditorPane().file;
 		ScriptLanguage currentLanguage = getCurrentLanguage();
-		if ((file == null || scriptService.isCompiledLanguage(currentLanguage))
-				&& !handleUnsavedChanges(true))
+		if ((file == null || currentLanguage.isCompiledLanguage()) &&
+			!handleUnsavedChanges(true))
+		{
 			return false;
+		}
 
 		String name = getEditorPane().getFileName();
 		String ext = FileUtils.getExtension(name);
@@ -1676,7 +1678,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		}
 
 		final boolean isRunnable = item != noneLanguageItem;
-		final boolean isCompileable = scriptService.isCompiledLanguage(language);
+		final boolean isCompileable = language.isCompiledLanguage();
 
 		runMenu.setVisible(isRunnable);
 		compileAndRun.setText(isCompileable ?
@@ -1947,7 +1949,7 @@ public class TextEditor extends JFrame implements ActionListener,
 
 	public void runText(final boolean selectionOnly) {
 		final ScriptLanguage currentLanguage = getCurrentLanguage();
-		if (scriptService.isCompiledLanguage(currentLanguage)) {
+		if (currentLanguage.isCompiledLanguage()) {
 			if (selectionOnly) {
 				error("Cannot run selection of compiled language!");
 				return;
@@ -1981,7 +1983,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			return;
 		}
 
-		if (scriptService.isCompiledLanguage(getCurrentLanguage()))
+		if (getCurrentLanguage().isCompiledLanguage())
 			getTab().showErrors();
 		else
 			getTab().showOutput();

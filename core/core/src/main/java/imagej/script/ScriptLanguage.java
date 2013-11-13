@@ -57,5 +57,8 @@ import org.scijava.plugin.SingletonPlugin;
 public interface ScriptLanguage extends ScriptEngineFactory, SingletonPlugin,
 	ImageJPlugin
 {
-	// just so we can annotate the factories with @Plugin...
+
+	/** True iff this language requires a compilation step. */
+	boolean isCompiledLanguage();
+
 }

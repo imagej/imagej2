@@ -103,7 +103,4 @@ public interface ScriptService extends SingletonService<ScriptLanguage> {
 	void initialize(final ScriptEngine engine, final String fileName,
 		final Writer writer, final Writer errorWriter);
 
-	/** TODO */
-	boolean isCompiledLanguage(ScriptLanguage currentLanguage);
-
 }

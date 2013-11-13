@@ -170,11 +170,6 @@ public class DefaultScriptService extends
 		if (writer != null) context.setErrorWriter(errorWriter);
 	}
 
-	@Override
-	public boolean isCompiledLanguage(final ScriptLanguage language) {
-		return false;
-	}
-
 	// -- PTService methods --
 
 	@Override

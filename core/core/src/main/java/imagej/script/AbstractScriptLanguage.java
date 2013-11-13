@@ -52,6 +52,13 @@ import javax.script.ScriptEngineFactory;
  */
 public abstract class AbstractScriptLanguage implements ScriptLanguage {
 
+	// -- ScriptLanguage methods --
+
+	@Override
+	public boolean isCompiledLanguage() {
+		return false;
+	}
+
 	// -- (Possibly) unsupported operations --
 
 	@Override
