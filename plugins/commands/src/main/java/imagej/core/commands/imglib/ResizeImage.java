@@ -36,21 +36,16 @@
 package imagej.core.commands.imglib;
 
 import imagej.command.Command;
-import imagej.command.DynamicCommand;
-import imagej.command.DynamicCommandInfo;
+import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
-import imagej.data.types.DataType;
-import imagej.data.types.DataTypeService;
 import imagej.menu.MenuConstants;
-import imagej.module.ModuleItem;
-import imagej.module.MutableModuleItem;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import net.imglib2.img.Img;
+import net.imglib2.img.cell.AbstractCellImg;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
@@ -64,265 +59,321 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * Resamples a {@link Dataset} and changes it in place.
+ * Resamples an existing image into a Dataset of specified dimensions. The
+ * dimensions can be manipulated separately. The resultant pixel is some
+ * combination of the original neighboring pixels using some user specified
+ * interpolation method.
  * 
  * @author Barry DeZonia
  */
-@Plugin(type = Command.class, menu = {
+@Plugin(type = Command.class, initializer = "init", headless = true, menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
-		mnemonic = MenuConstants.IMAGE_MNEMONIC), @Menu(label = "Adjust"),
-	@Menu(label = "Resize") }, initializer = "init", headless = true)
-public class ResizeImage<T extends RealType<T>> extends DynamicCommand {
+		mnemonic = MenuConstants.IMAGE_MNEMONIC),
+	@Menu(label = "Adjust", mnemonic = 'a'),
+	@Menu(label = "Resize", mnemonic = 'r') })
+public class ResizeImage<T extends RealType<T>> extends ContextCommand {
 
 	// -- constants --
 
-	private static final String CONSTRAIN = "Constrain";
-	private static final String DIMENSION = "Dimension";
-	private static final String INTERPOLATION = "Interpolation";
+	private static final String LANCZOS = "Lanczos";
+	private static final String LINEAR = "Linear";
+	private static final String NEAREST_NEIGHBOR = "Nearest Neighbor";
+	private static final String PERIODICAL = "Periodic";
 
 	// -- Parameters --
 
 	@Parameter(type = ItemIO.BOTH)
 	private Dataset dataset;
 
-	@Parameter
-	private DataTypeService dataTypeService;
+	@Parameter(label = "Dimensions", persist = false)
+	private String dimensionsString;
+
+	@Parameter(label = "Interpolation", choices = { LINEAR, NEAREST_NEIGHBOR,
+		LANCZOS, PERIODICAL }, persist = false)
+	private String method = LINEAR;
+
+	@Parameter(label = "Constrain XY aspect ratio", persist = false)
+	private boolean constrain;
 
 	@Parameter
 	private DatasetService datasetService;
 
+
 	// -- non-parameter fields --
 
-	private List<String> modes = new ArrayList<String>();
+	private String err = null;
+
 	private List<Long> dimensions = new ArrayList<Long>();
-	private double aspectRatio = Double.NaN;
-	private int xIndex = -1;
-	private int yIndex = -1;
+
+	private int xAxis;
+
+	private int yAxis;
+
+	// -- constructors --
+
+	public ResizeImage() {}
 
 	// -- accessors --
 
 	/**
-	 * Returns the name of the current interpolation mode.
+	 * Sets the Dataset that the resize operation will be run upon.
 	 */
-	public String getMode() {
-		return (String) getInfo().getInput(INTERPOLATION).getValue(this);
+	public void setDataset(Dataset ds) {
+		dataset = ds;
+		init();
 	}
 
 	/**
-	 * Sets the name of the current interpolation mode. Given mode name must be
-	 * one of the values listed by getModes().
+	 * Gets the Dataset that the resize operation will be run upon.
 	 */
-	@SuppressWarnings("unchecked")
-	public void setMode(String mode) {
-		boolean found = false;
-		for (String s : modes) {
-			if (s.equals(mode)) found = true;
-		}
-		if (!found) {
-			throw new IllegalArgumentException("Unknown interpolation mode: " + mode);
-		}
-		DynamicCommandInfo info = getInfo();
-		((ModuleItem<String>) info.getInput(INTERPOLATION)).setValue(this, mode);
+	public Dataset getDataset() {
+		return dataset;
 	}
 
 	/**
-	 * A list of the names of all the possible interpolation methods.
-	 */
-	public List<String> getModes() {
-		return Collections.unmodifiableList(modes);
-	}
-
-	/**
-	 * Returns the number of dimensions in the resampled image.
-	 */
-	public int numDimensions() {
-		return dataset.numDimensions();
-	}
-
-	/**
-	 * Returns the size of a dimension for resampling purposes.
-	 * 
-	 * @param d The dimension number.
-	 * @return The size of the dimension in the resampled image.
-	 */
-	public long dimension(int d) {
-		if (d < dimensions.size()) return dimensions.get(d);
-		return dataset.dimension(d);
-	}
-
-	/**
-	 * Sets the size of a dimension for resampling purposes.
-	 * 
-	 * @param d The dimension number.
-	 * @param size The size of the dimension for the resampled image.
+	 * Sets the given dimension of the resized image.
 	 */
 	public void setDimension(int d, long size) {
-		if (size <= 0) {
-			throw new IllegalArgumentException("Dimension size must be positive.");
-		}
-		for (int i = 0; i <= d; i++) {
-			if (i >= dimensions.size()) {
-				dimensions.add(dataset.dimension(i));
-			}
+		if (d < 0 || d >= dimensions.size()) {
+			throw new IllegalArgumentException("dimension " + d +
+				" out of bounds (0," + (dimensions.size() - 1) + ")");
 		}
 		dimensions.set(d, size);
+		if (constrain) {
+			if (d == xAxis) {
+				double sz = size;
+				sz *= dataset.dimension(yAxis);
+				sz /= dataset.dimension(xAxis);
+				long ySize = Math.round(sz);
+				dimensions.set(yAxis, ySize);
+			}
+			else if (d == yAxis) {
+				double sz = size;
+				sz *= dataset.dimension(xAxis);
+				sz /= dataset.dimension(yAxis);
+				long xSize = Math.round(sz);
+				dimensions.set(xAxis, xSize);
+			}
+		}
+		dimensionsString = dimensionsString();
+	}
+
+	/**
+	 * Gets the given dimension of the resized image.
+	 */
+	public long getDimension(int d) {
+		if (d < 0 || d >= dimensions.size()) {
+			throw new IllegalArgumentException("dimension " + d +
+				" out of bounds (0," + (dimensions.size() - 1) + ")");
+		}
+		return dimensions.get(d);
+	}
+
+	// TODO - have a set method and get method that take a Resample.Mode. This
+	// allows more flexibility on how data is combined.
+
+	/**
+	 * Sets the interpolation method used to combine pixels. Use the constant
+	 * strings that are exposed by this class.
+	 */
+	public void setInterpolationMethod(String str) {
+		if (str.equals(PERIODICAL)) method = PERIODICAL;
+		else if (str.equals(LINEAR)) method = LINEAR;
+		else if (str.equals(NEAREST_NEIGHBOR)) method = NEAREST_NEIGHBOR;
+		else if (str.equals(LANCZOS)) method = LANCZOS;
+		else throw new IllegalArgumentException("Unknown interpolation method: " +
+			str);
+	}
+
+	/**
+	 * Gets the interpolation method used to combine pixels. One of the constant
+	 * strings that are exposed by this class.
+	 */
+	public String getInterpolationMethod() {
+		return method;
+	}
+
+	/**
+	 * Sets whether command will constrain XY aspect ratio.
+	 */
+	public void setConstrainXY(Boolean val) {
+		constrain = val;
+	}
+
+	/**
+	 * Gets whether command will constrain XY aspect ratio.
+	 */
+	public boolean getConstrainXY() {
+		return constrain;
+	}
+
+	/**
+	 * Returns the current error message if any.
+	 */
+	public String getError() {
+		return err;
 	}
 
 	// -- Command methods --
 
 	@Override
-	@SuppressWarnings({ "unchecked" })
 	public void run() {
-		ImgPlus<? extends RealType<?>> origImgPlus = dataset.getImgPlus();
-		int numDims = origImgPlus.numDimensions();
-		String name = dataset.getName();
-		CalibratedAxis[] axes = new CalibratedAxis[numDims];
-		dataset.axes(axes);
-		AxisType[] axisTypes = new AxisType[numDims];
-		for (int i = 0; i < numDims; i++) {
-			axisTypes[i] = axes[i].type();
+		List<Long> dims = parseDimensions(dataset, dimensionsString);
+		if (dims == null) {
+			cancel(err);
+			return;
 		}
-		RealType<?> example = origImgPlus.firstElement();
-		DataType<?> type = dataTypeService.getTypeByClass(example.getClass());
-		Dataset newDs =
-			datasetService.create(newDims(), name, axisTypes, type.bitCount(), type
-				.isSigned(), type.isFloat());
-		newDs.setAxes(axes);
-		if (dataset.getCompositeChannelCount() == numChannels(dataset)) {
-			newDs.setCompositeChannelCount(numChannels(newDs));
-		}
-		Resample<T> resampleOp = new Resample<T>(resampleMode());
-		resampleOp.compute((Img<T>) origImgPlus, (Img<T>) newDs.getImgPlus());
-		dataset.setImgPlus(newDs.getImgPlus());
+		if (constrain) constrain(dims);
+		resampleData(dataset, dims);
 	}
 
 	// -- initializers --
 
 	protected void init() {
-
-		// fields
-
-		xIndex = dataset.dimensionIndex(Axes.X);
-		yIndex = dataset.dimensionIndex(Axes.Y);
-		if (xIndex >= 0 && yIndex >= 0) {
-			aspectRatio =
-				((double) dataset.dimension(yIndex)) / dataset.dimension(xIndex);
+		dimensions.clear();
+		for (int i = 0; i < dataset.numDimensions(); i++) {
+			dimensions.add(dataset.dimension(i));
 		}
-		else {
-			aspectRatio = Double.NaN;
-		}
-
-		// axis dimensions
-
-		for (int i = 0; i < numDimensions(); i++) {
-			final MutableModuleItem<Long> dimensionItem =
-				addInput(DIMENSION + i, Long.class);
-			dimensionItem.setValue(this, dimension(i));
-			dimensionItem.setLabel(dataset.axis(i).type().toString());
-			String callback;
-			if (i == xIndex) {
-				callback = "updateHeight";
-			}
-			else if (i == yIndex) {
-				callback = "updateWidth";
-			}
-			else {
-				callback = "updateOther";
-			}
-			dimensionItem.setCallback(callback);
-			dimensionItem.setPersisted(false);
-		}
-
-		// constrain aspect ratio : XY only
-
-		final MutableModuleItem<Boolean> constrainItem =
-			addInput(CONSTRAIN, Boolean.class);
-		constrainItem.setLabel("Maintain XY aspect ratio");
-		constrainItem.setPersisted(false);
-
-		// interpolation modes
-
-		for (Resample.Mode mode : Resample.Mode.values()) {
-			modes.add(mode.toString());
-		}
-		final MutableModuleItem<String> interpolationItem =
-			addInput(INTERPOLATION, String.class);
-		interpolationItem.setPersisted(false);
-		interpolationItem.setLabel(INTERPOLATION);
-		interpolationItem.setChoices(modes);
-		interpolationItem.setValue(this, modes.get(0));
-	}
-
-	// -- callbacks --
-
-	protected void updateWidth() {
-		updateConstrainedDim(xIndex);
-		setAllDimensions();
-	}
-
-	protected void updateHeight() {
-		updateConstrainedDim(yIndex);
-		setAllDimensions();
-	}
-
-	protected void updateOther() {
-		setAllDimensions();
+		dimensionsString = dimensionsString();
+		xAxis = dataset.dimensionIndex(Axes.X);
+		yAxis = dataset.dimensionIndex(Axes.Y);
 	}
 
 	// -- helpers --
 
-	private long[] newDims() {
-		long[] dims = new long[numDimensions()];
+	private List<Long> parseDimensions(Dataset ds, String spec) {
+		if (spec == null) {
+			err = "Dimension specification string is null.";
+			return null;
+		}
+		String[] terms = spec.split(",");
+		if (terms.length == 0) {
+			err = "Dimension specification string is empty.";
+			return null;
+		}
+		List<Long> dims = new ArrayList<Long>();
+		for (int i = 0; i < ds.numDimensions(); i++) {
+			dims.add(ds.dimension(i));
+		}
+		for (int i = 0; i < terms.length; i++) {
+			String term = terms[i].trim();
+			String[] parts = term.split("=");
+			if (parts.length != 2) {
+				err =
+					"Err in dimension specification string: each"
+						+ " dimension must be two numbers separated by an '=' sign.";
+				return null;
+			}
+			int axisIndex;
+			long size;
+			try {
+				axisIndex = Integer.parseInt(parts[0].trim());
+				size = Long.parseLong(parts[1].trim());
+			}
+			catch (NumberFormatException e) {
+				err =
+					"Err in dimension specification string: each"
+						+ " dimension must be two numbers separated by an '=' sign.";
+				return null;
+			}
+			if (axisIndex < 0 || axisIndex >= ds.numDimensions()) {
+				err = "An axis index is outside dimensionality of input dataset.";
+				return null;
+			}
+			if (size < 1) {
+				err = "Dimension " + i + " must be greater than 0";
+				return null;
+			}
+			dimensions.set(axisIndex, size);
+		}
+		return dimensions;
+	}
+
+	private void constrain(List<Long> dims) {
+
+		// NB if both X & Y edited by user it uses X as the fixed dimension.
+
+		// if X was edited by user
+		if (dims.get(xAxis) != dataset.dimension(xAxis)) {
+			double sz = dims.get(xAxis);
+			sz *= dataset.dimension(yAxis);
+			sz /= dataset.dimension(xAxis);
+			long ySize = Math.round(sz);
+			dims.set(yAxis, ySize);
+		}
+		// else if y edited by user
+		else if (dims.get(yAxis) != dataset.dimension(yAxis)) {
+			double sz = dims.get(yAxis);
+			sz *= dataset.dimension(xAxis);
+			sz /= dataset.dimension(yAxis);
+			long xSize = Math.round(sz);
+			dims.set(xAxis, xSize);
+		}
+	}
+
+	private void resampleData(Dataset ds, List<Long> dims) {
+
+		ImgPlus<? extends RealType<?>> origImgPlus = ds.getImgPlus();
+		int numDims = origImgPlus.numDimensions();
+		CalibratedAxis[] axes = new CalibratedAxis[numDims];
+		ds.axes(axes);
+		AxisType[] axisTypes = new AxisType[numDims];
+		for (int i = 0; i < numDims; i++) {
+			axisTypes[i] = axes[i].type();
+		}
+		Dataset newDs = newData(ds, dims);
+		newDs.setAxes(axes);
+		if (ds.getCompositeChannelCount() == numChannels(ds)) {
+			newDs.setCompositeChannelCount(numChannels(newDs));
+		}
+		Resample<T> resampleOp = new Resample<T>(resampleMode());
+		resampleOp.compute((Img<T>) origImgPlus, (Img<T>) newDs.getImgPlus());
+		ds.setImgPlus(newDs.getImgPlus());
+	}
+
+	private String dimensionsString() {
+		String str = "";
+		for (int i = 0; i < dimensions.size(); i++) {
+			if (i != 0) {
+				str += ", ";
+			}
+			str += i + "=" + dimensions.get(i);
+		}
+		return str;
+	}
+
+	private Dataset newData(Dataset origDs, List<Long> dims) {
+		long[] newDims = newDims(origDs, dims);
+		String name = origDs.getName();
+		AxisType[] axisTypes = new AxisType[origDs.numDimensions()];
+		for (int i = 0; i < axisTypes.length; i++) {
+			axisTypes[i] = origDs.axis(i).type();
+		}
+		int bitsPerPixel = origDs.getImgPlus().firstElement().getBitsPerPixel();
+		boolean signed = origDs.isSigned();
+		boolean floating = !origDs.isInteger();
+		boolean virtual =
+			AbstractCellImg.class.isAssignableFrom(origDs.getImgPlus().getImg()
+				.getClass());
+		return datasetService.create(newDims, name, axisTypes, bitsPerPixel,
+			signed, floating, virtual);
+	}
+
+	private long[] newDims(Dataset ds, List<Long> dimsList) {
+		long[] dims = new long[ds.numDimensions()];
 		for (int i = 0; i < dims.length; i++) {
-			dims[i] = dimension(i);
+			dims[i] = dimsList.get(i);
 		}
 		return dims;
 	}
 
 	private Resample.Mode resampleMode() {
-		return Resample.Mode.valueOf(Resample.Mode.class, getMode());
-	}
-
-	private void updateConstrainedDim(int index) {
-		if (constrain()) {
-			int otherIndex = (index == xIndex) ? yIndex : xIndex;
-			long currVal = getDimValue(otherIndex);
-			long newVal;
-			if (index == xIndex) newVal = (long) Math.ceil(currVal / aspectRatio);
-			else newVal = (long) Math.ceil(currVal * aspectRatio);
-			setDimValue(index, newVal);
-		}
-	}
-
-	private void setDimValue(int index, long value) {
-		ModuleItem<Long> item = getItem(index);
-		item.setValue(this, value);
-	}
-
-	private long getDimValue(int index) {
-		ModuleItem<Long> item = getItem(index);
-		return item.getValue(this);
-	}
-
-	@SuppressWarnings("unchecked")
-	private ModuleItem<Long> getItem(int index) {
-		String name = DIMENSION + index;
-		DynamicCommandInfo info = getInfo();
-		return ((ModuleItem<Long>) info.getInput(name));
-	}
-
-	@SuppressWarnings("unchecked")
-	private boolean constrain() {
-		if (xIndex < 0) return false;
-		if (yIndex < 0) return false;
-		if (Double.isNaN(aspectRatio)) return false;
-		return ((ModuleItem<Boolean>) getInfo().getInput(CONSTRAIN)).getValue(this);
-	}
-
-	private void setAllDimensions() {
-		for (int d = 0; d < numDimensions(); d++) {
-			setDimension(d, getDimValue(d));
-		}
+		if (method.equals(LANCZOS)) return Resample.Mode.LANCZOS;
+		else if (method.equals(LINEAR)) return Resample.Mode.LINEAR;
+		else if (method.equals(NEAREST_NEIGHBOR)) return Resample.Mode.NEAREST_NEIGHBOR;
+		else if (method.equals(PERIODICAL)) return Resample.Mode.PERIODICAL;
+		else throw new IllegalArgumentException("Unknown interpolation method: " +
+			method);
 	}
 
 	private int numChannels(Dataset ds) {
@@ -330,4 +381,5 @@ public class ResizeImage<T extends RealType<T>> extends DynamicCommand {
 		if (index < 0) return 1;
 		return (int) ds.dimension(index);
 	}
+
 }
