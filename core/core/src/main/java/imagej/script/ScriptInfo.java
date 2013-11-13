@@ -94,10 +94,6 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 		return path;
 	}
 
-	public boolean hasInputs() {
-		return !inputMap.isEmpty();
-	}
-
 	// -- ModuleInfo methods --
 
 	@Override
