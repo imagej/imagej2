@@ -45,6 +45,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,7 +65,10 @@ import org.scijava.service.Service;
  */
 public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 
+	private static final int PARAM_CHAR_MAX = 640 * 1024; // should be enough ;-)
+
 	private final String path;
+	private final BufferedReader reader;
 
 	@Parameter
 	private Context context;
@@ -74,9 +78,45 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 
 	private Map<String, Class<?>> typeMap;
 
+	/**
+	 * Creates a script metadata object which describes the given script file.
+	 * 
+	 * @param context The ImageJ application context to use when populating
+	 *          service inputs.
+	 * @param file The script file.
+	 */
+	public ScriptInfo(final Context context, final File file) {
+		this(context, file.getPath());
+	}
+
+	/**
+	 * Creates a script metadata object which describes the given script file.
+	 * 
+	 * @param context The ImageJ application context to use when populating
+	 *          service inputs.
+	 * @param path Path to the script file.
+	 */
 	public ScriptInfo(final Context context, final String path) {
+		this(context, path, null);
+	}
+
+	/**
+	 * Creates a script metadata object which describes a script provided by the
+	 * given {@link Reader}.
+	 * 
+	 * @param context The ImageJ application context to use when populating
+	 *          service inputs.
+	 * @param path Pseudo-path to the script file. This file does not actually
+	 *          need to exist, but rather provides a name for the script with file
+	 *          extension.
+	 * @param reader Reader which provides the script itself (i.e., its contents).
+	 */
+	public ScriptInfo(final Context context, final String path,
+		final Reader reader)
+	{
 		setContext(context);
 		this.path = path;
+		this.reader = new BufferedReader(reader, PARAM_CHAR_MAX);
 		try {
 			parseInputs();
 		}
@@ -90,8 +130,28 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 
 	// -- ScriptInfo methods --
 
+	/**
+	 * Gets the path to the script on disk.
+	 * <p>
+	 * If the path doesn't actually exist on disk, then this is a pseudo-path
+	 * merely for the purpose of naming the script with a file extension, and the
+	 * actual script content is delivered by the {@link BufferedReader} given by
+	 * {@link #getReader()}.
+	 * </p>
+	 */
 	public String getPath() {
 		return path;
+	}
+
+	/**
+	 * Gets the reader which delivers the script's content.
+	 * <p>
+	 * This might be null, in which case the content is stored in a file on disk
+	 * given by {@link #getPath()}.
+	 * </p>
+	 */
+	public BufferedReader getReader() {
+		return reader;
 	}
 
 	/**
@@ -117,8 +177,14 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	public void parseInputs() throws ScriptException, IOException {
 		clearInputs();
 
-		final FileReader fileReader = new FileReader(getPath());
-		final BufferedReader in = new BufferedReader(fileReader, 16384);
+		final BufferedReader in;
+		if (reader == null) {
+			in = new BufferedReader(new FileReader(getPath()));
+		}
+		else {
+			in = reader;
+			in.mark(PARAM_CHAR_MAX);
+		}
 		while (true) {
 			final String line = in.readLine();
 			if (line == null) break;
@@ -132,7 +198,8 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 			}
 			parseInput(line.substring(at + 1));
 		}
-		in.close();
+		if (reader == null) in.close();
+		else in.reset();
 	}
 
 	// -- ModuleInfo methods --
