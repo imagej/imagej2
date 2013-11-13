@@ -74,9 +74,9 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 
 	private Map<String, Class<?>> typeMap;
 
-	public ScriptInfo(final String path, final Context context) {
-		this.path = path;
+	public ScriptInfo(final Context context, final String path) {
 		setContext(context);
+		this.path = path;
 		try {
 			parseInputs();
 		}
