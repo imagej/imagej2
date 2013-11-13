@@ -98,13 +98,6 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 		return !inputMap.isEmpty();
 	}
 
-	public <T> void addInput(final String name, final Class<T> type) {
-		final DefaultMutableModuleItem<T> item =
-			new DefaultMutableModuleItem<T>(this, name, type);
-		inputMap.put(name, item);
-		inputList.add(item);
-	}
-
 	// -- ModuleInfo methods --
 
 	@Override
@@ -176,6 +169,13 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 			throw new ScriptException("Expected 'type name': " + line);
 		}
 		addInput(parts[1], parseType(parts[0]));
+	}
+
+	private <T> void addInput(final String name, final Class<T> type) {
+		final DefaultMutableModuleItem<T> item =
+			new DefaultMutableModuleItem<T>(this, name, type);
+		inputMap.put(name, item);
+		inputList.add(item);
 	}
 
 	private synchronized Class<?> parseType(final String string)
