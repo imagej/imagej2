@@ -138,11 +138,10 @@ public class ScriptFinder extends AbstractContextual {
 		return result;
 	}
 
-	private ScriptInfo createEntry(final File scriptPath,
-		final MenuPath menuPath)
+	private ScriptInfo
+		createEntry(final File scriptFile, final MenuPath menuPath)
 	{
-		final ScriptInfo info =
-			new ScriptInfo(getContext(), scriptPath.getAbsolutePath());
+		final ScriptInfo info = new ScriptInfo(getContext(), scriptFile);
 		info.setMenuPath(menuPath);
 
 		// flag script with special icon
