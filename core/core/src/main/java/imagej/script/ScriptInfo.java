@@ -94,6 +94,47 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 		return path;
 	}
 
+	/**
+	 * Parses the script's input parameters.
+	 * <p>
+	 * ImageJ's scripting framework supports specifying @{@link Parameter}-style
+	 * parameters in a preamble. The idea is to specify the input parameters in
+	 * this way:
+	 * 
+	 * <pre>
+	 * // @UIService ui
+	 * // @double degrees
+	 * </pre>
+	 * 
+	 * i.e. in the form <code>&#x40;&lt;type&gt; &lt;name&gt;</code>. These input
+	 * parameters will be parsed and filled just like @{@link Parameter}
+	 * -annotated fields in {@link Command}s.
+	 * </p>
+	 * 
+	 * @throws ScriptException If a parameter annotation is malformed.
+	 * @throws IOException If there is a problem reading the script file.
+	 */
+	public void parseInputs() throws ScriptException, IOException {
+		clearInputs();
+
+		final FileReader fileReader = new FileReader(getPath());
+		final BufferedReader in = new BufferedReader(fileReader, 16384);
+		while (true) {
+			final String line = in.readLine();
+			if (line == null) break;
+
+			// scan for lines containing an '@' stopping at the first line
+			// containing at least one alpha-numerical character but no '@'.
+			final int at = line.indexOf('@');
+			if (at < 0) {
+				if (line.matches(".*[A-Za-z0-9].*")) break;
+				continue;
+			}
+			parseInput(line.substring(at + 1));
+		}
+		in.close();
+	}
+
 	// -- ModuleInfo methods --
 
 	@Override
@@ -120,45 +161,6 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 
 	// -- Helper methods --
 
-	/**
-	 * Parses the script's input parameters.
-	 * <p>
-	 * ImageJ's scripting framework supports specifying @{@link Parameter}-style
-	 * parameters in a preamble. The idea is to specify the input parameters in
-	 * this way:
-	 * 
-	 * <pre>
-	 * // @UIService ui
-	 * // @double degrees
-	 * </pre>
-	 * 
-	 * i.e. in the form <code>&#x40;&lt;type&gt; &lt;name&gt;</code>. These input
-	 * parameters will be parsed and filled just like @{@link Parameter}
-	 * -annotated fields in {@link Command}s.
-	 * </p>
-	 * 
-	 * @throws ScriptException If a parameter annotation is malformed.
-	 * @throws IOException If there is a problem reading the script file.
-	 */
-	private void parseInputs() throws ScriptException, IOException {
-		final FileReader fileReader = new FileReader(getPath());
-		final BufferedReader in = new BufferedReader(fileReader, 16384);
-		while (true) {
-			final String line = in.readLine();
-			if (line == null) break;
-
-			// scan for lines containing an '@' stopping at the first line
-			// containing at least one alpha-numerical character but no '@'.
-			final int at = line.indexOf('@');
-			if (at < 0) {
-				if (line.matches(".*[A-Za-z0-9].*")) break;
-				continue;
-			}
-			parseInput(line.substring(at + 1));
-		}
-		in.close();
-	}
-
 	private <T> void parseInput(final String line) throws ScriptException {
 		final String[] parts = line.trim().split("[ \t\n]+");
 		if (parts.length != 2) {
@@ -172,6 +174,11 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 			new DefaultMutableModuleItem<T>(this, name, type);
 		inputMap.put(name, item);
 		inputList.add(item);
+	}
+
+	private void clearInputs() {
+		inputMap.clear();
+		inputList.clear();
 	}
 
 	private synchronized Class<?> parseType(final String string)
