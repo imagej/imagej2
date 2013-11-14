@@ -134,7 +134,7 @@ public abstract class InteractiveCommand extends DynamicCommand implements
 		if (oldValue != newValue) {
 			item.setValue(this, newValue);
 			try {
-				item.callback(InteractiveCommand.this);
+				item.callback(this);
 			}
 			catch (final MethodCallException exc) {
 				log.error(exc);
