@@ -59,7 +59,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.ui.awt</packageName>
+							<packageName>imagej.plugins.uis.awt</packageName>
 						</manifest>
 					</archive>
 				</configuration>
