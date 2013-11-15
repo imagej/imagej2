@@ -39,7 +39,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.core.platforms</packageName>
+							<packageName>imagej.plugins.platforms</packageName>
 						</manifest>
 					</archive>
 				</configuration>

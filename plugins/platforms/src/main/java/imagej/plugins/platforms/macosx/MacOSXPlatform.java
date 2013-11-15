@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.platforms.macosx;
+package imagej.plugins.platforms.macosx;
 
 import imagej.command.Command;
 import imagej.command.CommandInfo;
