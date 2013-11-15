@@ -37,6 +37,8 @@ package imagej.module;
 
 import imagej.module.event.ModulesAddedEvent;
 import imagej.module.event.ModulesRemovedEvent;
+import imagej.module.process.ModulePostprocessor;
+import imagej.module.process.ModulePreprocessor;
 
 import java.util.Collection;
 import java.util.HashMap;

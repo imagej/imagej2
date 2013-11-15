@@ -38,8 +38,8 @@ package imagej.command;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
-import imagej.plugin.PostprocessorPlugin;
-import imagej.plugin.PreprocessorPlugin;
+import imagej.module.process.PostprocessorPlugin;
+import imagej.module.process.PreprocessorPlugin;
 
 import java.util.ArrayList;
 import java.util.HashMap;

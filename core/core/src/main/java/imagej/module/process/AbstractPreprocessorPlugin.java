@@ -33,24 +33,32 @@
  * #L%
  */
 
-package imagej.module;
+package imagej.module.process;
 
-import imagej.Cancelable;
+import org.scijava.AbstractContextual;
 
 /**
- * A module preprocessor defines a step that occurs just prior to the actual
- * execution of a {@link Module}. Typically, a preprocessor prepares the module
- * for execution in some way, such as populating module inputs or checking
- * prerequisites.
- * <p>
- * The preprocessor may decide to cancel the module's pending execution, subject
- * to its own criteria. In this case, its {@link #isCanceled()} method will
- * return true, and its {@link #getCancelReason()} method may optionally explain
- * why.
- * </p>
+ * Abstract base class for plugin preprocessors.
  * 
  * @author Curtis Rueden
  */
-public interface ModulePreprocessor extends ModuleProcessor, Cancelable {
-	// NB: No implementation needed.
+public abstract class AbstractPreprocessorPlugin extends AbstractContextual
+	implements PreprocessorPlugin
+{
+
+	protected boolean canceled;
+	protected String cancelReason;
+
+	// -- Cancelable methods --
+
+	@Override
+	public boolean isCanceled() {
+		return canceled;
+	}
+
+	@Override
+	public String getCancelReason() {
+		return cancelReason;
+	}
+
 }

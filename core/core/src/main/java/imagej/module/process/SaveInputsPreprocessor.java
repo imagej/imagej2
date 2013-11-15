@@ -33,32 +33,45 @@
  * #L%
  */
 
-package imagej.plugin;
+package imagej.module.process;
 
-import org.scijava.AbstractContextual;
+import imagej.module.Module;
+import imagej.module.ModuleItem;
+
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
 
 /**
- * Abstract base class for plugin preprocessors.
+ * A preprocessor for saving populated input values to persistent storage.
+ * <p>
+ * This preprocessor runs late in the chain, giving other preprocessors every
+ * chance to populate the inputs first. In particular, it executes after the
+ * {@link imagej.widget.InputHarvester} has run, so that user-specified values
+ * are persisted for next time.
+ * </p>
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractPreprocessorPlugin extends AbstractContextual
-	implements PreprocessorPlugin
-{
+@Plugin(type = PreprocessorPlugin.class,
+	priority = Priority.VERY_LOW_PRIORITY - 1)
+public class SaveInputsPreprocessor extends AbstractPreprocessorPlugin {
 
-	protected boolean canceled;
-	protected String cancelReason;
-
-	// -- Cancelable methods --
+	// -- ModuleProcessor methods --
 
 	@Override
-	public boolean isCanceled() {
-		return canceled;
+	public void process(final Module module) {
+		final Iterable<ModuleItem<?>> inputs = module.getInfo().inputs();
+		for (final ModuleItem<?> item : inputs) {
+			saveValue(module, item);
+		}
 	}
 
-	@Override
-	public String getCancelReason() {
-		return cancelReason;
+	// -- Helper methods --
+
+	/** Saves the value of the given module item to persistent storage. */
+	private <T> void saveValue(final Module module, final ModuleItem<T> item) {
+		final T value = item.getValue(module);
+		item.saveValue(value);
 	}
 
 }

@@ -33,47 +33,32 @@
  * #L%
  */
 
-package imagej.plugin;
+package imagej.module.process;
 
-import imagej.module.Module;
+import imagej.ImageJPlugin;
 
-import java.util.Map;
-
-import org.scijava.Priority;
-import org.scijava.log.LogService;
-import org.scijava.plugin.Parameter;
+import org.scijava.Contextual;
 import org.scijava.plugin.Plugin;
 
 /**
- * A postprocessor plugin that dumps parameter values to the log.
+ * A postprocessor plugin defines a step that occurs immediately following the
+ * actual execution of a {@link imagej.module.Module}. Typically, a
+ * postprocessor does something with the results of a module, such as displaying
+ * its outputs on screen.
+ * <p>
+ * Postprocessor plugins discoverable at runtime must implement this interface
+ * and be annotated with @{@link Plugin} with attribute {@link Plugin#type()} =
+ * {@link PostprocessorPlugin}.class. While it possible to create a
+ * postprocessor plugin merely by implementing this interface, it is encouraged
+ * to instead extend {@link AbstractPostprocessorPlugin}, for convenience.
+ * </p>
  * 
  * @author Curtis Rueden
+ * @see ModulePostprocessor
  */
-@Plugin(type = PostprocessorPlugin.class, priority = Priority.FIRST_PRIORITY)
-public class DebugPostprocessor extends AbstractPostprocessorPlugin {
-
-	@Parameter(required = false)
-	private LogService log;
-
-	// -- ModuleProcessor methods --
-
-	@Override
-	public void process(final Module module) {
-		if (log == null || !log.isDebug()) return;
-
-		// dump input values to log
-		log.debug("INPUTS:");
-		final Map<String, Object> inputs = module.getInputs();
-		for (final String key : inputs.keySet()) {
-			log.debug("\t" + key + " = " + inputs.get(key));
-		}
-
-		// dump output values to log
-		log.debug("OUTPUTS:");
-		final Map<String, Object> outputs = module.getOutputs();
-		for (final String key : outputs.keySet()) {
-			log.debug("\t" + key + " = " + outputs.get(key));
-		}
-	}
-
+public interface PostprocessorPlugin extends ImageJPlugin, Contextual,
+	ModulePostprocessor
+{
+	// PostprocessorPlugin is a module postprocessor,
+	// discoverable via the plugin discovery mechanism.
 }

@@ -35,7 +35,7 @@
 
 package imagej.ui.swing.widget;
 
-import imagej.plugin.PreprocessorPlugin;
+import imagej.module.process.PreprocessorPlugin;
 import imagej.ui.swing.mdi.SwingMdiUI;
 import imagej.widget.InputHarvester;
 

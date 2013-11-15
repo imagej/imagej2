@@ -35,6 +35,8 @@
 
 package imagej.module;
 
+import imagej.module.process.ModulePostprocessor;
+import imagej.module.process.ModulePreprocessor;
 import imagej.service.ImageJService;
 
 import java.util.Collection;

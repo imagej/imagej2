@@ -36,7 +36,7 @@
 package imagej.ui.awt.widget;
 
 import imagej.module.Module;
-import imagej.plugin.PreprocessorPlugin;
+import imagej.module.process.PreprocessorPlugin;
 import imagej.ui.AbstractInputHarvesterPlugin;
 import imagej.ui.awt.AWTUI;
 import imagej.widget.InputHarvester;

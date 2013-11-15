@@ -58,12 +58,13 @@ import org.scijava.plugin.SciJavaPlugin;
  * used to display module outputs.</li>
  * <li>{@link imagej.widget.InputWidget} - plugins that render UI widgets for
  * the {@link imagej.widget.InputHarvester} preprocessor.</li>
- * <li>{@link imagej.plugin.PreprocessorPlugin} - plugins that perform
+ * <li>{@link imagej.module.process.PreprocessorPlugin} - plugins that perform
  * preprocessing on modules. A preprocessor plugin is a discoverable
- * {@link imagej.module.ModulePreprocessor}.</li>
- * <li>{@link imagej.plugin.PostprocessorPlugin} - plugins that perform
- * postprocessing on modules. A {@link imagej.plugin.PostprocessorPlugin} is a
- * discoverable {@link imagej.module.ModulePostprocessor}.</li>
+ * {@link imagej.module.process.ModulePreprocessor}.</li>
+ * <li>{@link imagej.module.process.PostprocessorPlugin} - plugins that perform
+ * postprocessing on modules. A
+ * {@link imagej.module.process.PostprocessorPlugin} is a discoverable
+ * {@link imagej.module.process.ModulePostprocessor}.</li>
  * <li>{@link imagej.platform.Platform} - plugins for defining platform-specific
  * behavior.</li>
  * </ul>

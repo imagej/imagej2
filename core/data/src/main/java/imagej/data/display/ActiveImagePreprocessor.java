@@ -39,8 +39,8 @@ import imagej.data.Dataset;
 import imagej.module.Module;
 import imagej.module.ModuleItem;
 import imagej.module.ModuleService;
-import imagej.plugin.AbstractPreprocessorPlugin;
-import imagej.plugin.PreprocessorPlugin;
+import imagej.module.process.AbstractPreprocessorPlugin;
+import imagej.module.process.PreprocessorPlugin;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Parameter;

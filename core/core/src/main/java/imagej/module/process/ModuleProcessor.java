@@ -33,7 +33,9 @@
  * #L%
  */
 
-package imagej.module;
+package imagej.module.process;
+
+import imagej.module.Module;
 
 /**
  * A module processor defines some sort of processing that occurs on a module

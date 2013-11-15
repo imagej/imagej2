@@ -33,17 +33,62 @@
  * #L%
  */
 
-package imagej.module;
+package imagej.module.process;
+
+import imagej.module.Module;
+import imagej.module.ModuleItem;
+
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
+import org.scijava.util.ConversionUtils;
 
 /**
- * A module postprocessor defines a step that occurs immediately following the
- * actual execution of a {@link Module}. Typically, a postprocessor does
- * something with the results of a module, such as displaying its outputs on
- * screen.
+ * A preprocessor for loading populated input values from persistent storage.
+ * <p>
+ * This preprocessor runs late in the chain, to give other preprocessors a
+ * chance to populate the inputs first. However, its priority immediately
+ * precedes the {@link imagej.widget.InputHarvester}'s, so that user-specified
+ * values from last time are populated in the user dialog.
+ * </p>
  * 
  * @author Curtis Rueden
  */
-public interface ModulePostprocessor extends ModuleProcessor {
-	// ModulePostprocessor trivially extends ModuleProcessor to differentiate
-	// preprocessors from postprocessors while sharing the same contract.
+@Plugin(type = PreprocessorPlugin.class,
+	priority = Priority.VERY_LOW_PRIORITY + 1)
+public class LoadInputsPreprocessor extends AbstractPreprocessorPlugin {
+
+	// -- ModuleProcessor methods --
+
+	@Override
+	public void process(final Module module) {
+		final Iterable<ModuleItem<?>> inputs = module.getInfo().inputs();
+		for (final ModuleItem<?> item : inputs) {
+			loadValue(module, item);
+		}
+	}
+
+	// -- Helper methods --
+
+	/** Loads the value of the given module item from persistent storage. */
+	private <T> void loadValue(final Module module, final ModuleItem<T> item) {
+		// skip input that has already been resolved
+		if (module.isResolved(item.getName())) return;
+
+		final Class<T> type = item.getType();
+		final T defaultValue = item.getValue(module);
+		final T prefValue = item.loadValue();
+		final T value = getBestValue(prefValue, defaultValue, type);
+		item.setValue(module, value);
+	}
+
+	private <T> T getBestValue(final Object prefValue,
+		final Object defaultValue, final Class<T> type)
+	{
+		if (prefValue != null) return ConversionUtils.convert(prefValue, type);
+		if (defaultValue != null) {
+			return ConversionUtils.convert(defaultValue, type);
+		}
+		return ConversionUtils.getNullValue(type);
+	}
+
 }

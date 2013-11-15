@@ -36,7 +36,7 @@
 package imagej.ui.pivot.widget;
 
 import imagej.module.Module;
-import imagej.plugin.PreprocessorPlugin;
+import imagej.module.process.PreprocessorPlugin;
 import imagej.ui.AbstractInputHarvesterPlugin;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;

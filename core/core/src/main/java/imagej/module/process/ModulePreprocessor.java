@@ -33,42 +33,25 @@
  * #L%
  */
 
-package imagej.plugin;
+package imagej.module.process;
 
-import imagej.ValidityProblem;
+import imagej.Cancelable;
 import imagej.module.Module;
-import imagej.module.ModuleInfo;
-
-import org.scijava.Priority;
-import org.scijava.plugin.Plugin;
 
 /**
- * A preprocessor plugin that verifies module validity. If the module is not
- * valid, the module execution is canceled.
+ * A module preprocessor defines a step that occurs just prior to the actual
+ * execution of a {@link Module}. Typically, a preprocessor prepares the module
+ * for execution in some way, such as populating module inputs or checking
+ * prerequisites.
+ * <p>
+ * The preprocessor may decide to cancel the module's pending execution, subject
+ * to its own criteria. In this case, its {@link #isCanceled()} method will
+ * return true, and its {@link #getCancelReason()} method may optionally explain
+ * why.
+ * </p>
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PreprocessorPlugin.class,
-	priority = Priority.VERY_HIGH_PRIORITY + 1)
-public class ValidityPreprocessor extends AbstractPreprocessorPlugin {
-
-	// -- ModuleProcessor methods --
-
-	@Override
-	public void process(final Module module) {
-		final ModuleInfo info = module.getInfo();
-
-		canceled = !info.isValid();
-		if (!canceled) return;
-
-		final StringBuilder sb =
-			new StringBuilder("The module \"" + info.getDelegateClassName() +
-				"\" is invalid:\n");
-		for (final ValidityProblem problem : info.getProblems()) {
-			sb.append("- " + problem.getMessage());
-			sb.append("\n");
-		}
-		cancelReason = sb.toString();
-	}
-
+public interface ModulePreprocessor extends ModuleProcessor, Cancelable {
+	// NB: No implementation needed.
 }

@@ -33,33 +33,19 @@
  * #L%
  */
 
-package imagej.plugin;
+package imagej.module.process;
 
-import imagej.ImageJPlugin;
-import imagej.module.ModulePreprocessor;
-
-import org.scijava.Contextual;
-import org.scijava.plugin.Plugin;
+import imagej.module.Module;
 
 /**
- * A preprocessor plugin defines a step that occurs just prior to the actual
- * execution of a {@link imagej.module.Module}. Typically, a preprocessor
- * prepares the module for execution in some way, such as populating module
- * inputs or checking prerequisites.
- * <p>
- * Preprocessor plugins discoverable at runtime must implement this interface
- * and be annotated with @{@link Plugin} with attribute {@link Plugin#type()} =
- * {@link PreprocessorPlugin}.class. While it possible to create a preprocessor
- * plugin merely by implementing this interface, it is encouraged to instead
- * extend {@link AbstractPreprocessorPlugin}, for convenience.
- * </p>
+ * A module postprocessor defines a step that occurs immediately following the
+ * actual execution of a {@link Module}. Typically, a postprocessor does
+ * something with the results of a module, such as displaying its outputs on
+ * screen.
  * 
  * @author Curtis Rueden
- * @see ModulePreprocessor
  */
-public interface PreprocessorPlugin extends ImageJPlugin, Contextual,
-	ModulePreprocessor
-{
-	// PreprocessorPlugin is a module preprocessor,
-	// discoverable via the plugin discovery mechanism.
+public interface ModulePostprocessor extends ModuleProcessor {
+	// ModulePostprocessor trivially extends ModuleProcessor to differentiate
+	// preprocessors from postprocessors while sharing the same contract.
 }

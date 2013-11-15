@@ -33,8 +33,9 @@
  * #L%
  */
 
-package imagej.plugin;
+package imagej.module.process;
 
+import imagej.module.MethodCallException;
 import imagej.module.Module;
 
 import org.scijava.Priority;
@@ -43,12 +44,15 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * A preprocessor plugin that dumps information to the log.
+ * A preprocessor plugin that populates initial parameter values.
+ * <p>
+ * This is done via a single call to {@link Module#initialize()}.
+ * </p>
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PreprocessorPlugin.class, priority = Priority.FIRST_PRIORITY)
-public class DebugPreprocessor extends AbstractPreprocessorPlugin {
+@Plugin(type = PreprocessorPlugin.class, priority = Priority.HIGH_PRIORITY)
+public class InitPreprocessor extends AbstractPreprocessorPlugin {
 
 	@Parameter(required = false)
 	private LogService log;
@@ -57,9 +61,15 @@ public class DebugPreprocessor extends AbstractPreprocessorPlugin {
 
 	@Override
 	public void process(final Module module) {
-		if (log == null || !log.isDebug()) return;
-
-		log.debug("Executing module: " + module.getDelegateObject());
+		try {
+			module.initialize();
+		}
+		catch (final MethodCallException exc) {
+			canceled = true;
+			final String moduleClass = module.getInfo().getDelegateClassName();
+			cancelReason = "The module \"" + moduleClass + "\" failed to initialize.";
+			if (log != null) log.error(exc);
+		}
 	}
 
 }

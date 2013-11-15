@@ -33,62 +33,32 @@
  * #L%
  */
 
-package imagej.plugin;
+package imagej.module.process;
 
-import imagej.module.Module;
-import imagej.module.ModuleItem;
+import imagej.ImageJPlugin;
 
-import org.scijava.Priority;
+import org.scijava.Contextual;
 import org.scijava.plugin.Plugin;
-import org.scijava.util.ConversionUtils;
 
 /**
- * A preprocessor for loading populated input values from persistent storage.
+ * A preprocessor plugin defines a step that occurs just prior to the actual
+ * execution of a {@link imagej.module.Module}. Typically, a preprocessor
+ * prepares the module for execution in some way, such as populating module
+ * inputs or checking prerequisites.
  * <p>
- * This preprocessor runs late in the chain, to give other preprocessors a
- * chance to populate the inputs first. However, its priority immediately
- * precedes the {@link imagej.widget.InputHarvester}'s, so that user-specified
- * values from last time are populated in the user dialog.
+ * Preprocessor plugins discoverable at runtime must implement this interface
+ * and be annotated with @{@link Plugin} with attribute {@link Plugin#type()} =
+ * {@link PreprocessorPlugin}.class. While it possible to create a preprocessor
+ * plugin merely by implementing this interface, it is encouraged to instead
+ * extend {@link AbstractPreprocessorPlugin}, for convenience.
  * </p>
  * 
  * @author Curtis Rueden
+ * @see ModulePreprocessor
  */
-@Plugin(type = PreprocessorPlugin.class,
-	priority = Priority.VERY_LOW_PRIORITY + 1)
-public class LoadInputsPreprocessor extends AbstractPreprocessorPlugin {
-
-	// -- ModuleProcessor methods --
-
-	@Override
-	public void process(final Module module) {
-		final Iterable<ModuleItem<?>> inputs = module.getInfo().inputs();
-		for (final ModuleItem<?> item : inputs) {
-			loadValue(module, item);
-		}
-	}
-
-	// -- Helper methods --
-
-	/** Loads the value of the given module item from persistent storage. */
-	private <T> void loadValue(final Module module, final ModuleItem<T> item) {
-		// skip input that has already been resolved
-		if (module.isResolved(item.getName())) return;
-
-		final Class<T> type = item.getType();
-		final T defaultValue = item.getValue(module);
-		final T prefValue = item.loadValue();
-		final T value = getBestValue(prefValue, defaultValue, type);
-		item.setValue(module, value);
-	}
-
-	private <T> T getBestValue(final Object prefValue,
-		final Object defaultValue, final Class<T> type)
-	{
-		if (prefValue != null) return ConversionUtils.convert(prefValue, type);
-		if (defaultValue != null) {
-			return ConversionUtils.convert(defaultValue, type);
-		}
-		return ConversionUtils.getNullValue(type);
-	}
-
+public interface PreprocessorPlugin extends ImageJPlugin, Contextual,
+	ModulePreprocessor
+{
+	// PreprocessorPlugin is a module preprocessor,
+	// discoverable via the plugin discovery mechanism.
 }
