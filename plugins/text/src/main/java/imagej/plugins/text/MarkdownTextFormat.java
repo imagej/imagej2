@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.text;
+package imagej.plugins.text;
 
 import com.petebevin.markdown.MarkdownProcessor;
 

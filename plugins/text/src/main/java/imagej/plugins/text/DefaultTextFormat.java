@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.text;
+package imagej.plugins.text;
 
 import imagej.text.AbstractTextFormat;
 import imagej.text.TextFormat;
