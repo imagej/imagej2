@@ -57,7 +57,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.core.tools</packageName>
+							<packageName>imagej.plugins.tools</packageName>
 						</manifest>
 					</archive>
 				</configuration>

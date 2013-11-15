@@ -33,27 +33,64 @@
  * #L%
  */
 
-package imagej.core.tools;
+package imagej.plugins.tools;
 
+import imagej.command.CommandService;
+import imagej.display.event.input.KyPressedEvent;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 
+import org.scijava.Priority;
+import org.scijava.input.KeyCode;
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.thread.ThreadService;
 
 /**
- * TODO
+ * Oh, the nostalgia!
  * 
- * @author Rick Lentz
- * @author Grant Harris
  * @author Curtis Rueden
  */
-@Plugin(type = Tool.class, name = "Arrow", description = "Arrow Tool",
-	iconPath = "/icons/tools/arrow.png", priority = ArrowTool.PRIORITY,
-	enabled = false)
-public class ArrowTool extends AbstractTool {
+@Plugin(type = Tool.class, name = "Konami",
+	priority = Priority.FIRST_PRIORITY,
+	attrs = { @Attr(name = Tool.ALWAYS_ACTIVE) })
+public class KonamiHandler extends AbstractTool implements Runnable {
 
-	public static final double PRIORITY = -305;
+	private static final KeyCode[] CODE = { KeyCode.UP, KeyCode.UP, KeyCode.DOWN,
+		KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.LEFT, KeyCode.RIGHT,
+		KeyCode.B, KeyCode.A };
 
-	// TODO
+	private static final String JINGLE =
+		"T100 L32 B > C E G B > C E C < B G E C < L8 B";
+
+	private static final String COMMAND = "imagej.core.commands.app.EasterEgg";
+
+	@Parameter
+	private ThreadService threadService;
+
+	@Parameter
+	private CommandService commandService;
+
+	private int index = 0;
+
+	@Override
+	public void onKeyDown(final KyPressedEvent evt) {
+		if (evt.getCode() == CODE[index]) {
+			index++;
+			if (index > CODE.length - 2) evt.consume();
+			if (index == CODE.length) {
+				index = 0;
+				threadService.run(this);
+				commandService.run(COMMAND);
+			}
+		}
+		else index = 0;
+	}
+
+	@Override
+	public void run() {
+		new TunePlayer().play(JINGLE);
+	}
 
 }

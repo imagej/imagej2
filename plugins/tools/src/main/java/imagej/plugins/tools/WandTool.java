@@ -33,50 +33,25 @@
  * #L%
  */
 
-package imagej.core.tools;
+package imagej.plugins.tools;
 
-import imagej.command.Command;
+import imagej.tool.AbstractTool;
+import imagej.tool.Tool;
 
-import org.scijava.ItemIO;
-import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * Implements the configuration code for {@link SprayCanTool}.
+ * TODO
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-@Plugin(type = Command.class, label = "Spray Can Tool", initializer = "initAll")
-public class SprayCanToolConfig implements Command {
+@Plugin(type = Tool.class, name = "Wand", description = "Wand (tracing) tool",
+	iconPath = "/icons/tools/wand.png", priority = WandTool.PRIORITY,
+	enabled = false)
+public class WandTool extends AbstractTool {
 
-	@Parameter(type = ItemIO.BOTH)
-	private SprayCanTool tool;
+	public static final double PRIORITY = -110;
 
-	// TODO - it would be nice to persist these values but the associated
-	// tools cannot persist values. thus you get in a situation that the
-	// these values do not equal the tool's initial values which is
-	// confusing. Tools need to be able to persist some values to get around this.
-
-  @Parameter(label = "Spray Width (pixels):", min = "1", persist = false)
-  private int width;
-
-  @Parameter(label = "Dot Size (pixels):", min = "1", persist = false)
-  private int dotSize;
-  
-  @Parameter(label = "Flow Rate (1-10):", min = "1", max = "10", persist=false)
-  private int rate;
-  
-	@Override
-	public void run() {
-		tool.setWidth(width);
-		tool.setRate(rate);
-		tool.setDotSize(dotSize);
-	}
-
-	protected void initAll() {
-		width = tool.getWidth();
-		rate = tool.getRate();
-		dotSize = tool.getDotSize();
-	}
+	// TODO
 
 }

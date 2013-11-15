@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.tools;
+package imagej.plugins.tools;
 
 import java.util.Arrays;
 

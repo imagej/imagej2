@@ -33,25 +33,50 @@
  * #L%
  */
 
-package imagej.core.tools;
+package imagej.plugins.tools;
 
+import imagej.display.event.input.KyPressedEvent;
+import imagej.display.event.input.KyReleasedEvent;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
+import imagej.tool.ToolService;
 
+import org.scijava.plugin.Attr;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * TODO
+ * Tool for activating the pan tool in response to the space bar.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Tool.class, name = "Wand", description = "Wand (tracing) tool",
-	iconPath = "/icons/tools/wand.png", priority = WandTool.PRIORITY,
-	enabled = false)
-public class WandTool extends AbstractTool {
+@Plugin(type = Tool.class, name = "Pan Activator", attrs = { @Attr(
+	name = Tool.ALWAYS_ACTIVE) })
+public class PanActivator extends AbstractTool {
 
-	public static final double PRIORITY = -110;
+	/** Key used to activate pan tool. */
+	private static final char KEY = ' ';
 
-	// TODO
+	@Parameter
+	private ToolService toolService;
+
+	/** Previously active tool, from before pan key was held. */
+	private Tool priorTool;
+
+	@Override
+	public void onKeyDown(final KyPressedEvent evt) {
+		if (evt.getCharacter() != KEY) return;
+		final Tool activeTool = toolService.getActiveTool();
+		final Tool panTool = toolService.getTool("Pan");
+		if (activeTool == panTool) return;
+		priorTool = activeTool;
+		toolService.setActiveTool(panTool);
+	}
+
+	@Override
+	public void onKeyUp(final KyReleasedEvent evt) {
+		if (evt.getCharacter() != KEY) return;
+		toolService.setActiveTool(priorTool);
+	}
 
 }

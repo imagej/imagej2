@@ -33,57 +33,41 @@
  * #L%
  */
 
-package imagej.core.tools;
+package imagej.plugins.tools;
 
-import imagej.data.ChannelCollection;
-import imagej.data.options.OptionsChannels;
-import imagej.tool.Tool;
-import imagej.util.ColorRGB;
-import imagej.util.Colors;
+import imagej.command.Command;
 
+import org.scijava.ItemIO;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * The tool that displays the current foreground color.
+ * Implements the configuration code for {@link PencilTool}.
  * 
  * @author Barry DeZonia
  */
-@Plugin(type = Tool.class, name = "Foreground",
-	iconPath = "/icons/tools/blank.png", priority = FgColorTool.PRIORITY)
-public class FgColorTool extends AbstractColorTool {
+@Plugin(type = Command.class, label = "Pencil Tool")
+public class PencilToolConfig implements Command {
 
-	public static final int PRIORITY = BASE_PRIORITY - 0;
+	@Parameter(type = ItemIO.BOTH)
+	private PencilTool tool;
+
+	// TODO - it would be nice to persist this pencil width. but the associated
+	// tool cannot persist its own width. thus you get in a situation that the
+	// dialog pencil width does not equal the tool's initial value which is
+	// confusing. Tools need to be able to persist some values to get around this.
+
+	@Parameter(label = "Pencil Width (pixels)", min = "1", persist = false,
+		initializer = "init")
+	private long width;
 
 	@Override
-	ColorRGB getEmptyColor() {
-		return Colors.WHITE;
+	public void run() {
+		tool.setLineWidth(width);
 	}
 
-	@Override
-	ColorRGB getOutlineColor() {
-		return Colors.ORANGE;
-	}
-
-	@Override
-	ChannelCollection getChannels(final OptionsChannels options) {
-		return options.getFgValues();
-	}
-
-	@Override
-	void
-		setChannels(final OptionsChannels options, final ChannelCollection chans)
-	{
-		options.setFgValues(chans);
-	}
-
-	@Override
-	void setLastColor(final OptionsChannels options, final ColorRGB color) {
-		options.setLastFgColor(color);
-	}
-
-	@Override
-	String getLabel() {
-		return "FG";
+	protected void init() {
+		width = tool.getLineWidth();
 	}
 
 }

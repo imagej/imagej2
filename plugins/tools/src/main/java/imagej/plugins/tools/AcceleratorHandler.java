@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.tools;
+package imagej.plugins.tools;
 
 import imagej.command.CommandService;
 import imagej.display.event.input.KyPressedEvent;

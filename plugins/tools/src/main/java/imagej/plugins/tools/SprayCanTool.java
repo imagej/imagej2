@@ -33,8 +33,9 @@
  * #L%
  */
 
-package imagej.core.tools;
+package imagej.plugins.tools;
 
+import imagej.command.CommandService;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.DrawingTool;
@@ -45,32 +46,44 @@ import imagej.data.event.DatasetUpdatedEvent;
 import imagej.data.options.OptionsChannels;
 import imagej.display.event.input.MsButtonEvent;
 import imagej.display.event.input.MsDraggedEvent;
+import imagej.display.event.input.MsEvent;
 import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
 import imagej.options.OptionsService;
 import imagej.render.RenderingService;
 import imagej.tool.AbstractTool;
+import imagej.tool.Tool;
 import imagej.util.IntCoords;
 import imagej.util.RealCoords;
 
+import java.util.Random;
+
+import net.imglib2.meta.Axes;
+
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
- * Abstract class that is used by PencilTool, PaintBrushTool, and their erase
- * modes to draw lines into a dataset using fg/bg values.
+ * Implements a spray can drawing tool
  * 
  * @author Barry DeZonia
  */
-public abstract class AbstractLineTool extends AbstractTool {
+@Plugin(type = Tool.class, name = "SprayCan", label = "Spray Can",
+	description = "Spray Can Tool", iconPath = "/icons/tools/spray-can.png",
+	priority = SprayCanTool.PRIORITY)
+public class SprayCanTool extends AbstractTool {
 
-	// -- instance variables --
+	public static final double PRIORITY = -303;
 
 	@Parameter
-	private ImageDisplayService imageDisplayService;
+	private CommandService commandService;
 
 	@Parameter
 	private OptionsService optionsService;
+
+	@Parameter
+	private ImageDisplayService imageDisplayService;
 
 	@Parameter
 	private RenderingService renderingService;
@@ -79,36 +92,19 @@ public abstract class AbstractLineTool extends AbstractTool {
 	private EventService eventService;
 
 	private DrawingTool drawingTool;
-	private long lineWidth = 1;
-
-	// -- public interface --
-
-	/** Sets the drawing width for lines (in pixels). */
-	public void setLineWidth(final long w) {
-		if (w < 1) lineWidth = 1;
-		else lineWidth = w;
-	}
-
-	/** Gets the drawing width for lines (in pixels). */
-	public long getLineWidth() {
-		return lineWidth;
-	}
-
-	/** On mouse down the start point of a series of lines is established. */
+	private int width=100, rate=6, dotSize=1;
+	private long numPixels = 1;
+	private Random rng = new Random();
+	
+	/** On mouse down the delay counters are reset. */
 	@Override
 	public void onMouseDown(final MsPressedEvent evt) {
 		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
 		if (!(evt.getDisplay() instanceof ImageDisplay)) return;
 		initDrawingTool(evt);
 		if (drawingTool != null) {
-			// safe cast due to earlier test
-			ImageDisplay disp = (ImageDisplay) evt.getDisplay();
-			ImageCanvas canv = disp.getCanvas();
-			IntCoords panelCoords = new IntCoords(evt.getX(), evt.getY());
-			RealCoords realCoords = canv.panelToDataCoords(panelCoords);
-			long modelX = realCoords.getLongX();
-			long modelY = realCoords.getLongY();
-			drawingTool.moveTo(modelX, modelY);
+			numPixels = calcPixelCount();
+			doOneSpray(evt);
 		}
 		evt.consume();
 	}
@@ -127,24 +123,69 @@ public abstract class AbstractLineTool extends AbstractTool {
 		evt.consume();
 	}
 
-	/** On mouse drag a series of lines are drawn. */
+	/** On mouse drag sometimes a point is drawn. */
 	@Override
 	public void onMouseDrag(final MsDraggedEvent evt) {
 		if (drawingTool == null) return;
+		doOneSpray(evt);
+		evt.consume();
+	}
+
+	@Override
+	public void configure() {
+		commandService.run(SprayCanToolConfig.class, "tool", this);
+	}
+
+	public void setWidth(int width) { this.width = width; }
+	public void setRate(int rate) { this.rate = rate; }
+	public void setDotSize(int dotSize) { this.dotSize = dotSize; }
+	public int getWidth() { return width; }
+	public int getRate() { return rate; }
+	public int getDotSize() { return dotSize; }
+	
+
+	// -- private helpers --
+
+	private double calcFraction() {
+		// NB - formula arrived at by trying IJ1's version at each of the 10 rate
+		// settings and counting the pixels drawn in a radius 50 circle. Then used
+		// those values to fit a curve. This is not exactly like IJ1 but works
+		// better than previous linear interpolation schemes. 
+		return (13 * Math.pow(2.02,rate-1)) / 7854.0;
+	}
+	
+	private long calcPixelCount() {
+		double fraction = calcFraction();
+		// numPixels is fraction of the area of the circle of specified width
+		long count = (long) (fraction * Math.PI * Math.pow(width/2.0,2));
+		if (count <= 0) return 1;
+		return count;
+	}
+	
+	private void doOneSpray(MsEvent evt) {
 		if (!(evt.getDisplay() instanceof ImageDisplay)) return;
 		ImageDisplay disp = (ImageDisplay) evt.getDisplay();
 		ImageCanvas canv = disp.getCanvas();
 		IntCoords panelCoords = new IntCoords(evt.getX(), evt.getY());
 		RealCoords realCoords = canv.panelToDataCoords(panelCoords);
-		long modelX = realCoords.getLongX();
-		long modelY = realCoords.getLongY();
-		drawingTool.lineTo(modelX, modelY);
+		drawPixels(realCoords.getLongX(), realCoords.getLongY());
 		evt.getDisplay().update();
-		evt.consume();
 	}
-
-	// -- private helpers --
-
+	
+	// NB: adapted from IJ1's SprayCanTool.txt macro courtesy Wayne Rasband
+	private void drawPixels(long ox, long oy) {
+		double radius = width / 2.0;
+		double radius2 = radius * radius;
+		for (int i = 0; i < numPixels; i++) {
+			long dx, dy;
+			do {
+	      dx = (long) ((rng.nextDouble()-0.5)*width);
+	      dy = (long) ((rng.nextDouble()-0.5)*width);
+			} while (dx*dx + dy*dy > radius2);
+	    drawingTool.drawDot(ox + dx, oy + dy);
+		}
+	}
+	
 	/** Allocates and initializes a DrawingTool if possible. */
 	private void initDrawingTool(final MsPressedEvent evt) {
 
@@ -176,11 +217,20 @@ public abstract class AbstractLineTool extends AbstractTool {
 			currPos[i] = imageDisplay.getLongPosition(i);
 		drawingTool.setPosition(currPos);
 
-		// TODO - change here to make this work on any two arbitrary axes
-		drawingTool.setUAxis(0);
-		drawingTool.setVAxis(1);
+		// restrict to a single channel if a multichannel image
+		int chanIndex = imageDisplay.dimensionIndex(Axes.CHANNEL);
+		if (chanIndex >= 0) {
+			long currChanPos = currPos[chanIndex];
+			drawingTool.setPreferredChannel(currChanPos);
+		}
 
-		drawingTool.setLineWidth(getLineWidth());
+		// define the UV drawing axes that the tool will use
+		// TODO - change here to make this work on any two arbitrary axes
+		drawingTool.setUAxis(0); // U will be axis 0 (which by convention is X)
+		drawingTool.setVAxis(1); // V will be axis 1 (which by convention is Y)
+
+		// set the size used to draw dots
+		drawingTool.setLineWidth(getDotSize());
 	}
 
 }

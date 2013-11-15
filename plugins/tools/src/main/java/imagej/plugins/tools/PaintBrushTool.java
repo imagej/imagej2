@@ -33,57 +33,36 @@
  * #L%
  */
 
-package imagej.core.tools;
+package imagej.plugins.tools;
 
-import imagej.data.ChannelCollection;
-import imagej.data.options.OptionsChannels;
+import imagej.command.CommandService;
 import imagej.tool.Tool;
-import imagej.util.ColorRGB;
-import imagej.util.Colors;
 
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * The tool that displays the current background color.
+ * Tool implementation for paint brush.
  * 
  * @author Barry DeZonia
  */
-@Plugin(type = Tool.class, name = "Background",
-	iconPath = "/icons/tools/blankBlack.png", priority = BgColorTool.PRIORITY)
-public class BgColorTool extends AbstractColorTool {
+@Plugin(type = Tool.class, name = "Paintbrush",
+	description = "Paintbrush Tool", iconPath = "/icons/tools/paintbrush.png",
+	priority = PaintBrushTool.PRIORITY)
+public class PaintBrushTool extends AbstractLineTool {
 
-	public static final int PRIORITY = BASE_PRIORITY - 1;
+	public static final double PRIORITY = -300;
 
-	@Override
-	ColorRGB getEmptyColor() {
-		return Colors.BLACK;
+	@Parameter
+	private CommandService commandService;
+
+	public PaintBrushTool() {
+		setLineWidth(10);
 	}
 
 	@Override
-	ColorRGB getOutlineColor() {
-		return Colors.ORANGE;
-	}
-
-	@Override
-	ChannelCollection getChannels(final OptionsChannels options) {
-		return options.getBgValues();
-	}
-
-	@Override
-	void
-		setChannels(final OptionsChannels options, final ChannelCollection chans)
-	{
-		options.setBgValues(chans);
-	}
-
-	@Override
-	void setLastColor(final OptionsChannels options, final ColorRGB color) {
-		options.setLastBgColor(color);
-	}
-
-	@Override
-	String getLabel() {
-		return "BG";
+	public void configure() {
+		commandService.run(PaintBrushToolConfig.class, "tool", this);
 	}
 
 }

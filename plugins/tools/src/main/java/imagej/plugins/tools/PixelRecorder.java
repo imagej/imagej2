@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.tools;
+package imagej.plugins.tools;
 
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;

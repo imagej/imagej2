@@ -33,57 +33,27 @@
  * #L%
  */
 
-package imagej.core.tools;
+package imagej.plugins.tools;
 
-import imagej.command.Command;
+import imagej.tool.AbstractTool;
+import imagej.tool.Tool;
 
-import org.scijava.ItemIO;
-import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * Implements the configuration code for {@link FloodFillTool}.
+ * TODO
  * 
- * @author Barry DeZonia
+ * @author Rick Lentz
+ * @author Grant Harris
+ * @author Curtis Rueden
  */
-@Plugin(type = Command.class, label = "Flood Fill Tool")
-public class FloodFillToolConfig implements Command {
+@Plugin(type = Tool.class, name = "Arrow", description = "Arrow Tool",
+	iconPath = "/icons/tools/arrow.png", priority = ArrowTool.PRIORITY,
+	enabled = false)
+public class ArrowTool extends AbstractTool {
 
-	// -- constants --
+	public static final double PRIORITY = -305;
 
-	private static final String FOUR = "4-connected";
-	private static final String EIGHT = "8-connected";
-
-	// -- Parameters --
-
-	@Parameter(type = ItemIO.BOTH)
-	private FloodFillTool tool;
-
-	// TODO - it would be nice to persist this. but the associated tool cannot
-	// persist values. thus you get in a situation that the dialog connectivity
-	// does not equal the tool's initial value which is confusing. Tools need to
-	// be able to persist some values to get around this.
-
-	@Parameter(label = "Flood Type:", choices = { EIGHT, FOUR },
-		initializer = "init", persist = false)
-	private String connectivity;
-
-	// -- public interface --
-
-	/** Configures the connectivity of the FloodFillTool */
-	@Override
-	public void run() {
-		if (connectivity.equals(FOUR))
-			tool.setConnectivity(FloodFillTool.Connectivity.FOUR);
-		else tool.setConnectivity(FloodFillTool.Connectivity.EIGHT);
-	}
-
-	// -- initializer --
-
-	protected void init() {
-		final FloodFillTool.Connectivity neighCount = tool.getConnectivity();
-		if (neighCount.equals(FloodFillTool.Connectivity.FOUR)) connectivity = FOUR;
-		else connectivity = EIGHT;
-	}
+	// TODO
 
 }

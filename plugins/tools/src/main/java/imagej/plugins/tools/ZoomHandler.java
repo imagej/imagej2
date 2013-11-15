@@ -33,14 +33,14 @@
  * #L%
  */
 
-package imagej.core.tools;
+package imagej.plugins.tools;
 
+import imagej.command.CommandService;
+import imagej.data.display.ImageDisplay;
+import imagej.display.Display;
 import imagej.display.event.input.KyPressedEvent;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
-import imagej.ui.ApplicationFrame;
-import imagej.ui.UIService;
-import imagej.ui.UserInterface;
 
 import org.scijava.input.KeyCode;
 import org.scijava.plugin.Attr;
@@ -48,26 +48,32 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * Brings the main application window into focus when ENTER is pressed.
+ * Handles the second key mapping for zoom in (not just + but instead here =).
+ * The current plugin annotation system does not allow two keyboard accelerators
+ * to be defined for one plugin. We define a special key handler here.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Tool.class, name = "Window Focus", attrs = { @Attr(
-	name = Tool.ALWAYS_ACTIVE) })
-public class FocusHandler extends AbstractTool {
+@Plugin(type = Tool.class, name = "Zoom Shortcuts", attrs = {
+	@Attr(name = Tool.ALWAYS_ACTIVE), @Attr(name = Tool.ACTIVE_IN_APP_FRAME) })
+public class ZoomHandler extends AbstractTool {
 
-	@Parameter(required = false)
-	private UIService uiService;
+	@Parameter
+	private CommandService commandService;
 
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {
-		if (evt.getCode() != KeyCode.ENTER) return;
-		if (uiService == null) return;
-		final UserInterface ui = uiService.getDefaultUI();
-		if (ui == null) return;
-		final ApplicationFrame appFrame = ui.getApplicationFrame();
-		if (appFrame == null) return;
-		appFrame.activate();
+		final Display<?> display = evt.getDisplay();
+		if (!(display instanceof ImageDisplay)) return;
+
+		final KeyCode keyCode = evt.getCode();
+		final char keyChar = evt.getCharacter();
+
+		if (keyCode == KeyCode.EQUALS || keyChar == '=')
+		{
+			commandService.run("imagej.core.commands.zoom.ZoomIn");
+			evt.consume();
+		}
 	}
 
 }

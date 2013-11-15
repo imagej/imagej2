@@ -36,8 +36,8 @@
 package imagej.plugins.commands.debug;
 
 import imagej.command.Command;
-import imagej.core.tools.TunePlayer;
 import imagej.data.Dataset;
+import imagej.plugins.tools.TunePlayer;
 import imagej.widget.Button;
 import net.imglib2.img.Img;
 import net.imglib2.ops.img.ImageCombiner;

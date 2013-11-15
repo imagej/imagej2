@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.tools;
+package imagej.plugins.tools;
 
 import imagej.data.display.ImageDisplay;
 import imagej.display.Display;

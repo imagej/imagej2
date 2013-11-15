@@ -33,60 +33,41 @@
  * #L%
  */
 
-package imagej.core.tools;
+package imagej.plugins.tools;
 
-import imagej.display.Display;
-import imagej.display.event.input.MsButtonEvent;
-import imagej.display.event.input.MsClickedEvent;
-import imagej.display.event.input.MsPressedEvent;
-import imagej.display.event.input.MsReleasedEvent;
-import imagej.tool.AbstractTool;
-import imagej.tool.Tool;
-import imagej.ui.UIService;
+import imagej.command.Command;
 
-import org.scijava.plugin.Attr;
+import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * Handles display of general-purpose context menu (e.g., on right mouse click).
+ * Implements the configuration code for {@link PaintBrushTool}.
  * 
- * @author Curtis Rueden
+ * @author Barry DeZonia
  */
-@Plugin(type = Tool.class, name = "Context Menus",
-	menuRoot = Plugin.CONTEXT_MENU_ROOT, attrs = { @Attr(
-		name = Tool.ALWAYS_ACTIVE) })
-public class ContextMenuHandler extends AbstractTool {
+@Plugin(type = Command.class, label = "Paintbrush Tool")
+public class PaintBrushToolConfig implements Command {
 
-	@Parameter
-	private UIService uiService;
+	@Parameter(type = ItemIO.BOTH)
+	private PaintBrushTool tool;
 
-	@Override
-	public void onMouseDown(final MsPressedEvent evt) {
-		doPopupMenu(evt);
-	}
+	// TODO - it would be nice to persist this brush width. but the associated
+	// tool cannot persist its own width. thus you get in a situation that the
+	// dialog brush width does not equal the tool's initial value which is
+	// confusing. Tools need to be able to persist some values to get around this.
 
-	@Override
-	public void onMouseUp(final MsReleasedEvent evt) {
-		doPopupMenu(evt);
-	}
+	@Parameter(label = "Brush Width (pixels)", min = "1", persist = false,
+		initializer = "init")
+	private long width;
 
 	@Override
-	public void onMouseClick(final MsClickedEvent evt) {
-		doPopupMenu(evt);
+	public void run() {
+		tool.setLineWidth(width);
 	}
 
-	// -- Helper methods --
-
-	private void doPopupMenu(final MsButtonEvent evt) {
-		if (!evt.isPopupTrigger()) return;
-
-		final String menuRoot = getInfo().getMenuRoot();
-		final Display<?> display = evt.getDisplay();
-		uiService.showContextMenu(menuRoot, display, evt.getX(), evt.getY());
-
-		// consume event, so that nothing else tries to handle it
-		evt.consume();
+	protected void init() {
+		width = tool.getLineWidth();
 	}
 
 }

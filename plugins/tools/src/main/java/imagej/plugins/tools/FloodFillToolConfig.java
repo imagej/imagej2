@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.tools;
+package imagej.plugins.tools;
 
 import imagej.command.Command;
 
@@ -42,32 +42,48 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * Implements the configuration code for {@link PencilTool}.
+ * Implements the configuration code for {@link FloodFillTool}.
  * 
  * @author Barry DeZonia
  */
-@Plugin(type = Command.class, label = "Pencil Tool")
-public class PencilToolConfig implements Command {
+@Plugin(type = Command.class, label = "Flood Fill Tool")
+public class FloodFillToolConfig implements Command {
+
+	// -- constants --
+
+	private static final String FOUR = "4-connected";
+	private static final String EIGHT = "8-connected";
+
+	// -- Parameters --
 
 	@Parameter(type = ItemIO.BOTH)
-	private PencilTool tool;
+	private FloodFillTool tool;
 
-	// TODO - it would be nice to persist this pencil width. but the associated
-	// tool cannot persist its own width. thus you get in a situation that the
-	// dialog pencil width does not equal the tool's initial value which is
-	// confusing. Tools need to be able to persist some values to get around this.
+	// TODO - it would be nice to persist this. but the associated tool cannot
+	// persist values. thus you get in a situation that the dialog connectivity
+	// does not equal the tool's initial value which is confusing. Tools need to
+	// be able to persist some values to get around this.
 
-	@Parameter(label = "Pencil Width (pixels)", min = "1", persist = false,
-		initializer = "init")
-	private long width;
+	@Parameter(label = "Flood Type:", choices = { EIGHT, FOUR },
+		initializer = "init", persist = false)
+	private String connectivity;
 
+	// -- public interface --
+
+	/** Configures the connectivity of the FloodFillTool */
 	@Override
 	public void run() {
-		tool.setLineWidth(width);
+		if (connectivity.equals(FOUR))
+			tool.setConnectivity(FloodFillTool.Connectivity.FOUR);
+		else tool.setConnectivity(FloodFillTool.Connectivity.EIGHT);
 	}
 
+	// -- initializer --
+
 	protected void init() {
-		width = tool.getLineWidth();
+		final FloodFillTool.Connectivity neighCount = tool.getConnectivity();
+		if (neighCount.equals(FloodFillTool.Connectivity.FOUR)) connectivity = FOUR;
+		else connectivity = EIGHT;
 	}
 
 }

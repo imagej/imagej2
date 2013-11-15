@@ -33,41 +33,31 @@
  * #L%
  */
 
-package imagej.core.tools;
+package imagej.plugins.tools;
 
 import imagej.data.display.ImageDisplay;
 import imagej.display.Display;
 import imagej.display.event.input.KyPressedEvent;
-import imagej.display.event.input.MsButtonEvent;
-import imagej.display.event.input.MsDraggedEvent;
-import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsWheelEvent;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
-import imagej.util.IntCoords;
+import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 
-import org.scijava.input.MouseCursor;
+import org.scijava.input.InputModifiers;
+import org.scijava.input.KeyCode;
+import org.scijava.plugin.Attr;
 import org.scijava.plugin.Plugin;
 
 /**
- * Tool for panning the display.
+ * Handles keyboard and mouse wheel operations that change the dimensional
+ * position.
  * 
- * @author Rick Lentz
  * @author Grant Harris
- * @author Curtis Rueden
  */
-@Plugin(type = Tool.class, name = "Pan",
-	description = "Scrolling tool (or press space bar and drag)",
-	iconPath = "/icons/tools/pan.png", priority = PanTool.PRIORITY)
-public class PanTool extends AbstractTool {
-
-	public static final double PRIORITY = ZoomTool.PRIORITY - 1;
-
-	private static final int PAN_AMOUNT = 10;
-
-	// TODO - Add customization to set pan amount
-
-	private int lastX, lastY;
+@Plugin(type = Tool.class, name = "Axis Position Shortcuts", attrs = {
+	@Attr(name = Tool.ALWAYS_ACTIVE), @Attr(name = Tool.ACTIVE_IN_APP_FRAME) })
+public class AxisPositionHandler extends AbstractTool {
 
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {
@@ -75,53 +65,34 @@ public class PanTool extends AbstractTool {
 		if (!(display instanceof ImageDisplay)) return;
 		final ImageDisplay imageDisplay = (ImageDisplay) display;
 
-		final int panX, panY;
-		switch (evt.getCode()) {
-			case UP:
-				panX = 0;
-				panY = -PAN_AMOUNT;
-				break;
-			case DOWN:
-				panX = 0;
-				panY = PAN_AMOUNT;
-				break;
-			case LEFT:
-				panX = -PAN_AMOUNT;
-				panY = 0;
-				break;
-			case RIGHT:
-				panX = PAN_AMOUNT;
-				panY = 0;
-				break;
-			default:
-				panX = panY = 0;
+		final KeyCode keyCode = evt.getCode();
+		final char keyChar = evt.getCharacter();
+
+		// determine direction to move based on key press
+		final int delta;
+		if (keyCode == KeyCode.PERIOD || keyCode == KeyCode.GREATER ||
+			keyCode == KeyCode.KP_RIGHT || keyCode == KeyCode.RIGHT || keyChar == '>')
+		{
+			if (evt.getModifiers().isAltDown())
+				delta = 10;
+			else
+				delta = 1;
 		}
-		if (panX == 0 && panY == 0) return;
+		else if (keyCode == KeyCode.COMMA || keyCode == KeyCode.LESS ||
+			keyCode == KeyCode.KP_LEFT || keyCode == KeyCode.LEFT || keyChar == '<')
+		{
+			if (evt.getModifiers().isAltDown())
+				delta = -10;
+			else
+				delta = -1;
+		}
+		else return; // inapplicable key
 
-		imageDisplay.getCanvas().pan(new IntCoords(panX, panY));
-		evt.consume();
-	}
+		final AxisType axis = getAxis(imageDisplay, evt.getModifiers());
+		if (axis == null) return;
 
-	@Override
-	public void onMouseDown(final MsPressedEvent evt) {
-		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
-		lastX = evt.getX();
-		lastY = evt.getY();
-		evt.consume();
-	}
-
-	@Override
-	public void onMouseDrag(final MsDraggedEvent evt) {
-		if (evt.getButton() != MsButtonEvent.LEFT_BUTTON) return;
-		final Display<?> display = evt.getDisplay();
-		if (!(display instanceof ImageDisplay)) return;
-		final ImageDisplay imageDisplay = (ImageDisplay) display;
-
-		final int xDelta = lastX - evt.getX();
-		final int yDelta = lastY - evt.getY();
-		imageDisplay.getCanvas().pan(new IntCoords(xDelta, yDelta));
-		lastX = evt.getX();
-		lastY = evt.getY();
+		final long pos = imageDisplay.getLongPosition(axis) + delta;
+		imageDisplay.setPosition(pos, axis);
 		evt.consume();
 	}
 
@@ -131,15 +102,43 @@ public class PanTool extends AbstractTool {
 		if (!(display instanceof ImageDisplay)) return;
 		final ImageDisplay imageDisplay = (ImageDisplay) display;
 
-		// pan up or down
+		final AxisType axis = getAxis(imageDisplay, evt.getModifiers());
+		if (axis == null) return;
+
 		final int rotation = evt.getWheelRotation();
-		imageDisplay.getCanvas().pan(new IntCoords(0, rotation * PAN_AMOUNT));
+
+		final long pos = imageDisplay.getLongPosition(axis) + rotation;
+		imageDisplay.setPosition(pos, axis);
 		evt.consume();
 	}
 
-	@Override
-	public MouseCursor getCursor() {
-		return MouseCursor.HAND;
+	// -- Helper methods --
+
+	/**
+	 * Determines the axis to move based on the keyboard modifiers used.
+	 * <ul>
+	 * <li>No modifier moves channel axis</li>
+	 * <li>Ctrl modifier moves Z axis</li>
+	 * <li>Alt modifier moves Time axis</li>
+	 * <li>If preferred axis does not exist, first avilable axis is used</li>
+	 * </ul>
+	 */
+	private AxisType
+		getAxis(final ImageDisplay display, final InputModifiers mods)
+	{
+		if (display.numDimensions() < 3) return null;
+
+		// determine preferred axis based on keyboard modifier used
+		final AxisType axis;
+		if (mods.isAltDown() || mods.isAltGrDown()) axis = Axes.TIME;
+		else if (mods.isCtrlDown() || mods.isMetaDown()) axis = Axes.Z;
+		else axis = Axes.CHANNEL;
+
+		if (display.dimensionIndex(axis) < 0) {
+			// preferred axis does not exist; return first available axis instead
+			return display.axis(2).type();
+		}
+		return axis;
 	}
 
 }

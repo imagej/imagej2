@@ -33,50 +33,57 @@
  * #L%
  */
 
-package imagej.core.tools;
+package imagej.plugins.tools;
 
-import imagej.display.event.input.KyPressedEvent;
-import imagej.display.event.input.KyReleasedEvent;
-import imagej.tool.AbstractTool;
+import imagej.data.ChannelCollection;
+import imagej.data.options.OptionsChannels;
 import imagej.tool.Tool;
-import imagej.tool.ToolService;
+import imagej.util.ColorRGB;
+import imagej.util.Colors;
 
-import org.scijava.plugin.Attr;
-import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * Tool for activating the pan tool in response to the space bar.
+ * The tool that displays the current foreground color.
  * 
- * @author Curtis Rueden
+ * @author Barry DeZonia
  */
-@Plugin(type = Tool.class, name = "Pan Activator", attrs = { @Attr(
-	name = Tool.ALWAYS_ACTIVE) })
-public class PanActivator extends AbstractTool {
+@Plugin(type = Tool.class, name = "Foreground",
+	iconPath = "/icons/tools/blank.png", priority = FgColorTool.PRIORITY)
+public class FgColorTool extends AbstractColorTool {
 
-	/** Key used to activate pan tool. */
-	private static final char KEY = ' ';
-
-	@Parameter
-	private ToolService toolService;
-
-	/** Previously active tool, from before pan key was held. */
-	private Tool priorTool;
+	public static final int PRIORITY = BASE_PRIORITY - 0;
 
 	@Override
-	public void onKeyDown(final KyPressedEvent evt) {
-		if (evt.getCharacter() != KEY) return;
-		final Tool activeTool = toolService.getActiveTool();
-		final Tool panTool = toolService.getTool("Pan");
-		if (activeTool == panTool) return;
-		priorTool = activeTool;
-		toolService.setActiveTool(panTool);
+	ColorRGB getEmptyColor() {
+		return Colors.WHITE;
 	}
 
 	@Override
-	public void onKeyUp(final KyReleasedEvent evt) {
-		if (evt.getCharacter() != KEY) return;
-		toolService.setActiveTool(priorTool);
+	ColorRGB getOutlineColor() {
+		return Colors.ORANGE;
+	}
+
+	@Override
+	ChannelCollection getChannels(final OptionsChannels options) {
+		return options.getFgValues();
+	}
+
+	@Override
+	void
+		setChannels(final OptionsChannels options, final ChannelCollection chans)
+	{
+		options.setFgValues(chans);
+	}
+
+	@Override
+	void setLastColor(final OptionsChannels options, final ColorRGB color) {
+		options.setLastFgColor(color);
+	}
+
+	@Override
+	String getLabel() {
+		return "FG";
 	}
 
 }

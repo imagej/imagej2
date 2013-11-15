@@ -33,35 +33,60 @@
  * #L%
  */
 
-package imagej.core.tools;
+package imagej.plugins.tools;
 
-import imagej.command.CommandService;
+import imagej.display.Display;
+import imagej.display.event.input.MsButtonEvent;
+import imagej.display.event.input.MsClickedEvent;
+import imagej.display.event.input.MsPressedEvent;
+import imagej.display.event.input.MsReleasedEvent;
+import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
+import imagej.ui.UIService;
 
+import org.scijava.plugin.Attr;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * Tool implementation for pencil.
+ * Handles display of general-purpose context menu (e.g., on right mouse click).
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-@Plugin(type = Tool.class, name = "Pencil", description = "Pencil Tool",
-	iconPath = "/icons/tools/pencil.png", priority = PencilTool.PRIORITY)
-public class PencilTool extends AbstractLineTool {
-
-	public static final double PRIORITY = -301;
+@Plugin(type = Tool.class, name = "Context Menus",
+	menuRoot = Plugin.CONTEXT_MENU_ROOT, attrs = { @Attr(
+		name = Tool.ALWAYS_ACTIVE) })
+public class ContextMenuHandler extends AbstractTool {
 
 	@Parameter
-	private CommandService commandService;
+	private UIService uiService;
 
-	public PencilTool() {
-		setLineWidth(1);
+	@Override
+	public void onMouseDown(final MsPressedEvent evt) {
+		doPopupMenu(evt);
 	}
 
 	@Override
-	public void configure() {
-		commandService.run(PencilToolConfig.class, "tool", this);
+	public void onMouseUp(final MsReleasedEvent evt) {
+		doPopupMenu(evt);
+	}
+
+	@Override
+	public void onMouseClick(final MsClickedEvent evt) {
+		doPopupMenu(evt);
+	}
+
+	// -- Helper methods --
+
+	private void doPopupMenu(final MsButtonEvent evt) {
+		if (!evt.isPopupTrigger()) return;
+
+		final String menuRoot = getInfo().getMenuRoot();
+		final Display<?> display = evt.getDisplay();
+		uiService.showContextMenu(menuRoot, display, evt.getX(), evt.getY());
+
+		// consume event, so that nothing else tries to handle it
+		evt.consume();
 	}
 
 }

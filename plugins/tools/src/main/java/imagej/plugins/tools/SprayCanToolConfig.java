@@ -33,64 +33,50 @@
  * #L%
  */
 
-package imagej.core.tools;
+package imagej.plugins.tools;
 
-import imagej.command.CommandService;
-import imagej.display.event.input.KyPressedEvent;
-import imagej.tool.AbstractTool;
-import imagej.tool.Tool;
+import imagej.command.Command;
 
-import org.scijava.Priority;
-import org.scijava.input.KeyCode;
-import org.scijava.plugin.Attr;
+import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.thread.ThreadService;
 
 /**
- * Oh, the nostalgia!
+ * Implements the configuration code for {@link SprayCanTool}.
  * 
- * @author Curtis Rueden
+ * @author Barry DeZonia
  */
-@Plugin(type = Tool.class, name = "Konami",
-	priority = Priority.FIRST_PRIORITY,
-	attrs = { @Attr(name = Tool.ALWAYS_ACTIVE) })
-public class KonamiHandler extends AbstractTool implements Runnable {
+@Plugin(type = Command.class, label = "Spray Can Tool", initializer = "initAll")
+public class SprayCanToolConfig implements Command {
 
-	private static final KeyCode[] CODE = { KeyCode.UP, KeyCode.UP, KeyCode.DOWN,
-		KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.LEFT, KeyCode.RIGHT,
-		KeyCode.B, KeyCode.A };
+	@Parameter(type = ItemIO.BOTH)
+	private SprayCanTool tool;
 
-	private static final String JINGLE =
-		"T100 L32 B > C E G B > C E C < B G E C < L8 B";
+	// TODO - it would be nice to persist these values but the associated
+	// tools cannot persist values. thus you get in a situation that the
+	// these values do not equal the tool's initial values which is
+	// confusing. Tools need to be able to persist some values to get around this.
 
-	private static final String COMMAND = "imagej.core.commands.app.EasterEgg";
+  @Parameter(label = "Spray Width (pixels):", min = "1", persist = false)
+  private int width;
 
-	@Parameter
-	private ThreadService threadService;
-
-	@Parameter
-	private CommandService commandService;
-
-	private int index = 0;
-
-	@Override
-	public void onKeyDown(final KyPressedEvent evt) {
-		if (evt.getCode() == CODE[index]) {
-			index++;
-			if (index > CODE.length - 2) evt.consume();
-			if (index == CODE.length) {
-				index = 0;
-				threadService.run(this);
-				commandService.run(COMMAND);
-			}
-		}
-		else index = 0;
-	}
-
+  @Parameter(label = "Dot Size (pixels):", min = "1", persist = false)
+  private int dotSize;
+  
+  @Parameter(label = "Flow Rate (1-10):", min = "1", max = "10", persist=false)
+  private int rate;
+  
 	@Override
 	public void run() {
-		new TunePlayer().play(JINGLE);
+		tool.setWidth(width);
+		tool.setRate(rate);
+		tool.setDotSize(dotSize);
+	}
+
+	protected void initAll() {
+		width = tool.getWidth();
+		rate = tool.getRate();
+		dotSize = tool.getDotSize();
 	}
 
 }

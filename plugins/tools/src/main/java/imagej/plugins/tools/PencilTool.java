@@ -33,41 +33,35 @@
  * #L%
  */
 
-package imagej.core.tools;
+package imagej.plugins.tools;
 
-import imagej.command.Command;
+import imagej.command.CommandService;
+import imagej.tool.Tool;
 
-import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * Implements the configuration code for {@link PaintBrushTool}.
+ * Tool implementation for pencil.
  * 
  * @author Barry DeZonia
  */
-@Plugin(type = Command.class, label = "Paintbrush Tool")
-public class PaintBrushToolConfig implements Command {
+@Plugin(type = Tool.class, name = "Pencil", description = "Pencil Tool",
+	iconPath = "/icons/tools/pencil.png", priority = PencilTool.PRIORITY)
+public class PencilTool extends AbstractLineTool {
 
-	@Parameter(type = ItemIO.BOTH)
-	private PaintBrushTool tool;
+	public static final double PRIORITY = -301;
 
-	// TODO - it would be nice to persist this brush width. but the associated
-	// tool cannot persist its own width. thus you get in a situation that the
-	// dialog brush width does not equal the tool's initial value which is
-	// confusing. Tools need to be able to persist some values to get around this.
+	@Parameter
+	private CommandService commandService;
 
-	@Parameter(label = "Brush Width (pixels)", min = "1", persist = false,
-		initializer = "init")
-	private long width;
-
-	@Override
-	public void run() {
-		tool.setLineWidth(width);
+	public PencilTool() {
+		setLineWidth(1);
 	}
 
-	protected void init() {
-		width = tool.getLineWidth();
+	@Override
+	public void configure() {
+		commandService.run(PencilToolConfig.class, "tool", this);
 	}
 
 }
