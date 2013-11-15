@@ -35,7 +35,7 @@
 
 package imagej.data.minmax;
 
-import imagej.plugin.ImageJPlugin;
+import imagej.ImageJPlugin;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;

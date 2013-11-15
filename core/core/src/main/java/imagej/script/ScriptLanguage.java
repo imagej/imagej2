@@ -35,7 +35,7 @@
 
 package imagej.script;
 
-import imagej.plugin.ImageJPlugin;
+import imagej.ImageJPlugin;
 
 import javax.script.ScriptEngineFactory;
 

@@ -35,7 +35,7 @@
 
 package imagej.io;
 
-import imagej.plugin.ImageJPlugin;
+import imagej.ImageJPlugin;
 
 import java.io.IOException;
 

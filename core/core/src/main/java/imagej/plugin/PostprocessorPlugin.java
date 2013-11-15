@@ -35,6 +35,7 @@
 
 package imagej.plugin;
 
+import imagej.ImageJPlugin;
 import imagej.module.ModulePostprocessor;
 
 import org.scijava.Contextual;

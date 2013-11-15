@@ -35,8 +35,8 @@
 
 package imagej.ui.dnd;
 
+import imagej.ImageJPlugin;
 import imagej.display.Display;
-import imagej.plugin.ImageJPlugin;
 
 import org.scijava.plugin.HandlerPlugin;
 import org.scijava.plugin.Plugin;

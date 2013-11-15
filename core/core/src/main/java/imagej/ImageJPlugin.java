@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.plugin;
+package imagej;
 
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.SciJavaPlugin;

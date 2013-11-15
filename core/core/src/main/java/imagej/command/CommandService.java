@@ -35,10 +35,10 @@
 
 package imagej.command;
 
+import imagej.ImageJPlugin;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
-import imagej.plugin.ImageJPlugin;
 import imagej.plugin.PostprocessorPlugin;
 import imagej.plugin.PreprocessorPlugin;
 

@@ -35,12 +35,12 @@
 
 package imagej.data.display;
 
+import imagej.ImageJPlugin;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.PositionableByAxis;
 import imagej.data.overlay.Overlay;
-import imagej.plugin.ImageJPlugin;
 import net.imglib2.meta.AxisType;
 
 import org.scijava.Contextual;

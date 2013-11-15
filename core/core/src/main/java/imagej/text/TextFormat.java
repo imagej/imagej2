@@ -35,7 +35,7 @@
 
 package imagej.text;
 
-import imagej.plugin.ImageJPlugin;
+import imagej.ImageJPlugin;
 
 import java.io.File;
 import java.util.List;
