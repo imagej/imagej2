@@ -45,7 +45,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.core.scripting.beanshell</packageName>
+							<packageName>imagej.plugins.scripting.beanshell</packageName>
 						</manifest>
 					</archive>
 				</configuration>

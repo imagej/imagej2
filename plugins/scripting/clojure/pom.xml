@@ -45,7 +45,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.core.scripting.clojure</packageName>
+							<packageName>imagej.plugins.scripting.clojure</packageName>
 						</manifest>
 					</archive>
 				</configuration>

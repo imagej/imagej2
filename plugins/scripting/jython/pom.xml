@@ -45,7 +45,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.core.scripting.jruby</packageName>
+							<packageName>imagej.plugins.scripting.jython</packageName>
 						</manifest>
 					</archive>
 				</configuration>

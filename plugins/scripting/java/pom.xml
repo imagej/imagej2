@@ -53,7 +53,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.core.scripting.java</packageName>
+							<packageName>imagej.plugins.scripting.java</packageName>
 						</manifest>
 					</archive>
 				</configuration>

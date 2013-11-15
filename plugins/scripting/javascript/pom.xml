@@ -39,7 +39,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.core.scripting.javascript</packageName>
+							<packageName>imagej.plugins.scripting.javascript</packageName>
 						</manifest>
 					</archive>
 				</configuration>
