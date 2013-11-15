@@ -36,9 +36,6 @@
 package imagej.ui.swing;
 
 import imagej.command.CommandService;
-import imagej.core.commands.display.Flatten;
-import imagej.core.commands.overlay.SelectedManagerOverlayProperties;
-import imagej.core.commands.overlay.SelectionSpecify;
 import imagej.data.ChannelCollection;
 import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
@@ -57,6 +54,9 @@ import imagej.data.overlay.CompositeOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.options.OptionsService;
 import imagej.platform.PlatformService;
+import imagej.plugins.commands.display.Flatten;
+import imagej.plugins.commands.overlay.SelectedManagerOverlayProperties;
+import imagej.plugins.commands.overlay.SelectionSpecify;
 import imagej.util.Prefs;
 
 import java.awt.BorderLayout;
