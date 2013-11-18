@@ -310,7 +310,7 @@ public class TranslateImage<T extends RealType<T>> extends ContextCommand {
 			c2.get().set(inter.get());
 		}
 
-		ds.update(); // TODO ACK WHY DOESN'T ORGAN UPDATE???
+		ds.update(); // TODO WHY DOESN'T ORGAN UPDATE???
 	}
 
 	private String deltasString() {
