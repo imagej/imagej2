@@ -60,9 +60,9 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * Rotates an existing image by a user specified angle (in degrees). The
- * resultant pixel values are some combination of the original neighboring
- * pixels using the user specified interpolation method.
+ * Rotates an existing image by a user specified angle. The resultant pixel
+ * values are some combination of the original neighboring pixels using the
+ * user specified interpolation method.
  * 
  * @author Barry DeZonia
  */
@@ -120,17 +120,25 @@ public class RotateImageXY<T extends RealType<T>> extends ContextCommand {
 		return dataset;
 	}
 
+	/**
+	 * Sets the angle of counterclockwise rotation to apply. The angle units
+	 * are specified with setUnit().
+	 */
 	public void setAngle(double angle) {
 		this.angle = angle;
 	}
 	
+	/**
+	 * Gets the angle of counterclockwise rotation to apply. The angle units
+	 * are available from getUnit().
+	 */
 	public double getAngle() {
 		return angle;
 	}
 	
 	/**
-	 * Sets the current angle unit setting. Use one of the unit String
-	 * constants exposed by this class.
+	 * Sets the current angle unit setting (radians or dgrees). Use one of the
+	 * unit String constants exposed by this class.
 	 */
 	public void setUnit(String unit) {
 		if (unit.equals(DEGREES)) angleUnit = unit;
@@ -139,8 +147,8 @@ public class RotateImageXY<T extends RealType<T>> extends ContextCommand {
 	}
 	
 	/**
-	 * Gets the current angle unit setting. Returns one of the unit String
-	 * constants exposed by this class.
+	 * Gets the current angle unit setting (radians or degrees). Returns one of
+	 * the unit String constants exposed by this class.
 	 */
 	public String getUnit() {
 		return angleUnit;
