@@ -52,6 +52,7 @@ import net.imglib2.interpolation.InterpolatorFactory;
 import net.imglib2.interpolation.randomaccess.LanczosInterpolatorFactory;
 import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
 import net.imglib2.interpolation.randomaccess.NearestNeighborInterpolatorFactory;
+import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.outofbounds.OutOfBoundsConstantValueFactory;
 import net.imglib2.type.numeric.RealType;
@@ -94,6 +95,9 @@ public class TranslateImage<T extends RealType<T>> extends ContextCommand {
 	@Parameter(label = "Interpolation", choices = { LINEAR, NEAREST_NEIGHBOR,
 		LANCZOS }, persist = false)
 	private String method = LINEAR;
+	
+	@Parameter(label = "Use user units", persist = false)
+	private boolean useUserUnits;
 
 	@Parameter
 	private DatasetService datasetService;
@@ -126,7 +130,8 @@ public class TranslateImage<T extends RealType<T>> extends ContextCommand {
 	}
 
 	/**
-	 * Sets the translation delta for a given axis to a given value.
+	 * Sets the translation delta for a given axis to a given value. The delta is
+	 * in calibrated units.
 	 */
 	public void setDelta(int d, double delta) {
 		if (d < 0 || d >= deltas.size()) {
@@ -138,7 +143,8 @@ public class TranslateImage<T extends RealType<T>> extends ContextCommand {
 	}
 
 	/**
-	 * Gets the translation delta for a given axis.
+	 * Gets the translation delta for a given axis. The delta is in calibrated
+	 * units.
 	 */
 	public double getDelta(int d) {
 		if (d < 0 || d >= deltas.size()) {
@@ -172,6 +178,22 @@ public class TranslateImage<T extends RealType<T>> extends ContextCommand {
 	}
 
 	/**
+	 * Sets whether input deltas field values are in user units or pixel units.
+	 * If input val is true then use user units else use pixel units.
+	 */
+	public void setUseUserUnits(boolean val) {
+		useUserUnits = val;
+	}
+	
+	/**
+	 * Gets whether input deltas field values are in user units or pixel units.
+	 * Returns tru if currently in user units and false if currently in pixel units.
+	 */
+	public boolean useUserUnits() {
+		return useUserUnits;
+	}
+	
+	/**
 	 * Returns the current error message if any.
 	 */
 	public String getError() {
@@ -187,6 +209,7 @@ public class TranslateImage<T extends RealType<T>> extends ContextCommand {
 			cancel(err);
 			return;
 		}
+		if (useUserUnits) toPixelUnits(dataset, delts);
 		resampleData(dataset, delts);
 	}
 
@@ -248,6 +271,10 @@ public class TranslateImage<T extends RealType<T>> extends ContextCommand {
 
 	private void resampleData(Dataset ds, List<Double> delts) {
 
+		// TODO: resampling needs a copy of original data. We should be able to
+		// instead come up with smarter algo that duplicates less (like a plane
+		// at a time assuming interpolator only looks in curr plane).
+
 		ImgPlus<T> dest = (ImgPlus<T>) ds.getImgPlus();
 		ImgPlus<T> src = dest.copy();
 
@@ -282,6 +309,8 @@ public class TranslateImage<T extends RealType<T>> extends ContextCommand {
 			}
 			c2.get().set(inter.get());
 		}
+
+		ds.update(); // TODO ACK WHY DOESN'T ORGAN UPDATE???
 	}
 
 	private String deltasString() {
@@ -305,7 +334,16 @@ public class TranslateImage<T extends RealType<T>> extends ContextCommand {
 		else if (method.equals(LANCZOS)) {
 			return new LanczosInterpolatorFactory<T>();
 		}
-		else throw new IllegalArgumentException("unknonw interpolation method: " +
+		else throw new IllegalArgumentException("unknown interpolation method: " +
 			method);
+	}
+
+	private void toPixelUnits(Dataset ds, List<Double> delts) {
+		for (int i = 0; i < delts.size(); i++) {
+			CalibratedAxis axis = ds.axis(i);
+			double userUnit = delts.get(i);
+			double pixelUnit = axis.rawValue(userUnit) - axis.rawValue(0);
+			delts.set(i, pixelUnit);
+		}
 	}
 }
