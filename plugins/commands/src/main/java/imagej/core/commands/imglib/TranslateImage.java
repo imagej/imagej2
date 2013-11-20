@@ -130,8 +130,8 @@ public class TranslateImage<T extends RealType<T>> extends ContextCommand {
 	}
 
 	/**
-	 * Sets the translation delta for a given axis to a given value. The delta is
-	 * in calibrated units.
+	 * Sets the translation delta for a given axis to a given value. The delta
+	 * units are determined by the value of getUseUserUnits().
 	 */
 	public void setDelta(int d, double delta) {
 		if (d < 0 || d >= deltas.size()) {
@@ -143,8 +143,8 @@ public class TranslateImage<T extends RealType<T>> extends ContextCommand {
 	}
 
 	/**
-	 * Gets the translation delta for a given axis. The delta is in calibrated
-	 * units.
+	 * Gets the translation delta for a given axis. The delta units are
+	 * determined by the value of getUseUserUnits().
 	 */
 	public double getDelta(int d) {
 		if (d < 0 || d >= deltas.size()) {
