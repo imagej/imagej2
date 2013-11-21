@@ -363,8 +363,8 @@ public class ResliceImage<T extends RealType<T>> extends ContextCommand {
 			}
 			catch (NumberFormatException e) {
 				err =
-					"Err in deltas specification string: each"
-						+ " delta must be two numbers separated by an '=' sign.";
+					"Err in spacings specification string: each"
+						+ " spacing must be two numbers separated by an '=' sign.";
 				return null;
 			}
 			if (axisIndex < 0 || axisIndex >= ds.numDimensions()) {
