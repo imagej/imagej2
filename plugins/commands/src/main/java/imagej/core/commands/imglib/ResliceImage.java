@@ -62,6 +62,7 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
 
 import org.scijava.ItemIO;
+import org.scijava.app.StatusService;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -108,6 +109,9 @@ public class ResliceImage<T extends RealType<T>> extends ContextCommand {
 
 	@Parameter
 	private DatasetService datasetService;
+
+	@Parameter
+	private StatusService statusService;
 
 	// -- non-parameter fields --
 
@@ -260,7 +264,9 @@ public class ResliceImage<T extends RealType<T>> extends ContextCommand {
 			return;
 		}
 		if (useUserUnits) toPixelUnits(dataset, spaces);
+		statusService.showStatus("Resampling data ...");
 		resampleData(dataset, orig, spaces);
+		statusService.showStatus("Done.");
 	}
 
 	// -- initializers --
@@ -475,10 +481,8 @@ public class ResliceImage<T extends RealType<T>> extends ContextCommand {
 
 	private double position(long org, double spacing, long pos, long max)
 	{
-		if (org == 0) {
-			return org + spacing * pos;
-		}
-		// org > 0
+		if (org == 0) return spacing * pos;
+		// else org > 0
 		return org - spacing * (max - pos);
 	}
 
