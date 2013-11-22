@@ -54,10 +54,10 @@ import java.util.List;
 
 import net.imglib2.Binning;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.display.ARGBScreenImage;
+import net.imglib2.converter.RealLUTConverter;
 import net.imglib2.display.ColorTable;
-import net.imglib2.display.CompositeXYProjector;
-import net.imglib2.display.RealLUTConverter;
+import net.imglib2.display.projector.composite.CompositeXYProjector;
+import net.imglib2.display.screenimage.awt.ARGBScreenImage;
 import net.imglib2.img.cell.AbstractCellImg;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;

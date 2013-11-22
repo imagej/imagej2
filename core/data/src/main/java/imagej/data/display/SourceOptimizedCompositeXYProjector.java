@@ -43,7 +43,7 @@ import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.converter.Converter;
-import net.imglib2.display.CompositeXYProjector;
+import net.imglib2.display.projector.composite.CompositeXYProjector;
 import net.imglib2.img.cell.CellImg;
 import net.imglib2.type.numeric.ARGBType;
 

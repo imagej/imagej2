@@ -54,7 +54,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.imglib2.RandomAccess;
-import net.imglib2.display.ARGBScreenImage;
+import net.imglib2.display.screenimage.awt.ARGBScreenImage;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
