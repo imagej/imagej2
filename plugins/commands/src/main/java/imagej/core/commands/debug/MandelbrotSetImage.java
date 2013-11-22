@@ -124,7 +124,8 @@ public class MandelbrotSetImage extends ContextCommand {
 	// -- helpers --
 
 	private Dataset makeDataset() {
-		long[] dims = new long[] { 768, Math.round(768 * extentY / extentX) };
+		long SIZE = 2048;
+		long[] dims = new long[] { Math.round(SIZE * extentX / extentY), SIZE };
 		String name = "Mandelbrot Set";
 		name += " [" + originX + "," + originY + "] ";
 		name += " [" + (originX+extentX) + "," + (originY+extentY) + "]";
