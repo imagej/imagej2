@@ -38,11 +38,11 @@ package imagej.data.operator;
 import java.util.List;
 import java.util.Map;
 
-import org.scijava.plugin.SingletonService;
-
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
+
+import org.scijava.plugin.SingletonService;
 
 /**
  * Interface for service which manages available {@link CalculatorOp}s. It
