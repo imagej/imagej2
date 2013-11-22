@@ -40,7 +40,6 @@ import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.menu.MenuConstants;
-
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
