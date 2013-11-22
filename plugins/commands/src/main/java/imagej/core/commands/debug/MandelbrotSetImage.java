@@ -68,6 +68,17 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Command.class, menuPath = "Plugins>Sandbox>Mandelbrot Set")
 public class MandelbrotSetImage extends ContextCommand {
 
+	// TODO
+	// make a DynamicPlugin
+	// When launched it determines if a Mandelbrot Set Dataset exists.
+	// if not then hatch one with default extents
+	// else make existing one the active dataset
+	// Dialog should have one button that changes existing dataset in place
+	// User places a Rectangular roi
+	// Pressing button determines user coords of roi and rebuilds a new image
+	// and updates active mandelbrot set image in place.
+	// Dialog stays active until closed.
+
 	// -- constants --
 
 	private static final double CUTOFF = 1.8;
