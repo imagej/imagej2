@@ -73,7 +73,6 @@ public class DefaultOptionsService extends
 
 	@Override
 	public <O extends OptionsPlugin> O getOptions(final Class<O> optionsClass) {
-		getInstances(); // NB: Force instantiation of singletons.
 		final List<O> objects = objectService.getObjects(optionsClass);
 		return objects == null || objects.isEmpty() ? null : objects.get(0);
 	}
