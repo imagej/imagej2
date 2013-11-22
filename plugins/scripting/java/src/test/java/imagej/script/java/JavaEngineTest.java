@@ -37,7 +37,6 @@ package imagej.script.java;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
-
 import imagej.test.TestUtils;
 
 import java.io.File;
