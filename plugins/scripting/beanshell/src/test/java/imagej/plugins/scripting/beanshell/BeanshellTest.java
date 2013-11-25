@@ -63,7 +63,7 @@ public class BeanshellTest {
 			"dummy = IJ.getService(" + DummyService.class.getName() + ".class);\n" +
 			"dummy.context = IJ;\n" +
 			"dummy.value = 1234;\n";
-		scriptService.eval("hello.bsh", new StringReader(script));
+		scriptService.run("hello.bsh", new StringReader(script));
 
 		final DummyService dummy = context.getService(DummyService.class);
 		assertEquals(context, dummy.context);

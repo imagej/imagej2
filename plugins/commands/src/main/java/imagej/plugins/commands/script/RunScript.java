@@ -74,7 +74,7 @@ public class RunScript extends ContextCommand {
 	@Override
 	public void run() {
 		try {
-			scriptService.eval(script);
+			scriptService.run(script);
 		}
 		catch (final FileNotFoundException exc) {
 			log.error(exc);

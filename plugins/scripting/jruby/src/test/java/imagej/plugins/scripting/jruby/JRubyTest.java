@@ -36,7 +36,7 @@
 package imagej.plugins.scripting.jruby;
 
 import static org.junit.Assert.assertEquals;
-import imagej.plugins.scripting.jruby.JRubyScriptEngine;
+import imagej.script.ScriptModule;
 import imagej.script.ScriptService;
 
 import java.io.StringReader;
@@ -62,7 +62,9 @@ public class JRubyTest {
 		final ScriptService scriptService = context.getService(ScriptService.class);
 
 		String script = "$x = 1 + 2;";
-		final ScriptEngine engine = (ScriptEngine)scriptService.eval("add.rb", new StringReader(script));
+		final ScriptModule m =
+			scriptService.run("add.rb", new StringReader(script)).get();
+		final ScriptEngine engine = (ScriptEngine) m.getReturnValue();
 		assertEquals("3", engine.get("$x").toString());
 	}
 

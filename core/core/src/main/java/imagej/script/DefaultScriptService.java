@@ -37,12 +37,11 @@ package imagej.script;
 
 import imagej.command.Command;
 import imagej.command.CommandService;
+import imagej.module.Module;
 import imagej.module.ModuleService;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -53,6 +52,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import javax.script.Bindings;
 import javax.script.ScriptContext;
@@ -66,7 +66,6 @@ import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;
-import org.scijava.util.FileUtils;
 
 /**
  * Default service for working with scripting languages.
@@ -132,35 +131,20 @@ public class DefaultScriptService extends
 	}
 
 	@Override
-	public Object eval(final File file) throws FileNotFoundException,
-		ScriptException
-	{
-		final String fileExtension = FileUtils.getExtension(file);
-		final ScriptLanguage language = getByFileExtension(fileExtension);
-		if (language == null) {
-			throw new UnsupportedOperationException(
-				"Could not determine language for file extension " + fileExtension);
+	public Future<ScriptModule> run(final File file) {
+		// lookup existing script
+		ScriptInfo info = getScript(file);
+		if (info == null) {
+			// wrap file as a script ad hoc
+			info = new ScriptInfo(getContext(), file);
 		}
-		final ScriptEngine engine = language.getScriptEngine();
-		initialize(engine, file.getPath(), null, null);
-		final Reader reader =
-			parseInputs(engine, file.getPath(), new FileReader(file));
-		return engine.eval(reader);
+		return cast(commandService.run(info));
 	}
 
 	@Override
-	public Object eval(final String filename, final Reader reader)
-		throws IOException, ScriptException
-	{
-		final String fileExtension = FileUtils.getExtension(filename);
-		final ScriptLanguage language = getByFileExtension(fileExtension);
-		if (language == null) {
-			throw new UnsupportedOperationException(
-				"Could not determine language for file extension " + fileExtension);
-		}
-		final ScriptEngine engine = language.getScriptEngine();
-		initialize(engine, filename, null, null);
-		return engine.eval(parseInputs(engine, filename, reader));
+	public Future<ScriptModule> run(final String path, final Reader reader) {
+		final ScriptInfo info = new ScriptInfo(getContext(), path, reader);
+		return cast(commandService.run(info));
 	}
 
 	@Override
@@ -313,6 +297,11 @@ public class DefaultScriptService extends
 			log.warn(exc);
 			return file.getAbsoluteFile();
 		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private Future<ScriptModule> cast(final Future<Module> future) {
+		return (Future) future;
 	}
 
 }

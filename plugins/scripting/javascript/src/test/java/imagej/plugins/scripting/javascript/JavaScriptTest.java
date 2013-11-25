@@ -38,6 +38,7 @@ package imagej.plugins.scripting.javascript;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import imagej.script.ScriptModule;
 import imagej.script.ScriptService;
 
 import java.io.StringReader;
@@ -65,8 +66,9 @@ public class JavaScriptTest {
 		final ScriptService scriptService = context.getService(ScriptService.class);
 
 		String script = "$x = 1 + 2;";
-		final Double result =
-			(Double) scriptService.eval("add.js", new StringReader(script));
+		final ScriptModule m =
+			scriptService.run("add.js", new StringReader(script)).get();
+		final Double result = (Double) m.getReturnValue();
 		assertEquals(3.0, result.doubleValue(), 0.0);
 	}
 
@@ -97,7 +99,7 @@ public class JavaScriptTest {
 			"dummy = IJ.getService('" + DummyService.class.getName() + "');\n" +
 			"dummy.context = IJ;\n" +
 			"dummy.value = 1234;\n";
-		scriptService.eval("hello.js", new StringReader(script));
+		scriptService.run("hello.js", new StringReader(script));
 
 		final DummyService dummy = context.getService(DummyService.class);
 		assertEquals(context, dummy.context);
@@ -113,7 +115,7 @@ public class JavaScriptTest {
 		String script =
 				"// @DummyService d\n" +
 				"d.value = 4321;\n";
-		scriptService.eval("hello.js", new StringReader(script));
+		scriptService.run("hello.js", new StringReader(script));
 
 		final DummyService dummy = context.getService(DummyService.class);
 		assertEquals(4321, dummy.value);

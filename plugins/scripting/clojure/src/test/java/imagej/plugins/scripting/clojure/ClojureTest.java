@@ -36,7 +36,7 @@
 package imagej.plugins.scripting.clojure;
 
 import static org.junit.Assert.assertEquals;
-import imagej.plugins.scripting.clojure.ClojureScriptEngine;
+import imagej.script.ScriptModule;
 import imagej.script.ScriptService;
 
 import java.io.StringReader;
@@ -60,7 +60,9 @@ public class ClojureTest {
 		final ScriptService scriptService = context.getService(ScriptService.class);
 
 		String script = "(+ 1 2)";
-		final Object result = scriptService.eval("add.clj", new StringReader(script));
+		final ScriptModule m =
+			scriptService.run("add.clj", new StringReader(script)).get();
+		final Object result = m.getReturnValue();
 		assertEquals("3", result.toString());
 	}
 

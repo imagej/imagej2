@@ -37,7 +37,7 @@ package imagej.plugins.scripting.jython;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import imagej.plugins.scripting.jython.JythonScriptEngine;
+import imagej.script.ScriptModule;
 import imagej.script.ScriptService;
 
 import java.io.StringReader;
@@ -63,7 +63,9 @@ public class JythonTest {
 		final ScriptService scriptService = context.getService(ScriptService.class);
 
 		String script = "1 + 2";
-		Object result = scriptService.eval("add.py", new StringReader(script));
+		final ScriptModule m =
+			scriptService.run("add.py", new StringReader(script)).get();
+		final Object result = m.getReturnValue();
 		assertEquals("3", result.toString());
 	}
 

@@ -42,6 +42,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
@@ -101,11 +102,12 @@ public interface ScriptService extends SingletonService<ScriptLanguage> {
 	ScriptInfo getScript(File scriptFile);
 
 	/** TODO */
-	Object eval(final File file) throws FileNotFoundException, ScriptException;
+	Future<ScriptModule> run(final File file) throws FileNotFoundException,
+		ScriptException;
 
 	/** TODO */
-	Object eval(final String filename, final Reader reader) throws IOException,
-		ScriptException;
+	Future<ScriptModule> run(final String path, final Reader reader)
+		throws IOException, ScriptException;
 
 	/** TODO */
 	boolean canHandleFile(final File file);
