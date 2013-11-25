@@ -298,7 +298,7 @@ public class DefaultScriptService extends
 		new ScriptFinder(this).findScripts(scriptList);
 
 		// add newly discovered scripts
-		for (ScriptInfo info : scriptList) {
+		for (final ScriptInfo info : scriptList) {
 			scripts.put(asFile(info.getPath()), info);
 		}
 		moduleService.addModules(scriptList);
