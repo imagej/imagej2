@@ -40,6 +40,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.List;
 
 import javax.script.ScriptEngine;
@@ -65,6 +66,8 @@ public interface ScriptService extends SingletonService<ScriptLanguage> {
 	 */
 	final static String CONTEXT = "IJ";
 
+	// -- Scripting languages --
+
 	/** Gets the index of available scripting languages. */
 	ScriptLanguageIndex getIndex();
 
@@ -85,6 +88,17 @@ public interface ScriptService extends SingletonService<ScriptLanguage> {
 
 	/** TODO */
 	ScriptLanguage getByName(final String name);
+
+	// -- Scripts --
+
+	/** Gets all available scripts. */
+	Collection<ScriptInfo> getScripts();
+
+	/**
+	 * Gets the {@link ScriptInfo} metadata for the script at the given path, or
+	 * null if none.
+	 */
+	ScriptInfo getScript(String scriptPath);
 
 	/** TODO */
 	Object eval(final File file) throws FileNotFoundException, ScriptException;

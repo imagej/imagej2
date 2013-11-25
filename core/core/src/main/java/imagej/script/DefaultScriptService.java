@@ -47,6 +47,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -94,7 +96,7 @@ public class DefaultScriptService extends
 	private final HashMap<String, ScriptInfo> scripts =
 		new HashMap<String, ScriptInfo>();
 
-	// -- ScriptService methods --
+	// -- ScriptService methods - scripting languages --
 
 	/** Gets the index of available scripting languages. */
 	@Override
@@ -115,6 +117,18 @@ public class DefaultScriptService extends
 	@Override
 	public ScriptLanguage getByName(final String name) {
 		return scriptLanguageIndex.getByName(name);
+	}
+
+	// -- ScriptService methods - scripts --
+
+	@Override
+	public Collection<ScriptInfo> getScripts() {
+		return Collections.unmodifiableCollection(scripts.values());
+	}
+
+	@Override
+	public ScriptInfo getScript(final String scriptPath) {
+		return scripts.get(scriptPath);
 	}
 
 	@Override
