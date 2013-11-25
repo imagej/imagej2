@@ -92,9 +92,9 @@ public class DefaultScriptService extends
 	private final ScriptLanguageIndex scriptLanguageIndex =
 		new ScriptLanguageIndex();
 
-	/** Index of available scripts, by script <em>name</em> (i.e., file path). */
-	private final HashMap<String, ScriptInfo> scripts =
-		new HashMap<String, ScriptInfo>();
+	/** Index of available scripts, by script <em>file</em>. */
+	private final HashMap<File, ScriptInfo> scripts =
+		new HashMap<File, ScriptInfo>();
 
 	// -- ScriptService methods - scripting languages --
 
@@ -127,8 +127,8 @@ public class DefaultScriptService extends
 	}
 
 	@Override
-	public ScriptInfo getScript(final String scriptPath) {
-		return scripts.get(scriptPath);
+	public ScriptInfo getScript(final File scriptFile) {
+		return scripts.get(scriptFile);
 	}
 
 	@Override
@@ -299,9 +299,20 @@ public class DefaultScriptService extends
 
 		// add newly discovered scripts
 		for (ScriptInfo info : scriptList) {
-			scripts.put(info.getPath(), info);
+			scripts.put(asFile(info.getPath()), info);
 		}
 		moduleService.addModules(scriptList);
+	}
+
+	private File asFile(final String path) {
+		final File file = new File(path);
+		try {
+			return file.getCanonicalFile();
+		}
+		catch (final IOException exc) {
+			log.warn(exc);
+			return file.getAbsoluteFile();
+		}
 	}
 
 }

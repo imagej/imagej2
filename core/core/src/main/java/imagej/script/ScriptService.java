@@ -95,10 +95,10 @@ public interface ScriptService extends SingletonService<ScriptLanguage> {
 	Collection<ScriptInfo> getScripts();
 
 	/**
-	 * Gets the {@link ScriptInfo} metadata for the script at the given path, or
+	 * Gets the {@link ScriptInfo} metadata for the script at the given file, or
 	 * null if none.
 	 */
-	ScriptInfo getScript(String scriptPath);
+	ScriptInfo getScript(File scriptFile);
 
 	/** TODO */
 	Object eval(final File file) throws FileNotFoundException, ScriptException;
