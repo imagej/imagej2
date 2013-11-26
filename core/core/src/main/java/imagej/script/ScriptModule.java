@@ -73,7 +73,6 @@ public class ScriptModule extends AbstractModule implements Contextual {
 
 	public ScriptModule(final ScriptInfo info) {
 		this.info = info;
-		setContext(info.getContext());
 	}
 
 	// -- ScriptModule methods --
