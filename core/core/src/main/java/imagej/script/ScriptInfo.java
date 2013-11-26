@@ -38,7 +38,6 @@ package imagej.script;
 import imagej.command.Command;
 import imagej.module.AbstractModuleInfo;
 import imagej.module.DefaultMutableModuleItem;
-import imagej.module.Module;
 import imagej.module.ModuleException;
 
 import java.io.BufferedReader;
@@ -211,7 +210,7 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	}
 
 	@Override
-	public Module createModule() throws ModuleException {
+	public ScriptModule createModule() throws ModuleException {
 		return new ScriptModule(this);
 	}
 
