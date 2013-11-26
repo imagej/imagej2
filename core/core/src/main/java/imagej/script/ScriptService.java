@@ -106,6 +106,10 @@ public interface ScriptService extends SingletonService<ScriptLanguage> {
 		ScriptException;
 
 	/** TODO */
+	Future<ScriptModule> run(final String path, final String script)
+		throws IOException, ScriptException;
+
+	/** TODO */
 	Future<ScriptModule> run(final String path, final Reader reader)
 		throws IOException, ScriptException;
 

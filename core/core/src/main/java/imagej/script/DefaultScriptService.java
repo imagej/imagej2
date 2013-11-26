@@ -42,6 +42,7 @@ import imagej.module.ModuleService;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -133,6 +134,11 @@ public class DefaultScriptService extends
 			info = new ScriptInfo(getContext(), file);
 		}
 		return cast(commandService.run(info));
+	}
+
+	@Override
+	public Future<ScriptModule> run(final String path, final String script) {
+		return run(path, new StringReader(script));
 	}
 
 	@Override
