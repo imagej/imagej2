@@ -58,6 +58,8 @@ import org.scijava.util.FileUtils;
  */
 public class ScriptModule extends AbstractModule implements Contextual {
 
+	public static final String RETURN_VALUE = "result";
+
 	private final ScriptInfo info;
 
 	@Parameter
@@ -72,6 +74,13 @@ public class ScriptModule extends AbstractModule implements Contextual {
 	public ScriptModule(final ScriptInfo info) {
 		this.info = info;
 		setContext(info.getContext());
+	}
+
+	// -- ScriptModule methods --
+
+	/** Gets the return value of the script. */
+	public Object getReturnValue() {
+		return getOutput(RETURN_VALUE);
 	}
 
 	// -- Module methods --
@@ -99,10 +108,8 @@ public class ScriptModule extends AbstractModule implements Contextual {
 
 		// execute script!
 		try {
-			final Object result = engine.eval(new FileReader(path));
-			if (result != null) {
-				System.out.println(result.toString());
-			}
+			final Object returnValue = engine.eval(new FileReader(path));
+			setOutput(RETURN_VALUE, returnValue);
 		}
 		catch (final ScriptException e) {
 			log.error(e.getCause());

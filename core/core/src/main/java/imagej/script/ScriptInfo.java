@@ -126,6 +126,7 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 		catch (final IOException exc) {
 			log.error(exc);
 		}
+		addReturnValue();
 	}
 
 	// -- ScriptInfo methods --
@@ -246,6 +247,15 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	private void clearInputs() {
 		inputMap.clear();
 		inputList.clear();
+	}
+
+	/** Adds an output for the value returned by the script itself. */
+	private void addReturnValue() {
+		final DefaultMutableModuleItem<Object> item =
+			new DefaultMutableModuleItem<Object>(this, ScriptModule.RETURN_VALUE,
+				Object.class);
+		outputMap.put(item.getName(), item);
+		outputList.add(item);
 	}
 
 	private synchronized Class<?> parseType(final String string)
