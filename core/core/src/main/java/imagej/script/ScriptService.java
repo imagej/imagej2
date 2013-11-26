@@ -60,13 +60,6 @@ import org.scijava.plugin.SingletonService;
  */
 public interface ScriptService extends SingletonService<ScriptLanguage> {
 
-	/**
-	 * The script service puts the current ImageJ context into the engine's
-	 * bindings using this key. That way, scripts can access the context by
-	 * accessing the global variable of that name.
-	 */
-	final static String CONTEXT = "IJ";
-
 	// -- Scripting languages --
 
 	/** Gets the index of available scripting languages. */

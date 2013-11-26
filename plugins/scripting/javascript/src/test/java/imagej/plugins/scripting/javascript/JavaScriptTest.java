@@ -87,23 +87,6 @@ public class JavaScriptTest {
 	}
 
 	@Test
-	public void testContext() throws Exception {
-		final Context context = new Context(ScriptService.class);
-		final ScriptService scriptService = context.getService(ScriptService.class);
-		new ServiceHelper(context).createExactService(DummyService.class);
-
-		String script =
-			"dummy = IJ.getService('" + DummyService.class.getName() + "');\n" +
-			"dummy.context = IJ;\n" +
-			"dummy.value = 1234;\n";
-		scriptService.run("hello.js", script);
-
-		final DummyService dummy = context.getService(DummyService.class);
-		assertEquals(context, dummy.context);
-		assertEquals(1234, dummy.value);
-	}
-
-	@Test
 	public void testParameters() throws Exception {
 		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);

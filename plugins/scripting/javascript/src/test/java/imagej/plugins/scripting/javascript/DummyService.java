@@ -39,7 +39,7 @@ import org.scijava.Context;
 import org.scijava.service.AbstractService;
 
 /**
- * Helper service for {@link JavaScriptTest#testContext()}.
+ * Helper service for {@link JavaScriptTest}.
  * 
  * @author Johannes Schindelin
  */

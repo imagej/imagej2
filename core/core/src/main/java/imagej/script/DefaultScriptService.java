@@ -162,7 +162,6 @@ public class DefaultScriptService extends
 		final Writer writer, final Writer errorWriter)
 	{
 		engine.put(ScriptEngine.FILENAME, fileName);
-		engine.put(CONTEXT, getContext());
 		final ScriptContext context = engine.getContext();
 		if (writer != null) context.setWriter(writer);
 		if (writer != null) context.setErrorWriter(errorWriter);
