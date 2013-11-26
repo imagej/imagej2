@@ -239,7 +239,7 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	private <T> void addInput(final String name, final Class<T> type) {
 		final DefaultMutableModuleItem<T> item =
 			new DefaultMutableModuleItem<T>(this, name, type);
-		inputMap.put(name, item);
+		inputMap.put(item.getName(), item);
 		inputList.add(item);
 	}
 
