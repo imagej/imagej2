@@ -100,6 +100,10 @@ public class ScriptModule extends AbstractModule implements Contextual {
 			scriptService.getByFileExtension(fileExtension);
 		final ScriptEngine engine = language.getScriptEngine();
 
+		// initialize the script engine
+		// TODO: Handle stdout and stderr writers better.
+		scriptService.initialize(engine, path, null, null);
+
 		// populate bindings with the input values
 		for (final ModuleItem<?> item : getInfo().inputs()) {
 			final String name = item.getName();
