@@ -95,7 +95,7 @@ public class JavaScriptTest {
 		String script =
 				"// @DummyService d\n" +
 				"d.value = 4321;\n";
-		scriptService.run("hello.js", script);
+		scriptService.run("hello.js", script).get();
 
 		final DummyService dummy = context.getService(DummyService.class);
 		assertEquals(4321, dummy.value);
