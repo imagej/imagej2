@@ -40,8 +40,6 @@ import static org.junit.Assert.assertNull;
 import imagej.script.ScriptModule;
 import imagej.script.ScriptService;
 
-import java.io.StringReader;
-
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -63,8 +61,7 @@ public class JythonTest {
 		final ScriptService scriptService = context.getService(ScriptService.class);
 
 		String script = "1 + 2";
-		final ScriptModule m =
-			scriptService.run("add.py", new StringReader(script)).get();
+		final ScriptModule m = scriptService.run("add.py", script).get();
 		final Object result = m.getReturnValue();
 		assertEquals("3", result.toString());
 	}

@@ -39,8 +39,6 @@ import static org.junit.Assert.assertEquals;
 import imagej.script.DefaultScriptService;
 import imagej.script.ScriptService;
 
-import java.io.StringReader;
-
 import org.junit.Test;
 import org.scijava.Context;
 import org.scijava.service.ServiceHelper;
@@ -63,7 +61,7 @@ public class BeanshellTest {
 			"dummy = IJ.getService(" + DummyService.class.getName() + ".class);\n" +
 			"dummy.context = IJ;\n" +
 			"dummy.value = 1234;\n";
-		scriptService.run("hello.bsh", new StringReader(script));
+		scriptService.run("hello.bsh", script);
 
 		final DummyService dummy = context.getService(DummyService.class);
 		assertEquals(context, dummy.context);
