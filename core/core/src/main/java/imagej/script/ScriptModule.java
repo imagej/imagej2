@@ -40,6 +40,7 @@ import imagej.module.Module;
 import imagej.module.ModuleItem;
 
 import java.io.FileReader;
+import java.io.Reader;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
@@ -93,21 +94,24 @@ public class ScriptModule extends AbstractModule implements Contextual {
 
 	@Override
 	public void run() {
-		final String path = info.getPath();
+		final String path = getInfo().getPath();
 		final String fileExtension = FileUtils.getExtension(path);
 		final ScriptLanguage language =
 			scriptService.getByFileExtension(fileExtension);
 		final ScriptEngine engine = language.getScriptEngine();
 
 		// populate bindings with the input values
-		for (final ModuleItem<?> item : info.inputs()) {
+		for (final ModuleItem<?> item : getInfo().inputs()) {
 			final String name = item.getName();
 			engine.put(name, getInput(name));
 		}
 
 		// execute script!
 		try {
-			final Object returnValue = engine.eval(new FileReader(path));
+			final Reader reader = getInfo().getReader();
+			final Object returnValue;
+			if (reader == null) returnValue = engine.eval(new FileReader(path));
+			else returnValue = engine.eval(reader);
 			setOutput(RETURN_VALUE, returnValue);
 		}
 		catch (final ScriptException e) {
