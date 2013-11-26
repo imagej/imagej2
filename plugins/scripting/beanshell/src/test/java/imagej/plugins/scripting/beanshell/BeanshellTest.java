@@ -35,11 +35,33 @@
 
 package imagej.plugins.scripting.beanshell;
 
+import static org.junit.Assert.assertEquals;
+import imagej.script.ScriptService;
+
+import org.junit.Test;
+import org.scijava.Context;
+import org.scijava.service.ServiceHelper;
+
 /**
  * Unit tests for the Beanshell support.
  * 
  * @author Johannes Schindelin
  */
 public class BeanshellTest {
-	// NB: Placeholder for future tests.
+
+	@Test
+	public void testParameters() throws Exception {
+		final Context context = new Context(ScriptService.class);
+		final ScriptService scriptService = context.getService(ScriptService.class);
+		new ServiceHelper(context).createExactService(DummyService.class);
+
+		String script =
+				"// @DummyService d\n" +
+				"d.value = 4321;\n";
+		scriptService.run("hello.bsh", script).get();
+
+		final DummyService dummy = context.getService(DummyService.class);
+		assertEquals(4321, dummy.value);
+	}
+
 }
