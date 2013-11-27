@@ -39,10 +39,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import imagej.updater.webdav.NetrcParser.Credentials;
 
 import java.io.IOException;
-
-import imagej.updater.webdav.NetrcParser.Credentials;
 
 import org.junit.Test;
 

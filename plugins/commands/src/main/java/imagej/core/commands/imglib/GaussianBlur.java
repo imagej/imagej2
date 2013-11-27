@@ -33,77 +33,85 @@
  * #L%
  */
 
-package imagej.options;
+package imagej.core.commands.imglib;
 
-import imagej.command.CommandService;
+import imagej.command.Command;
+import imagej.command.ContextCommand;
+import imagej.data.Dataset;
+import imagej.menu.MenuConstants;
+import net.imglib2.ExtendedRandomAccessibleInterval;
+import net.imglib2.algorithm.gauss3.Gauss3;
+import net.imglib2.img.Img;
+import net.imglib2.meta.CalibratedAxis;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.view.Views;
 
-import java.util.List;
-
-import org.scijava.log.LogService;
-import org.scijava.object.ObjectService;
-import org.scijava.plugin.AbstractSingletonService;
+import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.service.Service;
 
 /**
- * Default service for keeping track of the available options and their
- * settings.
+ * Does an in place Gaussian blur noise reduction operation on a {@link Dataset}
+ * .
  * 
- * @author Curtis Rueden
  * @author Barry DeZonia
- * @see OptionsPlugin
+ * @param <T>
  */
-@Plugin(type = Service.class)
-public class DefaultOptionsService extends
-	AbstractSingletonService<OptionsPlugin> implements OptionsService
+@Plugin(
+	type = Command.class,
+	menu = {
+		@Menu(label = MenuConstants.PROCESS_LABEL,
+			weight = MenuConstants.PROCESS_WEIGHT,
+			mnemonic = MenuConstants.PROCESS_MNEMONIC),
+		@Menu(label = "Filters", mnemonic = 'f'), @Menu(label = "Gaussian Blur...") },
+	headless = true)
+public class GaussianBlur<T extends RealType<T>> extends
+	ContextCommand
 {
 
-	@Parameter
-	private LogService log;
+	// -- Parameters --
 
-	@Parameter
-	private ObjectService objectService;
+	@Parameter(type = ItemIO.BOTH)
+	private Dataset dataset;
+	
+	@Parameter(label = "Sigma (radius)", min = "0.0001")
+	private double sigma = 2;
+	
+	@Parameter(label = "Use units")
+	private boolean useUnits = false;
 
-	// NB: Required by DynamicCommand, the OptionsPlugin superclass.
-	@Parameter
-	private CommandService commandService;
-
-	// -- OptionsService methods --
-
-	@Override
-	public <O extends OptionsPlugin> O getOptions(final Class<O> optionsClass) {
-		final List<O> objects = objectService.getObjects(optionsClass);
-		return objects == null || objects.isEmpty() ? null : objects.get(0);
-	}
+	// -- Command methods --
 
 	@Override
-	public void reset() {
-		final List<OptionsPlugin> optionsPlugins = getInstances();
-		for (final OptionsPlugin plugin : optionsPlugins) {
-			plugin.reset();
+	public void run() {
+		double[] sigmas = sigmas();
+		Img<T> target = (Img<T>) (Img) dataset.getImgPlus();
+		Img<T> input = target.copy();
+		ExtendedRandomAccessibleInterval<T, ?> paddedInput =
+			Views.extendMirrorSingle(input);
+		try {
+			Gauss3.gauss(sigmas, paddedInput, target);
+		}
+		catch (Exception e) {
+			cancel(e.getMessage());
 		}
 	}
 
-	// -- SingletonService methods --
+	// -- helpers --
 
-	@Override
-	public List<OptionsPlugin> getInstances() {
-		final List<OptionsPlugin> instances = super.getInstances();
-
-		// load previous values from persistent storage
-		for (final OptionsPlugin options : instances) {
-			options.load();
+	private double[] sigmas() {
+		double[] sigmas = new double[dataset.numDimensions()];
+		for (int d = 0; d < sigmas.length; d++) {
+			if (useUnits) {
+				CalibratedAxis axis = dataset.axis(d);
+				sigmas[d] = axis.rawValue(sigma) - axis.rawValue(0);
+			}
+			else {
+				sigmas[d] = sigma;
+			}
 		}
-
-		return instances;
-	}
-
-	// -- PTService methods --
-
-	@Override
-	public Class<OptionsPlugin> getPluginType() {
-		return OptionsPlugin.class;
+		return sigmas;
 	}
 
 }

@@ -38,11 +38,11 @@ package imagej.data.autoscale;
 import java.util.List;
 import java.util.Map;
 
-import org.scijava.plugin.SingletonService;
-
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.plugin.SingletonService;
 
 /**
  * Interface for service that works with autoscale algorithms.

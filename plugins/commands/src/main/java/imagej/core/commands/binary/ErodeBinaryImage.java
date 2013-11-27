@@ -33,61 +33,39 @@
  * #L%
  */
 
-package imagej.data.table;
+package imagej.core.commands.binary;
 
+import imagej.command.Command;
+import imagej.data.Dataset;
+import imagej.menu.MenuConstants;
 import net.imglib2.img.Img;
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
-import net.imglib2.meta.ImgPlus;
-import net.imglib2.type.numeric.real.DoubleType;
+import net.imglib2.ops.operation.randomaccessibleinterval.unary.morph.Erode;
+import net.imglib2.type.logic.BitType;
+
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Plugin;
 
 /**
- * Default implementation of {@link ResultsTable}.
+ * Does a morphological erode operation on a binary image. Input data is changed
+ * in place.
  * 
- * @author Curtis Rueden
+ * @author Barry DeZonia
  */
-public class DefaultResultsTable extends AbstractTable<DoubleColumn, Double>
-	implements ResultsTable
-{
-
-	/** Creates an empty results table. */
-	public DefaultResultsTable() {
-		super();
-	}
-
-	/** Creates a results table with the given row and column dimensions. */
-	public DefaultResultsTable(final int columnCount, final int rowCount) {
-		super(columnCount, rowCount);
-	}
-
-	// -- ResultsTable methods --
+@Plugin(type = Command.class, menu = {
+	@Menu(label = MenuConstants.PROCESS_LABEL,
+		weight = MenuConstants.PROCESS_WEIGHT,
+		mnemonic = MenuConstants.PROCESS_MNEMONIC),
+	@Menu(label = "Binary", mnemonic = 'b'), @Menu(label = "Erode") },
+	headless = true)
+public class ErodeBinaryImage extends AbstractMorphOpsCommand {
 
 	@Override
-	public double getValue(final int col, final int row) {
-		return get(col).getValue(row);
-	}
-
-	@Override
-	public void setValue(final int col, final int row, final double value) {
-		get(col).setValue(row, value);
-	}
-
-	@Override
-	public ImgPlus<DoubleType> img() {
-		final Img<DoubleType> img = new ResultsImg(this);
-		final AxisType[] axes = { Axes.X, Axes.Y };
-		final String name = "Results";
-		final ImgPlus<DoubleType> imgPlus =
-			new ImgPlus<DoubleType>(img, name, axes);
-		// TODO: Once ImgPlus has a place for row & column labels, add those too.
-		return imgPlus;
-	}
-
-	// -- Internal methods --
-
-	@Override
-	protected DoubleColumn createColumn(final String header) {
-		return new DoubleColumn(header);
+	protected void updateDataset(Dataset ds) {
+		Erode op = new Erode(getConnectedType(), 1);
+		Dataset copy = ds.duplicate();
+		Img<BitType> copyData = (Img<BitType>) copy.getImgPlus();
+		Img<BitType> resultData = (Img<BitType>) ds.getImgPlus();
+		op.compute(copyData, resultData);
 	}
 
 }

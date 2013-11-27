@@ -37,10 +37,10 @@ package imagej.data;
 
 import imagej.data.display.DatasetView;
 import net.imglib2.RandomAccess;
-import net.imglib2.display.ARGBScreenImage;
+import net.imglib2.display.screenimage.awt.ARGBScreenImage;
+import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.ImgPlus;
-import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 

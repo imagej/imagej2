@@ -33,61 +33,28 @@
  * #L%
  */
 
-package imagej.data.table;
+package imagej.core.commands.binary;
 
-import net.imglib2.img.Img;
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
-import net.imglib2.meta.ImgPlus;
-import net.imglib2.type.numeric.real.DoubleType;
+import imagej.command.ContextCommand;
+
+import org.scijava.plugin.Parameter;
 
 /**
- * Default implementation of {@link ResultsTable}.
+ * Abstract super class for binarization commands like Create Mask and Make
+ * Binary.
  * 
- * @author Curtis Rueden
+ * @author Barry DeZonia
  */
-public class DefaultResultsTable extends AbstractTable<DoubleColumn, Double>
-	implements ResultsTable
-{
+public abstract class AbstractBinaryCommand extends ContextCommand {
 
-	/** Creates an empty results table. */
-	public DefaultResultsTable() {
-		super();
-	}
+	@Parameter(label = "Mask pixels", choices = { Binarize.INSIDE,
+		Binarize.OUTSIDE })
+	protected String maskPixels = Binarize.INSIDE;
 
-	/** Creates a results table with the given row and column dimensions. */
-	public DefaultResultsTable(final int columnCount, final int rowCount) {
-		super(columnCount, rowCount);
-	}
+	@Parameter(label = "Mask color", choices = { Binarize.WHITE, Binarize.BLACK })
+	protected String maskColor = Binarize.WHITE;
 
-	// -- ResultsTable methods --
-
-	@Override
-	public double getValue(final int col, final int row) {
-		return get(col).getValue(row);
-	}
-
-	@Override
-	public void setValue(final int col, final int row, final double value) {
-		get(col).setValue(row, value);
-	}
-
-	@Override
-	public ImgPlus<DoubleType> img() {
-		final Img<DoubleType> img = new ResultsImg(this);
-		final AxisType[] axes = { Axes.X, Axes.Y };
-		final String name = "Results";
-		final ImgPlus<DoubleType> imgPlus =
-			new ImgPlus<DoubleType>(img, name, axes);
-		// TODO: Once ImgPlus has a place for row & column labels, add those too.
-		return imgPlus;
-	}
-
-	// -- Internal methods --
-
-	@Override
-	protected DoubleColumn createColumn(final String header) {
-		return new DoubleColumn(header);
-	}
+	@Parameter(label = "Threshold each plane")
+	protected boolean threshEachPlane = false;
 
 }

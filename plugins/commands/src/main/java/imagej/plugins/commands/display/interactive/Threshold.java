@@ -470,14 +470,16 @@ public class Threshold<T extends RealType<T>> extends InteractiveImageCommand {
 		for (int binCount = 256; binCount <= MaxBinCount; binCount *= 2) {
 			if (range <= binCount) {
 				binMapper =
-					new Real1dBinMapper<T>(minMax.getMin(), minMax.getMax(), binCount,
+					new Real1dBinMapper<T>(dataRange.getMin(), dataRange.getMax(),
+						binCount,
 						false);
 				break;
 			}
 		}
 		if (binMapper == null) {
 			binMapper =
-				new Real1dBinMapper<T>(minMax.getMin(), minMax.getMax(), MaxBinCount,
+				new Real1dBinMapper<T>(dataRange.getMin(), dataRange.getMax(),
+					MaxBinCount,
 					false);
 		}
 		return new Histogram1d<T>(binMapper);

@@ -35,10 +35,9 @@
 
 package imagej.plugins.commands.assign.noisereduce;
 
-import imagej.Cancelable;
-import imagej.command.Command;
 import imagej.command.CommandModule;
 import imagej.command.CommandService;
+import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 
 import java.util.HashMap;
@@ -55,7 +54,6 @@ import net.imglib2.outofbounds.OutOfBoundsMirrorFactory.Boundary;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
-import org.scijava.Context;
 import org.scijava.ItemIO;
 import org.scijava.plugin.Parameter;
 
@@ -65,8 +63,8 @@ import org.scijava.plugin.Parameter;
  * @author Barry DeZonia
  */
 public abstract class AbstractNoiseReducerPlugin<U extends RealType<U>>
-	// TODO : extends ContextCommand
-	implements Command, Cancelable
+ extends
+	ContextCommand
 {
 	// -- constants --
 
@@ -77,9 +75,6 @@ public abstract class AbstractNoiseReducerPlugin<U extends RealType<U>>
 	
 	// -- Parameters --
 
-	@Parameter
-	protected Context context;
-	
 	@Parameter
 	protected CommandService commandService;
 	
@@ -118,7 +113,8 @@ public abstract class AbstractNoiseReducerPlugin<U extends RealType<U>>
 				new RealImageFunction<U,DoubleType>(inputImg, oobFactory, new DoubleType());
 		PointSet ps = neighborhood.getPoints();
 		Reducer<U,DoubleType> reducer =
-				new Reducer<U,DoubleType>(context, inputImg, getFunction(otherFunc), ps);
+			new Reducer<U, DoubleType>(getContext(), inputImg,
+				getFunction(otherFunc), ps);
 		output = reducer.reduceNoise(neighborhood.getDescription());
 	}
 

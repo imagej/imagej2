@@ -67,8 +67,7 @@ import org.scijava.plugin.Plugin;
 		@Menu(label = MenuConstants.PROCESS_LABEL,
 			weight = MenuConstants.PROCESS_WEIGHT,
 			mnemonic = MenuConstants.PROCESS_MNEMONIC),
-		@Menu(label = "Image Calculator...", weight = 22) }, headless = true,
-	initializer = "initCalculator")
+		@Menu(label = "Image Calculator...", weight = 22) }, headless = true)
 public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 	extends ContextCommand
 {
@@ -228,15 +227,6 @@ public class ImageCalculator<U extends RealType<U>, V extends RealType<V>>
 		this.wantDoubles = wantDoubles;
 	}
 
-
-	// -- initializer --
-
-	protected void initCalculator() {
-		// NB: Ensure the CalculatorService operators are fully initialized.
-		// This is necessary because CalculatorService only initializes its
-		// operators on demand (i.e., lazily).
-		calculatorService.getOperators();
-	}
 
 	// -- private helpers --
 

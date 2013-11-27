@@ -44,9 +44,9 @@ import java.util.List;
 
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.stats.ComputeMinMax;
-import net.imglib2.display.ARGBScreenImage;
 import net.imglib2.display.ColorTable;
-import net.imglib2.display.CompositeXYProjector;
+import net.imglib2.display.projector.composite.CompositeXYProjector;
+import net.imglib2.display.screenimage.awt.ARGBScreenImage;
 import net.imglib2.type.numeric.RealType;
 
 /**

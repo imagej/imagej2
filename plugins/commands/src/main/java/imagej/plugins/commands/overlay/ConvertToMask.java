@@ -74,8 +74,10 @@ import org.scijava.plugin.Plugin;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Binary", mnemonic = 'b'),
-	@Menu(label = "Convert to Mask", weight = 1) }, headless = true)
+	@Menu(label = "Make Mask Overlay...") }, headless = true)
 public class ConvertToMask extends ContextCommand {
+
+	// -- Parameters --
 
 	// TODO - this points out an issue with threshold service. Does it map
 	// thresh overlays to image displays or datasets. In the support code both
@@ -109,7 +111,40 @@ public class ConvertToMask extends ContextCommand {
 	@Parameter
 	private ThresholdService threshSrv;
 
+	// -- accessors --
+
+	public void setInput(ImageDisplay disp) {
+		input = disp;
+	}
+
+	public ImageDisplay getInput() {
+		return input;
+	}
+
+	public void setColor(ColorRGB val) {
+		color = val;
+	}
+
+	public ColorRGB getColor() {
+		return color;
+	}
+
+	public void setAlpha(int val) {
+		alpha = val;
+	}
+
+	public int getAlpha() {
+		return alpha;
+	}
+
+	public Overlay getOutput() {
+		return output;
+	}
+
+	// -- Command methods --
+
 	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void run() {
 		if (!threshSrv.hasThreshold(input)) {
 			cancel("This command requires a thresholded image.");
@@ -153,35 +188,7 @@ public class ConvertToMask extends ContextCommand {
 		output.setAlpha(alpha);
 		output.setFillColor(color);
 		for (int i = 0; i < numDims; i++) {
-			output.setAxis(ds.getImgPlus().axis(i), i);
+			output.setAxis(ds.axis(i), i);
 		}
-	}
-
-	public void setInput(ImageDisplay disp) {
-		input = disp;
-	}
-	
-	public ImageDisplay getInput() {
-		return input;
-	}
-
-	public void setColor(ColorRGB val) {
-		color = val;
-	}
-	
-	public ColorRGB getColor() {
-		return color;
-	}
-
-	public void setAlpha(int val) {
-		alpha = val;
-	}
-	
-	public int getAlpha() {
-		return alpha;
-	}
-
-	public Overlay getOutput() {
-		return output;
 	}
 }

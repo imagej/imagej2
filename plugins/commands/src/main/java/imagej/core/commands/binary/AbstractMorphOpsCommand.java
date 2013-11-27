@@ -33,61 +33,67 @@
  * #L%
  */
 
-package imagej.data.table;
+package imagej.core.commands.binary;
 
-import net.imglib2.img.Img;
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
-import net.imglib2.meta.ImgPlus;
-import net.imglib2.type.numeric.real.DoubleType;
+import imagej.command.ContextCommand;
+import imagej.data.Dataset;
+import net.imglib2.ops.types.ConnectedType;
+import net.imglib2.type.logic.BitType;
+import net.imglib2.type.numeric.RealType;
+
+import org.scijava.ItemIO;
+import org.scijava.plugin.Parameter;
 
 /**
- * Default implementation of {@link ResultsTable}.
+ * Abstract super class for commands that modify binary images in place.
  * 
- * @author Curtis Rueden
+ * @author Barry DeZonia
  */
-public class DefaultResultsTable extends AbstractTable<DoubleColumn, Double>
-	implements ResultsTable
-{
+public abstract class AbstractMorphOpsCommand extends ContextCommand {
 
-	/** Creates an empty results table. */
-	public DefaultResultsTable() {
-		super();
+	// -- constants --
+
+	public static final String FOUR = "Four";
+	public static final String EIGHT = "Eight";
+
+	// -- Parameters --
+
+	@Parameter(type = ItemIO.BOTH)
+	private Dataset dataset;
+
+	@Parameter(label = "Neighbors", choices = { FOUR, EIGHT })
+	private String neighbors = FOUR;
+
+	// -- abstract methods --
+
+	abstract protected void updateDataset(Dataset ds);
+
+	// -- accessors --
+
+	public ConnectedType getConnectedType() {
+		if (neighbors == FOUR) return ConnectedType.FOUR_CONNECTED;
+		return ConnectedType.EIGHT_CONNECTED;
 	}
 
-	/** Creates a results table with the given row and column dimensions. */
-	public DefaultResultsTable(final int columnCount, final int rowCount) {
-		super(columnCount, rowCount);
+	public void setConnectedType(ConnectedType type) {
+		if (type.equals(ConnectedType.FOUR_CONNECTED)) neighbors = FOUR;
+		else neighbors = EIGHT;
 	}
 
-	// -- ResultsTable methods --
+	// -- Command methods --
 
 	@Override
-	public double getValue(final int col, final int row) {
-		return get(col).getValue(row);
+	public void run() {
+		if (!isBitType(dataset)) {
+			cancel("This command requires input dataset to be of type BitType.");
+		}
+		else updateDataset(dataset);
 	}
 
-	@Override
-	public void setValue(final int col, final int row, final double value) {
-		get(col).setValue(row, value);
+	// -- helpers --
+
+	private boolean isBitType(Dataset ds) {
+		RealType<?> type = ds.getImgPlus().firstElement();
+		return (type instanceof BitType);
 	}
-
-	@Override
-	public ImgPlus<DoubleType> img() {
-		final Img<DoubleType> img = new ResultsImg(this);
-		final AxisType[] axes = { Axes.X, Axes.Y };
-		final String name = "Results";
-		final ImgPlus<DoubleType> imgPlus =
-			new ImgPlus<DoubleType>(img, name, axes);
-		// TODO: Once ImgPlus has a place for row & column labels, add those too.
-		return imgPlus;
-	}
-
-	// -- Internal methods --
-
-	@Override
-	protected DoubleColumn createColumn(final String header) {
-		return new DoubleColumn(header);
-	}
-
 }

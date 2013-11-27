@@ -84,7 +84,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import net.imglib2.RandomAccess;
-import net.imglib2.display.ARGBScreenImage;
+import net.imglib2.display.screenimage.awt.ARGBScreenImage;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;

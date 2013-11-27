@@ -50,7 +50,6 @@ import org.scijava.log.LogService;
 import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginInfo;
 import org.scijava.service.Service;
 
 /**
@@ -150,6 +149,7 @@ public final class DefaultPlatformService extends
 
 	@Override
 	public void initialize() {
+		super.initialize();
 		final List<Platform> platforms = discoverTargetPlatforms();
 		targetPlatforms = Collections.unmodifiableList(platforms);
 		for (final Platform platform : platforms) {
@@ -179,14 +179,8 @@ public final class DefaultPlatformService extends
 
 	/** Discovers target platform handlers. */
 	private List<Platform> discoverTargetPlatforms() {
-		// CTR FIXME: Rather than doing it this way, lean on the getInstances()
-		// method in initialize(), and filter and configure the instances based
-		// on the result of isTarget().
 		final List<Platform> platforms = new ArrayList<Platform>();
-		final List<PluginInfo<Platform>> infos =
-			getPluginService().getPluginsOfType(Platform.class);
-		for (final PluginInfo<Platform> info : infos) {
-			final Platform platform = getPluginService().createInstance(info);
+		for (final Platform platform : getInstances()) {
 			if (!platform.isTarget()) continue;
 			platforms.add(platform);
 		}

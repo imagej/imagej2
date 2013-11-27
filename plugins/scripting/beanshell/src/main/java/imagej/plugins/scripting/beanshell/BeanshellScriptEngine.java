@@ -35,6 +35,8 @@
 
 package imagej.plugins.scripting.beanshell;
 
+import bsh.EvalError;
+import bsh.Interpreter;
 import imagej.script.AbstractScriptEngine;
 import imagej.util.LineOutputStream;
 
@@ -46,9 +48,6 @@ import java.io.Writer;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
-
-import bsh.EvalError;
-import bsh.Interpreter;
 
 /**
  * Beanshell support for ImageJ

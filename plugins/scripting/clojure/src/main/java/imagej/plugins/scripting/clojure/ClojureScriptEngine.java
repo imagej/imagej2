@@ -37,6 +37,9 @@ package imagej.plugins.scripting.clojure;
 
 import imagej.script.AbstractScriptEngine;
 
+import clojure.lang.Compiler;
+import clojure.lang.LispReader;
+
 import java.io.PushbackReader;
 import java.io.Reader;
 import java.io.StringReader;
@@ -45,9 +48,6 @@ import java.io.Writer;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
-
-import clojure.lang.Compiler;
-import clojure.lang.LispReader;
 
 /**
  * A Clojure interpreter.
