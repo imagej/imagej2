@@ -53,8 +53,8 @@ import org.scijava.service.Service;
  * Services are obtained from this preprocessor instance's application context.
  * </p>
  * <p>
- * Many modules (e.g., most {@link Command}s) use service fields annotated with @
- * {@link Parameter}, resulting in those parameters being populated when the
+ * Many modules (e.g., most {@link Command}s) use @{@link Parameter}-annotated
+ * service fields, resulting in those parameters being populated when the
  * SciJava application context is injected (via {@link Context#inject(Object)}.
  * However, some modules may have service parameters which are programmatically
  * generated (i.e., returned directly as inputs from {@link ModuleInfo#inputs()}
