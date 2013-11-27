@@ -36,11 +36,11 @@
 package imagej.plugins.scripting.clojure;
 
 import static org.junit.Assert.assertEquals;
+import imagej.script.ScriptLanguage;
 import imagej.script.ScriptModule;
 import imagej.script.ScriptService;
 
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
 
 import org.junit.Test;
 import org.scijava.Context;
@@ -68,8 +68,8 @@ public class ClojureTest {
 		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
 
-		final ScriptEngineFactory factory = scriptService.getByFileExtension("clj");
-		final ScriptEngine engine = factory.getScriptEngine();
+		final ScriptLanguage language = scriptService.getByFileExtension("clj");
+		final ScriptEngine engine = language.getScriptEngine();
 		assertEquals(ClojureScriptEngine.class, engine.getClass());
 		engine.put("$hello", 17);
 		assertEquals("17", engine.eval("$hello").toString());

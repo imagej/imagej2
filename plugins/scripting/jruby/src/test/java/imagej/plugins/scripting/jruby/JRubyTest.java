@@ -36,13 +36,13 @@
 package imagej.plugins.scripting.jruby;
 
 import static org.junit.Assert.assertEquals;
+import imagej.script.ScriptLanguage;
 import imagej.script.ScriptModule;
 import imagej.script.ScriptService;
 
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
 
 import org.junit.Test;
 import org.scijava.Context;
@@ -70,8 +70,8 @@ public class JRubyTest {
 		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
 
-		final ScriptEngineFactory factory = scriptService.getByFileExtension("rb");
-		final ScriptEngine engine = factory.getScriptEngine();
+		final ScriptLanguage language = scriptService.getByFileExtension("rb");
+		final ScriptEngine engine = language.getScriptEngine();
 		assertEquals(JRubyScriptEngine.class, engine.getClass());
 		engine.put("$hello", 17);
 		assertEquals("17", engine.eval("$hello").toString());

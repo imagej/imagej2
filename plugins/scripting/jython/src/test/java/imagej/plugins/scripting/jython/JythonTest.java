@@ -37,13 +37,13 @@ package imagej.plugins.scripting.jython;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import imagej.script.ScriptLanguage;
 import imagej.script.ScriptModule;
 import imagej.script.ScriptService;
 
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
 
 import org.junit.Test;
 import org.scijava.Context;
@@ -71,8 +71,8 @@ public class JythonTest {
 		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
 
-		final ScriptEngineFactory factory = scriptService.getByFileExtension("py");
-		final ScriptEngine engine = factory.getScriptEngine();
+		final ScriptLanguage language = scriptService.getByFileExtension("py");
+		final ScriptEngine engine = language.getScriptEngine();
 		assertEquals(JythonScriptEngine.class, engine.getClass());
 		engine.put("hello", 17);
 		assertEquals("17", engine.eval("hello").toString());

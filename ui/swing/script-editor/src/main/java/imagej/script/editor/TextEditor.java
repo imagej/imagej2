@@ -85,7 +85,6 @@ import java.util.jar.JarOutputStream;
 import java.util.zip.ZipException;
 
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -186,7 +185,7 @@ public class TextEditor extends JFrame implements ActionListener,
 	@Parameter
 	protected ScriptService scriptService;
 
-	protected Map<ScriptEngineFactory, JRadioButtonMenuItem> languageMenuItems;
+	protected Map<ScriptLanguage, JRadioButtonMenuItem> languageMenuItems;
 	protected JRadioButtonMenuItem noneLanguageItem;
 
 	public TextEditor(final Context context) {
@@ -348,7 +347,7 @@ public class TextEditor extends JFrame implements ActionListener,
 
 		edit.add(whiteSpaceMenu);
 
-		languageMenuItems = new LinkedHashMap<ScriptEngineFactory, JRadioButtonMenuItem>();
+		languageMenuItems = new LinkedHashMap<ScriptLanguage, JRadioButtonMenuItem>();
 		Set<Integer> usedShortcuts = new HashSet<Integer>();
 		JMenu languages = new JMenu("Language");
 		languages.setMnemonic(KeyEvent.VK_L);

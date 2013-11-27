@@ -53,7 +53,6 @@ import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.Vector;
 
-import javax.script.ScriptEngineFactory;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
