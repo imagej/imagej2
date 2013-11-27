@@ -38,8 +38,6 @@ package imagej.command;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
-import imagej.module.process.PostprocessorPlugin;
-import imagej.module.process.PreprocessorPlugin;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -158,63 +156,52 @@ public class DefaultCommandService extends AbstractPTService<Command> implements
 	}
 
 	@Override
-	public Future<Module> run(final String className, final Object... inputs) {
-		final CommandInfo command = getOrCreate(className);
-		return run(command, inputs);
+	public Future<CommandModule> run(final String className,
+		final boolean process, final Object... inputs)
+	{
+		return run(getOrCreate(className), process, inputs);
 	}
 
 	@Override
-	public Future<Module> run(final String className,
-		final Map<String, Object> inputMap)
+	public Future<CommandModule> run(final String className,
+		final boolean process, final Map<String, Object> inputMap)
 	{
-		final CommandInfo command = getOrCreate(className);
-		return run(command, inputMap);
+		return run(getOrCreate(className), process, inputMap);
 	}
 
 	@Override
 	public <C extends Command> Future<CommandModule> run(
-		final Class<C> commandClass, final Object... inputs)
+		final Class<C> commandClass, final boolean process, final Object... inputs)
 	{
-		final CommandInfo command = getOrCreate(commandClass);
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final Future<CommandModule> future = (Future) run(command, inputs);
-		return future;
+		return run(getOrCreate(commandClass), process, inputs);
 	}
 
 	@Override
 	public <C extends Command> Future<CommandModule> run(
-		final Class<C> commandClass, final Map<String, Object> inputMap)
+		final Class<C> commandClass, final boolean process,
+		final Map<String, Object> inputMap)
 	{
-		final CommandInfo command = getOrCreate(commandClass);
+		return run(getOrCreate(commandClass), process, inputMap);
+	}
+
+	@Override
+	public Future<CommandModule> run(final CommandInfo info,
+		final boolean process, final Object... inputs)
+	{
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		final Future<CommandModule> future = (Future) run(command, inputMap);
+		final Future<CommandModule> future =
+			(Future) moduleService.run(info, process, inputs);
 		return future;
 	}
 
 	@Override
-	public Future<Module> run(final ModuleInfo info, final Object... inputs) {
-		return moduleService.run(info, pre(), post(), inputs);
-	}
-
-	@Override
-	public Future<Module> run(final ModuleInfo info,
-		final Map<String, Object> inputMap)
+	public Future<CommandModule> run(final CommandInfo info,
+		final boolean process, final Map<String, Object> inputMap)
 	{
-		return moduleService.run(info, pre(), post(), inputMap);
-	}
-
-	@Override
-	public <M extends Module> Future<M> run(final M module,
-		final Object... inputs)
-	{
-		return moduleService.run(module, pre(), post(), inputs);
-	}
-
-	@Override
-	public <M extends Module> Future<M> run(final M module,
-		final Map<String, Object> inputMap)
-	{
-		return moduleService.run(module, pre(), post(), inputMap);
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		final Future<CommandModule> future =
+			(Future) moduleService.run(info, process, inputMap);
+		return future;
 	}
 
 	// -- PTService methods --
@@ -252,16 +239,6 @@ public class DefaultCommandService extends AbstractPTService<Command> implements
 	}
 
 	// -- Helper methods --
-
-	/** Creates the preprocessor chain. */
-	private List<? extends PreprocessorPlugin> pre() {
-		return pluginService.createInstancesOfType(PreprocessorPlugin.class);
-	}
-
-	/** Creates the postprocessor chain. */
-	private List<? extends PostprocessorPlugin> post() {
-		return pluginService.createInstancesOfType(PostprocessorPlugin.class);
-	}
 
 	/**
 	 * Gets a {@link CommandInfo} for the given class name, creating a new one if
@@ -373,6 +350,56 @@ public class DefaultCommandService extends AbstractPTService<Command> implements
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		final List<PluginInfo<?>> typedPlugins = (List) plugins;
 		return typedPlugins;
+	}
+
+	// -- Deprecated methods --
+
+	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Future<Module> run(String className, Object... inputs) {
+		return (Future) run(className, true, inputs);
+	}
+
+	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Future<Module> run(String className, Map<String, Object> inputMap) {
+		return (Future) run(className, true, inputMap);
+	}
+
+	@Override
+	public <C extends Command> Future<CommandModule> run(Class<C> commandClass,
+		Object... inputs)
+	{
+		return run(commandClass, true, inputs);
+	}
+
+	@Override
+	public <C extends Command> Future<CommandModule> run(Class<C> commandClass,
+		Map<String, Object> inputMap)
+	{
+		return run(commandClass, true, inputMap);
+	}
+
+	@Override
+	public Future<Module> run(ModuleInfo info, Object... inputs) {
+		return moduleService.run(info, true, inputs);
+	}
+
+	@Override
+	public Future<Module> run(ModuleInfo info, Map<String, Object> inputMap) {
+		return moduleService.run(info, true, inputMap);
+	}
+
+	@Override
+	public <M extends Module> Future<M> run(M module, Object... inputs) {
+		return moduleService.run(module, true, inputs);
+	}
+
+	@Override
+	public <M extends Module> Future<M>
+		run(M module, Map<String, Object> inputMap)
+	{
+		return moduleService.run(module, true, inputMap);
 	}
 
 }

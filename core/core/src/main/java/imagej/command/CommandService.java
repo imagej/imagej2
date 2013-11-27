@@ -120,6 +120,10 @@ public interface CommandService extends PTService<Command> {
 	 * </p>
 	 * 
 	 * @param className Class name of the command to execute.
+	 * @param process If true, executes the command with pre- and postprocessing
+	 *          steps from all available {@link PreprocessorPlugin}s and
+	 *          {@link PostprocessorPlugin}s in the plugin index; if false,
+	 *          executes the command with no pre- or postprocessing.
 	 * @param inputs List of input parameter names and values. The expected order
 	 *          is in pairs: an input name followed by its value, for each desired
 	 *          input to populate. Leaving some inputs unpopulated is allowed.
@@ -129,7 +133,8 @@ public interface CommandService extends PTService<Command> {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module> run(String className, Object... inputs);
+	Future<CommandModule>
+		run(String className, boolean process, Object... inputs);
 
 	/**
 	 * Executes the first command of the given class name.
@@ -140,6 +145,10 @@ public interface CommandService extends PTService<Command> {
 	 * </p>
 	 * 
 	 * @param className Class name of the command to execute.
+	 * @param process If true, executes the command with pre- and postprocessing
+	 *          steps from all available {@link PreprocessorPlugin}s and
+	 *          {@link PostprocessorPlugin}s in the plugin index; if false,
+	 *          executes the command with no pre- or postprocessing.
 	 * @param inputMap Table of input parameter values, with keys matching the
 	 *          plugin's input parameter names. Passing a value of a type
 	 *          incompatible with the associated input parameter will issue an
@@ -147,7 +156,8 @@ public interface CommandService extends PTService<Command> {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module> run(String className, Map<String, Object> inputMap);
+	Future<CommandModule> run(String className, boolean process,
+		Map<String, Object> inputMap);
 
 	/**
 	 * Executes the first command of the given class.
@@ -159,6 +169,10 @@ public interface CommandService extends PTService<Command> {
 	 * 
 	 * @param <C> Class of the command to execute.
 	 * @param commandClass Class object of the command to execute.
+	 * @param process If true, executes the command with pre- and postprocessing
+	 *          steps from all available {@link PreprocessorPlugin}s and
+	 *          {@link PostprocessorPlugin}s in the plugin index; if false,
+	 *          executes the command with no pre- or postprocessing.
 	 * @param inputs List of input parameter names and values. The expected order
 	 *          is in pairs: an input name followed by its value, for each desired
 	 *          input to populate. Leaving some inputs unpopulated is allowed.
@@ -168,91 +182,129 @@ public interface CommandService extends PTService<Command> {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
+	<C extends Command> Future<CommandModule> run(Class<C> commandClass,
+		boolean process, Object... inputs);
+
+	/**
+	 * Executes the first command of the given class.
+	 * <p>
+	 * If no command of the given class is registered with the service, then a
+	 * default one is created and then executed. This default command is
+	 * <em>not</em> registered with the service for subsequent usage.
+	 * </p>
+	 * 
+	 * @param <C> Class of the command to execute.
+	 * @param commandClass Class object of the command to execute.
+	 * @param process If true, executes the command with pre- and postprocessing
+	 *          steps from all available {@link PreprocessorPlugin}s and
+	 *          {@link PostprocessorPlugin}s in the plugin index; if false,
+	 *          executes the command with no pre- or postprocessing.
+	 * @param inputMap Table of input parameter values, with keys matching the
+	 *          plugin's input parameter names. Passing a value of a type
+	 *          incompatible with the associated input parameter will issue an
+	 *          error and ignore that value.
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
+	 */
+	<C extends Command> Future<CommandModule> run(Class<C> commandClass,
+		boolean process, Map<String, Object> inputMap);
+
+	/**
+	 * Executes the given command.
+	 * 
+	 * @param info The command to instantiate and run.
+	 * @param process If true, executes the command with pre- and postprocessing
+	 *          steps from all available {@link PreprocessorPlugin}s and
+	 *          {@link PostprocessorPlugin}s in the plugin index; if false,
+	 *          executes the command with no pre- or postprocessing.
+	 * @param inputs List of input parameter names and values. The expected order
+	 *          is in pairs: an input name followed by its value, for each desired
+	 *          input to populate. Leaving some inputs unpopulated is allowed.
+	 *          Passing the name of an input that is not valid for the plugin, or
+	 *          passing a value of a type incompatible with the associated input
+	 *          parameter, will issue an error and ignore that name/value pair.
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
+	 */
+	Future<CommandModule>
+		run(CommandInfo info, boolean process, Object... inputs);
+
+	/**
+	 * Executes the given command.
+	 * 
+	 * @param info The command to instantiate and run.
+	 * @param process If true, executes the command with pre- and postprocessing
+	 *          steps from all available {@link PreprocessorPlugin}s and
+	 *          {@link PostprocessorPlugin}s in the plugin index; if false,
+	 *          executes the command with no pre- or postprocessing.
+	 * @param inputMap Table of input parameter values, with keys matching the
+	 *          plugin's input parameter names. Passing a value of a type
+	 *          incompatible with the associated input parameter will issue an
+	 *          error and ignore that value.
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
+	 */
+	Future<CommandModule> run(CommandInfo info, boolean process,
+		Map<String, Object> inputMap);
+
+	// -- Deprecated methods --
+
+	/**
+	 * @deprecated {@link #run(String, boolean, Object[])} with the
+	 *             {@code process} flag set to {@code true}.
+	 */
+	@Deprecated
+	Future<Module> run(String className, Object... inputs);
+
+	/**
+	 * @deprecated {@link #run(String, boolean, Map)} with the {@code process}
+	 *             flag set to {@code true}.
+	 */
+	@Deprecated
+	Future<Module> run(String className, Map<String, Object> inputMap);
+
+	/**
+	 * @deprecated {@link #run(Class, boolean, Object[])} with the {@code process}
+	 *             flag set to {@code true}.
+	 */
+	@Deprecated
 	<C extends Command> Future<CommandModule> run(Class<C> commandClass,
 		Object... inputs);
 
 	/**
-	 * Executes the first command of the given class.
-	 * <p>
-	 * If no command of the given class is registered with the service, then a
-	 * default one is created and then executed. This default command is
-	 * <em>not</em> registered with the service for subsequent usage.
-	 * </p>
-	 * 
-	 * @param <C> Class of the command to execute.
-	 * @param commandClass Class object of the command to execute.
-	 * @param inputMap Table of input parameter values, with keys matching the
-	 *          plugin's input parameter names. Passing a value of a type
-	 *          incompatible with the associated input parameter will issue an
-	 *          error and ignore that value.
-	 * @return {@link Future} of the module instance being executed. Calling
-	 *         {@link Future#get()} will block until execution is complete.
+	 * @deprecated {@link #run(Class, boolean, Map)} with the {@code process} flag
+	 *             set to {@code true}.
 	 */
+	@Deprecated
 	<C extends Command> Future<CommandModule> run(Class<C> commandClass,
 		Map<String, Object> inputMap);
 
 	/**
-	 * Executes the given module, with pre- and postprocessing steps from all
-	 * available {@link PreprocessorPlugin}s and {@link PostprocessorPlugin}s in
-	 * the plugin index.
-	 * 
-	 * @param info The module to instantiate and run.
-	 * @param inputs List of input parameter names and values. The expected order
-	 *          is in pairs: an input name followed by its value, for each desired
-	 *          input to populate. Leaving some inputs unpopulated is allowed.
-	 *          Passing the name of an input that is not valid for the plugin, or
-	 *          passing a value of a type incompatible with the associated input
-	 *          parameter, will issue an error and ignore that name/value pair.
-	 * @return {@link Future} of the module instance being executed. Calling
-	 *         {@link Future#get()} will block until execution is complete.
+	 * @deprecated Use {@link ModuleService#run(ModuleInfo, boolean, Object[])}
+	 *             with the {@code process} flag set to {@code true}.
 	 */
+	@Deprecated
 	Future<Module> run(ModuleInfo info, Object... inputs);
 
 	/**
-	 * Executes the given module, with pre- and postprocessing steps from all
-	 * available {@link PreprocessorPlugin}s and {@link PostprocessorPlugin}s in
-	 * the plugin index.
-	 * 
-	 * @param info The module to instantiate and run.
-	 * @param inputMap Table of input parameter values, with keys matching the
-	 *          {@link ModuleInfo}'s input parameter names. Passing a value of a
-	 *          type incompatible with the associated input parameter will issue
-	 *          an error and ignore that value.
-	 * @return {@link Future} of the module instance being executed. Calling
-	 *         {@link Future#get()} will block until execution is complete.
+	 * @deprecated Use {@link ModuleService#run(ModuleInfo, boolean, Map)} with
+	 *             the {@code process} flag set to {@code true}.
 	 */
+	@Deprecated
 	Future<Module> run(ModuleInfo info, Map<String, Object> inputMap);
 
 	/**
-	 * Executes the given module, with pre- and postprocessing steps from all
-	 * available {@link PreprocessorPlugin}s and {@link PostprocessorPlugin}s in
-	 * the plugin index.
-	 * 
-	 * @param module The module to run.
-	 * @param inputs List of input parameter names and values. The expected order
-	 *          is in pairs: an input name followed by its value, for each desired
-	 *          input to populate. Leaving some inputs unpopulated is allowed.
-	 *          Passing the name of an input that is not valid for the plugin, or
-	 *          passing a value of a type incompatible with the associated input
-	 *          parameter, will issue an error and ignore that name/value pair.
-	 * @return {@link Future} of the module instance being executed. Calling
-	 *         {@link Future#get()} will block until execution is complete.
+	 * @deprecated Use {@link ModuleService#run(Module, boolean, Object[])} with
+	 *             the {@code process} flag set to {@code true}.
 	 */
+	@Deprecated
 	<M extends Module> Future<M> run(M module, Object... inputs);
 
 	/**
-	 * Executes the given module, with pre- and postprocessing steps from all
-	 * available {@link PreprocessorPlugin}s and {@link PostprocessorPlugin}s in
-	 * the plugin index.
-	 * 
-	 * @param module The module to run.
-	 * @param inputMap Table of input parameter values, with keys matching the
-	 *          module's {@link ModuleInfo}'s input parameter names. Passing a
-	 *          value of a type incompatible with the associated input parameter
-	 *          will issue an error and ignore that value.
-	 * @return {@link Future} of the module instance being executed. Calling
-	 *         {@link Future#get()} will block until execution is complete.
+	 * @deprecated Use {@link ModuleService#run(Module, boolean, Map)} with the
+	 *             {@code process} flag set to {@code true}.
 	 */
+	@Deprecated
 	<M extends Module> Future<M> run(M module, Map<String, Object> inputMap);
 
 }
