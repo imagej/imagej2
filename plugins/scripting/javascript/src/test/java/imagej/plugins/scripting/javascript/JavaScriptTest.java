@@ -65,7 +65,8 @@ public class JavaScriptTest {
 
 		String script = "$x = 1 + 2;";
 		final ScriptModule m = scriptService.run("add.js", script).get();
-		final Double result = (Double) m.getReturnValue();
+		// NB: Some JVMs return Integer, others Double. Let's be careful here.
+		final Number result = (Number) m.getReturnValue();
 		assertEquals(3.0, result.doubleValue(), 0.0);
 	}
 
