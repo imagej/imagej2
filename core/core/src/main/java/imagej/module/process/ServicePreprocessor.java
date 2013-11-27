@@ -33,14 +33,12 @@
  * #L%
  */
 
-package imagej.plugin;
+package imagej.module.process;
 
 import imagej.command.Command;
 import imagej.module.Module;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
-import imagej.module.process.AbstractPreprocessorPlugin;
-import imagej.module.process.PreprocessorPlugin;
 
 import org.scijava.Context;
 import org.scijava.Priority;
