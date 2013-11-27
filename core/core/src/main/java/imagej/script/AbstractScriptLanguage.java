@@ -41,6 +41,8 @@ import java.util.List;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 
+import org.scijava.plugin.AbstractRichPlugin;
+
 /**
  * Abstract superclass for {@link ScriptLanguage} implementations.
  * <p>
@@ -50,7 +52,9 @@ import javax.script.ScriptEngineFactory;
  * 
  * @author Johannes Schindelin
  */
-public abstract class AbstractScriptLanguage implements ScriptLanguage {
+public abstract class AbstractScriptLanguage extends AbstractRichPlugin
+	implements ScriptLanguage
+{
 
 	// -- ScriptLanguage methods --
 

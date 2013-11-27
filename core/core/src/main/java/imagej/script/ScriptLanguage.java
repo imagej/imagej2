@@ -40,6 +40,7 @@ import imagej.ImageJPlugin;
 import javax.script.ScriptEngineFactory;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.RichPlugin;
 import org.scijava.plugin.SingletonPlugin;
 
 /**
@@ -54,8 +55,8 @@ import org.scijava.plugin.SingletonPlugin;
  * 
  * @author Johannes Schindelin
  */
-public interface ScriptLanguage extends ScriptEngineFactory, SingletonPlugin,
-	ImageJPlugin
+public interface ScriptLanguage extends ScriptEngineFactory, ImageJPlugin,
+	RichPlugin, SingletonPlugin
 {
 
 	/** True iff this language requires a compilation step. */

@@ -41,6 +41,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 
+import org.scijava.plugin.AbstractRichPlugin;
+
 /**
  * Abstract superclass for {@link ScriptLanguage} implementations which adapt an
  * existing {@link ScriptEngineFactory}.
@@ -51,7 +53,9 @@ import javax.script.ScriptEngineManager;
  * 
  * @author Curtis Rueden
  */
-public class AdaptedScriptLanguage implements ScriptLanguage {
+public class AdaptedScriptLanguage extends AbstractRichPlugin implements
+	ScriptLanguage
+{
 
 	/** The {@link ScriptEngineFactory} which this one adapts. */
 	private final ScriptEngineFactory base;
