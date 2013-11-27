@@ -37,6 +37,8 @@ package imagej.module;
 
 import imagej.module.process.ModulePostprocessor;
 import imagej.module.process.ModulePreprocessor;
+import imagej.module.process.PostprocessorPlugin;
+import imagej.module.process.PreprocessorPlugin;
 import imagej.service.ImageJService;
 
 import java.util.Collection;
@@ -115,9 +117,13 @@ public interface ModuleService extends ImageJService {
 	Module createModule(ModuleInfo info);
 
 	/**
-	 * Executes the given module, without any pre- or postprocessing.
+	 * Executes the given module.
 	 * 
 	 * @param info The module to instantiate and run.
+	 * @param process If true, executes the module with pre- and postprocessing
+	 *          steps from all available {@link PreprocessorPlugin}s and
+	 *          {@link PostprocessorPlugin}s in the plugin index; if false,
+	 *          executes the module with no pre- or postprocessing.
 	 * @param inputs List of input parameter names and values. The expected order
 	 *          is in pairs: an input name followed by its value, for each desired
 	 *          input to populate. Leaving some inputs unpopulated is allowed.
@@ -127,7 +133,25 @@ public interface ModuleService extends ImageJService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	Future<Module> run(ModuleInfo info, Object... inputs);
+	Future<Module> run(ModuleInfo info, boolean process, Object... inputs);
+
+	/**
+	 * Executes the given module.
+	 * 
+	 * @param info The module to instantiate and run.
+	 * @param process If true, executes the module with pre- and postprocessing
+	 *          steps from all available {@link PreprocessorPlugin}s and
+	 *          {@link PostprocessorPlugin}s in the plugin index; if false,
+	 *          executes the module with no pre- or postprocessing.
+	 * @param inputMap Table of input parameter values, with keys matching the
+	 *          {@link ModuleInfo}'s input parameter names. Passing a value of a
+	 *          type incompatible with the associated input parameter will issue
+	 *          an error and ignore that value.
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
+	 */
+	Future<Module> run(ModuleInfo info, boolean process,
+		Map<String, Object> inputMap);
 
 	/**
 	 * Executes the given module.
@@ -164,9 +188,13 @@ public interface ModuleService extends ImageJService {
 		List<? extends ModulePostprocessor> post, Map<String, Object> inputMap);
 
 	/**
-	 * Executes the given module, without any pre- or postprocessing.
+	 * Executes the given module.
 	 * 
 	 * @param module The module to run.
+	 * @param process If true, executes the module with pre- and postprocessing
+	 *          steps from all available {@link PreprocessorPlugin}s and
+	 *          {@link PostprocessorPlugin}s in the plugin index; if false,
+	 *          executes the module with no pre- or postprocessing.
 	 * @param inputs List of input parameter names and values. The expected order
 	 *          is in pairs: an input name followed by its value, for each desired
 	 *          input to populate. Leaving some inputs unpopulated is allowed.
@@ -176,7 +204,25 @@ public interface ModuleService extends ImageJService {
 	 * @return {@link Future} of the module instance being executed. Calling
 	 *         {@link Future#get()} will block until execution is complete.
 	 */
-	<M extends Module> Future<M> run(M module, Object... inputs);
+	<M extends Module> Future<M> run(M module, boolean process, Object... inputs);
+
+	/**
+	 * Executes the given module.
+	 * 
+	 * @param module The module to run.
+	 * @param process If true, executes the module with pre- and postprocessing
+	 *          steps from all available {@link PreprocessorPlugin}s and
+	 *          {@link PostprocessorPlugin}s in the plugin index; if false,
+	 *          executes the module with no pre- or postprocessing.
+	 * @param inputMap Table of input parameter values, with keys matching the
+	 *          {@link ModuleInfo}'s input parameter names. Passing a value of a
+	 *          type incompatible with the associated input parameter will issue
+	 *          an error and ignore that value.
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
+	 */
+	<M extends Module> Future<M> run(M module, boolean process,
+		Map<String, Object> inputMap);
 
 	/**
 	 * Executes the given module.
@@ -230,5 +276,21 @@ public interface ModuleService extends ImageJService {
 	 * one unresolved output of that type.
 	 */
 	<T> ModuleItem<T> getSingleOutput(Module module, Class<T> type);
+
+	// -- Deprecated methods --
+
+	/**
+	 * @deprecated Use {@link #run(ModuleInfo, boolean, Object[])} with the
+	 *             {@code process} flag set to {@code false}.
+	 */
+	@Deprecated
+	Future<Module> run(ModuleInfo info, Object... inputs);
+
+	/**
+	 * @deprecated Use {@link #run(Module, boolean, Object[])} with the
+	 *             {@code process} flag set to {@code false}.
+	 */
+	@Deprecated
+	<M extends Module> Future<M> run(M module, Object... inputs);
 
 }

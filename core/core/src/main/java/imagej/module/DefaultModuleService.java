@@ -39,6 +39,8 @@ import imagej.module.event.ModulesAddedEvent;
 import imagej.module.event.ModulesRemovedEvent;
 import imagej.module.process.ModulePostprocessor;
 import imagej.module.process.ModulePreprocessor;
+import imagej.module.process.PostprocessorPlugin;
+import imagej.module.process.PreprocessorPlugin;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -56,6 +58,7 @@ import org.scijava.log.LogService;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 import org.scijava.thread.ThreadService;
@@ -79,6 +82,9 @@ public class DefaultModuleService extends AbstractService implements
 
 	@Parameter
 	private EventService eventService;
+
+	@Parameter
+	private PluginService pluginService;
 
 	@Parameter
 	private ObjectService objectService;
@@ -157,8 +163,17 @@ public class DefaultModuleService extends AbstractService implements
 	}
 
 	@Override
-	public Future<Module> run(final ModuleInfo info, final Object... inputs) {
-		return run(info, null, null, inputs);
+	public Future<Module> run(final ModuleInfo info, final boolean process,
+		final Object... inputs)
+	{
+		return run(info, pre(process), post(process), inputs);
+	}
+
+	@Override
+	public Future<Module> run(final ModuleInfo info, final boolean process,
+		final Map<String, Object> inputMap)
+	{
+		return run(info, pre(process), post(process), inputMap);
 	}
 
 	@Override
@@ -182,9 +197,16 @@ public class DefaultModuleService extends AbstractService implements
 
 	@Override
 	public <M extends Module> Future<M> run(final M module,
-		final Object... inputs)
+		final boolean process, final Object... inputs)
 	{
-		return run(module, null, null, inputs);
+		return run(module, pre(process), post(process), inputs);
+	}
+
+	@Override
+	public <M extends Module> Future<M> run(final M module,
+		final boolean process, final Map<String, Object> inputMap)
+	{
+		return run(module, pre(process), post(process), inputMap);
 	}
 
 	@Override
@@ -246,6 +268,18 @@ public class DefaultModuleService extends AbstractService implements
 	}
 
 	// -- Helper methods --
+
+	/** Creates the preprocessor chain. */
+	private List<? extends PreprocessorPlugin> pre(final boolean process) {
+		if (!process) return null;
+		return pluginService.createInstancesOfType(PreprocessorPlugin.class);
+	}
+
+	/** Creates the postprocessor chain. */
+	private List<? extends PostprocessorPlugin> post(final boolean process) {
+		if (!process) return null;
+		return pluginService.createInstancesOfType(PostprocessorPlugin.class);
+	}
 
 	/**
 	 * Checks the {@link ObjectService} for a single registered {@link Module}
@@ -346,6 +380,18 @@ public class DefaultModuleService extends AbstractService implements
 			result = typedItem;
 		}
 		return result;
+	}
+
+	// -- Deprecated methods --
+
+	@Override
+	public Future<Module> run(ModuleInfo info, Object... inputs) {
+		return run(info, false, inputs);
+	}
+
+	@Override
+	public <M extends Module> Future<M> run(M module, Object... inputs) {
+		return run(module, false, inputs);
 	}
 
 }
