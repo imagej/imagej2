@@ -42,7 +42,6 @@ import imagej.command.Command;
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
 import imagej.script.AbstractScriptEngine;
-import imagej.script.ScriptService;
 import imagej.util.LineOutputStream;
 
 import java.io.BufferedReader;
@@ -76,7 +75,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.scijava.Context;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 import org.scijava.util.FileUtils;
@@ -98,6 +97,12 @@ public class JavaEngine extends AbstractScriptEngine {
 	{
 		engineScopeBindings = new JavaEngineBindings();
 	}
+
+	@Parameter
+	private PluginService pluginService;
+
+	@Parameter
+	private CommandService commandService;
 
 	@Override
 	public Object eval(String script) throws ScriptException {
@@ -168,7 +173,6 @@ public class JavaEngine extends AbstractScriptEngine {
 			// launch main class
 			final Class<?> clazz = classLoader.loadClass(mainClass);
 			if (Command.class.isAssignableFrom(clazz)) {
-				final Context context = (Context)get(ScriptService.CONTEXT);
 				final Plugin annotation = clazz.getAnnotation(Plugin.class);
 				final CommandInfo info = new CommandInfo(mainClass, annotation) {
 
@@ -177,11 +181,7 @@ public class JavaEngine extends AbstractScriptEngine {
 						return (Class<? extends Command>) clazz;
 					}
 				};
-
-				final PluginService pluginService = context.getService(PluginService.class);
 				pluginService.addPlugin(info);
-
-				final CommandService commandService = context.getService(CommandService.class);
 				commandService.run(info);
 			} else {
 				Method main = clazz.getMethod("main", new Class[] { String[].class });

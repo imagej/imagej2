@@ -79,7 +79,9 @@ public class JavaScriptLanguage extends AbstractScriptLanguage {
 
 	@Override
 	public ScriptEngine getScriptEngine() {
-		return new JavaEngine();
+		final JavaEngine engine = new JavaEngine();
+		getContext().inject(engine);
+		return engine;
 	}
 
 }
