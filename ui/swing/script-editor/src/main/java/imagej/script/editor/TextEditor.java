@@ -1260,8 +1260,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		 * Loads the preferences for the Tab from ij.Prefs and apply them.
 		 */
 		public void loadPreferences() {
-			editorPane.setTabSize(Prefs.getInt(TAB_SIZE_PREFS,
-				DEFAULT_TAB_SIZE));
+			editorPane.setTabSize(getTabSizeSetting());
 			editorPane.setFontSize(Prefs.getFloat(FONT_SIZE_PREFS,
 				editorPane.getFontSize()));
 			editorPane.setLineWrap(Prefs.getBoolean(LINE_WRAP_PREFS,
@@ -1801,8 +1800,10 @@ public class TextEditor extends JFrame implements ActionListener,
 	public void updateTabAndFontSize(boolean setByLanguage) {
 		EditorPane pane = getEditorPane();
 
-//		if (setByLanguage)
-//			pane.setTabSize(pane.currentLanguage.getLanguageName().equals("Python") ? 4 : 8);
+		if (setByLanguage) {
+			final boolean isPython = pane.currentLanguage.getLanguageName().equals("Python");
+			pane.setTabSize(isPython ? 4 : getTabSizeSetting());
+		}
 
 		int tabSize = pane.getTabSize();
 		boolean defaultSize = false;
@@ -2399,4 +2400,9 @@ public class TextEditor extends JFrame implements ActionListener,
 		JOptionPane.showMessageDialog(this, msg);
 		return count;
 	}
+
+	private int getTabSizeSetting() {
+		return Prefs.getInt(TAB_SIZE_PREFS, DEFAULT_TAB_SIZE);
+	}
+
 }
