@@ -54,6 +54,8 @@ import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
+// FIXME: This command belongs in ij-commands, not ij-data.
+
 /**
  * LUTSelectorPlugin is a {@link Command} that allows one to choose to apply a
  * {@link ColorTable} to an {@link ImageDisplay}. The applicable ColorTables are
@@ -97,8 +99,9 @@ public class LUTSelectorPlugin extends DynamicCommand {
 	public void run() {
 		// set LUT for current channel of current ImageDisplay
 		if (display != null) {
-			cmdService.run("imagej.core.commands.misc.ApplyLookupTable", "display",
-				display, "tableURL", luts.get(choice));
+			// FIXME: Bad to invoke another command via reflection this way.
+			cmdService.run("imagej.core.commands.misc.ApplyLookupTable", true,
+				new Object[] { "display", display, "tableURL", luts.get(choice) });
 		}
 	}
 
