@@ -38,15 +38,13 @@ package imagej.plugins.commands.zoom;
 import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.InputService;
+import imagej.data.display.ZoomService;
 import imagej.menu.MenuConstants;
-import imagej.util.IntCoords;
 
 import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.thread.ThreadService;
 
 /**
  * Zooms in on the currently displayed image. Zoom multiplier is taken from the
@@ -62,40 +60,20 @@ import org.scijava.thread.ThreadService;
 public class ZoomIn extends ContextCommand {
 
 	@Parameter
-	private ThreadService threadService;
-
-	@Parameter
-	private InputService inputService;
+	private ZoomService zoomService;
 
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	@Override
 	public void run() {
-
-		threadService.queue(new Runnable() {
-
-			@Override
-			public void run() {
-				if (inputService.getDisplay() == getDisplay()) {
-					// zoom in centered around the mouse cursor
-					final int x = inputService.getX();
-					final int y = inputService.getY();
-
-					getDisplay().getCanvas().zoomIn(new IntCoords(x, y));
-				}
-				else {
-					// no mouse coordinates available; use default behavior
-					getDisplay().getCanvas().zoomIn();
-				}
-			}
-		});
+		zoomService.zoomIn(display);
 	}
 
-	public void setDisplay(ImageDisplay disp) {
+	public void setDisplay(final ImageDisplay disp) {
 		display = disp;
 	}
-	
+
 	public ImageDisplay getDisplay() {
 		return display;
 	}

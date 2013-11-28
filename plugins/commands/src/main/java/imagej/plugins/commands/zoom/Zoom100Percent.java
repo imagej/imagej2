@@ -38,6 +38,7 @@ package imagej.plugins.commands.zoom;
 import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ZoomService;
 import imagej.menu.MenuConstants;
 
 import org.scijava.ItemIO;
@@ -58,20 +59,23 @@ import org.scijava.plugin.Plugin;
 	headless = true)
 public class Zoom100Percent extends ContextCommand {
 
+	@Parameter
+	private ZoomService zoomService;
+
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	@Override
 	public void run() {
-		display.getCanvas().setZoom(1);
+		zoomService.zoom100Percent(display);
 	}
 
-	public void setDisplay(ImageDisplay disp) {
+	public void setDisplay(final ImageDisplay disp) {
 		display = disp;
 	}
-	
+
 	public ImageDisplay getDisplay() {
 		return display;
 	}
-	
+
 }

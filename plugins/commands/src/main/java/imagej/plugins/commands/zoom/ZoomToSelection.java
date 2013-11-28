@@ -38,9 +38,8 @@ package imagej.plugins.commands.zoom;
 import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayService;
+import imagej.data.display.ZoomService;
 import imagej.menu.MenuConstants;
-import imagej.util.RealRect;
 
 import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
@@ -60,21 +59,20 @@ import org.scijava.plugin.Plugin;
 public class ZoomToSelection extends ContextCommand {
 
 	@Parameter
-	private OverlayService overlayService;
+	private ZoomService zoomService;
 
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
 
 	@Override
 	public void run() {
-		final RealRect selection = overlayService.getSelectionBounds(display);
-		display.getCanvas().zoomToFit(selection);
+		zoomService.zoomToSelection(display);
 	}
 
-	public void setDisplay(ImageDisplay disp) {
+	public void setDisplay(final ImageDisplay disp) {
 		display = disp;
 	}
-	
+
 	public ImageDisplay getDisplay() {
 		return display;
 	}

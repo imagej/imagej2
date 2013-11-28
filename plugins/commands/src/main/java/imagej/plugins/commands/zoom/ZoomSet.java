@@ -40,6 +40,7 @@ import imagej.command.DynamicCommand;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
+import imagej.data.display.ZoomService;
 import imagej.menu.MenuConstants;
 import imagej.module.MutableModuleItem;
 import imagej.util.RealCoords;
@@ -70,6 +71,9 @@ public class ZoomSet extends DynamicCommand {
 	private static final String CTR_V = "centerV";
 
 	// -- Parameters --
+
+	@Parameter
+	private ZoomService zoomService;
 
 	@Parameter
 	private ImageDisplayService imageDisplayService;
@@ -134,8 +138,7 @@ public class ZoomSet extends DynamicCommand {
 
 	@Override
 	public void run() {
-		display.getCanvas().setZoomAndCenter(zoomPercent / 100.0,
-			new RealCoords(getCenterU(), getCenterV()));
+		zoomService.zoomSet(display, zoomPercent, centerU, centerV);
 	}
 
 	// -- Initializers --
