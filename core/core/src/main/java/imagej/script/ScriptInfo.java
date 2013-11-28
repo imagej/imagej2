@@ -118,7 +118,7 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 		this.path = path;
 		this.reader = new BufferedReader(reader, PARAM_CHAR_MAX);
 		try {
-			parseInputs();
+			parseParameters();
 		}
 		catch (final ScriptException exc) {
 			log.error(exc);
@@ -156,7 +156,7 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	}
 
 	/**
-	 * Parses the script's input parameters.
+	 * Parses the script's input and output parameters.
 	 * <p>
 	 * ImageJ's scripting framework supports specifying @{@link Parameter}-style
 	 * parameters in a preamble. The idea is to specify the input parameters in
@@ -175,7 +175,7 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	 * @throws ScriptException If a parameter annotation is malformed.
 	 * @throws IOException If there is a problem reading the script file.
 	 */
-	public void parseInputs() throws ScriptException, IOException {
+	public void parseParameters() throws ScriptException, IOException {
 		clearParameters();
 
 		final BufferedReader in;
@@ -197,7 +197,7 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 				if (line.matches(".*[A-Za-z0-9].*")) break;
 				continue;
 			}
-			parseInput(line.substring(at + 1));
+			parseParam(line.substring(at + 1));
 		}
 		if (reader == null) in.close();
 		else in.reset();
@@ -229,7 +229,7 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 
 	// -- Helper methods --
 
-	private <T> void parseInput(final String line) throws ScriptException {
+	private <T> void parseParam(final String line) throws ScriptException {
 		final String[] parts = line.trim().split("[ \t\n]+");
 		if (parts.length != 2) {
 			throw new ScriptException("Expected 'type name': " + line);
