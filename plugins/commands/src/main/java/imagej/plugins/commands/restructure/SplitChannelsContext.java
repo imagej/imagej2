@@ -68,6 +68,7 @@ public class SplitChannelsContext extends ContextCommand {
 //			"ij.plugin.ChannelSplitter");
 		final HashMap<String, Object> inputValues = new HashMap<String, Object>();
 		inputValues.put("className", "ij.plugin.ChannelSplitter");
+		// FIXME: Bad to invoke a command via reflection this way.
 		commandService.run("imagej.legacy.plugin.LegacyCommand", inputValues);
 		
 		// TODO - replace with LegacyService::reunLegacyCommand() ?
