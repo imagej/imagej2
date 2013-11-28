@@ -56,6 +56,7 @@ import org.scijava.ItemIO;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.service.Service;
+import org.scijava.util.ClassUtils;
 
 /**
  * Metadata about a script.
@@ -316,19 +317,17 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 				if (dot > 0) typeMap.put(className.substring(dot + 1), clazz);
 			}
 		}
+
 		final Class<?> type = typeMap.get(string);
-		if (type == null) {
-			try {
-				final Class<?> clazz =
-					Thread.currentThread().getContextClassLoader().loadClass(string);
-				typeMap.put(string, clazz);
-				return clazz;
-			}
-			catch (final ClassNotFoundException e) {
-				throw new ScriptException("Unknown type: " + string);
-			}
+		if (type != null) return type;
+
+		final Class<?> c = ClassUtils.loadClass(string);
+		if (c != null) {
+			typeMap.put(string, c);
+			return c;
 		}
-		return type;
+
+		throw new ScriptException("Unknown type: " + string);
 	}
 
 }
