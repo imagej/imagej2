@@ -163,13 +163,14 @@ public abstract class AbstractNoiseReducerPlugin<U extends RealType<U>>
 			Map<String,Object> inputs = new HashMap<String,Object>();
 			inputs.put("numDims", numDims);
 			if (neighType == NeighborhoodType.RADIAL) {
-				Future<CommandModule> futureModule =
-					commandService.run(RadialNeighborhoodSpecifier.class, inputs);
+				final Future<CommandModule> futureModule =
+					commandService.run(RadialNeighborhoodSpecifier.class, true, inputs);
 				module = futureModule.get();
 			}
 			else { // neighType == RECTANGULAR
-				Future<CommandModule> futureModule =
-					commandService.run(RectangularNeighborhoodSpecifier.class, inputs);
+				final Future<CommandModule> futureModule =
+					commandService.run(RectangularNeighborhoodSpecifier.class, true,
+						inputs);
 				module = futureModule.get();
 			}
 		} catch (Exception e) {

@@ -62,7 +62,7 @@ public class PaintBrushTool extends AbstractLineTool {
 
 	@Override
 	public void configure() {
-		commandService.run(PaintBrushToolConfig.class, "tool", this);
+		commandService.run(PaintBrushToolConfig.class, true, new Object[] {"tool", this}); // FIXME
 	}
 
 }

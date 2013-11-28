@@ -75,7 +75,7 @@ public class InteractiveUploadTest {
 				}
 			});
 			context.getService(CommandService.class).run(SampleImageUploader.class,
-				"sampleImage", new File("/tmp/test.tif"));
+				true, new Object[] {"sampleImage", new File("/tmp/test.tif")}); // FIXME
 		}
 		catch (final Throwable t) {
 			t.printStackTrace();

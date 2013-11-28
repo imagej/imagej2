@@ -230,7 +230,7 @@ public abstract class AbstractUserInterface extends AbstractRichPlugin
 		final String firstRun = Prefs.get(getClass(), prefFirstRun);
 		if (firstRun != null) return;
 		Prefs.put(getClass(), prefFirstRun, false);
-		commandService.run(ShowReadme.class);
+		commandService.run(ShowReadme.class, true, new Object[0]); // FIXME
 	}
 
 	/** Tests whether updates are available */
@@ -247,7 +247,7 @@ public abstract class AbstractUserInterface extends AbstractRichPlugin
 				case DEVELOPER:
 					return;
 				case UPDATEABLE:
-					commandService.run(UpdatesAvailable.class);
+					commandService.run(UpdatesAvailable.class, true, new Object[0]); // FIXME
 					break;
 				case PROXY_NEEDS_AUTHENTICATION:
 					throw new RuntimeException(

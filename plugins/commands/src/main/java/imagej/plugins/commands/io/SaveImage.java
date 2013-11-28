@@ -81,7 +81,7 @@ public class SaveImage extends ContextCommand {
 		if (sourceFile != null && sourceFile.isFile()) {
 			inputMap.put("outputFile", new File(source));
 		}
-		commandService.run(SaveAsImage.class, inputMap);
+		commandService.run(SaveAsImage.class, true, inputMap);
 	}
 	
 	public void setDataset(Dataset d) {

@@ -593,7 +593,7 @@ public class SwingOverlayManager
 		final ImageDisplay imageDisplay =
 			imageDisplayService.getActiveImageDisplay();
 		if (imageDisplay == null) return;
-		commandService.run(Flatten.class, "display", imageDisplay);
+		commandService.run(Flatten.class, true, new Object[] {"display", imageDisplay}); // FIXME
 	}
 	
 	private void help() {
@@ -722,7 +722,7 @@ public class SwingOverlayManager
 		final ImageDisplay imageDisplay =
 			imageDisplayService.getActiveImageDisplay();
 		if (imageDisplay == null) return;
-		commandService.run(SelectionSpecify.class, "display", imageDisplay);
+		commandService.run(SelectionSpecify.class, true, new Object[] {"display", imageDisplay}); // FIXME
 	}
 	
 	/*
@@ -1143,7 +1143,7 @@ public class SwingOverlayManager
 	private void runPropertiesPlugin() {
 		final Map<String, Object> inputMap = new HashMap<String, Object>();
 		inputMap.put("overlays", overlayService.getOverlayInfo().selectedOverlays());
-		commandService.run(SelectedManagerOverlayProperties.class, inputMap);
+		commandService.run(SelectedManagerOverlayProperties.class, true, inputMap);
 	}
 
 	private ChannelCollection getChannels() {

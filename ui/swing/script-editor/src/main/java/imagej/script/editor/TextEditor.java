@@ -867,10 +867,10 @@ public class TextEditor extends JFrame implements ActionListener,
 			getTextArea().moveCaretPosition(getTextArea().getDocument().getLength());
 		}
 		else if (source == chooseFontSize) {
-			commandService.run(ChooseFontSize.class, "editor", this);
+			commandService.run(ChooseFontSize.class, true, new Object[] {"editor", this}); // FIXME
 		}
 		else if (source == chooseTabSize) {
-			commandService.run(ChooseTabSize.class, "editor", this);
+			commandService.run(ChooseTabSize.class, true, new Object[] {"editor", this}); // FIXME
 		}
 		else if (source == addImport)
 			addImport(null);
@@ -944,7 +944,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			}
 			searchRoot = searchRoot.getParentFile();
 
-			commandService.run(GitGrep.class, "editor", this, "searchTerm", searchTerm, "searchRoot", searchRoot);
+			commandService.run(GitGrep.class, true, new Object[] {"editor", this, "searchTerm", searchTerm, "searchRoot", searchRoot}); // FIXME
 		}
 		else if (source == openInGitweb) {
 			EditorPane editorPane = getEditorPane();
@@ -1938,7 +1938,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			error("\nNo running scripts\n");
 			return;
 		}
-		commandService.run(KillScript.class, "editor", this);
+		commandService.run(KillScript.class, true, new Object[] {"editor", this}); // FIXME
 	}
 
 	/** Run the text in the textArea without compiling it, only if it's not java. */

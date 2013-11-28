@@ -107,7 +107,7 @@ public class AcceleratorHandler extends AbstractTool {
 		if (moduleInfo == null) return; // no matching module found
 
 		// run via command service, so that preprocessors are run
-		commandService.run(moduleInfo);
+		moduleService.run(moduleInfo, true, new Object[0]); // FIXME
 
 		// consume event, so that nothing else tries to handle it
 		evt.consume();
