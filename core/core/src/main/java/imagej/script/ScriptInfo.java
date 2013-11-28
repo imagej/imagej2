@@ -159,20 +159,45 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	 * Parses the script's input and output parameters.
 	 * <p>
 	 * ImageJ's scripting framework supports specifying @{@link Parameter}-style
-	 * parameters in a preamble. The idea is to specify the input parameters in
-	 * this way:
-	 * 
-	 * <pre>
-	 * // @UIService ui
-	 * // @double degrees
-	 * </pre>
-	 * 
-	 * i.e. in the form <code>&#x40;&lt;type&gt; &lt;name&gt;</code>. These input
+	 * inputs and outputs in a preamble. The format is a simplified version of the
+	 * Java @{@link Parameter} annotation syntax. The following syntaxes are
+	 * supported:
+	 * </p>
+	 * <ul>
+	 * <li>{@code // @<type> <varName>}</li>
+	 * <li>{@code // @<type>(<attr1>=<value1>, ..., <attrN>=<valueN>) <varName>}</li>
+	 * <li>{@code // @<IOType> <type> <varName>}</li>
+	 * <li>{@code // @<IOType>(<attr1>=<value1>, ..., <attrN>=<valueN>) <type> <varName>}</li>
+	 * </ul>
+	 * <p>
+	 * Where:
+	 * </p>
+	 * <ul>
+	 * <li>{@code //} = the comment style of the scripting language, so that the
+	 * parameter line is ignored by the script engine itself.</li>
+	 * <li>{@code <IOType>} = one of {@code INPUT}, {@code OUTPUT}, or
+	 * {@code BOTH}.</li>
+	 * <li>{@code <varName>} = the name of the input or output variable.</li>
+	 * <li>{@code <type>} = the Java {@link Class} of the variable.</li>
+	 * <li>{@code <attr*>} = an attribute key.</li>
+	 * <li>{@code <value*>} = an attribute value.</li>
+	 * </ul>
+	 * <p>
+	 * See the @{@link Parameter} annotation for a list of valid attributes.
+	 * </p>
+	 * <p>
+	 * Here are a few examples:
+	 * </p>
+	 * <ul>
+	 * <li>{@code // @Dataset dataset}</li>
+	 * <li>{@code // @double(type=OUTPUT) result}</li>
+	 * <li>{@code // @BOTH ImageDisplay display}</li>
+	 * <li>{@code // @INPUT(persist=false, visibility=INVISIBLE) boolean verbose}</li>
 	 * parameters will be parsed and filled just like @{@link Parameter}
 	 * -annotated fields in {@link Command}s.
-	 * </p>
+	 * </ul>
 	 * 
-	 * @throws ScriptException If a parameter annotation is malformed.
+	 * @throws ScriptException If the parameter syntax is malformed.
 	 * @throws IOException If there is a problem reading the script file.
 	 */
 	public void parseParameters() throws ScriptException, IOException {
