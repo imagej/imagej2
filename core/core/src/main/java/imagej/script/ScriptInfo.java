@@ -176,7 +176,7 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	 * @throws IOException If there is a problem reading the script file.
 	 */
 	public void parseInputs() throws ScriptException, IOException {
-		clearInputs();
+		clearParameters();
 
 		final BufferedReader in;
 		if (reader == null) {
@@ -262,9 +262,11 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 		}
 	}
 
-	private void clearInputs() {
+	private void clearParameters() {
 		inputMap.clear();
 		inputList.clear();
+		outputMap.clear();
+		outputList.clear();
 	}
 
 	private synchronized Class<?> parseType(final String string)
