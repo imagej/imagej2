@@ -49,6 +49,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 import javax.script.ScriptContext;
@@ -126,25 +127,59 @@ public class DefaultScriptService extends
 	}
 
 	@Override
-	public Future<ScriptModule> run(final File file) {
-		// lookup existing script
-		ScriptInfo info = getScript(file);
-		if (info == null) {
-			// wrap file as a script ad hoc
-			info = new ScriptInfo(getContext(), file);
-		}
-		return cast(commandService.run(info));
+	public Future<ScriptModule> run(final File file, final boolean process,
+		final Object... inputs)
+	{
+		return run(getOrCreate(file), process, inputs);
 	}
 
 	@Override
-	public Future<ScriptModule> run(final String path, final String script) {
-		return run(path, new StringReader(script));
+	public Future<ScriptModule> run(final File file, final boolean process,
+		final Map<String, Object> inputMap)
+	{
+		return run(getOrCreate(file), process, inputMap);
 	}
 
 	@Override
-	public Future<ScriptModule> run(final String path, final Reader reader) {
-		final ScriptInfo info = new ScriptInfo(getContext(), path, reader);
-		return cast(commandService.run(info));
+	public Future<ScriptModule> run(final String path, final String script,
+		final boolean process, final Object... inputs)
+	{
+		return run(path, new StringReader(script), process, inputs);
+	}
+
+	@Override
+	public Future<ScriptModule> run(final String path, final String script,
+		final boolean process, final Map<String, Object> inputMap)
+	{
+		return run(path, new StringReader(script), process, inputMap);
+	}
+
+	@Override
+	public Future<ScriptModule> run(final String path, final Reader reader,
+		final boolean process, final Object... inputs)
+	{
+		return run(new ScriptInfo(getContext(), path, reader), process, inputs);
+	}
+
+	@Override
+	public Future<ScriptModule> run(final String path, final Reader reader,
+		final boolean process, final Map<String, Object> inputMap)
+	{
+		return run(new ScriptInfo(getContext(), path, reader), process, inputMap);
+	}
+
+	@Override
+	public Future<ScriptModule> run(final ScriptInfo info, final boolean process,
+		final Object... inputs)
+	{
+		return cast(moduleService.run(info, process, inputs));
+	}
+
+	@Override
+	public Future<ScriptModule> run(final ScriptInfo info, final boolean process,
+		final Map<String, Object> inputMap)
+	{
+		return cast(moduleService.run(info, process, inputMap));
 	}
 
 	@Override
@@ -216,6 +251,16 @@ public class DefaultScriptService extends
 			scripts.put(asFile(info.getPath()), info);
 		}
 		moduleService.addModules(scriptList);
+	}
+
+	/**
+	 * Gets a {@link ScriptInfo} for the given file, creating a new one if
+	 * none are registered with the service.
+	 */
+	private ScriptInfo getOrCreate(final File file) {
+		final ScriptInfo info = getScript(file);
+		if (info != null) return info;
+		return new ScriptInfo(getContext(), file);
 	}
 
 	private File asFile(final String path) {

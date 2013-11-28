@@ -58,7 +58,7 @@ public class ClojureTest {
 		final ScriptService scriptService = context.getService(ScriptService.class);
 
 		String script = "(+ 1 2)";
-		final ScriptModule m = scriptService.run("add.clj", script).get();
+		final ScriptModule m = scriptService.run("add.clj", script, true).get();
 		final Object result = m.getReturnValue();
 		assertEquals("3", result.toString());
 	}

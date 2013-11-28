@@ -64,8 +64,8 @@ public class JavaScriptTest {
 		final ScriptService scriptService = context.getService(ScriptService.class);
 
 		String script = "$x = 1 + 2;";
-		final ScriptModule m = scriptService.run("add.js", script).get();
 		// NB: Some JVMs return Integer, others Double. Let's be careful here.
+		final ScriptModule m = scriptService.run("add.js", script, true).get();
 		final Number result = (Number) m.getReturnValue();
 		assertEquals(3.0, result.doubleValue(), 0.0);
 	}
@@ -96,7 +96,7 @@ public class JavaScriptTest {
 		String script =
 				"// @DummyService d\n" +
 				"d.value = 4321;\n";
-		scriptService.run("hello.js", script).get();
+		scriptService.run("hello.js", script, true).get();
 
 		final DummyService dummy = context.getService(DummyService.class);
 		assertEquals(4321, dummy.value);

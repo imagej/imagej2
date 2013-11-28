@@ -60,7 +60,7 @@ public class JRubyTest {
 		final ScriptService scriptService = context.getService(ScriptService.class);
 
 		String script = "$x = 1 + 2;";
-		final ScriptModule m = scriptService.run("add.rb", script).get();
+		final ScriptModule m = scriptService.run("add.rb", script, true).get();
 		final ScriptEngine engine = (ScriptEngine) m.getReturnValue();
 		assertEquals("3", engine.get("$x").toString());
 	}

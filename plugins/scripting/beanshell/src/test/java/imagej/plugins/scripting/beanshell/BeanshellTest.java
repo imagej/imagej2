@@ -58,7 +58,7 @@ public class BeanshellTest {
 		String script =
 				"// @DummyService d\n" +
 				"d.value = 4321;\n";
-		scriptService.run("hello.bsh", script).get();
+		scriptService.run("hello.bsh", script, true).get();
 
 		final DummyService dummy = context.getService(DummyService.class);
 		assertEquals(4321, dummy.value);
