@@ -78,10 +78,10 @@ public interface ScriptService extends SingletonService<ScriptLanguage> {
 	List<ScriptLanguage> getLanguages();
 
 	/** TODO */
-	ScriptLanguage getByFileExtension(final String fileExtension);
+	ScriptLanguage getByFileExtension(String fileExtension);
 
 	/** TODO */
-	ScriptLanguage getByName(final String name);
+	ScriptLanguage getByName(String name);
 
 	// -- Scripts --
 
@@ -95,25 +95,25 @@ public interface ScriptService extends SingletonService<ScriptLanguage> {
 	ScriptInfo getScript(File scriptFile);
 
 	/** TODO */
-	Future<ScriptModule> run(final File file) throws FileNotFoundException,
+	Future<ScriptModule> run(File file) throws FileNotFoundException,
 		ScriptException;
 
 	/** TODO */
-	Future<ScriptModule> run(final String path, final String script)
+	Future<ScriptModule> run(String path, String script)
 		throws IOException, ScriptException;
 
 	/** TODO */
-	Future<ScriptModule> run(final String path, final Reader reader)
+	Future<ScriptModule> run(String path, Reader reader)
 		throws IOException, ScriptException;
 
 	/** TODO */
-	boolean canHandleFile(final File file);
+	boolean canHandleFile(File file);
 
 	/** TODO */
-	boolean canHandleFile(final String fileName);
+	boolean canHandleFile(String fileName);
 
 	/** TODO */
-	void initialize(final ScriptEngine engine, final String fileName,
-		final Writer writer, final Writer errorWriter);
+	void initialize(ScriptEngine engine, String fileName, Writer writer,
+		Writer errorWriter);
 
 }
