@@ -52,6 +52,7 @@ import javax.script.ScriptException;
 
 import org.scijava.Context;
 import org.scijava.Contextual;
+import org.scijava.ItemIO;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.service.Service;
@@ -237,24 +238,33 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	}
 
 	private <T> void addInput(final String name, final Class<T> type) {
+		addItem(name, type, ItemIO.INPUT);
+	}
+
+	/** Adds an output for the value returned by the script itself. */
+	private void addReturnValue() {
+		addItem(ScriptModule.RETURN_VALUE, Object.class, ItemIO.OUTPUT);
+	}
+
+	private <T> void addItem(final String name, final Class<T> type,
+		final ItemIO ioType)
+	{
 		final DefaultMutableModuleItem<T> item =
 			new DefaultMutableModuleItem<T>(this, name, type);
-		inputMap.put(item.getName(), item);
-		inputList.add(item);
+		item.setIOType(ioType);
+		if (item.isInput()) {
+			inputMap.put(item.getName(), item);
+			inputList.add(item);
+		}
+		if (item.isOutput()) {
+			outputMap.put(item.getName(), item);
+			outputList.add(item);
+		}
 	}
 
 	private void clearInputs() {
 		inputMap.clear();
 		inputList.clear();
-	}
-
-	/** Adds an output for the value returned by the script itself. */
-	private void addReturnValue() {
-		final DefaultMutableModuleItem<Object> item =
-			new DefaultMutableModuleItem<Object>(this, ScriptModule.RETURN_VALUE,
-				Object.class);
-		outputMap.put(item.getName(), item);
-		outputList.add(item);
 	}
 
 	private synchronized Class<?> parseType(final String string)
