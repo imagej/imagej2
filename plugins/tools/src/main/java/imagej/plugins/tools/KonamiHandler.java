@@ -64,7 +64,7 @@ public class KonamiHandler extends AbstractTool implements Runnable {
 	private static final String JINGLE =
 		"T100 L32 B > C E G B > C E C < B G E C < L8 B";
 
-	private static final String COMMAND = "imagej.core.commands.app.EasterEgg";
+	private static final String COMMAND = "imagej.plugins.commands.app.EasterEgg";
 
 	@Parameter
 	private ThreadService threadService;
@@ -82,7 +82,7 @@ public class KonamiHandler extends AbstractTool implements Runnable {
 			if (index == CODE.length) {
 				index = 0;
 				threadService.run(this);
-				commandService.run(COMMAND);
+				commandService.run(COMMAND, true, new Object[0]); // FIXME
 			}
 		}
 		else index = 0;
