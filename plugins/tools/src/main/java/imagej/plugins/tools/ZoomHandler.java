@@ -35,8 +35,8 @@
 
 package imagej.plugins.tools;
 
-import imagej.command.CommandService;
 import imagej.data.display.ImageDisplay;
+import imagej.data.display.ZoomService;
 import imagej.display.Display;
 import imagej.display.event.input.KyPressedEvent;
 import imagej.tool.AbstractTool;
@@ -59,7 +59,7 @@ import org.scijava.plugin.Plugin;
 public class ZoomHandler extends AbstractTool {
 
 	@Parameter
-	private CommandService commandService;
+	private ZoomService zoomService;
 
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {
@@ -69,9 +69,8 @@ public class ZoomHandler extends AbstractTool {
 		final KeyCode keyCode = evt.getCode();
 		final char keyChar = evt.getCharacter();
 
-		if (keyCode == KeyCode.EQUALS || keyChar == '=')
-		{
-			commandService.run("imagej.core.commands.zoom.ZoomIn");
+		if (keyCode == KeyCode.EQUALS || keyChar == '=') {
+			zoomService.zoomIn((ImageDisplay) display);
 			evt.consume();
 		}
 	}
