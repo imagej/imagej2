@@ -58,11 +58,12 @@ public class JRubyTest {
 	public void testBasic() throws Exception {
 		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
-
-		String script = "$x = 1 + 2;";
+		final String script = "$x = 1 + 2;";
 		final ScriptModule m = scriptService.run("add.rb", script, true).get();
 		final ScriptEngine engine = (ScriptEngine) m.getReturnValue();
-		assertEquals("3", engine.get("$x").toString());
+		final Object result = engine.get("$x");
+		// NB: Result is of type org.jruby.RubyFixnum.
+		assertEquals("3", result.toString());
 	}
 
 	@Test
