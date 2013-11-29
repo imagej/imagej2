@@ -36,8 +36,13 @@
 package imagej.plugins.scripting.beanshell;
 
 import static org.junit.Assert.assertEquals;
+import imagej.script.ScriptLanguage;
 import imagej.script.ScriptModule;
 import imagej.script.ScriptService;
+
+import javax.script.Bindings;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
 
 import org.junit.Test;
 import org.scijava.Context;
@@ -58,6 +63,23 @@ public class BeanshellTest {
 		final ScriptModule m = scriptService.run("add.bsh", script, true).get();
 		final Integer result = (Integer) m.getReturnValue();
 		assertEquals(3, result.intValue());
+	}
+
+	@Test
+	public void testLocals() throws Exception {
+		final Context context = new Context(ScriptService.class);
+		final ScriptService scriptService = context.getService(ScriptService.class);
+
+		final ScriptLanguage language = scriptService.getByFileExtension("bsh");
+		final ScriptEngine engine = language.getScriptEngine();
+		assertEquals(BeanshellScriptEngine.class, engine.getClass());
+		engine.put("hello", 17);
+		assertEquals("17", engine.eval("hello").toString());
+		assertEquals("17", engine.get("hello").toString());
+
+		Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
+		bindings.clear();
+		assertEquals("void", engine.get("hello").toString());
 	}
 
 	@Test
