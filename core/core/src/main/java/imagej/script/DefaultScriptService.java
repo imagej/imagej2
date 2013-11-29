@@ -38,6 +38,8 @@ package imagej.script;
 import imagej.command.CommandService;
 import imagej.module.Module;
 import imagej.module.ModuleService;
+import imagej.util.ColorRGB;
+import imagej.util.ColorRGBA;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,12 +58,15 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
+import org.scijava.Context;
 import org.scijava.log.LogService;
 import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;
+import org.scijava.util.ClassUtils;
 
 /**
  * Default service for working with scripting languages.
@@ -90,6 +95,9 @@ public class DefaultScriptService extends
 	/** Index of available scripts, by script <em>file</em>. */
 	private final HashMap<File, ScriptInfo> scripts =
 		new HashMap<File, ScriptInfo>();
+
+	/** Table of short type names to associated {@link Class}. */
+	private HashMap<String, Class<?>> typeMap;
 
 	// -- ScriptService methods - scripting languages --
 
@@ -202,6 +210,24 @@ public class DefaultScriptService extends
 		if (writer != null) context.setErrorWriter(errorWriter);
 	}
 
+	@Override
+	public synchronized Class<?> lookupClass(final String typeName)
+		throws ScriptException
+	{
+		if (typeMap == null) buildTypes();
+
+		final Class<?> type = typeMap.get(typeName);
+		if (type != null) return type;
+
+		final Class<?> c = ClassUtils.loadClass(typeName);
+		if (c != null) {
+			typeMap.put(typeName, c);
+			return c;
+		}
+
+		throw new ScriptException("Unknown type: " + typeName);
+	}
+
 	// -- PTService methods --
 
 	@Override
@@ -277,6 +303,41 @@ public class DefaultScriptService extends
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Future<ScriptModule> cast(final Future<Module> future) {
 		return (Future) future;
+	}
+
+	private void buildTypes() {
+		typeMap = new HashMap<String, Class<?>>();
+
+		// primitives
+		addTypes(boolean.class, byte.class, char.class, double.class, float.class,
+			int.class, long.class, short.class);
+
+		// primitive wrappers
+		addTypes(Boolean.class, Byte.class, Character.class, Double.class,
+			Float.class, Integer.class, Long.class, Short.class);
+
+		// built-in types
+		addTypes(Context.class, ColorRGB.class, ColorRGBA.class, File.class,
+			String.class);
+
+		// service types
+		for (final Service service : getContext().getServiceIndex()) {
+			addTypes(service.getClass());
+		}
+	}
+
+	private void addTypes(final Class<?>... types) {
+		for (final Class<?> type : types) {
+			addType(type);
+		}
+	}
+
+	private void addType(final Class<?> type) {
+		if (type == null) return;
+		typeMap.put(type.getSimpleName(), type);
+		// NB: Recursively add supertypes.
+		addType(type.getSuperclass());
+		addTypes(type.getInterfaces());
 	}
 
 }
