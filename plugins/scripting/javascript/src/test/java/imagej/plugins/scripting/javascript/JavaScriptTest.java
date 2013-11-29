@@ -62,8 +62,7 @@ public class JavaScriptTest {
 	public void testBasic() throws Exception {
 		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
-
-		String script = "$x = 1 + 2;";
+		final String script = "$x = 1 + 2;";
 		// NB: Some JVMs return Integer, others Double. Let's be careful here.
 		final ScriptModule m = scriptService.run("add.js", script, true).get();
 		final Number result = (Number) m.getReturnValue();
