@@ -214,13 +214,10 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 			if (line == null) break;
 
 			// scan for lines containing an '@' stopping at the first line
-			// containing at least one alpha-numerical character but no '@'.
+			// containing at least one alphameric character but no '@'.
 			final int at = line.indexOf('@');
-			if (at < 0) {
-				if (line.matches(".*[A-Za-z0-9].*")) break;
-				continue;
-			}
-			parseParam(line.substring(at + 1));
+			if (at >= 0) parseParam(line.substring(at + 1));
+			else if (line.matches(".*\\w.*")) break;
 		}
 		if (reader == null) in.close();
 		else in.reset();
