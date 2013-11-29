@@ -45,14 +45,19 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.script.ScriptException;
 
 import org.scijava.Context;
 import org.scijava.Contextual;
 import org.scijava.ItemIO;
+import org.scijava.ItemVisibility;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
+import org.scijava.util.ConversionUtils;
 
 /**
  * Metadata about a script.
@@ -117,6 +122,7 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 		this.reader = new BufferedReader(reader, PARAM_CHAR_MAX);
 		try {
 			parseParameters();
+			addReturnValue();
 		}
 		catch (final ScriptException exc) {
 			log.error(exc);
@@ -124,7 +130,6 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 		catch (final IOException exc) {
 			log.error(exc);
 		}
-		addReturnValue();
 	}
 
 	// -- ScriptInfo methods --
@@ -249,29 +254,91 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 
 	// -- Helper methods --
 
-	private <T> void parseParam(final String line) throws ScriptException {
-		final String[] parts = line.trim().split("[ \t\n]+");
-		if (parts.length != 2) {
-			throw new ScriptException("Expected 'type name': " + line);
+	private void parseParam(final String param) throws ScriptException {
+		final int lParen = param.indexOf("(");
+		final int rParen = param.lastIndexOf(")");
+		if (rParen < lParen) {
+			throw new ScriptException("Invalid parameter: " + param);
 		}
-		addInput(parts[1], scriptService.lookupClass(parts[0]));
+		if (lParen < 0) parseParam(param, parseAttrs(""));
+		else {
+			final String cutParam =
+				param.substring(0, lParen) + param.substring(rParen + 1);
+			final String attrs = param.substring(lParen + 1, rParen);
+			parseParam(cutParam, parseAttrs(attrs));
+		}
 	}
 
-	private <T> void addInput(final String name, final Class<T> type) {
-		addItem(name, type, ItemIO.INPUT);
+	private void parseParam(final String param,
+		final HashMap<String, String> attrs) throws ScriptException
+	{
+		final String[] tokens = param.trim().split("[ \t\n]+");
+		checkValid(tokens.length >= 1, param);
+		final String typeName, varName;
+		if (isIOType(tokens[0])) {
+			// assume syntax: <IOType> <type> <varName>
+			checkValid(tokens.length >= 3, param);
+			attrs.put("type", tokens[0]);
+			typeName = tokens[1];
+			varName = tokens[2];
+		}
+		else {
+			// assume syntax: <type> <varName>
+			checkValid(tokens.length >= 2, param);
+			typeName = tokens[0];
+			varName = tokens[1];
+		}
+		final Class<?> type = scriptService.lookupClass(typeName);
+		addItem(varName, type, attrs);
+	}
+
+	// NB: Stolen from: http://stackoverflow.com/q/1441556/1207769
+	// But we probably want to switch to a real parser instead of a regex.
+	private static final Pattern ATTRS_REGEX =
+		Pattern.compile("\"([^\"]*)\"|(?<=,|^)([^,]*)(?=,|$)");
+
+	/** Parses a comma-delimited list of {@code key=value} pairs into a map. */
+	private HashMap<String, String> parseAttrs(final String attrs)
+		throws ScriptException
+	{
+		final HashMap<String, String> attrsMap = new HashMap<String, String>();
+		for (final String token : ATTRS_REGEX.split(attrs)) {
+			if (token.isEmpty()) continue;
+			final int equals = token.indexOf("=");
+			if (equals < 0) throw new ScriptException("Invalid attribute: " + token);
+			final String key = token.substring(0, equals).trim();
+			final String value = token.substring(0, equals).trim();
+			attrsMap.put(key, value);
+		}
+		return attrsMap;
+	}
+
+	private boolean isIOType(final String token) {
+		return ConversionUtils.convert(token, ItemIO.class) != null;
+	}
+
+	private void checkValid(final boolean valid, final String param)
+		throws ScriptException
+	{
+		if (!valid) throw new ScriptException("Invalid parameter: " + param);
 	}
 
 	/** Adds an output for the value returned by the script itself. */
-	private void addReturnValue() {
-		addItem(ScriptModule.RETURN_VALUE, Object.class, ItemIO.OUTPUT);
+	private void addReturnValue() throws ScriptException {
+		final HashMap<String, String> attrs = new HashMap<String, String>();
+		attrs.put("type", "OUTPUT");
+		addItem(ScriptModule.RETURN_VALUE, Object.class, attrs);
 	}
 
 	private <T> void addItem(final String name, final Class<T> type,
-		final ItemIO ioType)
+		final Map<String, String> attrs) throws ScriptException
 	{
 		final DefaultMutableModuleItem<T> item =
 			new DefaultMutableModuleItem<T>(this, name, type);
-		item.setIOType(ioType);
+		for (String key : attrs.keySet()) {
+			final String value = attrs.get(key);
+			assignAttribute(item, key, value);
+		}
 		if (item.isInput()) {
 			inputMap.put(item.getName(), item);
 			inputList.add(item);
@@ -279,6 +346,72 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 		if (item.isOutput()) {
 			outputMap.put(item.getName(), item);
 			outputList.add(item);
+		}
+	}
+
+	private <T> void assignAttribute(final DefaultMutableModuleItem<T> item,
+		final String key, final String value) throws ScriptException
+	{
+		// CTR: There must be an easier way to do this.
+		// Just compile the thing using javac? Or parse via javascript, maybe?
+		if ("callback".equalsIgnoreCase(key)) {
+			item.setCallback(value);
+		}
+		else if ("choices".equalsIgnoreCase(key)) {
+			// FIXME: Regex above won't handle {a,b,c} syntax.
+//			item.setChoices(choices);
+		}
+		else if ("columns".equalsIgnoreCase(key)) {
+			item.setColumnCount(ConversionUtils.convert(value, int.class));
+		}
+		else if ("description".equalsIgnoreCase(key)) {
+			item.setDescription(value);
+		}
+		else if ("initializer".equalsIgnoreCase(key)) {
+			item.setInitializer(value);
+		}
+		else if ("type".equalsIgnoreCase(key)) {
+			item.setIOType(ConversionUtils.convert(value, ItemIO.class));
+		}
+		else if ("label".equalsIgnoreCase(key)) {
+			item.setLabel(value);
+		}
+		else if ("max".equalsIgnoreCase(key)) {
+			item.setMaximumValue(ConversionUtils.convert(value, item.getType()));
+		}
+		else if ("min".equalsIgnoreCase(key)) {
+			item.setMinimumValue(ConversionUtils.convert(value, item.getType()));
+		}
+		else if ("name".equalsIgnoreCase(key)) {
+			item.setName(value);
+		}
+		else if ("persist".equalsIgnoreCase(key)) {
+			item.setPersisted(ConversionUtils.convert(value, boolean.class));
+		}
+		else if ("persistKey".equalsIgnoreCase(key)) {
+			item.setPersistKey(value);
+		}
+		else if ("required".equalsIgnoreCase(key)) {
+			item.setRequired(ConversionUtils.convert(value, boolean.class));
+		}
+		else if ("softMax".equalsIgnoreCase(key)) {
+			item.setSoftMaximum(ConversionUtils.convert(value, item.getType()));
+		}
+		else if ("softMin".equalsIgnoreCase(key)) {
+			item.setSoftMinimum(ConversionUtils.convert(value, item.getType()));
+		}
+		else if ("stepSize".equalsIgnoreCase(key)) {
+			// FIXME
+			item.setStepSize(ConversionUtils.convert(value, Number.class));
+		}
+		else if ("visibility".equalsIgnoreCase(key)) {
+			item.setVisibility(ConversionUtils.convert(value, ItemVisibility.class));
+		}
+		else if ("value".equalsIgnoreCase(key)) {
+			item.setWidgetStyle(value);
+		}
+		else {
+			throw new ScriptException("Invalid attribute name: " + key);
 		}
 	}
 
