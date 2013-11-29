@@ -41,9 +41,13 @@ import imagej.script.ScriptLanguage;
 import imagej.script.ScriptModule;
 import imagej.script.ScriptService;
 
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 
 import org.junit.Test;
 import org.scijava.Context;
@@ -56,7 +60,9 @@ import org.scijava.Context;
 public class JythonTest {
 
 	@Test
-	public void testBasic() throws Exception {
+	public void testBasic() throws InterruptedException, ExecutionException,
+		IOException, ScriptException
+	{
 		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
 		final String script = "1 + 2";
@@ -67,7 +73,7 @@ public class JythonTest {
 	}
 
 	@Test
-	public void testLocals() throws Exception {
+	public void testLocals() throws ScriptException {
 		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
 
@@ -78,8 +84,9 @@ public class JythonTest {
 		assertEquals("17", engine.eval("hello").toString());
 		assertEquals("17", engine.get("hello").toString());
 
-		Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
+		final Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
 		bindings.clear();
 		assertNull(engine.get("hello"));
 	}
+
 }
