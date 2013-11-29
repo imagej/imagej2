@@ -45,8 +45,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.script.ScriptException;
 
@@ -55,8 +53,6 @@ import org.scijava.Contextual;
 import org.scijava.ItemIO;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
-import org.scijava.service.Service;
-import org.scijava.util.ClassUtils;
 
 /**
  * Metadata about a script.
@@ -77,7 +73,8 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	@Parameter
 	private LogService log;
 
-	private Map<String, Class<?>> typeMap;
+	@Parameter
+	private ScriptService scriptService;
 
 	/**
 	 * Creates a script metadata object which describes the given script file.
@@ -260,7 +257,7 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 		if (parts.length != 2) {
 			throw new ScriptException("Expected 'type name': " + line);
 		}
-		addInput(parts[1], parseType(parts[0]));
+		addInput(parts[1], scriptService.lookupClass(parts[0]));
 	}
 
 	private <T> void addInput(final String name, final Class<T> type) {
@@ -293,41 +290,6 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 		inputList.clear();
 		outputMap.clear();
 		outputList.clear();
-	}
-
-	private synchronized Class<?> parseType(final String string)
-		throws ScriptException
-	{
-		if (typeMap == null) {
-			typeMap = new HashMap<String, Class<?>>();
-			typeMap.put("byte", Byte.TYPE);
-			typeMap.put("short", Short.TYPE);
-			typeMap.put("int", Integer.TYPE);
-			typeMap.put("long", Long.TYPE);
-			typeMap.put("float", Float.TYPE);
-			typeMap.put("double", Double.TYPE);
-			typeMap.put("String", String.class);
-			typeMap.put("File", File.class);
-
-			for (final Service service : context.getServiceIndex()) {
-				final Class<?> clazz = service.getClass();
-				final String className = clazz.getName();
-				typeMap.put(className, clazz);
-				final int dot = className.lastIndexOf('.');
-				if (dot > 0) typeMap.put(className.substring(dot + 1), clazz);
-			}
-		}
-
-		final Class<?> type = typeMap.get(string);
-		if (type != null) return type;
-
-		final Class<?> c = ClassUtils.loadClass(string);
-		if (c != null) {
-			typeMap.put(string, c);
-			return c;
-		}
-
-		throw new ScriptException("Unknown type: " + string);
 	}
 
 }
