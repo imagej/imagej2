@@ -59,10 +59,10 @@ public class JythonTest {
 	public void testBasic() throws Exception {
 		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
-
-		String script = "1 + 2";
+		final String script = "1 + 2";
 		final ScriptModule m = scriptService.run("add.py", script, true).get();
 		final Object result = m.getReturnValue();
+		// NB: Result is of type org.python.core.PyInteger.
 		assertEquals("3", result.toString());
 	}
 
