@@ -72,11 +72,25 @@ public class ScriptModule extends AbstractModule implements Contextual {
 	@Parameter
 	private LogService log;
 
+	private ScriptEngine scriptEngine;
+
 	public ScriptModule(final ScriptInfo info) {
 		this.info = info;
 	}
 
 	// -- ScriptModule methods --
+
+	/** Gets the script engine used to execute the script. */
+	public ScriptEngine getEngine() {
+		if (scriptEngine == null) {
+			final String path = getInfo().getPath();
+			final String fileExtension = FileUtils.getExtension(path);
+			final ScriptLanguage language =
+					scriptService.getByFileExtension(fileExtension);
+			scriptEngine = language.getScriptEngine();
+		}
+		return scriptEngine;
+	}
 
 	/** Gets the return value of the script. */
 	public Object getReturnValue() {
@@ -94,11 +108,8 @@ public class ScriptModule extends AbstractModule implements Contextual {
 
 	@Override
 	public void run() {
+		final ScriptEngine engine = getEngine();
 		final String path = getInfo().getPath();
-		final String fileExtension = FileUtils.getExtension(path);
-		final ScriptLanguage language =
-			scriptService.getByFileExtension(fileExtension);
-		final ScriptEngine engine = language.getScriptEngine();
 
 		// initialize the script engine
 		// TODO: Handle stdout and stderr writers better.
