@@ -42,9 +42,13 @@ import imagej.script.ScriptLanguage;
 import imagej.script.ScriptModule;
 import imagej.script.ScriptService;
 
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 
 import org.junit.Test;
 import org.scijava.Context;
@@ -59,7 +63,9 @@ import org.scijava.service.ServiceHelper;
 public class JavaScriptTest {
 
 	@Test
-	public void testBasic() throws Exception {
+	public void testBasic() throws InterruptedException, ExecutionException,
+		IOException, ScriptException
+	{
 		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
 		final String script = "$x = 1 + 2;";
@@ -70,7 +76,7 @@ public class JavaScriptTest {
 	}
 
 	@Test
-	public void testLocals() throws Exception {
+	public void testLocals() throws ScriptException {
 		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
 
@@ -81,19 +87,21 @@ public class JavaScriptTest {
 		assertEquals("17", engine.eval("$hello").toString());
 		assertEquals("17", engine.get("$hello").toString());
 
-		Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
+		final Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
 		bindings.clear();
 		assertNull(engine.get("$hello"));
 	}
 
 	@Test
-	public void testParameters() throws Exception {
+	public void testParameters() throws InterruptedException, ExecutionException,
+		IOException, ScriptException
+	{
 		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
 		new ServiceHelper(context).createExactService(DummyService.class);
 
-		String script =
-				"// @DummyService d\n" +
+		final String script = //
+			"// @DummyService d\n" + //
 				"d.value = 4321;\n";
 		scriptService.run("hello.js", script, true).get();
 
