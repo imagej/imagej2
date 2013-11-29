@@ -36,10 +36,13 @@
 package imagej.plugins.scripting.clojure;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import imagej.script.ScriptLanguage;
 import imagej.script.ScriptModule;
 import imagej.script.ScriptService;
 
+import javax.script.Bindings;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 
 import org.junit.Test;
@@ -73,5 +76,14 @@ public class ClojureTest {
 		engine.put("$hello", 17);
 		assertEquals("17", engine.eval("$hello").toString());
 		assertEquals("17", engine.get("$hello").toString());
+
+		try {
+			Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
+			bindings.clear();
+			fail("UnsupportedOperationException expected on clear()");
+		}
+		catch (final UnsupportedOperationException exc) {
+			// NB: Expected.
+		}
 	}
 }
