@@ -56,11 +56,10 @@ public class ClojureTest {
 	public void testBasic() throws Exception {
 		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
-
-		String script = "(+ 1 2)";
+		final String script = "(+ 1 2)";
 		final ScriptModule m = scriptService.run("add.clj", script, true).get();
-		final Object result = m.getReturnValue();
-		assertEquals("3", result.toString());
+		final Long result = (Long) m.getReturnValue();
+		assertEquals(3L, result.longValue());
 	}
 
 	@Test
