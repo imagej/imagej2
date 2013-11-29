@@ -36,6 +36,7 @@
 package imagej.plugins.scripting.beanshell;
 
 import static org.junit.Assert.assertEquals;
+import imagej.script.ScriptModule;
 import imagej.script.ScriptService;
 
 import org.junit.Test;
@@ -48,6 +49,16 @@ import org.scijava.service.ServiceHelper;
  * @author Johannes Schindelin
  */
 public class BeanshellTest {
+
+	@Test
+	public void testBasic() throws Exception {
+		final Context context = new Context(ScriptService.class);
+		final ScriptService scriptService = context.getService(ScriptService.class);
+		final String script = "x = 1 + 2;";
+		final ScriptModule m = scriptService.run("add.bsh", script, true).get();
+		final Integer result = (Integer) m.getReturnValue();
+		assertEquals(3, result.intValue());
+	}
 
 	@Test
 	public void testParameters() throws Exception {
