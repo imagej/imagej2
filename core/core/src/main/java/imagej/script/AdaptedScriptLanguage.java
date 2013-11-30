@@ -41,8 +41,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 
-import org.scijava.plugin.AbstractRichPlugin;
-
 /**
  * Abstract superclass for {@link ScriptLanguage} implementations which adapt an
  * existing {@link ScriptEngineFactory}.
@@ -53,9 +51,7 @@ import org.scijava.plugin.AbstractRichPlugin;
  * 
  * @author Curtis Rueden
  */
-public class AdaptedScriptLanguage extends AbstractRichPlugin implements
-	ScriptLanguage
-{
+public class AdaptedScriptLanguage extends AbstractScriptLanguage {
 
 	/** The {@link ScriptEngineFactory} which this one adapts. */
 	private final ScriptEngineFactory base;
@@ -74,20 +70,6 @@ public class AdaptedScriptLanguage extends AbstractRichPlugin implements
 	 */
 	public AdaptedScriptLanguage(final String factoryName) {
 		this(findFactory(factoryName));
-	}
-
-	// -- Object methods --
-
-	@Override
-	public String toString() {
-		return getLanguageName();
-	}
-
-	// -- ScriptLanguage methods --
-
-	@Override
-	public boolean isCompiledLanguage() {
-		return false;
 	}
 
 	// -- ScriptEngineFactory methods --
