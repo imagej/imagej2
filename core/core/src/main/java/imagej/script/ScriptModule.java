@@ -49,6 +49,7 @@ import org.scijava.Context;
 import org.scijava.Contextual;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
+import org.scijava.util.ConversionUtils;
 import org.scijava.util.FileUtils;
 
 /**
@@ -135,6 +136,15 @@ public class ScriptModule extends AbstractModule implements Contextual {
 		catch (final Throwable e) {
 			log.error(e);
 		}
+
+		// populate output values
+		for (final ModuleItem<?> item : getInfo().outputs()) {
+			final String name = item.getName();
+			final Object value =
+				ConversionUtils.convert(engine.get(name), item.getType());
+			setOutput(name, value);
+		}
+
 	}
 
 	// -- Contextual methods --
