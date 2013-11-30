@@ -73,6 +73,7 @@ public class ScriptModule extends AbstractModule implements Contextual {
 	@Parameter
 	private LogService log;
 
+	private ScriptLanguage scriptLanguage;
 	private ScriptEngine scriptEngine;
 
 	public ScriptModule(final ScriptInfo info) {
@@ -81,14 +82,20 @@ public class ScriptModule extends AbstractModule implements Contextual {
 
 	// -- ScriptModule methods --
 
+	/** Gets the scripting language of the script. */
+	public ScriptLanguage getLanguage() {
+		if (scriptLanguage == null) {
+			final String path = getInfo().getPath();
+			final String fileExtension = FileUtils.getExtension(path);
+			scriptLanguage = scriptService.getByFileExtension(fileExtension);
+		}
+		return scriptLanguage;
+	}
+
 	/** Gets the script engine used to execute the script. */
 	public ScriptEngine getEngine() {
 		if (scriptEngine == null) {
-			final String path = getInfo().getPath();
-			final String fileExtension = FileUtils.getExtension(path);
-			final ScriptLanguage language =
-					scriptService.getByFileExtension(fileExtension);
-			scriptEngine = language.getScriptEngine();
+			scriptEngine = getLanguage().getScriptEngine();
 		}
 		return scriptEngine;
 	}
