@@ -426,47 +426,4 @@ public final class DefaultLegacyService extends AbstractService implements
 		finder.findPlugins(plugins);
 		pluginService.addPlugins(plugins);
 	}
-
-	/* 3-1-12
-
-	 We are no longer going to synchronize colors from IJ1 to modern ImageJ
-
-	protected class IJ1EventListener implements IJEventListener {
-
-		@Override
-		public void eventOccurred(final int eventID) {
-			final OptionsChannels colorOpts =
-				optionsService.getOptions(OptionsChannels.class);
-			ColorRGB color;
-			switch (eventID) {
-				case ij.IJEventListener.COLOR_PICKER_CLOSED:
-					color = AWTColors.getColorRGB(Toolbar.getForegroundColor());
-					colorOpts.setFgColor(color);
-					color = AWTColors.getColorRGB(Toolbar.getBackgroundColor());
-					colorOpts.setBgColor(color);
-					colorOpts.save();
-					break;
-				case ij.IJEventListener.FOREGROUND_COLOR_CHANGED:
-					color = AWTColors.getColorRGB(Toolbar.getForegroundColor());
-					colorOpts.setFgColor(color);
-					colorOpts.save();
-					break;
-				case ij.IJEventListener.BACKGROUND_COLOR_CHANGED:
-					color = AWTColors.getColorRGB(Toolbar.getBackgroundColor());
-					colorOpts.setBgColor(color);
-					colorOpts.save();
-					break;
-				case ij.IJEventListener.LOG_WINDOW_CLOSED:
-					// TODO - do something???
-					break;
-				case ij.IJEventListener.TOOL_CHANGED:
-					// TODO - do something???
-					break;
-				default: // unknown event
-					// do nothing
-					break;
-			}
-		}
-	}
-	*/
 }
