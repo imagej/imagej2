@@ -86,8 +86,8 @@ public class ScriptModule extends AbstractModule implements Contextual {
 	public ScriptLanguage getLanguage() {
 		if (scriptLanguage == null) {
 			final String path = getInfo().getPath();
-			final String fileExtension = FileUtils.getExtension(path);
-			scriptLanguage = scriptService.getByFileExtension(fileExtension);
+			final String extension = FileUtils.getExtension(path);
+			scriptLanguage = scriptService.getLanguageByExtension(extension);
 		}
 		return scriptLanguage;
 	}

@@ -55,7 +55,7 @@ public class ScriptLanguageIndex extends HashSet<ScriptLanguage> {
 
 	private static final long serialVersionUID = 1L;
 
-	private final Map<String, ScriptLanguage> byFileExtension =
+	private final Map<String, ScriptLanguage> byExtension =
 		new HashMap<String, ScriptLanguage>();
 
 	private final Map<String, ScriptLanguage> byName =
@@ -81,14 +81,14 @@ public class ScriptLanguageIndex extends HashSet<ScriptLanguage> {
 		// add file extensions
 		for (final String extension : language.getExtensions()) {
 			if ("".equals(extension)) continue;
-			byFileExtension.put(extension, language);
+			byExtension.put(extension, language);
 		}
 
 		return super.add(language);
 	}
 
-	public ScriptLanguage getByFileExtension(final String fileExtension) {
-		return byFileExtension.get(fileExtension);
+	public ScriptLanguage getByExtension(final String extension) {
+		return byExtension.get(extension);
 	}
 
 	public ScriptLanguage getByName(final String name) {
@@ -101,15 +101,15 @@ public class ScriptLanguageIndex extends HashSet<ScriptLanguage> {
 	}
 
 	public boolean canHandleFile(final File file) {
-		final String fileExtension = FileUtils.getExtension(file);
-		if ("".equals(fileExtension)) return false;
-		return byFileExtension.containsKey(fileExtension);
+		final String extension = FileUtils.getExtension(file);
+		if ("".equals(extension)) return false;
+		return byExtension.containsKey(extension);
 	}
 
 	public boolean canHandleFile(final String fileName) {
-		final String fileExtension = FileUtils.getExtension(fileName);
-		if ("".equals(fileExtension)) return false;
-		return byFileExtension.containsKey(fileExtension);
+		final String extension = FileUtils.getExtension(fileName);
+		if ("".equals(extension)) return false;
+		return byExtension.containsKey(extension);
 	}
 
 	// -- Collection methods --

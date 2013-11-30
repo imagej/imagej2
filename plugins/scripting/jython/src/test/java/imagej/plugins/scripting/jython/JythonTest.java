@@ -77,7 +77,7 @@ public class JythonTest {
 		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
 
-		final ScriptLanguage language = scriptService.getByFileExtension("py");
+		final ScriptLanguage language = scriptService.getLanguageByExtension("py");
 		final ScriptEngine engine = language.getScriptEngine();
 		assertEquals(JythonScriptEngine.class, engine.getClass());
 		engine.put("hello", 17);

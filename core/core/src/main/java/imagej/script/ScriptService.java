@@ -81,11 +81,11 @@ public interface ScriptService extends SingletonService<ScriptLanguage> {
 	 */
 	List<ScriptLanguage> getLanguages();
 
-	/** TODO */
-	ScriptLanguage getByFileExtension(String fileExtension);
+	/** Gets the scripting language that handles the given file extension. */
+	ScriptLanguage getLanguageByExtension(String extension);
 
-	/** TODO */
-	ScriptLanguage getByName(String name);
+	/** Gets the scripting language with the given name. */
+	ScriptLanguage getLanguageByName(String name);
 
 	// -- Scripts --
 

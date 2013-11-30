@@ -687,7 +687,7 @@ public class TextEditor extends JFrame implements ActionListener,
 
 			int dot = url.lastIndexOf('.');
 			if (dot > 0) {
-				ScriptLanguage language = scriptService.getByFileExtension(url.substring(dot));
+				ScriptLanguage language = scriptService.getLanguageByExtension(url.substring(dot));
 				if (language != null)
 					setLanguage(language);
 			}
@@ -1370,7 +1370,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		if (null != language && language.length() > 0) {
 			language = language.trim().toLowerCase();
 			if ('.' != language.charAt(0)) language = "." + language;
-			tab.editorPane.setLanguage(scriptService.getByName(language));
+			tab.editorPane.setLanguage(scriptService.getLanguageByName(language));
 		}
 		if (null != content) tab.editorPane.setText(content);
 		return tab;

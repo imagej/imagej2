@@ -113,12 +113,12 @@ public class DefaultScriptService extends
 	}
 
 	@Override
-	public ScriptLanguage getByFileExtension(final String fileExtension) {
-		return scriptLanguageIndex.getByFileExtension(fileExtension);
+	public ScriptLanguage getLanguageByExtension(final String extension) {
+		return scriptLanguageIndex.getByExtension(extension);
 	}
 
 	@Override
-	public ScriptLanguage getByName(final String name) {
+	public ScriptLanguage getLanguageByName(final String name) {
 		return scriptLanguageIndex.getByName(name);
 	}
 

@@ -80,7 +80,7 @@ public class JavaScriptTest {
 		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
 
-		final ScriptLanguage language = scriptService.getByFileExtension("js");
+		final ScriptLanguage language = scriptService.getLanguageByExtension("js");
 		final ScriptEngine engine = language.getScriptEngine();
 		assertTrue(engine.getClass().getName().endsWith(".RhinoScriptEngine"));
 		engine.put("$hello", 17);

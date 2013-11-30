@@ -76,7 +76,7 @@ public class BeanshellTest {
 		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
 
-		final ScriptLanguage language = scriptService.getByFileExtension("bsh");
+		final ScriptLanguage language = scriptService.getLanguageByExtension("bsh");
 		final ScriptEngine engine = language.getScriptEngine();
 		assertEquals(BeanshellScriptEngine.class, engine.getClass());
 		engine.put("hello", 17);

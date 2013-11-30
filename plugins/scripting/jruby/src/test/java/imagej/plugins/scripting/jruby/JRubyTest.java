@@ -77,7 +77,7 @@ public class JRubyTest {
 		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
 
-		final ScriptLanguage language = scriptService.getByFileExtension("rb");
+		final ScriptLanguage language = scriptService.getLanguageByExtension("rb");
 		final ScriptEngine engine = language.getScriptEngine();
 		assertEquals(JRubyScriptEngine.class, engine.getClass());
 		engine.put("$hello", 17);

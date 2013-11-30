@@ -338,7 +338,7 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 	}
 
 	protected void setLanguageByFileName(String name) {
-		setLanguage(frame.scriptService.getByFileExtension(FileUtils.getExtension(name)));
+		setLanguage(frame.scriptService.getLanguageByExtension(FileUtils.getExtension(name)));
 	}
 
 	protected void setLanguage(ScriptLanguage language) {
