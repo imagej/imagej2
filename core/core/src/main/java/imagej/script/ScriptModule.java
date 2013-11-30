@@ -136,6 +136,7 @@ public class ScriptModule extends AbstractModule implements Contextual {
 			if (reader == null) returnValue = engine.eval(new FileReader(path));
 			else returnValue = engine.eval(reader);
 			setOutput(RETURN_VALUE, returnValue);
+			setResolved(RETURN_VALUE, true);
 		}
 		catch (final ScriptException e) {
 			log.error(e.getCause());
@@ -147,6 +148,7 @@ public class ScriptModule extends AbstractModule implements Contextual {
 		// populate output values
 		for (final ModuleItem<?> item : getInfo().outputs()) {
 			final String name = item.getName();
+			if (isResolved(name)) continue;
 			final Object value =
 				ConversionUtils.convert(engine.get(name), item.getType());
 			setOutput(name, value);
