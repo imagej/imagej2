@@ -70,6 +70,12 @@ public abstract class AbstractScriptLanguage extends AbstractRichPlugin
 		return false;
 	}
 
+	@Override
+	public Object decode(final Object object) {
+		// NB: No decoding by default.
+		return object;
+	}
+
 	// -- (Possibly) unsupported operations --
 
 	@Override

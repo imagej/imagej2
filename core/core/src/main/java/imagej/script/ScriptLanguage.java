@@ -37,6 +37,7 @@ package imagej.script;
 
 import imagej.ImageJPlugin;
 
+import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 
 import org.scijava.plugin.Plugin;
@@ -61,5 +62,13 @@ public interface ScriptLanguage extends ScriptEngineFactory, ImageJPlugin,
 
 	/** True iff this language requires a compilation step. */
 	boolean isCompiledLanguage();
+
+	/**
+	 * Performs any necessary conversion of an encoded object retrieved from the
+	 * language's script engine.
+	 * 
+	 * @see ScriptEngine#get(String)
+	 */
+	Object decode(Object object);
 
 }
