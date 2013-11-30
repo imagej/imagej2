@@ -144,7 +144,6 @@ public class ScriptModule extends AbstractModule implements Contextual {
 				ConversionUtils.convert(engine.get(name), item.getType());
 			setOutput(name, value);
 		}
-
 	}
 
 	// -- Contextual methods --

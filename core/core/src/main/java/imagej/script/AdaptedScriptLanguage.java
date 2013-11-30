@@ -76,6 +76,13 @@ public class AdaptedScriptLanguage extends AbstractRichPlugin implements
 		this(findFactory(factoryName));
 	}
 
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return getLanguageName();
+	}
+
 	// -- ScriptLanguage methods --
 
 	@Override

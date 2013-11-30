@@ -56,6 +56,13 @@ public abstract class AbstractScriptLanguage extends AbstractRichPlugin
 	implements ScriptLanguage
 {
 
+	// -- Object methods --
+
+	@Override
+	public String toString() {
+		return getLanguageName();
+	}
+
 	// -- ScriptLanguage methods --
 
 	@Override
