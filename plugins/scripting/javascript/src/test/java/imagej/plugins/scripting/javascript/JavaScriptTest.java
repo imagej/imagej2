@@ -52,7 +52,6 @@ import javax.script.ScriptException;
 
 import org.junit.Test;
 import org.scijava.Context;
-import org.scijava.service.ServiceHelper;
 
 /**
  * JavaScript unit tests.
@@ -98,15 +97,20 @@ public class JavaScriptTest {
 	{
 		final Context context = new Context(ScriptService.class);
 		final ScriptService scriptService = context.getService(ScriptService.class);
-		new ServiceHelper(context).createExactService(DummyService.class);
 
-		final String script = //
-			"// @DummyService d\n" + //
-				"d.value = 4321;\n";
-		scriptService.run("hello.js", script, true).get();
+		final String script = "" + //
+			"// @ScriptService ss\n" + //
+			"// @OUTPUT String language\n" + //
+			"language = ss.getLanguageByName('JavaScript').getLanguageName()\n";
+		final ScriptModule m = scriptService.run("hello.js", script, true).get();
 
-		final DummyService dummy = context.getService(DummyService.class);
-		assertEquals(4321, dummy.value);
+		final Object actual = m.getOutput("language");
+		final String expected =
+			scriptService.getLanguageByName("JavaScript").getLanguageName();
+		assertEquals(expected, actual);
+
+		final Object result = m.getReturnValue();
+		assertEquals(expected, result);
 	}
 
 }
