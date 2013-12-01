@@ -259,8 +259,8 @@ public class LegacyTestUtils {
 			 * with another class loader than the URLClassLoader we just created.
 			 */
 			try {
-				final Class<?> ij1Helper = loader.loadClass(CodeHacker.class.getName());
-				final Method patchMethod = ij1Helper.getDeclaredMethod("patch", Boolean.TYPE);
+				final Class<?> hackerClass = loader.loadClass(CodeHacker.class.getName());
+				final Method patchMethod = hackerClass.getDeclaredMethod("patch", Boolean.TYPE);
 				patchMethod.setAccessible(true);
 				patchMethod.invoke(null, patchHeadless);
 			} catch (Exception e) {
