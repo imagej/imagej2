@@ -627,10 +627,7 @@ public class LegacyExtensions {
 
 	/**
 	 * Makes sure that the legacy plugin class loader finds stuff in
-	 * $HOME/.plugins/
-	 * 
-	 * @param directory
-	 *            a directory where additional plugins can be found
+	 * {@code $HOME/.plugins/}.
 	 */
 	private static void addExtraPlugins(final CodeHacker hacker) {
 		for (final String methodName : new String[] { "addJAR", "addJar" }) {

@@ -35,6 +35,7 @@
 
 package imagej.tool;
 
+import imagej.ImageJPlugin;
 import imagej.display.event.input.KyPressedEvent;
 import imagej.display.event.input.KyReleasedEvent;
 import imagej.display.event.input.MsClickedEvent;
@@ -43,7 +44,6 @@ import imagej.display.event.input.MsMovedEvent;
 import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
-import imagej.plugin.ImageJPlugin;
 
 import org.scijava.input.MouseCursor;
 import org.scijava.plugin.Plugin;

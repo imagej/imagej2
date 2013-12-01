@@ -35,11 +35,11 @@
 
 package imagej.ui.viewer;
 
+import imagej.ImageJPlugin;
 import imagej.display.Display;
 import imagej.display.event.DisplayActivatedEvent;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.DisplayUpdatedEvent;
-import imagej.plugin.ImageJPlugin;
 import imagej.ui.UserInterface;
 
 import org.scijava.Disposable;

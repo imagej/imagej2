@@ -39,12 +39,12 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.EllipseOverlay;
 import imagej.data.overlay.Overlay;
+import imagej.plugins.uis.swing.overlay.AbstractJHotDrawAdapter;
+import imagej.plugins.uis.swing.overlay.IJCreationTool;
+import imagej.plugins.uis.swing.overlay.JHotDrawAdapter;
+import imagej.plugins.uis.swing.overlay.JHotDrawTool;
 import imagej.tool.Tool;
 import imagej.tool.ToolService;
-import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
-import imagej.ui.swing.overlay.IJCreationTool;
-import imagej.ui.swing.overlay.JHotDrawAdapter;
-import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.tools.SwingEllipseTool;
 import imagej.util.RealCoords;
 

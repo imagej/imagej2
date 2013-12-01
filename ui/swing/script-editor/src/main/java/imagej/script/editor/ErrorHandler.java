@@ -35,10 +35,11 @@
 
 package imagej.script.editor;
 
+import imagej.script.ScriptLanguage;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.script.ScriptEngineFactory;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
@@ -61,7 +62,7 @@ public class ErrorHandler {
 		this.textArea = textArea;
 	}
 
-	public ErrorHandler(ScriptEngineFactory language, JTextArea textArea,
+	public ErrorHandler(ScriptLanguage language, JTextArea textArea,
 			int startOffset) {
 		this(textArea);
 		String languageName = language == null ? "None" : language.getLanguageName();

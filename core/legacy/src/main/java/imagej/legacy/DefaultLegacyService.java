@@ -192,7 +192,7 @@ public final class DefaultLegacyService extends AbstractService implements
 		final Map<String, Object> inputMap = new HashMap<String, Object>();
 		inputMap.put("className", ij1ClassName);
 		inputMap.put("arg", arg);
-		commandService.run(LegacyCommand.class, inputMap);
+		commandService.run(LegacyCommand.class, true, inputMap);
 	}
 
 	@Override

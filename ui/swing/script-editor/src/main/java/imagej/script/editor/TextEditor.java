@@ -38,6 +38,7 @@ package imagej.script.editor;
 import imagej.command.CommandService;
 import imagej.io.IOService;
 import imagej.platform.PlatformService;
+import imagej.script.ScriptLanguage;
 import imagej.script.ScriptService;
 import imagej.script.editor.command.ChooseFontSize;
 import imagej.script.editor.command.ChooseTabSize;
@@ -84,7 +85,6 @@ import java.util.jar.JarOutputStream;
 import java.util.zip.ZipException;
 
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -117,7 +117,9 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.modes.JavaScriptTokenMaker;
 import org.fife.ui.rsyntaxtextarea.modes.JavaTokenMaker;
+import org.scijava.Context;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 import org.scijava.util.FileUtils;
 
 /**
@@ -172,21 +174,23 @@ public class TextEditor extends JFrame implements ActionListener,
 	protected Position compileStartPosition;
 	protected ErrorHandler errorHandler;
 
-	protected final LogService log;
-	protected final PlatformService platformService;
-	protected final IOService ioService;
-	protected final CommandService commandService;
-	protected final ScriptService scriptService;
-	protected Map<ScriptEngineFactory, JRadioButtonMenuItem> languageMenuItems;
+	@Parameter
+	protected LogService log;
+	@Parameter
+	protected PlatformService platformService;
+	@Parameter
+	protected IOService ioService;
+	@Parameter
+	protected CommandService commandService;
+	@Parameter
+	protected ScriptService scriptService;
+
+	protected Map<ScriptLanguage, JRadioButtonMenuItem> languageMenuItems;
 	protected JRadioButtonMenuItem noneLanguageItem;
 
-	public TextEditor(ScriptService scriptService, PlatformService platformService, IOService ioService, CommandService commandService) {
+	public TextEditor(final Context context) {
 		super("Script Editor");
-		this.scriptService = scriptService;
-		log = scriptService.getLogService();
-		this.platformService = platformService;
-		this.ioService = ioService;
-		this.commandService = commandService;
+		context.inject(this);
 
 		// Initialize menu
 		int ctrl = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
@@ -343,19 +347,15 @@ public class TextEditor extends JFrame implements ActionListener,
 
 		edit.add(whiteSpaceMenu);
 
-		languageMenuItems = new LinkedHashMap<ScriptEngineFactory, JRadioButtonMenuItem>();
+		languageMenuItems = new LinkedHashMap<ScriptLanguage, JRadioButtonMenuItem>();
 		Set<Integer> usedShortcuts = new HashSet<Integer>();
 		JMenu languages = new JMenu("Language");
 		languages.setMnemonic(KeyEvent.VK_L);
 		ButtonGroup group = new ButtonGroup();
-		List<ScriptEngineFactory> list = scriptService.getLanguages();
+		List<ScriptLanguage> list = scriptService.getLanguages();
 		list.add(null);
-		for (final ScriptEngineFactory language : list) {
+		for (final ScriptLanguage language : list) {
 			String name = language == null ? "None" : language.getLanguageName();
-
-			if (name.equals("ECMAScript")) {
-				name = "Javascript";
-			}
 
 			JRadioButtonMenuItem item = new JRadioButtonMenuItem(name);
 			if (language == null) {
@@ -558,7 +558,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		return tab == null ? null : tab.editorPane;
 	}
 
-	public ScriptEngineFactory getCurrentLanguage() {
+	public ScriptLanguage getCurrentLanguage() {
 		return getEditorPane().currentLanguage;
 	}
 
@@ -687,7 +687,7 @@ public class TextEditor extends JFrame implements ActionListener,
 
 			int dot = url.lastIndexOf('.');
 			if (dot > 0) {
-				ScriptEngineFactory language = scriptService.getByFileExtension(url.substring(dot));
+				ScriptLanguage language = scriptService.getLanguageByExtension(url.substring(dot));
 				if (language != null)
 					setLanguage(language);
 			}
@@ -867,10 +867,10 @@ public class TextEditor extends JFrame implements ActionListener,
 			getTextArea().moveCaretPosition(getTextArea().getDocument().getLength());
 		}
 		else if (source == chooseFontSize) {
-			commandService.run(ChooseFontSize.class, "editor", this);
+			commandService.run(ChooseFontSize.class, true, new Object[] {"editor", this}); // FIXME
 		}
 		else if (source == chooseTabSize) {
-			commandService.run(ChooseTabSize.class, "editor", this);
+			commandService.run(ChooseTabSize.class, true, new Object[] {"editor", this}); // FIXME
 		}
 		else if (source == addImport)
 			addImport(null);
@@ -944,7 +944,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			}
 			searchRoot = searchRoot.getParentFile();
 
-			commandService.run(GitGrep.class, "editor", this, "searchTerm", searchTerm, "searchRoot", searchRoot);
+			commandService.run(GitGrep.class, true, new Object[] {"editor", this, "searchTerm", searchTerm, "searchRoot", searchRoot}); // FIXME
 		}
 		else if (source == openInGitweb) {
 			EditorPane editorPane = getEditorPane();
@@ -1241,7 +1241,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		}
 
 		/** Invoke in the context of the event dispatch thread. */
-		private void execute(final ScriptEngineFactory language,
+		private void execute(final ScriptLanguage language,
 				final boolean selectionOnly) throws IOException {
 			prepare();
 			final JTextAreaWriter output =
@@ -1370,7 +1370,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		if (null != language && language.length() > 0) {
 			language = language.trim().toLowerCase();
 			if ('.' != language.charAt(0)) language = "." + language;
-			tab.editorPane.setLanguage(scriptService.getByName(language));
+			tab.editorPane.setLanguage(scriptService.getLanguageByName(language));
 		}
 		if (null != content) tab.editorPane.setText(content);
 		return tab;
@@ -1480,10 +1480,9 @@ public class TextEditor extends JFrame implements ActionListener,
 
 	public boolean makeJar(boolean includeSources) {
 		File file = getEditorPane().file;
-		ScriptEngineFactory currentLanguage = getCurrentLanguage();
-		if ((file == null || scriptService.isCompiledLanguage(currentLanguage))
-				&& !handleUnsavedChanges(true))
+		if ((file == null || isCompiled()) && !handleUnsavedChanges(true)) {
 			return false;
+		}
 
 		String name = getEditorPane().getFileName();
 		String ext = FileUtils.getExtension(name);
@@ -1524,7 +1523,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		List<String> names = new ArrayList<String>();
 		File tmpDir = null, file = getEditorPane().file;
 		String sourceName = null;
-		ScriptEngineFactory currentLanguage = getCurrentLanguage();
+		ScriptLanguage currentLanguage = getCurrentLanguage();
 		if (currentLanguage == null || !(currentLanguage.getLanguageName().equals("Java")))
 			sourceName = file.getName();
 		if (currentLanguage != null) try {
@@ -1661,12 +1660,12 @@ public class TextEditor extends JFrame implements ActionListener,
 		directory.delete();
 	}
 
-	void setLanguage(ScriptEngineFactory language) {
+	void setLanguage(ScriptLanguage language) {
 		getEditorPane().setLanguage(language);
 		updateTabAndFontSize(true);
 	}
 
-	void updateLanguageMenu(ScriptEngineFactory language) {
+	void updateLanguageMenu(ScriptLanguage language) {
 		JMenuItem item = languageMenuItems.get(language);
 		if (item == null)
 			item = noneLanguageItem;
@@ -1675,7 +1674,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		}
 
 		final boolean isRunnable = item != noneLanguageItem;
-		final boolean isCompileable = scriptService.isCompiledLanguage(language);
+		final boolean isCompileable = language != null && language.isCompiledLanguage();
 
 		runMenu.setVisible(isRunnable);
 		compileAndRun.setText(isCompileable ?
@@ -1713,6 +1712,7 @@ public class TextEditor extends JFrame implements ActionListener,
 
 	public void updateTabAndFontSize(boolean setByLanguage) {
 		EditorPane pane = getEditorPane();
+		if (pane.currentLanguage == null) return;
 		if (setByLanguage)
 			pane.setTabSize(pane.currentLanguage.getLanguageName().equals("Python") ? 4 : 8);
 		int tabSize = pane.getTabSize();
@@ -1936,7 +1936,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			error("\nNo running scripts\n");
 			return;
 		}
-		commandService.run(KillScript.class, "editor", this);
+		commandService.run(KillScript.class, true, new Object[] {"editor", this}); // FIXME
 	}
 
 	/** Run the text in the textArea without compiling it, only if it's not java. */
@@ -1945,8 +1945,7 @@ public class TextEditor extends JFrame implements ActionListener,
 	}
 
 	public void runText(final boolean selectionOnly) {
-		final ScriptEngineFactory currentLanguage = getCurrentLanguage();
-		if (scriptService.isCompiledLanguage(currentLanguage)) {
+		if (isCompiled()) {
 			if (selectionOnly) {
 				error("Cannot run selection of compiled language!");
 				return;
@@ -1955,6 +1954,7 @@ public class TextEditor extends JFrame implements ActionListener,
 				runScript();
 			return;
 		}
+		final ScriptLanguage currentLanguage = getCurrentLanguage();
 		if (currentLanguage == null) {
 			error("Select a language first!");
 			// TODO guess the language, if possible.
@@ -1980,7 +1980,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			return;
 		}
 
-		if (scriptService.isCompiledLanguage(getCurrentLanguage()))
+		if (isCompiled())
 			getTab().showErrors();
 		else
 			getTab().showOutput();
@@ -2308,5 +2308,13 @@ public class TextEditor extends JFrame implements ActionListener,
 		String msg = count > 0 ? "Zap Gremlins converted " + count + " invalid characters to spaces" : "No invalid characters found!";
 		JOptionPane.showMessageDialog(this, msg);
 		return count;
+	}
+
+	// -- Helper methods --
+
+	private boolean isCompiled() {
+		final ScriptLanguage language = getCurrentLanguage();
+		if (language == null) return false;
+		return language.isCompiledLanguage();
 	}
 }

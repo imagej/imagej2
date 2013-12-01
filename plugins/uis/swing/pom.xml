@@ -94,7 +94,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.ui.swing</packageName>
+							<packageName>imagej.plugins.uis.swing</packageName>
 						</manifest>
 					</archive>
 				</configuration>

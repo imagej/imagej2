@@ -42,13 +42,13 @@ import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
 import imagej.module.event.ModuleEvent;
 import imagej.module.event.ModuleExecutedEvent;
+import imagej.plugins.uis.swing.StaticSwingUtils;
 import imagej.script.CodeGenerator;
 import imagej.script.CodeGeneratorJava;
 import imagej.script.InvocationObject;
 import imagej.script.ParameterObject;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
-import imagej.ui.swing.StaticSwingUtils;
 
 import java.awt.BorderLayout;
 import java.awt.Rectangle;

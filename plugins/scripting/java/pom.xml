@@ -11,7 +11,7 @@
 	<artifactId>ij-scripting-java</artifactId>
 
 	<name>A script engine for Java</name>
-	<description>Pretends that Java is a script language and offers it via the script framework of ImageJ</description>
+	<description>Pretends that Java is a scripting language and offers it via the script framework of ImageJ.</description>
 
 	<dependencies>
 		<dependency>
@@ -53,8 +53,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.build</packageName>
-							<mainClass>imagej.build.MiniMaven</mainClass>
+							<packageName>imagej.plugins.scripting.java</packageName>
 						</manifest>
 					</archive>
 				</configuration>

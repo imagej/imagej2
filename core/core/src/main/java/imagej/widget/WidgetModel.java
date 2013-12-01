@@ -303,7 +303,8 @@ public class WidgetModel extends AbstractContextual {
 
 	/** Gets whether the input provides a restricted set of choices. */
 	public boolean isMultipleChoice() {
-		return !item.getChoices().isEmpty();
+		final List<?> choices = item.getChoices();
+		return choices != null && !choices.isEmpty();
 	}
 
 	/** Gets whether the input is compatible with the given type. */

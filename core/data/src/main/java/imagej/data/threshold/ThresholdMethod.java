@@ -35,7 +35,7 @@
 
 package imagej.data.threshold;
 
-import imagej.plugin.ImageJPlugin;
+import imagej.ImageJPlugin;
 import net.imglib2.histogram.Histogram1d;
 
 import org.scijava.plugin.RichPlugin;

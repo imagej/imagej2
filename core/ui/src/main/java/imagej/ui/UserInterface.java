@@ -35,8 +35,8 @@
 
 package imagej.ui;
 
+import imagej.ImageJPlugin;
 import imagej.display.Display;
-import imagej.plugin.ImageJPlugin;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.widget.FileWidget;
 

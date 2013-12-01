@@ -39,11 +39,11 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.PolygonOverlay;
+import imagej.plugins.uis.swing.overlay.AbstractJHotDrawAdapter;
+import imagej.plugins.uis.swing.overlay.IJBezierTool;
+import imagej.plugins.uis.swing.overlay.JHotDrawAdapter;
+import imagej.plugins.uis.swing.overlay.JHotDrawTool;
 import imagej.tool.Tool;
-import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
-import imagej.ui.swing.overlay.IJBezierTool;
-import imagej.ui.swing.overlay.JHotDrawAdapter;
-import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.tools.SwingPolygonTool;
 
 import java.awt.Shape;

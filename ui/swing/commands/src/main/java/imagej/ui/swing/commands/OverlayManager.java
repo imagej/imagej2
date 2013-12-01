@@ -37,7 +37,7 @@ package imagej.ui.swing.commands;
 
 import imagej.command.Command;
 import imagej.command.ContextCommand;
-import imagej.ui.swing.SwingOverlayManager;
+import imagej.plugins.uis.swing.SwingOverlayManager;
 
 import org.scijava.Context;
 import org.scijava.plugin.Menu;

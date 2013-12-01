@@ -37,7 +37,7 @@ package imagej.ui;
 
 import imagej.module.Module;
 import imagej.module.ModuleException;
-import imagej.plugin.PreprocessorPlugin;
+import imagej.module.process.PreprocessorPlugin;
 import imagej.widget.AbstractInputHarvester;
 import imagej.widget.InputHarvester;
 

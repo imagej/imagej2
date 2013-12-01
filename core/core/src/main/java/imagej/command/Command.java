@@ -35,8 +35,8 @@
 
 package imagej.command;
 
+import imagej.ImageJPlugin;
 import imagej.module.Module;
-import imagej.plugin.ImageJPlugin;
 
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;

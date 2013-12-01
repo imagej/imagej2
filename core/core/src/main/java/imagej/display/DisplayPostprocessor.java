@@ -37,8 +37,8 @@ package imagej.display;
 
 import imagej.module.Module;
 import imagej.module.ModuleItem;
-import imagej.plugin.AbstractPostprocessorPlugin;
-import imagej.plugin.PostprocessorPlugin;
+import imagej.module.process.AbstractPostprocessorPlugin;
+import imagej.module.process.PostprocessorPlugin;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -12,7 +12,7 @@
 	<packaging>pom</packaging>
 
 	<name>ImageJ POM: Uploaders</name>
-	<description>A collection of built-in uploaders for ImageJ.</description>
+	<description>Built-in uploader protocols for ImageJ.</description>
 
 	<modules>
 		<module>ssh</module>

@@ -36,10 +36,10 @@
 package imagej.ui.swing.commands;
 
 import imagej.command.Command;
-import imagej.command.CommandService;
 import imagej.command.ContextCommand;
 import imagej.menu.MenuConstants;
 import imagej.module.ModuleInfo;
+import imagej.module.ModuleService;
 import imagej.util.swing.SwingDialog;
 
 import javax.swing.JOptionPane;
@@ -62,12 +62,12 @@ import org.scijava.plugin.Plugin;
 public class CommandFinder extends ContextCommand {
 
 	@Parameter
-	private CommandService commandService;
+	private ModuleService moduleService;
 
 	@Override
 	public void run() {
 		final CommandFinderPanel commandFinderPanel =
-			new CommandFinderPanel(commandService.getModuleService());
+			new CommandFinderPanel(moduleService);
 		final SwingDialog dialog =
 			new SwingDialog(commandFinderPanel, JOptionPane.OK_CANCEL_OPTION,
 				JOptionPane.PLAIN_MESSAGE, false);
@@ -80,7 +80,7 @@ public class CommandFinder extends ContextCommand {
 		if (info == null) return; // no command selected
 
 		// execute selected command
-		commandService.run(info);
+		moduleService.run(info, true, new Object[0]); // FIXME
 	}
 
 }
