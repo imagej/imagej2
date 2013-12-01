@@ -89,4 +89,23 @@ public class JythonTest {
 		assertNull(engine.get("hello"));
 	}
 
+	@Test
+	public void testParameters() throws InterruptedException, ExecutionException,
+		IOException, ScriptException
+	{
+		final Context context = new Context(ScriptService.class);
+		final ScriptService scriptService = context.getService(ScriptService.class);
+
+		final String script = "" + //
+			"# @ScriptService ss\n" + //
+			"# @OUTPUT String language\n" + //
+			"language = ss.getLanguageByName('jython').getLanguageName()\n";
+		final ScriptModule m = scriptService.run("hello.py", script, true).get();
+
+		final Object actual = m.getOutput("language");
+		final String expected =
+			scriptService.getLanguageByName("jython").getLanguageName();
+		assertEquals(expected, actual);
+	}
+
 }
