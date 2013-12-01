@@ -92,4 +92,24 @@ public class ClojureTest {
 			// NB: Expected.
 		}
 	}
+
+	@Test
+	public void testParameters() throws InterruptedException, ExecutionException,
+		IOException, ScriptException
+	{
+		final Context context = new Context(ScriptService.class);
+		final ScriptService scriptService = context.getService(ScriptService.class);
+
+		final String script = "" + //
+			"; @ScriptService ss\n" + //
+			"; @OUTPUT String language\n" + //
+			"(def language (.getLanguageName (.getLanguageByName ss \"Clojure\")))\n";
+		final ScriptModule m = scriptService.run("hello.clj", script, true).get();
+
+		final Object actual = m.getOutput("language");
+		final String expected =
+			scriptService.getLanguageByName("Clojure").getLanguageName();
+		assertEquals(expected, actual);
+	}
+
 }
