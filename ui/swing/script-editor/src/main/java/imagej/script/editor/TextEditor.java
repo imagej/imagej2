@@ -1480,10 +1480,7 @@ public class TextEditor extends JFrame implements ActionListener,
 
 	public boolean makeJar(boolean includeSources) {
 		File file = getEditorPane().file;
-		ScriptLanguage currentLanguage = getCurrentLanguage();
-		if ((file == null || currentLanguage.isCompiledLanguage()) &&
-			!handleUnsavedChanges(true))
-		{
+		if ((file == null || isCompiled()) && !handleUnsavedChanges(true)) {
 			return false;
 		}
 
@@ -1677,7 +1674,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		}
 
 		final boolean isRunnable = item != noneLanguageItem;
-		final boolean isCompileable = language.isCompiledLanguage();
+		final boolean isCompileable = language != null && language.isCompiledLanguage();
 
 		runMenu.setVisible(isRunnable);
 		compileAndRun.setText(isCompileable ?
@@ -1715,6 +1712,7 @@ public class TextEditor extends JFrame implements ActionListener,
 
 	public void updateTabAndFontSize(boolean setByLanguage) {
 		EditorPane pane = getEditorPane();
+		if (pane.currentLanguage == null) return;
 		if (setByLanguage)
 			pane.setTabSize(pane.currentLanguage.getLanguageName().equals("Python") ? 4 : 8);
 		int tabSize = pane.getTabSize();
@@ -1947,8 +1945,7 @@ public class TextEditor extends JFrame implements ActionListener,
 	}
 
 	public void runText(final boolean selectionOnly) {
-		final ScriptLanguage currentLanguage = getCurrentLanguage();
-		if (currentLanguage.isCompiledLanguage()) {
+		if (isCompiled()) {
 			if (selectionOnly) {
 				error("Cannot run selection of compiled language!");
 				return;
@@ -1957,6 +1954,7 @@ public class TextEditor extends JFrame implements ActionListener,
 				runScript();
 			return;
 		}
+		final ScriptLanguage currentLanguage = getCurrentLanguage();
 		if (currentLanguage == null) {
 			error("Select a language first!");
 			// TODO guess the language, if possible.
@@ -1982,7 +1980,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			return;
 		}
 
-		if (getCurrentLanguage().isCompiledLanguage())
+		if (isCompiled())
 			getTab().showErrors();
 		else
 			getTab().showOutput();
@@ -2310,5 +2308,13 @@ public class TextEditor extends JFrame implements ActionListener,
 		String msg = count > 0 ? "Zap Gremlins converted " + count + " invalid characters to spaces" : "No invalid characters found!";
 		JOptionPane.showMessageDialog(this, msg);
 		return count;
+	}
+
+	// -- Helper methods --
+
+	private boolean isCompiled() {
+		final ScriptLanguage language = getCurrentLanguage();
+		if (language == null) return false;
+		return language.isCompiledLanguage();
 	}
 }
