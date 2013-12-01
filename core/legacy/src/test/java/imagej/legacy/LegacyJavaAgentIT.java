@@ -32,6 +32,7 @@
 package imagej.legacy;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
@@ -49,12 +50,10 @@ public class LegacyJavaAgentIT {
 	private StackTraceElement[] trace;
 
 	@Test
-	public void testAgentInit() {
+	public void testAgentInit() throws Exception {
 		assumeTrue("init".equals(System.getProperty("legacy.agent.mode")));
 		IJ.log("Now ij.IJ is loaded.");
-		final LegacyService legacyService =
-			(LegacyService)IJ.runPlugIn(LegacyService.class.getName(), null);
-		assertTrue(legacyService != null);
+		assertNotNull(IJ.class.getField("_hooks"));
 	}
 
 	@Test
