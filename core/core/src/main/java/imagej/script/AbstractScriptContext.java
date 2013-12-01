@@ -43,7 +43,8 @@ import javax.script.Bindings;
 import javax.script.ScriptContext;
 
 /**
- * A minimal implementation of javax.script.ScriptContext for use in the AbstractScriptEngine
+ * A minimal implementation of {@link javax.script.ScriptContext} for use in the
+ * {@link AbstractScriptEngine}.
  * 
  * @author Johannes Schindelin
  */

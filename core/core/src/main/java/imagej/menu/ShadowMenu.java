@@ -35,11 +35,11 @@
 
 package imagej.menu;
 
-import imagej.command.CommandService;
 import imagej.menu.event.MenusAddedEvent;
 import imagej.menu.event.MenusRemovedEvent;
 import imagej.menu.event.MenusUpdatedEvent;
 import imagej.module.ModuleInfo;
+import imagej.module.ModuleService;
 
 import java.lang.reflect.Array;
 import java.net.URL;
@@ -108,7 +108,7 @@ public class ShadowMenu extends AbstractContextual implements
 	private EventService es;
 
 	@Parameter(required = false)
-	private CommandService commandService;
+	private ModuleService moduleService;
 
 	@Parameter(required = false)
 	private LogService log;
@@ -322,7 +322,7 @@ public class ShadowMenu extends AbstractContextual implements
 	@Override
 	public void run() {
 		if (moduleInfo == null) return; // no module to run
-		if (commandService != null) commandService.run(moduleInfo);
+		if (moduleService != null) moduleService.run(moduleInfo, true, new Object[0]); // TEMP
 	}
 
 	// -- Collection methods --

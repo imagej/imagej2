@@ -41,11 +41,11 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.threshold.ThresholdService;
+import imagej.plugins.uis.swing.overlay.AbstractJHotDrawAdapter;
+import imagej.plugins.uis.swing.overlay.IJCreationTool;
+import imagej.plugins.uis.swing.overlay.JHotDrawAdapter;
+import imagej.plugins.uis.swing.overlay.JHotDrawTool;
 import imagej.tool.Tool;
-import imagej.ui.swing.overlay.AbstractJHotDrawAdapter;
-import imagej.ui.swing.overlay.IJCreationTool;
-import imagej.ui.swing.overlay.JHotDrawAdapter;
-import imagej.ui.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.tools.SwingPolygonTool;
 
 import java.awt.Shape;

@@ -11,7 +11,7 @@
 	<artifactId>ij-text</artifactId>
 
 	<name>ImageJ Plugins: Text Formats</name>
-	<description>Text plugins for dealing with common markup formats.</description>
+	<description>Built-in ImageJ text plugins for dealing with common markup formats.</description>
 
 	<dependencies>
 		<dependency>
@@ -43,7 +43,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.core.text</packageName>
+							<packageName>imagej.plugins.text</packageName>
 						</manifest>
 					</archive>
 				</configuration>

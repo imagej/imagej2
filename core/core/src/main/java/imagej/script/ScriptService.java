@@ -35,65 +35,243 @@
 
 package imagej.script;
 
-import imagej.service.ImageJService;
+import imagej.module.process.PostprocessorPlugin;
+import imagej.module.process.PreprocessorPlugin;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Future;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
-import org.scijava.log.LogService;
-import org.scijava.plugin.PluginService;
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.SingletonService;
 
 /**
- * A service discovering all available script languages and convenience methods
- * to interact with them
+ * Interface for service that works with scripting languages. This service
+ * discovers available scripting languages, and provides convenience methods to
+ * interact with them.
  * 
  * @author Johannes Schindelin
  */
-public interface ScriptService extends ImageJService {
+public interface ScriptService extends SingletonService<ScriptLanguage> {
 
-	// CTR TODO: Extend SingletonService<ScriptEngineFactory>.
+	// -- Scripting languages --
 
-	/**
-	 * The script service puts the current ImageJ context into the engine's bindings
-	 * using this key. That way, scripts can access the context by accessing the global
-	 * variable of that name.
-	 */
-	final static String CONTEXT = "IJ";
-
-	PluginService getPluginService();
-
-	LogService getLogService();
-
-	/** Gets the index of available script languages. */
+	/** Gets the index of available scripting languages. */
 	ScriptLanguageIndex getIndex();
 
-	List<ScriptEngineFactory> getLanguages();
+	/**
+	 * Gets the available scripting languages, including wrapped
+	 * {@link ScriptEngineFactory} instances available from the Java scripting
+	 * framework itself.
+	 * <p>
+	 * This method is similar to {@link #getInstances()}, except that
+	 * {@link #getInstances()} only returns {@link ScriptLanguage} subclasses
+	 * annotated with @{@link Plugin}.
+	 * </p>
+	 */
+	List<ScriptLanguage> getLanguages();
 
-	ScriptEngineFactory getByFileExtension(final String fileExtension);
+	/** Gets the scripting language that handles the given file extension. */
+	ScriptLanguage getLanguageByExtension(String extension);
 
-	ScriptEngineFactory getByName(final String name);
+	/** Gets the scripting language with the given name. */
+	ScriptLanguage getLanguageByName(String name);
 
-	Object eval(final File file) throws FileNotFoundException,
-		ScriptException;
+	// -- Scripts --
 
-	Object eval(final String filename, final Reader reader)
-			throws IOException, ScriptException;
+	/** Gets all available scripts. */
+	Collection<ScriptInfo> getScripts();
 
-	boolean canHandleFile(final File file);
-	boolean canHandleFile(final String fileName);
+	/**
+	 * Gets the {@link ScriptInfo} metadata for the script at the given file, or
+	 * null if none.
+	 */
+	ScriptInfo getScript(File scriptFile);
 
-	void initialize(final ScriptEngine engine, final String fileName,
-			final Writer writer, final Writer errorWriter);
+	/**
+	 * Executes the script in the given file.
+	 * 
+	 * @param file File containing the script to execute.
+	 * @param process If true, executes the script with pre- and postprocessing
+	 *          steps from all available {@link PreprocessorPlugin}s and
+	 *          {@link PostprocessorPlugin}s in the plugin index; if false,
+	 *          executes the script with no pre- or postprocessing.
+	 * @param inputs List of input parameter names and values. The expected order
+	 *          is in pairs: an input name followed by its value, for each desired
+	 *          input to populate. Leaving some inputs unpopulated is allowed.
+	 *          Passing the name of an input that is not valid for the plugin, or
+	 *          passing a value of a type incompatible with the associated input
+	 *          parameter, will issue an error and ignore that name/value pair.
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
+	 */
+	Future<ScriptModule> run(File file, boolean process, Object... inputs)
+		throws FileNotFoundException, ScriptException;
 
-	boolean isCompiledLanguage(ScriptEngineFactory currentLanguage);
+	/**
+	 * Executes the script in the given file.
+	 * 
+	 * @param file File containing the script to execute.
+	 * @param process If true, executes the script with pre- and postprocessing
+	 *          steps from all available {@link PreprocessorPlugin}s and
+	 *          {@link PostprocessorPlugin}s in the plugin index; if false,
+	 *          executes the script with no pre- or postprocessing.
+	 * @param inputMap Table of input parameter values, with keys matching the
+	 *          plugin's input parameter names. Passing a value of a type
+	 *          incompatible with the associated input parameter will issue an
+	 *          error and ignore that value.
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
+	 */
+	Future<ScriptModule> run(File file, boolean process,
+		Map<String, Object> inputMap) throws FileNotFoundException, ScriptException;
+
+	/**
+	 * Executes the given script.
+	 * 
+	 * @param path Pseudo-path to the script. This is important mostly for the
+	 *          path's file extension, which provides an important hint as to the
+	 *          language of the script.
+	 * @param script The script itself to execute.
+	 * @param process If true, executes the script with pre- and postprocessing
+	 *          steps from all available {@link PreprocessorPlugin}s and
+	 *          {@link PostprocessorPlugin}s in the plugin index; if false,
+	 *          executes the script with no pre- or postprocessing.
+	 * @param inputs List of input parameter names and values. The expected order
+	 *          is in pairs: an input name followed by its value, for each desired
+	 *          input to populate. Leaving some inputs unpopulated is allowed.
+	 *          Passing the name of an input that is not valid for the plugin, or
+	 *          passing a value of a type incompatible with the associated input
+	 *          parameter, will issue an error and ignore that name/value pair.
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
+	 */
+	Future<ScriptModule> run(String path, String script, boolean process,
+		Object... inputs) throws IOException, ScriptException;
+
+	/**
+	 * Executes the given script.
+	 * 
+	 * @param path Pseudo-path to the script. This is important mostly for the
+	 *          path's file extension, which provides an important hint as to the
+	 *          language of the script.
+	 * @param script The script itself to execute.
+	 * @param process If true, executes the script with pre- and postprocessing
+	 *          steps from all available {@link PreprocessorPlugin}s and
+	 *          {@link PostprocessorPlugin}s in the plugin index; if false,
+	 *          executes the script with no pre- or postprocessing.
+	 * @param inputMap Table of input parameter values, with keys matching the
+	 *          plugin's input parameter names. Passing a value of a type
+	 *          incompatible with the associated input parameter will issue an
+	 *          error and ignore that value.
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
+	 */
+	Future<ScriptModule> run(String path, String script, boolean process,
+		Map<String, Object> inputMap) throws IOException, ScriptException;
+
+	/**
+	 * Executes the given script.
+	 * 
+	 * @param path Pseudo-path to the script. This is important mostly for the
+	 *          path's file extension, which provides an important hint as to the
+	 *          language of the script.
+	 * @param reader A stream providing the script contents.
+	 * @param process If true, executes the script with pre- and postprocessing
+	 *          steps from all available {@link PreprocessorPlugin}s and
+	 *          {@link PostprocessorPlugin}s in the plugin index; if false,
+	 *          executes the script with no pre- or postprocessing.
+	 * @param inputs List of input parameter names and values. The expected order
+	 *          is in pairs: an input name followed by its value, for each desired
+	 *          input to populate. Leaving some inputs unpopulated is allowed.
+	 *          Passing the name of an input that is not valid for the plugin, or
+	 *          passing a value of a type incompatible with the associated input
+	 *          parameter, will issue an error and ignore that name/value pair.
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
+	 */
+	Future<ScriptModule> run(String path, Reader reader, boolean process,
+		Object... inputs) throws IOException, ScriptException;
+
+	/**
+	 * Executes the given script.
+	 * 
+	 * @param path Pseudo-path to the script. This is important mostly for the
+	 *          path's file extension, which provides an important hint as to the
+	 *          language of the script.
+	 * @param reader A stream providing the script contents.
+	 * @param process If true, executes the script with pre- and postprocessing
+	 *          steps from all available {@link PreprocessorPlugin}s and
+	 *          {@link PostprocessorPlugin}s in the plugin index; if false,
+	 *          executes the script with no pre- or postprocessing.
+	 * @param inputMap Table of input parameter values, with keys matching the
+	 *          plugin's input parameter names. Passing a value of a type
+	 *          incompatible with the associated input parameter will issue an
+	 *          error and ignore that value.
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
+	 */
+	Future<ScriptModule> run(String path, Reader reader, boolean process,
+		Map<String, Object> inputMap) throws IOException, ScriptException;
+
+	/**
+	 * Executes the given script.
+	 * 
+	 * @param info The script to instantiate and run.
+	 * @param process If true, executes the script with pre- and postprocessing
+	 *          steps from all available {@link PreprocessorPlugin}s and
+	 *          {@link PostprocessorPlugin}s in the plugin index; if false,
+	 *          executes the script with no pre- or postprocessing.
+	 * @param inputs List of input parameter names and values. The expected order
+	 *          is in pairs: an input name followed by its value, for each desired
+	 *          input to populate. Leaving some inputs unpopulated is allowed.
+	 *          Passing the name of an input that is not valid for the plugin, or
+	 *          passing a value of a type incompatible with the associated input
+	 *          parameter, will issue an error and ignore that name/value pair.
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
+	 */
+	Future<ScriptModule> run(ScriptInfo info, boolean process, Object... inputs);
+
+	/**
+	 * Executes the given script.
+	 * 
+	 * @param info The script to instantiate and run.
+	 * @param process If true, executes the script with pre- and postprocessing
+	 *          steps from all available {@link PreprocessorPlugin}s and
+	 *          {@link PostprocessorPlugin}s in the plugin index; if false,
+	 *          executes the script with no pre- or postprocessing.
+	 * @param inputMap Table of input parameter values, with keys matching the
+	 *          plugin's input parameter names. Passing a value of a type
+	 *          incompatible with the associated input parameter will issue an
+	 *          error and ignore that value.
+	 * @return {@link Future} of the module instance being executed. Calling
+	 *         {@link Future#get()} will block until execution is complete.
+	 */
+	Future<ScriptModule> run(ScriptInfo info, boolean process,
+		Map<String, Object> inputMap);
+
+	/** TODO */
+	boolean canHandleFile(File file);
+
+	/** TODO */
+	boolean canHandleFile(String fileName);
+
+	/** TODO */
+	void initialize(ScriptEngine engine, String fileName, Writer writer,
+		Writer errorWriter);
+
+	/** TODO */
+	Class<?> lookupClass(String typeName) throws ScriptException;
 
 }
-

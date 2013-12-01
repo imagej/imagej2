@@ -35,7 +35,7 @@
 
 package imagej.data.types;
 
-import imagej.plugin.ImageJPlugin;
+import imagej.ImageJPlugin;
 import net.imglib2.type.numeric.NumericType;
 
 import org.scijava.Contextual;

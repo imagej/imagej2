@@ -35,7 +35,7 @@
 
 package imagej.console;
 
-import imagej.plugin.ImageJPlugin;
+import imagej.ImageJPlugin;
 
 import java.util.LinkedList;
 

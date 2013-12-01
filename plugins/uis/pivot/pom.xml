@@ -61,7 +61,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.ui.pivot</packageName>
+							<packageName>imagej.plugins.uis.pivot</packageName>
 						</manifest>
 					</archive>
 				</configuration>

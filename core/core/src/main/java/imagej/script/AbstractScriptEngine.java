@@ -43,13 +43,12 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
-import org.scijava.Context;
 import org.scijava.log.LogService;
 import org.scijava.log.StderrLogService;
 
 /**
  * This class implements dummy versions for ScriptEngine's methods that are not
- * needed by ImageJ's scripting interface
+ * needed by ImageJ's scripting interface.
  * 
  * @author Johannes Schindelin
  */
@@ -100,10 +99,6 @@ public abstract class AbstractScriptEngine implements ScriptEngine {
 	@Override
 	public void put(final String key, final Object value) {
 		engineScopeBindings.put(key, value);
-		if (value != null && value instanceof Context && key.equals(DefaultScriptService.CONTEXT)) {
-			final Context context = (Context)value;
-			setLogService(context.getService(LogService.class));
-		}
 	}
 
 	// ScriptContext

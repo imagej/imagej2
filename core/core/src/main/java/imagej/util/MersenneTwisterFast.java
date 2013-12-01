@@ -196,6 +196,7 @@ import java.util.Random;
  * @author Sean Luke
  * @version 17
  */
+@SuppressWarnings("all")
 public strictfp class MersenneTwisterFast implements Serializable, Cloneable
     {
 

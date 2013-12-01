@@ -36,11 +36,8 @@
 package imagej.script.editor;
 
 import imagej.command.Command;
-import imagej.command.CommandService;
-import imagej.io.IOService;
-import imagej.platform.PlatformService;
-import imagej.script.ScriptService;
 
+import org.scijava.Context;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -56,20 +53,11 @@ import org.scijava.plugin.Plugin;
 public class ScriptEditor implements Command {
 
 	@Parameter
-	private ScriptService scriptService;
-
-	@Parameter
-	private PlatformService platformService;
-
-	@Parameter
-	private IOService ioService;
-
-	@Parameter
-	private CommandService commandService;
+	private Context context;
 
 	@Override
 	public void run() {
-		new TextEditor(scriptService, platformService, ioService, commandService).setVisible(true);
+		new TextEditor(context).setVisible(true);
 	}
 
 }

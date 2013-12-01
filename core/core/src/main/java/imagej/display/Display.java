@@ -35,7 +35,7 @@
 
 package imagej.display;
 
-import imagej.plugin.ImageJPlugin;
+import imagej.ImageJPlugin;
 
 import java.util.List;
 

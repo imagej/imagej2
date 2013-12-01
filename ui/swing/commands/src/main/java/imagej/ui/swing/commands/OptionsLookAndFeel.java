@@ -38,8 +38,8 @@ package imagej.ui.swing.commands;
 import imagej.menu.MenuConstants;
 import imagej.module.MutableModuleItem;
 import imagej.options.OptionsPlugin;
+import imagej.plugins.uis.swing.SwingApplicationFrame;
 import imagej.ui.UserInterface;
-import imagej.ui.swing.SwingApplicationFrame;
 
 import java.awt.EventQueue;
 import java.util.ArrayList;

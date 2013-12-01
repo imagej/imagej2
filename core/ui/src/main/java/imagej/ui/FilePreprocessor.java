@@ -37,8 +37,8 @@ package imagej.ui;
 
 import imagej.module.Module;
 import imagej.module.ModuleItem;
-import imagej.plugin.AbstractPreprocessorPlugin;
-import imagej.plugin.PreprocessorPlugin;
+import imagej.module.process.AbstractPreprocessorPlugin;
+import imagej.module.process.PreprocessorPlugin;
 
 import java.io.File;
 

@@ -43,6 +43,8 @@ import imagej.module.event.ModuleFinishedEvent;
 import imagej.module.event.ModulePostprocessEvent;
 import imagej.module.event.ModulePreprocessEvent;
 import imagej.module.event.ModuleStartedEvent;
+import imagej.module.process.ModulePostprocessor;
+import imagej.module.process.ModulePreprocessor;
 
 import java.util.List;
 import java.util.concurrent.Callable;

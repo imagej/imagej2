@@ -35,16 +35,24 @@
 
 package imagej.script;
 
-import imagej.command.CommandInfo;
+import imagej.command.CommandService;
+import imagej.module.Module;
+import imagej.module.ModuleService;
+import imagej.util.ColorRGB;
+import imagej.util.ColorRGBA;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Future;
 
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -52,104 +60,134 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import org.scijava.Context;
 import org.scijava.log.LogService;
+import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginInfo;
-import org.scijava.plugin.PluginService;
-import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
-import org.scijava.util.FileUtils;
+import org.scijava.util.ClassUtils;
 
 /**
- * A service discovering all available script languages and convenience methods
- * to interact with them
+ * Default service for working with scripting languages.
  * 
  * @author Johannes Schindelin
+ * @author Curtis Rueden
  */
 @Plugin(type = Service.class)
-public class DefaultScriptService extends AbstractService implements ScriptService {
+public class DefaultScriptService extends
+	AbstractSingletonService<ScriptLanguage> implements ScriptService
+{
 
 	@Parameter
-	private PluginService pluginService;
+	private ModuleService moduleService;
+
+	@Parameter
+	private CommandService commandService;
 
 	@Parameter
 	private LogService log;
 
-	/** Index of registered script languages. */
+	/** Index of registered scripting languages. */
 	private final ScriptLanguageIndex scriptLanguageIndex =
 		new ScriptLanguageIndex();
 
-	@Override
-	public void initialize() {
-		reloadScriptLanguages();
+	/** Index of available scripts, by script <em>file</em>. */
+	private final HashMap<File, ScriptInfo> scripts =
+		new HashMap<File, ScriptInfo>();
 
-		final ArrayList<CommandInfo> plugins = new ArrayList<CommandInfo>();
-		new ScriptFinder(this).findPlugins(plugins);
-		pluginService.addPlugins(plugins);
+	/** Table of short type names to associated {@link Class}. */
+	private HashMap<String, Class<?>> typeMap;
 
-	}
+	// -- ScriptService methods - scripting languages --
 
-	// -- ScriptService methods --
-
-	@Override
-	public PluginService getPluginService() {
-		return pluginService;
-	}
-
-	@Override
-	public LogService getLogService() {
-		return log;
-	}
-
-	/** Gets the index of available script languages. */
+	/** Gets the index of available scripting languages. */
 	@Override
 	public ScriptLanguageIndex getIndex() {
 		return scriptLanguageIndex;
 	}
 
 	@Override
-	public List<ScriptEngineFactory> getLanguages() {
-		return new ArrayList<ScriptEngineFactory>(scriptLanguageIndex);
+	public List<ScriptLanguage> getLanguages() {
+		return new ArrayList<ScriptLanguage>(scriptLanguageIndex);
 	}
 
 	@Override
-	public ScriptEngineFactory getByFileExtension(final String fileExtension) {
-		return scriptLanguageIndex.getByFileExtension(fileExtension);
+	public ScriptLanguage getLanguageByExtension(final String extension) {
+		return scriptLanguageIndex.getByExtension(extension);
 	}
 
 	@Override
-	public ScriptEngineFactory getByName(final String name) {
+	public ScriptLanguage getLanguageByName(final String name) {
 		return scriptLanguageIndex.getByName(name);
 	}
 
+	// -- ScriptService methods - scripts --
+
 	@Override
-	public Object eval(final File file) throws FileNotFoundException,
-		ScriptException
-	{
-		final String fileExtension = FileUtils.getExtension(file);
-		final ScriptEngineFactory language = getByFileExtension(fileExtension);
-		if (language == null) {
-			throw new UnsupportedOperationException(
-				"Could not determine language for file extension " + fileExtension);
-		}
-		final ScriptEngine engine = language.getScriptEngine();
-		initialize(engine, file.getPath(), null, null);
-		return engine.eval(new FileReader(file));
+	public Collection<ScriptInfo> getScripts() {
+		return Collections.unmodifiableCollection(scripts.values());
 	}
 
 	@Override
-	public Object eval(final String filename, final Reader reader)
-			throws IOException, ScriptException {
-		final String fileExtension = FileUtils.getExtension(filename);
-		final ScriptEngineFactory language = getByFileExtension(fileExtension);
-		if (language == null) {
-			throw new UnsupportedOperationException(
-				"Could not determine language for file extension " + fileExtension);
-		}
-		final ScriptEngine engine = language.getScriptEngine();
-		initialize(engine, filename, null, null);
-		return engine.eval(reader);
+	public ScriptInfo getScript(final File scriptFile) {
+		return scripts.get(scriptFile);
+	}
+
+	@Override
+	public Future<ScriptModule> run(final File file, final boolean process,
+		final Object... inputs)
+	{
+		return run(getOrCreate(file), process, inputs);
+	}
+
+	@Override
+	public Future<ScriptModule> run(final File file, final boolean process,
+		final Map<String, Object> inputMap)
+	{
+		return run(getOrCreate(file), process, inputMap);
+	}
+
+	@Override
+	public Future<ScriptModule> run(final String path, final String script,
+		final boolean process, final Object... inputs)
+	{
+		return run(path, new StringReader(script), process, inputs);
+	}
+
+	@Override
+	public Future<ScriptModule> run(final String path, final String script,
+		final boolean process, final Map<String, Object> inputMap)
+	{
+		return run(path, new StringReader(script), process, inputMap);
+	}
+
+	@Override
+	public Future<ScriptModule> run(final String path, final Reader reader,
+		final boolean process, final Object... inputs)
+	{
+		return run(new ScriptInfo(getContext(), path, reader), process, inputs);
+	}
+
+	@Override
+	public Future<ScriptModule> run(final String path, final Reader reader,
+		final boolean process, final Map<String, Object> inputMap)
+	{
+		return run(new ScriptInfo(getContext(), path, reader), process, inputMap);
+	}
+
+	@Override
+	public Future<ScriptModule> run(final ScriptInfo info, final boolean process,
+		final Object... inputs)
+	{
+		return cast(moduleService.run(info, process, inputs));
+	}
+
+	@Override
+	public Future<ScriptModule> run(final ScriptInfo info, final boolean process,
+		final Map<String, Object> inputMap)
+	{
+		return cast(moduleService.run(info, process, inputMap));
 	}
 
 	@Override
@@ -163,40 +201,143 @@ public class DefaultScriptService extends AbstractService implements ScriptServi
 	}
 
 	@Override
-	public boolean isCompiledLanguage(ScriptEngineFactory language) {
-		return false;
+	public void initialize(final ScriptEngine engine, final String fileName,
+		final Writer writer, final Writer errorWriter)
+	{
+		engine.put(ScriptEngine.FILENAME, fileName);
+		final ScriptContext context = engine.getContext();
+		if (writer != null) context.setWriter(writer);
+		if (writer != null) context.setErrorWriter(errorWriter);
 	}
 
-	public void reloadScriptLanguages() {
+	@Override
+	public synchronized Class<?> lookupClass(final String typeName)
+		throws ScriptException
+	{
+		if (typeMap == null) buildTypes();
+
+		final Class<?> type = typeMap.get(typeName);
+		if (type != null) return type;
+
+		final Class<?> c = ClassUtils.loadClass(typeName);
+		if (c != null) {
+			typeMap.put(typeName, c);
+			return c;
+		}
+
+		throw new ScriptException("Unknown type: " + typeName);
+	}
+
+	// -- PTService methods --
+
+	@Override
+	public Class<ScriptLanguage> getPluginType() {
+		return ScriptLanguage.class;
+	}
+
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		reloadLanguages();
+		reloadScripts();
+	}
+
+	// -- Helper methods --
+
+	private void reloadLanguages() {
+		// remove previously discovered scripting languages
 		scriptLanguageIndex.clear();
-		for (final PluginInfo<ScriptLanguage> item :
-			pluginService.getPluginsOfType(ScriptLanguage.class))
-		{
-			final ScriptEngineFactory language = pluginService.createInstance(item);
-			if (language == null) continue;
+
+		// add ScriptLanguage plugins
+		for (final ScriptLanguage language : getInstances()) {
 			scriptLanguageIndex.add(language, false);
 		}
 
-		/*
-		 *  Now look for the ScriptEngines in javax.scripting. We only do that
-		 *  now since the javax.scripting framework does not provide all the
-		 *  functionality we might want to use in ImageJ2.
-		 */
+		// Now look for the ScriptEngines in javax.scripting. We only do that
+		// now since the javax.scripting framework does not provide all the
+		// functionality we might want to use in ImageJ2.
 		final ScriptEngineManager manager = new javax.script.ScriptEngineManager();
 		for (final ScriptEngineFactory factory : manager.getEngineFactories()) {
 			scriptLanguageIndex.add(factory, true);
 		}
 	}
 
-	@Override
-	public void initialize(final ScriptEngine engine, final String fileName,
-		final Writer writer, final Writer errorWriter)
-	{
-		engine.put(ScriptEngine.FILENAME, fileName);
-		engine.put(CONTEXT, getContext());
-		final ScriptContext context = engine.getContext();
-		if (writer != null) context.setWriter(writer);
-		if (writer != null) context.setErrorWriter(errorWriter);
+	private void reloadScripts() {
+		// remove previously discovered scripts
+		moduleService.removeModules(scripts.values());
+		scripts.clear();
+
+		// discover available scripts
+		final ArrayList<ScriptInfo> scriptList = new ArrayList<ScriptInfo>();
+		new ScriptFinder(this).findScripts(scriptList);
+
+		// add newly discovered scripts
+		for (final ScriptInfo info : scriptList) {
+			scripts.put(asFile(info.getPath()), info);
+		}
+		moduleService.addModules(scriptList);
+	}
+
+	/**
+	 * Gets a {@link ScriptInfo} for the given file, creating a new one if
+	 * none are registered with the service.
+	 */
+	private ScriptInfo getOrCreate(final File file) {
+		final ScriptInfo info = getScript(file);
+		if (info != null) return info;
+		return new ScriptInfo(getContext(), file);
+	}
+
+	private File asFile(final String path) {
+		final File file = new File(path);
+		try {
+			return file.getCanonicalFile();
+		}
+		catch (final IOException exc) {
+			log.warn(exc);
+			return file.getAbsoluteFile();
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private Future<ScriptModule> cast(final Future<Module> future) {
+		return (Future) future;
+	}
+
+	private void buildTypes() {
+		typeMap = new HashMap<String, Class<?>>();
+
+		// primitives
+		addTypes(boolean.class, byte.class, char.class, double.class, float.class,
+			int.class, long.class, short.class);
+
+		// primitive wrappers
+		addTypes(Boolean.class, Byte.class, Character.class, Double.class,
+			Float.class, Integer.class, Long.class, Short.class);
+
+		// built-in types
+		addTypes(Context.class, ColorRGB.class, ColorRGBA.class, File.class,
+			String.class);
+
+		// service types
+		for (final Service service : getContext().getServiceIndex()) {
+			addTypes(service.getClass());
+		}
+	}
+
+	private void addTypes(final Class<?>... types) {
+		for (final Class<?> type : types) {
+			addType(type);
+		}
+	}
+
+	private void addType(final Class<?> type) {
+		if (type == null) return;
+		typeMap.put(type.getSimpleName(), type);
+		// NB: Recursively add supertypes.
+		addType(type.getSuperclass());
+		addTypes(type.getInterfaces());
 	}
 
 }

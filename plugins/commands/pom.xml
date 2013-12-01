@@ -78,7 +78,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.core.commands</packageName>
+							<packageName>imagej.plugins.commands</packageName>
 						</manifest>
 					</archive>
 				</configuration>

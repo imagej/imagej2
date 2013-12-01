@@ -36,7 +36,7 @@
 package imagej.module.event;
 
 import imagej.module.Module;
-import imagej.module.ModulePostprocessor;
+import imagej.module.process.ModulePostprocessor;
 
 /**
  * An event indicating a {@link ModulePostprocessor} has been invoked as part of

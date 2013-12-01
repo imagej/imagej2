@@ -50,7 +50,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.ui.swt</packageName>
+							<packageName>imagej.plugins.uis.swt</packageName>
 						</manifest>
 					</archive>
 				</configuration>

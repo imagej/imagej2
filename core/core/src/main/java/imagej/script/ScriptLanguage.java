@@ -35,15 +35,40 @@
 
 package imagej.script;
 
-import imagej.plugin.ImageJPlugin;
+import imagej.ImageJPlugin;
 
+import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 
+import org.scijava.plugin.Plugin;
+import org.scijava.plugin.RichPlugin;
+import org.scijava.plugin.SingletonPlugin;
+
 /**
- * The base interface for script language adapters
+ * The base interface for scripting language adapters.
+ * <p>
+ * Script languages discoverable at runtime must implement this interface and be
+ * annotated with @{@link Plugin} with attribute {@link Plugin#type()} =
+ * {@link ScriptLanguage}.class. While it possible to create a scripting
+ * language adapter merely by implementing this interface, it is encouraged to
+ * instead extend {@link AbstractScriptLanguage}, for convenience.
+ * </p>
  * 
  * @author Johannes Schindelin
  */
-public interface ScriptLanguage extends ScriptEngineFactory, ImageJPlugin {
-	// just so we can annotate the factories with @Plugin...
+public interface ScriptLanguage extends ScriptEngineFactory, ImageJPlugin,
+	RichPlugin, SingletonPlugin
+{
+
+	/** True iff this language requires a compilation step. */
+	boolean isCompiledLanguage();
+
+	/**
+	 * Performs any necessary conversion of an encoded object retrieved from the
+	 * language's script engine.
+	 * 
+	 * @see ScriptEngine#get(String)
+	 */
+	Object decode(Object object);
+
 }

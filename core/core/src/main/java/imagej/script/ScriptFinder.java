@@ -35,16 +35,14 @@
 
 package imagej.script;
 
-import imagej.command.CommandInfo;
-
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import org.scijava.AbstractContextual;
 import org.scijava.MenuEntry;
 import org.scijava.MenuPath;
 import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
 
 /**
  * Discovers scripts.
@@ -54,29 +52,31 @@ import org.scijava.log.LogService;
  * 
  * @author Johannes Schindelin
  */
-public class ScriptFinder {
+public class ScriptFinder extends AbstractContextual {
 
-	private static final String SCRIPT_PLUGIN_CLASS = ScriptPlugin.class
-		.getName();
-	private static final String SCRIPT_PLUGIN_ICON = "/icons/script_code.png";
+	private static final String SCRIPT_ICON = "/icons/script_code.png";
 	private static final String SPECIAL_SUBDIRECTORY = "Scripts";
 
 	private final ScriptService scriptService;
-	private final LogService log;
 
-	public ScriptFinder(final ScriptService scriptService) {
-		this.scriptService = scriptService;
-		log = scriptService.getLogService();
-	}
+	@Parameter
+	private LogService log;
 
 	private int scriptCount;
 
+	public ScriptFinder(final ScriptService scriptService) {
+		this.scriptService = scriptService;
+		setContext(scriptService.getContext());
+	}
+
+	// -- ScriptFinder methods --
+
 	/**
-	 * Discover the scripts
+	 * Discovers the scripts.
 	 * 
-	 * @param plugins The collection to which the discovered scripts are added
+	 * @param scripts The collection to which the discovered scripts are added
 	 */
-	public void findPlugins(final List<CommandInfo> plugins) {
+	public void findScripts(final List<ScriptInfo> scripts) {
 		final String path = System.getProperty("plugins.dir");
 		if (path == null) return;
 
@@ -86,21 +86,21 @@ public class ScriptFinder {
 			if (pluginsDir.isDirectory()) directory = pluginsDir;
 		}
 		scriptCount = 0;
-		discoverScripts(plugins, directory, null);
+		discoverScripts(scripts, directory, null);
 		log.info("Found " + scriptCount + " scripts");
 	}
 
 	/**
-	 * Look through a directory, discovering and adding scripts
+	 * Looks through a directory, discovering and adding scripts.
 	 * 
-	 * @param plugins The collection to which the discovered scripts are added
-	 * @param directory The directory in which to look for scripts recursively
+	 * @param scripts The collection to which the discovered scripts are added.
+	 * @param directory The directory in which to look for scripts recursively.
 	 * @param menuPath The menuPath. If <i>null</i>, it defaults to Plugins>,
 	 *          except for the subdirectory <i>Scripts/</i> whose entries will be
-	 *          pulled into the top-level menu structure
+	 *          pulled into the top-level menu structure.
 	 */
-	private void discoverScripts(final List<CommandInfo> plugins,
-		final File directory, MenuPath menuPath)
+	private void discoverScripts(final List<ScriptInfo> scripts,
+		final File directory, final MenuPath menuPath)
 	{
 		final File[] fileList = directory.listFiles();
 		if (fileList == null) return; // directory does not exist
@@ -108,21 +108,27 @@ public class ScriptFinder {
 		// TODO: sort?
 		final boolean isTopLevel = menuPath == null;
 		final MenuPath path = isTopLevel ? new MenuPath("Plugins") : menuPath;
-		for (final File file : fileList)
+		for (final File file : fileList) {
 			if (file.isDirectory()) {
-				if (isTopLevel && file.getName().equals(SPECIAL_SUBDIRECTORY)) discoverScripts(
-					plugins, file, new MenuPath());
-				else discoverScripts(plugins, file, subMenuPath(path, file
-					.getName().replace('_', ' ')));
+				if (isTopLevel && file.getName().equals(SPECIAL_SUBDIRECTORY)) {
+					discoverScripts(scripts, file, new MenuPath());
+				}
+				else {
+					discoverScripts(scripts, file, subMenuPath(path, file.getName()
+						.replace('_', ' ')));
+				}
 			}
 			else if (scriptService.canHandleFile(file)) {
 				String name = file.getName().replace('_', ' ');
 				final int dot = name.lastIndexOf('.');
 				if (dot > 0) name = name.substring(0, dot);
-				plugins.add(createEntry(file, subMenuPath(path, file.getName())));
+				scripts.add(createEntry(file, subMenuPath(path, file.getName())));
 				scriptCount++;
 			}
+		}
 	}
+
+	// -- Helper methods --
 
 	private MenuPath
 		subMenuPath(final MenuPath menuPath, final String subMenuName)
@@ -132,19 +138,16 @@ public class ScriptFinder {
 		return result;
 	}
 
-	private CommandInfo createEntry(final File scriptPath,
-		final MenuPath menuPath)
+	private ScriptInfo
+		createEntry(final File scriptFile, final MenuPath menuPath)
 	{
-		final Map<String, Object> presets = new HashMap<String, Object>();
-		presets.put("file", scriptPath);
-		final CommandInfo pe = new CommandInfo(SCRIPT_PLUGIN_CLASS);
-		pe.setMenuPath(menuPath);
-		pe.setPresets(presets);
+		final ScriptInfo info = new ScriptInfo(getContext(), scriptFile);
+		info.setMenuPath(menuPath);
 
 		// flag script with special icon
-		menuPath.getLeaf().setIconPath(SCRIPT_PLUGIN_ICON);
+		menuPath.getLeaf().setIconPath(SCRIPT_ICON);
 
-		return pe;
+		return info;
 	}
 
 }

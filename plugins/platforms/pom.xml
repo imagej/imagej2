@@ -11,7 +11,7 @@
 	<artifactId>ij-platforms</artifactId>
 
 	<name>ImageJ Plugins: Platforms</name>
-	<description>Platform-specific code for dealing with common desktop platforms, including Mac OS X and Windows.</description>
+	<description>Built-in platform support for ImageJ. These plugins contain platform-specific code for dealing with common desktop platforms, including Mac OS X and Windows.</description>
 
 	<dependencies>
 		<dependency>
@@ -39,7 +39,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.core.platforms</packageName>
+							<packageName>imagej.plugins.platforms</packageName>
 						</manifest>
 					</archive>
 				</configuration>

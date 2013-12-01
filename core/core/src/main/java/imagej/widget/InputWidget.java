@@ -35,8 +35,8 @@
 
 package imagej.widget;
 
+import imagej.ImageJPlugin;
 import imagej.module.ModuleItem;
-import imagej.plugin.ImageJPlugin;
 
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.WrapperPlugin;
