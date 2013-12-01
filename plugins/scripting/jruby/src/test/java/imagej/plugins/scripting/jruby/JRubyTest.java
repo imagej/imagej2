@@ -89,4 +89,27 @@ public class JRubyTest {
 		assertEquals("", engine.get("$hello").toString());
 	}
 
+	// FIXME: This test currently fails due to input injection failure.
+//	@Test
+	public void testParameters() throws InterruptedException, ExecutionException,
+		IOException, ScriptException
+	{
+		final Context context = new Context(ScriptService.class);
+		final ScriptService scriptService = context.getService(ScriptService.class);
+
+		final String script = "" + //
+			"# @ScriptService ss\n" + //
+			"# @OUTPUT String language\n" + //
+			"language = ss.getLanguageByName(\"Ruby\").getLanguageName\n";
+		final ScriptModule m = scriptService.run("hello.rb", script, true).get();
+
+		final Object actual = m.getOutput("language");
+		final String expected =
+			scriptService.getLanguageByName("Ruby").getLanguageName();
+		assertEquals(expected, actual);
+
+		final Object result = m.getReturnValue();
+		assertEquals(expected, result);
+	}
+
 }
