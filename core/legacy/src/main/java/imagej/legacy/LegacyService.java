@@ -31,7 +31,6 @@
 
 package imagej.legacy;
 
-import ij.ImagePlus;
 import imagej.data.display.ImageDisplay;
 import imagej.service.ImageJService;
 
@@ -67,7 +66,7 @@ public interface LegacyService extends ImageJService {
 	void runLegacyCommand(String ij1ClassName, String argument);
 
 	/**
-	 * Ensures that the currently active {@link ImagePlus} matches the currently
+	 * Ensures that the currently active {@link ij.ImagePlus} matches the currently
 	 * active {@link ImageDisplay}. Does not perform any harmonization.
 	 */
 	void syncActiveImage();
