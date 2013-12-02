@@ -44,10 +44,10 @@ import javax.script.ScriptEngineManager;
 /**
  * Abstract superclass for {@link ScriptLanguage} implementations which adapt an
  * existing {@link ScriptEngineFactory}.
-	 * <p>
-	 * This is useful for situations where a JSR-223-compliant script engine has
-	 * been provided, but whose behavior we need to extend or tweak.
-	 * </p>
+ * <p>
+ * This is useful for situations where a JSR-223-compliant script engine has
+ * been provided, but whose behavior we need to extend or tweak.
+ * </p>
  * 
  * @author Curtis Rueden
  */
@@ -138,7 +138,7 @@ public class AdaptedScriptLanguage extends AbstractScriptLanguage {
 
 	// -- Helper methods --
 
-	private static ScriptEngineFactory findFactory(String factoryName) {
+	private static ScriptEngineFactory findFactory(final String factoryName) {
 		final ScriptEngineManager manager = new javax.script.ScriptEngineManager();
 		for (final ScriptEngineFactory factory : manager.getEngineFactories()) {
 			for (final String name : factory.getNames()) {
