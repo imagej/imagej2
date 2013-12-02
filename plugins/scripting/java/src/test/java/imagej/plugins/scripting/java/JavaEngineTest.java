@@ -37,8 +37,8 @@ package imagej.plugins.scripting.java;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
-
-import imagej.plugins.scripting.java.JavaScriptLanguage;
+import imagej.script.ScriptLanguage;
+import imagej.script.ScriptService;
 import imagej.test.TestUtils;
 
 import java.io.File;
@@ -53,6 +53,8 @@ import javax.script.ScriptException;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.scijava.Context;
+import org.scijava.object.ObjectService;
 import org.scijava.util.FileUtils;
 
 /**
@@ -136,7 +138,7 @@ public class JavaEngineTest {
 				"\t}\n" +
 				"}";
 
-		ScriptEngine miniMaven = new JavaScriptLanguage().getScriptEngine();
+		final ScriptEngine miniMaven = miniMaven();
 		boolean result = false;
 		try {
 			miniMaven.eval(source);
@@ -164,7 +166,7 @@ public class JavaEngineTest {
 	}
 
 	private ScriptEngine evalJava(final File file) throws ScriptException {
-		ScriptEngine miniMaven = new JavaScriptLanguage().getScriptEngine();
+		ScriptEngine miniMaven = miniMaven();
 		miniMaven.put(ScriptEngine.FILENAME, file.getPath());
 		final ScriptContext context = miniMaven.getContext();
 		context.setWriter(new OutputStreamWriter(System.out));
@@ -222,5 +224,13 @@ public class JavaEngineTest {
 			writer.close();
 		}
 	}
-}
 
+	private ScriptEngine miniMaven() {
+		final Context context =
+			new Context(ScriptService.class, ObjectService.class);
+		final ObjectService objectService = context.getService(ObjectService.class);
+		final ScriptLanguage java =
+			objectService.getObjects(JavaScriptLanguage.class).get(0);
+		return java.getScriptEngine();
+	}
+}
