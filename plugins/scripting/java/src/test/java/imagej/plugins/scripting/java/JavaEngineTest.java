@@ -68,8 +68,12 @@ public class JavaEngineTest {
 	public void assumeJavaC() {
 		boolean found = false;
 		try {
-			found = getClass().getClassLoader().loadClass("com.sun.tools.javac.Main") != null;
-		} catch (Throwable t) {}
+			final ClassLoader classLoader = getClass().getClassLoader();
+			found = classLoader.loadClass("com.sun.tools.javac.Main") != null;
+		}
+		catch (final Throwable t) {
+			// NB: No action needed.
+		}
 		assumeTrue(found);
 	}
 
@@ -80,9 +84,12 @@ public class JavaEngineTest {
 		boolean result = false;
 		try {
 			evalJava(new File(dir, "pom.xml"));
-		} catch (ScriptException e) {
+		}
+		catch (final ScriptException e) {
 			final Throwable cause = e.getCause();
-			result = cause != null && cause.getCause() != null && cause.getCause().getMessage().equals("success");
+			result =
+				cause != null && cause.getCause() != null &&
+					cause.getCause().getMessage().equals("success");
 			if (!result) e.printStackTrace();
 		}
 		assertTrue(result);
@@ -100,21 +107,25 @@ public class JavaEngineTest {
 	public void minimalProjectFromSource() throws Exception {
 		final File dir = makeMinimalProject();
 
-		final String source = "package minimaven;\n"
-				+ "public class MinimalTest2 {\n"
-				+ "\tpublic static void main(final String[] args) throws Exception {\n"
-				+ "\t\tthrow new RuntimeException(\"other main class\");\n"
-				+ "\t}\n"
-				+ "}\n";
+		final String source = "" + //
+			"package minimaven;\n" + //
+			"public class MinimalTest2 {\n" + //
+			"\tpublic static void main(final String[] args) throws Exception {\n" + //
+			"\t\tthrow new RuntimeException(\"other main class\");\n" + //
+			"\t}\n" + //
+			"}\n";
 		final String path = "minimaven/MinimalTest2.java";
 		writeFiles(dir, path, source);
 		boolean result = false;
 		try {
 			evalJava(new File(dir, "src/main/java/" + path));
-		} catch (ScriptException e) {
+		}
+		catch (final ScriptException e) {
 			try {
-				result = e.getCause().getCause().getMessage().equals("other main class");
-			} catch (Throwable t) {
+				result =
+					e.getCause().getCause().getMessage().equals("other main class");
+			}
+			catch (final Throwable t) {
 				e.printStackTrace();
 			}
 		}
@@ -131,21 +142,24 @@ public class JavaEngineTest {
 
 	@Test
 	public void testEvalReader() throws Exception {
-		final String source = "package pinky.brain;\n" +
-				"public class TakeOverTheWorld {\n" +
-				"\tpublic static void main(final String[] arguments) {\n" +
-				"\t\tthrow new RuntimeException(\"Egads!\");\n" +
-				"\t}\n" +
-				"}";
+		final String source = "" + //
+			"package pinky.brain;\n" + //
+			"public class TakeOverTheWorld {\n" + //
+			"\tpublic static void main(final String[] arguments) {\n" + //
+			"\t\tthrow new RuntimeException(\"Egads!\");\n" + //
+			"\t}\n" + //
+			"}";
 
 		final ScriptEngine miniMaven = miniMaven();
 		boolean result = false;
 		try {
 			miniMaven.eval(source);
-		} catch (ScriptException e) {
+		}
+		catch (final ScriptException e) {
 			try {
 				result = e.getCause().getCause().getMessage().equals("Egads!");
-			} catch (Throwable t) {
+			}
+			catch (final Throwable t) {
 				e.printStackTrace();
 			}
 		}
@@ -155,54 +169,60 @@ public class JavaEngineTest {
 	// -- helper functions
 
 	private File makeMinimalProject() throws IOException {
-		final String source = "package minimaven;\n"
-			+ "public class MinimalTest {\n"
-			+ "\tpublic static void main(final String[] args) throws Exception {\n"
-			+ "\t\tthrow new RuntimeException(\"success\");\n"
-			+ "\t}\n"
-			+ "}\n";
-		final File dir = makeProject("minimaven.MinimalTest", "minimaven/MinimalTest.java", source);
+		final String source = "" + //
+			"package minimaven;\n" + //
+			"public class MinimalTest {\n" + //
+			"\tpublic static void main(final String[] args) throws Exception {\n" + //
+			"\t\tthrow new RuntimeException(\"success\");\n" + //
+			"\t}\n" + //
+			"}\n";
+		final File dir =
+			makeProject("minimaven.MinimalTest", "minimaven/MinimalTest.java", source);
 		return dir;
 	}
 
 	private ScriptEngine evalJava(final File file) throws ScriptException {
-		ScriptEngine miniMaven = miniMaven();
+		final ScriptEngine miniMaven = miniMaven();
 		miniMaven.put(ScriptEngine.FILENAME, file.getPath());
 		final ScriptContext context = miniMaven.getContext();
 		context.setWriter(new OutputStreamWriter(System.out));
 		context.setErrorWriter(new OutputStreamWriter(System.err));
-		miniMaven.eval((Reader)null);
+		miniMaven.eval((Reader) null);
 		return miniMaven;
 	}
 
-	private File makeProject(final String mainClass, final String... args) throws IOException {
+	private File makeProject(final String mainClass, final String... args)
+		throws IOException
+	{
 		final File dir = TestUtils.createTemporaryDirectory("java-");
 
 		final FileWriter pom = new FileWriter(new File(dir, "pom.xml"));
-		pom.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-			+ "<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n"
-			+ " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-			+ " xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0\n"
-			+ " http://maven.apache.org/xsd/maven-4.0.0.xsd\">\n"
-			+ " <modelVersion>4.0.0</modelVersion>\n"
-			+ " <groupId>net.imagej</groupId>\n"
-			+ " <artifactId>MinimalTest</artifactId>\n"
-			+ " <version>1.0.0</version>\n"
-			+ " <build>\n"
-			+ "  <plugins>\n"
-			+ "   <plugin>\n"
-			+ "    <artifactId>maven-jar-plugin</artifactId>\n"
-			+ "    <configuration>\n"
-			+ "     <archive>\n"
-			+ "      <manifest>\n"
-			+ "       <mainClass>" + mainClass + "</mainClass>\n"
-			+ "      </manifest>\n"
-			+ "     </archive>\n"
-			+ "    </configuration>\n"
-			+ "   </plugin>\n"
-			+ "  </plugins>\n"
-			+ " </build>\n"
-			+ "</project>\n");
+		final String xml = "" + //
+			"<?xml version=\"2.0\" encoding=\"UTF-8\"?>\n" + //
+			"<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n" + //
+			" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + //
+			" xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0\n" + //
+			" http://maven.apache.org/xsd/maven-4.0.0.xsd\">\n" + //
+			" <modelVersion>4.0.0</modelVersion>\n" + //
+			" <groupId>net.imagej</groupId>\n" + //
+			" <artifactId>MinimalTest</artifactId>\n" + //
+			" <version>1.0.0</version>\n" + //
+			" <build>\n" + //
+			"  <plugins>\n" + //
+			"   <plugin>\n" + //
+			"    <artifactId>maven-jar-plugin</artifactId>\n" + //
+			"    <configuration>\n" + //
+			"     <archive>\n" + //
+			"      <manifest>\n" + //
+			"       <mainClass>" + mainClass + "</mainClass>\n" + //
+			"      </manifest>\n" + //
+			"     </archive>\n" + //
+			"    </configuration>\n" + //
+			"   </plugin>\n" + //
+			"  </plugins>\n" + //
+			" </build>\n" + //
+			"</project>\n";
+		pom.write(xml);
 		pom.close();
 
 		writeFiles(dir, args);
@@ -233,4 +253,5 @@ public class JavaEngineTest {
 			objectService.getObjects(JavaScriptLanguage.class).get(0);
 		return java.getScriptEngine();
 	}
+
 }
