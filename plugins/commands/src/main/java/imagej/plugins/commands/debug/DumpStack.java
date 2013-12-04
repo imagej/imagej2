@@ -36,6 +36,7 @@
 package imagej.plugins.commands.debug;
 
 import imagej.command.Command;
+import imagej.menu.MenuConstants;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,6 +44,7 @@ import java.util.Comparator;
 import java.util.Map;
 
 import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -55,7 +57,11 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Command.class, menuPath = "Plugins>Debug>Dump Stack",
+@Plugin(type = Command.class, menu = {
+	@Menu(label = MenuConstants.PLUGINS_LABEL,
+		weight = MenuConstants.PLUGINS_WEIGHT,
+		mnemonic = MenuConstants.PLUGINS_MNEMONIC), @Menu(label = "Debug"),
+	@Menu(label = "Dump Stack", accelerator = "ctrl back_slash") },
 	headless = true)
 public class DumpStack implements Command {
 
