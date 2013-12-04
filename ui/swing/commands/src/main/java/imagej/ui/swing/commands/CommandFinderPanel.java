@@ -48,6 +48,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -356,9 +357,11 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 			if (column == 4) return info.getDelegateClassName();
 			if (column == 5) {
 				final URL location = ClassUtils.getLocation(info.getDelegateClassName());
-				final String file = FileUtils.urlToFile(location).getAbsolutePath();
-				if (file.startsWith(ijDir))
-					return file.substring(ijDir.length() + 1);
+				final File file = FileUtils.urlToFile(location);
+				final String path = file == null ? null : file.getAbsolutePath();
+				if (path != null && path.startsWith(ijDir)) {
+					return path.substring(ijDir.length() + 1);
+				}
 				return file;
 			}
 			if (column == 6) return info.getDescription();
