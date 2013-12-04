@@ -99,8 +99,8 @@ public class LUTSelectorPlugin extends DynamicCommand {
 	public void run() {
 		// set LUT for current channel of current ImageDisplay
 		if (display != null) {
-			// FIXME: Bad to invoke another command via reflection this way.
-			cmdService.run("imagej.core.commands.misc.ApplyLookupTable", true,
+			// CTR FIXME: Avoid circular dependency between ij-data and ij-commands.
+			cmdService.run("imagej.plugins.commands.misc.ApplyLookupTable", true,
 				new Object[] { "display", display, "tableURL", luts.get(choice) });
 		}
 	}

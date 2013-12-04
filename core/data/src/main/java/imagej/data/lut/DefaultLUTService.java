@@ -262,8 +262,9 @@ public class DefaultLUTService extends AbstractService implements LUTService {
 		final HashMap<String, Object> presets = new HashMap<String, Object>();
 		presets.put("tableURL", url);
 		// and create the command info
+		// CTR FIXME: Avoid circular dependency between ij-data and ij-commands.
 		final CommandInfo info =
-			new CommandInfo("imagej.core.commands.misc.ApplyLookupTable");
+			new CommandInfo("imagej.plugins.commands.misc.ApplyLookupTable");
 		info.setPresets(presets);
 		info.setMenuPath(menuPath);
 		// use the default icon
