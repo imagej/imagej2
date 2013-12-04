@@ -71,7 +71,7 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 
 	// -- private instance variables --
 
-	private final ConfigFileParameters params = new ConfigFileParameters();
+	private ConfigFileParameters params;
 
 	// -- OptionsMemoryAndThreads methods --
 
@@ -152,12 +152,19 @@ public class OptionsMemoryAndThreads extends OptionsPlugin {
 
 	/** Loads the maxMemory instance variable from persistent storage. */
 	private void loadMaxMemory() {
-		maxMemory = params.getMemoryInMB();
+		maxMemory = params().getMemoryInMB();
 	}
 
 	/** Saves the maxMemory instance variable to persistent storage. */
 	private void saveMaxMemory() {
-		if (maxMemory == params.getMemoryInMB()) return;
-		params.setMemoryInMB(maxMemory);
+		if (maxMemory == params().getMemoryInMB()) return;
+		params().setMemoryInMB(maxMemory);
+	}
+
+	private ConfigFileParameters params() {
+		if (params == null) {
+			params = new ConfigFileParameters(getContext());
+		}
+		return params;
 	}
 }

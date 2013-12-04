@@ -35,6 +35,7 @@
 
 package imagej.config;
 
+import imagej.app.ImageJApp;
 import imagej.util.AppUtils;
 
 import java.io.BufferedReader;
@@ -51,9 +52,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.scijava.AbstractContextual;
+import org.scijava.Context;
+import org.scijava.app.AppService;
 import org.scijava.log.LogService;
-import org.scijava.log.StderrLogService;
-import org.scijava.util.POM;
+import org.scijava.plugin.Parameter;
 
 /**
  * This class reads launcher configuration parameters from a file and allows
@@ -61,7 +64,7 @@ import org.scijava.util.POM;
  * 
  * @author Barry DeZonia
  */
-public class ConfigFileParameters {
+public class ConfigFileParameters extends AbstractContextual {
 
 	// -- public constants --
 
@@ -74,22 +77,13 @@ public class ConfigFileParameters {
 	private static final String MEMORY_KEY = "maxheap.mb";
 	private static final String JVMARGS_KEY = "jvmargs";
 
-	/** @deprecated FIXME */
-	@Deprecated
-	private static final String VERSION = getStaticVersion();
-
-	/** @deprecated FIXME */
-	@Deprecated
-	private static String getStaticVersion() {
-		final POM pom =
-			POM.getPOM(ConfigFileParameters.class, "net.imagej", "ij-core");
-		return pom == null ? "Unknown" : pom.getVersion();
-	}
-
 	// -- private instance variables --
 
-	// TODO: Use the application context's LogService.
-	private final LogService log = new StderrLogService();
+	@Parameter
+	private AppService appService;
+
+	@Parameter
+	private LogService log;
 
 	private final Map<String, String> dataMap;
 	private final File configFile;
@@ -97,21 +91,22 @@ public class ConfigFileParameters {
 	// -- constructors --
 
 	/**
-	 * Constructs a ConfigFileParameters object. Uses filename for loading/saving
-	 * its values.
-	 */
-	public ConfigFileParameters(final File configFile) {
-		this.dataMap = new HashMap<String, String>();
-		this.configFile = configFile;
-		initialize();
-	}
-
-	/**
 	 * Constructs a ConfigFileParameters object. Loads values from the default
 	 * file location.
 	 */
-	public ConfigFileParameters() {
-		this(getCfgFile());
+	public ConfigFileParameters(final Context context) {
+		this(context, getCfgFile());
+	}
+
+	/**
+	 * Constructs a ConfigFileParameters object. Uses filename for loading/saving
+	 * its values.
+	 */
+	public ConfigFileParameters(final Context context, final File configFile) {
+		setContext(context);
+		this.dataMap = new HashMap<String, String>();
+		this.configFile = configFile;
+		initialize();
 	}
 
 	// -- public interface --
@@ -300,7 +295,7 @@ public class ConfigFileParameters {
 			final FileOutputStream fos = new FileOutputStream(file);
 			final OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF8");
 			final BufferedWriter out = new BufferedWriter(osw);
-			out.write("#" + SENTINEL + " (" + VERSION + ")");
+			out.write("#" + SENTINEL + " (" + getVersion() + ")");
 			out.newLine();
 			for (final String key : map.keySet()) {
 				String value = map.get(key);
@@ -364,6 +359,10 @@ public class ConfigFileParameters {
 			// problem? We may not want the legacy file's class path info.
 		}
 		return value;
+	}
+
+	private String getVersion() {
+		return appService.getApp(ImageJApp.NAME).getVersion();
 	}
 
 }
