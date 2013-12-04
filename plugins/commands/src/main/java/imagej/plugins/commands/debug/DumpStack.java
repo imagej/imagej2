@@ -109,7 +109,7 @@ public class DumpStack implements Command {
 		sb.append(NL);
 	}
 
-	private void threadInfo(Thread t, final StringBuilder sb) {
+	private void threadInfo(final Thread t, final StringBuilder sb) {
 		sb.append("\"");
 		sb.append(t.getName());
 		sb.append("\"");
