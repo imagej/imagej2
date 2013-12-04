@@ -43,7 +43,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<packageName>imagej.core.commands</packageName>
+							<packageName>imagej.updater.gui</packageName>
 						</manifest>
 					</archive>
 				</configuration>
