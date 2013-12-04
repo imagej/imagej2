@@ -57,9 +57,8 @@ import org.scijava.plugin.Plugin;
 // FIXME: This command belongs in ij-commands, not ij-data.
 
 /**
- * LUTSelectorPlugin is a {@link Command} that allows one to choose to apply a
- * {@link ColorTable} to an {@link ImageDisplay}. The applicable ColorTables are
- * discovered at runtime.
+ * Applies a {@link ColorTable} to an {@link ImageDisplay}. The applicable color
+ * tables are discovered at runtime.
  * 
  * @author Barry DeZonia
  */
@@ -70,7 +69,7 @@ import org.scijava.plugin.Plugin;
 			mnemonic = MenuConstants.IMAGE_MNEMONIC),
 		@Menu(label = "Lookup Tables", mnemonic = 'l'),
 		@Menu(label = "Select...", weight = 0, mnemonic = 's') })
-public class LUTSelectorPlugin extends DynamicCommand {
+public class LUTSelector extends DynamicCommand {
 
 	// -- Parameters --
 
