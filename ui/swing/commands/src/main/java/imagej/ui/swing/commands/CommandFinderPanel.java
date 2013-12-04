@@ -72,6 +72,7 @@ import javax.swing.table.TableColumnModel;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.scijava.MenuEntry;
 import org.scijava.MenuPath;
 import org.scijava.util.ClassUtils;
 import org.scijava.util.FileUtils;
@@ -346,13 +347,12 @@ public class CommandFinderPanel extends JPanel implements ActionListener,
 			if (column == 1) return info.getTitle();
 			if (column == 2) {
 				final MenuPath menuPath = info.getMenuPath();
-				if (menuPath == null) return "";
-				return menuPath.getMenuString(false);
+				return menuPath == null ? "" : menuPath.getMenuString(false);
 			}
 			if (column == 3) {
 				final MenuPath menuPath = info.getMenuPath();
-				if (menuPath == null) return "";
-				return menuPath.getLeaf().getAccelerator();
+				final MenuEntry menuLeaf = menuPath == null ? null : menuPath.getLeaf();
+				return menuLeaf == null ? "" : menuLeaf.getAccelerator();
 			}
 			if (column == 4) return info.getDelegateClassName();
 			if (column == 5) {
