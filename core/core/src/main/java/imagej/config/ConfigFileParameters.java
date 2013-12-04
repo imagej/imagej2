@@ -116,12 +116,6 @@ public class ConfigFileParameters {
 
 	// -- public interface --
 
-	/** Finds the default name/location of the launcher config file. */
-	public static File getCfgFile() {
-		final File directory = AppUtils.getBaseDirectory();
-		return new File(directory, CONFIG_FILE);
-	}
-
 	/**
 	 * Returns the value of the number of megabytes of ram to allocate that is
 	 * specified in the launcher config file. Will never return less than a
@@ -174,6 +168,14 @@ public class ConfigFileParameters {
 		if (args == null) value = "";
 		dataMap.put(JVMARGS_KEY, value);
 		save();
+	}
+
+	// -- utility methods --
+
+	/** Finds the default name/location of the launcher config file. */
+	public static File getCfgFile() {
+		final File directory = AppUtils.getBaseDirectory();
+		return new File(directory, CONFIG_FILE);
 	}
 
 	// -- private helpers --
