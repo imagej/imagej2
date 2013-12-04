@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.commands.imglib;
+package imagej.plugins.commands.imglib;
 
 import imagej.command.Command;
 import imagej.command.ContextCommand;

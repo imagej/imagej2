@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.commands.debug;
+package imagej.plugins.commands.debug;
 
 import imagej.command.Command;
 import imagej.command.InteractiveCommand;

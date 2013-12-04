@@ -33,21 +33,21 @@
  * #L%
  */
 
-package imagej.core.commands.binary;
+package imagej.plugins.commands.binary;
 
 import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.menu.MenuConstants;
-import net.imglib2.img.Img;
-import net.imglib2.ops.operation.randomaccessibleinterval.unary.morph.Erode;
-import net.imglib2.type.logic.BitType;
+import net.imglib2.type.numeric.RealType;
 
+import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * Does a morphological erode operation on a binary image. Input data is changed
- * in place.
+ * Changes an existing {@link Dataset} to a binary mask Dataset using the
+ * default thresholding method.
  * 
  * @author Barry DeZonia
  */
@@ -55,17 +55,27 @@ import org.scijava.plugin.Plugin;
 	@Menu(label = MenuConstants.PROCESS_LABEL,
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
-	@Menu(label = "Binary", mnemonic = 'b'), @Menu(label = "Erode") },
+	@Menu(label = "Binary", mnemonic = 'b'), @Menu(label = "Make Binary...") },
 	headless = true)
-public class ErodeBinaryImage extends AbstractMorphOpsCommand {
+public class MakeBinary<T extends RealType<T>> extends AbstractBinaryCommand {
+
+	@Parameter(type = ItemIO.BOTH)
+	private Dataset dataset;
 
 	@Override
-	protected void updateDataset(Dataset ds) {
-		Erode op = new Erode(getConnectedType(), 1);
-		Dataset copy = ds.duplicate();
-		Img<BitType> copyData = (Img<BitType>) copy.getImgPlus();
-		Img<BitType> resultData = (Img<BitType>) ds.getImgPlus();
-		op.compute(copyData, resultData);
+	public void run() {
+		Binarize<T> binarizeOp = new Binarize<T>();
+		binarizeOp.setContext(getContext());
+		binarizeOp.setChangeInput(true);
+		binarizeOp.setFillMaskBackground(true);
+		binarizeOp.setFillMaskForeground(true);
+		binarizeOp.setInputData(dataset);
+		binarizeOp.setInputMask(null);
+		binarizeOp.setMaskColor(maskColor);
+		binarizeOp.setMaskPixels(maskPixels);
+		binarizeOp.setThresholdEachPlane(threshEachPlane);
+		binarizeOp.setDefaultThresholdMethod();
+		binarizeOp.run();
 	}
 
 }

@@ -33,67 +33,85 @@
  * #L%
  */
 
-package imagej.core.commands.binary;
+package imagej.plugins.commands.imglib;
 
+import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
-import net.imglib2.ops.types.ConnectedType;
-import net.imglib2.type.logic.BitType;
+import imagej.menu.MenuConstants;
+import net.imglib2.ExtendedRandomAccessibleInterval;
+import net.imglib2.algorithm.gauss3.Gauss3;
+import net.imglib2.img.Img;
+import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.view.Views;
 
 import org.scijava.ItemIO;
+import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
- * Abstract super class for commands that modify binary images in place.
+ * Does an in place Gaussian blur noise reduction operation on a {@link Dataset}
+ * .
  * 
  * @author Barry DeZonia
+ * @param <T>
  */
-public abstract class AbstractMorphOpsCommand extends ContextCommand {
-
-	// -- constants --
-
-	public static final String FOUR = "Four";
-	public static final String EIGHT = "Eight";
+@Plugin(
+	type = Command.class,
+	menu = {
+		@Menu(label = MenuConstants.PROCESS_LABEL,
+			weight = MenuConstants.PROCESS_WEIGHT,
+			mnemonic = MenuConstants.PROCESS_MNEMONIC),
+		@Menu(label = "Filters", mnemonic = 'f'), @Menu(label = "Gaussian Blur...") },
+	headless = true)
+public class GaussianBlur<T extends RealType<T>> extends
+	ContextCommand
+{
 
 	// -- Parameters --
 
 	@Parameter(type = ItemIO.BOTH)
 	private Dataset dataset;
-
-	@Parameter(label = "Neighbors", choices = { FOUR, EIGHT })
-	private String neighbors = FOUR;
-
-	// -- abstract methods --
-
-	abstract protected void updateDataset(Dataset ds);
-
-	// -- accessors --
-
-	public ConnectedType getConnectedType() {
-		if (neighbors == FOUR) return ConnectedType.FOUR_CONNECTED;
-		return ConnectedType.EIGHT_CONNECTED;
-	}
-
-	public void setConnectedType(ConnectedType type) {
-		if (type.equals(ConnectedType.FOUR_CONNECTED)) neighbors = FOUR;
-		else neighbors = EIGHT;
-	}
+	
+	@Parameter(label = "Sigma (radius)", min = "0.0001")
+	private double sigma = 2;
+	
+	@Parameter(label = "Use units")
+	private boolean useUnits = false;
 
 	// -- Command methods --
 
 	@Override
 	public void run() {
-		if (!isBitType(dataset)) {
-			cancel("This command requires input dataset to be of type BitType.");
+		double[] sigmas = sigmas();
+		Img<T> target = (Img<T>) (Img) dataset.getImgPlus();
+		Img<T> input = target.copy();
+		ExtendedRandomAccessibleInterval<T, ?> paddedInput =
+			Views.extendMirrorSingle(input);
+		try {
+			Gauss3.gauss(sigmas, paddedInput, target);
 		}
-		else updateDataset(dataset);
+		catch (Exception e) {
+			cancel(e.getMessage());
+		}
 	}
 
 	// -- helpers --
 
-	private boolean isBitType(Dataset ds) {
-		RealType<?> type = ds.getImgPlus().firstElement();
-		return (type instanceof BitType);
+	private double[] sigmas() {
+		double[] sigmas = new double[dataset.numDimensions()];
+		for (int d = 0; d < sigmas.length; d++) {
+			if (useUnits) {
+				CalibratedAxis axis = dataset.axis(d);
+				sigmas[d] = axis.rawValue(sigma) - axis.rawValue(0);
+			}
+			else {
+				sigmas[d] = sigma;
+			}
+		}
+		return sigmas;
 	}
+
 }

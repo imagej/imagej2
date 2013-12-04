@@ -33,7 +33,7 @@
  * #L%
  */
 
-package imagej.core.commands.binary;
+package imagej.plugins.commands.binary;
 
 import imagej.command.Command;
 import imagej.command.ContextCommand;

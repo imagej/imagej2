@@ -33,22 +33,21 @@
  * #L%
  */
 
-package imagej.core.commands.binary;
+package imagej.plugins.commands.binary;
 
 import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.menu.MenuConstants;
-import net.imglib2.img.Img;
-import net.imglib2.ops.operation.randomaccessibleinterval.unary.morph.Dilate;
-import net.imglib2.ops.operation.randomaccessibleinterval.unary.morph.Erode;
-import net.imglib2.type.logic.BitType;
+import net.imglib2.type.numeric.RealType;
 
+import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * Does a morphological open operation on a binary image. Input data is changed
- * in place.
+ * Creates a new binary mask {@link Dataset} from an existing Dataset using the
+ * default thresholding method.
  * 
  * @author Barry DeZonia
  */
@@ -56,19 +55,31 @@ import org.scijava.plugin.Plugin;
 	@Menu(label = MenuConstants.PROCESS_LABEL,
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
-	@Menu(label = "Binary", mnemonic = 'b'), @Menu(label = "Open") },
+	@Menu(label = "Binary", mnemonic = 'b'), @Menu(label = "Create Mask...") },
 	headless = true)
-public class OpenBinaryImage extends AbstractMorphOpsCommand {
+public class CreateMask<T extends RealType<T>> extends AbstractBinaryCommand {
+
+	@Parameter
+	private Dataset dataset;
+
+	@Parameter(type = ItemIO.OUTPUT)
+	private Dataset output;
 
 	@Override
-	protected void updateDataset(Dataset ds) {
-		Erode opErode = new Erode(getConnectedType(), 1);
-		Dilate opDilate = new Dilate(getConnectedType(), 1);
-		Dataset copy = ds.duplicateBlank();
-		Img<BitType> copyData = (Img<BitType>) copy.getImgPlus();
-		Img<BitType> origData = (Img<BitType>) ds.getImgPlus();
-		opErode.compute(origData, copyData);
-		opDilate.compute(copyData, origData);
+	public void run() {
+		Binarize<T> binarizeOp = new Binarize<T>();
+		binarizeOp.setContext(getContext());
+		binarizeOp.setChangeInput(false);
+		binarizeOp.setFillMaskBackground(true);
+		binarizeOp.setFillMaskForeground(true);
+		binarizeOp.setInputData(dataset);
+		binarizeOp.setInputMask(null);
+		binarizeOp.setMaskColor(maskColor);
+		binarizeOp.setMaskPixels(maskPixels);
+		binarizeOp.setThresholdEachPlane(threshEachPlane);
+		binarizeOp.setDefaultThresholdMethod();
+		binarizeOp.run();
+		output = binarizeOp.outputMask();
 	}
 
 }

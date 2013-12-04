@@ -33,21 +33,21 @@
  * #L%
  */
 
-package imagej.core.commands.binary;
+package imagej.plugins.commands.binary;
 
 import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.menu.MenuConstants;
-import net.imglib2.type.numeric.RealType;
+import net.imglib2.img.Img;
+import net.imglib2.ops.operation.randomaccessibleinterval.unary.morph.Dilate;
+import net.imglib2.type.logic.BitType;
 
-import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
-import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * Creates a new binary mask {@link Dataset} from an existing Dataset using the
- * default thresholding method.
+ * Does a morphological dilate operation on a binary image. Input data is
+ * changed in place.
  * 
  * @author Barry DeZonia
  */
@@ -55,31 +55,17 @@ import org.scijava.plugin.Plugin;
 	@Menu(label = MenuConstants.PROCESS_LABEL,
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
-	@Menu(label = "Binary", mnemonic = 'b'), @Menu(label = "Create Mask...") },
+	@Menu(label = "Binary", mnemonic = 'b'), @Menu(label = "Dilate") },
 	headless = true)
-public class CreateMask<T extends RealType<T>> extends AbstractBinaryCommand {
-
-	@Parameter
-	private Dataset dataset;
-
-	@Parameter(type = ItemIO.OUTPUT)
-	private Dataset output;
+public class DilateBinaryImage extends AbstractMorphOpsCommand {
 
 	@Override
-	public void run() {
-		Binarize<T> binarizeOp = new Binarize<T>();
-		binarizeOp.setContext(getContext());
-		binarizeOp.setChangeInput(false);
-		binarizeOp.setFillMaskBackground(true);
-		binarizeOp.setFillMaskForeground(true);
-		binarizeOp.setInputData(dataset);
-		binarizeOp.setInputMask(null);
-		binarizeOp.setMaskColor(maskColor);
-		binarizeOp.setMaskPixels(maskPixels);
-		binarizeOp.setThresholdEachPlane(threshEachPlane);
-		binarizeOp.setDefaultThresholdMethod();
-		binarizeOp.run();
-		output = binarizeOp.outputMask();
+	protected void updateDataset(Dataset ds) {
+		Dilate op = new Dilate(getConnectedType(), 1);
+		Dataset copy = ds.duplicate();
+		Img<BitType> copyData = (Img<BitType>) copy.getImgPlus();
+		Img<BitType> resultData = (Img<BitType>) ds.getImgPlus();
+		op.compute(copyData, resultData);
 	}
 
 }

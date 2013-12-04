@@ -33,42 +33,67 @@
  * #L%
  */
 
-package imagej.core.commands.binary;
+package imagej.plugins.commands.binary;
 
-import imagej.command.Command;
+import imagej.command.ContextCommand;
 import imagej.data.Dataset;
-import imagej.menu.MenuConstants;
-import net.imglib2.img.Img;
-import net.imglib2.ops.operation.randomaccessibleinterval.unary.morph.Dilate;
-import net.imglib2.ops.operation.randomaccessibleinterval.unary.morph.Erode;
+import net.imglib2.ops.types.ConnectedType;
 import net.imglib2.type.logic.BitType;
+import net.imglib2.type.numeric.RealType;
 
-import org.scijava.plugin.Menu;
-import org.scijava.plugin.Plugin;
+import org.scijava.ItemIO;
+import org.scijava.plugin.Parameter;
 
 /**
- * Does a morphological close operation on a binary image. Input data is changed
- * in place.
+ * Abstract super class for commands that modify binary images in place.
  * 
  * @author Barry DeZonia
  */
-@Plugin(type = Command.class, menu = {
-	@Menu(label = MenuConstants.PROCESS_LABEL,
-		weight = MenuConstants.PROCESS_WEIGHT,
-		mnemonic = MenuConstants.PROCESS_MNEMONIC),
-	@Menu(label = "Binary", mnemonic = 'b'), @Menu(label = "Close") },
-	headless = true)
-public class CloseBinaryImage extends AbstractMorphOpsCommand {
+public abstract class AbstractMorphOpsCommand extends ContextCommand {
 
-	@Override
-	protected void updateDataset(Dataset ds) {
-		Erode opErode = new Erode(getConnectedType(), 1);
-		Dilate opDilate = new Dilate(getConnectedType(), 1);
-		Dataset copy = ds.duplicateBlank();
-		Img<BitType> copyData = (Img<BitType>) copy.getImgPlus();
-		Img<BitType> origData = (Img<BitType>) ds.getImgPlus();
-		opDilate.compute(origData, copyData);
-		opErode.compute(copyData, origData);
+	// -- constants --
+
+	public static final String FOUR = "Four";
+	public static final String EIGHT = "Eight";
+
+	// -- Parameters --
+
+	@Parameter(type = ItemIO.BOTH)
+	private Dataset dataset;
+
+	@Parameter(label = "Neighbors", choices = { FOUR, EIGHT })
+	private String neighbors = FOUR;
+
+	// -- abstract methods --
+
+	abstract protected void updateDataset(Dataset ds);
+
+	// -- accessors --
+
+	public ConnectedType getConnectedType() {
+		if (neighbors == FOUR) return ConnectedType.FOUR_CONNECTED;
+		return ConnectedType.EIGHT_CONNECTED;
 	}
 
+	public void setConnectedType(ConnectedType type) {
+		if (type.equals(ConnectedType.FOUR_CONNECTED)) neighbors = FOUR;
+		else neighbors = EIGHT;
+	}
+
+	// -- Command methods --
+
+	@Override
+	public void run() {
+		if (!isBitType(dataset)) {
+			cancel("This command requires input dataset to be of type BitType.");
+		}
+		else updateDataset(dataset);
+	}
+
+	// -- helpers --
+
+	private boolean isBitType(Dataset ds) {
+		RealType<?> type = ds.getImgPlus().firstElement();
+		return (type instanceof BitType);
+	}
 }

@@ -33,17 +33,13 @@
  * #L%
  */
 
-package imagej.core.commands.imglib;
+package imagej.plugins.commands.imglib;
 
 import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.menu.MenuConstants;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
@@ -52,7 +48,6 @@ import net.imglib2.interpolation.InterpolatorFactory;
 import net.imglib2.interpolation.randomaccess.LanczosInterpolatorFactory;
 import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
 import net.imglib2.interpolation.randomaccess.NearestNeighborInterpolatorFactory;
-import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.outofbounds.OutOfBoundsConstantValueFactory;
 import net.imglib2.type.numeric.RealType;
@@ -64,10 +59,9 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 /**
- * Translates an existing image by a set of possibly nonintegral deltas. The
- * deltas can be manipulated by dimension. The resultant pixel is some
- * combination of the original neighboring pixels using some user specified
- * interpolation method.
+ * Rotates an existing image by a user specified angle. The resultant pixel
+ * values are some combination of the original neighboring pixels using the
+ * user specified interpolation method.
  * 
  * @author Barry DeZonia
  */
@@ -75,8 +69,8 @@ import org.scijava.plugin.Plugin;
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
 	@Menu(label = "Transform", mnemonic = 't'),
-	@Menu(label = "Translate...", mnemonic = 't') })
-public class TranslateImage<T extends RealType<T>> extends ContextCommand {
+	@Menu(label = "Rotate...", mnemonic = 'r') })
+public class RotateImageXY<T extends RealType<T>> extends ContextCommand {
 
 	// -- constants --
 
@@ -84,76 +78,81 @@ public class TranslateImage<T extends RealType<T>> extends ContextCommand {
 	private static final String LINEAR = "Linear";
 	private static final String NEAREST_NEIGHBOR = "Nearest Neighbor";
 
+	private static final String DEGREES = "Degrees";
+	private static final String RADIANS = "Radians";
+	
 	// -- Parameters --
 
 	@Parameter(type = ItemIO.BOTH)
 	private Dataset dataset;
 
-	@Parameter(label = "Deltas", persist = false)
-	private String deltasString;
+	@Parameter(label = "Angle")
+	private double angle;
+	
+	@Parameter(label = "Unit", choices = { DEGREES, RADIANS })
+	private String angleUnit = DEGREES;
 
 	@Parameter(label = "Interpolation", choices = { LINEAR, NEAREST_NEIGHBOR,
 		LANCZOS }, persist = false)
 	private String method = LINEAR;
 	
-	@Parameter(label = "Use user units", persist = false)
-	private boolean useUserUnits;
-
 	@Parameter
 	private DatasetService datasetService;
 
-	// -- non-parameter fields --
-
-	private String err = null;
-
-	private List<Double> deltas = new ArrayList<Double>();
-
 	// -- constructors --
 
-	public TranslateImage() {}
+	public RotateImageXY() {}
 
 	// -- accessors --
 
 	/**
-	 * Sets the Dataset that the translate operation will be run upon.
+	 * Sets the Dataset that the rotate operation will be run upon.
 	 */
 	public void setDataset(Dataset ds) {
 		dataset = ds;
-		init();
 	}
 
 	/**
-	 * Gets the Dataset that the translate operation will be run upon.
+	 * Gets the Dataset that the rotate operation will be run upon.
 	 */
 	public Dataset getDataset() {
 		return dataset;
 	}
 
 	/**
-	 * Sets the translation delta for a given axis to a given value. The delta
-	 * units are determined by the value of getUseUserUnits().
+	 * Sets the angle of counterclockwise rotation to apply. The angle units
+	 * are specified with setUnit().
 	 */
-	public void setDelta(int d, double delta) {
-		if (d < 0 || d >= deltas.size()) {
-			throw new IllegalArgumentException("dimension " + d +
-				" out of bounds (0," + (deltas.size() - 1) + ")");
-		}
-		deltas.set(d, delta);
-		deltasString = deltasString();
+	public void setAngle(double angle) {
+		this.angle = angle;
 	}
-
+	
 	/**
-	 * Gets the translation delta for a given axis. The delta units are
-	 * determined by the value of getUseUserUnits().
+	 * Gets the angle of counterclockwise rotation to apply. The angle units
+	 * are available from getUnit().
 	 */
-	public double getDelta(int d) {
-		if (d < 0 || d >= deltas.size()) {
-			throw new IllegalArgumentException("dimension " + d +
-				" out of bounds (0," + (deltas.size() - 1) + ")");
-		}
-		return deltas.get(d);
+	public double getAngle() {
+		return angle;
 	}
-
+	
+	/**
+	 * Sets the current angle unit setting (radians or dgrees). Use one of the
+	 * unit String constants exposed by this class.
+	 */
+	public void setUnit(String unit) {
+		if (unit.equals(DEGREES)) angleUnit = unit;
+		else if (unit.equals(RADIANS)) angleUnit = unit;
+		else throw new IllegalArgumentException("Unknown angle unit: "+unit);
+	}
+	
+	/**
+	 * Gets the current angle unit setting (radians or degrees). Returns one of
+	 * the unit String constants exposed by this class.
+	 */
+	public String getUnit() {
+		return angleUnit;
+	}
+	
 	// TODO - have a set method and get method that take a InterpFactory. This
 	// allows more flexibility on how data is combined.
 
@@ -177,99 +176,22 @@ public class TranslateImage<T extends RealType<T>> extends ContextCommand {
 		return method;
 	}
 
-	/**
-	 * Sets whether input deltas field values are in user units or pixel units.
-	 * If input val is true then use user units else use pixel units.
-	 */
-	public void setUseUserUnits(boolean val) {
-		useUserUnits = val;
-	}
-	
-	/**
-	 * Gets whether input deltas field values are in user units or pixel units.
-	 * Returns tru if currently in user units and false if currently in pixel units.
-	 */
-	public boolean useUserUnits() {
-		return useUserUnits;
-	}
-	
-	/**
-	 * Returns the current error message if any.
-	 */
-	public String getError() {
-		return err;
-	}
-
 	// -- Command methods --
 
 	@Override
 	public void run() {
-		List<Double> delts = parseDeltas(dataset, deltasString);
-		if (delts == null) {
-			cancel(err);
-			return;
-		}
-		if (useUserUnits) toPixelUnits(dataset, delts);
-		resampleData(dataset, delts);
-	}
-
-	// -- initializers --
-
-	protected void init() {
-		deltas.clear();
-		for (int i = 0; i < dataset.numDimensions(); i++) {
-			deltas.add(0.0);
-		}
-		deltasString = deltasString();
+		double ang = radians(angle);
+		resampleData(dataset, ang);
 	}
 
 	// -- helpers --
 
-	private List<Double> parseDeltas(Dataset ds, String spec) {
-		if (spec == null) {
-			err = "Deltas specification string is null.";
-			return null;
-		}
-		String[] terms = spec.split(",");
-		if (terms.length == 0) {
-			err = "Deltas specification string is empty.";
-			return null;
-		}
-		List<Double> delts = new ArrayList<Double>();
-		for (int i = 0; i < ds.numDimensions(); i++) {
-			delts.add(0.0);
-		}
-		for (int i = 0; i < terms.length; i++) {
-			String term = terms[i].trim();
-			String[] parts = term.split("=");
-			if (parts.length != 2) {
-				err =
-					"Err in deltas specification string: each"
-						+ " delta must be two numbers separated by an '=' sign.";
-				return null;
-			}
-			int axisIndex;
-			double delta;
-			try {
-				axisIndex = Integer.parseInt(parts[0].trim());
-				delta = Double.parseDouble(parts[1].trim());
-			}
-			catch (NumberFormatException e) {
-				err =
-					"Err in deltas specification string: each"
-						+ " delta must be two numbers separated by an '=' sign.";
-				return null;
-			}
-			if (axisIndex < 0 || axisIndex >= ds.numDimensions()) {
-				err = "An axis index is outside dimensionality of input dataset.";
-				return null;
-			}
-			deltas.set(axisIndex, delta);
-		}
-		return deltas;
+	private double radians(double angle) {
+		if (angleUnit.equals(RADIANS)) return angle;
+		return (angle * 2.0 * Math.PI) / 360.0;
 	}
-
-	private void resampleData(Dataset ds, List<Double> delts) {
+	
+	private void resampleData(Dataset ds, double angleInRadians) {
 
 		// TODO: resampling needs a copy of original data. We should be able to
 		// instead come up with smarter algo that duplicates less (like a plane
@@ -297,15 +219,21 @@ public class TranslateImage<T extends RealType<T>> extends ContextCommand {
 					zero)));
 
 		final Cursor<T> c2 = Views.iterable(dest).localizingCursor();
+		final double cos = Math.cos(angleInRadians);
+		final double sin = Math.sin(angleInRadians);
+		final double[] center = new double[dest.numDimensions()];
+		center[0] = (dest.dimension(0) / 2.0) - 0.5;
+		center[1] = (dest.dimension(1) / 2.0) - 0.5;
 		final double[] delta = new double[dest.numDimensions()];
-		for (int i = 0; i < delta.length; i++)
-			delta[i] = delts.get(i);
 		final long[] d = new long[dest.numDimensions()];
 		while (c2.hasNext()) {
 			c2.fwd();
 			c2.localize(d);
-			for (int i = 0; i < d.length; i++) {
-				inter.setPosition(d[i] - delta[i], i);
+			findDeltas(center, d, cos, sin, delta);
+			inter.setPosition(center[0] + delta[0], 0);
+			inter.setPosition(center[1] + delta[1], 1);
+			for (int i = 2; i < d.length; i++) {
+				inter.setPosition(d[i], i);
 			}
 			c2.get().set(inter.get());
 		}
@@ -313,17 +241,15 @@ public class TranslateImage<T extends RealType<T>> extends ContextCommand {
 		ds.update(); // TODO WHY DOESN'T ORGAN UPDATE???
 	}
 
-	private String deltasString() {
-		String str = "";
-		for (int i = 0; i < deltas.size(); i++) {
-			if (i != 0) {
-				str += ", ";
-			}
-			str += i + "=" + deltas.get(i);
-		}
-		return str;
+	private void findDeltas(double[] ctr, long[] pt, double cos, double sin, double[] delta) {
+		double dx = pt[0] - ctr[0];
+		double dy = pt[1] - ctr[1];
+	    double xPrime = dx * cos - dy * sin;
+	    double yPrime = dx * sin + dy * cos;
+		delta[0] = xPrime;
+		delta[1] = yPrime;
 	}
-
+	
 	private InterpolatorFactory<T, RandomAccessible<T>> getInterpolator() {
 		if (method.equals(LINEAR)) {
 			return new NLinearInterpolatorFactory<T>();
@@ -336,14 +262,5 @@ public class TranslateImage<T extends RealType<T>> extends ContextCommand {
 		}
 		else throw new IllegalArgumentException("unknown interpolation method: " +
 			method);
-	}
-
-	private void toPixelUnits(Dataset ds, List<Double> delts) {
-		for (int i = 0; i < delts.size(); i++) {
-			CalibratedAxis axis = ds.axis(i);
-			double userUnit = delts.get(i);
-			double pixelUnit = axis.rawValue(userUnit) - axis.rawValue(0);
-			delts.set(i, pixelUnit);
-		}
 	}
 }

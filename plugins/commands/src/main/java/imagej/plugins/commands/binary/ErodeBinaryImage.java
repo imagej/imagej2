@@ -33,28 +33,39 @@
  * #L%
  */
 
-package imagej.core.commands.binary;
+package imagej.plugins.commands.binary;
 
-import imagej.command.ContextCommand;
+import imagej.command.Command;
+import imagej.data.Dataset;
+import imagej.menu.MenuConstants;
+import net.imglib2.img.Img;
+import net.imglib2.ops.operation.randomaccessibleinterval.unary.morph.Erode;
+import net.imglib2.type.logic.BitType;
 
-import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Menu;
+import org.scijava.plugin.Plugin;
 
 /**
- * Abstract super class for binarization commands like Create Mask and Make
- * Binary.
+ * Does a morphological erode operation on a binary image. Input data is changed
+ * in place.
  * 
  * @author Barry DeZonia
  */
-public abstract class AbstractBinaryCommand extends ContextCommand {
+@Plugin(type = Command.class, menu = {
+	@Menu(label = MenuConstants.PROCESS_LABEL,
+		weight = MenuConstants.PROCESS_WEIGHT,
+		mnemonic = MenuConstants.PROCESS_MNEMONIC),
+	@Menu(label = "Binary", mnemonic = 'b'), @Menu(label = "Erode") },
+	headless = true)
+public class ErodeBinaryImage extends AbstractMorphOpsCommand {
 
-	@Parameter(label = "Mask pixels", choices = { Binarize.INSIDE,
-		Binarize.OUTSIDE })
-	protected String maskPixels = Binarize.INSIDE;
-
-	@Parameter(label = "Mask color", choices = { Binarize.WHITE, Binarize.BLACK })
-	protected String maskColor = Binarize.WHITE;
-
-	@Parameter(label = "Threshold each plane")
-	protected boolean threshEachPlane = false;
+	@Override
+	protected void updateDataset(Dataset ds) {
+		Erode op = new Erode(getConnectedType(), 1);
+		Dataset copy = ds.duplicate();
+		Img<BitType> copyData = (Img<BitType>) copy.getImgPlus();
+		Img<BitType> resultData = (Img<BitType>) ds.getImgPlus();
+		op.compute(copyData, resultData);
+	}
 
 }
