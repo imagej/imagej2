@@ -67,7 +67,7 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
-	@Menu(label = "Invert...", weight = 30, accelerator = "shift control I") },
+	@Menu(label = "Invert...", weight = 30, accelerator = "shift ^I") },
 	headless = true)
 public class InvertDataValues<T extends RealType<T>> extends ContextCommand {
 

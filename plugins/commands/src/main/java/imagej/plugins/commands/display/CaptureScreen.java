@@ -57,7 +57,7 @@ import org.scijava.plugin.Plugin;
 			mnemonic = MenuConstants.PLUGINS_MNEMONIC),
 	@Menu(label = "Utilities"),
 	@Menu(label = "Capture Screen", weight = 20, 
-				accelerator = "shift control G")})
+				accelerator = "shift ^G")})
 public class CaptureScreen extends ContextCommand {
 
 	// -- Parameters --

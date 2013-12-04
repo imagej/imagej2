@@ -80,7 +80,7 @@ import org.scijava.plugin.Plugin;
 	@Menu(label = MenuConstants.PLUGINS_LABEL, weight = MenuConstants.PLUGINS_WEIGHT,
 			mnemonic = MenuConstants.PLUGINS_MNEMONIC),
 		@Menu(label = "Sandbox", mnemonic = 's'),
-	@Menu(label = "Mandelbrot Set", mnemonic = 'm', accelerator = "shift control NUM0") })
+	@Menu(label = "Mandelbrot Set", mnemonic = 'm', accelerator = "shift ^NUM0") })
 public class MandelbrotSetImage extends InteractiveCommand {
 
 	// -- constants --

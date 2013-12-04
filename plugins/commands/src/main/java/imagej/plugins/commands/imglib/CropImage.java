@@ -76,7 +76,7 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Crop", accelerator = "shift control X") }, headless = true)
+	@Menu(label = "Crop", accelerator = "shift ^X") }, headless = true)
 public class CropImage extends ContextCommand {
 
 	// -- instance variables that are Parameters --

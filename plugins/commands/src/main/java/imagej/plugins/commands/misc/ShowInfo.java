@@ -65,7 +65,7 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Command.class, menu = {
 	@Menu(label = MenuConstants.IMAGE_LABEL, weight = MenuConstants.IMAGE_WEIGHT,
 		mnemonic = MenuConstants.IMAGE_MNEMONIC),
-	@Menu(label = "Show Info...", accelerator = "control I") },
+	@Menu(label = "Show Info...", accelerator = "^I") },
 	headless = true)
 public class ShowInfo implements Command {
 

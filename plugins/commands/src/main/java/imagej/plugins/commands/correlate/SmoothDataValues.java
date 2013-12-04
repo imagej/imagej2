@@ -58,7 +58,7 @@ import org.scijava.plugin.Plugin;
 	@Menu(label = MenuConstants.PROCESS_LABEL,
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
-	@Menu(label = "Smooth", weight = 1, accelerator = "shift control S") },
+	@Menu(label = "Smooth", weight = 1, accelerator = "shift ^S") },
 	headless = true)
 public class SmoothDataValues extends ContextCommand {
 
