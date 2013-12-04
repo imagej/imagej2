@@ -164,7 +164,7 @@ public class SitesDialog extends JDialog implements ActionListener {
 										+ site.getHost() + "; directory: "
 										+ site.getUploadDirectory() + ")?"))
 									return false;
-								if (!initializeUpdateSite((String)getValueAt(row, 0),
+								if (!initializeUpdateSite(site.getName(),
 										value, site.getHost(), site.getUploadDirectory()))
 									return false;
 							}
