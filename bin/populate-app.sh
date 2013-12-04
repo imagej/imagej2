@@ -3,9 +3,9 @@
 cd "$(dirname "$0")/.." &&
 if test ! -d app/ImageJ.app
 then
-	mvn -DskipTests -Ppopulate-app "$@"
+	mvn -Ppopulate-app "$@"
 else
-	mvn -DskipTests "$@" &&
+	mvn "$@" &&
 	VERSION="$(sed -n 's/^.<version>\(.*\)<\/version>.*/\1/p' < pom.xml)" &&
 	(cd app &&
 	 ZIP=target/imagej-$VERSION-application.zip &&
