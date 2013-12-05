@@ -74,21 +74,15 @@ import org.scijava.plugin.SingletonPlugin;
  */
 public interface Tool extends ImageJPlugin, RichPlugin, SingletonPlugin {
 
-	/**
-	 * When true, tool has no button but rather is active all the time.
-	 * 
-	 * @see Plugin#attrs()
-	 */
-	String ALWAYS_ACTIVE = "alwaysActive";
+	/** When true, tool has no button but rather is active all the time. */
+	boolean isAlwaysActive();
 
 	/**
 	 * When true, tool receives events when the main ImageJ application frame is
 	 * active. When false, tool only receives events when a display window is
 	 * active.
-	 * 
-	 * @see Plugin#attrs()
 	 */
-	String ACTIVE_IN_APP_FRAME = "activeInAppFrame";
+	boolean isActiveInAppFrame();
 
 	/** The tool's mouse pointer. */
 	MouseCursor getCursor();

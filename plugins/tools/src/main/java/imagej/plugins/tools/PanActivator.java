@@ -41,7 +41,6 @@ import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 import imagej.tool.ToolService;
 
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -50,8 +49,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Tool.class, name = "Pan Activator", attrs = { @Attr(
-	name = Tool.ALWAYS_ACTIVE) })
+@Plugin(type = Tool.class, name = "Pan Activator")
 public class PanActivator extends AbstractTool {
 
 	/** Key used to activate pan tool. */
@@ -62,6 +60,11 @@ public class PanActivator extends AbstractTool {
 
 	/** Previously active tool, from before pan key was held. */
 	private Tool priorTool;
+
+	@Override
+	public boolean isAlwaysActive() {
+		return true;
+	}
 
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {

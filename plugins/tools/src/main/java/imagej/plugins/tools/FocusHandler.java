@@ -43,7 +43,6 @@ import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 
 import org.scijava.input.KeyCode;
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -52,12 +51,16 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Tool.class, name = "Window Focus", attrs = { @Attr(
-	name = Tool.ALWAYS_ACTIVE) })
+@Plugin(type = Tool.class, name = "Window Focus")
 public class FocusHandler extends AbstractTool {
 
 	@Parameter(required = false)
 	private UIService uiService;
+
+	@Override
+	public boolean isAlwaysActive() {
+		return true;
+	}
 
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {

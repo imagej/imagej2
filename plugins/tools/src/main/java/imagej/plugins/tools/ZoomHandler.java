@@ -43,7 +43,6 @@ import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 
 import org.scijava.input.KeyCode;
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -54,12 +53,21 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Tool.class, name = "Zoom Shortcuts", attrs = {
-	@Attr(name = Tool.ALWAYS_ACTIVE), @Attr(name = Tool.ACTIVE_IN_APP_FRAME) })
+@Plugin(type = Tool.class, name = "Zoom Shortcuts")
 public class ZoomHandler extends AbstractTool {
 
 	@Parameter
 	private ZoomService zoomService;
+
+	@Override
+	public boolean isAlwaysActive() {
+		return true;
+	}
+
+	@Override
+	public boolean isActiveInAppFrame() {
+		return true;
+	}
 
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {

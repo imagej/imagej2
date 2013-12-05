@@ -42,7 +42,6 @@ import imagej.tool.Tool;
 
 import org.scijava.Priority;
 import org.scijava.input.KeyCode;
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.thread.ThreadService;
@@ -53,8 +52,7 @@ import org.scijava.thread.ThreadService;
  * @author Curtis Rueden
  */
 @Plugin(type = Tool.class, name = "Konami",
-	priority = Priority.FIRST_PRIORITY,
-	attrs = { @Attr(name = Tool.ALWAYS_ACTIVE) })
+	priority = Priority.FIRST_PRIORITY)
 public class KonamiHandler extends AbstractTool implements Runnable {
 
 	private static final KeyCode[] CODE = { KeyCode.UP, KeyCode.UP, KeyCode.DOWN,
@@ -73,6 +71,11 @@ public class KonamiHandler extends AbstractTool implements Runnable {
 	private CommandService commandService;
 
 	private int index = 0;
+
+	@Override
+	public boolean isAlwaysActive() {
+		return true;
+	}
 
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {

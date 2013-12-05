@@ -44,7 +44,6 @@ import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
 import imagej.ui.UIService;
 
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -54,12 +53,16 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  */
 @Plugin(type = Tool.class, name = "Context Menus",
-	menuRoot = Plugin.CONTEXT_MENU_ROOT, attrs = { @Attr(
-		name = Tool.ALWAYS_ACTIVE) })
+	menuRoot = Plugin.CONTEXT_MENU_ROOT)
 public class ContextMenuHandler extends AbstractTool {
 
 	@Parameter
 	private UIService uiService;
+
+	@Override
+	public boolean isAlwaysActive() {
+		return true;
+	}
 
 	@Override
 	public void onMouseDown(final MsPressedEvent evt) {

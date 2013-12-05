@@ -46,7 +46,6 @@ import org.scijava.Priority;
 import org.scijava.input.Accelerator;
 import org.scijava.input.InputModifiers;
 import org.scijava.input.KeyCode;
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -71,8 +70,7 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  */
 @Plugin(type = Tool.class, name = "Keyboard Shortcuts",
-	priority = Priority.VERY_LOW_PRIORITY, attrs = {
-		@Attr(name = Tool.ALWAYS_ACTIVE), @Attr(name = Tool.ACTIVE_IN_APP_FRAME) })
+	priority = Priority.VERY_LOW_PRIORITY)
 public class AcceleratorHandler extends AbstractTool {
 
 	@Parameter
@@ -80,6 +78,16 @@ public class AcceleratorHandler extends AbstractTool {
 
 	@Parameter
 	private CommandService commandService;
+
+	@Override
+	public boolean isAlwaysActive() {
+		return true;
+	}
+
+	@Override
+	public boolean isActiveInAppFrame() {
+		return true;
+	}
 
 	@Override
 	public void onKeyDown(final KyPressedEvent evt) {

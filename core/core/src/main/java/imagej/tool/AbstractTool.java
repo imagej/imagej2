@@ -56,6 +56,16 @@ import org.scijava.plugin.AbstractRichPlugin;
 public abstract class AbstractTool extends AbstractRichPlugin implements Tool {
 
 	@Override
+	public boolean isAlwaysActive() {
+		return false;
+	}
+
+	@Override
+	public boolean isActiveInAppFrame() {
+		return false;
+	}
+
+	@Override
 	public MouseCursor getCursor() {
 		return MouseCursor.DEFAULT;
 	}

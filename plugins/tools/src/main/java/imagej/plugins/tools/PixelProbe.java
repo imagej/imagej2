@@ -44,7 +44,6 @@ import imagej.tool.Tool;
 import net.imglib2.meta.Axes;
 
 import org.scijava.app.StatusService;
-import org.scijava.plugin.Attr;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
@@ -53,8 +52,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(type = Tool.class, name = "Probe", attrs = { @Attr(
-	name = Tool.ALWAYS_ACTIVE) })
+@Plugin(type = Tool.class, name = "Probe")
 public class PixelProbe extends AbstractTool {
 
 	@Parameter
@@ -66,6 +64,11 @@ public class PixelProbe extends AbstractTool {
 	private PixelRecorder recorder;
 
 	// -- Tool methods --
+
+	@Override
+	public boolean isAlwaysActive() {
+		return true;
+	}
 
 	// NB - this tool does not consume the events by design
 	

@@ -60,7 +60,6 @@ import org.scijava.event.EventService;
 import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginInfo;
 import org.scijava.service.Service;
 
 /**
@@ -348,7 +347,7 @@ public class DefaultToolService extends AbstractSingletonService<Tool>
 		tools = new HashMap<String, Tool>();
 		toolList = new ArrayList<Tool>();
 		for (final Tool tool : getInstances()) {
-			if (tool.getInfo().is(Tool.ALWAYS_ACTIVE)) {
+			if (tool.isAlwaysActive()) {
 				alwaysActiveTools.put(tool.getInfo().getName(), tool);
 				alwaysActiveToolList.add(tool);
 			}
@@ -371,8 +370,7 @@ public class DefaultToolService extends AbstractSingletonService<Tool>
 		if (event.getDisplay() != null) return true;
 		// NB: An event with a null display came from the main app frame.
 		// We only pass these events on to tools flagged with activeInAppFrame.
-		final PluginInfo<?> toolInfo = tool == null ? null : tool.getInfo();
-		return toolInfo != null && toolInfo.is(Tool.ACTIVE_IN_APP_FRAME);
+		return tool.isActiveInAppFrame();
 	}
 
 }
