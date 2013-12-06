@@ -252,6 +252,13 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 		context.inject(this);
 	}
 
+	// -- Identifiable methods --
+
+	@Override
+	public String getIdentifier() {
+		return "script:" + path;
+	}
+
 	// -- Helper methods --
 
 	private void parseParam(final String param) throws ScriptException {
