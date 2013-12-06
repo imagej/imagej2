@@ -173,7 +173,7 @@ public abstract class AbstractModuleInfo extends AbstractUIDetails implements
 		// distinguishes the module from others. If the same delegate class is used
 		// for more than one module, though, it may need to override this method to
 		// provide more differentiating details.
-		return "className = " + getDelegateClassName() + "\n";
+		return "module:" + getDelegateClassName();
 	}
 
 	// -- Helper methods --

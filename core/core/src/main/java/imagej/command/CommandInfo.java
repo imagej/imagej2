@@ -393,11 +393,22 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo,
 		// NB: The delegate class name, together with the list of presets, is
 		// typically enough to uniquely distinguish this command from others.
 		final StringBuilder sb = new StringBuilder();
-		sb.append("className = " + getDelegateClassName() + "\n");
+		sb.append("command:" + getDelegateClassName());
 		final Map<String, Object> pre = getPresets();
-		for (final String name : pre.keySet()) {
-			final Object value = pre.get(name);
-			sb.append(name + " = " + value + "\n");
+		if (!pre.isEmpty()) {
+			sb.append("(");
+			boolean first = true;
+			for (final String name : pre.keySet()) {
+				final Object value = pre.get(name);
+				final String sValue =
+					value == null ? "" : value.toString().replaceAll("[^\\w]", "_");
+				if (first) {
+					sb.append(", ");
+					first = false;
+				}
+				sb.append(name + " = " + sValue);
+			}
+			sb.append(")");
 		}
 		return sb.toString();
 	}
