@@ -48,36 +48,6 @@ Optionally, after performing the release, [tell Jenkins to update
 `scifio.version` in
 pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
 
-## [CPPTASKS-PARALLEL](https://github.com/scijava/cpptasks-parallel)
-
-CppTasks Parallel is used by the NAR plugin.
-We deploy unofficial release builds for use with the ImageJ launcher.
-
-    cd cpptasks-parellel
-    release-version.sh 1.1.1-scijava-1
-    git push scijava cpptasks-parallel-1.1.1-scijava-1
-
-- Where `1.1.1-scijava-1` is the new release version.
-- The `-scijava-X` qualifier indicates an unofficial release.
-- Note that `release:prepare` will be called in interactive mode.
-
-## [NAR-MAVEN-PLUGIN](https://github.com/scijava/maven-nar-plugin)
-
-The NAR plugin is used to build the ImageJ launcher.
-We deploy unofficial release builds.
-
-    cd maven-nar-plugin
-    release-version.sh 3.0.0-scijava-1
-    git push scijava nar-maven-plugin-3.0.0-scijava-1
-
-- Where `3.0.0-scijava-1` is the new release version.
-- The `-scijava-X` qualifier indicates an unofficial release.
-- Note that `release:prepare` will be called in interactive mode.
-
-Optionally, after performing the release, [tell Jenkins to update
-`nar.version` in
-pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
-
 ## [IMAGEJ LAUNCHER](https://github.com/imagej/imagej-launcher)
 
 The ImageJ launcher is a native launcher for ImageJ.
