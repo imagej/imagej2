@@ -65,6 +65,14 @@ public class JavaScriptScriptLanguage extends AdaptedScriptLanguage {
 
 	@Override
 	public Object decode(final Object object) {
+		// NB: JavaScript objects come out of the engine wrapped as
+		// JavaScript-specific objects (e.g., NativeJavaObject), which must be
+		// unwrapped. Unfortunately, we don't necessarily have direct compile-time
+		// access to the JavaScript Wrapper interface implemented by the
+		// NativeJavaObject wrapper. But we can access it via reflection. It is
+		// typically org.mozilla.javascript.Wrapper, except for Oracle's shaded
+		// implementation, which is sun.org.mozilla.javascript.internal.Wrapper.
+		// Either way, the package will match that of the wrapped object itself.
 		if (object == null) return null;
 		final Class<?> objectClass = object.getClass();
 		final String packageName = objectClass.getPackage().getName();
