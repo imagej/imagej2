@@ -244,7 +244,7 @@ public class JavaEngine extends AbstractScriptEngine {
 				}
 				line = line.substring(end + 2).trim();
 			}
-			if (line.equals("") || line.startsWith("//")) continue;
+			if (line == null || line.equals("") || line.startsWith("//")) continue;
 			final Matcher packageMatcher = packagePattern.matcher(line);
 			if (packageMatcher.matches()) {
 				packageName = packageMatcher.group(1) + ".";
