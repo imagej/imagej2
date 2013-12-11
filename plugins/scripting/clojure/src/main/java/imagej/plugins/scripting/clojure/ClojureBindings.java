@@ -70,29 +70,31 @@ public class ClojureBindings implements Bindings {
 	}
 
 	@Override
-	public boolean containsKey(Object key) {
+	public boolean containsKey(final Object key) {
 		return get(key) != null;
 	}
 
 	@Override
-	public boolean containsValue(Object value) {
+	public boolean containsValue(final Object value) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Object get(Object keyObject) {
-		String key = (String)keyObject;
-		int dot = key.lastIndexOf('.');
+	public Object get(final Object keyObject) {
+		String key = (String) keyObject;
+		final int dot = key.lastIndexOf('.');
 		final String nameSpace;
 		if (dot < 0) {
 			nameSpace = "user";
-		} else {
+		}
+		else {
 			nameSpace = key.substring(0, dot);
 			key = key.substring(dot + 1);
 		}
 		try {
 			return RT.var(nameSpace, key).get();
-		} catch (Error e) {
+		}
+		catch (final Error e) {
 			return null;
 		}
 	}
@@ -102,34 +104,39 @@ public class ClojureBindings implements Bindings {
 	}
 
 	@Override
-	public Object put(String key, Object value) {
-		int dot = key.lastIndexOf('.');
-		final String nameSpace;
+	public Object put(final String name, final Object value) {
+		final int dot = name.lastIndexOf('.');
+		final String nameSpace, key;
 		if (dot < 0) {
 			nameSpace = "user";
-		} else {
-			nameSpace = key.substring(0, dot);
-			key = key.substring(dot + 1);
+			key = name;
+		}
+		else {
+			nameSpace = name.substring(0, dot);
+			key = name.substring(dot + 1);
 		}
 		final Object result = get(nameSpace, key);
 		try {
 			final Var var = RT.var(nameSpace, key, null);
 			var.setDynamic();
 			Var.pushThreadBindings(RT.map(var, value));
-		} catch (Error e) {
+		}
+		catch (final Error e) {
 			// ignore
 		}
 		return result;
 	}
 
 	@Override
-	public Object remove(Object key) {
+	public Object remove(final Object key) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void putAll(Map<? extends String, ? extends Object> toMerge) {
-		for (final Entry<? extends String, ? extends Object> entry : toMerge.entrySet()) {
+	public void putAll(final Map<? extends String, ? extends Object> toMerge) {
+		for (final Entry<? extends String, ? extends Object> entry : toMerge
+			.entrySet())
+		{
 			put(entry.getKey(), entry.getValue());
 		}
 	}
