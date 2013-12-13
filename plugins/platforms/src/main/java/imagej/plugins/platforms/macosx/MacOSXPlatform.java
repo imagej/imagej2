@@ -141,7 +141,7 @@ public class MacOSXPlatform extends AbstractPlatform {
 
 	@EventHandler
 	protected void onEvent(final WinActivatedEvent evt) {
-		if (!SCREEN_MENU) return;
+		if (!SCREEN_MENU || !isTarget()) return;
 
 		final Object window = evt.getWindow();
 		if (!(window instanceof JFrame)) return;
