@@ -421,6 +421,24 @@
 			<build>
 				<plugins>
 					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<configuration>
+							<mainClass>org.scijava.annotations.CombineAnnotations</mainClass>
+							<arguments>
+								<argument>${basedir}/target/assembly/all/</argument>
+							</arguments>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>java</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
 						<configuration>
 							<descriptors>

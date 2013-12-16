@@ -43,11 +43,7 @@
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<fileSets>
 		<fileSet>
-			<directory>${project.build.outputDirectory}</directory>
-			<outputDirectory>/</outputDirectory>
-		</fileSet>
-		<fileSet>
-			<directory>${project.basedir}/src/main/assembly/all</directory>
+			<directory>${basedir}/target/assembly/all</directory>
 			<outputDirectory>/</outputDirectory>
 		</fileSet>
 	</fileSets>
@@ -58,6 +54,7 @@
 			<unpackOptions>
 				<excludes>
 					<exclude>META-INF/annotations/*</exclude>
+					<exclude>META-INF/json/*</exclude>
 				</excludes>
 			</unpackOptions>
 			<scope>runtime</scope>
