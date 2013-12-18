@@ -41,7 +41,9 @@ import imagej.module.ModuleItem;
 
 import java.io.FileReader;
 import java.io.Reader;
+import java.io.Writer;
 
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
@@ -79,6 +81,12 @@ public class ScriptModule extends AbstractModule implements Contextual {
 	/** Script engine with which the script should be executed. */
 	private ScriptEngine scriptEngine;
 
+	/** Destination for standard output during script execution. */
+	private Writer output;
+
+	/** Destination for standard error during script execution. */
+	private Writer error;
+
 	public ScriptModule(final ScriptInfo info) {
 		this.info = info;
 	}
@@ -99,6 +107,16 @@ public class ScriptModule extends AbstractModule implements Contextual {
 	/** Overrides the script language to use when executing the script. */
 	public void setLanguage(final ScriptLanguage scriptLanguage) {
 		this.scriptLanguage = scriptLanguage;
+	}
+
+	/** Sets the writer used to record the standard output stream. */
+	public void setOutputWriter(final Writer output) {
+		this.output = output;
+	}
+
+	/** Sets the writer used to record the standard error stream. */
+	public void setErrorWriter(final Writer error) {
+		this.error = error;
 	}
 
 	/** Gets the script engine used to execute the script. */
@@ -129,8 +147,10 @@ public class ScriptModule extends AbstractModule implements Contextual {
 		final String path = getInfo().getPath();
 
 		// initialize the script engine
-		// TODO: Handle stdout and stderr writers better.
-		scriptService.initialize(engine, path, null, null);
+		engine.put(ScriptEngine.FILENAME, path);
+		final ScriptContext scriptContext = engine.getContext();
+		if (output != null) scriptContext.setWriter(output);
+		if (error != null) scriptContext.setErrorWriter(error);
 
 		// populate bindings with the input values
 		for (final ModuleItem<?> item : getInfo().inputs()) {
