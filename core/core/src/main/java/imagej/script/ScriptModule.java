@@ -96,6 +96,11 @@ public class ScriptModule extends AbstractModule implements Contextual {
 		return scriptLanguage;
 	}
 
+	/** Overrides the script language to use when executing the script. */
+	public void setLanguage(final ScriptLanguage scriptLanguage) {
+		this.scriptLanguage = scriptLanguage;
+	}
+
 	/** Gets the script engine used to execute the script. */
 	public ScriptEngine getEngine() {
 		if (scriptEngine == null) {
