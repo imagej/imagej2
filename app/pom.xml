@@ -424,7 +424,7 @@
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
 						<configuration>
-							<mainClass>org.scijava.annotations.CombineAnnotations</mainClass>
+							<mainClass>org.scijava.util.MetaInfCombiner</mainClass>
 							<arguments>
 								<argument>${basedir}/target/assembly/all/</argument>
 							</arguments>

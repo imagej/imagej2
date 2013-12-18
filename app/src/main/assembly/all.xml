@@ -55,6 +55,7 @@
 				<excludes>
 					<exclude>META-INF/annotations/*</exclude>
 					<exclude>META-INF/json/*</exclude>
+					<exclude>META-INF/services/*</exclude>
 				</excludes>
 			</unpackOptions>
 			<scope>runtime</scope>
