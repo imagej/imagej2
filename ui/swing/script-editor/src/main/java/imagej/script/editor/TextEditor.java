@@ -37,6 +37,7 @@ package imagej.script.editor;
 
 import imagej.command.CommandService;
 import imagej.io.IOService;
+import imagej.module.ModuleService;
 import imagej.platform.PlatformService;
 import imagej.script.ScriptLanguage;
 import imagej.script.ScriptService;
@@ -188,7 +189,11 @@ public class TextEditor extends JFrame implements ActionListener,
 	protected ErrorHandler errorHandler;
 
 	@Parameter
+	protected Context context;
+	@Parameter
 	protected LogService log;
+	@Parameter
+	protected ModuleService moduleService;
 	@Parameter
 	protected PlatformService platformService;
 	@Parameter
