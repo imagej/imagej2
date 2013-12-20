@@ -35,6 +35,8 @@
 
 package imagej.widget;
 
+import imagej.service.ImageJService;
+
 import org.scijava.plugin.WrapperService;
 
 /**
@@ -43,7 +45,7 @@ import org.scijava.plugin.WrapperService;
  * @author Curtis Rueden
  */
 public interface WidgetService extends
-	WrapperService<WidgetModel, InputWidget<?, ?>>
+	WrapperService<WidgetModel, InputWidget<?, ?>>, ImageJService
 {
 
 	// NB: Javadoc overrides.

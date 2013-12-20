@@ -35,6 +35,8 @@
 
 package imagej.data.autoscale;
 
+import imagej.service.ImageJService;
+
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +53,9 @@ import org.scijava.plugin.SingletonService;
  * @see AutoscaleMethod
  */
 @SuppressWarnings("rawtypes")
-public interface AutoscaleService extends SingletonService<AutoscaleMethod> {
+public interface AutoscaleService extends SingletonService<AutoscaleMethod>,
+	ImageJService
+{
 
 	/** Returns a map of available {@link AutoscaleMethod}s, indexed by name. */
 	Map<String, AutoscaleMethod> getAutoscaleMethods();

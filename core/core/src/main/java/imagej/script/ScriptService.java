@@ -37,6 +37,7 @@ package imagej.script;
 
 import imagej.module.process.PostprocessorPlugin;
 import imagej.module.process.PreprocessorPlugin;
+import imagej.service.ImageJService;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -62,7 +63,9 @@ import org.scijava.plugin.SingletonService;
  * 
  * @author Johannes Schindelin
  */
-public interface ScriptService extends SingletonService<ScriptLanguage> {
+public interface ScriptService extends SingletonService<ScriptLanguage>,
+	ImageJService
+{
 
 	// -- Scripting languages --
 

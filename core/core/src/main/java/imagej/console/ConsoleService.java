@@ -35,6 +35,8 @@
 
 package imagej.console;
 
+import imagej.service.ImageJService;
+
 import java.util.LinkedList;
 
 import org.scijava.plugin.HandlerService;
@@ -49,7 +51,7 @@ import org.scijava.plugin.HandlerService;
  * @author Curtis Rueden
  */
 public interface ConsoleService extends
-	HandlerService<LinkedList<String>, ConsoleArgument>
+	HandlerService<LinkedList<String>, ConsoleArgument>, ImageJService
 {
 
 	/**

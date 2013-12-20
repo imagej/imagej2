@@ -35,6 +35,8 @@
 
 package imagej.data.operator;
 
+import imagej.service.ImageJService;
+
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +52,8 @@ import org.scijava.plugin.SingletonService;
  * 
  * @author Barry DeZonia
  */
-public interface CalculatorService extends SingletonService<CalculatorOp<?, ?>>
+public interface CalculatorService extends
+	SingletonService<CalculatorOp<?, ?>>, ImageJService
 {
 
 	/**
