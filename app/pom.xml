@@ -227,25 +227,6 @@
 					</archive>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<configuration>
-					<executable>java</executable>
-					<arguments>
-						<argument>-classpath</argument>
-						<classpath />
-						<argument>imagej.Main</argument>
-					</arguments>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -306,6 +287,38 @@
 	</repositories>
 
 	<profiles>
+		<!-- The exec:exec configuration is hidden in the exec profile to
+		     avoid interfering with the configuration of the 'deps' profile
+		     that wants to use the exec plugin in a different way -->
+		<profile>
+			<id>exec</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.2.1</version>
+						<configuration>
+							<executable>java</executable>
+							<arguments>
+								<argument>-classpath</argument>
+								<classpath />
+								<argument>imagej.Main</argument>
+							</arguments>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>test</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
 		<!-- The alt-ui profile adds the alternative UI components to the
 		     runtime classpath if the ij.ui system property is set.
 		     This enables launching ImageJ with an alternative UI; see:
@@ -343,6 +356,7 @@
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
 						<configuration>
+							<executable>java</executable>
 							<arguments>
 								<argument>-classpath</argument>
 								<classpath />
@@ -406,6 +420,24 @@
 			<id>deps</id>
 			<build>
 				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<configuration>
+							<mainClass>org.scijava.util.MetaInfCombiner</mainClass>
+							<arguments>
+								<argument>${basedir}/target/assembly/all/</argument>
+							</arguments>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>java</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
 					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
 						<configuration>
