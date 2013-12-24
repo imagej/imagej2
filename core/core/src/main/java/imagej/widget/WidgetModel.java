@@ -121,8 +121,8 @@ public class WidgetModel extends AbstractContextual {
 	 * {@link ModuleItem#getName()}).
 	 */
 	public String getWidgetLabel() {
-		// Do this dynamically. Don't cache this result. Some controls change their
-		// labels at runtime.
+		// Do this dynamically. Don't cache this result.
+		// Some controls change their labels at runtime.
 		final String label = item.getLabel();
 		if (label != null && !label.isEmpty()) return label;
 
