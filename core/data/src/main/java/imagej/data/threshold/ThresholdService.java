@@ -37,6 +37,7 @@ package imagej.data.threshold;
 
 import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.ThresholdOverlay;
+import imagej.service.ImageJService;
 
 import java.util.List;
 import java.util.Map;
@@ -50,7 +51,8 @@ import org.scijava.plugin.SingletonService;
  * @see ThresholdOverlay
  * @see ThresholdMethod
  */
-public interface ThresholdService extends SingletonService<ThresholdMethod>
+public interface ThresholdService extends SingletonService<ThresholdMethod>,
+	ImageJService
 {
 
 	/**

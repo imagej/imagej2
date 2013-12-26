@@ -35,6 +35,8 @@
 
 package imagej.data.types;
 
+import imagej.service.ImageJService;
+
 import java.util.List;
 
 import net.imglib2.type.numeric.NumericType;
@@ -47,7 +49,9 @@ import org.scijava.plugin.SingletonService;
  * 
  * @author Barry DeZonia
  */
-public interface DataTypeService extends SingletonService<DataType<?>> {
+public interface DataTypeService extends SingletonService<DataType<?>>,
+	ImageJService
+{
 
 	/**
 	 * Returns a list of all DataTypes known to system. List is in order sorted by

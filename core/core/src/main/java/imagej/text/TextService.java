@@ -35,6 +35,8 @@
 
 package imagej.text;
 
+import imagej.service.ImageJService;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -46,7 +48,9 @@ import org.scijava.plugin.HandlerService;
  * 
  * @author Curtis Rueden
  */
-public interface TextService extends HandlerService<File, TextFormat> {
+public interface TextService extends HandlerService<File, TextFormat>,
+	ImageJService
+{
 
 	/** Reads the data from the given file into a string. */
 	String open(File file) throws IOException;

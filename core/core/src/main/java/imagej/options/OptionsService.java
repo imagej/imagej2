@@ -35,6 +35,8 @@
 
 package imagej.options;
 
+import imagej.service.ImageJService;
+
 import org.scijava.plugin.SingletonService;
 
 /**
@@ -44,7 +46,9 @@ import org.scijava.plugin.SingletonService;
  * @author Barry DeZonia
  * @see OptionsPlugin
  */
-public interface OptionsService extends SingletonService<OptionsPlugin> {
+public interface OptionsService extends SingletonService<OptionsPlugin>,
+	ImageJService
+{
 
 	/** Gets the options plugin of the given class, or null if none. */
 	<O extends OptionsPlugin> O getOptions(Class<O> optionsClass);

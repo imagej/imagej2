@@ -35,6 +35,7 @@
 
 package imagej.tool;
 
+import imagej.service.ImageJService;
 import imagej.util.RealCoords;
 
 import java.util.List;
@@ -47,7 +48,7 @@ import org.scijava.plugin.SingletonService;
  * @author Grant Harris
  * @author Curtis Rueden
  */
-public interface ToolService extends SingletonService<Tool> {
+public interface ToolService extends SingletonService<Tool>, ImageJService {
 
 	Tool getTool(String name);
 

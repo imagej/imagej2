@@ -35,6 +35,8 @@
 
 package imagej.io;
 
+import imagej.service.ImageJService;
+
 import java.io.IOException;
 
 import org.scijava.plugin.HandlerService;
@@ -44,7 +46,9 @@ import org.scijava.plugin.HandlerService;
  * 
  * @author Curtis Rueden
  */
-public interface IOService extends HandlerService<String, IOPlugin<?>> {
+public interface IOService extends HandlerService<String, IOPlugin<?>>,
+	ImageJService
+{
 
 	/**
 	 * Gets the most appropriate {@link IOPlugin} for opening data from the given

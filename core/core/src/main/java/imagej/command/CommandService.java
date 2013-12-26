@@ -41,6 +41,7 @@ import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
 import imagej.module.process.PostprocessorPlugin;
 import imagej.module.process.PreprocessorPlugin;
+import imagej.service.ImageJService;
 
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,7 @@ import org.scijava.plugin.PluginService;
  * @see ModuleService
  * @see PluginService
  */
-public interface CommandService extends PTService<Command> {
+public interface CommandService extends PTService<Command>, ImageJService {
 
 	EventService getEventService();
 

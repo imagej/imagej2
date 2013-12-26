@@ -36,6 +36,7 @@
 package imagej.platform;
 
 import imagej.command.CommandService;
+import imagej.service.ImageJService;
 
 import java.io.IOException;
 import java.net.URL;
@@ -50,7 +51,9 @@ import org.scijava.plugin.SingletonService;
  * 
  * @author Curtis Rueden
  */
-public interface PlatformService extends SingletonService<Platform> {
+public interface PlatformService extends SingletonService<Platform>,
+	ImageJService
+{
 
 	EventService getEventService();
 
