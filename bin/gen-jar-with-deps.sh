@@ -48,7 +48,6 @@ done
 mvn -P deps package
 
 # clean up
-rm $ALL/META-INF/annotations/org.scijava.*
 rm -rf "$ALL/imagej"
 
 # show results
