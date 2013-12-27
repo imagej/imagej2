@@ -159,8 +159,7 @@ public class DisplayPostprocessor extends AbstractPostprocessorPlugin {
 
 		// no available displays for this type of output
 		if (log != null) {
-			final String valueClass =
-				output == null ? "null" : output.getClass().getName();
+			final String valueClass = output.getClass().getName();
 			log.warn("Ignoring unsupported output: " + defaultName + " [" +
 				valueClass + "]");
 		}
