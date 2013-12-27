@@ -49,6 +49,7 @@ import java.util.Random;
 import net.imglib2.RandomAccess;
 import net.imglib2.algorithm.stats.ComputeMinMax;
 import net.imglib2.img.Img;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
@@ -166,8 +167,9 @@ public class SaltAndPepper extends ContextCommand {
 		position = new long[inputImage.numDimensions()];
 		accessor = inputImage.randomAccess();
 		if (autoCalcMinMax) {
+			@SuppressWarnings({ "rawtypes", "unchecked" })
 			DataRange range =
-				autoscaleService.getDefaultIntervalRange(inputImage);
+				autoscaleService.getDefaultIntervalRange((ImgPlus) inputImage);
 			pepperValue = range.getMin();
 			saltValue = range.getMax();
 			RealType<?> t = inputImage.firstElement();

@@ -43,8 +43,8 @@ import org.scijava.plugin.SingletonPlugin;
  * 
  * @author Barry DeZonia
  */
-public interface AutoscaleMethod<T extends RealType<T>> extends ImageJPlugin,
-	RichPlugin, SingletonPlugin
+public interface AutoscaleMethod extends ImageJPlugin, RichPlugin,
+	SingletonPlugin
 {
 	
 	/**
@@ -53,5 +53,5 @@ public interface AutoscaleMethod<T extends RealType<T>> extends ImageJPlugin,
 	 * 
 	 * @return The calculated range of values.
 	 */
-	DataRange getRange(IterableInterval<T> interval);
+	<T extends RealType<T>> DataRange getRange(IterableInterval<T> interval);
 }

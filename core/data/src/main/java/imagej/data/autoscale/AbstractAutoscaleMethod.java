@@ -31,8 +31,6 @@
 
 package imagej.data.autoscale;
 
-import net.imglib2.type.numeric.RealType;
-
 import org.scijava.plugin.AbstractRichPlugin;
 
 /**
@@ -41,8 +39,8 @@ import org.scijava.plugin.AbstractRichPlugin;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-public abstract class AbstractAutoscaleMethod<T extends RealType<T>> extends
-	AbstractRichPlugin implements AutoscaleMethod<T>
+public abstract class AbstractAutoscaleMethod extends
+	AbstractRichPlugin implements AutoscaleMethod
 {
 	// NB: No implementation needed.
 }

@@ -48,7 +48,6 @@ import org.scijava.plugin.SingletonService;
  * @author Barry DeZonia
  * @see AutoscaleMethod
  */
-@SuppressWarnings("rawtypes")
 public interface AutoscaleService extends SingletonService<AutoscaleMethod>,
 	ImageJService
 {
@@ -80,8 +79,8 @@ public interface AutoscaleService extends SingletonService<AutoscaleMethod>,
 	 * 
 	 * @return The calculated range of values.
 	 */
-	DataRange getDefaultIntervalRange(
-		IterableInterval<? extends RealType<?>> interval);
+	<T extends RealType<T>> DataRange getDefaultIntervalRange(
+		IterableInterval<T> interval);
 
 	/**
 	 * Calculates the range of interest from the data contained in the given
@@ -89,6 +88,6 @@ public interface AutoscaleService extends SingletonService<AutoscaleMethod>,
 	 * 
 	 * @return The calculated range of values.
 	 */
-	DataRange getDefaultRandomAccessRange(
-		RandomAccessibleInterval<? extends RealType<?>> interval);
+	<T extends RealType<T>> DataRange getDefaultRandomAccessRange(
+		RandomAccessibleInterval<T> interval);
 }

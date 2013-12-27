@@ -46,8 +46,8 @@ import org.scijava.plugin.Plugin;
  * @author Barry DeZonia
  */
 @Plugin(type = AutoscaleMethod.class, name = "Confidence Interval")
-public class ConfidenceIntervalAutoscaleMethod<T extends RealType<T>> extends
-	AbstractAutoscaleMethod<T>
+public class ConfidenceIntervalAutoscaleMethod extends
+	AbstractAutoscaleMethod
 {
 
 	// -- instance variables --
@@ -123,7 +123,7 @@ public class ConfidenceIntervalAutoscaleMethod<T extends RealType<T>> extends
 	// -- AutoscaleMethod methods --
 
 	@Override
-	public DataRange getRange(IterableInterval<T> interval) {
+	public <T extends RealType<T>> DataRange getRange(IterableInterval<T> interval) {
 		// pass one through data
 		DataRange range = autoscaleService.getDefaultIntervalRange(interval);
 		// pass two through data

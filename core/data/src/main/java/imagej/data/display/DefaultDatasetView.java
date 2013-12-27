@@ -168,8 +168,10 @@ public class DefaultDatasetView extends AbstractDataView implements DatasetView
 			RandomAccessibleInterval<? extends RealType<?>> interval =
 				channelData(data, c);
 			interval = xyPlane(interval);
+			@SuppressWarnings({ "rawtypes", "unchecked" })
 			final DataRange result =
-				autoscaleService.getDefaultRandomAccessRange(interval);
+				autoscaleService
+					.getDefaultRandomAccessRange((RandomAccessibleInterval) interval);
 			min = result.getMin();
 			max = result.getMax();
 			// cache min/max in metadata for next time

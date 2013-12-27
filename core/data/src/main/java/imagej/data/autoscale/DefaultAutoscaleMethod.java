@@ -49,15 +49,13 @@ import org.scijava.plugin.PluginService;
  * @author Barry DeZonia
  */
 @Plugin(type = AutoscaleMethod.class, name = "Default")
-public class DefaultAutoscaleMethod<T extends RealType<T>> extends
-	AbstractAutoscaleMethod<T>
-{
+public class DefaultAutoscaleMethod extends AbstractAutoscaleMethod {
 
 	@Parameter
 	private PluginService pluginService;
 
 	@Override
-	public DataRange getRange(final IterableInterval<T> interval)
+	public <T extends RealType<T>> DataRange getRange(final IterableInterval<T> interval)
 	{
 		@SuppressWarnings("rawtypes")
 		final List<MinMaxMethod> methods =
