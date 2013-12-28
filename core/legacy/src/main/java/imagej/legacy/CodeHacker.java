@@ -814,9 +814,8 @@ public class CodeHacker {
 	private CtBehavior getBehavior(final String fullClass, final String methodSig) {
 		if (methodSig.indexOf("<init>") < 0) {
 			return getMethod(fullClass, methodSig);
-		} else {
-			return getConstructor(fullClass, methodSig);
 		}
+		return getConstructor(fullClass, methodSig);
 	}
 
 	/**
