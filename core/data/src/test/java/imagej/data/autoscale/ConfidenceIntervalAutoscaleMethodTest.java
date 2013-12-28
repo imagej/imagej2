@@ -70,6 +70,6 @@ public class ConfidenceIntervalAutoscaleMethodTest {
 		byte i = 0;
 		for (ByteType b : img)
 			b.set(i++);
-		return (Img<RealType>) (Img) img;
+		return (Img) img;
 	}
 }

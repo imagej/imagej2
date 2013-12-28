@@ -97,7 +97,7 @@ public class DefaultDataTypeService extends
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public Class<DataType<?>> getPluginType() {
-		return (Class<DataType<?>>) (Class) DataType.class;
+		return (Class) DataType.class;
 	}
 
 	@Override

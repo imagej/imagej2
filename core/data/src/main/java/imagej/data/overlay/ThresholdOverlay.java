@@ -452,9 +452,9 @@ public class ThresholdOverlay extends AbstractOverlay
 	private void reinit() {
 		ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
 		function = new RealImageFunction(imgPlus, imgPlus.firstElement());
-		conditionWithin.setFunction( (Function) function);
-		conditionLess.setFunction( (Function) function);
-		conditionGreater.setFunction( (Function) function);
+		conditionWithin.setFunction(function);
+		conditionLess.setFunction(function);
+		conditionGreater.setFunction(function);
 		// no change needed for conditionOutside
 		long[] dims = new long[imgPlus.numDimensions()];
 		imgPlus.dimensions(dims);

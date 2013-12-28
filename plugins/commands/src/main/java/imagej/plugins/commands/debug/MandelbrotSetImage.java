@@ -177,7 +177,7 @@ public class MandelbrotSetImage extends InteractiveCommand {
 	}
 
 	private void updateDisplay() {
-		Dataset ds = imageDisplayService.getActiveDataset((ImageDisplay)display);
+		Dataset ds = imageDisplayService.getActiveDataset(display);
 		ImgPlus<? extends RealType<?>> imgPlus = dataset().getImgPlus();
 		ds.setImgPlus(imgPlus);
 		removeOverlays();

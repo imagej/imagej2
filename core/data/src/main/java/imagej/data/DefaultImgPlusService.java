@@ -79,7 +79,7 @@ public class DefaultImgPlusService extends AbstractService implements
 	// see Javadoc
 	public <T extends Type<T>> ImgPlus<T> asType(ImgPlus<?> ip, T type) {
 		if (isBackedAs(ip, type.getClass())) {
-			return (ImgPlus<T>) (ImgPlus) ip;
+			return (ImgPlus) ip;
 		}
 		return null;
 	}
@@ -87,7 +87,7 @@ public class DefaultImgPlusService extends AbstractService implements
 	// see Javadoc
 	public ImgPlus<Type<?>> typed(ImgPlus<?> ip) {
 		if (isBackedAs(ip, Type.class)) {
-			return (ImgPlus<Type<?>>) (ImgPlus) ip;
+			return (ImgPlus) ip;
 		}
 		return null;
 	}
@@ -95,7 +95,7 @@ public class DefaultImgPlusService extends AbstractService implements
 	// see Javadoc
 	public ImgPlus<NumericType<?>> numeric(ImgPlus<?> ip) {
 		if (isBackedAs(ip, NumericType.class)) {
-			return (ImgPlus<NumericType<?>>) (ImgPlus) ip;
+			return (ImgPlus) ip;
 		}
 		return null;
 	}
@@ -103,7 +103,7 @@ public class DefaultImgPlusService extends AbstractService implements
 	// see Javadoc
 	public ImgPlus<ComplexType<?>> complex(ImgPlus<?> ip) {
 		if (isBackedAs(ip, ComplexType.class)) {
-			return (ImgPlus<ComplexType<?>>) (ImgPlus) ip;
+			return (ImgPlus) ip;
 		}
 		return null;
 	}
@@ -111,7 +111,7 @@ public class DefaultImgPlusService extends AbstractService implements
 	// see Javadoc
 	public ImgPlus<RealType<?>> real(ImgPlus<?> ip) {
 		if (isBackedAs(ip, RealType.class)) {
-			return (ImgPlus<RealType<?>>) (ImgPlus) ip;
+			return (ImgPlus) ip;
 		}
 		return null;
 	}
@@ -119,7 +119,7 @@ public class DefaultImgPlusService extends AbstractService implements
 	// see Javadoc
 	public ImgPlus<IntegerType<?>> integer(ImgPlus<?> ip) {
 		if (isBackedAs(ip, IntegerType.class)) {
-			return (ImgPlus<IntegerType<?>>) (ImgPlus) ip;
+			return (ImgPlus) ip;
 		}
 		return null;
 	}

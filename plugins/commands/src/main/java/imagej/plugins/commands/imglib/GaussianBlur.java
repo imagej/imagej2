@@ -86,7 +86,7 @@ public class GaussianBlur<T extends RealType<T>> extends
 	@Override
 	public void run() {
 		double[] sigmas = sigmas();
-		Img<T> target = (Img<T>) (Img) dataset.getImgPlus();
+		Img<T> target = (Img) dataset.getImgPlus();
 		Img<T> input = target.copy();
 		ExtendedRandomAccessibleInterval<T, ?> paddedInput =
 			Views.extendMirrorSingle(input);

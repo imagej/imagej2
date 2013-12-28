@@ -390,11 +390,11 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 			Style style = scheme.getStyle(i);
 			if (style == null || style.font == null)
 				continue;
-			float size = (float)Math.max(5, style.font.getSize2D() * factor);
+			float size = Math.max(5, style.font.getSize2D() * factor);
 			style.font = style.font.deriveFont(size);
 		}
 		Font font = getFont();
-		float size = (float)Math.max(5, font.getSize2D() * factor);
+		float size = Math.max(5, font.getSize2D() * factor);
 		setFont(font.deriveFont(size));
 		setSyntaxScheme(scheme);
 		Component parent = getParent();
