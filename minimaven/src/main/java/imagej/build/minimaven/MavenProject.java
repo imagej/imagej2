@@ -94,7 +94,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 
 	private static enum BooleanState {
 		UNKNOWN, YES, NO
-	};
+	}
 	private BooleanState upToDate = BooleanState.UNKNOWN,
 		jarUpToDate = BooleanState.UNKNOWN;
 

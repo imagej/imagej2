@@ -250,7 +250,7 @@ public class XMLFileReader extends DefaultHandler {
 						file.overriddenUpdateSites.put(current.updateSite, current);
 				} else if (getRank(files, updateSite) >= getRank(files, file.updateSite)) {
 					if ((updateSite != null && updateSite.equals(file.updateSite)) || (updateSite == null && file.updateSite == null)) {
-						; // simply update the object
+						 // simply update the object
 					} else {
 						for (String site : file.overriddenUpdateSites.keySet())
 							current.overriddenUpdateSites.put(site, file.overriddenUpdateSites.get(site));

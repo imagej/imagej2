@@ -56,7 +56,7 @@ public class ByteCodeAnalyzer implements Iterable<String> {
 	private Method[] methods;
 	private Attribute[] attributes;
 
-	public enum Mode { CONSTANTS, INTERFACES, FIELDS, METHODS, ALL };
+	public enum Mode { CONSTANTS, INTERFACES, FIELDS, METHODS, ALL }
 
 	public ByteCodeAnalyzer(final byte[] buffer) {
 		this(buffer, false);

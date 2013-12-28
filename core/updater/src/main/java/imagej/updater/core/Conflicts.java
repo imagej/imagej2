@@ -77,7 +77,7 @@ public class Conflicts {
 			public String toString() {
 				return Util.toCamelCase(name());
 			}
-		};
+		}
 		private final Severity severity;
 		protected final String filename;
 		private final String conflict;
