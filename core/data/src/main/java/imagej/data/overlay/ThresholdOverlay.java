@@ -451,10 +451,13 @@ public class ThresholdOverlay extends AbstractOverlay
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void reinit() {
 		ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
+		// FIXME: This generic typing is broken. Stop using raw types.
 		function = new RealImageFunction(imgPlus, imgPlus.firstElement());
-		conditionWithin.setFunction(function);
-		conditionLess.setFunction(function);
-		conditionGreater.setFunction(function);
+		// NB: Separate variable is necessary to avoid javac compile errors.
+		final Function f = function;
+		conditionWithin.setFunction(f);
+		conditionLess.setFunction(f);
+		conditionGreater.setFunction(f);
 		// no change needed for conditionOutside
 		long[] dims = new long[imgPlus.numDimensions()];
 		imgPlus.dimensions(dims);
