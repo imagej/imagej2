@@ -67,8 +67,6 @@ public class PointFigure extends AbstractAttributedFigure {
 	private Color fillColor = Color.yellow;
 	private Color lineColor = Color.white;
 
-	/** Creates a new instance.
-	 * @param swingPointTool TODO*/
 	public PointFigure() {
 		this(new double[2]);
 	}

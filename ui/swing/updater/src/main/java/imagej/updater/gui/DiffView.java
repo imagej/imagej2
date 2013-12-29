@@ -199,7 +199,7 @@ public class DiffView extends JScrollPane {
 	/**
 	 * Add some warnings.
 	 * 
-	 * @param text
+	 * @param warning
 	 *            the text to add
 	 */
 	public void warn(String warning) {
