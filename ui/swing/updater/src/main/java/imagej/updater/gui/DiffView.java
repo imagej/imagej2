@@ -116,6 +116,7 @@ public class DiffView extends JScrollPane {
 		getVerticalScrollBar().setUnitIncrement(10);
 
 		textPane.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent event) {
 				ActionListener action = getAction(event);
 				if (action != null)
