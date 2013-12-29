@@ -55,6 +55,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.WindowConstants;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -383,7 +384,7 @@ public class DiffView extends JScrollPane {
 		};
 
 		final JFrame frame = new JFrame("git show");
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		frame.setSize(640, 480);
 		frame.getContentPane().add(diff);
 		frame.addWindowListener(new WindowAdapter() {
