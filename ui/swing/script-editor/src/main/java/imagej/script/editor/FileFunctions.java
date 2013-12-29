@@ -149,10 +149,8 @@ public class FileFunctions {
 			int offset = 0;
 			while (offset < buffer.length) {
 				int count = in.read(buffer, offset, buffer.length - offset);
-				if (count < 0)
-					break;
-				else
-					offset += count;
+				if (count < 0) break;
+				offset += count;
 			}
 			in.close();
 			while (offset > 0)

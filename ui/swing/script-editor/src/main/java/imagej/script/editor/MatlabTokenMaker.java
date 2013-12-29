@@ -834,9 +834,8 @@ public class MatlabTokenMaker extends AbstractJFlexTokenMaker {
 						if (eof) {
 							zzInput = YYEOF;
 							break zzForAction;
-						} else {
-							zzInput = zzBufferL[zzCurrentPosL++];
 						}
+						zzInput = zzBufferL[zzCurrentPosL++];
 					}
 					int zzNext = zzTransL[ zzRowMapL[zzState] + zzCMapL[zzInput] ];
 					if (zzNext == -1) break zzForAction;
