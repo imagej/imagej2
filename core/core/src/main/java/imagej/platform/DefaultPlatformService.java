@@ -40,8 +40,8 @@ import imagej.platform.event.AppMenusCreatedEvent;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.scijava.event.EventHandler;
@@ -138,6 +138,17 @@ public final class DefaultPlatformService extends
 		return false;
 	}
 
+	@Override
+	public List<? extends Platform> filterInstances(List<Platform> list) {
+		final Iterator<Platform> iter = list.iterator();
+		while (iter.hasNext()) {
+			if (!iter.next().isTarget()) {
+				iter.remove();
+			}
+		}
+		return list;
+	}
+
 	// -- PTService methods --
 
 	@Override
@@ -150,7 +161,8 @@ public final class DefaultPlatformService extends
 	@Override
 	public void initialize() {
 		super.initialize();
-		final List<Platform> platforms = discoverTargetPlatforms();
+		/** Discovers target platform handlers. */
+		final List<Platform> platforms = getInstances();
 		targetPlatforms = Collections.unmodifiableList(platforms);
 		for (final Platform platform : platforms) {
 			log.info("Configuring platform: " + platform.getClass().getName());
@@ -173,18 +185,6 @@ public final class DefaultPlatformService extends
 	@EventHandler
 	protected void onEvent(final AppMenusCreatedEvent event) {
 		if (registerAppMenus(event.getMenus())) event.consume();
-	}
-
-	// -- Helper methods --
-
-	/** Discovers target platform handlers. */
-	private List<Platform> discoverTargetPlatforms() {
-		final List<Platform> platforms = new ArrayList<Platform>();
-		for (final Platform platform : getInstances()) {
-			if (!platform.isTarget()) continue;
-			platforms.add(platform);
-		}
-		return platforms;
 	}
 
 }
