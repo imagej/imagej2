@@ -89,8 +89,7 @@ public class DefaultScriptService extends
 	private LogService log;
 
 	/** Index of registered scripting languages. */
-	private final ScriptLanguageIndex scriptLanguageIndex =
-		new ScriptLanguageIndex();
+	private ScriptLanguageIndex scriptLanguageIndex = null;
 
 	/** Index of available scripts, by script <em>file</em>. */
 	private final HashMap<File, ScriptInfo> scripts =
@@ -103,23 +102,28 @@ public class DefaultScriptService extends
 
 	/** Gets the index of available scripting languages. */
 	@Override
-	public ScriptLanguageIndex getIndex() {
+	public synchronized ScriptLanguageIndex getIndex() {
+		if (scriptLanguageIndex == null) {
+			scriptLanguageIndex = new ScriptLanguageIndex();
+			reloadLanguages();
+			reloadScripts();
+		}
 		return scriptLanguageIndex;
 	}
 
 	@Override
 	public List<ScriptLanguage> getLanguages() {
-		return new ArrayList<ScriptLanguage>(scriptLanguageIndex);
+		return new ArrayList<ScriptLanguage>(getIndex());
 	}
 
 	@Override
 	public ScriptLanguage getLanguageByExtension(final String extension) {
-		return scriptLanguageIndex.getByExtension(extension);
+		return getIndex().getByExtension(extension);
 	}
 
 	@Override
 	public ScriptLanguage getLanguageByName(final String name) {
-		return scriptLanguageIndex.getByName(name);
+		return getIndex().getByName(name);
 	}
 
 	// -- ScriptService methods - scripts --
@@ -192,12 +196,12 @@ public class DefaultScriptService extends
 
 	@Override
 	public boolean canHandleFile(final File file) {
-		return scriptLanguageIndex.canHandleFile(file);
+		return getIndex().canHandleFile(file);
 	}
 
 	@Override
 	public boolean canHandleFile(final String fileName) {
-		return scriptLanguageIndex.canHandleFile(fileName);
+		return getIndex().canHandleFile(fileName);
 	}
 
 	@Override
@@ -233,14 +237,6 @@ public class DefaultScriptService extends
 	@Override
 	public Class<ScriptLanguage> getPluginType() {
 		return ScriptLanguage.class;
-	}
-
-	// -- Service methods --
-
-	@Override
-	public void initialize() {
-		reloadLanguages();
-		reloadScripts();
 	}
 
 	// -- Helper methods --
