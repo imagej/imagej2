@@ -54,7 +54,7 @@ public class IJDelegationSelectionTool extends DelegationSelectionTool
 	}
 
 	@Override
-	public JHotDrawAdapter getAdapter() {
+	public JHotDrawAdapter<?> getAdapter() {
 		return null;
 	}
 
