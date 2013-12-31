@@ -1080,7 +1080,7 @@ public class CodeHacker {
 		}
 	}
 
-	private void skipAWTInstantiations(CtClass clazz) throws CannotCompileException, NotFoundException {
+	private void skipAWTInstantiations(CtClass clazz) throws CannotCompileException {
 		clazz.instrument(new ExprEditor() {
 			@Override
 			public void edit(NewExpr expr) throws CannotCompileException {
