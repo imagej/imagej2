@@ -393,7 +393,6 @@ public class CodeHacker {
 	 *            the index of the parameter containing the application name
 	 * @param replacement
 	 *            the code to use instead of the specified parameter
-	 * @throws CannotCompileException
 	 */
 	protected void replaceAppNameInNew(final String fullClass,
 			final String methodSig, final String newClassName,
@@ -450,7 +449,6 @@ public class CodeHacker {
 	 *            the index of the parameter containing the application name
 	 * @param replacement
 	 *            the code to use instead of the specified parameter
-	 * @throws CannotCompileException
 	 */
 	protected void replaceAppNameInCall(final String fullClass,
 			final String methodSig, final String calledMethodName,
@@ -554,8 +552,6 @@ public class CodeHacker {
 	 * 
 	 * @param fullClass the class to patch
 	 * @param methodNames the names of the methods to replace
-	 * @throws NotFoundException
-	 * @throws CannotCompileException
 	 */
 	public void replaceWithStubMethods(final String fullClass, final String... methodNames) {
 		final CtClass clazz = getClass(fullClass);
@@ -575,7 +571,6 @@ public class CodeHacker {
 	 * 
 	 * @param fullClass
 	 * @param fullNewSuperclass
-	 * @throws NotFoundException
 	 */
 	public void replaceSuperclass(String fullClass, String fullNewSuperclass) {
 		final CtClass clazz = getClass(fullClass);
@@ -605,8 +600,6 @@ public class CodeHacker {
 	 * This is used by the partial headless support of legacy code.
 	 * 
 	 * @param fullClass
-	 * @throws CannotCompileException
-	 * @throws NotFoundException
 	 */
 	public void skipAWTInstantiations(String fullClass) {
 		try {
@@ -720,8 +713,8 @@ public class CodeHacker {
 	 * Loads the given, possibly modified, class.
 	 * <p>
 	 * This method must be called to confirm any changes made with
-	 * {@link #insertAfterMethod}, {@link #insertBeforeMethod},
-	 * or {@link #insertMethod}.
+	 * {@link #insertAtBottomOfMethod}, {@link #insertAtTopOfMethod},
+	 * or {@link #insertNewMethod}.
 	 * </p>
 	 * 
 	 * @param fullClass Fully qualified class name to load.
@@ -736,8 +729,8 @@ public class CodeHacker {
 	 * Loads the given, possibly modified, class.
 	 * <p>
 	 * This method must be called to confirm any changes made with
-	 * {@link #insertAfterMethod}, {@link #insertBeforeMethod},
-	 * or {@link #insertMethod}.
+	 * {@link #insertAtBottomOfMethod}, {@link #insertAtTopOfMethod},
+	 * or {@link #insertNewMethod}.
 	 * </p>
 	 * 
 	 * @param classRef class to load.
@@ -958,7 +951,7 @@ public class CodeHacker {
 	/**
 	 * Determines whether the specified class has the specified method.
 	 * 
-	 * @param fullName the class name
+	 * @param fullClass the class name
 	 * @param methodSig the signature of the method
 	 * @return whether the class has the specified method
 	 */
@@ -1132,7 +1125,7 @@ public class CodeHacker {
 	/**
 	 * Augments all <code>startsWith("http://")</code> calls with <code>|| startsWith("https://")</code>.
 	 * 
-	 * @param fullName the class containing the method to instrument
+	 * @param fullClass the class containing the method to instrument
 	 * @param methodSig the signature of the method to instrument
 	 */
 	public void handleHTTPS(final String fullClass, final String methodSig) {
