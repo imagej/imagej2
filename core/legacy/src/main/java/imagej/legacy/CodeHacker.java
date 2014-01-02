@@ -1245,7 +1245,7 @@ public class CodeHacker {
 	private void disassemble(CtBehavior method, PrintStream out) {
 		out.println(method.getLongName());
         MethodInfo info = method.getMethodInfo2();
-        ConstPool pool = info.getConstPool();
+        ConstPool constPool = info.getConstPool();
         CodeAttribute code = info.getCodeAttribute();
         if (code == null)
             return;
@@ -1259,7 +1259,7 @@ public class CodeHacker {
                 throw new RuntimeException(e);
             }
 
-            out.println(pos + ": " + InstructionPrinter.instructionString(iterator, pos, pool));
+            out.println(pos + ": " + InstructionPrinter.instructionString(iterator, pos, constPool));
         }
 
 		out.println("");
