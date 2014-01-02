@@ -78,6 +78,11 @@ import org.scijava.util.ProcessUtils;
  */
 public class DiffView extends JScrollPane {
 	private static final long serialVersionUID = 1L;
+
+	protected static final String ACTION_ATTRIBUTE = "ACTION";
+	protected static final String FONT = "Courier";
+	protected static final int FONT_SIZE = 12, BIG_FONT_SIZE = 15;
+
 	protected JPanel panel;
 	protected JTextPane textPane;
 	protected Cursor normalCursor, handCursor;
@@ -85,9 +90,6 @@ public class DiffView extends JScrollPane {
 	protected StyledDocument document;
 	protected int adds, removes;
 	protected boolean inHeader = true;
-	protected final static String ACTION_ATTRIBUTE = "ACTION";
-	protected final static String font = "Courier";
-	protected final static int fontSize = 12, bigFontSize = 15;
 
 	/**
 	 * Create a colorized diff view.
@@ -99,12 +101,12 @@ public class DiffView extends JScrollPane {
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		getViewport().setView(panel);
 
-		normal = getStyle(Color.black, false, false, font, fontSize);
-		bigBold = getStyle(Color.blue, false, true, font, bigFontSize);
-		bold = getStyle(Color.black, false, true, font, fontSize);
-		italic = getStyle(Color.black, true, false, font, fontSize);
-		red = getStyle(Color.red, false, false, font, fontSize);
-		green = getStyle(new Color(0, 128, 32), false, false, font, fontSize);
+		normal = getStyle(Color.black, false, false, FONT, FONT_SIZE);
+		bigBold = getStyle(Color.blue, false, true, FONT, BIG_FONT_SIZE);
+		bold = getStyle(Color.black, false, true, FONT, FONT_SIZE);
+		italic = getStyle(Color.black, true, false, FONT, FONT_SIZE);
+		red = getStyle(Color.red, false, false, FONT, FONT_SIZE);
+		green = getStyle(new Color(0, 128, 32), false, false, FONT, FONT_SIZE);
 
 		textPane = new JTextPane();
 		normalCursor = textPane.getCursor();
@@ -260,8 +262,8 @@ public class DiffView extends JScrollPane {
 		SimpleAttributeSet style = new SimpleAttributeSet();
 		StyleConstants.setForeground(style, Color.blue);
 		StyleConstants.setUnderline(style, true);
-		StyleConstants.setFontFamily(style, font);
-		StyleConstants.setFontSize(style, fontSize);
+		StyleConstants.setFontFamily(style, FONT);
+		StyleConstants.setFontSize(style, FONT_SIZE);
 		style.addAttribute(ACTION_ATTRIBUTE, action);
 		return style;
 	}
