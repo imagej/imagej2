@@ -84,11 +84,7 @@ public class SwitchToModernMode implements PlugIn {
 		}
 	}
 
-	/**
-	 * Register this ImageJ 1.x plugin.
-	 * 
-	 * @param service the legacy service holding the ImageJ context
-	 */
+	/** Registers this ImageJ 1.x plugin. */
 	public static void registerMenuItem() {
 		// inject Help>Switch to Modern Mode
 		@SuppressWarnings("unchecked")
