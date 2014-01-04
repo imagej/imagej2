@@ -275,6 +275,7 @@ public class TranslateImage<T extends RealType<T>> extends ContextCommand {
 		// instead come up with smarter algo that duplicates less (like a plane
 		// at a time assuming interpolator only looks in curr plane).
 
+		@SuppressWarnings("unchecked")
 		ImgPlus<T> dest = (ImgPlus<T>) ds.getImgPlus();
 		ImgPlus<T> src = dest.copy();
 

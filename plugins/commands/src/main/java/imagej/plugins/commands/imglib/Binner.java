@@ -280,6 +280,7 @@ public class Binner<T extends RealType<T>> extends ContextCommand {
 		long[] currPos = new long[newDs.numDimensions()];
 		long[] lastPos = new long[newDs.numDimensions()];
 		long[] translation = new long[ds.numDimensions()];
+		@SuppressWarnings("unchecked")
 		Cursor<T> cursor = (Cursor<T>) newDs.getImgPlus().localizingCursor();
 		T var = cursor.get().createVariable();
 		while (cursor.hasNext()) {
@@ -317,6 +318,7 @@ public class Binner<T extends RealType<T>> extends ContextCommand {
 	}
 
 	private Function<PointSet, T> function(Dataset ds) {
+		@SuppressWarnings("unchecked")
 		Img<T> img = (Img<T>) ds.getImgPlus();
 		OutOfBoundsMirrorFactory<T, RandomAccessibleInterval<T>> oobFactory =
 			new OutOfBoundsMirrorFactory<T, RandomAccessibleInterval<T>>(

@@ -390,6 +390,7 @@ public class ResliceImage<T extends RealType<T>> extends ContextCommand {
 
 		long[] destDims = newSize(ds, spaces);
 		ImgPlus<T> dest = newData(destDims, ds);
+		@SuppressWarnings("unchecked")
 		ImgPlus<T> src = (ImgPlus<T>) ds.getImgPlus();
 
 		// TODO: fill empty pixels with the current background color
