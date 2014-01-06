@@ -61,6 +61,9 @@ public class AdaptedScriptLanguage extends AbstractScriptLanguage {
 	 * {@link ScriptEngineFactory}.
 	 */
 	public AdaptedScriptLanguage(final ScriptEngineFactory base) {
+		if (base == null) {
+			throw new NullPointerException();
+		}
 		this.base = base;
 	}
 
