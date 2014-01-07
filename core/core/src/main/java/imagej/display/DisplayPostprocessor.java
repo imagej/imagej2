@@ -167,6 +167,12 @@ public class DisplayPostprocessor extends AbstractPostprocessorPlugin {
 
 	private boolean addToExisting(final Object output) {
 		// TODO - find a general way to decide this
+		// Current thinking is that with the pending display refactoring, each
+		// display will stop being a list and instead handle a single object.
+		// Once that happens, the idea of adding a new output to an existing display
+		// will largely disappear, obviating the need for this logic. In the case
+		// of images specifically there could be another PostprocessorPlugin that
+		// handles that special case in some fashion, though.
 		return false;
 	}
 
