@@ -636,6 +636,7 @@ public class LegacyExtensions {
 						extraPluginJarsHandler(methodName + "(file);"));
 			}
 		}
+		// add the extra .jar files to the list of plugin .jar files to be processed.
 		hacker.insertAtBottomOfMethod("ij.Menus",
 				"public static synchronized java.lang.String[] getPlugins()",
 				extraPluginJarsHandler("if (jarFiles == null) jarFiles = new java.util.Vector();" +
