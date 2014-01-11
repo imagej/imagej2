@@ -59,7 +59,7 @@ import org.scijava.plugin.Plugin;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Noise", mnemonic = 'n'),
 	@Menu(label = "Noise Reduction", mnemonic = 'r'),
-	@Menu(label = "Trimmed Mean", mnemonic = 't') })
+	@Menu(label = "Trimmed Mean", mnemonic = 't') }, headless = true)
 public class NoiseReductionTrimmedMean<T extends RealType<T>> extends
 	AbstractNoiseReducerPlugin<T>
 {
