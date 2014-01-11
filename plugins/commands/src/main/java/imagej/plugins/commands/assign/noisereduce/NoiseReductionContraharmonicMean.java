@@ -59,7 +59,7 @@ import org.scijava.plugin.Plugin;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Noise", mnemonic = 'n'),
 	@Menu(label = "Noise Reduction", mnemonic = 'r'),
-	@Menu(label = "Contraharmonic Mean") })
+	@Menu(label = "Contraharmonic Mean") }, headless = true )
 public class NoiseReductionContraharmonicMean<T extends RealType<T>> extends
 	AbstractNoiseReducerPlugin<T>
 {

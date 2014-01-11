@@ -57,7 +57,7 @@ import org.scijava.plugin.Plugin;
 		weight = MenuConstants.PROCESS_WEIGHT,
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Noise", mnemonic = 'n'),
-	@Menu(label = "Noise Reduction", mnemonic = 'r'), @Menu(label = "Mean") })
+	@Menu(label = "Noise Reduction", mnemonic = 'r'), @Menu(label = "Mean") }, headless = true)
 public class NoiseReductionMean<T extends RealType<T>> extends
 	AbstractNoiseReducerPlugin<T>
 {

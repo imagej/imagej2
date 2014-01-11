@@ -72,7 +72,7 @@ import org.scijava.plugin.Plugin;
 		mnemonic = MenuConstants.PROCESS_MNEMONIC),
 	@Menu(label = "Noise", mnemonic = 'n'),
 	@Menu(label = "Noise Reduction", mnemonic = 'r'),
-	@Menu(label = "Adaptive Median") })
+	@Menu(label = "Adaptive Median") }, headless = true)
 public class NoiseReductionAdaptiveMedian<U extends RealType<U>> extends
 	ContextCommand
 {
