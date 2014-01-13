@@ -401,6 +401,10 @@ public class IJ1Helper extends AbstractContextual {
 			radioButtons.add(getMacroParameter(label, defaultItem));
 		}
 
+		public List<String> getRadioButtonGroups() {
+			return radioButtons;
+		}
+
 		/** Returns the selected item in the next radio button group. */
 		public String getNextRadioButton() {
 			return radioButtons.get(radioButtonIndex++);

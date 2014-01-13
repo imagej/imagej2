@@ -61,7 +61,7 @@ public class ErodeBinaryImage extends AbstractMorphOpsCommand {
 
 	@Override
 	protected void updateDataset(Dataset ds) {
-		Erode op = new Erode(getConnectedType(), 1);
+		Erode op = new Erode(getConnectedType(), null, 1);
 		Dataset copy = ds.duplicate();
 		Img<BitType> copyData = (Img<BitType>) copy.getImgPlus();
 		Img<BitType> resultData = (Img<BitType>) ds.getImgPlus();
