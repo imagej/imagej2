@@ -259,7 +259,7 @@ public class Conflicts {
 	}
 
 	protected void listUploadIssues() {
-		final DependencyMap toUpload = new FilesCollection.DependencyMap();
+		final DependencyMap needsUpload = new FilesCollection.DependencyMap();
 		for (final FileObject file : files.toUpload()) {
 			if (file.getTimestamp() != Util.getTimestamp(files.prefix(file))) {
 				conflicts.add(timestampChanged(file));
@@ -270,8 +270,9 @@ public class Conflicts {
 				if (dep.getAction() != Action.UPLOAD
 						&& (dep.isInstallable() || dep.isLocalOnly()
 								|| dep.isObsolete() || dep.getStatus().isValid(
-								Action.UPLOAD)))
-					toUpload.add(dep, file);
+								Action.UPLOAD))) {
+					needsUpload.add(dep, file);
+				}
 			}
 			// test whether there are conflicting versions of the same file
 			if (!files.ignoredConflicts.contains(file) && file.filename.endsWith(".jar")) {
@@ -287,8 +288,8 @@ public class Conflicts {
 				}
 			}
 		}
-		for (final FileObject file : toUpload.keySet()) {
-			conflicts.add(needUpload(file, toUpload.get(file)));
+		for (final FileObject file : needsUpload.keySet()) {
+			conflicts.add(needUpload(file, needsUpload.get(file)));
 		}
 
 		// Replace dependencies on to-be-removed files

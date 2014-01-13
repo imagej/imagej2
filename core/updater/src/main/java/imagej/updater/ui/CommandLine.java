@@ -45,6 +45,7 @@ import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.FilesCollection.Filter;
+import imagej.updater.core.Dependency;
 import imagej.updater.core.FilesUploader;
 import imagej.updater.core.Installer;
 import imagej.updater.core.UpdateSite;
@@ -671,6 +672,18 @@ public class CommandLine {
 				if (dependency.willNotBeInstalled()
 						&& updateSite.equals(dependency.updateSite)) {
 					file.removeDependency(dependency.getFilename(false));
+				}
+			}
+			if (ignoreWarnings) {
+				final List<String> obsoleteDependencies = new ArrayList<String>();
+				for (final Dependency dependency : file.getDependencies()) {
+					final FileObject dep = files.get(dependency.filename);
+					if (dep != null && dep.isObsolete()) {
+						obsoleteDependencies.add(dependency.filename);
+					}
+				}
+				for (final String filename : obsoleteDependencies) {
+					file.removeDependency(filename);
 				}
 			}
 		}
