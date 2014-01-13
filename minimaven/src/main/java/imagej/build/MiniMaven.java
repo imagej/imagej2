@@ -75,6 +75,8 @@ public class MiniMaven {
 				+ "\tclean the project\n"
 				+ "get-dependencies\n"
 				+ "\tdownload the dependencies of the project\n"
+				+ "install-artifact-and-dependencies\n"
+				+ "\tdownload the specified artifact (needs no pom.xml)\n"
 				+ "list\n"
 				+ "\tshow list of projects\n"
 				+ "dependency-tree\n"
@@ -115,6 +117,21 @@ public class MiniMaven {
 			"true".equals(getSystemProperty("minimaven.download.automatically", "true")),
 			"true".equals(getSystemProperty("minimaven.verbose", "false")),
 			"true".equals(getSystemProperty("minimaven.debug", "false")));
+
+		if ("install-artifact-and-dependencies".equals(command)) {
+			final String groupId = getSystemProperty("groupId", "net.imagej");
+			final String artifactId = getSystemProperty("artifactId", null);
+			final String version = getSystemProperty("version", null);
+			final String ijDir = getSystemProperty(BuildEnvironment.IMAGEJ_APP_DIRECTORY, null);
+
+			if (artifactId == null || version == null || ijDir == null) {
+				err.println("Need artifactId, version and " + BuildEnvironment.IMAGEJ_APP_DIRECTORY + " properties!");
+				System.exit(1);
+			}
+
+			env.downloadAndInstall(new File(ijDir), new Coordinate(groupId, artifactId, version));
+		}
+
 		final MavenProject root = env.parse(new File("pom.xml"), null);
 		final String artifactId = getSystemProperty("artifactId", root.getArtifactId().equals("pom-ij-base") || root.getArtifactId().equals("pom-imagej") ? "ij-app" : root.getArtifactId());
 

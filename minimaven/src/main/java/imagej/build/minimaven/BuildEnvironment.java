@@ -35,6 +35,8 @@
 
 package imagej.build.minimaven;
 
+import imagej.build.minimaven.JavaCompiler.CompileError;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -256,9 +258,12 @@ public class BuildEnvironment {
 
 	public MavenProject fakePOM(File target, Coordinate dependency) {
 		MavenProject pom = new MavenProject(this, target, null);
-		pom.directory = target.getParentFile();
+		pom.directory = target == null ? target : target.getParentFile();
 		pom.target = target;
 		pom.children = new MavenProject[0];
+		if (dependency == null) {
+			dependency = new Coordinate("-", "-", "-");
+		}
 		pom.coordinate = dependency;
 		if (dependency.artifactId.equals("ij")) {
 			String javac = pom.expand("${java.home}/../lib/tools.jar");
@@ -520,6 +525,25 @@ public class BuildEnvironment {
 		in.close();
 		if (closeOutput)
 			out.close();
+	}
+
+	public void downloadAndInstall(final File ijDir, final Coordinate... coordinates) throws IOException {
+		final MavenProject project = fakePOM(null, null);
+		project.packaging = "pom";
+		project.dependencies.addAll(Arrays.asList(coordinates));
+		try {
+			project.getDependencies(true, true, "test", "provided", "system");
+			project.buildAndInstall(ijDir);
+		}
+		catch (CompileError e) {
+			e.printStackTrace(err);
+		}
+		catch (ParserConfigurationException e) {
+			e.printStackTrace(err);
+		}
+		catch (SAXException e) {
+			e.printStackTrace(err);
+		}
 	}
 
 	protected static boolean isSnapshotVersion(String version) {
