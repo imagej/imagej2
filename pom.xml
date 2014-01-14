@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>1.122</version>
+		<version>1.123</version>
 		<relativePath />
 	</parent>
 
@@ -54,8 +54,7 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>license-maven-plugin</artifactId>
 				<configuration>
-					<licenseName>imagej</licenseName>
-					<licenseResolver>file://${project.rootdir}/license</licenseResolver>
+					<licenseName>bsd_2</licenseName>
 					<inceptionYear>2009</inceptionYear>
 					<organizationName>Board of Regents of the University of
 Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
