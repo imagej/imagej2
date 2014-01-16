@@ -151,34 +151,10 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 			<timezone>-6</timezone>
 		</developer>
 		<developer>
-			<id>acardona</id>
-			<name>Albert Cardona</name>
-			<email>acardona@ini.phys.ethz.ch</email>
-			<url>http://albert.rierol.net/</url>
-			<organization>Institute of Neuroinformatics, Uni/ETH Zürich</organization>
-			<organizationUrl>http://www.ini.uzh.ch/</organizationUrl>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>+1</timezone>
-		</developer>
-		<developer>
-			<id>grislis</id>
-			<name>Aivar Grislis</name>
-			<email>grislis@wisc.edu</email>
-			<url>http://loci.wisc.edu/people/aivar-grislis</url>
-			<organization>UW-Madison LOCI</organization>
-			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>-6</timezone>
-		</developer>
-		<developer>
-			<id>bdezonia</id>
-			<name>Barry DeZonia</name>
-			<email>bdezonia@wisc.edu</email>
-			<url>http://loci.wisc.edu/people/barry-dezonia</url>
+			<id>hinerm</id>
+			<name>Mark Hiner</name>
+			<email>hiner@wisc.edu</email>
+			<url>http://loci.wisc.edu/people/mark-hiner</url>
 			<organization>UW-Madison LOCI</organization>
 			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
 			<roles>
@@ -202,6 +178,16 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 
 	<contributors>
 		<contributor>
+			<name>Barry DeZonia</name>
+			<url>http://loci.wisc.edu/people/barry-dezonia</url>
+			<organization>UW-Madison LOCI</organization>
+			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>-6</timezone>
+		</contributor>
+		<contributor>
 			<name>Grant Harris</name>
 			<email>gharris@mbl.edu</email>
 			<url>http://loci.wisc.edu/people/grant-harris</url>
@@ -212,6 +198,16 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 				<role>developer</role>
 			</roles>
 			<timezone>-5</timezone>
+		</contributor>
+		<contributor>
+			<name>Aivar Grislis</name>
+			<url>http://loci.wisc.edu/people/aivar-grislis</url>
+			<organization>UW-Madison LOCI</organization>
+			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>-6</timezone>
 		</contributor>
 		<contributor>
 			<name>Rick Lentz</name>
@@ -234,15 +230,15 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 			<timezone>-5</timezone>
 		</contributor>
 		<contributor>
-			<name>Mark Hiner</name>
-			<email>hiner@wisc.edu</email>
-			<url>http://loci.wisc.edu/people/mark-hiner</url>
-			<organization>UW-Madison LOCI</organization>
-			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
+			<name>Albert Cardona</name>
+			<email>acardona@ini.phys.ethz.ch</email>
+			<url>http://albert.rierol.net/</url>
+			<organization>Institute of Neuroinformatics, Uni/ETH Zürich</organization>
+			<organizationUrl>http://www.ini.uzh.ch/</organizationUrl>
 			<roles>
 				<role>developer</role>
 			</roles>
-			<timezone>-6</timezone>
+			<timezone>+1</timezone>
 		</contributor>
 	</contributors>
 
