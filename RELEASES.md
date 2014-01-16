@@ -2,7 +2,7 @@ ImageJ2 uses several major components, each of which is released on its own
 development cycle.
 
 Component releases are done using the [SciJava
-release-version.sh](https://github.com/scijava/scijava-common/blob/master/bin/release-version.sh)
+release-version.sh](https://github.com/scijava/scijava-scripts/blob/master/release-version.sh)
 script, which uses the
 [maven-release-plugin](http://maven.apache.org/maven-release/maven-release-plugin/)
 to do some of the work. All releases are tagged in their respective Git
