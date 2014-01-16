@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>1.123</version>
+		<version>1.125</version>
 		<relativePath />
 	</parent>
 
@@ -28,7 +28,6 @@
 	</modules>
 
 	<properties>
-		<argLine>-Dapple.awt.UIElement="true"</argLine>
 		<miglayout.version>3.7.3.1</miglayout.version>
 		<project.rootdir>${basedir}</project.rootdir>
 	</properties>
@@ -36,19 +35,12 @@
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>maven-source-plugin</artifactId>
-			</plugin>
-			<plugin>
 				<groupId>com.googlecode.maven-java-formatter-plugin</groupId>
 				<artifactId>maven-java-formatter-plugin</artifactId>
 				<version>0.3.1</version>
 				<configuration>
 					<configFile>${project.rootdir}/config/eclipse-code-formatter-profile.xml</configFile>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>buildnumber-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -60,39 +52,6 @@
 Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
 Institute of Molecular Cell Biology and Genetics.</organizationName>
 					<projectName>ImageJ software for multidimensional image processing and analysis.</projectName>
-					<addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
-					<canUpdateDescription>true</canUpdateDescription>
-					<canUpdateCopyright>true</canUpdateCopyright>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.fusesource.mvnplugins</groupId>
-				<artifactId>maven-graph-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>test-jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<!--
-			 Sometimes, one needs to pass JVM options to the JVM
-			 running the unit tests, such as -verbose:class or
-			 -Djava.awt.headless=true.
-
-			 Unfortunately, maven-surefire does not expose a
-			 command-line interface to do so, therefore let's
-			 simulate it by re-using the property 'argLine' to
-			 specify those options.
-			 -->
-			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<argLine>${argLine}</argLine>
 				</configuration>
 			</plugin>
 		</plugins>
