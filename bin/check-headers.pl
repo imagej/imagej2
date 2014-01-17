@@ -112,12 +112,12 @@ sub process($) {
   }
   $i += @header;
 
-  # check copyright statement
-  if (!match(\@copyright, \@data, $i)) {
+  # skip past copyright comment
+  while ($data[$i] =~ /^ * /) { $i++; }
+  if ($data[$i] ne "") {
     print "$file: invalid copyright\n";
     return INVALID_COPYRIGHT;
   }
-  $i += @copyright;
 
   # check for optional additional comments
   my $blank = 0;
