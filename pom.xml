@@ -245,8 +245,8 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 	<repositories>
 		<!-- NB: for project parent -->
 		<repository>
-			<id>imagej.releases</id>
-			<url>http://maven.imagej.net/content/repositories/releases</url>
+			<id>imagej.public</id>
+			<url>http://maven.imagej.net/content/groups/public</url>
 		</repository>
 	</repositories>
 
