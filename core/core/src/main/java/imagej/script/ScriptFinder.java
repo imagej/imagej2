@@ -43,10 +43,12 @@ import org.scijava.plugin.Parameter;
 /**
  * Discovers scripts.
  * <p>
- * To accomplish this, we must crawl the plugins/ directory.
+ * To accomplish this, we crawl the {@code scripts} directory (actually: the
+ * directory specified by {@link ScriptService#getScriptsDirectory()}).
  * </p>
  * 
  * @author Johannes Schindelin
+ * @author Curtis Rueden
  */
 public class ScriptFinder extends AbstractContextual {
 
@@ -73,13 +75,11 @@ public class ScriptFinder extends AbstractContextual {
 	 * @param scripts The collection to which the discovered scripts are added
 	 */
 	public void findScripts(final List<ScriptInfo> scripts) {
-		final String path = System.getProperty("plugins.dir");
-		if (path == null) return;
-
-		File directory = new File(path);
-		if (!path.endsWith("plugins")) {
-			final File pluginsDir = new File(directory, "plugins");
-			if (pluginsDir.isDirectory()) directory = pluginsDir;
+		final File directory = scriptService.getScriptsDirectory();
+		if (!directory.exists()) {
+			log.warn("Ignoring non-existent scripts directory: " +
+				directory.getAbsolutePath());
+			return;
 		}
 		scriptCount = 0;
 		discoverScripts(scripts, directory, null);
