@@ -273,20 +273,4 @@ public interface ModuleService extends ImageJService {
 	 */
 	<T> ModuleItem<T> getSingleOutput(Module module, Class<T> type);
 
-	// -- Deprecated methods --
-
-	/**
-	 * @deprecated Use {@link #run(ModuleInfo, boolean, Object[])} with the
-	 *             {@code process} flag set to {@code false}.
-	 */
-	@Deprecated
-	Future<Module> run(ModuleInfo info, Object... inputs);
-
-	/**
-	 * @deprecated Use {@link #run(Module, boolean, Object[])} with the
-	 *             {@code process} flag set to {@code false}.
-	 */
-	@Deprecated
-	<M extends Module> Future<M> run(M module, Object... inputs);
-
 }

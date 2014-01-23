@@ -33,7 +33,6 @@ package imagej.command;
 
 import imagej.ImageJPlugin;
 import imagej.module.Module;
-import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
 import imagej.module.process.PostprocessorPlugin;
 import imagej.module.process.PreprocessorPlugin;
@@ -243,65 +242,5 @@ public interface CommandService extends PTService<Command>, ImageJService {
 	 */
 	Future<CommandModule> run(CommandInfo info, boolean process,
 		Map<String, Object> inputMap);
-
-	// -- Deprecated methods --
-
-	/**
-	 * @deprecated {@link #run(String, boolean, Object[])} with the
-	 *             {@code process} flag set to {@code true}.
-	 */
-	@Deprecated
-	Future<Module> run(String className, Object... inputs);
-
-	/**
-	 * @deprecated {@link #run(String, boolean, Map)} with the {@code process}
-	 *             flag set to {@code true}.
-	 */
-	@Deprecated
-	Future<Module> run(String className, Map<String, Object> inputMap);
-
-	/**
-	 * @deprecated {@link #run(Class, boolean, Object[])} with the {@code process}
-	 *             flag set to {@code true}.
-	 */
-	@Deprecated
-	<C extends Command> Future<CommandModule> run(Class<C> commandClass,
-		Object... inputs);
-
-	/**
-	 * @deprecated {@link #run(Class, boolean, Map)} with the {@code process} flag
-	 *             set to {@code true}.
-	 */
-	@Deprecated
-	<C extends Command> Future<CommandModule> run(Class<C> commandClass,
-		Map<String, Object> inputMap);
-
-	/**
-	 * @deprecated Use {@link ModuleService#run(ModuleInfo, boolean, Object[])}
-	 *             with the {@code process} flag set to {@code true}.
-	 */
-	@Deprecated
-	Future<Module> run(ModuleInfo info, Object... inputs);
-
-	/**
-	 * @deprecated Use {@link ModuleService#run(ModuleInfo, boolean, Map)} with
-	 *             the {@code process} flag set to {@code true}.
-	 */
-	@Deprecated
-	Future<Module> run(ModuleInfo info, Map<String, Object> inputMap);
-
-	/**
-	 * @deprecated Use {@link ModuleService#run(Module, boolean, Object[])} with
-	 *             the {@code process} flag set to {@code true}.
-	 */
-	@Deprecated
-	<M extends Module> Future<M> run(M module, Object... inputs);
-
-	/**
-	 * @deprecated Use {@link ModuleService#run(Module, boolean, Map)} with the
-	 *             {@code process} flag set to {@code true}.
-	 */
-	@Deprecated
-	<M extends Module> Future<M> run(M module, Map<String, Object> inputMap);
 
 }

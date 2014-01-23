@@ -378,16 +378,4 @@ public class DefaultModuleService extends AbstractService implements
 		return result;
 	}
 
-	// -- Deprecated methods --
-
-	@Override
-	public Future<Module> run(ModuleInfo info, Object... inputs) {
-		return run(info, false, inputs);
-	}
-
-	@Override
-	public <M extends Module> Future<M> run(M module, Object... inputs) {
-		return run(module, false, inputs);
-	}
-
 }

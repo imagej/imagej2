@@ -31,8 +31,6 @@
 
 package imagej.command;
 
-import imagej.module.Module;
-import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
 
 import java.util.ArrayList;
@@ -346,56 +344,6 @@ public class DefaultCommandService extends AbstractPTService<Command> implements
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		final List<PluginInfo<?>> typedPlugins = (List) plugins;
 		return typedPlugins;
-	}
-
-	// -- Deprecated methods --
-
-	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Future<Module> run(String className, Object... inputs) {
-		return (Future) run(className, true, inputs);
-	}
-
-	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Future<Module> run(String className, Map<String, Object> inputMap) {
-		return (Future) run(className, true, inputMap);
-	}
-
-	@Override
-	public <C extends Command> Future<CommandModule> run(Class<C> commandClass,
-		Object... inputs)
-	{
-		return run(commandClass, true, inputs);
-	}
-
-	@Override
-	public <C extends Command> Future<CommandModule> run(Class<C> commandClass,
-		Map<String, Object> inputMap)
-	{
-		return run(commandClass, true, inputMap);
-	}
-
-	@Override
-	public Future<Module> run(ModuleInfo info, Object... inputs) {
-		return moduleService.run(info, true, inputs);
-	}
-
-	@Override
-	public Future<Module> run(ModuleInfo info, Map<String, Object> inputMap) {
-		return moduleService.run(info, true, inputMap);
-	}
-
-	@Override
-	public <M extends Module> Future<M> run(M module, Object... inputs) {
-		return moduleService.run(module, true, inputs);
-	}
-
-	@Override
-	public <M extends Module> Future<M>
-		run(M module, Map<String, Object> inputMap)
-	{
-		return moduleService.run(module, true, inputMap);
 	}
 
 }
