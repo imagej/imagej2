@@ -88,6 +88,9 @@ public interface ScriptService extends SingletonService<ScriptLanguage>,
 
 	// -- Scripts --
 
+	/** Gets the directory to scan for scripts. */
+	File getScriptsDirectory();
+
 	/** Gets all available scripts. */
 	Collection<ScriptInfo> getScripts();
 

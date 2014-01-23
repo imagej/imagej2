@@ -34,6 +34,7 @@ package imagej.script;
 import imagej.command.CommandService;
 import imagej.module.Module;
 import imagej.module.ModuleService;
+import imagej.util.AppUtils;
 import imagej.util.ColorRGB;
 import imagej.util.ColorRGBA;
 
@@ -123,6 +124,13 @@ public class DefaultScriptService extends
 	}
 
 	// -- ScriptService methods - scripts --
+
+	@Override
+	public File getScriptsDirectory() {
+		// TODO: Allow override of the scripts directory (or directories?)
+		// via a system property and/or other means.
+		return new File(AppUtils.getBaseDirectory(), "scripts");
+	}
 
 	@Override
 	public Collection<ScriptInfo> getScripts() {
