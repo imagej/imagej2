@@ -59,7 +59,8 @@ import org.scijava.util.Manifest;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Command.class, menuPath = "Plugins>Debug>System Information", headless = true)
+@Plugin(type = Command.class, menuPath = "Plugins>Debug>System Information",
+	headless = true)
 public class SystemInformation implements Command {
 
 	// -- Constants --
