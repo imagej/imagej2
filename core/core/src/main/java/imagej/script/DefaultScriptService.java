@@ -59,6 +59,7 @@ import javax.script.ScriptException;
 
 import org.scijava.Context;
 import org.scijava.log.LogService;
+import org.scijava.object.LazyObjects;
 import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -86,11 +87,10 @@ public class DefaultScriptService extends
 	private LogService log;
 
 	/** Index of registered scripting languages. */
-	private ScriptLanguageIndex scriptLanguageIndex = null;
+	private ScriptLanguageIndex scriptLanguageIndex;
 
 	/** Index of available scripts, by script <em>file</em>. */
-	private final HashMap<File, ScriptInfo> scripts =
-		new HashMap<File, ScriptInfo>();
+	private HashMap<File, ScriptInfo> scripts;
 
 	/** Table of short type names to associated {@link Class}. */
 	private HashMap<String, Class<?>> typeMap;
@@ -99,13 +99,8 @@ public class DefaultScriptService extends
 
 	/** Gets the index of available scripting languages. */
 	@Override
-	public synchronized ScriptLanguageIndex getIndex() {
-		if (scriptLanguageIndex == null) {
-			scriptLanguageIndex = new ScriptLanguageIndex();
-			reloadLanguages();
-			reloadScripts();
-		}
-		return scriptLanguageIndex;
+	public ScriptLanguageIndex getIndex() {
+		return scriptLanguageIndex();
 	}
 
 	@Override
@@ -134,12 +129,12 @@ public class DefaultScriptService extends
 
 	@Override
 	public Collection<ScriptInfo> getScripts() {
-		return Collections.unmodifiableCollection(scripts.values());
+		return Collections.unmodifiableCollection(scripts().values());
 	}
 
 	@Override
 	public ScriptInfo getScript(final File scriptFile) {
-		return scripts.get(scriptFile);
+		return scripts().get(scriptFile);
 	}
 
 	@Override
@@ -222,14 +217,12 @@ public class DefaultScriptService extends
 	public synchronized Class<?> lookupClass(final String typeName)
 		throws ScriptException
 	{
-		if (typeMap == null) buildTypes();
-
-		final Class<?> type = typeMap.get(typeName);
+		final Class<?> type = typeMap().get(typeName);
 		if (type != null) return type;
 
 		final Class<?> c = ClassUtils.loadClass(typeName);
 		if (c != null) {
-			typeMap.put(typeName, c);
+			typeMap().put(typeName, c);
 			return c;
 		}
 
@@ -243,11 +236,46 @@ public class DefaultScriptService extends
 		return ScriptLanguage.class;
 	}
 
+	// -- Service methods --
+
+	@Override
+	public void initialize() {
+		// add scripts to the module index... only when needed!
+		moduleService.getIndex().addLater(new LazyObjects<ScriptInfo>() {
+
+			@Override
+			public Collection<ScriptInfo> get() {
+				return scripts().values();
+			}
+
+		});
+	}
+
 	// -- Helper methods - lazy initialization --
 
-	private void reloadLanguages() {
-		// remove previously discovered scripting languages
-		scriptLanguageIndex.clear();
+	/** Gets {@link #scriptLanguageIndex}, initializing if needed. */
+	private ScriptLanguageIndex scriptLanguageIndex() {
+		if (scriptLanguageIndex == null) initScriptLanguageIndex();
+		return scriptLanguageIndex;
+	}
+
+	/** Gets {@link #scripts}, initializing if needed. */
+	private HashMap<File, ScriptInfo> scripts() {
+		if (scripts == null) initScripts();
+		return scripts;
+	}
+
+	/** Gets {@link #typeMap}, initializing if needed. */
+	private HashMap<String, Class<?>> typeMap() {
+		if (typeMap == null) initTypeMap();
+		return typeMap;
+	}
+
+	/** Initializes {@link #scriptLanguageIndex}. */
+	private synchronized void initScriptLanguageIndex() {
+		if (scriptLanguageIndex != null) return; // already initialized
+
+		scriptLanguageIndex = new ScriptLanguageIndex();
 
 		// add ScriptLanguage plugins
 		for (final ScriptLanguage language : getInstances()) {
@@ -263,23 +291,24 @@ public class DefaultScriptService extends
 		}
 	}
 
-	private void reloadScripts() {
-		// remove previously discovered scripts
-		moduleService.removeModules(scripts.values());
-		scripts.clear();
+	/** Initializes {@link #scripts}. */
+	private synchronized void initScripts() {
+		if (scripts != null) return; // already initialized
 
-		// discover available scripts
+		scripts = new HashMap<File, ScriptInfo>();
+
 		final ArrayList<ScriptInfo> scriptList = new ArrayList<ScriptInfo>();
 		new ScriptFinder(this).findScripts(scriptList);
 
-		// add newly discovered scripts
 		for (final ScriptInfo info : scriptList) {
 			scripts.put(asFile(info.getPath()), info);
 		}
-		moduleService.addModules(scriptList);
 	}
 
-	private void buildTypes() {
+	/** Initializes {@link #typeMap}. */
+	private synchronized void initTypeMap() {
+		if (typeMap != null) return; // already initialized
+
 		typeMap = new HashMap<String, Class<?>>();
 
 		// primitives
