@@ -32,7 +32,6 @@
 package imagej.plugins.commands.upload;
 
 import imagej.command.CommandService;
-import imagej.plugins.commands.upload.SampleImageUploader;
 
 import java.io.File;
 
