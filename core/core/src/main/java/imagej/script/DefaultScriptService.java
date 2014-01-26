@@ -243,7 +243,7 @@ public class DefaultScriptService extends
 		return ScriptLanguage.class;
 	}
 
-	// -- Helper methods --
+	// -- Helper methods - lazy initialization --
 
 	private void reloadLanguages() {
 		// remove previously discovered scripting languages
@@ -279,32 +279,6 @@ public class DefaultScriptService extends
 		moduleService.addModules(scriptList);
 	}
 
-	/**
-	 * Gets a {@link ScriptInfo} for the given file, creating a new one if
-	 * none are registered with the service.
-	 */
-	private ScriptInfo getOrCreate(final File file) {
-		final ScriptInfo info = getScript(file);
-		if (info != null) return info;
-		return new ScriptInfo(getContext(), file);
-	}
-
-	private File asFile(final String path) {
-		final File file = new File(path);
-		try {
-			return file.getCanonicalFile();
-		}
-		catch (final IOException exc) {
-			log.warn(exc);
-			return file.getAbsoluteFile();
-		}
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private Future<ScriptModule> cast(final Future<Module> future) {
-		return (Future) future;
-	}
-
 	private void buildTypes() {
 		typeMap = new HashMap<String, Class<?>>();
 
@@ -338,6 +312,34 @@ public class DefaultScriptService extends
 		// NB: Recursively add supertypes.
 		addType(type.getSuperclass());
 		addTypes(type.getInterfaces());
+	}
+
+	// -- Helper methods - run --
+
+	/**
+	 * Gets a {@link ScriptInfo} for the given file, creating a new one if
+	 * none are registered with the service.
+	 */
+	private ScriptInfo getOrCreate(final File file) {
+		final ScriptInfo info = getScript(file);
+		if (info != null) return info;
+		return new ScriptInfo(getContext(), file);
+	}
+
+	private File asFile(final String path) {
+		final File file = new File(path);
+		try {
+			return file.getCanonicalFile();
+		}
+		catch (final IOException exc) {
+			log.warn(exc);
+			return file.getAbsoluteFile();
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private Future<ScriptModule> cast(final Future<Module> future) {
+		return (Future) future;
 	}
 
 }
