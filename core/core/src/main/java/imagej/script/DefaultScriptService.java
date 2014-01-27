@@ -346,8 +346,8 @@ public class DefaultScriptService extends
 	// -- Helper methods - run --
 
 	/**
-	 * Gets a {@link ScriptInfo} for the given file, creating a new one if
-	 * none are registered with the service.
+	 * Gets a {@link ScriptInfo} for the given file, creating a new one if none
+	 * are registered with the service.
 	 */
 	private ScriptInfo getOrCreate(final File file) {
 		final ScriptInfo info = getScript(file);
