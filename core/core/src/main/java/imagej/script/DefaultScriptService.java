@@ -58,6 +58,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.scijava.Context;
+import org.scijava.Priority;
 import org.scijava.log.LogService;
 import org.scijava.object.LazyObjects;
 import org.scijava.plugin.AbstractSingletonService;
@@ -72,7 +73,7 @@ import org.scijava.util.ClassUtils;
  * @author Johannes Schindelin
  * @author Curtis Rueden
  */
-@Plugin(type = Service.class)
+@Plugin(type = Service.class, priority = Priority.HIGH_PRIORITY)
 public class DefaultScriptService extends
 	AbstractSingletonService<ScriptLanguage> implements ScriptService
 {
