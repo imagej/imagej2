@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +68,9 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
 
 import org.scijava.MenuEntry;
 import org.scijava.MenuPath;
+import org.scijava.Priority;
 import org.scijava.log.LogService;
+import org.scijava.object.LazyObjects;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
@@ -88,7 +91,7 @@ import org.scijava.service.Service;
  * @author Wayne Rasband
  * @author Curtis Rueden
  */
-@Plugin(type = Service.class)
+@Plugin(type = Service.class, priority = Priority.HIGH_PRIORITY)
 public class DefaultLUTService extends AbstractService implements LUTService {
 
 	// -- Constants --
@@ -228,14 +231,19 @@ public class DefaultLUTService extends AbstractService implements LUTService {
 
 	@Override
 	public void initialize() {
-		final Map<String, URL> luts = new LUTFinder().findLUTs();
-		final List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
-		for (final String key : luts.keySet()) {
-			modules.add(createInfo(key, luts.get(key)));
-		}
+		// add LUTs to the module index... only when needed!
+		moduleService.getIndex().addLater(new LazyObjects<ModuleInfo>() {
 
-		// register the modules with the module service
-		moduleService.addModules(modules);
+			@Override
+			public Collection<ModuleInfo> get() {
+				final Map<String, URL> luts = new LUTFinder().findLUTs();
+				final List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
+				for (final String key : luts.keySet()) {
+					modules.add(createInfo(key, luts.get(key)));
+				}
+				return modules;
+			}
+		});
 	}
 
 	// -- private initialization code --
