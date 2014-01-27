@@ -414,8 +414,16 @@ public class Util {
 		final URLConnection connection = dropboxURLMapper.get(url).openConnection();
 		if (connection instanceof HttpURLConnection) {
 			HttpURLConnection http = (HttpURLConnection)connection;
+			final String javaVmVersion = System.getProperty("java.runtime.version");
+			final String javaVersion = javaVmVersion != null ?
+					javaVmVersion : System.getProperty("java.version");
+			final String osVersion = System.getProperty("os.version");
+			final String os = "" + System.getProperty("os.name") + "-"
+					+ (osVersion != null ? osVersion + "-" : "")
+					+ System.getProperty("os.arch");
 			http.setRequestProperty("User-Agent",
-					"curl/7.22.0 compatible ImageJ updater/2.0.0-SNAPSHOT");
+					"curl/7.22.0 compatible ImageJ updater/2.0.0-SNAPSHOT (Java "
+					+ javaVersion + "/" + os + ")");
 		}
 		return connection;
 	}
