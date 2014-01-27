@@ -31,6 +31,7 @@
 
 package imagej.plugins.tools;
 
+import imagej.data.display.ImageDisplay;
 import imagej.display.Display;
 import imagej.display.event.input.MsButtonEvent;
 import imagej.display.event.input.MsClickedEvent;
@@ -49,7 +50,7 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  */
 @Plugin(type = Tool.class, name = "Context Menus",
-	menuRoot = Plugin.CONTEXT_MENU_ROOT)
+	menuRoot = ImageDisplay.CONTEXT_MENU_ROOT)
 public class ContextMenuHandler extends AbstractTool {
 
 	@Parameter

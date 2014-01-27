@@ -34,6 +34,7 @@ package imagej.plugins.commands.restructure;
 import imagej.command.Command;
 import imagej.command.CommandService;
 import imagej.command.ContextCommand;
+import imagej.data.display.ImageDisplay;
 
 import java.util.HashMap;
 
@@ -46,8 +47,8 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Command.class, menu = { @Menu(label = "Split Channels", mnemonic = 's') },
-	menuRoot = Plugin.CONTEXT_MENU_ROOT, headless = true)
+@Plugin(type = Command.class, menu = { @Menu(label = "Split Channels",
+	mnemonic = 's') }, menuRoot = ImageDisplay.CONTEXT_MENU_ROOT, headless = true)
 public class SplitChannelsContext extends ContextCommand {
 
 	// -- Parameters --
@@ -66,7 +67,7 @@ public class SplitChannelsContext extends ContextCommand {
 		inputValues.put("className", "ij.plugin.ChannelSplitter");
 		// FIXME: Bad to invoke a command via reflection this way.
 		commandService.run("imagej.legacy.plugin.LegacyCommand", true, inputValues);
-		
+
 		// TODO - replace with LegacyService::reunLegacyCommand() ?
 	}
 

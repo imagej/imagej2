@@ -33,6 +33,7 @@ package imagej.plugins.commands.imglib;
 
 import imagej.command.Command;
 import imagej.command.CommandService;
+import imagej.data.display.ImageDisplay;
 
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
@@ -45,7 +46,7 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = Command.class, menu = { @Menu(label = "Duplicate...",
 	mnemonic = 'd', accelerator = "shift ^D") },
-	menuRoot = Plugin.CONTEXT_MENU_ROOT, headless = true)
+	menuRoot = ImageDisplay.CONTEXT_MENU_ROOT, headless = true)
 public class DuplicateImageContext implements Command {
 
 	// -- Parameters --
