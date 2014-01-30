@@ -241,6 +241,8 @@ public class DefaultScriptService extends
 
 	@Override
 	public void initialize() {
+		super.initialize();
+
 		// add scripts to the module index... only when needed!
 		moduleService.getIndex().addLater(new LazyObjects<ScriptInfo>() {
 
