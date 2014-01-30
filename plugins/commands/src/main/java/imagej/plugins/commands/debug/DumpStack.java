@@ -74,6 +74,8 @@ public class DumpStack implements Command {
 
 	@Override
 	public void run() {
+		// TODO: stackDump = DebugUtils.getStackDump();
+
 		final StringBuilder sb = new StringBuilder();
 
 		final Map<Thread, StackTraceElement[]> stackTraces =

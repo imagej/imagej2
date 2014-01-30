@@ -295,22 +295,21 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 		addItem(varName, type, attrs);
 	}
 
-	// NB: Stolen from: http://stackoverflow.com/q/1441556/1207769
-	// But we probably want to switch to a real parser instead of a regex.
-	private static final Pattern ATTRS_REGEX =
-		Pattern.compile("\"([^\"]*)\"|(?<=,|^)([^,]*)(?=,|$)");
-
 	/** Parses a comma-delimited list of {@code key=value} pairs into a map. */
 	private HashMap<String, String> parseAttrs(final String attrs)
 		throws ScriptException
 	{
+		// TODO: We probably want to use a real CSV parser.
 		final HashMap<String, String> attrsMap = new HashMap<String, String>();
-		for (final String token : ATTRS_REGEX.split(attrs)) {
+		for (final String token : attrs.split(",")) {
 			if (token.isEmpty()) continue;
 			final int equals = token.indexOf("=");
 			if (equals < 0) throw new ScriptException("Invalid attribute: " + token);
 			final String key = token.substring(0, equals).trim();
-			final String value = token.substring(0, equals).trim();
+			String value = token.substring(equals + 1).trim();
+			if (value.startsWith("\"") && value.endsWith("\"")) {
+				value = value.substring(1, value.length() - 2);
+			}
 			attrsMap.put(key, value);
 		}
 		return attrsMap;

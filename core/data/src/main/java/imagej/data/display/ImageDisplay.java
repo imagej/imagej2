@@ -52,6 +52,9 @@ public interface ImageDisplay extends Display<DataView>,
 	CalibratedRealInterval<CalibratedAxis>, PositionableByAxis, Interval
 {
 
+	/** Pop-up context menu root for image displays. */
+	String CONTEXT_MENU_ROOT = "context-ImageDisplay";
+
 	/** Gets the view currently designated as active. */
 	DataView getActiveView();
 
