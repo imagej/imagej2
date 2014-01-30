@@ -157,7 +157,8 @@ public final class DefaultPlatformService extends
 	@Override
 	public void initialize() {
 		super.initialize();
-		/** Discovers target platform handlers. */
+
+		// configure target platforms
 		final List<Platform> platforms = getInstances();
 		targetPlatforms = Collections.unmodifiableList(platforms);
 		for (final Platform platform : platforms) {
