@@ -38,6 +38,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,7 @@ import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.SciJavaPlugin;
 import org.scijava.util.ClassUtils;
 import org.scijava.util.Manifest;
+import org.scijava.util.POM;
 
 /**
  * Dumps Java system properties.
@@ -101,6 +103,53 @@ public class SystemInformation implements Command {
 			if (manifest != null) {
 				sb.append(getManifestData(manifest));
 			}
+		}
+
+		// dump all available Maven metadata on the class path
+
+		final List<POM> poms = POM.getAllPOMs();
+
+		sb.append(NL);
+		sb.append("-- Libraries --" + NL);
+
+		// check for library version clashes
+		final HashMap<String, POM> pomsByGA = new HashMap<String, POM>();
+		for (final POM pom : poms) {
+			final String ga = pom.getGroupId() + ":" + pom.getArtifactId();
+			final POM priorPOM = pomsByGA.get(ga);
+			if (priorPOM == null) {
+				pomsByGA.put(ga, pom);
+			}
+			else {
+				sb.append("[WARNING] Version clash for " + ga + ": " +
+					pom.getVersion() + " shadows " + priorPOM.getVersion() + NL);
+			}
+		}
+
+		// output libraries in sorted order
+		final ArrayList<POM> sortedPOMs = new ArrayList<POM>(poms);
+		Collections.sort(sortedPOMs);
+		for (final POM pom : sortedPOMs) {
+			final String pomPath = pom.getPath();
+			final String groupId = pom.getGroupId();
+			final String artifactId = pom.getArtifactId();
+			final String version = pom.getVersion();
+			final String name = pom.getProjectName();
+			final String url = pom.getProjectURL();
+			final String year = pom.getProjectInceptionYear();
+			final String orgName = pom.getOrganizationName();
+			final String orgURL = pom.getOrganizationURL();
+			final String title = name == null ? groupId + ":" + artifactId : name;
+
+			sb.append(title + ":" + NL);
+			if (pomPath != null) sb.append("\tpath = " + pomPath + NL);
+			if (groupId != null) sb.append("\tgroupId = " + groupId + NL);
+			if (artifactId != null) sb.append("\tartifactId = " + artifactId + NL);
+			if (version != null) sb.append("\tversion = " + version + NL);
+			if (url != null) sb.append("\tproject URL = " + url + NL);
+			if (year != null) sb.append("\tinception year = " + year + NL);
+			if (orgName != null) sb.append("\torganization name = " + orgName + NL);
+			if (orgURL != null) sb.append("\torganization URL = " + orgURL + NL);
 		}
 
 		// compute the set of known plugin types
