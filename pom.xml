@@ -30,6 +30,7 @@
 	<properties>
 		<miglayout.version>3.7.3.1</miglayout.version>
 		<project.rootdir>${basedir}</project.rootdir>
+		<scijava-common.version>2.9.0</scijava-common.version>
 	</properties>
 
 	<build>
