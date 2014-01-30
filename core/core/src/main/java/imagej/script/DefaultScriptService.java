@@ -286,7 +286,7 @@ public class DefaultScriptService extends
 		// Now look for the ScriptEngines in javax.scripting. We only do that
 		// now since the javax.scripting framework does not provide all the
 		// functionality we might want to use in ImageJ2.
-		final ScriptEngineManager manager = new javax.script.ScriptEngineManager();
+		final ScriptEngineManager manager = new ScriptEngineManager();
 		for (final ScriptEngineFactory factory : manager.getEngineFactories()) {
 			scriptLanguageIndex.add(factory, true);
 		}
