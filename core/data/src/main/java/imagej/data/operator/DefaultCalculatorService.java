@@ -51,6 +51,7 @@ import org.scijava.service.Service;
  * Default service for managing available {@link CalculatorOp}s.
  * 
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
 @Plugin(type = Service.class)
 public class DefaultCalculatorService extends
@@ -59,8 +60,8 @@ public class DefaultCalculatorService extends
 
 	// -- instance variables --
 
-	private Map<String, CalculatorOp<?, ?>> operators;
-	private List<String> operatorNames;
+	private HashMap<String, CalculatorOp<?, ?>> operators;
+	private ArrayList<String> operatorNames;
 
 	// -- CalculatorService methods --
 
@@ -96,26 +97,45 @@ public class DefaultCalculatorService extends
 		return (Class) CalculatorOp.class;
 	}
 
-	// -- helpers --
+	// -- Helper methods - lazy initialization --
 
-	private void buildDataStructures() {
-		operators = new HashMap<String, CalculatorOp<?, ?>>();
-		operatorNames = new ArrayList<String>();
-		for (final CalculatorOp<?, ?> op : getInstances()) {
-			final String name = op.getInfo().getName();
-			operators.put(name, op);
-			operatorNames.add(name);
-		}
-	}
-
+	/** Gets {@link #operators}, initializing if needed. */
 	private Map<String, CalculatorOp<?, ?>> operators() {
-		if (operators == null) buildDataStructures();
+		if (operators == null) initOperators();
 		return operators;
 	}
 
+	/** Gets {@link #operatorNames}, initializing if needed. */
 	private List<? extends String> operatorNames() {
-		if (operatorNames == null) buildDataStructures();
+		if (operatorNames == null) initOperatorNames();
 		return operatorNames;
+	}
+
+	/** Initializes {@link #operators}. */
+	private synchronized void initOperators() {
+		if (operators != null) return; // already initialized
+
+		final HashMap<String, CalculatorOp<?, ?>> map =
+			new HashMap<String, CalculatorOp<?, ?>>();
+		for (final CalculatorOp<?, ?> op : getInstances()) {
+			final String name = op.getInfo().getName();
+			operators.put(name, op);
+		}
+
+		operators = map;
+	}
+
+	/** Initializes {@link #operatorNames}. */
+	private synchronized void initOperatorNames() {
+		if (operatorNames != null) return; // already initialized
+
+		final ArrayList<String> list = new ArrayList<String>();
+		for (final CalculatorOp<?, ?> op : getInstances()) {
+			final String name = op.getInfo().getName();
+			list.add(name);
+		}
+
+		operatorNames = list;
 	}
 
 }
