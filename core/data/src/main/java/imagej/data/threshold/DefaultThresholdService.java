@@ -87,15 +87,15 @@ public class DefaultThresholdService extends
 	// -- ThresholdService methods --
 
 	@Override
-	public boolean hasThreshold(ImageDisplay display) {
+	public boolean hasThreshold(final ImageDisplay display) {
 		return map().get(display) != null;
 	}
 
 	@Override
-	public ThresholdOverlay getThreshold(ImageDisplay display) {
+	public ThresholdOverlay getThreshold(final ImageDisplay display) {
 		ThresholdOverlay overlay = map().get(display);
 		if (overlay == null) {
-			Dataset dataset = displayService.getActiveDataset(display);
+			final Dataset dataset = displayService.getActiveDataset(display);
 			if (dataset == null) {
 				throw new IllegalArgumentException(
 					"expected ImageDisplay to have active dataset");
@@ -117,8 +117,8 @@ public class DefaultThresholdService extends
 	}
 
 	@Override
-	public void removeThreshold(ImageDisplay display) {
-		ThresholdOverlay overlay = map().get(display);
+	public void removeThreshold(final ImageDisplay display) {
+		final ThresholdOverlay overlay = map().get(display);
 		if (overlay != null) {
 			overlayService.removeOverlay(display, overlay);
 			map().remove(display);
@@ -136,7 +136,7 @@ public class DefaultThresholdService extends
 	}
 
 	@Override
-	public ThresholdMethod getThresholdMethod(String name) {
+	public ThresholdMethod getThresholdMethod(final String name) {
 		return methods().get(name);
 	}
 
@@ -150,18 +150,19 @@ public class DefaultThresholdService extends
 	// -- event handlers --
 
 	@EventHandler
-	protected void onEvent(DisplayDeletedEvent evt) {
-		Display<?> display = evt.getObject();
+	protected void onEvent(final DisplayDeletedEvent evt) {
+		final Display<?> display = evt.getObject();
 		if (display instanceof ImageDisplay) {
 			removeThreshold((ImageDisplay) display);
 		}
 	}
 
 	@EventHandler
-	protected void onEvent(OverlayDeletedEvent evt) {
-		Overlay overlay = evt.getObject();
+	protected void onEvent(final OverlayDeletedEvent evt) {
+		final Overlay overlay = evt.getObject();
 		if (overlay instanceof ThresholdOverlay) {
-			for (Entry<ImageDisplay, ThresholdOverlay> entry : map().entrySet()) {
+			for (final Entry<ImageDisplay, ThresholdOverlay> entry : map().entrySet())
+			{
 				if (entry.getValue() == overlay) removeThreshold(entry.getKey());
 			}
 		}
