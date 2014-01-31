@@ -43,6 +43,7 @@ import imagej.display.event.DisplayDeletedEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -59,6 +60,7 @@ import org.scijava.service.Service;
  * Default service for working with thresholds.
  * 
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
 @Plugin(type = Service.class)
 public class DefaultThresholdService extends
@@ -80,9 +82,9 @@ public class DefaultThresholdService extends
 
 	private ConcurrentHashMap<ImageDisplay, ThresholdOverlay> thresholdMap;
 
-	private ConcurrentHashMap<String, ThresholdMethod> methods;
+	private HashMap<String, ThresholdMethod> methods;
 
-	private List<String> methodNames;
+	private ArrayList<String> methodNames;
 
 	// -- ThresholdService methods --
 
@@ -169,32 +171,61 @@ public class DefaultThresholdService extends
 		}
 	}
 
-	// -- helpers --
+	// -- Helper methods - lazy initialization --
 
-	private void buildDataStructures() {
-		thresholdMap = new ConcurrentHashMap<ImageDisplay, ThresholdOverlay>();
-		methods = new ConcurrentHashMap<String, ThresholdMethod>();
-		methodNames = new ArrayList<String>();
-		for (final ThresholdMethod method : getInstances()) {
-			final String name = method.getInfo().getName();
-			methods.put(name, method);
-			methodNames.add(name);
-		}
-	}
-
+	/** Gets {@link #thresholdMap}, initializing if needed. */
 	private ConcurrentHashMap<ImageDisplay, ThresholdOverlay> thresholdMap() {
-		if (thresholdMap == null) buildDataStructures();
+		if (thresholdMap == null) initThresholdMap();
 		return thresholdMap;
 	}
 
-	private ConcurrentHashMap<String, ThresholdMethod> methods() {
-		if (methods == null) buildDataStructures();
+	/** Gets {@link #methods}, initializing if needed. */
+	private HashMap<String, ThresholdMethod> methods() {
+		if (methods == null) initMethods();
 		return methods;
 	}
 
+	/** Gets {@link #methodNames}, initializing if needed. */
 	private List<String> methodNames() {
-		if (methodNames == null) buildDataStructures();
+		if (methodNames == null) initMethodNames();
 		return methodNames;
+	}
+
+	/** Initializes {@link #thresholdMap}. */
+	private synchronized void initThresholdMap() {
+		if (thresholdMap != null) return; // already initialized
+
+		final ConcurrentHashMap<ImageDisplay, ThresholdOverlay> map =
+			new ConcurrentHashMap<ImageDisplay, ThresholdOverlay>();
+
+		thresholdMap = map;
+	}
+
+	/** Initializes {@link #methods}. */
+	private synchronized void initMethods() {
+		if (methods != null) return; // already initialized
+
+		final HashMap<String, ThresholdMethod> map =
+			new HashMap<String, ThresholdMethod>();
+		for (final ThresholdMethod method : getInstances()) {
+			final String name = method.getInfo().getName();
+			map.put(name, method);
+		}
+
+		methods = map;
+	}
+
+	/** Initializes {@link #methodNames}. */
+	private synchronized void initMethodNames() {
+		if (methodNames != null) return; // already initialized
+
+		final ArrayList<String> list = new ArrayList<String>();
+		for (final ThresholdMethod method : getInstances()) {
+			final String name = method.getInfo().getName();
+			list.add(name);
+		}
+
+		methodNames = list;
 	}
 
 }
