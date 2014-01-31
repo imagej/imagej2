@@ -309,57 +309,99 @@ public class DefaultToolService extends AbstractSingletonService<Tool>
 		}
 	}
 
-	// -- Helper methods --
+	// -- Helper methods - lazy initialization --
 
+	/** Gets {@link #alwaysActiveTools}, initializing if needed. */
 	private Map<String, Tool> alwaysActiveTools() {
-		if (alwaysActiveTools == null) buildDataStructures();
+		if (alwaysActiveTools == null) initAlwaysActiveTools();
 		return alwaysActiveTools;
 	}
 
+	/** Gets {@link #alwaysActiveToolList}, initializing if needed. */
 	private List<Tool> alwaysActiveToolList() {
-		if (alwaysActiveToolList == null) buildDataStructures();
+		if (alwaysActiveToolList == null) initAlwaysActiveToolList();
 		return alwaysActiveToolList;
 	}
 
+	/** Gets {@link #tools}, initializing if needed. */
 	private Map<String, Tool> tools() {
-		if (tools == null) buildDataStructures();
+		if (tools == null) initTools();
 		return tools;
 	}
 
+	/** Gets {@link #toolList}, initializing if needed. */
 	private List<Tool> toolList() {
-		if (toolList == null) buildDataStructures();
+		if (toolList == null) initToolList();
 		return toolList;
 	}
 
+	/** Gets {@link #activeTool}, initializing if needed. */
 	private Tool activeTool() {
-		if (activeTool == null) buildDataStructures();
+		if (activeTool == null) initActiveTool();
 		return activeTool;
 	}
 
-	private void buildDataStructures() {
-		// build lists of available tools
-		alwaysActiveTools = new HashMap<String, Tool>();
-		alwaysActiveToolList = new ArrayList<Tool>();
-		tools = new HashMap<String, Tool>();
-		toolList = new ArrayList<Tool>();
-		for (final Tool tool : getInstances()) {
-			if (tool.isAlwaysActive()) {
-				alwaysActiveTools.put(tool.getInfo().getName(), tool);
-				alwaysActiveToolList.add(tool);
-			}
-			else {
-				tools.put(tool.getInfo().getName(), tool);
-				toolList.add(tool);
-			}
+	/** Initializes {@link #alwaysActiveTools}. */
+	private synchronized void initAlwaysActiveTools() {
+		if (alwaysActiveTools != null) return; // already initialized
+
+		final HashMap<String, Tool> map = new HashMap<String, Tool>();
+		for (final Tool tool : alwaysActiveToolList()) {
+			map.put(tool.getInfo().getName(), tool);
 		}
 
-		// set the initially active tool (to the Rectangle tool, if available)
-		activeTool = new DummyTool();
-		final Tool rectangleTool = getTool("Rectangle");
-		if (rectangleTool != null) {
-			setActiveTool(rectangleTool);
-		}
+		alwaysActiveTools = map;
 	}
+
+	/** Initializes {@link #alwaysActiveToolList}. */
+	private synchronized void initAlwaysActiveToolList() {
+		if (alwaysActiveToolList != null) return; // already initialized
+
+		final ArrayList<Tool> list = new ArrayList<Tool>();
+		for (final Tool tool : getInstances()) {
+			if (!tool.isAlwaysActive()) continue;
+			list.add(tool);
+		}
+
+		alwaysActiveToolList = list;
+	}
+
+	/** Initializes {@link #tools}. */
+	private synchronized void initTools() {
+		if (tools != null) return; // already initialized
+
+		final HashMap<String, Tool> map = new HashMap<String, Tool>();
+		for (final Tool tool : toolList()) {
+			map.put(tool.getInfo().getName(), tool);
+		}
+
+		tools = map;
+	}
+
+	/** Initializes {@link #toolList}. */
+	private synchronized void initToolList() {
+		if (toolList != null) return; // already initialized
+
+		final ArrayList<Tool> list = new ArrayList<Tool>();
+		for (final Tool tool : getInstances()) {
+			if (tool.isAlwaysActive()) continue;
+			list.add(tool);
+		}
+
+		toolList = list;
+	}
+
+	/** Initializes {@link #activeTool}. */
+	private synchronized void initActiveTool() {
+		if (activeTool != null) return; // already initialized
+
+		final Tool rectangle = getTool("Rectangle");
+		final Tool active = rectangle == null ? new DummyTool() : rectangle;
+
+		activeTool = active;
+	}
+
+	// -- Helper methods - other --
 
 	/** Checks that an event is OK to be dispatched to a particular tool. */
 	private boolean eventOk(final DisplayEvent event, final Tool tool) {
