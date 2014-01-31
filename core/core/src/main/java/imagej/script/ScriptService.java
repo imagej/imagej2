@@ -63,6 +63,13 @@ public interface ScriptService extends SingletonService<ScriptLanguage>,
 	ImageJService
 {
 
+	/**
+	 * System property for overriding the list of directories to scan for scripts.
+	 * 
+	 * @see #getScriptDirectories()
+	 */
+	String SCRIPTS_PATH_PROPERTY = "ij.scripts.path";
+
 	// -- Scripting languages --
 
 	/** Gets the index of available scripting languages. */
@@ -88,8 +95,8 @@ public interface ScriptService extends SingletonService<ScriptLanguage>,
 
 	// -- Scripts --
 
-	/** Gets the directory to scan for scripts. */
-	File getScriptsDirectory();
+	/** Gets the base directories to scan for scripts. */
+	List<File> getScriptDirectories();
 
 	/** Gets all available scripts. */
 	Collection<ScriptInfo> getScripts();

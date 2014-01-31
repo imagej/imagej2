@@ -90,6 +90,9 @@ public class DefaultScriptService extends
 	/** Index of registered scripting languages. */
 	private ScriptLanguageIndex scriptLanguageIndex;
 
+	/** List of directories to scan for scripts. */
+	private ArrayList<File> scriptDirs;
+
 	/** Index of available scripts, by script <em>file</em>. */
 	private HashMap<File, ScriptInfo> scripts;
 
@@ -122,10 +125,8 @@ public class DefaultScriptService extends
 	// -- ScriptService methods - scripts --
 
 	@Override
-	public File getScriptsDirectory() {
-		// TODO: Allow override of the scripts directory (or directories?)
-		// via a system property and/or other means.
-		return new File(AppUtils.getBaseDirectory(), "scripts");
+	public List<File> getScriptDirectories() {
+		return Collections.unmodifiableList(scriptDirs());
 	}
 
 	@Override
@@ -262,6 +263,12 @@ public class DefaultScriptService extends
 		return scriptLanguageIndex;
 	}
 
+	/** Gets {@link #scriptDirs}, initializing if needed. */
+	private List<File> scriptDirs() {
+		if (scriptDirs == null) initScriptDirs();
+		return scriptDirs;
+	}
+
 	/** Gets {@link #scripts}, initializing if needed. */
 	private HashMap<File, ScriptInfo> scripts() {
 		if (scripts == null) initScripts();
@@ -291,6 +298,25 @@ public class DefaultScriptService extends
 		final ScriptEngineManager manager = new ScriptEngineManager();
 		for (final ScriptEngineFactory factory : manager.getEngineFactories()) {
 			scriptLanguageIndex.add(factory, true);
+		}
+	}
+
+	/** Initializes {@link #scriptDirs}. */
+	private synchronized void initScriptDirs() {
+		if (scriptDirs != null) return;
+
+		scriptDirs = new ArrayList<File>();
+
+		// append default script directories
+		final File baseDir = AppUtils.getBaseDirectory();
+		scriptDirs.add(new File(baseDir, "scripts"));
+
+		// append additional script directories from system property
+		final String scriptsPath = System.getProperty(SCRIPTS_PATH_PROPERTY);
+		if (scriptsPath != null) {
+			for (final String dir : scriptsPath.split(File.pathSeparator)) {
+				scriptDirs.add(new File(dir));
+			}
 		}
 	}
 

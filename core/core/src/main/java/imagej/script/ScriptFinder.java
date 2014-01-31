@@ -43,8 +43,10 @@ import org.scijava.plugin.Parameter;
 /**
  * Discovers scripts.
  * <p>
- * To accomplish this, we crawl the {@code scripts} directory (actually: the
- * directory specified by {@link ScriptService#getScriptsDirectory()}).
+ * To accomplish this, we crawl the directories specified by
+ * {@link ScriptService#getScriptDirectories()}. By default, those directories
+ * include the {@code scripts} and {@code plugins/Scripts} folders off the
+ * ImageJ base directory.
  * </p>
  * 
  * @author Johannes Schindelin
@@ -60,8 +62,6 @@ public class ScriptFinder extends AbstractContextual {
 	@Parameter
 	private LogService log;
 
-	private int scriptCount;
-
 	public ScriptFinder(final ScriptService scriptService) {
 		this.scriptService = scriptService;
 		setContext(scriptService.getContext());
@@ -72,17 +72,22 @@ public class ScriptFinder extends AbstractContextual {
 	/**
 	 * Discovers the scripts.
 	 * 
-	 * @param scripts The collection to which the discovered scripts are added
+	 * @param scripts The collection to which the discovered scripts are added.
 	 */
 	public void findScripts(final List<ScriptInfo> scripts) {
-		final File directory = scriptService.getScriptsDirectory();
-		if (!directory.exists()) {
-			log.warn("Ignoring non-existent scripts directory: " +
-				directory.getAbsolutePath());
-			return;
+		final List<File> directories = scriptService.getScriptDirectories();
+
+		int scriptCount = 0;
+
+		for (final File directory : directories) {
+			if (!directory.exists()) {
+				log.warn("Ignoring non-existent scripts directory: " +
+					directory.getAbsolutePath());
+				continue;
+			}
+			scriptCount += discoverScripts(scripts, directory, null);
 		}
-		scriptCount = 0;
-		discoverScripts(scripts, directory, null);
+
 		log.info("Found " + scriptCount + " scripts");
 	}
 
@@ -95,11 +100,13 @@ public class ScriptFinder extends AbstractContextual {
 	 *          except for the subdirectory <i>Scripts/</i> whose entries will be
 	 *          pulled into the top-level menu structure.
 	 */
-	private void discoverScripts(final List<ScriptInfo> scripts,
+	private int discoverScripts(final List<ScriptInfo> scripts,
 		final File directory, final MenuPath menuPath)
 	{
 		final File[] fileList = directory.listFiles();
-		if (fileList == null) return; // directory does not exist
+		if (fileList == null) return 0; // directory does not exist
+
+		int scriptCount = 0;
 
 		// TODO: sort?
 		final boolean isTopLevel = menuPath == null;
@@ -122,6 +129,8 @@ public class ScriptFinder extends AbstractContextual {
 				scriptCount++;
 			}
 		}
+
+		return scriptCount;
 	}
 
 	// -- Helper methods --
