@@ -285,11 +285,11 @@ public class DefaultScriptService extends
 	private synchronized void initScriptLanguageIndex() {
 		if (scriptLanguageIndex != null) return; // already initialized
 
-		scriptLanguageIndex = new ScriptLanguageIndex();
+		final ScriptLanguageIndex index = new ScriptLanguageIndex();
 
 		// add ScriptLanguage plugins
 		for (final ScriptLanguage language : getInstances()) {
-			scriptLanguageIndex.add(language, false);
+			index.add(language, false);
 		}
 
 		// Now look for the ScriptEngines in javax.scripting. We only do that
@@ -297,79 +297,91 @@ public class DefaultScriptService extends
 		// functionality we might want to use in ImageJ2.
 		final ScriptEngineManager manager = new ScriptEngineManager();
 		for (final ScriptEngineFactory factory : manager.getEngineFactories()) {
-			scriptLanguageIndex.add(factory, true);
+			index.add(factory, true);
 		}
+
+		scriptLanguageIndex = index;
 	}
 
 	/** Initializes {@link #scriptDirs}. */
 	private synchronized void initScriptDirs() {
 		if (scriptDirs != null) return;
 
-		scriptDirs = new ArrayList<File>();
+		final ArrayList<File> dirs = new ArrayList<File>();
 
 		// append default script directories
 		final File baseDir = AppUtils.getBaseDirectory();
-		scriptDirs.add(new File(baseDir, "scripts"));
+		dirs.add(new File(baseDir, "scripts"));
 
 		// append additional script directories from system property
 		final String scriptsPath = System.getProperty(SCRIPTS_PATH_PROPERTY);
 		if (scriptsPath != null) {
 			for (final String dir : scriptsPath.split(File.pathSeparator)) {
-				scriptDirs.add(new File(dir));
+				dirs.add(new File(dir));
 			}
 		}
+
+		scriptDirs = dirs;
 	}
 
 	/** Initializes {@link #scripts}. */
 	private synchronized void initScripts() {
 		if (scripts != null) return; // already initialized
 
-		scripts = new HashMap<File, ScriptInfo>();
+		final HashMap<File, ScriptInfo> map = new HashMap<File, ScriptInfo>();
 
 		final ArrayList<ScriptInfo> scriptList = new ArrayList<ScriptInfo>();
 		new ScriptFinder(this).findScripts(scriptList);
 
 		for (final ScriptInfo info : scriptList) {
-			scripts.put(asFile(info.getPath()), info);
+			map.put(asFile(info.getPath()), info);
 		}
+
+		scripts = map;
 	}
 
 	/** Initializes {@link #typeMap}. */
 	private synchronized void initTypeMap() {
 		if (typeMap != null) return; // already initialized
 
-		typeMap = new HashMap<String, Class<?>>();
+		final HashMap<String, Class<?>> map = new HashMap<String, Class<?>>();
 
 		// primitives
-		addTypes(boolean.class, byte.class, char.class, double.class, float.class,
-			int.class, long.class, short.class);
+		addTypes(map, boolean.class, byte.class, char.class, double.class,
+			float.class, int.class, long.class, short.class);
 
 		// primitive wrappers
-		addTypes(Boolean.class, Byte.class, Character.class, Double.class,
+		addTypes(map, Boolean.class, Byte.class, Character.class, Double.class,
 			Float.class, Integer.class, Long.class, Short.class);
 
 		// built-in types
-		addTypes(Context.class, ColorRGB.class, ColorRGBA.class, File.class,
+		addTypes(map, Context.class, ColorRGB.class, ColorRGBA.class, File.class,
 			String.class);
 
 		// service types
 		for (final Service service : getContext().getServiceIndex()) {
-			addTypes(service.getClass());
+			addTypes(map, service.getClass());
 		}
+
+		typeMap = map;
 	}
 
-	private void addTypes(final Class<?>... types) {
+	private void addTypes(final HashMap<String, Class<?>> map,
+		final Class<?>... types)
+	{
 		for (final Class<?> type : types) {
-			addType(type);
+			addType(map, type);
 		}
 	}
 
-	private void addType(final Class<?> type) {
+	private void
+		addType(final HashMap<String, Class<?>> map, final Class<?> type)
+	{
 		if (type == null) return;
-		typeMap.put(type.getSimpleName(), type);
+		map.put(type.getSimpleName(), type);
 		// NB: Recursively add supertypes.
-		addType(type.getSuperclass());
-		addTypes(type.getInterfaces());
+		addType(map, type.getSuperclass());
+		addTypes(map, type.getInterfaces());
 	}
 
 	// -- Helper methods - run --
