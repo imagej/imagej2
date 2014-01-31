@@ -158,8 +158,8 @@ public class DefaultToolService extends AbstractSingletonService<Tool>
 		final String fy = f.format(y);
 		final String fw = f.format(w);
 		final String fh = f.format(h);
-		statusService.showStatus(
-			"x=" + fx + ", y=" + fy + ", w=" + fw + ", h=" + fh);
+		statusService.showStatus("x=" + fx + ", y=" + fy + ", w=" + fw + ", h=" +
+			fh);
 	}
 
 	@Override
@@ -190,8 +190,8 @@ public class DefaultToolService extends AbstractSingletonService<Tool>
 		final String fy = f.format(y2);
 		final String fa = f.format(angle);
 		final String fl = f.format(length);
-		statusService.showStatus(
-			"x=" + fx + ", y=" + fy + ", angle=" + fa + ", length=" + fl);
+		statusService.showStatus("x=" + fx + ", y=" + fy + ", angle=" + fa +
+			", length=" + fl);
 	}
 
 	@Override
