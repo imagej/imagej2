@@ -33,9 +33,9 @@ package imagej.data.autoscale;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
@@ -50,6 +50,7 @@ import org.scijava.service.Service;
  * Default service for working with autoscale methods.
  * 
  * @author Barry DeZonia
+ * @author Curtis Rueden
  */
 @SuppressWarnings("rawtypes")
 @Plugin(type = Service.class)
@@ -59,9 +60,9 @@ public class DefaultAutoscaleService extends
 
 	// -- instance variables --
 
-	private ConcurrentHashMap<String, AutoscaleMethod> methods;
+	private HashMap<String, AutoscaleMethod> methods;
 
-	private List<String> methodNames;
+	private ArrayList<String> methodNames;
 
 	// -- AutoscaleService methods --
 
@@ -109,26 +110,45 @@ public class DefaultAutoscaleService extends
 		return AutoscaleMethod.class;
 	}
 
-	// -- helpers --
+	// -- Helper methods - lazy initialization --
 
-	private void buildDataStructures() {
-		methods = new ConcurrentHashMap<String, AutoscaleMethod>();
-		methodNames = new ArrayList<String>();
-		for (final AutoscaleMethod method : getInstances()) {
-			final String name = method.getInfo().getName();
-			methods.put(name, method);
-			methodNames.add(name);
-		}
-	}
-
+	/** Gets {@link #methods}, initializing if needed. */
 	private Map<? extends String, ? extends AutoscaleMethod> methods() {
-		if (methods == null) buildDataStructures();
+		if (methods == null) initMethods();
 		return methods;
 	}
 
+	/** Gets {@link #methodNames}, initializing if needed. */
 	private List<? extends String> methodNames() {
-		if (methodNames == null) buildDataStructures();
+		if (methodNames == null) initMethodNames();
 		return methodNames;
+	}
+
+	/** Initializes {@link #methods}. */
+	private synchronized void initMethods() {
+		if (methods != null) return; // already initialized
+
+		final HashMap<String, AutoscaleMethod> map =
+			new HashMap<String, AutoscaleMethod>();
+		for (final AutoscaleMethod method : getInstances()) {
+			final String name = method.getInfo().getName();
+			map.put(name, method);
+		}
+
+		methods = map;
+	}
+
+	/** Initializes {@link #methodNames}. */
+	private synchronized void initMethodNames() {
+		if (methodNames != null) return; // already initialized
+
+		final ArrayList<String> list = new ArrayList<String>();
+		for (final AutoscaleMethod method : getInstances()) {
+			final String name = method.getInfo().getName();
+			list.add(name);
+		}
+
+		methodNames = list;
 	}
 
 }
