@@ -55,7 +55,6 @@ import org.scijava.plugin.Parameter;
 public class ScriptFinder extends AbstractContextual {
 
 	private static final String SCRIPT_ICON = "/icons/script_code.png";
-	private static final String SPECIAL_SUBDIRECTORY = "Scripts";
 
 	private final ScriptService scriptService;
 
@@ -85,7 +84,7 @@ public class ScriptFinder extends AbstractContextual {
 					directory.getAbsolutePath());
 				continue;
 			}
-			scriptCount += discoverScripts(scripts, directory, null);
+			scriptCount += discoverScripts(scripts, directory, new MenuPath());
 		}
 
 		log.info("Found " + scriptCount + " scripts");
@@ -96,9 +95,7 @@ public class ScriptFinder extends AbstractContextual {
 	 * 
 	 * @param scripts The collection to which the discovered scripts are added.
 	 * @param directory The directory in which to look for scripts recursively.
-	 * @param menuPath The menuPath. If <i>null</i>, it defaults to Plugins>,
-	 *          except for the subdirectory <i>Scripts/</i> whose entries will be
-	 *          pulled into the top-level menu structure.
+	 * @param menuPath The menu path, which must not be {@code null}.
 	 */
 	private int discoverScripts(final List<ScriptInfo> scripts,
 		final File directory, final MenuPath menuPath)
@@ -107,25 +104,23 @@ public class ScriptFinder extends AbstractContextual {
 		if (fileList == null) return 0; // directory does not exist
 
 		int scriptCount = 0;
+		final boolean isTopLevel = menuPath.size() == 0;
 
-		// TODO: sort?
-		final boolean isTopLevel = menuPath == null;
-		final MenuPath path = isTopLevel ? new MenuPath("Plugins") : menuPath;
 		for (final File file : fileList) {
+			final String name = file.getName().replace('_', ' ');
 			if (file.isDirectory()) {
-				if (isTopLevel && file.getName().equals(SPECIAL_SUBDIRECTORY)) {
-					discoverScripts(scripts, file, new MenuPath());
-				}
-				else {
-					discoverScripts(scripts, file, subMenuPath(path, file.getName()
-						.replace('_', ' ')));
-				}
+				// recurse into subdirectory
+				discoverScripts(scripts, file, subMenuPath(menuPath, name));
+			}
+			else if (isTopLevel) {
+				// ignore scripts in toplevel script directories
+				continue;
 			}
 			else if (scriptService.canHandleFile(file)) {
-				String name = file.getName().replace('_', ' ');
+				// found a script!
 				final int dot = name.lastIndexOf('.');
-				if (dot > 0) name = name.substring(0, dot);
-				scripts.add(createEntry(file, subMenuPath(path, file.getName())));
+				final String noExt = dot <= 0 ? name : name.substring(0, dot);
+				scripts.add(createEntry(file, subMenuPath(menuPath, noExt)));
 				scriptCount++;
 			}
 		}
