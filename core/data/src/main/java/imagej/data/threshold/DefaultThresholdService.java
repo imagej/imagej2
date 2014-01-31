@@ -78,7 +78,7 @@ public class DefaultThresholdService extends
 
 	// -- instance variables --
 
-	private ConcurrentHashMap<ImageDisplay, ThresholdOverlay> map;
+	private ConcurrentHashMap<ImageDisplay, ThresholdOverlay> thresholdMap;
 
 	private ConcurrentHashMap<String, ThresholdMethod> methods;
 
@@ -88,12 +88,12 @@ public class DefaultThresholdService extends
 
 	@Override
 	public boolean hasThreshold(final ImageDisplay display) {
-		return map().get(display) != null;
+		return thresholdMap().get(display) != null;
 	}
 
 	@Override
 	public ThresholdOverlay getThreshold(final ImageDisplay display) {
-		ThresholdOverlay overlay = map().get(display);
+		ThresholdOverlay overlay = thresholdMap().get(display);
 		if (overlay == null) {
 			final Dataset dataset = displayService.getActiveDataset(display);
 			if (dataset == null) {
@@ -101,7 +101,7 @@ public class DefaultThresholdService extends
 					"expected ImageDisplay to have active dataset");
 			}
 			overlay = new ThresholdOverlay(getContext(), dataset);
-			map().put(display, overlay);
+			thresholdMap().put(display, overlay);
 			display.display(overlay);
 			// NOTE - the call on prev line did a rebuild() but not necessarily an
 			// update(). So graphics might not be up to date! This may be a bug in
@@ -118,10 +118,10 @@ public class DefaultThresholdService extends
 
 	@Override
 	public void removeThreshold(final ImageDisplay display) {
-		final ThresholdOverlay overlay = map().get(display);
+		final ThresholdOverlay overlay = thresholdMap().get(display);
 		if (overlay != null) {
 			overlayService.removeOverlay(display, overlay);
-			map().remove(display);
+			thresholdMap().remove(display);
 		}
 	}
 
@@ -161,7 +161,8 @@ public class DefaultThresholdService extends
 	protected void onEvent(final OverlayDeletedEvent evt) {
 		final Overlay overlay = evt.getObject();
 		if (overlay instanceof ThresholdOverlay) {
-			for (final Entry<ImageDisplay, ThresholdOverlay> entry : map().entrySet())
+			for (final Entry<ImageDisplay, ThresholdOverlay> entry : thresholdMap()
+				.entrySet())
 			{
 				if (entry.getValue() == overlay) removeThreshold(entry.getKey());
 			}
@@ -171,7 +172,7 @@ public class DefaultThresholdService extends
 	// -- helpers --
 
 	private void buildDataStructures() {
-		map = new ConcurrentHashMap<ImageDisplay, ThresholdOverlay>();
+		thresholdMap = new ConcurrentHashMap<ImageDisplay, ThresholdOverlay>();
 		methods = new ConcurrentHashMap<String, ThresholdMethod>();
 		methodNames = new ArrayList<String>();
 		for (final ThresholdMethod method : getInstances()) {
@@ -181,9 +182,9 @@ public class DefaultThresholdService extends
 		}
 	}
 
-	private ConcurrentHashMap<ImageDisplay, ThresholdOverlay> map() {
-		if (map == null) buildDataStructures();
-		return map;
+	private ConcurrentHashMap<ImageDisplay, ThresholdOverlay> thresholdMap() {
+		if (thresholdMap == null) buildDataStructures();
+		return thresholdMap;
 	}
 
 	private ConcurrentHashMap<String, ThresholdMethod> methods() {
