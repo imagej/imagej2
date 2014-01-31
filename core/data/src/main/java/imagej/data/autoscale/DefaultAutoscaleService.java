@@ -76,7 +76,7 @@ public class DefaultAutoscaleService extends
 	}
 
 	@Override
-	public AutoscaleMethod getAutoscaleMethod(String name) {
+	public AutoscaleMethod getAutoscaleMethod(final String name) {
 		return methods().get(name);
 	}
 
@@ -88,16 +88,17 @@ public class DefaultAutoscaleService extends
 	@SuppressWarnings("unchecked")
 	@Override
 	public DataRange getDefaultIntervalRange(
-		IterableInterval<? extends RealType<?>> interval)
+		final IterableInterval<? extends RealType<?>> interval)
 	{
 		return getDefaultAutoscaleMethod().getRange(interval);
 	}
 
 	@Override
 	public DataRange getDefaultRandomAccessRange(
-		RandomAccessibleInterval<? extends RealType<?>> interval)
+		final RandomAccessibleInterval<? extends RealType<?>> interval)
 	{
-		IterableInterval<? extends RealType<?>> newInterval = Views.iterable(interval);
+		final IterableInterval<? extends RealType<?>> newInterval =
+			Views.iterable(interval);
 		return getDefaultIntervalRange(newInterval);
 	}
 
