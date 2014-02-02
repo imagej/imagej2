@@ -19,10 +19,10 @@ cd "$ROOT/app"
 # build individual JARs and copy dependencies
 mvn package dependency:copy-dependencies
 
-# combine SezPoz annotations
+# combine SciJava plugin annotations
 mkdir -p "$ALL/META-INF/annotations"
 java -cp 'target/classes:target/dependency/*' \
-  org.scijava.util.CombineAnnotations
+  org.scijava.annotations.AnnotationCombiner
 
 # add source code
 echo "Copying source files..."
