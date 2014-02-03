@@ -116,13 +116,6 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 		this.path = path;
 		this.reader =
 			reader == null ? null : new BufferedReader(reader, PARAM_CHAR_MAX);
-		try {
-			parseParameters();
-			addReturnValue();
-		}
-		catch (final ScriptException exc) {
-			log.error(exc);
-		}
 	}
 
 	// -- ScriptInfo methods --
@@ -225,6 +218,8 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 			}
 			if (reader == null) in.close();
 			else in.reset();
+
+			addReturnValue();
 		}
 		catch (final IOException exc) {
 			log.error("Error reading script: " + path, exc);
@@ -351,14 +346,8 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 			final String value = attrs.get(key);
 			assignAttribute(item, key, value);
 		}
-		if (item.isInput()) {
-			inputMap().put(item.getName(), item);
-			inputList().add(item);
-		}
-		if (item.isOutput()) {
-			outputMap().put(item.getName(), item);
-			outputList().add(item);
-		}
+		if (item.isInput()) registerInput(item);
+		if (item.isOutput()) registerOutput(item);
 	}
 
 	private <T> void assignAttribute(final DefaultMutableModuleItem<T> item,
@@ -425,13 +414,6 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 		else {
 			throw new ScriptException("Invalid attribute name: " + key);
 		}
-	}
-
-	private void clearParameters() {
-		inputMap().clear();
-		inputList().clear();
-		outputMap().clear();
-		outputList().clear();
 	}
 
 }

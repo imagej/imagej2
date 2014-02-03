@@ -181,6 +181,32 @@ public abstract class AbstractModuleInfo extends AbstractUIDetails implements
 		// NB: Do nothing by default.
 	}
 
+	/** Clears input and output parameters. */
+	protected void clearParameters() {
+		inputMap.clear();
+		outputMap.clear();
+		inputList.clear();
+		outputList.clear();
+	}
+
+	/**
+	 * Adds an input. Intended to be called from overridden
+	 * {@link #parseParameters()} methods.
+	 */
+	protected void registerInput(final ModuleItem<?> input) {
+		inputMap.put(input.getName(), input);
+		inputList.add(input);
+	}
+
+	/**
+	 * Adds an output. Intended to be called from overridden
+	 * {@link #parseParameters()} methods.
+	 */
+	protected void registerOutput(final ModuleItem<?> output) {
+		outputMap.put(output.getName(), output);
+		outputList.add(output);
+	}
+
 	/** Gets {@link #inputMap}, initializing if needed. */
 	protected Map<String, ModuleItem<?>> inputMap() {
 		if (!initialized) initParameters();
