@@ -72,68 +72,85 @@ public class DefaultImgPlusService extends AbstractService implements
 
 	// -- public static methods --
 
-	// see Javadoc
-	public <T extends Type<T>> ImgPlus<T> asType(ImgPlus<?> ip, T type) {
+	@Override
+	public <T extends Type<T>> ImgPlus<T>
+		asType(final ImgPlus<?> ip, final T type)
+	{
 		if (isBackedAs(ip, type.getClass())) {
-			return (ImgPlus) ip;
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+			final ImgPlus<T> typedImgPlus = (ImgPlus) ip;
+			return typedImgPlus;
 		}
 		return null;
 	}
 
-	// see Javadoc
-	public ImgPlus<Type<?>> typed(ImgPlus<?> ip) {
+	@Override
+	public ImgPlus<Type<?>> typed(final ImgPlus<?> ip) {
 		if (isBackedAs(ip, Type.class)) {
-			return (ImgPlus) ip;
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+			final ImgPlus<Type<?>> typedImgPlus = (ImgPlus) ip;
+			return typedImgPlus;
 		}
 		return null;
 	}
 
-	// see Javadoc
-	public ImgPlus<NumericType<?>> numeric(ImgPlus<?> ip) {
+	@Override
+	public ImgPlus<NumericType<?>> numeric(final ImgPlus<?> ip) {
 		if (isBackedAs(ip, NumericType.class)) {
-			return (ImgPlus) ip;
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+			final ImgPlus<NumericType<?>> typedImgPlus = (ImgPlus) ip;
+			return typedImgPlus;
 		}
 		return null;
 	}
 
-	// see Javadoc
-	public ImgPlus<ComplexType<?>> complex(ImgPlus<?> ip) {
+	@Override
+	public ImgPlus<ComplexType<?>> complex(final ImgPlus<?> ip) {
 		if (isBackedAs(ip, ComplexType.class)) {
-			return (ImgPlus) ip;
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+			final ImgPlus<ComplexType<?>> typedImgPlus = (ImgPlus) ip;
+			return typedImgPlus;
 		}
 		return null;
 	}
 
-	// see Javadoc
-	public ImgPlus<RealType<?>> real(ImgPlus<?> ip) {
+	@Override
+	public ImgPlus<RealType<?>> real(final ImgPlus<?> ip) {
 		if (isBackedAs(ip, RealType.class)) {
-			return (ImgPlus) ip;
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+			final ImgPlus<RealType<?>> typedImgPlus = (ImgPlus) ip;
+			return typedImgPlus;
 		}
 		return null;
 	}
 
-	// see Javadoc
-	public ImgPlus<IntegerType<?>> integer(ImgPlus<?> ip) {
+	@Override
+	public ImgPlus<IntegerType<?>> integer(final ImgPlus<?> ip) {
 		if (isBackedAs(ip, IntegerType.class)) {
-			return (ImgPlus) ip;
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+			final ImgPlus<IntegerType<?>> typedImgPlus = (ImgPlus) ip;
+			return typedImgPlus;
 		}
 		return null;
 	}
 
 // TODO - once FloatingType is an Imglib type
 
-	// see Javadoc
-//	public ImgPlus<FloatingType<?>> floating(ImgPlus<?> ip) {
+//	@Override
+//	public ImgPlus<FloatingType<?>> floating(final ImgPlus<?> ip) {
 //		if (isBackedAs(ip, FloatingType.class)) {
-//			return (ImgPlus<FloatingType<?>>) (ImgPlus) ip;
+//			@SuppressWarnings({ "rawtypes", "unchecked" })
+//			final ImgPlus<FloatingType<?>> typedImgPlus = (ImgPlus) ip;
+//			return typedImgPlus;
 //		}
 //		return null;
 //	}
 
 	// -- helpers --
 
-	private boolean isBackedAs(ImgPlus<?> ip, Class<?> clazz) {
-		Object type = ip.firstElement();
+	private boolean isBackedAs(final ImgPlus<?> ip, final Class<?> clazz) {
+		final Object type = ip.firstElement();
 		return clazz.isAssignableFrom(type.getClass());
 	}
+
 }
