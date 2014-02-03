@@ -65,7 +65,7 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	private static final int PARAM_CHAR_MAX = 640 * 1024; // should be enough ;-)
 
 	private final String path;
-	private final BufferedReader reader;
+	private final Reader reader;
 
 	@Parameter
 	private Context context;
@@ -114,15 +114,12 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	{
 		setContext(context);
 		this.path = path;
-		this.reader = reader == null ? null : new BufferedReader(reader, PARAM_CHAR_MAX);
+		this.reader = reader;
 		try {
 			parseParameters();
 			addReturnValue();
 		}
 		catch (final ScriptException exc) {
-			log.error(exc);
-		}
-		catch (final IOException exc) {
 			log.error(exc);
 		}
 	}
@@ -149,12 +146,16 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	 * given by {@link #getPath()}.
 	 * </p>
 	 */
-	public BufferedReader getReader() {
+	public Reader getReader() {
 		return reader;
 	}
 
 	/**
-	 * Parses the script's input and output parameters.
+	 * Parses the script's input and output parameters from the script header.
+	 * <p>
+	 * This method is called automatically the first time any parameter accessor
+	 * method is called ({@link #getInput}, {@link #getOutput}, {@link #inputs()},
+	 * {@link #outputs()}, etc.). Subsequent calls will reparse the parameters.
 	 * <p>
 	 * ImageJ's scripting framework supports specifying @{@link Parameter}-style
 	 * inputs and outputs in a preamble. The format is a simplified version of the
@@ -165,7 +166,9 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	 * <li>{@code // @<type> <varName>}</li>
 	 * <li>{@code // @<type>(<attr1>=<value1>, ..., <attrN>=<valueN>) <varName>}</li>
 	 * <li>{@code // @<IOType> <type> <varName>}</li>
-	 * <li>{@code // @<IOType>(<attr1>=<value1>, ..., <attrN>=<valueN>) <type> <varName>}</li>
+	 * <li>
+	 * {@code // @<IOType>(<attr1>=<value1>, ..., <attrN>=<valueN>) <type> <varName>}
+	 * </li>
 	 * </ul>
 	 * <p>
 	 * Where:
@@ -194,33 +197,40 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	 * parameters will be parsed and filled just like @{@link Parameter}
 	 * -annotated fields in {@link Command}s.
 	 * </ul>
-	 * 
-	 * @throws ScriptException If the parameter syntax is malformed.
-	 * @throws IOException If there is a problem reading the script file.
 	 */
-	public void parseParameters() throws ScriptException, IOException {
+	// NB: Widened visibility from AbstractModuleInfo.
+	@Override
+	public void parseParameters() {
 		clearParameters();
 
-		final BufferedReader in;
-		if (reader == null) {
-			in = new BufferedReader(new FileReader(getPath()));
-		}
-		else {
-			in = reader;
-			in.mark(PARAM_CHAR_MAX);
-		}
-		while (true) {
-			final String line = in.readLine();
-			if (line == null) break;
+		try {
+			final BufferedReader in;
+			if (reader == null) {
+				in = new BufferedReader(new FileReader(getPath()));
+			}
+			else {
+				in = new BufferedReader(reader, PARAM_CHAR_MAX);
+				in.mark(PARAM_CHAR_MAX);
+			}
+			while (true) {
+				final String line = in.readLine();
+				if (line == null) break;
 
-			// scan for lines containing an '@' stopping at the first line
-			// containing at least one alphameric character but no '@'.
-			final int at = line.indexOf('@');
-			if (at >= 0) parseParam(line.substring(at + 1));
-			else if (line.matches(".*\\w.*")) break;
+				// scan for lines containing an '@' stopping at the first line
+				// containing at least one alphameric character but no '@'.
+				final int at = line.indexOf('@');
+				if (at >= 0) parseParam(line.substring(at + 1));
+				else if (line.matches(".*\\w.*")) break;
+			}
+			if (reader == null) in.close();
+			else in.reset();
 		}
-		if (reader == null) in.close();
-		else in.reset();
+		catch (final IOException exc) {
+			log.error("Error reading script: " + path, exc);
+		}
+		catch (final ScriptException exc) {
+			log.error("Invalid parameter syntax for script: " + path, exc);
+		}
 	}
 
 	// -- ModuleInfo methods --
@@ -336,17 +346,17 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	{
 		final DefaultMutableModuleItem<T> item =
 			new DefaultMutableModuleItem<T>(this, name, type);
-		for (String key : attrs.keySet()) {
+		for (final String key : attrs.keySet()) {
 			final String value = attrs.get(key);
 			assignAttribute(item, key, value);
 		}
 		if (item.isInput()) {
-			inputMap.put(item.getName(), item);
-			inputList.add(item);
+			inputMap().put(item.getName(), item);
+			inputList().add(item);
 		}
 		if (item.isOutput()) {
-			outputMap.put(item.getName(), item);
-			outputList.add(item);
+			outputMap().put(item.getName(), item);
+			outputList().add(item);
 		}
 	}
 
@@ -417,10 +427,10 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	}
 
 	private void clearParameters() {
-		inputMap.clear();
-		inputList.clear();
-		outputMap.clear();
-		outputList.clear();
+		inputMap().clear();
+		inputList().clear();
+		outputMap().clear();
+		outputList().clear();
 	}
 
 }
