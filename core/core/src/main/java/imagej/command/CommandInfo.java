@@ -86,6 +86,8 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo,
 	/** List of items with fixed, preset values. */
 	private Map<String, Object> presets;
 
+	// TODO: Reconcile more with AbstractModuleInfo?
+
 	/**
 	 * Flag indicating whether the command parameters have been parsed. Parsing
 	 * the parameters requires loading the command class, so doing so is deferred
