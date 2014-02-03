@@ -173,6 +173,14 @@ public abstract class AbstractModuleInfo extends AbstractUIDetails implements
 
 	// -- Internal methods --
 
+	/**
+	 * Parses input and output parameters. Intended to be overridden by concrete
+	 * subclasses.
+	 */
+	protected void parseParameters() {
+		// NB: Do nothing by default.
+	}
+
 	/** Gets {@link #inputMap}, initializing if needed. */
 	protected Map<String, ModuleItem<?>> inputMap() {
 		if (!initialized) initParameters();
@@ -224,6 +232,8 @@ public abstract class AbstractModuleInfo extends AbstractUIDetails implements
 		outputMap = new HashMap<String, ModuleItem<?>>();
 		inputList = new ArrayList<ModuleItem<?>>();
 		outputList = new ArrayList<ModuleItem<?>>();
+
+		parseParameters();
 
 		initialized = true;
 	}

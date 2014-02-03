@@ -151,7 +151,11 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	}
 
 	/**
-	 * Parses the script's input and output parameters.
+	 * Parses the script's input and output parameters from the script header.
+	 * <p>
+	 * This method is called automatically the first time any parameter accessor
+	 * method is called ({@link #getInput}, {@link #getOutput}, {@link #inputs()},
+	 * {@link #outputs()}, etc.). Subsequent calls will reparse the parameters.
 	 * <p>
 	 * ImageJ's scripting framework supports specifying @{@link Parameter}-style
 	 * inputs and outputs in a preamble. The format is a simplified version of the
@@ -194,6 +198,8 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	 * -annotated fields in {@link Command}s.
 	 * </ul>
 	 */
+	// NB: Widened visibility from AbstractModuleInfo.
+	@Override
 	public void parseParameters() {
 		clearParameters();
 
