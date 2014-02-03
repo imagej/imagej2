@@ -65,7 +65,7 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	private static final int PARAM_CHAR_MAX = 640 * 1024; // should be enough ;-)
 
 	private final String path;
-	private final Reader reader;
+	private final BufferedReader reader;
 
 	@Parameter
 	private Context context;
@@ -114,7 +114,8 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	{
 		setContext(context);
 		this.path = path;
-		this.reader = reader;
+		this.reader =
+			reader == null ? null : new BufferedReader(reader, PARAM_CHAR_MAX);
 		try {
 			parseParameters();
 			addReturnValue();
@@ -146,7 +147,7 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	 * given by {@link #getPath()}.
 	 * </p>
 	 */
-	public Reader getReader() {
+	public BufferedReader getReader() {
 		return reader;
 	}
 
@@ -209,7 +210,7 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 				in = new BufferedReader(new FileReader(getPath()));
 			}
 			else {
-				in = new BufferedReader(reader, PARAM_CHAR_MAX);
+				in = reader;
 				in.mark(PARAM_CHAR_MAX);
 			}
 			while (true) {
