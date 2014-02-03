@@ -418,9 +418,13 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo,
 	 * defer class loading as long as possible.
 	 */
 	private void parseParams() {
-		if (paramsParsed) return;
-		paramsParsed = true;
+		if (!paramsParsed) initParams();
+	}
+
+	private synchronized void initParams() {
+		if (paramsParsed) return; // already initialized
 		checkFields(loadCommandClass());
+		paramsParsed = true;
 	}
 
 	/** Processes the given class's @{@link Parameter}-annotated fields. */
