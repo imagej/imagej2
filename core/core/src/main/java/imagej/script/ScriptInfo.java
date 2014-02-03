@@ -114,7 +114,8 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	{
 		setContext(context);
 		this.path = path;
-		this.reader = reader == null ? null : new BufferedReader(reader, PARAM_CHAR_MAX);
+		this.reader =
+			reader == null ? null : new BufferedReader(reader, PARAM_CHAR_MAX);
 		try {
 			parseParameters();
 			addReturnValue();
@@ -338,7 +339,7 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	{
 		final DefaultMutableModuleItem<T> item =
 			new DefaultMutableModuleItem<T>(this, name, type);
-		for (String key : attrs.keySet()) {
+		for (final String key : attrs.keySet()) {
 			final String value = attrs.get(key);
 			assignAttribute(item, key, value);
 		}
