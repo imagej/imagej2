@@ -185,7 +185,7 @@ public abstract class AbstractModuleInfo extends AbstractUIDetails implements
 				" is incompatible with item of type " + itemType.getName());
 		}
 		@SuppressWarnings("unchecked")
-		ModuleItem<T> typedItem = (ModuleItem<T>) item;
+		final ModuleItem<T> typedItem = (ModuleItem<T>) item;
 		return typedItem;
 	}
 
