@@ -162,7 +162,9 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	 * <li>{@code // @<type> <varName>}</li>
 	 * <li>{@code // @<type>(<attr1>=<value1>, ..., <attrN>=<valueN>) <varName>}</li>
 	 * <li>{@code // @<IOType> <type> <varName>}</li>
-	 * <li>{@code // @<IOType>(<attr1>=<value1>, ..., <attrN>=<valueN>) <type> <varName>}</li>
+	 * <li>
+	 * {@code // @<IOType>(<attr1>=<value1>, ..., <attrN>=<valueN>) <type> <varName>}
+	 * </li>
 	 * </ul>
 	 * <p>
 	 * Where:
