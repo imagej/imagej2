@@ -59,26 +59,25 @@ public abstract class AbstractModuleInfo extends AbstractUIDetails implements
 {
 
 	/** Table of inputs, keyed on name. */
-	protected final Map<String, ModuleItem<?>> inputMap =
-		new HashMap<String, ModuleItem<?>>();
+	private HashMap<String, ModuleItem<?>> inputMap;
 
 	/** Table of outputs, keyed on name. */
-	protected final Map<String, ModuleItem<?>> outputMap =
-		new HashMap<String, ModuleItem<?>>();
+	private HashMap<String, ModuleItem<?>> outputMap;
 
 	/** Ordered list of input items. */
-	protected final List<ModuleItem<?>> inputList =
-		new ArrayList<ModuleItem<?>>();
+	private ArrayList<ModuleItem<?>> inputList;
 
 	/** Ordered list of output items. */
-	protected final List<ModuleItem<?>> outputList =
-		new ArrayList<ModuleItem<?>>();
+	private ArrayList<ModuleItem<?>> outputList;
+
+	/** Whether lazy initialization is complete. */
+	private boolean initialized;
 
 	// -- ModuleInfo methods --
 
 	@Override
 	public ModuleItem<?> getInput(final String name) {
-		return inputMap.get(name);
+		return inputMap().get(name);
 	}
 
 	@Override
@@ -88,7 +87,7 @@ public abstract class AbstractModuleInfo extends AbstractUIDetails implements
 
 	@Override
 	public ModuleItem<?> getOutput(final String name) {
-		return outputMap.get(name);
+		return outputMap().get(name);
 	}
 
 	@Override
@@ -98,12 +97,12 @@ public abstract class AbstractModuleInfo extends AbstractUIDetails implements
 
 	@Override
 	public Iterable<ModuleItem<?>> inputs() {
-		return Collections.unmodifiableList(inputList);
+		return Collections.unmodifiableList(inputList());
 	}
 
 	@Override
 	public Iterable<ModuleItem<?>> outputs() {
-		return Collections.unmodifiableList(outputList);
+		return Collections.unmodifiableList(outputList());
 	}
 
 	@Override
@@ -172,6 +171,32 @@ public abstract class AbstractModuleInfo extends AbstractUIDetails implements
 		return "module:" + getDelegateClassName();
 	}
 
+	// -- Internal methods --
+
+	/** Gets {@link #inputMap}, initializing if needed. */
+	protected Map<String, ModuleItem<?>> inputMap() {
+		if (!initialized) initParameters();
+		return inputMap;
+	}
+
+	/** Gets {@link #inputList}, initializing if needed. */
+	protected Map<String, ModuleItem<?>> outputMap() {
+		if (!initialized) initParameters();
+		return outputMap;
+	}
+
+	/** Gets {@link #outputMap}, initializing if needed. */
+	protected List<ModuleItem<?>> inputList() {
+		if (!initialized) initParameters();
+		return inputList;
+	}
+
+	/** Gets {@link #outputList}, initializing if needed. */
+	protected List<ModuleItem<?>> outputList() {
+		if (!initialized) initParameters();
+		return outputList;
+	}
+
 	// -- Helper methods --
 
 	private <T> ModuleItem<T> castItem(final ModuleItem<?> item,
@@ -187,6 +212,20 @@ public abstract class AbstractModuleInfo extends AbstractUIDetails implements
 		@SuppressWarnings("unchecked")
 		final ModuleItem<T> typedItem = (ModuleItem<T>) item;
 		return typedItem;
+	}
+
+	// -- Helper methods - lazy initialization --
+
+	/** Initializes data structures and parses parameters. */
+	private synchronized void initParameters() {
+		if (initialized) return; // already initialized
+
+		inputMap = new HashMap<String, ModuleItem<?>>();
+		outputMap = new HashMap<String, ModuleItem<?>>();
+		inputList = new ArrayList<ModuleItem<?>>();
+		outputList = new ArrayList<ModuleItem<?>>();
+
+		initialized = true;
 	}
 
 }

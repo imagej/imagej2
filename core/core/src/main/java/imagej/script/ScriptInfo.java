@@ -341,12 +341,12 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 			assignAttribute(item, key, value);
 		}
 		if (item.isInput()) {
-			inputMap.put(item.getName(), item);
-			inputList.add(item);
+			inputMap().put(item.getName(), item);
+			inputList().add(item);
 		}
 		if (item.isOutput()) {
-			outputMap.put(item.getName(), item);
-			outputList.add(item);
+			outputMap().put(item.getName(), item);
+			outputList().add(item);
 		}
 	}
 
@@ -417,10 +417,10 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	}
 
 	private void clearParameters() {
-		inputMap.clear();
-		inputList.clear();
-		outputMap.clear();
-		outputList.clear();
+		inputMap().clear();
+		inputList().clear();
+		outputMap().clear();
+		outputList().clear();
 	}
 
 }

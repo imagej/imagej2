@@ -66,26 +66,26 @@ public class DefaultMutableModuleInfo extends AbstractModuleInfo implements
 
 	@Override
 	public void addInput(final ModuleItem<?> input) {
-		inputMap.put(input.getName(), input);
-		inputList.add(input);
+		inputMap().put(input.getName(), input);
+		inputList().add(input);
 	}
 
 	@Override
 	public void addOutput(final ModuleItem<?> output) {
-		outputMap.put(output.getName(), output);
-		outputList.add(output);
+		outputMap().put(output.getName(), output);
+		outputList().add(output);
 	}
 
 	@Override
 	public void removeInput(final ModuleItem<?> input) {
-		inputMap.remove(input.getName());
-		inputList.remove(input);
+		inputMap().remove(input.getName());
+		inputList().remove(input);
 	}
 
 	@Override
 	public void removeOutput(final ModuleItem<?> output) {
-		outputMap.remove(output.getName());
-		outputList.remove(output);
+		outputMap().remove(output.getName());
+		outputList().remove(output);
 	}
 
 	// -- ModuleInfo methods --
