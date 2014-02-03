@@ -300,7 +300,7 @@ public final class DefaultDatasetService extends AbstractService implements
 			bitsPerPixel + ", signed=" + signed + ", floating=" + floating);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings("rawtypes")
 	private void save(final ImgSaver imageSaver, final String destination,
 		final ImgPlus img) throws ImgIOException, IncompatibleTypeException
 	{
