@@ -158,7 +158,8 @@ public class OverlayHarmonizerTest {
 	}
 
 	/**
-	 * Test method for {@link OverlayHarmonizer#setOverlays(List, ImagePlus)}.
+	 * Test method for
+	 * {@link OverlayHarmonizer#setOverlays(List, Overlay, ImagePlus)}.
 	 */
 	@Test
 	public void testSetOverlays() {
