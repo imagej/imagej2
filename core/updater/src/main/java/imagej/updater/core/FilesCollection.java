@@ -939,9 +939,15 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 
 	/* returns null if consistent, error string when not */
 	public String checkConsistency() {
+		final Collection<String> uploadSiteNames = getSiteNamesToUpload();
+		final String uploadSiteName = uploadSiteNames.isEmpty() ? null :
+			uploadSiteNames.iterator().next();
 		final StringBuilder result = new StringBuilder();
 		final Set<FileObject> circularChecked = new HashSet<FileObject>();
 		for (final FileObject file : this) {
+			if (uploadSiteName != null && !uploadSiteName.equals(file.updateSite)) {
+				continue;
+			}
 			result.append(checkForCircularDependency(file, circularChecked));
 			// only non-obsolete components can have dependencies
 			final Set<String> deps = file.dependencies.keySet();

@@ -550,7 +550,17 @@ public class CommandLine {
 				log.info("Would upload/remove " + count + " to/from "
 						+ getLongUpdateSiteName(updateSite));
 			}
+			final String errors = files.checkConsistency();
+			if (errors != null) {
+				log.error(errors);
+			}
 			return;
+		}
+
+
+		final String errors = files.checkConsistency();
+		if (errors != null) {
+			throw die(errors);
 		}
 
 		log.info("Uploading to " + getLongUpdateSiteName(updateSite));
@@ -703,6 +713,10 @@ public class CommandLine {
 				log.info("Would upload " + uploadCount + " (removing "
 						+ removeCount + ") to "
 						+ getLongUpdateSiteName(updateSite));
+			}
+			final String errors = files.checkConsistency();
+			if (errors != null) {
+				log.error(errors);
 			}
 			return;
 		}
@@ -1275,13 +1289,9 @@ public class CommandLine {
 		}
 
 		@Override
-		public void addWindow(final Frame window) {
-			throw new UnsupportedOperationException();
-		}
+		public void addWindow(final Frame window) { }
 
 		@Override
-		public void removeWindow(final Frame window) {
-			throw new UnsupportedOperationException();
-		}
+		public void removeWindow(final Frame window) { }
 	}
 }
