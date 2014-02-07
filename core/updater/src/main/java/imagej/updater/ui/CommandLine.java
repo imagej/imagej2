@@ -1275,13 +1275,9 @@ public class CommandLine {
 		}
 
 		@Override
-		public void addWindow(final Frame window) {
-			throw new UnsupportedOperationException();
-		}
+		public void addWindow(final Frame window) { }
 
 		@Override
-		public void removeWindow(final Frame window) {
-			throw new UnsupportedOperationException();
-		}
+		public void removeWindow(final Frame window) { }
 	}
 }
