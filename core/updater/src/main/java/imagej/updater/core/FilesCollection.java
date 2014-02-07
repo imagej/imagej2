@@ -907,11 +907,11 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	}
 
 	String checkForCircularDependency(final FileObject file,
-		final Set<FileObject> seen)
+		final Set<FileObject> seen, final String updateSite)
 	{
 		if (seen.contains(file)) return "";
 		final String result =
-			checkForCircularDependency(file, seen, new HashSet<FileObject>());
+			checkForCircularDependency(file, seen, new HashSet<FileObject>(), updateSite);
 		if (result == null) return "";
 
 		// Display only the circular dependency
@@ -921,15 +921,16 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	}
 
 	String checkForCircularDependency(final FileObject file,
-		final Set<FileObject> seen, final Set<FileObject> chain)
+		final Set<FileObject> seen, final Set<FileObject> chain, final String updateSite)
 	{
 		if (seen.contains(file)) return null;
 		for (final String dependency : file.dependencies.keySet()) {
 			final FileObject dep = get(dependency);
 			if (dep == null) continue;
+			if (updateSite != null && !updateSite.equals(dep.updateSite)) continue;
 			if (chain.contains(dep)) return " " + dependency;
 			chain.add(dep);
-			final String result = checkForCircularDependency(dep, seen, chain);
+			final String result = checkForCircularDependency(dep, seen, chain, updateSite);
 			seen.add(dep);
 			if (result != null) return " " + dependency + " ->" + result;
 			chain.remove(dep);
@@ -948,7 +949,7 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 			if (uploadSiteName != null && !uploadSiteName.equals(file.updateSite)) {
 				continue;
 			}
-			result.append(checkForCircularDependency(file, circularChecked));
+			result.append(checkForCircularDependency(file, circularChecked, uploadSiteName));
 			// only non-obsolete components can have dependencies
 			final Set<String> deps = file.dependencies.keySet();
 			if (deps.size() > 0 && file.isObsolete() && file.getAction() != Action.UPLOAD) {
