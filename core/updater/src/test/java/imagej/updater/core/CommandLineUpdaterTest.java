@@ -37,6 +37,7 @@ import static imagej.updater.core.UpdaterTestUtils.assertStatus;
 import static imagej.updater.core.UpdaterTestUtils.cleanup;
 import static imagej.updater.core.UpdaterTestUtils.initialize;
 import static imagej.updater.core.UpdaterTestUtils.main;
+import static imagej.updater.core.UpdaterTestUtils.writeGZippedFile;
 import static imagej.updater.core.UpdaterTestUtils.writeFile;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -172,4 +173,38 @@ public class CommandLineUpdaterTest {
 		}
 	}
 
+	@Test
+	public void testCircularDependenciesInOtherSite() throws Exception {
+		files = initialize();
+
+		final File second = addUpdateSite(files, "second");
+		final File third = addUpdateSite(files, "third");
+
+		// fake circular dependencies
+		writeGZippedFile(second, "db.xml.gz", "<pluginRecords>"
+				+ "<plugin filename=\"jars/a.jar\">"
+				+ "<version checksum=\"1\" timestamp=\"2\" filesize=\"3\" />"
+				+ "<dependency filename=\"jars/b.jar\" timestamp=\"2\" />"
+				+ "</plugin>"
+				+ "<plugin filename=\"jars/b.jar\">"
+				+ "<version checksum=\"4\" timestamp=\"2\" filesize=\"5\" />"
+				+ "<dependency filename=\"jars/a.jar\" timestamp=\"2\" />"
+				+ "</plugin>"
+				+ "</pluginRecords>");
+
+		writeFile(files, "macros/a.ijm");
+		files = main(files, "upload", "--update-site", "third", "macros/a.ijm");
+		final File uploaded = new File(third, "macros/a.ijm-" + files.get("macros/a.ijm").current.timestamp);
+		assertTrue(uploaded.exists());
+
+		// make sure that circular dependencies are still reported when uploading to the site
+		writeFile(files, "macros/b.ijm");
+		try {
+			files = main(files, "upload", "--update-site", "second", "macros/b.ijm");
+			assertTrue("Circular dependency not reported!", false);
+		} catch (RuntimeException e) {
+			assertEquals("Circular dependency detected: jars/b.jar -> jars/a.jar -> jars/b.jar\n",
+					e.getMessage());
+		}
+	}
 }
