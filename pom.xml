@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>1.129</version>
+		<version>1.130</version>
 		<relativePath />
 	</parent>
 
@@ -30,8 +30,6 @@
 	<properties>
 		<miglayout.version>3.7.3.1</miglayout.version>
 		<project.rootdir>${basedir}</project.rootdir>
-		<scijava-common.version>2.9.0</scijava-common.version>
-		<scifio.version>0.9.0</scifio.version>
 	</properties>
 
 	<build>
