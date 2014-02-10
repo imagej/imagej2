@@ -35,12 +35,12 @@ import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.types.DataTypeService;
 import io.scif.FormatException;
+import io.scif.config.SCIFIOConfig;
+import io.scif.config.SCIFIOConfig.ImgMode;
 import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
-import io.scif.img.ImgOptions;
-import io.scif.img.ImgOptions.CheckMode;
-import io.scif.img.ImgOptions.ImgMode;
 import io.scif.img.ImgSaver;
+import io.scif.img.SCIFIOImgPlus;
 import io.scif.services.FormatService;
 
 import java.io.File;
@@ -211,7 +211,7 @@ public final class DefaultDatasetService extends AbstractService implements
 	@Override
 	public boolean canOpen(final String source) {
 		try {
-			return formatService.getFormat(source, true) != null;
+			return formatService.getFormat(source) != null;
 		}
 		catch (final FormatException exc) {
 			log.error(exc);
@@ -233,23 +233,22 @@ public final class DefaultDatasetService extends AbstractService implements
 	@Override
 	public Dataset open(final String source) throws IOException {
 		final ImgOpener imageOpener = new ImgOpener(getContext());
-		// Restore this when NativeType can be eliminated from this class decl.
-		// TODO BDZ 7-17-12 Lowering reliance on NativeType. This cast is safe but
-		// necessary in the short term to get code to compile. But
-		// imageOpener.openImg() is being modified to have no reference to
-		// NativeType. Later, when that has been accomplished remove this cast.
-		//final ImgPlus<T> imgPlus = (ImgPlus<T>) imageOpener.openImg(source);
-		//
-		final ImgOptions options = 
-				new ImgOptions().setIndex(0)
-												.setCheckMode(CheckMode.DEEP)
-												.setComputeMinMax(false)
-												.setImgModes(ImgMode.PLANAR);
+
+		final SCIFIOConfig config = new SCIFIOConfig();
+
+		// TODO: Open more than just the first image.
+		config.imgOpenerSetIndex(0);
+
+		// skip min/max computation
+		config.imgOpenerSetComputeMinMax(false);
+
+		// prefer planar array structure, for ImageJ1 and ImgSaver compatibility
+		config.imgOpenerSetImgModes(ImgMode.PLANAR);
+
 		try {
-			@SuppressWarnings("rawtypes")
-			final ImgPlus imgPlus = imageOpener.openImg(source, options);
-			@SuppressWarnings("unchecked")
-			final Dataset dataset = create(imgPlus);
+			final SCIFIOImgPlus<?> imgPlus = imageOpener.openImg(source, config);
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+			final Dataset dataset = create((ImgPlus) imgPlus);
 			return dataset;
 		}
 		catch (final ImgIOException exc) {
