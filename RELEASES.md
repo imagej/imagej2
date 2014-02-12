@@ -99,6 +99,21 @@ And specify the newly pushed `temp` tag.
 - Delete the `temp` tag locally and remotely
 - Start the release process over again
 
+#### Manual testing steps
+
+At a minimum, the following should be tested:
+
+* `File -> Open`
+  * Ideally on all [SCIFIO-supported formats](https://github.com/scifio/scifio/tree/master/scifio/src/main/java/io/scif/formats).
+  * On at least one dataset that will force caching, e.g. `test&axes=X,Y,Z&lengths=256,256,100000.fake`
+* `File -> Save as...`
+  * ideally for all [SCIFIO-supported output formats](https://github.com/scifio/scifio/blob/master/scifio/src/main/java/io/scif/Writer.java).
+* `ImageJ -> Quit ImageJ`
+  * Test this *before and after* opening data, especially data that causes caching.
+* Plugins
+  * Test as many IJ2 plugins (green puzzle piece in the menus) as possible.
+  * Test several legacy plugins (IJ1 microscope in the menus) to verify compatibility layer.
+
 #### Tag, build and deploy the actual release
 
     cd imagej
