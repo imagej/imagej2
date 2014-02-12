@@ -32,6 +32,7 @@
 package imagej.data.display;
 
 import imagej.data.Dataset;
+import imagej.data.overlay.Overlay;
 import imagej.module.Module;
 import imagej.module.ModuleItem;
 import imagej.module.ModuleService;
@@ -69,6 +70,9 @@ public class ActiveImagePreprocessor extends AbstractPreprocessorPlugin {
 
 	@Parameter(required = false)
 	private ImageDisplayService imageDisplayService;
+	
+	@Parameter(required = false)
+	private OverlayService overlayService;
 
 	// -- ModuleProcessor methods --
 
@@ -110,6 +114,16 @@ public class ActiveImagePreprocessor extends AbstractPreprocessorPlugin {
 			module.setInput(datasetInput, activeDataset);
 			module.setResolved(datasetInput, true);
 		}
+		
+		// assign active overlay to single Overlay input
+		if (overlayService != null) {
+			final String overlayInput = getSingleInput(module, Overlay.class);
+			final Overlay activeOverlay = overlayService.getActiveOverlay(activeDisplay);
+			if (overlayInput != null && activeOverlay != null) {
+				module.setInput(overlayInput, activeOverlay);
+				module.setResolved(overlayInput, true);
+			}
+		}	
 	}
 
 	// -- Helper methods --
