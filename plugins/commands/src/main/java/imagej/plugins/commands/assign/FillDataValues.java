@@ -67,6 +67,10 @@ public class FillDataValues<T extends RealType<T>>	extends ContextCommand
 	
 	@Parameter(type = ItemIO.BOTH)
 	private ImageDisplay display;
+	
+	// TODO Investigate bug if persist = true
+	@Parameter(persist = false)
+	private Overlay overlay;
 
 	// -- public interface --
 
@@ -74,7 +78,6 @@ public class FillDataValues<T extends RealType<T>>	extends ContextCommand
 	public void run() {
 		final OptionsChannels opts =
 			optionsService.getOptions(OptionsChannels.class);
-		final Overlay overlay = overlayService.getActiveOverlay(display);
 		if (overlay == null) {
 			cancel("This command requires a selection");
 			return;
