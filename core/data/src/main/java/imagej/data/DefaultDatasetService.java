@@ -211,7 +211,8 @@ public final class DefaultDatasetService extends AbstractService implements
 	@Override
 	public boolean canOpen(final String source) {
 		try {
-			return formatService.getFormat(source) != null;
+			return formatService.getFormat(source, new SCIFIOConfig()
+				.checkerSetOpen(true)) != null;
 		}
 		catch (final FormatException exc) {
 			log.error(exc);
