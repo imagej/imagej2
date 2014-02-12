@@ -9,63 +9,52 @@ to do some of the work. All releases are tagged in their respective Git
 repositories, with binary builds deployed to the [ImageJ Maven
 repository](http://maven.imagej.net/).
 
-## [SCIJAVA COMMON](https://github.com/scijava/scijava-common)
+## POM-SCIJAVA VERSIONING
 
-SciJava Common provides the core plugin framework and application container.
+The [Bump-POM-SciJava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/) Jenkins job is used to automatically manage the version properties in [pom-scijava](https://github.com/scijava/pom-scijava). If there are no breaking changes in the ImageJ2 software stack components that will be released, the procedure is simple:
 
-    cd scijava-common
-    release-version.sh 1.0.0
+1. Perform all necessary releases as indicated below.
+2. Run Bump-POM-SciJava and select "UPDATE_XXXX" for all components that either:
+  * Were newly released
+  * Are downstream of a newly released component
 
-- Where `1.0.0` is the new release version.
+This will update the version properties to the latest releases of all components, and automatically update the pom-scijava usage to this newest pom-scijava version for each component that "UPDATE_XXXX" was selected.
 
-Optionally, after performing the release, [tell Jenkins to update
-`scijava-common.version` in
-pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
+### BREAKING CHANGES
 
-## [IMGLIB2](https://github.com/imagej/imglib)
+If some component releases will include breaking API changes, the procedure is different - as these changes will typically propagate through the software stack and will break builds if the downstream API use is not updated. In this case, the procedure is as follows:
 
-ImgLib2 provides the core data model and image processing.
+1. Manually update [pom-scijava](https://github.com/scijava/pom-scijava)'s version properties to point to the *expected* (but not yet released) version of each component that will be released. As a part of this commit, the pom-scijava version number should be increased as well.
+2. For each component that will be released, starting from the lowest component in the stack (e.g. the component with the breaking changes that are being propagated):
+  1. Add a single commit that updates the pom version to the latest and performs any necessary API updates.
+  2. Release the component as indicated below.
+3. Run [Bump-POM-SciJava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/) with the *POM_SCIJAVA_BUMPED_MANUALLY* parameter enabled to deploy the latest pom-scijava. Other parameters should be disabled.
+4. (Optional) Run Bump-POM-SciJava for any remaining downstream components that need to be updated (e.g. those that were not manually updated).
 
-    cd imglib
-    release-version.sh 2.0.0-beta-7
+## PREREQUISITES
 
-- Where `2.0.0-beta-7` is the new release version.
+All ImageJ2 prerequisites use the [release-version.sh](https://github.com/scijava/scijava-scripts/blob/master/release-version.sh) script. For each project:
 
-Optionally, after performing the release, [tell Jenkins to update
-`imglib2.version` in
-pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
+    cd <project top-level>
+    release-version.sh <new version>
 
-## [SCIFIO](https://github.com/scifio/scifio)
+The version numbering conventions for each project are as follows:
 
-SCIFIO provides core I/O functionality.
+|Project    |Version syntax
+| --------- |:-------------:|
+|SciJava Common| 1.X.X |
+|ImgLib2 |2.0.0-beta-X|
+|SCIFIO | 0.X.X|
+|ImageJ Launcher|2.X.X|
 
-    cd scifio
-    release-version.sh 0.1.0
-
-- Where `0.1.0` is the new release version.
-
-Optionally, after performing the release, [tell Jenkins to update
-`scifio.version` in
-pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
 
 ## [IMAGEJ LAUNCHER](https://github.com/imagej/imagej-launcher)
 
-The ImageJ launcher is a native launcher for ImageJ.
-
-    cd imagej-launcher
-    release-version.sh 2.0.0
-
-- Where `2.0.0` is the new release version.
-
-Then, to deploy:
+After running the release-version.sh script, you will need to manually deploy:
 
     open http://jenkins.imagej.net/job/ImageJ-launcher/build
 
 And build the newly pushed release tag; e.g., `ij-launcher-2.0.0`.
-
-Optionally, after performing the release, [tell Jenkins to update
-`imagej-launcher.version` in
-pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
 
 ## [IMAGEJ](https://github.com/imagej/imagej)
 
