@@ -105,6 +105,17 @@ public abstract class AbstractSwingImageDisplayViewer extends
 		return getCanvas().capture();
 	}
 
+	// -- Disposable methods --
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (imgCanvas != null) {
+			imgCanvas.removeAll();
+			imgCanvas = null;
+		}
+	}
+
 	// -- Event handlers --
 
 	@EventHandler
