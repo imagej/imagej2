@@ -105,6 +105,30 @@ public abstract class AbstractSwingImageDisplayViewer extends
 		return getCanvas().capture();
 	}
 
+	// -- Disposable methods --
+	
+	/**
+	 * NB: a reference to the imgCanvas is held, ultimately, by a finalizable
+	 * parent of a javax.swing.JViewport. This means that the entire resource
+	 * stack is held until finalize executes. This can be troublesome when
+	 * resources held by the imgCanvas themselves react to finalization or
+	 * reference queueing (e.g. of PhantomReferences). At the point dispose is
+	 * called, we know we're trying to release resources associated with this
+	 * object, so it makes sense to do as much as we can up front. By clearing the
+	 * imgCanvas, we break the strong reference link from Finalizer to the
+	 * imgCanvas's resources, allowing them to be garbage collected, etc... and
+	 * working around the limitation of swing classes overriding finalize.
+	 */
+	@Override
+	public void dispose() {
+		super.dispose();
+
+		if (imgCanvas != null) {
+			imgCanvas.removeAll();
+			imgCanvas = null;
+		}
+	}
+
 	// -- Event handlers --
 
 	@EventHandler
