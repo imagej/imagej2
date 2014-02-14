@@ -124,7 +124,7 @@ public abstract class AbstractSwingImageDisplayViewer extends
 		super.dispose();
 
 		if (imgCanvas != null) {
-			imgCanvas.removeAll();
+			imgCanvas.dispose();
 			imgCanvas = null;
 		}
 	}

@@ -78,6 +78,7 @@ import java.util.Set;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 
 import net.imglib2.RandomAccess;
 import net.imglib2.display.screenimage.awt.ARGBScreenImage;
@@ -93,6 +94,7 @@ import org.jhotdraw.draw.DrawingEditor;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.event.FigureSelectionEvent;
 import org.jhotdraw.draw.event.FigureSelectionListener;
+import org.scijava.Disposable;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.event.EventSubscriber;
@@ -109,7 +111,7 @@ import org.scijava.thread.ThreadService;
  * @author Lee Kamentsky
  */
 public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
-	ComponentListener, FigureSelectionListener
+	ComponentListener, FigureSelectionListener, Disposable
 {
 
 	private final SwingImageDisplayViewer displayViewer;
@@ -574,6 +576,20 @@ public class JHotDrawImageCanvas extends JPanel implements AdjustmentListener,
 			toolDelegator.setCreationTool(null);
 			toolDelegator.setSelection(false);
 		}
+	}
+
+	// -- Disposable API --
+
+	/**
+	 * Clears any resources associated with this canvas. This is necessary to
+	 * avoid deadlocks where finalization-dependent cleanup operations (e.g.
+	 * PhantomReference queueing) are unable to proceed because this object
+	 * is being held by a hard reference by the Finalizer (which the downstream
+	 * resources are waiting on) implicit in upstream {@link JViewport} use.
+	 */
+	@Override
+	public void dispose() {
+		figureViews.clear();
 	}
 
 }
