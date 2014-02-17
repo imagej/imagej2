@@ -46,14 +46,16 @@ import org.junit.Test;
 import org.scijava.Context;
 
 /**
- * Verifies that the LUTFinder works as expected.
+ * Unit tests for {@link LUTService}.
  * 
  * @author Johannes Schindelin
+ * @author Curtis Rueden
  */
-public class LUTFinderTest {
+public class LUTServiceTest {
 
+	/** Tests {@link LUTService#findLUTs()}. */
 	@Test
-	public void spacesInFilenames() throws Exception {
+	public void testFindLUTs() throws Exception {
 		final File jarFile = File.createTempFile("listFileContentsTest", ".jar");
 		final FileOutputStream out = new FileOutputStream(jarFile);
 		final JarOutputStream jarOut = new JarOutputStream(out);
