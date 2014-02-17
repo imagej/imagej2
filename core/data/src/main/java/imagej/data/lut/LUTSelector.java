@@ -103,8 +103,7 @@ public class LUTSelector extends DynamicCommand {
 	// -- initializers --
 
 	protected void init() {
-		final LUTFinder finder = new LUTFinder();
-		luts = finder.findLUTs();
+		luts = lutService.findLUTs();
 		final ArrayList<String> choices = new ArrayList<String>();
 		for (final Map.Entry<String, URL> entry : luts.entrySet()) {
 			choices.add(entry.getKey());
