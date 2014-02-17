@@ -137,14 +137,6 @@ public class MandelbrotSetImage extends InteractiveCommand {
 		updateDisplay();
 	}
 
-	@Override
-	public void cancel() {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void run() {}
-
 	// -- initializers --
 
 	protected void init() {
