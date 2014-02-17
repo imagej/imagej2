@@ -36,7 +36,12 @@ import imagej.util.AppUtils;
 import java.net.URL;
 import java.util.Map;
 
-/** @deprecated Use {@link LUTService#findLUTs()} instead. */
+/**
+ * The LUTFinder determines the locations of all .lut files known to ImageJ.
+ * 
+ * @author Barry DeZonia
+ * @deprecated Use {@link LUTService#findLUTs()} instead.
+ */
 @Deprecated
 public class LUTFinder {
 
