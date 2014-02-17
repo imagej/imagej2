@@ -43,6 +43,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
 import org.junit.Test;
+import org.scijava.Context;
 
 /**
  * Verifies that the LUTFinder works as expected.
@@ -70,17 +71,18 @@ public class LUTFinderTest {
 		jarOut.closeEntry();
 		jarOut.close();
 
+		final Context context = new Context(LUTService.class);
+		final LUTService lutService = context.getService(LUTService.class);
+
 		final ClassLoader savedLoader =
 			Thread.currentThread().getContextClassLoader();
-
 		try {
 			final ClassLoader loader =
 				new URLClassLoader(new URL[] { jarFile.toURI().toURL() }, ClassLoader
 					.getSystemClassLoader().getParent());
 			Thread.currentThread().setContextClassLoader(loader);
 
-			final LUTFinder finder = new LUTFinder();
-			final Map<String, URL> luts = finder.findLUTs();
+			final Map<String, URL> luts = lutService.findLUTs();
 			assertEquals(1, luts.size());
 			assertTrue(luts.containsKey("hello world/bang.lut"));
 		}
