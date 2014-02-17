@@ -39,7 +39,6 @@ import imagej.data.display.ColorTables;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
-import imagej.data.lut.LUTFinder;
 import imagej.data.lut.LUTService;
 import imagej.data.overlay.Overlay;
 import imagej.display.Display;
@@ -250,8 +249,7 @@ public class MandelbrotSetImage extends InteractiveCommand {
 	}
 
 	private ColorTable lut() {
-		final LUTFinder finder = new LUTFinder();
-		final Map<String, URL> luts = finder.findLUTs();
+		final Map<String, URL> luts = lutService.findLUTs();
 		final URL lutURL = luts.get("WCIF/Rainbow RGB.lut");
 		if (lutURL != null) {
 			try {
