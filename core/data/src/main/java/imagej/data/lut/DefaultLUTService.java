@@ -242,7 +242,7 @@ public class DefaultLUTService extends AbstractService implements LUTService {
 
 			@Override
 			public Collection<ModuleInfo> get() {
-				final Map<String, URL> luts = new LUTFinder().findLUTs();
+				final Map<String, URL> luts = findLUTs();
 				final List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
 				for (final String key : luts.keySet()) {
 					modules.add(createInfo(key, luts.get(key)));
