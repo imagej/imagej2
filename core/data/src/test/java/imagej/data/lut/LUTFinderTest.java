@@ -70,17 +70,21 @@ public class LUTFinderTest {
 		jarOut.closeEntry();
 		jarOut.close();
 
-		final ClassLoader savedLoader = Thread.currentThread().getContextClassLoader();
+		final ClassLoader savedLoader =
+			Thread.currentThread().getContextClassLoader();
 
 		try {
-			final ClassLoader loader = new URLClassLoader(new URL[] { jarFile.toURI().toURL() }, ClassLoader.getSystemClassLoader().getParent());
+			final ClassLoader loader =
+				new URLClassLoader(new URL[] { jarFile.toURI().toURL() }, ClassLoader
+					.getSystemClassLoader().getParent());
 			Thread.currentThread().setContextClassLoader(loader);
 
 			final LUTFinder finder = new LUTFinder();
 			final Map<String, URL> luts = finder.findLUTs();
 			assertEquals(1, luts.size());
 			assertTrue(luts.containsKey("hello world/bang.lut"));
-		} finally {
+		}
+		finally {
 			Thread.currentThread().setContextClassLoader(savedLoader);
 			if (!jarFile.delete()) {
 				jarFile.deleteOnExit();
