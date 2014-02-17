@@ -72,11 +72,15 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Barry DeZonia
  */
-@Plugin(type = Command.class, initializer = "init", menu = {
-	@Menu(label = MenuConstants.PLUGINS_LABEL, weight = MenuConstants.PLUGINS_WEIGHT,
+@Plugin(
+	type = Command.class,
+	initializer = "init",
+	menu = {
+		@Menu(label = MenuConstants.PLUGINS_LABEL,
+			weight = MenuConstants.PLUGINS_WEIGHT,
 			mnemonic = MenuConstants.PLUGINS_MNEMONIC),
 		@Menu(label = "Sandbox", mnemonic = 's'),
-	@Menu(label = "Mandelbrot Set", mnemonic = 'm', accelerator = "shift ^NUM0") })
+		@Menu(label = "Mandelbrot Set", mnemonic = 'm', accelerator = "shift ^NUM0") })
 public class MandelbrotSetImage extends InteractiveCommand {
 
 	// -- constants --
@@ -90,9 +94,10 @@ public class MandelbrotSetImage extends InteractiveCommand {
 
 	// -- Parameters --
 
-	@Parameter(visibility=ItemVisibility.MESSAGE, persist=false)
-	private String msg = "Draw a ROI on the Mandelbrot Set image and press Magnify.";
-	
+	@Parameter(visibility = ItemVisibility.MESSAGE, persist = false)
+	private final String msg =
+		"Draw a ROI on the Mandelbrot Set image and press Magnify.";
+
 	@Parameter(label = "Reset", callback = "reset")
 	private Button resetButton;
 
@@ -116,7 +121,7 @@ public class MandelbrotSetImage extends InteractiveCommand {
 
 	@Parameter
 	private OverlayService overlayService;
-	
+
 	// -- other fields --
 
 	private double originX = DEFAULT_ORIGIN_X;
@@ -128,28 +133,27 @@ public class MandelbrotSetImage extends InteractiveCommand {
 
 	@Override
 	public void preview() {
-		Overlay o = overlayService.getActiveOverlay(display);
+		final Overlay o = overlayService.getActiveOverlay(display);
 		setWindow(o);
 		updateDisplay();
 	}
-	
+
 	@Override
 	public void cancel() {
 		// TODO Auto-generated method stub
 	}
-	
+
 	@Override
-	public void run() {
-	}
+	public void run() {}
 
 	// -- initializers --
-	
+
 	protected void init() {
-		List<Display<?>> displays = displayService.getDisplays();
-		for (Display<?> disp : displays) {
+		final List<Display<?>> displays = displayService.getDisplays();
+		for (final Display<?> disp : displays) {
 			if (disp.getName().startsWith(NAME)) {
 				display = (ImageDisplay) disp;
-				Overlay o = overlayService.getActiveOverlay(display);
+				final Overlay o = overlayService.getActiveOverlay(display);
 				setWindow(o);
 				removeOverlays();
 				return;
@@ -158,61 +162,62 @@ public class MandelbrotSetImage extends InteractiveCommand {
 		setWindow(null);
 		display = (ImageDisplay) createDisplay();
 	}
-	
+
 	// -- callbacks --
 
 	protected void reset() {
 		setWindow(null);
 		updateDisplay();
 	}
-	
+
 	// -- helpers --
-	
+
 	private Display<?> createDisplay() {
 		return displayService.createDisplay(dataset());
 	}
 
 	private void updateDisplay() {
-		Dataset ds = imageDisplayService.getActiveDataset(display);
-		ImgPlus<? extends RealType<?>> imgPlus = dataset().getImgPlus();
+		final Dataset ds = imageDisplayService.getActiveDataset(display);
+		final ImgPlus<? extends RealType<?>> imgPlus = dataset().getImgPlus();
 		ds.setImgPlus(imgPlus);
 		removeOverlays();
 	}
-	
+
 	private Dataset dataset() {
-		Dataset data = makeDataset();
+		final Dataset data = makeDataset();
 		fillDataset(data);
 		calibrate(data);
 		applyLUT(data);
 		return data;
 	}
-	
+
 	private Dataset makeDataset() {
-		long SIZE = 768;
-		long[] dims = new long[] { Math.round(SIZE * extentX / extentY), SIZE };
+		final long SIZE = 768;
+		final long[] dims =
+			new long[] { Math.round(SIZE * extentX / extentY), SIZE };
 		String name = NAME;
 		name += " [" + originX + "," + originY + "] ";
-		name += " [" + (originX+extentX) + "," + (originY+extentY) + "]";
-		AxisType[] axes = new AxisType[]{Axes.X, Axes.Y};
-		int bitsPerPixel = 8;
-		boolean signed = false;
-		boolean floating = false;
+		name += " [" + (originX + extentX) + "," + (originY + extentY) + "]";
+		final AxisType[] axes = new AxisType[] { Axes.X, Axes.Y };
+		final int bitsPerPixel = 8;
+		final boolean signed = false;
+		final boolean floating = false;
 		return datasetService.create(dims, name, axes, bitsPerPixel, signed,
 			floating);
 	}
 
-	private void fillDataset(Dataset ds) {
-		RandomAccess<? extends RealType<?>> accessor =
+	private void fillDataset(final Dataset ds) {
+		final RandomAccess<? extends RealType<?>> accessor =
 			ds.getImgPlus().randomAccess();
-		double dx = extentX / ds.dimension(0);
-		double dy = extentY / ds.dimension(1);
+		final double dx = extentX / ds.dimension(0);
+		final double dy = extentY / ds.dimension(1);
 		double cx = 0;
 		for (long x = 0; x < ds.dimension(0); x++, cx += dx) {
 			accessor.setPosition(x, 0);
 			double cy = 0;
 			for (long y = 0; y < ds.dimension(1); y++, cy += dy) {
 				accessor.setPosition(y, 1);
-				short value = value(originX + cx, originY + cy);
+				final short value = value(originX + cx, originY + cy);
 				accessor.get().setReal(value);
 			}
 		}
@@ -220,14 +225,14 @@ public class MandelbrotSetImage extends InteractiveCommand {
 
 	// return a value from 0 to 255
 
-	private short value(double cx, double cy) {
+	private short value(final double cx, final double cy) {
 		double zx = cx;
 		double zy = cy;
 		short value = 255;
 		while (value > 0) {
 			// square self via complex multiply
-			double tx = zx;
-			double ty = zy;
+			final double tx = zx;
+			final double ty = zy;
 			zx = tx * tx - ty * ty;
 			zy = ty * tx + tx * ty;
 			// and then add self
@@ -239,36 +244,36 @@ public class MandelbrotSetImage extends InteractiveCommand {
 		return value;
 	}
 
-	private void applyLUT(Dataset ds) {
+	private void applyLUT(final Dataset ds) {
 		ds.initializeColorTables(1);
 		ds.setColorTable(lut(), 0);
 	}
 
 	private ColorTable lut() {
-		LUTFinder finder = new LUTFinder();
-		Map<String, URL> luts = finder.findLUTs();
-		URL lutURL = luts.get("WCIF/Rainbow RGB.lut");
+		final LUTFinder finder = new LUTFinder();
+		final Map<String, URL> luts = finder.findLUTs();
+		final URL lutURL = luts.get("WCIF/Rainbow RGB.lut");
 		if (lutURL != null) {
 			try {
 				return lutService.loadLUT(lutURL);
 			}
-			catch (Exception e) {
+			catch (final Exception e) {
 				// fall through
 			}
 		}
 		return ColorTables.FIRE;
 	}
 
-	private void calibrate(Dataset ds) {
-		CalibratedAxis xAxis =
+	private void calibrate(final Dataset ds) {
+		final CalibratedAxis xAxis =
 			new DefaultLinearAxis(Axes.X, extentX / ds.dimension(0), originX);
-		CalibratedAxis yAxis =
+		final CalibratedAxis yAxis =
 			new DefaultLinearAxis(Axes.Y, extentY / ds.dimension(1), originY);
 		ds.setAxis(xAxis, 0);
 		ds.setAxis(yAxis, 1);
 	}
-	
-	private void setWindow(Overlay o) {
+
+	private void setWindow(final Overlay o) {
 		if (o == null) {
 			originX = DEFAULT_ORIGIN_X;
 			originY = DEFAULT_ORIGIN_Y;
@@ -276,20 +281,20 @@ public class MandelbrotSetImage extends InteractiveCommand {
 			extentY = DEFAULT_EXTENT_Y;
 		}
 		else {
-			Dataset ds = imageDisplayService.getActiveDataset(display);
-			CalibratedAxis xAxis = ds.axis(0);
-			CalibratedAxis yAxis = ds.axis(1);
+			final Dataset ds = imageDisplayService.getActiveDataset(display);
+			final CalibratedAxis xAxis = ds.axis(0);
+			final CalibratedAxis yAxis = ds.axis(1);
 			originX = xAxis.calibratedValue(o.realMin(0));
 			originY = yAxis.calibratedValue(o.realMin(1));
-			double cornerX = xAxis.calibratedValue(o.realMax(0));
-			double cornerY = yAxis.calibratedValue(o.realMax(1));
+			final double cornerX = xAxis.calibratedValue(o.realMax(0));
+			final double cornerY = yAxis.calibratedValue(o.realMax(1));
 			extentX = cornerX - originX;
 			extentY = cornerY - originY;
 		}
 	}
-	
+
 	private void removeOverlays() {
-		for (Overlay ovr : overlayService.getOverlays(display)) {
+		for (final Overlay ovr : overlayService.getOverlays(display)) {
 			overlayService.removeOverlay(display, ovr);
 		}
 	}
