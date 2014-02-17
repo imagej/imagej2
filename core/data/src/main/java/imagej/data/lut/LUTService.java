@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Map;
 
 import net.imglib2.display.ColorTable;
 
@@ -50,6 +51,15 @@ import net.imglib2.display.ColorTable;
  * @author Curtis Rueden
  */
 public interface LUTService extends ImageJService {
+
+	/**
+	 * Finds the {@link URL}s of the LUT files known to ImageJ. LUT files can
+	 * reside within a JAR file on the classpath, or in the {@code luts}
+	 * subdirectory of the application.
+	 * 
+	 * @return A collection of URLs referencing the discovered LUT files.
+	 */
+	Map<String, URL> findLUTs();
 
 	/**
 	 * Gets whether the given file can be parsed as a color table by
