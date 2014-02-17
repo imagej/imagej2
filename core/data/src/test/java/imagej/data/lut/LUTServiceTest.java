@@ -43,16 +43,19 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
 import org.junit.Test;
+import org.scijava.Context;
 
 /**
- * Verifies that the LUTFinder works as expected.
+ * Unit tests for {@link LUTService}.
  * 
  * @author Johannes Schindelin
+ * @author Curtis Rueden
  */
-public class LUTFinderTest {
+public class LUTServiceTest {
 
+	/** Tests {@link LUTService#findLUTs()}. */
 	@Test
-	public void spacesInFilenames() throws Exception {
+	public void testFindLUTs() throws Exception {
 		final File jarFile = File.createTempFile("listFileContentsTest", ".jar");
 		final FileOutputStream out = new FileOutputStream(jarFile);
 		final JarOutputStream jarOut = new JarOutputStream(out);
@@ -70,17 +73,22 @@ public class LUTFinderTest {
 		jarOut.closeEntry();
 		jarOut.close();
 
-		final ClassLoader savedLoader = Thread.currentThread().getContextClassLoader();
+		final Context context = new Context(LUTService.class);
+		final LUTService lutService = context.getService(LUTService.class);
 
+		final ClassLoader savedLoader =
+			Thread.currentThread().getContextClassLoader();
 		try {
-			final ClassLoader loader = new URLClassLoader(new URL[] { jarFile.toURI().toURL() }, ClassLoader.getSystemClassLoader().getParent());
+			final ClassLoader loader =
+				new URLClassLoader(new URL[] { jarFile.toURI().toURL() }, ClassLoader
+					.getSystemClassLoader().getParent());
 			Thread.currentThread().setContextClassLoader(loader);
 
-			final LUTFinder finder = new LUTFinder();
-			final Map<String, URL> luts = finder.findLUTs();
+			final Map<String, URL> luts = lutService.findLUTs();
 			assertEquals(1, luts.size());
 			assertTrue(luts.containsKey("hello world/bang.lut"));
-		} finally {
+		}
+		finally {
 			Thread.currentThread().setContextClassLoader(savedLoader);
 			if (!jarFile.delete()) {
 				jarFile.deleteOnExit();

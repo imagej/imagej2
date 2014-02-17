@@ -43,6 +43,7 @@ import imagej.display.DisplayService;
 import imagej.menu.MenuConstants;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
+import imagej.util.AppUtils;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -120,6 +121,11 @@ public class DefaultLUTService extends AbstractService implements LUTService {
 	private ImageDisplayService imageDisplayService;
 
 	// -- LUTService methods --
+
+	@Override
+	public Map<String, URL> findLUTs() {
+		return AppUtils.findResources(".*\\.lut$", "luts");
+	}
 
 	@Override
 	public boolean isLUT(final File file) {
@@ -236,7 +242,7 @@ public class DefaultLUTService extends AbstractService implements LUTService {
 
 			@Override
 			public Collection<ModuleInfo> get() {
-				final Map<String, URL> luts = new LUTFinder().findLUTs();
+				final Map<String, URL> luts = findLUTs();
 				final List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
 				for (final String key : luts.keySet()) {
 					modules.add(createInfo(key, luts.get(key)));

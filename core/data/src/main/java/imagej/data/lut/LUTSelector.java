@@ -103,14 +103,13 @@ public class LUTSelector extends DynamicCommand {
 	// -- initializers --
 
 	protected void init() {
-		LUTFinder finder = new LUTFinder();
-		luts = finder.findLUTs();
-		ArrayList<String> choices = new ArrayList<String>();
-		for (Map.Entry<String, URL> entry : luts.entrySet()) {
+		luts = lutService.findLUTs();
+		final ArrayList<String> choices = new ArrayList<String>();
+		for (final Map.Entry<String, URL> entry : luts.entrySet()) {
 			choices.add(entry.getKey());
 		}
 		Collections.sort(choices);
-		MutableModuleItem<String> input =
+		final MutableModuleItem<String> input =
 			getInfo().getMutableInput("choice", String.class);
 		input.setChoices(choices);
 		input.setValue(this, choices.get(0));
@@ -123,7 +122,7 @@ public class LUTSelector extends DynamicCommand {
 		try {
 			table = lutService.loadLUT(luts.get(choice));
 		}
-		catch (Exception e) {
+		catch (final Exception e) {
 			// nada
 		}
 	}

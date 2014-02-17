@@ -33,86 +33,17 @@ package imagej.data.lut;
 
 import imagej.util.AppUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
-import org.scijava.util.FileUtils;
-import org.scijava.util.IteratorPlus;
-
-/**
- * The LUTFinder determines the locations of all .lut files known to ImageJ.
- * 
- * @author Barry DeZonia
- */
+/** @deprecated Use {@link LUTService#findLUTs()} instead. */
+@Deprecated
 public class LUTFinder {
 
-	private final static Pattern lutsPattern = Pattern.compile(".*\\.lut$");
-	private static final File LUT_DIRECTORY;
-
-	static {
-		final File appBaseDirectory = AppUtils.getBaseDirectory();
-		LUT_DIRECTORY = appBaseDirectory == null ?
-				null : new File(appBaseDirectory, "luts");
-	}
-
-	/**
-	 * Finds the {@link URL}s of the .lut files known to ImageJ. .lut files can
-	 * reside in the standard Jar file or in the luts subdirectory of the
-	 * application.
-	 * 
-	 * @return A collection of URLs referencing the known .lut files
-	 */
+	/** @deprecated Use {@link LUTService#findLUTs()} instead. */
+	@Deprecated
 	public Map<String, URL> findLUTs() {
-		final HashMap<String, URL> result = new HashMap<String, URL>();
-		try {
-			for (final URL jarURL : getJarURLs()) {
-				getLUTs(result, jarURL);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		// do file luts second: user can thus override jar luts if desired
-		final URL dirURL = getDirectoryURL();
-		if (dirURL != null) getLUTs(result, dirURL);
-		return result;
-	}
-
-	// -- private helpers --
-
-	private Iterable<URL> getJarURLs() throws IOException {
-		return new IteratorPlus<URL>(Thread.currentThread().getContextClassLoader().getResources("luts/"));
-	}
-
-	private URL getDirectoryURL() {
-		if (LUT_DIRECTORY == null) return null;
-		try {
-			return LUT_DIRECTORY.toURI().toURL();
-		}
-		catch (MalformedURLException e) {
-			return null;
-		}
-	}
-
-	private void getLUTs(final Map<String, URL> result, final URL base) {
-		try {
-			String prefix = base.toURI().toString();
-			for (final URL url : FileUtils.listContents(base)) {
-				String string = url.toURI().toString();
-				if (string == null || !string.startsWith(prefix)) continue;
-				String key = new URI(string.substring(prefix.length())).getPath();
-				if (lutsPattern.matcher(string).matches()) result.put(key, url);
-			}
-		}
-		catch (URISyntaxException e) {
-			throw new IllegalArgumentException(e);
-		}
+		return AppUtils.findResources(".*\\.lut$", "luts");
 	}
 
 }
