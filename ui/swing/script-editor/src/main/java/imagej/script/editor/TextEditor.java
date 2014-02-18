@@ -33,6 +33,7 @@ package imagej.script.editor;
 
 import imagej.command.CommandService;
 import imagej.io.IOService;
+import imagej.module.ModuleException;
 import imagej.module.ModuleService;
 import imagej.platform.PlatformService;
 import imagej.script.ScriptInfo;
@@ -72,6 +73,8 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -2090,25 +2093,9 @@ public class TextEditor extends JFrame implements ActionListener,
 		new TextEditor.Executer(output, errors) {
 			@Override
 			public void execute() {
-				FileReader reader = null;
+				Reader reader = null;
 				try {
-					reader = new FileReader(file);
-
-					// create script module for execution
-					final ScriptInfo info =
-							new ScriptInfo(context, getEditorPane().getFileName(), reader);
-					final ScriptModule module = info.createModule();
-					context.inject(module);
-
-					// use the currently selected language to execute the script
-					module.setLanguage(getCurrentLanguage());
-
-					// map stdout and stderr to the UI
-					module.setOutputWriter(output);
-					module.setErrorWriter(errors);
-
-					// execute the script
-					moduleService.run(module, true, new Object[] {}); // FIXME
+					reader = evalScript(getEditorPane().getFileName(), new FileReader(file), output, errors);
 
 					output.flush();
 					errors.flush();
@@ -2445,6 +2432,26 @@ public class TextEditor extends JFrame implements ActionListener,
 
 	private int getTabSizeSetting() {
 		return Prefs.getInt(TAB_SIZE_PREFS, DEFAULT_TAB_SIZE);
+	}
+
+	private Reader evalScript(final String filename, final Reader reader, final Writer output, final Writer errors) throws FileNotFoundException,
+			ModuleException {
+		// create script module for execution
+		final ScriptInfo info =
+				new ScriptInfo(context, filename, reader);
+		final ScriptModule module = info.createModule();
+		context.inject(module);
+
+		// use the currently selected language to execute the script
+		module.setLanguage(getCurrentLanguage());
+
+		// map stdout and stderr to the UI
+		module.setOutputWriter(output);
+		module.setErrorWriter(errors);
+
+		// execute the script
+		moduleService.run(module, true, new Object[] {}); // FIXME
+		return reader;
 	}
 
 }
