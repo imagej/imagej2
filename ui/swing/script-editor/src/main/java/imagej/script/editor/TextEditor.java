@@ -35,7 +35,9 @@ import imagej.command.CommandService;
 import imagej.io.IOService;
 import imagej.module.ModuleService;
 import imagej.platform.PlatformService;
+import imagej.script.ScriptInfo;
 import imagej.script.ScriptLanguage;
+import imagej.script.ScriptModule;
 import imagej.script.ScriptService;
 import imagej.script.editor.command.ChooseFontSize;
 import imagej.script.editor.command.ChooseTabSize;
@@ -2075,14 +2077,6 @@ public class TextEditor extends JFrame implements ActionListener,
 	}
 
 	public void runScript() {
-		final ScriptEngine interpreter =
-			getCurrentLanguage().getScriptEngine();
-
-		if (interpreter == null) {
-			error("There is no interpreter for this language");
-			return;
-		}
-
 		if (isCompiled())
 			getTab().showErrors();
 		else
@@ -2091,19 +2085,47 @@ public class TextEditor extends JFrame implements ActionListener,
 		markCompileStart();
 		final JTextAreaWriter output = new JTextAreaWriter(getTab().screen, log);
 		final JTextAreaWriter errors = new JTextAreaWriter(errorScreen, log);
-		scriptService.initialize(interpreter, getEditorPane().getFileName(), output, errors);
 
 		final File file = getEditorPane().file;
 		new TextEditor.Executer(output, errors) {
 			@Override
 			public void execute() {
+				FileReader reader = null;
 				try {
-					interpreter.eval(new FileReader(file));
+					reader = new FileReader(file);
+
+					// create script module for execution
+					final ScriptInfo info =
+							new ScriptInfo(context, getEditorPane().getFileName(), reader);
+					final ScriptModule module = info.createModule();
+					context.inject(module);
+
+					// use the currently selected language to execute the script
+					module.setLanguage(getCurrentLanguage());
+
+					// map stdout and stderr to the UI
+					module.setOutputWriter(output);
+					module.setErrorWriter(errors);
+
+					// execute the script
+					moduleService.run(module, true, new Object[] {}); // FIXME
+
 					output.flush();
 					errors.flush();
 					markCompileEnd();
-				} catch (Throwable e) {
+				}
+				catch (Throwable e) {
 					handleException(e);
+				}
+				finally {
+					if (reader != null) {
+						try {
+							reader.close();
+						}
+						catch (final IOException exc) {
+							handleException(exc);
+						}
+					}
 				}
 			}
 		};
