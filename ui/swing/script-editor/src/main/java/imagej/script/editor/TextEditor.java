@@ -1351,10 +1351,7 @@ public class TextEditor extends JFrame implements ActionListener,
 				new JTextAreaWriter(this.screen, TextEditor.this.log);
 			final JTextAreaWriter errors =
 				new JTextAreaWriter(errorScreen, log);
-			final ScriptEngine interpreter =
-				language.getScriptEngine();
 			final File file = getEditorPane().file;
-			scriptService.initialize(interpreter, file == null ? getEditorPane().getFileName() : file.getAbsolutePath(), output, errors);
 			// Pipe current text into the runScript:
 			final PipedInputStream pi = new PipedInputStream();
 			final PipedOutputStream po = new PipedOutputStream(pi);
@@ -1364,7 +1361,9 @@ public class TextEditor extends JFrame implements ActionListener,
 				@Override
 				public void execute() {
 					try {
-						interpreter.eval(new InputStreamReader(pi));
+						evalScript(file == null ? getEditorPane().getFileName()
+								: file.getAbsolutePath(),
+								new InputStreamReader(pi), output, errors);
 						output.flush();
 						errors.flush();
 						markCompileEnd();
