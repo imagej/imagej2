@@ -73,11 +73,14 @@ public class LegacyInjector {
 
 		// override behavior of ij.IJ
 		hacker.insertAtBottomOfMethod("ij.IJ",
-			"public static void showProgress(double progress)");
+			"public static void showProgress(double progress)",
+			"ij.IJ._hooks.showProgress($1);");
 		hacker.insertAtBottomOfMethod("ij.IJ",
-			"public static void showProgress(int currentIndex, int finalIndex)");
+			"public static void showProgress(int currentIndex, int finalIndex)",
+			"ij.IJ._hooks.showProgress($1, $2);");
 		hacker.insertAtBottomOfMethod("ij.IJ",
-			"public static void showStatus(java.lang.String s)");
+			"public static void showStatus(java.lang.String status)",
+			"ij.IJ._hooks.showStatus($1);");
 		hacker.insertPrivateStaticField("ij.IJ", Context.class, "_context");
 		hacker.insertNewMethod("ij.IJ",
 			"public synchronized static org.scijava.Context getContext()",
@@ -96,7 +99,9 @@ public class LegacyInjector {
 				+ " ij.IJ.init();"
 				+ " return null;"
 				+ "}");
-		hacker.insertAtTopOfMethod("ij.IJ", "public static void log(java.lang.String message)");
+		hacker.insertAtTopOfMethod("ij.IJ",
+				"public static void log(java.lang.String message)",
+				"ij.IJ._hooks.log($1);");
 		hacker.insertAtTopOfMethod("ij.IJ",
 			"static java.lang.Object runUserPlugIn(java.lang.String commandName, java.lang.String className, java.lang.String arg, boolean createNewLoader)",
 			"if (classLoader != null) Thread.currentThread().setContextClassLoader(classLoader);");
