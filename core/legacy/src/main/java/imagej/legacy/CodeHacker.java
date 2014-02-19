@@ -31,6 +31,9 @@
 
 package imagej.legacy;
 
+import imagej.legacy.patches.EssentialLegacyHooks;
+import imagej.legacy.patches.LegacyHooks;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -38,6 +41,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
@@ -117,6 +121,10 @@ public class CodeHacker {
 			insertNewMethod("ij.IJ",
 				"public static imagej.legacy.LegacyService getLegacyService()",
 				"return _legacyService;");
+		}
+
+		if (!hasField("ij.IJ", "_hooks")) {
+			insertPublicStaticField("ij.IJ", LegacyHooks.class, "_hooks", null);
 		}
 
 		onlyLogExceptions = !LegacyExtensions.stackTraceContains("junit.");
@@ -1508,6 +1516,22 @@ public class CodeHacker {
 		}
 		new LegacyInjector().injectHooks(hacker);
 		hacker.loadClasses();
+	}
+
+	public void installHooks(LegacyHooks hooks) throws UnsupportedOperationException {
+		if (hooks == null) hooks = new EssentialLegacyHooks();
+		try {
+			final Field hooksField = classLoader.loadClass("ij.IJ").getField("_hooks");
+			final LegacyHooks previous = (LegacyHooks)hooksField.get(null);
+			if (previous != null) {
+				previous.dispose();
+			}
+			hooksField.set(null, hooks);
+			hooks.installed();
+		}
+		catch (Throwable t) {
+			throw new UnsupportedOperationException(t);
+		}
 	}
 
 }

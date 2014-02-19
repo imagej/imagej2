@@ -162,6 +162,9 @@ public class LegacyInjector {
 	}
 
 	void setLegacyService(final LegacyService legacyService) {
+		hacker.installHooks(legacyService == null || legacyService instanceof DummyLegacyService ?
+			null : new DefaultLegacyHooks(legacyService));
+
 		Context context;
 		try {
 			context = legacyService.getContext();
