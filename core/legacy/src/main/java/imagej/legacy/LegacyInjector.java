@@ -101,12 +101,21 @@ public class LegacyInjector {
 			"if (classLoader != null) Thread.currentThread().setContextClassLoader(classLoader);");
 
 		// override behavior of ij.ImagePlus
-		hacker.insertAtBottomOfMethod("ij.ImagePlus", "public void updateAndDraw()");
-		hacker.insertAtBottomOfMethod("ij.ImagePlus", "public void repaintWindow()");
 		hacker.insertAtBottomOfMethod("ij.ImagePlus",
-			"public void show(java.lang.String statusMessage)");
-		hacker.insertAtBottomOfMethod("ij.ImagePlus", "public void hide()");
-		hacker.insertAtBottomOfMethod("ij.ImagePlus", "public void close()");
+			"public void updateAndDraw()",
+			"ij.IJ._hooks.registerLegacyImage(this);");
+		hacker.insertAtBottomOfMethod("ij.ImagePlus",
+			"public void repaintWindow()",
+			"ij.IJ._hooks.registerLegacyImage(this);");
+		hacker.insertAtBottomOfMethod("ij.ImagePlus",
+			"public void show(java.lang.String statusMessage)",
+			"ij.IJ._hooks.registerLegacyImage(this);");
+		hacker.insertAtBottomOfMethod("ij.ImagePlus",
+			"public void hide()",
+			"ij.IJ._hooks.unregisterLegacyImage(this);");
+		hacker.insertAtBottomOfMethod("ij.ImagePlus",
+			"public void close()",
+			"ij.IJ._hooks.unregisterLegacyImage(this);");
 
 		// override behavior of ij.gui.ImageWindow
 		hacker.insertNewMethod("ij.gui.ImageWindow",
