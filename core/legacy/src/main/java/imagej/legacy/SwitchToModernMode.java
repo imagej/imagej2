@@ -64,15 +64,15 @@ public class SwitchToModernMode implements PlugIn {
 					Thread.currentThread().setContextClassLoader(classLoader);
 
 					// Make sure that we have a valid context.
-					IJ.runPlugIn(Context.class.getName(), null);
+					final Context context = (Context)IJ.runPlugIn(Context.class.getName(), null);
 					/*
 					 * The LegacyService which has the ImageJ context.
 					 * 
 					 * Since ImageJ 1.x had no context, we have to set this variable just before
 					 * switching to the legacy mode.
 					 */
-					final LegacyService legacyService = (LegacyService)
-						IJ.runPlugIn(LegacyService.class.getName(), null);
+					final LegacyService legacyService = context == null ? null :
+						context.getService(LegacyService.class);
 					if (legacyService == null) {
 						IJ.error("No LegacyService available!");
 						return;
