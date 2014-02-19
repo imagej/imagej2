@@ -133,6 +133,7 @@ import org.scijava.util.FileUtils;
  * 
  * @author Johannes Schindelin
  */
+@SuppressWarnings("serial")
 public class TextEditor extends JFrame implements ActionListener,
 	       ChangeListener {
 
@@ -1876,7 +1877,6 @@ public class TextEditor extends JFrame implements ActionListener,
 			@Override
 			public void run() {
 				setTitle(title); // to the main window
-				int index = tabbed.getSelectedIndex();
 				// Update all tabs: could have changed
 				for (int i=0; i<tabbed.getTabCount(); i++)
 					tabbed.setTitleAt(i,
@@ -1994,6 +1994,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		}
 
 		/** Totally destroy/stop all threads in this and all recursive thread subgroups. Will remove itself from the executingTasks list. */
+		@SuppressWarnings("deprecation")
 		void obliterate() {
 			try {
 				// Stop printing to the screen
