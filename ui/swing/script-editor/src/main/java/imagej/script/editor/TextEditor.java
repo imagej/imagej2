@@ -77,13 +77,13 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import java.util.jar.JarEntry;
@@ -137,6 +137,7 @@ import org.scijava.util.FileUtils;
 public class TextEditor extends JFrame implements ActionListener,
 	       ChangeListener {
 
+	private static final String TEMPLATES_PATH = "script-templates";
 	public static final String TAB_SIZE_PREFS = "script.editor.TabSize";
 	public static final String FONT_SIZE_PREFS = "script.editor.FontSize";
 	public static final String LINE_WRAP_PREFS = "script.editor.WrapLines";
@@ -732,29 +733,22 @@ public class TextEditor extends JFrame implements ActionListener,
 	 * Initializes the template menu.
 	 */
 	protected void addTemplates(JMenu templatesMenu) {
-		String url = TextEditor.class.getResource("TextEditor.class").toString();
-		String classFilePath = "/" + getClass().getName().replace('.', '/') + ".class";
-		if (!url.endsWith(classFilePath))
-			return;
-		url = url.substring(0, url.length() - classFilePath.length() + 1) + templateFolder;
+		for (final Map.Entry<String, URL> entry :
+			new TreeMap<String, URL>(AppUtils.findResources(null, TEMPLATES_PATH)).entrySet()) {
+			final String path = entry.getKey().replace('/', '>').replace('_', ' ');
+			final JMenu menu = getMenu(templatesMenu, path, true);
 
-		List<String> templates = new FileFunctions(this).getResourceList(url);
-		Collections.sort(templates);
-		for (String template : templates) {
-			String path = template.replace('/', '>');
-			JMenu menu = getMenu(templatesMenu, path, true);
-
-			String label = path.substring(path.lastIndexOf('>') + 1).replace('_', ' ');
-			int dot = label.lastIndexOf('.');
+			String label = path.substring(path.lastIndexOf('>') + 1);
+			final int dot = label.lastIndexOf('.');
 			if (dot > 0)
 				label = label.substring(0, dot);
-			final String templateURL = url + template;
-			JMenuItem item = new JMenuItem(label);
+			final JMenuItem item = new JMenuItem(label);
 			menu.add(item);
+			final URL url = entry.getValue();
 			item.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					loadTemplate(templateURL);
+					loadTemplate(url);
 				}
 			});
 		}
@@ -765,20 +759,30 @@ public class TextEditor extends JFrame implements ActionListener,
 	 *
 	 * @param url The resource to load.
 	 */
-	public void loadTemplate(String url) {
+	public void loadTemplate(final String url) {
+		try {
+			loadTemplate(new URL(url));
+		} catch (Exception e) {
+			log.error(e);
+			error("The template '" + url + "' was not found.");
+		}
+	}
+	public void loadTemplate(final URL url) {
 		createNewDocument();
 
 		try {
 			// Load the template
-			InputStream in = new URL(url).openStream();
+			InputStream in = url.openStream();
 			getTextArea().read(new BufferedReader(new InputStreamReader(in)), null);
 
-			int dot = url.lastIndexOf('.');
+			final String path = url.getPath();
+			int dot = path.lastIndexOf('.');
 			if (dot > 0) {
-				ScriptLanguage language = scriptService.getLanguageByExtension(url.substring(dot));
+				ScriptLanguage language = scriptService.getLanguageByExtension(path.substring(dot + 1));
 				if (language != null)
 					setLanguage(language);
 			}
+			setFileName(path.substring(path.lastIndexOf('/') + 1));
 		} catch (Exception e) {
 			e.printStackTrace();
 			error("The template '" + url + "' was not found.");
