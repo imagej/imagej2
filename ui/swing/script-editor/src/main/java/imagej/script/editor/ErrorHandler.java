@@ -125,6 +125,7 @@ public class ErrorHandler {
 	}
 
 	public void scrollToVisible(int offset) throws BadLocationException {
+		if (textArea == null) return;
 		textArea.scrollRectToVisible(textArea.modelToView(textArea.getDocument().getLength()));
 		textArea.scrollRectToVisible(textArea.modelToView(offset));
 	}
