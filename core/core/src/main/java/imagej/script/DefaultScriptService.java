@@ -94,7 +94,7 @@ public class DefaultScriptService extends
 	private HashMap<File, ScriptInfo> scripts;
 
 	/** Table of short type names to associated {@link Class}. */
-	private HashMap<String, Class<?>> typeMap;
+	private HashMap<String, Class<?>> aliasMap;
 
 	// -- ScriptService methods - scripting languages --
 
@@ -203,19 +203,19 @@ public class DefaultScriptService extends
 	}
 
 	@Override
-	public synchronized Class<?> lookupClass(final String typeName)
+	public synchronized Class<?> lookupClass(final String alias)
 		throws ScriptException
 	{
-		final Class<?> type = typeMap().get(typeName);
+		final Class<?> type = aliasMap().get(alias);
 		if (type != null) return type;
 
-		final Class<?> c = ClassUtils.loadClass(typeName);
+		final Class<?> c = ClassUtils.loadClass(alias);
 		if (c != null) {
-			typeMap().put(typeName, c);
+			aliasMap().put(alias, c);
 			return c;
 		}
 
-		throw new ScriptException("Unknown type: " + typeName);
+		throw new ScriptException("Unknown type: " + alias);
 	}
 
 	// -- PTService methods --
@@ -262,10 +262,10 @@ public class DefaultScriptService extends
 		return scripts;
 	}
 
-	/** Gets {@link #typeMap}, initializing if needed. */
-	private HashMap<String, Class<?>> typeMap() {
-		if (typeMap == null) initTypeMap();
-		return typeMap;
+	/** Gets {@link #aliasMap}, initializing if needed. */
+	private HashMap<String, Class<?>> aliasMap() {
+		if (aliasMap == null) initAliasMap();
+		return aliasMap;
 	}
 
 	/** Initializes {@link #scriptLanguageIndex}. */
@@ -327,48 +327,48 @@ public class DefaultScriptService extends
 		scripts = map;
 	}
 
-	/** Initializes {@link #typeMap}. */
-	private synchronized void initTypeMap() {
-		if (typeMap != null) return; // already initialized
+	/** Initializes {@link #aliasMap}. */
+	private synchronized void initAliasMap() {
+		if (aliasMap != null) return; // already initialized
 
 		final HashMap<String, Class<?>> map = new HashMap<String, Class<?>>();
 
 		// primitives
-		addTypes(map, boolean.class, byte.class, char.class, double.class,
+		addAliases(map, boolean.class, byte.class, char.class, double.class,
 			float.class, int.class, long.class, short.class);
 
 		// primitive wrappers
-		addTypes(map, Boolean.class, Byte.class, Character.class, Double.class,
+		addAliases(map, Boolean.class, Byte.class, Character.class, Double.class,
 			Float.class, Integer.class, Long.class, Short.class);
 
 		// built-in types
-		addTypes(map, Context.class, ColorRGB.class, ColorRGBA.class, File.class,
+		addAliases(map, Context.class, ColorRGB.class, ColorRGBA.class, File.class,
 			String.class);
 
 		// service types
 		for (final Service service : getContext().getServiceIndex()) {
-			addTypes(map, service.getClass());
+			addAliases(map, service.getClass());
 		}
 
-		typeMap = map;
+		aliasMap = map;
 	}
 
-	private void addTypes(final HashMap<String, Class<?>> map,
+	private void addAliases(final HashMap<String, Class<?>> map,
 		final Class<?>... types)
 	{
 		for (final Class<?> type : types) {
-			addType(map, type);
+			addAlias(map, type);
 		}
 	}
 
 	private void
-		addType(final HashMap<String, Class<?>> map, final Class<?> type)
+		addAlias(final HashMap<String, Class<?>> map, final Class<?> type)
 	{
 		if (type == null) return;
 		map.put(type.getSimpleName(), type);
 		// NB: Recursively add supertypes.
-		addType(map, type.getSuperclass());
-		addTypes(map, type.getInterfaces());
+		addAlias(map, type.getSuperclass());
+		addAliases(map, type.getInterfaces());
 	}
 
 	// -- Helper methods - run --
