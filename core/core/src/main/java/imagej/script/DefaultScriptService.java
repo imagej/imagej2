@@ -55,12 +55,16 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.scijava.Context;
+import org.scijava.Gateway;
+import org.scijava.InstantiableException;
 import org.scijava.Priority;
 import org.scijava.log.LogService;
 import org.scijava.object.LazyObjects;
 import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
 import org.scijava.service.Service;
 import org.scijava.util.ClassUtils;
 
@@ -74,6 +78,9 @@ import org.scijava.util.ClassUtils;
 public class DefaultScriptService extends
 	AbstractSingletonService<ScriptLanguage> implements ScriptService
 {
+
+	@Parameter
+	private PluginService pluginService;
 
 	@Parameter
 	private ModuleService moduleService;
@@ -358,6 +365,18 @@ public class DefaultScriptService extends
 		// service types
 		for (final Service service : getContext().getServiceIndex()) {
 			addAliases(map, service.getClass());
+		}
+
+		// gateway types
+		final List<PluginInfo<Gateway>> gatewayPlugins =
+			pluginService.getPluginsOfType(Gateway.class);
+		for (final PluginInfo<Gateway> info : gatewayPlugins) {
+			try {
+				addAliases(map, info.loadClass());
+			}
+			catch (final InstantiableException exc) {
+				log.warn("Ignoring invalid gateway: " + info.getClassName(), exc);
+			}
 		}
 
 		aliasMap = map;
