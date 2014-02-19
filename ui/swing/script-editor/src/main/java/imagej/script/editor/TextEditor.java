@@ -2436,8 +2436,7 @@ public class TextEditor extends JFrame implements ActionListener,
 	private Reader evalScript(final String filename, final Reader reader, final Writer output, final Writer errors) throws FileNotFoundException,
 			ModuleException {
 		// create script module for execution
-		final ScriptInfo info =
-				new ScriptInfo(context, filename, reader);
+		final ScriptInfo info = new ScriptInfo(context, filename, reader);
 		final ScriptModule module = info.createModule();
 		context.inject(module);
 
