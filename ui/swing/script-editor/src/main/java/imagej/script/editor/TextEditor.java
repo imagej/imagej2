@@ -85,6 +85,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.ExecutionException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipException;
@@ -2448,7 +2449,15 @@ public class TextEditor extends JFrame implements ActionListener,
 		module.setErrorWriter(errors);
 
 		// execute the script
-		moduleService.run(module, true);
+		try {
+			moduleService.run(module, true).get();
+		}
+		catch (InterruptedException e) {
+			error("Interrupted");
+		}
+		catch (ExecutionException e) {
+			log.error(e);
+		}
 		return reader;
 	}
 
