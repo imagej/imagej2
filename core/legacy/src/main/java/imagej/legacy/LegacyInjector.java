@@ -32,7 +32,6 @@
 package imagej.legacy;
 
 import java.awt.GraphicsEnvironment;
-import java.lang.reflect.Field;
 
 import org.scijava.Context;
 import org.scijava.util.ClassUtils;
@@ -75,17 +74,10 @@ public class LegacyInjector {
 		hacker.insertAtBottomOfMethod("ij.IJ",
 			"public static void showStatus(java.lang.String status)",
 			"ij.IJ._hooks.showStatus($1);");
-		hacker.insertPrivateStaticField("ij.IJ", Context.class, "_context");
-		hacker.insertNewMethod("ij.IJ",
-			"public synchronized static org.scijava.Context getContext()",
-			"if (_context == null) {"
-			+ " if (classLoader != null) Thread.currentThread().setContextClassLoader(classLoader);"
-			+ " _context = new org.scijava.Context();"
-			+ "}"
-			+ "return _context;");
 		hacker.insertAtTopOfMethod("ij.IJ",
 				"public static Object runPlugIn(java.lang.String className, java.lang.String arg)",
-				"Object o = _hooks.interceptRunPlugIn($1, $2);"
+				" if (classLoader != null) Thread.currentThread().setContextClassLoader(classLoader);"
+				+ "Object o = _hooks.interceptRunPlugIn($1, $2);"
 				+ "if (o != null) return o;"
 				+ "if (\"ij.IJ.init\".equals($1)) {"
 				+ " ij.IJ.init();"
@@ -183,25 +175,6 @@ public class LegacyInjector {
 		} catch (UnsupportedOperationException e) {
 			// DummyLegacyService does not have a context
 			context = null;
-		}
-
-		try {
-			final Class<?> ij = hacker.classLoader.loadClass("ij.IJ");
-			Field field = ij.getDeclaredField("_legacyService");
-			field.setAccessible(true);
-			field.set(null, legacyService);
-
-			field = ij.getDeclaredField("_context");
-			field.setAccessible(true);
-			field.set(null, context);
-		} catch (ClassNotFoundException e) {
-			throw new IllegalArgumentException("Cannot find ij.IJ", e);
-		} catch (SecurityException e) {
-			throw new IllegalArgumentException("Cannot find ij.IJ", e);
-		} catch (NoSuchFieldException e) {
-			throw new IllegalArgumentException("Cannot find field in ij.IJ", e);
-		} catch (IllegalAccessException e) {
-			throw new IllegalArgumentException("Cannot access field in ij.IJ", e);
 		}
 
 		IJ1Helper.subscribeEvents(context);

@@ -80,11 +80,6 @@ public class LegacyServiceTest {
 		Context context2 = (Context)IJ.runPlugIn(Context.class.getName(), null);
 		assertNotNull(context2);
 		assertEquals(context, context2);
-
-		final LegacyService legacyService2 = (LegacyService)
-				IJ.runPlugIn(LegacyService.class.getName(), null);
-		assertNotNull(legacyService2);
-		assertEquals(legacyService, legacyService2);
 	}
 
 	@Test
