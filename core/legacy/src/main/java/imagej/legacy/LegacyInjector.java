@@ -131,7 +131,22 @@ public class LegacyInjector {
 			"ij.IJ._hooks.unregisterLegacyImage(this.getImagePlus());");
 
 		// override behavior of PluginClassLoader
-		hacker.insertAtTopOfMethod("ij.io.PluginClassLoader", "void init(java.lang.String path)");
+		hacker.insertNewMethod("ij.io.PluginClassLoader",
+			"void addRecursively(java.io.File directory)",
+			"java.io.File[] list = $1.listFiles();"
+			+ "if (list == null) return;"
+			+ "for (int i = 0; i < list.length; i++) {"
+			+ "  java.io.File file = list[i];"
+			+ "  if (file.isDirectory()) addRecursively(file);"
+			+ "  else if (file.getName().endsWith(\".jar\")) addURL(file.toURI().toURL());"
+			+ "}");
+		hacker.insertAtTopOfMethod("ij.io.PluginClassLoader",
+			"void init(java.lang.String path)",
+			"java.io.File plugins = new java.io.File($1);"
+			+ "if (plugins.getName().equals(\"plugins\")) {"
+			+ "  java.io.File root = plugins.getParentFile();"
+			+ "  if (root != null) addRecursively(new java.io.File(root, \"jars\"));"
+			+ "}");
 
 		// override behavior of MacAdapter, if needed
 		if (ClassUtils.hasClass("com.apple.eawt.ApplicationListener")) {
