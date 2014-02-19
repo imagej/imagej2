@@ -275,6 +275,12 @@ public interface ScriptService extends SingletonService<ScriptLanguage>,
 	boolean canHandleFile(String fileName);
 
 	/** TODO */
+	void addAlias(Class<?> type);
+
+	/** TODO */
+	void addAlias(String alias, Class<?> type);
+
+	/** TODO */
 	Class<?> lookupClass(String typeName) throws ScriptException;
 
 }

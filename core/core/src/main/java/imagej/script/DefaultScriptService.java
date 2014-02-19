@@ -203,6 +203,16 @@ public class DefaultScriptService extends
 	}
 
 	@Override
+	public void addAlias(final Class<?> type) {
+		addAlias(type.getSimpleName(), type);
+	}
+
+	@Override
+	public void addAlias(final String alias, final Class<?> type) {
+		aliasMap().put(alias, type);
+	}
+
+	@Override
 	public synchronized Class<?> lookupClass(final String alias)
 		throws ScriptException
 	{
