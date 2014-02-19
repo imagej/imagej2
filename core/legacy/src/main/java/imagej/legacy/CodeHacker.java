@@ -101,9 +101,6 @@ import org.scijava.util.FileUtils;
  */
 public class CodeHacker {
 
-	private static final String PATCH_PKG = "imagej.legacy.patches";
-	private static final String PATCH_SUFFIX = "Methods";
-
 	private final ClassPool pool;
 	protected final ClassLoader classLoader;
 	private final Set<CtClass> handledClasses = new LinkedHashSet<CtClass>();
@@ -132,25 +129,6 @@ public class CodeHacker {
 	}
 
 	/**
-	 * Modifies a class by injecting additional code at the end of the specified
-	 * method's body.
-	 * <p>
-	 * The extra code is defined in the imagej.legacy.patches package, as
-	 * described in the documentation for {@link #insertNewMethod(String, String)}
-	 * .
-	 * </p>
-	 * 
-	 * @param fullClass Fully qualified name of the class to modify.
-	 * @param methodSig Method signature of the method to modify; e.g.,
-	 *          "public void updateAndDraw()"
-	 */
-	public void insertAtBottomOfMethod(final String fullClass,
-		final String methodSig)
-	{
-		insertAtBottomOfMethod(fullClass, methodSig, newCode(fullClass, methodSig));
-	}
-
-	/**
 	 * Modifies a class by injecting the provided code string at the end of the
 	 * specified method's body.
 	 * 
@@ -164,31 +142,12 @@ public class CodeHacker {
 		final String methodSig, final String newCode)
 	{
 		try {
-			getBehavior(fullClass, methodSig).insertAfter(expand(newCode));
+			getBehavior(fullClass, methodSig).insertAfter(newCode);
 		}
 		catch (final Throwable e) {
 			maybeThrow(new IllegalArgumentException("Cannot modify method: " +
 				methodSig, e));
 		}
-	}
-
-	/**
-	 * Modifies a class by injecting additional code at the start of the specified
-	 * method's body.
-	 * <p>
-	 * The extra code is defined in the imagej.legacy.patches package, as
-	 * described in the documentation for {@link #insertNewMethod(String, String)}
-	 * .
-	 * </p>
-	 * 
-	 * @param fullClass Fully qualified name of the class to override.
-	 * @param methodSig Method signature of the method to override; e.g.,
-	 *          "public void updateAndDraw()"
-	 */
-	public void
-		insertAtTopOfMethod(final String fullClass, final String methodSig)
-	{
-		insertAtTopOfMethod(fullClass, methodSig, newCode(fullClass, methodSig));
 	}
 
 	/**
@@ -207,41 +166,16 @@ public class CodeHacker {
 		try {
 			final CtBehavior behavior = getBehavior(fullClass, methodSig);
 			if (behavior instanceof CtConstructor) {
-				((CtConstructor) behavior).insertBeforeBody(expand(newCode));
+				((CtConstructor) behavior).insertBeforeBody(newCode);
 			}
 			else {
-				behavior.insertBefore(expand(newCode));
+				behavior.insertBefore(newCode);
 			}
 		}
 		catch (final Throwable e) {
 			maybeThrow(new IllegalArgumentException("Cannot modify method: " +
 				methodSig, e));
 		}
-	}
-
-	/**
-	 * Modifies a class by injecting a new method.
-	 * <p>
-	 * The body of the method is defined in the imagej.legacy.patches package, as
-	 * described in the {@link #insertNewMethod(String, String)} method
-	 * documentation.
-	 * <p>
-	 * The new method implementation should be declared in the
-	 * imagej.legacy.patches package, with the same name as the original class
-	 * plus "Methods"; e.g., overridden ij.gui.ImageWindow methods should be
-	 * placed in the imagej.legacy.patches.ImageWindowMethods class.
-	 * </p>
-	 * <p>
-	 * New method implementations must be public static, with an additional first
-	 * parameter: the instance of the class on which to operate.
-	 * </p>
-	 * 
-	 * @param fullClass Fully qualified name of the class to override.
-	 * @param methodSig Method signature of the method to override; e.g.,
-	 *          "public void setVisible(boolean vis)"
-	 */
-	public void insertNewMethod(final String fullClass, final String methodSig) {
-		insertNewMethod(fullClass, methodSig, newCode(fullClass, methodSig));
 	}
 
 	/**
@@ -257,7 +191,7 @@ public class CodeHacker {
 		final String newCode)
 	{
 		final CtClass classRef = getClass(fullClass);
-		final String methodBody = methodSig + " { " + expand(newCode) + " } ";
+		final String methodBody = methodSig + " { " + newCode + " } ";
 		try {
 			final CtMethod methodRef = CtNewMethod.make(methodBody, classRef);
 			classRef.addMethod(methodRef);
@@ -914,56 +848,6 @@ public class CodeHacker {
 		}
 	}
 
-	/**
-	 * Generates a new line of code calling the {@link imagej.legacy.patches}
-	 * class and method corresponding to the given method signature.
-	 */
-	private String newCode(final String fullClass, final String methodSig) {
-		final int dotIndex = fullClass.lastIndexOf(".");
-		final String className = fullClass.substring(dotIndex + 1);
-
-		final String methodName = getMethodName(methodSig);
-		final boolean isStatic = isStatic(methodSig);
-		final boolean isVoid = isVoid(methodSig);
-
-		final String patchClass = PATCH_PKG + "." + className + PATCH_SUFFIX;
-		for (final CtMethod method : getClass(patchClass).getMethods())
-			try {
-				if ((method.getModifiers() & Modifier.STATIC) == 0) continue;
-				final CtClass[] types = method.getParameterTypes();
-				if (types.length == 0 ||
-					!types[0].getName().equals("imagej.legacy.LegacyService"))
-				{
-					throw new UnsupportedOperationException("Method " + method +
-						" of class " + patchClass + " has wrong type!");
-				}
-			}
-			catch (final NotFoundException e) {
-				e.printStackTrace();
-			}
-
-		final StringBuilder newCode =
-			new StringBuilder((isVoid ? "" : "return ") + patchClass + "." +
-				methodName + "(");
-		newCode.append("$service");
-		if (!isStatic) {
-			newCode.append(", this");
-		}
-		final int argCount = getMethodArgTypes(methodSig).length;
-		for (int i = 1; i <= argCount; i++) {
-			newCode.append(", $" + i);
-		}
-		newCode.append(");");
-
-		return newCode.toString();
-	}
-
-	/** Patches in the current legacy service for '$service' */
-	private String expand(final String code) {
-		return code.replace("$isLegacyMode()", "$service.isLegacyMode()").replace(
-			"$service", "ij.IJ.getLegacyService()");
-	}
-
 	/** Extracts the method name from the given method signature. */
 	private String getMethodName(final String methodSig) {
 		final int parenIndex = methodSig.indexOf("(");
@@ -981,24 +865,6 @@ public class CodeHacker {
 			args[i] = args[i].trim().split(" ")[0];
 		}
 		return args;
-	}
-
-	/** Returns true if the given method signature is static. */
-	private boolean isStatic(final String methodSig) {
-		final int parenIndex = methodSig.indexOf("(");
-		final String methodPrefix = methodSig.substring(0, parenIndex);
-		for (final String token : methodPrefix.split(" ")) {
-			if (token.equals("static")) return true;
-		}
-		return false;
-	}
-
-	/** Returns true if the given method signature returns void. */
-	private boolean isVoid(final String methodSig) {
-		final int parenIndex = methodSig.indexOf("(");
-		final String methodPrefix = methodSig.substring(0, parenIndex);
-		return methodPrefix.startsWith("void ") ||
-			methodPrefix.indexOf(" void ") > 0;
 	}
 
 	/**
