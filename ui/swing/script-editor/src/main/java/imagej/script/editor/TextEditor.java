@@ -2197,10 +2197,8 @@ public class TextEditor extends JFrame implements ActionListener,
 		}
 		if (compileStartOffset != errorScreen.getDocument().getLength())
 			getTab().showErrors();
-		if (getTab().showingErrors) try {
+		if (getTab().showingErrors) {
 			errorHandler.scrollToVisible(compileStartOffset);
-		} catch (BadLocationException e) {
-			// ignore
 		}
 	}
 

@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Document;
@@ -124,10 +125,30 @@ public class ErrorHandler {
 		scrollToVisible(start);
 	}
 
-	public void scrollToVisible(int offset) throws BadLocationException {
+	public void scrollToVisible(final int offset) {
 		if (textArea == null) return;
-		textArea.scrollRectToVisible(textArea.modelToView(textArea.getDocument().getLength()));
-		textArea.scrollRectToVisible(textArea.modelToView(offset));
+		final JTextArea textArea = this.textArea;
+		final Runnable task = new Runnable() {
+			@Override
+			public void run() {
+				try {
+					textArea.scrollRectToVisible(textArea.modelToView(textArea.getDocument().getLength()));
+					textArea.scrollRectToVisible(textArea.modelToView(offset));
+				} catch (BadLocationException e) {
+					// ignore
+				}
+			}
+		};
+		if (SwingUtilities.isEventDispatchThread()) {
+			task.run();
+		} else {
+			try {
+				SwingUtilities.invokeAndWait(task);
+			}
+			catch (Exception e) {
+				// ignore
+			}
+		}
 	}
 
 	static class Error {
