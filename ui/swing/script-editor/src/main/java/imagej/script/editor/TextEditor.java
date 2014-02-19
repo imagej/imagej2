@@ -33,9 +33,12 @@ package imagej.script.editor;
 
 import imagej.command.CommandService;
 import imagej.io.IOService;
+import imagej.module.ModuleException;
 import imagej.module.ModuleService;
 import imagej.platform.PlatformService;
+import imagej.script.ScriptInfo;
 import imagej.script.ScriptLanguage;
+import imagej.script.ScriptModule;
 import imagej.script.ScriptService;
 import imagej.script.editor.command.ChooseFontSize;
 import imagej.script.editor.command.ChooseTabSize;
@@ -70,6 +73,8 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -80,6 +85,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.ExecutionException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipException;
@@ -948,10 +954,10 @@ public class TextEditor extends JFrame implements ActionListener,
 			getTextArea().moveCaretPosition(getTextArea().getDocument().getLength());
 		}
 		else if (source == chooseFontSize) {
-			commandService.run(ChooseFontSize.class, true, new Object[] {"editor", this}); // FIXME
+			commandService.run(ChooseFontSize.class, true, "editor", this);
 		}
 		else if (source == chooseTabSize) {
-			commandService.run(ChooseTabSize.class, true, new Object[] {"editor", this}); // FIXME
+			commandService.run(ChooseTabSize.class, true, "editor", this);
 		}
 		else if (source == addImport)
 			addImport(null);
@@ -1027,7 +1033,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			}
 			searchRoot = searchRoot.getParentFile();
 
-			commandService.run(GitGrep.class, true, new Object[] {"editor", this, "searchTerm", searchTerm, "searchRoot", searchRoot}); // FIXME
+			commandService.run(GitGrep.class, true, "editor", this, "searchTerm", searchTerm, "searchRoot", searchRoot);
 		}
 		else if (source == openInGitweb) {
 			EditorPane editorPane = getEditorPane();
@@ -1346,10 +1352,7 @@ public class TextEditor extends JFrame implements ActionListener,
 				new JTextAreaWriter(this.screen, TextEditor.this.log);
 			final JTextAreaWriter errors =
 				new JTextAreaWriter(errorScreen, log);
-			final ScriptEngine interpreter =
-				language.getScriptEngine();
 			final File file = getEditorPane().file;
-			scriptService.initialize(interpreter, file == null ? getEditorPane().getFileName() : file.getAbsolutePath(), output, errors);
 			// Pipe current text into the runScript:
 			final PipedInputStream pi = new PipedInputStream();
 			final PipedOutputStream po = new PipedOutputStream(pi);
@@ -1359,7 +1362,9 @@ public class TextEditor extends JFrame implements ActionListener,
 				@Override
 				public void execute() {
 					try {
-						interpreter.eval(new InputStreamReader(pi));
+						evalScript(file == null ? getEditorPane().getFileName()
+								: file.getAbsolutePath(),
+								new InputStreamReader(pi), output, errors);
 						output.flush();
 						errors.flush();
 						markCompileEnd();
@@ -2039,7 +2044,7 @@ public class TextEditor extends JFrame implements ActionListener,
 			error("\nNo running scripts\n");
 			return;
 		}
-		commandService.run(KillScript.class, true, new Object[] {"editor", this}); // FIXME
+		commandService.run(KillScript.class, true, "editor", this);
 	}
 
 	/** Run the text in the textArea without compiling it, only if it's not java. */
@@ -2075,14 +2080,6 @@ public class TextEditor extends JFrame implements ActionListener,
 	}
 
 	public void runScript() {
-		final ScriptEngine interpreter =
-			getCurrentLanguage().getScriptEngine();
-
-		if (interpreter == null) {
-			error("There is no interpreter for this language");
-			return;
-		}
-
 		if (isCompiled())
 			getTab().showErrors();
 		else
@@ -2091,19 +2088,31 @@ public class TextEditor extends JFrame implements ActionListener,
 		markCompileStart();
 		final JTextAreaWriter output = new JTextAreaWriter(getTab().screen, log);
 		final JTextAreaWriter errors = new JTextAreaWriter(errorScreen, log);
-		scriptService.initialize(interpreter, getEditorPane().getFileName(), output, errors);
 
 		final File file = getEditorPane().file;
 		new TextEditor.Executer(output, errors) {
 			@Override
 			public void execute() {
+				Reader reader = null;
 				try {
-					interpreter.eval(new FileReader(file));
+					reader = evalScript(getEditorPane().getFileName(), new FileReader(file), output, errors);
+
 					output.flush();
 					errors.flush();
 					markCompileEnd();
-				} catch (Throwable e) {
+				}
+				catch (Throwable e) {
 					handleException(e);
+				}
+				finally {
+					if (reader != null) {
+						try {
+							reader.close();
+						}
+						catch (final IOException exc) {
+							handleException(exc);
+						}
+					}
 				}
 			}
 		};
@@ -2188,10 +2197,8 @@ public class TextEditor extends JFrame implements ActionListener,
 		}
 		if (compileStartOffset != errorScreen.getDocument().getLength())
 			getTab().showErrors();
-		if (getTab().showingErrors) try {
+		if (getTab().showingErrors) {
 			errorHandler.scrollToVisible(compileStartOffset);
-		} catch (BadLocationException e) {
-			// ignore
 		}
 	}
 
@@ -2423,6 +2430,33 @@ public class TextEditor extends JFrame implements ActionListener,
 
 	private int getTabSizeSetting() {
 		return Prefs.getInt(TAB_SIZE_PREFS, DEFAULT_TAB_SIZE);
+	}
+
+	private Reader evalScript(final String filename, final Reader reader, final Writer output, final Writer errors) throws FileNotFoundException,
+			ModuleException {
+		// create script module for execution
+		final ScriptInfo info = new ScriptInfo(context, filename, reader);
+		final ScriptModule module = info.createModule();
+		context.inject(module);
+
+		// use the currently selected language to execute the script
+		module.setLanguage(getCurrentLanguage());
+
+		// map stdout and stderr to the UI
+		module.setOutputWriter(output);
+		module.setErrorWriter(errors);
+
+		// execute the script
+		try {
+			moduleService.run(module, true).get();
+		}
+		catch (InterruptedException e) {
+			error("Interrupted");
+		}
+		catch (ExecutionException e) {
+			log.error(e);
+		}
+		return reader;
 	}
 
 }

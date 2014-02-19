@@ -39,13 +39,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.Writer;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
@@ -277,8 +275,10 @@ public interface ScriptService extends SingletonService<ScriptLanguage>,
 	boolean canHandleFile(String fileName);
 
 	/** TODO */
-	void initialize(ScriptEngine engine, String fileName, Writer writer,
-		Writer errorWriter);
+	void addAlias(Class<?> type);
+
+	/** TODO */
+	void addAlias(String alias, Class<?> type);
 
 	/** TODO */
 	Class<?> lookupClass(String typeName) throws ScriptException;
