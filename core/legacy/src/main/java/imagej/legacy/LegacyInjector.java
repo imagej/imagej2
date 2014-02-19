@@ -119,15 +119,16 @@ public class LegacyInjector {
 
 		// override behavior of ij.gui.ImageWindow
 		hacker.insertNewMethod("ij.gui.ImageWindow",
-			"public void setVisible(boolean vis)");
-		hacker.insertAtTopOfMethod("ij.gui.ImageWindow",
 			"public void setVisible(boolean vis)",
-			"if ($isLegacyMode()) { super.setVisible($1); }");
-		hacker.insertNewMethod("ij.gui.ImageWindow", "public void show()");
-		hacker.insertAtTopOfMethod("ij.gui.ImageWindow",
+			"if ($1) ij.IJ._hooks.registerLegacyImage(this.getImagePlus());"
+			+ "if (ij.IJ._hooks.isLegacyMode()) { super.setVisible($1); }");
+		hacker.insertNewMethod("ij.gui.ImageWindow",
 			"public void show()",
-			"if ($isLegacyMode()) { super.show(); }");
-		hacker.insertAtTopOfMethod("ij.gui.ImageWindow", "public void close()");
+			"ij.IJ._hooks.registerLegacyImage(this.getImagePlus());"
+			+ "if (ij.IJ._hooks.isLegacyMode()) { super.show(); }");
+		hacker.insertAtTopOfMethod("ij.gui.ImageWindow",
+			"public void close()",
+			"ij.IJ._hooks.unregisterLegacyImage(this.getImagePlus());");
 
 		// override behavior of PluginClassLoader
 		hacker.insertAtTopOfMethod("ij.io.PluginClassLoader", "void init(java.lang.String path)");
