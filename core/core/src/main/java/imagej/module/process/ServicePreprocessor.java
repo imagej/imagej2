@@ -54,8 +54,10 @@ import org.scijava.service.Service;
  * SciJava application context is injected (via {@link Context#inject(Object)}.
  * However, some modules may have service parameters which are programmatically
  * generated (i.e., returned directly as inputs from {@link ModuleInfo#inputs()}
- * and as such not populated by context injection. In that case, we need this
- * service preprocessor to fill in the service values.
+ * and as such not populated by context injection. E.g., this situation is the
+ * case for scripts, since module inputs are parsed from the script header
+ * rather than declared via the @{@link Parameter} annotation. In such cases, we
+ * need this service preprocessor to fill in the service values.
  * </p>
  * 
  * @author Curtis Rueden
