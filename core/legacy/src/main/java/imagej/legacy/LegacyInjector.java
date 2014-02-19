@@ -124,16 +124,6 @@ public class LegacyInjector {
 		// override behavior of PluginClassLoader
 		hacker.insertAtTopOfMethod("ij.io.PluginClassLoader", "void init(java.lang.String path)");
 
-		// override behavior of ij.macro.Functions
-		hacker
-			.insertAtTopOfMethod("ij.macro.Functions",
-				"void displayBatchModeImage(ij.ImagePlus imp2)",
-				"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageBefore($service, $1);");
-		hacker
-			.insertAtBottomOfMethod("ij.macro.Functions",
-				"void displayBatchModeImage(ij.ImagePlus imp2)",
-				"imagej.legacy.patches.FunctionsMethods.displayBatchModeImageAfter($service, $1);");
-
 		// override behavior of MacAdapter, if needed
 		if (ClassUtils.hasClass("com.apple.eawt.ApplicationListener")) {
 			// NB: If com.apple.eawt package is present, override IJ1's MacAdapter.
