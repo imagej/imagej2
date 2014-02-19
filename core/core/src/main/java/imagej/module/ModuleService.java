@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
+import org.scijava.Prioritized;
 import org.scijava.input.Accelerator;
 
 /**
@@ -102,7 +103,7 @@ public interface ModuleService extends ImageJService {
 	 * <p>
 	 * If the module implements the {@link org.scijava.Contextual} interface, the
 	 * appropriate context is injected. Similarly, if the module implements the
-	 * {@link org.scijava.Prioritized} interface, the appropriate priority is injected.
+	 * {@link Prioritized} interface, the appropriate priority is injected.
 	 * </p>
 	 * <p>
 	 * Note that in the case of commands, this method does <em>not</em> do any

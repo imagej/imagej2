@@ -45,7 +45,7 @@ import javax.swing.text.BadLocationException;
 import org.scijava.log.LogService;
 
 /**
- * TODO
+ * A {@link Writer} adapter for the output area of the script editor.
  * 
  * @author Johannes Schindelin
  */
