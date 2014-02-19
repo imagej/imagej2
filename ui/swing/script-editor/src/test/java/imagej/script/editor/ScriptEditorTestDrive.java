@@ -28,6 +28,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package imagej.script.editor;
 
 import java.awt.event.WindowAdapter;
