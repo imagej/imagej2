@@ -33,6 +33,10 @@ package imagej.legacy.patches;
 
 import ij.ImagePlus;
 
+import java.io.File;
+import java.net.URL;
+import java.util.List;
+
 /**
  * Extension points for ImageJ 1.x.
  * <p>
@@ -169,4 +173,59 @@ public interface LegacyHooks {
 	 */
 	void error(Throwable t);
 
+	/**
+	 * Returns the name to use in place of "ImageJ".
+	 * 
+	 * @return the application name
+	 */
+	String getAppName();
+
+	/**
+	 * Returns the icon to use in place of the ImageJ microscope.
+	 * 
+	 * @return the URL to the icon to use, or null
+	 */
+	URL getIconURL();
+
+	/**
+	 * Extension point to override ImageJ 1.x' editor.
+	 * 
+	 * @param path
+	 *            the path to the file to open
+	 * @return true if the hook opened a different editor
+	 */
+	boolean openInLegacyEditor(String path);
+
+	/**
+	 * Extension point to override ImageJ 1.x' editor.
+	 * 
+	 * @param fileName
+	 *            the name of the new file
+	 * @param content
+	 *            the initial content
+	 * @return true if the hook opened a different editor
+	 */
+	boolean createInLegacyEditor(String fileName, String content);
+
+	/**
+	 * Extension point to add to ImageJ 1.x' PluginClassLoader's class path.
+	 * 
+	 * @return a list of class path elements to add
+	 */
+	List<File> handleExtraPluginJars();
+
+	/**
+	 * Extension point to run after <i>Help&gt;Refresh Menus</i>
+	 */
+	void runAfterRefreshMenus();
+
+	/**
+	 * Extension point to enhance ImageJ 1.x' error reporting upon
+	 * {@link NoSuchMethodError}.
+	 * 
+	 * @param e
+	 *            the exception to handle
+	 * @return true if the error was handled by the legacy hook
+	 */
+	boolean handleNoSuchMethodError(NoSuchMethodError e);
 }

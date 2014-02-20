@@ -34,6 +34,20 @@ package imagej.legacy.patches;
 import ij.IJ;
 import ij.ImagePlus;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * The base {@link LegacyHooks} to be used in the patched ImageJ 1.x.
  * <p>
@@ -131,4 +145,171 @@ public class EssentialLegacyHooks implements LegacyHooks {
 		IJ.handleException(t);
 	}
 
+	/*
+	 * Helper functions intended to be called by runtime-patched ImageJ 1.x
+	 */
+
+	/**
+	 * A minimal interface for the editor to use instead of ImageJ 1.x' limited AWT-based one.
+	 * 
+	 * @author Johannes Schindelin
+	 */
+	public interface LegacyEditorPlugin {
+		public boolean open(final File path);
+		public boolean create(final String title, final String content);
+	}
+
+	private LegacyEditorPlugin editor;
+	private String appName = "ImageJ";
+	private URL iconURL;
+	private Runnable afterRefreshMenus;
+
+	/**
+	 * Sets the application name for ImageJ 1.x.
+	 * 
+	 * @param name the name to display instead of <i>ImageJ</i>.
+	 */
+	public void setAppName(final String name) {
+		appName = name;
+	}
+
+	/**
+	 * Returns the application name for use with ImageJ 1.x.
+	 * @return the application name
+	 */
+	@Override
+	public String getAppName() {
+		return appName;
+	}
+
+	/**
+	 * Sets the icon for ImageJ 1.x.
+	 * 
+	 * @param file
+	 *            the {@link File} of the icon to use in ImageJ 1.x
+	 */
+	public void setIcon(final File file) {
+		if (file != null && file.exists()) try {
+			iconURL = file.toURI().toURL();
+			return;
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		iconURL = null;
+	}
+
+	/**
+	 * Returns the icon for use with ImageJ 1.x.
+	 * 
+	 * @return the application name
+	 */
+	@Override
+	public URL getIconURL() {
+		return iconURL;
+	}
+
+	/**
+	 * Sets the legacy editor to use instead of ImageJ 1.x' built-in one.
+	 * 
+	 * @param plugin the editor to set, or null if ImageJ 1.x' built-in editor should be used
+	 */
+	public void setLegacyEditor(final LegacyEditorPlugin plugin) {
+		editor = plugin;
+	}
+
+	@Override
+	public boolean openInLegacyEditor(String path) {
+		return editor != null && editor.open(new File(path));
+	}
+
+	@Override
+	public boolean createInLegacyEditor(String fileName, String content) {
+		return editor != null && editor.create(fileName, content);
+	}
+
+	public void runAfterRefreshMenus(final Runnable runnable) {
+		afterRefreshMenus = runnable;
+	}
+
+	@Override
+	public void runAfterRefreshMenus() {
+		if (afterRefreshMenus != null) afterRefreshMenus.run();
+	}
+
+	/** @inherit */
+	@Override
+	public boolean handleNoSuchMethodError(NoSuchMethodError error) {
+		String message = error.getMessage();
+		int paren = message.indexOf("(");
+		if (paren < 0) return false;
+		int dot = message.lastIndexOf(".", paren);
+		if (dot < 0) return false;
+		String path = message.substring(0, dot).replace('.', '/') + ".class";
+		Set<String> urls = new LinkedHashSet<String>();
+		try {
+			Enumeration<URL> e = IJ.getClassLoader().getResources(path);
+			while (e.hasMoreElements()) {
+				urls.add(e.nextElement().toString());
+			}
+			e = IJ.getClassLoader().getResources("/" + path);
+			while (e.hasMoreElements()) {
+				urls.add(e.nextElement().toString());
+			}
+		} catch (Throwable t) {
+			t.printStackTrace();
+			return false;
+		}
+
+		if (urls.size() == 0) return false;
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("There was a problem with the class ");
+		buffer.append(message.substring(0, dot));
+		buffer.append(" which can be found here:\n");
+		for (String url : urls) {
+			if (url.startsWith("jar:")) url = url.substring(4);
+			if (url.startsWith("file:")) url = url.substring(5);
+			int bang = url.indexOf("!");
+			if (bang < 0) buffer.append(url);
+			else buffer.append(url.substring(0, bang));
+			buffer.append("\n");
+		}
+		if (urls.size() > 1) {
+			buffer.append("\nWARNING: multiple locations found!\n");
+		}
+
+		StringWriter writer = new StringWriter();
+		error.printStackTrace(new PrintWriter(writer));
+		buffer.append(writer.toString());
+
+		IJ.log(buffer.toString());
+		IJ.error("Could not find method " + message + "\n(See Log for details)\n");
+		return true;
+	}
+
+	/** @inherit */
+	@Override
+	public List<File> handleExtraPluginJars() {
+		final List<File> result = new ArrayList<File>();
+		final String extraPluginDirs = System.getProperty("ij1.plugin.dirs");
+		if (extraPluginDirs != null) {
+			for (final String dir : extraPluginDirs.split(File.pathSeparator)) {
+				handleExtraPluginJars(new File(dir), result);
+			}
+			return result;
+		}
+		final String userHome = System.getProperty("user.home");
+		if (userHome != null) handleExtraPluginJars(new File(userHome, ".plugins"), result);
+		return result;
+	}
+
+	private void handleExtraPluginJars(final File directory, final List<File> result) {
+		final File[] list = directory.listFiles();
+		if (list == null) return;
+		for (final File file : list) {
+			if (file.isDirectory()) handleExtraPluginJars(file, result);
+			else if (file.isFile() && file.getName().endsWith(".jar")) {
+				result.add(file);
+			}
+		}
+	}
 }

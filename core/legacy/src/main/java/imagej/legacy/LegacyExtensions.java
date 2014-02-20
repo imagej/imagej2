@@ -31,21 +31,6 @@
 
 package imagej.legacy;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.scijava.util.FileUtils;
 
 /**
  * Assorted legacy patches / extension points for use in the legacy mode.
@@ -82,228 +67,6 @@ public class LegacyExtensions {
 	/*
 	 * Extension points
 	 */
-
-	/**
-	 * A minimal interface for the editor to use instead of ImageJ 1.x' limited AWT-based one.
-	 * 
-	 * @author Johannes Schindelin
-	 */
-	public interface LegacyEditorPlugin {
-		public boolean open(final File path);
-		public boolean create(final String title, final String content);
-	}
-
-	private static LegacyEditorPlugin editor;
-	private static String appName = "ImageJ";
-	private static URL iconURL;
-	private static Runnable afterRefreshMenus;
-
-	/**
-	 * Sets the application name for ImageJ 1.x.
-	 * 
-	 * @param name the name to display instead of <i>ImageJ</i>.
-	 */
-	public static void setAppName(final String name) {
-		appName = name;
-	}
-
-	/**
-	 * Returns the application name for use with ImageJ 1.x.
-	 * @return the application name
-	 */
-	public static String getAppName() {
-		return appName;
-	}
-
-	/**
-	 * Sets the icon for ImageJ 1.x.
-	 * 
-	 * @param file
-	 *            the {@link File} of the icon to use in ImageJ 1.x
-	 */
-	public static void setIcon(final File file) {
-		if (file != null && file.exists()) try {
-			iconURL = file.toURI().toURL();
-			return;
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		iconURL = null;
-	}
-
-	/**
-	 * Returns the icon for use with ImageJ 1.x.
-	 * 
-	 * @return the application name
-	 */
-	public static URL getIconURL() {
-		return iconURL;
-	}
-
-	/**
-	 * Sets the legacy editor to use instead of ImageJ 1.x' built-in one.
-	 * 
-	 * @param plugin the editor to set, or null if ImageJ 1.x' built-in editor should be used
-	 */
-	public static void setLegacyEditor(final LegacyEditorPlugin plugin) {
-		editor = plugin;
-	}
-
-	public static void runAfterRefreshMenus(final Runnable runnable) {
-		afterRefreshMenus = runnable;
-	}
-
-	public static void runAfterRefreshMenus() {
-		if (afterRefreshMenus != null) afterRefreshMenus.run();
-	}
-
-	/*
-	 * Helper functions intended to be called by runtime-patched ImageJ 1.x
-	 */
-
-	public static boolean handleNoSuchMethodError(NoSuchMethodError error) {
-		String message = error.getMessage();
-		int paren = message.indexOf("(");
-		if (paren < 0) return false;
-		int dot = message.lastIndexOf(".", paren);
-		if (dot < 0) return false;
-		String path = message.substring(0, dot).replace('.', '/') + ".class";
-		Set<String> urls = new LinkedHashSet<String>();
-		try {
-			Enumeration<URL> e = IJ1Helper.getClassLoader().getResources(path);
-			while (e.hasMoreElements()) {
-				urls.add(e.nextElement().toString());
-			}
-			e = IJ1Helper.getClassLoader().getResources("/" + path);
-			while (e.hasMoreElements()) {
-				urls.add(e.nextElement().toString());
-			}
-		} catch (Throwable t) {
-			t.printStackTrace();
-			return false;
-		}
-
-		if (urls.size() == 0) return false;
-		StringBuilder buffer = new StringBuilder();
-		buffer.append("There was a problem with the class ");
-		buffer.append(message.substring(0, dot));
-		buffer.append(" which can be found here:\n");
-		for (String url : urls) {
-			if (url.startsWith("jar:")) url = url.substring(4);
-			if (url.startsWith("file:")) url = url.substring(5);
-			int bang = url.indexOf("!");
-			if (bang < 0) buffer.append(url);
-			else buffer.append(url.substring(0, bang));
-			buffer.append("\n");
-		}
-		if (urls.size() > 1) {
-			buffer.append("\nWARNING: multiple locations found!\n");
-		}
-
-		StringWriter writer = new StringWriter();
-		error.printStackTrace(new PrintWriter(writer));
-		buffer.append(writer.toString());
-
-		IJ1Helper.log(buffer.toString());
-		IJ1Helper.error("Could not find method " + message + "\n(See Log for details)\n");
-		return true;
-	}
-
-	public static List<File> handleExtraPluginJars() {
-		final List<File> result = new ArrayList<File>();
-		final String extraPluginDirs = System.getProperty("ij1.plugin.dirs");
-		if (extraPluginDirs != null) {
-			for (final String dir : extraPluginDirs.split(File.pathSeparator)) {
-				handleExtraPluginJars(new File(dir), result);
-			}
-			return result;
-		}
-		final String userHome = System.getProperty("user.home");
-		if (userHome != null) handleExtraPluginJars(new File(userHome, ".plugins"), result);
-		return result;
-	}
-
-	private static void handleExtraPluginJars(final File directory, final List<File> result) {
-		final File[] list = directory.listFiles();
-		if (list == null) return;
-		for (final File file : list) {
-			if (file.isDirectory()) handleExtraPluginJars(file, result);
-			else if (file.isFile() && file.getName().endsWith(".jar")) {
-				result.add(file);
-			}
-		}
-	}
-
-	/**
-	 * Opens the given path in the registered legacy editor, if any.
-	 * 
-	 * @param path the path of the file to open
-	 * @return whether the file was opened successfully
-	 */
-	public static boolean openInLegacyEditor(final String path) {
-		if (editor == null) return false;
-		if (path.indexOf("://") > 0) return false;
-		if ("".equals(FileUtils.getExtension(path))) return false;
-		if (stackTraceContains(LegacyExtensions.class.getName() + ".openEditor(")) return false;
-		final File file = new File(path);
-		if (!file.exists()) return false;
-		if (isBinaryFile(file)) return false;
-		return editor.open(file);
-	}
-
-	/**
-	 * Creates the given file in the registered legacy editor, if any.
-	 * 
-	 * @param title the title of the file to create
-	 * @param content the text of the file to be created
-	 * @return whether the fule was opened successfully
-	 */
-	public static boolean createInLegacyEditor(final String title, final String content) {
-		if (editor == null) return false;
-		return editor.create(title, content);
-	}
-
-	/**
-	 * Determines whether the current stack trace contains the specified string.
-	 * 
-	 * @param needle the text to find
-	 * @return whether the stack trace contains the text
-	 */
-	public static boolean stackTraceContains(String needle) {
-		final StringWriter writer = new StringWriter();
-		final PrintWriter out = new PrintWriter(writer);
-		new Exception().printStackTrace(out);
-		out.close();
-		return writer.toString().indexOf(needle) >= 0;
-	}
-
-    /**
-     * Determines whether a file is binary or text.
-     * 
-     * This just checks for a NUL in the first 1024 bytes.
-     * Not the best test, but a pragmatic one.
-     * 
-     * @param file the file to test
-     * @return whether it is binary
-     */
-	private static boolean isBinaryFile(final File file) {
-        try {
-			InputStream in = new FileInputStream(file);
-			byte[] buffer = new byte[1024];
-			int offset = 0;
-			while (offset < buffer.length) {
-				int count = in.read(buffer, offset, buffer.length - offset);
-				if (count < 0) break;
-				offset += count;
-			}
-			in.close();
-			while (offset > 0)
-				if (buffer[--offset] == 0)
-					return true;
-		} catch (IOException e) {
-		}
-        return false;
-    }
 
 	/*
 	 * Runtime patches (using CodeHacker for patching)
@@ -386,7 +149,7 @@ public class LegacyExtensions {
 		// tell IJ#runUserPlugIn to catch NoSuchMethodErrors
 		final String runUserPlugInSig = "static java.lang.Object runUserPlugIn(java.lang.String commandName, java.lang.String className, java.lang.String arg, boolean createNewLoader)";
 		hacker.addCatch("ij.IJ", runUserPlugInSig, "java.lang.NoSuchMethodError",
-				"if (" + LegacyExtensions.class.getName() + ".handleNoSuchMethodError($e))"
+				"if (ij.IJ._hooks.handleNoSuchMethodError($e))"
 				+ "  throw new RuntimeException(ij.Macro.MACRO_CANCELED);"
 				+ "throw $e;");
 
@@ -526,12 +289,12 @@ public class LegacyExtensions {
 	 */
 	private static void insertRefreshMenusHook(CodeHacker hacker) {
 		hacker.insertAtBottomOfMethod("ij.Menus", "public static void updateImageJMenus()",
-			LegacyExtensions.class.getName() + ".runAfterRefreshMenus();");
+			"ij.IJ._hooks.runAfterRefreshMenus();");
 	}
 
 	private static void addEditorExtensionPoints(final CodeHacker hacker) {
 		hacker.insertAtTopOfMethod("ij.io.Opener", "public void open(java.lang.String path)",
-			"if (isText($1) && " + LegacyExtensions.class.getName() + ".openInLegacyEditor($1)) return;");
+			"if (isText($1) && ij.IJ._hooks.openInLegacyEditor($1)) return;");
 		hacker.dontReturnOnNull("ij.plugin.frame.Recorder", "void createMacro()");
 		hacker.replaceCallInMethod("ij.plugin.frame.Recorder", "void createMacro()",
 			"ij.IJ", "runPlugIn",
@@ -541,7 +304,7 @@ public class LegacyExtensions {
 			"if ($1.endsWith(\".txt\")) {"
 			+ "  $1 = $1.substring($1.length() - 3) + \"ijm\";"
 			+ "}"
-			+ "if (!" + LegacyExtensions.class.getName() + ".createInLegacyEditor($1, $2)) {"
+			+ "if (!ij.IJ._hooks.createInLegacyEditor($1, $2)) {"
 			+ "  ((ij.plugin.frame.Editor)ij.IJ.runPlugIn(\"ij.plugin.frame.Editor\", \"\")).createMacro($1, $2);"
 			+ "}");
 		hacker.insertPublicStaticField("ij.plugin.frame.Recorder", String.class, "nameForEditor", null);
@@ -560,7 +323,7 @@ public class LegacyExtensions {
 			"if ($1.endsWith(\".txt\")) {"
 			+ "  $1 = $1.substring(0, $1.length() - 3) + \"ijm\";"
 			+ "}"
-			+ "if ($1.endsWith(\".ijm\") && " + LegacyExtensions.class.getName() + ".createInLegacyEditor($1, $2)) return;"
+			+ "if ($1.endsWith(\".ijm\") && ij.IJ._hooks.createInLegacyEditor($1, $2)) return;"
 			+ "int options = (monospaced ? ij.plugin.frame.Editor.MONOSPACED : 0)"
 			+ "  | (menuBar ? ij.plugin.frame.Editor.MENU_BAR : 0);"
 			+ "new ij.plugin.frame.Editor(rows, columns, 0, options).create($1, $2);");
@@ -570,7 +333,7 @@ public class LegacyExtensions {
 			"$_ = null;");
 		hacker.replaceCallInMethod("ij.plugin.NewPlugin", "public void createPlugin(java.lang.String name, int type, java.lang.String methods)",
 			"ij.plugin.frame.Editor", "create",
-			"if (!" + LegacyExtensions.class.getName() + ".createInLegacyEditor($1, $2)) {"
+			"if (!ij.IJ._hooks.createInLegacyEditor($1, $2)) {"
 			+ "  ((ij.plugin.frame.Editor)ij.IJ.runPlugIn(\"ij.plugin.frame.Editor\", \"\")).create($1, $2);"
 			+ "}");
 	}
@@ -579,7 +342,7 @@ public class LegacyExtensions {
 	 * Inserts hooks to replace the application name.
 	 */
 	private static void insertAppNameHooks(final CodeHacker hacker) {
-		final String appName = LegacyExtensions.class.getName() + ".getAppName()";
+		final String appName = "ij.IJ._hooks.getAppName()";
 		final String replace = ".replace(\"ImageJ\", " + appName + ")";
 		hacker.insertAtTopOfMethod("ij.IJ", "public void error(java.lang.String title, java.lang.String msg)",
 				"if ($1 == null || $1.equals(\"ImageJ\")) $1 = " + appName + ";");
@@ -602,7 +365,7 @@ public class LegacyExtensions {
 	}
 
 	private static void addIconHooks(final CodeHacker hacker) {
-		final String icon = LegacyExtensions.class.getName() + ".getIconURL()";
+		final String icon = "ij.IJ._hooks.getIconURL()";
 		hacker.replaceCallInMethod("ij.ImageJ", "void setIcon()", "java.lang.Class", "getResource",
 			"java.net.URL _iconURL = " + icon + ";\n" +
 			"if (_iconURL == null) $_ = $0.getResource($1);" +
@@ -659,7 +422,7 @@ public class LegacyExtensions {
 	}
 
 	private static String extraPluginJarsHandler(final String code) {
-		return "for (java.util.Iterator iter = " + LegacyExtensions.class.getName() + ".handleExtraPluginJars().iterator();\n" +
+		return "for (java.util.Iterator iter = ij.IJ._hooks.handleExtraPluginJars().iterator();\n" +
 				"iter.hasNext(); ) {\n" +
 				"\tjava.io.File file = (java.io.File)iter.next();\n" +
 				code + "\n" +
