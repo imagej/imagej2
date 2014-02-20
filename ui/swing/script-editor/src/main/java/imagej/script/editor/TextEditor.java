@@ -1350,8 +1350,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		}
 
 		/** Invoke in the context of the event dispatch thread. */
-		private void execute(final ScriptLanguage language,
-				final boolean selectionOnly) throws IOException {
+		private void execute(final boolean selectionOnly) throws IOException {
 			prepare();
 			final JTextAreaWriter output =
 				new JTextAreaWriter(this.screen, TextEditor.this.log);
@@ -2078,7 +2077,7 @@ public class TextEditor extends JFrame implements ActionListener,
 		try {
 			Tab tab = getTab();
 			tab.showOutput();
-			tab.execute(currentLanguage, selectionOnly);
+			tab.execute(selectionOnly);
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
