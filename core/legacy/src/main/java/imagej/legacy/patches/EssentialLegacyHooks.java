@@ -35,12 +35,8 @@ import ij.IJ;
 import ij.ImagePlus;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -145,95 +141,34 @@ public class EssentialLegacyHooks implements LegacyHooks {
 		IJ.handleException(t);
 	}
 
-	/*
-	 * Helper functions intended to be called by runtime-patched ImageJ 1.x
-	 */
-
-	/**
-	 * A minimal interface for the editor to use instead of ImageJ 1.x' limited AWT-based one.
-	 * 
-	 * @author Johannes Schindelin
-	 */
-	public interface LegacyEditorPlugin {
-		public boolean open(final File path);
-		public boolean create(final String title, final String content);
-	}
-
-	private LegacyEditorPlugin editor;
-	private String appName = "ImageJ";
-	private URL iconURL;
-	private Runnable afterRefreshMenus;
-
-	/**
-	 * Sets the application name for ImageJ 1.x.
-	 * 
-	 * @param name the name to display instead of <i>ImageJ</i>.
-	 */
-	public void setAppName(final String name) {
-		appName = name;
-	}
-
-	/**
-	 * Returns the application name for use with ImageJ 1.x.
-	 * @return the application name
-	 */
+	/** @inherit */
 	@Override
 	public String getAppName() {
-		return appName;
+		return "ImageJ";
 	}
 
-	/**
-	 * Sets the icon for ImageJ 1.x.
-	 * 
-	 * @param file
-	 *            the {@link File} of the icon to use in ImageJ 1.x
-	 */
-	public void setIcon(final File file) {
-		if (file != null && file.exists()) try {
-			iconURL = file.toURI().toURL();
-			return;
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		iconURL = null;
-	}
-
-	/**
-	 * Returns the icon for use with ImageJ 1.x.
-	 * 
-	 * @return the application name
-	 */
+	/** @inherit */
 	@Override
 	public URL getIconURL() {
-		return iconURL;
+		return null;
 	}
 
-	/**
-	 * Sets the legacy editor to use instead of ImageJ 1.x' built-in one.
-	 * 
-	 * @param plugin the editor to set, or null if ImageJ 1.x' built-in editor should be used
-	 */
-	public void setLegacyEditor(final LegacyEditorPlugin plugin) {
-		editor = plugin;
-	}
-
+	/** @inherit */
 	@Override
 	public boolean openInLegacyEditor(String path) {
-		return editor != null && editor.open(new File(path));
+		return false;
 	}
 
+	/** @inherit */
 	@Override
 	public boolean createInLegacyEditor(String fileName, String content) {
-		return editor != null && editor.create(fileName, content);
+		return false;
 	}
 
-	public void runAfterRefreshMenus(final Runnable runnable) {
-		afterRefreshMenus = runnable;
-	}
-
+	/** @inherit */
 	@Override
 	public void runAfterRefreshMenus() {
-		if (afterRefreshMenus != null) afterRefreshMenus.run();
+		// ignore
 	}
 
 	/** @inherit */
