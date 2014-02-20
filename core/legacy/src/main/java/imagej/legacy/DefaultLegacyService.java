@@ -319,7 +319,7 @@ public final class DefaultLegacyService extends AbstractService implements
 	public void dispose() {
 		ij1Helper.dispose();
 
-		legacyInjector.setLegacyService(new DummyLegacyService());
+		legacyInjector.setLegacyService(null);
 		instance = null;
 	}
 

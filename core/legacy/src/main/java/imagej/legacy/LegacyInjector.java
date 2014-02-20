@@ -161,22 +161,15 @@ public class LegacyInjector {
 
 		// make sure that there is a legacy service
 		if (this.hacker != null) {
-			setLegacyService(new DummyLegacyService());
+			setLegacyService(null);
 		}
 	}
 
 	void setLegacyService(final LegacyService legacyService) {
-		hacker.installHooks(legacyService == null || legacyService instanceof DummyLegacyService ?
+		hacker.installHooks(legacyService == null ?
 			null : new DefaultLegacyHooks(legacyService));
 
-		Context context;
-		try {
-			context = legacyService.getContext();
-		} catch (UnsupportedOperationException e) {
-			// DummyLegacyService does not have a context
-			context = null;
-		}
-
+		Context context = legacyService == null ? null : legacyService.getContext();
 		IJ1Helper.subscribeEvents(context);
 	}
 
