@@ -68,7 +68,7 @@ public class LegacyJavaAgentIT {
 			final Throwable e2 = e.getCause();
 			assertTrue(e2 != null);
 			final String message = e2.getMessage();
-			assertTrue("Message should being with 'Loading ij/IJ': " + message,
+			assertTrue("Message should begin with 'Loading ij/IJ': " + message,
 				message.startsWith("Loading ij/IJ "));
 			final StackTraceElement[] stackTrace = e2.getStackTrace();
 			assertEquals(getFileName(stackTrace, 0), getFileName(trace, 1));
