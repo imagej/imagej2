@@ -50,14 +50,14 @@ public class LegacyInjector {
 	/** Overrides class behavior of ImageJ1 classes by injecting method hooks. */
 	public void injectHooks(final ClassLoader classLoader) {
 		hacker = new CodeHacker(classLoader);
-		injectHooks(hacker);
+		injectHooks(hacker, GraphicsEnvironment.isHeadless());
 	}
 
 	/** Overrides class behavior of ImageJ1 classes by injecting method hooks. */
-	protected void injectHooks(final CodeHacker hacker) {
+	public void injectHooks(final CodeHacker hacker, boolean headless) {
 		// NB: Override class behavior before class loading gets too far along.
 
-		if (GraphicsEnvironment.isHeadless()) {
+		if (headless) {
 			new LegacyHeadless(hacker).patch();
 		}
 
