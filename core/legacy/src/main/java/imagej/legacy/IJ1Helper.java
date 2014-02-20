@@ -195,55 +195,6 @@ public class IJ1Helper extends AbstractContextual {
 	}
 
 	/**
-	 * Delegator for {@link IJ#getClassLoader()}.
-	 * 
-	 * <p>
-	 * This method allows the {@link LegacyExtensions} class to be loaded
-	 * without loading any of ImageJ 1.x.
-	 * </p>
-	 * 
-	 * @return ImageJ 1.x' current plugin class loader
-	 */
-	public static ClassLoader getClassLoader() {
-		return IJ.getClassLoader();
-	}
-
-	/**
-	 * Delegator for {@link IJ#log(String)}.
-	 * 
-	 * <p>
-	 * This method allows the {@link LegacyExtensions} class to be loaded
-	 * without loading any of ImageJ 1.x.
-	 * </p>
-	 */
-	public static void log(final String message) {
-		IJ.log(message);
-	}
-
-	/**
-	 * Delegator for {@link IJ#error(String)}.
-	 * 
-	 * <p>
-	 * This method allows the {@link LegacyExtensions} class to be loaded
-	 * without loading any of ImageJ 1.x.
-	 * </p>
-	 */
-	public static void error(final String message) {
-		IJ.log(message);
-	}
-
-	/**
-	 * Delegator for {@link IJ#runPlugIn(String, String)}.
-	 * <p>
-	 * This method allows the {@link DummyLegacyService} class to be loaded
-	 * without loading any of ImageJ 1.x.
-	 * </p>
-	 */
-	public static void runIJ1PlugIn(final String className, final String arg) {
-		IJ.runPlugIn(className, arg);
-	}
-
-	/**
 	 * Gets a macro parameter of type <i>boolean</i>.
 	 * 
 	 * @param label
