@@ -190,7 +190,7 @@ public class ScriptModule extends AbstractModule implements Contextual {
 	}
 
 	@Override
-	public void setContext(Context context) {
+	public void setContext(final Context context) {
 		context.inject(this);
 	}
 

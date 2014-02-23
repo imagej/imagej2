@@ -81,7 +81,7 @@ public class CommandInfo extends PluginInfo<Command> implements ModuleInfo,
 {
 
 	/** Wrapped {@link PluginInfo}, if any. */
-	private PluginInfo<Command> info;
+	private final PluginInfo<Command> info;
 
 	/** List of items with fixed, preset values. */
 	private Map<String, Object> presets;

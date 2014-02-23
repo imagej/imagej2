@@ -71,7 +71,7 @@ public final class DefaultIOService
 		for (final IOPlugin<?> handler : getInstances()) {
 			if (handler.supportsSave(data, destination)) {
 				@SuppressWarnings("unchecked")
-				IOPlugin<D> typedHandler = (IOPlugin<D>) handler;
+				final IOPlugin<D> typedHandler = (IOPlugin<D>) handler;
 				return typedHandler;
 			}
 		}
@@ -84,7 +84,9 @@ public final class DefaultIOService
 	}
 
 	@Override
-	public void save(Object data, String destination) throws IOException {
+	public void save(final Object data, final String destination)
+		throws IOException
+	{
 		getSaver(data, destination).save(data, destination);
 	}
 

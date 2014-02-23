@@ -135,7 +135,7 @@ public final class DefaultPlatformService extends
 	}
 
 	@Override
-	public List<? extends Platform> filterInstances(List<Platform> list) {
+	public List<? extends Platform> filterInstances(final List<Platform> list) {
 		final Iterator<Platform> iter = list.iterator();
 		while (iter.hasNext()) {
 			if (!iter.next().isTarget()) {

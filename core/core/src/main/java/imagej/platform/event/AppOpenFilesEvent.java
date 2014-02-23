@@ -41,7 +41,7 @@ import java.util.List;
  */
 public class AppOpenFilesEvent extends ApplicationEvent {
 
-	private List<File> files;
+	private final List<File> files;
 
 	public AppOpenFilesEvent(final List<File> files) {
 		this.files = files;

@@ -113,7 +113,7 @@ public class DefaultCommandService extends AbstractPTService<Command> implements
 
 	@Override
 	public <CT extends Command> List<CommandInfo> getCommandsOfType(
-		Class<CT> type)
+		final Class<CT> type)
 	{
 		return getCommands(pluginService.getPluginsOfType(type));
 	}
@@ -238,7 +238,7 @@ public class DefaultCommandService extends AbstractPTService<Command> implements
 	 * Gets a {@link CommandInfo} for the given class name, creating a new one if
 	 * none are registered with the service.
 	 */
-	private CommandInfo getOrCreate(String className) {
+	private CommandInfo getOrCreate(final String className) {
 		final CommandInfo command = getCommand(className);
 		if (command != null) return command;
 		return new CommandInfo(className);
@@ -248,7 +248,9 @@ public class DefaultCommandService extends AbstractPTService<Command> implements
 	 * Gets a {@link CommandInfo} for the given class, creating a new one if
 	 * none are registered with the service.
 	 */
-	private <C extends Command> CommandInfo getOrCreate(Class<C> commandClass) {
+	private <C extends Command> CommandInfo getOrCreate(
+		final Class<C> commandClass)
+	{
 		final CommandInfo command = getCommand(commandClass);
 		if (command != null) return command;
 		return new CommandInfo(commandClass);
