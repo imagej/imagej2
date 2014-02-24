@@ -320,7 +320,7 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 			final String key = token.substring(0, equals).trim();
 			String value = token.substring(equals + 1).trim();
 			if (value.startsWith("\"") && value.endsWith("\"")) {
-				value = value.substring(1, value.length() - 2);
+				value = value.substring(1, value.length() - 1);
 			}
 			attrsMap.put(key, value);
 		}
