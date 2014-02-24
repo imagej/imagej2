@@ -31,6 +31,7 @@
 
 package imagej.plugins.scripting.beanshell;
 
+import bsh.Primitive;
 import imagej.script.AbstractScriptLanguage;
 import imagej.script.ScriptLanguage;
 
@@ -58,6 +59,11 @@ public class BeanshellScriptLanguage extends AbstractScriptLanguage {
 	@Override
 	public ScriptEngine getScriptEngine() {
 		return new BeanshellScriptEngine();
+	}
+
+	@Override
+	public Object decode(final Object object) {
+		return Primitive.unwrap(object);
 	}
 
 }
