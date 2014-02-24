@@ -42,6 +42,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -359,8 +361,8 @@ public class DefaultScriptService extends
 			Float.class, Integer.class, Long.class, Short.class);
 
 		// built-in types
-		addAliases(map, Context.class, ColorRGB.class, ColorRGBA.class, File.class,
-			String.class);
+		addAliases(map, Context.class, BigDecimal.class, BigInteger.class,
+			ColorRGB.class, ColorRGBA.class, File.class, String.class);
 
 		// service types
 		for (final Service service : getContext().getServiceIndex()) {
