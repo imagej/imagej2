@@ -93,6 +93,8 @@ public class BeanshellBindings implements Bindings {
 
 	@Override
 	public Object put(String key, Object value) {
+		if (value == null) return remove(key);
+
 		final Object result = get(key);
 		try {
 			nameSpace.setVariable(key, value, false);
