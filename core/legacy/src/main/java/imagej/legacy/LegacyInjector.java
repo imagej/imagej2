@@ -81,7 +81,10 @@ public class LegacyInjector {
 		hacker.insertPrivateStaticField("ij.IJ", Context.class, "_context");
 		hacker.insertNewMethod("ij.IJ",
 			"public synchronized static org.scijava.Context getContext()",
-			"if (_context == null) _context = new org.scijava.Context();"
+			"if (_context == null) {"
+			+ " if (classLoader != null) Thread.currentThread().setContextClassLoader(classLoader);"
+			+ " _context = new org.scijava.Context();"
+			+ "}"
 			+ "return _context;");
 		hacker.insertAtTopOfMethod("ij.IJ",
 				"public static Object runPlugIn(java.lang.String className, java.lang.String arg)",
