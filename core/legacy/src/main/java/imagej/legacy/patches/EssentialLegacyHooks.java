@@ -85,6 +85,12 @@ public class EssentialLegacyHooks implements LegacyHooks {
 
 	/** @inherit */
 	@Override
+	public Object interceptRunPlugIn(String className, String arg) {
+		return null;
+	}
+
+	/** @inherit */
+	@Override
 	public void showProgress(double progress) {
 	}
 

@@ -85,10 +85,8 @@ public class LegacyInjector {
 			+ "return _context;");
 		hacker.insertAtTopOfMethod("ij.IJ",
 				"public static Object runPlugIn(java.lang.String className, java.lang.String arg)",
-				"if (\"" + LegacyService.class.getName() + "\".equals($1))"
-				+ " return getLegacyService();"
-				+ "if (\"" + Context.class.getName() + "\".equals($1))"
-				+ " return getContext();"
+				"Object o = _hooks.interceptRunPlugIn($1, $2);"
+				+ "if (o != null) return o;"
 				+ "if (\"ij.IJ.init\".equals($1)) {"
 				+ " ij.IJ.init();"
 				+ " return null;"

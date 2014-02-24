@@ -39,6 +39,8 @@ import imagej.legacy.patches.LegacyHooks;
 import java.io.BufferedWriter;
 import java.util.Date;
 
+import org.scijava.Context;
+
 /**
  * The {@link LegacyHooks} encapsulating an active {@link LegacyService} for use within the patched ImageJ 1.x.
  * 
@@ -75,6 +77,16 @@ public class DefaultLegacyHooks extends EssentialLegacyHooks {
 	@Override
 	public void dispose() {
 		// TODO: if there are still things open, we should object.
+	}
+
+	/** @inherit */
+	@Override
+	public Object interceptRunPlugIn(String className, String arg) {
+		if (LegacyService.class.getName().equals(className))
+			return legacyService;
+		if (Context.class.getName().equals(className))
+			return legacyService == null ? null : legacyService.getContext();
+		return null;
 	}
 
 	/** Resolution to use when converting double progress to int ratio. */

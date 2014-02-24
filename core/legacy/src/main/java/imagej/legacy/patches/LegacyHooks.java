@@ -91,6 +91,17 @@ public interface LegacyHooks {
 	void dispose();
 
 	/**
+	 * Intercepts the call to {@link ij.IJ#runPlugIn(String, String)}.
+	 * 
+	 * @param className
+	 *            the class name
+	 * @param arg
+	 *            the argument passed to the {@code runPlugIn} method
+	 * @return the object to return, or null to let ImageJ 1.x handle the call
+	 */
+	Object interceptRunPlugIn(String className, String arg);
+
+	/**
 	 * Updates the progress bar, where 0 <= progress <= 1.0.
 	 * 
 	 * @param value
