@@ -175,7 +175,6 @@ public class ScriptModule extends AbstractModule implements Contextual {
 		// populate output values
 		for (final ModuleItem<?> item : getInfo().outputs()) {
 			final String name = item.getName();
-			if (isResolved(name)) continue;
 			final Object value = engine.get(name);
 			final Object decoded = language.decode(value);
 			final Object typed = ConversionUtils.convert(decoded, item.getType());
