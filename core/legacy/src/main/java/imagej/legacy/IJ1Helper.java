@@ -62,6 +62,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.SwingUtilities;
+
 import org.scijava.AbstractContextual;
 import org.scijava.Context;
 import org.scijava.event.EventHandler;
@@ -118,16 +120,29 @@ public class IJ1Helper extends AbstractContextual {
 	public void dispose() {
 		final ImageJ ij = IJ.getInstance();
 		if (ij != null) {
-			// close out all image windows, without dialog prompts
-			while (true) {
-				final ImagePlus imp = WindowManager.getCurrentImage();
-				if (imp == null) break;
-				imp.changes = false;
-				imp.close();
-			}
+			Runnable run = new Runnable() {
+				@Override
+				public void run() {
+					// close out all image windows, without dialog prompts
+					while (true) {
+						final ImagePlus imp = WindowManager.getCurrentImage();
+						if (imp == null) break;
+						imp.changes = false;
+						imp.close();
+					}
 
-			// close any remaining (non-image) windows
-			WindowManager.closeAllWindows();
+					// close any remaining (non-image) windows
+					WindowManager.closeAllWindows();
+				}
+			};
+			if (SwingUtilities.isEventDispatchThread()) {
+				run.run();
+			} else try {
+				SwingUtilities.invokeAndWait(run);
+			} catch (Exception e) {
+				// report & ignore
+				e.printStackTrace();
+			}
 
 			// quit legacy ImageJ on the same thread
 			ij.run();
