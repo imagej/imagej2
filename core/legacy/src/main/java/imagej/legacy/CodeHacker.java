@@ -41,6 +41,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Arrays;
@@ -118,7 +119,7 @@ public class CodeHacker {
 			insertPublicStaticField("ij.IJ", LegacyHooks.class, "_hooks", null);
 		}
 
-		onlyLogExceptions = !LegacyExtensions.stackTraceContains("junit.");
+		onlyLogExceptions = !stackTraceContains("junit.");
 	}
 
 	public CodeHacker(final ClassLoader classLoader) {
@@ -1519,6 +1520,20 @@ public class CodeHacker {
 		catch (Throwable t) {
 			throw new UnsupportedOperationException(t);
 		}
+	}
+
+	/**
+	 * Determines whether the current stack trace contains the specified string.
+	 * 
+	 * @param needle the text to find
+	 * @return whether the stack trace contains the text
+	 */
+	private static boolean stackTraceContains(String needle) {
+		final StringWriter writer = new StringWriter();
+		final PrintWriter out = new PrintWriter(writer);
+		new Exception().printStackTrace(out);
+		out.close();
+		return writer.toString().indexOf(needle) >= 0;
 	}
 
 }
