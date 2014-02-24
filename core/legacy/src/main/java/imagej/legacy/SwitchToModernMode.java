@@ -55,9 +55,14 @@ public class SwitchToModernMode implements PlugIn {
 	@Override
 	public void run(String arg) {
 		try {
+			final ClassLoader classLoader =
+				Thread.currentThread().getContextClassLoader();
 			SwingUtilities.invokeAndWait(new Runnable() {
 				@Override
 				public void run() {
+					// NB: Set EDT's context class loader to match the calling thread.
+					Thread.currentThread().setContextClassLoader(classLoader);
+
 					// Make sure that we have a valid context.
 					IJ.runPlugIn(Context.class.getName(), null);
 					/*
