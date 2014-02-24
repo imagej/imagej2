@@ -1511,7 +1511,7 @@ public class CodeHacker {
 	private static void patch(final boolean forceHeadless) {
 		final ClassLoader loader = CodeHacker.class.getClassLoader();
 		final CodeHacker hacker = new CodeHacker(loader, new ClassPool(false));
-		new LegacyInjector().injectHooks(hacker, forceHeadless);
+		new LegacyInjector().injectHooks(loader, forceHeadless);
 	}
 
 	public void installHooks(LegacyHooks hooks) throws UnsupportedOperationException {
