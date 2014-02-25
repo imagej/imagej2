@@ -151,16 +151,16 @@ public class LegacyInjector {
 			// NB: If com.apple.eawt package is present, override IJ1's MacAdapter.
 			hacker.insertAtTopOfMethod("MacAdapter",
 				"public void run(java.lang.String arg)",
-				"if (!$isLegacyMode()) return;");
+				"if (!ij.IJ._hooks.isLegacyMode()) return;");
 		}
 
 		// override behavior of ij.plugin.frame.RoiManager
 		hacker.insertNewMethod("ij.plugin.frame.RoiManager",
 			"public void show()",
-			"if ($isLegacyMode()) { super.show(); }");
+			"if (ij.IJ._hooks.isLegacyMode()) { super.show(); }");
 		hacker.insertNewMethod("ij.plugin.frame.RoiManager",
 			"public void setVisible(boolean b)",
-			"if ($isLegacyMode()) { super.setVisible($1); }");
+			"if (ij.IJ._hooks.isLegacyMode()) { super.setVisible($1); }");
 
 		LegacyExtensions.injectHooks(hacker);
 
