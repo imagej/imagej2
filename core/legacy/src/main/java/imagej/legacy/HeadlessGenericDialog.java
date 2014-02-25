@@ -47,6 +47,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+/**
+ * Rump implementation of a pseudo dialog intended to stand in for the
+ * {@link ij.gui.GenericDialog} in headless mode.
+ * 
+ * @author Johannes Schindelin
+ */
 public class HeadlessGenericDialog {
 	protected List<Double> numbers;
 	protected List<String> strings;
