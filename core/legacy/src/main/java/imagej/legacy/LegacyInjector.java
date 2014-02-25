@@ -33,7 +33,6 @@ package imagej.legacy;
 
 import java.awt.GraphicsEnvironment;
 
-import org.scijava.Context;
 import org.scijava.util.ClassUtils;
 
 /**
@@ -168,9 +167,6 @@ public class LegacyInjector {
 	void setLegacyService(final LegacyService legacyService) {
 		hacker.installHooks(legacyService == null ?
 			null : new DefaultLegacyHooks(legacyService));
-
-		Context context = legacyService == null ? null : legacyService.getContext();
-		IJ1Helper.subscribeEvents(context);
 	}
 
 }

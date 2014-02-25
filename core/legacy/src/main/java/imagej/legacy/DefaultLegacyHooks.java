@@ -102,6 +102,7 @@ public class DefaultLegacyHooks extends EssentialLegacyHooks {
 	@Override
 	public synchronized void installed() {
 		context = legacyService.getContext();
+		IJ1Helper.subscribeEvents(context);
 		pluginService = context.getService(PluginService.class);
 		log = context.getService(LogService.class);
 		if (log == null) log = new StderrLogService();
@@ -133,6 +134,7 @@ public class DefaultLegacyHooks extends EssentialLegacyHooks {
 	/** @inherit */
 	@Override
 	public void dispose() {
+		IJ1Helper.subscribeEvents(null);
 		// TODO: if there are still things open, we should object.
 	}
 
