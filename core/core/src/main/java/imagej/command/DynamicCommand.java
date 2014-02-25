@@ -38,6 +38,7 @@ import java.lang.reflect.Field;
 
 import org.scijava.Context;
 import org.scijava.Contextual;
+import org.scijava.NullContextException;
 import org.scijava.plugin.Parameter;
 import org.scijava.util.ClassUtils;
 
@@ -105,6 +106,12 @@ public abstract class DynamicCommand extends DefaultMutableModule implements
 	}
 
 	// -- Contextual methods --
+
+	@Override
+	public Context context() {
+		if (context == null) throw new NullContextException();
+		return context;
+	}
 
 	@Override
 	public Context getContext() {

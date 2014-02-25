@@ -45,6 +45,7 @@ import javax.script.ScriptException;
 
 import org.scijava.Context;
 import org.scijava.Contextual;
+import org.scijava.NullContextException;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.util.ConversionUtils;
@@ -183,6 +184,12 @@ public class ScriptModule extends AbstractModule implements Contextual {
 	}
 
 	// -- Contextual methods --
+
+	@Override
+	public Context context() {
+		if (context == null) throw new NullContextException();
+		return context;
+	}
 
 	@Override
 	public Context getContext() {

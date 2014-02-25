@@ -49,6 +49,7 @@ import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.axis.DefaultLinearAxis;
 
 import org.scijava.Context;
+import org.scijava.NullContextException;
 import org.scijava.event.EventService;
 import org.scijava.event.SciJavaEvent;
 import org.scijava.plugin.Parameter;
@@ -200,6 +201,12 @@ public abstract class AbstractData extends
 	}
 
 	// -- Contextual methods --
+
+	@Override
+	public Context context() {
+		if (context == null) throw new NullContextException();
+		return context;
+	}
 
 	@Override
 	public Context getContext() {

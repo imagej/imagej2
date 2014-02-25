@@ -43,6 +43,7 @@ import java.util.Map;
 import org.scijava.Context;
 import org.scijava.Contextual;
 import org.scijava.InstantiableException;
+import org.scijava.NullContextException;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.util.ClassUtils;
@@ -207,6 +208,12 @@ public class CommandModule extends AbstractModule implements Cancelable,
 	}
 
 	// -- Contextual methods --
+
+	@Override
+	public Context context() {
+		if (context == null) throw new NullContextException();
+		return context;
+	}
 
 	@Override
 	public Context getContext() {

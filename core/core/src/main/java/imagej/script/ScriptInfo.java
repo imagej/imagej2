@@ -50,6 +50,7 @@ import org.scijava.Context;
 import org.scijava.Contextual;
 import org.scijava.ItemIO;
 import org.scijava.ItemVisibility;
+import org.scijava.NullContextException;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.util.ConversionUtils;
@@ -242,6 +243,12 @@ public class ScriptInfo extends AbstractModuleInfo implements Contextual {
 	}
 
 	// -- Contextual methods --
+
+	@Override
+	public Context context() {
+		if (context == null) throw new NullContextException();
+		return context;
+	}
 
 	@Override
 	public Context getContext() {

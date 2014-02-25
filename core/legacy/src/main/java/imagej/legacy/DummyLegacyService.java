@@ -73,6 +73,11 @@ public class DummyLegacyService implements LegacyService {
 	}
 
 	@Override
+	public Context context() {
+		throw new UnsupportedOperationException("The DummyLegacyService is not part of a valid ImageJ Context!");
+	}
+
+	@Override
 	public Context getContext() {
 		throw new UnsupportedOperationException("The DummyLegacyService is not part of a valid ImageJ Context!");
 	}
