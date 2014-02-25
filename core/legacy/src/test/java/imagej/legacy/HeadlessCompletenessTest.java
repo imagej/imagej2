@@ -32,7 +32,6 @@
 package imagej.legacy;
 
 import static org.junit.Assert.assertTrue;
-import imagej.legacy.IJ1Helper.LegacyGenericDialog;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +56,7 @@ public class HeadlessCompletenessTest {
 		pool.appendClassPath(new ClassClassPath(getClass()));
 		final String originalName = "ij.gui.GenericDialog";
 		final CtClass original = pool.get(originalName);
-		final String headlessName = LegacyGenericDialog.class.getName();
+		final String headlessName = HeadlessGenericDialog.class.getName();
 		final CtClass headless = pool.get(headlessName);
 
 		final Map<String, CtMethod> methods = new HashMap<String, CtMethod>();
