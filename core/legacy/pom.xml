@@ -46,6 +46,14 @@
 		</dependency>
 
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-ui-swing-script-editor</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
 			<groupId>${imglib2.groupId}</groupId>
 			<artifactId>imglib2</artifactId>
 			<version>${imglib2.version}</version>
