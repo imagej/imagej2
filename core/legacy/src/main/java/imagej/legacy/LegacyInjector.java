@@ -31,7 +31,11 @@
 
 package imagej.legacy;
 
+import imagej.legacy.patches.EssentialLegacyHooks;
+import imagej.legacy.patches.LegacyHooks;
+
 import java.awt.GraphicsEnvironment;
+import java.lang.reflect.Field;
 
 import org.scijava.util.ClassUtils;
 
@@ -43,7 +47,6 @@ import org.scijava.util.ClassUtils;
  * @author Curtis Rueden
  */
 public class LegacyInjector {
-	private CodeHacker hacker;
 
 	/** Overrides class behavior of ImageJ1 classes by injecting method hooks. */
 	public void injectHooks(final ClassLoader classLoader) {
@@ -52,7 +55,8 @@ public class LegacyInjector {
 
 	/** Overrides class behavior of ImageJ1 classes by injecting method hooks. */
 	public void injectHooks(final ClassLoader classLoader, boolean headless) {
-		hacker = new CodeHacker(classLoader);
+		final CodeHacker hacker = new CodeHacker(classLoader);
+
 		// NB: Override class behavior before class loading gets too far along.
 
 		if (headless) {
@@ -158,15 +162,24 @@ public class LegacyInjector {
 		// commit patches
 		hacker.loadClasses();
 
-		// make sure that there is a legacy service
-		if (this.hacker != null) {
-			setLegacyService(null);
-		}
+		// make sure that the legacy hooks are in place
+		installHooks(classLoader, null);
 	}
 
-	void setLegacyService(final LegacyService legacyService) {
-		hacker.installHooks(legacyService == null ?
-			null : new DefaultLegacyHooks(legacyService));
+	public static void installHooks(final ClassLoader classLoader, LegacyHooks hooks) throws UnsupportedOperationException {
+		if (hooks == null) hooks = new EssentialLegacyHooks();
+		try {
+			final Field hooksField = classLoader.loadClass("ij.IJ").getField("_hooks");
+			final LegacyHooks previous = (LegacyHooks)hooksField.get(null);
+			if (previous != null) {
+				previous.dispose();
+			}
+			hooksField.set(null, hooks);
+			hooks.installed();
+		}
+		catch (Throwable t) {
+			throw new UnsupportedOperationException(t);
+		}
 	}
 
 }
