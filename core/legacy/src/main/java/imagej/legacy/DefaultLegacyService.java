@@ -330,14 +330,13 @@ public final class DefaultLegacyService extends AbstractService implements
 	 * {@link ImageDisplay}.
 	 */
 	@EventHandler
-	protected void onEvent(
-		@SuppressWarnings("unused") final DisplayActivatedEvent event)
+	protected void onEvent(final DisplayActivatedEvent event)
 	{
 		syncActiveImage();
 	}
 
 	@EventHandler
-	protected void onEvent(@SuppressWarnings("unused") final OptionsEvent event) {
+	protected void onEvent(final OptionsEvent event) {
 		optionsSynchronizer.updateModernImageJSettingsFromLegacyImageJ();
 	}
 

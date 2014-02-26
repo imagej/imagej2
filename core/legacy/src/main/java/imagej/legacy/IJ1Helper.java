@@ -255,7 +255,7 @@ public class IJ1Helper extends AbstractContextual {
 		// -- MacAdapter re-implementations --
 
 		@EventHandler
-		private void onEvent(@SuppressWarnings("unused") final AppAboutEvent event)
+		private void onEvent(final AppAboutEvent event)
 		{
 			if (isLegacyMode()) {
 				IJ.run("About ImageJ...");
@@ -273,15 +273,14 @@ public class IJ1Helper extends AbstractContextual {
 		}
 
 		@EventHandler
-		private void onEvent(@SuppressWarnings("unused") final AppQuitEvent event) {
+		private void onEvent(final AppQuitEvent event) {
 			if (isLegacyMode()) {
 				new Executer("Quit", null); // works with the CommandListener
 			}
 		}
 
 		@EventHandler
-		private void onEvent(
-			@SuppressWarnings("unused") final AppPreferencesEvent event)
+		private void onEvent(final AppPreferencesEvent event)
 		{
 			if (isLegacyMode()) {
 				IJ.error("The ImageJ preferences are in the Edit>Options menu.");
