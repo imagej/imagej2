@@ -21,6 +21,8 @@
 		<module>options</module>
 		<module>ui</module>
 		<module>updater</module>
+		<!-- TEMP -->
+		<module>ij1-patcher</module>
 	</modules>
 
 	<properties>
