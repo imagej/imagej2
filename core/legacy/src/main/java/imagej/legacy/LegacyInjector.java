@@ -38,6 +38,8 @@ import java.awt.GraphicsEnvironment;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import javassist.ClassPool;
+
 import org.scijava.util.ClassUtils;
 
 /**
@@ -57,7 +59,7 @@ public class LegacyInjector {
 	/** Overrides class behavior of ImageJ1 classes by injecting method hooks. */
 	public void injectHooks(final ClassLoader classLoader, boolean headless) {
 		if (alreadyPatched(classLoader)) return;
-		final CodeHacker hacker = new CodeHacker(classLoader);
+		final CodeHacker hacker = new CodeHacker(classLoader, new ClassPool(false));
 
 		// NB: Override class behavior before class loading gets too far along.
 		hacker.insertPublicStaticField("ij.IJ", LegacyHooks.class, "_hooks", null);
