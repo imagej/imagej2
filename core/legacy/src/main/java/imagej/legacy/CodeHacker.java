@@ -721,28 +721,7 @@ public class CodeHacker {
 			// DefaultLegacyService
 			// class is loaded, which is when the CodeHacker is run
 			if (e.getCause() != null && e.getCause() instanceof LinkageError) {
-				final URL url = ClassUtils.getLocation(LegacyJavaAgent.class);
-				final String path =
-					url != null && "file".equals(url.getProtocol()) &&
-						url.getPath().endsWith(".jar") ? url.getPath()
-						: "/path/to/ij-legacy.jar";
-
-				throw new RuntimeException(
-					"Cannot load class: " +
-						classRef.getName() +
-						"\n" +
-						"It appears that this class was already defined in the class loader!\n" +
-						"Please make sure that you initialize the LegacyService before using\n" +
-						"any ImageJ 1.x class. You can do that by adding this static initializer:\n\n" +
-						"\tstatic {\n" +
-						"\t\tDefaultLegacyService.preinit();\n" +
-						"\t}\n\n" +
-						"To debug this issue, start the JVM with the option:\n\n" +
-						"\t-javaagent:" +
-						path +
-						"\n\n" +
-						"To enforce pre-initialization, start the JVM with the option:\n\n" +
-						"\t-javaagent:" + path + "=init\n", e.getCause());
+				throw javaAgentHint("Cannot load class: " + classRef.getName(), e.getCause());
 			}
 			System.err.println("Warning: Cannot load class: " + classRef.getName() +
 				" into " + classLoader);
@@ -752,6 +731,29 @@ public class CodeHacker {
 		finally {
 			classRef.freeze();
 		}
+	}
+
+	static RuntimeException javaAgentHint(final String message, final Throwable cause)
+	{
+		final URL url = ClassUtils.getLocation(LegacyJavaAgent.class);
+		final String path =
+			url != null && "file".equals(url.getProtocol()) &&
+				url.getPath().endsWith(".jar") ? url.getPath()
+				: "/path/to/ij-legacy.jar";
+
+		return new RuntimeException(message + "\n" +
+				"It appears that this class was already defined in the class loader!\n" +
+				"Please make sure that you initialize the LegacyService before using\n" +
+				"any ImageJ 1.x class. You can do that by adding this static initializer:\n\n" +
+				"\tstatic {\n" +
+				"\t\tDefaultLegacyService.preinit();\n" +
+				"\t}\n\n" +
+				"To debug this issue, start the JVM with the option:\n\n" +
+				"\t-javaagent:" +
+				path +
+				"\n\n" +
+				"To enforce pre-initialization, start the JVM with the option:\n\n" +
+				"\t-javaagent:" + path + "=init\n", cause);
 	}
 
 	public void loadClasses() {
