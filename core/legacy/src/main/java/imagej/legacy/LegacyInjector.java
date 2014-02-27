@@ -36,6 +36,7 @@ import imagej.legacy.patches.LegacyHooks;
 
 import java.awt.GraphicsEnvironment;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import org.scijava.util.ClassUtils;
 
@@ -55,6 +56,7 @@ public class LegacyInjector {
 
 	/** Overrides class behavior of ImageJ1 classes by injecting method hooks. */
 	public void injectHooks(final ClassLoader classLoader, boolean headless) {
+		if (alreadyPatched(classLoader)) return;
 		final CodeHacker hacker = new CodeHacker(classLoader);
 
 		// NB: Override class behavior before class loading gets too far along.
@@ -173,6 +175,37 @@ public class LegacyInjector {
 
 	public static void preinit(final ClassLoader classLoader) {
 		new LegacyInjector().injectHooks(classLoader);
+	}
+
+	private static boolean alreadyPatched(final ClassLoader classLoader) {
+		Class<?> ij = null;
+		try {
+			final Method findLoadedClass = ClassLoader.class.getDeclaredMethod("findLoadedClass", String.class);
+			findLoadedClass.setAccessible(true);
+			ij = (Class<?>)findLoadedClass.invoke(classLoader, "ij.IJ");
+			if (ij == null) return false;
+		} catch (Exception e) {
+			// fall through
+		}
+
+		if (ij == null) try {
+			ij = classLoader.loadClass("ij.IJ");
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException("Did not find ij.IJ in " + classLoader);
+		}
+
+		try {
+			final Field hooks = ij.getField("_hooks");
+			if (hooks.getType() != LegacyHooks.class) {
+				throw new RuntimeException("Unexpected type of ij.IJ._hooks: " +
+					hooks.getType() + " (loader: " + hooks.getType().getClassLoader() +
+					")");
+			}
+			return true;
+		}
+		catch (Exception e) {
+			throw CodeHacker.javaAgentHint("No _hooks field found in ij.IJ", e);
+		}
 	}
 
 	public static void installHooks(final ClassLoader classLoader, LegacyHooks hooks) throws UnsupportedOperationException {
