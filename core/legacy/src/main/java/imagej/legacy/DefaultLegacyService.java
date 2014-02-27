@@ -96,13 +96,8 @@ import org.scijava.service.Service;
 public final class DefaultLegacyService extends AbstractService implements
 	LegacyService
 {
-	private final static LegacyInjector legacyInjector;
-
 	static {
-		final ClassLoader contextClassLoader =
-			Thread.currentThread().getContextClassLoader();
-		legacyInjector = new LegacyInjector();
-		legacyInjector.injectHooks(contextClassLoader);
+		LegacyInjector.preinit();
 	}
 
 	@Parameter
@@ -379,7 +374,7 @@ public final class DefaultLegacyService extends AbstractService implements
 	 * </p>
 	 */
 	public static void preinit() {
-		if (legacyInjector == null) {
+		if (DefaultLegacyService.class == null) {
 			throw new RuntimeException("LegacyInjector was not instantiated!");
 		}
 	}

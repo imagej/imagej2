@@ -167,6 +167,14 @@ public class LegacyInjector {
 		installHooks(classLoader, null);
 	}
 
+	public static void preinit() {
+		preinit(Thread.currentThread().getContextClassLoader());
+	}
+
+	public static void preinit(final ClassLoader classLoader) {
+		new LegacyInjector().injectHooks(classLoader);
+	}
+
 	public static void installHooks(final ClassLoader classLoader, LegacyHooks hooks) throws UnsupportedOperationException {
 		if (hooks == null) hooks = new EssentialLegacyHooks();
 		try {
