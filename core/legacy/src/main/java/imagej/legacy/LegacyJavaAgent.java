@@ -146,7 +146,7 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 	}
 
 	private static void preinit() {
-		DefaultLegacyService.preinit();
+		LegacyInjector.preinit();
 	}
 
 	private static class ImageJ1ClassLoadedPrematurely extends RuntimeException {

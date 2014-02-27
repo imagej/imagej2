@@ -746,7 +746,7 @@ public class CodeHacker {
 				"Please make sure that you initialize the LegacyService before using\n" +
 				"any ImageJ 1.x class. You can do that by adding this static initializer:\n\n" +
 				"\tstatic {\n" +
-				"\t\tDefaultLegacyService.preinit();\n" +
+				"\t\tLegacyInjector.preinit();\n" +
 				"\t}\n\n" +
 				"To debug this issue, start the JVM with the option:\n\n" +
 				"\t-javaagent:" +

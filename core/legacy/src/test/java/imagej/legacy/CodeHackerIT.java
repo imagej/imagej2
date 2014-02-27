@@ -49,16 +49,13 @@ public class CodeHackerIT {
 	public void testExceptionMessage() {
 		IJ.log("Now ij.IJ is loaded.");
 		try {
-			DefaultLegacyService.preinit();
+			LegacyInjector.preinit();
 			assertTrue("Should never reach here", false);
-		} catch (ExceptionInInitializerError e) {
+		} catch (RuntimeException e) {
 			final Throwable e2 = e.getCause();
 			assertTrue(e2 != null);
-			assertTrue(e2 instanceof RuntimeException);
-			final Throwable e3 = e2.getCause();
-			assertTrue(e3 != null);
-			assertTrue("should be a NoSuchFieldException: " + e3, e3 instanceof NoSuchFieldException);
-			final String cause = e2.getMessage();
+			assertTrue("Should be a NoSuchFieldException: " + e2, e2 instanceof NoSuchFieldException);
+			final String cause = e.getMessage();
 			assertTrue("Contains hint:\n\n" + cause, cause.indexOf("-javaagent:") > 0);
 			IJ.log("We got the hint, and all is fine:\n\n" + cause);
 		}

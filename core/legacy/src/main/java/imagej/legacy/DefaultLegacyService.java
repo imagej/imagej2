@@ -372,11 +372,11 @@ public final class DefaultLegacyService extends AbstractService implements
 	 * not necessarily get initialized. So we provide this method just to force
 	 * class initialization (and thereby the LegacyInjector to patch ImageJ 1.x).
 	 * </p>
+	 * 
+	 * @deprecated use {@link LegacyInjector#preinit()} instead
 	 */
 	public static void preinit() {
-		if (DefaultLegacyService.class == null) {
-			throw new RuntimeException("LegacyInjector was not instantiated!");
-		}
+		LegacyInjector.preinit();
 	}
 
 	// -- helpers --

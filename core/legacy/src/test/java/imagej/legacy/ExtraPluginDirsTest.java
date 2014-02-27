@@ -55,7 +55,7 @@ import org.scijava.util.FileUtils;
 public class ExtraPluginDirsTest {
 
 	static {
-		DefaultLegacyService.preinit();
+		LegacyInjector.preinit();
 	}
 
 	private File tmpDir;

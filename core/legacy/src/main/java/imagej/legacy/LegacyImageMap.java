@@ -96,7 +96,7 @@ public class LegacyImageMap extends AbstractContextual {
 		 * we call the preinit() method just to force class initialization (and
 		 * thereby the LegacyInjector to patch ImageJ 1.x).
 		 */
-		DefaultLegacyService.preinit();
+		LegacyInjector.preinit();
 	}
 
 	// -- Fields --
