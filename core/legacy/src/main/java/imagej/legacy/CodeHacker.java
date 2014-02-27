@@ -110,10 +110,6 @@ public class CodeHacker {
 		pool.appendClassPath(new ClassClassPath(getClass()));
 		pool.appendClassPath(new LoaderClassPath(classLoader));
 
-		if (!hasField("ij.IJ", "_hooks")) {
-			insertPublicStaticField("ij.IJ", LegacyHooks.class, "_hooks", null);
-		}
-
 		onlyLogExceptions = !stackTraceContains("junit.");
 	}
 
