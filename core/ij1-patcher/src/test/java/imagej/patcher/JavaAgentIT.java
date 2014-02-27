@@ -29,36 +29,62 @@
  * #L%
  */
 
-package imagej.legacy;
+package imagej.patcher;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
-import ij.IJ;
+import static org.junit.Assume.assumeTrue;
 
 import org.junit.Test;
 
+import ij.IJ;
+
 /**
- * Tests that the CodeHacker gives a helpful message when ImageJ 1.x classes
- * were already loaded.
+ * Tests that the legacy Java agent identifies the correct spot where ImageJ 1.x classes were loaded.
  * 
  * @author Johannes Schindelin
  */
-public class CodeHackerIT {
+public class JavaAgentIT {
+
+	private StackTraceElement[] trace;
 
 	@Test
-	public void testExceptionMessage() {
+	public void testAgentInit() throws Exception {
+		assumeTrue("init".equals(System.getProperty("legacy.agent.mode")));
 		IJ.log("Now ij.IJ is loaded.");
+		assertNotNull(IJ.class.getField("_hooks"));
+	}
+
+	@Test
+	public void testAgentDebug() {
+		assumeTrue("debug".equals(System.getProperty("legacy.agent.mode")));
 		try {
-			LegacyInjector.preinit();
-			assertTrue("Should never reach here", false);
-		} catch (RuntimeException e) {
+			trace = Thread.currentThread().getStackTrace();
+			IJ.log("Now ij.IJ would be loaded.");
+			assertTrue("This code should not be reached", false);
+		} catch (final ExceptionInInitializerError e) {
 			final Throwable e2 = e.getCause();
 			assertTrue(e2 != null);
-			assertTrue("Should be a NoSuchFieldException: " + e2, e2 instanceof NoSuchFieldException);
-			final String cause = e.getMessage();
-			assertTrue("Contains hint:\n\n" + cause, cause.indexOf("-javaagent:") > 0);
-			IJ.log("We got the hint, and all is fine:\n\n" + cause);
+			final String message = e2.getMessage();
+			assertTrue("Message should begin with 'Loading ij/IJ': " + message,
+				message.startsWith("Loading ij/IJ "));
+			final StackTraceElement[] stackTrace = e2.getStackTrace();
+			assertEquals(getFileName(stackTrace, 0), getFileName(trace, 1));
+			assertEquals(getLineNumber(stackTrace, 0), getLineNumber(trace, 1) + 1);
+			System.err.println("All is fine, we got the exception:");
+			e2.printStackTrace();
 		}
+	}
+
+	private int getLineNumber(final StackTraceElement[] trace, int no) {
+		if (trace == null || trace.length <= no) return -1;
+		return trace[no].getLineNumber();
+	}
+
+	private String getFileName(final StackTraceElement[] trace, int no) {
+		if (trace == null || trace.length <= no) return null;
+		return trace[no].getFileName();
 	}
 
 }

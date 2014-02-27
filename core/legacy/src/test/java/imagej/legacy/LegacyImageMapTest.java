@@ -36,6 +36,7 @@ import ij.ImagePlus;
 import ij.gui.NewImage;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
+import imagej.patcher.LegacyInjector;
 import net.imglib2.Cursor;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;

@@ -33,11 +33,11 @@ package imagej.legacy;
 
 import ij.ImagePlus;
 import imagej.data.display.ImageDisplay;
-import imagej.legacy.patches.EssentialLegacyHooks;
-import imagej.legacy.patches.LegacyHooks;
 import imagej.legacy.plugin.LegacyAppConfiguration;
 import imagej.legacy.plugin.LegacyEditor;
 import imagej.legacy.plugin.LegacyPostRefreshMenus;
+import imagej.patcher.EssentialLegacyHooks;
+import imagej.patcher.LegacyHooks;
 
 import java.io.BufferedWriter;
 import java.io.File;

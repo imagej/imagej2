@@ -29,7 +29,7 @@
  * #L%
  */
 
-package imagej.legacy;
+package imagej.patcher;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -56,18 +56,15 @@ import javassist.CtConstructor;
 import javassist.CtNewConstructor;
 import javassist.Modifier;
 
-import org.scijava.util.ClassUtils;
-import org.scijava.util.FileUtils;
-
 /**
  * A Java agent to help with legacy issues.
  * 
  * @author Johannes Schindelin
  */
-public class LegacyJavaAgent implements ClassFileTransformer {
+public class JavaAgent implements ClassFileTransformer {
 
 	private static Instrumentation instrumentation;
-	private static LegacyJavaAgent agent;
+	private static JavaAgent agent;
 	private static Transformer transformer;
 
 	public static void stop() {
@@ -90,7 +87,7 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 	 * @param instrumentation the {@link Instrumentation} instance passed by the JVM
 	 */
 	public static void premain(final String agentArgs, final Instrumentation instrumentation) {
-		LegacyJavaAgent.instrumentation = instrumentation;
+		JavaAgent.instrumentation = instrumentation;
 		if ("help".equals(agentArgs)) {
 			usage();
 			return;
@@ -106,7 +103,7 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 			usage();
 			return;
 		}
-		agent = new LegacyJavaAgent();
+		agent = new JavaAgent();
 		instrumentation.addTransformer(agent);
 		System.err.println("Legacy Java agent initialized");
 	}
@@ -204,7 +201,7 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 				number = exceptions.size();
 				exceptions.add(exception);
 			}
-			final String src = LegacyJavaAgent.class.getName() + ".dontCall(" + number + ");";
+			final String src = JavaAgent.class.getName() + ".dontCall(" + number + ");";
 			try {
 				CtClass clazz = pool.makeClass(new ByteArrayInputStream(classfileBuffer), false);
 				CtConstructor method = clazz.getClassInitializer();
@@ -230,7 +227,7 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 	private final static ClassLoader bootstrapClassLoader = ClassLoader.getSystemClassLoader().getParent();
 
 	private static boolean isCoreClass(final String className) {
-		if (LegacyJavaAgent.class.getName().equals(className)) return true;
+		if (JavaAgent.class.getName().equals(className)) return true;
 		try {
 			bootstrapClassLoader.loadClass(className);
 			return true;
@@ -277,17 +274,17 @@ public class LegacyJavaAgent implements ClassFileTransformer {
 			}
 		}
 
-		final String classUrl = ClassUtils.getLocation(LegacyJavaAgent.class).toExternalForm();
+		final String classUrl = Utils.getLocation(JavaAgent.class).toExternalForm();
 		final int slash = classUrl.lastIndexOf('/');
 		final URL directory = new URL(classUrl.substring(0,  slash + 1));
-		final Collection<URL> urls = FileUtils.listContents(directory);
-		final String infix = LegacyJavaAgent.class.getName().replace('.', '/');
+		final Collection<URL> urls = Utils.listContents(directory);
+		final String infix = JavaAgent.class.getName().replace('.', '/');
 
 		final byte[] buffer = new byte[65536];
 		final Manifest manifest = new Manifest();
 		final Attributes mainAttrs = manifest.getMainAttributes();
 		mainAttrs.put(Attributes.Name.MANIFEST_VERSION, "1.0");
-		mainAttrs.putValue("Premain-Class", LegacyJavaAgent.class.getName());
+		mainAttrs.putValue("Premain-Class", JavaAgent.class.getName());
 		final JarOutputStream jar = new JarOutputStream(new FileOutputStream(file), manifest);
 
 		for (final URL url2 : urls) {

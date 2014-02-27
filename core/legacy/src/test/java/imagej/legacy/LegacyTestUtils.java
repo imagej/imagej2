@@ -38,6 +38,7 @@ import ij.ImagePlus;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import imagej.data.Dataset;
+import imagej.patcher.CodeHacker;
 
 import java.io.File;
 import java.io.FileOutputStream;

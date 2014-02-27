@@ -28,7 +28,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package imagej.legacy;
+package imagej.patcher;
 
 import ij.Macro;
 import ij.gui.DialogListener;
@@ -78,7 +78,7 @@ public class HeadlessGenericDialog {
 	}
 
 	public void addCheckbox(String label, boolean defaultValue) {
-		checkboxes.add(IJ1Helper.getMacroParameter(label, defaultValue));
+		checkboxes.add(getMacroParameter(label, defaultValue));
 	}
 
 	public void addCheckboxGroup(int rows, int columns, String[] labels, boolean[] defaultValues) {
@@ -91,7 +91,7 @@ public class HeadlessGenericDialog {
 	}
 
 	public void addChoice(String label, String[] items, String defaultItem) {
-		String item = IJ1Helper.getMacroParameter(label, defaultItem);
+		String item = getMacroParameter(label, defaultItem);
 		int index = 0;
 		for (int i = 0; i < items.length; i++)
 			if (items[i].equals(item)) {
@@ -103,7 +103,7 @@ public class HeadlessGenericDialog {
 	}
 
 	public void addNumericField(String label, double defaultValue, int digits) {
-		numbers.add(IJ1Helper.getMacroParameter(label, defaultValue));
+		numbers.add(getMacroParameter(label, defaultValue));
 	}
 
 	public void addNumericField(String label, double defaultValue, int digits, int columns, String units) {
@@ -111,11 +111,11 @@ public class HeadlessGenericDialog {
 	}
 
 	public void addSlider(String label, double minValue, double maxValue, double defaultValue) {
-		numbers.add(IJ1Helper.getMacroParameter(label, defaultValue));
+		numbers.add(getMacroParameter(label, defaultValue));
 	}
 
 	public void addStringField(String label, String defaultText) {
-		strings.add(IJ1Helper.getMacroParameter(label, defaultText));
+		strings.add(getMacroParameter(label, defaultText));
 	}
 
 	public void addStringField(String label, String defaultText, int columns) {
@@ -160,7 +160,7 @@ public class HeadlessGenericDialog {
 
 	/** Adds a radio button group. */
 	public void addRadioButtonGroup(String label, String[] items, int rows, int columns, String defaultItem) {
-		radioButtons.add(IJ1Helper.getMacroParameter(label, defaultItem));
+		radioButtons.add(getMacroParameter(label, defaultItem));
 	}
 
 	public List<String> getRadioButtonGroups() {
@@ -232,4 +232,55 @@ public class HeadlessGenericDialog {
 	protected void setup() {}
 	public void accessTextFields() {}
 	public void showHelp() {}
+
+	/**
+	 * Gets a macro parameter of type <i>boolean</i>.
+	 * 
+	 * @param label
+	 *            the name of the macro parameter
+	 * @param defaultValue
+	 *            the default value
+	 * @return the boolean value
+	 */
+	private static boolean getMacroParameter(String label, boolean defaultValue) {
+		return getMacroParameter(label) != null || defaultValue;
+	}
+
+	/**
+	 * Gets a macro parameter of type <i>double</i>.
+	 * 
+	 * @param label
+	 *            the name of the macro parameter
+	 * @param defaultValue
+	 *            the default value
+	 * @return the double value
+	 */
+	private static double getMacroParameter(String label, double defaultValue) {
+		String value = Macro.getValue(Macro.getOptions(), label, null);
+		return value != null ? Double.parseDouble(value) : defaultValue;
+	}
+
+	/**
+	 * Gets a macro parameter of type {@link String}.
+	 * 
+	 * @param label
+	 *            the name of the macro parameter
+	 * @param defaultValue
+	 *            the default value
+	 * @return the value
+	 */
+	private static String getMacroParameter(String label, String defaultValue) {
+		return Macro.getValue(Macro.getOptions(), label, defaultValue);
+	}
+
+	/**
+	 * Gets a macro parameter of type {@link String}.
+	 * 
+	 * @param label
+	 *            the name of the macro parameter
+	 * @return the value, <code>null</code> if the parameter was not specified
+	 */
+	private static String getMacroParameter(String label) {
+		return Macro.getValue(Macro.getOptions(), label, null);
+	}
 }

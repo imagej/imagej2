@@ -32,6 +32,7 @@
 package imagej.legacy;
 
 import static org.junit.Assert.assertTrue;
+import imagej.patcher.HeadlessGenericDialog;
 
 import java.util.HashMap;
 import java.util.Map;

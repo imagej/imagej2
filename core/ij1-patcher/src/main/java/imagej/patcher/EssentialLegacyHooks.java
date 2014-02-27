@@ -29,7 +29,7 @@
  * #L%
  */
 
-package imagej.legacy.patches;
+package imagej.patcher;
 
 import ij.IJ;
 import ij.ImagePlus;

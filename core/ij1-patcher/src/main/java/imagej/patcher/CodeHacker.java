@@ -29,9 +29,7 @@
  * #L%
  */
 
-package imagej.legacy;
-
-import imagej.legacy.patches.LegacyHooks;
+package imagej.patcher;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -79,9 +77,6 @@ import javassist.expr.FieldAccess;
 import javassist.expr.Handler;
 import javassist.expr.MethodCall;
 import javassist.expr.NewExpr;
-
-import org.scijava.util.ClassUtils;
-import org.scijava.util.FileUtils;
 
 /**
  * The code hacker provides a mechanism for altering the behavior of classes
@@ -735,7 +730,7 @@ public class CodeHacker {
 
 	static RuntimeException javaAgentHint(final String message, final Throwable cause)
 	{
-		final URL url = ClassUtils.getLocation(LegacyJavaAgent.class);
+		final URL url = Utils.getLocation(JavaAgent.class);
 		final String path =
 			url != null && "file".equals(url.getProtocol()) &&
 				url.getPath().endsWith(".jar") ? url.getPath()
@@ -758,7 +753,7 @@ public class CodeHacker {
 
 	public void loadClasses() {
 		try {
-			LegacyJavaAgent.stop();
+			JavaAgent.stop();
 		}
 		catch (final Throwable t) {
 			// ignore
@@ -1288,15 +1283,15 @@ public class CodeHacker {
 		try {
 			Collection<URL> urls;
 			urls =
-				FileUtils.listContents(new File(System.getProperty("user.home"),
+				Utils.listContents(new File(System.getProperty("user.home"),
 					"fiji/jars/").toURI().toURL());
 			if (urls.size() == 0) {
 				urls =
-					FileUtils.listContents(new File(System.getProperty("user.home"),
+					Utils.listContents(new File(System.getProperty("user.home"),
 						"Fiji.app/jars/").toURI().toURL());
 				if (urls.size() == 0) {
 					urls =
-						FileUtils.listContents(new File("/Applications/Fiji.app/jars/")
+						Utils.listContents(new File("/Applications/Fiji.app/jars/")
 							.toURI().toURL());
 				}
 			}

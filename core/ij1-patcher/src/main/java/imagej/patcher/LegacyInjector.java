@@ -29,18 +29,13 @@
  * #L%
  */
 
-package imagej.legacy;
-
-import imagej.legacy.patches.EssentialLegacyHooks;
-import imagej.legacy.patches.LegacyHooks;
+package imagej.patcher;
 
 import java.awt.GraphicsEnvironment;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import javassist.ClassPool;
-
-import org.scijava.util.ClassUtils;
 
 /**
  * Overrides class behavior of ImageJ1 classes using bytecode manipulation. This
@@ -147,7 +142,7 @@ public class LegacyInjector {
 			+ "}");
 
 		// override behavior of MacAdapter, if needed
-		if (ClassUtils.hasClass("com.apple.eawt.ApplicationListener")) {
+		if (Utils.hasClass("com.apple.eawt.ApplicationListener")) {
 			// NB: If com.apple.eawt package is present, override IJ1's MacAdapter.
 			hacker.insertAtTopOfMethod("MacAdapter",
 				"public void run(java.lang.String arg)",

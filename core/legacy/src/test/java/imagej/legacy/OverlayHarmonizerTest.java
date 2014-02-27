@@ -42,6 +42,7 @@ import imagej.data.overlay.BinaryMaskOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.PolygonOverlay;
 import imagej.legacy.translate.OverlayHarmonizer;
+import imagej.patcher.LegacyInjector;
 
 import java.util.ArrayList;
 import java.util.List;
