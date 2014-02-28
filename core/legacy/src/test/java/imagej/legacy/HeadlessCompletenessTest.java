@@ -33,6 +33,7 @@ package imagej.legacy;
 
 import static org.junit.Assert.assertTrue;
 import imagej.patcher.HeadlessGenericDialog;
+import imagej.patcher.LegacyInjector;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,6 +51,10 @@ import org.junit.Test;
  * @author Johannes Schindelin
  */
 public class HeadlessCompletenessTest {
+
+	static {
+		LegacyInjector.preinit();
+	}
 
 	@Test
 	public void missingGenericDialogMethods() throws Exception {

@@ -32,11 +32,11 @@
 package imagej.legacy;
 
 import static imagej.legacy.LegacyTestUtils.getFreshIJClassLoader;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
+import imagej.patcher.LegacyInjector;
 
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
@@ -53,6 +53,10 @@ import org.junit.Test;
  * @author Johannes Schindelin
  */
 public class LegacyHeadlessTest {
+
+	static {
+		LegacyInjector.preinit();
+	}
 
 	private final static String PLUGIN_CLASS = "imagej.legacy.Headless_Example_Plugin";
 	private String threadName;
