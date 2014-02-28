@@ -60,6 +60,15 @@ public class LegacyInjector {
 		hacker.insertPublicStaticField("ij.IJ", LegacyHooks.class, "_hooks", null);
 		hacker.commitClass(LegacyHooks.class);
 		hacker.commitClass(EssentialLegacyHooks.class);
+		final String legacyHooksClass = LegacyHooks.class.getName();
+		final String essentialHooksClass = EssentialLegacyHooks.class.getName();
+		hacker.insertNewMethod("ij.IJ",
+				"public static " + legacyHooksClass + " _hooks(" + legacyHooksClass + " hooks)",
+				legacyHooksClass + " previous = _hooks;"
+				+ "if (previous != null) previous.dispose();"
+				+ "_hooks = $1 == null ? new " + essentialHooksClass + "() : $1;"
+				+ "_hooks.installed();"
+				+ "return previous;");
 
 		if (headless) {
 			new LegacyHeadless(hacker).patch();
@@ -216,16 +225,10 @@ public class LegacyInjector {
 		}
 	}
 
-	public static void installHooks(final ClassLoader classLoader, LegacyHooks hooks) throws UnsupportedOperationException {
-		if (hooks == null) hooks = new EssentialLegacyHooks();
+	public static LegacyHooks installHooks(final ClassLoader classLoader, LegacyHooks hooks) throws UnsupportedOperationException {
 		try {
-			final Field hooksField = classLoader.loadClass("ij.IJ").getField("_hooks");
-			final LegacyHooks previous = (LegacyHooks)hooksField.get(null);
-			if (previous != null) {
-				previous.dispose();
-			}
-			hooksField.set(null, hooks);
-			hooks.installed();
+			final Method hooksSetter = classLoader.loadClass("ij.IJ").getMethod("_hooks", LegacyHooks.class);
+			return (LegacyHooks) hooksSetter.invoke(null, hooks);
 		}
 		catch (Throwable t) {
 			throw new UnsupportedOperationException(t);
