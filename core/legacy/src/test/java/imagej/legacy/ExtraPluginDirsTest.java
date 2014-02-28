@@ -31,12 +31,12 @@
 
 package imagej.legacy;
 
-import static imagej.legacy.LegacyTestUtils.ijRun;
 import static imagej.legacy.LegacyTestUtils.makeJar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import imagej.patcher.LegacyEnvironment;
 import imagej.patcher.LegacyInjector;
 import imagej.test.TestUtils;
 
@@ -82,8 +82,8 @@ public class ExtraPluginDirsTest {
 
 		final String key = "random-" + Math.random();
 		System.setProperty(key, "321");
-		final ClassLoader loader = LegacyTestUtils.getFreshIJClassLoader(true, true);
-		ijRun(loader, "Set Property", "key=" + key + " value=123");
+		final LegacyEnvironment ij1 = new LegacyEnvironment(null, false);
+		ij1.run("Set Property", "key=" + key + " value=123");
 		assertEquals("123", System.getProperty(key));
 	}
 
@@ -93,19 +93,21 @@ public class ExtraPluginDirsTest {
 		assertTrue(pluginsDir.mkdirs());
 		final File jarsDir = new File(tmpDir, "jars");
 		assertTrue(jarsDir.mkdirs());
-		ClassLoader loader = LegacyTestUtils.getFreshIJClassLoader(true, true);
-		final String helperClassName = Test.class.getName();
+		LegacyEnvironment ij1 = new LegacyEnvironment(null, false);
+		final String helperClassName = TestUtils.class.getName();
 		try {
-			assertNull(loader.loadClass(helperClassName));
+			assertNull(ij1.runPlugIn(helperClassName, null));
 		} catch (Throwable t) {
 			/* all okay, we did not find the class */
 		}
 		final File jarFile = new File(jarsDir, "helper.jar");
 		LegacyTestUtils.makeJar(jarFile, helperClassName);
 		System.setProperty("plugins.dir", pluginsDir.getAbsolutePath());
+		ij1 = new LegacyEnvironment(null, false);
 		try {
-			assertNotNull(loader.loadClass(helperClassName));
+			assertNotNull(ij1.runPlugIn(helperClassName, null));
 		} catch (Throwable t) {
+			t.printStackTrace();
 			assertNull("Should have found " + helperClassName + " in " + jarFile);
 		}
 	}
