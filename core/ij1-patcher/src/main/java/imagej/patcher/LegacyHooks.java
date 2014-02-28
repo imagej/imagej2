@@ -226,4 +226,17 @@ public interface LegacyHooks {
 	 * @return true if the error was handled by the legacy hook
 	 */
 	boolean handleNoSuchMethodError(NoSuchMethodError e);
+
+	/**
+	 * Extension point to run after a new PluginClassLoader was initialized.
+	 * 
+	 * @param loader
+	 *            the PluginClassLoader instance
+	 */
+	void newPluginClassLoader(final ClassLoader loader);
+
+	/**
+	 * First extension point to run just after ImageJ 1.x spun up.
+	 */
+	void initialized();
 }

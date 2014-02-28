@@ -94,6 +94,12 @@ public class LegacyInjector {
 		hacker.insertAtTopOfMethod("ij.IJ",
 			"static java.lang.Object runUserPlugIn(java.lang.String commandName, java.lang.String className, java.lang.String arg, boolean createNewLoader)",
 			"if (classLoader != null) Thread.currentThread().setContextClassLoader(classLoader);");
+		hacker.insertAtBottomOfMethod("ij.IJ",
+				"static void init()",
+				"ij.IJ._hooks.initialized();");
+		hacker.insertAtBottomOfMethod("ij.IJ",
+				"static void init(ij.ImageJ imagej, java.applet.Applet theApplet)",
+				"ij.IJ._hooks.initialized();");
 
 		// override behavior of ij.ImagePlus
 		hacker.insertAtBottomOfMethod("ij.ImagePlus",
@@ -142,6 +148,9 @@ public class LegacyInjector {
 			+ "  java.io.File root = plugins.getParentFile();"
 			+ "  if (root != null) addRecursively(new java.io.File(root, \"jars\"));"
 			+ "}");
+		hacker.insertAtBottomOfMethod("ij.io.PluginClassLoader",
+			"void init(java.lang.String path)",
+			"ij.IJ._hooks.newPluginClassLoader(this);");
 
 		// override behavior of MacAdapter, if needed
 		if (Utils.hasClass("com.apple.eawt.ApplicationListener")) {
