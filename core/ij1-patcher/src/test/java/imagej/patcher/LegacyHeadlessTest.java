@@ -29,15 +29,12 @@
  * #L%
  */
 
-package imagej.legacy;
+package imagej.patcher;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
-import imagej.patcher.LegacyClassLoader;
-import imagej.patcher.LegacyEnvironment;
-import imagej.patcher.LegacyInjector;
 
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
@@ -46,7 +43,6 @@ import java.lang.reflect.InvocationTargetException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.scijava.util.ClassUtils;
 
 /**
  * Tests that the legacy headless code works as expected.
@@ -94,7 +90,7 @@ public class LegacyHeadlessTest {
 	private static boolean runExamplePlugin(final boolean patchHeadless, final String arg, final String macroOptions, final String expectedValue) throws Exception {
 		final ClassLoader loader = new LegacyClassLoader(patchHeadless) {
 			{
-				addURL(ClassUtils.getLocation(Headless_Example_Plugin.class));
+				addURL(Utils.getLocation(Headless_Example_Plugin.class));
 			}
 		};
 		final LegacyEnvironment ij1 = new LegacyEnvironment(loader, patchHeadless);
