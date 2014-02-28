@@ -47,7 +47,7 @@ import java.lang.reflect.Method;
 public class LegacyEnvironment {
 
 	final private ClassLoader loader;
-	final private Method run, runMacro, runPlugIn, main;
+	final private Method setOptions, run, runMacro, runPlugIn, main;
 
 	/**
 	 * Constructs a new legacy environment.
@@ -69,7 +69,9 @@ public class LegacyEnvironment {
 		this.loader = loader != null ? loader : new LegacyClassLoader(headless);
 		final Class<?> ij = this.loader.loadClass("ij.IJ");
 		final Class<?> imagej = this.loader.loadClass("ij.ImageJ");
+		final Class<?> macro = this.loader.loadClass("ij.Macro");
 		try {
+			setOptions = macro.getMethod("setOptions", String.class);
 			run = ij.getMethod("run", String.class, String.class);
 			runMacro = ij.getMethod("runMacro", String.class, String.class);
 			runPlugIn = ij.getMethod("runPlugIn", String.class, String.class);
@@ -80,6 +82,30 @@ public class LegacyEnvironment {
 		}
 		// TODO: if we want to allow calling IJ#run(ImagePlus, String, String), we
 		// will need a data translator
+	}
+
+	/**
+	 * Sets the macro options.
+	 * <p>
+	 * Both {@link #run(String, String)} and {@link #runMacro(String, String)}
+	 * take an argument that is typically recorded by the macro recorder. For
+	 * {@link #runPlugIn(String, String)}, however, only the {@code arg} parameter
+	 * that is to be passed to the plugins {@code run()} or {@code setup()} method
+	 * can be specified. For those use cases where one wants to call a plugin
+	 * class directly, but still provide macro options, this method is the
+	 * solution.
+	 * </p>
+	 * 
+	 * @param options the macro options to use for the next call to
+	 *          {@link #runPlugIn(String, String)}
+	 */
+	public void setMacroOptions(final String options) {
+		try {
+			setOptions.invoke(null, options);
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
