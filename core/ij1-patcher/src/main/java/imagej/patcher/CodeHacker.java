@@ -1376,4 +1376,13 @@ public class CodeHacker {
 		return writer.toString().indexOf(needle) >= 0;
 	}
 
+	/**
+	 * Makes sure that the given class is defined in the class loader.
+	 * 
+	 * @param clazz the class to commit
+	 */
+	public void commitClass(Class<?> clazz) {
+		getClass(clazz.getName());
+	}
+
 }
