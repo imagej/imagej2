@@ -31,21 +31,22 @@
 
 package imagej.legacy;
 
-import static imagej.legacy.LegacyTestUtils.getFreshIJClassLoader;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
+import imagej.patcher.LegacyClassLoader;
+import imagej.patcher.LegacyEnvironment;
 import imagej.patcher.LegacyInjector;
 
 import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.scijava.util.ClassUtils;
 
 /**
  * Tests that the legacy headless code works as expected.
@@ -58,7 +59,6 @@ public class LegacyHeadlessTest {
 		LegacyInjector.preinit();
 	}
 
-	private final static String PLUGIN_CLASS = "imagej.legacy.Headless_Example_Plugin";
 	private String threadName;
 
 	@Before
@@ -72,31 +72,36 @@ public class LegacyHeadlessTest {
 	}
 
 	@Test
-	public void testHeadless() {
+	public void testHeadless() throws Exception {
 		assertTrue(runExampleDialogPlugin(true));
 	}
 
 	@Test
-	public void testPatchIsRequired() {
+	public void testPatchIsRequired() throws Exception {
 		assumeTrue(GraphicsEnvironment.isHeadless());
 		assertFalse(runExampleDialogPlugin(false));
 	}
 
 	@Test
-	public void saveDialog() {
+	public void saveDialog() throws Exception {
 		assertTrue(runExamplePlugin(true, "SaveDialog", "file=README.txt", "true"));
 	}
 
-	private static boolean runExampleDialogPlugin(final boolean patchHeadless) {
+	private static boolean runExampleDialogPlugin(final boolean patchHeadless) throws Exception {
 		return runExamplePlugin(patchHeadless, "the argument", "prefix=[*** ]", "*** the argument");
 	}
 
-	private static boolean runExamplePlugin(final boolean patchHeadless, final String arg, final String macroOptions, final String expectedValue) {
-		final ClassLoader loader = getFreshIJClassLoader(false, patchHeadless, PLUGIN_CLASS);
+	private static boolean runExamplePlugin(final boolean patchHeadless, final String arg, final String macroOptions, final String expectedValue) throws Exception {
+		final ClassLoader loader = new LegacyClassLoader(patchHeadless) {
+			{
+				addURL(ClassUtils.getLocation(Headless_Example_Plugin.class));
+			}
+		};
+		final LegacyEnvironment ij1 = new LegacyEnvironment(loader, patchHeadless);
 		try {
-			final String value = runPlugIn(loader,
-					Headless_Example_Plugin.class.getName(), arg,
-					macroOptions).toString();
+			ij1.setMacroOptions(macroOptions);
+			final String value = ij1.runPlugIn(
+					Headless_Example_Plugin.class.getName(), arg).toString();
 			assertEquals(expectedValue, value);
 			return true;
 		} catch (final Throwable t) {
@@ -107,24 +112,6 @@ public class LegacyHeadlessTest {
 			}
 			return false;
 		}
-	}
-
-	private static Object runPlugIn(final ClassLoader loader,
-			final String className, final String arg, final String macroOptions)
-			throws ClassNotFoundException, SecurityException,
-			NoSuchMethodException, IllegalArgumentException,
-			IllegalAccessException, InvocationTargetException {
-		if (macroOptions != null) {
-			Thread.currentThread().setName("Run$_ImageJ 1.x requires the macro's "
-				+ "Thread's name to start with: Run$_, otherwise "
-				+ "Macro.getOptions() always returns null");
-			final Class<?> macro = loader.loadClass("ij.Macro");
-			final Method method = macro.getMethod("setOptions", String.class);
-			method.invoke(null,  macroOptions);
-		}
-		final Class<?> ij = loader.loadClass("ij.IJ");
-		final Method method = ij.getMethod("runPlugIn", String.class, String.class);
-		return method.invoke(null, className, arg);
 	}
 
 }
