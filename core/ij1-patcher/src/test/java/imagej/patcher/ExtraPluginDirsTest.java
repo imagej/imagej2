@@ -29,16 +29,12 @@
  * #L%
  */
 
-package imagej.legacy;
+package imagej.patcher;
 
-import static imagej.legacy.LegacyTestUtils.makeJar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import imagej.patcher.LegacyEnvironment;
-import imagej.patcher.LegacyInjector;
-import imagej.test.TestUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,7 +42,6 @@ import java.io.IOException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.scijava.util.FileUtils;
 
 /**
  * Tests the support for <i>ij1.plugin.dirs</i> (falling back to the <i>.plugins/</i> subdirectory of <i>user.home</i>).
@@ -64,7 +59,7 @@ public class ExtraPluginDirsTest {
 	@After
 	public void rmRFTmpDir() {
 		if (tmpDir != null && tmpDir.isDirectory()) {
-			FileUtils.deleteRecursively(tmpDir);
+			TestUtils.deleteRecursively(tmpDir);
 		}
 	}
 
@@ -76,7 +71,7 @@ public class ExtraPluginDirsTest {
 	@Test
 	public void findsExtraPluginDir() throws Exception {
 		final File jarFile = new File(tmpDir, "Set_Property.jar");
-		makeJar(jarFile, Set_Property.class.getName());
+		TestUtils.makeJar(jarFile, Set_Property.class.getName());
 		assertTrue(jarFile.getAbsolutePath() + " exists", jarFile.exists());
 		System.setProperty("ij1.plugin.dirs", tmpDir.getAbsolutePath());
 
@@ -101,7 +96,7 @@ public class ExtraPluginDirsTest {
 			/* all okay, we did not find the class */
 		}
 		final File jarFile = new File(jarsDir, "helper.jar");
-		LegacyTestUtils.makeJar(jarFile, helperClassName);
+		TestUtils.makeJar(jarFile, helperClassName);
 		System.setProperty("plugins.dir", pluginsDir.getAbsolutePath());
 		ij1 = new LegacyEnvironment(null, false);
 		try {
