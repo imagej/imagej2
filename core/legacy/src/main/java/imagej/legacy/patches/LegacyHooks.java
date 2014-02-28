@@ -147,7 +147,7 @@ public interface LegacyHooks {
 	 * @param image
 	 *            the new image
 	 */
-	void registerLegacyImage(ImagePlus image);
+	void registerImage(ImagePlus image);
 
 	/**
 	 * Releases an image.
@@ -155,7 +155,7 @@ public interface LegacyHooks {
 	 * @param imagej
 	 *            the image
 	 */
-	void unregisterLegacyImage(ImagePlus imagej);
+	void unregisterImage(ImagePlus imagej);
 
 	/**
 	 * Logs a debug message (to be shown only in debug mode).
@@ -194,7 +194,7 @@ public interface LegacyHooks {
 	 *            the path to the file to open
 	 * @return true if the hook opened a different editor
 	 */
-	boolean openInLegacyEditor(String path);
+	boolean openInEditor(String path);
 
 	/**
 	 * Extension point to override ImageJ 1.x' editor.
@@ -205,7 +205,7 @@ public interface LegacyHooks {
 	 *            the initial content
 	 * @return true if the hook opened a different editor
 	 */
-	boolean createInLegacyEditor(String fileName, String content);
+	boolean createInEditor(String fileName, String content);
 
 	/**
 	 * Extension point to add to ImageJ 1.x' PluginClassLoader's class path.

@@ -93,32 +93,32 @@ public class LegacyInjector {
 		// override behavior of ij.ImagePlus
 		hacker.insertAtBottomOfMethod("ij.ImagePlus",
 			"public void updateAndDraw()",
-			"ij.IJ._hooks.registerLegacyImage(this);");
+			"ij.IJ._hooks.registerImage(this);");
 		hacker.insertAtBottomOfMethod("ij.ImagePlus",
 			"public void repaintWindow()",
-			"ij.IJ._hooks.registerLegacyImage(this);");
+			"ij.IJ._hooks.registerImage(this);");
 		hacker.insertAtBottomOfMethod("ij.ImagePlus",
 			"public void show(java.lang.String statusMessage)",
-			"ij.IJ._hooks.registerLegacyImage(this);");
+			"ij.IJ._hooks.registerImage(this);");
 		hacker.insertAtBottomOfMethod("ij.ImagePlus",
 			"public void hide()",
-			"ij.IJ._hooks.unregisterLegacyImage(this);");
+			"ij.IJ._hooks.unregisterImage(this);");
 		hacker.insertAtBottomOfMethod("ij.ImagePlus",
 			"public void close()",
-			"ij.IJ._hooks.unregisterLegacyImage(this);");
+			"ij.IJ._hooks.unregisterImage(this);");
 
 		// override behavior of ij.gui.ImageWindow
 		hacker.insertNewMethod("ij.gui.ImageWindow",
 			"public void setVisible(boolean vis)",
-			"if ($1) ij.IJ._hooks.registerLegacyImage(this.getImagePlus());"
+			"if ($1) ij.IJ._hooks.registerImage(this.getImagePlus());"
 			+ "if (ij.IJ._hooks.isLegacyMode()) { super.setVisible($1); }");
 		hacker.insertNewMethod("ij.gui.ImageWindow",
 			"public void show()",
-			"ij.IJ._hooks.registerLegacyImage(this.getImagePlus());"
+			"ij.IJ._hooks.registerImage(this.getImagePlus());"
 			+ "if (ij.IJ._hooks.isLegacyMode()) { super.show(); }");
 		hacker.insertAtTopOfMethod("ij.gui.ImageWindow",
 			"public void close()",
-			"ij.IJ._hooks.unregisterLegacyImage(this.getImagePlus());");
+			"ij.IJ._hooks.unregisterImage(this.getImagePlus());");
 
 		// override behavior of PluginClassLoader
 		hacker.insertNewMethod("ij.io.PluginClassLoader",

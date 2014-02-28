@@ -294,7 +294,7 @@ public class LegacyExtensions {
 
 	private static void addEditorExtensionPoints(final CodeHacker hacker) {
 		hacker.insertAtTopOfMethod("ij.io.Opener", "public void open(java.lang.String path)",
-			"if (isText($1) && ij.IJ._hooks.openInLegacyEditor($1)) return;");
+			"if (isText($1) && ij.IJ._hooks.openInEditor($1)) return;");
 		hacker.dontReturnOnNull("ij.plugin.frame.Recorder", "void createMacro()");
 		hacker.replaceCallInMethod("ij.plugin.frame.Recorder", "void createMacro()",
 			"ij.IJ", "runPlugIn",
@@ -304,7 +304,7 @@ public class LegacyExtensions {
 			"if ($1.endsWith(\".txt\")) {"
 			+ "  $1 = $1.substring($1.length() - 3) + \"ijm\";"
 			+ "}"
-			+ "if (!ij.IJ._hooks.createInLegacyEditor($1, $2)) {"
+			+ "if (!ij.IJ._hooks.createInEditor($1, $2)) {"
 			+ "  ((ij.plugin.frame.Editor)ij.IJ.runPlugIn(\"ij.plugin.frame.Editor\", \"\")).createMacro($1, $2);"
 			+ "}");
 		hacker.insertPublicStaticField("ij.plugin.frame.Recorder", String.class, "nameForEditor", null);
@@ -323,7 +323,7 @@ public class LegacyExtensions {
 			"if ($1.endsWith(\".txt\")) {"
 			+ "  $1 = $1.substring(0, $1.length() - 3) + \"ijm\";"
 			+ "}"
-			+ "if ($1.endsWith(\".ijm\") && ij.IJ._hooks.createInLegacyEditor($1, $2)) return;"
+			+ "if ($1.endsWith(\".ijm\") && ij.IJ._hooks.createInEditor($1, $2)) return;"
 			+ "int options = (monospaced ? ij.plugin.frame.Editor.MONOSPACED : 0)"
 			+ "  | (menuBar ? ij.plugin.frame.Editor.MENU_BAR : 0);"
 			+ "new ij.plugin.frame.Editor(rows, columns, 0, options).create($1, $2);");
@@ -333,7 +333,7 @@ public class LegacyExtensions {
 			"$_ = null;");
 		hacker.replaceCallInMethod("ij.plugin.NewPlugin", "public void createPlugin(java.lang.String name, int type, java.lang.String methods)",
 			"ij.plugin.frame.Editor", "create",
-			"if (!ij.IJ._hooks.createInLegacyEditor($1, $2)) {"
+			"if (!ij.IJ._hooks.createInEditor($1, $2)) {"
 			+ "  ((ij.plugin.frame.Editor)ij.IJ.runPlugIn(\"ij.plugin.frame.Editor\", \"\")).create($1, $2);"
 			+ "}");
 	}

@@ -178,7 +178,7 @@ public class DefaultLegacyHooks extends EssentialLegacyHooks {
 
 	/** @inherit */
 	@Override
-	public void registerLegacyImage(final ImagePlus image) {
+	public void registerImage(final ImagePlus image) {
 		// TODO: avoid using ImagePlus here altogether; use ImgLib2-ij's wrap() instead
 		if (image == null) return;
 		if (!image.isProcessor()) return;
@@ -196,7 +196,7 @@ public class DefaultLegacyHooks extends EssentialLegacyHooks {
 
 	/** @inherit */
 	@Override
-	public void unregisterLegacyImage(final ImagePlus image) {
+	public void unregisterImage(final ImagePlus image) {
 		// TODO: avoid using ImagePlus here altogether; use ImgLib2-ij's wrap() instead
 		if (isLegacyMode()) return;
 		if (image == null) return;
@@ -301,12 +301,12 @@ public class DefaultLegacyHooks extends EssentialLegacyHooks {
 	 * @return whether the file was opened successfully
 	 */
 	@Override
-	public boolean openInLegacyEditor(final String path) {
+	public boolean openInEditor(final String path) {
 		if (editor == null) return false;
 		if (path.indexOf("://") > 0) return false;
 		// if it has no extension, do not open it in the legacy editor
 		if (!path.matches(".*\\.[0-9A-Za-z]{1,4}")) return false;
-		if (stackTraceContains(getClass().getName() + ".openInLegacyEditor(")) return false;
+		if (stackTraceContains(getClass().getName() + ".openInEditor(")) return false;
 		final File file = new File(path);
 		if (!file.exists()) return false;
 		if (isBinaryFile(file)) return false;
@@ -321,7 +321,7 @@ public class DefaultLegacyHooks extends EssentialLegacyHooks {
 	 * @return whether the fule was opened successfully
 	 */
 	@Override
-	public boolean createInLegacyEditor(final String title, final String content) {
+	public boolean createInEditor(final String title, final String content) {
 		if (editor == null) return false;
 		return editor.create(title, content);
 	}

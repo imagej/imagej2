@@ -121,12 +121,12 @@ public class EssentialLegacyHooks implements LegacyHooks {
 
 	/** @inherit */
 	@Override
-	public void registerLegacyImage(final ImagePlus image) {
+	public void registerImage(final ImagePlus image) {
 	}
 
 	/** @inherit */
 	@Override
-	public void unregisterLegacyImage(final ImagePlus image) {
+	public void unregisterImage(final ImagePlus image) {
 	}
 
 	/** @inherit */
@@ -155,13 +155,13 @@ public class EssentialLegacyHooks implements LegacyHooks {
 
 	/** @inherit */
 	@Override
-	public boolean openInLegacyEditor(String path) {
+	public boolean openInEditor(String path) {
 		return false;
 	}
 
 	/** @inherit */
 	@Override
-	public boolean createInLegacyEditor(String fileName, String content) {
+	public boolean createInEditor(String fileName, String content) {
 		return false;
 	}
 
