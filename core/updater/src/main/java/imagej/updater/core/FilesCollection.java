@@ -371,8 +371,13 @@ public class FilesCollection extends LinkedHashMap<String, FileObject>
 	public void write() throws IOException, SAXException,
 		TransformerConfigurationException
 	{
-		new XMLFileWriter(this).write(new GZIPOutputStream(new FileOutputStream(
-			prefix(Util.XML_COMPRESSED))), true);
+		final File out = prefix(Util.XML_COMPRESSED);
+		final File tmp = prefix(Util.XML_COMPRESSED + ".tmp");
+		new XMLFileWriter(this).write(new GZIPOutputStream(
+				new FileOutputStream(tmp)), true);
+		if (out.exists() && !out.delete())
+			out.renameTo(prefix(Util.XML_COMPRESSED + ".backup"));
+		tmp.renameTo(out);
 	}
 
 	public interface Filter {
