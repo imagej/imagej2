@@ -32,7 +32,6 @@
 package imagej.patcher;
 
 import ij.IJ;
-import ij.ImagePlus;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -121,12 +120,12 @@ public class EssentialLegacyHooks implements LegacyHooks {
 
 	/** @inherit */
 	@Override
-	public void registerImage(final ImagePlus image) {
+	public void registerImage(final Object image) {
 	}
 
 	/** @inherit */
 	@Override
-	public void unregisterImage(final ImagePlus image) {
+	public void unregisterImage(final Object image) {
 	}
 
 	/** @inherit */

@@ -31,8 +31,6 @@
 
 package imagej.patcher;
 
-import ij.ImagePlus;
-
 import java.io.File;
 import java.net.URL;
 import java.util.List;
@@ -147,7 +145,7 @@ public interface LegacyHooks {
 	 * @param image
 	 *            the new image
 	 */
-	void registerImage(ImagePlus image);
+	void registerImage(Object image);
 
 	/**
 	 * Releases an image.
@@ -155,7 +153,7 @@ public interface LegacyHooks {
 	 * @param imagej
 	 *            the image
 	 */
-	void unregisterImage(ImagePlus imagej);
+	void unregisterImage(Object imagej);
 
 	/**
 	 * Logs a debug message (to be shown only in debug mode).

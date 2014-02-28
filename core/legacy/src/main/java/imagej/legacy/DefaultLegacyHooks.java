@@ -180,8 +180,8 @@ public class DefaultLegacyHooks extends EssentialLegacyHooks {
 
 	/** @inherit */
 	@Override
-	public void registerImage(final ImagePlus image) {
-		// TODO: avoid using ImagePlus here altogether; use ImgLib2-ij's wrap() instead
+	public void registerImage(final Object o) {
+		final ImagePlus image = (ImagePlus) o;
 		if (image == null) return;
 		if (!image.isProcessor()) return;
 		if (image.getWindow() == null) return;
@@ -198,8 +198,8 @@ public class DefaultLegacyHooks extends EssentialLegacyHooks {
 
 	/** @inherit */
 	@Override
-	public void unregisterImage(final ImagePlus image) {
-		// TODO: avoid using ImagePlus here altogether; use ImgLib2-ij's wrap() instead
+	public void unregisterImage(final Object o) {
+		final ImagePlus image = (ImagePlus) o;
 		if (isLegacyMode()) return;
 		if (image == null) return;
 		if (!Utils.isLegacyThread(Thread.currentThread())) return;
