@@ -69,6 +69,7 @@ public class LegacyInjector {
 				+ "_hooks = $1 == null ? new " + essentialHooksClass + "() : $1;"
 				+ "_hooks.installed();"
 				+ "return previous;");
+		hacker.addToClassInitializer("ij.IJ", "_hooks(null);");
 
 		if (headless) {
 			new LegacyHeadless(hacker).patch();
@@ -181,9 +182,6 @@ public class LegacyInjector {
 
 		// commit patches
 		hacker.loadClasses();
-
-		// make sure that the legacy hooks are in place
-		installHooks(classLoader, null);
 	}
 
 	public static void preinit() {
