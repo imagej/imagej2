@@ -58,6 +58,8 @@ public class LegacyInjector {
 
 		// NB: Override class behavior before class loading gets too far along.
 		hacker.insertPublicStaticField("ij.IJ", LegacyHooks.class, "_hooks", null);
+		hacker.commitClass(LegacyHooks.class);
+		hacker.commitClass(EssentialLegacyHooks.class);
 
 		if (headless) {
 			new LegacyHeadless(hacker).patch();
