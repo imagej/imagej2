@@ -28,6 +28,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package imagej.legacy.plugin;
 
 import java.io.File;

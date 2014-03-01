@@ -28,6 +28,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 package imagej.legacy.plugin;
 
 import imagej.platform.event.AppQuitEvent;
