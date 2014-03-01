@@ -48,7 +48,6 @@ import imagej.legacy.plugin.LegacyPluginFinder;
 import imagej.menu.MenuService;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
-import imagej.patcher.CodeHacker;
 import imagej.patcher.LegacyInjector;
 import imagej.ui.ApplicationFrame;
 import imagej.ui.UIService;
