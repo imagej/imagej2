@@ -42,6 +42,7 @@ import imagej.data.overlay.BinaryMaskOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.PolygonOverlay;
 import imagej.legacy.translate.OverlayHarmonizer;
+import imagej.patcher.LegacyInjector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +77,7 @@ public class OverlayHarmonizerTest {
 		 * we call the preinit() method just to force class initialization (and
 		 * thereby the LegacyInjector to patch ImageJ 1.x).
 		 */
-		DefaultLegacyService.preinit();
+		LegacyInjector.preinit();
 	}
 
 	private Context context;

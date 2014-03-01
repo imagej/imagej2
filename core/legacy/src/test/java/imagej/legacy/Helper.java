@@ -36,12 +36,8 @@ import ij.ImagePlus;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.process.ByteProcessor;
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
 import imagej.data.overlay.BinaryMaskOverlay;
-import imagej.data.overlay.EllipseOverlay;
 import imagej.data.overlay.PolygonOverlay;
-import imagej.data.overlay.RectangleOverlay;
 
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
@@ -53,18 +49,13 @@ import java.util.Random;
 import net.imglib2.RandomAccess;
 import net.imglib2.RealPoint;
 import net.imglib2.img.Img;
-import net.imglib2.meta.ImgPlus;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.basictypeaccess.array.BitArray;
-import net.imglib2.img.basictypeaccess.array.ByteArray;
 import net.imglib2.img.transform.ImgTranslationAdapter;
-import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
 import net.imglib2.roi.BinaryMaskRegionOfInterest;
 import net.imglib2.roi.PolygonRegionOfInterest;
 import net.imglib2.type.logic.BitType;
-import net.imglib2.type.numeric.integer.ByteType;
 
 import org.scijava.Context;
 
@@ -86,25 +77,6 @@ public class Helper {
 		for (int i = 0; i < x.length; i++) {
 			roi.addVertex(i, new RealPoint(x[i], y[i]));
 		}
-		return overlay;
-	}
-
-	public static RectangleOverlay makeRectangleOverlay(final Context context,
-		final double x, final double y, final double w, final double h)
-	{
-		final RectangleOverlay overlay = new RectangleOverlay(context);
-		overlay.getRegionOfInterest().setOrigin(new double[] { x, y });
-		overlay.getRegionOfInterest().setExtent(new double[] { w, h });
-		return overlay;
-	}
-
-	public static EllipseOverlay makeEllipseOverlay(final Context context,
-		final double x, final double y, final double w, final double h)
-	{
-		final EllipseOverlay overlay = new EllipseOverlay(context);
-		overlay.getRegionOfInterest().setOrigin(new double[] { x, y });
-		overlay.getRegionOfInterest().setRadius(w / 2, 0);
-		overlay.getRegionOfInterest().setRadius(h / 2, 1);
 		return overlay;
 	}
 
@@ -167,30 +139,6 @@ public class Helper {
 		return imp;
 	}
 
-	public static Dataset makeDataset(final Context context, final byte[][] data,
-		final String name)
-	{
-		final int w = data.length;
-		final int h = data[0].length;
-		final ArrayImg<ByteType, ByteArray> img =
-			new ArrayImgFactory<ByteType>()
-				.createByteInstance(new long[] { w, h }, 1);
-		final ByteType t = new ByteType(img);
-		img.setLinkedType(t);
-		final RandomAccess<ByteType> ra = img.randomAccess();
-		for (int i = 0; i < w; i++) {
-			ra.setPosition(i, 0);
-			for (int j = 0; j < h; j++) {
-				ra.setPosition(j, 1);
-				ra.get().set(data[i][j]);
-			}
-		}
-		final DatasetService datasetService =
-			context.getService(DatasetService.class);
-		return datasetService.create(new ImgPlus<ByteType>(img, name,
-			new AxisType[] { Axes.X, Axes.Y }));
-	}
-
 	public static PolygonRoi makePolygonROI(final int[] x, final int[] y) {
 		return makePolygonROI(x, y, Roi.POLYGON);
 	}
@@ -199,7 +147,7 @@ public class Helper {
 		return makePolygonROI(x, y, Roi.FREEROI);
 	}
 
-	public static PolygonRoi makePolygonROI(final int[] x, final int[] y,
+	private static PolygonRoi makePolygonROI(final int[] x, final int[] y,
 		final int type)
 	{
 		return new PolygonRoi(x, y, x.length, type);
@@ -212,17 +160,6 @@ public class Helper {
 		for (int i = 0; i < w; i++) {
 			data[i] = new byte[h];
 			r.nextBytes(data[i]);
-		}
-		return data;
-	}
-
-	public static byte[][] makeRandomMaskArray(final Random r, final int w,
-		final int h)
-	{
-		final byte[][] data = makeRandomByteArray(r, w, h);
-		for (int i = 0; i < w; i++) {
-			for (int j = 0; j < h; j++)
-				data[i][j] = (data[i][j] >= 0) ? 0 : (byte) 0xFF;
 		}
 		return data;
 	}

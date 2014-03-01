@@ -28,36 +28,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+package imagej.legacy.plugin;
 
-package imagej.legacy;
+import java.io.File;
 
-import ij.gui.GenericDialog;
-import ij.plugin.PlugIn;
+import org.scijava.plugin.SciJavaPlugin;
 
 /**
- * A simple plugin to test the legacy service.
- * 
- * <p>
- * Since regular plugins do not return anything, the quickest way to test that a
- * plugin ran alright found by this developer is to set a system property,
- * specified via a {@link GenericDialog}.
- * </p>
+ * A minimal interface for the editor to use instead of ImageJ 1.x' limited AWT-based one.
  * 
  * @author Johannes Schindelin
  */
-public class Set_Property implements PlugIn {
-
-	@Override
-	public void run(final String arg) {
-		final GenericDialog gd = new GenericDialog("Set Property");
-		gd.addStringField("key", "hello");
-		gd.addStringField("value", "world");
-		gd.showDialog();
-		if (gd.wasCanceled()) return;
-
-		final String key = gd.getNextString();
-		final String value = gd.getNextString();
-		System.setProperty(key, value);
-	}
-
+public interface LegacyEditor extends SciJavaPlugin {
+	public boolean open(final File path);
+	public boolean create(final String title, final String content);
 }

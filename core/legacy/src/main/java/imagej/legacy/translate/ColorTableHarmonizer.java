@@ -311,7 +311,7 @@ public class ColorTableHarmonizer implements DisplayHarmonizer {
 	/** Assigns the color tables of the active view of a ImageDisplay. */
 	private void assignColorTables(final ImageDisplay disp,
 		final List<ColorTable> colorTables,
-		@SuppressWarnings("unused") final boolean sixteenBitLUTs)
+		final boolean sixteenBitLUTs)
 	{
 		// FIXME HACK
 		// Grab the active view of the given ImageDisplay and set it's default

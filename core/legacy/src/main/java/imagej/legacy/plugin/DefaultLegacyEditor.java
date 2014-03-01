@@ -28,35 +28,64 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+package imagej.legacy.plugin;
 
-package imagej.legacy.patches;
+import imagej.platform.event.AppQuitEvent;
+import imagej.script.editor.TextEditor;
 
-import ij.ImageJ;
-import imagej.legacy.LegacyService;
+import java.io.File;
 
-import java.awt.Point;
+import org.scijava.Context;
+import org.scijava.event.EventHandler;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
-/**
- * Overrides {@link ImageJ} methods.
- * 
- * @author Curtis Rueden
- */
-public class ImageJMethods {
+@Plugin(type = LegacyEditor.class)
+public class DefaultLegacyEditor implements LegacyEditor {
 
-	/** Replaces {@link ImageJ#getLocationOnScreen()}. */
-	public static Point getLocationOnScreen(
-		final LegacyService legacyService,
-		@SuppressWarnings("unused") final ImageJ obj)
-	{
-		legacyService.log().debug("getLocationOnScreen");
-		// TODO: Return coordinates of modern ImageJ window.
-		return new Point(0, 0);
+	@Parameter
+	private Context context;
+
+	private TextEditor editor;
+
+	private synchronized TextEditor editor() {
+		if (editor == null) {
+			editor = new TextEditor(context) {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void dispose() {
+					synchronized (DefaultLegacyEditor.this) {
+						editor = null;
+						super.dispose();
+					}
+				}
+			};
+			editor.setVisible(true);
+		}
+		return editor;
 	}
 
-	/* an old approach
-	public static void quit(final LegacyService legSrv, ImageJ ij)
-	{
-		legSrv.getContext().dispose();
+	@EventHandler
+	private synchronized void onEvent(final AppQuitEvent event) {
+		if (editor != null) {
+			editor.dispose();
+			editor = null;
+		}
 	}
-	*/
+
+	/** @inherit */
+	@Override
+	public boolean open(File file) {
+		editor().open(file);
+		return true;
+	}
+
+	/** @inherit */
+	@Override
+	public boolean create(String title, String content) {
+		editor().createNewDocument(title, content);
+		return true;
+	}
+
 }

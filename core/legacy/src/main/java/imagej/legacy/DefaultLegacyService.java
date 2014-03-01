@@ -48,6 +48,7 @@ import imagej.legacy.plugin.LegacyPluginFinder;
 import imagej.menu.MenuService;
 import imagej.options.OptionsService;
 import imagej.options.event.OptionsEvent;
+import imagej.patcher.LegacyInjector;
 import imagej.ui.ApplicationFrame;
 import imagej.ui.UIService;
 import imagej.ui.viewer.DisplayWindow;
@@ -96,13 +97,8 @@ import org.scijava.service.Service;
 public final class DefaultLegacyService extends AbstractService implements
 	LegacyService
 {
-	private final static LegacyInjector legacyInjector;
-
 	static {
-		final ClassLoader contextClassLoader =
-			Thread.currentThread().getContextClassLoader();
-		legacyInjector = new LegacyInjector();
-		legacyInjector.injectHooks(contextClassLoader);
+		LegacyInjector.preinit();
 	}
 
 	@Parameter
@@ -299,7 +295,7 @@ public final class DefaultLegacyService extends AbstractService implements
 		synchronized (DefaultLegacyService.class) {
 			checkInstance();
 			instance = this;
-			legacyInjector.setLegacyService(this);
+			LegacyInjector.installHooks(getClass().getClassLoader(), new DefaultLegacyHooks(this));
 		}
 
 		ij1Helper.initialize();
@@ -319,7 +315,7 @@ public final class DefaultLegacyService extends AbstractService implements
 	public void dispose() {
 		ij1Helper.dispose();
 
-		legacyInjector.setLegacyService(new DummyLegacyService());
+		LegacyInjector.installHooks(getClass().getClassLoader(), null);
 		instance = null;
 	}
 
@@ -330,14 +326,13 @@ public final class DefaultLegacyService extends AbstractService implements
 	 * {@link ImageDisplay}.
 	 */
 	@EventHandler
-	protected void onEvent(
-		@SuppressWarnings("unused") final DisplayActivatedEvent event)
+	protected void onEvent(final DisplayActivatedEvent event)
 	{
 		syncActiveImage();
 	}
 
 	@EventHandler
-	protected void onEvent(@SuppressWarnings("unused") final OptionsEvent event) {
+	protected void onEvent(final OptionsEvent event) {
 		optionsSynchronizer.updateModernImageJSettingsFromLegacyImageJ();
 	}
 
@@ -378,11 +373,11 @@ public final class DefaultLegacyService extends AbstractService implements
 	 * not necessarily get initialized. So we provide this method just to force
 	 * class initialization (and thereby the LegacyInjector to patch ImageJ 1.x).
 	 * </p>
+	 * 
+	 * @deprecated use {@link LegacyInjector#preinit()} instead
 	 */
 	public static void preinit() {
-		if (legacyInjector == null) {
-			throw new RuntimeException("LegacyInjector was not instantiated!");
-		}
+		LegacyInjector.preinit();
 	}
 
 	// -- helpers --
@@ -426,47 +421,4 @@ public final class DefaultLegacyService extends AbstractService implements
 		finder.findPlugins(plugins);
 		pluginService.addPlugins(plugins);
 	}
-
-	/* 3-1-12
-
-	 We are no longer going to synchronize colors from IJ1 to modern ImageJ
-
-	protected class IJ1EventListener implements IJEventListener {
-
-		@Override
-		public void eventOccurred(final int eventID) {
-			final OptionsChannels colorOpts =
-				optionsService.getOptions(OptionsChannels.class);
-			ColorRGB color;
-			switch (eventID) {
-				case ij.IJEventListener.COLOR_PICKER_CLOSED:
-					color = AWTColors.getColorRGB(Toolbar.getForegroundColor());
-					colorOpts.setFgColor(color);
-					color = AWTColors.getColorRGB(Toolbar.getBackgroundColor());
-					colorOpts.setBgColor(color);
-					colorOpts.save();
-					break;
-				case ij.IJEventListener.FOREGROUND_COLOR_CHANGED:
-					color = AWTColors.getColorRGB(Toolbar.getForegroundColor());
-					colorOpts.setFgColor(color);
-					colorOpts.save();
-					break;
-				case ij.IJEventListener.BACKGROUND_COLOR_CHANGED:
-					color = AWTColors.getColorRGB(Toolbar.getBackgroundColor());
-					colorOpts.setBgColor(color);
-					colorOpts.save();
-					break;
-				case ij.IJEventListener.LOG_WINDOW_CLOSED:
-					// TODO - do something???
-					break;
-				case ij.IJEventListener.TOOL_CHANGED:
-					// TODO - do something???
-					break;
-				default: // unknown event
-					// do nothing
-					break;
-			}
-		}
-	}
-	*/
 }
