@@ -41,6 +41,16 @@ import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
+/**
+ * The default {@link LegacyEditor} plugin.
+ * <p>
+ * When the {@link imagej.legacy.DefaultLegacyHooks} are installed, the
+ * {@link LegacyEditor} plugin (if any) is given a chance to handle editor
+ * requests from ImageJ 1.x. Let's have a sensible default implementation.
+ * </p>
+ * 
+ * @author Johannes Schindelin
+ */
 @Plugin(type = LegacyEditor.class)
 public class DefaultLegacyEditor implements LegacyEditor {
 
