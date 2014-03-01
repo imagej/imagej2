@@ -15,9 +15,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>${imagej.groupId}</groupId>
+			<groupId>${ij1-patcher.groupId}</groupId>
 			<artifactId>ij1-patcher</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
+			<version>${ij1-patcher.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -97,6 +97,8 @@
 
 	<properties>
 		<ij-legacy.jar>${project.build.directory}/${project.build.finalName}.jar</ij-legacy.jar>
+		<ij1-patcher.groupId>net.imagej</ij1-patcher.groupId>
+		<ij1-patcher.version>0.1.0</ij1-patcher.version>
 		<project.rootdir>${basedir}/../..</project.rootdir>
 	</properties>
 
