@@ -28,41 +28,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+package imagej.legacy.plugin;
 
-package imagej.legacy;
-
-import static org.junit.Assert.assertTrue;
-
-import ij.IJ;
-
-import org.junit.Test;
+import org.scijava.plugin.SciJavaPlugin;
 
 /**
- * Tests that the CodeHacker gives a helpful message when ImageJ 1.x classes
- * were already loaded.
+ * Extension point for actions to be executed after <i>Help&gt;Refresh
+ * Menus</i>.
  * 
  * @author Johannes Schindelin
  */
-public class CodeHackerIT {
-
-	@Test
-	public void testExceptionMessage() {
-		IJ.log("Now ij.IJ is loaded.");
-		try {
-			DefaultLegacyService.preinit();
-			assertTrue("Should never reach here", false);
-		} catch (ExceptionInInitializerError e) {
-			final Throwable e2 = e.getCause();
-			assertTrue(e2 != null);
-			assertTrue(e2 instanceof RuntimeException);
-			final Throwable e3 = e2.getCause();
-			assertTrue(e3 != null);
-			assertTrue("should be a LinkageError: " + e3, e3 instanceof LinkageError);
-			final String cause = e2.getMessage();
-			assertTrue("Contains hint:\n\n" + cause, cause.indexOf("-javaagent:") > 0);
-			IJ.log("We got the hint, and all is fine:\n\n" + cause);
-		}
-	}
-
+public interface LegacyPostRefreshMenus extends Runnable, SciJavaPlugin {
 }
-

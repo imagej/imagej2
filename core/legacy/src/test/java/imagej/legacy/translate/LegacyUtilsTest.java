@@ -38,6 +38,7 @@ import ij.ImageStack;
 import ij.process.ByteProcessor;
 import imagej.data.Extents;
 import imagej.data.Position;
+import imagej.patcher.LegacyInjector;
 import io.scif.img.axes.SCIFIOAxes;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
@@ -50,6 +51,10 @@ import org.junit.Test;
  * @author Barry DeZonia
  */
 public class LegacyUtilsTest {
+
+	static {
+		LegacyInjector.preinit();
+	}
 
 	/*
 	 * This test is illustrative of an issue in IJ1 where the internal stack gets

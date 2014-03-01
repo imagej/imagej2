@@ -35,6 +35,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assume.assumeTrue;
 import ij.IJ;
+import imagej.patcher.LegacyInjector;
 
 import org.junit.After;
 import org.junit.Test;
@@ -57,7 +58,7 @@ public class LegacyServiceTest {
 		 * we call the preinit() method just to force class initialization (and
 		 * thereby the LegacyInjector to patch ImageJ 1.x).
 		 */
-		DefaultLegacyService.preinit();
+		LegacyInjector.preinit();
 	}
 
 	private Context context;
@@ -80,11 +81,6 @@ public class LegacyServiceTest {
 		Context context2 = (Context)IJ.runPlugIn(Context.class.getName(), null);
 		assertNotNull(context2);
 		assertEquals(context, context2);
-
-		final LegacyService legacyService2 = (LegacyService)
-				IJ.runPlugIn(LegacyService.class.getName(), null);
-		assertNotNull(legacyService2);
-		assertEquals(legacyService, legacyService2);
 	}
 
 	@Test

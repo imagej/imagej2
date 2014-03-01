@@ -37,6 +37,7 @@ import static org.junit.Assert.fail;
 import ij.process.ImageProcessor;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
+import imagej.patcher.LegacyInjector;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
@@ -53,6 +54,10 @@ import org.scijava.Context;
 public class MergedRgbVirtualStackTest {
 
 	private Context context = new Context(DatasetService.class);
+
+	static {
+		LegacyInjector.preinit();
+	}
 
 	@Test
 	public void test() {

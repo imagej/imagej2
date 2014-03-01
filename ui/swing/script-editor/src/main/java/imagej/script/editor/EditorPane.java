@@ -270,6 +270,10 @@ public class EditorPane extends RSyntaxTextArea implements DocumentListener {
 
 	public void setFileName(String baseName) {
 		String name = baseName;
+		if (currentLanguage == null) {
+			fallBackBaseName = name;
+			return;
+		}
 		for (String extension : currentLanguage.getExtensions()) {
 			extension = "." + extension;
 			if (baseName.endsWith(extension)) {

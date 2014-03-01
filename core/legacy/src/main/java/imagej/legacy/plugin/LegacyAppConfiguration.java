@@ -28,52 +28,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+package imagej.legacy.plugin;
 
-package imagej.legacy.patches;
+import java.net.URL;
 
-import ij.ImagePlus;
-import ij.macro.Functions;
-import imagej.legacy.LegacyService;
+import org.scijava.plugin.SciJavaPlugin;
 
 /**
- * Overrides {@link Functions} methods.
+ * Interface for configuring the legacy application appearance.
  * 
- * @author Barry DeZonia
- * @author Curtis Rueden
+ * <p>
+ * Implementing a plugin of this type lets applications override the appearance
+ * of the ImageJ 1.x instance, e.g. the window icon.
+ * </p>
+ * 
+ * @author Johannes Schindelin
  */
-@SuppressWarnings("javadoc")
-public class FunctionsMethods {
+public interface LegacyAppConfiguration extends SciJavaPlugin {
 
-	// TODO - this class was written to get around bug #554. The reliance on a
-	// static here is troubling. Rather than track calls we could replace the
-	// IJ1 code completely with a method that does the roi code but not the
-	// drawing code. Not sure if that would cause bad side effects. Waiting
-	// until we verify this implementation is a problem. On 10-19-11 BDZ
-	// found that not tracking this at all seems to be okay as #554 does not
-	// happen.
+	/**
+	 * Returns the application name for use with ImageJ 1.x.
+	 * @return the application name
+	 */
+	String getAppName();
 
-	public static int InsideBatchDrawing = 0;
-
-	private FunctionsMethods() {
-		// prevent instantiation of utility class
-	}
-
-	/** Prepends {@link ij.macro.Functions#displayBatchModeImage(ImagePlus)}. */
-	public static void displayBatchModeImageBefore(@SuppressWarnings("unused") final LegacyService legacyService,
-		@SuppressWarnings("unused") final ImagePlus imp2)
-	{
-		// NOTE - BDZ - removing for now - see if any problems rear their head.
-		// Was for bug #554
-		// InsideBatchDrawing++;
-	}
-
-	/** Appends {@link ij.macro.Functions#displayBatchModeImage(ImagePlus)}. */
-	public static void displayBatchModeImageAfter(@SuppressWarnings("unused") final LegacyService legacyService,
-		@SuppressWarnings("unused") final ImagePlus imp2)
-	{
-		// NOTE - BDZ - removing for now - see if any problems rear their head.
-		// Was for bug #554
-		// InsideBatchDrawing--;
-	}
-
+	/**
+	 * Returns the icon for use with ImageJ 1.x.
+	 * 
+	 * @return the application name
+	 */
+	URL getIconURL();
 }
