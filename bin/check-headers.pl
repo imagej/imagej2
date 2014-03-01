@@ -115,7 +115,7 @@ sub process($) {
   # skip past copyright comment
   while ($data[$i] =~ /^ * /) { $i++; }
   if ($data[$i] ne "") {
-    print "$file: invalid copyright\n";
+    print "$file: invalid copyright: line $i is not empty\n";
     return INVALID_COPYRIGHT;
   }
 
