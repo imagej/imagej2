@@ -55,8 +55,8 @@ public class SwitchToModernMode implements PlugIn {
 	@Override
 	public void run(String arg) {
 		try {
-			final ClassLoader classLoader =
-				Thread.currentThread().getContextClassLoader();
+			final ClassLoader classLoader = IJ.getClassLoader();
+			Thread.currentThread().setContextClassLoader(classLoader);
 			SwingUtilities.invokeAndWait(new Runnable() {
 				@Override
 				public void run() {
