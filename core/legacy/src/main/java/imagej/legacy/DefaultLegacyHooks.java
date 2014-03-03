@@ -44,8 +44,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
@@ -365,11 +363,12 @@ public class DefaultLegacyHooks extends EssentialLegacyHooks {
 	 * @return whether the stack trace contains the text
 	 */
 	private static boolean stackTraceContains(String needle) {
-		final StringWriter writer = new StringWriter();
-		final PrintWriter out = new PrintWriter(writer);
-		new Exception().printStackTrace(out);
-		out.close();
-		return writer.toString().indexOf(needle) >= 0;
+		final StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+		// exclude elements up to, and including, the caller
+		for (int i = 3; i < trace.length; i++) {
+			if (trace[i].toString().contains(needle)) return true;
+		}
+		return false;
 	}
 
 }
