@@ -35,9 +35,11 @@ import ij.IJ;
 import ij.ImageJ;
 import imagej.patcher.LegacyHooks;
 
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.image.ImageProducer;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 
 import javax.swing.SwingUtilities;
@@ -54,6 +56,24 @@ public class LegacyInitializer implements Runnable {
 
 	@Override
 	public void run() {
+		final ClassLoader loader = IJ.getClassLoader();
+		Thread.currentThread().setContextClassLoader(loader);
+		if (!GraphicsEnvironment.isHeadless() &&
+			!SwingUtilities.isEventDispatchThread()) try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				@Override
+				public void run() {
+					Thread.currentThread().setContextClassLoader(loader);
+				}
+			});
+		}
+		catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		catch (InterruptedException e) {
+			// ignore
+		}
+
 		try {
 			/*
 			 * Instantiate a Context if there is none; IJ.runPlugIn() will be intercepted

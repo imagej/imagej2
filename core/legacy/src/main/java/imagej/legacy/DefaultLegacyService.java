@@ -51,6 +51,7 @@ import imagej.options.event.OptionsEvent;
 import imagej.patcher.LegacyInjector;
 import imagej.ui.ApplicationFrame;
 import imagej.ui.UIService;
+import imagej.ui.UserInterface;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.image.ImageDisplayViewer;
 import imagej.util.ColorRGB;
@@ -240,10 +241,11 @@ public final class DefaultLegacyService extends AbstractService implements
 		if (!initializing) {
 			if (uiService != null) {
 				// hide/show the IJ2 main window
+				final UserInterface ui = uiService.getDefaultUI();
 				final ApplicationFrame appFrame =
-					uiService.getDefaultUI().getApplicationFrame();
+					ui == null ? null : ui.getApplicationFrame();
 				if (appFrame == null) {
-					if (!wantIJ1) uiService.showUI();
+					if (ui != null && !wantIJ1) uiService.showUI();
 				} else {
 					appFrame.setVisible(!wantIJ1);
 				}
