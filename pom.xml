@@ -22,7 +22,6 @@
 	<modules>
 		<module>app</module>
 		<module>core</module>
-		<module>minimaven</module>
 		<module>plugins</module>
 		<module>ui</module>
 	</modules>
