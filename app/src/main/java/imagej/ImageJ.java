@@ -68,6 +68,8 @@ import java.util.Collection;
 
 import org.scijava.AbstractGateway;
 import org.scijava.Context;
+import org.scijava.Gateway;
+import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;
 
 /**
@@ -77,6 +79,7 @@ import org.scijava.service.Service;
  * 
  * @author Curtis Rueden
  */
+@Plugin(type = Gateway.class)
 public class ImageJ extends AbstractGateway {
 
 	// -- Constructors --

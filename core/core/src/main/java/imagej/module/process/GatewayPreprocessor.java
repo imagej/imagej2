@@ -31,40 +31,34 @@
 
 package imagej.module.process;
 
-import imagej.command.Command;
 import imagej.module.Module;
-import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.scijava.Context;
+import org.scijava.Gateway;
 import org.scijava.Priority;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.service.Service;
 
 /**
- * The service preprocessor automatically populates module inputs that implement
- * {@link Service}.
+ * The gateway preprocessor automatically populates module inputs that implement
+ * {@link Gateway}.
  * <p>
- * Services are obtained from this preprocessor instance's application context.
- * </p>
- * <p>
- * Many modules (e.g., most {@link Command}s) use @{@link Parameter}-annotated
- * service fields, resulting in those parameters being populated when the
- * SciJava application context is injected (via {@link Context#inject(Object)}.
- * However, some modules may have service parameters which are programmatically
- * generated (i.e., returned directly as inputs from {@link ModuleInfo#inputs()}
- * and as such not populated by context injection. E.g., this situation is the
- * case for scripts, since module inputs are parsed from the script header
- * rather than declared via the @{@link Parameter} annotation. In such cases, we
- * need this service preprocessor to fill in the service values.
+ * Gateways are instantiated as needed, wrapping this preprocessor instance's
+ * application context.
  * </p>
  * 
  * @author Curtis Rueden
  */
 @Plugin(type = PreprocessorPlugin.class,
 	priority = Priority.VERY_HIGH_PRIORITY)
-public class ServicePreprocessor extends AbstractPreprocessorPlugin {
+public class GatewayPreprocessor extends AbstractPreprocessorPlugin {
+
+	@Parameter
+	private LogService log;
 
 	// -- ModuleProcessor methods --
 
@@ -73,29 +67,50 @@ public class ServicePreprocessor extends AbstractPreprocessorPlugin {
 		for (final ModuleItem<?> input : module.getInfo().inputs()) {
 			if (!input.isAutoFill()) continue; // cannot auto-fill this input
 			final Class<?> type = input.getType();
-			if (Service.class.isAssignableFrom(type)) {
-				// input is a service
+			if (Gateway.class.isAssignableFrom(type)) {
+				// input is a gateway
 				@SuppressWarnings("unchecked")
-				final ModuleItem<? extends Service> serviceInput =
-					(ModuleItem<? extends Service>) input;
-				setServiceValue(getContext(), module, serviceInput);
-			}
-			if (type.isAssignableFrom(getContext().getClass())) {
-				// input is a compatible context
-				final String name = input.getName();
-				module.setInput(name, getContext());
-				module.setResolved(name, true);
+				final ModuleItem<? extends Gateway> gatewayInput =
+					(ModuleItem<? extends Gateway>) input;
+				setGatewayValue(getContext(), module, gatewayInput);
 			}
 		}
 	}
 
 	// -- Helper methods --
 
-	private <S extends Service> void setServiceValue(final Context context,
-		final Module module, final ModuleItem<S> input)
+	private <G extends Gateway> void setGatewayValue(final Context context,
+		final Module module, final ModuleItem<G> input)
 	{
-		final S service = context.getService(input.getType());
-		input.setValue(module, service);
+		final Class<G> type = input.getType();
+		G gateway = null;
+		Exception exception = null;
+		try {
+			gateway = type.getConstructor(Context.class).newInstance(context);
+		}
+		catch (IllegalArgumentException exc) {
+			exception = exc;
+		}
+		catch (SecurityException exc) {
+			exception = exc;
+		}
+		catch (InstantiationException exc) {
+			exception = exc;
+		}
+		catch (IllegalAccessException exc) {
+			exception = exc;
+		}
+		catch (InvocationTargetException exc) {
+			exception = exc;
+		}
+		catch (NoSuchMethodException exc) {
+			exception = exc;
+		}
+		if (exception != null) {
+			log.warn("Could not instantiate gateway of type: " + type, exception);
+			return;
+		}
+		input.setValue(module, gateway);
 		module.setResolved(input.getName(), true);
 	}
 
