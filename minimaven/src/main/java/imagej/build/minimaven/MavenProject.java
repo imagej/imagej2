@@ -937,7 +937,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 			if (dependency.version.startsWith("["))
 				dependency.snapshotVersion = VersionPOMHandler.parse(new File(path, "maven-metadata-version.xml"));
 		} catch (FileNotFoundException e) { /* ignore */ }
-		path += dependency.getVersion() + "/";
+		path += (dependency.version.endsWith("-SNAPSHOT") ? dependency.version : dependency.getVersion()) + "/";
 		if (dependency.version.endsWith("-SNAPSHOT")) try {
 			if (!maybeDownloadAutomatically(dependency, quiet, downloadAutomatically)) {
 				return null;
