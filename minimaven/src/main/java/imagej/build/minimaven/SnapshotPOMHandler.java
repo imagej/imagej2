@@ -33,6 +33,7 @@ package imagej.build.minimaven;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -80,7 +81,18 @@ public class SnapshotPOMHandler extends DefaultHandler {
 	}
 
 	public static String parse(File xml) throws IOException, ParserConfigurationException, SAXException {
-		return SnapshotPOMHandler.parse(new FileInputStream(xml));
+		try {
+			return SnapshotPOMHandler.parse(new FileInputStream(xml));
+		}
+		catch (final FileNotFoundException e) {
+			throw e;
+		}
+		catch (final IOException e) {
+			throw new IOException("Error parsing " + xml, e);
+		}
+		catch (final SAXException e) {
+			throw new SAXException("Error parsing " + xml, e);
+		}
 	}
 
 	public static String parse(InputStream in) throws IOException, ParserConfigurationException, SAXException {
