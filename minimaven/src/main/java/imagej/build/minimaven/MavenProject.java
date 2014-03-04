@@ -889,9 +889,8 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 	protected void getRepositories(Set<String> result) {
 		// add a default to the root
 		if (parent == null) {
+			result.add("http://maven.imagej.net/content/groups/public/");
 			result.add("http://repo1.maven.org/maven2/");
-			result.add("http://maven.imagej.net/content/repositories/releases/");
-			result.add("http://maven.imagej.net/content/repositories/snapshots/");
 		}
 		result.addAll(repositories);
 		for (MavenProject child : getChildren())
@@ -938,7 +937,7 @@ public class MavenProject extends DefaultHandler implements Comparable<MavenProj
 			if (dependency.version.startsWith("["))
 				dependency.snapshotVersion = VersionPOMHandler.parse(new File(path, "maven-metadata-version.xml"));
 		} catch (FileNotFoundException e) { /* ignore */ }
-		path += dependency.getVersion() + "/";
+		path += (dependency.version.endsWith("-SNAPSHOT") ? dependency.version : dependency.getVersion()) + "/";
 		if (dependency.version.endsWith("-SNAPSHOT")) try {
 			if (!maybeDownloadAutomatically(dependency, quiet, downloadAutomatically)) {
 				return null;
