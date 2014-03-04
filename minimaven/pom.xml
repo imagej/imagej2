@@ -15,9 +15,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-core</artifactId>
-			<version>${project.version}</version>
+			<groupId>${scijava-common.groupId}</groupId>
+			<artifactId>scijava-common</artifactId>
+			<version>${scijava-common.version}</version>
 		</dependency>
 
 		<dependency>
