@@ -33,8 +33,11 @@ package imagej.build.minimaven;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
@@ -64,14 +67,26 @@ public class SnapshotPOMHandler extends DefaultHandler {
 		this.qName = null;
 	}
 
+	private static Pattern versionPattern = Pattern.compile("(.*)-(\\d+\\.\\d+)-(\\d+)");
+
 	@Override
-	public void characters(char[] ch, int start, int length) {
+	public void characters(char[] ch, int start, int length) throws SAXException {
 		if (qName == null)
 			return;
 		else if (qName.equals("version")) {
 			String version = new String(ch, start, length).trim();
-			if (version.endsWith("-SNAPSHOT"))
+			if (version.endsWith("-SNAPSHOT")) {
 				snapshotVersion = version.substring(0, version.length() - "-SNAPSHOT".length());
+			}
+			else {
+				final Matcher matcher = versionPattern.matcher(version);
+				if (!matcher.matches()) {
+					throw new SAXException("Unhandled version: " + version);
+				}
+				snapshotVersion = matcher.group(1);
+				timestamp = matcher.group(2);
+				buildNumber = matcher.group(3);
+			}
 		}
 		else if (qName.equals("timestamp"))
 			timestamp = new String(ch, start, length).trim();
@@ -80,7 +95,18 @@ public class SnapshotPOMHandler extends DefaultHandler {
 	}
 
 	public static String parse(File xml) throws IOException, ParserConfigurationException, SAXException {
-		return SnapshotPOMHandler.parse(new FileInputStream(xml));
+		try {
+			return SnapshotPOMHandler.parse(new FileInputStream(xml));
+		}
+		catch (final FileNotFoundException e) {
+			throw e;
+		}
+		catch (final IOException e) {
+			throw new IOException("Error parsing " + xml, e);
+		}
+		catch (final SAXException e) {
+			throw new SAXException("Error parsing " + xml, e);
+		}
 	}
 
 	public static String parse(InputStream in) throws IOException, ParserConfigurationException, SAXException {
