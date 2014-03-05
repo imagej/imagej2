@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>1.140</version>
+		<version>1.141</version>
 		<relativePath />
 	</parent>
 
@@ -22,7 +22,6 @@
 	<modules>
 		<module>app</module>
 		<module>core</module>
-		<module>minimaven</module>
 		<module>plugins</module>
 		<module>ui</module>
 	</modules>
