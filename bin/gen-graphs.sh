@@ -13,7 +13,7 @@
 set -e
 
 ROOT=`cd "$(dirname $0)/.." ; pwd`
-COMPONENTS=(. app core minimaven plugins ui)
+COMPONENTS=(. app core plugins ui)
 
 GRAPH_CMD="
   neato
