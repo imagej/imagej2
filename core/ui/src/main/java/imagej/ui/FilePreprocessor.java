@@ -69,7 +69,7 @@ public class FilePreprocessor extends AbstractPreprocessorPlugin {
 		// show file chooser dialog box
 		final File result = uiService.chooseFile(file, style);
 		if (result == null) {
-			canceled = true;
+			cancel("");
 			return;
 		}
 

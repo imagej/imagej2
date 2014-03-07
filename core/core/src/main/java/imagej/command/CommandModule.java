@@ -202,6 +202,11 @@ public class CommandModule extends AbstractModule implements Cancelable,
 	}
 
 	@Override
+	public void cancel(final String reason) {
+		((Cancelable) command).cancel(reason);
+	}
+
+	@Override
 	public String getCancelReason() {
 		if (!(command instanceof Cancelable)) return null;
 		return ((Cancelable) command).getCancelReason();

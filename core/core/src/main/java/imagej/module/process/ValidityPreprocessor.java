@@ -54,8 +54,7 @@ public class ValidityPreprocessor extends AbstractPreprocessorPlugin {
 	public void process(final Module module) {
 		final ModuleInfo info = module.getInfo();
 
-		canceled = !info.isValid();
-		if (!canceled) return;
+		if (info.isValid()) return;
 
 		final StringBuilder sb =
 			new StringBuilder("The module \"" + info.getDelegateClassName() +
@@ -64,7 +63,7 @@ public class ValidityPreprocessor extends AbstractPreprocessorPlugin {
 			sb.append("- " + problem.getMessage());
 			sb.append("\n");
 		}
-		cancelReason = sb.toString();
+		cancel(sb.toString());
 	}
 
 }

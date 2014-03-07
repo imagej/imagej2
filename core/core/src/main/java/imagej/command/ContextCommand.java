@@ -94,16 +94,15 @@ public abstract class ContextCommand extends AbstractContextual implements
 		return cancelReason != null;
 	}
 
+	/** Cancels the command execution, with the given reason for doing so. */
+	@Override
+	public void cancel(final String reason) {
+		cancelReason = reason;
+	}
+
 	@Override
 	public String getCancelReason() {
 		return cancelReason;
-	}
-
-	// -- Internal methods --
-
-	/** Cancels the command execution, with the given reason for doing so. */
-	protected void cancel(final String reason) {
-		cancelReason = reason;
 	}
 
 }

@@ -61,10 +61,9 @@ public class InitPreprocessor extends AbstractPreprocessorPlugin {
 			module.initialize();
 		}
 		catch (final MethodCallException exc) {
-			canceled = true;
-			final String moduleClass = module.getInfo().getDelegateClassName();
-			cancelReason = "The module \"" + moduleClass + "\" failed to initialize.";
 			if (log != null) log.error(exc);
+			final String moduleClass = module.getInfo().getDelegateClassName();
+			cancel("The module \"" + moduleClass + "\" failed to initialize.");
 		}
 	}
 

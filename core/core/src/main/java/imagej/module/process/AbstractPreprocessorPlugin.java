@@ -42,14 +42,18 @@ public abstract class AbstractPreprocessorPlugin extends AbstractContextual
 	implements PreprocessorPlugin
 {
 
-	protected boolean canceled;
-	protected String cancelReason;
+	private String cancelReason;
 
 	// -- Cancelable methods --
 
 	@Override
 	public boolean isCanceled() {
-		return canceled;
+		return cancelReason != null;
+	}
+
+	@Override
+	public void cancel(final String reason) {
+		cancelReason = reason;
 	}
 
 	@Override
