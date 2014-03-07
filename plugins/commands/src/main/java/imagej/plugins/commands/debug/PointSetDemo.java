@@ -81,7 +81,7 @@ public class PointSetDemo implements Command, Cancelable {
 	public void run() {
 		TextSpecifiedPointSet pointSet = new TextSpecifiedPointSet(specification);
 		if (pointSet.getErrorString() != null) {
-			err = pointSet.getErrorString();
+			cancel(pointSet.getErrorString());
 			return;
 		}
 		long[] minBound = new long[pointSet.numDimensions()];
@@ -91,7 +91,7 @@ public class PointSetDemo implements Command, Cancelable {
 		
 		for (int i = 0; i < minBound.length; i++) {
 			if ((minBound[i] < 0) || (maxBound[i] < 0)) {
-				err = "For now won't handle negative space with this test plugin";
+				cancel("For now won't handle negative space with this test plugin");
 				return;
 			}
 			// make a border around the maximum bound
@@ -117,6 +117,11 @@ public class PointSetDemo implements Command, Cancelable {
 	@Override
 	public boolean isCanceled() {
 		return err != null;
+	}
+
+	@Override
+	public void cancel(final String reason) {
+		err = reason;
 	}
 
 	@Override

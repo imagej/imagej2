@@ -42,6 +42,20 @@ public interface Cancelable {
 	boolean isCanceled();
 
 	/**
+	 * Cancels the operation execution, with the given reason for doing so.
+	 * <p>
+	 * This method merely sets the operation status to canceled; it cannot
+	 * necessarily stop the operation itself. That is, it is the responsibility of
+	 * each individual operation to check {@link #isCanceled()} in a timely manner
+	 * during execution, and stop doing whatever it is doing if the flag has been
+	 * tripped.
+	 * </p>
+	 * 
+	 * @param reason A message describing why the operation is being canceled.
+	 */
+	void cancel(String reason);
+
+	/**
 	 * Gets a message describing why the operation was canceled.
 	 * 
 	 * @return The reason for cancelation, which may be null if no reason was

@@ -131,15 +131,13 @@ public abstract class DynamicCommand extends DefaultMutableModule implements
 	}
 
 	@Override
-	public String getCancelReason() {
-		return cancelReason;
+	public void cancel(final String reason) {
+		cancelReason = reason;
 	}
 
-	// -- Internal methods --
-
-	/** Cancels the command execution, with the given reason for doing so. */
-	protected void cancel(final String reason) {
-		cancelReason = reason;
+	@Override
+	public String getCancelReason() {
+		return cancelReason;
 	}
 
 }

@@ -61,7 +61,6 @@ public abstract class AbstractInputHarvesterPlugin<P, W> extends
 	@Parameter(required = false)
 	private UIService uiService;
 
-	private boolean canceled;
 	private String cancelReason;
 
 	// -- ModuleProcessor methods --
@@ -78,8 +77,7 @@ public abstract class AbstractInputHarvesterPlugin<P, W> extends
 			harvest(module);
 		}
 		catch (final ModuleException e) {
-			canceled = true;
-			cancelReason = e.getMessage();
+			cancel(e.getMessage());
 		}
 	}
 
@@ -87,7 +85,12 @@ public abstract class AbstractInputHarvesterPlugin<P, W> extends
 
 	@Override
 	public boolean isCanceled() {
-		return canceled;
+		return cancelReason != null;
+	}
+
+	@Override
+	public void cancel(final String reason) {
+		cancelReason = reason;
 	}
 
 	@Override
