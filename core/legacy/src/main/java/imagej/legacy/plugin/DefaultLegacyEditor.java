@@ -37,6 +37,7 @@ import imagej.script.editor.TextEditor;
 import java.io.File;
 
 import org.scijava.Context;
+import org.scijava.Priority;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -51,7 +52,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Johannes Schindelin
  */
-@Plugin(type = LegacyEditor.class)
+@Plugin(type = LegacyEditor.class, priority = Priority.LOW_PRIORITY)
 public class DefaultLegacyEditor implements LegacyEditor {
 
 	@Parameter
