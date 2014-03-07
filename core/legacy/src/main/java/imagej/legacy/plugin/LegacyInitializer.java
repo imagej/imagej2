@@ -105,6 +105,14 @@ public class LegacyInitializer implements Runnable {
 				Object producer = iconURL.getContent();
 				Image image = ij.createImage((ImageProducer)producer);
 				ij.setIconImage(image);
+				if (IJ.isMacOSX()) try {
+					// NB: We also need to set the dock icon
+					final Class<?> clazz = Class.forName("com.apple.eawt.Application");
+					final Object app = clazz.getMethod("getApplication").invoke(null);
+					clazz.getMethod("setDockIconImage", Image.class).invoke(app, image);
+				} catch (Throwable t) {
+					t.printStackTrace();
+				}
 			} catch (IOException e) {
 				IJ.handleException(e);
 			}
