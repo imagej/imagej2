@@ -35,6 +35,7 @@ import imagej.util.Prefs;
 
 import java.util.List;
 
+import org.scijava.AbstractBasicDetails;
 import org.scijava.ItemIO;
 import org.scijava.ItemVisibility;
 import org.scijava.util.ClassUtils;
@@ -47,7 +48,9 @@ import org.scijava.util.StringMaker;
  * 
  * @author Curtis Rueden
  */
-public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
+public abstract class AbstractModuleItem<T> extends AbstractBasicDetails
+	implements ModuleItem<T>
+{
 
 	private final ModuleInfo info;
 
@@ -253,38 +256,6 @@ public abstract class AbstractModuleItem<T> implements ModuleItem<T> {
 	public void setValue(final Module module, final T value) {
 		if (isInput()) module.setInput(getName(), value);
 		if (isOutput()) module.setOutput(getName(), value);
-	}
-
-	// -- BasicDetails methods --
-
-	@Override
-	public String getName() {
-		return null;
-	}
-
-	@Override
-	public String getLabel() {
-		return null;
-	}
-
-	@Override
-	public String getDescription() {
-		return null;
-	}
-
-	@Override
-	public void setName(final String name) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void setLabel(final String description) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void setDescription(final String description) {
-		throw new UnsupportedOperationException();
 	}
 
 	// -- Helper methods --
