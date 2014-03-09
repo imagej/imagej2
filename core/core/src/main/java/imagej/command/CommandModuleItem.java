@@ -41,6 +41,7 @@ import java.util.List;
 
 import org.scijava.ItemIO;
 import org.scijava.ItemVisibility;
+import org.scijava.plugin.Attr;
 import org.scijava.plugin.Parameter;
 import org.scijava.util.ConversionUtils;
 import org.scijava.util.NumberUtils;
@@ -70,21 +71,6 @@ public class CommandModuleItem<T> extends AbstractModuleItem<T> {
 	}
 
 	// -- ModuleItem methods --
-
-	@Override
-	public String getName() {
-		return field.getName();
-	}
-
-	@Override
-	public String getLabel() {
-		return getParameter().label();
-	}
-
-	@Override
-	public String getDescription() {
-		return getParameter().description();
-	}
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -167,6 +153,39 @@ public class CommandModuleItem<T> extends AbstractModuleItem<T> {
 			choices.add(ConversionUtils.convert(choice, getType()));
 		}
 		return choices;
+	}
+
+	// -- BasicDetails methods --
+
+	@Override
+	public String getName() {
+		return field.getName();
+	}
+
+	@Override
+	public String getLabel() {
+		return getParameter().label();
+	}
+
+	@Override
+	public String getDescription() {
+		return getParameter().description();
+	}
+
+	@Override
+	public boolean is(final String key) {
+		for (final Attr attr : getParameter().attrs()) {
+			if (attr.name().equals(key)) return true;
+		}
+		return false;
+	}
+
+	@Override
+	public String get(final String key) {
+		for (final Attr attr : getParameter().attrs()) {
+			if (attr.name().equals(key)) return attr.value();
+		}
+		return null;
 	}
 
 }
