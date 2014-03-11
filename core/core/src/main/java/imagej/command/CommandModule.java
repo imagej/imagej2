@@ -158,24 +158,30 @@ public class CommandModule extends AbstractModule implements Cancelable,
 	@Override
 	public Object getInput(final String name) {
 		final CommandModuleItem<?> item = info.getInput(name);
-		return ClassUtils.getValue(item.getField(), command);
+		return item == null ? null : ClassUtils.getValue(item.getField(), command);
 	}
 
 	@Override
 	public Object getOutput(final String name) {
 		final CommandModuleItem<?> item = info.getOutput(name);
-		return ClassUtils.getValue(item.getField(), command);
+		return item == null ? null : ClassUtils.getValue(item.getField(), command);
 	}
 
 	@Override
 	public void setInput(final String name, final Object value) {
 		final CommandModuleItem<?> item = info.getInput(name);
+		if (item == null) {
+			throw new IllegalArgumentException("No such input: " + name);
+		}
 		ClassUtils.setValue(item.getField(), command, value);
 	}
 
 	@Override
 	public void setOutput(final String name, final Object value) {
 		final CommandModuleItem<?> item = info.getOutput(name);
+		if (item == null) {
+			throw new IllegalArgumentException("No such output: " + name);
+		}
 		ClassUtils.setValue(item.getField(), command, value);
 	}
 
