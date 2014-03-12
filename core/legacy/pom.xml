@@ -96,7 +96,6 @@
 	</dependencies>
 
 	<properties>
-		<imagej1.version>1.48r</imagej1.version>
 		<project.rootdir>${basedir}/../..</project.rootdir>
 	</properties>
 
