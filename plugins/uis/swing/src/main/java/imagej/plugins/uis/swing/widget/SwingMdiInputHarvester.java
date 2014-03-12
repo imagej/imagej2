@@ -44,7 +44,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_LOW_PRIORITY)
+@Plugin(type = PreprocessorPlugin.class, priority = InputHarvester.PRIORITY)
 public class SwingMdiInputHarvester extends SwingInputHarvester {
 
 	// TODO - Show an internal (MDI-style) dialog box.

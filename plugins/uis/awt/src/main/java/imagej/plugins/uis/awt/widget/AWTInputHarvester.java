@@ -55,7 +55,7 @@ import org.scijava.plugin.Plugin;
  * @author Curtis Rueden
  * @author Barry DeZonia
  */
-@Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_LOW_PRIORITY)
+@Plugin(type = PreprocessorPlugin.class, priority = InputHarvester.PRIORITY)
 public class AWTInputHarvester extends
 	AbstractInputHarvesterPlugin<Panel, Panel>
 {

@@ -34,6 +34,8 @@ package imagej.widget;
 import imagej.module.Module;
 import imagej.module.ModuleException;
 
+import org.scijava.Priority;
+
 /**
  * An input harvester collects {@link Module} input values, according to the
  * following steps:
@@ -52,6 +54,8 @@ import imagej.module.ModuleException;
  * @param <W> The type of UI component housing each input widget.
  */
 public interface InputHarvester<P, W> {
+
+	double PRIORITY = Priority.VERY_LOW_PRIORITY;
 
 	/**
 	 * Performs the harvesting process.
