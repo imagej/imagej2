@@ -146,17 +146,18 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 
 	@EventHandler
 	protected void onEvent(final StatusEvent event) {
-		final String message = uiService.getStatusMessage(event);
-
-		final int val = event.getProgressValue();
-		final int max = event.getProgressMaximum();
-		final boolean warning = event.isWarning();
-		if (warning) {
+		if (event.isWarning()) {
 			// report warning messages to the user in a dialog box
-			uiService.showDialog(message, MessageType.WARNING_MESSAGE);
+			final String message = event.getStatusMessage();
+			if (message != null && !message.isEmpty()) {
+				uiService.showDialog(message, MessageType.WARNING_MESSAGE);
+			}
 		}
 		else {
 			// report status updates in the status bar
+			final int val = event.getProgressValue();
+			final int max = event.getProgressMaximum();
+			final String message = uiService.getStatusMessage(event);
 			setStatus(message);
 			setProgress(val, max);
 		}
