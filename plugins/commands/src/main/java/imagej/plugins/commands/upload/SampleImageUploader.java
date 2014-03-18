@@ -95,7 +95,8 @@ public class SampleImageUploader implements Command {
 		upload(baseURL + file.getName(), new BufferedInputStream(new FileInputStream(file)), file.length());
 	}
 
-	private void upload(final String url, final InputStream in, final long totalLength) throws IOException, MalformedURLException {
+	private void upload(final String unformattedUrl, final InputStream in, final long totalLength) throws IOException, MalformedURLException {
+		final String url = formatURL(unformattedUrl);
 		if (status != null) status.showStatus("Uploading " + url);
 
 		final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
@@ -125,6 +126,18 @@ public class SampleImageUploader implements Command {
 		}
 		response.close();
 
-		if (status != null) status.clearStatus();
+		if (status != null) {
+			status.clearStatus();
+			status.showStatus("Upload complete!");
+		}
+	}
+
+	/**
+	 * Helper method to perform any necessary formatting on a given URL.
+	 */
+	private String formatURL(final String url) {
+		// Spaces are truncated from the URL.
+		String formattedUrl = url.replaceAll(" ", "_");
+		return formattedUrl;
 	}
 }
