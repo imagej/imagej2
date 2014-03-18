@@ -92,15 +92,19 @@ public class SampleImageUploader implements Command {
 		}
 	}
 
-	private void uploadFile(final File file) throws IOException, MalformedURLException {
-		upload(baseURL + file.getName(), new BufferedInputStream(new FileInputStream(file)), file.length());
+	private void uploadFile(final File file) throws IOException,
+		MalformedURLException
+	{
+		// Convert file to URL with proper encoding.
+		String path = file.toURI().toURL().getFile();
+		// Extract file name only, without trailing '/'
+		path = path.substring(path.lastIndexOf('/', path.length() - 2) + 1);
+		upload(baseURL + path, new BufferedInputStream(new FileInputStream(file)), file.length());
 	}
 
-	private void upload(final String unencodedURL, final InputStream in,
+	private void upload(final String url, final InputStream in,
 		final long totalLength) throws IOException, MalformedURLException
 	{
-		final String url = URLEncoder.encode(unencodedURL, "UTF-8");
-
 		if (status != null) status.showStatus("Uploading " + url);
 
 		final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
