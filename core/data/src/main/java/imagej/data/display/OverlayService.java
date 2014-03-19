@@ -32,6 +32,8 @@
 package imagej.data.display;
 
 import imagej.data.ChannelCollection;
+import imagej.data.Dataset;
+import imagej.data.Position;
 import imagej.data.overlay.CompositeOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
@@ -108,10 +110,22 @@ public interface OverlayService extends ImageJService {
 	void drawOverlay(Overlay o, ImageDisplay display, ChannelCollection channelData);
 	
 	/**
+	 * Draws the outline of a given overlay in a dataset using the set of channel
+	 * information provided.
+	 */
+	void drawOverlay(Overlay o, Dataset ds, Position position, ChannelCollection channelData);
+	
+	/**
 	 * Draws and fills the outline of a given overlay in a display using the set
 	 * of channel information provided.
 	 */
 	void fillOverlay(Overlay o, ImageDisplay display, ChannelCollection channelData);
+	
+	/**
+	 * Draws and fills the outline of a given overlay in a dataset using the set
+	 * of channel information provided.
+	 */
+	void fillOverlay(Overlay o, Dataset ds, Position position, ChannelCollection channelData);
 
 	/**
 	 * Returns the first display associated with an overlay

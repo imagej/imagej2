@@ -33,6 +33,7 @@ package imagej.data.display;
 
 import imagej.data.Data;
 import imagej.data.Dataset;
+import imagej.data.Position;
 import imagej.display.DisplayService;
 
 import java.util.List;
@@ -112,6 +113,11 @@ public final class DefaultImageDisplayService extends AbstractService
 	public DatasetView getActiveDatasetView() {
 		return getActiveDatasetView(getActiveImageDisplay());
 	}
+	
+	@Override
+	public Position getActivePosition() {
+		return getActivePosition(getActiveImageDisplay());
+	}
 
 	@Override
 	public Dataset getActiveDataset(final ImageDisplay display) {
@@ -127,6 +133,14 @@ public final class DefaultImageDisplayService extends AbstractService
 			return (DatasetView) activeView;
 		}
 		return null;
+	}
+	
+	@Override
+	public Position getActivePosition(final ImageDisplay display) {
+		if (display == null) return null;
+		final DatasetView activeDatasetView = this.getActiveDatasetView(display);
+		if(activeDatasetView == null) return null;
+		return activeDatasetView.getPlanePosition();
 	}
 
 	@Override

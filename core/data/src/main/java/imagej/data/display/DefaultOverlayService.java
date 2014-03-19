@@ -245,12 +245,12 @@ public final class DefaultOverlayService extends AbstractService implements
 
 	@Override
 	public void drawOverlay(Overlay o, ImageDisplay display, ChannelCollection channels) {
-		draw(o, display, channels, new OverlayOutliner());
+		draw(o, imageDisplayService.getActiveDataset(display), imageDisplayService.getActivePosition(display), channels, new OverlayOutliner());
 	}
 
 	@Override
 	public void fillOverlay(Overlay o, ImageDisplay display, ChannelCollection channels) {
-		draw(o, display, channels, new OverlayFiller());
+		draw(o, imageDisplayService.getActiveDataset(display), imageDisplayService.getActivePosition(display), channels, new OverlayFiller());
 	}
 
 	@Override
@@ -390,13 +390,22 @@ public final class DefaultOverlayService extends AbstractService implements
 			
 		}
 	}
-
-	private void draw(Overlay o, ImageDisplay display, ChannelCollection channels, Drawer drawer)
+	
+	public void drawOverlay(Overlay o, Dataset ds, Position position, ChannelCollection channels)
 	{
-		final Dataset ds = getDataset(display);
+		draw(o, ds, position, channels, new OverlayOutliner());
+	}
+	
+	public void fillOverlay(Overlay o, Dataset ds, Position position, ChannelCollection channels)
+	{
+		draw(o, ds, position, channels, new OverlayFiller());
+	}
+
+	private void draw(Overlay o, Dataset ds, Position position, ChannelCollection channels, Drawer drawer)
+	{
+		// TODO What null items should be checked here? Return silently if any are null? Currently check only for null Dataset? Others likely result in NullPointerExceptions. OK?
 		if (ds == null) return;
 		DrawingTool tool = new DrawingTool(ds, renderingService);
-		final Position position = display.getActiveView().getPlanePosition();
 		final long[] pp = new long[position.numDimensions()];
 		position.localize(pp);
 		final long[] fullPos = new long[pp.length + 2];
@@ -406,9 +415,5 @@ public final class DefaultOverlayService extends AbstractService implements
 		tool.setChannels(channels);
 		drawer.draw(o, tool);
 		ds.update();
-	}
-	
-	private Dataset getDataset(ImageDisplay display) {
-		return imageDisplayService.getActiveDataset(display);
 	}
 }

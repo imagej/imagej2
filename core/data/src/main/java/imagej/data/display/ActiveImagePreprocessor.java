@@ -31,13 +31,17 @@
 
 package imagej.data.display;
 
+import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
+import imagej.data.Position;
+import imagej.data.options.OptionsChannels;
 import imagej.data.overlay.Overlay;
 import imagej.module.Module;
 import imagej.module.ModuleItem;
 import imagej.module.ModuleService;
 import imagej.module.process.AbstractPreprocessorPlugin;
 import imagej.module.process.PreprocessorPlugin;
+import imagej.options.OptionsService;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Parameter;
@@ -73,6 +77,9 @@ public class ActiveImagePreprocessor extends AbstractPreprocessorPlugin {
 	
 	@Parameter(required = false)
 	private OverlayService overlayService;
+	
+	@Parameter(required = false)
+	private OptionsService optionsService;
 
 	// -- ModuleProcessor methods --
 
@@ -115,6 +122,16 @@ public class ActiveImagePreprocessor extends AbstractPreprocessorPlugin {
 			module.setResolved(datasetInput, true);
 		}
 		
+		// assign active display's active dataset view's position to single Position input
+		final String positionInput = getSingleInput(module, Position.class);
+		if (positionInput != null) {
+			final Position activePosition = imageDisplayService.getActivePosition(activeDisplay);
+			if (activePosition != null) {
+				module.setInput(positionInput, activePosition);
+				module.setResolved(positionInput, true);
+			}
+		}
+		
 		// assign active overlay to single Overlay input
 		if (overlayService != null) {
 			final String overlayInput = getSingleInput(module, Overlay.class);
@@ -123,7 +140,24 @@ public class ActiveImagePreprocessor extends AbstractPreprocessorPlugin {
 				module.setInput(overlayInput, activeOverlay);
 				module.setResolved(overlayInput, true);
 			}
-		}	
+		}
+		
+		// TODO This should probably not be preprocessed in ActiveImagePreprocessor but didn't know where to put it HELP.
+		// assign a channel collection to a single ChannelCollection input
+		if(optionsService != null)
+		{
+			final String channelCollectionInput = getSingleInput(module, ChannelCollection.class);
+			final OptionsChannels optionsChannels = optionsService.getOptions(OptionsChannels.class);
+			ChannelCollection defaultColor = null;
+			if(optionsChannels != null)
+			{
+				defaultColor = optionsChannels.getFgValues();
+			}
+			if (channelCollectionInput != null && defaultColor != null) {
+				module.setInput(channelCollectionInput, defaultColor);
+				module.setResolved(channelCollectionInput, true);
+			}
+		}
 	}
 
 	// -- Helper methods --

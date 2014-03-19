@@ -33,12 +33,12 @@ package imagej.plugins.commands.assign;
 
 import imagej.command.Command;
 import imagej.command.ContextCommand;
-import imagej.data.display.ImageDisplay;
+import imagej.data.ChannelCollection;
+import imagej.data.Dataset;
+import imagej.data.Position;
 import imagej.data.display.OverlayService;
-import imagej.data.options.OptionsChannels;
 import imagej.data.overlay.Overlay;
 import imagej.menu.MenuConstants;
-import imagej.options.OptionsService;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
@@ -62,35 +62,64 @@ public class FillDataValues<T extends RealType<T>>	extends ContextCommand
 	@Parameter
 	private OverlayService overlayService;
 
-	@Parameter
-	private OptionsService optionsService;
-	
 	@Parameter(type = ItemIO.BOTH)
-	private ImageDisplay display;
+	private Dataset dataset;
+	
+	@Parameter
+	private Position position;
 	
 	// TODO Investigate bug if persist = true
 	@Parameter(persist = false)
 	private Overlay overlay;
+	
+	@Parameter
+	private ChannelCollection channelCollection;
 
 	// -- public interface --
 
 	@Override
 	public void run() {
-		final OptionsChannels opts =
-			optionsService.getOptions(OptionsChannels.class);
 		if (overlay == null) {
 			cancel("This command requires a selection");
 			return;
 		}
-		overlayService.fillOverlay(overlay, display, opts.getFgValues());
+		if (channelCollection == null) {
+			cancel("This command requires a channel collection (i.e., color) to fill with");
+			return;
+		}
+		overlayService.fillOverlay(overlay, dataset, position, channelCollection);
 	}
 
-	public ImageDisplay getDisplay() {
-		return display;
+	public Dataset getDataset() {
+		return dataset;
 	}
 
-	public void setDisplay(final ImageDisplay display) {
-		this.display = display;
+	public void setDataset(final Dataset dataset) {
+		this.dataset = dataset;
+	}
+	
+	public Position getPosition() {
+		return position;
+	}
+
+	public void setPosition(final Position position) {
+		this.position = position;
+	}
+	
+	public Overlay getOverlay() {
+		return overlay;
+	}
+
+	public void setOverlay(final Overlay overlay) {
+		this.overlay = overlay;
+	}
+	
+	public ChannelCollection getChannelCollection() {
+		return channelCollection;
+	}
+
+	public void setChannelCollection(final ChannelCollection channelCollection) {
+		this.channelCollection = channelCollection;
 	}
 
 	// -- private helpers --
