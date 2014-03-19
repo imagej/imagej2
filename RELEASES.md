@@ -76,6 +76,9 @@ all ImageJ2 and Fiji users to an obsolete ImageJ 1.x version.
 
 #### Tag a release candidate
 
+*First of all*, if you have an **Eclipse** instance running, quit it, or make sure
+that *Project>Build automatically* is checked **off**.
+
     cd imagej
     release-version.sh --skip-push --skip-deploy --tag=temp 2.0.0-beta-7
     git push origin temp
