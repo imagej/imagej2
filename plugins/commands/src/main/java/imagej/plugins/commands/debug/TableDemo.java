@@ -51,6 +51,8 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Command.class, menuPath = "Plugins>Sandbox>Table Demo", headless = true)
 public class TableDemo implements Command {
 
+	// FIXME: Migrate this to imagej-tutorials!
+
 	@Parameter
 	private StatusService statusService;
 
