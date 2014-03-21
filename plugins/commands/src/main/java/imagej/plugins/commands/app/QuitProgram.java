@@ -57,7 +57,7 @@ import org.scijava.plugin.Plugin;
 	@Menu(label = MenuConstants.FILE_LABEL, weight = MenuConstants.FILE_WEIGHT,
 		mnemonic = MenuConstants.FILE_MNEMONIC),
 	@Menu(label = "Quit", weight = Double.MAX_VALUE, mnemonic = 'q',
-		accelerator = "^Q") }, headless = true)
+		accelerator = "^Q") })
 public class QuitProgram extends ContextCommand {
 
 	public static final String MESSAGE = "Quit ImageJ?";
