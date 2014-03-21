@@ -47,6 +47,6 @@ import org.scijava.plugin.Plugin;
 	iconPath = "/icons/tools/angle.png", priority = SwingAngleTool.PRIORITY)
 public class SwingAngleTool extends AbstractTool {
 
-	public static final double PRIORITY = SwingLineTool.PRIORITY - 1;
+	public static final double PRIORITY = SwingPolylineTool.PRIORITY - 1;
 
 }
