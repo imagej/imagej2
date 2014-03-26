@@ -53,6 +53,7 @@ import imagej.io.RecentFileService;
 import imagej.legacy.LegacyService;
 import imagej.menu.MenuService;
 import imagej.module.ModuleService;
+import imagej.ops.OpService;
 import imagej.options.OptionsService;
 import imagej.platform.AppEventService;
 import imagej.platform.PlatformService;
@@ -213,6 +214,10 @@ public class ImageJ extends AbstractGateway {
 
 	public ModuleService module() {
 		return get(ModuleService.class);
+	}
+
+	public OpService op() {
+		return get(OpService.class);
 	}
 
 	public OptionsService options() {
