@@ -57,7 +57,8 @@ import org.scijava.util.Manifest;
 import org.scijava.util.POM;
 
 /**
- * Dumps Java system properties.
+ * Dumps the full system configuration, including installed libraries and Java
+ * system properties.
  * 
  * @author Curtis Rueden
  */
