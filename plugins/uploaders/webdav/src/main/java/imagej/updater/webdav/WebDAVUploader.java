@@ -275,7 +275,7 @@ public class WebDAVUploader extends AbstractUploader {
 			+ "</owner>"
 			+ "</lockinfo>";
 		try {
-			final HttpURLConnection connection = connect("LOCK", getURL(path, false), xml, "Timeout", "Second-1800");
+			final HttpURLConnection connection = connect("LOCK", getURL(path, false), xml, "Timeout", "Second-600");
 
 			if (connection.getResponseCode() != 200) {
 				throw new IOException("Error obtaining lock for " + path + ": "
