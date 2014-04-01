@@ -41,6 +41,7 @@ import java.util.List;
 
 import org.scijava.ItemIO;
 import org.scijava.ItemVisibility;
+import org.scijava.Optional;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Parameter;
 import org.scijava.util.ConversionUtils;
@@ -95,7 +96,8 @@ public class CommandModuleItem<T> extends AbstractModuleItem<T> {
 
 	@Override
 	public boolean isRequired() {
-		return getParameter().required();
+		return getParameter().required() &&
+			!Optional.class.isAssignableFrom(getType());
 	}
 
 	@Override
