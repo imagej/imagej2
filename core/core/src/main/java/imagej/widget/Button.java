@@ -31,12 +31,14 @@
 
 package imagej.widget;
 
+import org.scijava.Optional;
+
 /**
  * A interface used for marking input fields of plugin parameter dialogs as
  * button fields.
  * 
  * @author Barry DeZonia
  */
-public interface Button {
+public interface Button extends Optional {
 	// marker : nothing to implement
 }
