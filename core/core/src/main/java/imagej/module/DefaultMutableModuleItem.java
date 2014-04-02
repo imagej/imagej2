@@ -31,6 +31,7 @@
 
 package imagej.module;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -49,6 +50,7 @@ public class DefaultMutableModuleItem<T> extends AbstractModuleItem<T>
 {
 
 	private final Class<T> type;
+	private final Type genericType;
 	private ItemIO ioType;
 	private ItemVisibility visibility;
 	private boolean required;
@@ -80,6 +82,7 @@ public class DefaultMutableModuleItem<T> extends AbstractModuleItem<T>
 		super(info);
 		this.name = name;
 		this.type = type;
+		genericType = type;
 		ioType = super.getIOType();
 		visibility = super.getVisibility();
 		required = super.isRequired();
@@ -105,6 +108,7 @@ public class DefaultMutableModuleItem<T> extends AbstractModuleItem<T>
 		super(info);
 		name = item.getName();
 		type = item.getType();
+		genericType = item.getGenericType();
 		ioType = item.getIOType();
 		visibility = item.getVisibility();
 		required = item.isRequired();
@@ -208,6 +212,11 @@ public class DefaultMutableModuleItem<T> extends AbstractModuleItem<T>
 	@Override
 	public Class<T> getType() {
 		return type;
+	}
+
+	@Override
+	public Type getGenericType() {
+		return genericType;
 	}
 
 	@Override

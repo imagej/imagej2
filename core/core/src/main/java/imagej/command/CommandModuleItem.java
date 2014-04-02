@@ -36,6 +36,7 @@ import imagej.module.ModuleInfo;
 import imagej.module.ModuleItem;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +45,7 @@ import org.scijava.ItemVisibility;
 import org.scijava.Optional;
 import org.scijava.plugin.Attr;
 import org.scijava.plugin.Parameter;
+import org.scijava.util.ClassUtils;
 import org.scijava.util.ConversionUtils;
 import org.scijava.util.NumberUtils;
 
@@ -74,9 +76,16 @@ public class CommandModuleItem<T> extends AbstractModuleItem<T> {
 	// -- ModuleItem methods --
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public Class<T> getType() {
-		return (Class<T>) field.getType();
+		final Class<?> type = ClassUtils.getTypes(field, getDelegateClass()).get(0);
+		@SuppressWarnings("unchecked")
+		final Class<T> typedType = (Class<T>) type;
+		return typedType;
+	}
+
+	@Override
+	public Type getGenericType() {
+		return ClassUtils.getGenericType(field, getDelegateClass());
 	}
 
 	@Override

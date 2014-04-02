@@ -33,6 +33,7 @@ package imagej.module;
 
 import imagej.util.Prefs;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 import org.scijava.AbstractBasicDetails;
@@ -83,6 +84,11 @@ public abstract class AbstractModuleItem<T> extends AbstractBasicDetails
 	}
 
 	// -- ModuleItem methods --
+
+	@Override
+	public Type getGenericType() {
+		return getType();
+	}
 
 	@Override
 	public ItemIO getIOType() {
@@ -258,9 +264,9 @@ public abstract class AbstractModuleItem<T> extends AbstractBasicDetails
 		if (isOutput()) module.setOutput(getName(), value);
 	}
 
-	// -- Helper methods --
+	// -- Internal methods --
 
-	private Class<?> getDelegateClass() {
+	protected Class<?> getDelegateClass() {
 		return ClassUtils.loadClass(info.getDelegateClassName());
 	}
 
