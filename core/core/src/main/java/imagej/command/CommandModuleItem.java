@@ -79,6 +79,11 @@ public class CommandModuleItem<T> extends AbstractModuleItem<T> {
 	}
 
 	@Override
+	public Type getGenericType() {
+		return field.getGenericType();
+	}
+
+	@Override
 	public ItemIO getIOType() {
 		return getParameter().type();
 	}

@@ -31,6 +31,8 @@
 
 package imagej.module;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.List;
 
 import org.scijava.BasicDetails;
@@ -47,6 +49,18 @@ public interface ModuleItem<T> extends BasicDetails {
 
 	/** Gets the type of the item. */
 	Class<T> getType();
+
+	/**
+	 * Gets the type of the item, including Java generic parameters.
+	 * <p>
+	 * For many modules, this may be the same {@link Class} object returned by
+	 * {@link #getType()}, but some module inputs or outputs may be backed by a
+	 * generic type such as {@code List<String>} or {@code Iterable<Integer>}.
+	 * </p>
+	 * 
+	 * @see Field#getGenericType()
+	 */
+	Type getGenericType();
 
 	/** Gets the input/output type of the item. */
 	ItemIO getIOType();
