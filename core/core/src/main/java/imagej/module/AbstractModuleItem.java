@@ -264,9 +264,9 @@ public abstract class AbstractModuleItem<T> extends AbstractBasicDetails
 		if (isOutput()) module.setOutput(getName(), value);
 	}
 
-	// -- Helper methods --
+	// -- Internal methods --
 
-	private Class<?> getDelegateClass() {
+	protected Class<?> getDelegateClass() {
 		return ClassUtils.loadClass(info.getDelegateClassName());
 	}
 
