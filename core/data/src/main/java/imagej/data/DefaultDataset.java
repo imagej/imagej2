@@ -38,7 +38,12 @@ import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.data.types.DataTypeService;
+
+import java.util.Iterator;
+
 import net.imglib2.Cursor;
+import net.imglib2.Interval;
+import net.imglib2.IterableRealInterval;
 import net.imglib2.Positionable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RealPositionable;
@@ -718,5 +723,71 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		if (imgPlus.dimensionIndex(Axes.CHANNEL) < 0) return false;
 		if (imgPlus.dimension(dimensionIndex(Axes.CHANNEL)) != 3) return false;
 		return true;
+	}
+
+	@Override
+	public Img<RealType<?>> copy() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ImgFactory<RealType<?>> factory() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public RandomAccess<RealType<?>> randomAccess() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public RandomAccess<RealType<?>> randomAccess(Interval arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Cursor<RealType<?>> cursor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Cursor<RealType<?>> localizingCursor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean equalIterationOrder(IterableRealInterval<?> arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public RealType<?> firstElement() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object iterationOrder() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public long size() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Iterator<RealType<?>> iterator() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
