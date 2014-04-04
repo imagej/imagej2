@@ -38,7 +38,12 @@ import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.data.types.DataTypeService;
+
+import java.util.Iterator;
+
 import net.imglib2.Cursor;
+import net.imglib2.Interval;
+import net.imglib2.IterableRealInterval;
 import net.imglib2.Positionable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RealPositionable;
@@ -718,5 +723,66 @@ public class DefaultDataset extends AbstractData implements Dataset {
 		if (imgPlus.dimensionIndex(Axes.CHANNEL) < 0) return false;
 		if (imgPlus.dimension(dimensionIndex(Axes.CHANNEL)) != 3) return false;
 		return true;
+	}
+
+	@Override
+	public Img<RealType<?>> copy() {
+		final ImgPlus<? extends RealType<?>> copy = getImgPlus().copy();
+		return new DefaultDataset(getContext(), copy);
+	}
+
+	@Override
+	public ImgFactory<RealType<?>> factory() {
+		throw new UnsupportedOperationException("TODO");
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public RandomAccess<RealType<?>> randomAccess() {
+		return (RandomAccess<RealType<?>>) getImgPlus().randomAccess();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public RandomAccess<RealType<?>> randomAccess(Interval interval) {
+		return (RandomAccess<RealType<?>>) getImgPlus().randomAccess(interval);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Cursor<RealType<?>> cursor() {
+		return (Cursor<RealType<?>>) getImgPlus().cursor();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Cursor<RealType<?>> localizingCursor() {
+		return (Cursor<RealType<?>>) getImgPlus().localizingCursor();
+	}
+
+	@Override
+	public boolean equalIterationOrder(IterableRealInterval<?> interval) {
+		return getImgPlus().equalIterationOrder(interval);
+	}
+
+	@Override
+	public RealType<?> firstElement() {
+		return getImgPlus().firstElement();
+	}
+
+	@Override
+	public Object iterationOrder() {
+		return getImgPlus().iterationOrder();
+	}
+
+	@Override
+	public long size() {
+		return getImgPlus().size();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Iterator<RealType<?>> iterator() {
+		return (Iterator<RealType<?>>) getImgPlus().iterator();
 	}
 }
