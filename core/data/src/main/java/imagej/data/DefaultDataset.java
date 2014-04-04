@@ -727,67 +727,62 @@ public class DefaultDataset extends AbstractData implements Dataset {
 
 	@Override
 	public Img<RealType<?>> copy() {
-		// TODO Auto-generated method stub
-		return null;
+		final ImgPlus<? extends RealType<?>> copy = getImgPlus().copy();
+		return new DefaultDataset(getContext(), copy);
 	}
 
 	@Override
 	public ImgFactory<RealType<?>> factory() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("TODO");
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public RandomAccess<RealType<?>> randomAccess() {
-		// TODO Auto-generated method stub
-		return null;
+		return (RandomAccess<RealType<?>>) getImgPlus().randomAccess();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public RandomAccess<RealType<?>> randomAccess(Interval arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public RandomAccess<RealType<?>> randomAccess(Interval interval) {
+		return (RandomAccess<RealType<?>>) getImgPlus().randomAccess(interval);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Cursor<RealType<?>> cursor() {
-		// TODO Auto-generated method stub
-		return null;
+		return (Cursor<RealType<?>>) getImgPlus().cursor();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Cursor<RealType<?>> localizingCursor() {
-		// TODO Auto-generated method stub
-		return null;
+		return (Cursor<RealType<?>>) getImgPlus().localizingCursor();
 	}
 
 	@Override
-	public boolean equalIterationOrder(IterableRealInterval<?> arg0) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean equalIterationOrder(IterableRealInterval<?> interval) {
+		return getImgPlus().equalIterationOrder(interval);
 	}
 
 	@Override
 	public RealType<?> firstElement() {
-		// TODO Auto-generated method stub
-		return null;
+		return getImgPlus().firstElement();
 	}
 
 	@Override
 	public Object iterationOrder() {
-		// TODO Auto-generated method stub
-		return null;
+		return getImgPlus().iterationOrder();
 	}
 
 	@Override
 	public long size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return getImgPlus().size();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Iterator<RealType<?>> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return (Iterator<RealType<?>>) getImgPlus().iterator();
 	}
 }
