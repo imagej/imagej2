@@ -48,6 +48,13 @@ License: Apache 2.0
 Artifact: org.bushe:eventbus:1.4
 
 ===============================================================================
+gentyref - https://code.google.com/p/gentyref/
+
+License: Apache 2.0
+
+Artifact: com.googlecode:gentyref:1.1.0
+
+===============================================================================
 ImgLib2 - http://imglib2.net/
 
 License: 2-clause BSD
