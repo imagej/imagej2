@@ -73,7 +73,7 @@ public class FillDataValues<T extends RealType<T>> extends ContextCommand {
 	private Overlay overlay;
 
 	@Parameter
-	private ChannelCollection channelCollection;
+	private ChannelCollection color;
 
 	// -- public interface --
 
@@ -83,11 +83,11 @@ public class FillDataValues<T extends RealType<T>> extends ContextCommand {
 			cancel("This command requires a selection");
 			return;
 		}
-		if (channelCollection == null) {
-			cancel("This command requires a channel collection (i.e., color) to fill with");
+		if (color == null) {
+			cancel("This command requires a color to fill with");
 			return;
 		}
-		overlayService.fillOverlay(overlay, dataset, position, channelCollection);
+		overlayService.fillOverlay(overlay, dataset, position, color);
 	}
 
 	public Dataset getDataset() {
@@ -113,13 +113,13 @@ public class FillDataValues<T extends RealType<T>> extends ContextCommand {
 	public void setOverlay(final Overlay overlay) {
 		this.overlay = overlay;
 	}
-	
-	public ChannelCollection getChannelCollection() {
-		return channelCollection;
+
+	public ChannelCollection getColor() {
+		return color;
 	}
 
-	public void setChannelCollection(final ChannelCollection channelCollection) {
-		this.channelCollection = channelCollection;
+	public void setColor(final ChannelCollection color) {
+		this.color = color;
 	}
 
 	// -- private helpers --
