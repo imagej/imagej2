@@ -33,6 +33,7 @@ package imagej.data.display;
 
 import imagej.data.Data;
 import imagej.data.Dataset;
+import imagej.data.Position;
 import imagej.display.DisplayService;
 import imagej.service.ImageJService;
 
@@ -80,6 +81,12 @@ public interface ImageDisplayService extends ImageJService {
 	 * {@link ImageDisplay}.
 	 */
 	DatasetView getActiveDatasetView();
+	
+	/** 
+	 * Gets the active {@link Position}, if any, of the currently active
+	 * {@link ImageDisplay}.
+	 */
+	Position getActivePosition();
 
 	/**
 	 * Gets the active {@link Dataset}, if any, of the given {@link ImageDisplay}.
@@ -94,5 +101,11 @@ public interface ImageDisplayService extends ImageJService {
 
 	/** Gets a list of all available {@link ImageDisplay}s. */
 	List<ImageDisplay> getImageDisplays();
+	
+	/** 
+	 * Gets the active {@link Position}, if any, of the active
+	 * {@link DatasetView} in the given {@link ImageDisplay}.
+	 */
+	Position getActivePosition(ImageDisplay display);
 
 }
