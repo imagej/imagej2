@@ -68,7 +68,7 @@ public interface OverlayService extends ImageJService {
 
 	/**
 	 * Gets a list of {@link Overlay}s linked to the given {@link ImageDisplay}.
-	 * A shortcut for getOverlays(display,false).
+	 * A shortcut for {@code getOverlays(display, false)}.
 	 */
 	List<Overlay> getOverlays(ImageDisplay display);
 
