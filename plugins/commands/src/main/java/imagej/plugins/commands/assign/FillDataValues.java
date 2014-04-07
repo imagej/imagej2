@@ -55,8 +55,8 @@ import org.scijava.plugin.Plugin;
 	@Menu(label = MenuConstants.EDIT_LABEL, weight = MenuConstants.EDIT_WEIGHT,
 		mnemonic = MenuConstants.EDIT_MNEMONIC),
 	@Menu(label = "Fill", weight = 28, accelerator = "^F") }, headless = true)
-public class FillDataValues<T extends RealType<T>>	extends ContextCommand
-{
+public class FillDataValues<T extends RealType<T>> extends ContextCommand {
+
 	// -- Parameters --
 
 	@Parameter
@@ -64,14 +64,14 @@ public class FillDataValues<T extends RealType<T>>	extends ContextCommand
 
 	@Parameter(type = ItemIO.BOTH)
 	private Dataset dataset;
-	
+
 	@Parameter
 	private Position position;
-	
+
 	// TODO Investigate bug if persist = true
 	@Parameter(persist = false)
 	private Overlay overlay;
-	
+
 	@Parameter
 	private ChannelCollection channelCollection;
 
@@ -97,7 +97,7 @@ public class FillDataValues<T extends RealType<T>>	extends ContextCommand
 	public void setDataset(final Dataset dataset) {
 		this.dataset = dataset;
 	}
-	
+
 	public Position getPosition() {
 		return position;
 	}
@@ -105,7 +105,7 @@ public class FillDataValues<T extends RealType<T>>	extends ContextCommand
 	public void setPosition(final Position position) {
 		this.position = position;
 	}
-	
+
 	public Overlay getOverlay() {
 		return overlay;
 	}
