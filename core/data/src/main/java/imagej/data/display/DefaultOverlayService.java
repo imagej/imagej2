@@ -227,11 +227,25 @@ public final class DefaultOverlayService extends AbstractService implements
 	}
 
 	@Override
+	public void drawOverlay(final Overlay o, final Dataset ds,
+		final Position position, final ChannelCollection channels)
+	{
+		draw(o, ds, position, channels, new OverlayOutliner());
+	}
+
+	@Override
 	public void fillOverlay(final Overlay o, final ImageDisplay display,
 		final ChannelCollection channels)
 	{
 		draw(o, imageDisplayService.getActiveDataset(display), imageDisplayService
 			.getActivePosition(display), channels, new OverlayFiller());
+	}
+
+	@Override
+	public void fillOverlay(final Overlay o, final Dataset ds,
+		final Position position, final ChannelCollection channels)
+	{
+		draw(o, ds, position, channels, new OverlayFiller());
 	}
 
 	@Override
@@ -307,7 +321,28 @@ public final class DefaultOverlayService extends AbstractService implements
 		removeOverlay(overlay);
 	}
 
-	// -- helpers --
+	// -- Helper methods --
+
+	private void draw(final Overlay o, final Dataset ds, final Position position,
+		final ChannelCollection channels, final Drawer drawer)
+	{
+		// TODO What null items should be checked here? Return silently if any are
+		// null? Currently check only for null Dataset? Others likely result in
+		// NullPointerExceptions. OK?
+		if (ds == null) return;
+		final DrawingTool tool = new DrawingTool(ds, renderingService);
+		final long[] pp = new long[position.numDimensions()];
+		position.localize(pp);
+		final long[] fullPos = new long[pp.length + 2];
+		for (int i = 2; i < fullPos.length; i++)
+			fullPos[i] = pp[i - 2];
+		tool.setPosition(fullPos);
+		tool.setChannels(channels);
+		drawer.draw(o, tool);
+		ds.update();
+	}
+
+	// -- Helper classes --
 
 	private interface Drawer {
 
@@ -376,36 +411,4 @@ public final class DefaultOverlayService extends AbstractService implements
 		}
 	}
 
-	@Override
-	public void drawOverlay(final Overlay o, final Dataset ds,
-		final Position position, final ChannelCollection channels)
-	{
-		draw(o, ds, position, channels, new OverlayOutliner());
-	}
-
-	@Override
-	public void fillOverlay(final Overlay o, final Dataset ds,
-		final Position position, final ChannelCollection channels)
-	{
-		draw(o, ds, position, channels, new OverlayFiller());
-	}
-
-	private void draw(final Overlay o, final Dataset ds, final Position position,
-		final ChannelCollection channels, final Drawer drawer)
-	{
-		// TODO What null items should be checked here? Return silently if any are
-		// null? Currently check only for null Dataset? Others likely result in
-		// NullPointerExceptions. OK?
-		if (ds == null) return;
-		final DrawingTool tool = new DrawingTool(ds, renderingService);
-		final long[] pp = new long[position.numDimensions()];
-		position.localize(pp);
-		final long[] fullPos = new long[pp.length + 2];
-		for (int i = 2; i < fullPos.length; i++)
-			fullPos[i] = pp[i - 2];
-		tool.setPosition(fullPos);
-		tool.setChannels(channels);
-		drawer.draw(o, tool);
-		ds.update();
-	}
 }
