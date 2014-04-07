@@ -65,8 +65,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PreprocessorPlugin.class,
-	priority = Priority.VERY_HIGH_PRIORITY)
+@Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_HIGH_PRIORITY)
 public class ActiveImagePreprocessor extends AbstractPreprocessorPlugin {
 
 	@Parameter(required = false)
@@ -74,10 +73,10 @@ public class ActiveImagePreprocessor extends AbstractPreprocessorPlugin {
 
 	@Parameter(required = false)
 	private ImageDisplayService imageDisplayService;
-	
+
 	@Parameter(required = false)
 	private OverlayService overlayService;
-	
+
 	@Parameter(required = false)
 	private OptionsService optionsService;
 
@@ -121,36 +120,39 @@ public class ActiveImagePreprocessor extends AbstractPreprocessorPlugin {
 			module.setInput(datasetInput, activeDataset);
 			module.setResolved(datasetInput, true);
 		}
-		
-		// assign active display's active dataset view's position to single Position input
+
+		// assign active dataset view's position to single Position input
 		final String positionInput = getSingleInput(module, Position.class);
 		if (positionInput != null) {
-			final Position activePosition = imageDisplayService.getActivePosition(activeDisplay);
+			final Position activePosition =
+				imageDisplayService.getActivePosition(activeDisplay);
 			if (activePosition != null) {
 				module.setInput(positionInput, activePosition);
 				module.setResolved(positionInput, true);
 			}
 		}
-		
+
 		// assign active overlay to single Overlay input
 		if (overlayService != null) {
 			final String overlayInput = getSingleInput(module, Overlay.class);
-			final Overlay activeOverlay = overlayService.getActiveOverlay(activeDisplay);
+			final Overlay activeOverlay =
+				overlayService.getActiveOverlay(activeDisplay);
 			if (overlayInput != null && activeOverlay != null) {
 				module.setInput(overlayInput, activeOverlay);
 				module.setResolved(overlayInput, true);
 			}
 		}
-		
-		// TODO This should probably not be preprocessed in ActiveImagePreprocessor but didn't know where to put it HELP.
+
+		// TODO This should probably not be preprocessed in ActiveImagePreprocessor
+		// but didn't know where to put it HELP.
 		// assign a channel collection to a single ChannelCollection input
-		if(optionsService != null)
-		{
-			final String channelCollectionInput = getSingleInput(module, ChannelCollection.class);
-			final OptionsChannels optionsChannels = optionsService.getOptions(OptionsChannels.class);
+		if (optionsService != null) {
+			final String channelCollectionInput =
+				getSingleInput(module, ChannelCollection.class);
+			final OptionsChannels optionsChannels =
+				optionsService.getOptions(OptionsChannels.class);
 			ChannelCollection defaultColor = null;
-			if(optionsChannels != null)
-			{
+			if (optionsChannels != null) {
 				defaultColor = optionsChannels.getFgValues();
 			}
 			if (channelCollectionInput != null && defaultColor != null) {
