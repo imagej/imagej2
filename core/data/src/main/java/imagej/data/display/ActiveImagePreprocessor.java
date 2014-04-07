@@ -143,9 +143,8 @@ public class ActiveImagePreprocessor extends AbstractPreprocessorPlugin {
 			}
 		}
 
-		// TODO This should probably not be preprocessed in ActiveImagePreprocessor
-		// but didn't know where to put it HELP.
-		// assign a channel collection to a single ChannelCollection input
+		// TODO: Split this into its own OptionsPreprocessor,
+		// which extends a common AbstractSingleInputPreprocessor.
 		if (optionsService != null) {
 			final String channelCollectionInput =
 				getSingleInput(module, ChannelCollection.class);
