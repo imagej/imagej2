@@ -104,11 +104,15 @@ public final class DefaultOverlayService extends AbstractService implements
 	}
 
 	@Override
-	public List<Overlay> getOverlays(ImageDisplay display, boolean selectedOnly) {
-		ArrayList<Overlay> overlays = new ArrayList<Overlay>();
+	public List<Overlay> getOverlays(final ImageDisplay display,
+		final boolean selectedOnly)
+	{
+		final ArrayList<Overlay> overlays = new ArrayList<Overlay>();
 		for (final DataView view : display) {
-			if (selectedOnly)
-				if (!view.isSelected()) continue; // ignore non-selected objects
+			if (selectedOnly && !view.isSelected()) {
+				// ignore non-selected objects
+				continue;
+			}
 			final Data data = view.getData();
 			if (!(data instanceof Overlay)) continue; // ignore non-overlays
 			final Overlay overlay = (Overlay) data;
@@ -132,8 +136,7 @@ public final class DefaultOverlayService extends AbstractService implements
 	}
 
 	@Override
-	public void removeOverlay(final ImageDisplay display, final Overlay overlay)
-	{
+	public void removeOverlay(final ImageDisplay display, final Overlay overlay) {
 		final ArrayList<DataView> overlayViews = new ArrayList<DataView>();
 		final List<DataView> views = display;
 		for (final DataView view : views) {
@@ -149,8 +152,9 @@ public final class DefaultOverlayService extends AbstractService implements
 
 	@Override
 	public void removeOverlay(final Overlay overlay) {
-		List<ImageDisplay> imgDisps = objectService.getObjects(ImageDisplay.class);
-		for (ImageDisplay disp : imgDisps)
+		final List<ImageDisplay> imgDisps =
+			objectService.getObjects(ImageDisplay.class);
+		for (final ImageDisplay disp : imgDisps)
 			removeOverlay(disp, overlay);
 	}
 
@@ -208,63 +212,69 @@ public final class DefaultOverlayService extends AbstractService implements
 		if (defaultSettings == null) {
 			defaultSettings = new OverlaySettings();
 			final OptionsOverlay overlayOptions =
-					optionsService.getOptions(OptionsOverlay.class);
+				optionsService.getOptions(OptionsOverlay.class);
 			overlayOptions.updateSettings(defaultSettings);
 		}
 		return defaultSettings;
 	}
 
 	@Override
-	public void drawOverlay(Overlay o, ImageDisplay display, ChannelCollection channels) {
-		draw(o, imageDisplayService.getActiveDataset(display), imageDisplayService.getActivePosition(display), channels, new OverlayOutliner());
+	public void drawOverlay(final Overlay o, final ImageDisplay display,
+		final ChannelCollection channels)
+	{
+		draw(o, imageDisplayService.getActiveDataset(display), imageDisplayService
+			.getActivePosition(display), channels, new OverlayOutliner());
 	}
 
 	@Override
-	public void fillOverlay(Overlay o, ImageDisplay display, ChannelCollection channels) {
-		draw(o, imageDisplayService.getActiveDataset(display), imageDisplayService.getActivePosition(display), channels, new OverlayFiller());
+	public void fillOverlay(final Overlay o, final ImageDisplay display,
+		final ChannelCollection channels)
+	{
+		draw(o, imageDisplayService.getActiveDataset(display), imageDisplayService
+			.getActivePosition(display), channels, new OverlayFiller());
 	}
 
 	@Override
-	public ImageDisplay getFirstDisplay(Overlay o) {
+	public ImageDisplay getFirstDisplay(final Overlay o) {
 		final List<Display<?>> displays = displayService.getDisplays();
-		for (Display<?> display : displays) {
+		for (final Display<?> display : displays) {
 			if (display instanceof ImageDisplay) {
-				final List<Overlay> displayOverlays = getOverlays((ImageDisplay)display);
-				if (displayOverlays.contains(o))
-					return (ImageDisplay) display;
+				final List<Overlay> displayOverlays =
+					getOverlays((ImageDisplay) display);
+				if (displayOverlays.contains(o)) return (ImageDisplay) display;
 			}
 		}
 		return null;
 	}
 
 	@Override
-	public List<ImageDisplay> getDisplays(Overlay o) {
+	public List<ImageDisplay> getDisplays(final Overlay o) {
 		final ArrayList<ImageDisplay> containers = new ArrayList<ImageDisplay>();
 		final List<Display<?>> displays = displayService.getDisplays();
-		for (Display<?> display : displays) {
-			if ( ! (display instanceof ImageDisplay) ) continue;
+		for (final Display<?> display : displays) {
+			if (!(display instanceof ImageDisplay)) continue;
 			final ImageDisplay imageDisplay = (ImageDisplay) display;
 			for (final DataView view : imageDisplay) {
 				final Data data = view.getData();
-				if ( ! (data instanceof Overlay) ) continue;
+				if (!(data instanceof Overlay)) continue;
 				final Overlay overlay = (Overlay) data;
-				if (overlay == o)
-					containers.add(imageDisplay);
+				if (overlay == o) containers.add(imageDisplay);
 			}
 		}
 		return containers;
 	}
-	
+
 	// TODO - assumes first selected overlay view is the only one. bad?
 	@Override
-	public Overlay getActiveOverlay(ImageDisplay disp) {
-		for (DataView view : disp) {
-			if (view.isSelected() && (view instanceof OverlayView))
+	public Overlay getActiveOverlay(final ImageDisplay disp) {
+		for (final DataView view : disp) {
+			if (view.isSelected() && view instanceof OverlayView) {
 				return ((OverlayView) view).getData();
+			}
 		}
 		return null;
 	}
-	
+
 	@Override
 	public OverlayInfoList getOverlayInfo() {
 		if (overlayInfo == null) {
@@ -274,17 +284,17 @@ public final class DefaultOverlayService extends AbstractService implements
 	}
 
 	@Override
-	public void divideCompositeOverlay(CompositeOverlay overlay) {
-		List<Overlay> subcomponents = overlay.getSubcomponents();
-		
+	public void divideCompositeOverlay(final CompositeOverlay overlay) {
+		final List<Overlay> subcomponents = overlay.getSubcomponents();
+
 		// to each display that owns the composite
-		//   reference the original overlays (if not already)
-		
-		List<ImageDisplay> owners = getDisplays(overlay);
-		for (ImageDisplay owner : owners) {
+		// reference the original overlays (if not already)
+
+		final List<ImageDisplay> owners = getDisplays(overlay);
+		for (final ImageDisplay owner : owners) {
 			boolean changes = false;
-			List<Overlay> displayOverlays = getOverlays(owner);
-			for (Overlay subcomponent : subcomponents) {
+			final List<Overlay> displayOverlays = getOverlays(owner);
+			for (final Overlay subcomponent : subcomponents) {
 				if (!displayOverlays.contains(subcomponent)) {
 					owner.display(subcomponent);
 					changes = true;
@@ -292,7 +302,7 @@ public final class DefaultOverlayService extends AbstractService implements
 			}
 			if (changes) owner.update();
 		}
-		
+
 		// delete the composite overlay
 		removeOverlay(overlay);
 	}
@@ -300,14 +310,16 @@ public final class DefaultOverlayService extends AbstractService implements
 	// -- helpers --
 
 	private interface Drawer {
+
 		void draw(Overlay o, DrawingTool tool);
 	}
 
 	private static class OverlayOutliner implements Drawer {
+
 		@Override
-		public void draw(Overlay o, DrawingTool tool) {
+		public void draw(final Overlay o, final DrawingTool tool) {
 			final RegionOfInterest region = o.getRegionOfInterest();
-			PointSet pointSet = new RoiPointSet(region);
+			final PointSet pointSet = new RoiPointSet(region);
 			// TODO - rather than a pointSet use an IterableInterval? Investigate.
 			final RealRandomAccess<BitType> accessor = region.realRandomAccess();
 			final PointSetIterator iter = pointSet.iterator();
@@ -317,27 +329,29 @@ public final class DefaultOverlayService extends AbstractService implements
 			while (iter.hasNext()) {
 				pos = iter.next();
 				accessor.setPosition(pos);
-				if (accessor.get().get())
-					if (isBorderPixel(accessor, pos, max[0], max[1]))
-						tool.drawPixel(pos[0], pos[1]);
+				if (accessor.get().get() &&
+					isBorderPixel(accessor, pos, max[0], max[1]))
+				{
+					tool.drawPixel(pos[0], pos[1]);
+				}
 			}
 		}
-		
-		private boolean isBorderPixel(RealRandomAccess<BitType> accessor, long[] pos,
-			long maxX, long maxY)
+
+		private boolean isBorderPixel(final RealRandomAccess<BitType> accessor,
+			final long[] pos, final long maxX, final long maxY)
 		{
 			if (pos[0] == 0) return true;
 			if (pos[0] == maxX) return true;
 			if (pos[1] == 0) return true;
 			if (pos[1] == maxY) return true;
-			accessor.setPosition(pos[0]-1,0);
+			accessor.setPosition(pos[0] - 1, 0);
 			if (!accessor.get().get()) return true;
-			accessor.setPosition(pos[0]+1,0);
+			accessor.setPosition(pos[0] + 1, 0);
 			if (!accessor.get().get()) return true;
-			accessor.setPosition(pos[0],0);
-			accessor.setPosition(pos[1]-1,1);
+			accessor.setPosition(pos[0], 0);
+			accessor.setPosition(pos[1] - 1, 1);
 			if (!accessor.get().get()) return true;
-			accessor.setPosition(pos[1]+1,1);
+			accessor.setPosition(pos[1] + 1, 1);
 			if (!accessor.get().get()) return true;
 			return false;
 		}
@@ -345,8 +359,9 @@ public final class DefaultOverlayService extends AbstractService implements
 	}
 
 	private static class OverlayFiller implements Drawer {
+
 		@Override
-		public void draw(Overlay o, DrawingTool tool) {
+		public void draw(final Overlay o, final DrawingTool tool) {
 			final RegionOfInterest region = o.getRegionOfInterest();
 			final RoiPointSet pointSet = new RoiPointSet(region);
 			final RealRandomAccess<BitType> accessor = region.realRandomAccess();
@@ -355,35 +370,39 @@ public final class DefaultOverlayService extends AbstractService implements
 			while (iter.hasNext()) {
 				pos = iter.next();
 				accessor.setPosition(pos);
-				if (accessor.get().get())
-					tool.drawPixel(pos[0], pos[1]);
+				if (accessor.get().get()) tool.drawPixel(pos[0], pos[1]);
 			}
-			
+
 		}
 	}
-	
+
 	@Override
-	public void drawOverlay(Overlay o, Dataset ds, Position position, ChannelCollection channels)
+	public void drawOverlay(final Overlay o, final Dataset ds,
+		final Position position, final ChannelCollection channels)
 	{
 		draw(o, ds, position, channels, new OverlayOutliner());
 	}
-	
+
 	@Override
-	public void fillOverlay(Overlay o, Dataset ds, Position position, ChannelCollection channels)
+	public void fillOverlay(final Overlay o, final Dataset ds,
+		final Position position, final ChannelCollection channels)
 	{
 		draw(o, ds, position, channels, new OverlayFiller());
 	}
 
-	private void draw(Overlay o, Dataset ds, Position position, ChannelCollection channels, Drawer drawer)
+	private void draw(final Overlay o, final Dataset ds, final Position position,
+		final ChannelCollection channels, final Drawer drawer)
 	{
-		// TODO What null items should be checked here? Return silently if any are null? Currently check only for null Dataset? Others likely result in NullPointerExceptions. OK?
+		// TODO What null items should be checked here? Return silently if any are
+		// null? Currently check only for null Dataset? Others likely result in
+		// NullPointerExceptions. OK?
 		if (ds == null) return;
-		DrawingTool tool = new DrawingTool(ds, renderingService);
+		final DrawingTool tool = new DrawingTool(ds, renderingService);
 		final long[] pp = new long[position.numDimensions()];
 		position.localize(pp);
 		final long[] fullPos = new long[pp.length + 2];
 		for (int i = 2; i < fullPos.length; i++)
-			fullPos[i] = pp[i-2];
+			fullPos[i] = pp[i - 2];
 		tool.setPosition(fullPos);
 		tool.setChannels(channels);
 		drawer.draw(o, tool);
