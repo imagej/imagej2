@@ -122,35 +122,4 @@ public class FillDataValues<T extends RealType<T>> extends ContextCommand {
 		this.color = color;
 	}
 
-	// -- private helpers --
-
-	// TODO - make this part of Dataset API maybe. or somewhere else.
-	/*
-	private void fillSelectedRegion(final Dataset dataset,
-		final ChannelCollection channels)
-	{
-		final RealRect bounds = overlayService.getSelectionBounds(display);
-		final long minX = (long) bounds.x;
-		final long minY = (long) bounds.y;
-		final long maxX = (long) (bounds.x + bounds.width - 1);
-		final long maxY = (long) (bounds.y + bounds.height - 1);
-		final long[] pos = new long[dataset.numDimensions()];
-		final int xIndex = dataset.dimensionIndex(Axes.X);
-		final int yIndex = dataset.dimensionIndex(Axes.Y);
-		final int chIndex = dataset.dimensionIndex(Axes.CHANNEL);
-		final ImgPlus<? extends RealType<?>> imgPlus = dataset.getImgPlus();
-		final Cursor<? extends RealType<?>> cursor = imgPlus.localizingCursor();
-		while (cursor.hasNext()) {
-			final RealType<?> pixRef = cursor.next();
-			cursor.localize(pos);
-			if ((pos[xIndex] < minX) || (pos[xIndex] > maxX)) continue;
-			if ((pos[yIndex] < minY) || (pos[yIndex] > maxY)) continue;
-			long position = 0;
-			if (chIndex >= 0) position = pos[chIndex];
-			double value = channels.getChannelValue(position);
-			pixRef.setReal(value);
-		}
-		dataset.update();
-	}
-	*/
 }
