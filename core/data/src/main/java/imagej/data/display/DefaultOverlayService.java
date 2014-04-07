@@ -391,11 +391,13 @@ public final class DefaultOverlayService extends AbstractService implements
 		}
 	}
 	
+	@Override
 	public void drawOverlay(Overlay o, Dataset ds, Position position, ChannelCollection channels)
 	{
 		draw(o, ds, position, channels, new OverlayOutliner());
 	}
 	
+	@Override
 	public void fillOverlay(Overlay o, Dataset ds, Position position, ChannelCollection channels)
 	{
 		draw(o, ds, position, channels, new OverlayFiller());
