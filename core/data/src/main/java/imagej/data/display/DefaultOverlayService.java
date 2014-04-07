@@ -98,20 +98,11 @@ public final class DefaultOverlayService extends AbstractService implements
 		return objectService;
 	}
 
-	/**
-	 * Gets a list of all {@link Overlay}s. This method is a shortcut that
-	 * delegates to {@link ObjectService}.
-	 */
 	@Override
 	public List<Overlay> getOverlays() {
 		return objectService.getObjects(Overlay.class);
 	}
 
-	/**
-	 * Gets a list of {@link Overlay}s linked to the given {@link ImageDisplay}.
-	 * If selectedOnly is true then it will gather overlays from the selected
-	 * views only. Otherwise it will gather overlays from all the views.
-	 */
 	@Override
 	public List<Overlay> getOverlays(ImageDisplay display, boolean selectedOnly) {
 		ArrayList<Overlay> overlays = new ArrayList<Overlay>();
@@ -125,17 +116,12 @@ public final class DefaultOverlayService extends AbstractService implements
 		}
 		return overlays;
 	}
-	
-	/**
-	 * Gets a list of {@link Overlay}s linked to the given {@link ImageDisplay}.
-	 * A shortcut for getOverlays(display,false).
-	 */
+
 	@Override
 	public List<Overlay> getOverlays(final ImageDisplay display) {
 		return getOverlays(display, false);
 	}
 
-	/** Adds the list of {@link Overlay}s to the given {@link ImageDisplay}. */
 	@Override
 	public void addOverlays(final ImageDisplay display,
 		final List<Overlay> overlays)
@@ -145,13 +131,6 @@ public final class DefaultOverlayService extends AbstractService implements
 		}
 	}
 
-	/**
-	 * Removes an {@link Overlay} from the given {@link ImageDisplay}.
-	 * 
-	 * @param display the {@link ImageDisplay} from which the overlay should be
-	 *          removed
-	 * @param overlay the {@link Overlay} to remove
-	 */
 	@Override
 	public void removeOverlay(final ImageDisplay display, final Overlay overlay)
 	{
@@ -174,15 +153,7 @@ public final class DefaultOverlayService extends AbstractService implements
 		for (ImageDisplay disp : imgDisps)
 			removeOverlay(disp, overlay);
 	}
-	
-	/**
-	 * Gets the bounding box for the selected data objects in the given
-	 * {@link ImageDisplay}.
-	 * 
-	 * @param display the {@link ImageDisplay} from which the bounding box should
-	 *          be computed
-	 * @return the smallest bounding box encompassing all selected data objects
-	 */
+
 	@Override
 	public RealRect getSelectionBounds(final ImageDisplay display) {
 		// TODO - Compute bounds over N dimensions, not just two.
