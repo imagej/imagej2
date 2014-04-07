@@ -46,6 +46,7 @@ my %knownAuthors = (
   "Wayne Rasband" => 1,
 
   "Jarek Sacha" => 1,
+  "Jay Warrick" => 1,
   "Melinda Green" => 1,
   "Sean Luke" => 1,
   "Sumit Dubey" => 1,
