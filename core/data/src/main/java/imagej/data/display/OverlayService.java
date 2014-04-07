@@ -67,8 +67,8 @@ public interface OverlayService extends ImageJService {
 	List<Overlay> getOverlays(ImageDisplay display, boolean selectedOnly);
 
 	/**
-	 * Gets a list of {@link Overlay}s linked to the given {@link ImageDisplay}.
-	 * A shortcut for {@code getOverlays(display, false)}.
+	 * Gets a list of {@link Overlay}s linked to the given {@link ImageDisplay}. A
+	 * shortcut for {@code getOverlays(display, false)}.
 	 */
 	List<Overlay> getOverlays(ImageDisplay display);
 
@@ -107,25 +107,29 @@ public interface OverlayService extends ImageJService {
 	 * Draws the outline of a given overlay in a display using the set of channel
 	 * information provided.
 	 */
-	void drawOverlay(Overlay o, ImageDisplay display, ChannelCollection channelData);
-	
+	void drawOverlay(Overlay o, ImageDisplay display,
+		ChannelCollection channelData);
+
 	/**
 	 * Draws the outline of a given overlay in a dataset using the set of channel
 	 * information provided.
 	 */
-	void drawOverlay(Overlay o, Dataset ds, Position position, ChannelCollection channelData);
-	
+	void drawOverlay(Overlay o, Dataset ds, Position position,
+		ChannelCollection channelData);
+
 	/**
 	 * Draws and fills the outline of a given overlay in a display using the set
 	 * of channel information provided.
 	 */
-	void fillOverlay(Overlay o, ImageDisplay display, ChannelCollection channelData);
-	
+	void fillOverlay(Overlay o, ImageDisplay display,
+		ChannelCollection channelData);
+
 	/**
 	 * Draws and fills the outline of a given overlay in a dataset using the set
 	 * of channel information provided.
 	 */
-	void fillOverlay(Overlay o, Dataset ds, Position position, ChannelCollection channelData);
+	void fillOverlay(Overlay o, Dataset ds, Position position,
+		ChannelCollection channelData);
 
 	/**
 	 * Returns the first display associated with an overlay
@@ -136,7 +140,7 @@ public interface OverlayService extends ImageJService {
 	 * Returns all the displays associated with an overlay
 	 */
 	List<ImageDisplay> getDisplays(Overlay o);
-	
+
 	/**
 	 * Returns the active overlay associated with a display
 	 */
