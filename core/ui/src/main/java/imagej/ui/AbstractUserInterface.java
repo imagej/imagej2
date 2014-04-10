@@ -229,7 +229,7 @@ public abstract class AbstractUserInterface extends AbstractRichPlugin
 		commandService.run(ShowReadme.class, true);
 	}
 
-	/** Tests whether updates are available */
+	/** Tests whether updates are available. */
 	private void updaterCheck() {
 		// TODO: Migrate this code to the ij-updater component.
 		try {
