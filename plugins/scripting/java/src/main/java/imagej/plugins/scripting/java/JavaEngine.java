@@ -178,7 +178,7 @@ public class JavaEngine extends AbstractScriptEngine {
 					}
 				};
 				pluginService.addPlugin(info);
-				commandService.run(info, true, new Object[0]); // FIXME
+				commandService.run(info, true);
 			} else {
 				Method main = clazz.getMethod("main", new Class[] { String[].class });
 				main.invoke(null, new Object[] { new String[0] });

@@ -76,7 +76,7 @@ public class CommandFinder extends ContextCommand {
 		if (info == null) return; // no command selected
 
 		// execute selected command
-		moduleService.run(info, true, new Object[0]); // FIXME
+		moduleService.run(info, true);
 	}
 
 }

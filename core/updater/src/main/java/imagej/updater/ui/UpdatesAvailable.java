@@ -72,7 +72,7 @@ public class UpdatesAvailable implements Command {
 			final List<CommandInfo> updaters =
 				commandService.getCommandsOfType(UpdaterUI.class);
 			if (updaters.size() > 0) {
-				commandService.run(updaters.get(0), true, new Object[0]); // FIXME
+				commandService.run(updaters.get(0), true);
 			}
 			else {
 				if (log == null) {

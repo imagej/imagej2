@@ -58,7 +58,7 @@ public class DuplicateImageContext implements Command {
 
 	@Override
 	public void run() {
-		commandService.run(DuplicateImage.class, true, new Object[0]); // FIXME
+		commandService.run(DuplicateImage.class, true);
 	}
 
 }

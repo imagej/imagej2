@@ -318,7 +318,7 @@ public class ShadowMenu extends AbstractContextual implements
 	@Override
 	public void run() {
 		if (moduleInfo == null) return; // no module to run
-		if (moduleService != null) moduleService.run(moduleInfo, true, new Object[0]); // TEMP
+		if (moduleService != null) moduleService.run(moduleInfo, true);
 	}
 
 	// -- Collection methods --

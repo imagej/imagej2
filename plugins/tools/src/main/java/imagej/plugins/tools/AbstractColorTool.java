@@ -110,7 +110,7 @@ public abstract class AbstractColorTool extends AbstractTool implements
 
 	@Override
 	public void configure() {
-		commandService.run(OptionsChannels.class, true, new Object[0]); // FIXME
+		commandService.run(OptionsChannels.class, true);
 	}
 
 	@Override

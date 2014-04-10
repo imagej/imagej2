@@ -81,7 +81,7 @@ public class KonamiHandler extends AbstractTool implements Runnable {
 			if (index == CODE.length) {
 				index = 0;
 				threadService.run(this);
-				commandService.run(COMMAND, true, new Object[0]); // FIXME
+				commandService.run(COMMAND, true);
 			}
 		}
 		else index = 0;

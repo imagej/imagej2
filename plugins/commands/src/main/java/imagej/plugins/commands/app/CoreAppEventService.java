@@ -62,17 +62,17 @@ public final class CoreAppEventService extends DefaultAppEventService {
 
 	@Override
 	public void about() {
-		commandService.run(AboutImageJ.class, true, new Object[0]); // FIXME
+		commandService.run(AboutImageJ.class, true);
 	}
 
 	@Override
 	public void prefs() {
-		commandService.run(Preferences.class, true, new Object[0]); // FIXME
+		commandService.run(Preferences.class, true);
 	}
 
 	@Override
 	public void quit() {
-		commandService.run(QuitProgram.class, true, new Object[0]); // FIXME
+		commandService.run(QuitProgram.class, true);
 	}
 
 	@Override

@@ -90,7 +90,7 @@ public class RunArgument extends AbstractConsoleArgument {
 		}
 		if (info == null) return;
 		// TODO: parse the optionString a la ImageJ1
-		commandService.run(info, true, new Object[0]); // FIXME
+		commandService.run(info, true);
 	}
 
 }
