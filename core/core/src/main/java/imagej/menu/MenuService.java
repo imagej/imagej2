@@ -31,8 +31,6 @@
 
 package imagej.menu;
 
-import imagej.command.Command;
-import imagej.module.Module;
 import imagej.module.ModuleInfo;
 import imagej.service.ImageJService;
 
@@ -71,26 +69,5 @@ public interface MenuService extends ImageJService {
 	 * @param menu the destination menu structure to populate.
 	 */
 	<T> T createMenus(String menuRoot, MenuCreator<T> creator, T menu);
-
-	/** Selects or deselects the given module in the menu structure. */
-	void setSelected(Module module, boolean selected);
-
-	/** Selects or deselects the given plugin in the menu structure. */
-	void setSelected(Command command, boolean selected);
-
-	/**
-	 * Selects or deselects the plugin of the given class in the menu structure.
-	 */
-	<C extends Command> void
-		setSelected(Class<C> commandClass, boolean selected);
-
-	/**
-	 * Selects or deselects the plugin of the given class in the menu structure.
-	 */
-	<C extends Command> void
-		setSelected(String pluginClassName, boolean selected);
-
-	/** Selects or deselects the given module in the menu structure. */
-	void setSelected(ModuleInfo info, boolean selected);
 
 }

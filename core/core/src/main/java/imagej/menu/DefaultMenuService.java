@@ -31,9 +31,6 @@
 
 package imagej.menu;
 
-import imagej.command.Command;
-import imagej.command.CommandService;
-import imagej.module.Module;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
 import imagej.module.event.ModulesAddedEvent;
@@ -69,9 +66,6 @@ public class DefaultMenuService extends AbstractService implements MenuService
 	@Parameter
 	private ModuleService moduleService;
 
-	@Parameter
-	private CommandService commandService;
-
 	/** Menu tree structures. There is one structure per menu root. */
 	private HashMap<String, ShadowMenu> rootMenus;
 
@@ -98,36 +92,6 @@ public class DefaultMenuService extends AbstractService implements MenuService
 	{
 		creator.createMenus(getMenu(menuRoot), menu);
 		return menu;
-	}
-
-	@Override
-	public void setSelected(final Module module, final boolean selected) {
-		setSelected(module.getInfo(), selected);
-	}
-
-	@Override
-	public void setSelected(final Command command, final boolean selected) {
-		setSelected(command.getClass(), selected);
-	}
-
-	@Override
-	public <C extends Command> void setSelected(final Class<C> commandClass,
-		final boolean selected)
-	{
-		setSelected(commandService.getCommand(commandClass), selected);
-	}
-
-	@Override
-	public <C extends Command> void setSelected(final String commandClassName,
-		final boolean selected)
-	{
-		setSelected(commandService.getCommand(commandClassName), selected);
-	}
-
-	@Override
-	public void setSelected(final ModuleInfo info, final boolean selected) {
-		info.setSelected(selected);
-		info.update(eventService);
 	}
 
 	// -- Event handlers --
