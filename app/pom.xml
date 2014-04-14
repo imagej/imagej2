@@ -339,15 +339,13 @@
 					<scope>runtime</scope>
 				</dependency>
 				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>ij-ui-pivot</artifactId>
-					<version>${project.version}</version>
+					<groupId>${imagej.groupId}</groupId>
+					<artifactId>imagej-ui-pivot</artifactId>
 					<scope>runtime</scope>
 				</dependency>
 				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>ij-ui-swt</artifactId>
-					<version>${project.version}</version>
+					<groupId>${imagej.groupId}</groupId>
+					<artifactId>imagej-ui-swt</artifactId>
 					<scope>runtime</scope>
 				</dependency>
 			</dependencies>
