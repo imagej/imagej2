@@ -42,8 +42,6 @@ my $sourcePrefix = "$githubURL/tree/master";
   section('Core', 'core');
   section('UI: AWT &amp; Swing', 'ui/awt-swing');
   section('UI: AWT', 'ui/awt');
-  section('UI: Pivot', 'ui/pivot');
-  section('UI: SWT', 'ui/swt');
   section('UI: Swing', 'ui/swing');
 }
 
