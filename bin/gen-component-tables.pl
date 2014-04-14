@@ -40,9 +40,9 @@ my $sourcePrefix = "$githubURL/tree/master";
 {
   section('App', 'app');
   section('Core', 'core');
-  section('UI: AWT &amp; Swing', 'ui/awt-swing');
-  section('UI: AWT', 'ui/awt');
-  section('UI: Swing', 'ui/swing');
+  section('UI: AWT &amp; Swing', 'plugins/uis/awt-swing');
+  section('UI: AWT', 'plugins/uis/awt');
+  section('UI: Swing', 'plugins/uis/swing');
 }
 
 # -- Subroutines --
