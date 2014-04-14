@@ -16,9 +16,7 @@
 
 	<modules>
 		<module>awt</module>
-		<module>pivot</module>
 		<module>swing</module>
-		<module>swt</module>
 	</modules>
 
 	<properties>
