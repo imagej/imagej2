@@ -66,7 +66,7 @@
 		<dependency>
 			<groupId>${imglib2.groupId}</groupId>
 			<artifactId>imglib2-ij</artifactId>
-			<version>${imglib2.version}</version>
+			<version>${imglib2-ij.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${imglib2.groupId}</groupId>
