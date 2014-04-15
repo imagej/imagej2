@@ -40,6 +40,7 @@ import imagej.data.event.DatasetUpdatedEvent;
 import imagej.data.types.DataTypeService;
 
 import java.util.Iterator;
+import java.util.Map;
 
 import net.imglib2.Cursor;
 import net.imglib2.Interval;
@@ -784,5 +785,10 @@ public class DefaultDataset extends AbstractData implements Dataset {
 	@Override
 	public Iterator<RealType<?>> iterator() {
 		return (Iterator<RealType<?>>) getImgPlus().iterator();
+	}
+
+	@Override
+	public Map<String, Object> getProperties() {
+		return imgPlus.getProperties();
 	}
 }
