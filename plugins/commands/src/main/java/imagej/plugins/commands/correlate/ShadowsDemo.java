@@ -41,7 +41,6 @@ import imagej.display.Display;
 import imagej.display.event.DisplayDeletedEvent;
 import imagej.display.event.input.KyPressedEvent;
 import imagej.menu.MenuConstants;
-import imagej.util.RealRect;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
@@ -52,6 +51,7 @@ import org.scijava.input.KeyCode;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.RealRect;
 
 /**
  * Implements legacy ImageJ's Shadows Demo plugin functionality.

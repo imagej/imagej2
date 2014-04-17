@@ -49,12 +49,12 @@ import imagej.options.OptionsService;
 import imagej.tool.ToolService;
 import imagej.ui.viewer.AbstractDisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
-import imagej.util.UnitUtils;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
+import org.scijava.util.UnitUtils;
 
 /**
  * The AbstractImageDisplayViewer implements the UI-independent elements of an

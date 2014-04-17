@@ -41,12 +41,12 @@ import imagej.plugins.uis.swing.overlay.JHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.JHotDrawTool;
 import imagej.tool.Tool;
 import imagej.ui.swing.tools.SwingPointTool;
-import imagej.util.ColorRGB;
 
 import java.awt.Shape;
 
 import org.jhotdraw.draw.Figure;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.ColorRGB;
 
 /**
  * JHotDraw adapter for point tool.

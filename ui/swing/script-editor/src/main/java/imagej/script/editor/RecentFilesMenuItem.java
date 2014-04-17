@@ -31,8 +31,6 @@
 
 package imagej.script.editor;
 
-import imagej.util.Prefs;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -42,6 +40,8 @@ import java.util.Stack;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+
+import org.scijava.util.Prefs;
 
 /**
  * TODO

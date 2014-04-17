@@ -31,8 +31,6 @@
 
 package imagej.updater.gui;
 
-import imagej.util.LineOutputStream;
-
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -60,6 +58,7 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+import org.scijava.util.LineOutputStream;
 import org.scijava.util.ProcessUtils;
 
 /**

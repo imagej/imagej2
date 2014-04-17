@@ -53,7 +53,6 @@ import imagej.platform.PlatformService;
 import imagej.plugins.commands.display.Flatten;
 import imagej.plugins.commands.overlay.SelectedManagerOverlayProperties;
 import imagej.plugins.commands.overlay.SelectionSpecify;
-import imagej.util.Prefs;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -97,6 +96,7 @@ import org.scijava.Context;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
+import org.scijava.util.Prefs;
 
 // TODO
 //

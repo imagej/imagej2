@@ -31,10 +31,11 @@
 
 package imagej.plugins.commands.neigh;
 
+import org.scijava.util.RealRect;
+
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
-import imagej.util.RealRect;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessible;

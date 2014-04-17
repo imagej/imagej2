@@ -49,11 +49,11 @@ import imagej.tool.AbstractTool;
 import imagej.tool.CustomDrawnTool;
 import imagej.tool.IconDrawer;
 import imagej.tool.IconService;
-import imagej.util.ColorRGB;
 
 import org.scijava.app.StatusService;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
+import org.scijava.util.ColorRGB;
 
 /**
  * Abstract superclass for the {@link BgColorTool} and {@link FgColorTool}

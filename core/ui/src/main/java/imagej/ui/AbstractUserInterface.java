@@ -38,7 +38,6 @@ import imagej.ui.viewer.DisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.updater.core.UpToDate;
 import imagej.updater.ui.UpdatesAvailable;
-import imagej.util.Prefs;
 
 import java.util.List;
 
@@ -50,6 +49,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.thread.ThreadService;
+import org.scijava.util.Prefs;
 
 /**
  * Abstract superclass for {@link UserInterface} implementations.

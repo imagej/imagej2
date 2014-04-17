@@ -54,7 +54,6 @@ import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.image.ImageDisplayViewer;
-import imagej.util.ColorRGB;
 
 import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
@@ -72,6 +71,7 @@ import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import org.scijava.util.ColorRGB;
 
 /**
  * Default service for working with legacy ImageJ 1.x.

@@ -31,7 +31,6 @@
 
 package imagej.plugins.uis.swing.widget;
 
-import imagej.util.ColorRGB;
 import imagej.util.awt.AWTColors;
 import imagej.widget.ColorWidget;
 import imagej.widget.InputWidget;
@@ -57,6 +56,7 @@ import javax.swing.JPanel;
 import javax.swing.colorchooser.AbstractColorChooserPanel;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.util.ColorRGB;
 
 /**
  * Swing implementation of color chooser widget.

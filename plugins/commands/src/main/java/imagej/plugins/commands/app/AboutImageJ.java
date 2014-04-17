@@ -44,9 +44,6 @@ import imagej.menu.MenuConstants;
 import imagej.render.RenderingService;
 import imagej.render.TextRenderer.TextJustification;
 import imagej.util.AppUtils;
-import imagej.util.ColorRGB;
-import imagej.util.Colors;
-import imagej.util.MersenneTwisterFast;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -70,7 +67,10 @@ import org.scijava.log.LogService;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.ColorRGB;
+import org.scijava.util.Colors;
 import org.scijava.util.Manifest;
+import org.scijava.util.MersenneTwisterFast;
 
 // TODO
 //   Have imageX.ext image file and imageX.ext.txt metadata files

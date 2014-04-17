@@ -38,9 +38,6 @@ import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
 import imagej.display.Display;
-import imagej.util.ColorRGB;
-import imagej.util.IntCoords;
-import imagej.util.RealCoords;
 import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
@@ -52,7 +49,10 @@ import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.decoration.ArrowTip;
 import org.scijava.plugin.AbstractRichPlugin;
 import org.scijava.plugin.Parameter;
+import org.scijava.util.ColorRGB;
+import org.scijava.util.IntCoords;
 import org.scijava.util.MiscUtils;
+import org.scijava.util.RealCoords;
 
 /**
  * An abstract class that gives default behavior for the {@link JHotDrawAdapter}

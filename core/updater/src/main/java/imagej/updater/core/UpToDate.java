@@ -33,7 +33,6 @@ package imagej.updater.core;
 
 import imagej.updater.util.Util;
 import imagej.util.AppUtils;
-import imagej.util.Prefs;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -49,6 +48,7 @@ import java.util.Enumeration;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.scijava.util.Prefs;
 import org.xml.sax.SAXException;
 
 /**

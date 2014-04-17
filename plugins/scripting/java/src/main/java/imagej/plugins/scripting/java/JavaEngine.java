@@ -38,7 +38,6 @@ import imagej.command.Command;
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
 import imagej.script.AbstractScriptEngine;
-import imagej.util.LineOutputStream;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -75,6 +74,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 import org.scijava.util.FileUtils;
+import org.scijava.util.LineOutputStream;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;

@@ -31,7 +31,8 @@
 
 package imagej.data.display;
 
-import imagej.util.ColorRGB;
+import org.scijava.util.ColorRGB;
+
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 

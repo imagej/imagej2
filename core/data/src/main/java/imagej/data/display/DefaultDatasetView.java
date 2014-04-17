@@ -42,7 +42,6 @@ import imagej.data.display.event.LUTsChangedEvent;
 import imagej.data.event.DatasetRGBChangedEvent;
 import imagej.data.event.DatasetTypeChangedEvent;
 import imagej.data.event.DatasetUpdatedEvent;
-import imagej.util.ColorRGB;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,6 +67,7 @@ import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.thread.ThreadService;
+import org.scijava.util.ColorRGB;
 
 /**
  * A view into a {@link Dataset}, for use with a {@link ImageDisplay}.

@@ -40,10 +40,10 @@ import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsWheelEvent;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
-import imagej.util.IntCoords;
 
 import org.scijava.input.MouseCursor;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.IntCoords;
 
 /**
  * Tool for panning the display.

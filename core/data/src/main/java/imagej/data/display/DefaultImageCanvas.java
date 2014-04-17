@@ -34,10 +34,6 @@ package imagej.data.display;
 import imagej.data.display.event.MouseCursorEvent;
 import imagej.data.display.event.PanZoomEvent;
 import imagej.data.display.event.ViewportResizeEvent;
-import imagej.util.IntCoords;
-import imagej.util.IntRect;
-import imagej.util.RealCoords;
-import imagej.util.RealRect;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,6 +44,10 @@ import org.scijava.event.EventService;
 import org.scijava.input.MouseCursor;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
+import org.scijava.util.IntCoords;
+import org.scijava.util.IntRect;
+import org.scijava.util.RealCoords;
+import org.scijava.util.RealRect;
 
 /**
  * The DefaultImageCanvas maintains a viewport, a zoom scale and a center

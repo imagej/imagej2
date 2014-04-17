@@ -31,7 +31,6 @@
 
 package imagej.ui.swing.tools.overlay;
 
-import imagej.util.ColorRGB;
 import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
@@ -48,6 +47,7 @@ import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.handle.DragHandle;
 import org.jhotdraw.draw.handle.Handle;
 import org.jhotdraw.geom.Geom;
+import org.scijava.util.ColorRGB;
 
 /**
  * Implementation of a point as a JHotDraw figure.

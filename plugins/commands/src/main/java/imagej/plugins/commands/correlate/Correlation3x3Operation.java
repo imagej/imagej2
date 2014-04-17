@@ -31,10 +31,11 @@
 
 package imagej.plugins.commands.correlate;
 
+import org.scijava.util.RealRect;
+
 import imagej.data.Dataset;
 import imagej.plugins.commands.neigh.Neighborhood3x3Operation;
 import imagej.plugins.commands.neigh.Neighborhood3x3Watcher;
-import imagej.util.RealRect;
 
 /**
  * Correlation3x3Operation is used for general 3x3 correlation. It takes a 3x3

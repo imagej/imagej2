@@ -31,8 +31,6 @@
 
 package imagej.module;
 
-import imagej.util.Prefs;
-
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -42,6 +40,7 @@ import org.scijava.ItemVisibility;
 import org.scijava.util.ClassUtils;
 import org.scijava.util.ConversionUtils;
 import org.scijava.util.NumberUtils;
+import org.scijava.util.Prefs;
 import org.scijava.util.StringMaker;
 
 /**

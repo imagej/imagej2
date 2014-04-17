@@ -35,9 +35,6 @@ import imagej.data.ChannelCollection;
 import imagej.menu.MenuConstants;
 import imagej.options.OptionsPlugin;
 import imagej.options.event.OptionsEvent;
-import imagej.util.ColorRGB;
-import imagej.util.Colors;
-import imagej.util.Prefs;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -45,6 +42,9 @@ import java.util.List;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.ColorRGB;
+import org.scijava.util.Colors;
+import org.scijava.util.Prefs;
 
 /**
  * Runs the Edit::Options::Channels dialog.

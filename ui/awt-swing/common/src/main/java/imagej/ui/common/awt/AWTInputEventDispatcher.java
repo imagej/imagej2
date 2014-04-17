@@ -48,7 +48,6 @@ import imagej.display.event.input.MsMovedEvent;
 import imagej.display.event.input.MsPressedEvent;
 import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
-import imagej.util.IntCoords;
 
 import java.awt.Component;
 import java.awt.event.InputEvent;
@@ -63,6 +62,7 @@ import java.awt.event.MouseWheelListener;
 import org.scijava.event.EventService;
 import org.scijava.input.InputModifiers;
 import org.scijava.input.KeyCode;
+import org.scijava.util.IntCoords;
 
 /**
  * Rebroadcasts AWT {@link InputEvent}s as ImageJ

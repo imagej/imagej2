@@ -31,7 +31,7 @@
 
 package imagej.tool;
 
-import imagej.util.ColorRGB;
+import org.scijava.util.ColorRGB;
 
 /**
  * {@link CustomDrawnTool}s use {@link IconDrawer}s to draw their icon on

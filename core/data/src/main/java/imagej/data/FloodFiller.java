@@ -31,11 +31,11 @@
 
 package imagej.data;
 
-import imagej.util.RealRect;
-
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.scijava.util.RealRect;
 
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;

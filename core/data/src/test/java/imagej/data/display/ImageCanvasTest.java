@@ -32,14 +32,14 @@
 package imagej.data.display;
 
 import static org.junit.Assert.assertEquals;
-import imagej.util.IntCoords;
-import imagej.util.IntRect;
-import imagej.util.RealCoords;
-import imagej.util.RealRect;
 
 import org.junit.Test;
 import org.scijava.Context;
 import org.scijava.event.EventService;
+import org.scijava.util.IntCoords;
+import org.scijava.util.IntRect;
+import org.scijava.util.RealCoords;
+import org.scijava.util.RealRect;
 
 /**
  * Unit tests for {@link DefaultImageCanvas}.

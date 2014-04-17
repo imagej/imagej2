@@ -41,7 +41,6 @@ import imagej.data.overlay.Overlay;
 import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.threshold.ThresholdService;
 import imagej.menu.MenuConstants;
-import imagej.util.ColorRGB;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImg;
@@ -57,6 +56,7 @@ import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.ColorRGB;
 
 /**
  * Creates an {@link Overlay} representing the thresholded pixels of a

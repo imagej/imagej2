@@ -31,11 +31,11 @@
 
 package imagej.data;
 
-import imagej.util.ColorRGB;
-
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.scijava.util.ColorRGB;
 
 /**
  * A ChannelCollection maintains a list of data values. The data is read only.

@@ -34,7 +34,6 @@ package imagej.script.editor;
 import imagej.command.CommandModule;
 import imagej.script.editor.command.NewPlugin;
 import imagej.util.AppUtils;
-import imagej.util.LineOutputStream;
 
 import java.awt.Color;
 import java.io.File;
@@ -71,6 +70,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
+import org.scijava.util.LineOutputStream;
 import org.scijava.util.ProcessUtils;
 
 /**

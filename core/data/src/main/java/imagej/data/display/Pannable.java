@@ -31,8 +31,8 @@
 
 package imagej.data.display;
 
-import imagej.util.IntCoords;
-import imagej.util.RealCoords;
+import org.scijava.util.IntCoords;
+import org.scijava.util.RealCoords;
 
 /**
  * Defines methods needed to adjust the pan position of a viewport, such as an

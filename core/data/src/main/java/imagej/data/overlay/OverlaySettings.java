@@ -31,11 +31,12 @@
 
 package imagej.data.overlay;
 
+import org.scijava.util.ColorRGB;
+import org.scijava.util.Colors;
+
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay.ArrowStyle;
 import imagej.data.overlay.Overlay.LineStyle;
-import imagej.util.ColorRGB;
-import imagej.util.Colors;
 
 /**
  * Utility class that gives access to default overlay settings such as fill,

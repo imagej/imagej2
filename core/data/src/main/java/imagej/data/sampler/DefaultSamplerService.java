@@ -39,7 +39,6 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.display.DisplayService;
-import imagej.util.RealRect;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +56,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import org.scijava.util.RealRect;
 
 //TODO
 //1) Maintain metadata

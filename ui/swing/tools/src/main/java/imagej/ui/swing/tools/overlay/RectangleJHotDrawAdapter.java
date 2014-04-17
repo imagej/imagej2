@@ -42,7 +42,6 @@ import imagej.plugins.uis.swing.overlay.JHotDrawTool;
 import imagej.tool.Tool;
 import imagej.tool.ToolService;
 import imagej.ui.swing.tools.SwingRectangleTool;
-import imagej.util.RealCoords;
 
 import java.awt.Shape;
 import java.awt.geom.Point2D;
@@ -52,6 +51,7 @@ import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.RectangleFigure;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.RealCoords;
 
 /**
  * JHotDraw adapter for rectangle overlays.

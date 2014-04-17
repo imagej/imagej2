@@ -40,12 +40,12 @@ import imagej.data.display.OverlayService;
 import imagej.menu.MenuConstants;
 import imagej.plugins.commands.imglib.ImgLibDataTransform;
 import imagej.plugins.commands.rotate.XYFlipper.FlipCoordinateTransformer;
-import imagej.util.RealRect;
 
 import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.RealRect;
 
 //TODO - IJ1 updates the calibration so that pixel width & depth swap after this operation. Must implement here.
 

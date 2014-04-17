@@ -47,7 +47,6 @@ import imagej.menu.MenuConstants;
 import imagej.module.MutableModuleItem;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
-import imagej.util.Colors;
 import imagej.widget.Button;
 import imagej.widget.NumberWidget;
 import net.imglib2.Cursor;
@@ -66,6 +65,7 @@ import org.scijava.event.EventHandler;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.Colors;
 
 // TODO All the problems with thresh overlay code at the moment:
 //

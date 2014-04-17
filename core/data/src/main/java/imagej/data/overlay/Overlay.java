@@ -31,9 +31,10 @@
 
 package imagej.data.overlay;
 
+import org.scijava.util.ColorRGB;
+
 import imagej.data.Data;
 import imagej.data.Dataset;
-import imagej.util.ColorRGB;
 import net.imglib2.roi.RegionOfInterest;
 
 /**

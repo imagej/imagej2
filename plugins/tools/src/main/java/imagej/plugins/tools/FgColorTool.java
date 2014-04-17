@@ -34,10 +34,10 @@ package imagej.plugins.tools;
 import imagej.data.ChannelCollection;
 import imagej.data.options.OptionsChannels;
 import imagej.tool.Tool;
-import imagej.util.ColorRGB;
-import imagej.util.Colors;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.util.ColorRGB;
+import org.scijava.util.Colors;
 
 /**
  * The tool that displays the current foreground color.

@@ -39,13 +39,13 @@ import imagej.data.display.ImageDisplayService;
 import imagej.data.display.ZoomService;
 import imagej.menu.MenuConstants;
 import imagej.module.MutableModuleItem;
-import imagej.util.RealCoords;
-import imagej.util.RealRect;
 
 import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.RealCoords;
+import org.scijava.util.RealRect;
 
 /**
  * Zooms in on the center of the image at the user-specified magnification

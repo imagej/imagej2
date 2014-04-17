@@ -34,9 +34,10 @@ package imagej.data.display;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.display.Display;
-import imagej.util.ColorRGB;
 
 import java.util.List;
+
+import org.scijava.util.ColorRGB;
 
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.stats.ComputeMinMax;

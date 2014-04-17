@@ -40,10 +40,10 @@ import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
-import imagej.util.IntCoords;
-import imagej.util.IntRect;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.util.IntCoords;
+import org.scijava.util.IntRect;
 
 /**
  * Tool for zooming in and out of a display using the mouse.

@@ -37,7 +37,6 @@ import imagej.data.event.OverlayCreatedEvent;
 import imagej.data.event.OverlayDeletedEvent;
 import imagej.data.event.OverlayRestructuredEvent;
 import imagej.data.event.OverlayUpdatedEvent;
-import imagej.util.ColorRGB;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -55,6 +54,7 @@ import net.imglib2.roi.RegionOfInterest;
 
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
+import org.scijava.util.ColorRGB;
 
 /**
  * Abstract superclass of {@link Overlay} implementations.

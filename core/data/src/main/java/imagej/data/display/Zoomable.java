@@ -31,10 +31,10 @@
 
 package imagej.data.display;
 
-import imagej.util.IntCoords;
-import imagej.util.IntRect;
-import imagej.util.RealCoords;
-import imagej.util.RealRect;
+import org.scijava.util.IntCoords;
+import org.scijava.util.IntRect;
+import org.scijava.util.RealCoords;
+import org.scijava.util.RealRect;
 
 /**
  * Defines methods needed to adjust the zoom of an {@link ImageCanvas}.

@@ -46,11 +46,11 @@ import imagej.display.event.input.MsReleasedEvent;
 import imagej.options.OptionsService;
 import imagej.render.RenderingService;
 import imagej.tool.AbstractTool;
-import imagej.util.IntCoords;
-import imagej.util.RealCoords;
 
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
+import org.scijava.util.IntCoords;
+import org.scijava.util.RealCoords;
 
 /**
  * Abstract class that is used by PencilTool, PaintBrushTool, and their erase

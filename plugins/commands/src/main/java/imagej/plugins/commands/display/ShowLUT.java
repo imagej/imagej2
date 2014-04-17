@@ -46,8 +46,6 @@ import imagej.display.DisplayService;
 import imagej.menu.MenuConstants;
 import imagej.render.RenderingService;
 import imagej.render.TextRenderer.TextJustification;
-import imagej.util.ColorRGB;
-import imagej.util.Colors;
 
 import java.util.List;
 
@@ -59,6 +57,8 @@ import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.ColorRGB;
+import org.scijava.util.Colors;
 
 // TODO
 // this implementation does not support a "List" button which shows

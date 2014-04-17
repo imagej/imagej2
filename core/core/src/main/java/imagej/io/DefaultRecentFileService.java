@@ -36,7 +36,6 @@ import imagej.command.CommandService;
 import imagej.menu.MenuConstants;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
-import imagej.util.Prefs;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,6 +52,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 import org.scijava.util.FileUtils;
+import org.scijava.util.Prefs;
 
 // TODO - DefaultRecentFileService, DefaultWindowService, and DefaultLUTService
 // all build menus dynamically (see createInfo()). We may be able to abstract a

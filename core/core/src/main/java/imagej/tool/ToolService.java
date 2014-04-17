@@ -32,11 +32,11 @@
 package imagej.tool;
 
 import imagej.service.ImageJService;
-import imagej.util.RealCoords;
 
 import java.util.List;
 
 import org.scijava.plugin.SingletonService;
+import org.scijava.util.RealCoords;
 
 /**
  * Interface for service that tracks available tools.

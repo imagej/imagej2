@@ -38,11 +38,11 @@ import imagej.data.overlay.CompositeOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
 import imagej.service.ImageJService;
-import imagej.util.RealRect;
 
 import java.util.List;
 
 import org.scijava.object.ObjectService;
+import org.scijava.util.RealRect;
 
 /**
  * Interface for service that works with {@link Overlay}s.

@@ -49,8 +49,6 @@ import imagej.options.OptionsService;
 import imagej.render.RenderingService;
 import imagej.tool.AbstractTool;
 import imagej.tool.Tool;
-import imagej.util.IntCoords;
-import imagej.util.RealCoords;
 
 import java.util.Random;
 
@@ -59,6 +57,8 @@ import net.imglib2.meta.Axes;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.IntCoords;
+import org.scijava.util.RealCoords;
 
 /**
  * Implements a spray can drawing tool

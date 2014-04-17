@@ -41,10 +41,6 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.display.Display;
 import imagej.display.event.input.MsEvent;
-import imagej.util.ColorRGB;
-import imagej.util.Colors;
-import imagej.util.IntCoords;
-import imagej.util.RealCoords;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -57,6 +53,10 @@ import net.imglib2.type.numeric.RealType;
 
 import org.scijava.Context;
 import org.scijava.plugin.Parameter;
+import org.scijava.util.ColorRGB;
+import org.scijava.util.Colors;
+import org.scijava.util.IntCoords;
+import org.scijava.util.RealCoords;
 
 /**
  * Gathers pixel information (location, channel values) of pixel associated

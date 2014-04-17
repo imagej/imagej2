@@ -42,7 +42,6 @@ import imagej.plugins.uis.swing.overlay.JHotDrawTool;
 import imagej.tool.Tool;
 import imagej.tool.ToolService;
 import imagej.ui.swing.tools.SwingEllipseTool;
-import imagej.util.RealCoords;
 
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
@@ -53,6 +52,7 @@ import org.jhotdraw.draw.EllipseFigure;
 import org.jhotdraw.draw.Figure;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.RealCoords;
 
 /**
  * JHotDraw adapter for ellipse overlays.

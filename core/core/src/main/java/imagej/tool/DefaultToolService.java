@@ -42,7 +42,6 @@ import imagej.display.event.input.MsReleasedEvent;
 import imagej.display.event.input.MsWheelEvent;
 import imagej.tool.event.ToolActivatedEvent;
 import imagej.tool.event.ToolDeactivatedEvent;
-import imagej.util.RealCoords;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -57,6 +56,7 @@ import org.scijava.plugin.AbstractSingletonService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;
+import org.scijava.util.RealCoords;
 
 /**
  * Default service for keeping track of available tools, including which tool is

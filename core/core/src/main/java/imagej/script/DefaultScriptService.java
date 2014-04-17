@@ -35,8 +35,6 @@ import imagej.command.CommandService;
 import imagej.module.Module;
 import imagej.module.ModuleService;
 import imagej.util.AppUtils;
-import imagej.util.ColorRGB;
-import imagej.util.ColorRGBA;
 
 import java.io.File;
 import java.io.IOException;
@@ -69,6 +67,8 @@ import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.Service;
 import org.scijava.util.ClassUtils;
+import org.scijava.util.ColorRGB;
+import org.scijava.util.ColorRGBA;
 
 /**
  * Default service for working with scripting languages.

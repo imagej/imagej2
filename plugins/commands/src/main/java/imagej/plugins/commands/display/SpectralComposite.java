@@ -35,13 +35,13 @@ import imagej.command.Command;
 import imagej.command.ContextCommand;
 import imagej.data.display.DatasetView;
 import imagej.menu.MenuConstants;
-import imagej.util.ColorRGB;
 import net.imglib2.display.ColorTable8;
 
 import org.scijava.ItemIO;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.ColorRGB;
 
 /**
  * Creates a series of lookup tables according to the given range of

@@ -31,7 +31,7 @@
 
 package imagej.widget;
 
-import imagej.util.ColorRGB;
+import org.scijava.util.ColorRGB;
 
 /**
  * Widget interface for color choosers.

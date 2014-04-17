@@ -31,15 +31,14 @@
 
 package imagej.data.display;
 
-import imagej.util.IntCoords;
-import imagej.util.RealCoords;
-import imagej.util.RealRect;
-
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 import org.scijava.thread.ThreadService;
+import org.scijava.util.IntCoords;
+import org.scijava.util.RealCoords;
+import org.scijava.util.RealRect;
 
 /**
  * Default service for performing zoom operations on {@link ImageDisplay}s.

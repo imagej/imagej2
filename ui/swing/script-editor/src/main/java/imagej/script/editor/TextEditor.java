@@ -44,7 +44,6 @@ import imagej.script.editor.command.ChooseTabSize;
 import imagej.script.editor.command.GitGrep;
 import imagej.script.editor.command.KillScript;
 import imagej.util.AppUtils;
-import imagej.util.Prefs;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -127,6 +126,7 @@ import org.scijava.io.IOService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.util.FileUtils;
+import org.scijava.util.Prefs;
 
 /**
  * TODO

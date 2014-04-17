@@ -31,11 +31,12 @@
 
 package imagej.plugins.commands.rotate;
 
+import org.scijava.util.RealRect;
+
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
 import imagej.plugins.commands.imglib.OutputAlgorithm;
-import imagej.util.RealRect;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;

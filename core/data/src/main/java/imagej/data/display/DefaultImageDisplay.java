@@ -41,7 +41,6 @@ import imagej.display.AbstractDisplay;
 import imagej.display.Display;
 import imagej.display.DisplayService;
 import imagej.display.event.DisplayDeletedEvent;
-import imagej.util.RealRect;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -60,6 +59,7 @@ import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.thread.ThreadService;
+import org.scijava.util.RealRect;
 
 /**
  * Default implementation of {@link ImageDisplay}.

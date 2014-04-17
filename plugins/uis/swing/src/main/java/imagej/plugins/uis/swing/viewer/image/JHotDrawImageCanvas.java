@@ -56,9 +56,6 @@ import imagej.tool.event.ToolActivatedEvent;
 import imagej.ui.common.awt.AWTCursors;
 import imagej.ui.common.awt.AWTDropTargetEventDispatcher;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
-import imagej.util.IntCoords;
-import imagej.util.RealCoords;
-import imagej.util.RealRect;
 
 import java.awt.BorderLayout;
 import java.awt.Cursor;
@@ -102,6 +99,9 @@ import org.scijava.input.MouseCursor;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.thread.ThreadService;
+import org.scijava.util.IntCoords;
+import org.scijava.util.RealCoords;
+import org.scijava.util.RealRect;
 
 /**
  * A renderer of an {@link ImageCanvas}, which uses JHotDraw's

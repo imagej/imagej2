@@ -34,11 +34,11 @@ package imagej.options;
 import imagej.command.DynamicCommand;
 import imagej.module.ModuleItem;
 import imagej.options.event.OptionsEvent;
-import imagej.util.Prefs;
 
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.SingletonPlugin;
+import org.scijava.util.Prefs;
 
 // TODO - outline for how to address issues with options (initializing, aggregating into 1 dialog)
 

@@ -34,7 +34,6 @@ package imagej.plugins.uis.swing;
 import imagej.tool.IconDrawer;
 import imagej.tool.IconService;
 import imagej.tool.Tool;
-import imagej.util.ColorRGB;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -45,6 +44,7 @@ import javax.swing.AbstractButton;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import org.scijava.util.ColorRGB;
 
 /**
  * Swing implementation of the {@link IconService}.
