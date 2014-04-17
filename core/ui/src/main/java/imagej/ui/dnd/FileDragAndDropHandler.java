@@ -33,12 +33,12 @@ package imagej.ui.dnd;
 
 import imagej.display.Display;
 import imagej.display.DisplayService;
-import imagej.io.IOService;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.scijava.Priority;
+import org.scijava.io.IOService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

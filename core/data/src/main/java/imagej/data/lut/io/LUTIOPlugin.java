@@ -32,14 +32,14 @@
 package imagej.data.lut.io;
 
 import imagej.data.lut.LUTService;
-import imagej.io.AbstractIOPlugin;
-import imagej.io.IOPlugin;
 
 import java.io.File;
 import java.io.IOException;
 
 import net.imglib2.display.ColorTable;
 
+import org.scijava.io.AbstractIOPlugin;
+import org.scijava.io.IOPlugin;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 

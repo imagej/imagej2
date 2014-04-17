@@ -33,12 +33,12 @@ package imagej.data.io;
 
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
-import imagej.io.AbstractIOPlugin;
-import imagej.io.IOPlugin;
 
 import java.io.IOException;
 
 import org.scijava.Priority;
+import org.scijava.io.AbstractIOPlugin;
+import org.scijava.io.IOPlugin;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 

@@ -31,12 +31,12 @@
 
 package imagej.script.io;
 
-import imagej.io.AbstractIOPlugin;
-import imagej.io.IOPlugin;
 import imagej.script.ScriptService;
 
 import java.io.IOException;
 
+import org.scijava.io.AbstractIOPlugin;
+import org.scijava.io.IOPlugin;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 

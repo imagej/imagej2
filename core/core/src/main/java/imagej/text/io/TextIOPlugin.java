@@ -31,14 +31,14 @@
 
 package imagej.text.io;
 
-import imagej.io.AbstractIOPlugin;
-import imagej.io.IOPlugin;
 import imagej.text.TextService;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.scijava.Priority;
+import org.scijava.io.AbstractIOPlugin;
+import org.scijava.io.IOPlugin;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 

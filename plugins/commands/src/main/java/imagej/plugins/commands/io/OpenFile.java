@@ -33,7 +33,6 @@ package imagej.plugins.commands.io;
 
 import imagej.command.Command;
 import imagej.command.ContextCommand;
-import imagej.io.IOService;
 import imagej.menu.MenuConstants;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
@@ -42,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.scijava.ItemIO;
+import org.scijava.io.IOService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;

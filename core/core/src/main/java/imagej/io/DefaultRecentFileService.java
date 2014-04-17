@@ -33,7 +33,6 @@ package imagej.io;
 
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
-import imagej.io.event.IOEvent;
 import imagej.menu.MenuConstants;
 import imagej.module.ModuleInfo;
 import imagej.module.ModuleService;
@@ -48,6 +47,7 @@ import org.scijava.MenuEntry;
 import org.scijava.MenuPath;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
+import org.scijava.io.event.IOEvent;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;

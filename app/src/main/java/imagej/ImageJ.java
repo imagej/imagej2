@@ -33,7 +33,6 @@ package imagej;
 
 import imagej.app.ImageJApp;
 import imagej.command.CommandService;
-import imagej.console.ConsoleService;
 import imagej.data.DatasetService;
 import imagej.data.animation.AnimationService;
 import imagej.data.display.ImageDisplayService;
@@ -48,7 +47,6 @@ import imagej.data.operator.CalculatorService;
 import imagej.data.sampler.SamplerService;
 import imagej.data.threshold.ThresholdService;
 import imagej.display.DisplayService;
-import imagej.io.IOService;
 import imagej.io.RecentFileService;
 import imagej.legacy.LegacyService;
 import imagej.menu.MenuService;
@@ -168,10 +166,6 @@ public class ImageJ extends AbstractGateway {
 		return get(CommandService.class);
 	}
 
-	public ConsoleService console() {
-		return get(ConsoleService.class);
-	}
-
 	public DatasetService dataset() {
 		return get(DatasetService.class);
 	}
@@ -190,10 +184,6 @@ public class ImageJ extends AbstractGateway {
 
 	public InputService input() {
 		return get(InputService.class);
-	}
-
-	public IOService io() {
-		return get(IOService.class);
 	}
 
 	public LegacyService legacy() {

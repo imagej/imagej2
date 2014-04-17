@@ -32,7 +32,6 @@
 package imagej.script.editor;
 
 import imagej.command.CommandService;
-import imagej.io.IOService;
 import imagej.module.ModuleException;
 import imagej.module.ModuleService;
 import imagej.platform.PlatformService;
@@ -124,6 +123,7 @@ import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.modes.JavaScriptTokenMaker;
 import org.fife.ui.rsyntaxtextarea.modes.JavaTokenMaker;
 import org.scijava.Context;
+import org.scijava.io.IOService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.util.FileUtils;
