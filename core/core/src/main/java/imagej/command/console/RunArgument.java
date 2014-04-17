@@ -33,11 +33,11 @@ package imagej.command.console;
 
 import imagej.command.CommandInfo;
 import imagej.command.CommandService;
-import imagej.console.AbstractConsoleArgument;
-import imagej.console.ConsoleArgument;
 
 import java.util.LinkedList;
 
+import org.scijava.console.AbstractConsoleArgument;
+import org.scijava.console.ConsoleArgument;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
