@@ -32,7 +32,6 @@
 package imagej.plugins.commands.debug;
 
 import imagej.app.ImageJApp;
-import imagej.command.Command;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -48,6 +47,7 @@ import org.scijava.Context;
 import org.scijava.ItemIO;
 import org.scijava.app.App;
 import org.scijava.app.AppService;
+import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;

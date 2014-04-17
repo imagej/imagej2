@@ -31,15 +31,12 @@
 
 package imagej.plugins.commands.imglib;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.ThresholdOverlay;
-import imagej.menu.MenuConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +49,9 @@ import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

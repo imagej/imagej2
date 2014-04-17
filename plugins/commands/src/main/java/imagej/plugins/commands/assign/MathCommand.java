@@ -31,8 +31,6 @@
 
 package imagej.plugins.commands.assign;
 
-import imagej.command.ContextCommand;
-import imagej.command.Previewable;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.display.DatasetView;
@@ -53,6 +51,8 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
 import org.scijava.ItemIO;
+import org.scijava.command.ContextCommand;
+import org.scijava.command.Previewable;
 import org.scijava.plugin.Parameter;
 
 /**

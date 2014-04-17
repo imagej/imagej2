@@ -31,17 +31,16 @@
 
 package imagej.data.display;
 
-import imagej.display.Display;
-import imagej.display.event.DisplayDeletedEvent;
-import imagej.display.event.input.KyPressedEvent;
-import imagej.display.event.input.KyReleasedEvent;
-import imagej.display.event.input.MsExitedEvent;
-import imagej.display.event.input.MsMovedEvent;
-import imagej.display.event.input.MsPressedEvent;
-import imagej.display.event.input.MsReleasedEvent;
-
 import java.util.HashSet;
 
+import org.scijava.display.Display;
+import org.scijava.display.event.DisplayDeletedEvent;
+import org.scijava.display.event.input.KyPressedEvent;
+import org.scijava.display.event.input.KyReleasedEvent;
+import org.scijava.display.event.input.MsExitedEvent;
+import org.scijava.display.event.input.MsMovedEvent;
+import org.scijava.display.event.input.MsPressedEvent;
+import org.scijava.display.event.input.MsReleasedEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.input.InputModifiers;

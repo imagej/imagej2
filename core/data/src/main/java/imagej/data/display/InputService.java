@@ -31,10 +31,10 @@
 
 package imagej.data.display;
 
-import imagej.display.Display;
-import imagej.display.event.input.MsButtonEvent;
 import imagej.service.ImageJService;
 
+import org.scijava.display.Display;
+import org.scijava.display.event.input.MsButtonEvent;
 import org.scijava.event.EventService;
 import org.scijava.input.InputModifiers;
 import org.scijava.input.KeyCode;

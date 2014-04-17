@@ -31,14 +31,13 @@
 
 package imagej.plugins.commands.display;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
-import imagej.display.Display;
-import imagej.display.DisplayService;
-import imagej.menu.MenuConstants;
-
 import java.util.ArrayList;
 
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.display.Display;
+import org.scijava.display.DisplayService;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

@@ -31,8 +31,6 @@
 
 package imagej.script.editor;
 
-import imagej.script.ScriptLanguage;
-
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -68,6 +66,7 @@ import org.fife.ui.rtextarea.IconGroup;
 import org.fife.ui.rtextarea.RTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.fife.ui.rtextarea.RecordableTextAction;
+import org.scijava.script.ScriptLanguage;
 import org.scijava.util.FileUtils;
 
 /**

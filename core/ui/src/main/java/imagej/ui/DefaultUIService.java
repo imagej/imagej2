@@ -32,20 +32,7 @@
 package imagej.ui;
 
 import imagej.app.ImageJApp;
-import imagej.command.CommandService;
 import imagej.data.display.ImageDisplayService;
-import imagej.display.Display;
-import imagej.display.DisplayService;
-import imagej.display.event.DisplayActivatedEvent;
-import imagej.display.event.DisplayCreatedEvent;
-import imagej.display.event.DisplayDeletedEvent;
-import imagej.display.event.DisplayUpdatedEvent;
-import imagej.menu.MenuService;
-import imagej.options.OptionsService;
-import imagej.platform.AppEventService;
-import imagej.platform.PlatformService;
-import imagej.platform.event.AppQuitEvent;
-import imagej.tool.ToolService;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.DialogPrompt.Result;
@@ -62,9 +49,21 @@ import org.scijava.app.App;
 import org.scijava.app.AppService;
 import org.scijava.app.StatusService;
 import org.scijava.app.event.StatusEvent;
+import org.scijava.command.CommandService;
+import org.scijava.display.Display;
+import org.scijava.display.DisplayService;
+import org.scijava.display.event.DisplayActivatedEvent;
+import org.scijava.display.event.DisplayCreatedEvent;
+import org.scijava.display.event.DisplayDeletedEvent;
+import org.scijava.display.event.DisplayUpdatedEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.log.LogService;
+import org.scijava.menu.MenuService;
+import org.scijava.options.OptionsService;
+import org.scijava.platform.AppEventService;
+import org.scijava.platform.PlatformService;
+import org.scijava.platform.event.AppQuitEvent;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
@@ -72,6 +71,7 @@ import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 import org.scijava.thread.ThreadService;
+import org.scijava.tool.ToolService;
 
 /**
  * Default service for handling ImageJ user interfaces.

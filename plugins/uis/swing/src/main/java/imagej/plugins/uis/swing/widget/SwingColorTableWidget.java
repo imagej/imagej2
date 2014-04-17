@@ -32,8 +32,6 @@
 package imagej.plugins.uis.swing.widget;
 
 import imagej.data.widget.ColorTableWidget;
-import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
 
 import java.awt.image.BufferedImage;
 
@@ -44,6 +42,8 @@ import javax.swing.JPanel;
 import net.imglib2.display.ColorTable;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
  * Render a {@link ColorTable} in Swing.

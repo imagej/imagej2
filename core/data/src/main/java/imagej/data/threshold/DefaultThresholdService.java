@@ -38,8 +38,6 @@ import imagej.data.display.OverlayService;
 import imagej.data.event.OverlayDeletedEvent;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.ThresholdOverlay;
-import imagej.display.Display;
-import imagej.display.event.DisplayDeletedEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,6 +47,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.scijava.display.Display;
+import org.scijava.display.event.DisplayDeletedEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.log.LogService;
 import org.scijava.plugin.AbstractSingletonService;

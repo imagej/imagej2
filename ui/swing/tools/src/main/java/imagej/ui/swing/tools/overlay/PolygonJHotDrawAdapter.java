@@ -39,7 +39,6 @@ import imagej.plugins.uis.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.IJBezierTool;
 import imagej.plugins.uis.swing.overlay.JHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.JHotDrawTool;
-import imagej.tool.Tool;
 import imagej.ui.swing.tools.SwingPolygonTool;
 
 import java.awt.Shape;
@@ -56,6 +55,7 @@ import org.jhotdraw.geom.BezierPath.Node;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.tool.Tool;
 
 /**
  * JHotDraw adapter for polygon/freehand overlays.

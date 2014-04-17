@@ -34,10 +34,11 @@ package imagej.plugins.uis.swing.widget;
 import imagej.plugins.uis.swing.sdi.SwingUI;
 import imagej.ui.AbstractUIInputWidget;
 import imagej.ui.UserInterface;
-import imagej.widget.WidgetModel;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+
+import org.scijava.widget.WidgetModel;
 
 import net.miginfocom.swing.MigLayout;
 

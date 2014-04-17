@@ -31,8 +31,6 @@
 
 package imagej.plugins.uis.swing.viewer.text;
 
-import imagej.display.TextDisplay;
-import imagej.platform.PlatformService;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.text.TextDisplayPanel;
 
@@ -47,7 +45,9 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 import org.scijava.app.StatusService;
+import org.scijava.display.TextDisplay;
 import org.scijava.log.LogService;
+import org.scijava.platform.PlatformService;
 import org.scijava.plugin.Parameter;
 
 /**

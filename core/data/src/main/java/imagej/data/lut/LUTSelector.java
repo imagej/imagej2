@@ -31,13 +31,8 @@
 
 package imagej.data.lut;
 
-import imagej.command.Command;
-import imagej.command.CommandService;
-import imagej.command.DynamicCommand;
 import imagej.data.display.ColorTables;
 import imagej.data.display.ImageDisplay;
-import imagej.menu.MenuConstants;
-import imagej.module.MutableModuleItem;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -46,6 +41,11 @@ import java.util.Map;
 
 import net.imglib2.display.ColorTable;
 
+import org.scijava.command.Command;
+import org.scijava.command.CommandService;
+import org.scijava.command.DynamicCommand;
+import org.scijava.menu.MenuConstants;
+import org.scijava.module.MutableModuleItem;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

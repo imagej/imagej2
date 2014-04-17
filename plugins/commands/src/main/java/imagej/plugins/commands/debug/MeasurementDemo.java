@@ -31,7 +31,6 @@
 
 package imagej.plugins.commands.debug;
 
-import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.display.ImageDisplay;
@@ -40,7 +39,6 @@ import imagej.data.measure.BasicStats;
 import imagej.data.measure.BasicStatsFunction;
 import imagej.data.measure.MeasurementService;
 import imagej.data.overlay.Overlay;
-import imagej.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,8 +70,10 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.DoubleType;
 
 import org.scijava.app.StatusService;
+import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.Button;
 
 /**
  * Shows how to use the MeasurementService.

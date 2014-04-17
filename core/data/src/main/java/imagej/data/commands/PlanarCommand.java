@@ -31,7 +31,8 @@
 
 package imagej.data.commands;
 
-import imagej.command.Command;
+import org.scijava.command.Command;
+
 import imagej.data.display.DatasetView;
 import net.imglib2.RandomAccessibleInterval;
 

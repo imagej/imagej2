@@ -33,8 +33,6 @@ package imagej.plugins.uis.swing.widget;
 
 import imagej.data.widget.HistogramBundle;
 import imagej.data.widget.HistogramWidget;
-import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -62,6 +60,8 @@ import org.jfree.chart.title.TextTitle;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
  * Render a {@link HistogramBundle} in Swing.

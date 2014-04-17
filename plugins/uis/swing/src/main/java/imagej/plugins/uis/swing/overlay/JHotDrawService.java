@@ -36,7 +36,6 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
-import imagej.tool.Tool;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,6 +50,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import org.scijava.tool.Tool;
 
 /**
  * The JHotDraw service manages the bidirectional linkage between ImageJ

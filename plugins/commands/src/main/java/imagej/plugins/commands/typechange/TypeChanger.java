@@ -31,16 +31,12 @@
 
 package imagej.plugins.commands.typechange;
 
-import imagej.command.Command;
-import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.display.ColorTables;
 import imagej.data.types.BigComplex;
 import imagej.data.types.DataType;
 import imagej.data.types.DataTypeService;
-import imagej.menu.MenuConstants;
-import imagej.module.MutableModuleItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +54,10 @@ import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 
+import org.scijava.command.Command;
+import org.scijava.command.DynamicCommand;
+import org.scijava.menu.MenuConstants;
+import org.scijava.module.MutableModuleItem;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

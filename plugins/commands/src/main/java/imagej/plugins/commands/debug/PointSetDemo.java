@@ -31,12 +31,8 @@
 
 package imagej.plugins.commands.debug;
 
-import imagej.Cancelable;
-import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
-import imagej.platform.PlatformService;
-import imagej.widget.Button;
 
 import java.net.URL;
 
@@ -46,9 +42,13 @@ import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.ops.pointset.TextSpecifiedPointSet;
 import net.imglib2.type.numeric.RealType;
 
+import org.scijava.Cancelable;
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.platform.PlatformService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.Button;
 
 /**
  * A test of TextSpecifiedPointSets

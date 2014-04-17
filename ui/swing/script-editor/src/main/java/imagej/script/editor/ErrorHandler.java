@@ -31,8 +31,6 @@
 
 package imagej.script.editor;
 
-import imagej.script.ScriptLanguage;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +40,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Document;
 import javax.swing.text.Position;
+
+import org.scijava.script.ScriptLanguage;
 
 /**
  * TODO

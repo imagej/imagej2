@@ -31,10 +31,6 @@
 
 package imagej.plugins.uis.awt.menu;
 
-import imagej.menu.AbstractMenuCreator;
-import imagej.menu.ShadowMenu;
-import imagej.module.ModuleInfo;
-
 import java.awt.Menu;
 import java.awt.MenuItem;
 import java.awt.MenuShortcut;
@@ -42,6 +38,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import org.scijava.input.Accelerator;
+import org.scijava.menu.AbstractMenuCreator;
+import org.scijava.menu.ShadowMenu;
+import org.scijava.module.ModuleInfo;
 
 /**
  * Populates an AWT menu structure with menu items from a {@link ShadowMenu}.

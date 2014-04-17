@@ -40,7 +40,7 @@ import javax.swing.event.UndoableEditListener;
 import org.jhotdraw.draw.tool.Tool;
 
 /**
- * A JHotDraw {@link Tool} (<em>not</em> an ImageJ {@link imagej.tool.Tool})
+ * A JHotDraw {@link Tool} (<em>not</em> an ImageJ {@link org.scijava.tool.Tool})
  * with some extra needed API methods.
  * 
  * @author Johannes Schindelin

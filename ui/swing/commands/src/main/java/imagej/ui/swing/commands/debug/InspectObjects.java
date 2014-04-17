@@ -33,8 +33,7 @@ package imagej.ui.swing.commands.debug;
 
 import com.github.sbridges.objectinspector.Inspector;
 
-import imagej.command.Command;
-
+import org.scijava.command.Command;
 import org.scijava.object.ObjectService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

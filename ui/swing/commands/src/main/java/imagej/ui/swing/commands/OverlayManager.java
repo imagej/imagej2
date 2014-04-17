@@ -31,11 +31,11 @@
 
 package imagej.ui.swing.commands;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
 import imagej.plugins.uis.swing.SwingOverlayManager;
 
 import org.scijava.Context;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

@@ -31,16 +31,16 @@
 
 package imagej.plugins.commands.zoom;
 
-import imagej.command.Command;
-import imagej.command.DynamicCommand;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.ZoomService;
-import imagej.menu.MenuConstants;
-import imagej.module.MutableModuleItem;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.command.DynamicCommand;
+import org.scijava.menu.MenuConstants;
+import org.scijava.module.MutableModuleItem;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

@@ -31,10 +31,9 @@
 
 package imagej.ui.dnd;
 
-import imagej.display.Display;
-
 import java.util.List;
 
+import org.scijava.display.Display;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 

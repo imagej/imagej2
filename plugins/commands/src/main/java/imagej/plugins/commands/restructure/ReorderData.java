@@ -31,11 +31,7 @@
 
 package imagej.plugins.commands.restructure;
 
-import imagej.command.Command;
-import imagej.command.DynamicCommand;
 import imagej.data.Dataset;
-import imagej.menu.MenuConstants;
-import imagej.module.DefaultMutableModuleItem;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -51,7 +47,11 @@ import net.imglib2.ops.pointset.PointSetIterator;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.command.DynamicCommand;
 import org.scijava.log.LogService;
+import org.scijava.menu.MenuConstants;
+import org.scijava.module.DefaultMutableModuleItem;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

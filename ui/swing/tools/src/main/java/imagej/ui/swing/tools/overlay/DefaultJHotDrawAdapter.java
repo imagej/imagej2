@@ -39,7 +39,6 @@ import imagej.plugins.uis.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.IJCreationTool;
 import imagej.plugins.uis.swing.overlay.JHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.JHotDrawTool;
-import imagej.tool.Tool;
 
 import java.awt.Color;
 import java.awt.Shape;
@@ -61,6 +60,7 @@ import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.ImageFigure;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
+import org.scijava.tool.Tool;
 import org.scijava.util.ColorRGB;
 
 /**

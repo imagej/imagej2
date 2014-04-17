@@ -39,13 +39,13 @@ import imagej.plugins.uis.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.IJCreationTool;
 import imagej.plugins.uis.swing.overlay.JHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.JHotDrawTool;
-import imagej.tool.Tool;
 import imagej.ui.swing.tools.SwingPointTool;
 
 import java.awt.Shape;
 
 import org.jhotdraw.draw.Figure;
 import org.scijava.plugin.Plugin;
+import org.scijava.tool.Tool;
 import org.scijava.util.ColorRGB;
 
 /**

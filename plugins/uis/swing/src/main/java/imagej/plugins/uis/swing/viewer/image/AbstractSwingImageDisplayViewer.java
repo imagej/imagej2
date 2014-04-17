@@ -32,15 +32,15 @@
 package imagej.plugins.uis.swing.viewer.image;
 
 import imagej.data.Dataset;
-import imagej.display.Display;
-import imagej.options.event.OptionsEvent;
 import imagej.ui.common.awt.AWTDropTargetEventDispatcher;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.image.AbstractImageDisplayViewer;
 
+import org.scijava.display.Display;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
+import org.scijava.options.event.OptionsEvent;
 import org.scijava.plugin.Parameter;
 
 /**

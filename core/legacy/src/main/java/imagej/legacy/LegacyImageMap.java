@@ -38,7 +38,6 @@ import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.overlay.Overlay;
-import imagej.display.event.DisplayDeletedEvent;
 import imagej.legacy.translate.DefaultImageTranslator;
 import imagej.legacy.translate.Harmonizer;
 import imagej.legacy.translate.ImageTranslator;
@@ -58,6 +57,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.scijava.AbstractContextual;
+import org.scijava.display.event.DisplayDeletedEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
 

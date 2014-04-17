@@ -31,9 +31,10 @@
 
 package imagej.ui.viewer.table;
 
+import org.scijava.display.Display;
+
 import imagej.data.table.Table;
 import imagej.data.table.TableDisplay;
-import imagej.display.Display;
 import imagej.ui.viewer.AbstractDisplayViewer;
 
 /**

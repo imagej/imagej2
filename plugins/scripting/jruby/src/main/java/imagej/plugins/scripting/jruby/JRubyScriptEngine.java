@@ -31,8 +31,6 @@
 
 package imagej.plugins.scripting.jruby;
 
-import imagej.script.AbstractScriptEngine;
-
 import java.io.PrintStream;
 import java.io.Reader;
 import java.io.Writer;
@@ -45,6 +43,7 @@ import org.jruby.Ruby;
 import org.jruby.RubyInstanceConfig;
 import org.jruby.embed.io.ReaderInputStream;
 import org.jruby.embed.io.WriterOutputStream;
+import org.scijava.script.AbstractScriptEngine;
 
 /**
  * A Ruby interpreter based on JRuby.

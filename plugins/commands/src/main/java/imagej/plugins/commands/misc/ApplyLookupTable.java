@@ -31,14 +31,12 @@
 
 package imagej.plugins.commands.misc;
 
-import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.lut.LUTService;
-import imagej.display.DisplayService;
 
 import java.io.IOException;
 import java.net.URL;
@@ -50,6 +48,8 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.display.DisplayService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

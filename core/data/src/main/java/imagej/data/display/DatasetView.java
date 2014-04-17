@@ -33,10 +33,10 @@ package imagej.data.display;
 
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
-import imagej.display.Display;
 
 import java.util.List;
 
+import org.scijava.display.Display;
 import org.scijava.util.ColorRGB;
 
 import net.imglib2.RandomAccessibleInterval;

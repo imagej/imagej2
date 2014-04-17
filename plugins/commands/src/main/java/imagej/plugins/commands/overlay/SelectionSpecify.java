@@ -31,16 +31,16 @@
 
 package imagej.plugins.commands.overlay;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
 import imagej.data.display.ImageDisplay;
 import imagej.data.overlay.EllipseOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.RectangleOverlay;
-import imagej.menu.MenuConstants;
 
 import org.scijava.Context;
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

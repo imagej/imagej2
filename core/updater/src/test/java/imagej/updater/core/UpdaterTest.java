@@ -56,7 +56,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import imagej.test.TestUtils;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.Conflicts.Resolution;
 import imagej.updater.core.FileObject.Action;
@@ -79,6 +78,7 @@ import java.util.zip.GZIPOutputStream;
 
 import org.junit.After;
 import org.junit.Test;
+import org.scijava.test.TestUtils;
 import org.scijava.util.FileUtils;
 
 /**

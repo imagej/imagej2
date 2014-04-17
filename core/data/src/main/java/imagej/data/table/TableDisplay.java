@@ -31,7 +31,7 @@
 
 package imagej.data.table;
 
-import imagej.display.Display;
+import org.scijava.display.Display;
 
 /**
  * Interface for {@link Table} {@link Display}s.

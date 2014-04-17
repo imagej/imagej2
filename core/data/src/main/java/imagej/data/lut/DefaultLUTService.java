@@ -31,7 +31,6 @@
 
 package imagej.data.lut;
 
-import imagej.command.CommandInfo;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.display.DatasetView;
@@ -39,10 +38,6 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.table.ResultsTable;
 import imagej.data.table.TableLoader;
-import imagej.display.DisplayService;
-import imagej.menu.MenuConstants;
-import imagej.module.ModuleInfo;
-import imagej.module.ModuleService;
 import imagej.util.AppUtils;
 
 import java.io.BufferedInputStream;
@@ -70,7 +65,12 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
 import org.scijava.MenuEntry;
 import org.scijava.MenuPath;
 import org.scijava.Priority;
+import org.scijava.command.CommandInfo;
+import org.scijava.display.DisplayService;
 import org.scijava.log.LogService;
+import org.scijava.menu.MenuConstants;
+import org.scijava.module.ModuleInfo;
+import org.scijava.module.ModuleService;
 import org.scijava.object.LazyObjects;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

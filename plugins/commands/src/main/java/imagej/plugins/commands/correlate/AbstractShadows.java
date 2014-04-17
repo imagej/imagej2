@@ -31,13 +31,13 @@
 
 package imagej.plugins.commands.correlate;
 
-import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 
 import org.scijava.ItemIO;
+import org.scijava.command.ContextCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.util.RealRect;
 

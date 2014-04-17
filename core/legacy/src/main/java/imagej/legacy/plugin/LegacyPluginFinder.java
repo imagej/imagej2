@@ -33,9 +33,6 @@ package imagej.legacy.plugin;
 
 import ij.IJ;
 import ij.Menus;
-import imagej.command.Command;
-import imagej.command.CommandInfo;
-import imagej.menu.ShadowMenu;
 
 import java.awt.Menu;
 import java.awt.MenuBar;
@@ -55,10 +52,13 @@ import java.util.Set;
 
 import org.scijava.MenuEntry;
 import org.scijava.MenuPath;
+import org.scijava.command.Command;
+import org.scijava.command.CommandInfo;
 import org.scijava.input.Accelerator;
 import org.scijava.input.InputModifiers;
 import org.scijava.input.KeyCode;
 import org.scijava.log.LogService;
+import org.scijava.menu.ShadowMenu;
 import org.scijava.plugin.PluginFinder;
 import org.scijava.plugin.PluginInfo;
 

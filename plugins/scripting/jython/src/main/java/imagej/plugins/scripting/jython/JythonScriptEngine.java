@@ -31,8 +31,6 @@
 
 package imagej.plugins.scripting.jython;
 
-import imagej.script.AbstractScriptEngine;
-
 import java.io.Reader;
 import java.io.Writer;
 
@@ -42,6 +40,7 @@ import javax.script.ScriptException;
 
 import org.python.core.Py;
 import org.python.util.PythonInterpreter;
+import org.scijava.script.AbstractScriptEngine;
 
 /**
  * A Python interpreter based on Jython.

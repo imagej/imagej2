@@ -37,10 +37,6 @@ import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.event.DataRestructuredEvent;
 import imagej.data.event.DataUpdatedEvent;
 import imagej.data.lut.LUTService;
-import imagej.display.AbstractDisplay;
-import imagej.display.Display;
-import imagej.display.DisplayService;
-import imagej.display.event.DisplayDeletedEvent;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -54,6 +50,10 @@ import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.CalibratedRealInterval;
 import net.imglib2.meta.CombinedCalibratedRealInterval;
 
+import org.scijava.display.AbstractDisplay;
+import org.scijava.display.Display;
+import org.scijava.display.DisplayService;
+import org.scijava.display.event.DisplayDeletedEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;

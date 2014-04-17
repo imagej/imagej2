@@ -39,8 +39,6 @@ import imagej.plugins.uis.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.IJCreationTool;
 import imagej.plugins.uis.swing.overlay.JHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.JHotDrawTool;
-import imagej.tool.Tool;
-import imagej.tool.ToolService;
 import imagej.ui.swing.tools.SwingRectangleTool;
 
 import java.awt.Shape;
@@ -51,6 +49,8 @@ import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.RectangleFigure;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.tool.Tool;
+import org.scijava.tool.ToolService;
 import org.scijava.util.RealCoords;
 
 /**

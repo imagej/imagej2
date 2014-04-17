@@ -31,7 +31,6 @@
 
 package imagej.plugins.uis.swing.mdi.viewer;
 
-import imagej.display.Display;
 import imagej.plugins.uis.swing.mdi.SwingMdiUI;
 import imagej.plugins.uis.swing.viewer.image.AbstractSwingImageDisplayViewer;
 import imagej.plugins.uis.swing.viewer.image.SwingImageDisplayViewer;
@@ -41,6 +40,7 @@ import imagej.ui.viewer.DisplayWindow;
 
 import javax.swing.JInternalFrame;
 
+import org.scijava.display.Display;
 import org.scijava.plugin.Plugin;
 
 /**

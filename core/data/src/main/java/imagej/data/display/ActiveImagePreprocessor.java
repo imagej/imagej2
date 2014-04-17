@@ -36,14 +36,14 @@ import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.options.OptionsChannels;
 import imagej.data.overlay.Overlay;
-import imagej.module.Module;
-import imagej.module.ModuleItem;
-import imagej.module.ModuleService;
-import imagej.module.process.AbstractPreprocessorPlugin;
-import imagej.module.process.PreprocessorPlugin;
-import imagej.options.OptionsService;
 
 import org.scijava.Priority;
+import org.scijava.module.Module;
+import org.scijava.module.ModuleItem;
+import org.scijava.module.ModuleService;
+import org.scijava.module.process.AbstractPreprocessorPlugin;
+import org.scijava.module.process.PreprocessorPlugin;
+import org.scijava.options.OptionsService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 

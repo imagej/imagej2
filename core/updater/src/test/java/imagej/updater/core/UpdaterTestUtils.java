@@ -31,13 +31,13 @@
 
 package imagej.updater.core;
 
-import static imagej.test.TestUtils.createTemporaryDirectory;
-import static imagej.test.TestUtils.getCallingClass;
 import static imagej.updater.core.FilesCollection.DEFAULT_UPDATE_SITE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.scijava.test.TestUtils.createTemporaryDirectory;
+import static org.scijava.test.TestUtils.getCallingClass;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.ui.CommandLine;

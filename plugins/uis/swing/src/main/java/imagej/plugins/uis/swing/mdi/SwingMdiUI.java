@@ -31,7 +31,6 @@
 
 package imagej.plugins.uis.swing.mdi;
 
-import imagej.display.Display;
 import imagej.plugins.uis.swing.AbstractSwingUI;
 import imagej.plugins.uis.swing.SwingApplicationFrame;
 import imagej.plugins.uis.swing.mdi.viewer.SwingMdiDisplayWindow;
@@ -49,6 +48,7 @@ import java.awt.Rectangle;
 import javax.swing.JScrollPane;
 
 import org.scijava.Priority;
+import org.scijava.display.Display;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

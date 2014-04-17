@@ -42,18 +42,18 @@ import imagej.data.display.event.DelayedPositionEvent;
 import imagej.data.display.event.PanZoomEvent;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetUpdatedEvent;
-import imagej.display.Display;
-import imagej.display.event.DisplayUpdatedEvent;
-import imagej.display.event.window.WinActivatedEvent;
-import imagej.options.OptionsService;
-import imagej.tool.ToolService;
 import imagej.ui.viewer.AbstractDisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
+import org.scijava.display.Display;
+import org.scijava.display.event.DisplayUpdatedEvent;
+import org.scijava.display.event.window.WinActivatedEvent;
 import org.scijava.event.EventHandler;
+import org.scijava.options.OptionsService;
 import org.scijava.plugin.Parameter;
+import org.scijava.tool.ToolService;
 import org.scijava.util.UnitUtils;
 
 /**

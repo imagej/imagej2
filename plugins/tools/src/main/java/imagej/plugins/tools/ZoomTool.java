@@ -32,16 +32,16 @@
 package imagej.plugins.tools;
 
 import imagej.data.display.ImageDisplay;
-import imagej.display.Display;
-import imagej.display.event.input.MsButtonEvent;
-import imagej.display.event.input.MsMovedEvent;
-import imagej.display.event.input.MsPressedEvent;
-import imagej.display.event.input.MsReleasedEvent;
-import imagej.display.event.input.MsWheelEvent;
-import imagej.tool.AbstractTool;
-import imagej.tool.Tool;
 
+import org.scijava.display.Display;
+import org.scijava.display.event.input.MsButtonEvent;
+import org.scijava.display.event.input.MsMovedEvent;
+import org.scijava.display.event.input.MsPressedEvent;
+import org.scijava.display.event.input.MsReleasedEvent;
+import org.scijava.display.event.input.MsWheelEvent;
 import org.scijava.plugin.Plugin;
+import org.scijava.tool.AbstractTool;
+import org.scijava.tool.Tool;
 import org.scijava.util.IntCoords;
 import org.scijava.util.IntRect;
 

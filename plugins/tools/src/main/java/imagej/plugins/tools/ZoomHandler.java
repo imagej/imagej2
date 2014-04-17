@@ -33,14 +33,14 @@ package imagej.plugins.tools;
 
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ZoomService;
-import imagej.display.Display;
-import imagej.display.event.input.KyPressedEvent;
-import imagej.tool.AbstractTool;
-import imagej.tool.Tool;
 
+import org.scijava.display.Display;
+import org.scijava.display.event.input.KyPressedEvent;
 import org.scijava.input.KeyCode;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.tool.AbstractTool;
+import org.scijava.tool.Tool;
 
 /**
  * Handles the second key mapping for zoom in (not just + but instead here =).

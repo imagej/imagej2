@@ -31,10 +31,10 @@
 
 package imagej.legacy.plugin;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
 import imagej.legacy.LegacyService;
 
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

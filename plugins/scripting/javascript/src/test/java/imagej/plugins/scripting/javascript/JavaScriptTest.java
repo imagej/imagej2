@@ -34,9 +34,6 @@ package imagej.plugins.scripting.javascript;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import imagej.script.ScriptLanguage;
-import imagej.script.ScriptModule;
-import imagej.script.ScriptService;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -48,6 +45,9 @@ import javax.script.ScriptException;
 
 import org.junit.Test;
 import org.scijava.Context;
+import org.scijava.script.ScriptLanguage;
+import org.scijava.script.ScriptModule;
+import org.scijava.script.ScriptService;
 
 /**
  * JavaScript unit tests.

@@ -31,10 +31,9 @@
 
 package imagej.core.options;
 
-import imagej.command.Command;
-import imagej.menu.MenuConstants;
-import imagej.options.OptionsService;
-
+import org.scijava.command.Command;
+import org.scijava.menu.MenuConstants;
+import org.scijava.options.OptionsService;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

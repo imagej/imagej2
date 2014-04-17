@@ -31,10 +31,9 @@
 
 package imagej.data.display;
 
-import imagej.command.Command;
-import imagej.display.Display;
-import imagej.display.DisplayService;
-
+import org.scijava.command.Command;
+import org.scijava.display.Display;
+import org.scijava.display.DisplayService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 

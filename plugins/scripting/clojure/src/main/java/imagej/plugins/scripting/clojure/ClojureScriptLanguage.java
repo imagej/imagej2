@@ -31,15 +31,14 @@
 
 package imagej.plugins.scripting.clojure;
 
-import imagej.script.AbstractScriptLanguage;
-import imagej.script.ScriptLanguage;
-
 import java.util.Arrays;
 import java.util.List;
 
 import javax.script.ScriptEngine;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.script.AbstractScriptLanguage;
+import org.scijava.script.ScriptLanguage;
 
 /**
  * An adapter of the Clojure interpreter to ImageJ's scripting interfaces.

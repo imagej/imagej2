@@ -31,7 +31,7 @@
 
 package imagej.data.widget;
 
-import imagej.widget.InputWidget;
+import org.scijava.widget.InputWidget;
 
 /**
  * Widget interface for charts.

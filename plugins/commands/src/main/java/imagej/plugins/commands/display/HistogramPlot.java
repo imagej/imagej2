@@ -31,8 +31,6 @@
 
 package imagej.plugins.commands.display;
 
-import imagej.command.Command;
-import imagej.command.InteractiveCommand;
 import imagej.data.Dataset;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
@@ -40,9 +38,7 @@ import imagej.data.display.OverlayService;
 import imagej.data.event.DatasetRestructuredEvent;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.data.widget.HistogramBundle;
-import imagej.module.MutableModuleItem;
 import imagej.ui.UIService;
-import imagej.widget.Button;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.histogram.DiscreteFrequencyDistribution;
@@ -56,10 +52,14 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.LongType;
 
 import org.scijava.ItemVisibility;
+import org.scijava.command.Command;
+import org.scijava.command.InteractiveCommand;
 import org.scijava.event.EventHandler;
+import org.scijava.module.MutableModuleItem;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.Button;
 
 // TODO
 // 1) some button commands unimplemented

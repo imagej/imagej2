@@ -31,9 +31,6 @@
 
 package imagej.plugins.commands.assign.noisereduce;
 
-import imagej.command.CommandModule;
-import imagej.command.CommandService;
-import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 
 import java.util.HashMap;
@@ -51,6 +48,9 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
 import org.scijava.ItemIO;
+import org.scijava.command.CommandModule;
+import org.scijava.command.CommandService;
+import org.scijava.command.ContextCommand;
 import org.scijava.plugin.Parameter;
 
 /**

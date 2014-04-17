@@ -31,16 +31,6 @@
 
 package imagej.data.display;
 
-import imagej.command.CommandInfo;
-import imagej.display.Display;
-import imagej.display.event.DisplayActivatedEvent;
-import imagej.display.event.DisplayCreatedEvent;
-import imagej.display.event.DisplayDeletedEvent;
-import imagej.menu.MenuConstants;
-import imagej.menu.MenuService;
-import imagej.module.ModuleInfo;
-import imagej.module.ModuleService;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,8 +39,17 @@ import java.util.Map;
 
 import org.scijava.MenuEntry;
 import org.scijava.MenuPath;
+import org.scijava.command.CommandInfo;
+import org.scijava.display.Display;
+import org.scijava.display.event.DisplayActivatedEvent;
+import org.scijava.display.event.DisplayCreatedEvent;
+import org.scijava.display.event.DisplayDeletedEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
+import org.scijava.menu.MenuConstants;
+import org.scijava.menu.MenuService;
+import org.scijava.module.ModuleInfo;
+import org.scijava.module.ModuleService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;

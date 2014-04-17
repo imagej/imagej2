@@ -31,7 +31,8 @@
 
 package imagej.ui.viewer.text;
 
-import imagej.display.TextDisplay;
+import org.scijava.display.TextDisplay;
+
 import imagej.ui.viewer.DisplayViewer;
 
 /**

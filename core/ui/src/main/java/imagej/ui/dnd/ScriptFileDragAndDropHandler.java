@@ -31,13 +31,12 @@
 
 package imagej.ui.dnd;
 
-import imagej.display.Display;
-import imagej.script.ScriptService;
-
 import java.io.File;
 
+import org.scijava.display.Display;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.script.ScriptService;
 
 /**
  * Drag-and-drop handler for script files.

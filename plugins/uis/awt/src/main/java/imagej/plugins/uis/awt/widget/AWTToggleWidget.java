@@ -31,15 +31,14 @@
 
 package imagej.plugins.uis.awt.widget;
 
-import imagej.widget.InputWidget;
-import imagej.widget.ToggleWidget;
-import imagej.widget.WidgetModel;
-
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
 import java.awt.Panel;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.ToggleWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
  * AWT implementation of boolean toggle widget.

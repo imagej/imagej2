@@ -31,11 +31,11 @@
 
 package imagej.plugins.commands.overlay;
 
-import imagej.command.Command;
 import imagej.data.overlay.Overlay;
 
 import java.util.List;
 
+import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 

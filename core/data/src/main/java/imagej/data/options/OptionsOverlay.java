@@ -35,15 +35,15 @@ import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay.ArrowStyle;
 import imagej.data.overlay.Overlay.LineStyle;
 import imagej.data.overlay.OverlaySettings;
-import imagej.menu.MenuConstants;
-import imagej.options.OptionsPlugin;
-import imagej.widget.NumberWidget;
 
+import org.scijava.menu.MenuConstants;
+import org.scijava.options.OptionsPlugin;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.ColorRGB;
 import org.scijava.util.Colors;
+import org.scijava.widget.NumberWidget;
 
 /**
  * Runs the Edit::Options::Overlay... dialog.

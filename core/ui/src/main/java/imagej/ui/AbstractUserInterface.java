@@ -31,9 +31,6 @@
 
 package imagej.ui;
 
-import imagej.command.CommandService;
-import imagej.display.Display;
-import imagej.display.DisplayService;
 import imagej.ui.viewer.DisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.updater.core.UpToDate;
@@ -43,6 +40,9 @@ import java.util.List;
 
 import org.scijava.app.App;
 import org.scijava.app.StatusService;
+import org.scijava.command.CommandService;
+import org.scijava.display.Display;
+import org.scijava.display.DisplayService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.AbstractRichPlugin;
 import org.scijava.plugin.Parameter;

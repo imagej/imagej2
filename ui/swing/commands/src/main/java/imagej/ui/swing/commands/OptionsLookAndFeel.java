@@ -31,9 +31,6 @@
 
 package imagej.ui.swing.commands;
 
-import imagej.menu.MenuConstants;
-import imagej.module.MutableModuleItem;
-import imagej.options.OptionsPlugin;
 import imagej.plugins.uis.swing.SwingApplicationFrame;
 import imagej.ui.UserInterface;
 
@@ -46,6 +43,9 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import org.scijava.log.LogService;
+import org.scijava.menu.MenuConstants;
+import org.scijava.module.MutableModuleItem;
+import org.scijava.options.OptionsPlugin;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

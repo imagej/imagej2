@@ -31,7 +31,6 @@
 
 package imagej.plugins.commands.debug;
 
-import imagej.command.Command;
 import imagej.data.table.DefaultGenericTable;
 import imagej.data.table.DefaultResultsTable;
 import imagej.data.table.GenericTable;
@@ -39,6 +38,7 @@ import imagej.data.table.ResultsTable;
 
 import org.scijava.ItemIO;
 import org.scijava.app.StatusService;
+import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.MersenneTwisterFast;

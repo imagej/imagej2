@@ -31,12 +31,8 @@
 
 package imagej.plugins.uis.awt.widget;
 
-import imagej.module.Module;
-import imagej.module.process.PreprocessorPlugin;
 import imagej.plugins.uis.awt.AWTUI;
 import imagej.ui.AbstractInputHarvesterPlugin;
-import imagej.widget.InputHarvester;
-import imagej.widget.InputPanel;
 
 import java.awt.Dimension;
 import java.awt.Panel;
@@ -46,7 +42,11 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import org.scijava.Priority;
+import org.scijava.module.Module;
+import org.scijava.module.process.PreprocessorPlugin;
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.InputHarvester;
+import org.scijava.widget.InputPanel;
 
 /**
  * AWTInputHarvester is an {@link InputHarvester} that collects input parameter

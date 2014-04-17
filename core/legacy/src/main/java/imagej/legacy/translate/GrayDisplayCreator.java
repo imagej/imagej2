@@ -38,7 +38,6 @@ import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.display.DisplayService;
 import imagej.legacy.LegacyService;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
@@ -46,6 +45,7 @@ import net.imglib2.meta.AxisType;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.AbstractContextual;
+import org.scijava.display.DisplayService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 

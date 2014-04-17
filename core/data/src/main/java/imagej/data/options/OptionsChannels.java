@@ -32,13 +32,13 @@
 package imagej.data.options;
 
 import imagej.data.ChannelCollection;
-import imagej.menu.MenuConstants;
-import imagej.options.OptionsPlugin;
-import imagej.options.event.OptionsEvent;
 
 import java.util.LinkedList;
 import java.util.List;
 
+import org.scijava.menu.MenuConstants;
+import org.scijava.options.OptionsPlugin;
+import org.scijava.options.event.OptionsEvent;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

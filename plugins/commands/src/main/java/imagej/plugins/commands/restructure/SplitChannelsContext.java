@@ -31,13 +31,13 @@
 
 package imagej.plugins.commands.restructure;
 
-import imagej.command.Command;
-import imagej.command.CommandService;
-import imagej.command.ContextCommand;
 import imagej.data.display.ImageDisplay;
 
 import java.util.HashMap;
 
+import org.scijava.command.Command;
+import org.scijava.command.CommandService;
+import org.scijava.command.ContextCommand;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

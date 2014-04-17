@@ -31,14 +31,6 @@
 
 package imagej.script.editor;
 
-import imagej.command.CommandService;
-import imagej.module.ModuleException;
-import imagej.module.ModuleService;
-import imagej.platform.PlatformService;
-import imagej.script.ScriptInfo;
-import imagej.script.ScriptLanguage;
-import imagej.script.ScriptModule;
-import imagej.script.ScriptService;
 import imagej.script.editor.command.ChooseFontSize;
 import imagej.script.editor.command.ChooseTabSize;
 import imagej.script.editor.command.GitGrep;
@@ -122,9 +114,17 @@ import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.modes.JavaScriptTokenMaker;
 import org.fife.ui.rsyntaxtextarea.modes.JavaTokenMaker;
 import org.scijava.Context;
+import org.scijava.command.CommandService;
 import org.scijava.io.IOService;
 import org.scijava.log.LogService;
+import org.scijava.module.ModuleException;
+import org.scijava.module.ModuleService;
+import org.scijava.platform.PlatformService;
 import org.scijava.plugin.Parameter;
+import org.scijava.script.ScriptInfo;
+import org.scijava.script.ScriptLanguage;
+import org.scijava.script.ScriptModule;
+import org.scijava.script.ScriptService;
 import org.scijava.util.FileUtils;
 import org.scijava.util.Prefs;
 

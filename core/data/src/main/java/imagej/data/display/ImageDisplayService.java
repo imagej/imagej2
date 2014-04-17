@@ -34,11 +34,11 @@ package imagej.data.display;
 import imagej.data.Data;
 import imagej.data.Dataset;
 import imagej.data.Position;
-import imagej.display.DisplayService;
 import imagej.service.ImageJService;
 
 import java.util.List;
 
+import org.scijava.display.DisplayService;
 import org.scijava.event.EventService;
 import org.scijava.plugin.PluginService;
 

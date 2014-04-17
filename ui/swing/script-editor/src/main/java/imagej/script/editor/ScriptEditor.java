@@ -31,9 +31,8 @@
 
 package imagej.script.editor;
 
-import imagej.command.Command;
-
 import org.scijava.Context;
+import org.scijava.command.Command;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

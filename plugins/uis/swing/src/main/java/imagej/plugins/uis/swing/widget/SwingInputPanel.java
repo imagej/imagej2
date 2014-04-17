@@ -31,13 +31,13 @@
 
 package imagej.plugins.uis.swing.widget;
 
-import imagej.widget.AbstractInputPanel;
-import imagej.widget.InputPanel;
-import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import org.scijava.widget.AbstractInputPanel;
+import org.scijava.widget.InputPanel;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.WidgetModel;
 
 import net.miginfocom.swing.MigLayout;
 

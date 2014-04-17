@@ -35,7 +35,6 @@ import imagej.data.display.DataView;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
-import imagej.display.Display;
 import imagej.plugins.uis.swing.overlay.JHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.JHotDrawService;
 
@@ -44,6 +43,7 @@ import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.event.FigureAdapter;
 import org.jhotdraw.draw.event.FigureEvent;
 import org.scijava.AbstractContextual;
+import org.scijava.display.Display;
 import org.scijava.plugin.Parameter;
 
 /**

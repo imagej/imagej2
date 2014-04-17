@@ -38,7 +38,6 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
 import imagej.data.overlay.Overlay;
-import imagej.display.DisplayService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +51,7 @@ import net.imglib2.meta.ImgPlus;
 import net.imglib2.meta.IntervalUtils;
 import net.imglib2.type.numeric.RealType;
 
+import org.scijava.display.DisplayService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;

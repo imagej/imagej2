@@ -31,8 +31,6 @@
 
 package imagej.updater.core;
 
-import imagej.command.CommandInfo;
-import imagej.command.CommandService;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
@@ -48,6 +46,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.scijava.command.CommandInfo;
+import org.scijava.command.CommandService;
 
 /**
  * A class that updates local files from all available update sites.

@@ -33,9 +33,9 @@ package imagej.legacy.plugin;
 
 import ij.ImagePlus;
 import ij.process.ByteProcessor;
-import imagej.command.Command;
 import imagej.legacy.LegacyOutputTracker;
 
+import org.scijava.command.Command;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

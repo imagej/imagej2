@@ -32,9 +32,9 @@
 package imagej.core.options;
 
 import imagej.config.ConfigFileParameters;
-import imagej.menu.MenuConstants;
-import imagej.options.OptionsPlugin;
 
+import org.scijava.menu.MenuConstants;
+import org.scijava.options.OptionsPlugin;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

@@ -31,9 +31,8 @@
 
 package imagej.data.table;
 
-import imagej.display.AbstractDisplay;
-import imagej.display.Display;
-
+import org.scijava.display.AbstractDisplay;
+import org.scijava.display.Display;
 import org.scijava.plugin.Plugin;
 
 /**

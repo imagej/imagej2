@@ -31,9 +31,8 @@
 
 package imagej.plugins.commands.debug;
 
-import imagej.command.Command;
-
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 

@@ -31,11 +31,10 @@
 
 package imagej.ui.swing.commands.debug;
 
-import imagej.command.Command;
-
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import org.scijava.command.Command;
 import org.scijava.event.EventDetails;
 import org.scijava.event.EventHistory;
 import org.scijava.event.EventHistoryListener;

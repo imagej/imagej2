@@ -34,14 +34,14 @@ package imagej.data.animation;
 import imagej.data.Data;
 import imagej.data.display.ImageDisplay;
 import imagej.data.event.DataRestructuredEvent;
-import imagej.display.Display;
-import imagej.display.event.DisplayDeletedEvent;
-import imagej.display.event.input.KyPressedEvent;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.scijava.app.StatusService;
+import org.scijava.display.Display;
+import org.scijava.display.event.DisplayDeletedEvent;
+import org.scijava.display.event.input.KyPressedEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.input.KeyCode;

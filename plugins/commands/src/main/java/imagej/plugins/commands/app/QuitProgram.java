@@ -31,16 +31,16 @@
 
 package imagej.plugins.commands.app;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
 import imagej.core.options.OptionsMisc;
 import imagej.data.display.WindowService;
-import imagej.menu.MenuConstants;
-import imagej.options.OptionsService;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 
 import org.scijava.app.StatusService;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.menu.MenuConstants;
+import org.scijava.options.OptionsService;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

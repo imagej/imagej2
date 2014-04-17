@@ -31,7 +31,6 @@
 
 package imagej.plugins.commands.misc;
 
-import imagej.command.Command;
 import imagej.data.Dataset;
 import imagej.data.Position;
 import imagej.data.display.ColorMode;
@@ -42,12 +41,13 @@ import imagej.data.overlay.ThresholdOverlay;
 import imagej.data.threshold.ThresholdService;
 import imagej.data.types.DataType;
 import imagej.data.types.DataTypeService;
-import imagej.menu.MenuConstants;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.axis.LinearAxis;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

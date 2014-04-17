@@ -31,12 +31,11 @@
 
 package imagej.ui;
 
-import imagej.module.Module;
-import imagej.module.ModuleItem;
-import imagej.module.process.AbstractPreprocessorPlugin;
-import imagej.module.process.PreprocessorPlugin;
-
 import org.scijava.Priority;
+import org.scijava.module.Module;
+import org.scijava.module.ModuleItem;
+import org.scijava.module.process.AbstractPreprocessorPlugin;
+import org.scijava.module.process.PreprocessorPlugin;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 

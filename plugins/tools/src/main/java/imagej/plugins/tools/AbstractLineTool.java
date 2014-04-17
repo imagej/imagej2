@@ -39,16 +39,16 @@ import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.event.DatasetUpdatedEvent;
 import imagej.data.options.OptionsChannels;
-import imagej.display.event.input.MsButtonEvent;
-import imagej.display.event.input.MsDraggedEvent;
-import imagej.display.event.input.MsPressedEvent;
-import imagej.display.event.input.MsReleasedEvent;
-import imagej.options.OptionsService;
 import imagej.render.RenderingService;
-import imagej.tool.AbstractTool;
 
+import org.scijava.display.event.input.MsButtonEvent;
+import org.scijava.display.event.input.MsDraggedEvent;
+import org.scijava.display.event.input.MsPressedEvent;
+import org.scijava.display.event.input.MsReleasedEvent;
 import org.scijava.event.EventService;
+import org.scijava.options.OptionsService;
 import org.scijava.plugin.Parameter;
+import org.scijava.tool.AbstractTool;
 import org.scijava.util.IntCoords;
 import org.scijava.util.RealCoords;
 

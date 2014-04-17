@@ -31,13 +31,13 @@
 
 package imagej.plugins.uis.swing.viewer.text;
 
-import imagej.display.Display;
 import imagej.plugins.uis.swing.AbstractSwingUI;
 import imagej.ui.UserInterface;
 import imagej.ui.viewer.DisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.text.AbstractTextDisplayViewer;
 
+import org.scijava.display.Display;
 import org.scijava.plugin.Plugin;
 
 /**

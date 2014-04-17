@@ -33,7 +33,6 @@ package imagej.data.overlay;
 
 import imagej.data.Dataset;
 import imagej.data.event.DatasetRestructuredEvent;
-import imagej.display.Displayable;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.ImgPlus;
@@ -52,6 +51,7 @@ import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.Context;
+import org.scijava.display.Displayable;
 import org.scijava.event.EventHandler;
 import org.scijava.util.ColorRGB;
 import org.scijava.util.Colors;

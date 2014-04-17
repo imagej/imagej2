@@ -31,10 +31,6 @@
 
 package imagej.plugins.uis.swing.widget;
 
-import imagej.widget.InputWidget;
-import imagej.widget.NumberWidget;
-import imagej.widget.WidgetModel;
-
 import java.awt.Adjustable;
 import java.awt.Dimension;
 import java.awt.event.AdjustmentEvent;
@@ -55,6 +51,9 @@ import javax.swing.event.ChangeListener;
 
 import org.scijava.plugin.Plugin;
 import org.scijava.util.NumberUtils;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.NumberWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
  * Swing implementation of number chooser widget.

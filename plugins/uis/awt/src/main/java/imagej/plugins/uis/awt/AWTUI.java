@@ -31,10 +31,6 @@
 
 package imagej.plugins.uis.awt;
 
-import imagej.display.Display;
-import imagej.menu.MenuService;
-import imagej.platform.AppEventService;
-import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.plugins.uis.awt.menu.AWTMenuBarCreator;
 import imagej.ui.AbstractUserInterface;
 import imagej.ui.ApplicationFrame;
@@ -52,7 +48,11 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 
+import org.scijava.display.Display;
 import org.scijava.event.EventService;
+import org.scijava.menu.MenuService;
+import org.scijava.platform.AppEventService;
+import org.scijava.platform.event.AppMenusCreatedEvent;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 

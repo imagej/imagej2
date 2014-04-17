@@ -32,7 +32,6 @@
 package imagej;
 
 import imagej.app.ImageJApp;
-import imagej.command.CommandService;
 import imagej.data.DatasetService;
 import imagej.data.animation.AnimationService;
 import imagej.data.display.ImageDisplayService;
@@ -46,30 +45,31 @@ import imagej.data.measure.StatisticsService;
 import imagej.data.operator.CalculatorService;
 import imagej.data.sampler.SamplerService;
 import imagej.data.threshold.ThresholdService;
-import imagej.display.DisplayService;
 import imagej.io.RecentFileService;
 import imagej.legacy.LegacyService;
-import imagej.menu.MenuService;
-import imagej.module.ModuleService;
 import imagej.ops.OpService;
-import imagej.options.OptionsService;
-import imagej.platform.AppEventService;
-import imagej.platform.PlatformService;
 import imagej.render.RenderingService;
-import imagej.script.ScriptService;
-import imagej.tool.IconService;
-import imagej.tool.ToolService;
 import imagej.ui.UIService;
 import imagej.updater.core.UploaderService;
-import imagej.widget.WidgetService;
 
 import java.util.Collection;
 
 import org.scijava.AbstractGateway;
 import org.scijava.Context;
 import org.scijava.Gateway;
+import org.scijava.command.CommandService;
+import org.scijava.display.DisplayService;
+import org.scijava.menu.MenuService;
+import org.scijava.module.ModuleService;
+import org.scijava.options.OptionsService;
+import org.scijava.platform.AppEventService;
+import org.scijava.platform.PlatformService;
 import org.scijava.plugin.Plugin;
+import org.scijava.script.ScriptService;
 import org.scijava.service.Service;
+import org.scijava.tool.IconService;
+import org.scijava.tool.ToolService;
+import org.scijava.widget.WidgetService;
 
 /**
  * Main entry point into ImageJ. This class enables working with ImageJ services

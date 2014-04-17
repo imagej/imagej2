@@ -31,8 +31,6 @@
 
 package imagej.plugins.commands.upload;
 
-import imagej.command.Command;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -49,6 +47,7 @@ import java.net.URLEncoder;
 import net.iharder.Base64;
 
 import org.scijava.app.StatusService;
+import org.scijava.command.Command;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

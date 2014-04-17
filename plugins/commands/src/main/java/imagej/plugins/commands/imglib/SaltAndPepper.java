@@ -31,8 +31,6 @@
 
 package imagej.plugins.commands.imglib;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
 import imagej.data.Dataset;
 import imagej.data.Extents;
 import imagej.data.Position;
@@ -41,7 +39,6 @@ import imagej.data.autoscale.DataRange;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.OverlayService;
-import imagej.menu.MenuConstants;
 
 import java.util.Random;
 
@@ -51,6 +48,9 @@ import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

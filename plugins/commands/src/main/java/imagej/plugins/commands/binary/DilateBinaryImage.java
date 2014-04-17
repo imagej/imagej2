@@ -31,13 +31,13 @@
 
 package imagej.plugins.commands.binary;
 
-import imagej.command.Command;
 import imagej.data.Dataset;
-import imagej.menu.MenuConstants;
 import net.imglib2.img.Img;
 import net.imglib2.ops.operation.randomaccessibleinterval.unary.morph.Dilate;
 import net.imglib2.type.logic.BitType;
 
+import org.scijava.command.Command;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Plugin;
 

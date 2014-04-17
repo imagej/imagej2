@@ -31,7 +31,7 @@
 
 package imagej.updater.core;
 
-import imagej.command.Command;
+import org.scijava.command.Command;
 
 /**
  * A placeholder interface for graphical user interfaces for the updater.

@@ -31,7 +31,6 @@
 
 package imagej.updater.gui;
 
-import imagej.command.CommandService;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.FileObject;
 import imagej.updater.core.FilesCollection;
@@ -57,6 +56,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.scijava.app.StatusService;
+import org.scijava.command.CommandService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;

@@ -32,7 +32,6 @@
 package imagej.plugins.uis.swing.viewer.table;
 
 import imagej.data.table.Table;
-import imagej.display.Display;
 import imagej.plugins.uis.swing.AbstractSwingUI;
 import imagej.ui.UserInterface;
 import imagej.ui.viewer.DisplayViewer;
@@ -41,6 +40,7 @@ import imagej.ui.viewer.table.AbstractTableDisplayViewer;
 
 import javax.swing.JTable;
 
+import org.scijava.display.Display;
 import org.scijava.plugin.Plugin;
 
 /**

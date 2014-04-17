@@ -32,15 +32,10 @@
 package imagej.plugins.commands.app;
 
 import imagej.app.ImageJApp;
-import imagej.command.Command;
-import imagej.command.ContextCommand;
 import imagej.data.ChannelCollection;
 import imagej.data.Dataset;
 import imagej.data.DatasetService;
 import imagej.data.DrawingTool;
-import imagej.display.Display;
-import imagej.display.DisplayService;
-import imagej.menu.MenuConstants;
 import imagej.render.RenderingService;
 import imagej.render.TextRenderer.TextJustification;
 import imagej.util.AppUtils;
@@ -63,7 +58,12 @@ import net.imglib2.meta.AxisType;
 import org.scijava.ItemIO;
 import org.scijava.app.App;
 import org.scijava.app.AppService;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.display.Display;
+import org.scijava.display.DisplayService;
 import org.scijava.log.LogService;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

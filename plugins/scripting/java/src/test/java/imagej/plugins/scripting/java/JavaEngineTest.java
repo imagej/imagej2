@@ -33,9 +33,6 @@ package imagej.plugins.scripting.java;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
-import imagej.script.ScriptLanguage;
-import imagej.script.ScriptService;
-import imagej.test.TestUtils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -51,6 +48,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.scijava.Context;
 import org.scijava.object.ObjectService;
+import org.scijava.script.ScriptLanguage;
+import org.scijava.script.ScriptService;
+import org.scijava.test.TestUtils;
 import org.scijava.util.FileUtils;
 
 /**

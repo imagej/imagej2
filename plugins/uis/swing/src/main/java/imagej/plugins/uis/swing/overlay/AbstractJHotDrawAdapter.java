@@ -37,7 +37,6 @@ import imagej.data.display.OverlayService;
 import imagej.data.display.OverlayView;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
-import imagej.display.Display;
 import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
@@ -47,6 +46,7 @@ import org.jhotdraw.draw.AttributeKey;
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.decoration.ArrowTip;
+import org.scijava.display.Display;
 import org.scijava.plugin.AbstractRichPlugin;
 import org.scijava.plugin.Parameter;
 import org.scijava.util.ColorRGB;

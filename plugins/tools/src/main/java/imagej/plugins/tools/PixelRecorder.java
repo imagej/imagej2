@@ -39,8 +39,6 @@ import imagej.data.display.DatasetView;
 import imagej.data.display.ImageCanvas;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.display.Display;
-import imagej.display.event.input.MsEvent;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -52,6 +50,8 @@ import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.Context;
+import org.scijava.display.Display;
+import org.scijava.display.event.input.MsEvent;
 import org.scijava.plugin.Parameter;
 import org.scijava.util.ColorRGB;
 import org.scijava.util.Colors;

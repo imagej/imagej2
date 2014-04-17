@@ -40,9 +40,6 @@ import imagej.data.options.OptionsOverlay;
 import imagej.data.overlay.CompositeOverlay;
 import imagej.data.overlay.Overlay;
 import imagej.data.overlay.OverlaySettings;
-import imagej.display.Display;
-import imagej.display.DisplayService;
-import imagej.options.OptionsService;
 import imagej.render.RenderingService;
 
 import java.util.ArrayList;
@@ -55,7 +52,10 @@ import net.imglib2.ops.pointset.RoiPointSet;
 import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.logic.BitType;
 
+import org.scijava.display.Display;
+import org.scijava.display.DisplayService;
 import org.scijava.object.ObjectService;
+import org.scijava.options.OptionsService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;

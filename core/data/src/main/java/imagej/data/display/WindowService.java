@@ -31,13 +31,13 @@
 
 package imagej.data.display;
 
-import imagej.menu.MenuService;
-import imagej.module.ModuleService;
 import imagej.service.ImageJService;
 
 import java.util.List;
 
 import org.scijava.event.EventService;
+import org.scijava.menu.MenuService;
+import org.scijava.module.ModuleService;
 
 /**
  * Interface for service that keeps track of open windows, including management

@@ -31,10 +31,10 @@
 
 package imagej.script.editor.command;
 
-import imagej.command.DynamicCommand;
-import imagej.module.MutableModuleItem;
 import imagej.script.editor.TextEditor;
 
+import org.scijava.command.DynamicCommand;
+import org.scijava.module.MutableModuleItem;
 import org.scijava.plugin.Parameter;
 
 /**

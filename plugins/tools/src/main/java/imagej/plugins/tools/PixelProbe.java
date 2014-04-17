@@ -34,14 +34,14 @@ package imagej.plugins.tools;
 import imagej.data.ChannelCollection;
 import imagej.data.display.ImageDisplay;
 import imagej.data.display.ImageDisplayService;
-import imagej.display.event.input.MsMovedEvent;
-import imagej.tool.AbstractTool;
-import imagej.tool.Tool;
 import net.imglib2.meta.Axes;
 
 import org.scijava.app.StatusService;
+import org.scijava.display.event.input.MsMovedEvent;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.tool.AbstractTool;
+import org.scijava.tool.Tool;
 
 /**
  * Displays pixel values under the cursor.

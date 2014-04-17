@@ -31,14 +31,14 @@
 
 package imagej.plugins.commands.display;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
-import imagej.command.Previewable;
 import imagej.data.display.ColorMode;
 import imagej.data.display.DatasetView;
-import imagej.menu.MenuConstants;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.command.Previewable;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

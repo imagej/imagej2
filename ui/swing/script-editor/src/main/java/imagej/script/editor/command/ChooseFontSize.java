@@ -31,9 +31,9 @@
 
 package imagej.script.editor.command;
 
-import imagej.command.ContextCommand;
 import imagej.script.editor.TextEditor;
 
+import org.scijava.command.ContextCommand;
 import org.scijava.plugin.Parameter;
 
 /**

@@ -31,8 +31,9 @@
 
 package imagej.data.display.event;
 
+import org.scijava.display.event.DisplayEvent;
+
 import imagej.data.display.ImageDisplay;
-import imagej.display.event.DisplayEvent;
 
 /**
  * An event indicating something has happened to an {@link ImageDisplay}.

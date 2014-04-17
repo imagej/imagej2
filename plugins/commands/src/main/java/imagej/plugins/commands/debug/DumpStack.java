@@ -31,15 +31,14 @@
 
 package imagej.plugins.commands.debug;
 
-import imagej.command.Command;
-import imagej.menu.MenuConstants;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

@@ -31,10 +31,10 @@
 
 package imagej.plugins.commands.dataset;
 
-import imagej.command.Command;
 import imagej.data.Dataset;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 

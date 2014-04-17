@@ -31,11 +31,6 @@
 
 package imagej.plugins.uis.swing;
 
-import imagej.display.Display;
-import imagej.menu.MenuService;
-import imagej.menu.ShadowMenu;
-import imagej.platform.AppEventService;
-import imagej.platform.event.AppMenusCreatedEvent;
 import imagej.plugins.uis.swing.menu.SwingJMenuBarCreator;
 import imagej.plugins.uis.swing.menu.SwingJPopupMenuCreator;
 import imagej.ui.AbstractUserInterface;
@@ -46,7 +41,6 @@ import imagej.ui.common.awt.AWTDropTargetEventDispatcher;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
 import imagej.ui.viewer.DisplayViewer;
-import imagej.widget.FileWidget;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -59,8 +53,14 @@ import javax.swing.JMenuBar;
 import javax.swing.JPopupMenu;
 import javax.swing.WindowConstants;
 
+import org.scijava.display.Display;
 import org.scijava.event.EventService;
+import org.scijava.menu.MenuService;
+import org.scijava.menu.ShadowMenu;
+import org.scijava.platform.AppEventService;
+import org.scijava.platform.event.AppMenusCreatedEvent;
 import org.scijava.plugin.Parameter;
+import org.scijava.widget.FileWidget;
 
 /**
  * Abstract superclass for Swing-based user interfaces.

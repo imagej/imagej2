@@ -33,9 +33,9 @@ package imagej.plugins.tools;
 
 import imagej.data.ChannelCollection;
 import imagej.data.options.OptionsChannels;
-import imagej.tool.Tool;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.tool.Tool;
 import org.scijava.util.ColorRGB;
 import org.scijava.util.Colors;
 

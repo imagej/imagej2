@@ -31,8 +31,9 @@
 
 package imagej.data.display;
 
+import org.scijava.display.Display;
+
 import imagej.data.overlay.Overlay;
-import imagej.display.Display;
 
 /**
  * A linkage between an {@link Overlay} and a {@link Display}.

@@ -31,11 +31,11 @@
 
 package imagej.data.display;
 
+import org.scijava.display.Display;
 import org.scijava.util.RealRect;
 
 import imagej.data.Data;
 import imagej.data.PositionableByAxis;
-import imagej.display.Display;
 import net.imglib2.Interval;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;

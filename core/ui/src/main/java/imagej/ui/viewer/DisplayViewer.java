@@ -32,13 +32,13 @@
 package imagej.ui.viewer;
 
 import imagej.ImageJPlugin;
-import imagej.display.Display;
-import imagej.display.event.DisplayActivatedEvent;
-import imagej.display.event.DisplayDeletedEvent;
-import imagej.display.event.DisplayUpdatedEvent;
 import imagej.ui.UserInterface;
 
 import org.scijava.Disposable;
+import org.scijava.display.Display;
+import org.scijava.display.event.DisplayActivatedEvent;
+import org.scijava.display.event.DisplayDeletedEvent;
+import org.scijava.display.event.DisplayUpdatedEvent;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.RichPlugin;
 

@@ -31,7 +31,6 @@
 
 package imagej.plugins.uis.swing.sdi;
 
-import imagej.display.Display;
 import imagej.plugins.uis.swing.AbstractSwingUI;
 import imagej.plugins.uis.swing.SwingApplicationFrame;
 import imagej.plugins.uis.swing.sdi.viewer.SwingDisplayWindow;
@@ -47,6 +46,7 @@ import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 
+import org.scijava.display.Display;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

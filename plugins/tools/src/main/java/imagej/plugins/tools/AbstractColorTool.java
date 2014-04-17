@@ -31,28 +31,28 @@
 
 package imagej.plugins.tools;
 
-import imagej.command.CommandService;
 import imagej.data.ChannelCollection;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplayService;
 import imagej.data.display.event.AxisPositionEvent;
 import imagej.data.options.OptionsChannels;
-import imagej.display.Display;
-import imagej.display.DisplayService;
-import imagej.display.event.DisplayActivatedEvent;
-import imagej.display.event.DisplayDeletedEvent;
-import imagej.display.event.input.MsButtonEvent;
-import imagej.display.event.input.MsClickedEvent;
-import imagej.options.OptionsService;
-import imagej.options.event.OptionsEvent;
-import imagej.tool.AbstractTool;
-import imagej.tool.CustomDrawnTool;
-import imagej.tool.IconDrawer;
-import imagej.tool.IconService;
 
 import org.scijava.app.StatusService;
+import org.scijava.command.CommandService;
+import org.scijava.display.Display;
+import org.scijava.display.DisplayService;
+import org.scijava.display.event.DisplayActivatedEvent;
+import org.scijava.display.event.DisplayDeletedEvent;
+import org.scijava.display.event.input.MsButtonEvent;
+import org.scijava.display.event.input.MsClickedEvent;
 import org.scijava.event.EventHandler;
+import org.scijava.options.OptionsService;
+import org.scijava.options.event.OptionsEvent;
 import org.scijava.plugin.Parameter;
+import org.scijava.tool.AbstractTool;
+import org.scijava.tool.CustomDrawnTool;
+import org.scijava.tool.IconDrawer;
+import org.scijava.tool.IconService;
 import org.scijava.util.ColorRGB;
 
 /**

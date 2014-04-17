@@ -31,13 +31,13 @@
 
 package imagej.data.command;
 
-import imagej.command.InteractiveCommand;
 import imagej.data.Dataset;
 import imagej.data.display.DatasetView;
 import imagej.data.display.ImageDisplayService;
-import imagej.display.Display;
-import imagej.module.ModuleItem;
 
+import org.scijava.command.InteractiveCommand;
+import org.scijava.display.Display;
+import org.scijava.module.ModuleItem;
 import org.scijava.plugin.Parameter;
 
 /**

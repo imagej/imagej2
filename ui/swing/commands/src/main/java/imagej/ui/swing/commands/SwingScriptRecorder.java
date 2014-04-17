@@ -31,18 +31,7 @@
 
 package imagej.ui.swing.commands;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
-import imagej.module.Module;
-import imagej.module.ModuleInfo;
-import imagej.module.ModuleItem;
-import imagej.module.event.ModuleEvent;
-import imagej.module.event.ModuleExecutedEvent;
 import imagej.plugins.uis.swing.StaticSwingUtils;
-import imagej.script.CodeGenerator;
-import imagej.script.CodeGeneratorJava;
-import imagej.script.InvocationObject;
-import imagej.script.ParameterObject;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
 
@@ -64,13 +53,24 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.event.EventSubscriber;
 import org.scijava.event.SciJavaEvent;
+import org.scijava.module.Module;
+import org.scijava.module.ModuleInfo;
+import org.scijava.module.ModuleItem;
+import org.scijava.module.event.ModuleEvent;
+import org.scijava.module.event.ModuleExecutedEvent;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.script.CodeGenerator;
+import org.scijava.script.CodeGeneratorJava;
+import org.scijava.script.InvocationObject;
+import org.scijava.script.ParameterObject;
 
 /**
  * Script Recorder.

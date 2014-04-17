@@ -31,10 +31,8 @@
 
 package imagej.ui;
 
-import imagej.display.Display;
 import imagej.service.ImageJService;
 import imagej.ui.viewer.DisplayViewer;
-import imagej.widget.FileWidget;
 
 import java.io.File;
 import java.util.List;
@@ -42,7 +40,9 @@ import java.util.List;
 import org.scijava.app.App;
 import org.scijava.app.StatusService;
 import org.scijava.app.event.StatusEvent;
+import org.scijava.display.Display;
 import org.scijava.plugin.PluginInfo;
+import org.scijava.widget.FileWidget;
 
 /**
  * Interface for service that handles ImageJ user interfaces.

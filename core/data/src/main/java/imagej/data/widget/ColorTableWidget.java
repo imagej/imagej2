@@ -31,7 +31,8 @@
 
 package imagej.data.widget;
 
-import imagej.widget.InputWidget;
+import org.scijava.widget.InputWidget;
+
 import net.imglib2.display.ColorTable;
 
 /**
