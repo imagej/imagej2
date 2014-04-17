@@ -57,19 +57,8 @@ import java.util.Collection;
 import org.scijava.AbstractGateway;
 import org.scijava.Context;
 import org.scijava.Gateway;
-import org.scijava.command.CommandService;
-import org.scijava.display.DisplayService;
-import org.scijava.menu.MenuService;
-import org.scijava.module.ModuleService;
-import org.scijava.options.OptionsService;
-import org.scijava.platform.AppEventService;
-import org.scijava.platform.PlatformService;
 import org.scijava.plugin.Plugin;
-import org.scijava.script.ScriptService;
 import org.scijava.service.Service;
-import org.scijava.tool.IconService;
-import org.scijava.tool.ToolService;
-import org.scijava.widget.WidgetService;
 
 /**
  * Main entry point into ImageJ. This class enables working with ImageJ services
@@ -154,28 +143,12 @@ public class ImageJ extends AbstractGateway {
 		return get(AnimationService.class);
 	}
 
-	public AppEventService appEvent() {
-		return get(AppEventService.class);
-	}
-
 	public CalculatorService calculator() {
 		return get(CalculatorService.class);
 	}
 
-	public CommandService command() {
-		return get(CommandService.class);
-	}
-
 	public DatasetService dataset() {
 		return get(DatasetService.class);
-	}
-
-	public DisplayService display() {
-		return get(DisplayService.class);
-	}
-
-	public IconService icon() {
-		return get(IconService.class);
 	}
 
 	public ImageDisplayService imageDisplay() {
@@ -198,28 +171,12 @@ public class ImageJ extends AbstractGateway {
 		return get(MeasurementService.class);
 	}
 
-	public MenuService menu() {
-		return get(MenuService.class);
-	}
-
-	public ModuleService module() {
-		return get(ModuleService.class);
-	}
-
 	public OpService op() {
 		return get(OpService.class);
 	}
 
-	public OptionsService options() {
-		return get(OptionsService.class);
-	}
-
 	public OverlayService overlay() {
 		return get(OverlayService.class);
-	}
-
-	public PlatformService platform() {
-		return get(PlatformService.class);
 	}
 
 	public RecentFileService recentFile() {
@@ -238,10 +195,6 @@ public class ImageJ extends AbstractGateway {
 		return get(ScreenCaptureService.class);
 	}
 
-	public ScriptService script() {
-		return get(ScriptService.class);
-	}
-
 	public StatisticsService statistics() {
 		return get(StatisticsService.class);
 	}
@@ -250,20 +203,12 @@ public class ImageJ extends AbstractGateway {
 		return get(ThresholdService.class);
 	}
 
-	public ToolService tool() {
-		return get(ToolService.class);
-	}
-
 	public UIService ui() {
 		return get(UIService.class);
 	}
 
 	public UploaderService uploader() {
 		return get(UploaderService.class);
-	}
-
-	public WidgetService widget() {
-		return get(WidgetService.class);
 	}
 
 	public WindowService window() {
