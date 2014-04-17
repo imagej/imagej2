@@ -33,6 +33,9 @@ package imagej.util;
 
 /**
  * A color with red, green, blue and alpha color components.
+ * <p>
+ * It exists mainly to avoid AWT references to {@link java.awt.Color}.
+ * </p>
  * 
  * @author Curtis Rueden
  */

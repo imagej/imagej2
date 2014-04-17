@@ -32,10 +32,10 @@
 package imagej.util;
 
 /**
- * A class for representing a rectangular region, in integer coordinates. This
- * class is very similar to {@link java.awt.Rectangle}; it mainly exists to
- * avoid problems with AWT, JNI and headless operation. Adapted from BioFormats'
- * Region class.
+ * A class for representing a rectangular region, in integer coordinates.
+ * <p>
+ * It exists mainly to avoid AWT references to {@link java.awt.Rectangle}.
+ * </p>
  * 
  * @author Barry DeZonia
  */

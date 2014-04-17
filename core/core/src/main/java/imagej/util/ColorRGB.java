@@ -35,6 +35,9 @@ import java.io.Serializable;
 
 /**
  * A color with red, green and blue color components.
+ * <p>
+ * It exists mainly to avoid AWT references to {@link java.awt.Color}.
+ * </p>
  * 
  * @author Curtis Rueden
  * @author Lee Kamentsky
