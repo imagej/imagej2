@@ -33,13 +33,12 @@ package imagej.plugins.text;
 
 import com.petebevin.markdown.MarkdownProcessor;
 
-import imagej.text.AbstractTextFormat;
-import imagej.text.TextFormat;
-
 import java.util.Arrays;
 import java.util.List;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.text.AbstractTextFormat;
+import org.scijava.text.TextFormat;
 
 /**
  * Text format for <a
