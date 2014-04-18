@@ -32,7 +32,6 @@
 package imagej;
 
 import imagej.legacy.LegacyService;
-import imagej.ops.OpService;
 import imagej.ui.UIService;
 import imagej.updater.core.UploaderService;
 
@@ -50,6 +49,7 @@ import net.imagej.lut.LUTService;
 import net.imagej.measure.MeasurementService;
 import net.imagej.measure.StatisticsService;
 import net.imagej.operator.CalculatorService;
+import net.imagej.ops.OpService;
 import net.imagej.render.RenderingService;
 import net.imagej.sampler.SamplerService;
 import net.imagej.threshold.ThresholdService;

@@ -33,12 +33,11 @@
 		<!-- SciJava dependencies -->
 		<dependency>
 			<groupId>net.imagej</groupId>
-			<artifactId>ij-ops</artifactId>
-			<version>0.1.0</version><!-- TEMP -->
+			<artifactId>imagej-common</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>net.imagej</groupId>
-			<artifactId>imagej-common</artifactId>
+			<artifactId>imagej-ops</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.scijava</groupId>
