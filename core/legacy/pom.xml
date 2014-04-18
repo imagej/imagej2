@@ -87,9 +87,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-core</artifactId>
-			<version>${project.version}</version>
+			<groupId>org.scijava</groupId>
+			<artifactId>scijava-common</artifactId>
 			<classifier>tests</classifier>
 			<scope>test</scope>
 		</dependency>
