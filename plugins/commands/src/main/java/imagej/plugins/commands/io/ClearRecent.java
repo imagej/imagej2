@@ -31,9 +31,8 @@
 
 package imagej.plugins.commands.io;
 
-import imagej.io.RecentFileService;
-
 import org.scijava.command.Command;
+import org.scijava.io.RecentFileService;
 import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;

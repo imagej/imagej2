@@ -45,7 +45,6 @@ import imagej.data.measure.StatisticsService;
 import imagej.data.operator.CalculatorService;
 import imagej.data.sampler.SamplerService;
 import imagej.data.threshold.ThresholdService;
-import imagej.io.RecentFileService;
 import imagej.legacy.LegacyService;
 import imagej.ops.OpService;
 import imagej.render.RenderingService;
@@ -177,10 +176,6 @@ public class ImageJ extends AbstractGateway {
 
 	public OverlayService overlay() {
 		return get(OverlayService.class);
-	}
-
-	public RecentFileService recentFile() {
-		return get(RecentFileService.class);
 	}
 
 	public RenderingService rendering() {
