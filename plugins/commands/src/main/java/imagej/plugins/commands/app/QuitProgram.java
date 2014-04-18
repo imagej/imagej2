@@ -32,9 +32,9 @@
 package imagej.plugins.commands.app;
 
 import imagej.core.options.OptionsMisc;
-import imagej.data.display.WindowService;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
+import net.imagej.display.WindowService;
 
 import org.scijava.app.StatusService;
 import org.scijava.command.Command;

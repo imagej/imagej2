@@ -31,7 +31,7 @@
 
 package imagej.plugins.commands.display;
 
-import imagej.data.display.DatasetView;
+import net.imagej.display.DatasetView;
 import net.imglib2.display.ColorTable8;
 
 import org.scijava.ItemIO;

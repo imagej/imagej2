@@ -31,11 +31,12 @@
 
 package imagej.updater.core;
 
-import imagej.ImageJPlugin;
 import imagej.updater.util.Progressable;
 
 import java.io.IOException;
 import java.util.List;
+
+import net.imagej.ImageJPlugin;
 
 import org.scijava.plugin.Plugin;
 

@@ -31,15 +31,6 @@
 
 package imagej.plugins.commands.app;
 
-import imagej.app.ImageJApp;
-import imagej.data.ChannelCollection;
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.data.DrawingTool;
-import imagej.render.RenderingService;
-import imagej.render.TextRenderer.TextJustification;
-import imagej.util.AppUtils;
-
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -52,6 +43,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.imagej.ChannelCollection;
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
+import net.imagej.DrawingTool;
+import net.imagej.app.ImageJApp;
+import net.imagej.render.RenderingService;
+import net.imagej.render.TextRenderer.TextJustification;
+import net.imagej.util.AppUtils;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 

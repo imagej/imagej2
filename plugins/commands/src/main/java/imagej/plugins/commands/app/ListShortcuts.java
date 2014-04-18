@@ -31,10 +31,10 @@
 
 package imagej.plugins.commands.app;
 
-import imagej.data.table.DefaultGenericTable;
-import imagej.data.table.GenericTable;
-
 import java.util.List;
+
+import net.imagej.table.DefaultGenericTable;
+import net.imagej.table.GenericTable;
 
 import org.scijava.ItemIO;
 import org.scijava.MenuEntry;

@@ -31,7 +31,7 @@
 
 package imagej.plugins.commands.app;
 
-import imagej.data.Dataset;
+import net.imagej.Dataset;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.RealType;

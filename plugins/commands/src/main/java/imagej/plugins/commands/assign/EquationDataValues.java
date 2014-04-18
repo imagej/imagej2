@@ -31,16 +31,15 @@
 
 package imagej.plugins.commands.assign;
 
-import imagej.data.Dataset;
-import imagej.data.Position;
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayService;
-import imagej.data.overlay.Overlay;
-
 import java.net.URL;
 
+import net.imagej.Dataset;
+import net.imagej.Position;
+import net.imagej.display.DatasetView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.OverlayService;
+import net.imagej.overlay.Overlay;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.ops.condition.UVInsideRoiCondition;

@@ -31,9 +31,9 @@
 
 package imagej.ui.viewer.image;
 
-import imagej.data.display.DataView;
-import imagej.data.display.ImageDisplay;
 import imagej.ui.viewer.DisplayPanel;
+import net.imagej.display.DataView;
+import net.imagej.display.ImageDisplay;
 
 /**
  * This is a panel that can go inside a display window. It displays

@@ -31,19 +31,18 @@
 
 package imagej.plugins.commands.debug;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.data.display.ColorTables;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayService;
-import imagej.data.lut.LUTService;
-import imagej.data.overlay.Overlay;
-
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
+import net.imagej.display.ColorTables;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.OverlayService;
+import net.imagej.lut.LUTService;
+import net.imagej.overlay.Overlay;
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;

@@ -31,7 +31,7 @@
 
 package imagej.plugins.commands.binary;
 
-import imagej.data.Dataset;
+import net.imagej.Dataset;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;

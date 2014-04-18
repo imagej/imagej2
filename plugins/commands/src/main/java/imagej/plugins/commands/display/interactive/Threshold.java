@@ -31,19 +31,19 @@
 
 package imagej.plugins.commands.display.interactive;
 
-import imagej.data.Dataset;
-import imagej.data.autoscale.AutoscaleService;
-import imagej.data.autoscale.DataRange;
-import imagej.data.command.InteractiveImageCommand;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.event.AxisPositionEvent;
-import imagej.data.overlay.ThresholdOverlay;
-import imagej.data.threshold.ThresholdMethod;
-import imagej.data.threshold.ThresholdService;
-import imagej.data.widget.HistogramBundle;
 import imagej.ui.DialogPrompt;
 import imagej.ui.UIService;
+import net.imagej.Dataset;
+import net.imagej.autoscale.AutoscaleService;
+import net.imagej.autoscale.DataRange;
+import net.imagej.command.InteractiveImageCommand;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.event.AxisPositionEvent;
+import net.imagej.overlay.ThresholdOverlay;
+import net.imagej.threshold.ThresholdMethod;
+import net.imagej.threshold.ThresholdService;
+import net.imagej.widget.HistogramBundle;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.histogram.Histogram1d;

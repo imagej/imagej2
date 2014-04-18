@@ -31,8 +31,6 @@
 
 package imagej.ui.swing.commands;
 
-import imagej.util.AppUtils;
-
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -64,6 +62,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import net.imagej.util.AppUtils;
 import net.miginfocom.swing.MigLayout;
 
 import org.scijava.MenuEntry;

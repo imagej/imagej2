@@ -31,8 +31,8 @@
 
 package imagej.ui.viewer;
 
-import imagej.ImageJPlugin;
 import imagej.ui.UserInterface;
+import net.imagej.ImageJPlugin;
 
 import org.scijava.Disposable;
 import org.scijava.display.Display;

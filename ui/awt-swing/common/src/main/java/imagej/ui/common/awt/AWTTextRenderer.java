@@ -31,8 +31,6 @@
 
 package imagej.ui.common.awt;
 
-import imagej.render.TextRenderer;
-
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -41,6 +39,10 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+
+import net.imagej.render.TextRenderer;
+import net.imagej.render.TextRenderer.FontFamily;
+import net.imagej.render.TextRenderer.FontStyle;
 
 /**
  * The AWT implementation of the TextRenderer interface. TODO - relocate to

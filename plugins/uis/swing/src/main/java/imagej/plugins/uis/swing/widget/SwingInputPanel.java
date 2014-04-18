@@ -34,12 +34,12 @@ package imagej.plugins.uis.swing.widget;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import net.miginfocom.swing.MigLayout;
+
 import org.scijava.widget.AbstractInputPanel;
 import org.scijava.widget.InputPanel;
 import org.scijava.widget.InputWidget;
 import org.scijava.widget.WidgetModel;
-
-import net.miginfocom.swing.MigLayout;
 
 /**
  * Swing implementation of {@link InputPanel}.

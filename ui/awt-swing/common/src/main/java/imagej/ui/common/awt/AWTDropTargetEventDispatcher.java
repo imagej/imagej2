@@ -31,7 +31,6 @@
 
 package imagej.ui.common.awt;
 
-import imagej.data.display.InputService;
 import imagej.ui.dnd.DragAndDropData;
 import imagej.ui.dnd.DragAndDropService;
 import imagej.ui.dnd.event.DragAndDropEvent;
@@ -49,6 +48,8 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
+
+import net.imagej.display.InputService;
 
 import org.scijava.display.Display;
 import org.scijava.event.EventService;

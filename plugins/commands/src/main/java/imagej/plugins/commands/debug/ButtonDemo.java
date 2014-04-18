@@ -31,8 +31,8 @@
 
 package imagej.plugins.commands.debug;
 
-import imagej.data.Dataset;
 import imagej.plugins.tools.TunePlayer;
+import net.imagej.Dataset;
 import net.imglib2.img.Img;
 import net.imglib2.ops.img.ImageCombiner;
 import net.imglib2.ops.operation.real.unary.RealAddConstant;

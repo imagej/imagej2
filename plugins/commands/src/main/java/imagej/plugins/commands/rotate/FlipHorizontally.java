@@ -31,12 +31,12 @@
 
 package imagej.plugins.commands.rotate;
 
-import imagej.data.Dataset;
-import imagej.data.Extents;
-import imagej.data.Position;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayService;
+import net.imagej.Dataset;
+import net.imagej.Extents;
+import net.imagej.Position;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.OverlayService;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.ImgPlus;

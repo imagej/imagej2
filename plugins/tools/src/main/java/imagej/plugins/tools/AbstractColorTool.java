@@ -31,11 +31,11 @@
 
 package imagej.plugins.tools;
 
-import imagej.data.ChannelCollection;
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.event.AxisPositionEvent;
-import imagej.data.options.OptionsChannels;
+import net.imagej.ChannelCollection;
+import net.imagej.display.DatasetView;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.event.AxisPositionEvent;
+import net.imagej.options.OptionsChannels;
 
 import org.scijava.app.StatusService;
 import org.scijava.command.CommandService;

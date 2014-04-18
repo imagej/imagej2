@@ -33,7 +33,6 @@ package imagej.plugins.uis.swing.widget;
 
 import imagej.plugins.uis.swing.mdi.SwingMdiUI;
 
-import org.scijava.Priority;
 import org.scijava.module.process.PreprocessorPlugin;
 import org.scijava.plugin.Plugin;
 import org.scijava.widget.InputHarvester;

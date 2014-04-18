@@ -31,8 +31,8 @@
 
 package imagej.plugins.commands.assign.noisereduce;
 
-import imagej.data.Dataset;
-import imagej.data.DefaultDataset;
+import net.imagej.Dataset;
+import net.imagej.DefaultDataset;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.ops.function.Function;
 import net.imglib2.ops.img.SerialImageAssignment;

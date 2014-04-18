@@ -32,7 +32,7 @@
 package imagej.legacy.translate;
 
 import ij.ImagePlus;
-import imagej.data.display.ImageDisplay;
+import net.imagej.display.ImageDisplay;
 
 /**
  * General interface for all DisplayHarmonizers. A DisplayHarmonizer keeps some

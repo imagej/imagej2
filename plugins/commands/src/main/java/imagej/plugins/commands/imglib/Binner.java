@@ -31,12 +31,11 @@
 
 package imagej.plugins.commands.imglib;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;

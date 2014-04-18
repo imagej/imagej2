@@ -31,10 +31,6 @@
 
 package imagej.ui.swing.tools.overlay;
 
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayView;
-import imagej.data.overlay.Overlay;
-import imagej.data.overlay.PolygonOverlay;
 import imagej.plugins.uis.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.IJBezierTool;
 import imagej.plugins.uis.swing.overlay.JHotDrawAdapter;
@@ -44,6 +40,10 @@ import imagej.ui.swing.tools.SwingPolygonTool;
 import java.awt.Shape;
 import java.util.Arrays;
 
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.OverlayView;
+import net.imagej.overlay.Overlay;
+import net.imagej.overlay.PolygonOverlay;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.roi.PolygonRegionOfInterest;

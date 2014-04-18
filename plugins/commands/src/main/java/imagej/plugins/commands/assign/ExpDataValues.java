@@ -31,12 +31,12 @@
 
 package imagej.plugins.commands.assign;
 
-import imagej.data.Dataset;
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayService;
-import imagej.data.overlay.Overlay;
+import net.imagej.Dataset;
+import net.imagej.display.DatasetView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.OverlayService;
+import net.imagej.overlay.Overlay;
 import net.imglib2.ops.operation.real.unary.RealExp;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;

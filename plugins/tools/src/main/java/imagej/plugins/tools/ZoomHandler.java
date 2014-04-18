@@ -31,8 +31,8 @@
 
 package imagej.plugins.tools;
 
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ZoomService;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ZoomService;
 
 import org.scijava.display.Display;
 import org.scijava.display.event.input.KyPressedEvent;

@@ -31,18 +31,17 @@
 
 package imagej.plugins.commands.debug;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayService;
-import imagej.data.measure.BasicStats;
-import imagej.data.measure.BasicStatsFunction;
-import imagej.data.measure.MeasurementService;
-import imagej.data.overlay.Overlay;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.OverlayService;
+import net.imagej.measure.BasicStats;
+import net.imagej.measure.BasicStatsFunction;
+import net.imagej.measure.MeasurementService;
+import net.imagej.overlay.Overlay;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;

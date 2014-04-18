@@ -31,9 +31,6 @@
 
 package imagej.plugins.uis.swing.widget;
 
-import imagej.data.widget.HistogramBundle;
-import imagej.data.widget.HistogramWidget;
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -42,6 +39,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPanel;
+
+import net.imagej.widget.HistogramBundle;
+import net.imagej.widget.HistogramWidget;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;

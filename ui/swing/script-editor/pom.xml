@@ -15,9 +15,8 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-core</artifactId>
-			<version>${project.version}</version>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-common</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.fifesoft</groupId>

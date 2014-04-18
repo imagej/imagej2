@@ -31,7 +31,7 @@
 
 package imagej.plugins.tools;
 
-import imagej.data.display.ImageDisplay;
+import net.imagej.display.ImageDisplay;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 

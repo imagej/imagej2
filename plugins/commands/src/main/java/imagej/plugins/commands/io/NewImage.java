@@ -31,14 +31,13 @@
 
 package imagej.plugins.commands.io;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.data.types.DataType;
-import imagej.data.types.DataTypeService;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
+import net.imagej.types.DataType;
+import net.imagej.types.DataTypeService;
 import net.imglib2.Cursor;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;

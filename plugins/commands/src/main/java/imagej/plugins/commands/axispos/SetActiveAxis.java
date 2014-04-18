@@ -31,12 +31,11 @@
 
 package imagej.plugins.commands.axispos;
 
-import imagej.data.animation.Animation;
-import imagej.data.animation.AnimationService;
-import imagej.data.display.ImageDisplay;
-
 import java.util.ArrayList;
 
+import net.imagej.animation.Animation;
+import net.imagej.animation.AnimationService;
+import net.imagej.display.ImageDisplay;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 

@@ -31,8 +31,8 @@
 
 package imagej.plugins.commands.display;
 
-import imagej.data.Dataset;
-import imagej.data.display.ScreenCaptureService;
+import net.imagej.Dataset;
+import net.imagej.display.ScreenCaptureService;
 
 import org.scijava.ItemIO;
 import org.scijava.command.Command;

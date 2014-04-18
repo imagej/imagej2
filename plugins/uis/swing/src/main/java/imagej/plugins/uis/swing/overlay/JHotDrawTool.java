@@ -31,11 +31,11 @@
 
 package imagej.plugins.uis.swing.overlay;
 
-import imagej.data.display.ImageDisplay;
-
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.event.UndoableEditListener;
+
+import net.imagej.display.ImageDisplay;
 
 import org.jhotdraw.draw.tool.Tool;
 

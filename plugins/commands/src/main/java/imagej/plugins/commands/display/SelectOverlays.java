@@ -31,9 +31,9 @@
 
 package imagej.plugins.commands.display;
 
-import imagej.data.display.DataView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayView;
+import net.imagej.display.DataView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.OverlayView;
 
 import org.scijava.ItemIO;
 import org.scijava.command.Command;

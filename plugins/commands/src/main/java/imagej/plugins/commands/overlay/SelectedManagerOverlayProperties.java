@@ -31,9 +31,9 @@
 
 package imagej.plugins.commands.overlay;
 
-import imagej.data.overlay.Overlay;
-
 import java.util.List;
+
+import net.imagej.overlay.Overlay;
 
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;

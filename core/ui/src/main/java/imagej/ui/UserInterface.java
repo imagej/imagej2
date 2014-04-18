@@ -31,10 +31,11 @@
 
 package imagej.ui;
 
-import imagej.ImageJPlugin;
 import imagej.ui.viewer.DisplayWindow;
 
 import java.io.File;
+
+import net.imagej.ImageJPlugin;
 
 import org.scijava.Disposable;
 import org.scijava.display.Display;

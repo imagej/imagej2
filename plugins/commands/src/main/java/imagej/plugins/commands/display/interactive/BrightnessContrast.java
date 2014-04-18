@@ -31,11 +31,11 @@
 
 package imagej.plugins.commands.display.interactive;
 
-import imagej.data.autoscale.AutoscaleService;
-import imagej.data.autoscale.DataRange;
-import imagej.data.command.InteractiveImageCommand;
-import imagej.data.display.DatasetView;
-import imagej.data.widget.HistogramBundle;
+import net.imagej.autoscale.AutoscaleService;
+import net.imagej.autoscale.DataRange;
+import net.imagej.command.InteractiveImageCommand;
+import net.imagej.display.DatasetView;
+import net.imagej.widget.HistogramBundle;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.histogram.BinMapper1d;
 import net.imglib2.histogram.Histogram1d;

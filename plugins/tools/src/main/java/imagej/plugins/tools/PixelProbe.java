@@ -31,9 +31,9 @@
 
 package imagej.plugins.tools;
 
-import imagej.data.ChannelCollection;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
+import net.imagej.ChannelCollection;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
 import net.imglib2.meta.Axes;
 
 import org.scijava.app.StatusService;

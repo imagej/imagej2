@@ -31,9 +31,6 @@
 
 package imagej.ui.common.awt;
 
-import imagej.data.display.ImageCanvas;
-import imagej.data.display.ImageDisplay;
-
 import java.awt.Component;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -43,6 +40,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+
+import net.imagej.display.ImageCanvas;
+import net.imagej.display.ImageDisplay;
 
 import org.scijava.display.Display;
 import org.scijava.display.event.input.KyEvent;

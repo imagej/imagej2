@@ -31,12 +31,11 @@
 
 package imagej.ui.dnd;
 
-import imagej.data.display.ImageDisplay;
-import imagej.data.lut.LUTService;
-
 import java.io.File;
 import java.io.IOException;
 
+import net.imagej.display.ImageDisplay;
+import net.imagej.lut.LUTService;
 import net.imglib2.display.ColorTable;
 
 import org.scijava.display.Display;

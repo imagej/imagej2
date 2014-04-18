@@ -31,11 +31,11 @@
 
 package imagej.plugins.commands.imglib;
 
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.overlay.ThresholdOverlay;
-import imagej.data.threshold.ThresholdService;
+import net.imagej.Dataset;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.overlay.ThresholdOverlay;
+import net.imagej.threshold.ThresholdService;
 import net.imglib2.RandomAccess;
 import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.ops.pointset.PointSetIterator;

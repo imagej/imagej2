@@ -31,13 +31,6 @@
 
 package imagej.legacy;
 
-import imagej.data.DatasetService;
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayService;
-import imagej.data.options.OptionsChannels;
-import imagej.data.threshold.ThresholdService;
 import imagej.legacy.plugin.LegacyCommand;
 import imagej.legacy.plugin.LegacyPluginFinder;
 import imagej.patcher.LegacyInjector;
@@ -51,6 +44,14 @@ import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import net.imagej.DatasetService;
+import net.imagej.display.DatasetView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.OverlayService;
+import net.imagej.options.OptionsChannels;
+import net.imagej.threshold.ThresholdService;
 
 import org.scijava.app.StatusService;
 import org.scijava.command.CommandService;

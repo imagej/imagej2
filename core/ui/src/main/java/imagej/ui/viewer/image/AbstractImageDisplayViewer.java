@@ -32,18 +32,18 @@
 package imagej.ui.viewer.image;
 
 import imagej.core.options.OptionsAppearance;
-import imagej.data.Data;
-import imagej.data.Dataset;
-import imagej.data.Position;
-import imagej.data.display.DataView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.event.DelayedPositionEvent;
-import imagej.data.display.event.PanZoomEvent;
-import imagej.data.event.DatasetRestructuredEvent;
-import imagej.data.event.DatasetUpdatedEvent;
 import imagej.ui.viewer.AbstractDisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
+import net.imagej.Data;
+import net.imagej.Dataset;
+import net.imagej.Position;
+import net.imagej.display.DataView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.event.DelayedPositionEvent;
+import net.imagej.display.event.PanZoomEvent;
+import net.imagej.event.DatasetRestructuredEvent;
+import net.imagej.event.DatasetUpdatedEvent;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 

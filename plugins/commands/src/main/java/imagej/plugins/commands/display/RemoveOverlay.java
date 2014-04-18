@@ -31,12 +31,12 @@
 
 package imagej.plugins.commands.display;
 
-import imagej.data.display.DataView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayService;
-import imagej.data.display.OverlayView;
-
 import java.util.ArrayList;
+
+import net.imagej.display.DataView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.OverlayService;
+import net.imagej.display.OverlayView;
 
 import org.scijava.command.Command;
 import org.scijava.command.ContextCommand;

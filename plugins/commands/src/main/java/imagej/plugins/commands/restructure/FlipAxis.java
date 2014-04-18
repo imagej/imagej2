@@ -31,10 +31,9 @@
 
 package imagej.plugins.commands.restructure;
 
-import imagej.data.Dataset;
-
 import java.util.ArrayList;
 
+import net.imagej.Dataset;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;

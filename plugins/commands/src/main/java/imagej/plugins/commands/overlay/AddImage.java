@@ -31,7 +31,7 @@
 
 package imagej.plugins.commands.overlay;
 
-import imagej.data.display.ImageDisplay;
+import net.imagej.display.ImageDisplay;
 
 import org.scijava.command.Command;
 import org.scijava.command.UnimplementedCommand;

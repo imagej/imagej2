@@ -31,9 +31,9 @@
 
 package imagej.plugins.commands.restructure;
 
-import imagej.data.display.ImageDisplay;
-
 import java.util.HashMap;
+
+import net.imagej.display.ImageDisplay;
 
 import org.scijava.command.Command;
 import org.scijava.command.CommandService;

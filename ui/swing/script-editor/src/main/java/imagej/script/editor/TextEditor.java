@@ -35,7 +35,6 @@ import imagej.script.editor.command.ChooseFontSize;
 import imagej.script.editor.command.ChooseTabSize;
 import imagej.script.editor.command.GitGrep;
 import imagej.script.editor.command.KillScript;
-import imagej.util.AppUtils;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -107,6 +106,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Position;
+
+import net.imagej.util.AppUtils;
 
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;

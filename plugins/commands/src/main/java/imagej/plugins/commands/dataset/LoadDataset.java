@@ -31,7 +31,7 @@
 
 package imagej.plugins.commands.dataset;
 
-import imagej.data.Dataset;
+import net.imagej.Dataset;
 
 import org.scijava.ItemIO;
 import org.scijava.command.Command;

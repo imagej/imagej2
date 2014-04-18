@@ -31,7 +31,7 @@
 
 package imagej.plugins.commands.display.interactive;
 
-import imagej.data.display.ImageDisplay;
+import net.imagej.display.ImageDisplay;
 
 import org.scijava.command.Command;
 import org.scijava.command.UnimplementedCommand;

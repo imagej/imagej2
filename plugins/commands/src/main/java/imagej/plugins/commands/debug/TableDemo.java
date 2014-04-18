@@ -31,10 +31,10 @@
 
 package imagej.plugins.commands.debug;
 
-import imagej.data.table.DefaultGenericTable;
-import imagej.data.table.DefaultResultsTable;
-import imagej.data.table.GenericTable;
-import imagej.data.table.ResultsTable;
+import net.imagej.table.DefaultGenericTable;
+import net.imagej.table.DefaultResultsTable;
+import net.imagej.table.GenericTable;
+import net.imagej.table.ResultsTable;
 
 import org.scijava.ItemIO;
 import org.scijava.app.StatusService;

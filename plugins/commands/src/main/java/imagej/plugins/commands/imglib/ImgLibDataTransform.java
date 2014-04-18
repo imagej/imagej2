@@ -31,7 +31,7 @@
 
 package imagej.plugins.commands.imglib;
 
-import imagej.data.Dataset;
+import net.imagej.Dataset;
 import net.imglib2.img.Img;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.RealType;

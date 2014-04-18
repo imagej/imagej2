@@ -31,16 +31,15 @@
 
 package imagej.plugins.commands.misc;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.lut.LUTService;
-
 import java.io.IOException;
 import java.net.URL;
 
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
+import net.imagej.display.DatasetView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.lut.LUTService;
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;

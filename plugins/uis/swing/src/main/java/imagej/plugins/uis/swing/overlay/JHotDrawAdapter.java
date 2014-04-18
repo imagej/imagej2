@@ -31,10 +31,10 @@
 
 package imagej.plugins.uis.swing.overlay;
 
-import imagej.ImageJPlugin;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayView;
-import imagej.data.overlay.Overlay;
+import net.imagej.ImageJPlugin;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.OverlayView;
+import net.imagej.overlay.Overlay;
 
 import org.jhotdraw.draw.Figure;
 import org.scijava.display.Display;

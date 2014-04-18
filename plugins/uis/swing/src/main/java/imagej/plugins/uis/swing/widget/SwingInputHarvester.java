@@ -38,7 +38,6 @@ import imagej.util.swing.SwingDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.scijava.Priority;
 import org.scijava.module.Module;
 import org.scijava.module.process.PreprocessorPlugin;
 import org.scijava.plugin.Plugin;

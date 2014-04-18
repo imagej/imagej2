@@ -31,9 +31,9 @@
 
 package imagej.plugins.uis.swing.overlay;
 
-import imagej.data.display.ImageDisplay;
-
 import java.awt.event.MouseEvent;
+
+import net.imagej.display.ImageDisplay;
 
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.tool.CreationTool;

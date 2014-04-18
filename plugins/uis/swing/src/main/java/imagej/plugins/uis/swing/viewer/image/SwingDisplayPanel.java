@@ -31,13 +31,6 @@
 
 package imagej.plugins.uis.swing.viewer.image;
 
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageCanvas;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.event.AxisPositionEvent;
-import imagej.data.display.event.DelayedPositionEvent;
-import imagej.data.display.event.LUTsChangedEvent;
 import imagej.plugins.uis.swing.StaticSwingUtils;
 import imagej.plugins.uis.swing.SwingColorBar;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
@@ -64,6 +57,13 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import net.imagej.display.DatasetView;
+import net.imagej.display.ImageCanvas;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.event.AxisPositionEvent;
+import net.imagej.display.event.DelayedPositionEvent;
+import net.imagej.display.event.LUTsChangedEvent;
 import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;

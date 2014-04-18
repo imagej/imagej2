@@ -31,10 +31,10 @@
 
 package imagej.plugins.commands.assign;
 
-import imagej.data.Dataset;
-import imagej.data.Position;
-import imagej.data.display.ImageDisplay;
-import imagej.data.overlay.Overlay;
+import net.imagej.Dataset;
+import net.imagej.Position;
+import net.imagej.display.ImageDisplay;
+import net.imagej.overlay.Overlay;
 import net.imglib2.img.Img;
 import net.imglib2.meta.Axes;
 import net.imglib2.ops.condition.Condition;

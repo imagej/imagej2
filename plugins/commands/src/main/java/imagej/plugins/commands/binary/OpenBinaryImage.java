@@ -31,7 +31,7 @@
 
 package imagej.plugins.commands.binary;
 
-import imagej.data.Dataset;
+import net.imagej.Dataset;
 import net.imglib2.img.Img;
 import net.imglib2.ops.operation.randomaccessibleinterval.unary.morph.Dilate;
 import net.imglib2.ops.operation.randomaccessibleinterval.unary.morph.Erode;

@@ -31,7 +31,7 @@
 
 package imagej.ui;
 
-import imagej.util.ARGBPlane;
+import net.imagej.util.ARGBPlane;
 
 /**
  * UI agnostic representation of the system clipboard.

@@ -31,7 +31,7 @@
 
 package imagej.core.options;
 
-import imagej.config.ConfigFileParameters;
+import net.imagej.config.ConfigFileParameters;
 
 import org.scijava.menu.MenuConstants;
 import org.scijava.options.OptionsPlugin;

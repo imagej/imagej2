@@ -31,16 +31,15 @@
 
 package imagej.plugins.commands.imglib;
 
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayService;
-import imagej.data.overlay.Overlay;
-import imagej.data.overlay.ThresholdOverlay;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import net.imagej.Dataset;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.OverlayService;
+import net.imagej.overlay.Overlay;
+import net.imagej.overlay.ThresholdOverlay;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;

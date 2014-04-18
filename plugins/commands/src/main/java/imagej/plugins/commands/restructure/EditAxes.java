@@ -31,12 +31,11 @@
 
 package imagej.plugins.commands.restructure;
 
-import imagej.data.Dataset;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import net.imagej.Dataset;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;

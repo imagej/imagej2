@@ -31,12 +31,12 @@
 
 package imagej.plugins.commands.display;
 
-import imagej.data.display.DataView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayView;
-import imagej.data.overlay.Overlay;
-import imagej.data.overlay.RectangleOverlay;
+import net.imagej.display.DataView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.OverlayView;
+import net.imagej.overlay.Overlay;
+import net.imagej.overlay.RectangleOverlay;
 import net.imglib2.meta.AxisType;
 import net.imglib2.roi.RegionOfInterest;
 

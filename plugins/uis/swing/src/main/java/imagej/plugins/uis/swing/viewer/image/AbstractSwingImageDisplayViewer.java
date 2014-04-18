@@ -31,11 +31,11 @@
 
 package imagej.plugins.uis.swing.viewer.image;
 
-import imagej.data.Dataset;
 import imagej.ui.common.awt.AWTDropTargetEventDispatcher;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.image.AbstractImageDisplayViewer;
+import net.imagej.Dataset;
 
 import org.scijava.display.Display;
 import org.scijava.event.EventHandler;

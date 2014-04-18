@@ -34,6 +34,7 @@ package imagej.updater.ui;
 import imagej.updater.core.Conflicts;
 import imagej.updater.core.Conflicts.Conflict;
 import imagej.updater.core.Conflicts.Resolution;
+import imagej.updater.core.Dependency;
 import imagej.updater.core.Diff;
 import imagej.updater.core.Diff.Mode;
 import imagej.updater.core.FileObject;
@@ -41,7 +42,6 @@ import imagej.updater.core.FileObject.Action;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.FilesCollection.Filter;
-import imagej.updater.core.Dependency;
 import imagej.updater.core.FilesUploader;
 import imagej.updater.core.Installer;
 import imagej.updater.core.UpdateSite;
@@ -51,7 +51,6 @@ import imagej.updater.util.Progress;
 import imagej.updater.util.StderrProgress;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
-import imagej.util.AppUtils;
 
 import java.awt.Frame;
 import java.io.Console;
@@ -66,6 +65,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import net.imagej.util.AppUtils;
 
 import org.scijava.log.LogService;
 import org.scijava.util.FileUtils;

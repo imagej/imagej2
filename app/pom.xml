@@ -25,11 +25,6 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-legacy</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -37,6 +32,10 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-ui</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-common</artifactId>
 		</dependency>
 
 		<dependency>

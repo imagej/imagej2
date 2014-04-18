@@ -31,7 +31,7 @@
 
 package imagej.plugins.commands.imglib;
 
-import imagej.data.display.ImageDisplay;
+import net.imagej.display.ImageDisplay;
 
 import org.scijava.command.Command;
 import org.scijava.command.CommandService;

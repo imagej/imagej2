@@ -31,11 +31,11 @@
 
 package imagej.plugins.commands.assign;
 
-import imagej.data.ChannelCollection;
-import imagej.data.Dataset;
-import imagej.data.Position;
-import imagej.data.display.OverlayService;
-import imagej.data.overlay.Overlay;
+import net.imagej.ChannelCollection;
+import net.imagej.Dataset;
+import net.imagej.Position;
+import net.imagej.display.OverlayService;
+import net.imagej.overlay.Overlay;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;

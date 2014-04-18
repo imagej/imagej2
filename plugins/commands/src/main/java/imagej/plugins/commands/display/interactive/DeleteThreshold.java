@@ -31,8 +31,8 @@
 
 package imagej.plugins.commands.display.interactive;
 
-import imagej.data.display.ImageDisplay;
-import imagej.data.threshold.ThresholdService;
+import net.imagej.display.ImageDisplay;
+import net.imagej.threshold.ThresholdService;
 
 import org.scijava.command.Command;
 import org.scijava.command.ContextCommand;

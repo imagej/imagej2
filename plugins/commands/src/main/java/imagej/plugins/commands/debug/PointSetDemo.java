@@ -31,11 +31,10 @@
 
 package imagej.plugins.commands.debug;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-
 import java.net.URL;
 
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.ops.pointset.PointSetIterator;

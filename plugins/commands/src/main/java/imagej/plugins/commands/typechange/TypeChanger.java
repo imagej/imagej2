@@ -31,16 +31,15 @@
 
 package imagej.plugins.commands.typechange;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.data.display.ColorTables;
-import imagej.data.types.BigComplex;
-import imagej.data.types.DataType;
-import imagej.data.types.DataTypeService;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
+import net.imagej.display.ColorTables;
+import net.imagej.types.BigComplex;
+import net.imagej.types.DataType;
+import net.imagej.types.DataTypeService;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;

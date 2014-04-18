@@ -31,8 +31,8 @@
 
 package imagej.plugins.tools;
 
-import imagej.data.ChannelCollection;
-import imagej.data.options.OptionsChannels;
+import net.imagej.ChannelCollection;
+import net.imagej.options.OptionsChannels;
 
 import org.scijava.plugin.Plugin;
 import org.scijava.tool.Tool;

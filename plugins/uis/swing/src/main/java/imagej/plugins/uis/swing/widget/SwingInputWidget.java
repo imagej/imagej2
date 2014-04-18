@@ -38,9 +38,9 @@ import imagej.ui.UserInterface;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import org.scijava.widget.WidgetModel;
-
 import net.miginfocom.swing.MigLayout;
+
+import org.scijava.widget.WidgetModel;
 
 /**
  * Common superclass for Swing-based input widgets.

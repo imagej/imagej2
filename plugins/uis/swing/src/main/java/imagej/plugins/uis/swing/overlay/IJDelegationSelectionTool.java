@@ -31,7 +31,7 @@
 
 package imagej.plugins.uis.swing.overlay;
 
-import imagej.data.display.ImageDisplay;
+import net.imagej.display.ImageDisplay;
 
 import org.jhotdraw.draw.tool.DelegationSelectionTool;
 

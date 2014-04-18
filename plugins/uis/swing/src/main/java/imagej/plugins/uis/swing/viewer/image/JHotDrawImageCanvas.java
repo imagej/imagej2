@@ -31,18 +31,6 @@
 
 package imagej.plugins.uis.swing.viewer.image;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.data.display.DataView;
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageCanvas;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayView;
-import imagej.data.display.event.DataViewDeselectedEvent;
-import imagej.data.display.event.DataViewSelectedEvent;
-import imagej.data.display.event.MouseCursorEvent;
-import imagej.data.display.event.PanZoomEvent;
 import imagej.plugins.uis.swing.StaticSwingUtils;
 import imagej.plugins.uis.swing.overlay.FigureCreatedEvent;
 import imagej.plugins.uis.swing.overlay.JHotDrawAdapter;
@@ -73,6 +61,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
+import net.imagej.display.DataView;
+import net.imagej.display.DatasetView;
+import net.imagej.display.ImageCanvas;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.OverlayView;
+import net.imagej.display.event.DataViewDeselectedEvent;
+import net.imagej.display.event.DataViewSelectedEvent;
+import net.imagej.display.event.MouseCursorEvent;
+import net.imagej.display.event.PanZoomEvent;
 import net.imglib2.RandomAccess;
 import net.imglib2.display.screenimage.awt.ARGBScreenImage;
 import net.imglib2.meta.Axes;

@@ -31,18 +31,17 @@
 
 package imagej.plugins.tools;
 
-import imagej.data.ChannelCollection;
-import imagej.data.Dataset;
-import imagej.data.Position;
-import imagej.data.display.DataView;
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageCanvas;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-
 import java.util.LinkedList;
 import java.util.List;
 
+import net.imagej.ChannelCollection;
+import net.imagej.Dataset;
+import net.imagej.Position;
+import net.imagej.display.DataView;
+import net.imagej.display.DatasetView;
+import net.imagej.display.ImageCanvas;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
 import net.imglib2.RandomAccess;
 import net.imglib2.display.screenimage.awt.ARGBScreenImage;
 import net.imglib2.img.Img;

@@ -35,7 +35,7 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.ImageWindow;
 import ij.macro.Interpreter;
-import imagej.data.Dataset;
+import net.imagej.Dataset;
 import net.imglib2.img.basictypeaccess.PlanarAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;

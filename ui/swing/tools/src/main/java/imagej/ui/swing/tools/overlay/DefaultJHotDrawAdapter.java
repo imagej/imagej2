@@ -31,10 +31,6 @@
 
 package imagej.ui.swing.tools.overlay;
 
-import imagej.data.Position;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayView;
-import imagej.data.overlay.Overlay;
 import imagej.plugins.uis.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.IJCreationTool;
 import imagej.plugins.uis.swing.overlay.JHotDrawAdapter;
@@ -51,6 +47,10 @@ import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.SinglePixelPackedSampleModel;
 
+import net.imagej.Position;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.OverlayView;
+import net.imagej.overlay.Overlay;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.logic.BitType;

@@ -31,11 +31,12 @@
 
 package imagej.ui;
 
-import imagej.service.ImageJService;
 import imagej.ui.viewer.DisplayViewer;
 
 import java.io.File;
 import java.util.List;
+
+import net.imagej.service.ImageJService;
 
 import org.scijava.app.App;
 import org.scijava.app.StatusService;

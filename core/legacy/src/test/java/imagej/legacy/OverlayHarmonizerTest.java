@@ -37,10 +37,6 @@ import ij.ImagePlus;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
-import imagej.data.display.ImageDisplay;
-import imagej.data.overlay.BinaryMaskOverlay;
-import imagej.data.overlay.Overlay;
-import imagej.data.overlay.PolygonOverlay;
 import imagej.legacy.translate.OverlayHarmonizer;
 import imagej.patcher.LegacyInjector;
 
@@ -48,6 +44,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import net.imagej.display.ImageDisplay;
+import net.imagej.overlay.BinaryMaskOverlay;
+import net.imagej.overlay.Overlay;
+import net.imagej.overlay.PolygonOverlay;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.img.Img;

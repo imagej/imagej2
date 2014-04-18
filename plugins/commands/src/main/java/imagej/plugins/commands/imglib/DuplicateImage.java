@@ -31,14 +31,13 @@
 
 package imagej.plugins.commands.imglib;
 
-import imagej.data.display.ImageDisplay;
-import imagej.data.sampler.AxisSubrange;
-import imagej.data.sampler.SamplerService;
-import imagej.data.sampler.SamplingDefinition;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import net.imagej.display.ImageDisplay;
+import net.imagej.sampler.AxisSubrange;
+import net.imagej.sampler.SamplerService;
+import net.imagej.sampler.SamplingDefinition;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.SpaceUtils;
 

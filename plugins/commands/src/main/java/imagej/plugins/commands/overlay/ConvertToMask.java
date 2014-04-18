@@ -31,13 +31,13 @@
 
 package imagej.plugins.commands.overlay;
 
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.overlay.BinaryMaskOverlay;
-import imagej.data.overlay.Overlay;
-import imagej.data.overlay.ThresholdOverlay;
-import imagej.data.threshold.ThresholdService;
+import net.imagej.Dataset;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.overlay.BinaryMaskOverlay;
+import net.imagej.overlay.Overlay;
+import net.imagej.overlay.ThresholdOverlay;
+import net.imagej.threshold.ThresholdService;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImg;

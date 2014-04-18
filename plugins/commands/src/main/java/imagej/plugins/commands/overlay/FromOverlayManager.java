@@ -31,14 +31,14 @@
 
 package imagej.plugins.commands.overlay;
 
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayInfoList;
-import imagej.data.display.OverlayService;
-import imagej.data.overlay.Overlay;
-import imagej.data.overlay.ThresholdOverlay;
-import imagej.data.threshold.ThresholdService;
-
 import java.util.List;
+
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.OverlayInfoList;
+import net.imagej.display.OverlayService;
+import net.imagej.overlay.Overlay;
+import net.imagej.overlay.ThresholdOverlay;
+import net.imagej.threshold.ThresholdService;
 
 import org.scijava.command.Command;
 import org.scijava.command.ContextCommand;

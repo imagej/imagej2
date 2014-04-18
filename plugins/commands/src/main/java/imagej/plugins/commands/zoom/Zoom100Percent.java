@@ -31,8 +31,8 @@
 
 package imagej.plugins.commands.zoom;
 
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ZoomService;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ZoomService;
 
 import org.scijava.ItemIO;
 import org.scijava.command.Command;

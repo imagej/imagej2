@@ -31,10 +31,9 @@
 
 package imagej.plugins.commands.overlay;
 
-import imagej.data.display.ImageDisplay;
-import imagej.data.overlay.EllipseOverlay;
-import imagej.data.overlay.Overlay;
-import imagej.data.overlay.RectangleOverlay;
+import net.imagej.display.ImageDisplay;
+import net.imagej.overlay.EllipseOverlay;
+import net.imagej.overlay.RectangleOverlay;
 
 import org.scijava.Context;
 import org.scijava.ItemIO;

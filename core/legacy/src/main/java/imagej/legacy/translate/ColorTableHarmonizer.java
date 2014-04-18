@@ -36,17 +36,17 @@ import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import ij.process.LUT;
-import imagej.data.Dataset;
-import imagej.data.display.ColorTables;
-import imagej.data.display.DataView;
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
 
 import java.awt.image.IndexColorModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.imagej.Dataset;
+import net.imagej.display.ColorTables;
+import net.imagej.display.DataView;
+import net.imagej.display.DatasetView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.type.numeric.RealType;

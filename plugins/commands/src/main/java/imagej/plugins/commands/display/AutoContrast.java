@@ -31,8 +31,8 @@
 
 package imagej.plugins.commands.display;
 
-import imagej.data.Dataset;
-import imagej.data.display.DatasetView;
+import net.imagej.Dataset;
+import net.imagej.display.DatasetView;
 import net.imglib2.Cursor;
 import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;

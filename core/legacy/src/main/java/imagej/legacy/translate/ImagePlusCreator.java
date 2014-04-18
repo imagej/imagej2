@@ -32,7 +32,7 @@
 package imagej.legacy.translate;
 
 import ij.ImagePlus;
-import imagej.data.display.ImageDisplay;
+import net.imagej.display.ImageDisplay;
 
 /**
  * The interface for creating {@link ImagePlus}es from {@link ImageDisplay}s.

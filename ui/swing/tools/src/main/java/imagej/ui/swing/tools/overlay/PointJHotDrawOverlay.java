@@ -31,10 +31,6 @@
 
 package imagej.ui.swing.tools.overlay;
 
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayView;
-import imagej.data.overlay.Overlay;
-import imagej.data.overlay.PointOverlay;
 import imagej.plugins.uis.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.IJCreationTool;
 import imagej.plugins.uis.swing.overlay.JHotDrawAdapter;
@@ -42,6 +38,11 @@ import imagej.plugins.uis.swing.overlay.JHotDrawTool;
 import imagej.ui.swing.tools.SwingPointTool;
 
 import java.awt.Shape;
+
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.OverlayView;
+import net.imagej.overlay.Overlay;
+import net.imagej.overlay.PointOverlay;
 
 import org.jhotdraw.draw.Figure;
 import org.scijava.plugin.Plugin;

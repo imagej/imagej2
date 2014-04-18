@@ -34,10 +34,6 @@ package imagej.legacy;
 import ij.ImagePlus;
 import ij.gui.ImageWindow;
 import ij.gui.Roi;
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.overlay.Overlay;
 import imagej.legacy.translate.DefaultImageTranslator;
 import imagej.legacy.translate.Harmonizer;
 import imagej.legacy.translate.ImageTranslator;
@@ -55,6 +51,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import net.imagej.Dataset;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.overlay.Overlay;
 
 import org.scijava.AbstractContextual;
 import org.scijava.display.event.DisplayDeletedEvent;

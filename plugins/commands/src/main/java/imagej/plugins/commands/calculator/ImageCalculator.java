@@ -31,10 +31,10 @@
 
 package imagej.plugins.commands.calculator;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.data.operator.CalculatorOp;
-import imagej.data.operator.CalculatorService;
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
+import net.imagej.operator.CalculatorOp;
+import net.imagej.operator.CalculatorService;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.meta.SpaceUtils;

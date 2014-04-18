@@ -31,14 +31,15 @@
 
 package imagej.plugins.commands.io;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.Result;
 import imagej.ui.UIService;
 
 import java.io.File;
 import java.io.IOException;
+
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
 
 import org.scijava.ItemIO;
 import org.scijava.command.Command;

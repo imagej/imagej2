@@ -31,13 +31,13 @@
 
 package imagej.plugins.commands.app;
 
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayService;
-import imagej.data.overlay.Overlay;
 import imagej.ui.UserInterface;
-import imagej.util.ARGBPlane;
+import net.imagej.display.DatasetView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.OverlayService;
+import net.imagej.overlay.Overlay;
+import net.imagej.util.ARGBPlane;
 
 import org.scijava.app.StatusService;
 import org.scijava.command.Command;

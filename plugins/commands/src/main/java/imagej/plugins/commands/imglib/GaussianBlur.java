@@ -31,7 +31,7 @@
 
 package imagej.plugins.commands.imglib;
 
-import imagej.data.Dataset;
+import net.imagej.Dataset;
 import net.imglib2.ExtendedRandomAccessibleInterval;
 import net.imglib2.algorithm.gauss3.Gauss3;
 import net.imglib2.img.Img;

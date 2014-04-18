@@ -31,10 +31,10 @@
 
 package imagej.plugins.commands.display;
 
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
 import imagej.ui.UIService;
 import imagej.ui.viewer.image.ImageDisplayViewer;
+import net.imagej.Dataset;
+import net.imagej.display.ImageDisplay;
 
 import org.scijava.ItemIO;
 import org.scijava.command.Command;

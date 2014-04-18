@@ -31,7 +31,6 @@
 
 package imagej.plugins.uis.swing.viewer.table;
 
-import imagej.data.table.Table;
 import imagej.plugins.uis.swing.AbstractSwingUI;
 import imagej.ui.UserInterface;
 import imagej.ui.viewer.DisplayViewer;

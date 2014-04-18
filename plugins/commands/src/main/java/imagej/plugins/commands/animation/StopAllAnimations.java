@@ -31,8 +31,8 @@
 
 package imagej.plugins.commands.animation;
 
-import imagej.data.animation.AnimationService;
-import imagej.data.display.ImageDisplay;
+import net.imagej.animation.AnimationService;
+import net.imagej.display.ImageDisplay;
 
 import org.scijava.command.Command;
 import org.scijava.command.ContextCommand;

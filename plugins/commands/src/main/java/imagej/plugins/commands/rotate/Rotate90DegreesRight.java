@@ -31,12 +31,12 @@
 
 package imagej.plugins.commands.rotate;
 
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayService;
 import imagej.plugins.commands.imglib.ImgLibDataTransform;
 import imagej.plugins.commands.rotate.XYFlipper.FlipCoordinateTransformer;
+import net.imagej.Dataset;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.OverlayService;
 
 import org.scijava.ItemIO;
 import org.scijava.command.Command;

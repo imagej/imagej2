@@ -31,13 +31,13 @@
 
 package imagej.plugins.commands.display;
 
-import imagej.data.Dataset;
-import imagej.data.display.ImageCanvas;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ScreenCaptureService;
 import imagej.ui.UIService;
 import imagej.ui.viewer.DisplayViewer;
 import imagej.ui.viewer.DisplayWindow;
+import net.imagej.Dataset;
+import net.imagej.display.ImageCanvas;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ScreenCaptureService;
 
 import org.scijava.ItemIO;
 import org.scijava.command.Command;

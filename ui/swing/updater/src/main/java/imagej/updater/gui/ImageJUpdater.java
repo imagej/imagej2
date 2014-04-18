@@ -43,7 +43,6 @@ import imagej.updater.util.Progress;
 import imagej.updater.util.UpdateCanceledException;
 import imagej.updater.util.UpdaterUserInterface;
 import imagej.updater.util.Util;
-import imagej.util.AppUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,6 +53,8 @@ import java.net.URLClassLoader;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+
+import net.imagej.util.AppUtils;
 
 import org.scijava.app.StatusService;
 import org.scijava.command.CommandService;

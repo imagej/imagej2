@@ -31,8 +31,6 @@
 
 package imagej.ui;
 
-import imagej.app.ImageJApp;
-import imagej.data.display.ImageDisplayService;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.DialogPrompt.OptionType;
 import imagej.ui.DialogPrompt.Result;
@@ -44,6 +42,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import net.imagej.app.ImageJApp;
+import net.imagej.display.ImageDisplayService;
 
 import org.scijava.app.App;
 import org.scijava.app.AppService;

@@ -31,8 +31,8 @@
 
 package imagej.plugins.commands.imglib;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;

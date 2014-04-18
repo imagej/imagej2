@@ -31,15 +31,14 @@
 
 package imagej.plugins.commands.display;
 
-import imagej.data.Position;
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.table.DefaultResultsTable;
-import imagej.data.table.ResultsTable;
-
 import java.util.List;
 
+import net.imagej.Position;
+import net.imagej.display.DatasetView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.table.DefaultResultsTable;
+import net.imagej.table.ResultsTable;
 import net.imglib2.display.ColorTable;
 
 import org.scijava.ItemIO;

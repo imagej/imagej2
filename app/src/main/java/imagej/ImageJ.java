@@ -31,27 +31,28 @@
 
 package imagej;
 
-import imagej.app.ImageJApp;
-import imagej.data.DatasetService;
-import imagej.data.animation.AnimationService;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.InputService;
-import imagej.data.display.OverlayService;
-import imagej.data.display.ScreenCaptureService;
-import imagej.data.display.WindowService;
-import imagej.data.lut.LUTService;
-import imagej.data.measure.MeasurementService;
-import imagej.data.measure.StatisticsService;
-import imagej.data.operator.CalculatorService;
-import imagej.data.sampler.SamplerService;
-import imagej.data.threshold.ThresholdService;
 import imagej.legacy.LegacyService;
 import imagej.ops.OpService;
-import imagej.render.RenderingService;
 import imagej.ui.UIService;
 import imagej.updater.core.UploaderService;
 
 import java.util.Collection;
+
+import net.imagej.DatasetService;
+import net.imagej.animation.AnimationService;
+import net.imagej.app.ImageJApp;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.InputService;
+import net.imagej.display.OverlayService;
+import net.imagej.display.ScreenCaptureService;
+import net.imagej.display.WindowService;
+import net.imagej.lut.LUTService;
+import net.imagej.measure.MeasurementService;
+import net.imagej.measure.StatisticsService;
+import net.imagej.operator.CalculatorService;
+import net.imagej.render.RenderingService;
+import net.imagej.sampler.SamplerService;
+import net.imagej.threshold.ThresholdService;
 
 import org.scijava.AbstractGateway;
 import org.scijava.Context;

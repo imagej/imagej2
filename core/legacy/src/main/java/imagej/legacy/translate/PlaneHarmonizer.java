@@ -33,9 +33,9 @@ package imagej.legacy.translate;
 
 import ij.ImagePlus;
 import ij.ImageStack;
-import imagej.data.Dataset;
-import imagej.data.Extents;
-import imagej.data.Position;
+import net.imagej.Dataset;
+import net.imagej.Extents;
+import net.imagej.Position;
 import net.imglib2.meta.Axes;
 
 import org.scijava.log.LogService;

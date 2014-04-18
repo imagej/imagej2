@@ -31,7 +31,6 @@
 
 package imagej.plugins.uis.swing;
 
-import imagej.data.display.ColorTables;
 import imagej.util.awt.AWTImageTools;
 
 import java.awt.Color;
@@ -45,6 +44,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
+import net.imagej.display.ColorTables;
 import net.imglib2.display.ColorTable;
 
 /**

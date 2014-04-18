@@ -31,11 +31,11 @@
 
 package imagej.ui.viewer.table;
 
-import org.scijava.display.Display;
-
-import imagej.data.table.Table;
-import imagej.data.table.TableDisplay;
 import imagej.ui.viewer.AbstractDisplayViewer;
+import net.imagej.table.Table;
+import net.imagej.table.TableDisplay;
+
+import org.scijava.display.Display;
 
 /**
  * Implements the UI-independent elements of a {@link Table} viewer.

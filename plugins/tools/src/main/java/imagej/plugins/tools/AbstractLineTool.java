@@ -31,15 +31,15 @@
 
 package imagej.plugins.tools;
 
-import imagej.data.ChannelCollection;
-import imagej.data.Dataset;
-import imagej.data.DrawingTool;
-import imagej.data.display.ImageCanvas;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.event.DatasetUpdatedEvent;
-import imagej.data.options.OptionsChannels;
-import imagej.render.RenderingService;
+import net.imagej.ChannelCollection;
+import net.imagej.Dataset;
+import net.imagej.DrawingTool;
+import net.imagej.display.ImageCanvas;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.event.DatasetUpdatedEvent;
+import net.imagej.options.OptionsChannels;
+import net.imagej.render.RenderingService;
 
 import org.scijava.display.event.input.MsButtonEvent;
 import org.scijava.display.event.input.MsDraggedEvent;

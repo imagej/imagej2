@@ -31,16 +31,15 @@
 
 package imagej.plugins.commands.binary;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.data.autoscale.AutoscaleService;
-import imagej.data.autoscale.DataRange;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.threshold.ThresholdMethod;
-import imagej.data.threshold.ThresholdService;
-
 import java.util.Arrays;
 
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
+import net.imagej.autoscale.AutoscaleService;
+import net.imagej.autoscale.DataRange;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.threshold.ThresholdMethod;
+import net.imagej.threshold.ThresholdService;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable8;

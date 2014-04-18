@@ -31,10 +31,10 @@
 
 package imagej.plugins.commands.zoom;
 
-import imagej.data.display.ImageCanvas;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.ZoomService;
+import net.imagej.display.ImageCanvas;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.ZoomService;
 
 import org.scijava.ItemIO;
 import org.scijava.command.Command;

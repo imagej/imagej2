@@ -31,15 +31,15 @@
 
 package imagej.plugins.commands.rotate;
 
-import org.scijava.util.RealRect;
-
-import imagej.data.Dataset;
-import imagej.data.Extents;
-import imagej.data.Position;
 import imagej.plugins.commands.imglib.OutputAlgorithm;
+import net.imagej.Dataset;
+import net.imagej.Extents;
+import net.imagej.Position;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
+
+import org.scijava.util.RealRect;
 
 // TODO - in IJ1 this flips single plane in active window. do we want to extend to all planes???
 

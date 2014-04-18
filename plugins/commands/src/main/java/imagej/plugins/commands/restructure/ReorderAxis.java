@@ -31,14 +31,13 @@
 
 package imagej.plugins.commands.restructure;
 
-import imagej.data.Dataset;
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import net.imagej.Dataset;
+import net.imagej.display.DatasetView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable;

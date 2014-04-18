@@ -31,13 +31,13 @@
 
 package imagej.plugins.commands.overlay;
 
-import imagej.data.options.OptionsOverlay;
-import imagej.data.overlay.Overlay;
-import imagej.data.overlay.Overlay.ArrowStyle;
-import imagej.data.overlay.Overlay.LineStyle;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import net.imagej.options.OptionsOverlay;
+import net.imagej.overlay.Overlay;
+import net.imagej.overlay.Overlay.ArrowStyle;
+import net.imagej.overlay.Overlay.LineStyle;
 
 import org.scijava.command.ContextCommand;
 import org.scijava.command.Previewable;

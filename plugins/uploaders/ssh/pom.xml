@@ -16,13 +16,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-core</artifactId>
+			<artifactId>ij-updater-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-updater-core</artifactId>
-			<version>${project.version}</version>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-common</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${scijava-common.groupId}</groupId>

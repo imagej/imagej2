@@ -31,8 +31,8 @@
 
 package imagej.plugins.commands.display;
 
-import imagej.data.display.ColorMode;
-import imagej.data.display.DatasetView;
+import net.imagej.display.ColorMode;
+import net.imagej.display.DatasetView;
 
 import org.scijava.ItemIO;
 import org.scijava.command.Command;

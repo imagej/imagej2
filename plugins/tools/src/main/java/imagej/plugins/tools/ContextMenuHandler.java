@@ -31,8 +31,8 @@
 
 package imagej.plugins.tools;
 
-import imagej.data.display.ImageDisplay;
 import imagej.ui.UIService;
+import net.imagej.display.ImageDisplay;
 
 import org.scijava.display.Display;
 import org.scijava.display.event.input.MsButtonEvent;

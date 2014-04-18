@@ -31,10 +31,6 @@
 
 package imagej.ui.swing.tools.overlay;
 
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayView;
-import imagej.data.overlay.EllipseOverlay;
-import imagej.data.overlay.Overlay;
 import imagej.plugins.uis.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.IJCreationTool;
 import imagej.plugins.uis.swing.overlay.JHotDrawAdapter;
@@ -45,6 +41,11 @@ import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.OverlayView;
+import net.imagej.overlay.EllipseOverlay;
+import net.imagej.overlay.Overlay;
 
 import org.jhotdraw.draw.EllipseFigure;
 import org.jhotdraw.draw.Figure;

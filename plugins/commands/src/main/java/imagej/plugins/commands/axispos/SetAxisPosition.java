@@ -31,8 +31,8 @@
 
 package imagej.plugins.commands.axispos;
 
-import imagej.data.animation.AnimationService;
-import imagej.data.display.ImageDisplay;
+import net.imagej.animation.AnimationService;
+import net.imagej.display.ImageDisplay;
 import net.imglib2.meta.AxisType;
 
 import org.scijava.ItemIO;

@@ -39,7 +39,6 @@ import ij.Macro;
 import ij.WindowManager;
 import ij.gui.ImageWindow;
 import ij.io.Opener;
-import imagej.data.display.ImageDisplay;
 
 import java.awt.GraphicsEnvironment;
 import java.io.File;
@@ -47,6 +46,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
+
+import net.imagej.display.ImageDisplay;
 
 import org.scijava.AbstractContextual;
 import org.scijava.Context;

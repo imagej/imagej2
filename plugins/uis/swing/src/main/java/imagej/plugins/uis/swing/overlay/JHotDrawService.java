@@ -31,16 +31,16 @@
 
 package imagej.plugins.uis.swing.overlay;
 
-import imagej.data.display.DataView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayView;
-import imagej.data.overlay.Overlay;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import net.imagej.display.DataView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.OverlayView;
+import net.imagej.overlay.Overlay;
 
 import org.jhotdraw.draw.Figure;
 import org.scijava.event.EventService;

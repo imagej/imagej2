@@ -31,11 +31,10 @@
 
 package imagej.plugins.commands.io;
 
-import imagej.data.Dataset;
-
 import java.io.File;
 import java.util.HashMap;
 
+import net.imagej.Dataset;
 import net.imglib2.meta.ImgPlus;
 
 import org.scijava.command.Command;

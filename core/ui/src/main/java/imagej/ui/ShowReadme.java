@@ -31,10 +31,10 @@
 
 package imagej.ui;
 
-import imagej.util.AppUtils;
-
 import java.io.File;
 import java.io.IOException;
+
+import net.imagej.util.AppUtils;
 
 import org.scijava.ItemIO;
 import org.scijava.command.Command;

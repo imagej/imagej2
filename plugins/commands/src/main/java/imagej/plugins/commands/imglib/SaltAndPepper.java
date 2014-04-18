@@ -31,17 +31,16 @@
 
 package imagej.plugins.commands.imglib;
 
-import imagej.data.Dataset;
-import imagej.data.Extents;
-import imagej.data.Position;
-import imagej.data.autoscale.AutoscaleService;
-import imagej.data.autoscale.DataRange;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayService;
-
 import java.util.Random;
 
+import net.imagej.Dataset;
+import net.imagej.Extents;
+import net.imagej.Position;
+import net.imagej.autoscale.AutoscaleService;
+import net.imagej.autoscale.DataRange;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.OverlayService;
 import net.imglib2.RandomAccess;
 import net.imglib2.algorithm.stats.ComputeMinMax;
 import net.imglib2.img.Img;

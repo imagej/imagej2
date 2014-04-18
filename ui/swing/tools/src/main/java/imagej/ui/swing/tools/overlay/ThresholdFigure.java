@@ -31,9 +31,6 @@
 
 package imagej.ui.swing.tools.overlay;
 
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.data.overlay.ThresholdOverlay;
 import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
@@ -43,6 +40,9 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 import java.awt.geom.Rectangle2D;
 
+import net.imagej.Dataset;
+import net.imagej.display.ImageDisplay;
+import net.imagej.overlay.ThresholdOverlay;
 import net.imglib2.Cursor;
 import net.imglib2.meta.AxisType;
 import net.imglib2.ops.pointset.HyperVolumePointSet;

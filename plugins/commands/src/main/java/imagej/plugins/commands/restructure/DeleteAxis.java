@@ -31,11 +31,10 @@
 
 package imagej.plugins.commands.restructure;
 
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-
 import java.util.ArrayList;
 
+import net.imagej.Dataset;
+import net.imagej.display.ImageDisplay;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.ImgPlus;

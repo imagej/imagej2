@@ -32,7 +32,7 @@
 package imagej.legacy.translate;
 
 import ij.ImagePlus;
-import imagej.data.Dataset;
+import net.imagej.Dataset;
 
 /**
  * General interface for all data harmonizers. A data harmonizer keeps some

@@ -31,9 +31,9 @@
 
 package imagej.ui.viewer;
 
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
+import net.imagej.Dataset;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
 import net.imglib2.img.Img;
 import net.imglib2.img.cell.AbstractCellImg;
 
