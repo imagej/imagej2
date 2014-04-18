@@ -31,13 +31,13 @@
 
 package imagej.plugins.commands.app;
 
-import imagej.command.Command;
-import imagej.data.Dataset;
+import net.imagej.Dataset;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 

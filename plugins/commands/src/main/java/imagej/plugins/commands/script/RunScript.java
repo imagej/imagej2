@@ -31,20 +31,19 @@
 
 package imagej.plugins.commands.script;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
-import imagej.menu.MenuConstants;
-import imagej.script.ScriptService;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 
 import javax.script.ScriptException;
 
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
 import org.scijava.log.LogService;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.script.ScriptService;
 
 /**
  * Executes the script in the given file.

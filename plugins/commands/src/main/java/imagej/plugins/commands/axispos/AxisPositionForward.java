@@ -31,15 +31,15 @@
 
 package imagej.plugins.commands.axispos;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
-import imagej.data.animation.AnimationService;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.InputService;
-import imagej.menu.MenuConstants;
+import net.imagej.animation.AnimationService;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.InputService;
 import net.imglib2.meta.AxisType;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

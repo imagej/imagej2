@@ -31,28 +31,29 @@
 
 package imagej.plugins.uis.swing.overlay;
 
-import imagej.data.display.ImageCanvas;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayService;
-import imagej.data.display.OverlayView;
-import imagej.data.overlay.Overlay;
-import imagej.data.overlay.OverlaySettings;
-import imagej.display.Display;
-import imagej.util.ColorRGB;
-import imagej.util.IntCoords;
-import imagej.util.RealCoords;
 import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
 import java.awt.Shape;
 
+import net.imagej.display.ImageCanvas;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.OverlayService;
+import net.imagej.display.OverlayView;
+import net.imagej.overlay.Overlay;
+import net.imagej.overlay.OverlaySettings;
+
 import org.jhotdraw.draw.AttributeKey;
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.decoration.ArrowTip;
+import org.scijava.display.Display;
 import org.scijava.plugin.AbstractRichPlugin;
 import org.scijava.plugin.Parameter;
+import org.scijava.util.ColorRGB;
+import org.scijava.util.IntCoords;
 import org.scijava.util.MiscUtils;
+import org.scijava.util.RealCoords;
 
 /**
  * An abstract class that gives default behavior for the {@link JHotDrawAdapter}

@@ -31,19 +31,18 @@
 
 package imagej.plugins.uis.swing.widget;
 
-import imagej.module.Module;
-import imagej.module.process.PreprocessorPlugin;
 import imagej.plugins.uis.swing.sdi.SwingUI;
 import imagej.ui.AbstractInputHarvesterPlugin;
 import imagej.util.swing.SwingDialog;
-import imagej.widget.InputHarvester;
-import imagej.widget.InputPanel;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.scijava.Priority;
+import org.scijava.module.Module;
+import org.scijava.module.process.PreprocessorPlugin;
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.InputHarvester;
+import org.scijava.widget.InputPanel;
 
 /**
  * SwingInputHarvester is an {@link InputHarvester} that collects input

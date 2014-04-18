@@ -34,7 +34,7 @@ package imagej.legacy.translate;
 import ij.VirtualStack;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
-import imagej.data.Dataset;
+import net.imagej.Dataset;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;

@@ -31,12 +31,12 @@
 
 package imagej.plugins.commands.display.interactive;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
-import imagej.data.display.ImageDisplay;
-import imagej.data.threshold.ThresholdService;
-import imagej.menu.MenuConstants;
+import net.imagej.display.ImageDisplay;
+import net.imagej.threshold.ThresholdService;
 
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

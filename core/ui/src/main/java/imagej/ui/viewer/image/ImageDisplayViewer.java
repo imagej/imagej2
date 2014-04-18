@@ -31,10 +31,10 @@
 
 package imagej.ui.viewer.image;
 
-import imagej.data.Dataset;
-import imagej.data.display.DataView;
-import imagej.data.display.ImageDisplay;
 import imagej.ui.viewer.DisplayViewer;
+import net.imagej.Dataset;
+import net.imagej.display.DataView;
+import net.imagej.display.ImageDisplay;
 
 /**
  * A display viewer for {@link DataView}s.

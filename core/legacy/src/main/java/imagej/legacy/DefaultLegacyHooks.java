@@ -32,7 +32,6 @@
 package imagej.legacy;
 
 import ij.ImagePlus;
-import imagej.data.display.ImageDisplay;
 import imagej.legacy.plugin.LegacyAppConfiguration;
 import imagej.legacy.plugin.LegacyEditor;
 import imagej.legacy.plugin.LegacyPostRefreshMenus;
@@ -47,6 +46,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
+
+import net.imagej.display.ImageDisplay;
 
 import org.scijava.Context;
 import org.scijava.InstantiableException;

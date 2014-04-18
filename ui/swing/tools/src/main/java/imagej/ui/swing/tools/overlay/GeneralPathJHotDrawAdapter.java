@@ -31,23 +31,23 @@
 
 package imagej.ui.swing.tools.overlay;
 
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayView;
-import imagej.data.overlay.GeneralPathOverlay;
-import imagej.data.overlay.Overlay;
 import imagej.plugins.uis.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.JHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.JHotDrawTool;
-import imagej.tool.Tool;
 import imagej.ui.swing.tools.SwingPolygonTool;
 
 import java.awt.Shape;
 
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.OverlayView;
+import net.imagej.overlay.GeneralPathOverlay;
+import net.imagej.overlay.Overlay;
 import net.imglib2.roi.GeneralPathRegionOfInterest;
 
 import org.jhotdraw.draw.AttributeKeys;
 import org.jhotdraw.draw.Figure;
 import org.scijava.plugin.Plugin;
+import org.scijava.tool.Tool;
 
 /**
  * JHotDraw adapter for composite area selections.

@@ -31,16 +31,17 @@
 
 package imagej.ui;
 
-import imagej.ImageJPlugin;
-import imagej.display.Display;
 import imagej.ui.viewer.DisplayWindow;
-import imagej.widget.FileWidget;
 
 import java.io.File;
 
+import net.imagej.ImageJPlugin;
+
 import org.scijava.Disposable;
+import org.scijava.display.Display;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.RichPlugin;
+import org.scijava.widget.FileWidget;
 
 /**
  * An end-user ImageJ application user interface.

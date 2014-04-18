@@ -14,12 +14,13 @@
 	<description>Built-in ImageJ text plugins for dealing with common markup formats.</description>
 
 	<dependencies>
+		<!-- SciJava dependencies -->
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-core</artifactId>
-			<version>${project.version}</version>
+			<groupId>org.scijava</groupId>
+			<artifactId>scijava-common</artifactId>
 		</dependency>
 
+		<!-- Third-party dependencies -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>

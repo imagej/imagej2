@@ -31,25 +31,18 @@
 
 package imagej.plugins.commands.debug;
 
-import imagej.command.Command;
-import imagej.command.InteractiveCommand;
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.data.display.ColorTables;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayService;
-import imagej.data.lut.LUTService;
-import imagej.data.overlay.Overlay;
-import imagej.display.Display;
-import imagej.display.DisplayService;
-import imagej.menu.MenuConstants;
-import imagej.widget.Button;
-
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
+import net.imagej.display.ColorTables;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.OverlayService;
+import net.imagej.lut.LUTService;
+import net.imagej.overlay.Overlay;
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
@@ -61,9 +54,15 @@ import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
 import org.scijava.ItemVisibility;
+import org.scijava.command.Command;
+import org.scijava.command.InteractiveCommand;
+import org.scijava.display.Display;
+import org.scijava.display.DisplayService;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.Button;
 
 /**
  * Makes a color image that represents a Mandelbrot set using specified

@@ -31,12 +31,12 @@
 
 package imagej.plugins.uis.awt.menu;
 
-import imagej.menu.ShadowMenu;
-
 import java.awt.Menu;
 import java.awt.MenuBar;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
+
+import org.scijava.menu.ShadowMenu;
 
 /**
  * Populates an AWT {@link MenuBar} with menu items from a {@link ShadowMenu}.

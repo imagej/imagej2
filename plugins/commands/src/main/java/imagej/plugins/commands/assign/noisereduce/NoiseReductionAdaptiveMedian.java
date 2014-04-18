@@ -31,14 +31,10 @@
 
 package imagej.plugins.commands.assign.noisereduce;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-import imagej.menu.MenuConstants;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import net.imagej.Dataset;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.ops.function.Function;
@@ -53,6 +49,9 @@ import net.imglib2.type.numeric.real.DoubleType;
 
 import org.scijava.Context;
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

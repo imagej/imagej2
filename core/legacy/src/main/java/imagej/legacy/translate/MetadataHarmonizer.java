@@ -33,7 +33,7 @@ package imagej.legacy.translate;
 
 import ij.ImagePlus;
 import ij.measure.Calibration;
-import imagej.data.Dataset;
+import net.imagej.Dataset;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.axis.LinearAxis;

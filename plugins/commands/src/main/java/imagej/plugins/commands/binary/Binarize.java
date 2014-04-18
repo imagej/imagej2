@@ -31,19 +31,15 @@
 
 package imagej.plugins.commands.binary;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.data.autoscale.AutoscaleService;
-import imagej.data.autoscale.DataRange;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.threshold.ThresholdMethod;
-import imagej.data.threshold.ThresholdService;
-import imagej.menu.MenuConstants;
-
 import java.util.Arrays;
 
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
+import net.imagej.autoscale.AutoscaleService;
+import net.imagej.autoscale.DataRange;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.threshold.ThresholdMethod;
+import net.imagej.threshold.ThresholdService;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable8;
@@ -65,6 +61,9 @@ import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

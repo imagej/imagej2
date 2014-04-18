@@ -31,17 +31,16 @@
 
 package imagej.plugins.commands.io;
 
-import imagej.command.Command;
-import imagej.command.CommandService;
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-import imagej.menu.MenuConstants;
-
 import java.io.File;
 import java.util.HashMap;
 
+import net.imagej.Dataset;
 import net.imglib2.meta.ImgPlus;
 
+import org.scijava.command.Command;
+import org.scijava.command.CommandService;
+import org.scijava.command.ContextCommand;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

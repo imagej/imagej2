@@ -31,10 +31,6 @@
 
 package imagej.ui.common.awt;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.data.display.ScreenCaptureService;
-
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Robot;
@@ -42,6 +38,9 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
+import net.imagej.display.ScreenCaptureService;
 import net.imglib2.RandomAccess;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;

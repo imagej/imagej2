@@ -31,24 +31,17 @@
 
 package imagej.plugins.tools;
 
-import imagej.data.ChannelCollection;
-import imagej.data.Dataset;
-import imagej.data.Position;
-import imagej.data.display.DataView;
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageCanvas;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.display.Display;
-import imagej.display.event.input.MsEvent;
-import imagej.util.ColorRGB;
-import imagej.util.Colors;
-import imagej.util.IntCoords;
-import imagej.util.RealCoords;
-
 import java.util.LinkedList;
 import java.util.List;
 
+import net.imagej.ChannelCollection;
+import net.imagej.Dataset;
+import net.imagej.Position;
+import net.imagej.display.DataView;
+import net.imagej.display.DatasetView;
+import net.imagej.display.ImageCanvas;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
 import net.imglib2.RandomAccess;
 import net.imglib2.display.screenimage.awt.ARGBScreenImage;
 import net.imglib2.img.Img;
@@ -56,7 +49,13 @@ import net.imglib2.meta.Axes;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.Context;
+import org.scijava.display.Display;
+import org.scijava.display.event.input.MsEvent;
 import org.scijava.plugin.Parameter;
+import org.scijava.util.ColorRGB;
+import org.scijava.util.Colors;
+import org.scijava.util.IntCoords;
+import org.scijava.util.RealCoords;
 
 /**
  * Gathers pixel information (location, channel values) of pixel associated

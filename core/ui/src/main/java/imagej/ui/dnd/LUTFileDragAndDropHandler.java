@@ -31,16 +31,15 @@
 
 package imagej.ui.dnd;
 
-import imagej.data.display.ImageDisplay;
-import imagej.data.lut.LUTService;
-import imagej.display.Display;
-import imagej.display.DisplayService;
-
 import java.io.File;
 import java.io.IOException;
 
+import net.imagej.display.ImageDisplay;
+import net.imagej.lut.LUTService;
 import net.imglib2.display.ColorTable;
 
+import org.scijava.display.Display;
+import org.scijava.display.DisplayService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

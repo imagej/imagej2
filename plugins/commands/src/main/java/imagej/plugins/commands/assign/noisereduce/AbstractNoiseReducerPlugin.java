@@ -31,15 +31,11 @@
 
 package imagej.plugins.commands.assign.noisereduce;
 
-import imagej.command.CommandModule;
-import imagej.command.CommandService;
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
 
+import net.imagej.Dataset;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.ops.function.Function;
@@ -51,6 +47,9 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
 import org.scijava.ItemIO;
+import org.scijava.command.CommandModule;
+import org.scijava.command.CommandService;
+import org.scijava.command.ContextCommand;
 import org.scijava.plugin.Parameter;
 
 /**

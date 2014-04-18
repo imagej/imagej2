@@ -31,13 +31,13 @@
 
 package imagej.ui.console;
 
-import imagej.console.AbstractConsoleArgument;
-import imagej.console.ConsoleArgument;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 
 import java.util.LinkedList;
 
+import org.scijava.console.AbstractConsoleArgument;
+import org.scijava.console.ConsoleArgument;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

@@ -31,16 +31,15 @@
 
 package imagej.plugins.uis.swing.widget;
 
-import imagej.widget.InputWidget;
-import imagej.widget.ToggleWidget;
-import imagej.widget.WidgetModel;
-
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.ToggleWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
  * Swing implementation of boolean toggle widget.

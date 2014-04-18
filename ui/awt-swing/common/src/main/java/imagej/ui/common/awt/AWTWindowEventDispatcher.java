@@ -31,20 +31,19 @@
 
 package imagej.ui.common.awt;
 
-import imagej.display.Display;
-import imagej.display.event.window.WinActivatedEvent;
-import imagej.display.event.window.WinClosedEvent;
-import imagej.display.event.window.WinClosingEvent;
-import imagej.display.event.window.WinDeactivatedEvent;
-import imagej.display.event.window.WinDeiconifiedEvent;
-import imagej.display.event.window.WinEvent;
-import imagej.display.event.window.WinIconifiedEvent;
-import imagej.display.event.window.WinOpenedEvent;
-
 import java.awt.Window;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import org.scijava.display.Display;
+import org.scijava.display.event.window.WinActivatedEvent;
+import org.scijava.display.event.window.WinClosedEvent;
+import org.scijava.display.event.window.WinClosingEvent;
+import org.scijava.display.event.window.WinDeactivatedEvent;
+import org.scijava.display.event.window.WinDeiconifiedEvent;
+import org.scijava.display.event.window.WinEvent;
+import org.scijava.display.event.window.WinIconifiedEvent;
+import org.scijava.display.event.window.WinOpenedEvent;
 import org.scijava.event.EventService;
 
 /**

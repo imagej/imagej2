@@ -31,14 +31,9 @@
 
 package imagej.plugins.commands.restructure;
 
-import imagej.command.Command;
-import imagej.command.DynamicCommand;
-import imagej.data.Dataset;
-import imagej.menu.MenuConstants;
-import imagej.module.MutableModuleItem;
-
 import java.util.ArrayList;
 
+import net.imagej.Dataset;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.ImgPlus;
@@ -46,6 +41,10 @@ import net.imglib2.meta.SpaceUtils;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.command.DynamicCommand;
+import org.scijava.menu.MenuConstants;
+import org.scijava.module.MutableModuleItem;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

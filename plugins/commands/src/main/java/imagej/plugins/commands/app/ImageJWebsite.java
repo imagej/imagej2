@@ -31,14 +31,13 @@
 
 package imagej.plugins.commands.app;
 
-import imagej.command.Command;
-import imagej.menu.MenuConstants;
-import imagej.platform.PlatformService;
-
 import java.io.IOException;
 import java.net.URL;
 
+import org.scijava.command.Command;
 import org.scijava.log.LogService;
+import org.scijava.menu.MenuConstants;
+import org.scijava.platform.PlatformService;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

@@ -31,10 +31,6 @@
 
 package imagej.plugins.uis.swing;
 
-import imagej.tool.Tool;
-import imagej.tool.ToolService;
-import imagej.tool.event.ToolActivatedEvent;
-import imagej.tool.event.ToolDeactivatedEvent;
 import imagej.ui.ToolBar;
 import imagej.ui.UIService;
 
@@ -61,6 +57,10 @@ import org.scijava.event.EventHandler;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.PluginInfo;
+import org.scijava.tool.Tool;
+import org.scijava.tool.ToolService;
+import org.scijava.tool.event.ToolActivatedEvent;
+import org.scijava.tool.event.ToolDeactivatedEvent;
 
 /**
  * Button bar with selectable tools, similar to ImageJ 1.x.

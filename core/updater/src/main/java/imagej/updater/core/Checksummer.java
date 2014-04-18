@@ -32,8 +32,8 @@
 package imagej.updater.core;
 
 import imagej.updater.core.Conflicts.Conflict;
-import imagej.updater.core.Conflicts.Resolution;
 import imagej.updater.core.Conflicts.Conflict.Severity;
+import imagej.updater.core.Conflicts.Resolution;
 import imagej.updater.core.FileObject.Status;
 import imagej.updater.util.AbstractProgressable;
 import imagej.updater.util.Progress;

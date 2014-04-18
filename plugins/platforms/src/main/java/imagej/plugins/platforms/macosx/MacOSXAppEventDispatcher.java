@@ -56,19 +56,18 @@ import com.apple.eawt.ScreenSleepListener;
 import com.apple.eawt.SystemSleepListener;
 import com.apple.eawt.UserSessionListener;
 
-import imagej.platform.event.AppAboutEvent;
-import imagej.platform.event.AppFocusEvent;
-import imagej.platform.event.AppOpenFilesEvent;
-import imagej.platform.event.AppPreferencesEvent;
-import imagej.platform.event.AppPrintEvent;
-import imagej.platform.event.AppQuitEvent;
-import imagej.platform.event.AppReOpenEvent;
-import imagej.platform.event.AppScreenSleepEvent;
-import imagej.platform.event.AppSystemSleepEvent;
-import imagej.platform.event.AppUserSessionEvent;
-import imagej.platform.event.AppVisibleEvent;
-
 import org.scijava.event.EventService;
+import org.scijava.platform.event.AppAboutEvent;
+import org.scijava.platform.event.AppFocusEvent;
+import org.scijava.platform.event.AppOpenFilesEvent;
+import org.scijava.platform.event.AppPreferencesEvent;
+import org.scijava.platform.event.AppPrintEvent;
+import org.scijava.platform.event.AppQuitEvent;
+import org.scijava.platform.event.AppReOpenEvent;
+import org.scijava.platform.event.AppScreenSleepEvent;
+import org.scijava.platform.event.AppSystemSleepEvent;
+import org.scijava.platform.event.AppUserSessionEvent;
+import org.scijava.platform.event.AppVisibleEvent;
 
 /**
  * Rebroadcasts Mac OS X application events as ImageJ events.

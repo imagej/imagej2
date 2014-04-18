@@ -31,12 +31,11 @@
 
 package imagej.plugins.scripting.jython;
 
-import imagej.script.AdaptedScriptLanguage;
-import imagej.script.ScriptLanguage;
-
 import javax.script.ScriptEngine;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.script.AdaptedScriptLanguage;
+import org.scijava.script.ScriptLanguage;
 
 /**
  * An adapter of the Jython interpreter to ImageJ's scripting interfaces.

@@ -61,17 +61,18 @@ import imagej.core.options.OptionsProfilePlot;
 import imagej.core.options.OptionsProxy;
 import imagej.core.options.OptionsRoundedRectangleTool;
 import imagej.core.options.OptionsWandTool;
-import imagej.data.options.OptionsChannels;
-import imagej.data.options.OptionsOverlay;
-import imagej.options.OptionsService;
-import imagej.util.ColorRGB;
 import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.lang.reflect.Field;
 
+import net.imagej.options.OptionsChannels;
+import net.imagej.options.OptionsOverlay;
+
+import org.scijava.options.OptionsService;
 import org.scijava.util.ClassUtils;
+import org.scijava.util.ColorRGB;
 
 /**
  * The options synchronizer bidirectionally synchronizes modern ImageJ options

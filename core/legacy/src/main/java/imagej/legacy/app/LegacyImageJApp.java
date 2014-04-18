@@ -31,8 +31,8 @@
 
 package imagej.legacy.app;
 
-import imagej.app.ImageJApp;
 import imagej.legacy.LegacyService;
+import net.imagej.app.ImageJApp;
 
 import org.scijava.Priority;
 import org.scijava.app.App;

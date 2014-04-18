@@ -31,17 +31,11 @@
 
 package imagej.plugins.commands.display.interactive;
 
-import imagej.command.Command;
-import imagej.data.autoscale.AutoscaleService;
-import imagej.data.autoscale.DataRange;
-import imagej.data.command.InteractiveImageCommand;
-import imagej.data.display.DatasetView;
-import imagej.data.widget.HistogramBundle;
-import imagej.menu.MenuConstants;
-import imagej.module.MutableModuleItem;
-import imagej.widget.Button;
-import imagej.widget.ChoiceWidget;
-import imagej.widget.NumberWidget;
+import net.imagej.autoscale.AutoscaleService;
+import net.imagej.autoscale.DataRange;
+import net.imagej.command.InteractiveImageCommand;
+import net.imagej.display.DatasetView;
+import net.imagej.widget.HistogramBundle;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.histogram.BinMapper1d;
 import net.imglib2.histogram.Histogram1d;
@@ -50,9 +44,15 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.menu.MenuConstants;
+import org.scijava.module.MutableModuleItem;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.Button;
+import org.scijava.widget.ChoiceWidget;
+import org.scijava.widget.NumberWidget;
 
 /**
  * Plugin that sets the minimum and maximum for scaling of display values. Sets

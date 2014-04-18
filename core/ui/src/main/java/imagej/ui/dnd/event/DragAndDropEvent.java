@@ -31,10 +31,10 @@
 
 package imagej.ui.dnd.event;
 
-import imagej.display.Display;
-import imagej.display.event.input.InputEvent;
 import imagej.ui.dnd.DragAndDropData;
 
+import org.scijava.display.Display;
+import org.scijava.display.event.input.InputEvent;
 import org.scijava.input.InputModifiers;
 
 /**

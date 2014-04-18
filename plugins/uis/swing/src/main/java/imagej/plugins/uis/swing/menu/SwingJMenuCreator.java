@@ -31,12 +31,12 @@
 
 package imagej.plugins.uis.swing.menu;
 
-import imagej.menu.ShadowMenu;
-
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+
+import org.scijava.menu.ShadowMenu;
 
 /**
  * Populates a {@link JMenu} with menu items from a {@link ShadowMenu}.

@@ -15,8 +15,6 @@
 	<description>Core ImageJ projects.</description>
 
 	<modules>
-		<module>core</module>
-		<module>data</module>
 		<module>legacy</module>
 		<module>options</module>
 		<module>ui</module>

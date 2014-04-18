@@ -31,8 +31,8 @@
 
 package imagej.updater.core;
 
-import imagej.service.ImageJService;
 import imagej.updater.util.Progress;
+import net.imagej.service.ImageJService;
 
 /**
  * Interface for service that manages available ImageJ upload mechanisms.

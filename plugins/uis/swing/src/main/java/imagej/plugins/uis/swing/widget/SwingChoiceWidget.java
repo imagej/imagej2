@@ -31,10 +31,6 @@
 
 package imagej.plugins.uis.swing.widget;
 
-import imagej.widget.ChoiceWidget;
-import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -43,6 +39,9 @@ import javax.swing.JPanel;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.ChoiceWidget;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
  * Swing implementation of multiple choice selector widget using a

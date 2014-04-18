@@ -31,10 +31,6 @@
 
 package imagej.plugins.uis.swing.widget;
 
-import imagej.widget.InputWidget;
-import imagej.widget.TextWidget;
-import imagej.widget.WidgetModel;
-
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
@@ -48,6 +44,9 @@ import javax.swing.text.JTextComponent;
 
 import org.scijava.log.LogService;
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.TextWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
  * Swing implementation of text field widget.

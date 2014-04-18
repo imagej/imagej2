@@ -31,10 +31,6 @@
 
 package imagej.plugins.uis.awt.widget;
 
-import imagej.widget.FileWidget;
-import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
-
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.FileDialog;
@@ -48,6 +44,9 @@ import java.awt.event.TextListener;
 import java.io.File;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.FileWidget;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
  * AWT implementation of file selector widget.

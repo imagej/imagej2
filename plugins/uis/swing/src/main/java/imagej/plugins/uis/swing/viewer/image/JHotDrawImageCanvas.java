@@ -31,34 +31,15 @@
 
 package imagej.plugins.uis.swing.viewer.image;
 
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.data.display.DataView;
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageCanvas;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayView;
-import imagej.data.display.event.DataViewDeselectedEvent;
-import imagej.data.display.event.DataViewSelectedEvent;
-import imagej.data.display.event.MouseCursorEvent;
-import imagej.data.display.event.PanZoomEvent;
-import imagej.display.event.DisplayDeletedEvent;
 import imagej.plugins.uis.swing.StaticSwingUtils;
 import imagej.plugins.uis.swing.overlay.FigureCreatedEvent;
 import imagej.plugins.uis.swing.overlay.JHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.JHotDrawService;
 import imagej.plugins.uis.swing.overlay.JHotDrawTool;
 import imagej.plugins.uis.swing.overlay.ToolDelegator;
-import imagej.tool.Tool;
-import imagej.tool.ToolService;
-import imagej.tool.event.ToolActivatedEvent;
 import imagej.ui.common.awt.AWTCursors;
 import imagej.ui.common.awt.AWTDropTargetEventDispatcher;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
-import imagej.util.IntCoords;
-import imagej.util.RealCoords;
-import imagej.util.RealRect;
 
 import java.awt.BorderLayout;
 import java.awt.Cursor;
@@ -80,6 +61,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
+import net.imagej.display.DataView;
+import net.imagej.display.DatasetView;
+import net.imagej.display.ImageCanvas;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.OverlayView;
+import net.imagej.display.event.DataViewDeselectedEvent;
+import net.imagej.display.event.DataViewSelectedEvent;
+import net.imagej.display.event.MouseCursorEvent;
+import net.imagej.display.event.PanZoomEvent;
 import net.imglib2.RandomAccess;
 import net.imglib2.display.screenimage.awt.ARGBScreenImage;
 import net.imglib2.meta.Axes;
@@ -95,6 +88,7 @@ import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.event.FigureSelectionEvent;
 import org.jhotdraw.draw.event.FigureSelectionListener;
 import org.scijava.Disposable;
+import org.scijava.display.event.DisplayDeletedEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.event.EventSubscriber;
@@ -102,6 +96,12 @@ import org.scijava.input.MouseCursor;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.thread.ThreadService;
+import org.scijava.tool.Tool;
+import org.scijava.tool.ToolService;
+import org.scijava.tool.event.ToolActivatedEvent;
+import org.scijava.util.IntCoords;
+import org.scijava.util.RealCoords;
+import org.scijava.util.RealRect;
 
 /**
  * A renderer of an {@link ImageCanvas}, which uses JHotDraw's

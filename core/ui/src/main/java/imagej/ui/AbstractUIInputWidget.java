@@ -31,14 +31,13 @@
 
 package imagej.ui;
 
-import imagej.widget.AbstractInputWidget;
-import imagej.widget.InputWidget;
-
 import java.lang.reflect.InvocationTargetException;
 
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.thread.ThreadService;
+import org.scijava.widget.AbstractInputWidget;
+import org.scijava.widget.InputWidget;
 
 /**
  * Abstract superclass of {@link InputWidget} implementations that

@@ -14,6 +14,7 @@
 	<description>Swing utility classes for use with Swing user interfaces. These classes do not depend on ImageJ, and are considered general-purpose Swing utility classes, potentially useful outside the ImageJ framework.</description>
 
 	<dependencies>
+		<!-- Project dependencies -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-util-awt</artifactId>

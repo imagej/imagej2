@@ -31,17 +31,6 @@
 
 package imagej.plugins.platforms.macosx;
 
-import imagej.command.Command;
-import imagej.command.CommandInfo;
-import imagej.command.CommandService;
-import imagej.display.event.window.WinActivatedEvent;
-import imagej.module.ModuleInfo;
-import imagej.module.event.ModulesUpdatedEvent;
-import imagej.platform.AbstractPlatform;
-import imagej.platform.AppEventService;
-import imagej.platform.Platform;
-import imagej.platform.PlatformService;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -50,9 +39,19 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 
+import org.scijava.command.Command;
+import org.scijava.command.CommandInfo;
+import org.scijava.command.CommandService;
+import org.scijava.display.event.window.WinActivatedEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.event.EventSubscriber;
+import org.scijava.module.ModuleInfo;
+import org.scijava.module.event.ModulesUpdatedEvent;
+import org.scijava.platform.AbstractPlatform;
+import org.scijava.platform.AppEventService;
+import org.scijava.platform.Platform;
+import org.scijava.platform.PlatformService;
 import org.scijava.plugin.Plugin;
 
 /**

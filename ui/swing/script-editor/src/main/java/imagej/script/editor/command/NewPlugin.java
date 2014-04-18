@@ -31,10 +31,10 @@
 
 package imagej.script.editor.command;
 
-import imagej.command.Command;
 import imagej.script.editor.FileFunctions;
 import imagej.script.editor.TextEditor;
 
+import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 
 /**

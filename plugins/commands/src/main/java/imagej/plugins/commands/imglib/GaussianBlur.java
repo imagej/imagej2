@@ -31,10 +31,7 @@
 
 package imagej.plugins.commands.imglib;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-import imagej.menu.MenuConstants;
+import net.imagej.Dataset;
 import net.imglib2.ExtendedRandomAccessibleInterval;
 import net.imglib2.algorithm.gauss3.Gauss3;
 import net.imglib2.img.Img;
@@ -43,6 +40,9 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

@@ -31,14 +31,13 @@
 
 package imagej.core.options;
 
-import imagej.menu.MenuConstants;
-import imagej.options.OptionsPlugin;
-import imagej.util.ColorRGB;
-import imagej.util.Colors;
-
+import org.scijava.menu.MenuConstants;
+import org.scijava.options.OptionsPlugin;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.ColorRGB;
+import org.scijava.util.Colors;
 
 /**
  * Runs the Edit::Options::Appearance dialog.

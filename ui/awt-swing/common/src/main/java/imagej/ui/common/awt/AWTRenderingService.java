@@ -31,8 +31,8 @@
 
 package imagej.ui.common.awt;
 
-import imagej.render.RenderingService;
-import imagej.render.TextRenderer;
+import net.imagej.render.RenderingService;
+import net.imagej.render.TextRenderer;
 
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;

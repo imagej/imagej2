@@ -31,9 +31,9 @@
 
 package imagej.ui.dnd.event;
 
-import imagej.display.Display;
 import imagej.ui.dnd.DragAndDropData;
 
+import org.scijava.display.Display;
 import org.scijava.input.InputModifiers;
 
 /**

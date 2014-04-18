@@ -31,13 +31,10 @@
 
 package imagej.plugins.commands.calculator;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.data.operator.CalculatorOp;
-import imagej.data.operator.CalculatorService;
-import imagej.menu.MenuConstants;
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
+import net.imagej.operator.CalculatorOp;
+import net.imagej.operator.CalculatorService;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.meta.SpaceUtils;
@@ -47,6 +44,9 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

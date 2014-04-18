@@ -31,18 +31,18 @@
 
 package imagej.ui.viewer;
 
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.display.Display;
-import imagej.display.event.DisplayActivatedEvent;
-import imagej.display.event.DisplayCreatedEvent;
-import imagej.display.event.DisplayDeletedEvent;
-import imagej.display.event.DisplayUpdatedEvent;
-import imagej.display.event.DisplayUpdatedEvent.DisplayUpdateLevel;
+import net.imagej.Dataset;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
 import net.imglib2.img.Img;
 import net.imglib2.img.cell.AbstractCellImg;
 
+import org.scijava.display.Display;
+import org.scijava.display.event.DisplayActivatedEvent;
+import org.scijava.display.event.DisplayCreatedEvent;
+import org.scijava.display.event.DisplayDeletedEvent;
+import org.scijava.display.event.DisplayUpdatedEvent;
+import org.scijava.display.event.DisplayUpdatedEvent.DisplayUpdateLevel;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.AbstractRichPlugin;
 import org.scijava.plugin.Parameter;

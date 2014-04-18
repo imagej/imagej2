@@ -31,16 +31,16 @@
 
 package imagej.plugins.commands.overlay;
 
-import imagej.command.Command;
-import imagej.data.Data;
-import imagej.data.display.DataView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.overlay.Overlay;
-import imagej.menu.MenuConstants;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import net.imagej.Data;
+import net.imagej.display.DataView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.overlay.Overlay;
+
+import org.scijava.command.Command;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

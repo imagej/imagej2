@@ -31,12 +31,11 @@
 
 package imagej.plugins.platforms.windows;
 
-import imagej.platform.AbstractPlatform;
-import imagej.platform.Platform;
-
 import java.io.IOException;
 import java.net.URL;
 
+import org.scijava.platform.AbstractPlatform;
+import org.scijava.platform.Platform;
 import org.scijava.plugin.Plugin;
 
 /**

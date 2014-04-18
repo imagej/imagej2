@@ -31,22 +31,22 @@
 
 package imagej.plugins.commands.debug;
 
-import imagej.command.Command;
-import imagej.data.ChannelCollection;
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.data.DrawingTool;
-import imagej.render.RenderingService;
-import imagej.render.TextRenderer.TextJustification;
 import io.scif.img.axes.SCIFIOAxes;
 
 import java.util.Arrays;
 import java.util.List;
 
+import net.imagej.ChannelCollection;
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
+import net.imagej.DrawingTool;
+import net.imagej.render.RenderingService;
+import net.imagej.render.TextRenderer.TextJustification;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 

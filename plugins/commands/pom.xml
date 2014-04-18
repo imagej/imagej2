@@ -14,16 +14,7 @@
 	<description>Built-in ImageJ commands. These commands take the form of menu entries accessible through the user interface.</description>
 
 	<dependencies>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-data</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+		<!-- Project dependencies -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-options</artifactId>
@@ -39,22 +30,38 @@
 			<artifactId>ij-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
+		<!-- SciJava dependencies -->
 		<dependency>
-			<groupId>${imglib2.groupId}</groupId>
+			<groupId>io.scif</groupId>
+			<artifactId>scifio</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2</artifactId>
-			<version>${imglib2.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${imglib2.groupId}</groupId>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2-algorithms</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2-meta</artifactId>
-			<version>${imglib2.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${imglib2.groupId}</groupId>
+			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2-ops</artifactId>
-			<version>${imglib2.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>scijava-common</artifactId>
 		</dependency>
 
+		<!-- Third-party dependencies -->
 		<dependency>
 			<groupId>com.github.sbridges.object-inspector</groupId>
 			<artifactId>object-inspector</artifactId>

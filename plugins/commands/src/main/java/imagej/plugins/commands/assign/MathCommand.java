@@ -31,15 +31,13 @@
 
 package imagej.plugins.commands.assign;
 
-import imagej.command.ContextCommand;
-import imagej.command.Previewable;
-import imagej.data.Dataset;
-import imagej.data.Position;
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayService;
-import imagej.data.overlay.Overlay;
+import net.imagej.Dataset;
+import net.imagej.Position;
+import net.imagej.display.DatasetView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.OverlayService;
+import net.imagej.overlay.Overlay;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
@@ -53,6 +51,8 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
 import org.scijava.ItemIO;
+import org.scijava.command.ContextCommand;
+import org.scijava.command.Previewable;
 import org.scijava.plugin.Parameter;
 
 /**

@@ -31,23 +31,23 @@
 
 package imagej.plugins.commands.misc;
 
-import imagej.command.Command;
-import imagej.data.Dataset;
-import imagej.data.Position;
-import imagej.data.display.ColorMode;
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.overlay.ThresholdOverlay;
-import imagej.data.threshold.ThresholdService;
-import imagej.data.types.DataType;
-import imagej.data.types.DataTypeService;
-import imagej.menu.MenuConstants;
+import net.imagej.Dataset;
+import net.imagej.Position;
+import net.imagej.display.ColorMode;
+import net.imagej.display.DatasetView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.overlay.ThresholdOverlay;
+import net.imagej.threshold.ThresholdService;
+import net.imagej.types.DataType;
+import net.imagej.types.DataTypeService;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.CalibratedAxis;
 import net.imglib2.meta.axis.LinearAxis;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

@@ -31,10 +31,10 @@
 
 package imagej.util.awt;
 
-import imagej.util.ColorRGB;
-import imagej.util.ColorRGBA;
-
 import java.awt.Color;
+
+import org.scijava.util.ColorRGB;
+import org.scijava.util.ColorRGBA;
 
 /**
  * Translates ImageJ {@link ColorRGB}s into AWT {@link Color}s.

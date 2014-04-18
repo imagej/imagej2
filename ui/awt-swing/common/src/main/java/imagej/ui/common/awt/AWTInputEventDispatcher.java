@@ -31,25 +31,6 @@
 
 package imagej.ui.common.awt;
 
-import imagej.data.display.ImageCanvas;
-import imagej.data.display.ImageDisplay;
-import imagej.display.Display;
-import imagej.display.event.input.KyEvent;
-import imagej.display.event.input.KyPressedEvent;
-import imagej.display.event.input.KyReleasedEvent;
-import imagej.display.event.input.KyTypedEvent;
-import imagej.display.event.input.MsButtonEvent;
-import imagej.display.event.input.MsClickedEvent;
-import imagej.display.event.input.MsDraggedEvent;
-import imagej.display.event.input.MsEnteredEvent;
-import imagej.display.event.input.MsEvent;
-import imagej.display.event.input.MsExitedEvent;
-import imagej.display.event.input.MsMovedEvent;
-import imagej.display.event.input.MsPressedEvent;
-import imagej.display.event.input.MsReleasedEvent;
-import imagej.display.event.input.MsWheelEvent;
-import imagej.util.IntCoords;
-
 import java.awt.Component;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -60,13 +41,32 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
+import net.imagej.display.ImageCanvas;
+import net.imagej.display.ImageDisplay;
+
+import org.scijava.display.Display;
+import org.scijava.display.event.input.KyEvent;
+import org.scijava.display.event.input.KyPressedEvent;
+import org.scijava.display.event.input.KyReleasedEvent;
+import org.scijava.display.event.input.KyTypedEvent;
+import org.scijava.display.event.input.MsButtonEvent;
+import org.scijava.display.event.input.MsClickedEvent;
+import org.scijava.display.event.input.MsDraggedEvent;
+import org.scijava.display.event.input.MsEnteredEvent;
+import org.scijava.display.event.input.MsEvent;
+import org.scijava.display.event.input.MsExitedEvent;
+import org.scijava.display.event.input.MsMovedEvent;
+import org.scijava.display.event.input.MsPressedEvent;
+import org.scijava.display.event.input.MsReleasedEvent;
+import org.scijava.display.event.input.MsWheelEvent;
 import org.scijava.event.EventService;
 import org.scijava.input.InputModifiers;
 import org.scijava.input.KeyCode;
+import org.scijava.util.IntCoords;
 
 /**
  * Rebroadcasts AWT {@link InputEvent}s as ImageJ
- * {@link imagej.display.event.input.InputEvent}s, translating
+ * {@link org.scijava.display.event.input.InputEvent}s, translating
  * {@link KeyEvent}s into {@link KyEvent}s, and {@link MouseEvent}s into
  * {@link MsEvent}s.
  * 

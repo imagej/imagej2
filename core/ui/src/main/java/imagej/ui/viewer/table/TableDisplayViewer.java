@@ -31,9 +31,9 @@
 
 package imagej.ui.viewer.table;
 
-import imagej.data.table.Table;
-import imagej.data.table.TableDisplay;
 import imagej.ui.viewer.DisplayViewer;
+import net.imagej.table.Table;
+import net.imagej.table.TableDisplay;
 
 /**
  * A display viewer for a display of {@link Table}s.

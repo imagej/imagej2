@@ -31,9 +31,10 @@
 
 package imagej.ui.viewer.text;
 
-import imagej.display.Display;
-import imagej.display.TextDisplay;
 import imagej.ui.viewer.AbstractDisplayViewer;
+
+import org.scijava.display.Display;
+import org.scijava.display.TextDisplay;
 
 /**
  * Implements the UI-independent elements of a text viewer.

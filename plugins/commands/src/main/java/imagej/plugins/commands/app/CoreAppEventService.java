@@ -31,13 +31,12 @@
 
 package imagej.plugins.commands.app;
 
-import imagej.command.Command;
-import imagej.command.CommandService;
-import imagej.platform.DefaultAppEventService;
-
 import java.util.Arrays;
 import java.util.List;
 
+import org.scijava.command.Command;
+import org.scijava.command.CommandService;
+import org.scijava.platform.DefaultAppEventService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;

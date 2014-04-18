@@ -31,18 +31,13 @@
 
 package imagej.plugins.commands.restructure;
 
-import imagej.command.Command;
-import imagej.command.DynamicCommand;
-import imagej.data.Dataset;
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.menu.MenuConstants;
-import imagej.module.DefaultMutableModuleItem;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import net.imagej.Dataset;
+import net.imagej.display.DatasetView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable;
@@ -54,6 +49,10 @@ import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.command.DynamicCommand;
+import org.scijava.menu.MenuConstants;
+import org.scijava.module.DefaultMutableModuleItem;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

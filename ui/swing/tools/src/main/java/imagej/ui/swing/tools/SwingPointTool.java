@@ -31,11 +31,10 @@
 
 package imagej.ui.swing.tools;
 
-import imagej.tool.AbstractTool;
-import imagej.tool.Tool;
-
 import org.scijava.input.MouseCursor;
 import org.scijava.plugin.Plugin;
+import org.scijava.tool.AbstractTool;
+import org.scijava.tool.Tool;
 
 /**
  * Swing/JHotDraw implementation of point tool.

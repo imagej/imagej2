@@ -31,13 +31,12 @@
 
 package imagej.ui;
 
-import imagej.module.Module;
-import imagej.module.ModuleException;
-import imagej.module.process.PreprocessorPlugin;
-import imagej.widget.AbstractInputHarvester;
-import imagej.widget.InputHarvester;
-
+import org.scijava.module.Module;
+import org.scijava.module.ModuleException;
+import org.scijava.module.process.PreprocessorPlugin;
 import org.scijava.plugin.Parameter;
+import org.scijava.widget.AbstractInputHarvester;
+import org.scijava.widget.InputHarvester;
 
 /**
  * AbstractInputHarvesterPlugin is an {@link InputHarvester} that implements the

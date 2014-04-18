@@ -31,24 +31,25 @@
 
 package imagej.ui.swing.tools.overlay;
 
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayView;
-import imagej.data.overlay.AngleOverlay;
-import imagej.data.overlay.Overlay;
 import imagej.plugins.uis.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.IJCreationTool;
 import imagej.plugins.uis.swing.overlay.JHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.JHotDrawTool;
-import imagej.tool.Tool;
 import imagej.ui.swing.tools.SwingAngleTool;
 
 import java.awt.Shape;
 import java.awt.geom.Point2D;
 
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.OverlayView;
+import net.imagej.overlay.AngleOverlay;
+import net.imagej.overlay.Overlay;
+
 import org.jhotdraw.draw.BezierFigure;
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.geom.BezierPath;
 import org.scijava.plugin.Plugin;
+import org.scijava.tool.Tool;
 
 /**
  * JHotDraw adapter for angle overlays.

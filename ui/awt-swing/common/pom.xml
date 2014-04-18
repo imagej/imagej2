@@ -14,31 +14,29 @@
 	<description>Common AWT classes for use with AWT and Swing user interfaces. These classes depend on several ImageJ components, and are intended only to share code between AWT- and Swing-based user interfaces of ImageJ.</description>
 
 	<dependencies>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-data</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+		<!-- Project dependencies -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
+		<!-- SciJava dependencies -->
 		<dependency>
-			<groupId>${imglib2.groupId}</groupId>
-			<artifactId>imglib2</artifactId>
-			<version>${imglib2.version}</version>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-common</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${imglib2.groupId}</groupId>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2-meta</artifactId>
-			<version>${imglib2.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>scijava-common</artifactId>
 		</dependency>
 	</dependencies>
 

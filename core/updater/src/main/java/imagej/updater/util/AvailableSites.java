@@ -33,7 +33,6 @@ package imagej.updater.util;
 
 import imagej.updater.core.FilesCollection;
 import imagej.updater.core.UpdateSite;
-import imagej.util.MediaWikiClient;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,6 +43,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import net.imagej.util.MediaWikiClient;
 
 /**
  * Utility class for parsing the list of available update sites.

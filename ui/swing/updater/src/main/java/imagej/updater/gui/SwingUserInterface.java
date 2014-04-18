@@ -32,7 +32,6 @@
 package imagej.updater.gui;
 
 import imagej.updater.util.UpdaterUserInterface;
-import imagej.util.Prefs;
 
 import java.awt.Frame;
 import java.awt.Graphics;
@@ -49,6 +48,7 @@ import net.miginfocom.swing.MigLayout;
 
 import org.scijava.app.StatusService;
 import org.scijava.log.LogService;
+import org.scijava.util.Prefs;
 
 /**
  * TODO

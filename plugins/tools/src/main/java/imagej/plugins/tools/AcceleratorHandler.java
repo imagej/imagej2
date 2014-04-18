@@ -31,19 +31,18 @@
 
 package imagej.plugins.tools;
 
-import imagej.command.CommandService;
-import imagej.display.event.input.KyPressedEvent;
-import imagej.module.ModuleInfo;
-import imagej.module.ModuleService;
-import imagej.tool.AbstractTool;
-import imagej.tool.Tool;
-
 import org.scijava.Priority;
+import org.scijava.command.CommandService;
+import org.scijava.display.event.input.KyPressedEvent;
 import org.scijava.input.Accelerator;
 import org.scijava.input.InputModifiers;
 import org.scijava.input.KeyCode;
+import org.scijava.module.ModuleInfo;
+import org.scijava.module.ModuleService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.tool.AbstractTool;
+import org.scijava.tool.Tool;
 
 /**
  * Handles keyboard accelerator combinations that launch modules.

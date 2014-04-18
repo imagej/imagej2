@@ -29,47 +29,17 @@
  * #L%
  */
 
-package imagej.plugins.commands.imglib;
+package imagej.plugins.uis.swing.widget;
 
-import net.imagej.Dataset;
-import net.imglib2.img.Img;
-import net.imglib2.meta.ImgPlus;
-import net.imglib2.type.numeric.RealType;
+import net.imglib2.meta.TypedAxis;
+
+import org.scijava.widget.InputWidget;
 
 /**
- * Runs an ImgLib {@link OutputAlgorithm}, assigning the created image to the
- * input Dataset.
+ * Widget interface for dimension selectors.
  * 
- * @author Barry DeZonia
+ * @author Curtis Rueden
  */
-public class ImgLibDataTransform implements Runnable {
-
-	// -- instance variables --
-
-	private final Dataset dataset;
-	private final OutputAlgorithm<Img<? extends RealType<?>>> algorithm;
-
-	// -- constructor --
-
-	public ImgLibDataTransform(final Dataset dataset,
-		final OutputAlgorithm<Img<? extends RealType<?>>> algorithm)
-	{
-		this.dataset = dataset;
-		this.algorithm = algorithm;
-	}
-
-	// -- Runnable methods --
-
-	@Override
-	public void run() {
-		if (!algorithm.checkInput() || !algorithm.process()) {
-			throw new IllegalStateException(algorithm.getErrorMessage());
-		}
-
-		final ImgPlus<? extends RealType<?>> imgPlus =
-			ImgPlus.wrap(algorithm.getResult(), dataset);
-
-		dataset.setImgPlus(imgPlus);
-	}
-
+public interface DimSelectionWidget<U> extends InputWidget<TypedAxis[], U> {
+	// NB: No changes to interface.
 }

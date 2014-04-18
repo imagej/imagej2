@@ -31,47 +31,48 @@
 
 package imagej.legacy;
 
-import imagej.command.CommandService;
-import imagej.data.DatasetService;
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayService;
-import imagej.data.options.OptionsChannels;
-import imagej.data.threshold.ThresholdService;
-import imagej.display.DisplayService;
-import imagej.display.event.DisplayActivatedEvent;
-import imagej.display.event.input.KyPressedEvent;
-import imagej.display.event.input.KyReleasedEvent;
 import imagej.legacy.plugin.LegacyCommand;
 import imagej.legacy.plugin.LegacyPluginFinder;
-import imagej.menu.MenuService;
-import imagej.options.OptionsService;
-import imagej.options.event.OptionsEvent;
 import imagej.patcher.LegacyInjector;
 import imagej.ui.ApplicationFrame;
 import imagej.ui.UIService;
 import imagej.ui.UserInterface;
 import imagej.ui.viewer.DisplayWindow;
 import imagej.ui.viewer.image.ImageDisplayViewer;
-import imagej.util.ColorRGB;
 
 import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.imagej.DatasetService;
+import net.imagej.display.DatasetView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.OverlayService;
+import net.imagej.options.OptionsChannels;
+import net.imagej.threshold.ThresholdService;
+
 import org.scijava.app.StatusService;
+import org.scijava.command.CommandService;
+import org.scijava.display.DisplayService;
+import org.scijava.display.event.DisplayActivatedEvent;
+import org.scijava.display.event.input.KyPressedEvent;
+import org.scijava.display.event.input.KyReleasedEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.input.KeyCode;
 import org.scijava.log.LogService;
+import org.scijava.menu.MenuService;
+import org.scijava.options.OptionsService;
+import org.scijava.options.event.OptionsEvent;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import org.scijava.util.ColorRGB;
 
 /**
  * Default service for working with legacy ImageJ 1.x.

@@ -31,20 +31,20 @@
 
 package imagej.plugins.commands.app;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
-import imagej.data.table.DefaultGenericTable;
-import imagej.data.table.GenericTable;
-import imagej.menu.MenuConstants;
-import imagej.module.ModuleInfo;
-import imagej.module.ModuleService;
-
 import java.util.List;
+
+import net.imagej.table.DefaultGenericTable;
+import net.imagej.table.GenericTable;
 
 import org.scijava.ItemIO;
 import org.scijava.MenuEntry;
 import org.scijava.MenuPath;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
 import org.scijava.input.Accelerator;
+import org.scijava.menu.MenuConstants;
+import org.scijava.module.ModuleInfo;
+import org.scijava.module.ModuleService;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

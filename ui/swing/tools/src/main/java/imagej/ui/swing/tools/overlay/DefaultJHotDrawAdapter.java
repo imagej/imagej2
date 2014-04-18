@@ -31,16 +31,10 @@
 
 package imagej.ui.swing.tools.overlay;
 
-import imagej.data.Position;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayView;
-import imagej.data.overlay.Overlay;
 import imagej.plugins.uis.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.IJCreationTool;
 import imagej.plugins.uis.swing.overlay.JHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.JHotDrawTool;
-import imagej.tool.Tool;
-import imagej.util.ColorRGB;
 
 import java.awt.Color;
 import java.awt.Shape;
@@ -53,6 +47,10 @@ import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.SinglePixelPackedSampleModel;
 
+import net.imagej.Position;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.OverlayView;
+import net.imagej.overlay.Overlay;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.roi.RegionOfInterest;
 import net.imglib2.type.logic.BitType;
@@ -62,6 +60,8 @@ import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.ImageFigure;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
+import org.scijava.tool.Tool;
+import org.scijava.util.ColorRGB;
 
 /**
  * The default adapter handles any kind of overlay. It uses the fill color and

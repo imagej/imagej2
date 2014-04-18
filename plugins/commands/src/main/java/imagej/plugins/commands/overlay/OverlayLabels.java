@@ -31,10 +31,9 @@
 
 package imagej.plugins.commands.overlay;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
-import imagej.menu.MenuConstants;
-
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Plugin;
 

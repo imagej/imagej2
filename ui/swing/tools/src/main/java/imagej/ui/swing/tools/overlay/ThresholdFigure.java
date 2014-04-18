@@ -31,10 +31,6 @@
 
 package imagej.ui.swing.tools.overlay;
 
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.data.overlay.ThresholdOverlay;
-import imagej.display.Displayable;
 import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
@@ -44,6 +40,9 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 import java.awt.geom.Rectangle2D;
 
+import net.imagej.Dataset;
+import net.imagej.display.ImageDisplay;
+import net.imagej.overlay.ThresholdOverlay;
 import net.imglib2.Cursor;
 import net.imglib2.meta.AxisType;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
@@ -51,6 +50,7 @@ import net.imglib2.ops.pointset.PointSet;
 
 import org.jhotdraw.draw.AbstractAttributedFigure;
 import org.jhotdraw.draw.AttributeKeys;
+import org.scijava.display.Displayable;
 
 /**
  * Implementation of JHotDraw Figure that can display a {@link ThresholdOverlay}

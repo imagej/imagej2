@@ -36,8 +36,6 @@ import ij.ImagePlus;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.process.ByteProcessor;
-import imagej.data.overlay.BinaryMaskOverlay;
-import imagej.data.overlay.PolygonOverlay;
 
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
@@ -46,6 +44,8 @@ import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.util.Random;
 
+import net.imagej.overlay.BinaryMaskOverlay;
+import net.imagej.overlay.PolygonOverlay;
 import net.imglib2.RandomAccess;
 import net.imglib2.RealPoint;
 import net.imglib2.img.Img;

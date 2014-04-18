@@ -31,7 +31,6 @@
 
 package imagej.legacy.plugin;
 
-import imagej.platform.event.AppQuitEvent;
 import imagej.script.editor.TextEditor;
 
 import java.io.File;
@@ -39,6 +38,7 @@ import java.io.File;
 import org.scijava.Context;
 import org.scijava.Priority;
 import org.scijava.event.EventHandler;
+import org.scijava.platform.event.AppQuitEvent;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 

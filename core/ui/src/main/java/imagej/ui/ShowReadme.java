@@ -31,16 +31,16 @@
 
 package imagej.ui;
 
-import imagej.command.Command;
-import imagej.text.TextService;
-import imagej.util.AppUtils;
-
 import java.io.File;
 import java.io.IOException;
 
+import net.imagej.util.AppUtils;
+
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.text.TextService;
 
 /**
  * Displays the ImageJ readme file.

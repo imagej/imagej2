@@ -31,16 +31,15 @@
 
 package imagej.core.options;
 
-import imagej.menu.MenuConstants;
-import imagej.options.OptionsPlugin;
-import imagej.platform.PlatformService;
-import imagej.widget.Button;
-
 import java.net.URL;
 
+import org.scijava.menu.MenuConstants;
+import org.scijava.options.OptionsPlugin;
+import org.scijava.platform.PlatformService;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.Button;
 
 /**
  * Runs the Edit::Options::Compatibility dialog.

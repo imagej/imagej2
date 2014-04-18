@@ -31,11 +31,11 @@
 
 package imagej.ui.dnd;
 
-import imagej.display.Display;
-import imagej.service.ImageJService;
-
 import java.util.List;
 
+import net.imagej.service.ImageJService;
+
+import org.scijava.display.Display;
 import org.scijava.plugin.HandlerService;
 
 /**

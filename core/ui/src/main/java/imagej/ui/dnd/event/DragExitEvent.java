@@ -31,7 +31,7 @@
 
 package imagej.ui.dnd.event;
 
-import imagej.display.Display;
+import org.scijava.display.Display;
 
 /**
  * An event indicating an object was dragged off of a display.

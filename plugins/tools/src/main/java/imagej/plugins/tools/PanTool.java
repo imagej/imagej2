@@ -31,19 +31,19 @@
 
 package imagej.plugins.tools;
 
-import imagej.data.display.ImageDisplay;
-import imagej.display.Display;
-import imagej.display.event.input.KyPressedEvent;
-import imagej.display.event.input.MsButtonEvent;
-import imagej.display.event.input.MsDraggedEvent;
-import imagej.display.event.input.MsPressedEvent;
-import imagej.display.event.input.MsWheelEvent;
-import imagej.tool.AbstractTool;
-import imagej.tool.Tool;
-import imagej.util.IntCoords;
+import net.imagej.display.ImageDisplay;
 
+import org.scijava.display.Display;
+import org.scijava.display.event.input.KyPressedEvent;
+import org.scijava.display.event.input.MsButtonEvent;
+import org.scijava.display.event.input.MsDraggedEvent;
+import org.scijava.display.event.input.MsPressedEvent;
+import org.scijava.display.event.input.MsWheelEvent;
 import org.scijava.input.MouseCursor;
 import org.scijava.plugin.Plugin;
+import org.scijava.tool.AbstractTool;
+import org.scijava.tool.Tool;
+import org.scijava.util.IntCoords;
 
 /**
  * Tool for panning the display.

@@ -31,8 +31,8 @@
 
 package imagej.plugins.commands.restructure;
 
-import imagej.data.Dataset;
-import imagej.data.Extents;
+import net.imagej.Dataset;
+import net.imagej.Extents;
 import net.imglib2.RandomAccess;
 import net.imglib2.display.ColorTable;
 import net.imglib2.img.Img;

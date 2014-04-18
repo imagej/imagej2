@@ -31,8 +31,9 @@
 
 package imagej.ui.viewer.text;
 
-import imagej.display.TextDisplay;
 import imagej.ui.viewer.DisplayViewer;
+
+import org.scijava.display.TextDisplay;
 
 /**
  * A display viewer for {@link String}s.

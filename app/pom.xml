@@ -13,21 +13,7 @@
 	<name>ImageJ Application</name>
 	<description>The app component is the top-level ImageJ application. It brings together all the components into the final application. It launches the Swing user interface by default, but other interfaces are equally possible.</description>
 	<dependencies>
-		<dependency>
-			<groupId>${imagej.groupId}</groupId>
-			<artifactId>ij-ops</artifactId>
-			<version>${imagej-ops.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-commands</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+		<!-- Project dependencies -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-legacy</artifactId>
@@ -38,7 +24,33 @@
 			<artifactId>ij-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-updater-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
+		<!-- SciJava dependencies -->
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-ops</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>scijava-common</artifactId>
+		</dependency>
+
+		<!-- Runtime project dependencies -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ij-commands</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-options</artifactId>
@@ -114,7 +126,6 @@
 	</dependencies>
 
 	<properties>
-		<imagej-ops.version>0.1.0</imagej-ops.version>
 		<project.rootdir>${basedir}/..</project.rootdir>
 	</properties>
 

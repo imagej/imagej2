@@ -31,7 +31,7 @@
 
 package imagej.legacy.translate;
 
-import imagej.data.Dataset;
+import net.imagej.Dataset;
 import net.imglib2.Dimensions;
 
 /**

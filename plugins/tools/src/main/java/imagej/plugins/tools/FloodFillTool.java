@@ -31,24 +31,24 @@
 
 package imagej.plugins.tools;
 
-import imagej.command.CommandService;
-import imagej.data.ChannelCollection;
-import imagej.data.Dataset;
-import imagej.data.DrawingTool;
-import imagej.data.FloodFiller;
-import imagej.data.display.ImageDisplay;
-import imagej.data.event.DatasetUpdatedEvent;
-import imagej.data.options.OptionsChannels;
-import imagej.display.event.input.MsButtonEvent;
-import imagej.display.event.input.MsClickedEvent;
-import imagej.options.OptionsService;
-import imagej.render.RenderingService;
-import imagej.tool.AbstractTool;
-import imagej.tool.Tool;
+import net.imagej.ChannelCollection;
+import net.imagej.Dataset;
+import net.imagej.DrawingTool;
+import net.imagej.FloodFiller;
+import net.imagej.display.ImageDisplay;
+import net.imagej.event.DatasetUpdatedEvent;
+import net.imagej.options.OptionsChannels;
+import net.imagej.render.RenderingService;
 
+import org.scijava.command.CommandService;
+import org.scijava.display.event.input.MsButtonEvent;
+import org.scijava.display.event.input.MsClickedEvent;
 import org.scijava.event.EventService;
+import org.scijava.options.OptionsService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.tool.AbstractTool;
+import org.scijava.tool.Tool;
 
 /**
  * Tool implementation for flood fill.

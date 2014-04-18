@@ -31,14 +31,14 @@
 
 package imagej.plugins.commands.assign.noisereduce;
 
-import imagej.command.Command;
-import imagej.menu.MenuConstants;
 import net.imglib2.ops.function.Function;
 import net.imglib2.ops.function.real.RealMaxFunction;
 import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
+import org.scijava.command.Command;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Plugin;
 

@@ -31,19 +31,18 @@
 
 package imagej.plugins.uis.swing.mdi;
 
-import imagej.display.Display;
-import imagej.display.event.window.WinActivatedEvent;
-import imagej.display.event.window.WinClosedEvent;
-import imagej.display.event.window.WinClosingEvent;
-import imagej.display.event.window.WinDeactivatedEvent;
-import imagej.display.event.window.WinDeiconifiedEvent;
-import imagej.display.event.window.WinIconifiedEvent;
-import imagej.display.event.window.WinOpenedEvent;
-
 import javax.swing.JInternalFrame;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
+import org.scijava.display.Display;
+import org.scijava.display.event.window.WinActivatedEvent;
+import org.scijava.display.event.window.WinClosedEvent;
+import org.scijava.display.event.window.WinClosingEvent;
+import org.scijava.display.event.window.WinDeactivatedEvent;
+import org.scijava.display.event.window.WinDeiconifiedEvent;
+import org.scijava.display.event.window.WinIconifiedEvent;
+import org.scijava.display.event.window.WinOpenedEvent;
 import org.scijava.event.EventService;
 
 /**

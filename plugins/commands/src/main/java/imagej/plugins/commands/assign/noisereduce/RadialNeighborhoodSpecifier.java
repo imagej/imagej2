@@ -31,10 +31,9 @@
 
 package imagej.plugins.commands.assign.noisereduce;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
-
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 

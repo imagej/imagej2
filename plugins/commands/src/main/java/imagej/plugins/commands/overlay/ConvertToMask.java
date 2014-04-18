@@ -31,17 +31,13 @@
 
 package imagej.plugins.commands.overlay;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.overlay.BinaryMaskOverlay;
-import imagej.data.overlay.Overlay;
-import imagej.data.overlay.ThresholdOverlay;
-import imagej.data.threshold.ThresholdService;
-import imagej.menu.MenuConstants;
-import imagej.util.ColorRGB;
+import net.imagej.Dataset;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.overlay.BinaryMaskOverlay;
+import net.imagej.overlay.Overlay;
+import net.imagej.overlay.ThresholdOverlay;
+import net.imagej.threshold.ThresholdService;
 import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImg;
@@ -54,9 +50,13 @@ import net.imglib2.type.logic.BitType;
 
 import org.scijava.Context;
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.ColorRGB;
 
 /**
  * Creates an {@link Overlay} representing the thresholded pixels of a

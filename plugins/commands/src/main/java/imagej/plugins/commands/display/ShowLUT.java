@@ -31,34 +31,33 @@
 
 package imagej.plugins.commands.display;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
-import imagej.data.ChannelCollection;
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.data.DrawingTool;
-import imagej.data.display.ColorTables;
-import imagej.data.display.DatasetView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.display.Display;
-import imagej.display.DisplayService;
-import imagej.menu.MenuConstants;
-import imagej.render.RenderingService;
-import imagej.render.TextRenderer.TextJustification;
-import imagej.util.ColorRGB;
-import imagej.util.Colors;
-
 import java.util.List;
 
+import net.imagej.ChannelCollection;
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
+import net.imagej.DrawingTool;
+import net.imagej.display.ColorTables;
+import net.imagej.display.DatasetView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.render.RenderingService;
+import net.imagej.render.TextRenderer.TextJustification;
 import net.imglib2.display.ColorTable;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.display.Display;
+import org.scijava.display.DisplayService;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.ColorRGB;
+import org.scijava.util.Colors;
 
 // TODO
 // this implementation does not support a "List" button which shows

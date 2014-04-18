@@ -31,25 +31,26 @@
 
 package imagej.plugins.commands.io;
 
-import imagej.command.Command;
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.display.Display;
-import imagej.menu.MenuConstants;
 import imagej.ui.DialogPrompt;
 import imagej.ui.DialogPrompt.Result;
 import imagej.ui.UIService;
-import imagej.widget.FileWidget;
 
 import java.io.File;
 import java.io.IOException;
 
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
+
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.display.Display;
 import org.scijava.log.LogService;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.FileWidget;
 
 /**
  * Saves the current {@link Dataset} to disk using a user-specified file name.

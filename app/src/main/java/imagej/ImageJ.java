@@ -31,41 +31,28 @@
 
 package imagej;
 
-import imagej.app.ImageJApp;
-import imagej.command.CommandService;
-import imagej.console.ConsoleService;
-import imagej.data.DatasetService;
-import imagej.data.animation.AnimationService;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.InputService;
-import imagej.data.display.OverlayService;
-import imagej.data.display.ScreenCaptureService;
-import imagej.data.display.WindowService;
-import imagej.data.lut.LUTService;
-import imagej.data.measure.MeasurementService;
-import imagej.data.measure.StatisticsService;
-import imagej.data.operator.CalculatorService;
-import imagej.data.sampler.SamplerService;
-import imagej.data.threshold.ThresholdService;
-import imagej.display.DisplayService;
-import imagej.io.IOService;
-import imagej.io.RecentFileService;
 import imagej.legacy.LegacyService;
-import imagej.menu.MenuService;
-import imagej.module.ModuleService;
-import imagej.ops.OpService;
-import imagej.options.OptionsService;
-import imagej.platform.AppEventService;
-import imagej.platform.PlatformService;
-import imagej.render.RenderingService;
-import imagej.script.ScriptService;
-import imagej.tool.IconService;
-import imagej.tool.ToolService;
 import imagej.ui.UIService;
 import imagej.updater.core.UploaderService;
-import imagej.widget.WidgetService;
 
 import java.util.Collection;
+
+import net.imagej.DatasetService;
+import net.imagej.animation.AnimationService;
+import net.imagej.app.ImageJApp;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.InputService;
+import net.imagej.display.OverlayService;
+import net.imagej.display.ScreenCaptureService;
+import net.imagej.display.WindowService;
+import net.imagej.lut.LUTService;
+import net.imagej.measure.MeasurementService;
+import net.imagej.measure.StatisticsService;
+import net.imagej.operator.CalculatorService;
+import net.imagej.ops.OpService;
+import net.imagej.render.RenderingService;
+import net.imagej.sampler.SamplerService;
+import net.imagej.threshold.ThresholdService;
 
 import org.scijava.AbstractGateway;
 import org.scijava.Context;
@@ -156,32 +143,12 @@ public class ImageJ extends AbstractGateway {
 		return get(AnimationService.class);
 	}
 
-	public AppEventService appEvent() {
-		return get(AppEventService.class);
-	}
-
 	public CalculatorService calculator() {
 		return get(CalculatorService.class);
 	}
 
-	public CommandService command() {
-		return get(CommandService.class);
-	}
-
-	public ConsoleService console() {
-		return get(ConsoleService.class);
-	}
-
 	public DatasetService dataset() {
 		return get(DatasetService.class);
-	}
-
-	public DisplayService display() {
-		return get(DisplayService.class);
-	}
-
-	public IconService icon() {
-		return get(IconService.class);
 	}
 
 	public ImageDisplayService imageDisplay() {
@@ -190,10 +157,6 @@ public class ImageJ extends AbstractGateway {
 
 	public InputService input() {
 		return get(InputService.class);
-	}
-
-	public IOService io() {
-		return get(IOService.class);
 	}
 
 	public LegacyService legacy() {
@@ -208,32 +171,12 @@ public class ImageJ extends AbstractGateway {
 		return get(MeasurementService.class);
 	}
 
-	public MenuService menu() {
-		return get(MenuService.class);
-	}
-
-	public ModuleService module() {
-		return get(ModuleService.class);
-	}
-
 	public OpService op() {
 		return get(OpService.class);
 	}
 
-	public OptionsService options() {
-		return get(OptionsService.class);
-	}
-
 	public OverlayService overlay() {
 		return get(OverlayService.class);
-	}
-
-	public PlatformService platform() {
-		return get(PlatformService.class);
-	}
-
-	public RecentFileService recentFile() {
-		return get(RecentFileService.class);
 	}
 
 	public RenderingService rendering() {
@@ -248,10 +191,6 @@ public class ImageJ extends AbstractGateway {
 		return get(ScreenCaptureService.class);
 	}
 
-	public ScriptService script() {
-		return get(ScriptService.class);
-	}
-
 	public StatisticsService statistics() {
 		return get(StatisticsService.class);
 	}
@@ -260,20 +199,12 @@ public class ImageJ extends AbstractGateway {
 		return get(ThresholdService.class);
 	}
 
-	public ToolService tool() {
-		return get(ToolService.class);
-	}
-
 	public UIService ui() {
 		return get(UIService.class);
 	}
 
 	public UploaderService uploader() {
 		return get(UploaderService.class);
-	}
-
-	public WidgetService widget() {
-		return get(WidgetService.class);
 	}
 
 	public WindowService window() {

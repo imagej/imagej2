@@ -31,15 +31,16 @@
 
 package imagej.plugins.uis.swing.viewer.image;
 
-import imagej.data.Dataset;
-import imagej.data.display.DatasetView;
-import imagej.data.display.event.DataViewUpdatedEvent;
 import imagej.util.awt.AWTImageTools;
 
 import java.awt.Image;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+
+import net.imagej.Dataset;
+import net.imagej.display.DatasetView;
+import net.imagej.display.event.DataViewUpdatedEvent;
 
 import org.jhotdraw.draw.Drawing;
 import org.jhotdraw.draw.ImageFigure;

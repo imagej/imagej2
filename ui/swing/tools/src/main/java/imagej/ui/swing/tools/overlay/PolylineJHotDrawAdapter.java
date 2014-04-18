@@ -31,20 +31,19 @@
 
 package imagej.ui.swing.tools.overlay;
 
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayView;
-import imagej.data.overlay.GeneralPathOverlay;
-import imagej.data.overlay.Overlay;
 import imagej.plugins.uis.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.IJBezierTool;
 import imagej.plugins.uis.swing.overlay.JHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.JHotDrawTool;
-import imagej.tool.Tool;
 import imagej.ui.swing.tools.SwingPolylineTool;
 
 import java.awt.Shape;
 import java.awt.geom.PathIterator;
 
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.OverlayView;
+import net.imagej.overlay.GeneralPathOverlay;
+import net.imagej.overlay.Overlay;
 import net.imglib2.roi.GeneralPathRegionOfInterest;
 
 import org.jhotdraw.draw.BezierFigure;
@@ -53,6 +52,7 @@ import org.jhotdraw.geom.BezierPath.Node;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.tool.Tool;
 
 /**
  * JHotDraw adapter for multi-segmented lines

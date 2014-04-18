@@ -31,10 +31,6 @@
 
 package imagej.plugins.uis.awt.widget;
 
-import imagej.widget.InputWidget;
-import imagej.widget.ObjectWidget;
-import imagej.widget.WidgetModel;
-
 import java.awt.BorderLayout;
 import java.awt.Choice;
 import java.awt.Panel;
@@ -42,6 +38,9 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.ObjectWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
  * AWT implementation of object selector widget.

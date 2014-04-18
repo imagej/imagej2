@@ -31,14 +31,14 @@
 
 package imagej.plugins.commands.restructure;
 
-import imagej.command.CommandInfo;
-import imagej.command.CommandService;
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.event.DataRestructuredEvent;
-import imagej.display.event.DisplayActivatedEvent;
+import net.imagej.Dataset;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.event.DataRestructuredEvent;
 import net.imglib2.meta.Axes;
 
+import org.scijava.command.CommandInfo;
+import org.scijava.command.CommandService;
+import org.scijava.display.event.DisplayActivatedEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;

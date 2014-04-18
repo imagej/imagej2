@@ -39,11 +39,6 @@ import ij.Macro;
 import ij.WindowManager;
 import ij.gui.ImageWindow;
 import ij.io.Opener;
-import imagej.data.display.ImageDisplay;
-import imagej.platform.event.AppAboutEvent;
-import imagej.platform.event.AppOpenFilesEvent;
-import imagej.platform.event.AppPreferencesEvent;
-import imagej.platform.event.AppQuitEvent;
 
 import java.awt.GraphicsEnvironment;
 import java.io.File;
@@ -52,10 +47,16 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import net.imagej.display.ImageDisplay;
+
 import org.scijava.AbstractContextual;
 import org.scijava.Context;
 import org.scijava.event.EventHandler;
 import org.scijava.log.LogService;
+import org.scijava.platform.event.AppAboutEvent;
+import org.scijava.platform.event.AppOpenFilesEvent;
+import org.scijava.platform.event.AppPreferencesEvent;
+import org.scijava.platform.event.AppQuitEvent;
 import org.scijava.plugin.Parameter;
 
 /**

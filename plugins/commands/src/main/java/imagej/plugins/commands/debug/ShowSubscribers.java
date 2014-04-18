@@ -31,13 +31,12 @@
 
 package imagej.plugins.commands.debug;
 
-import imagej.command.Command;
-import imagej.display.event.DisplayActivatedEvent;
-import imagej.display.event.DisplayUpdatedEvent;
-
 import java.util.List;
 
 import org.scijava.ItemIO;
+import org.scijava.command.Command;
+import org.scijava.display.event.DisplayActivatedEvent;
+import org.scijava.display.event.DisplayUpdatedEvent;
 import org.scijava.event.EventService;
 import org.scijava.event.EventSubscriber;
 import org.scijava.event.SciJavaEvent;

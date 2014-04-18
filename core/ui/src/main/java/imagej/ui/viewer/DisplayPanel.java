@@ -31,7 +31,7 @@
 
 package imagej.ui.viewer;
 
-import imagej.display.Display;
+import org.scijava.display.Display;
 
 /**
  * The panel housing a particular {@link Display}.

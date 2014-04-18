@@ -31,27 +31,28 @@
 
 package imagej.ui.swing.tools.overlay;
 
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayView;
-import imagej.data.overlay.Overlay;
-import imagej.data.overlay.RectangleOverlay;
 import imagej.plugins.uis.swing.overlay.AbstractJHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.IJCreationTool;
 import imagej.plugins.uis.swing.overlay.JHotDrawAdapter;
 import imagej.plugins.uis.swing.overlay.JHotDrawTool;
-import imagej.tool.Tool;
-import imagej.tool.ToolService;
 import imagej.ui.swing.tools.SwingRectangleTool;
-import imagej.util.RealCoords;
 
 import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.OverlayView;
+import net.imagej.overlay.Overlay;
+import net.imagej.overlay.RectangleOverlay;
+
 import org.jhotdraw.draw.Figure;
 import org.jhotdraw.draw.RectangleFigure;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.tool.Tool;
+import org.scijava.tool.ToolService;
+import org.scijava.util.RealCoords;
 
 /**
  * JHotDraw adapter for rectangle overlays.

@@ -31,8 +31,9 @@
 
 package imagej.ui.viewer.text;
 
-import imagej.display.TextDisplay;
 import imagej.ui.viewer.DisplayPanel;
+
+import org.scijava.display.TextDisplay;
 
 /**
  * This is a panel that can go inside a display window. It displays

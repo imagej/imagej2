@@ -31,13 +31,13 @@
 
 package imagej.plugins.commands.binary;
 
-import imagej.command.ContextCommand;
-import imagej.data.Dataset;
+import net.imagej.Dataset;
 import net.imglib2.ops.types.ConnectedType;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
 
 import org.scijava.ItemIO;
+import org.scijava.command.ContextCommand;
 import org.scijava.plugin.Parameter;
 
 /**

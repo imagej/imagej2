@@ -31,23 +31,6 @@
 
 package imagej.plugins.commands.app;
 
-import imagej.app.ImageJApp;
-import imagej.command.Command;
-import imagej.command.ContextCommand;
-import imagej.data.ChannelCollection;
-import imagej.data.Dataset;
-import imagej.data.DatasetService;
-import imagej.data.DrawingTool;
-import imagej.display.Display;
-import imagej.display.DisplayService;
-import imagej.menu.MenuConstants;
-import imagej.render.RenderingService;
-import imagej.render.TextRenderer.TextJustification;
-import imagej.util.AppUtils;
-import imagej.util.ColorRGB;
-import imagej.util.Colors;
-import imagej.util.MersenneTwisterFast;
-
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -60,17 +43,33 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.imagej.ChannelCollection;
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
+import net.imagej.DrawingTool;
+import net.imagej.app.ImageJApp;
+import net.imagej.render.RenderingService;
+import net.imagej.render.TextRenderer.TextJustification;
+import net.imagej.util.AppUtils;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
 import org.scijava.ItemIO;
 import org.scijava.app.App;
 import org.scijava.app.AppService;
+import org.scijava.command.Command;
+import org.scijava.command.ContextCommand;
+import org.scijava.display.Display;
+import org.scijava.display.DisplayService;
 import org.scijava.log.LogService;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.ColorRGB;
+import org.scijava.util.Colors;
 import org.scijava.util.Manifest;
+import org.scijava.util.MersenneTwisterFast;
 
 // TODO
 //   Have imageX.ext image file and imageX.ext.txt metadata files

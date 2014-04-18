@@ -32,7 +32,6 @@
 package imagej.updater.core;
 
 import static org.scijava.util.FileUtils.deleteRecursively;
-import imagej.test.TestUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +39,7 @@ import java.net.MalformedURLException;
 
 import org.junit.After;
 import org.junit.Test;
+import org.scijava.test.TestUtils;
 
 /**
  * A conditional JUnit test for uploading via file: protocol.

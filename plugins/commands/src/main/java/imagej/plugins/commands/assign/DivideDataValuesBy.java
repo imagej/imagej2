@@ -31,14 +31,14 @@
 
 package imagej.plugins.commands.assign;
 
-import imagej.command.Command;
 import imagej.core.options.OptionsMisc;
-import imagej.menu.MenuConstants;
-import imagej.options.OptionsService;
 import net.imglib2.ops.operation.real.unary.RealDivideConstant;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
+import org.scijava.command.Command;
+import org.scijava.menu.MenuConstants;
+import org.scijava.options.OptionsService;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

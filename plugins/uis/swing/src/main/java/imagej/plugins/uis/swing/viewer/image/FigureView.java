@@ -31,7 +31,7 @@
 
 package imagej.plugins.uis.swing.viewer.image;
 
-import imagej.data.display.DataView;
+import net.imagej.display.DataView;
 
 import org.jhotdraw.draw.Figure;
 

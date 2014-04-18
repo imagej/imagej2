@@ -31,9 +31,6 @@
 
 package imagej.plugins.commands.debug;
 
-import imagej.app.ImageJApp;
-import imagej.command.Command;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,10 +41,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import net.imagej.app.ImageJApp;
+
 import org.scijava.Context;
 import org.scijava.ItemIO;
 import org.scijava.app.App;
 import org.scijava.app.AppService;
+import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;

@@ -31,29 +31,9 @@
 
 package imagej.plugins.uis.swing;
 
-import imagej.command.CommandService;
-import imagej.data.ChannelCollection;
-import imagej.data.display.DataView;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.ImageDisplayService;
-import imagej.data.display.OverlayInfo;
-import imagej.data.display.OverlayInfoList;
-import imagej.data.display.OverlayService;
-import imagej.data.display.OverlayView;
-import imagej.data.display.event.DataViewSelectionEvent;
-import imagej.data.event.OverlayCreatedEvent;
-import imagej.data.event.OverlayDeletedEvent;
-import imagej.data.event.OverlayRestructuredEvent;
-import imagej.data.event.OverlayUpdatedEvent;
-import imagej.data.options.OptionsChannels;
-import imagej.data.overlay.CompositeOverlay;
-import imagej.data.overlay.Overlay;
-import imagej.options.OptionsService;
-import imagej.platform.PlatformService;
 import imagej.plugins.commands.display.Flatten;
 import imagej.plugins.commands.overlay.SelectedManagerOverlayProperties;
 import imagej.plugins.commands.overlay.SelectionSpecify;
-import imagej.util.Prefs;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -93,10 +73,31 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import net.imagej.ChannelCollection;
+import net.imagej.display.DataView;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.ImageDisplayService;
+import net.imagej.display.OverlayInfo;
+import net.imagej.display.OverlayInfoList;
+import net.imagej.display.OverlayService;
+import net.imagej.display.OverlayView;
+import net.imagej.display.event.DataViewSelectionEvent;
+import net.imagej.event.OverlayCreatedEvent;
+import net.imagej.event.OverlayDeletedEvent;
+import net.imagej.event.OverlayRestructuredEvent;
+import net.imagej.event.OverlayUpdatedEvent;
+import net.imagej.options.OptionsChannels;
+import net.imagej.overlay.CompositeOverlay;
+import net.imagej.overlay.Overlay;
+
 import org.scijava.Context;
+import org.scijava.command.CommandService;
 import org.scijava.event.EventHandler;
 import org.scijava.event.EventService;
+import org.scijava.options.OptionsService;
+import org.scijava.platform.PlatformService;
 import org.scijava.plugin.Parameter;
+import org.scijava.util.Prefs;
 
 // TODO
 //

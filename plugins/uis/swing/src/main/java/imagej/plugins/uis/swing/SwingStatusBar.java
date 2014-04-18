@@ -32,7 +32,6 @@
 package imagej.plugins.uis.swing;
 
 import imagej.core.options.OptionsMemoryAndThreads;
-import imagej.options.OptionsService;
 import imagej.ui.DialogPrompt.MessageType;
 import imagej.ui.StatusBar;
 import imagej.ui.UIService;
@@ -50,6 +49,7 @@ import org.scijava.Context;
 import org.scijava.app.StatusService;
 import org.scijava.app.event.StatusEvent;
 import org.scijava.event.EventHandler;
+import org.scijava.options.OptionsService;
 import org.scijava.plugin.Parameter;
 
 /**

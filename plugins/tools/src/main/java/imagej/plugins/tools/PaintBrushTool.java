@@ -31,11 +31,10 @@
 
 package imagej.plugins.tools;
 
-import imagej.command.CommandService;
-import imagej.tool.Tool;
-
+import org.scijava.command.CommandService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.tool.Tool;
 
 /**
  * Tool implementation for paint brush.

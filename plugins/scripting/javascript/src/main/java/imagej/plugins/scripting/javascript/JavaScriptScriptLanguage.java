@@ -31,9 +31,6 @@
 
 package imagej.plugins.scripting.javascript;
 
-import imagej.script.AdaptedScriptLanguage;
-import imagej.script.ScriptLanguage;
-
 import java.lang.reflect.InvocationTargetException;
 
 import javax.script.ScriptEngine;
@@ -41,6 +38,8 @@ import javax.script.ScriptEngine;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.script.AdaptedScriptLanguage;
+import org.scijava.script.ScriptLanguage;
 import org.scijava.util.ClassUtils;
 
 /**

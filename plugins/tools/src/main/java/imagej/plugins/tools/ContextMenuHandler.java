@@ -31,18 +31,18 @@
 
 package imagej.plugins.tools;
 
-import imagej.data.display.ImageDisplay;
-import imagej.display.Display;
-import imagej.display.event.input.MsButtonEvent;
-import imagej.display.event.input.MsClickedEvent;
-import imagej.display.event.input.MsPressedEvent;
-import imagej.display.event.input.MsReleasedEvent;
-import imagej.tool.AbstractTool;
-import imagej.tool.Tool;
 import imagej.ui.UIService;
+import net.imagej.display.ImageDisplay;
 
+import org.scijava.display.Display;
+import org.scijava.display.event.input.MsButtonEvent;
+import org.scijava.display.event.input.MsClickedEvent;
+import org.scijava.display.event.input.MsPressedEvent;
+import org.scijava.display.event.input.MsReleasedEvent;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.tool.AbstractTool;
+import org.scijava.tool.Tool;
 
 /**
  * Handles display of general-purpose context menu (e.g., on right mouse click).

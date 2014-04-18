@@ -31,18 +31,18 @@
 
 package imagej.plugins.tools;
 
-import imagej.data.display.ImageDisplay;
-import imagej.display.Display;
-import imagej.display.event.input.KyPressedEvent;
-import imagej.display.event.input.MsWheelEvent;
-import imagej.tool.AbstractTool;
-import imagej.tool.Tool;
+import net.imagej.display.ImageDisplay;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
+import org.scijava.display.Display;
+import org.scijava.display.event.input.KyPressedEvent;
+import org.scijava.display.event.input.MsWheelEvent;
 import org.scijava.input.InputModifiers;
 import org.scijava.input.KeyCode;
 import org.scijava.plugin.Plugin;
+import org.scijava.tool.AbstractTool;
+import org.scijava.tool.Tool;
 
 /**
  * Handles keyboard and mouse wheel operations that change the dimensional

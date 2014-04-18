@@ -31,10 +31,9 @@
 
 package imagej.plugins.commands.app;
 
-import imagej.command.Command;
-import imagej.command.UnimplementedCommand;
-import imagej.menu.MenuConstants;
-
+import org.scijava.command.Command;
+import org.scijava.command.UnimplementedCommand;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Plugin;
 

@@ -14,26 +14,7 @@
 	<description>The legacy component enables backward compatibility with the legacy version of ImageJ (1.x). It contains the code necessary to translate ImageJ images into ImageJ1 format and back, so that legacy plugins can be executed faithfully.</description>
 
 	<dependencies>
-		<dependency>
-			<groupId>${imagej.groupId}</groupId>
-			<artifactId>ij1-patcher</artifactId>
-			<version>${ij1-patcher.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij</artifactId>
-			<version>${imagej1.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-data</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+		<!-- Project dependencies -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-options</artifactId>
@@ -50,47 +31,52 @@
 			<version>${project.version}</version>
 		</dependency>
 
+		<!-- SciJava dependencies -->
+		<dependency>
+			<groupId>io.scif</groupId>
+			<artifactId>scifio</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>ij1-patcher</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>ij</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2-ij</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2-meta</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>scijava-common</artifactId>
+		</dependency>
+
+		<!-- Optional project dependencies -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-ui-swing-script-editor</artifactId>
 			<version>${project.version}</version>
-			<scope>compile</scope>
 			<optional>true</optional>
 		</dependency>
 
-		<dependency>
-			<groupId>${imglib2.groupId}</groupId>
-			<artifactId>imglib2</artifactId>
-			<version>${imglib2.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${imglib2.groupId}</groupId>
-			<artifactId>imglib2-ij</artifactId>
-			<version>${imglib2-ij.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${imglib2.groupId}</groupId>
-			<artifactId>imglib2-meta</artifactId>
-			<version>${imglib2.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.javassist</groupId>
-			<artifactId>javassist</artifactId>
-			<version>3.16.1-GA</version>
-		</dependency>
-
+		<!-- Test dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-core</artifactId>
-			<version>${project.version}</version>
-			<classifier>tests</classifier>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

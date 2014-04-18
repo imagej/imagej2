@@ -31,11 +31,11 @@
 
 package imagej.plugins.commands.overlay;
 
-import imagej.command.Command;
-import imagej.command.UnimplementedCommand;
-import imagej.data.display.ImageDisplay;
-import imagej.menu.MenuConstants;
+import net.imagej.display.ImageDisplay;
 
+import org.scijava.command.Command;
+import org.scijava.command.UnimplementedCommand;
+import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;

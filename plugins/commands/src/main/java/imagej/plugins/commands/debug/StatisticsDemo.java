@@ -31,20 +31,20 @@
 
 package imagej.plugins.commands.debug;
 
-import imagej.command.Command;
-import imagej.data.Dataset;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayService;
-import imagej.data.measure.StatisticsService;
-import imagej.data.overlay.Overlay;
-import imagej.widget.Button;
+import net.imagej.Dataset;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.OverlayService;
+import net.imagej.measure.StatisticsService;
+import net.imagej.overlay.Overlay;
 import net.imglib2.ops.pointset.HyperVolumePointSet;
 import net.imglib2.ops.pointset.PointSet;
 import net.imglib2.ops.pointset.RoiPointSet;
 
 import org.scijava.app.StatusService;
+import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.Button;
 
 /**
  * Shows how to use the StatisticsService.

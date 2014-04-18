@@ -31,14 +31,13 @@
 
 package imagej.plugins.tools;
 
-import imagej.display.event.input.KyPressedEvent;
-import imagej.display.event.input.KyReleasedEvent;
-import imagej.tool.AbstractTool;
-import imagej.tool.Tool;
-import imagej.tool.ToolService;
-
+import org.scijava.display.event.input.KyPressedEvent;
+import org.scijava.display.event.input.KyReleasedEvent;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.tool.AbstractTool;
+import org.scijava.tool.Tool;
+import org.scijava.tool.ToolService;
 
 /**
  * Tool for activating the pan tool in response to the space bar.

@@ -33,7 +33,7 @@ package imagej.legacy.translate;
 
 import ij.CompositeImage;
 import ij.ImagePlus;
-import imagej.data.Dataset;
+import net.imagej.Dataset;
 
 /**
  * This class sets composite channel count for {@link Dataset}s to match a given

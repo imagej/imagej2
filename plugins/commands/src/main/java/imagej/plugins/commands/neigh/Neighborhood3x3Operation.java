@@ -31,16 +31,17 @@
 
 package imagej.plugins.commands.neigh;
 
-import imagej.data.Dataset;
-import imagej.data.Extents;
-import imagej.data.Position;
-import imagej.util.RealRect;
+import net.imagej.Dataset;
+import net.imagej.Extents;
+import net.imagej.Position;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessible;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
+
+import org.scijava.util.RealRect;
 
 /**
  * Neighborhood3x3Operation - a helper class for 3x3 neighborhood operation

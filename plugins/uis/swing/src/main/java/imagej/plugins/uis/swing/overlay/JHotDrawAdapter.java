@@ -31,17 +31,17 @@
 
 package imagej.plugins.uis.swing.overlay;
 
-import imagej.ImageJPlugin;
-import imagej.data.display.ImageDisplay;
-import imagej.data.display.OverlayView;
-import imagej.data.overlay.Overlay;
-import imagej.display.Display;
-import imagej.tool.Tool;
-import imagej.util.RealCoords;
+import net.imagej.ImageJPlugin;
+import net.imagej.display.ImageDisplay;
+import net.imagej.display.OverlayView;
+import net.imagej.overlay.Overlay;
 
 import org.jhotdraw.draw.Figure;
+import org.scijava.display.Display;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.RichPlugin;
+import org.scijava.tool.Tool;
+import org.scijava.util.RealCoords;
 
 /**
  * Interface for JHotDraw-based adapters, which maintain a bidirectional link

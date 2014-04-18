@@ -31,10 +31,6 @@
 
 package imagej.plugins.uis.swing.widget;
 
-import imagej.widget.DateWidget;
-import imagej.widget.InputWidget;
-import imagej.widget.WidgetModel;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
@@ -48,6 +44,9 @@ import net.sourceforge.jdatepicker.impl.UtilDateModel;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.widget.DateWidget;
+import org.scijava.widget.InputWidget;
+import org.scijava.widget.WidgetModel;
 
 /**
  * Swing implementation of date selector widget.
