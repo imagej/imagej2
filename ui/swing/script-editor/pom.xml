@@ -35,13 +35,11 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-scripting-beanshell</artifactId>
-			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-scripting-jython</artifactId>
-			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

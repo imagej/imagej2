@@ -27,6 +27,9 @@
 	</modules>
 
 	<properties>
+		<!-- NB: Needed to override managed versions. -->
+		<imagej.version>${project.version}</imagej.version>
+
 		<miglayout.version>3.7.3.1</miglayout.version>
 		<project.rootdir>${basedir}</project.rootdir>
 	</properties>

@@ -18,17 +18,14 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-ui</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-ui-swing</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-util-swing</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 
 		<!-- SciJava dependencies -->

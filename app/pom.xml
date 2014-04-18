@@ -17,17 +17,14 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-legacy</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-ui</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-updater-core</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 
 		<!-- SciJava dependencies -->
@@ -48,79 +45,66 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-commands</artifactId>
-			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-options</artifactId>
-			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-scripting-beanshell</artifactId>
-			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-scripting-clojure</artifactId>
-			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-scripting-java</artifactId>
-			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-scripting-javascript</artifactId>
-			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-scripting-jruby</artifactId>
-			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-scripting-jython</artifactId>
-			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-platforms</artifactId>
-			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-text</artifactId>
-			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-tools</artifactId>
-			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-updater-ssh</artifactId>
-			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-updater-webdav</artifactId>
-			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
@@ -346,7 +330,6 @@
 				<dependency>
 					<groupId>${project.groupId}</groupId>
 					<artifactId>ij-ui-awt</artifactId>
-					<version>${project.version}</version>
 					<scope>runtime</scope>
 				</dependency>
 				<dependency>
@@ -392,31 +375,26 @@
 				<dependency>
 					<groupId>${project.groupId}</groupId>
 					<artifactId>ij-ui-swing</artifactId>
-					<version>${project.version}</version>
 					<scope>runtime</scope>
 				</dependency>
 				<dependency>
 					<groupId>${project.groupId}</groupId>
 					<artifactId>ij-ui-swing-commands</artifactId>
-					<version>${project.version}</version>
 					<scope>runtime</scope>
 				</dependency>
 				<dependency>
 					<groupId>${project.groupId}</groupId>
 					<artifactId>ij-ui-swing-script-editor</artifactId>
-					<version>${project.version}</version>
 					<scope>runtime</scope>
 				</dependency>
 				<dependency>
 					<groupId>${project.groupId}</groupId>
 					<artifactId>ij-ui-swing-tools</artifactId>
-					<version>${project.version}</version>
 					<scope>runtime</scope>
 				</dependency>
 				<dependency>
 					<groupId>${project.groupId}</groupId>
 					<artifactId>ij-ui-swing-updater</artifactId>
-					<version>${project.version}</version>
 					<scope>runtime</scope>
 				</dependency>
 			</dependencies>

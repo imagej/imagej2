@@ -18,7 +18,6 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-updater-core</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 
 		<!-- SciJava dependencies -->
@@ -43,7 +42,7 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-updater-core</artifactId>
-			<version>${project.version}</version>
+			<version>${imagej.version}</version> <!-- TEMP -->
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
