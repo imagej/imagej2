@@ -11,12 +11,13 @@
 	<artifactId>ij-util-awt</artifactId>
 
 	<name>ImageJ Utility Classes: AWT</name>
-	<description>AWT utility classes for use with AWT and Swing user interfaces. These classes depend on ImageJ core only, and are considered general-purpose AWT utility classes, potentially useful outside the ImageJ framework.</description>
+	<description>AWT utility classes for use with AWT and Swing user interfaces. These classes depend on SciJava Common only, and are considered general-purpose AWT utility classes, potentially useful outside the ImageJ framework.</description>
 
 	<dependencies>
+		<!-- SciJava dependencies -->
 		<dependency>
-			<groupId>net.imagej</groupId>
-			<artifactId>imagej-common</artifactId>
+			<groupId>org.scijava</groupId>
+			<artifactId>scijava-common</artifactId>
 		</dependency>
 	</dependencies>
 

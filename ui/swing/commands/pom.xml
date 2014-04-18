@@ -14,11 +14,7 @@
 	<description>Commands for Swing-based ImageJ user interfaces.</description>
 
 	<dependencies>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-options</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+		<!-- Project dependencies -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-ui</artifactId>
@@ -34,26 +30,26 @@
 			<artifactId>ij-util-swing</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
+		<!-- SciJava dependencies -->
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej-common</artifactId>
 		</dependency>
-
 		<dependency>
-			<groupId>${imglib2.groupId}</groupId>
+			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2</artifactId>
-			<version>${imglib2.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${imglib2.groupId}</groupId>
+			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2-algorithms</artifactId>
-			<version>${imglib2.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${imglib2.groupId}</groupId>
-			<artifactId>imglib2-meta</artifactId>
-			<version>${imglib2.version}</version>
+			<groupId>org.scijava</groupId>
+			<artifactId>scijava-common</artifactId>
 		</dependency>
+
+		<!-- Third-party dependencies -->
 		<dependency>
 			<groupId>com.github.sbridges.object-inspector</groupId>
 			<artifactId>object-inspector</artifactId>

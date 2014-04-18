@@ -14,24 +14,22 @@
 	<description>Pretends that Java is a scripting language and offers it via the script framework of ImageJ.</description>
 
 	<dependencies>
+		<!-- SciJava dependencies -->
 		<dependency>
 			<groupId>net.imagej</groupId>
-			<artifactId>imagej-common</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>${minimaven.groupId}</groupId>
 			<artifactId>minimaven</artifactId>
-			<version>${minimaven.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>scijava-common</artifactId>
 		</dependency>
 
+		<!-- Test dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.scijava</groupId>
 			<artifactId>scijava-common</artifactId>

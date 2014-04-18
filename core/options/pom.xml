@@ -14,9 +14,14 @@
 	<description>The core options component contains some built-in shared preferences for ImageJ. These options appear in the Edit &gt; Options menu.</description>
 
 	<dependencies>
+		<!-- SciJava dependencies -->
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>scijava-common</artifactId>
 		</dependency>
 	</dependencies>
 
