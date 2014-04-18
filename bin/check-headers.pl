@@ -35,6 +35,7 @@ my %knownAuthors = (
   "Barry DeZonia" => 1,
   "Benjamin Nanes" => 1,
   "Curtis Rueden" => 1,
+  "Daniel Seebacher" => 1,
   "Gabriel Landini" => 1,
   "Grant Harris" => 1,
   "Johannes Schindelin" => 1,
