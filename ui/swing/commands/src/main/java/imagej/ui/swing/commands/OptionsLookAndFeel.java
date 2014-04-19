@@ -32,7 +32,6 @@
 package imagej.ui.swing.commands;
 
 import imagej.plugins.uis.swing.SwingApplicationFrame;
-import imagej.ui.UserInterface;
 
 import java.awt.EventQueue;
 import java.util.ArrayList;
@@ -49,6 +48,7 @@ import org.scijava.options.OptionsPlugin;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.UserInterface;
 
 /**
  * Runs the Edit::Options::Look and Feel dialog.

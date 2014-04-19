@@ -31,7 +31,7 @@
 
 package imagej.plugins.uis.swing.viewer.image;
 
-import imagej.ui.viewer.image.ImageDisplayViewer;
+import net.imagej.ui.viewer.image.ImageDisplayViewer;
 
 /**
  * Interface for Swing-based image display viewers.

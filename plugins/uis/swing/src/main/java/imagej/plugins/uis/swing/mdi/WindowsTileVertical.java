@@ -31,13 +31,12 @@
 
 package imagej.plugins.uis.swing.mdi;
 
-import imagej.ui.Arrangeable.Arrangement;
-import imagej.ui.Desktop;
-import imagej.ui.UserInterface;
-
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.Arrangeable.Arrangement;
+import org.scijava.ui.Desktop;
+import org.scijava.ui.UserInterface;
 
 /**
  * Arranges the Windows in an MDI environment.

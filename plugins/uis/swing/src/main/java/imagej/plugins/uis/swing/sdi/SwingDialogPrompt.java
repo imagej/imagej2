@@ -31,13 +31,13 @@
 
 package imagej.plugins.uis.swing.sdi;
 
-import imagej.ui.DialogPrompt;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+
+import org.scijava.ui.DialogPrompt;
 
 /**
  * TODO

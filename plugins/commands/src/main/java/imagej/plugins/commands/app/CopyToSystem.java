@@ -31,13 +31,11 @@
 
 package imagej.plugins.commands.app;
 
-import imagej.ui.UserInterface;
 import net.imagej.display.DatasetView;
 import net.imagej.display.ImageDisplay;
 import net.imagej.display.ImageDisplayService;
 import net.imagej.display.OverlayService;
 import net.imagej.overlay.Overlay;
-import net.imagej.util.ARGBPlane;
 
 import org.scijava.app.StatusService;
 import org.scijava.command.Command;
@@ -46,6 +44,8 @@ import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.ARGBPlane;
+import org.scijava.ui.UserInterface;
 
 /**
  * Copies an ARGB image plane to the system clipboard for use by

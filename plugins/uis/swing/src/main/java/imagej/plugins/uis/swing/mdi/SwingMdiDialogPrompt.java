@@ -32,14 +32,15 @@
 package imagej.plugins.uis.swing.mdi;
 
 import imagej.plugins.uis.swing.SwingApplicationFrame;
-import imagej.ui.DialogPrompt;
-import imagej.ui.UserInterface;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
+
+import org.scijava.ui.DialogPrompt;
+import org.scijava.ui.UserInterface;
 
 /**
  * TODO

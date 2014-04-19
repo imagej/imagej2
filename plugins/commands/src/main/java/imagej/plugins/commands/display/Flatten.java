@@ -31,10 +31,9 @@
 
 package imagej.plugins.commands.display;
 
-import imagej.ui.UIService;
-import imagej.ui.viewer.image.ImageDisplayViewer;
 import net.imagej.Dataset;
 import net.imagej.display.ImageDisplay;
+import net.imagej.ui.viewer.image.ImageDisplayViewer;
 
 import org.scijava.ItemIO;
 import org.scijava.command.Command;
@@ -43,6 +42,7 @@ import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.UIService;
 
 /**
  * Captures the current view of an {@link ImageDisplay} to a color merged

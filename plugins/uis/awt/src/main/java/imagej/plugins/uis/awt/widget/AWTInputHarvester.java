@@ -32,7 +32,6 @@
 package imagej.plugins.uis.awt.widget;
 
 import imagej.plugins.uis.awt.AWTUI;
-import imagej.ui.AbstractInputHarvesterPlugin;
 
 import java.awt.Dimension;
 import java.awt.Panel;
@@ -45,6 +44,7 @@ import org.scijava.Priority;
 import org.scijava.module.Module;
 import org.scijava.module.process.PreprocessorPlugin;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.AbstractInputHarvesterPlugin;
 import org.scijava.widget.InputHarvester;
 import org.scijava.widget.InputPanel;
 

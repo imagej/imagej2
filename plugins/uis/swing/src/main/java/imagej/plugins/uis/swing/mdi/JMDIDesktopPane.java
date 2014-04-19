@@ -42,9 +42,6 @@
 
 package imagej.plugins.uis.swing.mdi;
 
-import imagej.ui.Arrangeable;
-import imagej.ui.Desktop;
-
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
@@ -58,6 +55,9 @@ import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
+
+import org.scijava.ui.Arrangeable;
+import org.scijava.ui.Desktop;
 
 /**
  * An extension of JDesktopPane that supports often used MDI functionality. This

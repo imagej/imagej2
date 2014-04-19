@@ -32,15 +32,7 @@
 package imagej.plugins.uis.awt;
 
 import imagej.plugins.uis.awt.menu.AWTMenuBarCreator;
-import imagej.ui.AbstractUserInterface;
-import imagej.ui.ApplicationFrame;
-import imagej.ui.DialogPrompt;
-import imagej.ui.DialogPrompt.MessageType;
-import imagej.ui.DialogPrompt.OptionType;
-import imagej.ui.SystemClipboard;
-import imagej.ui.UserInterface;
 import imagej.ui.common.awt.AWTClipboard;
-import imagej.ui.viewer.DisplayWindow;
 
 import java.awt.BorderLayout;
 import java.awt.MenuBar;
@@ -48,6 +40,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 
+import org.scijava.app.AppService;
 import org.scijava.display.Display;
 import org.scijava.event.EventService;
 import org.scijava.menu.MenuService;
@@ -55,6 +48,14 @@ import org.scijava.platform.AppEventService;
 import org.scijava.platform.event.AppMenusCreatedEvent;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.AbstractUserInterface;
+import org.scijava.ui.ApplicationFrame;
+import org.scijava.ui.DialogPrompt;
+import org.scijava.ui.DialogPrompt.MessageType;
+import org.scijava.ui.DialogPrompt.OptionType;
+import org.scijava.ui.SystemClipboard;
+import org.scijava.ui.UserInterface;
+import org.scijava.ui.viewer.DisplayWindow;
 
 /**
  * AWT-based user interface for ImageJ.
@@ -65,6 +66,9 @@ import org.scijava.plugin.Plugin;
 public class AWTUI extends AbstractUserInterface {
 
 	public static final String NAME = "awt";
+
+	@Parameter
+	private AppService appService;
 
 	@Parameter
 	private AppEventService appEventService;
@@ -142,7 +146,7 @@ public class AWTUI extends AbstractUserInterface {
 
 	@Override
 	protected void createUI() {
-		frame = new AWTApplicationFrame(getApp().getTitle());
+		frame = new AWTApplicationFrame(appService.getApp().getTitle());
 
 		toolBar = new AWTToolBar(getContext());
 		statusBar = new AWTStatusBar(getContext());

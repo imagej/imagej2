@@ -31,11 +31,11 @@
 
 package imagej.plugins.uis.awt;
 
-import imagej.ui.ApplicationFrame;
-
 import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.HeadlessException;
+
+import org.scijava.ui.ApplicationFrame;
 
 /**
  * AWT implementation of {@link ApplicationFrame}.

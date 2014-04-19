@@ -31,14 +31,6 @@
 
 package imagej.ui.common.awt;
 
-import imagej.ui.dnd.DragAndDropData;
-import imagej.ui.dnd.DragAndDropService;
-import imagej.ui.dnd.event.DragAndDropEvent;
-import imagej.ui.dnd.event.DragEnterEvent;
-import imagej.ui.dnd.event.DragExitEvent;
-import imagej.ui.dnd.event.DragOverEvent;
-import imagej.ui.dnd.event.DropEvent;
-
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.datatransfer.Transferable;
@@ -54,6 +46,13 @@ import net.imagej.display.InputService;
 import org.scijava.display.Display;
 import org.scijava.event.EventService;
 import org.scijava.input.InputModifiers;
+import org.scijava.ui.dnd.DragAndDropData;
+import org.scijava.ui.dnd.DragAndDropService;
+import org.scijava.ui.dnd.event.DragAndDropEvent;
+import org.scijava.ui.dnd.event.DragEnterEvent;
+import org.scijava.ui.dnd.event.DragExitEvent;
+import org.scijava.ui.dnd.event.DragOverEvent;
+import org.scijava.ui.dnd.event.DropEvent;
 
 /**
  * Rebroadcasts AWT {@link DropTargetEvent}s as ImageJ {@link DragAndDropEvent}

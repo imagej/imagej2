@@ -32,8 +32,6 @@
 package imagej.plugins.commands.app;
 
 import imagej.core.options.OptionsMisc;
-import imagej.ui.DialogPrompt;
-import imagej.ui.UIService;
 import net.imagej.display.WindowService;
 
 import org.scijava.app.StatusService;
@@ -44,6 +42,8 @@ import org.scijava.options.OptionsService;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.DialogPrompt;
+import org.scijava.ui.UIService;
 
 /**
  * Quits ImageJ.

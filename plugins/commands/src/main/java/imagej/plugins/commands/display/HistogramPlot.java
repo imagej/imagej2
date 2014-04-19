@@ -31,7 +31,6 @@
 
 package imagej.plugins.commands.display;
 
-import imagej.ui.UIService;
 import net.imagej.Dataset;
 import net.imagej.display.ImageDisplay;
 import net.imagej.display.ImageDisplayService;
@@ -59,6 +58,7 @@ import org.scijava.module.MutableModuleItem;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.UIService;
 import org.scijava.widget.Button;
 
 // TODO

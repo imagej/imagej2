@@ -34,11 +34,6 @@ package imagej.legacy;
 import imagej.legacy.plugin.LegacyCommand;
 import imagej.legacy.plugin.LegacyPluginFinder;
 import imagej.patcher.LegacyInjector;
-import imagej.ui.ApplicationFrame;
-import imagej.ui.UIService;
-import imagej.ui.UserInterface;
-import imagej.ui.viewer.DisplayWindow;
-import imagej.ui.viewer.image.ImageDisplayViewer;
 
 import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
@@ -52,6 +47,7 @@ import net.imagej.display.ImageDisplayService;
 import net.imagej.display.OverlayService;
 import net.imagej.options.OptionsChannels;
 import net.imagej.threshold.ThresholdService;
+import net.imagej.ui.viewer.image.ImageDisplayViewer;
 
 import org.scijava.app.StatusService;
 import org.scijava.command.CommandService;
@@ -72,6 +68,10 @@ import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
+import org.scijava.ui.ApplicationFrame;
+import org.scijava.ui.UIService;
+import org.scijava.ui.UserInterface;
+import org.scijava.ui.viewer.DisplayWindow;
 import org.scijava.util.ColorRGB;
 
 /**

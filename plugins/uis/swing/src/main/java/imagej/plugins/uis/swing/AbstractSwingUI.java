@@ -33,14 +33,10 @@ package imagej.plugins.uis.swing;
 
 import imagej.plugins.uis.swing.menu.SwingJMenuBarCreator;
 import imagej.plugins.uis.swing.menu.SwingJPopupMenuCreator;
-import imagej.ui.AbstractUserInterface;
-import imagej.ui.SystemClipboard;
-import imagej.ui.UIService;
 import imagej.ui.common.awt.AWTClipboard;
 import imagej.ui.common.awt.AWTDropTargetEventDispatcher;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
-import imagej.ui.viewer.DisplayViewer;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -53,6 +49,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JPopupMenu;
 import javax.swing.WindowConstants;
 
+import org.scijava.app.AppService;
 import org.scijava.display.Display;
 import org.scijava.event.EventService;
 import org.scijava.menu.MenuService;
@@ -60,6 +57,10 @@ import org.scijava.menu.ShadowMenu;
 import org.scijava.platform.AppEventService;
 import org.scijava.platform.event.AppMenusCreatedEvent;
 import org.scijava.plugin.Parameter;
+import org.scijava.ui.AbstractUserInterface;
+import org.scijava.ui.SystemClipboard;
+import org.scijava.ui.UIService;
+import org.scijava.ui.viewer.DisplayViewer;
 import org.scijava.widget.FileWidget;
 
 /**
@@ -71,6 +72,9 @@ import org.scijava.widget.FileWidget;
  * @author Grant Harris
  */
 public abstract class AbstractSwingUI extends AbstractUserInterface {
+
+	@Parameter
+	private AppService appService;
 
 	@Parameter
 	private AppEventService appEventService;
@@ -162,7 +166,7 @@ public abstract class AbstractSwingUI extends AbstractUserInterface {
 	protected void createUI() {
 		final JMenuBar menuBar = createMenus();
 
-		appFrame = new SwingApplicationFrame(getApp().getTitle());
+		appFrame = new SwingApplicationFrame(appService.getApp().getTitle());
 		if (menuBar != null) appFrame.setJMenuBar(menuBar);
 
 		toolBar = new SwingToolBar(getContext());

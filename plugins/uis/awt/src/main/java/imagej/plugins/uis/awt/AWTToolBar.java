@@ -31,9 +31,6 @@
 
 package imagej.plugins.uis.awt;
 
-import imagej.ui.ToolBar;
-import imagej.ui.UIService;
-
 import java.awt.Button;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
@@ -57,6 +54,8 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.tool.Tool;
 import org.scijava.tool.ToolService;
+import org.scijava.ui.ToolBar;
+import org.scijava.ui.UIService;
 
 /**
  * Button bar with selectable tools, similar to ImageJ 1.x.

@@ -32,11 +32,11 @@
 package imagej.plugins.uis.awt.widget;
 
 import imagej.plugins.uis.awt.AWTUI;
-import imagej.ui.AbstractUIInputWidget;
-import imagej.ui.UserInterface;
 
 import java.awt.Panel;
 
+import org.scijava.ui.AbstractUIInputWidget;
+import org.scijava.ui.UserInterface;
 import org.scijava.widget.WidgetModel;
 
 /**

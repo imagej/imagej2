@@ -31,10 +31,6 @@
 
 package imagej.ui.common.awt;
 
-import imagej.ui.dnd.AbstractDragAndDropData;
-import imagej.ui.dnd.DragAndDropData;
-import imagej.ui.dnd.MIMEType;
-
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -45,6 +41,9 @@ import java.util.ArrayList;
 import org.scijava.Context;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
+import org.scijava.ui.dnd.AbstractDragAndDropData;
+import org.scijava.ui.dnd.DragAndDropData;
+import org.scijava.ui.dnd.MIMEType;
 
 /**
  * AWT implementation of {@link DragAndDropData}.

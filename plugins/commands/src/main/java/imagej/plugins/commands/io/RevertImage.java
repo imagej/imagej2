@@ -31,9 +31,6 @@
 
 package imagej.plugins.commands.io;
 
-import imagej.ui.DialogPrompt;
-import imagej.ui.UIService;
-
 import java.io.IOException;
 
 import net.imagej.Dataset;
@@ -47,6 +44,8 @@ import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.DialogPrompt;
+import org.scijava.ui.UIService;
 
 /**
  * Resets the current {@link Dataset} to its original state.

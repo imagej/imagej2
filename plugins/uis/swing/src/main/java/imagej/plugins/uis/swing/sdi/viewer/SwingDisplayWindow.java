@@ -33,8 +33,6 @@ package imagej.plugins.uis.swing.sdi.viewer;
 
 import imagej.plugins.uis.swing.StaticSwingUtils;
 import imagej.plugins.uis.swing.viewer.image.JHotDrawImageCanvas;
-import imagej.ui.viewer.DisplayPanel;
-import imagej.ui.viewer.DisplayWindow;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -43,6 +41,9 @@ import java.awt.HeadlessException;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
+
+import org.scijava.ui.viewer.DisplayPanel;
+import org.scijava.ui.viewer.DisplayWindow;
 
 /**
  * Swing class implementation of the {@link DisplayWindow} interface.
