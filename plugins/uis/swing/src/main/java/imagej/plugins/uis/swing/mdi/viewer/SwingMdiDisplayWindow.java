@@ -34,8 +34,6 @@ package imagej.plugins.uis.swing.mdi.viewer;
 import imagej.plugins.uis.swing.StaticSwingUtils;
 import imagej.plugins.uis.swing.mdi.InternalFrameEventDispatcher;
 import imagej.plugins.uis.swing.viewer.image.SwingDisplayPanel;
-import imagej.ui.viewer.DisplayPanel;
-import imagej.ui.viewer.DisplayWindow;
 
 import java.awt.Dimension;
 import java.awt.HeadlessException;
@@ -43,6 +41,9 @@ import java.beans.PropertyVetoException;
 
 import javax.swing.JInternalFrame;
 import javax.swing.WindowConstants;
+
+import org.scijava.ui.viewer.DisplayPanel;
+import org.scijava.ui.viewer.DisplayWindow;
 
 /**
  * TODO

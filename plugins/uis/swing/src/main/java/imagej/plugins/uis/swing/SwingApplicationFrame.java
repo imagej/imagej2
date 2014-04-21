@@ -31,7 +31,6 @@
 
 package imagej.plugins.uis.swing;
 
-import imagej.ui.ApplicationFrame;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 
 import java.awt.Component;
@@ -40,6 +39,8 @@ import java.awt.EventQueue;
 import java.awt.HeadlessException;
 
 import javax.swing.JFrame;
+
+import org.scijava.ui.ApplicationFrame;
 
 /**
  * Swing implementation of {@link ApplicationFrame}.

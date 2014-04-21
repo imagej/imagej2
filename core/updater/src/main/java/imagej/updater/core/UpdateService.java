@@ -29,48 +29,15 @@
  * #L%
  */
 
-package imagej.ui.dnd;
+package imagej.updater.core;
 
-import imagej.ui.dnd.event.DragEnterEvent;
-import imagej.ui.dnd.event.DropEvent;
-
-import java.util.List;
+import net.imagej.service.ImageJService;
 
 /**
- * Interface for drag-and-drop data.
+ * Interface for services that manage ImageJ updates.
  * 
  * @author Curtis Rueden
  */
-public interface DragAndDropData {
-
-	/**
-	 * Gets whether the data can be provided as an object with the given MIME
-	 * type.
-	 */
-	boolean isSupported(MIMEType mimeType);
-
-	/**
-	 * Gets whether the data can be provided as an object of the given Java class.
-	 */
-	boolean isSupported(Class<?> type);
-
-	/**
-	 * Gets the data with respect to the given MIME type.
-	 * 
-	 * @return The data object for the given MIME type. May return null if the
-	 *         data is requested too early in the drag-and-drop process, such as
-	 *         during a {@link DragEnterEvent} rather than a {@link DropEvent}.
-	 * @throws IllegalArgumentException if the MIME type is not supported.
-	 */
-	Object getData(MIMEType mimeType);
-
-	/** Gets the data as an object of the given Java class. */
-	<T> T getData(Class<T> type);
-
-	/** Gets the best supported MIME type matching the given Java class. */
-	MIMEType getMIMEType(Class<?> type);
-
-	/** Gets the list of supported MIME types. */
-	List<MIMEType> getMIMETypes();
-
+public interface UpdateService extends ImageJService {
+	// NB: Marker interface.
 }

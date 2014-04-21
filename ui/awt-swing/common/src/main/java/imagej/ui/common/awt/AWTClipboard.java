@@ -31,15 +31,14 @@
 
 package imagej.ui.common.awt;
 
-import imagej.ui.SystemClipboard;
-
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.image.BufferedImage;
 
-import net.imagej.util.ARGBPlane;
+import org.scijava.ui.ARGBPlane;
+import org.scijava.ui.SystemClipboard;
 
 /**
  * AWT implementation of the SystemClipboard interface

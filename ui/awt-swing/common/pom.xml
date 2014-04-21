@@ -14,12 +14,6 @@
 	<description>Common AWT classes for use with AWT and Swing user interfaces. These classes depend on several ImageJ components, and are intended only to share code between AWT- and Swing-based user interfaces of ImageJ.</description>
 
 	<dependencies>
-		<!-- Project dependencies -->
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ui</artifactId>
-		</dependency>
-
 		<!-- SciJava dependencies -->
 		<dependency>
 			<groupId>net.imagej</groupId>

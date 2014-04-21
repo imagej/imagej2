@@ -50,7 +50,6 @@ import net.imagej.DrawingTool;
 import net.imagej.app.ImageJApp;
 import net.imagej.render.RenderingService;
 import net.imagej.render.TextRenderer.TextJustification;
-import net.imagej.util.AppUtils;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 
@@ -204,7 +203,8 @@ public class AboutImageJ extends ContextCommand {
 	 * @return file path of the chosen image
 	 */
 	private File getRandomAboutImagePath() {
-		final File aboutDir = new File(AppUtils.getBaseDirectory(), "about");
+		final File aboutDir =
+			new File(appService.getApp().getBaseDirectory(), "about");
 		if (!aboutDir.exists()) {
 			// no "about" folder found
 			log.warn("About folder '" + aboutDir.getPath() + "' does not exist.");

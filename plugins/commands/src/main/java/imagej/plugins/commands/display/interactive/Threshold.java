@@ -31,8 +31,6 @@
 
 package imagej.plugins.commands.display.interactive;
 
-import imagej.ui.DialogPrompt;
-import imagej.ui.UIService;
 import net.imagej.Dataset;
 import net.imagej.autoscale.AutoscaleService;
 import net.imagej.autoscale.DataRange;
@@ -63,6 +61,8 @@ import org.scijava.module.MutableModuleItem;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.DialogPrompt;
+import org.scijava.ui.UIService;
 import org.scijava.util.Colors;
 import org.scijava.widget.Button;
 import org.scijava.widget.NumberWidget;

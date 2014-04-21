@@ -29,18 +29,24 @@
  * #L%
  */
 
-package imagej.ui;
+package imagej.readme;
+
+import net.imagej.service.ImageJService;
 
 /**
- * Common interface for status bars, which have a text area and progress bar,
- * similar to ImageJ 1.x.
+ * Interface for services that display the ImageJ README.
  * 
  * @author Curtis Rueden
  */
-public interface StatusBar {
+public interface ReadmeService extends ImageJService {
 
-	void setStatus(String message);
+	/** Displays the ImageJ README. */
+	void displayReadme();
 
-	void setProgress(int val, int max);
+	/** Returns true iff this version of ImageJ has not run before. */
+	boolean isFirstRun();
+
+	/** Sets a preference recording whether this version of ImageJ has run. */
+	void setFirstRun(final boolean firstRun);
 
 }

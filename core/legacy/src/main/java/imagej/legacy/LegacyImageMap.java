@@ -39,9 +39,6 @@ import imagej.legacy.translate.Harmonizer;
 import imagej.legacy.translate.ImageTranslator;
 import imagej.legacy.translate.LegacyUtils;
 import imagej.patcher.LegacyInjector;
-import imagej.ui.UIService;
-import imagej.ui.viewer.DisplayWindow;
-import imagej.ui.viewer.image.ImageDisplayViewer;
 
 import java.lang.ref.WeakReference;
 import java.util.Collection;
@@ -56,11 +53,14 @@ import net.imagej.Dataset;
 import net.imagej.display.ImageDisplay;
 import net.imagej.display.ImageDisplayService;
 import net.imagej.overlay.Overlay;
+import net.imagej.ui.viewer.image.ImageDisplayViewer;
 
 import org.scijava.AbstractContextual;
 import org.scijava.display.event.DisplayDeletedEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
+import org.scijava.ui.UIService;
+import org.scijava.ui.viewer.DisplayWindow;
 
 /**
  * An image map between legacy ImageJ {@link ImagePlus} objects and modern

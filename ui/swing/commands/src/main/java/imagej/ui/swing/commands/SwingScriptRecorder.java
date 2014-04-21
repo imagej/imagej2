@@ -32,8 +32,6 @@
 package imagej.ui.swing.commands;
 
 import imagej.plugins.uis.swing.StaticSwingUtils;
-import imagej.ui.DialogPrompt;
-import imagej.ui.UIService;
 
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
@@ -71,6 +69,8 @@ import org.scijava.script.CodeGenerator;
 import org.scijava.script.CodeGeneratorJava;
 import org.scijava.script.InvocationObject;
 import org.scijava.script.ParameterObject;
+import org.scijava.ui.DialogPrompt;
+import org.scijava.ui.UIService;
 
 /**
  * Script Recorder.

@@ -36,6 +36,7 @@ import imagej.plugins.uis.swing.overlay.JHotDrawService;
 import net.imagej.display.DataView;
 import net.imagej.display.ImageDisplay;
 import net.imagej.display.OverlayView;
+import net.imagej.overlay.Overlay;
 
 import org.jhotdraw.draw.Drawing;
 import org.jhotdraw.draw.Figure;

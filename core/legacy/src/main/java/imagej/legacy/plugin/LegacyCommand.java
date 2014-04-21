@@ -43,8 +43,6 @@ import imagej.legacy.translate.Harmonizer;
 import imagej.legacy.translate.ImageTranslator;
 import imagej.legacy.translate.LegacyUtils;
 import imagej.legacy.translate.ResultsTableHarmonizer;
-import imagej.ui.DialogPrompt;
-import imagej.ui.UIService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,6 +59,8 @@ import org.scijava.command.Command;
 import org.scijava.display.DisplayService;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
+import org.scijava.ui.DialogPrompt;
+import org.scijava.ui.UIService;
 
 /**
  * Executes an ImageJ v1.x command.

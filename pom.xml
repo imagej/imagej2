@@ -27,6 +27,9 @@
 	</modules>
 
 	<properties>
+		<scijava-common.version>2.16.0</scijava-common.version>
+		<imagej-common.version>0.2.0</imagej-common.version>
+
 		<!-- NB: Needed to override managed versions. -->
 		<imagej.version>${project.version}</imagej.version>
 

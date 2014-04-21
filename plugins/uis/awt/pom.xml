@@ -17,14 +17,14 @@
 		<!-- Project dependencies -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ui</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-ui-common-awt</artifactId>
 		</dependency>
 
 		<!-- SciJava dependencies -->
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-common</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.scijava</groupId>
 			<artifactId>scijava-common</artifactId>

@@ -29,46 +29,72 @@
  * #L%
  */
 
-package imagej.ui;
+package imagej.updater.core;
 
-import org.scijava.Priority;
-import org.scijava.module.Module;
-import org.scijava.module.ModuleItem;
-import org.scijava.module.process.AbstractPreprocessorPlugin;
-import org.scijava.module.process.PreprocessorPlugin;
+import imagej.updater.ui.UpdatesAvailable;
+
+import org.scijava.app.StatusService;
+import org.scijava.command.CommandService;
+import org.scijava.event.EventHandler;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
+import org.scijava.ui.event.UIShownEvent;
 
 /**
- * The UI preprocessor automatically populates module {@link UserInterface}
- * inputs with the {@link UIService}'s default UI instance, if compatible.
+ * Default service for managing ImageJ updates.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = PreprocessorPlugin.class, priority = Priority.VERY_HIGH_PRIORITY)
-public class UIPreprocessor extends AbstractPreprocessorPlugin {
+@Plugin(type = Service.class)
+public class DefaultUpdateService extends AbstractService implements
+	UpdateService
+{
 
-	@Parameter(required = false)
-	private UIService uiService;
+	@Parameter
+	private LogService log;
 
-	// -- ModuleProcessor methods --
+	@Parameter
+	private StatusService statusService;
 
-	@Override
-	public void process(final Module module) {
-		if (uiService == null) return; // no UI service available
+	@Parameter
+	private CommandService commandService;
 
-		final UserInterface ui = uiService.getDefaultUI();
-		if (ui == null) return; // no default UI
+	// -- Event handlers --
 
-		for (final ModuleItem<?> input : module.getInfo().inputs()) {
-			if (!input.isAutoFill()) continue; // cannot auto-fill this input
-			final Class<?> type = input.getType();
-			if (type.isAssignableFrom(ui.getClass())) {
-				// input is a compatible UI
-				final String name = input.getName();
-				module.setInput(name, ui);
-				module.setResolved(name, true);
+	/** Checks for updates when the ImageJ UI is first shown. */
+	@EventHandler
+	protected void onEvent(@SuppressWarnings("unused") final UIShownEvent evt) {
+		try {
+			final UpToDate.Result result = UpToDate.check();
+			switch (result) {
+				case UP_TO_DATE:
+				case OFFLINE:
+				case REMIND_LATER:
+				case CHECK_TURNED_OFF:
+				case UPDATES_MANAGED_DIFFERENTLY:
+				case DEVELOPER:
+					return;
+				case UPDATEABLE:
+					commandService.run(UpdatesAvailable.class, true);
+					break;
+				case PROXY_NEEDS_AUTHENTICATION:
+					throw new RuntimeException(
+						"TODO: authenticate proxy with the configured user/pass pair");
+				case READ_ONLY:
+					final String message =
+						"Your ImageJ installation cannot be updated because it is read-only";
+					log.warn(message);
+					statusService.showStatus(message);
+					break;
+				default:
+					log.error("Unhandled UpToDate case: " + result);
 			}
+		}
+		catch (final Exception e) {
+			log.error(e);
 		}
 	}
 

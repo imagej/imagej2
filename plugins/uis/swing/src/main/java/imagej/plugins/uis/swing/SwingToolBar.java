@@ -31,9 +31,6 @@
 
 package imagej.plugins.uis.swing;
 
-import imagej.ui.ToolBar;
-import imagej.ui.UIService;
-
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
@@ -61,6 +58,8 @@ import org.scijava.tool.Tool;
 import org.scijava.tool.ToolService;
 import org.scijava.tool.event.ToolActivatedEvent;
 import org.scijava.tool.event.ToolDeactivatedEvent;
+import org.scijava.ui.ToolBar;
+import org.scijava.ui.UIService;
 
 /**
  * Button bar with selectable tools, similar to ImageJ 1.x.

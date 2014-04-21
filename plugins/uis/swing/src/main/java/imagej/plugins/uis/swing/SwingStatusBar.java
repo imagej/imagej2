@@ -32,9 +32,6 @@
 package imagej.plugins.uis.swing;
 
 import imagej.core.options.OptionsMemoryAndThreads;
-import imagej.ui.DialogPrompt.MessageType;
-import imagej.ui.StatusBar;
-import imagej.ui.UIService;
 
 import java.awt.BorderLayout;
 import java.awt.event.MouseEvent;
@@ -46,11 +43,15 @@ import javax.swing.JProgressBar;
 import javax.swing.border.BevelBorder;
 
 import org.scijava.Context;
+import org.scijava.app.AppService;
 import org.scijava.app.StatusService;
 import org.scijava.app.event.StatusEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.options.OptionsService;
 import org.scijava.plugin.Parameter;
+import org.scijava.ui.DialogPrompt.MessageType;
+import org.scijava.ui.StatusBar;
+import org.scijava.ui.UIService;
 
 /**
  * Swing implementation of {@link StatusBar}.
@@ -69,12 +70,15 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 	private StatusService statusService;
 
 	@Parameter
+	private AppService appService;
+
+	@Parameter
 	private UIService uiService;
 
 	public SwingStatusBar(final Context context) {
 		context.inject(this);
 
-		statusText = new JLabel(uiService.getApp().getInfo(false));
+		statusText = new JLabel(appService.getApp().getInfo(false));
 		statusText.setBorder(new BevelBorder(BevelBorder.LOWERED));
 		progressBar = new JProgressBar();
 		progressBar.setVisible(false);
@@ -134,7 +138,7 @@ public class SwingStatusBar extends JPanel implements StatusBar, MouseListener {
 		final OptionsMemoryAndThreads options =
 			optionsService.getOptions(OptionsMemoryAndThreads.class);
 		if (options.isRunGcOnClick()) System.gc();
-		statusService.showStatus(uiService.getApp().getInfo(true));
+		statusService.showStatus(appService.getApp().getInfo(true));
 	}
 
 	@Override

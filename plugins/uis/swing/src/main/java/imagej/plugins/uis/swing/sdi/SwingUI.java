@@ -34,10 +34,6 @@ package imagej.plugins.uis.swing.sdi;
 import imagej.plugins.uis.swing.AbstractSwingUI;
 import imagej.plugins.uis.swing.SwingApplicationFrame;
 import imagej.plugins.uis.swing.sdi.viewer.SwingDisplayWindow;
-import imagej.ui.DialogPrompt;
-import imagej.ui.DialogPrompt.MessageType;
-import imagej.ui.DialogPrompt.OptionType;
-import imagej.ui.UserInterface;
 import imagej.ui.common.awt.AWTDropTargetEventDispatcher;
 import imagej.ui.common.awt.AWTInputEventDispatcher;
 import imagej.ui.common.awt.AWTWindowEventDispatcher;
@@ -50,6 +46,10 @@ import org.scijava.display.Display;
 import org.scijava.event.EventService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.DialogPrompt;
+import org.scijava.ui.DialogPrompt.MessageType;
+import org.scijava.ui.DialogPrompt.OptionType;
+import org.scijava.ui.UserInterface;
 
 /**
  * Swing-based SDI user interface for ImageJ.

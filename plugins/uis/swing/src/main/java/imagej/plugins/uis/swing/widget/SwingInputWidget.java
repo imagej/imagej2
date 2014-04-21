@@ -32,14 +32,14 @@
 package imagej.plugins.uis.swing.widget;
 
 import imagej.plugins.uis.swing.sdi.SwingUI;
-import imagej.ui.AbstractUIInputWidget;
-import imagej.ui.UserInterface;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.scijava.ui.AbstractUIInputWidget;
+import org.scijava.ui.UserInterface;
 import org.scijava.widget.WidgetModel;
 
 /**

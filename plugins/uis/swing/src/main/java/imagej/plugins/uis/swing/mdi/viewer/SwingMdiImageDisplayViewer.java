@@ -34,14 +34,14 @@ package imagej.plugins.uis.swing.mdi.viewer;
 import imagej.plugins.uis.swing.mdi.SwingMdiUI;
 import imagej.plugins.uis.swing.viewer.image.AbstractSwingImageDisplayViewer;
 import imagej.plugins.uis.swing.viewer.image.SwingImageDisplayViewer;
-import imagej.ui.UserInterface;
-import imagej.ui.viewer.DisplayViewer;
-import imagej.ui.viewer.DisplayWindow;
 
 import javax.swing.JInternalFrame;
 
 import org.scijava.display.Display;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.UserInterface;
+import org.scijava.ui.viewer.DisplayViewer;
+import org.scijava.ui.viewer.DisplayWindow;
 
 /**
  * Multiple Document Interface implementation of Swing image display viewer. The

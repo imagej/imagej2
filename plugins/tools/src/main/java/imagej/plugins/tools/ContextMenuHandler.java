@@ -31,7 +31,6 @@
 
 package imagej.plugins.tools;
 
-import imagej.ui.UIService;
 import net.imagej.display.ImageDisplay;
 
 import org.scijava.display.Display;
@@ -43,6 +42,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.tool.AbstractTool;
 import org.scijava.tool.Tool;
+import org.scijava.ui.UIService;
 
 /**
  * Handles display of general-purpose context menu (e.g., on right mouse click).

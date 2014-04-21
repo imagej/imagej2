@@ -31,9 +31,6 @@
 
 package imagej.plugins.commands.display;
 
-import imagej.ui.UIService;
-import imagej.ui.viewer.DisplayViewer;
-import imagej.ui.viewer.DisplayWindow;
 import net.imagej.Dataset;
 import net.imagej.display.ImageCanvas;
 import net.imagej.display.ImageDisplay;
@@ -46,6 +43,9 @@ import org.scijava.menu.MenuConstants;
 import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.UIService;
+import org.scijava.ui.viewer.DisplayViewer;
+import org.scijava.ui.viewer.DisplayWindow;
 
 // NOTE: the following TODO may be invalid
 // TODO - write code that captures part of the screen as a merged color Dataset.

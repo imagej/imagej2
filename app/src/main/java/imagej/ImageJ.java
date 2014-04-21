@@ -32,7 +32,6 @@
 package imagej;
 
 import imagej.legacy.LegacyService;
-import imagej.ui.UIService;
 import imagej.updater.core.UploaderService;
 
 import java.util.Collection;
@@ -59,6 +58,7 @@ import org.scijava.Context;
 import org.scijava.Gateway;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.Service;
+import org.scijava.ui.UIService;
 
 /**
  * Main entry point into ImageJ. This class enables working with ImageJ services

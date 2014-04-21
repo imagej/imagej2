@@ -17,10 +17,6 @@
 		<!-- Project dependencies -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ui</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-ui-swing</artifactId>
 		</dependency>
 		<dependency>

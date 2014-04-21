@@ -34,12 +34,12 @@ package imagej.plugins.uis.swing.sdi.viewer;
 import imagej.plugins.uis.swing.sdi.SwingUI;
 import imagej.plugins.uis.swing.viewer.image.AbstractSwingImageDisplayViewer;
 import imagej.plugins.uis.swing.viewer.image.SwingImageDisplayViewer;
-import imagej.ui.UserInterface;
-import imagej.ui.viewer.DisplayViewer;
 
 import javax.swing.JFrame;
 
 import org.scijava.plugin.Plugin;
+import org.scijava.ui.UserInterface;
+import org.scijava.ui.viewer.DisplayViewer;
 
 /**
  * Single Document Interface implementation of Swing image display viewer. The

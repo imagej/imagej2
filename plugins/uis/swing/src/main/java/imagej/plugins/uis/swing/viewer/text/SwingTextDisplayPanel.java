@@ -31,9 +31,6 @@
 
 package imagej.plugins.uis.swing.viewer.text;
 
-import imagej.ui.viewer.DisplayWindow;
-import imagej.ui.viewer.text.TextDisplayPanel;
-
 import java.awt.Dimension;
 import java.awt.Font;
 import java.io.IOException;
@@ -49,6 +46,8 @@ import org.scijava.display.TextDisplay;
 import org.scijava.log.LogService;
 import org.scijava.platform.PlatformService;
 import org.scijava.plugin.Parameter;
+import org.scijava.ui.viewer.DisplayWindow;
+import org.scijava.ui.viewer.text.TextDisplayPanel;
 
 /**
  * This is the display panel for {@link String}s.

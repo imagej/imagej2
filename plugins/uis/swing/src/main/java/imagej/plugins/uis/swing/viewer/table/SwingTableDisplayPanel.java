@@ -31,15 +31,15 @@
 
 package imagej.plugins.uis.swing.viewer.table;
 
-import imagej.ui.viewer.DisplayWindow;
-import imagej.ui.viewer.table.TableDisplayPanel;
-
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import net.imagej.table.Table;
 import net.imagej.table.TableDisplay;
+import net.imagej.ui.viewer.table.TableDisplayPanel;
+
+import org.scijava.ui.viewer.DisplayWindow;
 
 /**
  * This is the display panel for {@link Table}s.

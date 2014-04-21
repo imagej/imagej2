@@ -29,29 +29,71 @@
  * #L%
  */
 
-package imagej.ui;
+package imagej.readme;
+
+import org.scijava.app.AppService;
+import org.scijava.command.CommandService;
+import org.scijava.event.EventHandler;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
+import org.scijava.ui.event.UIShownEvent;
+import org.scijava.util.Prefs;
 
 /**
- * Common interface for top-level application frames.
+ * Default service for displaying the ImageJ README.
  * 
- * @author Grant Harris
  * @author Curtis Rueden
  */
-public interface ApplicationFrame {
+@Plugin(type = Service.class)
+public class DefaultReadmeService extends AbstractService implements
+	ReadmeService
+{
 
-	/** Sets the coordinates of the application frame's top left corner. */
-	void setLocation(int x, int y);
+	@Parameter
+	private LogService log;
 
-	/** Gets the X coordinate of the application frame's top left corner. */
-	int getLocationX();
+	@Parameter
+	private AppService appService;
 
-	/** Gets the Y coordinate of the application frame's top left corner. */
-	int getLocationY();
+	@Parameter
+	private CommandService commandService;
 
-	/** Activate the application frame, bringing it to the front. */
-	void activate();
+	// -- ReadmeService methods --
 
-	/** Show or hide the application frame */
-	void setVisible(boolean visible);
+	@Override
+	public void displayReadme() {
+		commandService.run(ShowReadme.class, true);
+	}
+
+	@Override
+	public boolean isFirstRun() {
+		final String firstRun = Prefs.get(getClass(), firstRunPrefKey());
+		return firstRun == null || Boolean.parseBoolean(firstRun);
+	}
+
+	@Override
+	public void setFirstRun(final boolean firstRun) {
+		Prefs.put(getClass(), firstRunPrefKey(), firstRun);
+	}
+
+	// -- Event handlers --
+
+	/** Displays the readme when the ImageJ UI is shown for the first time. */
+	@EventHandler
+	protected void onEvent(@SuppressWarnings("unused") final UIShownEvent evt) {
+		if (!isFirstRun()) return;
+		setFirstRun(false);
+		displayReadme();
+	}
+
+	// -- Helper methods --
+
+	/** Gets the preference key for ImageJ's first run. */
+	private String firstRunPrefKey() {
+		return "firstRun-" + appService.getApp().getVersion();
+	}
 
 }

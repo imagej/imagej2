@@ -31,9 +31,6 @@
 
 package imagej.plugins.uis.awt;
 
-import imagej.ui.StatusBar;
-import imagej.ui.UIService;
-
 import java.awt.Graphics;
 import java.awt.Label;
 
@@ -41,6 +38,8 @@ import org.scijava.Context;
 import org.scijava.app.event.StatusEvent;
 import org.scijava.event.EventHandler;
 import org.scijava.plugin.Parameter;
+import org.scijava.ui.StatusBar;
+import org.scijava.ui.UIService;
 
 /**
  * AWT implementation of {@link StatusBar}.
