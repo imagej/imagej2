@@ -41,6 +41,11 @@
 			<groupId>org.scijava</groupId>
 			<artifactId>scijava-common</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>swing-checkbox-tree</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 
 		<!-- Third-party dependencies -->
 		<dependency>

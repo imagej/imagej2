@@ -31,10 +31,6 @@
 
 package imagej.ui.swing.commands.debug;
 
-import imagej.util.swing.tree.CheckBoxNodeData;
-import imagej.util.swing.tree.CheckBoxNodeEditor;
-import imagej.util.swing.tree.CheckBoxNodeRenderer;
-
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -67,6 +63,9 @@ import org.scijava.event.EventDetails;
 import org.scijava.event.EventHistory;
 import org.scijava.event.SciJavaEvent;
 import org.scijava.log.LogService;
+import org.scijava.swing.checkboxtree.CheckBoxNodeData;
+import org.scijava.swing.checkboxtree.CheckBoxNodeEditor;
+import org.scijava.swing.checkboxtree.CheckBoxNodeRenderer;
 import org.scijava.util.ClassUtils;
 import org.scijava.util.IteratorPlus;
 
