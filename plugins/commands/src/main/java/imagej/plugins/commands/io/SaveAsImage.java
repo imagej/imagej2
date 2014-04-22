@@ -47,8 +47,8 @@ import org.scijava.plugin.Menu;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.DialogPrompt;
-import org.scijava.ui.UIService;
 import org.scijava.ui.DialogPrompt.Result;
+import org.scijava.ui.UIService;
 import org.scijava.widget.FileWidget;
 
 /**

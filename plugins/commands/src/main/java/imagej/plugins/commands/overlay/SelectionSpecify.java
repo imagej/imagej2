@@ -33,6 +33,7 @@ package imagej.plugins.commands.overlay;
 
 import net.imagej.display.ImageDisplay;
 import net.imagej.overlay.EllipseOverlay;
+import net.imagej.overlay.Overlay;
 import net.imagej.overlay.RectangleOverlay;
 
 import org.scijava.Context;
