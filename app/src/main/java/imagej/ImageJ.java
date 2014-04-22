@@ -40,7 +40,6 @@ import net.imagej.DatasetService;
 import net.imagej.animation.AnimationService;
 import net.imagej.app.ImageJApp;
 import net.imagej.display.ImageDisplayService;
-import net.imagej.display.InputService;
 import net.imagej.display.OverlayService;
 import net.imagej.display.ScreenCaptureService;
 import net.imagej.display.WindowService;
@@ -153,10 +152,6 @@ public class ImageJ extends AbstractGateway {
 
 	public ImageDisplayService imageDisplay() {
 		return get(ImageDisplayService.class);
-	}
-
-	public InputService input() {
-		return get(InputService.class);
 	}
 
 	public LegacyService legacy() {
