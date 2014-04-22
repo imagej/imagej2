@@ -253,18 +253,4 @@ Institute of Molecular Cell Biology and Genetics.</organizationName>
 		</repository>
 	</repositories>
 
-	<!-- NB: for deploying to maven.imagej.net -->
-	<distributionManagement>
-		<repository>
-			<id>imagej.releases</id>
-			<name>ImageJ Releases Repository</name>
-			<url>dav:http://maven.imagej.net/content/repositories/releases</url>
-		</repository>
-		<snapshotRepository>
-			<id>imagej.snapshots</id>
-			<name>ImageJ Snapshots Repository</name>
-			<url>dav:http://maven.imagej.net/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
-
 </project>
