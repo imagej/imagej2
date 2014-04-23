@@ -31,9 +31,9 @@
 
 package imagej.updater.ssh;
 
-import imagej.updater.core.AbstractUploaderTestBase.Deleter;
-
 import java.io.IOException;
+
+import net.imagej.updater.AbstractUploaderTestBase.Deleter;
 
 /**
  * A helper class to delete files from an SSH update site before running the integration test.

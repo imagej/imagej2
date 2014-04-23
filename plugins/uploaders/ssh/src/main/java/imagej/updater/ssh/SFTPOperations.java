@@ -38,12 +38,12 @@ import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.SftpProgressMonitor;
 
-import imagej.updater.util.UpdaterUserInterface;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import net.imagej.updater.util.UpdaterUserInterface;
 
 /**
  * Wraps low level SFTP operations and isolates from implementation API.

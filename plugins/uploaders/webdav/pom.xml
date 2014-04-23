@@ -14,13 +14,11 @@
 	<description>A WebDAV backend to the ImageJ Updater (TAFKA Fiji Updater).</description>
 
 	<dependencies>
-		<!-- Project dependencies -->
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-updater-core</artifactId>
-		</dependency>
-
 		<!-- SciJava dependencies -->
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-updater</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.scijava</groupId>
 			<artifactId>scijava-common</artifactId>
@@ -40,9 +38,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-updater-core</artifactId>
-			<version>${imagej.version}</version> <!-- TEMP -->
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-updater</artifactId>
+			<version>${imagej-updater.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>

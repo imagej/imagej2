@@ -31,13 +31,6 @@
 
 package imagej.updater.webdav;
 
-import imagej.updater.core.AbstractUploader;
-import imagej.updater.core.FilesUploader;
-import imagej.updater.core.UpdateSite;
-import imagej.updater.core.Uploadable;
-import imagej.updater.core.Uploader;
-import imagej.updater.util.UpdaterUserInterface;
-import imagej.updater.util.Util;
 import imagej.updater.webdav.NetrcParser.Credentials;
 
 import java.io.FileNotFoundException;
@@ -59,6 +52,13 @@ import java.util.Set;
 import javax.xml.parsers.ParserConfigurationException;
 
 import net.iharder.Base64;
+import net.imagej.updater.AbstractUploader;
+import net.imagej.updater.FilesUploader;
+import net.imagej.updater.UpdateSite;
+import net.imagej.updater.Uploadable;
+import net.imagej.updater.Uploader;
+import net.imagej.updater.util.UpdaterUserInterface;
+import net.imagej.updater.util.UpdaterUtil;
 
 import org.scijava.log.LogService;
 import org.scijava.log.StderrLogService;
@@ -283,7 +283,7 @@ public class WebDAVUploader extends AbstractUploader {
 			}
 
 			if (timestamp < 0) {
-				timestamp = Long.parseLong(Util.timestamp(connection.getHeaderFieldDate("Date", -1)));
+				timestamp = Long.parseLong(UpdaterUtil.timestamp(connection.getHeaderFieldDate("Date", -1)));
 				if (timestamp < 0) {
 					throw new IOException("Could not obtain date from the server");
 				}
