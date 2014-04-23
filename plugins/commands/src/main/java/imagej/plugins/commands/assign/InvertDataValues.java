@@ -31,12 +31,12 @@
 
 package imagej.plugins.commands.assign;
 
-import imagej.core.options.OptionsCompatibility;
 import net.imagej.Dataset;
 import net.imagej.display.DatasetView;
 import net.imagej.display.ImageDisplay;
 import net.imagej.display.ImageDisplayService;
 import net.imagej.display.OverlayService;
+import net.imagej.options.OptionsCompatibility;
 import net.imagej.overlay.Overlay;
 import net.imglib2.Cursor;
 import net.imglib2.ops.operation.real.unary.RealInvert;

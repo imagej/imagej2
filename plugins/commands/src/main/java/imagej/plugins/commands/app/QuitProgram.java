@@ -31,8 +31,8 @@
 
 package imagej.plugins.commands.app;
 
-import imagej.core.options.OptionsMisc;
 import net.imagej.display.WindowService;
+import net.imagej.options.OptionsMisc;
 
 import org.scijava.app.StatusService;
 import org.scijava.command.Command;

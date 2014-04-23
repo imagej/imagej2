@@ -16,7 +16,6 @@
 
 	<modules>
 		<module>legacy</module>
-		<module>options</module>
 	</modules>
 
 	<properties>

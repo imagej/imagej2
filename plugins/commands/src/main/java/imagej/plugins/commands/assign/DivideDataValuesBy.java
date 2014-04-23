@@ -31,7 +31,7 @@
 
 package imagej.plugins.commands.assign;
 
-import imagej.core.options.OptionsMisc;
+import net.imagej.options.OptionsMisc;
 import net.imglib2.ops.operation.real.unary.RealDivideConstant;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
