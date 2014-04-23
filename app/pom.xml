@@ -40,11 +40,6 @@
 		<!-- Runtime project dependencies -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-commands</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-scripting-beanshell</artifactId>
 			<scope>runtime</scope>
 		</dependency>
@@ -96,6 +91,13 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-updater-webdav</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- Runtime SciJava dependencies -->
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-plugins-commands</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
