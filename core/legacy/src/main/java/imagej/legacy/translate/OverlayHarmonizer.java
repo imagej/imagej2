@@ -44,7 +44,6 @@ import ij.process.ByteProcessor;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
 import imagej.legacy.LegacyService;
-import imagej.util.awt.AWTColors;
 
 import java.awt.Color;
 import java.awt.Rectangle;
@@ -88,6 +87,7 @@ import net.imglib2.type.logic.BitType;
 import org.scijava.AbstractContextual;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
+import org.scijava.ui.awt.AWTColors;
 
 /**
  * OverlayTranslator translates regions of interest back and forth between

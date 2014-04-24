@@ -34,17 +34,17 @@ package imagej.updater.ssh;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
-import imagej.updater.core.AbstractUploader;
-import imagej.updater.core.FilesUploader;
-import imagej.updater.core.Uploadable;
-import imagej.updater.core.Uploader;
-import imagej.updater.util.UpdateCanceledException;
-import imagej.updater.util.UpdaterUserInterface;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+
+import net.imagej.updater.AbstractUploader;
+import net.imagej.updater.FilesUploader;
+import net.imagej.updater.Uploadable;
+import net.imagej.updater.Uploader;
+import net.imagej.updater.util.UpdateCanceledException;
+import net.imagej.updater.util.UpdaterUserInterface;
 
 import org.scijava.log.LogService;
 import org.scijava.plugin.Plugin;

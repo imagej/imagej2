@@ -31,9 +31,9 @@
 
 package imagej.legacy.plugin;
 
-import imagej.script.editor.TextEditor;
-
 import java.io.File;
+
+import net.imagej.ui.swing.script.TextEditor;
 
 import org.scijava.Context;
 import org.scijava.Priority;

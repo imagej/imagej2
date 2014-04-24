@@ -4,7 +4,7 @@
 
 	<parent>
 		<groupId>net.imagej</groupId>
-		<artifactId>pom-imagej</artifactId>
+		<artifactId>pom-ij-base</artifactId>
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
@@ -18,10 +18,6 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-legacy</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-updater-core</artifactId>
-		</dependency>
 
 		<!-- SciJava dependencies -->
 		<dependency>
@@ -33,21 +29,15 @@
 			<artifactId>imagej-ops</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-updater</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.scijava</groupId>
 			<artifactId>scijava-common</artifactId>
 		</dependency>
 
 		<!-- Runtime project dependencies -->
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-commands</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-options</artifactId>
-			<scope>runtime</scope>
-		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-scripting-beanshell</artifactId>
@@ -101,6 +91,13 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-updater-webdav</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- Runtime SciJava dependencies -->
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-plugins-commands</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
@@ -311,30 +308,30 @@
 			</build>
 		</profile>
 
-		<!-- The alt-ui profile adds the alternative UI components to the
-		     runtime classpath if the ij.ui system property is set.
+		<!-- The alt-ui profile adds alternative user interfaces to the
+		     runtime classpath if the imagej.ui system property is set.
 		     This enables launching ImageJ with an alternative UI; see:
 		     http://developer.imagej.net/command-line -->
 		<profile>
 			<id>alt-ui</id>
 			<activation>
 				<property>
-					<name>ij.ui</name>
+					<name>imagej.ui</name>
 				</property>
 			</activation>
 			<dependencies>
 				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>ij-ui-awt</artifactId>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-ui-awt</artifactId>
 					<scope>runtime</scope>
 				</dependency>
 				<dependency>
-					<groupId>${imagej.groupId}</groupId>
+					<groupId>net.imagej</groupId>
 					<artifactId>imagej-ui-pivot</artifactId>
 					<scope>runtime</scope>
 				</dependency>
 				<dependency>
-					<groupId>${imagej.groupId}</groupId>
+					<groupId>net.imagej</groupId>
 					<artifactId>imagej-ui-swt</artifactId>
 					<scope>runtime</scope>
 				</dependency>
@@ -349,7 +346,7 @@
 							<arguments>
 								<argument>-classpath</argument>
 								<classpath />
-								<argument>-Dij.ui=${ij.ui}</argument>
+								<argument>-Dimagej.ui=${imagej.ui}</argument>
 								<argument>imagej.Main</argument>
 							</arguments>
 						</configuration>
@@ -358,8 +355,8 @@
 			</build>
 		</profile>
 
-		<!-- The swing profile includes the Swing UI components.
-		     They are always included unless java.awt.headless is set. -->
+		<!-- The swing profile includes the ImageJ Swing UI.
+		     It is always included unless java.awt.headless is set. -->
 		<profile>
 			<id>swing</id>
 			<activation>
@@ -369,28 +366,8 @@
 			</activation>
 			<dependencies>
 				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>ij-ui-swing</artifactId>
-					<scope>runtime</scope>
-				</dependency>
-				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>ij-ui-swing-commands</artifactId>
-					<scope>runtime</scope>
-				</dependency>
-				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>ij-ui-swing-script-editor</artifactId>
-					<scope>runtime</scope>
-				</dependency>
-				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>ij-ui-swing-tools</artifactId>
-					<scope>runtime</scope>
-				</dependency>
-				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>ij-ui-swing-updater</artifactId>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-ui-swing</artifactId>
 					<scope>runtime</scope>
 				</dependency>
 			</dependencies>

@@ -16,7 +16,7 @@
 	<dependencies>
 		<!-- SciJava dependencies -->
 		<dependency>
-			<groupId>net.imagej</groupId>
+			<groupId>org.scijava</groupId>
 			<artifactId>minimaven</artifactId>
 		</dependency>
 		<dependency>

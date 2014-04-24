@@ -37,13 +37,13 @@ import com.jcraft.jsch.ProxyHTTP;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 
-import imagej.updater.core.FilesUploader;
-import imagej.updater.util.UpdaterUserInterface;
-import imagej.updater.util.Util;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+
+import net.imagej.updater.FilesUploader;
+import net.imagej.updater.util.UpdaterUserInterface;
+import net.imagej.updater.util.UpdaterUtil;
 
 import org.scijava.log.LogService;
 
@@ -228,7 +228,7 @@ final class SSHSessionCreator {
 			try {
 				final Session session = connect(configInfo, userInfo);
 				if (session != null) {
-					UpdaterUserInterface.get().setPref(Util.PREFS_USER, configInfo.username);
+					UpdaterUserInterface.get().setPref(UpdaterUtil.PREFS_USER, configInfo.username);
 					return session;
 				}
 			}

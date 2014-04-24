@@ -31,11 +31,11 @@
 
 package imagej.updater.webdav;
 
-import imagej.updater.core.AbstractUploaderTestBase;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import net.imagej.updater.AbstractUploaderTestBase;
 
 import org.junit.Test;
 

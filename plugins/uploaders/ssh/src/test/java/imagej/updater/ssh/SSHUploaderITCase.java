@@ -31,7 +31,7 @@
 
 package imagej.updater.ssh;
 
-import imagej.updater.core.AbstractUploaderTestBase;
+import net.imagej.updater.AbstractUploaderTestBase;
 
 import org.junit.Test;
 

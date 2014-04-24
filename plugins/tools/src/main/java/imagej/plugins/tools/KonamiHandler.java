@@ -40,6 +40,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.thread.ThreadService;
 import org.scijava.tool.AbstractTool;
 import org.scijava.tool.Tool;
+import org.scijava.util.TunePlayer;
 
 /**
  * Oh, the nostalgia!

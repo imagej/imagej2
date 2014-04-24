@@ -32,7 +32,6 @@
 package imagej;
 
 import imagej.legacy.LegacyService;
-import imagej.updater.core.UploaderService;
 
 import java.util.Collection;
 
@@ -40,7 +39,6 @@ import net.imagej.DatasetService;
 import net.imagej.animation.AnimationService;
 import net.imagej.app.ImageJApp;
 import net.imagej.display.ImageDisplayService;
-import net.imagej.display.InputService;
 import net.imagej.display.OverlayService;
 import net.imagej.display.ScreenCaptureService;
 import net.imagej.display.WindowService;
@@ -52,6 +50,8 @@ import net.imagej.ops.OpService;
 import net.imagej.render.RenderingService;
 import net.imagej.sampler.SamplerService;
 import net.imagej.threshold.ThresholdService;
+import net.imagej.updater.UpdateService;
+import net.imagej.updater.UploaderService;
 
 import org.scijava.AbstractGateway;
 import org.scijava.Context;
@@ -155,10 +155,6 @@ public class ImageJ extends AbstractGateway {
 		return get(ImageDisplayService.class);
 	}
 
-	public InputService input() {
-		return get(InputService.class);
-	}
-
 	public LegacyService legacy() {
 		return get(LegacyService.class);
 	}
@@ -201,6 +197,10 @@ public class ImageJ extends AbstractGateway {
 
 	public UIService ui() {
 		return get(UIService.class);
+	}
+
+	public UpdateService update() {
+		return get(UpdateService.class);
 	}
 
 	public UploaderService uploader() {

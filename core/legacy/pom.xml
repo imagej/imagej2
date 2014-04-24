@@ -19,10 +19,6 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-options</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-util-awt</artifactId>
-		</dependency>
 
 		<!-- SciJava dependencies -->
 		<dependency>
@@ -58,10 +54,10 @@
 			<artifactId>scijava-common</artifactId>
 		</dependency>
 
-		<!-- Optional project dependencies -->
+		<!-- Optional SciJava dependencies -->
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-ui-swing-script-editor</artifactId>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-ui-swing</artifactId>
 			<optional>true</optional>
 		</dependency>
 
