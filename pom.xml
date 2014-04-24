@@ -3,9 +3,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.scijava</groupId>
-		<artifactId>pom-scijava</artifactId>
-		<version>1.166</version>
+		<groupId>net.imagej</groupId>
+		<artifactId>pom-imagej</artifactId>
+		<version>2.4</version>
 		<relativePath />
 	</parent>
 
@@ -29,7 +29,6 @@
 		<!-- NB: Needed to override managed versions. -->
 		<imagej.version>${project.version}</imagej.version>
 
-		<miglayout.version>3.7.3.1</miglayout.version>
 		<project.rootdir>${basedir}</project.rootdir>
 	</properties>
 
@@ -43,199 +42,13 @@
 					<configFile>${project.rootdir}/config/eclipse-code-formatter-profile.xml</configFile>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>license-maven-plugin</artifactId>
-				<configuration>
-					<licenseName>bsd_2</licenseName>
-					<inceptionYear>2009</inceptionYear>
-					<organizationName>Board of Regents of the University of
-Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
-Institute of Molecular Cell Biology and Genetics.</organizationName>
-					<projectName>ImageJ software for multidimensional image processing and analysis.</projectName>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
-
-	<licenses>
-		<license>
-			<name>Simplified BSD License</name>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-
-	<organization>
-		<name>ImageJ</name>
-		<url>http://developer.imagej.net/</url>
-	</organization>
-
-	<developers>
-		<developer>
-			<id>rasband</id>
-			<name>Wayne Rasband</name>
-			<email>wsr@nih.gov</email>
-			<url>http://www.linkedin.com/pub/wayne-rasband/11/140/477</url>
-			<organization>NIH</organization>
-			<organizationUrl>http://nih.gov/</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>-5</timezone>
-		</developer>
-		<developer>
-			<id>ctrueden</id>
-			<name>Curtis Rueden</name>
-			<email>ctrueden@wisc.edu</email>
-			<url>http://loci.wisc.edu/people/curtis-rueden</url>
-			<organization>UW-Madison LOCI</organization>
-			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>-6</timezone>
-		</developer>
-		<developer>
-			<id>dscho</id>
-			<name>Johannes Schindelin</name>
-			<email>schindelin@wisc.edu</email>
-			<url>http://loci.wisc.edu/people/johannes-schindelin</url>
-			<organization>UW-Madison LOCI</organization>
-			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>-6</timezone>
-		</developer>
-		<developer>
-			<id>hinerm</id>
-			<name>Mark Hiner</name>
-			<email>hiner@wisc.edu</email>
-			<url>http://loci.wisc.edu/people/mark-hiner</url>
-			<organization>UW-Madison LOCI</organization>
-			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>-6</timezone>
-		</developer>
-		<developer>
-			<id>LeeKamentsky</id>
-			<name>Lee Kamentsky</name>
-			<email>leek@broadinstitute.org</email>
-			<url>http://www.broadinstitute.org/~leek/</url>
-			<organization>Broad Institute of MIT and Harvard</organization>
-			<organizationUrl>http://www.broadinstitute.org/</organizationUrl>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>-5</timezone>
-		</developer>
-	</developers>
-
-	<contributors>
-		<contributor>
-			<name>Barry DeZonia</name>
-			<url>http://loci.wisc.edu/people/barry-dezonia</url>
-			<organization>UW-Madison LOCI</organization>
-			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>-6</timezone>
-		</contributor>
-		<contributor>
-			<name>Grant Harris</name>
-			<email>gharris@mbl.edu</email>
-			<url>http://loci.wisc.edu/people/grant-harris</url>
-			<organization>MBL at Woods Hole</organization>
-			<organizationUrl>http://www.mbl.edu/</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-			<timezone>-5</timezone>
-		</contributor>
-		<contributor>
-			<name>Aivar Grislis</name>
-			<url>http://loci.wisc.edu/people/aivar-grislis</url>
-			<organization>UW-Madison LOCI</organization>
-			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>-6</timezone>
-		</contributor>
-		<contributor>
-			<name>Rick Lentz</name>
-			<url>http://loci.wisc.edu/people/rick-lentz</url>
-			<organization>UW-Madison LOCI</organization>
-			<organizationUrl>http://loci.wisc.edu/</organizationUrl>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>-6</timezone>
-		</contributor>
-		<contributor>
-			<name>Adam Fraser</name>
-			<url>http://about.me/adamfraser</url>
-			<organization>Broad Institute of MIT and Harvard</organization>
-			<organizationUrl>http://www.broadinstitute.org/</organizationUrl>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>-5</timezone>
-		</contributor>
-		<contributor>
-			<name>Albert Cardona</name>
-			<email>acardona@ini.phys.ethz.ch</email>
-			<url>http://albert.rierol.net/</url>
-			<organization>Institute of Neuroinformatics, Uni/ETH Zürich</organization>
-			<organizationUrl>http://www.ini.uzh.ch/</organizationUrl>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>+1</timezone>
-		</contributor>
-		<contributor><name>Daniel Seebacher</name></contributor>
-	</contributors>
 
 	<issueManagement>
 		<system>Trac</system>
 		<url>http://trac.imagej.net/</url>
 	</issueManagement>
-
-	<ciManagement>
-		<system>Jenkins</system>
-		<url>http://jenkins.imagej.net/</url>
-	</ciManagement>
-
-	<mailingLists>
-		<mailingList>
-			<name>ImageJ</name>
-			<subscribe>http://imagej.net/list.html</subscribe>
-			<unsubscribe>http://imagej.net/list.html</unsubscribe>
-			<post>imagej@list.nih.gov</post>
-			<archive>http://list.nih.gov/archives/imagej.html</archive>
-		</mailingList>
-		<mailingList>
-			<name>ImageJ-devel</name>
-			<subscribe>http://imagej.net/mailman/listinfo/imagej-devel</subscribe>
-			<unsubscribe>http://imagej.net/mailman/listinfo/imagej-devel</unsubscribe>
-			<post>imagej-devel@imagej.net</post>
-			<archive>http://imagej.net/pipermail/imagej-devel/</archive>
-		</mailingList>
-		<mailingList>
-			<name>Fiji-devel</name>
-			<subscribe>http://groups.google.com/group/fiji-devel</subscribe>
-			<unsubscribe>http://groups.google.com/group/fiji-devel</unsubscribe>
-			<post>fiji@fiji.sc</post>
-			<archive>http://groups.google.com/group/fiji-devel</archive>
-		</mailingList>
-	</mailingLists>
 
 	<scm>
 		<connection>scm:git:git://github.com/imagej/imagej</connection>
