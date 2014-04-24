@@ -17,7 +17,6 @@
 	<modules>
 		<module>scripting</module>
 		<module>text</module>
-		<module>uploaders</module>
 	</modules>
 
 	<properties>

@@ -73,16 +73,6 @@
 			<artifactId>ij-text</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-updater-ssh</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-updater-webdav</artifactId>
-			<scope>runtime</scope>
-		</dependency>
 
 		<!-- Runtime SciJava dependencies -->
 		<dependency>
@@ -93,6 +83,16 @@
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej-plugins-tools</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-plugins-uploader-ssh</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-plugins-uploader-webdav</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
