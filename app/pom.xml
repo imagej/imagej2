@@ -80,11 +80,6 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-tools</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
 			<artifactId>ij-updater-ssh</artifactId>
 			<scope>runtime</scope>
 		</dependency>
@@ -98,6 +93,11 @@
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej-plugins-commands</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-plugins-tools</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
