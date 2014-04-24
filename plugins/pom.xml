@@ -16,7 +16,6 @@
 
 	<modules>
 		<module>scripting</module>
-		<module>text</module>
 	</modules>
 
 	<properties>
