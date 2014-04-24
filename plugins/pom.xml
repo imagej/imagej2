@@ -15,10 +15,7 @@
 	<description>Built-in ImageJ plugins.</description>
 
 	<modules>
-		<module>platforms</module>
 		<module>scripting</module>
-		<module>text</module>
-		<module>uploaders</module>
 	</modules>
 
 	<properties>
