@@ -18,7 +18,6 @@
 		<module>platforms</module>
 		<module>scripting</module>
 		<module>text</module>
-		<module>tools</module>
 		<module>uploaders</module>
 	</modules>
 
