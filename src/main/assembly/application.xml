@@ -39,7 +39,7 @@
 
 		<!-- Include documents and about images in toplevel directory. -->
 		<fileSet>
-			<directory>${project.rootdir}</directory>
+			<directory>${basedir}</directory>
 			<outputDirectory>/</outputDirectory>
 			<includes>
 				<include>LICENSE*</include>
@@ -66,18 +66,18 @@
 
 		<!-- Include the ImageJ2 icon in the Mac OS X application bundle. -->
 		<file>
-			<source>${project.rootdir}/logo/ImageJ.icns</source>
+			<source>${basedir}/logo/ImageJ.icns</source>
 			<outputDirectory>/Contents/Resources/</outputDirectory>
 		</file>
 
 		<!-- Use the ImageJ2 logo for the splash screen. -->
 		<file>
-			<source>${project.rootdir}/logo/imagej.png</source>
+			<source>${basedir}/logo/imagej.png</source>
 			<outputDirectory>/images/</outputDirectory>
 			<destName>icon.png</destName>
 		</file>
 		<file>
-			<source>${project.rootdir}/logo/imagej.png</source>
+			<source>${basedir}/logo/imagej.png</source>
 			<outputDirectory>/images/</outputDirectory>
 			<destName>icon-flat.png</destName>
 		</file>
