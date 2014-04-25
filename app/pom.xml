@@ -13,16 +13,14 @@
 	<name>ImageJ Application</name>
 	<description>The app component is the top-level ImageJ application. It brings together all the components into the final application. It launches the Swing user interface by default, but other interfaces are equally possible.</description>
 	<dependencies>
-		<!-- Project dependencies -->
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ij-legacy</artifactId>
-		</dependency>
-
 		<!-- SciJava dependencies -->
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-legacy</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>net.imagej</groupId>

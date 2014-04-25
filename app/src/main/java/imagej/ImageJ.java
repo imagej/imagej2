@@ -31,8 +31,6 @@
 
 package imagej;
 
-import imagej.legacy.LegacyService;
-
 import java.util.Collection;
 
 import net.imagej.DatasetService;
@@ -42,6 +40,7 @@ import net.imagej.display.ImageDisplayService;
 import net.imagej.display.OverlayService;
 import net.imagej.display.ScreenCaptureService;
 import net.imagej.display.WindowService;
+import net.imagej.legacy.LegacyService;
 import net.imagej.lut.LUTService;
 import net.imagej.measure.MeasurementService;
 import net.imagej.measure.StatisticsService;
