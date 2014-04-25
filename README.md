@@ -51,6 +51,63 @@ For the list of developers and contributors, see
 [pom.xml](https://github.com/imagej/imagej/blob/master/pom.xml).
 
 
+IMAGEJ AS A LIBRARY
+-------------------
+
+This repository is the master ImageJ2 application, which brings together all of
+ImageJ under the artifact
+[net.imagej:imagej](http://maven.imagej.net/index.html#nexus-search;gav~net.imagej~imagej~~~~kw,versionexpand).
+It is the easiest entry point if you are looking to use ImageJ as a library from
+your own software. E.g., in your Maven `pom.xml`:
+```
+<parent>
+  <groupId>org.scijava</groupId>
+  <artifactId>pom-scijava</artifactId>
+  <version>2.0</version>
+</parent>
+...
+<dependency>
+  <groupId>net.imagej</groupId>
+  <artifactId>imagej</artifactId>
+</dependency>
+```
+We recommend inheriting from the
+[pom-scijava](https://github.com/scijava/pom-scijava) parent, although it is not
+required. (If you do not, you will need to include the `<version>` of ImageJ in
+your `<dependency>` declaration.)
+
+
+DEPENDENCIES
+------------
+
+This component depends on other, lower level components, each of which lives in
+its own repository:
+
+* [ImageJ Common](https://github.com/imagej/imagej-common)
+* [ImageJ Legacy](https://github.com/imagej/imagej-legacy)
+* [ImageJ OPS](https://github.com/imagej/imagej-ops)
+* [ImageJ Updater](https://github.com/imagej/imagej-updater)
+* [SciJava Common](https://github.com/scijava/scijava-common)
+
+It also includes uses various "plugin" components at runtime:
+
+* [Imagej Plugins: Commands](https://github.com/imagej/imagej-plugins-commands)
+* [Imagej Plugins: Tools](https://github.com/imagej/imagej-plugins-tools)
+* [Imagej Plugins: Uploader: SSH](https://github.com/imagej/imagej-plugins-uploader-ssh)
+* [Imagej Plugins: Uploader: WebDAV](https://github.com/imagej/imagej-plugins-uploader-webdav)
+* [SciJava Plugins: Platforms](https://github.com/scijava/scijava-plugins-platforms)
+* [SciJava Plugins: Text: Markdown](https://github.com/scijava/scijava-plugins-text-markdown)
+* [SciJava Plugins: Text: Plain](https://github.com/scijava/scijava-plugins-text-plain)
+* [Scripting: Beanshell](https://github.com/scijava/scripting-beanshell)
+* [Scripting: Clojure](https://github.com/scijava/scripting-clojure)
+* [Scripting: Java](https://github.com/scijava/scripting-java)
+* [Scripting: JavaScript](https://github.com/scijava/scripting-javascript)
+* [Scripting: JRuby](https://github.com/scijava/scripting-jruby)
+* [Scripting: Jython](https://github.com/scijava/scripting-jython)
+
+See the [pom.xml](pom.xml) for a complete list of dependencies.
+
+
 BUGS
 ----
 
@@ -59,18 +116,3 @@ For a list of known issues, see the
 
 Please report any bugs by following the
 [instructions online](http://developer.imagej.net/reporting-bugs).
-
-
-OTHER NOTES
------------
-
-Menus: IJ2 is currently made up of both IJ1 & IJ2 commands. IJ1 commands are
-distinguished with a small microscope icon next to their name in the menus,
-while IJ2 commands have either a green puzzle piece or a custom icon. Many IJ1
-commands work, but some do not, for various reasons. We are still working to
-improve the number of working IJ1 commands, and/or update them to pure IJ2
-commands.
-
-Macros and scripts: It is possible to execute IJ1 macros in IJ2, though you may
-experience mixed results. You can even include calls to overridden IJ2 commands
-but they will not record correctly.
