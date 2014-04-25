@@ -1,7 +1,0 @@
-// @OUTPUT String greeting
-
-// This is a very simple Beanshell script using a single script parameter,
-// 'greeting'. It is the duty of the scripting framework to figure out what
-// to do with it, based on its type.
-
-greeting = "Hello, world!";
