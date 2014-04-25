@@ -29,24 +29,61 @@
  * #L%
  */
 
-package imagej.readme;
+package net.imagej.readme;
 
-import net.imagej.service.ImageJService;
+import java.io.File;
+import java.io.IOException;
+
+import org.scijava.ItemIO;
+import org.scijava.app.AppService;
+import org.scijava.command.Command;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
+import org.scijava.text.TextService;
 
 /**
- * Interface for services that display the ImageJ README.
+ * Displays the ImageJ readme file.
  * 
  * @author Curtis Rueden
  */
-public interface ReadmeService extends ImageJService {
+@Plugin(type = Command.class)
+public class ShowReadme implements Command {
 
-	/** Displays the ImageJ README. */
-	void displayReadme();
+	private static final String README_FILE = "README.md";
 
-	/** Returns true iff this version of ImageJ has not run before. */
-	boolean isFirstRun();
+	@Parameter
+	private AppService appService;
 
-	/** Sets a preference recording whether this version of ImageJ has run. */
-	void setFirstRun(final boolean firstRun);
+	@Parameter
+	private TextService textService;
+
+	@Parameter(label = "Readme", type = ItemIO.OUTPUT)
+	private String readmeText;
+
+	// -- ShowReadme methods --
+
+	public String getReadmeText() {
+		return readmeText;
+	}
+
+	// -- Runnable methods --
+
+	@Override
+	public void run() {
+		readmeText = loadReadmeFile();
+	}
+
+	// -- Helper methods --
+
+	private String loadReadmeFile() {
+		final File baseDir = appService.getApp().getBaseDirectory();
+		final File readmeFile = new File(baseDir, README_FILE);
+		try {
+			return textService.asHTML(readmeFile);
+		}
+		catch (final IOException e) {
+			throw new IllegalStateException(e.getMessage());
+		}
+	}
 
 }

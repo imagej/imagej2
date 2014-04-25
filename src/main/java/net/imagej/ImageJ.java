@@ -29,7 +29,7 @@
  * #L%
  */
 
-package imagej;
+package net.imagej;
 
 import java.util.Collection;
 

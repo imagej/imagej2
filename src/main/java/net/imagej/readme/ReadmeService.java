@@ -29,47 +29,24 @@
  * #L%
  */
 
-package imagej;
+package net.imagej.readme;
+
+import net.imagej.service.ImageJService;
 
 /**
- * Launches ImageJ.
+ * Interface for services that display the ImageJ README.
  * 
  * @author Curtis Rueden
  */
-public final class Main {
+public interface ReadmeService extends ImageJService {
 
-	private Main() {
-		// prevent instantiation of utility class
-	}
+	/** Displays the ImageJ README. */
+	void displayReadme();
 
-	/**
-	 * Launches a new instance of ImageJ, displaying the default user interface.
-	 * <p>
-	 * This method is provided merely for convenience. If you do not want to
-	 * display a user interface, construct the ImageJ instance directly instead:
-	 * </p>
-	 * {@code
-	 * final ImageJ ij = new ImageJ();<br/>
-	 * ij.console().processArgs(args); // if you want to pass any arguments
-	 * }
-	 * 
-	 * @param args The arguments to pass to the new ImageJ instance.
-	 * @return The newly launched ImageJ instance.
-	 */
-	public static ImageJ launch(final String... args) {
-		final ImageJ ij = new ImageJ();
+	/** Returns true iff this version of ImageJ has not run before. */
+	boolean isFirstRun();
 
-		// parse command line arguments
-		ij.console().processArgs(args);
-
-		// display the user interface
-		ij.ui().showUI();
-
-		return ij;
-	}
-
-	public static void main(final String... args) {
-		launch(args);
-	}
+	/** Sets a preference recording whether this version of ImageJ has run. */
+	void setFirstRun(final boolean firstRun);
 
 }

@@ -29,61 +29,71 @@
  * #L%
  */
 
-package imagej.readme;
+package net.imagej.readme;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.scijava.ItemIO;
 import org.scijava.app.AppService;
-import org.scijava.command.Command;
+import org.scijava.command.CommandService;
+import org.scijava.event.EventHandler;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
-import org.scijava.text.TextService;
+import org.scijava.service.AbstractService;
+import org.scijava.service.Service;
+import org.scijava.ui.event.UIShownEvent;
+import org.scijava.util.Prefs;
 
 /**
- * Displays the ImageJ readme file.
+ * Default service for displaying the ImageJ README.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Command.class)
-public class ShowReadme implements Command {
+@Plugin(type = Service.class)
+public class DefaultReadmeService extends AbstractService implements
+	ReadmeService
+{
 
-	private static final String README_FILE = "README.md";
+	@Parameter
+	private LogService log;
 
 	@Parameter
 	private AppService appService;
 
 	@Parameter
-	private TextService textService;
+	private CommandService commandService;
 
-	@Parameter(label = "Readme", type = ItemIO.OUTPUT)
-	private String readmeText;
-
-	// -- ShowReadme methods --
-
-	public String getReadmeText() {
-		return readmeText;
-	}
-
-	// -- Runnable methods --
+	// -- ReadmeService methods --
 
 	@Override
-	public void run() {
-		readmeText = loadReadmeFile();
+	public void displayReadme() {
+		commandService.run(ShowReadme.class, true);
+	}
+
+	@Override
+	public boolean isFirstRun() {
+		final String firstRun = Prefs.get(getClass(), firstRunPrefKey());
+		return firstRun == null || Boolean.parseBoolean(firstRun);
+	}
+
+	@Override
+	public void setFirstRun(final boolean firstRun) {
+		Prefs.put(getClass(), firstRunPrefKey(), firstRun);
+	}
+
+	// -- Event handlers --
+
+	/** Displays the readme when the ImageJ UI is shown for the first time. */
+	@EventHandler
+	protected void onEvent(@SuppressWarnings("unused") final UIShownEvent evt) {
+		if (!isFirstRun()) return;
+		setFirstRun(false);
+		displayReadme();
 	}
 
 	// -- Helper methods --
 
-	private String loadReadmeFile() {
-		final File baseDir = appService.getApp().getBaseDirectory();
-		final File readmeFile = new File(baseDir, README_FILE);
-		try {
-			return textService.asHTML(readmeFile);
-		}
-		catch (final IOException e) {
-			throw new IllegalStateException(e.getMessage());
-		}
+	/** Gets the preference key for ImageJ's first run. */
+	private String firstRunPrefKey() {
+		return "firstRun-" + appService.getApp().getVersion();
 	}
 
 }

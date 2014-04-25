@@ -29,7 +29,7 @@
  * #L%
  */
 
-package imagej.debug;
+package net.imagej.debug;
 
 import java.util.ArrayList;
 import java.util.Collection;

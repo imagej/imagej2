@@ -29,71 +29,47 @@
  * #L%
  */
 
-package imagej.readme;
-
-import org.scijava.app.AppService;
-import org.scijava.command.CommandService;
-import org.scijava.event.EventHandler;
-import org.scijava.log.LogService;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-import org.scijava.service.AbstractService;
-import org.scijava.service.Service;
-import org.scijava.ui.event.UIShownEvent;
-import org.scijava.util.Prefs;
+package net.imagej;
 
 /**
- * Default service for displaying the ImageJ README.
+ * Launches ImageJ.
  * 
  * @author Curtis Rueden
  */
-@Plugin(type = Service.class)
-public class DefaultReadmeService extends AbstractService implements
-	ReadmeService
-{
+public final class Main {
 
-	@Parameter
-	private LogService log;
-
-	@Parameter
-	private AppService appService;
-
-	@Parameter
-	private CommandService commandService;
-
-	// -- ReadmeService methods --
-
-	@Override
-	public void displayReadme() {
-		commandService.run(ShowReadme.class, true);
+	private Main() {
+		// prevent instantiation of utility class
 	}
 
-	@Override
-	public boolean isFirstRun() {
-		final String firstRun = Prefs.get(getClass(), firstRunPrefKey());
-		return firstRun == null || Boolean.parseBoolean(firstRun);
+	/**
+	 * Launches a new instance of ImageJ, displaying the default user interface.
+	 * <p>
+	 * This method is provided merely for convenience. If you do not want to
+	 * display a user interface, construct the ImageJ instance directly instead:
+	 * </p>
+	 * {@code
+	 * final ImageJ ij = new ImageJ();<br/>
+	 * ij.console().processArgs(args); // if you want to pass any arguments
+	 * }
+	 * 
+	 * @param args The arguments to pass to the new ImageJ instance.
+	 * @return The newly launched ImageJ instance.
+	 */
+	public static ImageJ launch(final String... args) {
+		final ImageJ ij = new ImageJ();
+
+		// parse command line arguments
+		ij.console().processArgs(args);
+
+		// display the user interface
+		ij.ui().showUI();
+
+		return ij;
 	}
 
-	@Override
-	public void setFirstRun(final boolean firstRun) {
-		Prefs.put(getClass(), firstRunPrefKey(), firstRun);
-	}
-
-	// -- Event handlers --
-
-	/** Displays the readme when the ImageJ UI is shown for the first time. */
-	@EventHandler
-	protected void onEvent(@SuppressWarnings("unused") final UIShownEvent evt) {
-		if (!isFirstRun()) return;
-		setFirstRun(false);
-		displayReadme();
-	}
-
-	// -- Helper methods --
-
-	/** Gets the preference key for ImageJ's first run. */
-	private String firstRunPrefKey() {
-		return "firstRun-" + appService.getApp().getVersion();
+	public static void main(final String... args) {
+		launch(args);
 	}
 
 }
