@@ -22,7 +22,6 @@
 	<modules>
 		<module>app</module>
 		<module>core</module>
-		<module>plugins</module>
 	</modules>
 
 	<properties>
