@@ -402,14 +402,158 @@
 			</dependencies>
 		</profile>
 
-		<!-- The deps profile builds the imagej-x.y.z-all uber-jar, which is a
-		     bundle of imagej with all dependencies. While we do not encourage
-		     its use, it can simplify deployment in some environments; see:
+		<!-- The deps profile builds the imagej-x.y.z-all uber-jar, which is
+		     a bundle of ImageJ with all dependencies and ImageJ sources.
+		     While we do not encourage its use, it can simplify deployment
+		     in some environments; see:
 		     http://developer.imagej.net/how-can-i-call-imagej-my-software -->
 		<profile>
 			<id>deps</id>
+			<!-- NB: Include source code for all parts of ImageJ.
+			     This list of dependencies needs to remain in sync with the
+			     main list of dependencies outside the profiles section,
+			     but with <classifier>sources</classifier> for each. -->
+			<dependencies>
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej</artifactId>
+					<version>${project.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+
+				<!-- SciJava dependencies -->
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-common</artifactId>
+					<version>${imagej-common.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-legacy</artifactId>
+					<version>${imagej-legacy.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-ops</artifactId>
+					<version>${imagej-ops.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-updater</artifactId>
+					<version>${imagej-updater.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>org.scijava</groupId>
+					<artifactId>scijava-common</artifactId>
+					<version>${scijava-common.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+
+				<!-- Runtime SciJava dependencies -->
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-plugins-commands</artifactId>
+					<version>${imagej-plugins-commands.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-plugins-tools</artifactId>
+					<version>${imagej-plugins-tools.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-plugins-uploader-ssh</artifactId>
+					<version>${imagej-plugins-uploader-ssh.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-plugins-uploader-webdav</artifactId>
+					<version>${imagej-plugins-uploader-webdav.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>org.scijava</groupId>
+					<artifactId>scijava-plugins-platforms</artifactId>
+					<version>${scijava-plugins-platforms.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>org.scijava</groupId>
+					<artifactId>scijava-plugins-text-markdown</artifactId>
+					<version>${scijava-plugins-text-markdown.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>org.scijava</groupId>
+					<artifactId>scijava-plugins-text-plain</artifactId>
+					<version>${scijava-plugins-text-plain.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>org.scijava</groupId>
+					<artifactId>scripting-beanshell</artifactId>
+					<version>${scripting-beanshell.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>org.scijava</groupId>
+					<artifactId>scripting-clojure</artifactId>
+					<version>${scripting-clojure.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>org.scijava</groupId>
+					<artifactId>scripting-java</artifactId>
+					<version>${scripting-java.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>org.scijava</groupId>
+					<artifactId>scripting-javascript</artifactId>
+					<version>${scripting-javascript.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>org.scijava</groupId>
+					<artifactId>scripting-jruby</artifactId>
+					<version>${scripting-jruby.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>org.scijava</groupId>
+					<artifactId>scripting-jython</artifactId>
+					<version>${scripting-jython.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-ui-swing</artifactId>
+					<version>${imagej-ui-swing.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+			</dependencies>
 			<build>
 				<plugins>
+					<plugin>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copy-dependencies</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>copy-dependencies</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
