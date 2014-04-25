@@ -14,7 +14,7 @@ set -e
 ROOT=`cd "$(dirname $0)/.." ; pwd`
 ALL='src/main/assembly/all'
 
-cd "$ROOT/app"
+cd "$ROOT"
 
 # build individual JARs and copy dependencies
 mvn package dependency:copy-dependencies
