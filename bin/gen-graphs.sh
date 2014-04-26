@@ -16,7 +16,8 @@ ROOT=`cd "$(dirname $0)/.." ; pwd`
 cd "$ROOT"
 
 GRAPH_CMD="
-  neato
+  dot
+  -Gnodesep=0.3
   -Goverlap=scale
   -Gsplines=true
   -Gepsilon=0.0001

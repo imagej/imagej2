@@ -302,6 +302,13 @@
 					<configFile>${basedir}/config/eclipse-code-formatter-profile.xml</configFile>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.fusesource.mvnplugins</groupId>
+				<artifactId>maven-graph-plugin</artifactId>
+				<configuration>
+					<hideTransitive>false</hideTransitive>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
