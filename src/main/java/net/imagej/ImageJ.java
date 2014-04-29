@@ -33,7 +33,6 @@ package net.imagej;
 
 import java.util.Collection;
 
-import net.imagej.DatasetService;
 import net.imagej.animation.AnimationService;
 import net.imagej.app.ImageJApp;
 import net.imagej.display.ImageDisplayService;
