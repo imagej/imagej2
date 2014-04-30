@@ -31,7 +31,7 @@
 
 package net.imagej.readme;
 
-import net.imagej.service.ImageJService;
+import net.imagej.ImageJService;
 
 /**
  * Interface for services that display the ImageJ README.
