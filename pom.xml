@@ -692,6 +692,31 @@
 				</pluginManagement>
 			</build>
 		</profile>
+
+		<!-- The javadoc profile builds the aggregated javadocs.
+		     Launch it using: mvn -Pjavadocs javadoc:jar -->
+		<profile>
+			<id>javadoc</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+							</execution>
+						</executions>
+						<configuration>
+							<includeDependencySources>true</includeDependencySources>
+							<dependencySourceExcludes>
+								<!-- No need to include the tools -->
+								<dependencySourceExclude>com.sun:*</dependencySourceExclude>
+							</dependencySourceExcludes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 
 </project>
