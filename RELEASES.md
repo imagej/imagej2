@@ -54,7 +54,7 @@ After running the release-version.sh script, you will need to manually deploy:
 
     open http://jenkins.imagej.net/job/ImageJ-launcher/build
 
-And build the newly pushed release tag; e.g., `ij-launcher-2.0.0`.
+And build the newly pushed release tag; e.g., `imagej-launcher-2.0.0`.
 
 ## [IMAGEJ](https://github.com/imagej/imagej)
 

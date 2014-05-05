@@ -37,7 +37,6 @@
 		<imagej.main-class>net.imagej.Main</imagej.main-class>
 
 		<imagej-updater.version>0.2.0</imagej-updater.version>
-		<imagej-launcher.version>2.0.3</imagej-launcher.version>
 	</properties>
 
 	<repositories>
@@ -175,11 +174,11 @@
 							<artifactItems>
 								<artifactItem>
 									<groupId>${project.groupId}</groupId>
-									<artifactId>ij-launcher</artifactId>
+									<artifactId>imagej-launcher</artifactId>
 									<version>${imagej-launcher.version}</version>
 									<type>nar</type>
 									<outputDirectory>${project.build.directory}/</outputDirectory>
-									<destFileName>ij-launcher-${imagej-launcher.version}.jar</destFileName>
+									<destFileName>imagej-launcher-${imagej-launcher.version}.jar</destFileName>
 								</artifactItem>
 							</artifactItems>
 						</configuration>
@@ -194,7 +193,7 @@
 							<artifactItems>
 								<artifactItem>
 									<groupId>${project.groupId}</groupId>
-									<artifactId>ij-launcher</artifactId>
+									<artifactId>imagej-launcher</artifactId>
 									<version>${imagej-launcher.version}</version>
 									<classifier>amd64-Linux-gcc-executable</classifier>
 									<type>nar</type>
@@ -202,7 +201,7 @@
 								</artifactItem>
 								<artifactItem>
 									<groupId>${project.groupId}</groupId>
-									<artifactId>ij-launcher</artifactId>
+									<artifactId>imagej-launcher</artifactId>
 									<version>${imagej-launcher.version}</version>
 									<classifier>i386-Linux-gcc-executable</classifier>
 									<type>nar</type>
@@ -210,7 +209,7 @@
 								</artifactItem>
 								<artifactItem>
 									<groupId>${project.groupId}</groupId>
-									<artifactId>ij-launcher</artifactId>
+									<artifactId>imagej-launcher</artifactId>
 									<version>${imagej-launcher.version}</version>
 									<classifier>amd64-Windows-gcc-executable</classifier>
 									<type>nar</type>
@@ -218,7 +217,7 @@
 								</artifactItem>
 								<artifactItem>
 									<groupId>${project.groupId}</groupId>
-									<artifactId>ij-launcher</artifactId>
+									<artifactId>imagej-launcher</artifactId>
 									<version>${imagej-launcher.version}</version>
 									<classifier>x86-Windows-gcc-executable</classifier>
 									<type>nar</type>
@@ -226,7 +225,7 @@
 								</artifactItem>
 								<artifactItem>
 									<groupId>${project.groupId}</groupId>
-									<artifactId>ij-launcher</artifactId>
+									<artifactId>imagej-launcher</artifactId>
 									<version>${imagej-launcher.version}</version>
 									<classifier>i386-MacOSX-gcc-executable</classifier>
 									<type>nar</type>
@@ -234,7 +233,7 @@
 								</artifactItem>
 								<artifactItem>
 									<groupId>${project.groupId}</groupId>
-									<artifactId>ij-launcher</artifactId>
+									<artifactId>imagej-launcher</artifactId>
 									<version>${imagej-launcher.version}</version>
 									<classifier>x86_64-MacOSX-gcc-executable</classifier>
 									<type>nar</type>
