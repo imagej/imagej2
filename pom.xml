@@ -96,6 +96,11 @@
 		<!-- Runtime SciJava dependencies -->
 		<dependency>
 			<groupId>org.scijava</groupId>
+			<artifactId>scijava-plugins-commands</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.scijava</groupId>
 			<artifactId>scijava-plugins-platforms</artifactId>
 			<scope>runtime</scope>
 		</dependency>
