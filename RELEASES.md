@@ -45,7 +45,7 @@ The version numbering conventions for each project are as follows:
 |SciJava Common| 1.X.X |
 |ImgLib2 |2.0.0-beta-X|
 |SCIFIO | 0.X.X|
-|ImageJ Launcher|2.X.X|
+|ImageJ Launcher|3.X.X|
 
 
 ## [IMAGEJ LAUNCHER](https://github.com/imagej/imagej-launcher)
@@ -54,7 +54,7 @@ After running the release-version.sh script, you will need to manually deploy:
 
     open http://jenkins.imagej.net/job/ImageJ-launcher/build
 
-And build the newly pushed release tag; e.g., `imagej-launcher-2.0.0`.
+And build the newly pushed release tag; e.g., `imagej-launcher-3.14.159`.
 
 ## [IMAGEJ](https://github.com/imagej/imagej)
 
