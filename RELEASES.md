@@ -11,42 +11,63 @@ repository](http://maven.imagej.net/).
 
 ## POM-SCIJAVA VERSIONING
 
-The [Bump-POM-SciJava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/) Jenkins job is used to automatically manage the version properties in [pom-scijava](https://github.com/scijava/pom-scijava). If there are no breaking changes in the ImageJ2 software stack components that will be released, the procedure is simple:
+The
+[Bump-POM-SciJava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/)
+Jenkins job is used to automatically manage the version properties in
+[pom-scijava](https://github.com/scijava/pom-scijava). If there are no breaking
+changes in the ImageJ2 software stack components that will be released, the
+procedure is simple:
 
 1. Perform all necessary releases as indicated below.
 2. Run Bump-POM-SciJava and select "UPDATE_XXXX" for all components that either:
   * Were newly released
   * Are downstream of a newly released component
 
-This will update the version properties to the latest releases of all components, and automatically update the pom-scijava usage to this newest pom-scijava version for each component that "UPDATE_XXXX" was selected.
+This will update the version properties to the latest releases of all
+components, and automatically update the pom-scijava usage to this newest
+pom-scijava version for each component that "UPDATE_XXXX" was selected.
 
 ### BREAKING CHANGES
 
-If some component releases will include breaking API changes, the procedure is different - as these changes will typically propagate through the software stack and will break builds if the downstream API use is not updated. In this case, the procedure is as follows:
+If some component releases will include breaking API changes, the procedure is
+different - as these changes will typically propagate through the software
+stack and will break builds if the downstream API use is not updated. In this
+case, the procedure is as follows:
 
-1. Manually update [pom-scijava](https://github.com/scijava/pom-scijava)'s version properties to point to the *expected* (but not yet released) version of each component that will be released. As a part of this commit, the pom-scijava version number should be increased as well.
-2. For each component that will be released, starting from the lowest component in the stack (e.g. the component with the breaking changes that are being propagated):
-  1. Add a single commit that updates the pom version to the latest and performs any necessary API updates.
-  2. Release the component as indicated below.
-3. Run [Bump-POM-SciJava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/) with the *POM_SCIJAVA_BUMPED_MANUALLY* parameter enabled to deploy the latest pom-scijava. Other parameters should be disabled.
-4. (Optional) Run Bump-POM-SciJava for any remaining downstream components that need to be updated (e.g. those that were not manually updated).
+1.  Manually update [pom-scijava](https://github.com/scijava/pom-scijava)'s
+    version properties to point to the *expected* (but not yet released) version of
+    each component that will be released. As a part of this commit, the pom-scijava
+    version number should be increased as well.
+2.  For each component that will be released, starting from the lowest
+    component in the stack (e.g. the component with the breaking changes that
+    are being propagated):
+    1.  Add a single commit that updates the pom version to the latest and
+        performs any necessary API updates.
+    2.  Release the component as indicated below.
+3.  Run
+    [Bump-POM-SciJava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/)
+    with the `POM_SCIJAVA_BUMPED_MANUALLY` parameter enabled to deploy the
+    latest pom-scijava. Other parameters should be disabled.
+4.  (Optional) Run Bump-POM-SciJava for any remaining downstream components
+    that need to be updated (e.g. those that were not manually updated).
 
 ## PREREQUISITES
 
-All ImageJ2 prerequisites use the [release-version.sh](https://github.com/scijava/scijava-scripts/blob/master/release-version.sh) script. For each project:
+All ImageJ2 prerequisites use the
+[release-version.sh](https://github.com/scijava/scijava-scripts/blob/master/release-version.sh)
+script. For each project:
 
     cd <project top-level>
     release-version.sh <new version>
 
 The version numbering conventions for each project are as follows:
 
-|Project    |Version syntax
-| --------- |:-------------:|
-|SciJava Common| 1.X.X |
-|ImgLib2 |2.0.0-beta-X|
-|SCIFIO | 0.X.X|
-|ImageJ Launcher|3.X.X|
-
+| Project        | Version syntax |
+| -------------- |:--------------:|
+| SciJava Common | 1.X.X          |
+| ImgLib2        | 2.0.0-beta-X   |
+| SCIFIO         | 0.X.X          |
+| ImageJ Launcher| 3.X.X          |
 
 ## [IMAGEJ LAUNCHER](https://github.com/imagej/imagej-launcher)
 
@@ -107,15 +128,20 @@ And specify the newly pushed `temp` tag.
 At a minimum, the following should be tested:
 
 * `File -> Open`
-  * Ideally on all [SCIFIO-supported formats](https://github.com/scifio/scifio/tree/master/scifio/src/main/java/io/scif/formats).
-  * On at least one dataset that will force caching, e.g. `test&axes=X,Y,Z&lengths=256,256,100000.fake`
+  * Ideally on all [SCIFIO-supported
+    formats](https://github.com/scifio/scifio/tree/master/scifio/src/main/java/io/scif/formats).
+  * On at least one dataset that will force caching, e.g.
+    `test&axes=X,Y,Z&lengths=256,256,100000.fake`
 * `File -> Save as...`
-  * ideally for all [SCIFIO-supported output formats](https://github.com/scifio/scifio/blob/master/scifio/src/main/java/io/scif/Writer.java).
+  * ideally for all [SCIFIO-supported output
+    formats](https://github.com/scifio/scifio/blob/master/scifio/src/main/java/io/scif/Writer.java).
 * `ImageJ -> Quit ImageJ`
-  * Test this *before and after* opening data, especially data that causes caching.
+  * Test this *before and after* opening data, especially data that causes
+    caching.
 * Plugins
   * Test as many IJ2 plugins (green puzzle piece in the menus) as possible.
-  * Test several legacy plugins (IJ1 microscope in the menus) to verify compatibility layer.
+  * Test several legacy plugins (IJ1 microscope in the menus) to verify
+    compatibility layer.
 
 #### Tag, build and deploy the actual release
 
