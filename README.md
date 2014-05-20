@@ -59,11 +59,12 @@ ImageJ under the artifact
 [net.imagej:imagej](http://maven.imagej.net/index.html#nexus-search;gav~net.imagej~imagej~~~~kw,versionexpand).
 It is the easiest entry point if you are looking to use ImageJ as a library from
 your own software. E.g., in your Maven `pom.xml`:
+
 ```
 <parent>
-  <groupId>org.scijava</groupId>
-  <artifactId>pom-scijava</artifactId>
-  <version>2.0</version>
+  <groupId>net.iamgej</groupId>
+  <artifactId>pom-imagej</artifactId>
+  <version>2.14</version>
 </parent>
 ...
 <dependency>
@@ -71,8 +72,9 @@ your own software. E.g., in your Maven `pom.xml`:
   <artifactId>imagej</artifactId>
 </dependency>
 ```
+
 We recommend inheriting from the
-[pom-scijava](https://github.com/scijava/pom-scijava) parent, although it is not
+[pom-imagej](https://github.com/imagej/pom-imagej) parent, although it is not
 required. (If you do not, you will need to include the `<version>` of ImageJ in
 your `<dependency>` declaration.)
 
