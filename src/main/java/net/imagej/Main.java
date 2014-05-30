@@ -48,10 +48,11 @@ public final class Main {
 	 * This method is provided merely for convenience. If you do not want to
 	 * display a user interface, construct the ImageJ instance directly instead:
 	 * </p>
-	 * {@code
-	 * final ImageJ ij = new ImageJ();<br/>
+	 * 
+	 * <pre>
+	 * final ImageJ ij = new ImageJ();
 	 * ij.console().processArgs(args); // if you want to pass any arguments
-	 * }
+	 * </pre>
 	 * 
 	 * @param args The arguments to pass to the new ImageJ instance.
 	 * @return The newly launched ImageJ instance.
