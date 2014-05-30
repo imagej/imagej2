@@ -45,6 +45,7 @@
 				<include>LICENSE*</include>
 				<include>NOTICE*</include>
 				<include>README*</include>
+				<include>WELCOME*</include>
 				<include>about/*</include>
 				<include>luts/*</include>
 			</includes>
