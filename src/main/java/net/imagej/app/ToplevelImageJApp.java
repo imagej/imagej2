@@ -31,10 +31,8 @@
 
 package net.imagej.app;
 
-import net.imagej.app.ImageJApp;
 import net.imagej.legacy.LegacyService;
 
-import org.scijava.Priority;
 import org.scijava.app.App;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -48,7 +46,7 @@ import org.scijava.plugin.Plugin;
  * @see org.scijava.app.AppService
  */
 @Plugin(type = App.class, name = ImageJApp.NAME,
-	priority = Priority.HIGH_PRIORITY + 1)
+	priority = ImageJApp.PRIORITY + 1)
 public class ToplevelImageJApp extends ImageJApp {
 
 	// NB: This app uses the same name as ImageJApp, but with a higher priority,
