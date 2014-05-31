@@ -35,6 +35,8 @@
 
 	<properties>
 		<imagej.main-class>net.imagej.Main</imagej.main-class>
+		<imagej-common.version>0.7.2-SNAPSHOT</imagej-common.version><!--TEMP-->
+		<imagej-legacy.version>0.5.1-SNAPSHOT</imagej-legacy.version><!--TEMP-->
 	</properties>
 
 	<repositories>
