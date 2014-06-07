@@ -63,6 +63,12 @@
 			<artifactId>imagej-updater</artifactId>
 		</dependency>
 
+		<!-- SCIFIO dependencies -->
+		<dependency>
+			<groupId>io.scif</groupId>
+			<artifactId>scifio</artifactId>
+		</dependency>
+
 		<!-- SciJava dependencies -->
 		<dependency>
 			<groupId>org.scijava</groupId>
