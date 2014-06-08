@@ -31,6 +31,8 @@
 
 package net.imagej;
 
+import io.scif.SCIFIO;
+
 import java.util.Collection;
 
 import net.imagej.animation.AnimationService;
@@ -67,6 +69,9 @@ import org.scijava.ui.UIService;
  */
 @Plugin(type = Gateway.class)
 public class ImageJ extends AbstractGateway {
+
+	/** SCIFIO gateway instance, for access to SCIFIO services. */
+	private SCIFIO scifio;
 
 	// -- Constructors --
 
@@ -133,6 +138,13 @@ public class ImageJ extends AbstractGateway {
 	 */
 	public ImageJ(final Context context) {
 		super(ImageJApp.NAME, context);
+		scifio = new SCIFIO(context);
+	}
+
+	// -- ImageJ methods - gateways --
+
+	public SCIFIO scifio() {
+		return scifio;
 	}
 
 	// -- ImageJ methods - services --
