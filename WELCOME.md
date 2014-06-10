@@ -46,6 +46,7 @@ ImageJ2 is also a collection of reusable software libraries built on the
 framework to facilitate rapid development and painless user customization.
 
 The following software component libraries form the core of ImageJ2:
+
 * [ImageJ Common](https://github.com/imagej/imagej-common) -
   The core image data model, using ImgLib2.
 * [ImageJ OPS](https://github.com/imagej/imagej-ops) -
