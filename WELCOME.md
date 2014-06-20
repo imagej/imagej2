@@ -61,7 +61,7 @@ The following software component libraries form the core of ImageJ2:
 ## Improved image I/O with the SCIFIO library
 
 ImageJ2 uses the [SCIFIO](http://wiki.imagej.net/SCIFIO) library (SCientific
-Image Format Input and Output)  by default for most image input tasks. You can
+Image Format Input and Output) by default for most image input tasks. You can
 change this behavior at any time by running `Edit > Options > ImageJ2` and
 modifying the `Use SCIFIO when opening files` option.
 
