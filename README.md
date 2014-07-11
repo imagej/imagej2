@@ -53,7 +53,7 @@ For the list of developers and contributors, see
 IMAGEJ AS A LIBRARY
 -------------------
 
-This repository is the master ImageJ2 application, which brings together all of
+This repository is the master ImageJ application, which brings together all of
 ImageJ under the artifact
 [net.imagej:imagej](http://maven.imagej.net/index.html#nexus-search;gav~net.imagej~imagej~~~~kw,versionexpand).
 It is the easiest entry point if you are looking to use ImageJ as a library from
