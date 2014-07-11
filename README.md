@@ -61,7 +61,7 @@ your own software. E.g., in your Maven `pom.xml`:
 
 ```
 <parent>
-  <groupId>net.iamgej</groupId>
+  <groupId>net.imagej</groupId>
   <artifactId>pom-imagej</artifactId>
   <version>2.14</version>
 </parent>
