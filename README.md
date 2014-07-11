@@ -88,6 +88,8 @@ its own repository:
 * [ImageJ Legacy](https://github.com/imagej/imagej-legacy)
 * [ImageJ OPS](https://github.com/imagej/imagej-ops)
 * [ImageJ Updater](https://github.com/imagej/imagej-updater)
+* [ImgLib2](https://github.com/imglib/imglib)
+* [SCIFIO](https://github.com/scifio/scifio)
 * [SciJava Common](https://github.com/scijava/scijava-common)
 
 It also includes uses various "plugin" components at runtime:
