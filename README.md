@@ -63,7 +63,7 @@ your own software. E.g., in your Maven `pom.xml`:
 <parent>
   <groupId>net.imagej</groupId>
   <artifactId>pom-imagej</artifactId>
-  <version>2.14</version>
+  <version>2.35</version>
 </parent>
 ...
 <dependency>
