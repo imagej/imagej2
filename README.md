@@ -35,8 +35,7 @@ provides backward compatibility with older versions of ImageJ by bundling the
 latest v1.x code and translating between "legacy" and "modern" image
 structures.
 
-For more details on the project, see the
-[ImageJ2 web site](http://developer.imagej.net/).
+For more details on the project, see the [ImageJ web site](http://imagej.net/).
 
 
 LICENSING
