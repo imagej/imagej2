@@ -1,7 +1,7 @@
-ImageJ2 is a new version of ImageJ seeking to strengthen both the software and
-its community. Internally, it is a total redesign of ImageJ, but it is
-backwards compatible with ImageJ 1.x via a "legacy layer" and features a user
-interface closely modeled after the original.
+ImageJ2 is a new version of [ImageJ](http://imagej.net/) seeking to strengthen
+both the software and its community. Internally, it is a total redesign of
+ImageJ, but it is backwards compatible with ImageJ 1.x via a "legacy layer" and
+features a user interface closely modeled after the original.
 
 Under the hood, ImageJ2 completely isolates the image processing logic from the
 graphical user interface (UI), allowing ImageJ2 commands to be used in many
