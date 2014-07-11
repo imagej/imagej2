@@ -117,5 +117,5 @@ BUGS
 For a list of known issues, see the
 [issue tracking system](http://trac.imagej.net/report/1).
 
-Please report any bugs by following the
-[instructions online](http://developer.imagej.net/reporting-bugs).
+Please report any bugs by following the [instructions
+online](http://imagej.net/Bugs).
