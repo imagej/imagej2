@@ -62,6 +62,10 @@
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej-updater</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-usage</artifactId>
+		</dependency>
 
 		<!-- SCIFIO dependencies -->
 		<dependency>
@@ -439,6 +443,12 @@
 					<groupId>net.imagej</groupId>
 					<artifactId>imagej-updater</artifactId>
 					<version>${imagej-updater.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-usage</artifactId>
+					<version>${imagej-usage.version}</version>
 					<classifier>sources</classifier>
 				</dependency>
 
