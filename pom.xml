@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>net.imagej</groupId>
 		<artifactId>pom-imagej</artifactId>
-		<version>2.37</version>
+		<version>2.40</version>
 		<relativePath />
 	</parent>
 
@@ -61,6 +61,10 @@
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej-updater</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-usage</artifactId>
 		</dependency>
 
 		<!-- SCIFIO dependencies -->
@@ -126,6 +130,11 @@
 		<dependency>
 			<groupId>org.scijava</groupId>
 			<artifactId>scripting-clojure</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>scripting-groovy</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -439,6 +448,12 @@
 					<groupId>net.imagej</groupId>
 					<artifactId>imagej-updater</artifactId>
 					<version>${imagej-updater.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-usage</artifactId>
+					<version>${imagej-usage.version}</version>
 					<classifier>sources</classifier>
 				</dependency>
 
