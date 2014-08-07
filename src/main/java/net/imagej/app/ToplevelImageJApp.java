@@ -65,7 +65,7 @@ public class ToplevelImageJApp extends ImageJApp {
 	@Override
 	public String getVersion() {
 		if (legacyService == null) return super.getVersion();
-		return super.getVersion() + " (" + legacyService.getLegacyVersion() + ")";
+		return legacyService.getCombinedVersion();
 	}
 
 }
