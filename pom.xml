@@ -134,6 +134,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.scijava</groupId>
+			<artifactId>scripting-groovy</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.scijava</groupId>
 			<artifactId>scripting-java</artifactId>
 			<scope>runtime</scope>
 		</dependency>
