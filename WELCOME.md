@@ -38,6 +38,13 @@ ImageJ2 provides a wealth of new features and capabilities:
     * Mix and match ImageJ 1.x and ImageJ2 data structures.
     * Plugins appear in the menu automatically without plugins.config files.
     * Reusable in many contexts: KNIME, CellProfiler, OMERO, headless...
+* Usage statistics
+    * ImageJ now anonymously reports usage of plugins.
+    * This data will soon be available on the ImageJ website.
+    * You may opt out of data collection via 'Edit > Options > Privacy...'.
+    * ImageJ automatically uploads these statistics once per hour, and when
+      quitting. If you notice significant slowdown when quitting, please
+      contact the mailing list!
 
 ## ImageJ2 is more than just an application
 
