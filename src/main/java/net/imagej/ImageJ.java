@@ -52,7 +52,6 @@ import net.imagej.sampler.SamplerService;
 import net.imagej.threshold.ThresholdService;
 import net.imagej.updater.UpdateService;
 import net.imagej.updater.UploaderService;
-import net.imagej.usage.UsageUploadService;
 
 import org.scijava.AbstractGateway;
 import org.scijava.Context;
@@ -216,10 +215,6 @@ public class ImageJ extends AbstractGateway {
 
 	public UploaderService uploader() {
 		return get(UploaderService.class);
-	}
-
-	public UsageUploadService usageUpload() {
-		return get(UsageUploadService.class);
 	}
 
 	public WindowService window() {
