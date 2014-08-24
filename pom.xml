@@ -35,6 +35,9 @@
 
 	<properties>
 		<imagej.main-class>net.imagej.Main</imagej.main-class>
+		<scijava-common.version>LATEST</scijava-common.version>
+		<imagej-legacy.version>LATEST</imagej-legacy.version>
+		<imagej-plugins-commands.version>0.2.6-SNAPSHOT</imagej-plugins-commands.version>
 	</properties>
 
 	<repositories>
