@@ -62,6 +62,15 @@
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej-updater</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2-ui</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>sc.fiji</groupId>
+			<artifactId>bigdataviewer-core</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
 
 		<!-- SCIFIO dependencies -->
 		<dependency>
