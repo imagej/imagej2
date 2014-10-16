@@ -659,6 +659,35 @@
 							</execution>
 						</executions>
 					</plugin>
+					<plugin>
+						<artifactId>maven-enforcer-plugin</artifactId>
+						<configuration>
+							<rules>
+								<requireReleaseDeps>
+									<excludes>
+										<exclude>${project.groupId}:${project.artifactId}</exclude>
+									</excludes>
+								</requireReleaseDeps>
+
+							</rules>
+
+							<!--
+							 Unfortunately, we cannot configure banCircularDependencies to handle the
+							 -sources "circular dependency" correctly. In other words, the following
+							 does not work:
+
+								<banCircularDependencies>
+									<excludes>
+										<exclude>${project.groupId}:${project.artifactId}</exclude>
+									</excludes>
+								</banCircularDependencies>
+
+							 Therefore, we have to force the maven-enforcer-plugin *not* to fail, even if a rule
+							 failed.
+							-->
+							<fail>false</fail>
+						</configuration>
+					</plugin>
 				</plugins>
 			</build>
 		</profile>
