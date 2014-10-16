@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>net.imagej</groupId>
 		<artifactId>pom-imagej</artifactId>
-		<version>2.52</version>
+		<version>2.53</version>
 		<relativePath />
 	</parent>
 
@@ -188,6 +188,66 @@
 				<artifactId>maven-graph-plugin</artifactId>
 				<configuration>
 					<hideTransitive>false</hideTransitive>
+				</configuration>
+			</plugin>
+			<!--
+			 The maven-enforcer-plugin configuration was introduced by the pom-scijava version
+			 to which we just bumped; Unfortunately, a few configurations were necessary to
+			 let the Maven build pass. These configurations need to be moved out to the appropriate
+			 places: pom-scijava for the JRuby/Jython stuff and pom-imagej for the ImgLib2-ops issue.
+			 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<configuration>
+					<rules>
+						<banDuplicateClasses>
+							<dependencies>
+								<!-- JRuby/JRuby clashes -->
+								<dependency>
+									<artifactId>jcodings</artifactId>
+									<ignoreClasses>
+										<ignoreClass>org/jcodings/*</ignoreClass>
+									</ignoreClasses>
+								</dependency>
+								<dependency>
+									<artifactId>jnr-constants</artifactId>
+									<ignoreClasses>
+										<ignoreClass>com/kenai/constantine/*</ignoreClass>
+										<ignoreClass>jnr/constants/*</ignoreClass>
+									</ignoreClasses>
+								</dependency>
+								<dependency>
+									<artifactId>jnr-ffi</artifactId>
+									<ignoreClasses>
+										<ignoreClass>jnr/ffi/*</ignoreClass>
+									</ignoreClasses>
+								</dependency>
+
+								<!-- JRuby/Jython clashes -->
+								<dependency>
+									<artifactId>jython-standalone</artifactId>
+									<ignoreClasses>
+										<ignoreClass>jnr/netdb/*</ignoreClass>
+										<ignoreClass>com/kenai/jffi/*</ignoreClass>
+									</ignoreClasses>
+								</dependency>
+
+								<!-- ImgLib2-ops is still referenced, but already dissolved into ImageJ-OPS -->
+								<dependency>
+									<artifactId>imglib2-ops</artifactId>
+									<ignoreClasses>
+										<ignoreClass>net/imglib2/ops/*</ignoreClass>
+									</ignoreClasses>
+								</dependency>
+							</dependencies>
+						</banDuplicateClasses>
+						<enforceBytecodeVersion>
+							<excludes>
+								<exclude>com.headius:invokebinder</exclude>
+							</excludes>
+						</enforceBytecodeVersion>
+					</rules>
 				</configuration>
 			</plugin>
 		</plugins>
