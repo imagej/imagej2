@@ -245,6 +245,7 @@
 						<enforceBytecodeVersion>
 							<excludes>
 								<exclude>com.headius:invokebinder</exclude>
+								<exclude>com.sun:tools</exclude>
 							</excludes>
 						</enforceBytecodeVersion>
 					</rules>
