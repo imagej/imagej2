@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>net.imagej</groupId>
 		<artifactId>pom-imagej</artifactId>
-		<version>2.53</version>
+		<version>3.2</version>
 		<relativePath />
 	</parent>
 
@@ -35,6 +35,12 @@
 
 	<properties>
 		<imagej.main-class>net.imagej.Main</imagej.main-class>
+
+		<imagej-legacy.version>0.9.0</imagej-legacy.version>
+		<imagej-plugins-tools.version>0.2.0</imagej-plugins-tools.version>
+		<imagej-ui-awt.version>0.2.0</imagej-ui-awt.version>
+		<imglib2.version>2.0.2</imglib2.version>
+		<scifio.version>0.17.0</scifio.version>
 	</properties>
 
 	<repositories>
@@ -230,14 +236,6 @@
 									<ignoreClasses>
 										<ignoreClass>jnr/netdb/*</ignoreClass>
 										<ignoreClass>com/kenai/jffi/*</ignoreClass>
-									</ignoreClasses>
-								</dependency>
-
-								<!-- ImgLib2-ops is still referenced, but already dissolved into ImageJ-OPS -->
-								<dependency>
-									<artifactId>imglib2-ops</artifactId>
-									<ignoreClasses>
-										<ignoreClass>net/imglib2/ops/*</ignoreClass>
 									</ignoreClasses>
 								</dependency>
 							</dependencies>
