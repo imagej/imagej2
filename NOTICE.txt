@@ -53,16 +53,24 @@ License: Apache 2.0
 Artifact: com.googlecode:gentyref:1.1.0
 
 ===============================================================================
+Groovy - http://groovy.codehaus.org/
+
+License: Apache 2.0
+
+Artifact: org.codehaus.groovy:groovy:2.3.6
+
+===============================================================================
 ImgLib2 - http://imglib2.net/
 
 License: 2-clause BSD
 
 Artifacts:
-net.imglib2:imglib2:2.0.0-beta-23
-net.imglib2:imglib2-algorithms:2.0.0-beta-23
-net.imglib2:imglib2-ij:2.0.0-beta-23
-net.imglib2:imglib2-meta:2.0.0-beta-23
-net.imglib2:imglib2-ops:2.0.0-beta-23
+net.imglib2:imglib2:2.0.2
+net.imglib2:imglib2-algorithm:0.1.0
+net.imglib2:imglib2-algorithm-fft:0.1.0
+net.imglib2:imglib2-ij:2.0.0-beta-27
+net.imglib2:imglib2-realtransform:2.0.0-beta-27
+net.imglib2:imglib2-roi:0.1.0
 
 ===============================================================================
 JAMA - http://math.nist.gov/javanumerics/jama/
@@ -90,13 +98,10 @@ JFreeChart - http://www.jfree.org/jfreechart/
 
 License: LGPL
 
-Artifact: org.jfree:jfreechart:1.0.14
+Artifact: org.jfree:jfreechart:1.0.19
 
 Dependencies:
-bouncycastle:bcmail-jdk14:138
-bouncycastle:bcprov-jdk14:138
-com.lowagie:itext:2.1.5
-org.jfree:jcommon:1.0.17
+org.jfree:jcommon:1.0.23
 
 ===============================================================================
 JHotDraw7 - http://www.randelshofer.ch/oop/jhotdraw/index.html
@@ -110,7 +115,35 @@ JRuby - http://jruby.org/
 
 License: CPL or GPL or LGPL
 
-Artifact: org.jruby:jruby:1.6.7.2
+Artifacts:
+org.jruby:jruby-core:1.7.12
+org.jruby:jruby-stdlib:1.7.12
+
+Dependencies:
+com.github.jnr:jffi:1.2.7
+com.github.jnr:jffi:native:1.2.7
+com.github.jnr:jnr-constants:0.8.5
+com.github.jnr:jnr-enxio:0.4
+com.github.jnr:jnr-ffi:1.0.7
+com.github.jnr:jnr-netdb:1.1.2
+com.github.jnr:jnr-posix:3.0.1
+com.github.jnr:jnr-unixsocket:0.3
+com.github.jnr:jnr-x86asm:1.0.2
+com.headius:invokebinder:1.2
+com.headius:options:1.1
+com.jcraft:jzlib:1.1.2
+com.martiansoftware:nailgun-server:0.9.1
+joda-time:joda-time:2.3
+org.jruby.extras:bytelist:1.0.11
+org.jruby.jcodings:jcodings:1.0.10
+org.jruby.joni:joni:2.1.1
+org.jruby:yecht:1.0
+org.ow2.asm:asm:4.0
+org.ow2.asm:asm-analysis:4.0
+org.ow2.asm:asm-commons:4.0
+org.ow2.asm:asm-tree:4.0
+org.ow2.asm:asm-util:4.0
+org.yaml:snakeyaml:1.13
 
 ===============================================================================
 JSch - http://www.jcraft.com/jsch/
@@ -124,7 +157,7 @@ Jython - http://jython.org/
 
 License: Python Software Foundation License Version 2
 
-Artifact: org.python:jython:2.5.2
+Artifact: org.scijava:jython-shaded:2.5.3
 
 ===============================================================================
 MarkdownJ - http://markdownj.org/
@@ -159,32 +192,28 @@ RSyntaxTextArea - http://fifesoft.com/rsyntaxtextarea/
 
 License: 3-clause BSD
 
-Artifact: com.fifesoft:rsyntaxtextarea:2.0.4.1
+Artifact: com.fifesoft:rsyntaxtextarea:2.5.2
 
 ===============================================================================
 SCIFIO - http://loci.wisc.edu/software/scifio
 
 License: 2-clause BSD
 
-Artifacts:
-io.scif:scifio:0.8.2
+Artifact: io.scif:scifio:0.17.0
 
 Dependencies:
-io.scif:jai_imageio:1.0.1
-log4j:log4j:1.2.14
-org.mapdb:mapdb:0.9.7
-xalan:serializer:2.7.1
-xalan:xalan:2.7.1
+io.scif:jai_imageio:1.1.0
+org.mapdb:mapdb:1.0.3
 
 ===============================================================================
 SciJava Common - https://github.com/scijava/scijava-common
 
 License: 2-clause BSD
 
-Artifacts:
-org.scijava:scijava-common:1.7.0
+Artifact: org.scijava:scijava-common:2.35.0
 
 Dependencies:
+com.googlecode:gentyref:1.1.0
 org.bushe:eventbus:1.4
 
 ===============================================================================
