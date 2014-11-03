@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>net.imagej</groupId>
 		<artifactId>pom-imagej</artifactId>
-		<version>3.2</version>
+		<version>3.3</version>
 		<relativePath />
 	</parent>
 
@@ -35,12 +35,6 @@
 
 	<properties>
 		<imagej.main-class>net.imagej.Main</imagej.main-class>
-
-		<imagej-legacy.version>0.9.0</imagej-legacy.version>
-		<imagej-plugins-tools.version>0.2.0</imagej-plugins-tools.version>
-		<imagej-ui-awt.version>0.2.0</imagej-ui-awt.version>
-		<imglib2.version>2.0.2</imglib2.version>
-		<scifio.version>0.17.0</scifio.version>
 	</properties>
 
 	<repositories>
