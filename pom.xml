@@ -190,12 +190,12 @@
 					<hideTransitive>false</hideTransitive>
 				</configuration>
 			</plugin>
-			<!--
-			 The maven-enforcer-plugin configuration was introduced by the pom-scijava version
-			 to which we just bumped; Unfortunately, a few configurations were necessary to
-			 let the Maven build pass. These configurations need to be moved out to the appropriate
-			 places: pom-scijava for the JRuby/Jython stuff and pom-imagej for the ImgLib2-ops issue.
-			 -->
+			<!-- The maven-enforcer-plugin configuration was introduced by the
+			     pom-scijava version to which we just bumped; Unfortunately, a few
+			     configurations were necessary to let the Maven build pass. These
+			     configurations need to be moved out to the appropriate places:
+			     pom-scijava for the JRuby/Jython stuff and pom-imagej for the
+			     ImgLib2-OPS issue. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
@@ -664,10 +664,9 @@
 
 							</rules>
 
-							<!--
-							 Unfortunately, we cannot configure banCircularDependencies to handle the
-							 -sources "circular dependency" correctly. In other words, the following
-							 does not work:
+							<!-- Unfortunately, we cannot configure banCircularDependencies
+							     to handle the -sources "circular dependency" correctly. In
+							     other words, the following does not work:
 
 								<banCircularDependencies>
 									<excludes>
@@ -675,8 +674,8 @@
 									</excludes>
 								</banCircularDependencies>
 
-							 Therefore, we have to force the maven-enforcer-plugin *not* to fail, even if a rule
-							 failed.
+							     Therefore, we have to force the maven-enforcer-plugin *not*
+							     to fail, even if a rule failed.
 							-->
 							<fail>false</fail>
 						</configuration>
@@ -754,7 +753,7 @@
 				<pluginManagement>
 					<plugins>
 						<!-- This plugin's configuration is used to store Eclipse m2e settings
-								 only. It has no influence on the Maven build itself. -->
+						     only. It has no influence on the Maven build itself. -->
 						<plugin>
 							<groupId>org.eclipse.m2e</groupId>
 							<artifactId>lifecycle-mapping</artifactId>
