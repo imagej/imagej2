@@ -117,5 +117,5 @@ BUGS
 For a list of known issues, see the
 [GitHub issues](https://github.com/imagej/imagej/issues).
 
-Please report any bugs by following the [instructions
-online](http://imagej.net/Bugs).
+Please report any bugs by following the
+[instructions online](http://imagej.net/Bugs).
