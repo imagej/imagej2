@@ -184,10 +184,29 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.fusesource.mvnplugins</groupId>
-				<artifactId>maven-graph-plugin</artifactId>
+				<groupId>org.kuali.maven.plugins</groupId>
+				<artifactId>graph-maven-plugin</artifactId>
+				<version>1.2.3</version>
 				<configuration>
-					<hideTransitive>false</hideTransitive>
+					<keepDotFile>true</keepDotFile>
+					<descriptors>
+						<!-- Entire dependency graph, compile+runtime -->
+						<descriptor>
+						</descriptor>
+						<!-- Entire dependency graph, compile only -->
+						<descriptor>
+							<hide>runtime</hide>
+						</descriptor>
+						<!-- SciJava dependency graph, compile+runtime -->
+						<descriptor>
+							<includes>org.scijava,net.imagej,net.imglib2,io.scif</includes>
+						</descriptor>
+						<!-- SciJava dependency graph, compile only -->
+						<descriptor>
+							<includes>org.scijava,net.imagej,net.imglib2,io.scif</includes>
+							<hide>runtime</hide>
+						</descriptor>
+					</descriptors>
 				</configuration>
 			</plugin>
 			<!-- The maven-enforcer-plugin configuration was introduced by the
