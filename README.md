@@ -92,12 +92,12 @@ its own repository:
 * [SCIFIO](https://github.com/scifio/scifio)
 * [SciJava Common](https://github.com/scijava/scijava-common)
 
-It also includes uses various "plugin" components at runtime:
+It also includes various "plugin" components at runtime:
 
-* [Imagej Plugins: Commands](https://github.com/imagej/imagej-plugins-commands)
-* [Imagej Plugins: Tools](https://github.com/imagej/imagej-plugins-tools)
-* [Imagej Plugins: Uploader: SSH](https://github.com/imagej/imagej-plugins-uploader-ssh)
-* [Imagej Plugins: Uploader: WebDAV](https://github.com/imagej/imagej-plugins-uploader-webdav)
+* [ImageJ Plugins: Commands](https://github.com/imagej/imagej-plugins-commands)
+* [ImageJ Plugins: Tools](https://github.com/imagej/imagej-plugins-tools)
+* [ImageJ Plugins: Uploader: SSH](https://github.com/imagej/imagej-plugins-uploader-ssh)
+* [ImageJ Plugins: Uploader: WebDAV](https://github.com/imagej/imagej-plugins-uploader-webdav)
 * [SciJava Plugins: Platforms](https://github.com/scijava/scijava-plugins-platforms)
 * [SciJava Plugins: Text: Markdown](https://github.com/scijava/scijava-plugins-text-markdown)
 * [SciJava Plugins: Text: Plain](https://github.com/scijava/scijava-plugins-text-plain)
