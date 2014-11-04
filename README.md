@@ -47,7 +47,7 @@ for the full text of the license, see
 [LICENSE.txt](https://github.com/imagej/imagej/blob/master/LICENSE.txt).
 
 For the list of developers and contributors, see
-[pom.xml](https://github.com/imagej/imagej/blob/master/pom.xml).
+[the parent POM](https://github.com/imagej/pom-imagej/blob/master/pom.xml).
 
 
 IMAGEJ AS A LIBRARY
