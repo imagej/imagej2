@@ -34,7 +34,7 @@
 	</ciManagement>
 
 	<properties>
-		<imagej.main-class>net.imagej.Main</imagej.main-class>
+		<main-class>net.imagej.Main</main-class>
 	</properties>
 
 	<repositories>
@@ -163,7 +163,7 @@
 					<archive>
 						<manifest>
 							<packageName>net.imagej</packageName>
-							<mainClass>${imagej.main-class}</mainClass>
+							<mainClass>${main-class}</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -241,37 +241,6 @@
 	</build>
 
 	<profiles>
-		<!-- The exec:exec configuration is hidden in the exec profile to
-		     avoid interfering with the configuration of the 'deps' profile
-		     that wants to use the exec plugin in a different way -->
-		<profile>
-			<id>exec</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>exec-maven-plugin</artifactId>
-						<configuration>
-							<executable>java</executable>
-							<arguments>
-								<argument>-classpath</argument>
-								<classpath />
-								<argument>${imagej.main-class}</argument>
-							</arguments>
-						</configuration>
-						<executions>
-							<execution>
-								<phase>test</phase>
-								<goals>
-									<goal>exec</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
 		<!-- The alt-ui profile adds alternative user interfaces to the
 		     runtime classpath if the imagej.ui system property is set.
 		     This enables launching ImageJ with an alternative UI; see:
@@ -311,7 +280,7 @@
 								<argument>-classpath</argument>
 								<classpath />
 								<argument>-Dimagej.ui=${imagej.ui}</argument>
-								<argument>${imagej.main-class}</argument>
+								<argument>${main-class}</argument>
 							</arguments>
 						</configuration>
 					</plugin>
@@ -632,7 +601,7 @@
 							<finalName>imagej-${project.version}</finalName>
 							<archive>
 								<manifest>
-									<mainClass>${imagej.main-class}</mainClass>
+									<mainClass>${main-class}</mainClass>
 								</manifest>
 							</archive>
 						</configuration>
@@ -699,35 +668,6 @@
 								<phase>package</phase>
 								<goals>
 									<goal>single</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
-		<!-- The jdb profile launches ImageJ in the jdb debugger.
-		     Launch it using: mvn -P jdb exec:exec -->
-		<profile>
-			<id>jdb</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>exec-maven-plugin</artifactId>
-						<configuration>
-							<executable>jdb</executable>
-							<arguments>
-								<argument>-classpath</argument>
-								<classpath />
-								<argument>${imagej.main-class}</argument>
-							</arguments>
-						</configuration>
-						<executions>
-							<execution>
-								<goals>
-									<goal>exec</goal>
 								</goals>
 							</execution>
 						</executions>
