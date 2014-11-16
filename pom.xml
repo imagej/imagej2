@@ -307,7 +307,7 @@
 		</profile>
 
 		<!-- The app profile builds the imagej-x.y.z-application.zip bundle,
-		     which is the downloable ZIP archive of the ImageJ application. -->
+		     which is the downloadable ZIP archive of the ImageJ application. -->
 		<profile>
 			<id>app</id>
 			<build>
