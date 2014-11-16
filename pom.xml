@@ -190,12 +190,6 @@
 					<hideTransitive>false</hideTransitive>
 				</configuration>
 			</plugin>
-			<!-- The maven-enforcer-plugin configuration was introduced by the
-			     pom-scijava version to which we just bumped; Unfortunately, a few
-			     configurations were necessary to let the Maven build pass. These
-			     configurations need to be moved out to the appropriate places:
-			     pom-scijava for the JRuby/Jython stuff and pom-imagej for the
-			     ImgLib2-OPS issue. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
