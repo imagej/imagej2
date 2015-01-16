@@ -190,53 +190,6 @@
 					<hideTransitive>false</hideTransitive>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-enforcer-plugin</artifactId>
-				<configuration>
-					<rules>
-						<banDuplicateClasses>
-							<dependencies>
-								<!-- JRuby/JRuby clashes -->
-								<dependency>
-									<artifactId>jcodings</artifactId>
-									<ignoreClasses>
-										<ignoreClass>org/jcodings/*</ignoreClass>
-									</ignoreClasses>
-								</dependency>
-								<dependency>
-									<artifactId>jnr-constants</artifactId>
-									<ignoreClasses>
-										<ignoreClass>com/kenai/constantine/*</ignoreClass>
-										<ignoreClass>jnr/constants/*</ignoreClass>
-									</ignoreClasses>
-								</dependency>
-								<dependency>
-									<artifactId>jnr-ffi</artifactId>
-									<ignoreClasses>
-										<ignoreClass>jnr/ffi/*</ignoreClass>
-									</ignoreClasses>
-								</dependency>
-
-								<!-- JRuby/Jython clashes -->
-								<dependency>
-									<artifactId>jython-standalone</artifactId>
-									<ignoreClasses>
-										<ignoreClass>jnr/netdb/*</ignoreClass>
-										<ignoreClass>com/kenai/jffi/*</ignoreClass>
-									</ignoreClasses>
-								</dependency>
-							</dependencies>
-						</banDuplicateClasses>
-						<enforceBytecodeVersion>
-							<excludes>
-								<exclude>com.headius:invokebinder</exclude>
-								<exclude>com.sun:tools</exclude>
-							</excludes>
-						</enforceBytecodeVersion>
-					</rules>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 
