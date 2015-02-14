@@ -227,7 +227,6 @@ discover_tools_jar () {
 
 discover_jar () {
 	ls -t "$IMAGEJ_ROOT/jars/$1-"[0-9]*.jar |
-	grep "/${1%.jar}\(\|-[0-9].*\)\.jar$" |
 	head -n 1
 }
 
