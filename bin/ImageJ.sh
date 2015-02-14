@@ -93,8 +93,6 @@ Options to run programs other than ImageJ:
 	start BeanShell instead of ImageJ
 --main-class <class name>
 	start the given class instead of ImageJ
---build
-	start Fiji's build instead of ImageJ (deprecated)
 --mini-maven
 	start MiniMaven instead of ImageJ
 --update
