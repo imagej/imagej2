@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# A fallback shell script to launch Fiji without the ImageJ launcher
+# A fallback shell script to launch ImageJ without the ImageJ launcher
 # (i.e. when all else fails)
 
 unset CDPATH
@@ -14,23 +14,23 @@ case "`uname -s`" in
 MINGW*)
 	ISWINDOWS=t
 	PATHSEPARATOR=";"
-	FIJI_ROOT="$(cd "$DIRECTORY" && pwd -W)"
+	IMAGEJ_ROOT="$(cd "$DIRECTORY" && pwd -W)"
 	;;
 CYGWIN*)
 	ISWINDOWS=t
 	ISCYGWIN=t
 	PATHSEPARATOR=";"
-	FIJI_ROOT="$(cygpath -d "$(cd "$DIRECTORY" && pwd)" | tr \\\\ /)"
+	IMAGEJ_ROOT="$(cygpath -d "$(cd "$DIRECTORY" && pwd)" | tr \\\\ /)"
 	;;
 *)
-	FIJI_ROOT="`cd "$DIRECTORY" && pwd`"
+	IMAGEJ_ROOT="`cd "$DIRECTORY" && pwd`"
 	;;
 esac
 
-# SunOS's sh cannot do this: FIJI_ROOT="${FIJI_ROOT%*/bin}"
-case "$FIJI_ROOT" in
+# SunOS's sh cannot do this: IMAGEJ_ROOT="${IMAGEJ_ROOT%*/bin}"
+case "$IMAGEJ_ROOT" in
 */bin)
-	FIJI_ROOT="`expr "$FIJI_ROOT" : '\(.*\)/bin'`"
+	IMAGEJ_ROOT="`expr "$IMAGEJ_ROOT" : '\(.*\)/bin'`"
 	;;
 esac
 
@@ -53,7 +53,7 @@ add_classpath () {
 first_java_options=
 java_options=
 ij_options=
-main_class=fiji.Main
+main_class=net.imagej.Main
 dashdash=f
 dry_run=
 needs_tools_jar=
@@ -73,7 +73,7 @@ Usage: $0 [<java-options> --] <options>
 Java options are passed to the Java Runtime, ImageJ
 options to ImageJ (or Jython, JRuby, ...).
 
-In addition, the following options are supported by Fiji:
+In addition, the following options are supported by ImageJ:
 General options:
 --help, -h
         show this help
@@ -98,7 +98,7 @@ Options to run programs other than ImageJ:
 --mini-maven
 	start MiniMaven instead of ImageJ
 --update
-	start Fiji's command-line Updater instead of ImageJ
+	start ImageJ's command-line Updater instead of ImageJ
 EOF
 		exit 1
 		;;
@@ -167,7 +167,7 @@ EOF
 		main_class=org.scijava.minimaven.MiniMaven
 		;;
 	?,--update)
-		main_class=fiji.updater.Main
+		main_class=net.imagej.updater.CommandLine
 		;;
 	?,--ant)
 		needs_tools_jar=t
@@ -195,16 +195,16 @@ get_first () {
 }
 
 case "$main_class,`get_first $ij_options`" in
-fiji.Main,*.py)
+net.imagej.Main,*.py)
 	main_class=org.python.util.jython
 	;;
-fiji.Main,*.rb)
+net.imagej.Main,*.rb)
 	main_class=org.jruby.Main
 	;;
-fiji.Main,*.clj)
+net.imagej.Main,*.clj)
 	main_class=clojure.lang.Repl
 	;;
-fiji.Main,*.bsh)
+net.imagej.Main,*.bsh)
 	main_class=bsh.Interpreter
 	;;
 esac
@@ -228,7 +228,7 @@ discover_tools_jar () {
 }
 
 discover_jar () {
-	ls -t "$FIJI_ROOT/jars/${1%.jar}"*.jar |
+	ls -t "$IMAGEJ_ROOT/jars/$1-"[0-9]*.jar |
 	grep "/${1%.jar}\(\|-[0-9].*\)\.jar$" |
 	head -n 1
 }
@@ -245,19 +245,19 @@ test -z "$needs_tools_jar" || {
 }
 
 case "$main_class" in
-fiji.Main|ij.ImageJ)
-	ij_options="$main_class -port7 $ij_options"
-	main_class="net.imagej.updater.ClassLauncher -ijjarpath jars/ -ijjarpath plugins/"
-	add_classpath "`discover_jar ij-launcher`" "`discover_jar ij`" "`discover_jar javassist`"
+net.imagej.Main|ij.ImageJ)
+	ij_options="$main_class $ij_options"
+	main_class="net.imagej.launcher.ClassLauncher -ijjarpath jars/ -ijjarpath plugins/"
+	add_classpath "`discover_jar imagej-launcher`" "`discover_jar ij`" "`discover_jar javassist`"
 	;;
 org.apache.tools.ant.Main)
-	for path in "$FIJI_ROOT"/jars/ant*.jar
+	for path in "$IMAGEJ_ROOT"/jars/ant*.jar
 	do
 		add_classpath "$path"
 	done
 	;;
 *)
-	for path in "$FIJI_ROOT"/jars/*.jar "$FIJI_ROOT"/plugins/*.jar
+	for path in "$IMAGEJ_ROOT"/jars/*.jar "$IMAGEJ_ROOT"/plugins/*.jar
 	do
 		add_classpath "$path"
 	done
@@ -278,7 +278,7 @@ t)
 	;;
 esac
 
-FIJI_ROOT_SQ="`sq_quote "$FIJI_ROOT"`"
+IMAGEJ_ROOT_SQ="`sq_quote "$IMAGEJ_ROOT"`"
 EXECUTABLE_NAME="$0"
 case "$EXECUTABLE_NAME" in
 */*)
@@ -289,20 +289,20 @@ esac
 EXT_OPTION=
 case "`uname -s`" in
 Darwin)
-	EXT_OPTION=-Djava.ext.dirs="$FIJI_ROOT_SQ"/java/macosx-java3d/Home/lib/ext:/Library/Java/Extensions:/System/Library/Java/Extensions:/System/Library/Frameworks/JavaVM.framework/Home/lib/ext
+	EXT_OPTION=-Djava.ext.dirs="$IMAGEJ_ROOT_SQ"/java/macosx-java3d/Home/lib/ext:/Library/Java/Extensions:/System/Library/Java/Extensions:/System/Library/Frameworks/JavaVM.framework/Home/lib/ext
 	;;
 esac
 
 eval java $EXT_OPTION \
 	-Dpython.cachedir.skip=true \
 	-Xincgc -XX:PermSize=128m \
-	-Dplugins.dir=$FIJI_ROOT_SQ \
+	-Dplugins.dir=$IMAGEJ_ROOT_SQ \
 	-Djava.class.path="`sq_quote "$CLASSPATH"`" \
-	-Dsun.java.command=Fiji -Dij.dir=$FIJI_ROOT_SQ \
-	-Dfiji.dir=$FIJI_ROOT_SQ \
-	-Dfiji.executable="`sq_quote "$EXECUTABLE_NAME"`" \
+	-Dsun.java.command=ImageJ -Dij.dir=$IMAGEJ_ROOT_SQ \
+	-Dimagej.dir=$IMAGEJ_ROOT_SQ \
+	-Dimagej.executable="`sq_quote "$EXECUTABLE_NAME"`" \
 	-Dij.executable="`sq_quote "$EXECUTABLE_NAME"`" \
-	`cat "$FIJI_ROOT"/jvm.cfg 2> /dev/null` \
+	`cat "$IMAGEJ_ROOT"/jvm.cfg 2> /dev/null` \
 	$first_java_options \
 	$java_options \
 	$main_class $ij_options
