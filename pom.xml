@@ -96,6 +96,31 @@
 			<artifactId>imagej-plugins-uploader-webdav</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-ui-swing</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- Optional ImageJ dependencies -->
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-ui-awt</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-ui-pivot</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-ui-swt</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
 
 		<!-- Runtime SciJava dependencies -->
 		<dependency>
@@ -205,23 +230,6 @@
 					<name>imagej.ui</name>
 				</property>
 			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>net.imagej</groupId>
-					<artifactId>imagej-ui-awt</artifactId>
-					<scope>runtime</scope>
-				</dependency>
-				<dependency>
-					<groupId>net.imagej</groupId>
-					<artifactId>imagej-ui-pivot</artifactId>
-					<scope>runtime</scope>
-				</dependency>
-				<dependency>
-					<groupId>net.imagej</groupId>
-					<artifactId>imagej-ui-swt</artifactId>
-					<scope>runtime</scope>
-				</dependency>
-			</dependencies>
 			<build>
 				<plugins>
 					<plugin>
@@ -250,13 +258,6 @@
 					<name>!java.awt.headless</name>
 				</property>
 			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>net.imagej</groupId>
-					<artifactId>imagej-ui-swing</artifactId>
-					<scope>runtime</scope>
-				</dependency>
-			</dependencies>
 		</profile>
 
 		<!-- The app profile builds the imagej-x.y.z-application.zip bundle,
