@@ -450,6 +450,32 @@
 					<version>${imagej-plugins-uploader-webdav.version}</version>
 					<classifier>sources</classifier>
 				</dependency>
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-ui-swing</artifactId>
+					<version>${imagej-ui-swing.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+
+				<!-- Optional ImageJ dependencies -->
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-ui-awt</artifactId>
+					<version>${imagej-ui-awt.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-ui-pivot</artifactId>
+					<version>${imagej-ui-pivot.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-ui-swt</artifactId>
+					<version>${imagej-ui-swt.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
 
 				<!-- Runtime SciJava dependencies -->
 				<dependency>
@@ -504,13 +530,6 @@
 					<groupId>org.scijava</groupId>
 					<artifactId>scripting-jython</artifactId>
 					<version>${scripting-jython.version}</version>
-					<classifier>sources</classifier>
-				</dependency>
-
-				<dependency>
-					<groupId>net.imagej</groupId>
-					<artifactId>imagej-ui-swing</artifactId>
-					<version>${imagej-ui-swing.version}</version>
 					<classifier>sources</classifier>
 				</dependency>
 			</dependencies>
