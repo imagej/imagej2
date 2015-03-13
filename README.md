@@ -1,3 +1,5 @@
+[![Join the chat at https://gitter.im/imagej/imagej](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/imagej/imagej?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ImageJ2 is a new version of [ImageJ](http://imagej.net/) seeking to strengthen
 both the software and its community. Internally, it is a total redesign of
 ImageJ, but it is backwards compatible with ImageJ 1.x via a "legacy layer" and
@@ -40,8 +42,6 @@ For more details on the project, see the [ImageJ web site](http://imagej.net/).
 
 LICENSING
 ---------
-
-[![Join the chat at https://gitter.im/imagej/imagej](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/imagej/imagej?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ImageJ2 is distributed under a
 [Simplified BSD License](http://en.wikipedia.org/wiki/BSD_licenses);
