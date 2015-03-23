@@ -194,10 +194,12 @@
 	</build>
 
 	<profiles>
-		<!-- The alt-ui profile adds alternative user interfaces to the
-		     runtime classpath if the imagej.ui system property is set.
-		     This enables launching ImageJ with an alternative UI; see:
-		     http://developer.imagej.net/command-line -->
+		<!--
+		The alt-ui profile adds alternative user interfaces to the
+		runtime classpath if the imagej.ui system property is set.
+		This enables launching ImageJ with an alternative UI; see:
+		http://developer.imagej.net/command-line
+		-->
 		<profile>
 			<id>alt-ui</id>
 			<activation>
@@ -241,8 +243,10 @@
 			</build>
 		</profile>
 
-		<!-- The swing profile includes the ImageJ Swing UI.
-		     It is always included unless java.awt.headless is set. -->
+		<!--
+		The swing profile includes the ImageJ Swing UI.
+		It is always included unless java.awt.headless is set.
+		-->
 		<profile>
 			<id>swing</id>
 			<activation>
@@ -259,8 +263,10 @@
 			</dependencies>
 		</profile>
 
-		<!-- The app profile builds the imagej-x.y.z-application.zip bundle,
-		     which is the downloadable ZIP archive of the ImageJ application. -->
+		<!--
+		The app profile builds the imagej-x.y.z-application.zip bundle,
+		which is the downloadable ZIP archive of the ImageJ application.
+		-->
 		<profile>
 			<id>app</id>
 			<build>
@@ -371,17 +377,20 @@
 			</build>
 		</profile>
 
-		<!-- The deps profile builds the imagej-x.y.z-all uber-jar, which is
-		     a bundle of ImageJ with all dependencies and ImageJ sources.
-		     While we do not encourage its use, it can simplify deployment
-		     in some environments; see:
-		     http://imagej.net/FAQ#How_can_I_call_ImageJ_from_my_software.3F -->
+		<!--
+		The deps profile builds the imagej-x.y.z-all uber-jar, which is a bundle of
+		ImageJ with all dependencies and ImageJ sources. While we do not encourage
+		its use, it can simplify deployment in some environments; see:
+		http://imagej.net/FAQ#How_can_I_call_ImageJ_from_my_software.3F
+		-->
 		<profile>
 			<id>deps</id>
-			<!-- NB: Include source code for all parts of ImageJ.
-			     This list of dependencies needs to remain in sync with the
-			     main list of dependencies outside the profiles section,
-			     but with <classifier>sources</classifier> for each. -->
+			<!--
+			NB: Include source code for all parts of ImageJ.
+			This list of dependencies needs to remain in sync with the
+			main list of dependencies outside the profiles section,
+			but with <classifier>sources</classifier> for each.
+			-->
 			<dependencies>
 				<dependency>
 					<groupId>net.imagej</groupId>
@@ -580,9 +589,10 @@
 
 							</rules>
 
-							<!-- Unfortunately, we cannot configure banCircularDependencies
-							     to handle the -sources "circular dependency" correctly. In
-							     other words, the following does not work:
+							<!--
+							Unfortunately, we cannot configure banCircularDependencies
+							to handle the -sources "circular dependency" correctly. In
+							other words, the following does not work:
 
 								<banCircularDependencies>
 									<excludes>
@@ -590,8 +600,8 @@
 									</excludes>
 								</banCircularDependencies>
 
-							     Therefore, we have to force the maven-enforcer-plugin *not*
-							     to fail, even if a rule failed.
+							Therefore, we have to force the maven-enforcer-plugin *not*
+							to fail, even if a rule failed.
 							-->
 							<fail>false</fail>
 						</configuration>
@@ -639,8 +649,10 @@
 			<build>
 				<pluginManagement>
 					<plugins>
-						<!-- This plugin's configuration is used to store Eclipse m2e settings
-						     only. It has no influence on the Maven build itself. -->
+						<!--
+						This plugin's configuration is used to store Eclipse m2e settings
+						only. It has no influence on the Maven build itself.
+						-->
 						<plugin>
 							<groupId>org.eclipse.m2e</groupId>
 							<artifactId>lifecycle-mapping</artifactId>
