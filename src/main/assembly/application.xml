@@ -83,45 +83,6 @@
 			<destName>icon-flat.png</destName>
 		</file>
 
-		<!-- Include the ImageJ launcher executables in appropriate locations. -->
-		<file>
-			<source>target/imagej-launcher-${imagej-launcher.version}.jar</source>
-			<outputDirectory>jars/</outputDirectory>
-			<destName>imagej-launcher-${imagej-launcher.version}.jar</destName>
-		</file>
-		<file>
-			<source>target/bin/i386-Linux-gcc/imagej-launcher</source>
-			<destName>ImageJ-linux32</destName>
-			<fileMode>0755</fileMode>
-		</file>
-		<file>
-			<source>target/bin/amd64-Linux-gcc/imagej-launcher</source>
-			<destName>ImageJ-linux64</destName>
-			<fileMode>0755</fileMode>
-		</file>
-		<file>
-			<source>target/bin/x86_64-MacOSX-gcc/imagej-launcher</source>
-			<outputDirectory>/Contents/MacOS/</outputDirectory>
-			<destName>ImageJ-macosx</destName>
-			<fileMode>0755</fileMode>
-		</file>
-		<file>
-			<source>target/bin/i386-MacOSX-gcc/imagej-launcher</source>
-			<outputDirectory>/Contents/MacOS/</outputDirectory>
-			<destName>ImageJ-tiger</destName>
-			<fileMode>0755</fileMode>
-		</file>
-		<file>
-			<source>target/bin/x86-Windows-gcc/imagej-launcher.exe</source>
-			<destName>ImageJ-win32.exe</destName>
-			<fileMode>0755</fileMode>
-		</file>
-		<file>
-			<source>target/bin/amd64-Windows-gcc/imagej-launcher.exe</source>
-			<destName>ImageJ-win64.exe</destName>
-			<fileMode>0755</fileMode>
-		</file>
-
 	</files>
 
 </component>

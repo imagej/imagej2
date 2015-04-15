@@ -272,6 +272,45 @@
 			<build>
 				<plugins>
 					<plugin>
+						<groupId>com.akathist.maven.plugins.launch4j</groupId>
+						<artifactId>launch4j-maven-plugin</artifactId>
+						<version>1.7.5</version>
+						<executions>
+							<execution>
+								<id>l4j-clui</id>
+								<phase>package</phase>
+								<goals>
+									<goal>launch4j</goal>
+								</goals>
+								<configuration>
+									<headerType>console</headerType>
+									<outfile>target/ImageJ.exe</outfile>
+									<jar>target/imagej-${project.version}.jar</jar>
+									<errTitle>ImageJ</errTitle>
+									<classPath>
+										<mainClass>com.akathist.encc.Clui</mainClass>
+										<addDependencies>false</addDependencies>
+										<preCp>anything</preCp>
+									</classPath>
+									<jre>
+										<minVersion>1.6.0</minVersion>
+									</jre>
+									<versionInfo>
+										<fileVersion>1.2.3.4</fileVersion>
+										<txtFileVersion>txt file version?</txtFileVersion>
+										<fileDescription>a description</fileDescription>
+										<copyright>my copyright</copyright>
+										<productVersion>4.3.2.1</productVersion>
+										<txtProductVersion>txt product version</txtProductVersion>
+										<productName>ImageJ</productName>
+										<internalName>imagej</internalName>
+										<originalFilename>original.exe</originalFilename>
+									</versionInfo>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
 						<configuration>
 							<descriptors>
@@ -286,90 +325,6 @@
 								<goals>
 									<goal>single</goal>
 								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<artifactId>maven-dependency-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>copy</id>
-								<phase>prepare-package</phase>
-								<goals>
-									<goal>copy</goal>
-								</goals>
-								<configuration>
-									<artifactItems>
-										<artifactItem>
-											<groupId>${project.groupId}</groupId>
-											<artifactId>imagej-launcher</artifactId>
-											<version>${imagej-launcher.version}</version>
-											<type>nar</type>
-											<outputDirectory>${project.build.directory}/</outputDirectory>
-											<destFileName>imagej-launcher-${imagej-launcher.version}.jar</destFileName>
-										</artifactItem>
-									</artifactItems>
-								</configuration>
-							</execution>
-							<execution>
-								<id>unpack</id>
-								<phase>prepare-package</phase>
-								<goals>
-									<goal>unpack</goal>
-								</goals>
-								<configuration>
-									<artifactItems>
-										<artifactItem>
-											<groupId>${project.groupId}</groupId>
-											<artifactId>imagej-launcher</artifactId>
-											<version>${imagej-launcher.version}</version>
-											<classifier>amd64-Linux-gcc-executable</classifier>
-											<type>nar</type>
-											<outputDirectory>${project.build.directory}/</outputDirectory>
-										</artifactItem>
-										<artifactItem>
-											<groupId>${project.groupId}</groupId>
-											<artifactId>imagej-launcher</artifactId>
-											<version>${imagej-launcher.version}</version>
-											<classifier>i386-Linux-gcc-executable</classifier>
-											<type>nar</type>
-											<outputDirectory>${project.build.directory}/</outputDirectory>
-										</artifactItem>
-										<artifactItem>
-											<groupId>${project.groupId}</groupId>
-											<artifactId>imagej-launcher</artifactId>
-											<version>${imagej-launcher.version}</version>
-											<classifier>amd64-Windows-gcc-executable</classifier>
-											<type>nar</type>
-											<outputDirectory>${project.build.directory}/</outputDirectory>
-										</artifactItem>
-										<artifactItem>
-											<groupId>${project.groupId}</groupId>
-											<artifactId>imagej-launcher</artifactId>
-											<version>${imagej-launcher.version}</version>
-											<classifier>x86-Windows-gcc-executable</classifier>
-											<type>nar</type>
-											<outputDirectory>${project.build.directory}/</outputDirectory>
-										</artifactItem>
-										<artifactItem>
-											<groupId>${project.groupId}</groupId>
-											<artifactId>imagej-launcher</artifactId>
-											<version>${imagej-launcher.version}</version>
-											<classifier>i386-MacOSX-gcc-executable</classifier>
-											<type>nar</type>
-											<outputDirectory>${project.build.directory}/</outputDirectory>
-										</artifactItem>
-										<artifactItem>
-											<groupId>${project.groupId}</groupId>
-											<artifactId>imagej-launcher</artifactId>
-											<version>${imagej-launcher.version}</version>
-											<classifier>x86_64-MacOSX-gcc-executable</classifier>
-											<type>nar</type>
-											<outputDirectory>${project.build.directory}/</outputDirectory>
-										</artifactItem>
-									</artifactItems>
-									<overWriteSnapshots>true</overWriteSnapshots>
-								</configuration>
 							</execution>
 						</executions>
 					</plugin>
