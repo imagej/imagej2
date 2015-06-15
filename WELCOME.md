@@ -12,8 +12,8 @@ features as needed.
 The [Fiji](http://fiji.sc/) distribution of ImageJ has shipped with beta
 versions of ImageJ2 for quite some time, so you may already be familiar with
 some of ImageJ2's features -- some of which, such as the
-[Updater](http://wiki.imagej.net/Updater) and
-[Launcher](http://wiki.imagej.net/Launcher), were originally developed as part
+[Updater](http://imagej.net/Updater) and
+[Launcher](http://imagej.net/Launcher), were originally developed as part
 of Fiji.
 
 ## Features of ImageJ2
@@ -22,16 +22,16 @@ ImageJ2 provides a wealth of new features and capabilities:
 
 * The ImageJ Updater makes it simple to keep your ImageJ up to date, and to
   add new plugins by enabling additional
-  [Update Sites](http://wiki.imagej.net/Update_Sites).
+  [Update Sites](http://imagej.net/Update_Sites).
 * New and enhanced file format support via the SCIFIO library (see below).
-* More powerful [Script Editor](http://wiki.imagej.net/Script_Editor) with
+* More powerful [Script Editor](http://imagej.net/Script_Editor) with
   support for several scripting languages.
 * New commands:
     * `Plugins > Debug > Dump Stack` for debugging when things
       [hang](https://en.wikipedia.org/wiki/Hang_(computing)).
     * `Plugins > Debug > System Information` for reporting on versions of
       installed plugins and libraries.
-* Use ImageJ2's N-dimensional [ImgLib2](http://wiki.imagej.net/ImgLib2)-based
+* Use ImageJ2's N-dimensional [ImgLib2](http://imagej.net/ImgLib2)-based
   data structures (still in beta).
 * Write parameterized commands and scripts:
     * Typed inputs and outputs with no dependence on AWT user interface.
@@ -60,7 +60,7 @@ The following software component libraries form the core of ImageJ2:
 
 ## Improved image I/O with the SCIFIO library
 
-ImageJ2 uses the [SCIFIO](http://wiki.imagej.net/SCIFIO) library (SCientific
+ImageJ2 uses the [SCIFIO](http://imagej.net/SCIFIO) library (SCientific
 Image Format Input and Output) by default for most image input tasks. You can
 change this behavior at any time by running `Edit > Options > ImageJ2` and
 modifying the `Use SCIFIO when opening files` option.
