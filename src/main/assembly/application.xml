@@ -106,12 +106,6 @@
 			<fileMode>0755</fileMode>
 		</file>
 		<file>
-			<source>target/bin/i386-MacOSX-gcc/imagej-launcher</source>
-			<outputDirectory>/Contents/MacOS/</outputDirectory>
-			<destName>ImageJ-tiger</destName>
-			<fileMode>0755</fileMode>
-		</file>
-		<file>
 			<source>target/bin/x86-Windows-gcc/imagej-launcher.exe</source>
 			<destName>ImageJ-win32.exe</destName>
 			<fileMode>0755</fileMode>

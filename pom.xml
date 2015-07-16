@@ -355,14 +355,6 @@
 											<groupId>${project.groupId}</groupId>
 											<artifactId>imagej-launcher</artifactId>
 											<version>${imagej-launcher.version}</version>
-											<classifier>i386-MacOSX-gcc-executable</classifier>
-											<type>nar</type>
-											<outputDirectory>${project.build.directory}/</outputDirectory>
-										</artifactItem>
-										<artifactItem>
-											<groupId>${project.groupId}</groupId>
-											<artifactId>imagej-launcher</artifactId>
-											<version>${imagej-launcher.version}</version>
 											<classifier>x86_64-MacOSX-gcc-executable</classifier>
 											<type>nar</type>
 											<outputDirectory>${project.build.directory}/</outputDirectory>
