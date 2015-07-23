@@ -89,7 +89,7 @@ its own repository:
 
 * [ImageJ Common](https://github.com/imagej/imagej-common)
 * [ImageJ Legacy](https://github.com/imagej/imagej-legacy)
-* [ImageJ OPS](https://github.com/imagej/imagej-ops)
+* [ImageJ Ops](https://github.com/imagej/imagej-ops)
 * [ImageJ Updater](https://github.com/imagej/imagej-updater)
 * [ImgLib2](https://github.com/imglib/imglib)
 * [SCIFIO](https://github.com/scifio/scifio)

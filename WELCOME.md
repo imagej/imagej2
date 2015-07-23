@@ -49,7 +49,7 @@ The following software component libraries form the core of ImageJ2:
 
 * [ImageJ Common](https://github.com/imagej/imagej-common) -
   The core image data model, using ImgLib2.
-* [ImageJ OPS](https://github.com/imagej/imagej-ops) -
+* [ImageJ Ops](https://github.com/imagej/imagej-ops) -
   An extensible framework for reusable image processing algorithms.
 * [ImageJ Updater](https://github.com/imagej/imagej-updater) -
   A mechanism to update individual plugins and libraries within ImageJ.
