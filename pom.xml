@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>net.imagej</groupId>
 		<artifactId>pom-imagej</artifactId>
-		<version>10.0.2</version>
+		<version>11.0.0</version>
 		<relativePath />
 	</parent>
 
