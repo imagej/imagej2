@@ -43,13 +43,9 @@ import net.imagej.display.ScreenCaptureService;
 import net.imagej.display.WindowService;
 import net.imagej.legacy.LegacyService;
 import net.imagej.lut.LUTService;
-import net.imagej.measure.MeasurementService;
-import net.imagej.measure.StatisticsService;
-import net.imagej.operator.CalculatorService;
 import net.imagej.ops.OpService;
 import net.imagej.render.RenderingService;
 import net.imagej.sampler.SamplerService;
-import net.imagej.threshold.ThresholdService;
 import net.imagej.updater.UpdateService;
 import net.imagej.updater.UploaderService;
 
@@ -153,10 +149,6 @@ public class ImageJ extends AbstractGateway {
 		return get(AnimationService.class);
 	}
 
-	public CalculatorService calculator() {
-		return get(CalculatorService.class);
-	}
-
 	public DatasetService dataset() {
 		return get(DatasetService.class);
 	}
@@ -171,10 +163,6 @@ public class ImageJ extends AbstractGateway {
 
 	public LUTService lut() {
 		return get(LUTService.class);
-	}
-
-	public MeasurementService measurement() {
-		return get(MeasurementService.class);
 	}
 
 	public OpService op() {
@@ -195,14 +183,6 @@ public class ImageJ extends AbstractGateway {
 
 	public ScreenCaptureService screenCapture() {
 		return get(ScreenCaptureService.class);
-	}
-
-	public StatisticsService statistics() {
-		return get(StatisticsService.class);
-	}
-
-	public ThresholdService threshold() {
-		return get(ThresholdService.class);
 	}
 
 	public UIService ui() {
