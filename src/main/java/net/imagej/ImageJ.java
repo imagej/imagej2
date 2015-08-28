@@ -32,7 +32,7 @@
 package net.imagej;
 
 import io.scif.SCIFIO;
-
+import io.scif.SCIFIOService;
 import net.imagej.animation.AnimationService;
 import net.imagej.app.ImageJApp;
 import net.imagej.display.ImageDisplayService;
@@ -51,7 +51,7 @@ import org.scijava.AbstractGateway;
 import org.scijava.Context;
 import org.scijava.Gateway;
 import org.scijava.plugin.Plugin;
-import org.scijava.service.Service;
+import org.scijava.service.SciJavaService;
 import org.scijava.ui.UIService;
 
 /**
@@ -69,11 +69,15 @@ public class ImageJ extends AbstractGateway {
 
 	// -- Constructors --
 
-	/** Creates a new ImageJ application context with all available services. */
+	/**
+	 * Creates a new ImageJ application context with all ImageJ, SCIFIO and
+	 * SciJava services.
+	 */
 	public ImageJ() {
 		// TODO: Consider whether to restrict available services
 		// to SciJava, SCIFIO and ImageJ by default.
-		this(new Context());
+		this(new Context(SciJavaService.class, SCIFIOService.class,
+			ImageJService.class));
 	}
 
 	/**
