@@ -33,8 +33,6 @@ package net.imagej;
 
 import io.scif.SCIFIO;
 
-import java.util.Collection;
-
 import net.imagej.animation.AnimationService;
 import net.imagej.app.ImageJApp;
 import net.imagej.display.ImageDisplayService;
@@ -76,54 +74,6 @@ public class ImageJ extends AbstractGateway {
 		// TODO: Consider whether to restrict available services
 		// to SciJava, SCIFIO and ImageJ by default.
 		this(new Context());
-	}
-
-	/**
-	 * Creates a new ImageJ application context.
-	 * 
-	 * @param empty If true, the context will be empty; otherwise, it will be
-	 *          initialized with all available services.
-	 */
-	public ImageJ(final boolean empty) {
-		this(new Context(empty));
-	}
-
-	/**
-	 * Creates a new ImageJ application context with the specified services (and
-	 * any required service dependencies).
-	 * <p>
-	 * <b>Developer's note:</b> This constructor's argument is raw (i.e.,
-	 * {@code Class...} instead of {@code Class<? extends Service>...}) because
-	 * otherwise, downstream invocations (e.g.,
-	 * {@code new ImageJ(DisplayService.class)}) yield the potentially confusing
-	 * warning:
-	 * </p>
-	 * <blockquote>Type safety: A generic array of Class<? extends Service> is
-	 * created for a varargs parameter</blockquote>
-	 * <p>
-	 * To avoid this, we have opted to use raw types and suppress the relevant
-	 * warning here instead.
-	 * </p>
-	 * 
-	 * @param serviceClasses A list of types that implement the {@link Service}
-	 *          interface (e.g., {@code DisplayService.class}).
-	 * @throws ClassCastException If any of the given arguments do not implement
-	 *           the {@link Service} interface.
-	 */
-	@SuppressWarnings({ "rawtypes" })
-	public ImageJ(final Class... serviceClasses) {
-		this(new Context(serviceClasses));
-	}
-
-	/**
-	 * Creates a new ImageJ application context with the specified services (and
-	 * any required service dependencies).
-	 * 
-	 * @param serviceClasses A collection of types that implement the
-	 *          {@link Service} interface (e.g., {@code DisplayService.class}).
-	 */
-	public ImageJ(final Collection<Class<? extends Service>> serviceClasses) {
-		this(new Context(serviceClasses));
 	}
 
 	/**
