@@ -99,58 +99,128 @@ public class ImageJ extends AbstractGateway {
 
 	// -- ImageJ methods - services --
 
+	/**
+	 * Gets this application context's {@link AnimationService}.
+	 *
+	 * @return The {@link AnimationService} of this application context.
+	 */
 	public AnimationService animation() {
 		return get(AnimationService.class);
 	}
 
+	/**
+	 * Gets this application context's {@link DatasetService}.
+	 *
+	 * @return The {@link DatasetService} of this application context.
+	 */
 	public DatasetService dataset() {
 		return get(DatasetService.class);
 	}
 
+	/**
+	 * Gets this application context's {@link ImageDisplayService}.
+	 *
+	 * @return The {@link ImageDisplayService} of this application context.
+	 */
 	public ImageDisplayService imageDisplay() {
 		return get(ImageDisplayService.class);
 	}
 
+	/**
+	 * Gets this application context's {@link LegacyService}.
+	 *
+	 * @return The {@link LegacyService} of this application context.
+	 */
 	public LegacyService legacy() {
 		return get(LegacyService.class);
 	}
 
+	/**
+	 * Gets this application context's {@link LUTService}.
+	 *
+	 * @return The {@link LUTService} of this application context.
+	 */
 	public LUTService lut() {
 		return get(LUTService.class);
 	}
 
+	/**
+	 * Gets this application context's {@link OpService}.
+	 *
+	 * @return The {@link OpService} of this application context.
+	 */
 	public OpService op() {
 		return get(OpService.class);
 	}
 
+	/**
+	 * Gets this application context's {@link OverlayService}.
+	 *
+	 * @return The {@link OverlayService} of this application context.
+	 */
 	public OverlayService overlay() {
 		return get(OverlayService.class);
 	}
 
+	/**
+	 * Gets this application context's {@link RenderingService}.
+	 *
+	 * @return The {@link RenderingService} of this application context.
+	 */
 	public RenderingService rendering() {
 		return get(RenderingService.class);
 	}
 
+	/**
+	 * Gets this application context's {@link SamplerService}.
+	 *
+	 * @return The {@link SamplerService} of this application context.
+	 */
 	public SamplerService sampler() {
 		return get(SamplerService.class);
 	}
 
+	/**
+	 * Gets this application context's {@link ScreenCaptureService}.
+	 *
+	 * @return The {@link ScreenCaptureService} of this application context.
+	 */
 	public ScreenCaptureService screenCapture() {
 		return get(ScreenCaptureService.class);
 	}
 
+	/**
+	 * Gets this application context's {@link UIService}.
+	 *
+	 * @return The {@link UIService} of this application context.
+	 */
 	public UIService ui() {
 		return get(UIService.class);
 	}
 
+	/**
+	 * Gets this application context's {@link UpdateService}.
+	 *
+	 * @return The {@link UpdateService} of this application context.
+	 */
 	public UpdateService update() {
 		return get(UpdateService.class);
 	}
 
+	/**
+	 * Gets this application context's {@link UploaderService}.
+	 *
+	 * @return The {@link UploaderService} of this application context.
+	 */
 	public UploaderService uploader() {
 		return get(UploaderService.class);
 	}
 
+	/**
+	 * Gets this application context's {@link WindowService}.
+	 *
+	 * @return The {@link WindowService} of this application context.
+	 */
 	public WindowService window() {
 		return get(WindowService.class);
 	}
