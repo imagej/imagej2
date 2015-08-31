@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>net.imagej</groupId>
 		<artifactId>pom-imagej</artifactId>
-		<version>11.1.0</version>
+		<version>11.2.0</version>
 		<relativePath />
 	</parent>
 
@@ -96,6 +96,11 @@
 			<artifactId>imagej-plugins-uploader-webdav</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-scripting</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 
 		<!-- Runtime SciJava dependencies -->
 		<dependency>
@@ -116,41 +121,6 @@
 		<dependency>
 			<groupId>org.scijava</groupId>
 			<artifactId>scijava-plugins-text-plain</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.scijava</groupId>
-			<artifactId>scripting-beanshell</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.scijava</groupId>
-			<artifactId>scripting-clojure</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.scijava</groupId>
-			<artifactId>scripting-groovy</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.scijava</groupId>
-			<artifactId>scripting-java</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.scijava</groupId>
-			<artifactId>scripting-javascript</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.scijava</groupId>
-			<artifactId>scripting-jruby</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.scijava</groupId>
-			<artifactId>scripting-jython</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
