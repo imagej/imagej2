@@ -4,6 +4,10 @@ setlocal ENABLEEXTENSIONS
 set DIR=%~dp0
 set DIR=%DIR:~0,-1%
 
+::
+:: Use bundled JRE, if present
+::
+
 if exist "%DIR%\java\win32" (
     set JAVA_PATH=%DIR%\java\win32\jdk1.6.0_24\jre
 )
