@@ -4,10 +4,11 @@ setlocal ENABLEEXTENSIONS
 set DIR=%~dp0
 set DIR=%DIR:~0,-1%
 
-if exist %DIR%\java\win32 (
+if exist "%DIR%\java\win32" (
     set JAVA_PATH=%DIR%\java\win32\jdk1.6.0_24\jre
 )
-if exist %DIR%\java\win64 (
+
+if exist "%DIR%\java\win64" (
     set JAVA_PATH=%DIR%\java\win64\jdk1.6.0_24\jre
 )
 
@@ -45,7 +46,7 @@ FOR /F "usebackq skip=2 tokens=3*" %%A IN (`REG QUERY %JAVA_CURRENT% /v %JAVA_HO
     set JAVA_PATH=%%A %%B
 )
 
-if not exist %JAVA_PATH% (
+if not exist "%JAVA_PATH%" (
     echo.
     echo No Java installation could be found!
     echo.
@@ -71,6 +72,6 @@ set CP=%CP%;%DIR%\plugins\*
 :: Launch ImageJ.
 ::
 echo Launching ImageJ.
-%JAVA_PATH%\bin\java.exe -cp "%CP%" net.imagej.Main
+"%JAVA_PATH%\bin\java.exe" -cp "%CP%" net.imagej.Main
 
 :end
