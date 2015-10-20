@@ -59,9 +59,18 @@ echo %JAVA_PATH%
 echo.
 
 ::
-:: Launch ImageJ
+:: Build up the classpath.
+::
+set CP=%DIR%\jars\*
+for /d %%a in (%DIR%\jars\*) do (
+    set CP=%CP%;%%a\*
+)
+set CP=%CP%;%DIR%\plugins\*
+
+::
+:: Launch ImageJ.
 ::
 echo Launching ImageJ.
-%JAVA_PATH%\bin\java.exe -cp "%DIR%\jars\*;%DIR%\jars\bio-formats\*;%DIR%\plugins\*" net.imagej.Main
+%JAVA_PATH%\bin\java.exe -cp "%CP%" net.imagej.Main
 
 :end
