@@ -11,38 +11,38 @@ if exist %DIR%\java\win64 (
     set JAVA_PATH=%DIR%\java\win64\jdk1.6.0_24\jre
 )
 
-if not exist "%JAVA_PATH%" (
-    ::
-    :: Detect Java installation from the registry.
-    ::
-    :: Credit to:
-    :: http://www.rgagnon.com/javadetails/java-0642.html
-    ::
+if exist "%JAVA_PATH%" goto pathOK
 
-    set KEY_NAME="HKLM\SOFTWARE\JavaSoft\Java Runtime Environment"
-    set VALUE_NAME=CurrentVersion
+::
+:: Detect Java installation from the registry.
+::
+:: Credit to:
+:: http://www.rgagnon.com/javadetails/java-0642.html
+::
 
-    ::
-    :: Get the current version
-    ::
-    FOR /F "usebackq skip=2 tokens=3" %%A IN (`REG QUERY %KEY_NAME% /v %VALUE_NAME% 2^>nul`) DO (
-        set ValueValue=%%A
-    )
-    if defined ValueValue (
-        @echo The current Java runtime is: %ValueValue%
-    ) else (
-        @echo %KEY_NAME%\%VALUE_NAME% not found.
-        goto end
-    )
-    set JAVA_CURRENT="HKLM\SOFTWARE\JavaSoft\Java Runtime Environment\%ValueValue%"
-    set JAVA_HOME=JavaHome
+set KEY_NAME="HKLM\SOFTWARE\JavaSoft\Java Runtime Environment"
+set VALUE_NAME=CurrentVersion
 
-    ::
-    :: Get the java path
-    ::
-    FOR /F "usebackq skip=2 tokens=3*" %%A IN (`REG QUERY %JAVA_CURRENT% /v %JAVA_HOME% 2^>nul`) DO (
-        set JAVA_PATH=%%A %%B
-    )
+::
+:: Get the current version
+::
+FOR /F "usebackq skip=2 tokens=3" %%A IN (`REG QUERY %KEY_NAME% /v %VALUE_NAME% 2^>nul`) DO (
+    set ValueValue=%%A
+)
+if defined ValueValue (
+    @echo The current Java runtime is: %ValueValue%
+) else (
+    @echo %KEY_NAME%\%VALUE_NAME% not found.
+    goto end
+)
+set JAVA_CURRENT="HKLM\SOFTWARE\JavaSoft\Java Runtime Environment\%ValueValue%"
+set JAVA_HOME=JavaHome
+
+::
+:: Get the java path
+::
+FOR /F "usebackq skip=2 tokens=3*" %%A IN (`REG QUERY %JAVA_CURRENT% /v %JAVA_HOME% 2^>nul`) DO (
+    set JAVA_PATH=%%A %%B
 )
 
 if not exist %JAVA_PATH% (
@@ -52,6 +52,7 @@ if not exist %JAVA_PATH% (
     goto end
 )
 
+:pathOK
 echo.
 echo Discovered Java at:
 echo %JAVA_PATH%
