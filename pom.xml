@@ -22,12 +22,10 @@
 		<tag>HEAD</tag>
 		<url>https://github.com/imagej/imagej</url>
 	</scm>
-
 	<issueManagement>
 		<system>GitHub Issues</system>
 		<url>https://github.com/imagej/imagej/issues</url>
 	</issueManagement>
-
 	<ciManagement>
 		<system>Jenkins</system>
 		<url>http://jenkins.imagej.net/job/ImageJ/</url>
@@ -670,5 +668,4 @@
 			</build>
 		</profile>
 	</profiles>
-
 </project>
