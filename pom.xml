@@ -83,7 +83,11 @@
 	</ciManagement>
 
 	<properties>
-		<scijava.jvm.version>1.8</scijava.jvm.version>
+		<!-- NB: Pinned versions, for Java 6 compatibility -->
+		<imagej-ops.version>0.23.0</imagej-ops.version>
+		<imagej-ui-swing.version>0.16.0</imagej-ui-swing.version>
+		<mines-jtk.version>20100113</mines-jtk.version>
+
 		<main-class>net.imagej.Main</main-class>
 	</properties>
 
