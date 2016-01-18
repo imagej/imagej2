@@ -66,7 +66,7 @@ public class TypeHierarchy {
 	public static <T extends Comparable<? super T>> List<T> sort(
 		final Collection<T> c)
 	{
-		final ArrayList<T> sortedList = new ArrayList<T>(c);
+		final ArrayList<T> sortedList = new ArrayList<>(c);
 		Collections.sort(sortedList);
 		return sortedList;
 	}
@@ -74,7 +74,7 @@ public class TypeHierarchy {
 	// -- Helper methods --
 
 	private HashMap<Class<?>, TypeNode> loadClasses(final String[] classNames) {
-		final HashMap<Class<?>, TypeNode> list = new HashMap<Class<?>, TypeNode>();
+		final HashMap<Class<?>, TypeNode> list = new HashMap<>();
 		for (final String className : classNames) {
 			try {
 				final Class<?> c = Class.forName(className);
@@ -114,8 +114,8 @@ public class TypeHierarchy {
 	public class TypeNode implements Comparable<TypeNode> {
 
 		private final Class<?> c;
-		private final HashSet<TypeNode> children = new HashSet<TypeNode>();
-		private final HashSet<TypeNode> parents = new HashSet<TypeNode>();
+		private final HashSet<TypeNode> children = new HashSet<>();
+		private final HashSet<TypeNode> parents = new HashSet<>();
 
 		public TypeNode(final Class<?> c) {
 			this.c = c;

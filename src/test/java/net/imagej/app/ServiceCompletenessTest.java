@@ -66,7 +66,7 @@ public class ServiceCompletenessTest {
 	@Test
 	public void testServices() {
 		final ArrayList<Class<? extends Service>> services =
-			new ArrayList<Class<? extends Service>>();
+			new ArrayList<>();
 		services.add(net.imagej.DefaultDatasetService.class);
 		services.add(net.imagej.DefaultImgPlusService.class);
 		services.add(net.imagej.animation.DefaultAnimationService.class);
