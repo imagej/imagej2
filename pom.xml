@@ -85,6 +85,7 @@
 	<properties>
 		<scijava.jvm.version>1.8</scijava.jvm.version>
 		<main-class>net.imagej.Main</main-class>
+		<imagej-legacy.version>0.18.0</imagej-legacy.version>
 	</properties>
 
 	<repositories>
@@ -99,10 +100,6 @@
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej-common</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>net.imagej</groupId>
-			<artifactId>imagej-legacy</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>net.imagej</groupId>
@@ -126,6 +123,12 @@
 		</dependency>
 
 		<!-- Runtime ImageJ dependencies -->
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-legacy</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej-deprecated</artifactId>

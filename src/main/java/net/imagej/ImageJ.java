@@ -39,7 +39,6 @@ import net.imagej.display.ImageDisplayService;
 import net.imagej.display.OverlayService;
 import net.imagej.display.ScreenCaptureService;
 import net.imagej.display.WindowService;
-import net.imagej.legacy.LegacyService;
 import net.imagej.lut.LUTService;
 import net.imagej.ops.OpService;
 import net.imagej.render.RenderingService;
@@ -124,15 +123,6 @@ public class ImageJ extends AbstractGateway {
 	 */
 	public ImageDisplayService imageDisplay() {
 		return get(ImageDisplayService.class);
-	}
-
-	/**
-	 * Gets this application context's {@link LegacyService}.
-	 *
-	 * @return The {@link LegacyService} of this application context.
-	 */
-	public LegacyService legacy() {
-		return get(LegacyService.class);
 	}
 
 	/**

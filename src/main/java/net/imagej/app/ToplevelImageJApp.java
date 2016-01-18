@@ -31,11 +31,12 @@
 
 package net.imagej.app;
 
-import net.imagej.legacy.LegacyService;
-
+import org.scijava.Versioned;
 import org.scijava.app.App;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
+import org.scijava.service.Service;
 
 /**
  * An extension of {@link ImageJApp} that provides the legacy ImageJ 1.x version
@@ -53,7 +54,7 @@ public class ToplevelImageJApp extends ImageJApp {
 	// so that it takes precedence in the AppService.
 
 	@Parameter(required = false)
-	private LegacyService legacyService;
+	private LogService log;
 
 	@Override
 	public String getArtifactId() {
@@ -62,8 +63,31 @@ public class ToplevelImageJApp extends ImageJApp {
 
 	@Override
 	public String getVersion() {
-		if (legacyService == null) return super.getVersion();
-		return legacyService.getCombinedVersion();
+		final String version = super.getVersion();
+		final String legacyVersion = getLegacyVersion();
+		return version + (legacyVersion == null ? "" : "/" + legacyVersion);
+	}
+
+	// -- Helper methods --
+
+	private String getLegacyVersion() {
+		try {
+			final Class<?> c = Class.forName("net.imagej.legacy.LegacyService");
+			if (!Service.class.isAssignableFrom(c)) return null; // no imagej-legacy
+
+			@SuppressWarnings("unchecked")
+			final Class<? extends Service> sc = (Class<? extends Service>) c;
+
+			final Service legacyService = getContext().getService(sc);
+			if (legacyService == null) return null; // no LegacyService in context
+			if (!(legacyService instanceof Versioned)) return null; // incompatible
+
+			return ((Versioned) legacyService).getVersion();
+		}
+		catch (final ClassNotFoundException exc) {
+			if (log != null) log.debug(exc);
+		}
+		return null;
 	}
 
 }
