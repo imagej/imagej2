@@ -63,8 +63,11 @@ public final class Main {
 		// parse command line arguments
 		ij.console().processArgs(args);
 
+		// launch main methods
+		final int mainCount = ij.main().execMains();
+
 		// display the user interface
-		ij.ui().showUI();
+		if (mainCount == 0) ij.ui().showUI();
 
 		return ij;
 	}
