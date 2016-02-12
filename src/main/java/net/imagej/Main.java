@@ -66,8 +66,13 @@ public final class Main {
 		// launch main methods
 		final int mainCount = ij.main().execMains();
 
-		// display the user interface
-		if (mainCount == 0) ij.ui().showUI();
+		// display the user interface (NB: does not block)
+		if (mainCount == 0 && !ij.ui().isHeadless()) ij.ui().showUI();
+
+		if (ij.ui().isHeadless()) {
+			// now that CLI processing/execution is done, we can shut down
+			ij.getContext().dispose();
+		}
 
 		return ij;
 	}
