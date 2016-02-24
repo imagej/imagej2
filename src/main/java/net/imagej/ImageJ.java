@@ -180,15 +180,6 @@ public class ImageJ extends AbstractGateway {
 	}
 
 	/**
-	 * Gets this application context's {@link UIService}.
-	 *
-	 * @return The {@link UIService} of this application context.
-	 */
-	public UIService ui() {
-		return get(UIService.class);
-	}
-
-	/**
 	 * Gets this application context's {@link UpdateService}.
 	 *
 	 * @return The {@link UpdateService} of this application context.
