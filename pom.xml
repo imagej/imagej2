@@ -85,7 +85,6 @@
 	<properties>
 		<scijava.jvm.version>1.8</scijava.jvm.version>
 		<main-class>net.imagej.Main</main-class>
-		<imagej-legacy.version>0.18.0</imagej-legacy.version>
 	</properties>
 
 	<repositories>
