@@ -65,7 +65,8 @@ public class MainTest {
 	}
 
 	/**
-	 * Test that the {@link org.scijava.Context} is disposed after running headlessly.
+	 * Test that the {@link org.scijava.Context} is disposed after running
+	 * headlessly.
 	 */
 	@Test
 	public void testHeadless() {
