@@ -52,9 +52,7 @@ import org.scijava.service.Service;
  */
 public class MainTest {
 
-	/**
-	 * Test launching an alternate main method
-	 */
+	/** Tests launching an alternate main method. */
 	@Test
 	public void testMains() {
 		final ImageJ ij = Main.launch("--main", Concatenate.class.getName(), //
@@ -69,7 +67,7 @@ public class MainTest {
 	}
 
 	/**
-	 * Test that the {@link org.scijava.Context} is disposed after running
+	 * Tests that the {@link org.scijava.Context} is disposed after running
 	 * headlessly.
 	 */
 	@Test
