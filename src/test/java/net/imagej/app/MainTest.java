@@ -34,8 +34,6 @@ package net.imagej.app;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.awt.GraphicsEnvironment;
-
 import net.imagej.ImageJ;
 import net.imagej.ImageJService;
 import net.imagej.Main;
@@ -58,7 +56,7 @@ public class MainTest {
 		final ImageJ ij = Main.launch("--main", Concatenate.class.getName(), //
 			"kung", "-", "fu");
 		assertEquals("kung-fu", Concatenate.s);
-		final boolean headless = GraphicsEnvironment.isHeadless();
+		final boolean headless = ij.ui().isHeadless();
 		assertEquals(headless, ij.get(LitmusService.class).isDisposed());
 		if (!headless) {
 			// Since we didn't run headlessly we need to manually dispose the context
