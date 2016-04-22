@@ -32,8 +32,10 @@
 package net.imagej.app;
 
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import net.imagej.ImageJService;
 
@@ -41,7 +43,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.scijava.Context;
+import org.scijava.InstantiableException;
+import org.scijava.plugin.PluginIndex;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.service.SciJavaService;
 import org.scijava.service.Service;
+
+import io.scif.SCIFIOService;
 
 /**
  * Tests that all expected ImageJ services are present.
@@ -99,6 +107,20 @@ public class ServiceCompletenessTest {
 		for (final Class<? extends Service> c : services) {
 			final Service s = ctx.service(c);
 			assertSame(c, s.getClass());
+		}
+	}
+
+	@Test
+	public void testMarkerInterfaces() throws InstantiableException {
+		final PluginIndex pluginIndex = new PluginIndex();
+		final List<PluginInfo<Service>> servicePlugins = //
+			pluginIndex.getPlugins(Service.class);
+		for (final PluginInfo<Service> info : servicePlugins) {
+			final Class<? extends Service> c = info.loadClass();
+			final boolean scijava = SciJavaService.class.isAssignableFrom(c);
+			final boolean imagej = ImageJService.class.isAssignableFrom(c);
+			final boolean scifio = SCIFIOService.class.isAssignableFrom(c);
+			assertTrue(c.getName(), scijava ^ imagej ^ scifio);
 		}
 	}
 
