@@ -76,16 +76,22 @@ echo.
 ::
 :: Build up the classpath.
 ::
+:: NB: Cannot use an inline loop due to batch files being so defective.
+:: Credit to: http://stackoverflow.com/a/13809834/1207769
+::
 set CP=%DIR%\jars\*
-for /d %%a in (%DIR%\jars\*) do (
-    set CP=%CP%;%%a\*
-)
-set CP=%CP%;%DIR%\plugins\*
+for /d %%a in (%DIR%\jars\*) do call :appendCP %%a
+call :appendCP %DIR%\plugins
 
 ::
 :: Launch ImageJ.
 ::
 echo Launching ImageJ.
 "%JAVA_PATH%\bin\java.exe" -cp "%CP%" net.imagej.Main
+
+goto end
+
+:appendCP
+set CP=%CP%;%1\*
 
 :end
