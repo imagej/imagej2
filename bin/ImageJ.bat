@@ -9,6 +9,16 @@ set DIR=%DIR:~0,-1%
 ::
 
 if exist "%DIR%\java\win32" (
+    set JAVA_PATH=%DIR%\java\win32\jdk1.8.0_66\jre
+)
+
+if exist "%DIR%\java\win64" (
+    set JAVA_PATH=%DIR%\java\win64\jdk1.8.0_66\jre
+)
+
+if exist "%JAVA_PATH%" goto pathOK
+
+if exist "%DIR%\java\win32" (
     set JAVA_PATH=%DIR%\java\win32\jdk1.6.0_24\jre
 )
 
