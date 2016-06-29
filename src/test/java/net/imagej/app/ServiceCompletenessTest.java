@@ -101,7 +101,6 @@ public class ServiceCompletenessTest {
 		services.add(net.imagej.ui.awt.AWTRenderingService.class);
 		services.add(net.imagej.ui.awt.AWTScreenCaptureService.class);
 		services.add(net.imagej.ui.swing.overlay.JHotDrawService.class);
-		services.add(net.imagej.ui.swing.script.DefaultLanguageSupportService.class);
 		services.add(net.imagej.updater.DefaultUpdateService.class);
 		services.add(net.imagej.updater.DefaultUploaderService.class);
 		for (final Class<? extends Service> c : services) {

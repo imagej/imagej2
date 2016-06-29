@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>net.imagej</groupId>
 		<artifactId>pom-imagej</artifactId>
-		<version>15.6.0</version>
+		<version>15.8.0</version>
 		<relativePath />
 	</parent>
 
@@ -162,6 +162,11 @@
 		<dependency>
 			<groupId>org.scijava</groupId>
 			<artifactId>scijava-plugins-text-plain</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>script-editor</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 
