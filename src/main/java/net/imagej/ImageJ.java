@@ -204,4 +204,10 @@ public class ImageJ extends AbstractGateway {
 		return get(WindowService.class);
 	}
 
+	// -- Gateway methods --
+
+	@Override
+	public String getShortName() {
+		return "ij";
+	}
 }
