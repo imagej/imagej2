@@ -31,7 +31,6 @@
 
 package net.imagej.app;
 
-import org.scijava.Versioned;
 import org.scijava.app.App;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
@@ -80,9 +79,8 @@ public class ToplevelImageJApp extends ImageJApp {
 
 			final Service legacyService = getContext().getService(sc);
 			if (legacyService == null) return null; // no LegacyService in context
-			if (!(legacyService instanceof Versioned)) return null; // incompatible
 
-			return ((Versioned) legacyService).getVersion();
+			return legacyService.getVersion();
 		}
 		catch (final ClassNotFoundException exc) {
 			if (log != null) log.debug(exc);
