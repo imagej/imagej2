@@ -143,6 +143,11 @@
 			<artifactId>imagej-scripting</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>imagej-ui-swing</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 
 		<!-- Runtime SciJava dependencies -->
 		<dependency>
@@ -261,11 +266,6 @@
 				</property>
 			</activation>
 			<dependencies>
-				<dependency>
-					<groupId>net.imagej</groupId>
-					<artifactId>imagej-ui-swing</artifactId>
-					<scope>runtime</scope>
-				</dependency>
 			</dependencies>
 		</profile>
 
