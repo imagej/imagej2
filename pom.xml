@@ -224,16 +224,6 @@
 					<artifactId>imagej-ui-awt</artifactId>
 					<scope>runtime</scope>
 				</dependency>
-				<dependency>
-					<groupId>net.imagej</groupId>
-					<artifactId>imagej-ui-pivot</artifactId>
-					<scope>runtime</scope>
-				</dependency>
-				<dependency>
-					<groupId>net.imagej</groupId>
-					<artifactId>imagej-ui-swt</artifactId>
-					<scope>runtime</scope>
-				</dependency>
 			</dependencies>
 			<build>
 				<plugins>
