@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>net.imagej</groupId>
 		<artifactId>pom-imagej</artifactId>
-		<version>16.2.1</version>
+		<version>16.4.0</version>
 		<relativePath />
 	</parent>
 
@@ -68,6 +68,8 @@
 
 	<properties>
 		<main-class>net.imagej.Main</main-class>
+
+		<license.inceptionYear>2009</license.inceptionYear>
 	</properties>
 
 	<repositories>
@@ -179,24 +181,6 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifest>
-							<packageName>net.imagej</packageName>
-							<mainClass>${main-class}</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>license-maven-plugin</artifactId>
-				<configuration>
-					<inceptionYear>2009</inceptionYear>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>com.googlecode.maven-java-formatter-plugin</groupId>
 				<artifactId>maven-java-formatter-plugin</artifactId>
