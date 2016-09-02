@@ -67,7 +67,6 @@
 	</ciManagement>
 
 	<properties>
-		<scijava.jvm.version>1.8</scijava.jvm.version>
 		<main-class>net.imagej.Main</main-class>
 	</properties>
 
