@@ -221,7 +221,7 @@
 		The alt-ui profile adds alternative user interfaces to the
 		runtime classpath if the scijava.ui system property is set.
 		This enables launching ImageJ with an alternative UI; see:
-		http://developer.imagej.net/command-line
+		http://imagej.net/Developing_ImageJ_on_the_command_line
 		-->
 		<profile>
 			<id>alt-ui</id>
