@@ -41,6 +41,7 @@ import net.imagej.display.OverlayService;
 import net.imagej.display.ScreenCaptureService;
 import net.imagej.display.WindowService;
 import net.imagej.lut.LUTService;
+import net.imagej.notebook.NotebookService;
 import net.imagej.ops.OpService;
 import net.imagej.render.RenderingService;
 import net.imagej.sampler.SamplerService;
@@ -130,6 +131,15 @@ public class ImageJ extends AbstractGateway {
 	 */
 	public LUTService lut() {
 		return get(LUTService.class);
+	}
+
+	/**
+	 * Gets this application context's {@link NotebookService}.
+	 *
+	 * @return The {@link NotebookService} of this application context.
+	 */
+	public NotebookService notebook() {
+		return get(NotebookService.class);
 	}
 
 	/**

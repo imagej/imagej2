@@ -110,6 +110,10 @@ Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 		</dependency>
 		<dependency>
 			<groupId>net.imagej</groupId>
+			<artifactId>imagej-notebook</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
 			<artifactId>imagej-ops</artifactId>
 		</dependency>
 		<dependency>
