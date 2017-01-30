@@ -31,6 +31,9 @@
 
 package net.imagej;
 
+import io.scif.SCIFIO;
+import io.scif.SCIFIOService;
+
 import net.imagej.animation.AnimationService;
 import net.imagej.app.ImageJApp;
 import net.imagej.display.ImageDisplayService;
@@ -49,9 +52,6 @@ import org.scijava.Context;
 import org.scijava.Gateway;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.SciJavaService;
-
-import io.scif.SCIFIO;
-import io.scif.SCIFIOService;
 
 /**
  * Main entry point into ImageJ. This class enables working with ImageJ services
