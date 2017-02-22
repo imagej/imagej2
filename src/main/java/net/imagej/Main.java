@@ -42,30 +42,17 @@ public final class Main {
 		// prevent instantiation of utility class
 	}
 
-	/**
-	 * Launches a new instance of ImageJ, displaying the default user interface.
-	 * <p>
-	 * This method is provided merely for convenience. If you do not want to
-	 * display a user interface, construct the ImageJ instance directly instead:
-	 * </p>
-	 * 
-	 * <pre>
-	 * final ImageJ ij = new ImageJ();
-	 * ij.console().processArgs(args); // if you want to pass any arguments
-	 * </pre>
-	 * 
-	 * @param args The arguments to pass to the new ImageJ instance.
-	 * @return The newly launched ImageJ instance.
-	 */
+	/** @deprecated Use {@link ImageJ#launch} instead. */
+	@Deprecated
 	public static ImageJ launch(final String... args) {
 		final ImageJ ij = new ImageJ();
 		ij.launch(args);
-
 		return ij;
 	}
 
 	public static void main(final String... args) {
-		launch(args);
+		final ImageJ ij = new ImageJ();
+		ij.launch(args);
 	}
 
 }
