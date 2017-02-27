@@ -1,4 +1,6 @@
 language: java
+branches:
+  only: master
 install: true
 script: ".travis/build.sh"
 after_success: ".travis/notify.sh Travis-Success"
