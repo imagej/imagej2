@@ -1,0 +1,14 @@
+<settings>
+  <servers>
+    <server>
+      <id>imagej.releases</id>
+      <username>travis</username>
+      <password>${env.MAVEN_PASS}</password>
+    </server>
+    <server>
+      <id>imagej.snapshots</id>
+      <username>travis</username>
+      <password>${env.MAVEN_PASS}</password>
+    </server>
+  </servers>
+</settings>

@@ -1,4 +1,4 @@
-[![](http://jenkins.imagej.net/job/ImageJ/lastBuild/badge/icon)](http://jenkins.imagej.net/job/ImageJ/)
+[![](https://travis-ci.org/imagej/imagej.svg?branch=master)](https://travis-ci.org/imagej/imagej)
 [![Join the chat at https://gitter.im/imagej/imagej](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/imagej/imagej?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ImageJ2 is a new version of [ImageJ](http://imagej.net/) seeking to strengthen

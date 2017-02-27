@@ -80,8 +80,8 @@
 		<url>https://github.com/imagej/imagej/issues</url>
 	</issueManagement>
 	<ciManagement>
-		<system>Jenkins</system>
-		<url>http://jenkins.imagej.net/job/ImageJ/</url>
+		<system>Travis CI</system>
+		<url>https://travis-ci.org/imagej/imagej</url>
 	</ciManagement>
 
 	<properties>
