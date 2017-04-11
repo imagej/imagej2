@@ -53,8 +53,8 @@ public class MainTest {
 	/** Tests launching an alternate main method. */
 	@Test
 	public void testMains() {
-		final ImageJ ij = Main.launch("--main", Concatenate.class.getName(), //
-			"kung", "-", "fu");
+		final ImageJ ij = new ImageJ();
+		ij.launch("--main", Concatenate.class.getName(), "kung", "-", "fu");
 		assertEquals("kung-fu", Concatenate.s);
 		final boolean headless = ij.ui().isHeadless();
 		assertEquals(headless, ij.get(LitmusService.class).isDisposed());
@@ -70,7 +70,8 @@ public class MainTest {
 	 */
 	@Test
 	public void testHeadless() {
-		final ImageJ ij = Main.launch("--headless");
+		final ImageJ ij = new ImageJ();
+		ij.launch("--headless");
 		assertTrue(ij.get(LitmusService.class).isDisposed());
 	}
 
