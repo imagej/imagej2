@@ -64,9 +64,9 @@ your own software. E.g., in your Maven `pom.xml`:
 
 ```
 <parent>
-  <groupId>net.imagej</groupId>
-  <artifactId>pom-imagej</artifactId>
-  <version>2.35</version>
+  <groupId>org.scijava</groupId>
+  <artifactId>pom-scijava</artifactId>
+  <version>16.2.0</version>
 </parent>
 ...
 <dependency>
@@ -76,7 +76,7 @@ your own software. E.g., in your Maven `pom.xml`:
 ```
 
 We recommend inheriting from the
-[pom-imagej](https://github.com/imagej/pom-imagej) parent, although it is not
+[pom-scijava](https://github.com/scijava/pom-scijava) parent, although it is not
 required. (If you do not, you will need to include the `<version>` of ImageJ in
 your `<dependency>` declaration.)
 
