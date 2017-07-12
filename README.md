@@ -101,15 +101,10 @@ It also includes various "plugin" components at runtime:
 * [ImageJ Plugins: Tools](https://github.com/imagej/imagej-plugins-tools)
 * [ImageJ Plugins: Uploader: SSH](https://github.com/imagej/imagej-plugins-uploader-ssh)
 * [ImageJ Plugins: Uploader: WebDAV](https://github.com/imagej/imagej-plugins-uploader-webdav)
+* [ImageJ Scripting](https://github.com/imagej/imagej-scripting)
 * [SciJava Plugins: Platforms](https://github.com/scijava/scijava-plugins-platforms)
 * [SciJava Plugins: Text: Markdown](https://github.com/scijava/scijava-plugins-text-markdown)
 * [SciJava Plugins: Text: Plain](https://github.com/scijava/scijava-plugins-text-plain)
-* [Scripting: Beanshell](https://github.com/scijava/scripting-beanshell)
-* [Scripting: Clojure](https://github.com/scijava/scripting-clojure)
-* [Scripting: Java](https://github.com/scijava/scripting-java)
-* [Scripting: JavaScript](https://github.com/scijava/scripting-javascript)
-* [Scripting: JRuby](https://github.com/scijava/scripting-jruby)
-* [Scripting: Jython](https://github.com/scijava/scripting-jython)
 
 See the [pom.xml](pom.xml) for a complete list of dependencies.
 
