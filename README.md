@@ -9,7 +9,7 @@ features a user interface closely modeled after the original.
 Under the hood, ImageJ2 completely isolates the image processing logic from the
 graphical user interface (UI), allowing ImageJ2 commands to be used in many
 contexts, including headless in the cloud or on a server such as
-[OMERO](http://openmicroscopy.org/site/support/omero4), or from within another
+[OMERO](http://openmicroscopy.org/site/support/omero), or from within another
 application such as [KNIME](http://knime.org/),
 [Icy](http://icy.bioimageanalysis.org/) or
 [CellProfiler](http://cellprofiler.org/) (a Python application).
