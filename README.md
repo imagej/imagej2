@@ -27,17 +27,6 @@ We are collaborating closely with related projects including
 software stack reusable throughout the life sciences community and beyond. For
 more details, see the [SciJava web site](http://scijava.org/).
 
-ImageJ2 is currently in the "beta" stage, meaning the code is not finished. It
-is being released for early community feedback and testing. Comments, questions
-and bug reports are much appreciated!
-
-To maintain ImageJ's continuity of development, we have modeled the application
-after ImageJ v1.x as much as is reasonable. However, please be aware that
-ImageJ2 is essentially a total rewrite of ImageJ from the ground up. It
-provides backward compatibility with older versions of ImageJ by bundling the
-latest v1.x code and translating between "legacy" and "modern" image
-structures.
-
 For more details on the project, see the [ImageJ web site](http://imagej.net/).
 
 
