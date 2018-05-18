@@ -43,6 +43,8 @@ For the list of developers and contributors, see
 
 # IMAGEJ AS A LIBRARY
 
+## From Java
+
 This repository is the master ImageJ application, which brings together all of
 ImageJ under the artifact
 [net.imagej:imagej](http://maven.imagej.net/index.html#nexus-search;gav~net.imagej~imagej~~~~kw,versionexpand).
@@ -66,6 +68,17 @@ We recommend inheriting from the
 [pom-scijava](https://github.com/scijava/pom-scijava) parent, although it is not
 required. (If you do not, you will need to include the `<version>` of ImageJ in
 your `<dependency>` declaration.)
+
+## From other languages
+
+* __JavaScript__: Use the
+  [imagej module on npm](https://www.npmjs.com/package/imagej)
+  to call ImageJ in-process from node.js code.
+* __Python__: Use the
+  [imagej module on pypi](https://pypi.org/project/imagej/)
+  to call ImageJ in-process or interprocess from Python code.
+* __Ruby, R, LLVM and beyond__: Use [GraalVM](https://graalvm.org/)
+  to combine ImageJ with Truffle-based languages in the same VM.
 
 
 # DEPENDENCIES
