@@ -30,8 +30,7 @@ more details, see the [SciJava web site](http://scijava.org/).
 For more details on the project, see the [ImageJ web site](http://imagej.net/).
 
 
-LICENSING
----------
+# LICENSING
 
 ImageJ2 is distributed under a
 [Simplified BSD License](http://en.wikipedia.org/wiki/BSD_licenses);
@@ -42,8 +41,7 @@ For the list of developers and contributors, see
 [the parent POM](https://github.com/imagej/pom-imagej/blob/master/pom.xml).
 
 
-IMAGEJ AS A LIBRARY
--------------------
+# IMAGEJ AS A LIBRARY
 
 This repository is the master ImageJ application, which brings together all of
 ImageJ under the artifact
@@ -70,8 +68,7 @@ required. (If you do not, you will need to include the `<version>` of ImageJ in
 your `<dependency>` declaration.)
 
 
-DEPENDENCIES
-------------
+# DEPENDENCIES
 
 This component depends on other, lower level components, each of which lives in
 its own repository:
@@ -98,8 +95,7 @@ It also includes various "plugin" components at runtime:
 See the [pom.xml](pom.xml) for a complete list of dependencies.
 
 
-BUGS
-----
+# BUGS
 
 For a list of known issues, see the
 [GitHub issues](https://github.com/imagej/imagej/issues).
