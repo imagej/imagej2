@@ -77,7 +77,7 @@ your `<dependency>` declaration.)
 * __Python__: Use the
   [imagej module on pypi](https://pypi.org/project/imagej/)
   to call ImageJ in-process or interprocess from Python code.
-* __Ruby, R, LLVM and beyond__: Use [GraalVM](https://graalvm.org/)
+* __Ruby, R, LLVM and beyond__: Use [GraalVM](https://www.graalvm.org/)
   to combine ImageJ with Truffle-based languages in the same VM.
 
 
