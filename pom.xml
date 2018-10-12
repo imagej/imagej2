@@ -334,59 +334,43 @@ Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 											<outputDirectory>${project.build.directory}/</outputDirectory>
 											<destFileName>imagej-launcher-${imagej-launcher.version}.jar</destFileName>
 										</artifactItem>
-									</artifactItems>
-								</configuration>
-							</execution>
-							<execution>
-								<id>unpack</id>
-								<phase>prepare-package</phase>
-								<goals>
-									<goal>unpack</goal>
-								</goals>
-								<configuration>
-									<artifactItems>
 										<artifactItem>
 											<groupId>${project.groupId}</groupId>
 											<artifactId>imagej-launcher</artifactId>
 											<version>${imagej-launcher.version}</version>
-											<classifier>amd64-Linux-gcc-executable</classifier>
-											<type>nar</type>
+											<classifier>linux64</classifier>
+											<type>exe</type>
 											<outputDirectory>${project.build.directory}/</outputDirectory>
+											<destFileName>imagej-launcher-linux64</destFileName>
 										</artifactItem>
 										<artifactItem>
 											<groupId>${project.groupId}</groupId>
 											<artifactId>imagej-launcher</artifactId>
 											<version>${imagej-launcher.version}</version>
-											<classifier>i386-Linux-gcc-executable</classifier>
-											<type>nar</type>
+											<classifier>win32</classifier>
+											<type>exe</type>
 											<outputDirectory>${project.build.directory}/</outputDirectory>
+											<destFileName>imagej-launcher-win32.exe</destFileName>
 										</artifactItem>
 										<artifactItem>
 											<groupId>${project.groupId}</groupId>
 											<artifactId>imagej-launcher</artifactId>
 											<version>${imagej-launcher.version}</version>
-											<classifier>amd64-Windows-gcc-executable</classifier>
-											<type>nar</type>
+											<classifier>win64</classifier>
+											<type>exe</type>
 											<outputDirectory>${project.build.directory}/</outputDirectory>
+											<destFileName>imagej-launcher-win64.exe</destFileName>
 										</artifactItem>
 										<artifactItem>
 											<groupId>${project.groupId}</groupId>
 											<artifactId>imagej-launcher</artifactId>
 											<version>${imagej-launcher.version}</version>
-											<classifier>x86-Windows-gcc-executable</classifier>
-											<type>nar</type>
+											<classifier>macosx</classifier>
+											<type>exe</type>
 											<outputDirectory>${project.build.directory}/</outputDirectory>
-										</artifactItem>
-										<artifactItem>
-											<groupId>${project.groupId}</groupId>
-											<artifactId>imagej-launcher</artifactId>
-											<version>${imagej-launcher.version}</version>
-											<classifier>x86_64-MacOSX-gcc-executable</classifier>
-											<type>nar</type>
-											<outputDirectory>${project.build.directory}/</outputDirectory>
+											<destFileName>imagej-launcher-macosx</destFileName>
 										</artifactItem>
 									</artifactItems>
-									<overWriteSnapshots>true</overWriteSnapshots>
 								</configuration>
 							</execution>
 						</executions>
