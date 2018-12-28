@@ -15,11 +15,11 @@
 
 	<name>ImageJ</name>
 	<description>ImageJ is an open source Java image processing program inspired by NIH Image for the Macintosh.</description>
-	<url>http://imagej.net/</url>
+	<url>https://imagej.net/</url>
 	<inceptionYear>2009</inceptionYear>
 	<organization>
 		<name>ImageJ</name>
-		<url>http://imagej.net/</url>
+		<url>https://imagej.net/</url>
 	</organization>
 	<licenses>
 		<license>
@@ -32,7 +32,7 @@
 		<developer>
 			<id>ctrueden</id>
 			<name>Curtis Rueden</name>
-			<url>http://imagej.net/User:Rueden</url>
+			<url>https://imagej.net/User:Rueden</url>
 			<roles>
 				<role>founder</role>
 				<role>lead</role>
@@ -47,17 +47,17 @@
 	<contributors>
 		<contributor>
 			<name>Johannes Schindelin</name>
-			<url>http://imagej.net/User:Schindelin</url>
+			<url>https://imagej.net/User:Schindelin</url>
 			<properties><id>dscho</id></properties>
 		</contributor>
 		<contributor>
 			<name>Mark Hiner</name>
-			<url>http://imagej.net/User:Hinerm</url>
+			<url>https://imagej.net/User:Hinerm</url>
 			<properties><id>hinerm</id></properties>
 		</contributor>
 		<contributor>
 			<name>David Pinto</name>
-			<url>http://imagej.net/User:Carandraug</url>
+			<url>https://imagej.net/User:Carandraug</url>
 			<properties><id>carandraug</id></properties>
 		</contributor>
 	</contributors>
@@ -101,7 +101,7 @@ Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 	<repositories>
 		<repository>
 			<id>imagej.public</id>
-			<url>http://maven.imagej.net/content/groups/public</url>
+			<url>https://maven.imagej.net/content/groups/public</url>
 		</repository>
 	</repositories>
 
@@ -244,7 +244,7 @@ Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 		The alt-ui profile adds alternative user interfaces to the
 		runtime classpath if the scijava.ui system property is set.
 		This enables launching ImageJ with an alternative UI; see:
-		http://imagej.net/Developing_ImageJ_on_the_command_line
+		https://imagej.net/Developing_ImageJ_on_the_command_line
 		-->
 		<profile>
 			<id>alt-ui</id>
@@ -388,7 +388,7 @@ Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 		The deps profile builds the imagej-x.y.z-all uber-jar, which is a bundle of
 		ImageJ with all dependencies and ImageJ sources. While we do not encourage
 		its use, it can simplify deployment in some environments; see:
-		http://imagej.net/FAQ#How_can_I_call_ImageJ_from_my_software.3F
+		https://imagej.net/FAQ#How_can_I_call_ImageJ_from_my_software.3F
 		-->
 		<profile>
 			<id>deps</id>
