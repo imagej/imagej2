@@ -187,6 +187,11 @@ Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 		<!-- Runtime SciJava dependencies -->
 		<dependency>
 			<groupId>org.scijava</groupId>
+			<artifactId>scijava-io-http</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.scijava</groupId>
 			<artifactId>scijava-plugins-commands</artifactId>
 			<scope>runtime</scope>
 		</dependency>
