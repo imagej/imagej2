@@ -2,7 +2,7 @@
 [![](https://travis-ci.org/imagej/imagej.svg?branch=master)](https://travis-ci.org/imagej/imagej)
 [![Join the chat at https://gitter.im/imagej/imagej](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/imagej/imagej?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-ImageJ2 is a new version of [ImageJ](http://imagej.net/) seeking to strengthen
+ImageJ2 is a new version of [ImageJ](https://imagej.net/) seeking to strengthen
 both the software and its community. Internally, it is a total redesign of
 ImageJ, but it is backwards compatible with ImageJ 1.x via a "legacy layer" and
 features a user interface closely modeled after the original.
@@ -10,10 +10,10 @@ features a user interface closely modeled after the original.
 Under the hood, ImageJ2 completely isolates the image processing logic from the
 graphical user interface (UI), allowing ImageJ2 commands to be used in many
 contexts, including headless in the cloud or on a server such as
-[OMERO](http://openmicroscopy.org/site/support/omero), or from within another
-application such as [KNIME](http://knime.org/),
+[OMERO](https://openmicroscopy.org/site/support/omero), or from within another
+application such as [KNIME](https://www.knime.com/),
 [Icy](http://icy.bioimageanalysis.org/) or
-[CellProfiler](http://cellprofiler.org/) (a Python application).
+[CellProfiler](https://cellprofiler.org/) (a Python application).
 
 ImageJ2 has an N-dimensional data model driven by the powerful
 [ImgLib2](http://imglib2.net/) library, which supports image data expressed in
@@ -23,18 +23,18 @@ collaborative development process, including version control, unit testing,
 automated builds via a continuous integration system, a bug tracker and more.
 
 We are collaborating closely with related projects including
-[Fiji](http://fiji.sc/), [SCIFIO](http://scif.io/) and
-[OME](http://openmicroscopy.org/), and are striving to deliver a coherent
+[Fiji](https://fiji.sc/), [SCIFIO](https://scif.io/) and
+[OME](https://openmicroscopy.org/), and are striving to deliver a coherent
 software stack reusable throughout the life sciences community and beyond. For
-more details, see the [SciJava web site](http://scijava.org/).
+more details, see the [SciJava web site](https://scijava.org/).
 
-For more details on the project, see the [ImageJ web site](http://imagej.net/).
+For more details on the project, see the [ImageJ web site](https://imagej.net/).
 
 
 # LICENSING
 
 ImageJ2 is distributed under a
-[Simplified BSD License](http://en.wikipedia.org/wiki/BSD_licenses);
+[Simplified BSD License](https://en.wikipedia.org/wiki/BSD_licenses);
 for the full text of the license, see
 [LICENSE.txt](https://github.com/imagej/imagej/blob/master/LICENSE.txt).
 
@@ -48,7 +48,7 @@ For the list of developers and contributors, see
 
 This repository is the master ImageJ application, which brings together all of
 ImageJ under the artifact
-[net.imagej:imagej](http://maven.imagej.net/index.html#nexus-search;gav~net.imagej~imagej~~~~kw,versionexpand).
+[net.imagej:imagej](https://maven.scijava.org/index.html#nexus-search;gav~net.imagej~imagej~~~~kw,versionexpand).
 It is the easiest entry point if you are looking to use ImageJ as a library from
 your own software. E.g., in your Maven `pom.xml`:
 
@@ -120,4 +120,4 @@ For a list of known issues, see the
 [GitHub issues](https://github.com/imagej/imagej/issues).
 
 Please report any bugs by following the
-[instructions online](http://imagej.net/Bugs).
+[instructions online](https://imagej.net/Bugs).
