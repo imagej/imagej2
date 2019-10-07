@@ -326,7 +326,6 @@ esac
 
 eval java $EXT_OPTION \
 	-Dpython.cachedir.skip=true \
-	-Xincgc -XX:PermSize=128m \
 	-Dplugins.dir=$IMAGEJ_ROOT_SQ \
 	-Djava.class.path="`sq_quote "$CLASSPATH"`" \
 	-Dsun.java.command=ImageJ -Dij.dir=$IMAGEJ_ROOT_SQ \
