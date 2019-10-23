@@ -34,9 +34,13 @@ package net.imagej.app;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import net.imagej.ImageJ;
 import net.imagej.ImageJService;
 
 import org.junit.After;
@@ -123,4 +127,20 @@ public class ServiceCompletenessTest {
 		}
 	}
 
+	@Test
+	public void testGatewayMethods() {
+		final Method[] methods = ImageJ.class.getMethods();
+		final Set<Class<?>> gatewayServices = new HashSet<>();
+		for (final Method method : methods) {
+			final Class<?> returnType = method.getReturnType();
+			if (!returnType.getName().endsWith("Service")) continue;
+			if (returnType == Service.class) continue;
+			gatewayServices.add(returnType);
+		}
+		for (final Service s : ctx.getServiceIndex()) {
+			final Class<?> c = s.getClass();
+			assertTrue("No gateway accessor for " + c.getSimpleName(),
+				gatewayServices.contains(c));
+		}
+	}
 }
