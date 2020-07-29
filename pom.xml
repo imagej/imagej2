@@ -113,6 +113,10 @@ Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 		</dependency>
 		<dependency>
 			<groupId>net.imagej</groupId>
+			<artifactId>imagej-launcher</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
 			<artifactId>imagej-notebook</artifactId>
 		</dependency>
 		<dependency>
@@ -341,14 +345,6 @@ Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 								</goals>
 								<configuration>
 									<artifactItems>
-										<artifactItem>
-											<groupId>${project.groupId}</groupId>
-											<artifactId>imagej-launcher</artifactId>
-											<version>${imagej-launcher.version}</version>
-											<type>nar</type>
-											<outputDirectory>${project.build.directory}/</outputDirectory>
-											<destFileName>imagej-launcher-${imagej-launcher.version}.jar</destFileName>
-										</artifactItem>
 										<artifactItem>
 											<groupId>${project.groupId}</groupId>
 											<artifactId>imagej-launcher</artifactId>
