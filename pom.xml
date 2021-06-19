@@ -13,8 +13,8 @@
 	<artifactId>imagej</artifactId>
 	<version>2.2.1-SNAPSHOT</version>
 
-	<name>ImageJ</name>
-	<description>ImageJ is an open source Java image processing program inspired by NIH Image for the Macintosh.</description>
+	<name>ImageJ2</name>
+	<description>ImageJ2 is a new version of ImageJ for multidimensional image data, with a focus on scientific imaging.</description>
 	<url>https://imagej.net/</url>
 	<inceptionYear>2009</inceptionYear>
 	<organization>
@@ -286,7 +286,7 @@
 		<license.copyrightOwners>Board of Regents of the University of
 Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
 Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
-		<license.projectName>ImageJ software for multidimensional image processing and analysis.</license.projectName>
+		<license.projectName>ImageJ2 software for multidimensional image processing and analysis.</license.projectName>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>deploy-to-scijava</releaseProfiles>
