@@ -274,8 +274,8 @@
 		<url>https://github.com/imagej/imagej/issues</url>
 	</issueManagement>
 	<ciManagement>
-		<system>Travis CI</system>
-		<url>https://travis-ci.org/imagej/imagej</url>
+		<system>GitHub Actions</system>
+		<url>https://github.com/imagej/imagej/actions</url>
 	</ciManagement>
 
 	<properties>
@@ -289,7 +289,7 @@ Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 		<license.projectName>ImageJ2 software for multidimensional image processing and analysis.</license.projectName>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
-		<releaseProfiles>deploy-to-scijava</releaseProfiles>
+		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 	</properties>
 
 	<repositories>
