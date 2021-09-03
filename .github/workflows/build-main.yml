@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - "*-[0-9]+.*"
 
 jobs:
   build:
