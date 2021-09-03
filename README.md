@@ -3,10 +3,17 @@
 [![Join the chat at https://gitter.im/imagej/imagej](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/imagej/imagej?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/imagej/imagej2)
 
-ImageJ2 is a new version of [ImageJ](https://imagej.net/) seeking to strengthen
-both the software and its community. Internally, it is a total redesign of
-ImageJ, but it is backwards compatible with ImageJ 1.x via a "legacy layer" and
-features a user interface closely modeled after the original.
+This is the repository for [ImageJ2](https://imagej.net/software/imagej2),
+a rewrite of the original [ImageJ](https://imagej.net/software/imagej) for
+multidimensional image data, with a focus on scientific imaging. Its central
+goal is to broaden the paradigm of ImageJ beyond the limitations of the
+original ImageJ application, to support the next generation of multidimensional
+scientific imaging.
+
+To ensure backwards compatibility, ImageJ2 has been designed to fully integrate
+into the original ImageJ user interface. This allows users to keep using ImageJ
+in familiar ways, while providing the ability to migrate toward more powerful
+new features as needed.
 
 Under the hood, ImageJ2 completely isolates the image processing logic from the
 graphical user interface (UI), allowing ImageJ2 commands to be used in many
@@ -29,7 +36,7 @@ We are collaborating closely with related projects including
 software stack reusable throughout the life sciences community and beyond.
 For more details, see the [SciJava web site](https://scijava.org/).
 
-For more details on the project, see the [ImageJ web site](https://imagej.net/).
+For more details on the project, see the [ImageJ wiki](https://imagej.net/).
 
 
 # LICENSING
