@@ -26,8 +26,8 @@ automated builds via a continuous integration system, a bug tracker and more.
 We are collaborating closely with related projects including
 [Fiji](https://fiji.sc/), [SCIFIO](https://scif.io/) and
 [OME](https://openmicroscopy.org/), and are striving to deliver a coherent
-software stack reusable throughout the life sciences community and beyond. For
-more details, see the [SciJava web site](https://scijava.org/).
+software stack reusable throughout the life sciences community and beyond.
+For more details, see the [SciJava web site](https://scijava.org/).
 
 For more details on the project, see the [ImageJ web site](https://imagej.net/).
 
