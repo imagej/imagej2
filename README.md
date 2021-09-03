@@ -46,9 +46,6 @@ ImageJ2 is distributed under a
 for the full text of the license, see
 [LICENSE.txt](https://github.com/imagej/imagej2/blob/master/LICENSE.txt).
 
-For the list of developers and contributors, see
-[the parent POM](https://github.com/imagej/pom-imagej/blob/master/pom.xml).
-
 
 # IMAGEJ AS A LIBRARY
 
