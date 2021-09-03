@@ -1,7 +1,7 @@
 [![Image.sc forum](https://img.shields.io/badge/dynamic/json.svg?label=forum&url=https%3A%2F%2Fforum.image.sc%2Ftags%2Fimagej.json&query=%24.topic_list.tags.0.topic_count&colorB=brightgreen&suffix=%20topics&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAABPklEQVR42m3SyyqFURTA8Y2BER0TDyExZ+aSPIKUlPIITFzKeQWXwhBlQrmFgUzMMFLKZeguBu5y+//17dP3nc5vuPdee6299gohUYYaDGOyyACq4JmQVoFujOMR77hNfOAGM+hBOQqB9TjHD36xhAa04RCuuXeKOvwHVWIKL9jCK2bRiV284QgL8MwEjAneeo9VNOEaBhzALGtoRy02cIcWhE34jj5YxgW+E5Z4iTPkMYpPLCNY3hdOYEfNbKYdmNngZ1jyEzw7h7AIb3fRTQ95OAZ6yQpGYHMMtOTgouktYwxuXsHgWLLl+4x++Kx1FJrjLTagA77bTPvYgw1rRqY56e+w7GNYsqX6JfPwi7aR+Y5SA+BXtKIRfkfJAYgj14tpOF6+I46c4/cAM3UhM3JxyKsxiOIhH0IO6SH/A1Kb1WBeUjbkAAAAAElFTkSuQmCC)](https://forum.image.sc/tag/imagej)
-[![](https://github.com/imagej/imagej/actions/workflows/build-main.yml/badge.svg)](https://github.com/imagej/imagej/actions/workflows/build-main.yml)
+[![](https://github.com/imagej/imagej2/actions/workflows/build-main.yml/badge.svg)](https://github.com/imagej/imagej2/actions/workflows/build-main.yml)
 [![Join the chat at https://gitter.im/imagej/imagej](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/imagej/imagej?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/imagej/imagej)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/imagej/imagej2)
 
 ImageJ2 is a new version of [ImageJ](https://imagej.net/) seeking to strengthen
 both the software and its community. Internally, it is a total redesign of
@@ -37,7 +37,7 @@ For more details on the project, see the [ImageJ web site](https://imagej.net/).
 ImageJ2 is distributed under a
 [Simplified BSD License](https://en.wikipedia.org/wiki/BSD_licenses);
 for the full text of the license, see
-[LICENSE.txt](https://github.com/imagej/imagej/blob/master/LICENSE.txt).
+[LICENSE.txt](https://github.com/imagej/imagej2/blob/master/LICENSE.txt).
 
 For the list of developers and contributors, see
 [the parent POM](https://github.com/imagej/pom-imagej/blob/master/pom.xml).
