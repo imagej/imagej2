@@ -67,18 +67,18 @@
 
 		<!-- Include the ImageJ2 icon in the Mac OS X application bundle. -->
 		<file>
-			<source>${basedir}/logo/ImageJ.icns</source>
+			<source>${basedir}/logo/imagej2-v1/ImageJ.icns</source>
 			<outputDirectory>/Contents/Resources/</outputDirectory>
 		</file>
 
 		<!-- Use the ImageJ2 logo for the splash screen. -->
 		<file>
-			<source>${basedir}/logo/imagej.png</source>
+			<source>${basedir}/logo/imagej2-v1/imagej.png</source>
 			<outputDirectory>/images/</outputDirectory>
 			<destName>icon.png</destName>
 		</file>
 		<file>
-			<source>${basedir}/logo/imagej.png</source>
+			<source>${basedir}/logo/imagej2-v1/imagej.png</source>
 			<outputDirectory>/images/</outputDirectory>
 			<destName>icon-flat.png</destName>
 		</file>
