@@ -85,11 +85,6 @@
 
 		<!-- Include the ImageJ launcher executables in appropriate locations. -->
 		<file>
-			<source>target/imagej-launcher-${imagej-launcher.version}.jar</source>
-			<outputDirectory>jars/</outputDirectory>
-			<destName>imagej-launcher-${imagej-launcher.version}.jar</destName>
-		</file>
-		<file>
 			<source>target/imagej-launcher-linux64</source>
 			<destName>ImageJ-linux64</destName>
 			<fileMode>0755</fileMode>

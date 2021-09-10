@@ -125,6 +125,10 @@
 			<properties><id>tferr</id></properties>
 		</contributor>
 		<contributor>
+			<name>Henrik Grimler</name>
+			<properties><id>Grimler91</id></properties>
+		</contributor>
+		<contributor>
 			<name>Aivar Grislis</name>
 			<url>https://imagej.net/people/grislis</url>
 			<properties><id>grislis</id></properties>
