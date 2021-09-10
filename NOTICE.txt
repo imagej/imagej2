@@ -1,4 +1,4 @@
-ImageJ depends on several other software packages, each with its own license.
+ImageJ2 depends on several other software packages, each with its own license.
 
 You can generate an up-to-date list of dependencies from the source code:
 

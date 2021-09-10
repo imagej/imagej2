@@ -1,4 +1,4 @@
-[![Image.sc forum](https://img.shields.io/badge/dynamic/json.svg?label=forum&url=https%3A%2F%2Fforum.image.sc%2Ftags%2Fimagej.json&query=%24.topic_list.tags.0.topic_count&colorB=brightgreen&suffix=%20topics&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAABPklEQVR42m3SyyqFURTA8Y2BER0TDyExZ+aSPIKUlPIITFzKeQWXwhBlQrmFgUzMMFLKZeguBu5y+//17dP3nc5vuPdee6299gohUYYaDGOyyACq4JmQVoFujOMR77hNfOAGM+hBOQqB9TjHD36xhAa04RCuuXeKOvwHVWIKL9jCK2bRiV284QgL8MwEjAneeo9VNOEaBhzALGtoRy02cIcWhE34jj5YxgW+E5Z4iTPkMYpPLCNY3hdOYEfNbKYdmNngZ1jyEzw7h7AIb3fRTQ95OAZ6yQpGYHMMtOTgouktYwxuXsHgWLLl+4x++Kx1FJrjLTagA77bTPvYgw1rRqY56e+w7GNYsqX6JfPwi7aR+Y5SA+BXtKIRfkfJAYgj14tpOF6+I46c4/cAM3UhM3JxyKsxiOIhH0IO6SH/A1Kb1WBeUjbkAAAAAElFTkSuQmCC)](https://forum.image.sc/tag/imagej)
+[![Image.sc Forum](https://img.shields.io/badge/dynamic/json.svg?label=forum&url=https%3A%2F%2Fforum.image.sc%2Ftags%2Fimagej.json&query=%24.topic_list.tags.0.topic_count&colorB=brightgreen&suffix=%20topics&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAABPklEQVR42m3SyyqFURTA8Y2BER0TDyExZ+aSPIKUlPIITFzKeQWXwhBlQrmFgUzMMFLKZeguBu5y+//17dP3nc5vuPdee6299gohUYYaDGOyyACq4JmQVoFujOMR77hNfOAGM+hBOQqB9TjHD36xhAa04RCuuXeKOvwHVWIKL9jCK2bRiV284QgL8MwEjAneeo9VNOEaBhzALGtoRy02cIcWhE34jj5YxgW+E5Z4iTPkMYpPLCNY3hdOYEfNbKYdmNngZ1jyEzw7h7AIb3fRTQ95OAZ6yQpGYHMMtOTgouktYwxuXsHgWLLl+4x++Kx1FJrjLTagA77bTPvYgw1rRqY56e+w7GNYsqX6JfPwi7aR+Y5SA+BXtKIRfkfJAYgj14tpOF6+I46c4/cAM3UhM3JxyKsxiOIhH0IO6SH/A1Kb1WBeUjbkAAAAAElFTkSuQmCC)](https://forum.image.sc/tag/imagej)
 [![](https://github.com/imagej/imagej2/actions/workflows/build-main.yml/badge.svg)](https://github.com/imagej/imagej2/actions/workflows/build-main.yml)
 [![Join the chat at https://gitter.im/imagej/imagej](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/imagej/imagej?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/imagej/imagej2)
@@ -18,20 +18,23 @@ new features as needed.
 Under the hood, ImageJ2 completely isolates the image processing logic from the
 graphical user interface (UI), allowing ImageJ2 commands to be used in many
 contexts, including headless in the cloud or on a server such as
-[OMERO](https://openmicroscopy.org/site/support/omero), or from within another
-application such as [KNIME](https://www.knime.com/),
-[Icy](http://icy.bioimageanalysis.org/) or
-[CellProfiler](https://cellprofiler.org/) (a Python application).
+[OMERO](https://imagej.net/software/omero), or from within another application
+such as [KNIME](https://imagej.net/software/knime),
+[Icy](https://imagej.net/software/icy) or
+[CellProfiler](https://imagej.net/software/cellprofiler) (a Python
+application).
 
 ImageJ2 has an N-dimensional data model driven by the powerful
-[ImgLib2](http://imglib2.net/) library, which supports image data expressed in
-an extensible set of numeric and non-numeric types, and accessed from an
-extensible set of data sources. ImageJ2 is driven by a state-of-the-art,
-collaborative development process, including version control, unit testing,
-automated builds via a continuous integration system, a bug tracker and more.
+[ImgLib2](https://imagej.net/libs/imglib2) library, which supports image data
+expressed in an extensible set of numeric and non-numeric types, and accessed
+from an extensible set of data sources. ImageJ2 is driven by a
+state-of-the-art, collaborative development process, including version control,
+unit testing, automated builds via a continuous integration system, a bug
+tracker and more.
 
 We are collaborating closely with related projects including
-[Fiji](https://fiji.sc/), [SCIFIO](https://scif.io/) and
+[Fiji](https://imagej.net/software/fiji),
+[SCIFIO](https://imagej.net/software/scifio) and
 [OME](https://openmicroscopy.org/), and are striving to deliver a coherent
 software stack reusable throughout the life sciences community and beyond.
 For more details, see the [SciJava web site](https://scijava.org/).
@@ -47,21 +50,21 @@ for the full text of the license, see
 [LICENSE.txt](https://github.com/imagej/imagej2/blob/master/LICENSE.txt).
 
 
-# IMAGEJ AS A LIBRARY
+# IMAGEJ2 AS A LIBRARY
 
 ## From Java
 
-This repository is the master ImageJ application, which brings together all of
-ImageJ under the artifact
+This repository is the main ImageJ2 application, which brings together all of
+ImageJ2 under the artifact
 [net.imagej:imagej](https://maven.scijava.org/index.html#nexus-search;gav~net.imagej~imagej~~~~kw,versionexpand).
-It is the easiest entry point if you are looking to use ImageJ as a library from
-your own software. E.g., in your Maven `pom.xml`:
+It is the easiest entry point if you are looking to use ImageJ2 as a library
+from your own software. E.g., in your Maven `pom.xml`:
 
 ```
 <parent>
   <groupId>org.scijava</groupId>
   <artifactId>pom-scijava</artifactId>
-  <version>16.2.0</version>
+  <version>30.0.0</version>
 </parent>
 ...
 <dependency>
@@ -72,23 +75,23 @@ your own software. E.g., in your Maven `pom.xml`:
 
 We recommend inheriting from the
 [pom-scijava](https://github.com/scijava/pom-scijava) parent, although it is not
-required. (If you do not, you will need to include the `<version>` of ImageJ in
+required. (If you do not, you will need to include the `<version>` of ImageJ2 in
 your `<dependency>` declaration.)
 
 ## From other languages
 
 * __JavaScript__: Use the
   [imagej module on npm](https://www.npmjs.com/package/imagej)
-  to call ImageJ in-process from node.js code.
+  to call ImageJ2 in-process from node.js code.
 * __Python__: Use the
-  [imagej module on pypi](https://pypi.org/project/imagej/)
-  to call ImageJ in-process or interprocess from Python code.
+  [PyImageJ module on PyPi](https://pypi.org/project/pyimagej/)
+  to call ImageJ2 in-process or interprocess from Python code.
 * __Ruby, R, LLVM and beyond__: Use [GraalVM](https://www.graalvm.org/)
-  to combine ImageJ with Truffle-based languages in the same VM,
+  to combine ImageJ2 with Truffle-based languages in the same VM,
   with shared objects and memory on a single VM heap.
 * __Interprocess__: Use the
   [ImageJ Server](https://github.com/imagej/imagej-server)
-  to work with ImageJ via a RESTful web services API, between
+  to work with ImageJ2 via a RESTful web services API, between
   processes on the same machine, or between multiple machines.
 
 
@@ -122,7 +125,7 @@ See the [pom.xml](pom.xml) for a complete list of dependencies.
 # BUGS
 
 For a list of known issues, see the
-[GitHub issues](https://github.com/imagej/imagej/issues).
+[GitHub issues](https://github.com/imagej/imagej2/issues).
 
 Please report any bugs by following the
-[instructions online](https://imagej.net/Bugs).
+[instructions online](https://imagej.net/discuss/bugs).

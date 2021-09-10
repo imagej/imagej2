@@ -14,7 +14,7 @@
 	<version>2.2.1-SNAPSHOT</version>
 
 	<name>ImageJ2</name>
-	<description>ImageJ2 is a new version of ImageJ for multidimensional image data, with a focus on scientific imaging.</description>
+	<description>ImageJ2 is a rewrite of ImageJ for multidimensional image data, with a focus on scientific imaging.</description>
 	<url>https://imagej.net/</url>
 	<inceptionYear>2009</inceptionYear>
 	<organization>
@@ -300,7 +300,7 @@ Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 	</repositories>
 
 	<dependencies>
-		<!-- ImageJ dependencies -->
+		<!-- ImageJ2 dependencies -->
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej-common</artifactId>
@@ -334,7 +334,7 @@ Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 			<artifactId>scijava-common</artifactId>
 		</dependency>
 
-		<!-- Runtime ImageJ dependencies -->
+		<!-- Runtime ImageJ2 dependencies -->
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej-legacy</artifactId>
@@ -456,8 +456,8 @@ Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 		<!--
 		The alt-ui profile adds alternative user interfaces to the
 		runtime classpath if the scijava.ui system property is set.
-		This enables launching ImageJ with an alternative UI; see:
-		https://imagej.net/Developing_ImageJ_on_the_command_line
+		This enables launching ImageJ2 with an alternative UI; see:
+		https://imagej.net/develop/command-line
 		-->
 		<profile>
 			<id>alt-ui</id>
@@ -493,7 +493,7 @@ Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 		</profile>
 
 		<!--
-		The swing profile includes the ImageJ Swing UI.
+		The swing profile includes the ImageJ2 Swing UI.
 		It is always included unless java.awt.headless is set.
 		-->
 		<profile>
@@ -508,8 +508,8 @@ Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 		</profile>
 
 		<!--
-		The app profile builds the imagej-x.y.z-application.zip bundle,
-		which is the downloadable ZIP archive of the ImageJ application.
+		The app profile builds the imagej2-x.y.z-application.zip bundle,
+		which is the downloadable ZIP archive of the ImageJ2 application.
 		-->
 		<profile>
 			<id>app</id>
@@ -521,7 +521,7 @@ Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 							<descriptors>
 								<descriptor>src/main/assembly/zip.xml</descriptor>
 							</descriptors>
-							<finalName>imagej-${project.version}</finalName>
+							<finalName>imagej2-${project.version}</finalName>
 						</configuration>
 						<executions>
 							<execution>
@@ -591,9 +591,9 @@ Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 
 		<!--
 		The deps profile builds the imagej-x.y.z-all uber-jar, which is a bundle of
-		ImageJ with all dependencies and ImageJ sources. While we do not encourage
+		ImageJ2 with all dependencies and sources. While we do not encourage
 		its use, it can simplify deployment in some environments; see:
-		https://imagej.net/FAQ#How_can_I_call_ImageJ_from_my_software.3F
+		https://imagej.net/learn/faq#how-can-i-call-imagej-from-my-software
 		-->
 		<profile>
 			<id>deps</id>
@@ -611,7 +611,7 @@ Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 					<classifier>sources</classifier>
 				</dependency>
 
-				<!-- ImageJ dependencies -->
+				<!-- ImageJ2 dependencies -->
 				<dependency>
 					<groupId>net.imagej</groupId>
 					<artifactId>imagej-common</artifactId>
@@ -645,7 +645,7 @@ Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 					<classifier>sources</classifier>
 				</dependency>
 
-				<!-- Runtime ImageJ dependencies -->
+				<!-- Runtime ImageJ2 dependencies -->
 				<dependency>
 					<groupId>net.imagej</groupId>
 					<artifactId>imagej-plugins-commands</artifactId>
@@ -832,7 +832,7 @@ Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
 							<descriptors>
 								<descriptor>src/main/assembly/dir.xml</descriptor>
 							</descriptors>
-							<finalName>ImageJ.app</finalName>
+							<finalName>ImageJ2.app</finalName>
 							<outputDirectory>${basedir}</outputDirectory>
 							<appendAssemblyId>false</appendAssemblyId>
 							<attach>false</attach>
