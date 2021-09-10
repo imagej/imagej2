@@ -36,7 +36,7 @@
 	<formats>
 		<format>zip</format>
 	</formats>
-	<baseDirectory>ImageJ.app</baseDirectory>
+	<baseDirectory>ImageJ2.app</baseDirectory>
 	<componentDescriptors>
 		<componentDescriptor>src/main/assembly/application.xml</componentDescriptor>
 	</componentDescriptors>

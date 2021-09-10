@@ -55,9 +55,9 @@ import org.scijava.plugin.Plugin;
 import org.scijava.service.SciJavaService;
 
 /**
- * Main entry point into ImageJ. This class enables working with ImageJ services
- * in a simple way, while retaining extensibility (i.e., access to third-party
- * services).
+ * Main entry point into ImageJ2. This class enables working with ImageJ2
+ * services in a simple way, while retaining extensibility (i.e., access to
+ * third-party services).
  * 
  * @author Curtis Rueden
  */
@@ -70,8 +70,8 @@ public class ImageJ extends AbstractGateway {
 	// -- Constructors --
 
 	/**
-	 * Creates a new ImageJ application context with all ImageJ, SCIFIO and
-	 * SciJava services.
+	 * Creates a new application context with all ImageJ2, SCIFIO and SciJava
+	 * services.
 	 */
 	public ImageJ() {
 		this(new Context(SciJavaService.class, SCIFIOService.class,
@@ -79,8 +79,8 @@ public class ImageJ extends AbstractGateway {
 	}
 
 	/**
-	 * Creates a new ImageJ application context which wraps the given existing
-	 * SciJava context.
+	 * Creates a new application context which wraps the given existing SciJava
+	 * context.
 	 * 
 	 * @see Context
 	 */
