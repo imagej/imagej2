@@ -34,13 +34,13 @@
 		<!-- Include main application skeleton. -->
 		<fileSet>
 			<directory>${project.basedir}/src/main/assembly/application</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory></outputDirectory>
 		</fileSet>
 
 		<!-- Include documents and about images in toplevel directory. -->
 		<fileSet>
 			<directory>${basedir}</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory></outputDirectory>
 			<includes>
 				<include>LICENSE*</include>
 				<include>NOTICE*</include>
@@ -56,7 +56,7 @@
 	<!-- Include all dependent libraries in jars subdirectory. -->
 	<dependencySets>
 		<dependencySet>
-			<outputDirectory>/jars</outputDirectory>
+			<outputDirectory>jars</outputDirectory>
 			<outputFileNameMapping>${artifact.artifactId}-${artifact.baseVersion}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
 			<unpack>false</unpack>
 			<scope>runtime</scope>
@@ -68,18 +68,18 @@
 		<!-- Include the ImageJ2 icon in the Mac OS X application bundle. -->
 		<file>
 			<source>${basedir}/logo/ImageJ2.icns</source>
-			<outputDirectory>/Contents/Resources/</outputDirectory>
+			<outputDirectory>Contents/Resources/</outputDirectory>
 		</file>
 
 		<!-- Use the ImageJ2 logo for the splash screen. -->
 		<file>
 			<source>${basedir}/logo/256x256-shadow.png</source>
-			<outputDirectory>/images/</outputDirectory>
+			<outputDirectory>images/</outputDirectory>
 			<destName>icon.png</destName>
 		</file>
 		<file>
 			<source>${basedir}/logo/256x256-flat.png</source>
-			<outputDirectory>/images/</outputDirectory>
+			<outputDirectory>images/</outputDirectory>
 			<destName>icon-flat.png</destName>
 		</file>
 
@@ -91,7 +91,7 @@
 		</file>
 		<file>
 			<source>target/imagej-launcher-macosx</source>
-			<outputDirectory>/Contents/MacOS/</outputDirectory>
+			<outputDirectory>Contents/MacOS/</outputDirectory>
 			<destName>ImageJ-macosx</destName>
 			<fileMode>0755</fileMode>
 		</file>
