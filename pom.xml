@@ -268,18 +268,18 @@
 	</mailingLists>
 
 	<scm>
-		<connection>scm:git:git://github.com/imagej/imagej</connection>
-		<developerConnection>scm:git:git@github.com:imagej/imagej</developerConnection>
+		<connection>scm:git:git://github.com/imagej/imagej2</connection>
+		<developerConnection>scm:git:git@github.com:imagej/imagej2</developerConnection>
 		<tag>HEAD</tag>
-		<url>https://github.com/imagej/imagej</url>
+		<url>https://github.com/imagej/imagej2</url>
 	</scm>
 	<issueManagement>
 		<system>GitHub Issues</system>
-		<url>https://github.com/imagej/imagej/issues</url>
+		<url>https://github.com/imagej/imagej2/issues</url>
 	</issueManagement>
 	<ciManagement>
 		<system>GitHub Actions</system>
-		<url>https://github.com/imagej/imagej/actions</url>
+		<url>https://github.com/imagej/imagej2/actions</url>
 	</ciManagement>
 
 	<properties>
