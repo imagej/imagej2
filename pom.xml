@@ -268,7 +268,7 @@
 	</mailingLists>
 
 	<scm>
-		<connection>scm:git:git://github.com/imagej/imagej2</connection>
+		<connection>scm:git:https://github.com/imagej/imagej2</connection>
 		<developerConnection>scm:git:git@github.com:imagej/imagej2</developerConnection>
 		<tag>HEAD</tag>
 		<url>https://github.com/imagej/imagej2</url>
