@@ -7,8 +7,8 @@ This is the repository for [ImageJ2](https://imagej.net/software/imagej2),
 a rewrite of the original [ImageJ](https://imagej.net/software/imagej) for
 multidimensional image data, with a focus on scientific imaging. Its central
 goal is to broaden the paradigm of ImageJ beyond the limitations of the
-original ImageJ application, to support the next generation of multidimensional
-scientific imaging.
+original ImageJ application, to support a wider range of multidimensional
+scientific image data.
 
 To ensure backwards compatibility, ImageJ2 has been designed to fully integrate
 into the original ImageJ user interface. This allows users to keep using ImageJ
@@ -18,23 +18,24 @@ new features as needed.
 Under the hood, ImageJ2 completely isolates the image processing logic from the
 graphical user interface (UI), allowing ImageJ2 commands to be used in many
 contexts, including headless in the cloud or on a server such as
-[OMERO](https://imagej.net/software/omero), or from within another application
-such as [KNIME](https://imagej.net/software/knime),
-[Icy](https://imagej.net/software/icy) or
-[CellProfiler](https://imagej.net/software/cellprofiler) (a Python
-application).
+[OMERO](https://imagej.net/software/omero), from within another Java
+application such as [KNIME](https://imagej.net/software/knime) or
+[Icy](https://imagej.net/software/icy), or even from Python-based applications
+such as [CellProfiler](https://imagej.net/software/cellprofiler) and
+[napari](https://imagej.net/software/napari) via
+[PyImageJ](https://pypi.org/project/pyimagej).
 
 ImageJ2 has an N-dimensional data model driven by the powerful
 [ImgLib2](https://imagej.net/libs/imglib2) library, which supports image data
 expressed in an extensible set of numeric and non-numeric types, and accessed
-from an extensible set of data sources. ImageJ2 is driven by a
-state-of-the-art, collaborative development process, including version control,
-unit testing, automated builds via a continuous integration system, a bug
-tracker and more.
+from an extensible set of data sources. ImageJ2 is driven by a collaborative
+development process; for details, see the
+[Contributing](https://imagej.net/contribute/) page.
 
-We are collaborating closely with related projects including
+We collaborate with related projects such as
 [Fiji](https://imagej.net/software/fiji),
-[SCIFIO](https://imagej.net/software/scifio) and
+[SCIFIO](https://imagej.net/software/scifio),
+[CellProfiler](https://imagej.net/software/cellprofiler), and
 [OME](https://openmicroscopy.org/), and are striving to deliver a coherent
 software stack reusable throughout the life sciences community and beyond.
 For more details, see the [SciJava web site](https://scijava.org/).
@@ -76,7 +77,9 @@ from your own software. E.g., in your Maven `pom.xml`:
 We recommend inheriting from the
 [pom-scijava](https://github.com/scijava/pom-scijava) parent, although it is not
 required. (If you do not, you will need to include the `<version>` of ImageJ2 in
-your `<dependency>` declaration.)
+your `<dependency>` declaration, and you may be bitten by [this bug in
+Maven](https://stackoverflow.com/q/45041888/1207769) regarding the versions of
+ImageJ2's dependencies that you inherit.)
 
 ## From other languages
 
@@ -85,7 +88,7 @@ your `<dependency>` declaration.)
   to call ImageJ2 in-process from node.js code.
 * __Python__: Use the
   [PyImageJ module on PyPi](https://pypi.org/project/pyimagej/)
-  to call ImageJ2 in-process or interprocess from Python code.
+  to call ImageJ2 in-process from Python code.
 * __Ruby, R, LLVM and beyond__: Use [GraalVM](https://www.graalvm.org/)
   to combine ImageJ2 with Truffle-based languages in the same VM,
   with shared objects and memory on a single VM heap.
