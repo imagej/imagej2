@@ -13,24 +13,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Cache m2 folder
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-m2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-build-${{ env.cache-name }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-
-      - name: Set up JDK 8
+      - name: Set up Java
         uses: actions/setup-java@v2
         with:
           java-version: '8'
           distribution: 'zulu'
+          cache: 'maven'
       - name: Set up CI environment
         run: .github/setup.sh
       - name: Execute the build
