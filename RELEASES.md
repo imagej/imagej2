@@ -6,8 +6,8 @@ release-version.sh](https://github.com/scijava/scijava-scripts/blob/master/relea
 script, which uses the
 [maven-release-plugin](http://maven.apache.org/maven-release/maven-release-plugin/)
 to do some of the work. All releases are tagged in their respective Git
-repositories, with binary builds deployed to the [ImageJ Maven
-repository](http://maven.imagej.net/).
+repositories, with binary builds deployed to the [SciJava Maven
+repository](https://maven.scijava.org/).
 
 ## POM-SCIJAVA VERSIONING
 
@@ -85,7 +85,7 @@ The following steps perform a release of ImageJ itself:
 
 Verify that the pom-scijava version used by ImageJ references the
 [latest available version of ImageJ
-1.x](http://maven.imagej.net/content/repositories/releases/net/imagej/ij/):
+1.x](https://maven.scijava.org/content/repositories/releases/net/imagej/ij/):
 
     cd imagej
     sj-version.sh | grep imagej1.version
@@ -159,7 +159,7 @@ pom-scijava](http://jenkins.imagej.net/view/SciJava/job/Bump-POM-SciJava/build).
 #### Upload artifacts to the ImageJ update site
 
 - Unpack the [application
-  ZIP](http://maven.imagej.net/content/repositories/releases/net/imagej/ij-app/)
+  ZIP](https://maven.scijava.org/content/repositories/releases/net/imagej/ij-app/)
 - Add upload information for the ''ImageJ'' update site:
 
   ```
