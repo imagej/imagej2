@@ -287,9 +287,7 @@
 		<package-name>net.imagej</package-name>
 
 		<license.licenseName>bsd_2</license.licenseName>
-		<license.copyrightOwners>Board of Regents of the University of
-Wisconsin-Madison, Broad Institute of MIT and Harvard, and Max Planck
-Institute of Molecular Cell Biology and Genetics.</license.copyrightOwners>
+		<license.copyrightOwners>ImageJ2 developers.</license.copyrightOwners>
 		<license.projectName>ImageJ2 software for multidimensional image processing and analysis.</license.projectName>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
