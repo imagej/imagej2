@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>32.0.0-beta-7</version>
+		<version>32.0.0</version>
 		<relativePath />
 	</parent>
 
