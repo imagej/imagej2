@@ -419,6 +419,18 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- Optional runtime dependencies -->
+		<!--
+		NB: scijava-config provides application configuration (e.g. logging) that
+		should not be propagated to downstream components depending on ImageJ2.
+		-->
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>scijava-config</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+
 		<!-- Test scope dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
