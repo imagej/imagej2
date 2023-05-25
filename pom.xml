@@ -332,6 +332,11 @@
 		<!-- Runtime ImageJ2 dependencies -->
 		<dependency>
 			<groupId>net.imagej</groupId>
+			<artifactId>imagej-deprecated</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.imagej</groupId>
 			<artifactId>imagej-legacy</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
@@ -344,11 +349,6 @@
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej-plugins-batch</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>net.imagej</groupId>
-			<artifactId>imagej-deprecated</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -629,8 +629,14 @@
 				</dependency>
 				<dependency>
 					<groupId>net.imagej</groupId>
-					<artifactId>imagej-legacy</artifactId>
-					<version>${imagej-legacy.version}</version>
+					<artifactId>imagej-launcher</artifactId>
+					<version>${imagej-launcher.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-notebook</artifactId>
+					<version>${imagej-notebook.version}</version>
 					<classifier>sources</classifier>
 				</dependency>
 				<dependency>
@@ -646,6 +652,14 @@
 					<classifier>sources</classifier>
 				</dependency>
 
+				<!-- SCIFIO dependencies -->
+				<dependency>
+					<groupId>io.scif</groupId>
+					<artifactId>scifio</artifactId>
+					<version>${scifio.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+
 				<!-- SciJava dependencies -->
 				<dependency>
 					<groupId>org.scijava</groupId>
@@ -655,6 +669,25 @@
 				</dependency>
 
 				<!-- Runtime ImageJ2 dependencies -->
+				<!-- NB: imagej-deprecated intentionally excluded. -->
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-legacy</artifactId>
+					<version>${imagej-legacy.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-mesh-io</artifactId>
+					<version>${imagej-mesh-io.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-plugins-batch</artifactId>
+					<version>${imagej-plugins-batch.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
 				<dependency>
 					<groupId>net.imagej</groupId>
 					<artifactId>imagej-plugins-commands</artifactId>
@@ -679,8 +712,32 @@
 					<version>${imagej-plugins-uploader-webdav.version}</version>
 					<classifier>sources</classifier>
 				</dependency>
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-scripting</artifactId>
+					<version>${imagej-scripting.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>net.imagej</groupId>
+					<artifactId>imagej-ui-swing</artifactId>
+					<version>${imagej-ui-swing.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
 
 				<!-- Runtime SciJava dependencies -->
+				<dependency>
+					<groupId>org.scijava</groupId>
+					<artifactId>scijava-io-http</artifactId>
+					<version>${scijava-io-http.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
+				<dependency>
+					<groupId>org.scijava</groupId>
+					<artifactId>scijava-plugins-commands</artifactId>
+					<version>${scijava-plugins-commands.version}</version>
+					<classifier>sources</classifier>
+				</dependency>
 				<dependency>
 					<groupId>org.scijava</groupId>
 					<artifactId>scijava-plugins-platforms</artifactId>
@@ -701,45 +758,16 @@
 				</dependency>
 				<dependency>
 					<groupId>org.scijava</groupId>
-					<artifactId>scripting-beanshell</artifactId>
-					<version>${scripting-beanshell.version}</version>
-					<classifier>sources</classifier>
-				</dependency>
-				<dependency>
-					<groupId>org.scijava</groupId>
-					<artifactId>scripting-clojure</artifactId>
-					<version>${scripting-clojure.version}</version>
-					<classifier>sources</classifier>
-				</dependency>
-				<dependency>
-					<groupId>org.scijava</groupId>
-					<artifactId>scripting-java</artifactId>
-					<version>${scripting-java.version}</version>
-					<classifier>sources</classifier>
-				</dependency>
-				<dependency>
-					<groupId>org.scijava</groupId>
-					<artifactId>scripting-javascript</artifactId>
-					<version>${scripting-javascript.version}</version>
-					<classifier>sources</classifier>
-				</dependency>
-				<dependency>
-					<groupId>org.scijava</groupId>
-					<artifactId>scripting-jruby</artifactId>
-					<version>${scripting-jruby.version}</version>
-					<classifier>sources</classifier>
-				</dependency>
-				<dependency>
-					<groupId>org.scijava</groupId>
-					<artifactId>scripting-jython</artifactId>
-					<version>${scripting-jython.version}</version>
+					<artifactId>script-editor</artifactId>
+					<version>${script-editor.version}</version>
 					<classifier>sources</classifier>
 				</dependency>
 
+				<!-- Optional runtime dependencies -->
 				<dependency>
-					<groupId>net.imagej</groupId>
-					<artifactId>imagej-ui-swing</artifactId>
-					<version>${imagej-ui-swing.version}</version>
+					<groupId>org.scijava</groupId>
+					<artifactId>scijava-config</artifactId>
+					<version>${scijava-config.version}</version>
 					<classifier>sources</classifier>
 				</dependency>
 			</dependencies>
