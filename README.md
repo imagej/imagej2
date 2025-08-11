@@ -65,7 +65,7 @@ from your own software. E.g., in your Maven `pom.xml`:
 <parent>
   <groupId>org.scijava</groupId>
   <artifactId>pom-scijava</artifactId>
-  <version>30.0.0</version>
+  <version>42.0.0</version>
 </parent>
 ...
 <dependency>

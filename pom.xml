@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>39.0.0</version>
+		<version>42.0.0</version>
 		<relativePath />
 	</parent>
 
@@ -302,10 +302,6 @@
 		</dependency>
 		<dependency>
 			<groupId>net.imagej</groupId>
-			<artifactId>imagej-launcher</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>net.imagej</groupId>
 			<artifactId>imagej-notebook</artifactId>
 		</dependency>
 		<dependency>
@@ -559,58 +555,6 @@
 							</execution>
 						</executions>
 					</plugin>
-					<plugin>
-						<artifactId>maven-dependency-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>copy</id>
-								<phase>prepare-package</phase>
-								<goals>
-									<goal>copy</goal>
-								</goals>
-								<configuration>
-									<artifactItems>
-										<artifactItem>
-											<groupId>${project.groupId}</groupId>
-											<artifactId>imagej-launcher</artifactId>
-											<version>${imagej-launcher.version}</version>
-											<classifier>linux64</classifier>
-											<type>exe</type>
-											<outputDirectory>${project.build.directory}/</outputDirectory>
-											<destFileName>imagej-launcher-linux64</destFileName>
-										</artifactItem>
-										<artifactItem>
-											<groupId>${project.groupId}</groupId>
-											<artifactId>imagej-launcher</artifactId>
-											<version>${imagej-launcher.version}</version>
-											<classifier>win32</classifier>
-											<type>exe</type>
-											<outputDirectory>${project.build.directory}/</outputDirectory>
-											<destFileName>imagej-launcher-win32.exe</destFileName>
-										</artifactItem>
-										<artifactItem>
-											<groupId>${project.groupId}</groupId>
-											<artifactId>imagej-launcher</artifactId>
-											<version>${imagej-launcher.version}</version>
-											<classifier>win64</classifier>
-											<type>exe</type>
-											<outputDirectory>${project.build.directory}/</outputDirectory>
-											<destFileName>imagej-launcher-win64.exe</destFileName>
-										</artifactItem>
-										<artifactItem>
-											<groupId>${project.groupId}</groupId>
-											<artifactId>imagej-launcher</artifactId>
-											<version>${imagej-launcher.version}</version>
-											<classifier>macosx</classifier>
-											<type>exe</type>
-											<outputDirectory>${project.build.directory}/</outputDirectory>
-											<destFileName>imagej-launcher-macosx</destFileName>
-										</artifactItem>
-									</artifactItems>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
 				</plugins>
 			</build>
 		</profile>
@@ -642,12 +586,6 @@
 					<groupId>net.imagej</groupId>
 					<artifactId>imagej-common</artifactId>
 					<version>${imagej-common.version}</version>
-					<classifier>sources</classifier>
-				</dependency>
-				<dependency>
-					<groupId>net.imagej</groupId>
-					<artifactId>imagej-launcher</artifactId>
-					<version>${imagej-launcher.version}</version>
 					<classifier>sources</classifier>
 				</dependency>
 				<dependency>
