@@ -530,36 +530,6 @@
 		</profile>
 
 		<!--
-		The app profile builds the imagej2-x.y.z-application.zip bundle,
-		which is the downloadable ZIP archive of the ImageJ2 application.
-		-->
-		<profile>
-			<id>app</id>
-			<build>
-				<plugins>
-					<plugin>
-						<artifactId>maven-assembly-plugin</artifactId>
-						<configuration>
-							<descriptors>
-								<descriptor>src/main/assembly/zip.xml</descriptor>
-							</descriptors>
-							<finalName>imagej2-${project.version}</finalName>
-						</configuration>
-						<executions>
-							<execution>
-								<id>make-assembly</id>
-								<phase>package</phase>
-								<goals>
-									<goal>single</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
-		<!--
 		The deps profile builds the imagej-x.y.z-all uber-jar, which is a bundle of
 		ImageJ2 with all dependencies and sources. While we do not encourage
 		its use, it can simplify deployment in some environments; see:
@@ -568,7 +538,7 @@
 		<profile>
 			<id>deps</id>
 			<!--
-			NB: Include source code for all parts of ImageJ.
+			NB: Include source code for all parts of ImageJ2.
 			This list of dependencies needs to remain in sync with the
 			main list of dependencies outside the profiles section,
 			but with <classifier>sources</classifier> for each.
@@ -823,92 +793,6 @@
 						</configuration>
 					</plugin>
 				</plugins>
-			</build>
-		</profile>
-
-		<profile>
-			<id>populate-app</id>
-			<build>
-				<plugins>
-					<plugin>
-						<artifactId>maven-assembly-plugin</artifactId>
-						<configuration>
-							<descriptors>
-								<descriptor>src/main/assembly/dir.xml</descriptor>
-							</descriptors>
-							<finalName>ImageJ2.app</finalName>
-							<outputDirectory>${basedir}</outputDirectory>
-							<appendAssemblyId>false</appendAssemblyId>
-							<attach>false</attach>
-						</configuration>
-						<executions>
-							<execution>
-								<id>make-assembly</id>
-								<phase>package</phase>
-								<goals>
-									<goal>single</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
-		<profile>
-			<id>only-eclipse</id>
-			<activation>
-				<property>
-					<name>m2e.version</name>
-				</property>
-			</activation>
-			<build>
-				<pluginManagement>
-					<plugins>
-						<!--
-						This plugin's configuration is used to store Eclipse m2e settings
-						only. It has no influence on the Maven build itself.
-						-->
-						<plugin>
-							<groupId>org.eclipse.m2e</groupId>
-							<artifactId>lifecycle-mapping</artifactId>
-							<version>1.0.0</version>
-							<configuration>
-								<lifecycleMappingMetadata>
-									<pluginExecutions>
-										<pluginExecution>
-											<pluginExecutionFilter>
-												<groupId />
-												<artifactId />
-												<versionRange>${project.version}</versionRange>
-												<goals>
-													<goal />
-												</goals>
-											</pluginExecutionFilter>
-											<action>
-												<ignore />
-											</action>
-										</pluginExecution>
-										<pluginExecution>
-											<pluginExecutionFilter>
-												<groupId>org.apache.maven.plugins</groupId>
-												<artifactId>maven-dependency-plugin</artifactId>
-												<versionRange>[2.0,)</versionRange>
-												<goals>
-													<goal>copy</goal>
-													<goal>unpack</goal>
-												</goals>
-											</pluginExecutionFilter>
-											<action>
-												<ignore />
-											</action>
-										</pluginExecution>
-									</pluginExecutions>
-								</lifecycleMappingMetadata>
-							</configuration>
-						</plugin>
-					</plugins>
-				</pluginManagement>
 			</build>
 		</profile>
 	</profiles>
