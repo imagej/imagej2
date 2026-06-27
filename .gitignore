@@ -1,11 +1,21 @@
-.classpath
-.metadata
-.project
-.settings
-target
-*.swp
-/.idea
-*.iml
-/app/ImageJ.app/
+# Maven #
+/target/
+
+# Eclipse #
+/.classpath
+/.factorypath
+/.metadata
+/.project
+/.settings/
+
+# IntelliJ IDEA #
+/.idea/
+/*.iml
+
+# NetBeans #
 nb-configuration.xml
+
+# Misc #
+*.swp
+/app/ImageJ.app/
 /scripts/
