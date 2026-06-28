@@ -285,6 +285,7 @@
 	<properties>
 		<main-class>net.imagej.Main</main-class>
 		<package-name>net.imagej</package-name>
+		<automatic-module-name>net.imagej.imagej2</automatic-module-name>
 
 		<license.licenseName>bsd_2</license.licenseName>
 		<license.copyrightOwners>ImageJ2 developers.</license.copyrightOwners>
