@@ -1,5 +1,5 @@
 [![Image.sc Forum](https://img.shields.io/badge/dynamic/json.svg?label=forum&url=https%3A%2F%2Fforum.image.sc%2Ftags%2Fimagej.json&query=%24.topic_list.tags.0.topic_count&colorB=brightgreen&suffix=%20topics&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAABPklEQVR42m3SyyqFURTA8Y2BER0TDyExZ+aSPIKUlPIITFzKeQWXwhBlQrmFgUzMMFLKZeguBu5y+//17dP3nc5vuPdee6299gohUYYaDGOyyACq4JmQVoFujOMR77hNfOAGM+hBOQqB9TjHD36xhAa04RCuuXeKOvwHVWIKL9jCK2bRiV284QgL8MwEjAneeo9VNOEaBhzALGtoRy02cIcWhE34jj5YxgW+E5Z4iTPkMYpPLCNY3hdOYEfNbKYdmNngZ1jyEzw7h7AIb3fRTQ95OAZ6yQpGYHMMtOTgouktYwxuXsHgWLLl+4x++Kx1FJrjLTagA77bTPvYgw1rRqY56e+w7GNYsqX6JfPwi7aR+Y5SA+BXtKIRfkfJAYgj14tpOF6+I46c4/cAM3UhM3JxyKsxiOIhH0IO6SH/A1Kb1WBeUjbkAAAAAElFTkSuQmCC)](https://forum.image.sc/tag/imagej)
-[![](https://github.com/imagej/imagej2/actions/workflows/build.yml/badge.svg)](https://github.com/imagej/imagej2/actions/workflows/build.yml)
+[![Build Status](https://github.com/imagej/imagej2/actions/workflows/build.yml/badge.svg)](https://github.com/imagej/imagej2/actions/workflows/build.yml)
 [![developer chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://imagesc.zulipchat.com/#narrow/stream/327236-ImageJ2)
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/imagej/imagej2)
 
@@ -65,7 +65,7 @@ from your own software. E.g., in your Maven `pom.xml`:
 <parent>
   <groupId>org.scijava</groupId>
   <artifactId>pom-scijava</artifactId>
-  <version>42.0.0</version>
+  <version>45.0.0</version>
 </parent>
 ...
 <dependency>
@@ -83,16 +83,18 @@ ImageJ2's dependencies that you inherit.)
 
 ## From other languages
 
+* __Python__: Use the
+  [PyImageJ module on PyPi](https://pypi.org/project/pyimagej/)
+  to call ImageJ2 in-process from Python code, or the
+  [Appose](https://apposed.org/) library to call ImageJ2
+  as a separate process from Python code or vice versa.
 * __JavaScript__: Use the
   [imagej module on npm](https://www.npmjs.com/package/imagej)
   to call ImageJ2 in-process from node.js code.
-* __Python__: Use the
-  [PyImageJ module on PyPi](https://pypi.org/project/pyimagej/)
-  to call ImageJ2 in-process from Python code.
 * __Ruby, R, LLVM and beyond__: Use [GraalVM](https://www.graalvm.org/)
   to combine ImageJ2 with Truffle-based languages in the same VM,
   with shared objects and memory on a single VM heap.
-* __Interprocess__: Use the
+* __Web__: You can use the
   [ImageJ Server](https://github.com/imagej/imagej-server)
   to work with ImageJ2 via a RESTful web services API, between
   processes on the same machine, or between multiple machines.
@@ -107,7 +109,7 @@ its own repository:
 * [ImageJ Legacy](https://github.com/imagej/imagej-legacy)
 * [ImageJ Ops](https://github.com/imagej/imagej-ops)
 * [ImageJ Updater](https://github.com/imagej/imagej-updater)
-* [ImgLib2](https://github.com/imglib/imglib)
+* [ImgLib2](https://github.com/imglib/imglib2)
 * [SCIFIO](https://github.com/scifio/scifio)
 * [SciJava Common](https://github.com/scijava/scijava-common)
 
@@ -118,7 +120,7 @@ It also includes various "plugin" components at runtime:
 * [ImageJ Plugins: Uploader: SSH](https://github.com/imagej/imagej-plugins-uploader-ssh)
 * [ImageJ Plugins: Uploader: WebDAV](https://github.com/imagej/imagej-plugins-uploader-webdav)
 * [ImageJ Scripting](https://github.com/imagej/imagej-scripting)
-* [SciJava Plugins: Platforms](https://github.com/scijava/scijava-plugins-platforms)
+* [SciJava Desktop](https://github.com/scijava/scijava-desktop)
 * [SciJava Plugins: Text: Markdown](https://github.com/scijava/scijava-plugins-text-markdown)
 * [SciJava Plugins: Text: Plain](https://github.com/scijava/scijava-plugins-text-plain)
 
